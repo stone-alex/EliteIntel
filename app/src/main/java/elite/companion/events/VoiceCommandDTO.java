@@ -1,13 +1,11 @@
-package elite.companion.model;
+package elite.companion.events;
 
-
-import java.util.Map;
 
 public class VoiceCommandDTO {
     private String timestamp;
     private String transcribedText;
     private String interpretedAction;
-    private Map<String, String> params = new java.util.HashMap<>();
+    private String target;
 
     public VoiceCommandDTO(String timestamp, String transcribedText) {
         this.timestamp = timestamp;
@@ -19,8 +17,8 @@ public class VoiceCommandDTO {
         this.interpretedAction = interpretedAction;
     }
 
-    public void setParams(String param) {
-        this.params.put("target", param);
+    public void setTarget(String param) {
+        this.target = param;
     }
 
     public String getTimestamp() {
@@ -35,7 +33,7 @@ public class VoiceCommandDTO {
         return interpretedAction;
     }
 
-    public String getParams(String key) {
-        return params.get(key);
+    public String getTarget() {
+        return this.target;
     }
 }

@@ -15,7 +15,7 @@ public class VoiceNotifier {
 
     private final TextToSpeechClient textToSpeechClient;
 
-    public VoiceNotifier() throws IOException {
+    public VoiceNotifier()  {
         // Load credentials from classpath
         //TODO: Refactor this to use a config file or a user interface.
         try (InputStream serviceAccountStream = getClass().getResourceAsStream(GOOGLE_API_KEY)) {
@@ -25,6 +25,9 @@ public class VoiceNotifier {
             GoogleCredentials credentials = GoogleCredentials.fromStream(serviceAccountStream).createScoped("https://www.googleapis.com/auth/cloud-platform");
             TextToSpeechSettings settings = TextToSpeechSettings.newBuilder().setCredentialsProvider(() -> credentials).build();
             textToSpeechClient = TextToSpeechClient.create(settings);
+        } catch (Exception e) {
+            log.error("Failed to initialize Text To Speech client", e);
+            throw new RuntimeException("Failed to initialize Text To Speech client", e);
         }
     }
 
@@ -33,7 +36,7 @@ public class VoiceNotifier {
             SynthesisInput input = SynthesisInput.newBuilder().setText(text).build();
             VoiceSelectionParams voice = VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Wavenet-D").build(); // Natural WaveNet voice
 
-            AudioConfig config = AudioConfig.newBuilder().setAudioEncoding(AudioEncoding.LINEAR16).setSpeakingRate(1.0).setSampleRateHertz(24000).build();
+            AudioConfig config = AudioConfig.newBuilder().setAudioEncoding(AudioEncoding.LINEAR16).setSpeakingRate(1.1).setSampleRateHertz(24000).build();
             SynthesizeSpeechResponse response = textToSpeechClient.synthesizeSpeech(input, voice, config);
             byte[] audioData = response.getAudioContent().toByteArray();
 
@@ -44,8 +47,8 @@ public class VoiceNotifier {
                 audioData = even;
             }
 
-            // Apply a short linear fade-in (~10 ms) to avoid initial discontinuity
-            int fadeMs = 10;
+            // Apply a short linear fade-in (~20 ms) to avoid initial discontinuity
+            int fadeMs = 20;
             int samplesToFade = (24000 * fadeMs) / 1000; // 24kHz mono
             for (int i = 0; i < samplesToFade && (i * 2 + 1) < audioData.length; i++) {
                 // little-endian 16-bit sample

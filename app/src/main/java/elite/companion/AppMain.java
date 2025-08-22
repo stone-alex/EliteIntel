@@ -1,26 +1,19 @@
 package elite.companion;
 
-import com.google.common.eventbus.EventBus;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import elite.companion.comms.VoiceCommandModule;
-import elite.companion.comms.VoiceNotifier;
-import elite.companion.modules.MiningModule;
-
-import java.io.IOException;
-import java.nio.file.*;
+import elite.companion.subscribers.*;
 
 
 public class AppMain {
     public static void main(String[] args) throws Exception {
-        VoiceNotifier voice = new VoiceNotifier();
-        EventBus bus = new EventBus();
-        VoiceCommandModule voiceCommandModule = new VoiceCommandModule(bus);
 
 
-        //JournalParser parser = new JournalParser(bus);
-        //parser.startReading();
+        new LoadGameEventSubscriber();
+        new MiningEventSubscriber();
+        new CarrierEventSubscriber();
+        new CommanderEventSubscriber();
 
-        //voice.speak("Companion is running");
+
+        JournalParser parser = new JournalParser();
+        parser.startReading();
     }
 }

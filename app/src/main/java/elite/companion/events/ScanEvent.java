@@ -1,18 +1,18 @@
-package elite.companion.model;
+package elite.companion.events;
 
 import java.time.Duration;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-public class ScanDTO extends BaseEventDTO {
+public class ScanEvent extends BaseEventEvent {
 
     private String TargetType; // e.g., "Ship"
     private boolean isWanted;
     private boolean isMissionTarget;
     private String contactId; // Custom: Unique ID from journal (or timestamp)
 
-    public ScanDTO(String timestamp, String targetType, boolean isWanted, boolean isMissionTarget, String contactId) {
-        super(timestamp, 1, Duration.ofSeconds(30)); // High priority, short TTL
+    public ScanEvent(String timestamp, String targetType, boolean isWanted, boolean isMissionTarget, String contactId) {
+        super(timestamp, 1, Duration.ofSeconds(30), ScanEvent.class.getName()); // High priority, short TTL
         this.TargetType = targetType;
         this.isWanted = isWanted;
         this.isMissionTarget = isMissionTarget;
@@ -54,7 +54,7 @@ public class ScanDTO extends BaseEventDTO {
     @Override public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
 
-        ScanDTO scanDTO = (ScanDTO) o;
+        ScanEvent scanDTO = (ScanEvent) o;
         return isWanted() == scanDTO.isWanted() && isMissionTarget() == scanDTO.isMissionTarget() && Objects.equals(getTargetType(), scanDTO.getTargetType()) && Objects.equals(getContactId(), scanDTO.getContactId());
     }
 
@@ -67,7 +67,7 @@ public class ScanDTO extends BaseEventDTO {
     }
 
     @Override public String toString() {
-        return new StringJoiner(", ", ScanDTO.class.getSimpleName() + "[", "]")
+        return new StringJoiner(", ", ScanEvent.class.getSimpleName() + "[", "]")
                 .add("TargetType='" + TargetType + "'")
                 .add("isWanted=" + isWanted)
                 .add("isMissionTarget=" + isMissionTarget)

@@ -1,17 +1,17 @@
-package elite.companion.model;
+package elite.companion.events;
 
 import java.time.Duration;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-public class LaunchDroneDTO extends BaseEventDTO {
+public class LaunchDroneEvent extends BaseEventEvent {
     private String Type; // e.g., "Prospector"
     private String droneId; // Custom: Use timestamp as unique ID
 
-    public LaunchDroneDTO(String timestamp, String type) {
-        super(timestamp, 3, Duration.ofMinutes(5)); // Low priority, short TTL
+    public LaunchDroneEvent(String timestamp, String type) {
+        super(timestamp, 3, Duration.ofMinutes(5), LaunchDroneEvent.class.getName()); // Low priority, short TTL
         this.Type = type;
-        this.droneId = timestamp; // Custom field for tracking
+        this.droneId = String.valueOf(timestamp); // Custom field for tracking
     }
 
 
@@ -34,7 +34,7 @@ public class LaunchDroneDTO extends BaseEventDTO {
     @Override public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
 
-        LaunchDroneDTO that = (LaunchDroneDTO) o;
+        LaunchDroneEvent that = (LaunchDroneEvent) o;
         return Objects.equals(getType(), that.getType()) && Objects.equals(getDroneId(), that.getDroneId());
     }
 
@@ -45,7 +45,7 @@ public class LaunchDroneDTO extends BaseEventDTO {
     }
 
     @Override public String toString() {
-        return new StringJoiner(", ", LaunchDroneDTO.class.getSimpleName() + "[", "]")
+        return new StringJoiner(", ", LaunchDroneEvent.class.getSimpleName() + "[", "]")
                 .add("timestamp='" + timestamp + "'")
                 .add("priority=" + priority)
                 .add("endOfLife=" + endOfLife)

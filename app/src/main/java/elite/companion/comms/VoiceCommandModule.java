@@ -19,10 +19,10 @@ public class VoiceCommandModule {
     private static final long LISTEN_POLL_INTERVAL_MS = 1000L;
     public static final int SAMPLE_RATE_HERTZ = 24000;
     private SpeechClient speechClient;
-    private final EventBus bus;
 
-    public VoiceCommandModule(EventBus bus) {
-        this.bus = bus;
+
+    public VoiceCommandModule() {
+
 
         //TODO: Refactor this to use a config file or a user interface.
         try (InputStream sttStream = getClass().getResourceAsStream(GOOGLE_API_KEY)) {
@@ -48,7 +48,7 @@ public class VoiceCommandModule {
 
 
                 if (!transcript.isEmpty()) {
-                    GrokCommandProcessor processor = new GrokCommandProcessor(bus);
+                    GrokCommandProcessor processor = new GrokCommandProcessor();
                     processor.processCommand(transcript);
                 }
 

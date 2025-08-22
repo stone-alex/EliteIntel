@@ -1,4 +1,6 @@
 <configuration scan="true">
+    <!-- Optional: print Logback internal status messages (helps diagnose config issues) -->
+    <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener" />
     <property name="LOG_LEVEL" value="${LOG_LEVEL:-INFO}" />
     <!-- Separate property for app logs if you like -->
     <property name="APP_LOG_LEVEL" value="${APP_LOG_LEVEL:-INFO}" />
@@ -14,10 +16,8 @@
     <logger name="elite.companion" level="${APP_LOG_LEVEL}" />
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <![CDATA[
-            %d{HH:mm:ss.SSS} %highlight(%-5level) [%thread{20}] %cyan(%logger{36}) - %replace(%.-200msg){'\s*\[id:[^\]]+\]\s*',''}%n
-            ]]>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{HH:mm:ss.SSS} %highlight(%-5level) [%thread{20}] %cyan(%logger{36}) - %replace(%.-200msg){'\s*\[id:[^\]]+\]\s*',''}%n</pattern>
         </encoder>
     </appender>
 

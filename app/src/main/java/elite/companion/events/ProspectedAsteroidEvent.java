@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.time.Duration;
 
-public class ProspectedAsteroidEvent extends BaseEventEvent {
+public class ProspectedAsteroidEvent extends BaseEvent {
 
     public static class Material {
         public String Name;

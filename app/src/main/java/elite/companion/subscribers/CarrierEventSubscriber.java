@@ -2,7 +2,6 @@ package elite.companion.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import elite.companion.EventBusManager;
-import elite.companion.comms.VoiceNotifier;
 import elite.companion.events.CarrierStatsEvent;
 import elite.companion.session.PlayerStats;
 import elite.companion.session.SessionTracker;
@@ -15,7 +14,6 @@ public class CarrierEventSubscriber {
 
     @Subscribe
     public void onEvent(CarrierStatsEvent event) {
-        String name = event.getName();
         long carrierBalance = event.getFinance().getCarrierBalance();
         long reserveBalance = event.getFinance().getReserveBalance();
 
@@ -28,12 +26,9 @@ public class CarrierEventSubscriber {
         long reserveBalanceBillions = (reserveBalance / 100_000_000) * 100_000_000;
 
 
-
         if (!EventTracker.isProcessed(event.getEventName())) {
             int jumps = event.getFuelLevel() / 90;
-
-            VoiceNotifier.getInstance().speak(String.format("Welcome to %s, %s. We have around %d credits available. From that amount around %d credits are reserved for operations.", name, playerStats.getPlayerName(), carrierBalanceBillions, reserveBalanceBillions));
-            VoiceNotifier.getInstance().speak(String.format("Our fuel level is %dTons. It should be enough for about %d jumps which is about %d light years.", event.getFuelLevel(), jumps, jumps * 500));
+            SessionTracker.getInstance().addToState("carrier_stats", "Credit balance: " + carrierBalanceBillions + " reserved balance: " + reserveBalanceBillions + " fuel level: " + event.getFuelLevel() + " enough for " + event.getFuelLevel() / 90 + " jumps or " + (jumps * 500) + " light years");
         }
         EventTracker.setProcessed(event.getEventName());
     }

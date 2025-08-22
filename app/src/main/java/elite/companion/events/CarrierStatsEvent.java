@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-public class CarrierStatsEvent extends BaseEventEvent {
+public class CarrierStatsEvent extends BaseEvent {
     private long CarrierID;
     private String CarrierType;
     private String Callsign;

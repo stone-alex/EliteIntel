@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import java.time.Duration;
 import java.time.Instant;
 
-public class MiningRefinedEvent extends BaseEventEvent {
+public class MiningRefinedEvent extends BaseEvent {
 
     @SerializedName("mineralType")
     private String mineralType;

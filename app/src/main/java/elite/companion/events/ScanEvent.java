@@ -4,7 +4,7 @@ import java.time.Duration;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-public class ScanEvent extends BaseEventEvent {
+public class ScanEvent extends BaseEvent {
 
     private String TargetType; // e.g., "Ship"
     private boolean isWanted;

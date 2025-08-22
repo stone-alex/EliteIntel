@@ -1,5 +1,7 @@
 package elite.companion.session;
 
+import elite.companion.events.PowerplayEvent;
+
 /**
  * Temporary storage for player stats. This data is kept in memory and is reset on every new play session.
  * */
@@ -12,6 +14,8 @@ public class PlayerStats {
     private String currentShip;
     private String currentStarSystem;
     private String currentShipName;
+    private PowerplayEvent powerplayEvent;
+
 
 
     public String getPlayerName() {
@@ -20,7 +24,21 @@ public class PlayerStats {
     }
 
     public void setPlayerName(String playerName) {
-        this.playerName = playerName;
+
+        if (playerName == null) {
+            this.playerName = null;
+            return;
+        }
+        String[] words = playerName.toLowerCase().split("\\s+");
+        StringBuilder result = new StringBuilder();
+        for (String word : words) {
+            if (!word.isEmpty()) {
+                result.append(Character.toUpperCase(word.charAt(0)))
+                        .append(word.substring(1))
+                        .append(" ");
+            }
+        }
+        this.playerName = result.toString().trim();
     }
 
     public long getCreditBalance() {
@@ -69,5 +87,13 @@ public class PlayerStats {
 
     public void setCurrentShipName(String currentShipName) {
         this.currentShipName = currentShipName;
+    }
+
+    public PowerplayEvent getPowerplayEvent() {
+        return powerplayEvent;
+    }
+
+    public void setPowerplayEvent(PowerplayEvent powerplayEvent) {
+        this.powerplayEvent = powerplayEvent;
     }
 }

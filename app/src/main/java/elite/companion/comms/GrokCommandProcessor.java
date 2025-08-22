@@ -38,8 +38,8 @@ public class GrokCommandProcessor {
                     break;
 
                 case "query":
-                    //Handle the query
-
+                    handleQuery(responseText);
+                    break;
 
                 case "chat":
                     handleChat(responseText);
@@ -53,6 +53,10 @@ public class GrokCommandProcessor {
             log.error("Failed to parse Grok response: {}", e.getMessage());
             handleChat("Error processing command.");
         }
+    }
+
+    private void handleQuery(String responseText) {
+        VoiceNotifier.getInstance().speak(responseText);
     }
 
 

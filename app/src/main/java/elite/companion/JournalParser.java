@@ -92,6 +92,8 @@ public class JournalParser {
                                     break;
                                 case "CarrierStats":
                                     EventBusManager.publish(gson.fromJson(event, CarrierStatsEvent.class));
+                                case "Powerplay":
+                                    EventBusManager.publish(gson.fromJson(event, PowerplayEvent.class));
 
                                 default:
                                     // Ignore noise (e.g., "Music", "ReceiveText")

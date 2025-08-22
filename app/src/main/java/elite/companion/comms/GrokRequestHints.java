@@ -17,7 +17,9 @@ public class GrokRequestHints {
             "where are we (current system)",
             "carrier balance",
             "cargo status",
-            "mining target"
+            "mining target",
+            "mission status",
+            "my stats (how am I doing)"
     );
 
     private static String formatCommands() {

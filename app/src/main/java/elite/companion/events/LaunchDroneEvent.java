@@ -4,7 +4,7 @@ import java.time.Duration;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-public class LaunchDroneEvent extends BaseEventEvent {
+public class LaunchDroneEvent extends BaseEvent {
     private String Type; // e.g., "Prospector"
     private String droneId; // Custom: Use timestamp as unique ID
 

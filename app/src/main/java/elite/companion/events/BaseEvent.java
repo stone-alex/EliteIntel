@@ -4,7 +4,7 @@ package elite.companion.events;
 import java.time.Duration;
 import java.time.Instant;
 
-public abstract class BaseEventEvent {
+public abstract class BaseEvent {
 
     //@SerializedName("timestamp")
     public String timestamp;
@@ -13,7 +13,7 @@ public abstract class BaseEventEvent {
     public Instant endOfLife;
     public boolean isProcessed;
 
-    public BaseEventEvent(String timestamp, int priority, Duration ttl, String eventName) {
+    public BaseEvent(String timestamp, int priority, Duration ttl, String eventName) {
         this.eventName = eventName;
         this.timestamp = timestamp;
         this.priority = priority;

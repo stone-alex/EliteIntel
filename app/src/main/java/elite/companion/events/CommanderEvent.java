@@ -4,7 +4,7 @@ import java.time.Duration;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-public class CommanderEvent extends BaseEventEvent {
+public class CommanderEvent extends BaseEvent {
     private String FID;
     private String Name;
 

@@ -2,7 +2,7 @@ package elite.companion.events;
 
 import java.time.Duration;
 
-public class FSDJumpEvent extends BaseEventEvent {
+public class FSDJumpEvent extends BaseEvent {
     private final String starSystem;
 
     public FSDJumpEvent(String timestamp, String starSystem) {

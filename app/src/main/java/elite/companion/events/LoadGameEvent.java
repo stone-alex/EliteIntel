@@ -4,7 +4,7 @@ import java.time.Duration;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-public class LoadGameEvent extends BaseEventEvent {
+public class LoadGameEvent extends BaseEvent {
     private String FID;
     private String Commander;
     private boolean Horizons;

@@ -2,6 +2,7 @@ package elite.companion.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import elite.companion.EventBusManager;
+import elite.companion.comms.VoiceNotifier;
 import elite.companion.events.LoadGameEvent;
 import elite.companion.session.PlayerStats;
 
@@ -19,6 +20,7 @@ public class LoadGameEventSubscriber {
         playerStats.setCurrentShip(event.getShip());
         playerStats.setCreditBalance(event.getCredits());
         EventBusManager.publish(playerStats);
+        VoiceNotifier.getInstance().speak("Welcome back, " + playerStats.getPlayerName() + ".");
     }
 
 }

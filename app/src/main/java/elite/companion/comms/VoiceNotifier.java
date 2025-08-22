@@ -7,11 +7,23 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import static elite.companion.Globals.GOOGLE_API_KEY;
 
 public class VoiceNotifier {
     private static final Logger log = LoggerFactory.getLogger(VoiceNotifier.class);
+    public static final String JAMES = "James";
+    public static final String MICHEAL = "Micheal";
+    public static final String JENNIFER = "Jennifer";
+    public static final String MERRY = "Merry";
+    public static final String FAST_JENNY = "Fast Jenny";
+    public static final String CHARLES = "Charles";
+    public static final String STEVE = "Steve";
+    public static final String JOSEPH = "Joseph";
+    public static final String LEDA = "Leda";
+    public static final String KAREN = "Karen";
 
     private final TextToSpeechClient textToSpeechClient;
 
@@ -21,8 +33,9 @@ public class VoiceNotifier {
         return INSTANCE;
     }
 
+    private Map<String, VoiceSelectionParams> voiceMap = new HashMap<>();
 
-    private VoiceNotifier()  {
+    private VoiceNotifier() {
         // Load credentials from classpath
         //TODO: Refactor this to use a config file or a user interface.
         try (InputStream serviceAccountStream = getClass().getResourceAsStream(GOOGLE_API_KEY)) {
@@ -36,12 +49,29 @@ public class VoiceNotifier {
             log.error("Failed to initialize Text To Speech client", e);
             throw new RuntimeException("Failed to initialize Text To Speech client", e);
         }
+
+        voiceMap.put(JAMES, VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Wavenet-D").build());
+        voiceMap.put(MICHEAL, VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Algieba").build());
+        voiceMap.put(JENNIFER, VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Sulafat").build());
+
+        voiceMap.put(MERRY, VoiceSelectionParams.newBuilder().setLanguageCode("en-GB").setName("en-GB-Neural2-A").build());
+        voiceMap.put(FAST_JENNY, VoiceSelectionParams.newBuilder().setLanguageCode("en-GB").setName("en-GB-Chirp-HD-F").build());
+        voiceMap.put(CHARLES, VoiceSelectionParams.newBuilder().setLanguageCode("en-GB").setName("en-GB-Chirp3-HD-Algenib").build());
+
+        voiceMap.put(STEVE, VoiceSelectionParams.newBuilder().setLanguageCode("en-AU").setName("en-AU-Chirp3-HD-Schedar").build());
+        voiceMap.put(JOSEPH, VoiceSelectionParams.newBuilder().setLanguageCode("en-AU").setName("en-AU-Chirp3-HD-Enceladus").build());
+        voiceMap.put(LEDA, VoiceSelectionParams.newBuilder().setLanguageCode("en-AU").setName("en-AU-Chirp3-HD-Leda").build());
+        voiceMap.put(KAREN, VoiceSelectionParams.newBuilder().setLanguageCode("en-AU").setName("en-AU-Chirp3-HD-Gacrux").build());
     }
 
-    public void speak(String text) {
+    public void speak(String text){
+        speak(text, MICHEAL);
+    }
+
+    public void speak(String text, String voiceName) {
         try {
             SynthesisInput input = SynthesisInput.newBuilder().setText(text).build();
-            VoiceSelectionParams voice = VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Wavenet-D").build(); // Natural WaveNet voice
+            VoiceSelectionParams voice = voiceMap.get(voiceName);
 
             AudioConfig config = AudioConfig.newBuilder().setAudioEncoding(AudioEncoding.LINEAR16).setSpeakingRate(1.1).setSampleRateHertz(24000).build();
             SynthesizeSpeechResponse response = textToSpeechClient.synthesizeSpeech(input, voice, config);
@@ -55,18 +85,7 @@ public class VoiceNotifier {
             }
 
             // Apply a short linear fade-in (~20 ms) to avoid initial discontinuity
-            int fadeMs = 20;
-            int samplesToFade = (24000 * fadeMs) / 1000; // 24kHz mono
-            for (int i = 0; i < samplesToFade && (i * 2 + 1) < audioData.length; i++) {
-                // little-endian 16-bit sample
-                int lo = audioData[2 * i] & 0xFF;
-                int hi = audioData[2 * i + 1] & 0xFF;
-                short sample = (short) ((hi << 8) | lo);
-                float gain = (float) i / samplesToFade; // 0.0 -> 1.0
-                int scaled = Math.round(sample * gain);
-                audioData[2 * i] = (byte) (scaled & 0xFF);
-                audioData[2 * i + 1] = (byte) ((scaled >>> 8) & 0xFF);
-            }
+            applyFadeIn(audioData, 20);
 
             // Play audio directly using Java Sound
             javax.sound.sampled.AudioFormat format = new javax.sound.sampled.AudioFormat(24000, 16, 1, true, false);
@@ -89,6 +108,20 @@ public class VoiceNotifier {
             line.close();
         } catch (Exception e) {
             log.error("Text To Speech error: {}", e.getMessage());
+        }
+    }
+
+    private static void applyFadeIn(byte[] audioData, int fadeMs) {
+        int samplesToFade = (24000 * fadeMs) / 1000; // 24kHz mono
+        for (int i = 0; i < samplesToFade && (i * 2 + 1) < audioData.length; i++) {
+            // little-endian 16-bit sample
+            int lo = audioData[2 * i] & 0xFF;
+            int hi = audioData[2 * i + 1] & 0xFF;
+            short sample = (short) ((hi << 8) | lo);
+            float gain = (float) i / samplesToFade; // 0.0 -> 1.0
+            int scaled = Math.round(sample * gain);
+            audioData[2 * i] = (byte) (scaled & 0xFF);
+            audioData[2 * i + 1] = (byte) ((scaled >>> 8) & 0xFF);
         }
     }
 }

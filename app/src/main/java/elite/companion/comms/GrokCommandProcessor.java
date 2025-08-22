@@ -34,7 +34,7 @@ public class GrokCommandProcessor {
 
             switch (type.toLowerCase()) {
                 case "command":
-                    processCommand(transcribedText, json, responseText);
+                    handleCommand(transcribedText, json, responseText);
                     break;
 
                 case "query":
@@ -42,21 +42,21 @@ public class GrokCommandProcessor {
 
 
                 case "chat":
-                    processChat(responseText);
+                    handleChat(responseText);
                     break;
 
                 default:
                     log.warn("Unknown response type: {}", type);
-                    processChat("Hmm, not sure about that one.");
+                    handleChat("Hmm, not sure about that one.");
             }
         } catch (Exception e) {
             log.error("Failed to parse Grok response: {}", e.getMessage());
-            processChat("Error processing command.");
+            handleChat("Error processing command.");
         }
     }
 
 
-    private void processCommand(String transcribedText, JsonObject json, String responseText) {
+    private void handleCommand(String transcribedText, JsonObject json, String responseText) {
         String action = json.has("action") ? json.get("action").getAsString() : "";
         JsonObject params = json.has("params") ? json.get("params").getAsJsonObject() : new JsonObject();
 
@@ -69,10 +69,10 @@ public class GrokCommandProcessor {
             } // Add more setters for other param types as needed
         }
         EventBusManager.publish(dto);
-        processChat(responseText);
+        handleChat(responseText);
     }
 
-    private void processChat(String responseText) {
+    private void handleChat(String responseText) {
         VoiceNotifier.getInstance().speak(responseText); // Direct TTS response
     }
 

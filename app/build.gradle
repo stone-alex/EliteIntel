@@ -23,6 +23,11 @@ dependencies {
 
     // Guava for EventBus
     implementation 'com.google.guava:guava:33.0.0-jre'
+
+    //Logging
+    implementation 'ch.qos.logback:logback-classic:1.5.6'
+    implementation 'org.slf4j:slf4j-api:2.0.16'
+
 }
 
 // Ensure resources are included in the build
@@ -31,6 +36,8 @@ sourceSets {
         resources {
             srcDirs = ['src/main/resources']
             include '**/*.json'
+            include '**/*.conf'
+            include 'logback.xml'
         }
     }
 }

@@ -1,45 +1,39 @@
 package elite.companion.comms;
 
-import com.google.cloud.speech.v1.*;
 import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.speech.v1.*;
 import com.google.common.eventbus.EventBus;
 import com.google.protobuf.ByteString;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import elite.companion.model.VoiceCommandDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.time.Instant;
-import java.util.HashMap;
-import java.util.Scanner;
 
 import static elite.companion.Globals.GOOGLE_API_KEY;
 
 public class VoiceCommandModule {
 
+    private static final Logger log = LoggerFactory.getLogger(VoiceCommandModule.class);
+
+    private static final long LISTEN_POLL_INTERVAL_MS = 1000L;
+    public static final int SAMPLE_RATE_HERTZ = 24000;
     private SpeechClient speechClient;
     private final EventBus bus;
-    private final String xaiApiKey = "your-xai-api-key";
 
-    public VoiceCommandModule(EventBus bus) throws IOException {
+    public VoiceCommandModule(EventBus bus) {
         this.bus = bus;
+
+        //TODO: Refactor this to use a config file or a user interface.
         try (InputStream sttStream = getClass().getResourceAsStream(GOOGLE_API_KEY)) {
             if (sttStream == null) {
-                throw new IOException("STT service account JSON file '" + GOOGLE_API_KEY + "' not found in resources");
+                throw new IOException(String.format("STT service account JSON file '%s' not found in resources", GOOGLE_API_KEY));
             }
-            GoogleCredentials sttCredentials = GoogleCredentials.fromStream(sttStream)
-                    .createScoped("https://www.googleapis.com/auth/cloud-platform");
-            SpeechSettings settings = SpeechSettings.newBuilder()
-                    .setCredentialsProvider(() -> sttCredentials)
-                    .build();
+            GoogleCredentials sttCredentials = GoogleCredentials.fromStream(sttStream).createScoped("https://www.googleapis.com/auth/cloud-platform");
+            SpeechSettings settings = SpeechSettings.newBuilder().setCredentialsProvider(() -> sttCredentials).build();
             speechClient = SpeechClient.create(settings);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Failed to initialize Speech to Text client", e);
         }
         new Thread(this::listen).start();
     }
@@ -50,30 +44,45 @@ public class VoiceCommandModule {
                 byte[] audioData = recordAudio(); // Capture audio from your mic
                 RecognizeResponse response = recognizeSpeech(audioData);
                 String transcript = response.getResults(0).getAlternatives(0).getTranscript();
-                System.out.println("Heard: " + transcript);
-/*
-                if (transcript != null && !transcript.isEmpty()) {
-                    processCommand(transcript);
+                log.warn("STT transcript: {}", transcript);
+
+
+                if (!transcript.isEmpty()) {
+                    GrokCommandProcessor processor = new GrokCommandProcessor(bus);
+                    processor.processCommand(transcript);
                 }
-*/
+
             } catch (Exception e) {
-                System.err.println("STT error: " + e.getMessage());
+                log.error("STT error: {}", e.getMessage());
             }
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
+            if (!pauseBetweenIterations()) {
+                break;
             }
         }
     }
 
+    private boolean pauseBetweenIterations() {
+        try {
+            Thread.sleep(LISTEN_POLL_INTERVAL_MS);
+            return true;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.warn("Listen loop interrupted; exiting.");
+            return false;
+        }
+    }
+
+
     private byte[] recordAudio() throws Exception {
-        // Optimized for your high-end audio setup (Shure SM7B, RME Fireface UFX+)
-        javax.sound.sampled.AudioFormat format = new javax.sound.sampled.AudioFormat(24000, 16, 1, true, false); // Match your TTS rate
+        // Optimized for your high-end audio setup (Shure SM7B, RME Fireface UFX+ 48kHz audio)
+        javax.sound.sampled.AudioFormat format = new javax.sound.sampled.AudioFormat(SAMPLE_RATE_HERTZ, 16, 1, true, false); // Match your TTS rate
         javax.sound.sampled.DataLine.Info info = new javax.sound.sampled.DataLine.Info(javax.sound.sampled.TargetDataLine.class, format);
         javax.sound.sampled.TargetDataLine line = (javax.sound.sampled.TargetDataLine) javax.sound.sampled.AudioSystem.getLine(info);
         line.open(format);
         line.start();
-        byte[] data = new byte[24000 * 5]; // 5 seconds at 24kHz
+        //TODO:This should be configurable via user interface
+        byte[] data = new byte[SAMPLE_RATE_HERTZ * 20]; // 20 seconds at 24kHz or 10 seconds at 48kHz;
+
         int bytesRead = line.read(data, 0, data.length);
         byte[] trimmedData = new byte[bytesRead];
         System.arraycopy(data, 0, trimmedData, 0, bytesRead);
@@ -85,7 +94,7 @@ public class VoiceCommandModule {
     private RecognizeResponse recognizeSpeech(byte[] audioData) throws Exception {
         RecognitionConfig config = RecognitionConfig.newBuilder()
                 .setEncoding(RecognitionConfig.AudioEncoding.LINEAR16)
-                .setSampleRateHertz(24000) // Match your audio setup
+                .setSampleRateHertz(SAMPLE_RATE_HERTZ)
                 .setLanguageCode("en-US")
                 .setEnableAutomaticPunctuation(true) // Improve natural parsing
                 .build();
@@ -93,53 +102,5 @@ public class VoiceCommandModule {
                 .setContent(ByteString.copyFrom(audioData))
                 .build();
         return speechClient.recognize(config, audio);
-    }
-
-    private void processCommand(String transcribedText) {
-        String prompt = "Interpret this Elite Dangerous app command: '" + transcribedText +
-                "'. Output JSON: {'action': 'set_mining_target', 'target': 'Tritium'} or similar.";
-        String response = callXaiApi(prompt);
-
-        JsonObject json = JsonParser.parseString(response).getAsJsonObject();
-        String action = json.has("action") ? json.get("action").getAsString() : "";
-        String target = json.has("target") ? json.get("target").getAsString() : null;
-
-        VoiceCommandDTO dto = new VoiceCommandDTO(Instant.now().toString(), transcribedText);
-        dto.setInterpretedAction(action);
-        if (target != null) dto.setParams(target);
-        bus.post(dto);
-    }
-
-    private String callXaiApi(String prompt) {
-        try {
-            URL url = new URL("https://api.x.ai/v1/chat/completions");
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("POST");
-            conn.setRequestProperty("Content-Type", "application/json");
-            conn.setRequestProperty("Authorization", "Bearer " + xaiApiKey);
-            conn.setDoOutput(true);
-
-            String body = "{\"model\": \"grok\", \"messages\": [{\"role\": \"user\", \"content\": \"" + prompt + "\"}]}";
-            try (var os = conn.getOutputStream()) {
-                os.write(body.getBytes());
-            }
-
-            if (conn.getResponseCode() == 200) {
-                try (Scanner scanner = new Scanner(conn.getInputStream())) {
-                    String response = scanner.useDelimiter("\\A").next();
-                    JsonObject json = JsonParser.parseString(response).getAsJsonObject();
-                    return json.getAsJsonArray("choices")
-                            .get(0).getAsJsonObject()
-                            .get("message").getAsJsonObject()
-                            .get("content").getAsString();
-                }
-            } else {
-                System.err.println("xAI API error: " + conn.getResponseCode());
-                return "{}";
-            }
-        } catch (Exception e) {
-            System.err.println("API call error: " + e.getMessage());
-            return "{}";
-        }
     }
 }

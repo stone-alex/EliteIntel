@@ -4,7 +4,9 @@ import com.google.common.eventbus.EventBus;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import elite.companion.model.LaunchDroneDTO;
 import elite.companion.model.MiningRefinedDTO;
+import elite.companion.model.ProspectedAsteroidDTO;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -16,6 +18,8 @@ import java.util.Comparator;
 public class JournalParser {
     private final Gson gson = new GsonBuilder().setLenient().create(); // Handles malformed JSON
     private final EventBus bus;
+
+    //TODO: Refactor this to be settable via config file or user interface.
     private final Path journalDir = Paths.get(System.getProperty("user.home"), "Saved Games", "Frontier Developments", "Elite Dangerous");
 
     public JournalParser(EventBus bus) {
@@ -49,14 +53,12 @@ public class JournalParser {
                             case "MiningRefined":
                                 bus.post(gson.fromJson(event, MiningRefinedDTO.class));
                                 break;
-/*
                             case "ProspectedAsteroid":
                                 bus.post(gson.fromJson(event, ProspectedAsteroidDTO.class));
                                 break;
                             case "LaunchDrone":
                                 bus.post(gson.fromJson(event, LaunchDroneDTO.class));
                                 break;
-*/
                             // Add more cases (e.g., "Scan" for combat) as needed
                             default:
                                 // Ignore noise (e.g., "Music", "ReceiveText")

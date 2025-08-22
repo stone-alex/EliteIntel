@@ -14,14 +14,13 @@ import java.nio.file.*;
 public class AppMain {
     public static void main(String[] args) throws Exception {
         VoiceNotifier voice = new VoiceNotifier();
-        voice.speak("Elite Dangerous Companion is running");
         EventBus bus = new EventBus();
-
         VoiceCommandModule voiceCommandModule = new VoiceCommandModule(bus);
 
 
         //JournalParser parser = new JournalParser(bus);
         //parser.startReading();
 
+        //voice.speak("Companion is running");
     }
 }

@@ -1,0 +1,28 @@
+<configuration scan="true">
+    <property name="LOG_LEVEL" value="${LOG_LEVEL:-INFO}" />
+    <!-- Separate property for app logs if you like -->
+    <property name="APP_LOG_LEVEL" value="${APP_LOG_LEVEL:-INFO}" />
+
+    <!-- Silence noisy dependencies -->
+    <logger name="io.grpc" level="WARN" />
+    <logger name="io.grpc.netty" level="WARN" />
+    <logger name="io.grpc.netty.shaded" level="WARN" />
+    <logger name="io.netty" level="WARN" />
+    <logger name="com.google" level="WARN" />
+
+    <!-- Turn ON logs for your application package -->
+    <logger name="elite.companion" level="${APP_LOG_LEVEL}" />
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <![CDATA[
+            %d{HH:mm:ss.SSS} %highlight(%-5level) [%thread{20}] %cyan(%logger{36}) - %replace(%.-200msg){'\s*\[id:[^\]]+\]\s*',''}%n
+            ]]>
+        </encoder>
+    </appender>
+
+    <!-- Keep root high to suppress third-party noise -->
+    <root level="WARN">
+        <appender-ref ref="CONSOLE" />
+    </root>
+</configuration>

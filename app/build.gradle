@@ -1,0 +1,39 @@
+plugins {
+    id 'java'
+}
+
+dependencies {
+
+    //Text to Speech
+    implementation 'com.google.cloud:google-cloud-texttospeech:2.73.0'
+
+    //Speech to text
+    implementation 'com.google.cloud:google-cloud-speech:4.67.0'
+
+    //authentication
+    implementation 'com.google.auth:google-auth-library-oauth2-http:1.37.0'
+
+
+    // CMU Sphinx for STT (fallback or hybrid)
+    implementation 'edu.cmu.sphinx:sphinx4-core:5prealpha-SNAPSHOT'
+    implementation 'edu.cmu.sphinx:sphinx4-data:5prealpha-SNAPSHOT'
+
+    // Gson for JSON parsing
+    implementation 'com.google.code.gson:gson:2.10.1'
+
+    // Guava for EventBus
+    implementation 'com.google.guava:guava:33.0.0-jre'
+}
+
+// Ensure resources are included in the build
+sourceSets {
+    main {
+        resources {
+            srcDirs = ['src/main/resources']
+            include '**/*.json'
+        }
+    }
+}
+
+sourceCompatibility = 11
+targetCompatibility = 11

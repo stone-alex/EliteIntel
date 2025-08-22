@@ -1,0 +1,10 @@
+allprojects {
+    repositories {
+        mavenCentral() // For Azure Speech SDK, Gson, Guava
+        maven {
+            url 'https://oss.sonatype.org/content/repositories/snapshots' // For CMU Sphinx
+        }
+        // Fallback for Azure SDK (optional, if Maven Central fails)
+        maven { url 'https://pkgs.dev.azure.com/azure-sdk/public/_packaging/azure-sdk-for-java/maven/v1' }
+    }
+}

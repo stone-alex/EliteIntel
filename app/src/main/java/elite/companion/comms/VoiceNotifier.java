@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import static elite.companion.Globals.GOOGLE_API_KEY;
 
@@ -64,11 +65,26 @@ public class VoiceNotifier {
         voiceMap.put(KAREN, VoiceSelectionParams.newBuilder().setLanguageCode("en-AU").setName("en-AU-Chirp3-HD-Gacrux").build());
     }
 
+
+
+    public void speakInRandomVoice(String text) {
+        speak(text, getRandomVoice());
+    }
+
+    public String getRandomVoice() {
+        if (voiceMap.isEmpty()) {
+            return MICHEAL;
+        }
+        String[] voices = voiceMap.keySet().toArray(new String[0]);
+        return voices[new Random().nextInt(voices.length)];
+    }
+
     public void speak(String text){
         speak(text, MICHEAL);
     }
 
     public void speak(String text, String voiceName) {
+        System.out.println(text);
         try {
             SynthesisInput input = SynthesisInput.newBuilder().setText(text).build();
             VoiceSelectionParams voice = voiceMap.get(voiceName);

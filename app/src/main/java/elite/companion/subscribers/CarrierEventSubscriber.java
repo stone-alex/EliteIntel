@@ -28,7 +28,7 @@ public class CarrierEventSubscriber {
 
         if (!EventTracker.isProcessed(event.getEventName())) {
             int jumps = event.getFuelLevel() / 90;
-            SessionTracker.getInstance().addToState("carrier_stats", "Credit balance: " + carrierBalanceBillions + " reserved balance: " + reserveBalanceBillions + " fuel level: " + event.getFuelLevel() + " enough for " + event.getFuelLevel() / 90 + " jumps or " + (jumps * 500) + " light years");
+            SessionTracker.getInstance().updateSession("carrier_stats", "Credit balance: " + carrierBalanceBillions + " reserved balance: " + reserveBalanceBillions + " fuel level: " + event.getFuelLevel() + " enough for " + event.getFuelLevel() / 90 + " jumps or " + (jumps * 500) + " light years");
         }
         EventTracker.setProcessed(event.getEventName());
     }

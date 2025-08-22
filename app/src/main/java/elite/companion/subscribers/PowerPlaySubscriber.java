@@ -16,6 +16,6 @@ public class PowerPlaySubscriber {
     public void onPowerPlayEvent(PowerplayEvent event) {
         PlayerStats playerStats = SessionTracker.getInstance().getPlayerStats();
         playerStats.setPowerplayEvent(event);
-        SessionTracker.getInstance().addToState("player_power_stands", "Pledged to " + event.getPower() + " at rank " + event.getRank() + " with " + event.getMerits() + " merits ");
+        SessionTracker.getInstance().updateSession("player_power_stands", "Pledged to " + event.getPower() + " at rank " + event.getRank() + " with " + event.getMerits() + " merits ");
     }
 }

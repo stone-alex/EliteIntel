@@ -1,21 +1,17 @@
 package elite.companion;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 import elite.companion.events.*;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.nio.file.*;
-import java.util.Comparator;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
 
 public class JournalParser {
     private static final Logger log = LoggerFactory.getLogger(JournalParser.class);
@@ -73,6 +69,7 @@ public class JournalParser {
                         JsonObject event = element.getAsJsonObject();
                         if (event.has("event")) {
                             String eventType = event.get("event").getAsString();
+                            String eventTimestamp = event.get("timestamp").getAsString();
                             log.info("Processing Journal Event: {} {}", eventType, event.toString());
                             switch (eventType) {
                                 case "LoadGame":
@@ -92,8 +89,21 @@ public class JournalParser {
                                     break;
                                 case "CarrierStats":
                                     EventBusManager.publish(gson.fromJson(event, CarrierStatsEvent.class));
+                                    break;
                                 case "Powerplay":
                                     EventBusManager.publish(gson.fromJson(event, PowerplayEvent.class));
+                                    break;
+                                case "Statistics":
+                                    EventBusManager.publish(gson.fromJson(event, StatisticsEvent.class));
+                                    break;
+                                case "ReceiveText":
+                                    // Filter events older than 10 seconds
+                                    if (isRecent(eventTimestamp, 10)) {
+                                        EventBusManager.publish(gson.fromJson(event, ReceiveTextEvent.class));
+                                    } else {
+                                        log.info("Skipping old ReceiveTextEvent: {}", eventTimestamp);
+                                    }
+
 
                                 default:
                                     // Ignore noise (e.g., "Music", "ReceiveText")
@@ -115,6 +125,19 @@ public class JournalParser {
             key.reset();
         }
     }
+
+
+    private boolean isRecent(String timestamp, long secondsThreshold) {
+        try {
+            Instant eventTime = Instant.parse(timestamp);
+            Instant now = Instant.now();
+            return !eventTime.isBefore(now.minus(secondsThreshold, ChronoUnit.SECONDS));
+        } catch (Exception e) {
+            log.warn("Invalid timestamp format: {}", timestamp);
+            return false; // Skip malformed timestamps
+        }
+    }
+
 
     private Path getLatestJournalFile() throws IOException {
         return Files.list(journalDir)

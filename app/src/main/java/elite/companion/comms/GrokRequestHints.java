@@ -19,7 +19,9 @@ public class GrokRequestHints {
             "cargo status",
             "mining target",
             "mission status",
-            "my stats (how am I doing)"
+            "carrier stats | how is my/our carrier doing (only carrier stats)",
+            "player stats | how am I doing (player quick stats summary)",
+            "0 or null means no data available, skip that data point"
     );
 
     private static String formatCommands() {

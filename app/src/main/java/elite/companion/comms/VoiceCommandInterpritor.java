@@ -41,18 +41,19 @@ public class VoiceCommandInterpritor {
         while (true) {
             try {
                 byte[] audioData = recordAudio(); // Capture audio from your mic
-                RecognizeResponse response = recognizeSpeech(audioData);
-                String transcript = response.getResults(0).getAlternatives(0).getTranscript();
-                log.warn("STT transcript: {}", transcript);
+                if(audioData.length > 0) {
+                    RecognizeResponse response = recognizeSpeech(audioData);
+                    String transcript = response.getResults(0).getAlternatives(0).getTranscript();
+                    log.warn("STT transcript: {}", transcript);
 
 
-                if (!transcript.isEmpty()) {
-                    GrokInteractionHandler processor = new GrokInteractionHandler();
-                    processor.processCommand(transcript);
+                    if (!transcript.isEmpty()) {
+                        GrokInteractionHandler processor = new GrokInteractionHandler();
+                        processor.processCommand(transcript);
+                    }
                 }
-
             } catch (Exception e) {
-                log.error("STT error: {}", e.getMessage());
+                log.error("STT not processed: {}", e.getMessage());
             }
             if (!pauseBetweenIterations()) {
                 break;

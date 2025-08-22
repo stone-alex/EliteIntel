@@ -2,9 +2,7 @@ package elite.companion.session;
 
 import com.google.common.eventbus.Subscribe;
 import elite.companion.EventBusManager;
-import elite.companion.events.CarrierStatsEvent; // Assume this event exists
-import elite.companion.events.CommanderEvent;
-import elite.companion.events.PowerplayEvent;
+import elite.companion.events.CarrierStatsEvent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,7 +36,7 @@ public class SessionTracker {
 
     @Subscribe
     public void onPlayerStatusEvent(PlayerStats event) {
-        if(event.getPowerplayEvent() != null) {
+        if (event.getPowerplayEvent() != null) {
             state.put("pledged_to_power", event.getPowerplayEvent().getPower());
             state.put("pledged_to_rank", event.getPowerplayEvent().getRank());
             state.put("pledged_to_merits", event.getPowerplayEvent().getMerits());
@@ -46,12 +44,12 @@ public class SessionTracker {
         }
         state.put("current_ship", event.getCurrentShip());
         state.put("current_ship_name", event.getCurrentShipName());
-        state.put("personal_credits_available", event.getCreditBalance());
+        if (event.getCreditBalance() > 0) state.put("personal_credits_available", event.getCreditBalance());
     }
 
 
-    public void addToState(String key, String data) {
-            state.put(key, data);
+    public void updateSession(String key, String data) {
+        state.put(key, data);
     }
 
     public String getStateSummary() {

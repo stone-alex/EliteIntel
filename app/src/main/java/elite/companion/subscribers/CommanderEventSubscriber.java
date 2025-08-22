@@ -14,7 +14,7 @@ public class CommanderEventSubscriber {
 
     @Subscribe
     public void onEvent(CommanderEvent event) {
-        PlayerStats playerStats = SessionTracker.getPlayerStats();
+        PlayerStats playerStats = SessionTracker.getInstance().getPlayerStats();
         playerStats.setPlayerName(event.getName());
     }
 }

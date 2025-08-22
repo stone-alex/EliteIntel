@@ -1,5 +1,6 @@
 package elite.companion;
 
+import elite.companion.comms.VoiceCommandInterpritor;
 import elite.companion.subscribers.*;
 
 
@@ -12,6 +13,8 @@ public class AppMain {
         new CarrierEventSubscriber();
         new CommanderEventSubscriber();
 
+
+        new VoiceCommandInterpritor();
 
         JournalParser parser = new JournalParser();
         parser.startReading();

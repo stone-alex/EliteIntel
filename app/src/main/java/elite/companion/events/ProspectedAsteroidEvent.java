@@ -30,6 +30,6 @@ public class ProspectedAsteroidEvent extends BaseEventEvent {
 
     @Override
     public String toString() {
-        return timestamp + ": Asteroid with content: " + ContentLocalised;
+        return String.format("%s: Asteroid with content: %s", timestamp, ContentLocalised);
     }
 }

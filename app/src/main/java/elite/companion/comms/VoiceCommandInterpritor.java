@@ -2,7 +2,6 @@ package elite.companion.comms;
 
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.speech.v1.*;
-import com.google.common.eventbus.EventBus;
 import com.google.protobuf.ByteString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,16 +11,16 @@ import java.io.InputStream;
 
 import static elite.companion.Globals.GOOGLE_API_KEY;
 
-public class VoiceCommandModule {
+public class VoiceCommandInterpritor {
 
-    private static final Logger log = LoggerFactory.getLogger(VoiceCommandModule.class);
+    private static final Logger log = LoggerFactory.getLogger(VoiceCommandInterpritor.class);
 
     private static final long LISTEN_POLL_INTERVAL_MS = 1000L;
     public static final int SAMPLE_RATE_HERTZ = 24000;
     private SpeechClient speechClient;
 
 
-    public VoiceCommandModule() {
+    public VoiceCommandInterpritor() {
 
 
         //TODO: Refactor this to use a config file or a user interface.
@@ -48,7 +47,7 @@ public class VoiceCommandModule {
 
 
                 if (!transcript.isEmpty()) {
-                    GrokCommandProcessor processor = new GrokCommandProcessor();
+                    GrokInteractionHandler processor = new GrokInteractionHandler();
                     processor.processCommand(transcript);
                 }
 

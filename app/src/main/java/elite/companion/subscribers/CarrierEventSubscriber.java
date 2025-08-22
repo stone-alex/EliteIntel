@@ -19,21 +19,21 @@ public class CarrierEventSubscriber {
         long carrierBalance = event.getFinance().getCarrierBalance();
         long reserveBalance = event.getFinance().getReserveBalance();
 
-        PlayerStats playerStats = SessionTracker.getPlayerStats();
+        PlayerStats playerStats = SessionTracker.getInstance().getPlayerStats();
         playerStats.setCarrierBalance(String.valueOf(carrierBalance));
         playerStats.setCarrierReserve(String.valueOf(reserveBalance));
-        SessionTracker.setPlayerStats(playerStats);
+        EventBusManager.publish(playerStats);
 
         long carrierBalanceBillions = (carrierBalance / 100_000_000) * 100_000_000;
         long reserveBalanceBillions = (reserveBalance / 100_000_000) * 100_000_000;
 
 
-        VoiceNotifier voiceNotifier = new VoiceNotifier();
+
         if (!EventTracker.isProcessed(event.getEventName())) {
             int jumps = event.getFuelLevel() / 90;
 
-            voiceNotifier.speak(String.format("Welcome to %s, %s. We have around %d credits available. From that amount around %d credits are reserved for operations.", name, playerStats.getPlayerName(), carrierBalanceBillions, reserveBalanceBillions));
-            voiceNotifier.speak(String.format("Our fuel level is %dTons. It should be enough for about %d jumps which is about %d light years.", event.getFuelLevel(), jumps, jumps * 500));
+            VoiceNotifier.getInstance().speak(String.format("Welcome to %s, %s. We have around %d credits available. From that amount around %d credits are reserved for operations.", name, playerStats.getPlayerName(), carrierBalanceBillions, reserveBalanceBillions));
+            VoiceNotifier.getInstance().speak(String.format("Our fuel level is %dTons. It should be enough for about %d jumps which is about %d light years.", event.getFuelLevel(), jumps, jumps * 500));
         }
         EventTracker.setProcessed(event.getEventName());
     }

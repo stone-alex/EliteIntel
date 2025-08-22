@@ -15,7 +15,14 @@ public class VoiceNotifier {
 
     private final TextToSpeechClient textToSpeechClient;
 
-    public VoiceNotifier()  {
+    private final static VoiceNotifier INSTANCE = new VoiceNotifier();
+
+    public static VoiceNotifier getInstance() {
+        return INSTANCE;
+    }
+
+
+    private VoiceNotifier()  {
         // Load credentials from classpath
         //TODO: Refactor this to use a config file or a user interface.
         try (InputStream serviceAccountStream = getClass().getResourceAsStream(GOOGLE_API_KEY)) {

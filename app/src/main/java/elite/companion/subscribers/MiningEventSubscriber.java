@@ -19,11 +19,9 @@ public class MiningEventSubscriber {
     private static final Logger log = LoggerFactory.getLogger(MiningEventSubscriber.class);
     private final Map<String, ProspectedAsteroidEvent> activeProspectors = new HashMap<>();
     private String miningTarget = null;
-    private final VoiceNotifier voice;
 
     public MiningEventSubscriber() {
         EventBusManager.register(this);
-        voice = new VoiceNotifier();
 
     }
 
@@ -35,7 +33,7 @@ public class MiningEventSubscriber {
                     .max(Comparator.comparing(Instant::parse))
                     .orElse(null);
 
-            // ... existing code ...
+
 
             double matchedProportion = -1.0;
             if (closestDroneId != null && dto.Materials != null) {
@@ -47,7 +45,7 @@ public class MiningEventSubscriber {
                 }
                 if (matchedProportion >= 0) {
                     activeProspectors.put(closestDroneId, dto);
-                    voice.speak(String.format(
+                    VoiceNotifier.getInstance().speak(String.format(
                             "Prospector %s reports %.0f%% %s",
                             closestDroneId.substring(11, 19),
                             matchedProportion * 100.0,
@@ -63,7 +61,7 @@ public class MiningEventSubscriber {
     @Subscribe
     public void onMiningRefined(MiningRefinedEvent dto) {
         if (miningTarget != null && miningTarget.equalsIgnoreCase(dto.getMineralType())) {
-            voice.speak("Refined " + dto.getMineralType() + "!");
+            VoiceNotifier.getInstance().speak("Refined " + dto.getMineralType() + "!");
         }
     }
 
@@ -71,7 +69,7 @@ public class MiningEventSubscriber {
     public void onVoiceCommand(VoiceCommandDTO dto) {
         if ("set_mining_target".equals(dto.getInterpretedAction())) {
             miningTarget = dto.getTarget();
-            voice.speak("Mining target set to " + miningTarget + "!");
+            VoiceNotifier.getInstance().speak("Mining target set to " + miningTarget + "!");
         }
     }
 }

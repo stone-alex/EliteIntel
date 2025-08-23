@@ -1,7 +1,7 @@
 package elite.companion.comms;
 
-import com.google.api.gax.rpc.ApiStreamObserver;
 import com.google.cloud.speech.v1p1beta1.*;
+import com.google.api.gax.rpc.ApiStreamObserver;
 import com.google.protobuf.ByteString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,18 +16,20 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class SpeechRecognizer {
     private static final Logger log = LoggerFactory.getLogger(SpeechRecognizer.class);
-    private static final int SAMPLE_RATE_HERTZ = 48000; // Match your system
-    private static final int BUFFER_SIZE = 9600; // ~100ms at 48kHz mono 16-bit to avoid underruns
-    private static final int KEEP_ALIVE_INTERVAL_MS = 2000; // 2 seconds
-    private static final int STREAM_DURATION_MS = 240000; // 4 minutes (before 305s limit)
+    private static final int SAMPLE_RATE_HERTZ = 48000; // Locked to 48kHz
+    private static final int BUFFER_SIZE = 9600; // ~100ms at 48kHz, mono
+    private static final int CHANNELS = 1; // Mono
+    private static final int KEEP_ALIVE_INTERVAL_MS = 2000;
+    private static final int STREAM_DURATION_MS = 30000; // 30s
+    private static final int RESTART_DELAY_MS = 1000; // 1s sleep after stream close
     private final BlockingQueue<String> transcriptionQueue = new LinkedBlockingQueue<>();
     private final SpeechClient speechClient;
-    private GrokInteractionHandler grok;
-    private AtomicBoolean isListening = new AtomicBoolean(true);
+    private final GrokInteractionHandler grok;
+    private final AtomicBoolean isListening = new AtomicBoolean(true);
     private long lastAudioSentTime = System.currentTimeMillis();
-    private byte[] lastBuffer = null; // For resending on restart
-    private AudioInputStream audioInputStream = null; // For WAV
-    private File wavFile = null; // Output WAV
+    private byte[] lastBuffer = null;
+    private AudioInputStream audioInputStream = null;
+    private File wavFile = null;
 
     public SpeechRecognizer() {
         this.grok = new GrokInteractionHandler();
@@ -42,26 +44,40 @@ public class SpeechRecognizer {
         this.speechClient = tempClient;
     }
 
-    // Start/stop WAV recording
-    public void startWavRecording() {
+    // List available audio inputs
+    public void listAudioInputs() {
+        AudioFormat format = new AudioFormat(SAMPLE_RATE_HERTZ, 16, CHANNELS, true, false);
+        DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
+        for (Mixer.Info mixerInfo : AudioSystem.getMixerInfo()) {
+            Mixer mixer = AudioSystem.getMixer(mixerInfo);
+            if (mixer.isLineSupported(info)) {
+                log.info("Available audio input: {} (SampleRate: {}, Channels: {})",
+                        mixerInfo.getName(), SAMPLE_RATE_HERTZ, CHANNELS);
+            }
+        }
+    }
+
+    // Standalone WAV recording for testing
+    public void testWavRecording() {
         try {
-            AudioFormat format = new AudioFormat(SAMPLE_RATE_HERTZ, 16, 1, true, false);
-            wavFile = new File("audio_debug.wav");
+            AudioFormat format = new AudioFormat(SAMPLE_RATE_HERTZ, 16, CHANNELS, true, false);
             DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
             TargetDataLine line = (TargetDataLine) AudioSystem.getLine(info);
+            log.info("Using WAV format: SampleRate={}, Channels={}", SAMPLE_RATE_HERTZ, CHANNELS);
             line.open(format, BUFFER_SIZE);
             line.start();
-            audioInputStream = new AudioInputStream(line); // Fixed constructor
+            audioInputStream = new AudioInputStream(line);
+            wavFile = new File("audio_debug.wav");
             new Thread(() -> {
                 try {
-                    AudioSystem.write(audioInputStream, AudioFileFormat.Type.WAVE, wavFile); // Fixed method
+                    AudioSystem.write(audioInputStream, AudioFileFormat.Type.WAVE, wavFile);
                     log.info("Started WAV recording to {}", wavFile.getAbsolutePath());
                 } catch (Exception e) {
                     log.error("Failed to write WAV file", e);
                 }
             }).start();
-        } catch (Exception e) {
-            log.error("Failed to start WAV recording", e);
+        } catch (LineUnavailableException | IllegalArgumentException e) {
+            log.error("Failed to start WAV recording: {}", e.getMessage());
         }
     }
 
@@ -90,7 +106,7 @@ public class SpeechRecognizer {
             try {
                 Thread.currentThread().setPriority(Thread.MAX_PRIORITY - 1);
 
-                // Command context with extra tritium focus
+                // Command context
                 SpeechContext commandContext = SpeechContext.newBuilder()
                         .addPhrases("open cargo scoop")
                         .addPhrases("close cargo scoop")
@@ -102,6 +118,13 @@ public class SpeechRecognizer {
                         .addPhrases("tritium")
                         .addPhrases("TRITIUM")
                         .addPhrases("tri-tium")
+                        .addPhrases("try-tee-um")
+                        .addPhrases("tree-tee-um")
+                        .addPhrases("trit-ee-um")
+                        .addPhrases("trish-ium")
+                        .addPhrases("try-tium")
+                        .addPhrases("t-r-i-t-i-u-m")
+                        .addPhrases("trit-ium")
                         .addPhrases("let mine some tritium")
                         .addPhrases("let get some tritium")
                         .addPhrases("set tritium as the mining target")
@@ -112,10 +135,7 @@ public class SpeechRecognizer {
                         .addPhrases("mining")
                         .addPhrases("mine")
                         .addAllPhrases(GrokRequestHints.COMMANDS)
-                        .addAllPhrases(GrokRequestHints.QUERIES)
-                        .addAllPhrases(GrokRequestHints.COMMON_PHRASES)
-                        .addAllPhrases(GrokRequestHints.CONCEPTS)
-                        .setBoost(20.0f)
+                        .setBoost(25.0f)
                         .build();
 
                 // Domain terms context
@@ -125,18 +145,48 @@ public class SpeechRecognizer {
                         .addPhrases("GROK")
                         .addPhrases("Anaconda")
                         .addPhrases("Coriolis")
-                        .setBoost(20.0f)
+                        .setBoost(25.0f)
+                        .build();
+
+                // Inline SpeechAdaptation
+                SpeechAdaptation adaptation = SpeechAdaptation.newBuilder()
+                        .addPhraseSets(PhraseSet.newBuilder()
+                                .setBoost(15.0f)
+                                .addPhrases(PhraseSet.Phrase.newBuilder()
+                                        .setValue("tritium").setBoost(30.0f))
+                                .addPhrases(PhraseSet.Phrase.newBuilder()
+                                        .setValue("tri-tium").setBoost(30.0f))
+                                .addPhrases(PhraseSet.Phrase.newBuilder()
+                                        .setValue("try-tee-um").setBoost(30.0f))
+                                .addPhrases(PhraseSet.Phrase.newBuilder()
+                                        .setValue("tree-tee-um").setBoost(30.0f))
+                                .addPhrases(PhraseSet.Phrase.newBuilder()
+                                        .setValue("trit-ee-um").setBoost(30.0f))
+                                .addPhrases(PhraseSet.Phrase.newBuilder()
+                                        .setValue("trish-ium").setBoost(30.0f))
+                                .addPhrases(PhraseSet.Phrase.newBuilder()
+                                        .setValue("try-tium").setBoost(30.0f))
+                                .addPhrases(PhraseSet.Phrase.newBuilder()
+                                        .setValue("t-r-i-t-i-u-m").setBoost(30.0f))
+                                .addPhrases(PhraseSet.Phrase.newBuilder()
+                                        .setValue("trit-ium").setBoost(30.0f))
+                                .addPhrases(PhraseSet.Phrase.newBuilder()
+                                        .setValue("open cargo scoop").setBoost(25.0f))
+                                .addPhrases(PhraseSet.Phrase.newBuilder()
+                                        .setValue("engage supercruise").setBoost(25.0f))
+                                .build())
                         .build();
 
                 RecognitionConfig config = RecognitionConfig.newBuilder()
                         .setEncoding(RecognitionConfig.AudioEncoding.LINEAR16)
                         .setSampleRateHertz(SAMPLE_RATE_HERTZ)
+                        .setAudioChannelCount(CHANNELS)
                         .setLanguageCode("en-US")
                         .setEnableAutomaticPunctuation(true)
                         .addSpeechContexts(commandContext)
                         .addSpeechContexts(domainTermsContext)
-                        .setModel("latest_long")
-                        //.setModel("phone_call")
+                        .setAdaptation(adaptation)
+                        .setModel("phone_call")
                         .setEnableWordTimeOffsets(true)
                         .build();
 
@@ -146,27 +196,30 @@ public class SpeechRecognizer {
                         .setSingleUtterance(false)
                         .build();
 
-                // Initial configuration request
                 List<StreamingRecognizeRequest> requests = new ArrayList<>();
-                requests.add(StreamingRecognizeRequest.newBuilder()
-                        .setStreamingConfig(streamingConfig)
-                        .build());
+                requests.add(StreamingRecognizeRequest.newBuilder().setStreamingConfig(streamingConfig).build());
+                if (lastBuffer != null) {
+                    requests.add(StreamingRecognizeRequest.newBuilder().setAudioContent(ByteString.copyFrom(lastBuffer)).build());
+                }
 
-                // Set up streaming observer
                 requestObserver = speechClient.streamingRecognizeCallable().bidiStreamingCall(
                         new ApiStreamObserver<StreamingRecognizeResponse>() {
                             @Override
                             public void onNext(StreamingRecognizeResponse response) {
                                 for (StreamingRecognitionResult result : response.getResultsList()) {
                                     if (result.getAlternativesCount() > 0) {
-                                        String transcript = result.getAlternatives(0).getTranscript();
+                                        SpeechRecognitionAlternative alt = result.getAlternatives(0);
+                                        String transcript = alt.getTranscript();
+                                        float confidence = alt.getConfidence();
                                         if (!result.getIsFinal()) {
-                                            log.debug("Interim transcript: {}", transcript);
+                                            //log.debug("Interim transcript: {} (confidence: {})", transcript, confidence);
                                         } else {
-                                            transcriptionQueue.offer(transcript);
-                                            log.info("Final transcript: {}", transcript);
-                                            if (transcript != null && !transcript.isBlank()) {
+                                            if (transcript != null && !transcript.isBlank() && transcript.length() >= 3 && confidence > 0.6) {
+                                                transcriptionQueue.offer(transcript);
+                                                log.info("Final transcript: {} (confidence: {})", transcript, confidence);
                                                 //grok.processCommand(transcript);
+                                            } else {
+                                                log.info("Discarded transcript: {} (confidence: {})", transcript, confidence);
                                             }
                                         }
                                     }
@@ -185,18 +238,16 @@ public class SpeechRecognizer {
                         }
                 );
 
-                // Send initial config
                 for (StreamingRecognizeRequest request : requests) {
                     requestObserver.onNext(request);
                 }
 
-                // Start audio capture
-                AudioFormat format = new AudioFormat(SAMPLE_RATE_HERTZ, 16, 2, true, false);
+                AudioFormat format = new AudioFormat(SAMPLE_RATE_HERTZ, 16, CHANNELS, true, false);
                 DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
                 try (TargetDataLine line = (TargetDataLine) AudioSystem.getLine(info)) {
+                    log.info("Using streaming format: SampleRate={}, Channels={}", SAMPLE_RATE_HERTZ, CHANNELS);
                     line.open(format, BUFFER_SIZE);
                     line.start();
-                    // startWavRecording(); // Avoid opening a second capture line concurrently
                     byte[] buffer = new byte[BUFFER_SIZE];
 
                     while (isListening.get() && line.isOpen() && (System.currentTimeMillis() - streamStartTime) < STREAM_DURATION_MS) {
@@ -204,8 +255,6 @@ public class SpeechRecognizer {
                         if (bytesRead > 0) {
                             byte[] trimmedBuffer = new byte[bytesRead];
                             System.arraycopy(buffer, 0, trimmedBuffer, 0, bytesRead);
-                            //double rms = calculateRMS(trimmedBuffer);
-                            //log.info("RMS level: {}", rms);
                             long currentTime = System.currentTimeMillis();
                             if ((currentTime - lastAudioSentTime) >= KEEP_ALIVE_INTERVAL_MS) {
                                 log.debug("Sending keep-alive audio, bytes read: {}", bytesRead);
@@ -213,17 +262,29 @@ public class SpeechRecognizer {
                             requestObserver.onNext(StreamingRecognizeRequest.newBuilder()
                                     .setAudioContent(ByteString.copyFrom(trimmedBuffer))
                                     .build());
-                            lastAudioSentTime = currentTime;
+                            lastAudioSentTime = System.currentTimeMillis();
                         }
                     }
-                } catch (Exception e) {
+                } catch (LineUnavailableException | IllegalArgumentException e) {
                     log.error("Audio capture failed: {}", e.getMessage());
+                } finally {
+                    if (requestObserver != null) {
+                        requestObserver.onCompleted();
+                    }
+                    try {
+                        Thread.sleep(RESTART_DELAY_MS); // 1s delay before restarting
+                    } catch (InterruptedException e) {
+                        log.error("Restart delay interrupted", e);
+                        Thread.currentThread().interrupt();
+                    }
                 }
             } catch (Exception e) {
                 log.error("Streaming recognition failed: {}", e.getMessage());
-            } finally {
-                if (requestObserver != null) {
-                    requestObserver.onCompleted();
+                try {
+                    Thread.sleep(RESTART_DELAY_MS); // 1s delay on failure
+                } catch (InterruptedException ie) {
+                    log.error("Restart delay interrupted", ie);
+                    Thread.currentThread().interrupt();
                 }
             }
         }
@@ -244,17 +305,5 @@ public class SpeechRecognizer {
             log.info("SpeechClient closed");
         }
         stopWavRecording();
-    }
-
-    private double calculateRMS(byte[] audioData) {
-        double sumSquare = 0.0;
-        int sampleCount = audioData.length / 2; // 16-bit samples
-        for (int i = 0; i < audioData.length; i += 2) {
-            int low = audioData[i] & 0xFF;
-            int high = audioData[i + 1] & 0xFF;
-            short sample = (short) ((high << 8) | low);
-            sumSquare += sample * sample;
-        }
-        return sampleCount > 0 ? Math.sqrt(sumSquare / sampleCount) : 0.0; // Avoid division by zero
     }
 }

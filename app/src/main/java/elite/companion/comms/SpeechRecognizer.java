@@ -106,7 +106,7 @@ public class SpeechRecognizer {
             try {
                 Thread.currentThread().setPriority(Thread.MAX_PRIORITY - 1);
 
-                // Command context
+                // Trimmed command context with increased tritium boost
                 SpeechContext commandContext = SpeechContext.newBuilder()
                         .addPhrases("open cargo scoop")
                         .addPhrases("close cargo scoop")
@@ -125,6 +125,12 @@ public class SpeechRecognizer {
                         .addPhrases("try-tium")
                         .addPhrases("t-r-i-t-i-u-m")
                         .addPhrases("trit-ium")
+                        .addPhrases("tritium fuel")
+                        .addPhrases("try-tium fuel")
+                        .addPhrases("hydrogen 3")
+                        .addPhrases("hydrogen three")
+                        .addPhrases("tritium mining")
+                        .addPhrases("try-tium mining")
                         .addPhrases("let mine some tritium")
                         .addPhrases("let get some tritium")
                         .addPhrases("set tritium as the mining target")
@@ -134,8 +140,7 @@ public class SpeechRecognizer {
                         .addPhrases("Painite")
                         .addPhrases("mining")
                         .addPhrases("mine")
-                        .addAllPhrases(GrokRequestHints.COMMANDS)
-                        .setBoost(25.0f)
+                        .setBoost(35.0f)
                         .build();
 
                 // Domain terms context
@@ -170,6 +175,18 @@ public class SpeechRecognizer {
                                         .setValue("t-r-i-t-i-u-m").setBoost(30.0f))
                                 .addPhrases(PhraseSet.Phrase.newBuilder()
                                         .setValue("trit-ium").setBoost(30.0f))
+                                .addPhrases(PhraseSet.Phrase.newBuilder()
+                                        .setValue("tritium fuel").setBoost(30.0f))
+                                .addPhrases(PhraseSet.Phrase.newBuilder()
+                                        .setValue("try-tium fuel").setBoost(30.0f))
+                                .addPhrases(PhraseSet.Phrase.newBuilder()
+                                        .setValue("hydrogen 3").setBoost(30.0f))
+                                .addPhrases(PhraseSet.Phrase.newBuilder()
+                                        .setValue("hydrogen three").setBoost(30.0f))
+                                .addPhrases(PhraseSet.Phrase.newBuilder()
+                                        .setValue("tritium mining").setBoost(30.0f))
+                                .addPhrases(PhraseSet.Phrase.newBuilder()
+                                        .setValue("try-tium mining").setBoost(30.0f))
                                 .addPhrases(PhraseSet.Phrase.newBuilder()
                                         .setValue("open cargo scoop").setBoost(25.0f))
                                 .addPhrases(PhraseSet.Phrase.newBuilder()
@@ -217,7 +234,7 @@ public class SpeechRecognizer {
                                             if (transcript != null && !transcript.isBlank() && transcript.length() >= 3 && confidence > 0.6) {
                                                 transcriptionQueue.offer(transcript);
                                                 log.info("Final transcript: {} (confidence: {})", transcript, confidence);
-                                                //grok.processCommand(transcript);
+                                                grok.processCommand(transcript);
                                             } else {
                                                 log.info("Discarded transcript: {} (confidence: {})", transcript, confidence);
                                             }
@@ -262,7 +279,7 @@ public class SpeechRecognizer {
                             requestObserver.onNext(StreamingRecognizeRequest.newBuilder()
                                     .setAudioContent(ByteString.copyFrom(trimmedBuffer))
                                     .build());
-                            lastAudioSentTime = System.currentTimeMillis();
+                            lastAudioSentTime = currentTime;
                         }
                     }
                 } catch (LineUnavailableException | IllegalArgumentException e) {

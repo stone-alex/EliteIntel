@@ -220,7 +220,7 @@ public class SpeechRecognizer {
                 }
 
                 requestObserver = speechClient.streamingRecognizeCallable().bidiStreamingCall(
-                        new ApiStreamObserver<StreamingRecognizeResponse>() {
+                        new ApiStreamObserver<>() {
                             @Override
                             public void onNext(StreamingRecognizeResponse response) {
                                 for (StreamingRecognitionResult result : response.getResultsList()) {

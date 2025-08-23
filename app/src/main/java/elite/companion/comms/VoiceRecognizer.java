@@ -11,21 +11,20 @@ import java.io.InputStream;
 
 import static elite.companion.Globals.GOOGLE_API_KEY;
 
-public class VoiceCommandInterpritor {
+public class VoiceRecognizer {
 
-    private static final Logger log = LoggerFactory.getLogger(VoiceCommandInterpritor.class);
+    private static final Logger log = LoggerFactory.getLogger(VoiceRecognizer.class);
 
     private static final long LISTEN_POLL_INTERVAL_MS = 50;
     public static final int SAMPLE_RATE_HERTZ = 48000;
     private SpeechClient speechClient;
 
 
-    public VoiceCommandInterpritor() {
-
-
+    public VoiceRecognizer() {
         //TODO: Refactor this to use a config file or a user interface.
         try (InputStream sttStream = getClass().getResourceAsStream(GOOGLE_API_KEY)) {
             if (sttStream == null) {
+                log.error("Unable to find STT service account JSON file:");
                 throw new IOException(String.format("STT service account JSON file '%s' not found in resources", GOOGLE_API_KEY));
             }
             GoogleCredentials sttCredentials = GoogleCredentials.fromStream(sttStream).createScoped("https://www.googleapis.com/auth/cloud-platform");
@@ -38,6 +37,8 @@ public class VoiceCommandInterpritor {
     }
 
     private void listen() {
+        log.info("Listening for voice commands...");
+        final GrokInteractionHandler grok = new GrokInteractionHandler();
         while (true) {
             try {
                 byte[] audioData = recordAudio(); // Capture audio from your mic
@@ -49,8 +50,7 @@ public class VoiceCommandInterpritor {
 
 
                 if (!transcript.isEmpty()) {
-                    GrokInteractionHandler processor = new GrokInteractionHandler();
-                    processor.processCommand(transcript);
+                    grok.processCommand(transcript);
                 }
 
             } catch (Exception e) {

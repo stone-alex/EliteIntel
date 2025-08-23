@@ -1,17 +1,24 @@
 package elite.companion.comms;
 
 import com.google.gson.JsonObject;
+import elite.companion.comms.handlers.CommandHandler;
+import elite.companion.comms.handlers.SetMiningTargetHandler;
 import elite.companion.robot.VoiceCommandHandler;
 import elite.companion.session.SessionTracker;
 import elite.companion.util.InaraApiClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import elite.companion.comms.handlers.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class GrokResponseRouter {
     private static final Logger log = LoggerFactory.getLogger(GrokResponseRouter.class);
     private static final GrokResponseRouter INSTANCE = new GrokResponseRouter();
     private final VoiceCommandHandler voiceCommandHandler;
-    private final InaraApiClient inaraApiClient; // For handling queries that require external API calls
+    private final InaraApiClient inaraApiClient;
+    private final Map<String, CommandHandler> commandHandlers = new HashMap<>();
 
     public static GrokResponseRouter getInstance() {
         return INSTANCE;
@@ -20,13 +27,20 @@ public class GrokResponseRouter {
     private GrokResponseRouter() {
         try {
             this.voiceCommandHandler = new VoiceCommandHandler();
-            this.inaraApiClient = new InaraApiClient(); // Initialize INARA client (implement as needed)
+            this.inaraApiClient = new InaraApiClient();
+            registerCommandHandlers();
         } catch (Exception e) {
             throw new RuntimeException("Failed to initialize GrokResponseRouter", e);
         }
     }
 
-    public void start() throws Exception {
+    private void registerCommandHandlers() {
+        commandHandlers.put("set_mining_target", new SetMiningTargetHandler());
+        commandHandlers.put("plot_route", new PlotRouteHandler(voiceCommandHandler));
+        // Add more handlers as needed, e.g., commandHandlers.put("deploy_landing_gear", new DeployLandingGearHandler(voiceCommandHandler));
+    }
+
+    public void start() {
         voiceCommandHandler.start();
         log.info("Started GrokResponseRouter");
     }
@@ -36,16 +50,16 @@ public class GrokResponseRouter {
         log.info("Stopped GrokResponseRouter");
     }
 
-    public void processGrokResponse(JsonObject json) {
+    public void processGrokResponse(JsonObject jsonResponse) {
         try {
-            String type = json.has("type") ? json.get("type").getAsString().toLowerCase() : "";
-            String responseText = json.has("response_text") ? json.get("response_text").getAsString() : "";
-            String action = json.has("action") ? json.get("action").getAsString() : "";
-            JsonObject params = json.has("params") ? json.get("params").getAsJsonObject() : new JsonObject();
+            String type = jsonResponse.has("type") ? jsonResponse.get("type").getAsString().toLowerCase() : "";
+            String responseText = jsonResponse.has("response_text") ? jsonResponse.get("response_text").getAsString() : "";
+            String action = jsonResponse.has("action") ? jsonResponse.get("action").getAsString() : "";
+            JsonObject params = jsonResponse.has("params") ? jsonResponse.get("params").getAsJsonObject() : new JsonObject();
 
             switch (type) {
                 case "command":
-                    handleCommand(action, params, responseText);
+                    handleCommand(action, params, responseText, jsonResponse);
                     break;
                 case "query":
                     handleQuery(action, params, responseText);
@@ -63,44 +77,24 @@ public class GrokResponseRouter {
         }
     }
 
-    private void handleCommand(String action, JsonObject params, String responseText) {
-        // Update SessionTracker for all commands
-        SessionTracker.getInstance().updateSession("action", action);
-        SessionTracker.getInstance().updateSession("params", params);
-        log.debug("Updated SessionTracker with action: {}, params: {}", action, params);
-
-        // Handle specific command actions
-        if (action.equals("set_mining_target")) {
-            String target = params.has("target") ? params.get("target").getAsString() : "";
-            if (!target.isEmpty()) {
-                SessionTracker.getInstance().updateSession("mining_target", target);
-                log.info("Set mining target to: {}", target);
-            }
-        } else if (action.equals("plot_route")) {
-            String destination = SessionTracker.getInstance().getSessionValue("query_destination", String.class);
-            if (destination != null && !destination.isEmpty()) {
-                // Simulate keyboard actions to plot route
-                voiceCommandHandler.handleGrokResponse(params); // Delegate to VoiceCommandHandler for keyboard simulation
-                log.info("Plotting route to: {}", destination);
-            } else {
-                log.warn("No destination found in session for plot_route");
-                handleChat("No destination available to plot route.");
-            }
+    private void handleCommand(String action, JsonObject params, String responseText, JsonObject jsonResponse) {
+        CommandHandler handler = commandHandlers.get(action);
+        if (handler != null) {
+            handler.handle(params, responseText);
+            log.debug("Handled command action: {}", action);
         } else {
-            // Delegate keyboard-related commands to VoiceCommandHandler
-            voiceCommandHandler.handleGrokResponse(params);
+            // Fallback to VoiceCommandHandler for keyboard-related commands
+            voiceCommandHandler.handleGrokResponse(jsonResponse);
+            log.debug("Delegated unhandled command to VoiceCommandHandler: {}", action);
         }
-
-        handleChat(responseText);
     }
 
     private void handleQuery(String action, JsonObject params, String responseText) {
-        // Example: Handle "find_nearest_material_trader" query
+        // Similar pattern can be applied for queries if they grow
         if (action.equals("find_nearest_material_trader")) {
-            // Use INARA API to search for nearest material trader
-            String currentSystem = SessionTracker.getInstance().getSessionValue("current_system", String.class); // Assume from journal
+            String currentSystem = SessionTracker.getInstance().getSessionValue("current_system", String.class);
             JsonObject result = inaraApiClient.searchNearestMaterialTrader(currentSystem);
-            if (result != null) {
+            if (result != null && result.has("system_name")) {
                 String destination = result.get("system_name").getAsString();
                 SessionTracker.getInstance().updateSession("query_destination", destination);
                 log.info("Found nearest material trader in: {}", destination);
@@ -110,7 +104,6 @@ public class GrokResponseRouter {
                 handleChat("No material trader found nearby.");
             }
         } else {
-            // Handle other queries as needed
             log.debug("Unhandled query action: {}", action);
             handleChat(responseText);
         }

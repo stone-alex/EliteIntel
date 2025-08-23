@@ -27,7 +27,7 @@ public class VoiceCommandHandler {
         log.info("VoiceCommandHandler initialized");
     }
 
-    public void start() throws Exception {
+    public void start() {
         new Thread(() -> {
             try {
                 monitor.startMonitoring();
@@ -77,7 +77,7 @@ public class VoiceCommandHandler {
     private void handleCommand(String action, JsonObject params, String responseText) {
         if (BLACKLISTED_ACTIONS.contains(action) || action.startsWith("Humanoid")) {
             log.warn("Attempted to execute blacklisted or Humanoid action: {}", action);
-            handleChat("Sorry, that action is not allowed.");
+            handleChat("Sorry, I am not allowed to execute that action.");
             return;
         }
 

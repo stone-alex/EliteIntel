@@ -16,21 +16,33 @@ import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
 public class GrokInteractionHandler {
-
     private static final Logger log = LoggerFactory.getLogger(GrokInteractionHandler.class);
 
+    public void start() throws Exception {
+        GrokResponseRouter.getInstance().start();
+        log.info("Started GrokInteractionHandler");
+    }
+
+    public void stop() {
+        GrokResponseRouter.getInstance().stop();
+        log.info("Stopped GrokInteractionHandler");
+    }
 
     public void processVoiceCommand(String voiceCommand) {
         String command = sanitizeGoogleMistakes(voiceCommand);
-        if (command == null) {return;}
-
-        String request = buildRequest(command);
-        String apiResponse = callXaiApi(request);
-        if (apiResponse.isEmpty()) {
+        if (command == null) {
             VoiceGenerator.getInstance().speak("Sorry, I couldn't process that.");
             return;
         }
-        GrokCommandProcessor.getInstance().processResponse(apiResponse);
+
+        String request = buildRequest(command);
+        JsonObject apiResponse = callXaiApi(request);
+        if (apiResponse == null) {
+            VoiceGenerator.getInstance().speak("Sorry, I couldn't process that.");
+            return;
+        }
+
+        GrokResponseRouter.getInstance().processGrokResponse(apiResponse);
     }
 
     private static String sanitizeGoogleMistakes(String voiceCommand) {
@@ -38,7 +50,6 @@ public class GrokInteractionHandler {
 
         String command = voiceCommand.toLowerCase().trim();
 
-        // Map misheard phrases to "tritium"
         String[] misheardPhrases = {
                 "treat you", "trees you", "3 tube", "hydrogen 3", "hydrogen three",
                 "carrier fuel", "carrier juice", "carrot juice", "treatyou", "treesyou"
@@ -52,7 +63,6 @@ public class GrokInteractionHandler {
         return command;
     }
 
-
     private String buildRequest(String transcribedText) {
         String stateSummary = SessionTracker.getInstance().getStateSummary();
         return String.format(
@@ -60,18 +70,17 @@ public class GrokInteractionHandler {
                         "Current game state: %s. " +
                         "Classify as: 'command' (trigger app action or keyboard event), 'query' (request info from state), or 'chat' (general or unclear talk). " +
                         "If unclear or noise (e.g., sniff or gibberish), classify as 'chat' and respond lightly like 'Didn't catch that!'. %s %s " +
-                        "Respond in JSON only: {\"type\": \"command|query|chat\", \"response_text\": \"TTS output (concise and fun)\", \"action\": \"set_mining_target|open_cargo_hatch|...\" (if command), \"params\": {\"key\": \"value\"} (if command)}. " +
+                        "Respond in JSON only: {\"type\": \"command|query|chat\", \"response_text\": \"TTS output (concise and fun)\", \"action\": \"set_mining_target|open_cargo_hatch|...\" (if command or query), \"params\": {\"key\": \"value\"} (if command or query)}. " +
                         "Use provided state for queries; say 'I don't know' if data unavailable. " +
                         "Never automate—actions must be user-triggered.",
-                transcribedText, stateSummary, GrokRequestHints.supportedCommands, GrokRequestHints.supportedQueries, GrokRequestHints.supportedConcepts
+                transcribedText, stateSummary, GrokRequestHints.supportedCommands, GrokRequestHints.supportedQueries
         );
     }
 
-    private String callXaiApi(String prompt) {
+    private JsonObject callXaiApi(String prompt) {
         try {
             HttpURLConnection conn = getHttpURLConnection();
 
-            // Build JSON body programmatically
             JsonObject body = new JsonObject();
             body.addProperty("model", "grok-4-latest");
             body.addProperty("temperature", 0.7);
@@ -85,7 +94,7 @@ public class GrokInteractionHandler {
 
             JsonObject userMessage = new JsonObject();
             userMessage.addProperty("role", "user");
-            userMessage.addProperty("content", prompt); // Gson handles escaping
+            userMessage.addProperty("content", prompt);
             messages.add(userMessage);
 
             body.add("messages", messages);
@@ -102,10 +111,11 @@ public class GrokInteractionHandler {
                 try (Scanner scanner = new Scanner(conn.getInputStream(), StandardCharsets.UTF_8)) {
                     String response = scanner.useDelimiter("\\A").next();
                     JsonObject json = JsonParser.parseString(response).getAsJsonObject();
-                    return json.getAsJsonArray("choices")
+                    String content = json.getAsJsonArray("choices")
                             .get(0).getAsJsonObject()
                             .get("message").getAsJsonObject()
                             .get("content").getAsString();
+                    return JsonParser.parseString(content).getAsJsonObject();
                 }
             } else {
                 String errorResponse = "";
@@ -118,11 +128,11 @@ public class GrokInteractionHandler {
                 }
                 log.error("xAI API error: {} - {}", responseCode, conn.getResponseMessage());
                 log.info("Error response body: {}", errorResponse);
-                return "";
+                return null;
             }
         } catch (Exception e) {
             log.error("AI API call fatal error: {}", e.getMessage(), e);
-            return "";
+            return null;
         }
     }
 

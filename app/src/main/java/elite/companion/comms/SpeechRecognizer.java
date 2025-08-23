@@ -47,6 +47,7 @@ public class SpeechRecognizer {
         this.grok = new GrokInteractionHandler();
         SpeechClient tempClient;
         try {
+            this.grok.start();
             tempClient = SpeechClient.create();
             log.info("SpeechClient initialized successfully");
         } catch (Exception e) {
@@ -276,6 +277,7 @@ public class SpeechRecognizer {
 
     public void shutdown() {
         stopListening();
+        grok.stop();
         if (speechClient != null) {
             speechClient.close();
             log.info("SpeechClient closed");

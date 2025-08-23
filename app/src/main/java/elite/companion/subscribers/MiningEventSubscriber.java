@@ -3,7 +3,6 @@ package elite.companion.subscribers;
 import com.google.common.eventbus.Subscribe;
 import com.google.gson.JsonObject;
 import elite.companion.EventBusManager;
-import elite.companion.comms.GrokInteractionHandler;
 import elite.companion.comms.VoiceGenerator;
 import elite.companion.events.MiningRefinedEvent;
 import elite.companion.session.SessionTracker;
@@ -21,12 +20,12 @@ public class MiningEventSubscriber {
     @Subscribe
     public void onMiningRefined(MiningRefinedEvent dto) {
 
-        VoiceGenerator.getInstance().speak("One ton of " +dto.getTypeLocalised() + " has been refined!");
+        VoiceGenerator.getInstance().speak("One ton of " + dto.getTypeLocalised() + " has been refined!");
 
         JsonObject params = (JsonObject) SessionTracker.getInstance().getObject("params");
         if (params == null || !params.has("material")) {
-            GrokInteractionHandler grok = new GrokInteractionHandler();
-            grok.processVoiceCommand("set mining target " + dto.getTypeLocalised());
+            SessionTracker.getInstance().updateSession("mining_target", dto.getTypeLocalised());
+            VoiceGenerator.getInstance().speak("Set mining target to: " + dto.getTypeLocalised());
         }
         log.info("Mining event processed: {}", dto.toString());
     }

@@ -1,19 +1,30 @@
 package elite.companion.comms;
 
-import com.google.cloud.speech.v1p1beta1.*;
 import com.google.api.gax.rpc.ApiStreamObserver;
+import com.google.cloud.speech.v1p1beta1.*;
 import com.google.protobuf.ByteString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sound.sampled.*;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+
+/**
+ * This class connects to the Google Speech API endpoint and streams audio to it.
+ * The STT (Speech-to-Text) API will return a final result which will be processed by Grok API.
+ * NOTE This method is not free. Calls will incur charges on both Google and Grok platforms.
+ * Do not call this method if you do not need to process voice commands.
+ * Do not use in unit tests.
+ * Requires Google json credentials to be set in resources/google_credentials.json.
+ * Requires Grok API credentials to be set in resources/grok_credentials.json.
+ * Do not post credentials to GitHub.
+ * Do not hardocde credentials in source code.
+ * */
 public class SpeechRecognizer {
     private static final Logger log = LoggerFactory.getLogger(SpeechRecognizer.class);
     private static final int SAMPLE_RATE_HERTZ = 48000; // Locked to 48kHz
@@ -29,11 +40,10 @@ public class SpeechRecognizer {
     private long lastAudioSentTime = System.currentTimeMillis();
     private byte[] lastBuffer = null;
     private AudioInputStream audioInputStream = null;
-    private File wavFile = null;
 
     public SpeechRecognizer() {
         this.grok = new GrokInteractionHandler();
-        SpeechClient tempClient = null;
+        SpeechClient tempClient;
         try {
             tempClient = SpeechClient.create();
             log.info("SpeechClient initialized successfully");
@@ -42,43 +52,6 @@ public class SpeechRecognizer {
             throw new RuntimeException("SpeechRecognizer initialization failed", e);
         }
         this.speechClient = tempClient;
-    }
-
-    // List available audio inputs
-    public void listAudioInputs() {
-        AudioFormat format = new AudioFormat(SAMPLE_RATE_HERTZ, 16, CHANNELS, true, false);
-        DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
-        for (Mixer.Info mixerInfo : AudioSystem.getMixerInfo()) {
-            Mixer mixer = AudioSystem.getMixer(mixerInfo);
-            if (mixer.isLineSupported(info)) {
-                log.info("Available audio input: {} (SampleRate: {}, Channels: {})",
-                        mixerInfo.getName(), SAMPLE_RATE_HERTZ, CHANNELS);
-            }
-        }
-    }
-
-    // Standalone WAV recording for testing
-    public void testWavRecording() {
-        try {
-            AudioFormat format = new AudioFormat(SAMPLE_RATE_HERTZ, 16, CHANNELS, true, false);
-            DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
-            TargetDataLine line = (TargetDataLine) AudioSystem.getLine(info);
-            log.info("Using WAV format: SampleRate={}, Channels={}", SAMPLE_RATE_HERTZ, CHANNELS);
-            line.open(format, BUFFER_SIZE);
-            line.start();
-            audioInputStream = new AudioInputStream(line);
-            wavFile = new File("audio_debug.wav");
-            new Thread(() -> {
-                try {
-                    AudioSystem.write(audioInputStream, AudioFileFormat.Type.WAVE, wavFile);
-                    log.info("Started WAV recording to {}", wavFile.getAbsolutePath());
-                } catch (Exception e) {
-                    log.error("Failed to write WAV file", e);
-                }
-            }).start();
-        } catch (LineUnavailableException | IllegalArgumentException e) {
-            log.error("Failed to start WAV recording: {}", e.getMessage());
-        }
     }
 
     public void stopWavRecording() {
@@ -97,6 +70,12 @@ public class SpeechRecognizer {
         log.info("SpeechRecognizer started in background thread");
     }
 
+    /**
+     * Stream audio to Google STT and process the final result returned as text.
+     * This method will call Grok API with the final result returned from Google STT.
+     * The stream runs for 30 seconds and then restarts.
+     *
+     */
     private void startStreaming() {
         while (isListening.get()) {
             log.info("Starting new streaming session...");
@@ -106,112 +85,7 @@ public class SpeechRecognizer {
             try {
                 Thread.currentThread().setPriority(Thread.MAX_PRIORITY - 1);
 
-                // Trimmed command context with increased tritium boost
-                SpeechContext commandContext = SpeechContext.newBuilder()
-                        .addPhrases("open cargo scoop")
-                        .addPhrases("close cargo scoop")
-                        .addPhrases("frame shift drive")
-                        .addPhrases("enter supercruise")
-                        .addPhrases("engage supercruise")
-                        .addPhrases("exit supercruise")
-                        .addPhrases("engage ftl")
-                        .addPhrases("tritium")
-                        .addPhrases("TRITIUM")
-                        .addPhrases("tri-tium")
-                        .addPhrases("try-tee-um")
-                        .addPhrases("tree-tee-um")
-                        .addPhrases("trit-ee-um")
-                        .addPhrases("trish-ium")
-                        .addPhrases("try-tium")
-                        .addPhrases("t-r-i-t-i-u-m")
-                        .addPhrases("trit-ium")
-                        .addPhrases("tritium fuel")
-                        .addPhrases("try-tium fuel")
-                        .addPhrases("hydrogen 3")
-                        .addPhrases("hydrogen three")
-                        .addPhrases("tritium mining")
-                        .addPhrases("try-tium mining")
-                        .addPhrases("let mine some tritium")
-                        .addPhrases("let get some tritium")
-                        .addPhrases("set tritium as the mining target")
-                        .addPhrases("let's mine some fuel")
-                        .addPhrases("Alexandrite")
-                        .addPhrases("Bromellite")
-                        .addPhrases("Painite")
-                        .addPhrases("mining")
-                        .addPhrases("mine")
-                        .setBoost(35.0f)
-                        .build();
-
-                // Domain terms context
-                SpeechContext domainTermsContext = SpeechContext.newBuilder()
-                        .addPhrases("FSD")
-                        .addPhrases("SRV")
-                        .addPhrases("GROK")
-                        .addPhrases("Anaconda")
-                        .addPhrases("Coriolis")
-                        .setBoost(25.0f)
-                        .build();
-
-                // Inline SpeechAdaptation
-                SpeechAdaptation adaptation = SpeechAdaptation.newBuilder()
-                        .addPhraseSets(PhraseSet.newBuilder()
-                                .setBoost(15.0f)
-                                .addPhrases(PhraseSet.Phrase.newBuilder()
-                                        .setValue("tritium").setBoost(30.0f))
-                                .addPhrases(PhraseSet.Phrase.newBuilder()
-                                        .setValue("tri-tium").setBoost(30.0f))
-                                .addPhrases(PhraseSet.Phrase.newBuilder()
-                                        .setValue("try-tee-um").setBoost(30.0f))
-                                .addPhrases(PhraseSet.Phrase.newBuilder()
-                                        .setValue("tree-tee-um").setBoost(30.0f))
-                                .addPhrases(PhraseSet.Phrase.newBuilder()
-                                        .setValue("trit-ee-um").setBoost(30.0f))
-                                .addPhrases(PhraseSet.Phrase.newBuilder()
-                                        .setValue("trish-ium").setBoost(30.0f))
-                                .addPhrases(PhraseSet.Phrase.newBuilder()
-                                        .setValue("try-tium").setBoost(30.0f))
-                                .addPhrases(PhraseSet.Phrase.newBuilder()
-                                        .setValue("t-r-i-t-i-u-m").setBoost(30.0f))
-                                .addPhrases(PhraseSet.Phrase.newBuilder()
-                                        .setValue("trit-ium").setBoost(30.0f))
-                                .addPhrases(PhraseSet.Phrase.newBuilder()
-                                        .setValue("tritium fuel").setBoost(30.0f))
-                                .addPhrases(PhraseSet.Phrase.newBuilder()
-                                        .setValue("try-tium fuel").setBoost(30.0f))
-                                .addPhrases(PhraseSet.Phrase.newBuilder()
-                                        .setValue("hydrogen 3").setBoost(30.0f))
-                                .addPhrases(PhraseSet.Phrase.newBuilder()
-                                        .setValue("hydrogen three").setBoost(30.0f))
-                                .addPhrases(PhraseSet.Phrase.newBuilder()
-                                        .setValue("tritium mining").setBoost(30.0f))
-                                .addPhrases(PhraseSet.Phrase.newBuilder()
-                                        .setValue("try-tium mining").setBoost(30.0f))
-                                .addPhrases(PhraseSet.Phrase.newBuilder()
-                                        .setValue("open cargo scoop").setBoost(25.0f))
-                                .addPhrases(PhraseSet.Phrase.newBuilder()
-                                        .setValue("engage supercruise").setBoost(25.0f))
-                                .build())
-                        .build();
-
-                RecognitionConfig config = RecognitionConfig.newBuilder()
-                        .setEncoding(RecognitionConfig.AudioEncoding.LINEAR16)
-                        .setSampleRateHertz(SAMPLE_RATE_HERTZ)
-                        .setAudioChannelCount(CHANNELS)
-                        .setLanguageCode("en-US")
-                        .setEnableAutomaticPunctuation(true)
-                        .addSpeechContexts(commandContext)
-                        .addSpeechContexts(domainTermsContext)
-                        .setAdaptation(adaptation)
-                        .setModel("phone_call")
-                        .setEnableWordTimeOffsets(true)
-                        .build();
-
-                StreamingRecognitionConfig streamingConfig = StreamingRecognitionConfig.newBuilder()
-                        .setConfig(config)
-                        .setInterimResults(true)
-                        .setSingleUtterance(false)
-                        .build();
+                StreamingRecognitionConfig streamingConfig = getStreamingRecognitionConfig();
 
                 List<StreamingRecognizeRequest> requests = new ArrayList<>();
                 requests.add(StreamingRecognizeRequest.newBuilder().setStreamingConfig(streamingConfig).build());
@@ -224,22 +98,7 @@ public class SpeechRecognizer {
                             @Override
                             public void onNext(StreamingRecognizeResponse response) {
                                 for (StreamingRecognitionResult result : response.getResultsList()) {
-                                    if (result.getAlternativesCount() > 0) {
-                                        SpeechRecognitionAlternative alt = result.getAlternatives(0);
-                                        String transcript = alt.getTranscript();
-                                        float confidence = alt.getConfidence();
-                                        if (!result.getIsFinal()) {
-                                            //log.debug("Interim transcript: {} (confidence: {})", transcript, confidence);
-                                        } else {
-                                            if (transcript != null && !transcript.isBlank() && transcript.length() >= 3 && confidence > 0.6) {
-                                                transcriptionQueue.offer(transcript);
-                                                log.info("Final transcript: {} (confidence: {})", transcript, confidence);
-                                                grok.processCommand(transcript);
-                                            } else {
-                                                log.info("Discarded transcript: {} (confidence: {})", transcript, confidence);
-                                            }
-                                        }
-                                    }
+                                    processStreamingRecognitionResult(result);
                                 }
                             }
 
@@ -305,6 +164,104 @@ public class SpeechRecognizer {
                 }
             }
         }
+    }
+
+
+    /**
+     * We receive a stream of results from Google STT and process the final one only.
+     */
+    private void processStreamingRecognitionResult(StreamingRecognitionResult result) {
+        if (result.getAlternativesCount() > 0) {
+            SpeechRecognitionAlternative alt = result.getAlternatives(0);
+            String transcript = alt.getTranscript();
+            float confidence = alt.getConfidence();
+            if (result.getIsFinal()) {
+                if (!transcript.isBlank() && transcript.length() >= 3 && confidence > 0.6) {
+                    transcriptionQueue.offer(transcript);
+                    log.info("Final transcript: {} (confidence: {})", transcript, confidence);
+                    grok.processCommand(transcript);
+                } else {
+                    log.info("Discarded transcript: {} (confidence: {})", transcript, confidence);
+                }
+            }
+        }
+    }
+
+    /**
+     * Creates a StreamingRecognitionConfig for the Google Speech API.
+     * Contains speech adaptations, domain terms and command context.
+     * Use GrokRequestHints to add more as needed.
+     * Sets a recognition model to phone_call. and language to en-US.
+     *
+     */
+    private static StreamingRecognitionConfig getStreamingRecognitionConfig() {
+
+        SpeechContext commandContext = SpeechContext.newBuilder()
+                .addAllPhrases(GrokRequestHints.COMMON_PHRASES)
+                .addAllPhrases(GrokRequestHints.DOMAIN_CONCEPTS)
+                .setBoost(35.0f)
+                .build();
+
+
+        // Trimmed command context with increased tritium boost (probably does not help much to be honest)
+        SpeechAdaptation adaptation = SpeechAdaptation.newBuilder()
+                .addPhraseSets(PhraseSet.newBuilder()
+                        .setBoost(15.0f)
+                        .addPhrases(PhraseSet.Phrase.newBuilder()
+                                .setValue("tritium").setBoost(30.0f))
+                        .addPhrases(PhraseSet.Phrase.newBuilder()
+                                .setValue("tri-tium").setBoost(30.0f))
+                        .addPhrases(PhraseSet.Phrase.newBuilder()
+                                .setValue("try-tee-um").setBoost(30.0f))
+                        .addPhrases(PhraseSet.Phrase.newBuilder()
+                                .setValue("tree-tee-um").setBoost(30.0f))
+                        .addPhrases(PhraseSet.Phrase.newBuilder()
+                                .setValue("trit-ee-um").setBoost(30.0f))
+                        .addPhrases(PhraseSet.Phrase.newBuilder()
+                                .setValue("trish-ium").setBoost(30.0f))
+                        .addPhrases(PhraseSet.Phrase.newBuilder()
+                                .setValue("try-tium").setBoost(30.0f))
+                        .addPhrases(PhraseSet.Phrase.newBuilder()
+                                .setValue("t-r-i-t-i-u-m").setBoost(30.0f))
+                        .addPhrases(PhraseSet.Phrase.newBuilder()
+                                .setValue("trit-ium").setBoost(30.0f))
+                        .addPhrases(PhraseSet.Phrase.newBuilder()
+                                .setValue("tritium fuel").setBoost(30.0f))
+                        .addPhrases(PhraseSet.Phrase.newBuilder()
+                                .setValue("try-tium fuel").setBoost(30.0f))
+                        .addPhrases(PhraseSet.Phrase.newBuilder()
+                                .setValue("hydrogen 3").setBoost(30.0f))
+                        .addPhrases(PhraseSet.Phrase.newBuilder()
+                                .setValue("hydrogen three").setBoost(30.0f))
+                        .addPhrases(PhraseSet.Phrase.newBuilder()
+                                .setValue("tritium mining").setBoost(30.0f))
+                        .addPhrases(PhraseSet.Phrase.newBuilder()
+                                .setValue("try-tium mining").setBoost(30.0f))
+                        .addPhrases(PhraseSet.Phrase.newBuilder()
+                                .setValue("open cargo scoop").setBoost(25.0f))
+                        .addPhrases(PhraseSet.Phrase.newBuilder()
+                                .setValue("engage supercruise").setBoost(25.0f))
+                        .build())
+                .build();
+
+        RecognitionConfig config = RecognitionConfig.newBuilder()
+                .setEncoding(RecognitionConfig.AudioEncoding.LINEAR16)
+                .setSampleRateHertz(SAMPLE_RATE_HERTZ)
+                .setAudioChannelCount(CHANNELS)
+                .setLanguageCode("en-US")
+                .setEnableAutomaticPunctuation(true)
+                .addSpeechContexts(commandContext)
+                .setAdaptation(adaptation)
+                .setModel("phone_call")
+                .setEnableWordTimeOffsets(true)
+                .build();
+
+        StreamingRecognitionConfig streamingConfig = StreamingRecognitionConfig.newBuilder()
+                .setConfig(config)
+                .setInterimResults(true)
+                .setSingleUtterance(false)
+                .build();
+        return streamingConfig;
     }
 
     public String getNextTranscription() throws InterruptedException {

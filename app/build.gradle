@@ -2,6 +2,13 @@ plugins {
     id 'java'
 }
 
+repositories {
+    mavenCentral() // For Google Speech SDK, Gson, Guava
+    maven {
+        url 'https://oss.sonatype.org/content/repositories/snapshots' // For CMU Sphinx
+    }
+}
+
 dependencies {
 
     //Text to Speech

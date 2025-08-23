@@ -20,7 +20,7 @@ public class GrokCommandProcessor {
     }
 
 
-    protected void processResponse(String transcribedText, String apiResponse) {
+    protected void processResponse(String apiResponse) {
         try {
             JsonObject json = JsonParser.parseString(apiResponse).getAsJsonObject();
 
@@ -29,7 +29,7 @@ public class GrokCommandProcessor {
 
             switch (type.toLowerCase()) {
                 case "command":
-                    handleCommand(transcribedText, json, responseText);
+                    handleCommand(json, responseText);
                     break;
 
                 case "query":
@@ -55,27 +55,12 @@ public class GrokCommandProcessor {
     }
 
 
-    private void handleCommand(String transcribedText, JsonObject json, String responseText) {
+    private void handleCommand(JsonObject json, String responseText) {
         String action = json.has("action") ? json.get("action").getAsString() : "";
         JsonObject params = json.has("params") ? json.get("params").getAsJsonObject() : new JsonObject();
 
         SessionTracker.getInstance().updateSession("action", action);
         SessionTracker.getInstance().updateSession("params", params.getAsJsonObject());
-
-
-/*
-        VoiceCommandDTO dto = new VoiceCommandDTO(Instant.now().toString(), transcribedText);
-        dto.setInterpretedAction(action);
-        // Set params generically (extend VoiceCommandDTO if needed for more fields)
-        for (Map.Entry<String, JsonElement> entry : params.entrySet()) {
-            if (entry.getKey().equals("target")) {
-                dto.setTarget(entry.getValue().getAsString());
-            } // Add more setters for other param types as needed
-        }
-        EventBusManager.publish(dto);
-*/
-
-
         handleChat(responseText);
     }
 

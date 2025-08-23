@@ -19,15 +19,38 @@ public class GrokInteractionHandler {
     private static final Logger log = LoggerFactory.getLogger(GrokInteractionHandler.class);
 
 
-    public void processCommand(String transcribedText) {
-        String request = buildRequest(transcribedText);
+    public void processCommand(String voiceCommand) {
+        String command = sanitizeGoogleMistakes(voiceCommand);
+        if (command == null) {return;}
+
+        String request = buildRequest(command);
         String apiResponse = callXaiApi(request);
         if (apiResponse.isEmpty()) {
             VoiceGenerator.getInstance().speak("Sorry, I couldn't process that.");
             return;
         }
-        GrokCommandProcessor.getInstance().processResponse(transcribedText, apiResponse);
+        GrokCommandProcessor.getInstance().processResponse(apiResponse);
     }
+
+    private static String sanitizeGoogleMistakes(String voiceCommand) {
+        if (voiceCommand == null || voiceCommand.isEmpty()) return null;
+
+        String command = voiceCommand.toLowerCase().trim();
+
+        // Map misheard phrases to "tritium"
+        String[] misheardPhrases = {
+                "treat you", "trees you", "3 tube", "hydrogen 3", "hydrogen three",
+                "carrier fuel", "carrier juice", "carrot juice", "treatyou", "treesyou"
+        };
+        for (String phrase : misheardPhrases) {
+            if (command.contains(phrase)) {
+                command = command.replaceAll("(?i)" + phrase.replace(" ", "\\s+"), "tritium");
+                log.info("Sanitized transcript: {} -> {}", voiceCommand, command);
+            }
+        }
+        return command;
+    }
+
 
     private String buildRequest(String transcribedText) {
         String stateSummary = SessionTracker.getInstance().getStateSummary();
@@ -39,7 +62,7 @@ public class GrokInteractionHandler {
                         "Respond in JSON only: {\"type\": \"command|query|chat\", \"response_text\": \"TTS output (concise and fun)\", \"action\": \"set_mining_target|open_cargo_hatch|...\" (if command), \"params\": {\"key\": \"value\"} (if command)}. " +
                         "Use provided state for queries; say 'I don't know' if data unavailable. " +
                         "Never automate—actions must be user-triggered.",
-                transcribedText, stateSummary, GrokRequestHints.supportedCommands, GrokRequestHints.supportedQueries, GrokRequestHints.CONCEPTS
+                transcribedText, stateSummary, GrokRequestHints.supportedCommands, GrokRequestHints.supportedQueries, GrokRequestHints.supportedConcepts
         );
     }
 

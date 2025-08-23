@@ -8,11 +8,13 @@ public class GrokRequestHints {
     static final List<String> COMMANDS = Arrays.asList(
             "set_mining_target <material>",
             "lets_mine_some_fuel <set mining target to Tritium>",
+            "lets_get_some_hydrogen_three <set mining target to Tritium>",
             "open_cargo_hatch",
             "deploy_landing_gear",
             "retract_landing_gear",
-            "request_docking (triggers keyboard event)",
-            "engage_ftl (triggers keyboard event)",
+            "request_docking <triggers keyboard event>",
+            "engage_ftl <triggers keyboard event>",
+            "Punch it <engage ftl, keyboard event>",
             "enter_supercruise (triggers keyboard event)",
             "deploy_hardpoints (triggers keyboard event)",
             "retract_hardpoints (triggers keyboard event)",
@@ -41,12 +43,52 @@ public class GrokRequestHints {
             "fleet carriers use tritium for fuel"
     );
 
+
+    static final List<String> DOMAIN_CONCEPTS = Arrays.asList(
+            "FSD",
+            "SRV",
+            "GROK",
+            "Anaconda",
+            "Coriolis"
+    );
+
     static final List<String> COMMON_PHRASES = Arrays.asList(
+            "open cargo scoop",
+            "frame shift drive",
+            "enter supercruise",
+            "engage supercruise",
+            "exit supercruise",
+            "engage ftl",
+            "deploy landing gear",
+            "close cargo scoop",
+            "retract cargo scoop",
+            "frame shift drive",
+            "FTL",
+            "Punch it",
             "let's do some mining",
             "set tritium as the mining target",
             "set mining target",
             "set mining target to",
             "tritium",
+            "TRITIUM",
+            "tri-tium",
+            "try-tee-um",
+            "tree-tee-um",
+            "trit-ee-um",
+            "trish-ium",
+            "try-tium",
+            "t-r-i-t-i-u-m",
+            "trit-ium",
+            "tritium fuel",
+            "try-tium fuel",
+            "hydrogen 3",
+            "hydrogen three",
+            "tritium mining",
+            "try-tium mining",
+            "let mine some tritium",
+            "let get some tritium",
+            "set tritium as the mining target",
+            "let's mine some fuel",
             "Painite",
             "Platinum",
             "Osmium",
@@ -69,16 +111,11 @@ public class GrokRequestHints {
         return "Supported queries: '" + String.join("', '", QUERIES) + "'. ";
     }
 
-    private static String formatCommonPhrases() {
-        return "Supported common phrases: '" + String.join("', '", COMMON_PHRASES) + "'. ";
-    }
-
     private static String formatConcepts() {
         return "Common game concepts: '" + String.join("', '", CONCEPTS) + "'. ";
     }
 
     public static final String supportedCommands = formatCommands();
     public static final String supportedQueries = formatQueries();
-    public static final String supportedCommonPhrases = formatCommonPhrases();
     public static final String supportedConcepts = formatConcepts();
 }

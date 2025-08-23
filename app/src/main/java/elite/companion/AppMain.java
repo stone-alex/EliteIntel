@@ -9,6 +9,7 @@ public class AppMain {
     public static void main(String[] args) throws Exception {
         VoiceGenerator.getInstance().speak("Initializing Companion");
 
+        //instantiate subscribers
         new LoadGameEventSubscriber();
         new MiningEventSubscriber();
         new CarrierEventSubscriber();
@@ -17,14 +18,9 @@ public class AppMain {
         new ReceiveTextSubscriber();
         new ProspectorSubscriber();
 
-        VoiceGenerator.getInstance().speak("Mic is hot, standing-by");
         SpeechRecognizer recognizer = new SpeechRecognizer();
         recognizer.start(); // Start streaming in background
-/*
-        recognizer.startWavRecording();
-        Thread.sleep(10000);
-        recognizer.stopWavRecording();
-*/
+        VoiceGenerator.getInstance().speak("Mic is hot, standing-by");
 
         VoiceGenerator.getInstance().speak("Monitoring Journal");
         JournalParser parser = new JournalParser();

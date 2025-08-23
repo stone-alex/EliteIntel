@@ -19,11 +19,11 @@ public class AppMain {
         new ProspectorSubscriber();
 
         SpeechRecognizer recognizer = new SpeechRecognizer();
-        recognizer.start(); // Start streaming in background
+        recognizer.start(); // Start STT voice command processing thread
         VoiceGenerator.getInstance().speak("Mic is hot, standing-by");
 
-        VoiceGenerator.getInstance().speak("Monitoring Journal");
         JournalParser parser = new JournalParser();
+        VoiceGenerator.getInstance().speak("Monitoring Journal");
         parser.startReading();
     }
 }

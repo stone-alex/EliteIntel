@@ -15,9 +15,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 
 /**
+ * NOTE $$$ This method is not free. Calls will incur charges on both Google and Grok platforms. $$$
+ *
  * This class connects to the Google Speech API endpoint and streams audio to it.
  * The STT (Speech-to-Text) API will return a final result which will be processed by Grok API.
- * NOTE This method is not free. Calls will incur charges on both Google and Grok platforms.
+ *
  * Do not call this method if you do not need to process voice commands.
  * Do not use in unit tests.
  * Requires Google json credentials to be set in resources/google_credentials.json.

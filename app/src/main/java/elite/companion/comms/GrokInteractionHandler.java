@@ -3,6 +3,7 @@ package elite.companion.comms;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import elite.companion.Globals;
 import elite.companion.session.SessionTracker;
 import elite.companion.utils.ConfigManager;
 import org.slf4j.Logger;
@@ -130,7 +131,7 @@ public class GrokInteractionHandler {
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
         conn.setRequestProperty("Content-Type", "application/json");
-        conn.setRequestProperty("Authorization", "Bearer " + ConfigManager.getInstance().readConfig("elite-companion-xai-api-key.conf").get("key"));
+        conn.setRequestProperty("Authorization", "Bearer " + ConfigManager.getInstance().readConfig(Globals.XAI_API_KEY).get("key"));
         conn.setDoOutput(true);
         return conn;
     }

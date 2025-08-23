@@ -79,10 +79,14 @@ public class JournalParser {
                                     EventBusManager.publish(gson.fromJson(event, CommanderEvent.class));
                                     break;
                                 case "MiningRefined":
-                                    EventBusManager.publish(gson.fromJson(event, MiningRefinedEvent.class));
+                                    if (isRecent(eventTimestamp, 10)) {
+                                        EventBusManager.publish(gson.fromJson(event, MiningRefinedEvent.class));
+                                    }
                                     break;
                                 case "ProspectedAsteroid":
-                                    EventBusManager.publish(gson.fromJson(event, ProspectedAsteroidEvent.class));
+                                    if (isRecent(eventTimestamp, 60)) {
+                                        EventBusManager.publish(gson.fromJson(event, ProspectedAsteroidEvent.class));
+                                    }
                                     break;
                                 case "LaunchDrone":
                                     EventBusManager.publish(gson.fromJson(event, LaunchDroneEvent.class));
@@ -97,11 +101,8 @@ public class JournalParser {
                                     EventBusManager.publish(gson.fromJson(event, StatisticsEvent.class));
                                     break;
                                 case "ReceiveText":
-                                    // Filter events older than 10 seconds
                                     if (isRecent(eventTimestamp, 10)) {
                                         EventBusManager.publish(gson.fromJson(event, ReceiveTextEvent.class));
-                                    } else {
-                                        log.info("Skipping old ReceiveTextEvent: {}", eventTimestamp);
                                     }
 
 

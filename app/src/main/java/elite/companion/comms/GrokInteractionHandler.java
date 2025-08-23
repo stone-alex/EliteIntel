@@ -39,7 +39,7 @@ public class GrokInteractionHandler {
                         "Respond in JSON only: {\"type\": \"command|query|chat\", \"response_text\": \"TTS output (concise and fun)\", \"action\": \"set_mining_target|open_cargo_hatch|...\" (if command), \"params\": {\"key\": \"value\"} (if command)}. " +
                         "Use provided state for queries; say 'I don't know' if data unavailable. " +
                         "Never automate—actions must be user-triggered.",
-                transcribedText, stateSummary, GrokRequestHints.supportedCommands, GrokRequestHints.supportedQueries
+                transcribedText, stateSummary, GrokRequestHints.supportedCommands, GrokRequestHints.supportedQueries, GrokRequestHints.CONCEPTS
         );
     }
 

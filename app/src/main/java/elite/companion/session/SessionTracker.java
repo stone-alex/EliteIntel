@@ -48,7 +48,7 @@ public class SessionTracker {
     }
 
 
-    public void updateSession(String key, String data) {
+    public void updateSession(String key, Object data) {
         state.put(key, data);
     }
 
@@ -66,5 +66,9 @@ public class SessionTracker {
 
     public PlayerStats getPlayerStats() {
         return this.playerStats;
+    }
+
+    public Object getObject(String key) {
+        return state.get(key);
     }
 }

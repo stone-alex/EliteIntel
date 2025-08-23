@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import elite.companion.EventBusManager;
 import elite.companion.events.VoiceCommandDTO;
+import elite.companion.session.SessionTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,6 +65,11 @@ public class GrokCommandProcessor {
         String action = json.has("action") ? json.get("action").getAsString() : "";
         JsonObject params = json.has("params") ? json.get("params").getAsJsonObject() : new JsonObject();
 
+        SessionTracker.getInstance().updateSession("action", action);
+        SessionTracker.getInstance().updateSession("params", params.getAsJsonObject());
+
+
+/*
         VoiceCommandDTO dto = new VoiceCommandDTO(Instant.now().toString(), transcribedText);
         dto.setInterpretedAction(action);
         // Set params generically (extend VoiceCommandDTO if needed for more fields)
@@ -73,6 +79,9 @@ public class GrokCommandProcessor {
             } // Add more setters for other param types as needed
         }
         EventBusManager.publish(dto);
+*/
+
+
         handleChat(responseText);
     }
 

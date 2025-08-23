@@ -17,6 +17,7 @@ public class AppMain {
         new VoiceCommandInterpritor();
         new StatisticsSubscriber();
         new ReceiveTextSubscriber();
+        new ProspectorSubscriber();
 
         VoiceNotifier.getInstance().speak("Initialization complete. Your mic is hot, the big brother is listening...");
         JournalParser parser = new JournalParser();

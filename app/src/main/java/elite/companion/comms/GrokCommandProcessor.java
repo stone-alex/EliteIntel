@@ -1,16 +1,10 @@
 package elite.companion.comms;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import elite.companion.EventBusManager;
-import elite.companion.events.VoiceCommandDTO;
 import elite.companion.session.SessionTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.time.Instant;
-import java.util.Map;
 
 public class GrokCommandProcessor {
 
@@ -57,7 +51,7 @@ public class GrokCommandProcessor {
     }
 
     private void handleQuery(String responseText) {
-        VoiceNotifier.getInstance().speak(responseText);
+        VoiceGenerator.getInstance().speak(responseText);
     }
 
 
@@ -86,7 +80,7 @@ public class GrokCommandProcessor {
     }
 
     private void handleChat(String responseText) {
-        VoiceNotifier.getInstance().speak(responseText); // Direct TTS response
+        VoiceGenerator.getInstance().speak(responseText); // Direct TTS response
     }
 
 }

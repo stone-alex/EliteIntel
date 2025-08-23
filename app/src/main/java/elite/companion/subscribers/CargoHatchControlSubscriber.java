@@ -2,7 +2,7 @@ package elite.companion.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import elite.companion.EventBusManager;
-import elite.companion.comms.VoiceNotifier;
+import elite.companion.comms.VoiceGenerator;
 import elite.companion.events.VoiceCommandDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +29,7 @@ public class CargoHatchControlSubscriber {
             // Simulate keyboard combo (e.g., 'O' key, adjust based on game bindings)
             robot.keyPress(KeyEvent.VK_O);
             robot.keyRelease(KeyEvent.VK_O);
-            VoiceNotifier.getInstance().speak("Opening cargo hatch!");
+            VoiceGenerator.getInstance().speak("Opening cargo hatch!");
             log.debug("Triggered cargo hatch open");
         }
     }

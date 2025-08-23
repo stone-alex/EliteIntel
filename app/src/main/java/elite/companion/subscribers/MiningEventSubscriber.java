@@ -4,7 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import com.google.gson.JsonObject;
 import elite.companion.EventBusManager;
 import elite.companion.comms.GrokInteractionHandler;
-import elite.companion.comms.VoiceNotifier;
+import elite.companion.comms.VoiceGenerator;
 import elite.companion.events.MiningRefinedEvent;
 import elite.companion.session.SessionTracker;
 import org.slf4j.Logger;
@@ -21,7 +21,7 @@ public class MiningEventSubscriber {
     @Subscribe
     public void onMiningRefined(MiningRefinedEvent dto) {
 
-        VoiceNotifier.getInstance().speak("One ton of " +dto.getTypeLocalised() + " has been refined!");
+        VoiceGenerator.getInstance().speak("One ton of " +dto.getTypeLocalised() + " has been refined!");
 
         JsonObject params = (JsonObject) SessionTracker.getInstance().getObject("params");
         if (params == null || !params.has("material")) {

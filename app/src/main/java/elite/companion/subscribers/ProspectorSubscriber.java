@@ -1,14 +1,12 @@
 package elite.companion.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import elite.companion.EventBusManager;
-import elite.companion.comms.GrokInteractionHandler;
-import elite.companion.comms.VoiceNotifier;
+import elite.companion.comms.VoiceGenerator;
 import elite.companion.events.ProspectedAsteroidEvent;
 import elite.companion.session.SessionTracker;
-
-import java.util.Arrays;
 
 public class ProspectorSubscriber {
 
@@ -25,7 +23,8 @@ public class ProspectorSubscriber {
 
         for (ProspectedAsteroidEvent.Material material : event.getMaterials()) {
             String materialNameLocalised = material == null ? "" : material.getName();
-            String targetMaterial = params.get("material").getAsString().toLowerCase();
+            JsonElement jsonElement = params == null ? null : params.get("material");
+            String targetMaterial = jsonElement == null ? null : jsonElement.getAsString().toLowerCase();
 
             if (materialNameLocalised != null && !materialNameLocalised.isEmpty() && materialNameLocalised.toLowerCase().equals(targetMaterial)) {
                 foundTargetMaterial = true;
@@ -37,7 +36,7 @@ public class ProspectorSubscriber {
         }
 
         if(foundTargetMaterial) {
-            VoiceNotifier.getInstance().speak(anouncement.toString());
+            VoiceGenerator.getInstance().speak(anouncement.toString());
         }
 
     }

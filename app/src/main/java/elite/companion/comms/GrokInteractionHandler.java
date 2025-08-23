@@ -23,7 +23,7 @@ public class GrokInteractionHandler {
         String request = buildRequest(transcribedText);
         String apiResponse = callXaiApi(request);
         if (apiResponse.isEmpty()) {
-            VoiceNotifier.getInstance().speak("Sorry, I couldn't process that.");
+            VoiceGenerator.getInstance().speak("Sorry, I couldn't process that.");
             return;
         }
         GrokCommandProcessor.getInstance().processResponse(transcribedText, apiResponse);

@@ -1,19 +1,17 @@
 <configuration scan="true">
-    <!-- Optional: print Logback internal status messages (helps diagnose config issues) -->
     <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener" />
-    <property name="LOG_LEVEL" value="${LOG_LEVEL:-INFO}" />
-    <!-- Separate property for app logs if you like -->
-    <property name="APP_LOG_LEVEL" value="${APP_LOG_LEVEL:-INFO}" />
 
-    <!-- Silence noisy dependencies -->
+    <!-- You can keep properties if you still want overrides -->
+    <property name="APP_LOG_LEVEL" value="${APP_LOG_LEVEL:-DEBUG}" />
+
     <logger name="io.grpc" level="WARN" />
     <logger name="io.grpc.netty" level="WARN" />
     <logger name="io.grpc.netty.shaded" level="WARN" />
     <logger name="io.netty" level="WARN" />
     <logger name="com.google" level="WARN" />
 
-    <!-- Turn ON logs for your application package -->
-    <logger name="elite.companion" level="${APP_LOG_LEVEL}" />
+    <!-- Set your app to DEBUG explicitly -->
+    <logger name="elite.companion" level="DEBUG" />
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
@@ -21,7 +19,6 @@
         </encoder>
     </appender>
 
-    <!-- Keep root high to suppress third-party noise -->
     <root level="WARN">
         <appender-ref ref="CONSOLE" />
     </root>

@@ -8,7 +8,22 @@ dependencies {
     implementation 'com.google.cloud:google-cloud-texttospeech:2.73.0'
 
     //Speech to text
-    implementation 'com.google.cloud:google-cloud-speech:4.67.0'
+    implementation platform('com.google.cloud:libraries-bom:26.51.0')
+
+    // Existing high-level client (v1)
+    implementation 'com.google.cloud:google-cloud-speech'
+
+
+    // Stable Speech-to-Text client (v1)
+    implementation 'com.google.cloud:google-cloud-speech:2.43.0'
+    // Beta gRPC/proto for v1p1beta1
+    implementation 'com.google.api.grpc:proto-google-cloud-speech-v1p1beta1:0.135.0'
+    implementation 'com.google.api.grpc:grpc-google-cloud-speech-v1p1beta1:0.135.0'
+    // Logging
+    implementation 'org.slf4j:slf4j-api:2.0.9'
+
+
+
 
     //authentication
     implementation 'com.google.auth:google-auth-library-oauth2-http:1.37.0'

@@ -13,8 +13,8 @@ import java.util.Random;
 
 import static elite.companion.Globals.GOOGLE_API_KEY;
 
-public class VoiceNotifier {
-    private static final Logger log = LoggerFactory.getLogger(VoiceNotifier.class);
+public class VoiceGenerator {
+    private static final Logger log = LoggerFactory.getLogger(VoiceGenerator.class);
     public static final String JAMES = "James";
     public static final String MICHEAL = "Micheal";
     public static final String JENNIFER = "Jennifer";
@@ -28,15 +28,15 @@ public class VoiceNotifier {
 
     private final TextToSpeechClient textToSpeechClient;
 
-    private final static VoiceNotifier INSTANCE = new VoiceNotifier();
+    private final static VoiceGenerator INSTANCE = new VoiceGenerator();
 
-    public static VoiceNotifier getInstance() {
+    public static VoiceGenerator getInstance() {
         return INSTANCE;
     }
 
     private Map<String, VoiceSelectionParams> voiceMap = new HashMap<>();
 
-    private VoiceNotifier() {
+    private VoiceGenerator() {
         // Load credentials from classpath
         //TODO: Refactor this to use a config file or a user interface.
         try (InputStream serviceAccountStream = getClass().getResourceAsStream(GOOGLE_API_KEY)) {

@@ -2,7 +2,7 @@ package elite.companion.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import elite.companion.EventBusManager;
-import elite.companion.comms.VoiceNotifier;
+import elite.companion.comms.VoiceGenerator;
 import elite.companion.events.ReceiveTextEvent;
 
 public class ReceiveTextSubscriber {
@@ -14,7 +14,7 @@ public class ReceiveTextSubscriber {
     @Subscribe
     public void onReceiveTextEvent(ReceiveTextEvent event) {
         //if(!event.getFrom().isEmpty()){
-            VoiceNotifier.getInstance().speakInRandomVoice(event.getMessageLocalised());
+            VoiceGenerator.getInstance().speakInRandomVoice(event.getMessageLocalised());
         //}
     }
 }

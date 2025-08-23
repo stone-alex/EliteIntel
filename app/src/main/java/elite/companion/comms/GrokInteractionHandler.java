@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import elite.companion.Globals;
 import elite.companion.session.SessionTracker;
-import elite.companion.utils.ConfigManager;
+import elite.companion.util.ConfigManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +20,7 @@ public class GrokInteractionHandler {
     private static final Logger log = LoggerFactory.getLogger(GrokInteractionHandler.class);
 
 
-    public void processCommand(String voiceCommand) {
+    public void processVoiceCommand(String voiceCommand) {
         String command = sanitizeGoogleMistakes(voiceCommand);
         if (command == null) {return;}
 

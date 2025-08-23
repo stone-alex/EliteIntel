@@ -1,4 +1,4 @@
-package elite.companion.utils;
+package elite.companion.util;
 
 import java.io.BufferedReader;
 import java.io.InputStream;

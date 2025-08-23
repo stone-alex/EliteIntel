@@ -181,7 +181,7 @@ public class SpeechRecognizer {
                 if (!transcript.isBlank() && transcript.length() >= 3 && confidence > 0.6) {
                     transcriptionQueue.offer(transcript);
                     log.info("Final transcript: {} (confidence: {})", transcript, confidence);
-                    grok.processCommand(transcript);
+                    grok.processVoiceCommand(transcript);
                 } else {
                     log.info("Discarded transcript: {} (confidence: {})", transcript, confidence);
                 }

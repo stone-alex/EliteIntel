@@ -71,4 +71,8 @@ public class SessionTracker {
     public Object getObject(String key) {
         return state.get(key);
     }
+
+    public String getSessionValue(String queryDestination, Class<String> stringClass) {
+        return null;
+    }
 }

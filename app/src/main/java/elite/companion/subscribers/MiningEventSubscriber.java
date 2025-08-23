@@ -26,7 +26,7 @@ public class MiningEventSubscriber {
         JsonObject params = (JsonObject) SessionTracker.getInstance().getObject("params");
         if (params == null || !params.has("material")) {
             GrokInteractionHandler grok = new GrokInteractionHandler();
-            grok.processCommand("set mining target " + dto.getTypeLocalised());
+            grok.processVoiceCommand("set mining target " + dto.getTypeLocalised());
         }
         log.info("Mining event processed: {}", dto.toString());
     }

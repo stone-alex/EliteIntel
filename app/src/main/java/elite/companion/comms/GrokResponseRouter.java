@@ -2,13 +2,14 @@ package elite.companion.comms;
 
 import com.google.gson.JsonObject;
 import elite.companion.comms.handlers.CommandHandler;
+import elite.companion.comms.handlers.DeployLandingGearHandler;
+import elite.companion.comms.handlers.PlotRouteHandler;
 import elite.companion.comms.handlers.SetMiningTargetHandler;
 import elite.companion.robot.VoiceCommandHandler;
 import elite.companion.session.SessionTracker;
 import elite.companion.util.InaraApiClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import elite.companion.comms.handlers.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,12 +36,13 @@ public class GrokResponseRouter {
     }
 
     private void registerCommandHandlers() {
-        commandHandlers.put("set_mining_target", new SetMiningTargetHandler());
-        commandHandlers.put("plot_route", new PlotRouteHandler(voiceCommandHandler));
-        // Add more handlers as needed, e.g., commandHandlers.put("deploy_landing_gear", new DeployLandingGearHandler(voiceCommandHandler));
+        commandHandlers.put(CommandAction.SET_MINING_TARGET.getAction(), new SetMiningTargetHandler());
+        commandHandlers.put(CommandAction.PLOT_ROUTE.getAction(), new PlotRouteHandler(voiceCommandHandler));
+        commandHandlers.put(GameCommandMapping.GameCommand.LANDING_GEAR_TOGGLE.getUserCommand(), new DeployLandingGearHandler(voiceCommandHandler));
+        // Add more game command handlers as needed, e.g., commandHandlers.put(GameCommandMapping.GameCommand.OPEN_CARGO_SCOOP.getUserCommand(), new OpenCargoScoopHandler(voiceCommandHandler));
     }
 
-    public void start() {
+    public void start() throws Exception {
         voiceCommandHandler.start();
         log.info("Started GrokResponseRouter");
     }
@@ -83,15 +85,13 @@ public class GrokResponseRouter {
             handler.handle(params, responseText);
             log.debug("Handled command action: {}", action);
         } else {
-            // Fallback to VoiceCommandHandler for keyboard-related commands
             voiceCommandHandler.handleGrokResponse(jsonResponse);
             log.debug("Delegated unhandled command to VoiceCommandHandler: {}", action);
         }
     }
 
     private void handleQuery(String action, JsonObject params, String responseText) {
-        // Similar pattern can be applied for queries if they grow
-        if (action.equals("find_nearest_material_trader")) {
+        if (action.equals(CommandAction.FIND_NEAREST_MATERIAL_TRADER.getAction())) {
             String currentSystem = SessionTracker.getInstance().getSessionValue("current_system", String.class);
             JsonObject result = inaraApiClient.searchNearestMaterialTrader(currentSystem);
             if (result != null && result.has("system_name")) {

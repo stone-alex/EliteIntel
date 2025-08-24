@@ -1,12 +1,11 @@
 package elite.companion.comms.handlers;
 
+import com.google.gson.JsonObject;
 import elite.companion.comms.VoiceGenerator;
+import elite.companion.robot.KeyProcessor;
 import elite.companion.robot.VoiceCommandHandler;
-import elite.companion.session.SessionTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.google.gson.JsonObject;
-import elite.companion.robot.KeyProcessor;
 
 public class PlotRouteHandler implements CommandHandler {
     private static final Logger log = LoggerFactory.getLogger(PlotRouteHandler.class);
@@ -18,7 +17,7 @@ public class PlotRouteHandler implements CommandHandler {
 
     @Override
     public void handle(JsonObject params, String responseText) {
-        String destination = SessionTracker.getInstance().getSessionValue("query_destination", String.class);
+        String destination = params.get("destination").getAsString(); //SessionTracker.getInstance().getSessionValue("query_destination", String.class);
         if (destination != null && !destination.isEmpty()) {
             JsonObject plotRouteJson = new JsonObject();
             plotRouteJson.addProperty("type", "command");

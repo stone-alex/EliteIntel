@@ -2,6 +2,7 @@ package elite.companion.comms;
 
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.texttospeech.v1.*;
+import elite.companion.session.SessionTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,18 +74,19 @@ public class VoiceGenerator {
 
     public String getRandomVoice() {
         if (voiceMap.isEmpty()) {
-            return MICHEAL;
+            return JENNIFER;
         }
         String[] voices = voiceMap.keySet().toArray(new String[0]);
         return voices[new Random().nextInt(voices.length)];
     }
 
     public void speak(String text){
-        speak(text, MICHEAL);
+        speak(text, JENNIFER);
     }
 
     public void speak(String text, String voiceName) {
-        System.out.println(text);
+        log.info("Speaking: {}", text);
+        SessionTracker.getInstance().updateSession("context_your_last_transmission", text);
         try {
             SynthesisInput input = SynthesisInput.newBuilder().setText(text).build();
             VoiceSelectionParams voice = voiceMap.get(voiceName);

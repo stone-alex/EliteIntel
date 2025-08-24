@@ -1,6 +1,7 @@
 package elite.companion;
 
 import com.google.gson.*;
+import elite.companion.comms.VoiceGenerator;
 import elite.companion.events.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +44,7 @@ public class JournalParser {
                 reader.skip(lastPosition);
                 String line;
                 boolean isFirstLineAfterSeek = (lastPosition == 0);
+                VoiceGenerator.getInstance().speak("Monitoring Journal");
                 while ((line = reader.readLine()) != null) {
                     // Strip UTF-8 BOM if present on the first line
                     if (isFirstLineAfterSeek) {
@@ -120,6 +122,7 @@ public class JournalParser {
                     lastPosition += line.getBytes(StandardCharsets.UTF_8).length + System.lineSeparator().getBytes(StandardCharsets.UTF_8).length;
                 }
             } catch (IOException e) {
+                VoiceGenerator.getInstance().speak("Error reading journal: {}", e.getMessage());
                 log.error("Error reading journal: {}", e.getMessage());
             }
 

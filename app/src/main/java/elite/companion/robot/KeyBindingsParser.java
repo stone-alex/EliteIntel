@@ -1,5 +1,6 @@
 package elite.companion.robot;
 
+import elite.companion.comms.VoiceGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -79,6 +80,7 @@ public class KeyBindingsParser {
             }
         }
         log.info("Parsed {} bindings from file: {}", bindings.size(), file.getName());
+        VoiceGenerator.getInstance().speak("Parsed "+bindings.size()+" bindings from file: "+file.getName());
         return bindings;
     }
 

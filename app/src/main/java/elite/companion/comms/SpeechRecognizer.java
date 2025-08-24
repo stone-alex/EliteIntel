@@ -3,6 +3,7 @@ package elite.companion.comms;
 import com.google.api.gax.rpc.ApiStreamObserver;
 import com.google.cloud.speech.v1p1beta1.*;
 import com.google.protobuf.ByteString;
+import elite.companion.session.SessionTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,6 +71,7 @@ public class SpeechRecognizer {
 
     public void start() {
         new Thread(this::startStreaming).start();
+        VoiceGenerator.getInstance().speak("Mic is hot, standing-by");
         log.info("SpeechRecognizer started in background thread");
     }
 
@@ -182,6 +184,7 @@ public class SpeechRecognizer {
                 if (!transcript.isBlank() && transcript.length() >= 3 && confidence > 0.6) {
                     transcriptionQueue.offer(transcript);
                     log.info("Final transcript: {} (confidence: {})", transcript, confidence);
+                    SessionTracker.getInstance().updateSession("context_user_last_transmission", transcript);
                     grok.processVoiceCommand(transcript);
                 } else {
                     log.info("Discarded transcript: {} (confidence: {})", transcript, confidence);

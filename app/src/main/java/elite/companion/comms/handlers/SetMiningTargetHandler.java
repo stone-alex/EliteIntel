@@ -3,7 +3,7 @@ package elite.companion.comms.handlers;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import elite.companion.comms.VoiceGenerator;
-import elite.companion.session.SessionTracker;
+import elite.companion.session.PublicSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import elite.companion.comms.CommandAction;
@@ -13,7 +13,7 @@ public class SetMiningTargetHandler implements CommandHandler {
 
     @Override
     public void handle(JsonObject params, String responseText) {
-        SessionTracker session = SessionTracker.getInstance();
+        PublicSession session = PublicSession.getInstance();
         JsonElement jsonElement = params.get("material");
 
         if (jsonElement == null || jsonElement.getAsString().isEmpty()) {

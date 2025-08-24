@@ -2,13 +2,11 @@ package elite.companion.comms;
 
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.texttospeech.v1.*;
-import elite.companion.session.SessionTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -151,6 +149,7 @@ public class VoiceGenerator {
     }
 
     private void processVoiceRequest(String text, String voiceName) {
+        if (text == null || text.isEmpty()) {return;}
         log.info("Speaking: {}", text);
         //SessionTracker.getInstance().updateSession("context_your_last_transmission", "Timestamp:"+ Instant.now().toString()+" text: " + text);
         try {

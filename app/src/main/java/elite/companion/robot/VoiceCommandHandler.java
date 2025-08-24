@@ -3,7 +3,7 @@ package elite.companion.robot;
 import com.google.gson.JsonObject;
 import elite.companion.comms.GameCommandMapping;
 import elite.companion.comms.VoiceGenerator;
-import elite.companion.session.SessionTracker;
+import elite.companion.session.PublicSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,6 +59,11 @@ public class VoiceCommandHandler {
                     JsonObject params = jsonResponse.has("params") ? jsonResponse.get("params").getAsJsonObject() : new JsonObject();
                     handleCommand(action, params, responseText);
                     break;
+                case "system_command":
+                    JsonObject system_params = jsonResponse.has("params") ? jsonResponse.get("params").getAsJsonObject() : new JsonObject();
+                    handleSystemCommand(system_params, responseText);
+                    break;
+
                 case "query":
                     handleQuery(responseText);
                     break;
@@ -82,11 +87,11 @@ public class VoiceCommandHandler {
             return;
         }
 
-        SessionTracker.getInstance().updateSession("action", action);
-        SessionTracker.getInstance().updateSession("params", params);
+        PublicSession.getInstance().updateSession("action", action);
+        PublicSession.getInstance().updateSession("params", params);
         log.debug("Updated SessionTracker with action: {}, params: {}", action, params);
         KeyBindingsParser.KeyBinding binding = monitor.getBindings().get(action);
-        if(binding == null) {
+        if (binding == null) {
             binding = monitor.getBindings().get(GameCommandMapping.getGameBinding(action));
         }
 
@@ -94,14 +99,15 @@ public class VoiceCommandHandler {
             executor.executeBinding(binding);
             log.info("Executed action: {} with key: {}", action, binding.key);
             handleChat(responseText);
-        }
-
-
-
-        else {
+        } else {
             log.warn("No binding found for action: {}", action);
             handleChat("No key binding found for that action.");
         }
+    }
+
+    private void handleSystemCommand(JsonObject params, String responseText) {
+        PublicSession.getInstance().updateSession("params", params);
+        handleChat(responseText);
     }
 
     private void handleQuery(String responseText) {

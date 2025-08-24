@@ -4,7 +4,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import elite.companion.Globals;
-import elite.companion.session.SessionTracker;
+import elite.companion.session.PublicSession;
+import elite.companion.session.SystemSession;
 import elite.companion.util.ConfigManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,8 +15,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
-
-import static elite.companion.Globals.EXTERNAL_TRANSMISSION;
 
 public class GrokInteractionHandler {
     private static final Logger log = LoggerFactory.getLogger(GrokInteractionHandler.class);
@@ -37,7 +36,8 @@ public class GrokInteractionHandler {
             return;
         }
 
-        String request = buildRequest(command);
+        String request = buildVoiceRequest(command);
+        System.out.println( request);
         JsonObject apiResponse = callXaiApi(request);
         if (apiResponse == null) {
             VoiceGenerator.getInstance().speak("Sorry, I couldn't process that.");
@@ -46,6 +46,21 @@ public class GrokInteractionHandler {
 
         GrokResponseRouter.getInstance().processGrokResponse(apiResponse);
     }
+
+    public void processSystemCommand(String input) {
+        if (input == null || input.isEmpty()) {return;}
+
+        String request = buildSystemRequest(input);
+        System.out.println( request);
+        JsonObject apiResponse = callXaiApi(request);
+        if (apiResponse == null) {
+            VoiceGenerator.getInstance().speak("Failure processing system request. Check programming");
+            return;
+        }
+
+        GrokResponseRouter.getInstance().processGrokResponse(apiResponse);
+    }
+
 
     private static String sanitizeGoogleMistakes(String voiceCommand) {
         if (voiceCommand == null || voiceCommand.isEmpty()) return null;
@@ -65,8 +80,12 @@ public class GrokInteractionHandler {
         return command;
     }
 
-    private String buildRequest(String transcribedText) {
-        String stateSummary = SessionTracker.getInstance().getStateSummary();
+    /**
+     * Reacts to user voice input and generates a JSON request for the xAI API.
+     * Can and will trigger game controls.
+     * */
+    private String buildVoiceRequest(String transcribedText) {
+        String stateSummary = PublicSession.getInstance().getStateSummary();
         return String.format(
                 "Interpret this user voice input: "+transcribedText+". " +
                         "Current game state: "+stateSummary+". " +
@@ -79,12 +98,29 @@ public class GrokInteractionHandler {
         );
     }
 
+    /**
+     * Reacts to system sensor input and generates a JSON request for the xAI API.
+     * Used for reactions, does not trigger game controls.
+     * */
+    private String buildSystemRequest(String systemInput) {
+        String stateSummary = PublicSession.getInstance().getStateSummary();
+        SystemSession.getInstance().clear();
+        return String.format(
+                "Analyze this ship sensor input : "+systemInput+". provide response and system_command" +
+                        "Current game state: "+stateSummary+". " +
+                        "Classify as: 'system_command' (sets companion app variables, provides fun response TTS output, but does not trigger game controls)" +
+                        "Respond in JSON only: {\"type\": \"system_command\", \"response_text\": \"TTS output (concise and fun)\", \"action\": \"set_mining_target|set_current_system|...\" , \"params\": {\"key\": \"value\"}}." +
+                        "Use provided data for response. Example: 'I see we are mining Tritium, I will set it as the mining target.' Or 'We are in Sol, I will flag it as the current location.' Or welcome user back to Elite Dangerous when new session is detected etc."
+        );
+    }
+
     private JsonObject callXaiApi(String prompt) {
         try {
             HttpURLConnection conn = getHttpURLConnection();
 
             JsonObject body = new JsonObject();
-            body.addProperty("model", "grok-4-latest");
+            //body.addProperty("model", "grok-4-latest");
+            body.addProperty("model", "grok-3-fast");
             body.addProperty("temperature", 0.7);
             body.addProperty("stream", false);
 

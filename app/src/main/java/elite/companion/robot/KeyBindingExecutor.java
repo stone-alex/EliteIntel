@@ -55,7 +55,7 @@ public class KeyBindingExecutor {
         try {
             Integer mainKeyCode = ELITE_TO_KEYPROCESSOR_MAP.get(binding.key.toUpperCase());
             if (mainKeyCode == null) {
-                log.error("No KeyProcessor mapping for key: {}", binding.key);
+                log.error("No KeyProcessor mapping for key: {}", binding.key.toUpperCase());
                 return;
             }
             int[] modifierCodes = new int[binding.modifiers.length];

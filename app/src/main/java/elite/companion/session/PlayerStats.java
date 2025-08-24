@@ -15,6 +15,7 @@ public class PlayerStats {
     private String currentStarSystem;
     private String currentShipName;
     private PowerplayEvent powerplayEvent;
+    private double fuelLevel;
 
 
 
@@ -95,5 +96,12 @@ public class PlayerStats {
 
     public void setPowerplayEvent(PowerplayEvent powerplayEvent) {
         this.powerplayEvent = powerplayEvent;
+    }
+
+    public double getFuelLevel() {
+        return fuelLevel;
+    }
+    public void setFuelLevel(double fuelLevel) {
+        this.fuelLevel = fuelLevel;
     }
 }

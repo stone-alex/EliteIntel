@@ -3,19 +3,19 @@ package elite.companion.comms;
 import com.google.api.gax.rpc.ApiStreamObserver;
 import com.google.cloud.speech.v1p1beta1.*;
 import com.google.protobuf.ByteString;
-import elite.companion.session.SessionTracker;
+import elite.companion.session.PublicSession;
+import elite.companion.session.SystemSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sound.sampled.*;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static elite.companion.Globals.EXTERNAL_TRANSMISSION;
+import static elite.companion.Globals.SENSOR_READING;
 
 
 /**
@@ -153,10 +153,10 @@ public class SpeechRecognizer {
                             lastAudioSentTime = currentTime;
                         }
 
-                        SessionTracker session = SessionTracker.getInstance();
-                        if(session.getObject(EXTERNAL_TRANSMISSION) != null && session.getObject(EXTERNAL_TRANSMISSION) instanceof String && !((String) session.getObject(EXTERNAL_TRANSMISSION)).isBlank()) {
-                            grok.processVoiceCommand(session.getObject(EXTERNAL_TRANSMISSION).toString());
-                            session.remove(EXTERNAL_TRANSMISSION);
+                        SystemSession systemSession = SystemSession.getInstance();
+                        if(systemSession.getObject(SENSOR_READING) != null && systemSession.getObject(SENSOR_READING) instanceof String && !((String) systemSession.getObject(SENSOR_READING)).isBlank()) {
+                            grok.processSystemCommand(systemSession.getObject(SENSOR_READING).toString());
+                            systemSession.remove(SENSOR_READING);
                         }
                     }
                 } catch (LineUnavailableException | IllegalArgumentException e) {
@@ -197,7 +197,6 @@ public class SpeechRecognizer {
                 if (!transcript.isBlank() && transcript.length() >= 3 && confidence > 0.3) {
                     transcriptionQueue.offer(transcript);
                     log.info("Final transcript: {} (confidence: {})", transcript, confidence);
-                    //SessionTracker.getInstance().updateSession("context_user_last_transmission", "Timestamp:" + Instant.now().toString() + " text: " + transcript);
                     grok.processVoiceCommand(transcript);
                 } else {
                     log.info("Discarded transcript: {} (confidence: {})", transcript, confidence);

@@ -9,6 +9,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class GrokRequestHints {
@@ -38,7 +39,17 @@ public class GrokRequestHints {
             KeyBindingsParser parser = new KeyBindingsParser();
             File bindingsFile = new BindingsLoader().getLatestBindsFile();
             Map<String, KeyBindingsParser.KeyBinding> bindings = parser.parseBindings(bindingsFile);
-            commands.addAll(bindings.keySet());
+
+            Set<String> strings = bindings.keySet();
+            for(String s : strings) {
+                if(!s.toLowerCase().contains("camera") || s.toLowerCase().contains("cam")) {
+                    commands.add(s);
+                }
+            }
+
+            //commands.addAll(bindings.keySet());
+
+
             log.info("Loaded {} game bindings for Grok hints", bindings.size());
         } catch (Exception e) {
             log.error("Failed to load game bindings for hints: {}", e.getMessage());

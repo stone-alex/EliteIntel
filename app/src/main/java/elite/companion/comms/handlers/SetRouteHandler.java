@@ -6,15 +6,15 @@ import elite.companion.comms.GameCommandMapping;
 import elite.companion.comms.VoiceGenerator;
 import elite.companion.robot.KeyProcessor;
 import elite.companion.robot.VoiceCommandHandler;
-import elite.companion.session.SessionTracker;
+import elite.companion.session.PublicSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PlotRouteHandler implements CommandHandler {
-    private static final Logger log = LoggerFactory.getLogger(PlotRouteHandler.class);
+public class SetRouteHandler implements CommandHandler {
+    private static final Logger log = LoggerFactory.getLogger(SetRouteHandler.class);
     private final VoiceCommandHandler voiceCommandHandler;
 
-    public PlotRouteHandler(VoiceCommandHandler voiceCommandHandler) {
+    public SetRouteHandler(VoiceCommandHandler voiceCommandHandler) {
         this.voiceCommandHandler = voiceCommandHandler;
     }
 
@@ -23,7 +23,7 @@ public class PlotRouteHandler implements CommandHandler {
         String destination = params.has(CommandAction.PLOT_ROUTE.getParamKey()) ? params.get(CommandAction.PLOT_ROUTE.getParamKey()).getAsString() : null;
         if (destination == null || destination.isEmpty()) {
             // Fallback to SessionTracker if params don't provide destination
-            destination = SessionTracker.getInstance().getSessionValue("query_destination", String.class);
+            destination = PublicSession.getInstance().getSessionValue("query_destination", String.class);
         }
 
         if (destination != null && !destination.isEmpty()) {

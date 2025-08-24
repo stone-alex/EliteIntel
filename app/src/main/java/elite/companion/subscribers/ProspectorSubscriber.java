@@ -1,13 +1,12 @@
 package elite.companion.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import elite.companion.EventBusManager;
 import elite.companion.comms.CommandAction;
 import elite.companion.comms.VoiceGenerator;
 import elite.companion.events.ProspectedAsteroidEvent;
-import elite.companion.session.SessionTracker;
+import elite.companion.session.PublicSession;
 
 public class ProspectorSubscriber {
 
@@ -17,14 +16,14 @@ public class ProspectorSubscriber {
 
     @Subscribe
     public void onProspectedAsteroidEvent(ProspectedAsteroidEvent event) {
-        JsonObject params = (JsonObject) SessionTracker.getInstance().getObject("params");
+        JsonObject params = (JsonObject) PublicSession.getInstance().getObject("params");
 
         boolean foundTargetMaterial = false;
         StringBuilder anouncement = new StringBuilder();
 
         for (ProspectedAsteroidEvent.Material material : event.getMaterials()) {
             String prospectedMaterial = material == null ? "" : material.getName();
-            String targetMaterial = String.valueOf(SessionTracker.getInstance().getObject(CommandAction.SET_MINING_TARGET.getParamKey())).replaceAll("\"", "");
+            String targetMaterial = String.valueOf(PublicSession.getInstance().getObject(CommandAction.SET_MINING_TARGET.getParamKey())).replaceAll("\"", "");
             if (prospectedMaterial != null && !prospectedMaterial.isEmpty() && prospectedMaterial.toLowerCase().equals(targetMaterial.toLowerCase())) {
                 foundTargetMaterial = true;
 

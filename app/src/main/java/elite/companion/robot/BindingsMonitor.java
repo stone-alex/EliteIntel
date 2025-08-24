@@ -1,5 +1,6 @@
 package elite.companion.robot;
 
+import elite.companion.comms.VoiceGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +25,7 @@ public class BindingsMonitor {
     public void startMonitoring() throws Exception {
         currentBindsFile = new BindingsLoader().getLatestBindsFile();
         bindings = parser.parseBindings(currentBindsFile);
+        VoiceGenerator.getInstance().speak("Key bindings are initialized.");
         log.info("Initial bindings loaded from: {}", currentBindsFile.getName());
 
         watchService = FileSystems.getDefault().newWatchService();

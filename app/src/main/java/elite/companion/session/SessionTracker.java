@@ -37,6 +37,7 @@ public class SessionTracker {
     @Subscribe
     public void onPlayerStatusEvent(PlayerStats event) {
         if (event.getPowerplayEvent() != null) {
+            state.put("player_name", event.getPlayerName());
             state.put("pledged_to_power", event.getPowerplayEvent().getPower());
             state.put("pledged_to_rank", event.getPowerplayEvent().getRank());
             state.put("pledged_to_merits", event.getPowerplayEvent().getMerits());
@@ -54,6 +55,7 @@ public class SessionTracker {
 
     public String getStateSummary() {
         StringBuilder summary = new StringBuilder();
+        summary.append("You can refer to me by my title, name or military rank. My title is: Prince, My Name is: Krondor, and my Military Rank is: Viscount");
         summary.append("Currently known statistics: ");
         state.forEach((key, value) -> summary.append(key).append(": ").append(value).append("; "));
         return summary.toString();
@@ -74,5 +76,9 @@ public class SessionTracker {
 
     public String getSessionValue(String queryDestination, Class<String> stringClass) {
         return null;
+    }
+
+    public void remove(String key) {
+        state.remove(key);
     }
 }

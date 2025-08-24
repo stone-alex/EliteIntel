@@ -1,5 +1,6 @@
 package elite.companion.comms.handlers;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import elite.companion.comms.VoiceGenerator;
 import elite.companion.session.SessionTracker;
@@ -12,15 +13,15 @@ public class SetMiningTargetHandler implements CommandHandler {
 
     @Override
     public void handle(JsonObject params, String responseText) {
-        String target = params.has(CommandAction.SET_MINING_TARGET.getParamKey()) ?
-                params.get(CommandAction.SET_MINING_TARGET.getParamKey()).getAsString() : "";
-        if (!target.isEmpty()) {
-            SessionTracker.getInstance().updateSession("mining_target", target);
-            log.info("Set mining target to: {}", target);
-            VoiceGenerator.getInstance().speak(responseText);
+        SessionTracker session = SessionTracker.getInstance();
+        JsonElement jsonElement = params.get("material");
+
+        if (jsonElement == null || jsonElement.getAsString().isEmpty()) {
+            log.info("no mining target set");
+            VoiceGenerator.getInstance().speak("No material set. Please try again.");
         } else {
-            log.warn("No mining target specified in params");
-            VoiceGenerator.getInstance().speak("Please specify a mining target.");
+            session.updateSession(CommandAction.SET_MINING_TARGET.getParamKey(), jsonElement.getAsJsonPrimitive().getAsString().replace("\"", ""));
+            VoiceGenerator.getInstance().speak(responseText);
         }
     }
 }

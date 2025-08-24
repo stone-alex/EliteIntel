@@ -15,6 +15,8 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
+import static elite.companion.Globals.EXTERNAL_TRANSMISSION;
+
 public class GrokInteractionHandler {
     private static final Logger log = LoggerFactory.getLogger(GrokInteractionHandler.class);
 
@@ -51,7 +53,7 @@ public class GrokInteractionHandler {
         String command = voiceCommand.toLowerCase().trim();
 
         String[] misheardPhrases = {
-                "treat you", "trees you", "3 tube", "hydrogen 3", "hydrogen three",
+                "treat you", "trees you", "3 tube", "hydrogen 3", "hydrogen three", "32",
                 "carrier fuel", "carrier juice", "carrot juice", "treatyou", "treesyou"
         };
         for (String phrase : misheardPhrases) {

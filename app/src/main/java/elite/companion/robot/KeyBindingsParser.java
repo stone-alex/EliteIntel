@@ -1,22 +1,19 @@
 package elite.companion.robot;
 
-import elite.companion.comms.VoiceGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class KeyBindingsParser {
     private static final Logger log = LoggerFactory.getLogger(KeyBindingsParser.class);
+
     public static class KeyBinding {
         String key;
         String[] modifiers;
@@ -80,7 +77,6 @@ public class KeyBindingsParser {
             }
         }
         log.info("Parsed {} bindings from file: {}", bindings.size(), file.getName());
-        //VoiceGenerator.getInstance().speak("Parsed "+bindings.size()+" bindings from file: "+file.getName());
         return bindings;
     }
 

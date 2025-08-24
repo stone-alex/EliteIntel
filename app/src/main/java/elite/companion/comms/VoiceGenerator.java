@@ -12,6 +12,8 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import static elite.companion.Globals.GOOGLE_API_KEY;
 
@@ -29,6 +31,9 @@ public class VoiceGenerator {
     public static final String KAREN = "Karen";
 
     private final TextToSpeechClient textToSpeechClient;
+    private final BlockingQueue<VoiceRequest> voiceQueue;
+    private final Thread processingThread;
+    private volatile boolean running;
 
     private final static VoiceGenerator INSTANCE = new VoiceGenerator();
 
@@ -37,8 +42,24 @@ public class VoiceGenerator {
     }
 
     private Map<String, VoiceSelectionParams> voiceMap = new HashMap<>();
+    private Map<String, VoiceSelectionParams> randomVoiceMap = new HashMap<>();
+
+    private static class VoiceRequest {
+        final String text;
+        final String voiceName;
+
+        VoiceRequest(String text, String voiceName) {
+            this.text = text;
+            this.voiceName = voiceName;
+        }
+    }
 
     private VoiceGenerator() {
+        this.voiceQueue = new LinkedBlockingQueue<>();
+        this.running = true;
+        this.processingThread = new Thread(this::processVoiceQueue);
+        this.processingThread.setDaemon(true);
+        this.processingThread.start();
         // Load credentials from classpath
         //TODO: Refactor this to use a config file or a user interface.
         try (InputStream serviceAccountStream = getClass().getResourceAsStream(GOOGLE_API_KEY)) {
@@ -53,18 +74,40 @@ public class VoiceGenerator {
             throw new RuntimeException("Failed to initialize Text To Speech client", e);
         }
 
-        voiceMap.put(JAMES, VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Wavenet-D").build());
-        voiceMap.put(MICHEAL, VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Algieba").build());
-        voiceMap.put(JENNIFER, VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Sulafat").build());
+        VoiceSelectionParams James = VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Wavenet-D").build();
+        VoiceSelectionParams Micheal = VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Algieba").build();
+        VoiceSelectionParams Jennifer = VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Sulafat").build();
+        VoiceSelectionParams Merry = VoiceSelectionParams.newBuilder().setLanguageCode("en-GB").setName("en-GB-Neural2-A").build();
+        VoiceSelectionParams FastJenny = VoiceSelectionParams.newBuilder().setLanguageCode("en-GB").setName("en-GB-Chirp-HD-F").build();
+        VoiceSelectionParams Charles = VoiceSelectionParams.newBuilder().setLanguageCode("en-GB").setName("en-GB-Chirp3-HD-Algenib").build();
+        VoiceSelectionParams Steven = VoiceSelectionParams.newBuilder().setLanguageCode("en-AU").setName("en-AU-Chirp3-HD-Schedar").build();
+        VoiceSelectionParams Joseph = VoiceSelectionParams.newBuilder().setLanguageCode("en-AU").setName("en-AU-Chirp3-HD-Enceladus").build();
+        VoiceSelectionParams Leda = VoiceSelectionParams.newBuilder().setLanguageCode("en-AU").setName("en-AU-Chirp3-HD-Leda").build();
+        VoiceSelectionParams Karen = VoiceSelectionParams.newBuilder().setLanguageCode("en-AU").setName("en-AU-Chirp3-HD-Gacrux").build();
 
-        voiceMap.put(MERRY, VoiceSelectionParams.newBuilder().setLanguageCode("en-GB").setName("en-GB-Neural2-A").build());
-        voiceMap.put(FAST_JENNY, VoiceSelectionParams.newBuilder().setLanguageCode("en-GB").setName("en-GB-Chirp-HD-F").build());
-        voiceMap.put(CHARLES, VoiceSelectionParams.newBuilder().setLanguageCode("en-GB").setName("en-GB-Chirp3-HD-Algenib").build());
+        voiceMap.put(JAMES, James);
+        voiceMap.put(MICHEAL, Micheal);
+        voiceMap.put(JENNIFER, Jennifer);
 
-        voiceMap.put(STEVE, VoiceSelectionParams.newBuilder().setLanguageCode("en-AU").setName("en-AU-Chirp3-HD-Schedar").build());
-        voiceMap.put(JOSEPH, VoiceSelectionParams.newBuilder().setLanguageCode("en-AU").setName("en-AU-Chirp3-HD-Enceladus").build());
-        voiceMap.put(LEDA, VoiceSelectionParams.newBuilder().setLanguageCode("en-AU").setName("en-AU-Chirp3-HD-Leda").build());
-        voiceMap.put(KAREN, VoiceSelectionParams.newBuilder().setLanguageCode("en-AU").setName("en-AU-Chirp3-HD-Gacrux").build());
+        voiceMap.put(MERRY, Merry);
+        voiceMap.put(FAST_JENNY, FastJenny);
+        voiceMap.put(CHARLES, Charles);
+
+        voiceMap.put(STEVE, Steven);
+        voiceMap.put(JOSEPH, Joseph);
+        voiceMap.put(LEDA, Leda);
+        voiceMap.put(KAREN, Karen);
+
+        randomVoiceMap.put(JAMES, James);
+        randomVoiceMap.put(MICHEAL, Micheal);
+        randomVoiceMap.put(JENNIFER, Jennifer);
+        randomVoiceMap.put(MERRY, Merry);
+        randomVoiceMap.put(FAST_JENNY, FastJenny);
+        //randomVoiceMap.put(CHARLES, Charles);
+        randomVoiceMap.put(STEVE, Steven);
+        randomVoiceMap.put(JOSEPH, Joseph);
+        randomVoiceMap.put(LEDA, Leda);
+        randomVoiceMap.put(KAREN, Karen);
     }
 
 
@@ -75,19 +118,41 @@ public class VoiceGenerator {
 
     public String getRandomVoice() {
         if (voiceMap.isEmpty()) {
-            return JENNIFER;
+            return CHARLES;
         }
-        String[] voices = voiceMap.keySet().toArray(new String[0]);
+        String[] voices = randomVoiceMap.keySet().toArray(new String[0]);
         return voices[new Random().nextInt(voices.length)];
     }
 
-    public void speak(String text){
-        speak(text, JENNIFER);
+    public void speak(String text) {
+        speak(text, CHARLES);
     }
 
     public void speak(String text, String voiceName) {
+        try {
+            voiceQueue.put(new VoiceRequest(text, voiceName));
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.error("Interrupted while adding voice request to queue", e);
+        }
+    }
+
+    private void processVoiceQueue() {
+        while (running) {
+            try {
+                VoiceRequest request = voiceQueue.take();
+                processVoiceRequest(request.text, request.voiceName);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                log.error("Voice processing thread interrupted", e);
+                break;
+            }
+        }
+    }
+
+    private void processVoiceRequest(String text, String voiceName) {
         log.info("Speaking: {}", text);
-        SessionTracker.getInstance().updateSession("context_your_last_transmission", "Timestamp:"+ Instant.now().toString()+" text: " + text);
+        //SessionTracker.getInstance().updateSession("context_your_last_transmission", "Timestamp:"+ Instant.now().toString()+" text: " + text);
         try {
             SynthesisInput input = SynthesisInput.newBuilder().setText(text).build();
             VoiceSelectionParams voice = voiceMap.get(voiceName);

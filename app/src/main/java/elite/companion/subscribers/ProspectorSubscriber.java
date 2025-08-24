@@ -4,6 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import elite.companion.EventBusManager;
+import elite.companion.comms.CommandAction;
 import elite.companion.comms.VoiceGenerator;
 import elite.companion.events.ProspectedAsteroidEvent;
 import elite.companion.session.SessionTracker;
@@ -22,11 +23,9 @@ public class ProspectorSubscriber {
         StringBuilder anouncement = new StringBuilder();
 
         for (ProspectedAsteroidEvent.Material material : event.getMaterials()) {
-            String materialNameLocalised = material == null ? "" : material.getName();
-            JsonElement jsonElement = params == null ? null : params.get("material");
-            String targetMaterial = jsonElement == null ? null : jsonElement.getAsString().toLowerCase();
-
-            if (materialNameLocalised != null && !materialNameLocalised.isEmpty() && materialNameLocalised.toLowerCase().equals(targetMaterial)) {
+            String prospectedMaterial = material == null ? "" : material.getName();
+            String targetMaterial = String.valueOf(SessionTracker.getInstance().getObject(CommandAction.SET_MINING_TARGET.getParamKey())).replaceAll("\"", "");
+            if (prospectedMaterial != null && !prospectedMaterial.isEmpty() && prospectedMaterial.toLowerCase().equals(targetMaterial.toLowerCase())) {
                 foundTargetMaterial = true;
 
                 double proportion = material.getProportion();

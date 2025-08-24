@@ -60,7 +60,7 @@ public class KeyBindingExecutor {
             }
             int[] modifierCodes = new int[binding.modifiers.length];
             for (int i = 0; i < binding.modifiers.length; i++) {
-                Integer modCode = ELITE_TO_KEYPROCESSOR_MAP.get(binding.modifiers[i]);
+                Integer modCode = ELITE_TO_KEYPROCESSOR_MAP.get(binding.modifiers[i].toUpperCase());
                 if (modCode == null) {
                     log.error("No KeyProcessor mapping for modifier: {}", binding.modifiers[i]);
                     return;

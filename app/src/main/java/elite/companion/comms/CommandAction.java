@@ -1,7 +1,7 @@
 package elite.companion.comms;
 
 public enum CommandAction {
-    SET_MINING_TARGET("set_mining_target", "<material>", "target"),
+    SET_MINING_TARGET("set_mining_target", "<material>", "mining_target"),
     PLOT_ROUTE("plot_route", "<destination>", "destination"),
     FIND_NEAREST_MATERIAL_TRADER("find_nearest_material_trader", null, null);
 

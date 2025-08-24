@@ -15,6 +15,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static elite.companion.Globals.EXTERNAL_TRANSMISSION;
+
 
 /**
  * NOTE $$$ This method is not free. Calls will incur charges on both Google and Grok platforms. $$$
@@ -37,7 +39,7 @@ public class SpeechRecognizer {
     private static final int CHANNELS = 1; // Mono
     private static final int KEEP_ALIVE_INTERVAL_MS = 2000;
     private static final int STREAM_DURATION_MS = 30000; // 30s
-    private static final int RESTART_DELAY_MS = 1000; // 1s sleep after stream close
+    private static final int RESTART_DELAY_MS = 50; // 50ms sleep after stream close
     private final BlockingQueue<String> transcriptionQueue = new LinkedBlockingQueue<>();
     private final SpeechClient speechClient;
     private final GrokInteractionHandler grok;
@@ -73,7 +75,7 @@ public class SpeechRecognizer {
 
     public void start() {
         new Thread(this::startStreaming).start();
-        VoiceGenerator.getInstance().speak("Mic is hot, standing-by");
+        VoiceGenerator.getInstance().speak("Standing-by");
         log.info("SpeechRecognizer started in background thread");
     }
 
@@ -85,6 +87,9 @@ public class SpeechRecognizer {
      */
     private void startStreaming() {
         while (isListening.get()) {
+
+
+
             log.info("Starting new streaming session...");
             long streamStartTime = System.currentTimeMillis();
             ApiStreamObserver<StreamingRecognizeRequest> requestObserver = null;
@@ -147,6 +152,12 @@ public class SpeechRecognizer {
                                     .build());
                             lastAudioSentTime = currentTime;
                         }
+
+                        SessionTracker session = SessionTracker.getInstance();
+                        if(session.getObject(EXTERNAL_TRANSMISSION) != null && session.getObject(EXTERNAL_TRANSMISSION) instanceof String && !((String) session.getObject(EXTERNAL_TRANSMISSION)).isBlank()) {
+                            grok.processVoiceCommand(session.getObject(EXTERNAL_TRANSMISSION).toString());
+                            session.remove(EXTERNAL_TRANSMISSION);
+                        }
                     }
                 } catch (LineUnavailableException | IllegalArgumentException e) {
                     log.error("Audio capture failed: {}", e.getMessage());
@@ -186,7 +197,7 @@ public class SpeechRecognizer {
                 if (!transcript.isBlank() && transcript.length() >= 3 && confidence > 0.3) {
                     transcriptionQueue.offer(transcript);
                     log.info("Final transcript: {} (confidence: {})", transcript, confidence);
-                    SessionTracker.getInstance().updateSession("context_user_last_transmission", "Timestamp:" + Instant.now().toString() + " text: " + transcript);
+                    //SessionTracker.getInstance().updateSession("context_user_last_transmission", "Timestamp:" + Instant.now().toString() + " text: " + transcript);
                     grok.processVoiceCommand(transcript);
                 } else {
                     log.info("Discarded transcript: {} (confidence: {})", transcript, confidence);

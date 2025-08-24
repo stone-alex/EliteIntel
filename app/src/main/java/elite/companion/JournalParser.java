@@ -24,6 +24,7 @@ public class JournalParser {
 
     public void startReading() throws IOException, InterruptedException {
         log.info("Starting Journal Parser");
+        VoiceGenerator.getInstance().speak("Monitoring Journal");
         WatchService watchService = FileSystems.getDefault().newWatchService();
         journalDir.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_CREATE);
 
@@ -44,7 +45,7 @@ public class JournalParser {
                 reader.skip(lastPosition);
                 String line;
                 boolean isFirstLineAfterSeek = (lastPosition == 0);
-                VoiceGenerator.getInstance().speak("Monitoring Journal");
+
                 while ((line = reader.readLine()) != null) {
                     // Strip UTF-8 BOM if present on the first line
                     if (isFirstLineAfterSeek) {

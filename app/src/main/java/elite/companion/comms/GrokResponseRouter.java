@@ -1,10 +1,7 @@
 package elite.companion.comms;
 
 import com.google.gson.JsonObject;
-import elite.companion.comms.handlers.CommandHandler;
-import elite.companion.comms.handlers.DeployLandingGearHandler;
-import elite.companion.comms.handlers.PlotRouteHandler;
-import elite.companion.comms.handlers.SetMiningTargetHandler;
+import elite.companion.comms.handlers.*;
 import elite.companion.robot.VoiceCommandHandler;
 import elite.companion.session.SessionTracker;
 import elite.companion.util.InaraApiClient;
@@ -39,7 +36,10 @@ public class GrokResponseRouter {
         commandHandlers.put(CommandAction.SET_MINING_TARGET.getAction(), new SetMiningTargetHandler());
         commandHandlers.put(CommandAction.PLOT_ROUTE.getAction(), new PlotRouteHandler(voiceCommandHandler));
         commandHandlers.put(GameCommandMapping.GameCommand.LANDING_GEAR_TOGGLE.getUserCommand(), new DeployLandingGearHandler(voiceCommandHandler));
-        // Add more game command handlers as needed, e.g., commandHandlers.put(GameCommandMapping.GameCommand.OPEN_CARGO_SCOOP.getUserCommand(), new OpenCargoScoopHandler(voiceCommandHandler));
+        commandHandlers.put(GameCommandMapping.GameCommand.ENGAGE_SUPERCRUISE.getGameBinding(), new EngageSupercruiseHandler(voiceCommandHandler));
+        commandHandlers.put(GameCommandMapping.GameCommand.CARGO_SCOOP.getGameBinding(), new OpenCargoScoopHandler(voiceCommandHandler));
+
+
     }
 
     public void start() throws Exception {

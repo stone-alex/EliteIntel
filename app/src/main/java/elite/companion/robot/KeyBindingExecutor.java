@@ -2,13 +2,13 @@ package elite.companion.robot;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
 public class KeyBindingExecutor {
     private static final Logger log = LoggerFactory.getLogger(KeyBindingExecutor.class);
-
     private final KeyProcessor keyProcessor;
     private static final Map<String, Integer> ELITE_TO_KEYPROCESSOR_MAP = new HashMap<>();
 
@@ -49,6 +49,10 @@ public class KeyBindingExecutor {
     }
 
     public void executeBinding(KeyBindingsParser.KeyBinding binding) {
+        executeBindingWithHold(binding, 0); // Default: no hold
+    }
+
+    public void executeBindingWithHold(KeyBindingsParser.KeyBinding binding, int holdTimeMs) {
         try {
             Integer mainKeyCode = ELITE_TO_KEYPROCESSOR_MAP.get(binding.key);
             if (mainKeyCode == null) {
@@ -64,23 +68,36 @@ public class KeyBindingExecutor {
                 }
                 modifierCodes[i] = modCode;
             }
-            int[] keyCodes = new int[modifierCodes.length + 1];
-            System.arraycopy(modifierCodes, 0, keyCodes, 0, modifierCodes.length);
-            keyCodes[modifierCodes.length] = mainKeyCode;
-            if (binding.hold) {
-                for (int keyCode : keyCodes) {
-                    keyProcessor.holdKey(keyCode);
-                }
-                Thread.sleep(100);
-                for (int i = keyCodes.length - 1; i >= 0; i--) {
-                    keyProcessor.releaseKey(keyCodes[i]);
-                }
+
+            // Press modifiers
+            for (int modCode : modifierCodes) {
+                keyProcessor.holdKey(modCode);
+            }
+
+            // Execute main key
+            if (holdTimeMs > 0) {
+                keyProcessor.pressAndHoldKey(mainKeyCode, holdTimeMs);
+                log.debug("Executed hold binding: key={}, modifiers={}, holdTimeMs={}", binding.key, binding.modifiers, holdTimeMs);
+            } else if (binding.hold) {
+                keyProcessor.holdKey(mainKeyCode);
+                Thread.sleep(500);
+                keyProcessor.releaseKey(mainKeyCode);
                 log.debug("Executed hold binding: key={}, modifiers={}", binding.key, binding.modifiers);
             } else {
-                keyProcessor.pressKeyCombo(keyCodes);
-                log.debug("Executed combo binding: key={}, modifiers={}", binding.key, binding.modifiers);
+                keyProcessor.pressKey(mainKeyCode);
+                log.debug("Executed press binding: key={}, modifiers={}", binding.key, binding.modifiers);
+            }
+
+            // Release modifiers in reverse order
+            for (int i = modifierCodes.length - 1; i >= 0; i--) {
+                keyProcessor.releaseKey(modifierCodes[i]);
             }
         } catch (Exception e) {
+            // Ensure all keys are released on error
+            for (int modCode : ELITE_TO_KEYPROCESSOR_MAP.values()) {
+                keyProcessor.releaseKey(modCode);
+            }
+            keyProcessor.releaseKey(ELITE_TO_KEYPROCESSOR_MAP.getOrDefault(binding.key, 0));
             log.error("Error executing key binding: {}", e.getMessage());
         }
     }

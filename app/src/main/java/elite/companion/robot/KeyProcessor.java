@@ -166,6 +166,12 @@ public class KeyProcessor {
         robot.keyRelease(keyCode);
     }
 
+    public void pressAndHoldKey(int keyCode, int holdTime) {
+        robot.keyPress(keyCode);
+        robot.delay(holdTime);
+        robot.keyRelease(keyCode);
+    }
+
     public void holdKey(int keyCode) {
         robot.keyPress(keyCode);
     }

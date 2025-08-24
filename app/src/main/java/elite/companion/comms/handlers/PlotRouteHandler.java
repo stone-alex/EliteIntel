@@ -1,9 +1,12 @@
 package elite.companion.comms.handlers;
 
 import com.google.gson.JsonObject;
+import elite.companion.comms.CommandAction;
+import elite.companion.comms.GameCommandMapping;
 import elite.companion.comms.VoiceGenerator;
 import elite.companion.robot.KeyProcessor;
 import elite.companion.robot.VoiceCommandHandler;
+import elite.companion.session.SessionTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,54 +20,61 @@ public class PlotRouteHandler implements CommandHandler {
 
     @Override
     public void handle(JsonObject params, String responseText) {
-        String destination = params.get("destination").getAsString(); //SessionTracker.getInstance().getSessionValue("query_destination", String.class);
+        String destination = params.has(CommandAction.PLOT_ROUTE.getParamKey()) ? params.get(CommandAction.PLOT_ROUTE.getParamKey()).getAsString() : null;
+        if (destination == null || destination.isEmpty()) {
+            // Fallback to SessionTracker if params don't provide destination
+            destination = SessionTracker.getInstance().getSessionValue("query_destination", String.class);
+        }
+
         if (destination != null && !destination.isEmpty()) {
-            JsonObject plotRouteJson = new JsonObject();
-            plotRouteJson.addProperty("type", "command");
-            plotRouteJson.addProperty("action", "GalaxyMapOpen");
-            plotRouteJson.addProperty("response_text", "Opening galaxy map to plot route to " + destination);
-            voiceCommandHandler.handleGrokResponse(plotRouteJson);
             try {
-                Thread.sleep(500);
+                // Step 1: Open galaxy map
+                JsonObject openMapJson = new JsonObject();
+                openMapJson.addProperty("type", "command");
+                openMapJson.addProperty("action", GameCommandMapping.GameCommand.GALAXY_MAP.getGameBinding());
+                openMapJson.addProperty("response_text", "Opening galaxy map to plot route to " + destination);
+                voiceCommandHandler.handleGrokResponse(openMapJson);
+                Thread.sleep(500); // Wait for map to open
+
+                // Step 2: Navigate to text field
+                JsonObject tabToTextJson = new JsonObject();
+                tabToTextJson.addProperty("type", "command");
+                tabToTextJson.addProperty("action", GameCommandMapping.GameCommand.UI_TOGGLE.getGameBinding());
+                tabToTextJson.addProperty("response_text", "Entering system name");
+                voiceCommandHandler.handleGrokResponse(tabToTextJson);
+                Thread.sleep(200); // Wait for focus
+
+                // Step 3: Enter destination text
+                simulateTextEntry(destination);
+
+                // Step 4: Select system
+                JsonObject selectJson = new JsonObject();
+                selectJson.addProperty("type", "command");
+                selectJson.addProperty("action", GameCommandMapping.GameCommand.UI_SELECT.getGameBinding());
+                selectJson.addProperty("response_text", "Selecting " + destination);
+                voiceCommandHandler.handleGrokResponse(selectJson);
+                Thread.sleep(3000); // Wait for map to zoom in
+
+                // Step 5: Plot route
+                JsonObject plotJson = new JsonObject();
+                plotJson.addProperty("type", "command");
+                plotJson.addProperty("action", GameCommandMapping.GameCommand.UI_SELECT.getGameBinding());
+                plotJson.addProperty("action_press_and_hold_delay", "1000"); //<-- instruction to press and hold for 1s key is passed in a line above as action
+                plotJson.addProperty("response_text", "Route plotted to " + destination);
+                voiceCommandHandler.handleGrokResponse(plotJson);
+
+                log.info("Plotted route to: {}", destination);
             } catch (InterruptedException e) {
-                log.error("Sleep interrupted: {}", e.getMessage());
+                log.error("Sleep interrupted during route plotting: {}", e.getMessage());
+                VoiceGenerator.getInstance().speak("Error plotting route.");
             }
-
-            JsonObject tabToTextJson = new JsonObject();
-            tabToTextJson.addProperty("type", "command");
-            tabToTextJson.addProperty("action", "UI_Toggle");
-            tabToTextJson.addProperty("response_text", "Entering system name");
-            voiceCommandHandler.handleGrokResponse(tabToTextJson);
-            try {
-                Thread.sleep(200);
-            } catch (InterruptedException e) {
-                log.error("Sleep interrupted: {}", e.getMessage());
-            }
-
-            simulateTextEntry(destination);
-
-            JsonObject selectJson = new JsonObject();
-            selectJson.addProperty("type", "command");
-            selectJson.addProperty("action", "UI_Select");
-            selectJson.addProperty("response_text", "Selecting " + destination);
-            voiceCommandHandler.handleGrokResponse(selectJson);
-            try {
-                Thread.sleep(200);
-            } catch (InterruptedException e) {
-                log.error("Sleep interrupted: {}", e.getMessage());
-            }
-
-            JsonObject plotJson = new JsonObject();
-            plotJson.addProperty("type", "command");
-            plotJson.addProperty("action", "RoutePlot");
-            plotJson.addProperty("response_text", "Route plotted to " + destination);
-            voiceCommandHandler.handleGrokResponse(plotJson);
-
-            log.info("Plotted route to: {}", destination);
         } else {
-            log.warn("No destination found in session for plot_route");
+            log.warn("No destination found for plot_route");
             VoiceGenerator.getInstance().speak("No destination available to plot route.");
         }
+
+        // Speak the provided response text
+        VoiceGenerator.getInstance().speak(responseText);
     }
 
     private void simulateTextEntry(String text) {

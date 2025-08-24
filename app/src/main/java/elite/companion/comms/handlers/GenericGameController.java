@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class GenericGameController implements CommandHandler {
-    private static final Logger log = LoggerFactory.getLogger(DeployLandingGearHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(GenericGameController.class);
     private final VoiceCommandHandler voiceCommandHandler;
     private final String gameBinding;
 

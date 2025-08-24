@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -86,7 +87,7 @@ public class VoiceGenerator {
 
     public void speak(String text, String voiceName) {
         log.info("Speaking: {}", text);
-        SessionTracker.getInstance().updateSession("context_your_last_transmission", text);
+        SessionTracker.getInstance().updateSession("context_your_last_transmission", "Timestamp:"+ Instant.now().toString()+" text: " + text);
         try {
             SynthesisInput input = SynthesisInput.newBuilder().setText(text).build();
             VoiceSelectionParams voice = voiceMap.get(voiceName);

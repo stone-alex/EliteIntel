@@ -66,14 +66,14 @@ public class GrokInteractionHandler {
     private String buildRequest(String transcribedText) {
         String stateSummary = SessionTracker.getInstance().getStateSummary();
         return String.format(
-                "Interpret this user voice input: '%s'. " +
-                        "Current game state: %s. " +
+                "Interpret this user voice input: "+transcribedText+". " +
+                        "Current game state: "+stateSummary+". " +
                         "Classify as: 'command' (trigger app action or keyboard event), 'query' (request info from state), or 'chat' (general or unclear talk). " +
-                        "If unclear or noise (e.g., sniff or gibberish), classify as 'chat' and respond lightly like 'Didn't catch that!'. %s %s " +
+                        GrokRequestHints.supportedCommands +
+                        "If unclear or noise (e.g., sniff or gibberish), classify as 'chat' and respond lightly like 'Didn't catch that!'. " +
                         "Respond in JSON only: {\"type\": \"command|query|chat\", \"response_text\": \"TTS output (concise and fun)\", \"action\": \"set_mining_target|open_cargo_hatch|...\" (if command or query), \"params\": {\"key\": \"value\"} (if command or query)}. " +
                         "Use provided state for queries; say 'I don't know' if data unavailable. " +
-                        "Never automate—actions must be user-triggered.",
-                transcribedText, stateSummary, GrokRequestHints.supportedCommands
+                        "Never automate—actions must be user-triggered."
         );
     }
 

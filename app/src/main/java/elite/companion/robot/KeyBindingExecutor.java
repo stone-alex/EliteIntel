@@ -17,10 +17,10 @@ public class KeyBindingExecutor {
             for (Field field : KeyProcessor.class.getDeclaredFields()) {
                 if (field.getName().startsWith("KEY_") && field.getType() == int.class) {
                     String eliteKeyName = convertToEliteKeyName(field.getName());
-                    ELITE_TO_KEYPROCESSOR_MAP.put(eliteKeyName, field.getInt(null));
+                    ELITE_TO_KEYPROCESSOR_MAP.put(eliteKeyName.toUpperCase(), field.getInt(null));
                 }
             }
-            ELITE_TO_KEYPROCESSOR_MAP.put("Key_Apps", KeyProcessor.KEY_MENU);
+            ELITE_TO_KEYPROCESSOR_MAP.put("KEY_APPS", KeyProcessor.KEY_MENU);
         } catch (IllegalAccessException e) {
             throw new RuntimeException("Failed to initialize key mappings", e);
         }
@@ -31,17 +31,16 @@ public class KeyBindingExecutor {
         if (keyName.startsWith("NUM_")) {
             keyName = "Numpad_" + keyName.substring(4);
         }
-        StringBuilder eliteKey = new StringBuilder("Key_");
-        boolean capitalizeNext = false;
+        StringBuilder eliteKey = new StringBuilder("KEY_");
+
         for (char c : keyName.toCharArray()) {
             if (c == '_') {
-                capitalizeNext = true;
+                eliteKey.append(c);
             } else {
-                eliteKey.append(capitalizeNext ? Character.toUpperCase(c) : Character.toLowerCase(c));
-                capitalizeNext = false;
+                eliteKey.append(Character.toUpperCase(c));
             }
         }
-        return eliteKey.toString();
+        return eliteKey.toString().toUpperCase();
     }
 
     public KeyBindingExecutor() throws Exception {
@@ -54,7 +53,7 @@ public class KeyBindingExecutor {
 
     public void executeBindingWithHold(KeyBindingsParser.KeyBinding binding, int holdTimeMs) {
         try {
-            Integer mainKeyCode = ELITE_TO_KEYPROCESSOR_MAP.get(binding.key);
+            Integer mainKeyCode = ELITE_TO_KEYPROCESSOR_MAP.get(binding.key.toUpperCase());
             if (mainKeyCode == null) {
                 log.error("No KeyProcessor mapping for key: {}", binding.key);
                 return;
@@ -84,7 +83,7 @@ public class KeyBindingExecutor {
                 keyProcessor.releaseKey(mainKeyCode);
                 log.debug("Executed hold binding: key={}, modifiers={}", binding.key, binding.modifiers);
             } else {
-                keyProcessor.pressKey(mainKeyCode);
+                 keyProcessor.pressKey(mainKeyCode);
                 log.debug("Executed press binding: key={}, modifiers={}", binding.key, binding.modifiers);
             }
 

@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sound.sampled.*;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -17,17 +18,18 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * NOTE $$$ This method is not free. Calls will incur charges on both Google and Grok platforms. $$$
- *
+ * <p>
  * This class connects to the Google Speech API endpoint and streams audio to it.
  * The STT (Speech-to-Text) API will return a final result which will be processed by Grok API.
- *
+ * <p>
  * Do not call this method if you do not need to process voice commands.
  * Do not use in unit tests.
  * Requires Google json credentials to be set in resources/google_credentials.json.
  * Requires Grok API credentials to be set in resources/grok_credentials.json.
  * Do not post credentials to GitHub.
  * Do not hardocde credentials in source code.
- * */
+ *
+ */
 public class SpeechRecognizer {
     private static final Logger log = LoggerFactory.getLogger(SpeechRecognizer.class);
     private static final int SAMPLE_RATE_HERTZ = 48000; // Locked to 48kHz
@@ -109,7 +111,7 @@ public class SpeechRecognizer {
 
                             @Override
                             public void onError(Throwable t) {
-                                log.error("STT error: {}", t.getMessage());
+                                //log.error("STT error: {}", t.getMessage());
                             }
 
                             @Override
@@ -181,10 +183,10 @@ public class SpeechRecognizer {
             String transcript = alt.getTranscript();
             float confidence = alt.getConfidence();
             if (result.getIsFinal()) {
-                if (!transcript.isBlank() && transcript.length() >= 3 && confidence > 0.6) {
+                if (!transcript.isBlank() && transcript.length() >= 3 && confidence > 0.3) {
                     transcriptionQueue.offer(transcript);
                     log.info("Final transcript: {} (confidence: {})", transcript, confidence);
-                    SessionTracker.getInstance().updateSession("context_user_last_transmission", transcript);
+                    SessionTracker.getInstance().updateSession("context_user_last_transmission", "Timestamp:" + Instant.now().toString() + " text: " + transcript);
                     grok.processVoiceCommand(transcript);
                 } else {
                     log.info("Discarded transcript: {} (confidence: {})", transcript, confidence);
@@ -246,7 +248,7 @@ public class SpeechRecognizer {
                         .addPhrases(PhraseSet.Phrase.newBuilder()
                                 .setValue("open cargo scoop").setBoost(25.0f))
                         .addPhrases(PhraseSet.Phrase.newBuilder()
-                                .setValue("engage supercruise").setBoost(25.0f))
+                                .setValue("engage supercruise").setBoost(30.0f))
                         .build())
                 .build();
 

@@ -1,6 +1,7 @@
 package elite.companion.robot;
 
 import com.google.gson.JsonObject;
+import elite.companion.comms.GameCommandMapping;
 import elite.companion.comms.VoiceGenerator;
 import elite.companion.session.SessionTracker;
 import org.slf4j.Logger;
@@ -84,13 +85,20 @@ public class VoiceCommandHandler {
         SessionTracker.getInstance().updateSession("action", action);
         SessionTracker.getInstance().updateSession("params", params);
         log.debug("Updated SessionTracker with action: {}, params: {}", action, params);
-
         KeyBindingsParser.KeyBinding binding = monitor.getBindings().get(action);
+        if(binding == null) {
+            binding = monitor.getBindings().get(GameCommandMapping.getGameBinding(action));
+        }
+
         if (binding != null) {
             executor.executeBinding(binding);
             log.info("Executed action: {} with key: {}", action, binding.key);
             handleChat(responseText);
-        } else {
+        }
+
+
+
+        else {
             log.warn("No binding found for action: {}", action);
             handleChat("No key binding found for that action.");
         }

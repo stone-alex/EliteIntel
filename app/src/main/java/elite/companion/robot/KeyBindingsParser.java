@@ -80,7 +80,7 @@ public class KeyBindingsParser {
             }
         }
         log.info("Parsed {} bindings from file: {}", bindings.size(), file.getName());
-        VoiceGenerator.getInstance().speak("Parsed "+bindings.size()+" bindings from file: "+file.getName());
+        //VoiceGenerator.getInstance().speak("Parsed "+bindings.size()+" bindings from file: "+file.getName());
         return bindings;
     }
 

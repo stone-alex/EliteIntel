@@ -38,14 +38,14 @@ public class SpeechRecognizer {
     private static final int RESTART_DELAY_MS = 50; // 50ms sleep after stream close
     private final BlockingQueue<String> transcriptionQueue = new LinkedBlockingQueue<>();
     private final SpeechClient speechClient;
-    private final GrokInteractionHandler grok;
+    private final GrokInteractionEndPoint grok;
     private final AtomicBoolean isListening = new AtomicBoolean(true);
     private long lastAudioSentTime = System.currentTimeMillis();
     private byte[] lastBuffer = null;
     private AudioInputStream audioInputStream = null;
 
     public SpeechRecognizer() {
-        this.grok = new GrokInteractionHandler();
+        this.grok = new GrokInteractionEndPoint();
         SpeechClient tempClient;
         try {
             this.grok.start();
@@ -207,7 +207,6 @@ public class SpeechRecognizer {
 
         SpeechContext commandContext = SpeechContext.newBuilder()
                 .addAllPhrases(GrokRequestHints.COMMON_PHRASES)
-                .addAllPhrases(GrokRequestHints.DOMAIN_CONCEPTS)
                 .setBoost(35.0f)
                 .build();
 

@@ -2,18 +2,18 @@ package elite.companion.comms.handlers;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import elite.companion.comms.CommandAction;
 import elite.companion.comms.VoiceGenerator;
-import elite.companion.session.PublicSession;
+import elite.companion.session.PlayerSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import elite.companion.comms.CommandAction;
 
 public class SetMiningTargetHandler implements CommandHandler {
     private static final Logger log = LoggerFactory.getLogger(SetMiningTargetHandler.class);
 
     @Override
     public void handle(JsonObject params, String responseText) {
-        PublicSession session = PublicSession.getInstance();
+        PlayerSession session = PlayerSession.getInstance();
         JsonElement jsonElement = params.get("mining_target");
 
         if (jsonElement == null || jsonElement.getAsString().isEmpty()) {

@@ -2,14 +2,13 @@ package elite.companion.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import elite.companion.EventBusManager;
-import elite.companion.comms.*;
+import elite.companion.comms.CommandAction;
+import elite.companion.comms.VoiceGenerator;
 import elite.companion.events.MiningRefinedEvent;
-import elite.companion.session.PublicSession;
+import elite.companion.session.PlayerSession;
 import elite.companion.session.SystemSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static elite.companion.Globals.SENSOR_READING;
 
 public class MiningEventSubscriber {
 
@@ -22,10 +21,10 @@ public class MiningEventSubscriber {
     @Subscribe
     public void onMiningRefined(MiningRefinedEvent dto) {
         VoiceGenerator.getInstance().speak("One ton of " + dto.getTypeLocalised() + " has been refined!");
-        PublicSession publicSession = PublicSession.getInstance();
+        PlayerSession playerSession = PlayerSession.getInstance();
         SystemSession systemSession = SystemSession.getInstance();
-        if (publicSession.getObject(CommandAction.SET_MINING_TARGET.getParamKey()) == null) {
-            publicSession.updateSession(CommandAction.SET_MINING_TARGET.getParamKey(), dto.getTypeLocalised().replace("\"", ""));
+        if (playerSession.getObject(CommandAction.SET_MINING_TARGET.getParamKey()) == null) {
+            playerSession.updateSession(CommandAction.SET_MINING_TARGET.getParamKey(), dto.getTypeLocalised().replace("\"", ""));
             systemSession.setSensorData("Detected "+dto.getTypeLocalised()+" refined. Set mining target to: " + dto.getTypeLocalised());
         }
         log.info("Mining event processed: {}", dto.toString());

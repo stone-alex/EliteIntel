@@ -3,7 +3,7 @@ package elite.companion.subscribers;
 import com.google.common.eventbus.Subscribe;
 import elite.companion.EventBusManager;
 import elite.companion.events.StatisticsEvent;
-import elite.companion.session.PublicSession;
+import elite.companion.session.PlayerSession;
 
 public class StatisticsSubscriber {
 
@@ -50,6 +50,6 @@ public class StatisticsSubscriber {
         }
 
 
-        PublicSession.getInstance().updateSession("player_stats", data.toString());
+        PlayerSession.getInstance().updateSession(PlayerSession.PLAYER_STATS, data.toString());
     }
 }

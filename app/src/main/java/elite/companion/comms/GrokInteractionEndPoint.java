@@ -4,8 +4,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import elite.companion.Globals;
-import elite.companion.session.PublicSession;
+import elite.companion.session.PlayerSession;
 import elite.companion.session.SystemSession;
+import elite.companion.util.AIContextFactory;
 import elite.companion.util.ConfigManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,8 +17,8 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
-public class GrokInteractionHandler {
-    private static final Logger log = LoggerFactory.getLogger(GrokInteractionHandler.class);
+public class GrokInteractionEndPoint {
+    private static final Logger log = LoggerFactory.getLogger(GrokInteractionEndPoint.class);
 
     public void start() throws Exception {
         GrokResponseRouter.getInstance().start();
@@ -37,8 +38,8 @@ public class GrokInteractionHandler {
         }
 
         String request = buildVoiceRequest(command);
-        System.out.println( request);
-        JsonObject apiResponse = callXaiApi(request);
+        System.out.println(request);
+        JsonObject apiResponse = callXaiApi(request, AIContextFactory.getInstance().generateSystemPrompt());
         if (apiResponse == null) {
             VoiceGenerator.getInstance().speak("Sorry, I couldn't process that.");
             return;
@@ -48,13 +49,21 @@ public class GrokInteractionHandler {
     }
 
     public void processSystemCommand() {
-        String input = SystemSession.getInstance().getSensorData();
-        SystemSession.getInstance().clearSensorData();
-        if (input == null || input.isEmpty()) {return;}
+        String sensor_data = SystemSession.getInstance().getSensorData();
+        String fssData = SystemSession.getInstance().getFssData();
+
+        String input = (sensor_data == null && fssData == null) ? null : (sensor_data == null ? "" : sensor_data) + (fssData == null ? "" : fssData);
+
+        if (sensor_data != null) SystemSession.getInstance().clearSensorData();
+        if (fssData != null) SystemSession.getInstance().clearFssData();
+
+        if (input == null || input.isEmpty()) {
+            return;
+        }
 
         String request = buildSystemRequest(input);
-        System.out.println( request);
-        JsonObject apiResponse = callXaiApi(request);
+        System.out.println(request);
+        JsonObject apiResponse = callXaiApi(request, AIContextFactory.getInstance().generateSystemPrompt());
         if (apiResponse == null) {
             VoiceGenerator.getInstance().speak("Failure processing system request. Check programming");
             return;
@@ -85,46 +94,28 @@ public class GrokInteractionHandler {
     /**
      * Reacts to user voice input and generates a JSON request for the xAI API.
      * Can and will trigger game controls.
-     * */
+     *
+     */
     private String buildVoiceRequest(String transcribedText) {
-        String stateSummary = PublicSession.getInstance().getStateSummary();
-        return String.format(
-                "Interpret this user voice input: "+transcribedText+". " +
-                        "Current game state: "+stateSummary+". " +
-                        "Classify as: 'command' (trigger app action or keyboard event), 'query' (request info from state), or 'chat' (general or unclear talk). " +
-                        GrokRequestHints.supportedCommands +
-                        "If unclear or noise (e.g., sniff or gibberish), classify as 'chat' and respond lightly like 'Didn't catch that!'. " +
-                        "Respond in JSON only: {\"type\": \"command|query|chat\", \"response_text\": \"TTS output (concise and fun)\", \"action\": \"set_mining_target|open_cargo_hatch|...\" (if command or query), \"params\": {\"key\": \"value\"} (if command or query)}. " +
-                        "Use provided state for queries; say 'I don't know' if data unavailable. " +
-                        "Never automate—actions must be user-triggered."
+        return AIContextFactory.getInstance().generatePlayerInstructions(
+                String.valueOf(transcribedText), PlayerSession.getInstance().getSummary()
         );
     }
 
     /**
      * Reacts to system sensor input and generates a JSON request for the xAI API.
      * Used for reactions, does not trigger game controls.
-     * */
+     *
+     */
     private String buildSystemRequest(String systemInput) {
-        String stateSummary = PublicSession.getInstance().getStateSummary();
-        SystemSession.getInstance().clear();
-        return String.format(
-                "Analyze this ship sensor input : "+systemInput+". provide extremely brief but fun response and optional system_command " +
-
-                        "If radio_transmission:[data] provide only extremely brief response_text (chat) do not include the transmission in the response (user already knows what it is). " +
-                        "If is_station=true message was for us. else it is radio chatter." +
-
-                        "Context: Current game state: "+stateSummary+". " +
-                        "Classify as: 'system_command' (sets companion app variables, provides fun response TTS output, but does not trigger game controls), or 'chat' (general banter)." +
-                        "Respond in JSON only: {\"type\": \"system_command|chat\", \"response_text\": \"TTS output (extremely brief but fun)\", \"action\": \"set_mining_target|set_current_system|...\" , \"params\": {\"key\": \"value\"}}."
-        );
+        return AIContextFactory.getInstance().generateSystemInstructions(systemInput);
     }
 
-    private JsonObject callXaiApi(String prompt) {
+    private JsonObject callXaiApi(String userPrompt, String systemPrompt) {
         try {
             HttpURLConnection conn = getHttpURLConnection();
 
             JsonObject body = new JsonObject();
-            //body.addProperty("model", "grok-4-latest");
             body.addProperty("model", "grok-3-fast");
             body.addProperty("temperature", 0.7);
             body.addProperty("stream", false);
@@ -132,12 +123,12 @@ public class GrokInteractionHandler {
             JsonArray messages = new JsonArray();
             JsonObject systemMessage = new JsonObject();
             systemMessage.addProperty("role", "system");
-            systemMessage.addProperty("content", "You are an AI assistant for an Elite Dangerous companion app, processing voice commands.");
+            systemMessage.addProperty("content", systemPrompt);
             messages.add(systemMessage);
 
             JsonObject userMessage = new JsonObject();
             userMessage.addProperty("role", "user");
-            userMessage.addProperty("content", prompt);
+            userMessage.addProperty("content", userPrompt);
             messages.add(userMessage);
 
             body.add("messages", messages);

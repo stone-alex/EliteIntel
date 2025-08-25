@@ -3,8 +3,9 @@ package elite.companion.subscribers;
 import com.google.common.eventbus.Subscribe;
 import elite.companion.EventBusManager;
 import elite.companion.events.CommanderEvent;
-import elite.companion.session.PlayerStats;
-import elite.companion.session.PublicSession;
+import elite.companion.session.PlayerSession;
+
+import static elite.companion.session.PlayerSession.PLAYER_NAME;
 
 public class CommanderEventSubscriber {
 
@@ -14,7 +15,7 @@ public class CommanderEventSubscriber {
 
     @Subscribe
     public void onEvent(CommanderEvent event) {
-        PlayerStats playerStats = PublicSession.getInstance().getPlayerStats();
-        playerStats.setPlayerName(event.getName());
+        PlayerSession session = PlayerSession.getInstance();
+        session.updateSession(PLAYER_NAME, event.getName());
     }
 }

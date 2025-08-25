@@ -12,11 +12,12 @@ public class AppMain {
         //instantiate subscribers
         new LoadGameEventSubscriber();
         new MiningEventSubscriber();
-        new CarrierEventSubscriber();
         new CommanderEventSubscriber();
         new StatisticsSubscriber();
         new ReceiveTextSubscriber();
         new ProspectorSubscriber();
+        new FSSSignalDiscoveredSubscriber();
+        new PowerPlaySubscriber();
 
         SpeechRecognizer recognizer = new SpeechRecognizer();
         recognizer.start(); // Start STT voice command processing thread

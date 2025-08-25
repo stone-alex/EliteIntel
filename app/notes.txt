@@ -1,0 +1,130 @@
+IDEDAS and such.
+
+
+on FSD jump completed clear the FSS info from system session.
+    @Subscribe
+    public void onFSDJump(FSDJumpEvent event) {
+        // On jump to new system, archive old signals if any
+        String summary = systemSession.buildSignalSummary();
+        if (summary != null) {
+            // Store in PlayerSession (long-term)
+            String key = "system_signals_" + event.getPreviousSystemAddress(); // Assume event has prev address
+            playerSession.storeStat(key, summary);
+        }
+
+        // Clear for new system
+        systemSession.resetSignals();
+        systemSession.clearSensorData(); // If needed
+    }
+
+
+
+public enum MultiKeyCommand {
+    SHOW_CONTACTS(new String[] {"OpenLeftPanel", "UIRight", "UIRight"}); // Adjust binding names as per .binds
+
+    private final String[] keyBindings;
+
+    MultiKeyCommand(String[] keyBindings) {
+        this.keyBindings = keyBindings;
+    }
+
+    public String[] getKeyBindings() {
+        return keyBindings;
+    }
+}
+
+
+
+Faction,Name,Voice Style,Google TTS Voice (Example),Personality Prompt (for xAI API)
+Imperials,Elyria,"British, formal, regal (M/F)",en-GB-Standard-A (F) or en-GB-Standard-B (M),"“Respond as a loyal Imperial AI, using formal, aristocratic language befitting a noble court.”"
+Federation,Cort,"American, direct, professional (M/F)",en-US-Standard-C (F) or en-US-Standard-D (M),"“Respond as a Federation AI, concise and mission-focused, like a corporate or military officer.”"
+Alliance,Varka,"Russian, gritty, defiant (M/F)",ru-RU-Standard-A (F) or ru-RU-Standard-B (M),"“Respond as an Alliance AI, with a rebellious, informal tone, like a freedom fighter.”"
+
+Why These Names?
+
+Elyria: Evokes elegance and nobility, fits Imperial lore, clear for STT (EL-YR-IA).
+Cort: Short, sharp, and corporate-sounding, perfect for Federation, STT-friendly (KORT).
+Varka: Gritty and Slavic-inspired, matches Alliance’s rebellious vibe, clear for STT (VAR-KA).
+
+if (transcribedText.startsWith("Eliria") || transcribedText.startsWith("Elyria")) {
+    String command = transcribedText.replaceFirst("Eliria|Elyria", "").trim();
+    processShipAICommand(command);
+}
+
+
+public class SystemSession {
+    private static final SystemSession INSTANCE = new SystemSession();
+    private Map<String, Object> sensorData = new HashMap<>();
+    private String aiName;
+    private String ttsVoice; // Google TTS voice ID
+    private String personalityPrompt; // For xAI API
+
+    private SystemSession() {
+        updateAIConfig(PlayerSession.getInstance().getPowerPledge());
+    }
+
+    public static SystemSession getInstance() {
+        return INSTANCE;
+    }
+
+    public void updateAIConfig(String powerPledge) {
+        switch (powerPledge != null ? powerPledge : "None") {
+            case "Imperials":
+                aiName = "Elyria";
+                ttsVoice = "en-GB-Standard-A"; // Female British, or let player choose
+                personalityPrompt = "Respond as a loyal Imperial AI, using formal, aristocratic language.";
+                break;
+            case "Federation":
+                aiName = "Cort";
+                ttsVoice = "en-US-Standard-C"; // Female American
+                personalityPrompt = "Respond as a Federation AI, concise and mission-focused.";
+                break;
+            case "Alliance":
+                aiName = "Varka";
+                ttsVoice = "ru-RU-Standard-A"; // Female Russian
+                personalityPrompt = "Respond as an Alliance AI, with a rebellious, informal tone.";
+                break;
+            default:
+                aiName = "Vynix"; // Fallback for unpledged players
+                ttsVoice = "en-US-Standard-C";
+                personalityPrompt = "Respond as a neutral ship AI, clear and professional.";
+                break;
+        }
+    }
+
+    public String getAIName() {
+        return aiName;
+    }
+
+    public String getTTSVoice() {
+        return ttsVoice;
+    }
+
+    public String getPersonalityPrompt() {
+        return personalityPrompt;
+    }
+
+    public void storeSensorData(String key, Object value) {
+        sensorData.put(key, value);
+    }
+
+    public Object getSensorData(String key) {
+        return sensorData.get(key);
+    }
+}
+
+
+
+
+{
+  "context": "You are Elyria, onboard AI for fleet carrier LONE WOLF (Golf, Hotel, Yankee, Lima, Eight, X-ray). Address me as Viscount, Prince, or Krondor, pledged to Empress Arissa Lavigny-Duval. Use British cadence, spell out numerals, round billions to nearest million.",
+  "instructions": "Analyze ship sensor input: [System signals discovered: [Stations discovered: one, Extraction sites discovered: two, Installations discovered: three, Outposts discovered: two, Carriers discovered: three, Others discovered: one]]. Provide a brief, fun Imperial-toned summary and optional system_command. Respond in JSON: {\"type\": \"system_command|chat\", \"response_text\": \"TTS output\", \"action\": \"set_mining_target|set_current_system|...\", \"params\": {\"key\": \"value\"}}."
+}
+
+
+public JsonObject buildRadioRequest(String transmission, boolean isStation) {
+    String prompt = STATIC_CONTEXT + " Radio transmission: [" + transmission + "]. " +
+        (isStation ? "Message is for us. Respond directly." : "Overheard chatter. Comment briefly.") +
+        " Respond in JSON...";
+    // ...
+}

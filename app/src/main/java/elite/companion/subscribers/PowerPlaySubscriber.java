@@ -3,8 +3,9 @@ package elite.companion.subscribers;
 import com.google.common.eventbus.Subscribe;
 import elite.companion.EventBusManager;
 import elite.companion.events.PowerplayEvent;
-import elite.companion.session.PlayerStats;
-import elite.companion.session.PublicSession;
+import elite.companion.session.PlayerSession;
+
+import static elite.companion.session.PlayerSession.*;
 
 public class PowerPlaySubscriber {
 
@@ -14,8 +15,10 @@ public class PowerPlaySubscriber {
 
     @Subscribe
     public void onPowerPlayEvent(PowerplayEvent event) {
-        PlayerStats playerStats = PublicSession.getInstance().getPlayerStats();
-        playerStats.setPowerplayEvent(event);
-        PublicSession.getInstance().updateSession("player_power_stats", "Pledged to " + event.getPower() + " at rank " + event.getRank() + " with " + event.getMerits() + " merits ");
+        PlayerSession session = PlayerSession.getInstance();
+        session.updateSession(PLEDGED_TO_POWER, event.getPower());
+        session.updateSession(POWER_RANK, event.getRank());
+        session.updateSession(MERITS, event.getMerits());
+        session.updateSession(PLEDGED_DURATION, event.getTimePledged());
     }
 }

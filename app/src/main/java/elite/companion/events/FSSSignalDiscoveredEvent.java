@@ -1,48 +1,78 @@
 package elite.companion.events;
 
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.time.Duration;
 
 public class FSSSignalDiscoveredEvent extends BaseEvent {
+    private static final Logger logger = LoggerFactory.getLogger(FSSSignalDiscoveredEvent.class);
 
     @SerializedName("SystemAddress")
-    public long systemAddress;
+    private final long systemAddress;
 
     @SerializedName("SignalName")
-    public String signalName;
-
-    @SerializedName("SignalName_Localised")
-    public String signalNameLocalised;
+    private final String signalName;
 
     @SerializedName("SignalType")
-    public String signalType;
+    private final String signalType;
+
+    @SerializedName("SignalName_Localised")
+    private final String signalNameLocalised; // Nullable
 
     @SerializedName("IsStation")
-    public Boolean isStation; // Boolean to handle true/false or null
+    private final Boolean isStation; // Nullable, defaults to null if absent
 
-    public FSSSignalDiscoveredEvent(String timestamp, long systemAddress, String signalName, String signalNameLocalised, String signalType, Boolean isStation) {
-        super(timestamp, 3, Duration.ofMinutes(30), FSSSignalDiscoveredEvent.class.getName());
-        this.systemAddress = systemAddress;
-        this.signalName = signalName;
-        this.signalNameLocalised = signalNameLocalised;
-        this.signalType = signalType;
-        this.isStation = isStation;
+    public FSSSignalDiscoveredEvent(JsonObject json) {
+        super(json.get("timestamp").getAsString(), 3, Duration.ofMinutes(30), FSSSignalDiscoveredEvent.class.getName());
+
+        // Debug log to inspect JSON input
+        logger.debug("Parsing FSSSignalDiscoveredEvent: {}", json.toString());
+
+        this.systemAddress = json.get("SystemAddress").getAsLong();
+        this.signalName = json.get("SignalName").getAsString();
+        this.signalType = json.get("SignalType").getAsString();
+        this.signalNameLocalised = json.has("SignalName_Localised") ? json.get("SignalName_Localised").getAsString() : null;
+        this.isStation = json.has("IsStation") ? json.get("IsStation").getAsBoolean() : null;
+
+        // Debug log to verify field values
+        logger.debug("Parsed values: systemAddress={}, signalName={}, signalType={}, signalNameLocalised={}, isStation={}",
+                systemAddress, signalName, signalType, signalNameLocalised, isStation);
     }
 
-    // Helper method to get localized name (fallback to signalName if null)
-    public String getDisplayName() {
-        return signalNameLocalised != null ? signalNameLocalised : signalName;
+    // Getters
+    public long getSystemAddress() {
+        return systemAddress;
     }
 
-    // Helper method to get full description
-    public String getDescription() {
-        String type = signalType != null ? " " + signalType : "";
-        String station = isStation != null && isStation ? " (Station)" : "";
-        return getDisplayName() + type + station;
+    public String getSignalName() {
+        return signalName;
     }
 
-    @Override
-    public String toString() {
-        return String.format("%s: FSS Signal Discovered - %s (%s) in system %d", timestamp, getDisplayName(), signalType, systemAddress);
+    public String getSignalType() {
+        return signalType;
+    }
+
+    public String getSignalNameLocalised() {
+        return signalNameLocalised;
+    }
+
+    public Boolean getIsStation() {
+        return isStation;
+    }
+
+    // Helper methods
+    public boolean isFleetCarrier() {
+        return "FleetCarrier".equals(signalType);
+    }
+
+    public boolean isResourceExtractionSite() {
+        return "ResourceExtraction".equals(signalType);
+    }
+
+    public boolean isInstallation() {
+        return "Installation".equals(signalType);
     }
 }

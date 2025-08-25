@@ -6,7 +6,7 @@ import elite.companion.comms.GameCommandMapping;
 import elite.companion.comms.VoiceGenerator;
 import elite.companion.robot.KeyProcessor;
 import elite.companion.robot.VoiceCommandHandler;
-import elite.companion.session.PublicSession;
+import elite.companion.session.SystemSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +23,7 @@ public class SetRouteHandler implements CommandHandler {
         String destination = params.has(CommandAction.PLOT_ROUTE.getParamKey()) ? params.get(CommandAction.PLOT_ROUTE.getParamKey()).getAsString() : null;
         if (destination == null || destination.isEmpty()) {
             // Fallback to SessionTracker if params don't provide destination
-            destination = PublicSession.getInstance().getSessionValue("query_destination", String.class);
+            destination = SystemSession.getInstance().getSessionValue(SystemSession.QUERY_DESTINATION, String.class);
         }
 
         if (destination != null && !destination.isEmpty()) {

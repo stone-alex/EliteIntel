@@ -107,6 +107,9 @@ public class JournalParser {
                                     if (isRecent(eventTimestamp, 10)) {
                                         EventBusManager.publish(gson.fromJson(event, ReceiveTextEvent.class));
                                     }
+                                case "FSSSignalDiscovered":
+                                    EventBusManager.publish(gson.fromJson(event, FSSSignalDiscoveredEvent.class));
+                                    break;
 
 
                                 default:

@@ -3,7 +3,6 @@ package elite.companion.comms;
 import com.google.gson.JsonObject;
 import elite.companion.comms.handlers.*;
 import elite.companion.robot.VoiceCommandHandler;
-import elite.companion.session.PublicSession;
 import elite.companion.util.InaraApiClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,15 +35,17 @@ public class GrokResponseRouter {
 
     private void registerCommandHandlers() {
 
-        //CUSTOM HANDERS
+        //APP COMMANDS
+        commandHandlers.put(CommandAction.SET_MINING_TARGET.getAction(), new SetMiningTargetHandler());
+        commandHandlers.put(CommandAction.PLOT_ROUTE.getAction(), new SetRouteHandler(voiceCommandHandler));
+
+        //CUSTOM GAME CONTROL HANDERS
         commandHandlers.put(INCREASE_ENGINES_POWER.getUserCommand(), new SetPowerToEnginesHandler(voiceCommandHandler));
         commandHandlers.put(INCREASE_SYSTEMS_POWER.getUserCommand(), new SetPowerToSystemsHandler(voiceCommandHandler));
         commandHandlers.put(INCREASE_SHIELDS_POWER.getUserCommand(), new SetPowerToSystemsHandler(voiceCommandHandler));
         commandHandlers.put(INCREASE_WEAPONS_POWER.getUserCommand(), new SetPowerToWeaponsHandler(voiceCommandHandler));
 
-        //GENERIC Handler
-        commandHandlers.put(CommandAction.SET_MINING_TARGET.getAction(), new SetMiningTargetHandler());
-        commandHandlers.put(CommandAction.PLOT_ROUTE.getAction(), new SetRouteHandler(voiceCommandHandler));
+        //GENERIC GAME CONTROL HANDLERS
         commandHandlers.put(BACKWARD_KEY.getGameBinding(), new GenericGameController(voiceCommandHandler, BACKWARD_KEY.getGameBinding()));
         commandHandlers.put(AUTO_DOC.getGameBinding(), new GenericGameController(voiceCommandHandler, AUTO_DOC.getGameBinding()));
         commandHandlers.put(CARGO_SCOOP.getGameBinding(), new GenericGameController(voiceCommandHandler, CARGO_SCOOP.getGameBinding()));
@@ -201,22 +202,8 @@ public class GrokResponseRouter {
     }
 
     private void handleQuery(String action, JsonObject params, String responseText) {
-        if (action.equals(CommandAction.FIND_NEAREST_MATERIAL_TRADER.getAction())) {
-            String currentSystem = PublicSession.getInstance().getSessionValue("current_system", String.class);
-            JsonObject result = inaraApiClient.searchNearestMaterialTrader(currentSystem);
-            if (result != null && result.has("system_name")) {
-                String destination = result.get("system_name").getAsString();
-                PublicSession.getInstance().updateSession("query_destination", destination);
-                log.info("Found nearest material trader in: {}", destination);
-                handleChat(responseText + " Would you like to plot a route there?");
-            } else {
-                log.warn("No material trader found");
-                handleChat("No material trader found nearby.");
-            }
-        } else {
-            log.debug("Unhandled query action: {}", action);
-            handleChat(responseText);
-        }
+        // similar to handleCommand? have a query handler interface, map of handlers etc?
+        // private final Map<String, QueryHandler> queryHandlers = new HashMap<>();
     }
 
     private void handleChat(String responseText) {

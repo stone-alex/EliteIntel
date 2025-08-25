@@ -27,6 +27,7 @@ public class VoiceGenerator {
     public static final String JOSEPH = "Joseph";
     public static final String LEDA = "Leda";
     public static final String KAREN = "Karen";
+    public static final String ELYRIA = "Elyria";
 
     private final TextToSpeechClient textToSpeechClient;
     private final BlockingQueue<VoiceRequest> voiceQueue;
@@ -82,11 +83,13 @@ public class VoiceGenerator {
         VoiceSelectionParams Joseph = VoiceSelectionParams.newBuilder().setLanguageCode("en-AU").setName("en-AU-Chirp3-HD-Enceladus").build();
         VoiceSelectionParams Leda = VoiceSelectionParams.newBuilder().setLanguageCode("en-AU").setName("en-AU-Chirp3-HD-Leda").build();
         VoiceSelectionParams Karen = VoiceSelectionParams.newBuilder().setLanguageCode("en-AU").setName("en-AU-Chirp3-HD-Gacrux").build();
+        VoiceSelectionParams Elyria = VoiceSelectionParams.newBuilder().setLanguageCode("en-GB").setName("en-GB-Standard-A").build();
 
         voiceMap.put(JAMES, James);
         voiceMap.put(MICHEAL, Micheal);
         voiceMap.put(JENNIFER, Jennifer);
 
+        voiceMap.put(ELYRIA, Elyria);
         voiceMap.put(MERRY, Merry);
         voiceMap.put(FAST_JENNY, FastJenny);
         voiceMap.put(CHARLES, Charles);
@@ -100,6 +103,7 @@ public class VoiceGenerator {
         randomVoiceMap.put(MICHEAL, Micheal);
         randomVoiceMap.put(JENNIFER, Jennifer);
         randomVoiceMap.put(MERRY, Merry);
+        randomVoiceMap.put(ELYRIA, Elyria);
         randomVoiceMap.put(FAST_JENNY, FastJenny);
         //randomVoiceMap.put(CHARLES, Charles);
         randomVoiceMap.put(STEVE, Steven);

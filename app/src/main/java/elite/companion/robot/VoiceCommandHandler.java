@@ -3,7 +3,7 @@ package elite.companion.robot;
 import com.google.gson.JsonObject;
 import elite.companion.comms.GameCommandMapping;
 import elite.companion.comms.VoiceGenerator;
-import elite.companion.session.PublicSession;
+import elite.companion.session.SystemSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,8 +87,8 @@ public class VoiceCommandHandler {
             return;
         }
 
-        PublicSession.getInstance().updateSession("action", action);
-        PublicSession.getInstance().updateSession("params", params);
+        SystemSession.getInstance().updateSession("action", action);
+        SystemSession.getInstance().updateSession("params", params);
         log.debug("Updated SessionTracker with action: {}, params: {}", action, params);
         KeyBindingsParser.KeyBinding binding = monitor.getBindings().get(action);
         if (binding == null) {
@@ -106,7 +106,7 @@ public class VoiceCommandHandler {
     }
 
     private void handleSystemCommand(JsonObject params, String responseText) {
-        PublicSession.getInstance().updateSession("params", params);
+        SystemSession.getInstance().updateSession("params", params);
         handleChat(responseText);
     }
 

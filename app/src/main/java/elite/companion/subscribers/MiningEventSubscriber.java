@@ -22,11 +22,11 @@ public class MiningEventSubscriber {
     @Subscribe
     public void onMiningRefined(MiningRefinedEvent dto) {
         VoiceGenerator.getInstance().speak("One ton of " + dto.getTypeLocalised() + " has been refined!");
-        PublicSession session = PublicSession.getInstance();
+        PublicSession publicSession = PublicSession.getInstance();
         SystemSession systemSession = SystemSession.getInstance();
-        if (session.getObject(CommandAction.SET_MINING_TARGET.getParamKey()) == null) {
-            session.updateSession(CommandAction.SET_MINING_TARGET.getParamKey(), dto.getTypeLocalised().replace("\"", ""));
-            systemSession.updateSession(SENSOR_READING, "Detected "+dto.getTypeLocalised()+" refined. Therefore set mining target to: " + dto.getTypeLocalised());
+        if (publicSession.getObject(CommandAction.SET_MINING_TARGET.getParamKey()) == null) {
+            publicSession.updateSession(CommandAction.SET_MINING_TARGET.getParamKey(), dto.getTypeLocalised().replace("\"", ""));
+            systemSession.setSensorData("Detected "+dto.getTypeLocalised()+" refined. Set mining target to: " + dto.getTypeLocalised());
         }
         log.info("Mining event processed: {}", dto.toString());
     }

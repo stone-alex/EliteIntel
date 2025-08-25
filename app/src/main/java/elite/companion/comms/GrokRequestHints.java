@@ -35,6 +35,8 @@ public class GrokRequestHints {
         commands.addAll(Arrays.asList(GameCommandMapping.getUserCommands()));
 
         // Load game bindings
+        commands.addAll(Arrays.asList(GameCommandMapping.getUserCommands()));
+/*
         try {
             KeyBindingsParser parser = new KeyBindingsParser();
             File bindingsFile = new BindingsLoader().getLatestBindsFile();
@@ -54,6 +56,7 @@ public class GrokRequestHints {
         } catch (Exception e) {
             log.error("Failed to load game bindings for hints: {}", e.getMessage());
         }
+*/
 
         COMMANDS = commands;
     }

@@ -3,6 +3,8 @@ package elite.companion.session;
 import java.util.HashMap;
 import java.util.Map;
 
+import static elite.companion.Globals.SENSOR_READING;
+
 public class SystemSession {
     private static final SystemSession INSTANCE = new SystemSession();
     private final Map<String, Object> state = new HashMap<>();
@@ -35,11 +37,23 @@ public class SystemSession {
 
     }
 
+    public void setSensorData(String sensorReading) {
+        state.put(SENSOR_READING, sensorReading);
+    }
+
+    public String getSensorData() {
+        return (String) state.get(SENSOR_READING);
+    }
+
     public void updateSession(String sensorReading, String data) {
         state.put(sensorReading, data);
     }
 
     public void clear() {
         state.clear();
+    }
+
+    public void clearSensorData() {
+        state.remove(SENSOR_READING);
     }
 }

@@ -47,7 +47,9 @@ public class GrokInteractionHandler {
         GrokResponseRouter.getInstance().processGrokResponse(apiResponse);
     }
 
-    public void processSystemCommand(String input) {
+    public void processSystemCommand() {
+        String input = SystemSession.getInstance().getSensorData();
+        SystemSession.getInstance().clearSensorData();
         if (input == null || input.isEmpty()) {return;}
 
         String request = buildSystemRequest(input);
@@ -69,7 +71,7 @@ public class GrokInteractionHandler {
 
         String[] misheardPhrases = {
                 "treat you", "trees you", "3 tube", "hydrogen 3", "hydrogen three", "32",
-                "carrier fuel", "carrier juice", "carrot juice", "treatyou", "treesyou"
+                "carrier fuel", "carrier juice", "carrot juice", "treatyou", "treesyou",
         };
         for (String phrase : misheardPhrases) {
             if (command.contains(phrase)) {
@@ -106,11 +108,14 @@ public class GrokInteractionHandler {
         String stateSummary = PublicSession.getInstance().getStateSummary();
         SystemSession.getInstance().clear();
         return String.format(
-                "Analyze this ship sensor input : "+systemInput+". provide response and system_command" +
-                        "Current game state: "+stateSummary+". " +
-                        "Classify as: 'system_command' (sets companion app variables, provides fun response TTS output, but does not trigger game controls)" +
-                        "Respond in JSON only: {\"type\": \"system_command\", \"response_text\": \"TTS output (concise and fun)\", \"action\": \"set_mining_target|set_current_system|...\" , \"params\": {\"key\": \"value\"}}." +
-                        "Use provided data for response. Example: 'I see we are mining Tritium, I will set it as the mining target.' Or 'We are in Sol, I will flag it as the current location.' Or welcome user back to Elite Dangerous when new session is detected etc."
+                "Analyze this ship sensor input : "+systemInput+". provide extremely brief but fun response and optional system_command " +
+
+                        "If radio_transmission:[data] provide only extremely brief response_text (chat) do not include the transmission in the response (user already knows what it is). " +
+                        "If is_station=true message was for us. else it is radio chatter." +
+
+                        "Context: Current game state: "+stateSummary+". " +
+                        "Classify as: 'system_command' (sets companion app variables, provides fun response TTS output, but does not trigger game controls), or 'chat' (general banter)." +
+                        "Respond in JSON only: {\"type\": \"system_command|chat\", \"response_text\": \"TTS output (extremely brief but fun)\", \"action\": \"set_mining_target|set_current_system|...\" , \"params\": {\"key\": \"value\"}}."
         );
     }
 

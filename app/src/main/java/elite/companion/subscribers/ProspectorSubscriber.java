@@ -7,6 +7,9 @@ import elite.companion.comms.CommandAction;
 import elite.companion.comms.VoiceGenerator;
 import elite.companion.events.ProspectedAsteroidEvent;
 import elite.companion.session.PublicSession;
+import elite.companion.session.SystemSession;
+
+import static elite.companion.Globals.SENSOR_READING;
 
 public class ProspectorSubscriber {
 
@@ -28,7 +31,10 @@ public class ProspectorSubscriber {
                 foundTargetMaterial = true;
 
                 double proportion = material.getProportion();
-                anouncement.append("Prospector detected " + String.format("%.2f%%", proportion)).append(" ").append(material.getName());
+                String message = "Prospector detected " + String.format("%.2f", proportion) + " percent " + material.getName();
+
+                anouncement.append(message);
+
                 break;
             }
         }

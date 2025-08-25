@@ -38,19 +38,15 @@ public class GrokResponseRouter {
 
         //CUSTOM HANDERS
         commandHandlers.put(INCREASE_ENGINES_POWER.getUserCommand(), new SetPowerToEnginesHandler(voiceCommandHandler));
-        //commandHandlers.put(INCREASE_ENGINES_POWER_BUGGY.getGameBinding(), new PowerToEnginesHandler(voiceCommandHandler));
-
         commandHandlers.put(INCREASE_SYSTEMS_POWER.getUserCommand(), new SetPowerToSystemsHandler(voiceCommandHandler));
         commandHandlers.put(INCREASE_SHIELDS_POWER.getUserCommand(), new SetPowerToSystemsHandler(voiceCommandHandler));
-        //commandHandlers.put(INCREASE_SYSTEMS_POWER_BUGGY.getGameBinding(), new PowerToSystemsHandler(voiceCommandHandler));
-
         commandHandlers.put(INCREASE_WEAPONS_POWER.getUserCommand(), new SetPowerToWeaponsHandler(voiceCommandHandler));
-        //commandHandlers.put(INCREASE_WEAPONS_POWER_BUGGY.getGameBinding(), new PowerToWeaponsHandler(voiceCommandHandler));
 
         //GENERIC Handler
         commandHandlers.put(CommandAction.SET_MINING_TARGET.getAction(), new SetMiningTargetHandler());
         commandHandlers.put(CommandAction.PLOT_ROUTE.getAction(), new SetRouteHandler(voiceCommandHandler));
         commandHandlers.put(BACKWARD_KEY.getGameBinding(), new GenericGameController(voiceCommandHandler, BACKWARD_KEY.getGameBinding()));
+        commandHandlers.put(AUTO_DOC.getGameBinding(), new GenericGameController(voiceCommandHandler, AUTO_DOC.getGameBinding()));
         commandHandlers.put(CARGO_SCOOP.getGameBinding(), new GenericGameController(voiceCommandHandler, CARGO_SCOOP.getGameBinding()));
         commandHandlers.put(CARGO_SCOOP_BUGGY.getGameBinding(), new GenericGameController(voiceCommandHandler, CARGO_SCOOP_BUGGY.getGameBinding()));
         commandHandlers.put(DEPLOY_HARDPOINT_TOGGLE.getGameBinding(), new GenericGameController(voiceCommandHandler, DEPLOY_HARDPOINT_TOGGLE.getGameBinding()));
@@ -90,9 +86,6 @@ public class GrokResponseRouter {
         commandHandlers.put(OPEN_CODEX_GO_TO_DISCOVERY.getGameBinding(), new GenericGameController(voiceCommandHandler, OPEN_CODEX_GO_TO_DISCOVERY.getGameBinding()));
         commandHandlers.put(OPEN_CODEX_GO_TO_DISCOVERY_BUGGY.getGameBinding(), new GenericGameController(voiceCommandHandler, OPEN_CODEX_GO_TO_DISCOVERY_BUGGY.getGameBinding()));
         commandHandlers.put(PAUSE.getGameBinding(), new GenericGameController(voiceCommandHandler, PAUSE.getGameBinding()));
-        commandHandlers.put(PHOTO_CAMERA_BUGGY.getGameBinding(), new GenericGameController(voiceCommandHandler, PHOTO_CAMERA_BUGGY.getGameBinding()));
-        commandHandlers.put(PHOTO_CAMERA_HUMANOID.getGameBinding(), new GenericGameController(voiceCommandHandler, PHOTO_CAMERA_HUMANOID.getGameBinding()));
-        commandHandlers.put(PHOTO_CAMERA_TOGGLE.getGameBinding(), new GenericGameController(voiceCommandHandler, PHOTO_CAMERA_TOGGLE.getGameBinding()));
         commandHandlers.put(PLAYER_HUDMODE_TOGGLE.getGameBinding(), new GenericGameController(voiceCommandHandler, PLAYER_HUDMODE_TOGGLE.getGameBinding()));
         commandHandlers.put(QUICK_COMMS_PANEL_BUGGY.getGameBinding(), new GenericGameController(voiceCommandHandler, QUICK_COMMS_PANEL_BUGGY.getGameBinding()));
         commandHandlers.put(QUICK_COMMS_PANEL_HUMANOID.getGameBinding(), new GenericGameController(voiceCommandHandler, QUICK_COMMS_PANEL_HUMANOID.getGameBinding()));
@@ -107,7 +100,6 @@ public class GrokResponseRouter {
         commandHandlers.put(SET_SPEED50.getGameBinding(), new GenericGameController(voiceCommandHandler, SET_SPEED50.getGameBinding()));
         commandHandlers.put(SET_SPEED75.getGameBinding(), new GenericGameController(voiceCommandHandler, SET_SPEED75.getGameBinding()));
         commandHandlers.put(SET_SPEED_ZERO.getGameBinding(), new GenericGameController(voiceCommandHandler, SET_SPEED_ZERO.getGameBinding()));
-        commandHandlers.put(STORE_TOGGLE.getGameBinding(), new GenericGameController(voiceCommandHandler, STORE_TOGGLE.getGameBinding()));
         commandHandlers.put(SYSTEM_MAP.getGameBinding(), new GenericGameController(voiceCommandHandler, SYSTEM_MAP.getGameBinding()));
         commandHandlers.put(SYSTEM_MAP_BUGGY.getGameBinding(), new GenericGameController(voiceCommandHandler, SYSTEM_MAP_BUGGY.getGameBinding()));
         commandHandlers.put(SYSTEM_MAP_HUMANOID.getGameBinding(), new GenericGameController(voiceCommandHandler, SYSTEM_MAP_HUMANOID.getGameBinding()));

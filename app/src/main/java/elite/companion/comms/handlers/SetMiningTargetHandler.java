@@ -14,7 +14,7 @@ public class SetMiningTargetHandler implements CommandHandler {
     @Override
     public void handle(JsonObject params, String responseText) {
         PublicSession session = PublicSession.getInstance();
-        JsonElement jsonElement = params.get("material");
+        JsonElement jsonElement = params.get("mining_target");
 
         if (jsonElement == null || jsonElement.getAsString().isEmpty()) {
             log.info("no mining target set");

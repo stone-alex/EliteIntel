@@ -3,8 +3,6 @@ package elite.companion.comms;
 import com.google.api.gax.rpc.ApiStreamObserver;
 import com.google.cloud.speech.v1p1beta1.*;
 import com.google.protobuf.ByteString;
-import elite.companion.session.PublicSession;
-import elite.companion.session.SystemSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,8 +12,6 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import static elite.companion.Globals.SENSOR_READING;
 
 
 /**
@@ -89,7 +85,6 @@ public class SpeechRecognizer {
         while (isListening.get()) {
 
 
-
             log.info("Starting new streaming session...");
             long streamStartTime = System.currentTimeMillis();
             ApiStreamObserver<StreamingRecognizeRequest> requestObserver = null;
@@ -153,11 +148,7 @@ public class SpeechRecognizer {
                             lastAudioSentTime = currentTime;
                         }
 
-                        SystemSession systemSession = SystemSession.getInstance();
-                        if(systemSession.getObject(SENSOR_READING) != null && systemSession.getObject(SENSOR_READING) instanceof String && !((String) systemSession.getObject(SENSOR_READING)).isBlank()) {
-                            grok.processSystemCommand(systemSession.getObject(SENSOR_READING).toString());
-                            systemSession.remove(SENSOR_READING);
-                        }
+                        grok.processSystemCommand();
                     }
                 } catch (LineUnavailableException | IllegalArgumentException e) {
                     log.error("Audio capture failed: {}", e.getMessage());

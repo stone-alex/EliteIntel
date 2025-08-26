@@ -18,7 +18,8 @@ public class SystemSession {
     public static final String CURRENT_SYSTEM = "current_system";
     public static final String QUERY_DESTINATION = "query_destination";
     public static final String SHIP_DATA = "ship_data";
-    public static final String LOADOUT_JSON = "loadout_json";
+    public static final String SHIP_LOADOUT_JSON = "ship_loadout_json";
+    public static final String SUITE_LOADOUT_JSON = "suite_loadout_json";
     private static final SystemSession INSTANCE = new SystemSession();
     private final Map<String, Object> state = new HashMap<>();
     private final Map<String, Integer> signalCounts = new HashMap<>(); // For batch accumulation

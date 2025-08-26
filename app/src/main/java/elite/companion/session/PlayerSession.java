@@ -33,6 +33,8 @@ public class PlayerSession {
     public static final String CREW_WAGS_PAYOUT = "crew_wags_payout";
     public static final String SHIP_CARGO_CAPACITY = "ship_cargo_capacity";
     public static final String SHIP_FUEL_CAPACITY = "ship_fuel_capacity";
+    public static final String PLAYER_TITLE = "player_title";
+    public static final String PLAYER_RANK = "player_rank";
 
     private static final PlayerSession INSTANCE = new PlayerSession();
 

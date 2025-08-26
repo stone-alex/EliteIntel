@@ -6,10 +6,18 @@ package elite.companion.comms;
  *
  */
 public enum CommandAction {
+
+    //Commands
     SET_MINING_TARGET("set_mining_target", "<material>", "mining_target"),
     PLOT_ROUTE("plot_route", "<destination>", "destination"),
-    FIND_NEAREST_MATERIAL_TRADER("find_nearest_material_trader", null, null),
-    GET_CURRENT_SYSTEM("get_current_system", null, null);
+
+
+    //Queries
+    QUERY_CURRENT_SYSTEM("query_current_system", null, null),
+    QUERY_SHIP_LOADOUT("query_ship_loadout", null, null),
+    QUERY_FIND_NEAREST_MATERIAL_TRADER("query_find_nearest_material_trader", null, null),
+
+    ; //<-- end of enum
 
     private final String action;
     private final String placeholder;

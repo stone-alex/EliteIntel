@@ -33,6 +33,15 @@ public class ShipTargetedEvent extends BaseEvent {
     @SerializedName("LegalStatus")
     private String legalStatus;
 
+    @SerializedName("Power")
+    private String pledgePower;
+
+    @SerializedName("Faction")
+    private String faction;
+
+    @SerializedName("Ship_Localised")
+    private String shipLocalised;
+
     public ShipTargetedEvent(String timestamp) {
         super(timestamp, 1, Duration.ofSeconds(30), ShipTargetedEvent.class.getName());
     }
@@ -72,6 +81,20 @@ public class ShipTargetedEvent extends BaseEvent {
 
     public String getLegalStatus() {
         return legalStatus;
+    }
+
+
+    public String getPledgePower() {
+        return pledgePower;
+    }
+
+    public String getFaction() {
+        return faction;
+    }
+
+
+    public String getShipLocalised() {
+        return shipLocalised;
     }
 
     public String getFormattedTimestamp(boolean useLocalTime) {

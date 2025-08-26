@@ -3,7 +3,6 @@ package elite.companion.comms;
 import com.google.api.gax.rpc.ApiStreamObserver;
 import com.google.cloud.speech.v1p1beta1.*;
 import com.google.protobuf.ByteString;
-import elite.companion.Globals;
 import elite.companion.util.StringSanitizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -192,10 +191,10 @@ public class SpeechRecognizer {
                     transcriptionQueue.offer(transcript);
                     log.info("Final transcript: {} (confidence: {})", transcript, confidence);
                     String sanitizedTranscript = StringSanitizer.sanitizeGoogleMistakes(transcript);
-                    if (sanitizedTranscript.toLowerCase().contains(Globals.AI_NAME.toLowerCase())) {
+                    //if (sanitizedTranscript.toLowerCase().contains(Globals.AI_NAME.toLowerCase())) {
                         log.info("Processing sanitizedTranscript: {}", sanitizedTranscript);
                         grok.processVoiceCommand(sanitizedTranscript);
-                    }
+                    //}
                 } else {
                     log.info("Discarded transcript: {} (confidence: {})", transcript, confidence);
                 }

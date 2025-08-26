@@ -1,8 +1,6 @@
 package elite.companion.comms;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import elite.companion.Globals;
 import elite.companion.session.PlayerSession;
 import elite.companion.session.SystemSession;
@@ -50,7 +48,11 @@ public class GrokCommandEndPoint {
         messages.add(userMessage);
 
         System.out.println("Voice command messages: " + messages);
-        JsonObject apiResponse = callXaiApi(messages); // Pass messages directly
+        Gson gson = new Gson();
+        String jsonString = gson.toJson(messages);
+        log.info("JSON prepared for callXaiApi: [{}]", toDebugString(jsonString));
+
+        JsonObject apiResponse = callXaiApi(jsonString); // Pass messages directly
         if (apiResponse == null) {
             VoiceGenerator.getInstance().speak("Sorry, I couldn't process that.");
             return;
@@ -59,12 +61,25 @@ public class GrokCommandEndPoint {
         GrokResponseRouter.getInstance().processGrokResponse(apiResponse);
     }
 
-    public void processSystemCommand() {
-        String sensor_data = SystemSession.getInstance().getSensorData();
-        String fssData = SystemSession.getInstance().getFssData();
-        String input = (sensor_data == null && fssData == null) ? null : (sensor_data == null ? "" : sensor_data) + (fssData == null ? "" : fssData);
 
-        if (sensor_data != null) SystemSession.getInstance().clearSensorData();
+    public void processSystemCommand() {
+        String sensorData = SystemSession.getInstance().getSensorData();
+        String fssData = SystemSession.getInstance().getFssData();
+
+        // Log raw inputs for debugging
+        //log.info("Raw sensorData: [{}]", toDebugString(sensorData));
+        //log.info("Raw fssData: [{}]", toDebugString(fssData));
+
+        // Sanitize inputs
+        sensorData = escapeJson(sensorData);
+        fssData = escapeJson(fssData);
+        String input = (sensorData.isEmpty() && fssData.isEmpty()) ? null : sensorData + fssData;
+
+        // Log sanitized input
+        //log.info("Sanitized input: [{}]", input);
+
+        // Clear session data
+        if (sensorData != null) SystemSession.getInstance().clearSensorData();
         if (fssData != null) SystemSession.getInstance().clearFssData();
 
         if (input == null || input.isEmpty()) {
@@ -74,7 +89,8 @@ public class GrokCommandEndPoint {
         JsonArray messages = new JsonArray();
         JsonObject systemMessage = new JsonObject();
         systemMessage.addProperty("role", "system");
-        systemMessage.addProperty("content", AIContextFactory.getInstance().generateSystemPrompt());
+        String systemPrompt = AIContextFactory.getInstance().generateSystemPrompt();
+        systemMessage.addProperty("content", systemPrompt);
         messages.add(systemMessage);
 
         JsonObject userMessage = new JsonObject();
@@ -82,15 +98,194 @@ public class GrokCommandEndPoint {
         userMessage.addProperty("content", buildSystemRequest(input));
         messages.add(userMessage);
 
-        System.out.println("System command messages: " + messages);
-        JsonObject apiResponse = callXaiApi(messages);
-        if (apiResponse == null) {
-            VoiceGenerator.getInstance().speak("Failure processing system request. Check programming");
-            return;
-        }
+        // Create API request body
+        JsonObject requestBody = new JsonObject();
+        requestBody.addProperty("model", "grok-3-fast");
+        requestBody.addProperty("temperature", 0.7);
+        requestBody.addProperty("stream", false);
+        requestBody.add("messages", messages);
 
-        GrokResponseRouter.getInstance().processGrokResponse(apiResponse);
+        // Serialize to JSON string
+        Gson gson = new Gson();
+        String jsonString = gson.toJson(requestBody);
+        log.info("JSON prepared for callXaiApi: [{}]", toDebugString(jsonString));
+
+        try {
+            JsonObject apiResponse = callXaiApi(jsonString);
+            if (apiResponse == null) {
+                VoiceGenerator.getInstance().speak("Failure processing system request. Check programming");
+                return;
+            }
+            GrokResponseRouter.getInstance().processGrokResponse(apiResponse);
+        } catch (JsonSyntaxException e) {
+            log.error("JSON parsing failed for input: [{}]", toDebugString(jsonString), e);
+            throw e;
+        }
     }
+
+    // Debug string to reveal control characters
+    private String toDebugString(String input) {
+        if (input == null) return "null";
+        StringBuilder sb = new StringBuilder();
+        for (char c : input.toCharArray()) {
+            if (c < 32 || c == 127 || c == 0xFEFF) {
+                sb.append(String.format("\\u%04x", (int) c));
+            } else {
+                sb.append(c);
+            }
+        }
+        return sb.toString();
+    }
+
+    // Enhanced JSON escaping for plain strings
+    private String escapeJson(String input) {
+        if (input == null || input.isEmpty()) return "";
+        StringBuilder sb = new StringBuilder();
+        for (char c : input.toCharArray()) {
+            if (c < 32 || c == 127 || c == 0xFEFF) {
+                sb.append(' '); // Replace control characters
+            } else if (c == '"') {
+                sb.append("\\\"");
+            } else if (c == '\\') {
+                sb.append("\\\\");
+            } else if (c == '\n') {
+                sb.append("\\n");
+            } else if (c == '\r') {
+                sb.append("\\r");
+            } else if (c == '\t') {
+                sb.append("\\t");
+            } else {
+                sb.append(c);
+            }
+        }
+        return sb.toString();
+    }
+
+
+    private JsonObject callXaiApi(String jsonString) {
+        try {
+            HttpURLConnection conn = getHttpURLConnection();
+
+            // Log the input string
+            log.info("xAI API call: [{}]", toDebugString(jsonString));
+            // Store the messages array from the request body
+            JsonObject requestBody = new Gson().fromJson(jsonString, JsonObject.class);
+            JsonArray messages = requestBody.getAsJsonArray("messages");
+            currentHistory.set(messages); // Store messages array
+
+            try (var os = conn.getOutputStream()) {
+                os.write(jsonString.getBytes(StandardCharsets.UTF_8));
+            }
+
+            int responseCode = conn.getResponseCode();
+            String response;
+            try (Scanner scanner = new Scanner(conn.getInputStream(), StandardCharsets.UTF_8)) {
+                response = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
+            }
+
+            // Strip BOM if present
+            if (response.startsWith("\uFEFF")) {
+                response = response.substring(1);
+                log.info("Stripped BOM from response");
+            }
+
+            // Log raw response
+            log.info("xAI API response: [{}]", toDebugString(response));
+
+            if (responseCode != 200) {
+                String errorResponse = "";
+                try (Scanner scanner = new Scanner(conn.getErrorStream(), StandardCharsets.UTF_8)) {
+                    errorResponse = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
+                } catch (Exception e) {
+                    log.warn("Failed to read error stream: {}", e.getMessage());
+                }
+                log.error("xAI API error: {} - {}", responseCode, conn.getResponseMessage());
+                log.info("Error response body: {}", errorResponse);
+                return null;
+            }
+
+            // Parse response
+            JsonObject json;
+            try {
+                json = JsonParser.parseString(response).getAsJsonObject();
+            } catch (JsonSyntaxException e) {
+                log.error("Failed to parse API response: [{}]", toDebugString(response), e);
+                throw e;
+            }
+
+            // Extract content safely
+            JsonArray choices = json.getAsJsonArray("choices");
+            if (choices == null || choices.isEmpty()) {
+                log.error("No choices in API response: [{}]", toDebugString(response));
+                return null;
+            }
+
+            JsonObject message = choices.get(0).getAsJsonObject().getAsJsonObject("message");
+            if (message == null) {
+                log.error("No message in API response choices: [{}]", toDebugString(response));
+                return null;
+            }
+
+            String content = message.get("content").getAsString();
+            if (content == null) {
+                log.error("No content in API response message: [{}]", toDebugString(response));
+                return null;
+            }
+
+            // Log content before parsing
+            log.info("API response content: [{}]", toDebugString(content));
+
+            // Extract JSON from content (after double newline or first valid JSON object)
+            String jsonContent;
+            int jsonStart = content.indexOf("\n\n{");
+            if (jsonStart != -1) {
+                jsonContent = content.substring(jsonStart + 2); // Skip \n\n
+            } else {
+                // Fallback: Find first { that starts a valid JSON object
+                jsonStart = content.indexOf("{");
+                if (jsonStart == -1) {
+                    log.error("No JSON object found in content: [{}]", toDebugString(content));
+                    return null;
+                }
+                jsonContent = content.substring(jsonStart);
+                // Validate JSON
+                try {
+                    JsonParser.parseString(jsonContent);
+                } catch (JsonSyntaxException e) {
+                    log.error("Invalid JSON object in content: [{}]", toDebugString(jsonContent), e);
+                    return null;
+                }
+            }
+
+            // Log extracted JSON
+            log.info("Extracted JSON content: [{}]", toDebugString(jsonContent));
+
+            // Parse JSON content
+            try {
+                return JsonParser.parseString(jsonContent).getAsJsonObject();
+            } catch (JsonSyntaxException e) {
+                log.error("Failed to parse API response content: [{}]", toDebugString(jsonContent), e);
+                throw e;
+            }
+        } catch (Exception e) {
+            log.error("AI API call fatal error: {}", e.getMessage(), e);
+            log.error("Input data: [{}]", toDebugString(jsonString));
+            return null;
+        } finally {
+            currentHistory.remove(); // Always clear
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
 
     public static JsonArray getCurrentHistory() {
         return currentHistory.get() != null ? currentHistory.get() : new JsonArray();
@@ -116,6 +311,9 @@ public class GrokCommandEndPoint {
         return AIContextFactory.getInstance().generateSystemInstructions(systemInput);
     }
 
+
+
+/*
     private JsonObject callXaiApi(JsonArray messages) {
         try {
             HttpURLConnection conn = getHttpURLConnection();
@@ -167,6 +365,10 @@ public class GrokCommandEndPoint {
             currentHistory.remove(); // Always clear
         }
     }
+*/
+
+
+
 
     private static HttpURLConnection getHttpURLConnection() throws IOException {
         URL url = new URL("https://api.x.ai/v1/chat/completions"); //TODO: Read from config or settings.

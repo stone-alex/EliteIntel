@@ -16,7 +16,7 @@
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>%d{HH:mm:ss.SSS} %highlight(%-5level) [%thread{20}] %cyan(%logger{36}) - %replace(%.-200msg){'\s*\[id:[^\]]+\]\s*',''}%n</pattern>
+            <pattern>%d{HH:mm:ss.SSS} %highlight(%-5level) %cyan(%logger{36}) - %replace(%.-5000msg){'\s*\[id:[^\]]+\]\s*',''}%n</pattern>
         </encoder>
     </appender>
 

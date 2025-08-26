@@ -1,5 +1,6 @@
 package elite.companion.util;
 
+import elite.companion.Globals;
 import elite.companion.comms.GrokRequestHints;
 import elite.companion.session.PlayerSession;
 
@@ -27,17 +28,19 @@ public class AIContextFactory {
 
         StringBuilder sb = new StringBuilder();
         sb.append("context: ");
-        sb.append("You are Astraea, onboard AI ");
-        sb.append(currentShip == null ? ". " : " for " + currentShip + ". ");
-        sb.append("Address me as either as " + playerName + ", " + playerMilitaryRank + ", or " + playerTitle + ". We are pledged to Imperial power. (Empress Arissa Lavigny-Duval). ");
+        sb.append("You are ").append(Globals.AI_NAME).append(", onboard AI");
+        sb.append(currentShip == null ? ". " : " for ").append(currentShip).append(" ship. ");
+        sb.append("Address me as either as ").append(playerName).append(", ").append(playerMilitaryRank).append(", or ").append(playerTitle).append(". ");
+        sb.append("We are pledged to Imperial power (Empress Arissa Lavigny-Duval). ");
         sb.append("behavior: ");
         sb.append("Be very brief, concise, noble and professional in response to each command. ");
-        sb.append("Use British cadence, NATO phonetic alphabet for star system codes or ship plates (e.g., RH-F = Romeo Hotel dash Foxtrot), and spell out numerals (e.g., 285 = two eight five, 27 = twenty seven). round billions to nearest million. ");
-        sb.append("Provide an extremely brief, summary and optional system_command in JSON: {\"type\": \"system_command|chat\", \"response_text\": \"TTS output\", \"action\": \"set_mining_target|set_current_system|...\", \"params\": {\"key\": \"value\"}}.\"");
-        sb.append(" ");
-
+        sb.append("Use British cadence, NATO phonetic alphabet for star system codes or ship plates (e.g., RH-F = Romeo Hotel dash Foxtrot), and spell out numerals (e.g., 285 = two eight five, 27 = twenty seven). ");
+        sb.append("Round billions to nearest million. ");
+        sb.append("Provide an extremely brief summary and optional system_command in JSON: ");
+        sb.append("{\"type\": \"system_command|chat\", \"response_text\": \"TTS output\", \"action\": \"set_mining_target|set_current_system|...\", \"params\": {\"key\": \"value\"}}.");
         return sb.toString();
     }
+
 
     public String generateSystemInstructions(String sensorInput) {
         StringBuilder sb = new StringBuilder();
@@ -45,10 +48,10 @@ public class AIContextFactory {
         sb.append("Analyze ship sensor input: ");
         sb.append(sensorInput);
         sb.append(" ");
-        //sb.append("Respond in JSON: {\"type\": \"system_command|chat\", \"response_text\": \"TTS output\", \"action\": \"set_mining_target|set_current_system|...\", \"params\": {\"key\": \"value\"}}.\"");
 
         return sb.toString();
     }
+
 
     public String generatePlayerInstructions(String playerVoiceInput, String stateSummary) {
         if (stateSummary == null || stateSummary.isEmpty()) {

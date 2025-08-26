@@ -6,7 +6,7 @@ import elite.companion.events.LoadoutEvent;
 import elite.companion.session.PlayerSession;
 import elite.companion.session.SystemSession;
 
-import static elite.companion.session.SystemSession.LOADOUT_JSON;
+import static elite.companion.session.SystemSession.SHIP_LOADOUT_JSON;
 
 public class LoadoutSubscriber {
 
@@ -16,9 +16,12 @@ public class LoadoutSubscriber {
 
     @Subscribe
     public void onLoadoutEvent(LoadoutEvent event) {
-        PlayerSession session = PlayerSession.getInstance();
-        session.updateSession(PlayerSession.CURRENT_SHIP_NAME, event.getShipName());
-        SystemSession.getInstance().updateSession(LOADOUT_JSON, event.toJson());
-        SystemSession.getInstance().setSensorData("Loadout updated: " + event.toJson());
+        PlayerSession playerSession = PlayerSession.getInstance();
+        playerSession.updateSession(PlayerSession.CURRENT_SHIP_NAME, event.getShipName());
+        playerSession.updateSession(PlayerSession.CURRENT_SHIP, event.getShip());
+        playerSession.updateSession(PlayerSession.SHIP_CARGO_CAPACITY, event.getCargoCapacity());
+
+        SystemSession.getInstance().updateSession(SHIP_LOADOUT_JSON, event.toJson());
+        SystemSession.getInstance().setSensorData("Ship Selected: " + event.toJson());
     }
 }

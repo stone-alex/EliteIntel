@@ -1,5 +1,6 @@
 package elite.companion.subscribers;
 
+import com.google.common.eventbus.Subscribe;
 import elite.companion.EventBusManager;
 import elite.companion.events.FSDTargetEvent;
 import elite.companion.session.SystemSession;
@@ -13,6 +14,7 @@ public class FSDTargetSubscriber {
     }
 
 
+    @Subscribe
     public void onFSDTargetEvent(FSDTargetEvent event) {
         String targetName = event.getName();
         String targetClass = event.getStarClass();
@@ -26,7 +28,7 @@ public class FSDTargetSubscriber {
         sb.append(targetClass);
         sb.append(" ");
         sb.append("Star Scoopable: ");
-        sb.append(isScoopable);
+        sb.append(isScoopable ? "Yes" : "No");
         sb.append(".");
 
 

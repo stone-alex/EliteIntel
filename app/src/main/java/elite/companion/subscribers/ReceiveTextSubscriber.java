@@ -18,9 +18,11 @@ public class ReceiveTextSubscriber {
             boolean isStation = event.getMessage().toLowerCase().contains("station");
             VoiceGenerator.getInstance().speakInRandomVoice(event.getMessageLocalised());
             if (isStation) {
-                SystemSession.getInstance().setSensorData(
-                        "radio_transmission:[from:" + event.getFrom() + ", message:" + event.getMessageLocalised() + "]"
-                );
+                if (!event.getMessageLocalised().toLowerCase().contains("fire zone")) {
+                    SystemSession.getInstance().setSensorData(
+                            "radio_transmission:[from:" + event.getFrom() + ", message:" + event.getMessageLocalised() + "]"
+                    );
+                }
             }
         }
     }

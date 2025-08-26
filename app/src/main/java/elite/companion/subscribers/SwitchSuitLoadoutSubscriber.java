@@ -5,6 +5,8 @@ import elite.companion.EventBusManager;
 import elite.companion.events.SwitchSuitLoadoutEvent;
 import elite.companion.session.SystemSession;
 
+import static elite.companion.session.SystemSession.SUITE_LOADOUT_JSON;
+
 public class SwitchSuitLoadoutSubscriber {
 
     public SwitchSuitLoadoutSubscriber() {
@@ -13,6 +15,7 @@ public class SwitchSuitLoadoutSubscriber {
 
     @Subscribe
     public void onSwitchSuitLoadoutEvent(SwitchSuitLoadoutEvent event) {
-        SystemSession.getInstance().setSensorData("Switch Suit Loadout: " + event.toJson());
+        SystemSession.getInstance().updateSession(SUITE_LOADOUT_JSON, event.toJson());
+        SystemSession.getInstance().setSensorData("Suit Loadout: " + event.toJson());
     }
 }

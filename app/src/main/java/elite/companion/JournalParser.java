@@ -115,7 +115,8 @@ public class JournalParser {
                                     if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, CarrierJumpRequestEvent.class));
                                     break;
                                 case "FSDTarget":
-                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, FSDTargetEvent.class));
+                                    /*if (isRecent(eventTimestamp, THRESHOLD)) */
+                                    EventBusManager.publish(gson.fromJson(event, FSDTargetEvent.class));
                                     break;
                                 case "Scan":
                                     if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, ScanEvent.class));

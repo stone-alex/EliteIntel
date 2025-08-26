@@ -7,7 +7,7 @@ import elite.companion.subscribers.*;
 public class AppMain {
 
     public static void main(String[] args) throws Exception {
-        VoiceGenerator.getInstance().speak("Initializing Companion");
+        VoiceGenerator.getInstance().speak("Initializing " + Globals.AI_NAME);
 
         //instantiate subscribers
         new CarrierJumpRequestSubscriber();
@@ -24,7 +24,6 @@ public class AppMain {
         new SupercruiseExitedSubscriber();
         new TouchdownEventSubscriber();
         new LiftoffEventSubscriber();
-        new ShipTargetedEventSubscriber();
         new ScanEventSubscriber();
         new ShipTargetedEventSubscriber();
         new LoadoutSubscriber();

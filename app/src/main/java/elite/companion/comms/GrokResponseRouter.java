@@ -39,7 +39,9 @@ public class GrokResponseRouter {
     private void registerCommandHandlers() {
 
         //Query Handlers
-        queryHandlers.put(CommandAction.GET_CURRENT_SYSTEM.getAction(), new GetCurrentSystemHandler());
+        queryHandlers.put(CommandAction.QUERY_CURRENT_SYSTEM.getAction(), new GetCurrentSystemHandler());
+        queryHandlers.put(CommandAction.QUERY_SHIP_LOADOUT.getAction(), new GetShipLoadoutHandler());
+        queryHandlers.put(CommandAction.QUERY_FIND_NEAREST_MATERIAL_TRADER.getAction(), new FindMaterialTraderHandler());
 
         //APP COMMANDS
         commandHandlers.put(CommandAction.SET_MINING_TARGET.getAction(), new SetMiningTargetHandler());
@@ -178,8 +180,6 @@ public class GrokResponseRouter {
         }
         try {
             String data = handler.handle(params);
-            // Discard short-term data if applicable
-            // playSessionManager.discardSystemSessionIfConsumed(action); // As before
 
             // Build follow-up messages
             JsonArray messages = new JsonArray();
@@ -190,7 +190,7 @@ public class GrokResponseRouter {
             systemMessage.addProperty("content", AIContextFactory.getInstance().generateSystemPrompt());
             messages.add(systemMessage);
 
-            // Append original history (assume added method in GrokInteractionEndPoint)
+            // Append original history (assume added method in GrokCommandEndPoint)
             JsonArray originalHistory = GrokCommandEndPoint.getCurrentHistory(); // Implement this to return messages sans system
             for (int i = 0; i < originalHistory.size(); i++) {
                 messages.add(originalHistory.get(i));

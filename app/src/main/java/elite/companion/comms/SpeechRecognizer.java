@@ -3,6 +3,8 @@ package elite.companion.comms;
 import com.google.api.gax.rpc.ApiStreamObserver;
 import com.google.cloud.speech.v1p1beta1.*;
 import com.google.protobuf.ByteString;
+import elite.companion.Globals;
+import elite.companion.util.StringSanitizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,14 +40,14 @@ public class SpeechRecognizer {
     private static final int RESTART_DELAY_MS = 50; // 50ms sleep after stream close
     private final BlockingQueue<String> transcriptionQueue = new LinkedBlockingQueue<>();
     private final SpeechClient speechClient;
-    private final GrokInteractionEndPoint grok;
+    private final GrokCommandEndPoint grok;
     private final AtomicBoolean isListening = new AtomicBoolean(true);
     private long lastAudioSentTime = System.currentTimeMillis();
     private byte[] lastBuffer = null;
     private AudioInputStream audioInputStream = null;
 
     public SpeechRecognizer() {
-        this.grok = new GrokInteractionEndPoint();
+        this.grok = new GrokCommandEndPoint();
         SpeechClient tempClient;
         try {
             this.grok.start();
@@ -148,6 +150,7 @@ public class SpeechRecognizer {
                             lastAudioSentTime = currentTime;
                         }
 
+                        //Reads SystemSession.getInstance().getSensorData() reacts to it and removes it from system session.
                         grok.processSystemCommand();
                     }
                 } catch (LineUnavailableException | IllegalArgumentException e) {
@@ -188,7 +191,11 @@ public class SpeechRecognizer {
                 if (!transcript.isBlank() && transcript.length() >= 3 && confidence > 0.3) {
                     transcriptionQueue.offer(transcript);
                     log.info("Final transcript: {} (confidence: {})", transcript, confidence);
-                    grok.processVoiceCommand(transcript);
+                    String sanitizedTranscript = StringSanitizer.sanitizeGoogleMistakes(transcript);
+                    if (sanitizedTranscript.toLowerCase().contains(Globals.AI_NAME.toLowerCase())) {
+                        log.info("Processing sanitizedTranscript: {}", sanitizedTranscript);
+                        grok.processVoiceCommand(sanitizedTranscript);
+                    }
                 } else {
                     log.info("Discarded transcript: {} (confidence: {})", transcript, confidence);
                 }
@@ -215,6 +222,8 @@ public class SpeechRecognizer {
         SpeechAdaptation adaptation = SpeechAdaptation.newBuilder()
                 .addPhraseSets(PhraseSet.newBuilder()
                         .setBoost(15.0f)
+                        .addPhrases(PhraseSet.Phrase.newBuilder()
+                                .setValue("Astraea").setBoost(50.0f))
                         .addPhrases(PhraseSet.Phrase.newBuilder()
                                 .setValue("tritium").setBoost(30.0f))
                         .addPhrases(PhraseSet.Phrase.newBuilder()

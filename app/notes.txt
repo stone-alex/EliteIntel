@@ -1,6 +1,11 @@
 IDEDAS and such.
 
 
+Astraea is the Greek virgin goddess of justice, innocence, and purity. She is known as the "Star-Maiden" because her name means "starry".
+After abandoning Earth with the decline of the Golden Age, she ascended to the stars and became the constellation Virgo.
+Her return to Earth was prophesied to herald a new Golden Age
+
+
 on FSD jump completed clear the FSS info from system session.
     @Subscribe
     public void onFSDJump(FSDJumpEvent event) {
@@ -50,6 +55,78 @@ if (transcribedText.startsWith("Eliria") || transcribedText.startsWith("Elyria")
     String command = transcribedText.replaceFirst("Eliria|Elyria", "").trim();
     processShipAICommand(command);
 }
+
+
+
+
+Automatically assign AI personality:
+
+public String generateSystemPrompt() {
+        PlayerSession playerSession = PlayerSession.getInstance();
+        String playerRank = String.valueOf(playerSession.getStat("rank") != null ? playerSession.getStat("rank") : "Commander");
+        String playerName = String.valueOf(playerSession.getStat("name") != null ? playerSession.getStat("name") : "Pilot");
+        String powerPledge = String.valueOf(playerSession.getStat("power_pledge"));
+        String currentShip = String.valueOf(playerSession.getStat("current_ship"));
+        String fleetCarrier = String.valueOf(playerSession.getStat("fleet_carrier") != null ?
+            playerSession.getStat("fleet_carrier") : "No carrier");
+
+        String aiName, cadence, personality;
+        if (powerPledge == null || powerPledge.equals("null")) {
+            // No pledge: Base on ship manufacturer
+            if (currentShip != null && currentShip.contains("Gutamaya")) {
+                aiName = "Elyria";
+                cadence = "British cadence";
+                personality = "formal, aristocratic Imperial tone";
+            } else if (currentShip != null && currentShip.contains("Faulcon DeLacy")) {
+                aiName = "Cort";
+                cadence = "American cadence";
+                personality = "concise, professional Federal tone";
+            } else if (currentShip != null && currentShip.contains("Lakon")) {
+                aiName = "Varka";
+                cadence = "Russian cadence";
+                personality = "rebellious, informal Alliance tone";
+            } else {
+                aiName = "Elyria"; // Default
+                cadence = "neutral cadence";
+                personality = "dry, professional tone";
+            }
+        } else {
+            // Pledged to power
+            switch (powerPledge) {
+                case "Imperials":
+                    aiName = "Elyria";
+                    cadence = "British cadence";
+                    personality = "formal, aristocratic Imperial tone";
+                    break;
+                case "Federation":
+                    aiName = "Cort";
+                    cadence = "American cadence";
+                    personality = "concise, professional Federal tone";
+                    break;
+                case "Alliance":
+                    aiName = "Varka";
+                    cadence = "Russian cadence";
+                    personality = "rebellious, informal Alliance tone";
+                    break;
+                default:
+                    aiName = "Elyria";
+                    cadence = "neutral cadence";
+                    personality = "dry, professional tone";
+                    break;
+            }
+        }
+
+        String prompt = "You are " + aiName + ", onboard AI for fleet carrier " + fleetCarrier +
+            ". Address me as " + playerRank + ", Prince, or " + playerName +
+            ", pledged to " + (powerPledge != null && !powerPledge.equals("null") ? powerPledge : "no power") +
+            ". Use " + cadence + ", NATO phonetic alphabet for codes (e.g., RH-F = Romeo Hotel dash Foxtrot), " +
+            "spell out numerals (e.g., 285 = two eight five), and a " + personality + ".";
+        logger.debug("Generated system prompt: {}", prompt);
+        return prompt;
+    }
+
+
+
 
 
 public class SystemSession {

@@ -7,4 +7,6 @@ public class Globals {
 
     //no slash
     public static final String XAI_API_KEY = "elite-companion-xai-api-key.conf";
+
+    public static final String AI_NAME = "Astraea";
 }

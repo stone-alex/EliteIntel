@@ -5,6 +5,8 @@ import elite.companion.EventBusManager;
 import elite.companion.events.StatisticsEvent;
 import elite.companion.session.PlayerSession;
 
+import static elite.companion.session.PlayerSession.*;
+
 public class StatisticsSubscriber {
 
     public StatisticsSubscriber() {
@@ -14,42 +16,40 @@ public class StatisticsSubscriber {
 
     @Subscribe
     public void onStatisticsEvent(StatisticsEvent event) {
-        StringBuilder data = new StringBuilder();
-
+        PlayerSession playerSession = PlayerSession.getInstance();
         if (event.getBankAccount() != null) {
-            data.append("Current wealth: " + event.getBankAccount().getCurrentWealth() + " credits, ");
-            data.append("Insurance claims: " + event.getBankAccount().getInsuranceClaims() + " credits, ");
-            data.append("Number of ships owned: " + event.getBankAccount().getOwnedShipCount() + ", ");
+            playerSession.updateSession(PERSONAL_CREDITS_AVAILABLE, event.getBankAccount().getCurrentWealth());
+            playerSession.updateSession(INSURANCE_CLAIMS, event.getBankAccount().getInsuranceClaims());
+            playerSession.updateSession(SHIPS_OWNED, event.getBankAccount().getOwnedShipCount());
         }
 
         if (event.getCombat() != null) {
-            data.append("Total bounty claimed: " + event.getCombat().getBountiesClaimed() + ", ");
-            data.append("Total bounty profit: " + event.getCombat().getBountyHuntingProfit() + " credits, ");
+            playerSession.updateSession(TOTAL_BOUNTY_CLAIMED, event.getCombat().getBountiesClaimed());
+            playerSession.updateSession(TOTAL_BOUNTY_PROFIT, event.getCombat().getBountyHuntingProfit());
         }
 
         if (event.getExploration() != null) {
-            data.append("Total distance traveled: " + event.getExploration().getGreatestDistanceFromStart() + ", ");
-            data.append("Total systems visited: " + event.getExploration().getSystemsVisited() + ", ");
-            data.append("Total hyperspace distance: " + event.getExploration().getTotalHyperspaceDistance() + ", ");
-            data.append("Profits from exploration: " + event.getExploration().getExplorationProfits() + " credits, ");
+            playerSession.updateSession(TOTAL_DISTANCE_TRAVELED, event.getExploration().getGreatestDistanceFromStart());
+            playerSession.updateSession(TOTAL_SYSTEMS_VISITED, event.getExploration().getSystemsVisited());
+            playerSession.updateSession(TOTAL_HIPERSPACE_DISTANCE, event.getExploration().getTotalHyperspaceDistance());
+            playerSession.updateSession(TOTAL_PROFITS_FROM_EXPLORATION, event.getExploration().getExplorationProfits());
         }
 
         if (event.getExobiology() != null) {
-            data.append("Species First logged: " + event.getExobiology().getFirstLogged() + ", ");
-            data.append("total profit: " + event.getExobiology().getOrganicDataProfits() + " credits, ");
+            playerSession.updateSession(SPECIES_FIRST_LOGGED, event.getExobiology().getFirstLogged());
+            playerSession.updateSession(EXOBIOLOGY_PROFITS, event.getExobiology().getOrganicDataProfits());
         }
 
         if (event.getTrading() != null) {
-            data.append("total goods sold this session: " + event.getTrading().getGoodsSold() + ", ");
-            data.append("highest single transaction: " + event.getTrading().getHighestSingleTransaction() + " credits, ");
-            data.append("market profits: " + event.getTrading().getMarketProfits() + " credits, ");
+            playerSession.updateSession(GOODS_SOLD_THIS_SESSION, event.getTrading().getGoodsSold());
+            playerSession.updateSession(HIGHEST_SINGLE_TRANSACTION, event.getTrading().getHighestSingleTransaction());
+            playerSession.updateSession(MARKET_PROFITS, event.getTrading().getMarketProfits());
         }
 
         if (event.getCrew() != null) {
-            data.append("Crew wages payout: " + (event.getCrew().getNpcCrewTotalWages() > 1 ? "" + event.getCrew().getNpcCrewTotalWages() : "unknown"));
+            if (event.getCrew().getNpcCrewTotalWages() > 1) {
+                playerSession.updateSession(CREW_WAGS_PAYOUT, event.getCrew().getNpcCrewTotalWages());
+            }
         }
-
-
-        PlayerSession.getInstance().updateSession(PlayerSession.PLAYER_STATS, data.toString());
     }
 }

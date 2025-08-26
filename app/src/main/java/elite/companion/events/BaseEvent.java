@@ -1,6 +1,8 @@
 package elite.companion.events;
 
 
+import com.google.gson.Gson;
+
 import java.time.Duration;
 import java.time.Instant;
 
@@ -49,5 +51,9 @@ public abstract class BaseEvent {
 
     public String getEventName() {
         return eventName;
+    }
+
+    public String toJson() {
+        return new Gson().toJson(this);
     }
 }

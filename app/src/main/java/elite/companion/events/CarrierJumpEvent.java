@@ -1,18 +1,19 @@
 package elite.companion.events;
 
 import com.google.gson.annotations.SerializedName;
+import elite.companion.util.TimestampFormatter;
 
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.StringJoiner;
 
-public class FSDJumpEvent extends BaseEvent {
-    @SerializedName("Taxi")
-    private boolean taxi;
+public class CarrierJumpEvent extends BaseEvent {
+    @SerializedName("Docked")
+    private boolean docked;
 
-    @SerializedName("Multicrew")
-    private boolean multicrew;
+    @SerializedName("OnFoot")
+    private boolean onFoot;
 
     @SerializedName("StarSystem")
     private String starSystem;
@@ -80,32 +81,23 @@ public class FSDJumpEvent extends BaseEvent {
     @SerializedName("PowerplayStateUndermining")
     private int powerplayStateUndermining;
 
-    @SerializedName("JumpDist")
-    private float jumpDist;
-
-    @SerializedName("FuelUsed")
-    private float fuelUsed;
-
-    @SerializedName("FuelLevel")
-    private float fuelLevel;
-
     @SerializedName("Factions")
     private List<Faction> factions;
 
     @SerializedName("SystemFaction")
     private SystemFaction systemFaction;
 
-    public FSDJumpEvent(String timestamp) {
-        super(timestamp, 1, Duration.ofSeconds(30), FSDJumpEvent.class.getName());
+    public CarrierJumpEvent(String timestamp) {
+        super(timestamp, 1, Duration.ofSeconds(30), CarrierJumpEvent.class.getName());
     }
 
     // Getters
-    public boolean isTaxi() {
-        return taxi;
+    public boolean isDocked() {
+        return docked;
     }
 
-    public boolean isMulticrew() {
-        return multicrew;
+    public boolean isOnFoot() {
+        return onFoot;
     }
 
     public String getStarSystem() {
@@ -180,24 +172,16 @@ public class FSDJumpEvent extends BaseEvent {
         return powerplayStateUndermining;
     }
 
-    public float getJumpDist() {
-        return jumpDist;
-    }
-
-    public float getFuelUsed() {
-        return fuelUsed;
-    }
-
-    public float getFuelLevel() {
-        return fuelLevel;
-    }
-
     public List<Faction> getFactions() {
         return factions;
     }
 
     public SystemFaction getSystemFaction() {
         return systemFaction;
+    }
+
+    public String getFormattedTimestamp(boolean useLocalTime) {
+        return TimestampFormatter.formatTimestamp(getTimestamp().toString(), useLocalTime);
     }
 
     public static class Faction {
@@ -227,6 +211,12 @@ public class FSDJumpEvent extends BaseEvent {
 
         @SerializedName("ActiveStates")
         private List<ActiveState> activeStates;
+
+        @SerializedName("PendingStates")
+        private List<PendingState> pendingStates;
+
+        @SerializedName("RecoveringStates")
+        private List<RecoveringState> recoveringStates;
 
         // Getters
         public String getName() {
@@ -260,6 +250,14 @@ public class FSDJumpEvent extends BaseEvent {
         public List<ActiveState> getActiveStates() {
             return activeStates;
         }
+
+        public List<PendingState> getPendingStates() {
+            return pendingStates;
+        }
+
+        public List<RecoveringState> getRecoveringStates() {
+            return recoveringStates;
+        }
     }
 
     public static class ActiveState {
@@ -268,6 +266,38 @@ public class FSDJumpEvent extends BaseEvent {
 
         public String getState() {
             return state;
+        }
+    }
+
+    public static class PendingState {
+        @SerializedName("State")
+        private String state;
+
+        @SerializedName("Trend")
+        private int trend;
+
+        public String getState() {
+            return state;
+        }
+
+        public int getTrend() {
+            return trend;
+        }
+    }
+
+    public static class RecoveringState {
+        @SerializedName("State")
+        private String state;
+
+        @SerializedName("Trend")
+        private int trend;
+
+        public String getState() {
+            return state;
+        }
+
+        public int getTrend() {
+            return trend;
         }
     }
 
@@ -289,9 +319,9 @@ public class FSDJumpEvent extends BaseEvent {
 
 
     @Override public String toString() {
-        return new StringJoiner(", ", FSDJumpEvent.class.getSimpleName() + "[", "]")
-                .add("taxi=" + taxi)
-                .add("multicrew=" + multicrew)
+        return new StringJoiner("")
+                .add("docked=" + docked)
+                .add("onFoot=" + onFoot)
                 .add("starSystem='" + starSystem + "'")
                 .add("systemAddress=" + systemAddress)
                 .add("starPos=" + Arrays.toString(starPos))
@@ -314,10 +344,7 @@ public class FSDJumpEvent extends BaseEvent {
                 .add("powerplayStateControlProgress=" + powerplayStateControlProgress)
                 .add("powerplayStateReinforcement=" + powerplayStateReinforcement)
                 .add("powerplayStateUndermining=" + powerplayStateUndermining)
-                .add("jumpDist=" + jumpDist)
-                .add("fuelUsed=" + fuelUsed)
-                .add("fuelLevel=" + fuelLevel)
-                .add("factions=" + factions)
+                //.add("factions=" + factions.)
                 .add("systemFaction=" + systemFaction)
                 .toString();
     }

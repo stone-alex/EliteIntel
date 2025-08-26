@@ -1,5 +1,6 @@
 package elite.companion.util;
 
+import elite.companion.comms.GrokRequestHints;
 import elite.companion.session.PlayerSession;
 
 public class AIContextFactory {
@@ -18,7 +19,7 @@ public class AIContextFactory {
     public String generateSystemPrompt() {
 
         PlayerSession playerSession = PlayerSession.getInstance();
-        String playerName = playerSession.getSessionValue(PlayerSession.PLAYER_NAME, String.class);
+        String playerName = "Krondor"; // -> not available at start - fix -> playerSession.getSessionValue(PlayerSession.PLAYER_NAME, String.class);
         String playerTitle = "Prince";
         String playerMilitaryRank = "Viscount";
 
@@ -26,7 +27,7 @@ public class AIContextFactory {
 
         StringBuilder sb = new StringBuilder();
         sb.append("context: ");
-        sb.append("You are Charles, onboard AI ");
+        sb.append("You are Astraea, onboard AI ");
         sb.append(currentShip == null ? ". " : " for " + currentShip + ". ");
         sb.append("Address me as either as " + playerName + ", " + playerMilitaryRank + ", or " + playerTitle + ". We are pledged to Imperial power. (Empress Arissa Lavigny-Duval). ");
         sb.append("behavior: ");
@@ -60,7 +61,7 @@ public class AIContextFactory {
         sb.append(playerVoiceInput);
         sb.append(" ");
         sb.append("Classify as: 'command' (trigger app action or keyboard event), 'query' (request info from state), or 'chat' (general or unclear talk). ");
-        //sb.append(GrokRequestHints.supportedCommands); // "Supported commands: " is provided in the variable
+        sb.append(GrokRequestHints.supportedCommands); // "Supported commands: " is provided in the variable
         sb.append(" ");
         sb.append("If unclear or noise (e.g., sniff or gibberish), classify as 'chat' and respond lightly like 'Didn't catch that!'. ");
         sb.append("Provide very brief fun Imperial-toned response ");

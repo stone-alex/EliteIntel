@@ -10,14 +10,25 @@ public class AppMain {
         VoiceGenerator.getInstance().speak("Initializing Companion");
 
         //instantiate subscribers
+        new CarrierJumpRequestSubscriber();
+        new CommanderEventSubscriber();
+        new FSDJumpSubscriber();
+        new FSDTargetSubscriber();
+        new FSSSignalDiscoveredSubscriber();
         new LoadGameEventSubscriber();
         new MiningEventSubscriber();
-        new CommanderEventSubscriber();
-        new StatisticsSubscriber();
-        new ReceiveTextSubscriber();
-        new ProspectorSubscriber();
-        new FSSSignalDiscoveredSubscriber();
         new PowerPlaySubscriber();
+        new ProspectorSubscriber();
+        new ReceiveTextSubscriber();
+        new StatisticsSubscriber();
+        new SupercruiseExitedSubscriber();
+        new TouchdownEventSubscriber();
+        new LiftoffEventSubscriber();
+        new ShipTargetedEventSubscriber();
+        new ScanEventSubscriber();
+        new ShipTargetedEventSubscriber();
+        new LoadoutSubscriber();
+        new SwitchSuitLoadoutSubscriber();
 
         SpeechRecognizer recognizer = new SpeechRecognizer();
         recognizer.start(); // Start STT voice command processing thread

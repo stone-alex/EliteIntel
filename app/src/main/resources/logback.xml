@@ -9,6 +9,7 @@
     <logger name="io.grpc.netty.shaded" level="WARN" />
     <logger name="io.netty" level="WARN" />
     <logger name="com.google" level="WARN" />
+    <logger name="elite.companion.JournalParser" level="ERROR"/>
 
     <!-- Set your app to DEBUG explicitly -->
     <logger name="elite.companion" level="DEBUG" />

@@ -16,38 +16,37 @@ import java.util.Comparator;
 
 public class JournalParser {
     private static final Logger log = LoggerFactory.getLogger(JournalParser.class);
-    private final Gson gson = new GsonBuilder().setLenient().create(); // Handles malformed JSON
+    public static final int THRESHOLD = 10; //Seconds
+    public static final int THRESHOLD_LONG = 60; //Seconds
+    private final Gson gson = new GsonBuilder().setLenient().create();
 
-
-    //TODO: Refactor this to be settable via config file or user interface.
     private final Path journalDir = Paths.get(System.getProperty("user.home"), "Saved Games", "Frontier Developments", "Elite Dangerous");
 
     public void startReading() throws IOException, InterruptedException {
         log.info("Starting Journal Parser");
-        VoiceGenerator.getInstance().speak("Monitoring Journal");
+
         WatchService watchService = FileSystems.getDefault().newWatchService();
         journalDir.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_CREATE);
 
         Path currentFile = getLatestJournalFile();
         long lastPosition = 0;
-
+        VoiceGenerator.getInstance().speak("Monitoring Journal");
+        System.out.println("Monitoring " + currentFile.getFileName());
         while (true) {
-            WatchKey key = watchService.take(); // Blocks until file changes
+            WatchKey key = watchService.take();
             Path latestFile = getLatestJournalFile();
 
             if (!latestFile.equals(currentFile)) {
-                lastPosition = 0; // Reset position on new file
+                lastPosition = 0;
                 currentFile = latestFile;
             }
 
-            // Use UTF-8 explicitly; Elite Dangerous journals are UTF-8 (often with BOM)
             try (BufferedReader reader = Files.newBufferedReader(currentFile, StandardCharsets.UTF_8)) {
                 reader.skip(lastPosition);
                 String line;
                 boolean isFirstLineAfterSeek = (lastPosition == 0);
 
                 while ((line = reader.readLine()) != null) {
-                    // Strip UTF-8 BOM if present on the first line
                     if (isFirstLineAfterSeek) {
                         if (line.length() > 0 && line.charAt(0) == '\uFEFF') {
                             line = line.substring(1);
@@ -56,7 +55,6 @@ public class JournalParser {
                     }
 
                     if (line.isBlank()) {
-                        // Advance position and skip empty/whitespace-only lines
                         lastPosition += line.getBytes(StandardCharsets.UTF_8).length + System.lineSeparator().getBytes(StandardCharsets.UTF_8).length;
                         continue;
                     }
@@ -64,7 +62,6 @@ public class JournalParser {
                     try {
                         JsonElement element = JsonParser.parseString(line);
                         if (!element.isJsonObject()) {
-                            // Not an object (could be a primitive/array); skip safely
                             lastPosition += line.getBytes(StandardCharsets.UTF_8).length + System.lineSeparator().getBytes(StandardCharsets.UTF_8).length;
                             continue;
                         }
@@ -76,53 +73,71 @@ public class JournalParser {
                             log.info("Processing Journal Event: {} {}", eventType, event.toString());
                             switch (eventType) {
                                 case "LoadGame":
-                                    EventBusManager.publish(gson.fromJson(event, LoadGameEvent.class));
+                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, LoadGameEvent.class));
                                     break;
                                 case "Commander":
-                                    EventBusManager.publish(gson.fromJson(event, CommanderEvent.class));
+                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, CommanderEvent.class));
                                     break;
                                 case "MiningRefined":
-                                    if (isRecent(eventTimestamp, 10)) {
-                                        EventBusManager.publish(gson.fromJson(event, MiningRefinedEvent.class));
-                                    }
+                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, MiningRefinedEvent.class));
                                     break;
                                 case "ProspectedAsteroid":
-                                    if (isRecent(eventTimestamp, 60)) {
-                                        EventBusManager.publish(gson.fromJson(event, ProspectedAsteroidEvent.class));
-                                    }
+                                    if (isRecent(eventTimestamp, THRESHOLD_LONG)) EventBusManager.publish(gson.fromJson(event, ProspectedAsteroidEvent.class));
                                     break;
                                 case "LaunchDrone":
-                                    EventBusManager.publish(gson.fromJson(event, LaunchDroneEvent.class));
+                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, LaunchDroneEvent.class));
                                     break;
                                 case "CarrierStats":
-                                    EventBusManager.publish(gson.fromJson(event, CarrierStatsEvent.class));
+                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, CarrierStatsEvent.class));
                                     break;
                                 case "Powerplay":
-                                    EventBusManager.publish(gson.fromJson(event, PowerplayEvent.class));
+                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, PowerplayEvent.class));
                                     break;
                                 case "Statistics":
-                                    EventBusManager.publish(gson.fromJson(event, StatisticsEvent.class));
+                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, StatisticsEvent.class));
                                     break;
                                 case "ReceiveText":
-                                    if (isRecent(eventTimestamp, 10)) {
-                                        EventBusManager.publish(gson.fromJson(event, ReceiveTextEvent.class));
-                                    }
+                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, ReceiveTextEvent.class));
+                                    break;
                                 case "FSSSignalDiscovered":
-                                    EventBusManager.publish(gson.fromJson(event, FSSSignalDiscoveredEvent.class));
+                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, FSSSignalDiscoveredEvent.class));
+                                    break;
+                                case "FSDJump":
+                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, FSDJumpEvent.class));
+                                    break;
+                                case "Touchdown":
+                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, TouchdownEvent.class));
+                                    break;
+                                case "Liftoff":
+                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, LiftoffEvent.class));
+                                    break;
+                                case "CarrierJumpRequest":
+                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, CarrierJumpRequestEvent.class));
+                                    break;
+                                case "FSDTarget":
+                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, FSDTargetEvent.class));
+                                    break;
+                                case "Scan":
+                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, ScanEvent.class));
+                                    break;
+                                case "ShipTargeted":
+                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, ShipTargetedEvent.class));
+                                    break;
+                                case "Loadout":
+                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, LoadoutEvent.class));
+                                    break;
+                                case "SwitchSuitLoadout":
+                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, SwitchSuitLoadoutEvent.class));
                                     break;
 
-
                                 default:
-                                    // Ignore noise (e.g., "Music", "ReceiveText")
                                     break;
                             }
                         }
                     } catch (JsonSyntaxException jse) {
-                        // Malformed or partial JSON line; skip and continue watching
                         System.err.println("Skipping malformed journal line: " + jse.getMessage());
                     }
 
-                    // Account for bytes read + newline in UTF-8
                     lastPosition += line.getBytes(StandardCharsets.UTF_8).length + System.lineSeparator().getBytes(StandardCharsets.UTF_8).length;
                 }
             } catch (IOException e) {
@@ -134,7 +149,6 @@ public class JournalParser {
         }
     }
 
-
     private boolean isRecent(String timestamp, long secondsThreshold) {
         try {
             Instant eventTime = Instant.parse(timestamp);
@@ -142,10 +156,9 @@ public class JournalParser {
             return !eventTime.isBefore(now.minus(secondsThreshold, ChronoUnit.SECONDS));
         } catch (Exception e) {
             log.warn("Invalid timestamp format: {}", timestamp);
-            return false; // Skip malformed timestamps
+            return false;
         }
     }
-
 
     private Path getLatestJournalFile() throws IOException {
         return Files.list(journalDir)

@@ -14,15 +14,14 @@ public class ReceiveTextSubscriber {
 
     @Subscribe
     public void onReceiveTextEvent(ReceiveTextEvent event) {
-        if(!event.getMessageLocalised().toLowerCase().contains("entered channel")) {
+        if (!event.getMessageLocalised().toLowerCase().contains("entered channel")) {
             boolean isStation = event.getMessage().toLowerCase().contains("station");
             VoiceGenerator.getInstance().speakInRandomVoice(event.getMessageLocalised());
-            SystemSession.getInstance().setSensorData(
-                    "radio_transmission:[from:" + event.getFrom()+ ", " +
-                            "is_station:"+isStation+", " +
-                            "message:" + event.getMessageLocalised()
-                            +"]"
-            );
+            if (isStation) {
+                SystemSession.getInstance().setSensorData(
+                        "radio_transmission:[from:" + event.getFrom() + ", message:" + event.getMessageLocalised() + "]"
+                );
+            }
         }
     }
 }

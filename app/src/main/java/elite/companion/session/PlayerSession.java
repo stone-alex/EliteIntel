@@ -17,9 +17,25 @@ import java.util.Map;
  */
 public class PlayerSession {
     public static final String SHIP_FUEL_LEVEL = "ship_fuel_level";
+    public static final String INSURANCE_CLAIMS = "insurance_claims";
+    public static final String SHIPS_OWNED = "ships_owned";
+    public static final String TOTAL_BOUNTY_CLAIMED = "total_bounty_claimed";
+    public static final String TOTAL_BOUNTY_PROFIT = "total_bounty_profit";
+    public static final String TOTAL_DISTANCE_TRAVELED = "total_distance_traveled_in_light_years";
+    public static final String TOTAL_SYSTEMS_VISITED = "total_systems_visited";
+    public static final String TOTAL_HIPERSPACE_DISTANCE = "total_hyperspace_distance_in_light_years";
+    public static final String TOTAL_PROFITS_FROM_EXPLORATION = "total_profits_from_exploration";
+    public static final String SPECIES_FIRST_LOGGED = "species_first_logged";
+    public static final String EXOBIOLOGY_PROFITS = "exobiology_profits";
+    public static final String GOODS_SOLD_THIS_SESSION = "goods_sold_this_session";
+    public static final String HIGHEST_SINGLE_TRANSACTION = "highest_single_transaction";
+    public static final String MARKET_PROFITS = "market_profits";
+    public static final String CREW_WAGS_PAYOUT = "crew_wags_payout";
+    public static final String SHIP_CARGO_CAPACITY = "ship_cargo_capacity";
+    public static final String SHIP_FUEL_CAPACITY = "ship_fuel_capacity";
+
     private static final PlayerSession INSTANCE = new PlayerSession();
 
-    public static final String PLAYER_STATS = "player_stats";
     public static final String CARRIER_BALANCE = "carrier_balance";
     public static final String CARRIER_RESERVE = "carrier_reserve";
     public static final String PLAYER_NAME = "player_name";
@@ -118,7 +134,7 @@ public class PlayerSession {
         for (Map.Entry<String, Object> entry : state.entrySet()) {
             String key = entry.getKey();
             Object value = String.valueOf(entry.getValue());
-            summary.append(key).append(": ").append(value).append("; ");
+            summary.append(key).append(": ").append(String.valueOf(value)).append("; ");
         }
         return summary.toString();
     }

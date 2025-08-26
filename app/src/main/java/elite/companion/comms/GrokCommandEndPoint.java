@@ -17,8 +17,10 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
-public class GrokInteractionEndPoint {
-    private static final Logger log = LoggerFactory.getLogger(GrokInteractionEndPoint.class);
+public class GrokCommandEndPoint {
+    private static final Logger log = LoggerFactory.getLogger(GrokCommandEndPoint.class);
+
+    private static final ThreadLocal<JsonArray> currentHistory = new ThreadLocal<>();
 
     public void start() throws Exception {
         GrokResponseRouter.getInstance().start();
@@ -30,16 +32,25 @@ public class GrokInteractionEndPoint {
         log.info("Stopped GrokInteractionHandler");
     }
 
-    public void processVoiceCommand(String voiceCommand) {
-        String command = sanitizeGoogleMistakes(voiceCommand);
-        if (command == null) {
+    public void processVoiceCommand(String command) {
+        if (command == null || command.isEmpty()) {
             VoiceGenerator.getInstance().speak("Sorry, I couldn't process that.");
             return;
         }
 
-        String request = buildVoiceRequest(command);
-        System.out.println(request);
-        JsonObject apiResponse = callXaiApi(request, AIContextFactory.getInstance().generateSystemPrompt());
+        JsonArray messages = new JsonArray();
+        JsonObject systemMessage = new JsonObject();
+        systemMessage.addProperty("role", "system");
+        systemMessage.addProperty("content", AIContextFactory.getInstance().generateSystemPrompt());
+        messages.add(systemMessage);
+
+        JsonObject userMessage = new JsonObject();
+        userMessage.addProperty("role", "user");
+        userMessage.addProperty("content", buildVoiceRequest(command));
+        messages.add(userMessage);
+
+        System.out.println("Voice command messages: " + messages);
+        JsonObject apiResponse = callXaiApi(messages); // Pass messages directly
         if (apiResponse == null) {
             VoiceGenerator.getInstance().speak("Sorry, I couldn't process that.");
             return;
@@ -51,7 +62,6 @@ public class GrokInteractionEndPoint {
     public void processSystemCommand() {
         String sensor_data = SystemSession.getInstance().getSensorData();
         String fssData = SystemSession.getInstance().getFssData();
-
         String input = (sensor_data == null && fssData == null) ? null : (sensor_data == null ? "" : sensor_data) + (fssData == null ? "" : fssData);
 
         if (sensor_data != null) SystemSession.getInstance().clearSensorData();
@@ -61,9 +71,19 @@ public class GrokInteractionEndPoint {
             return;
         }
 
-        String request = buildSystemRequest(input);
-        System.out.println(request);
-        JsonObject apiResponse = callXaiApi(request, AIContextFactory.getInstance().generateSystemPrompt());
+        JsonArray messages = new JsonArray();
+        JsonObject systemMessage = new JsonObject();
+        systemMessage.addProperty("role", "system");
+        systemMessage.addProperty("content", AIContextFactory.getInstance().generateSystemPrompt());
+        messages.add(systemMessage);
+
+        JsonObject userMessage = new JsonObject();
+        userMessage.addProperty("role", "user");
+        userMessage.addProperty("content", buildSystemRequest(input));
+        messages.add(userMessage);
+
+        System.out.println("System command messages: " + messages);
+        JsonObject apiResponse = callXaiApi(messages);
         if (apiResponse == null) {
             VoiceGenerator.getInstance().speak("Failure processing system request. Check programming");
             return;
@@ -72,23 +92,8 @@ public class GrokInteractionEndPoint {
         GrokResponseRouter.getInstance().processGrokResponse(apiResponse);
     }
 
-
-    private static String sanitizeGoogleMistakes(String voiceCommand) {
-        if (voiceCommand == null || voiceCommand.isEmpty()) return null;
-
-        String command = voiceCommand.toLowerCase().trim();
-
-        String[] misheardPhrases = {
-                "treat you", "trees you", "3 tube", "hydrogen 3", "hydrogen three", "32",
-                "carrier fuel", "carrier juice", "carrot juice", "treatyou", "treesyou",
-        };
-        for (String phrase : misheardPhrases) {
-            if (command.contains(phrase)) {
-                command = command.replaceAll("(?i)" + phrase.replace(" ", "\\s+"), "tritium");
-                log.info("Sanitized transcript: {} -> {}", voiceCommand, command);
-            }
-        }
-        return command;
+    public static JsonArray getCurrentHistory() {
+        return currentHistory.get() != null ? currentHistory.get() : new JsonArray();
     }
 
     /**
@@ -111,7 +116,7 @@ public class GrokInteractionEndPoint {
         return AIContextFactory.getInstance().generateSystemInstructions(systemInput);
     }
 
-    private JsonObject callXaiApi(String userPrompt, String systemPrompt) {
+    private JsonObject callXaiApi(JsonArray messages) {
         try {
             HttpURLConnection conn = getHttpURLConnection();
 
@@ -119,22 +124,11 @@ public class GrokInteractionEndPoint {
             body.addProperty("model", "grok-3-fast");
             body.addProperty("temperature", 0.7);
             body.addProperty("stream", false);
-
-            JsonArray messages = new JsonArray();
-            JsonObject systemMessage = new JsonObject();
-            systemMessage.addProperty("role", "system");
-            systemMessage.addProperty("content", systemPrompt);
-            messages.add(systemMessage);
-
-            JsonObject userMessage = new JsonObject();
-            userMessage.addProperty("role", "user");
-            userMessage.addProperty("content", userPrompt);
-            messages.add(userMessage);
-
             body.add("messages", messages);
 
             String bodyString = body.toString();
             log.info("xAI API call: {}", bodyString);
+            currentHistory.set(messages); // Store before call
 
             try (var os = conn.getOutputStream()) {
                 os.write(bodyString.getBytes(StandardCharsets.UTF_8));
@@ -166,12 +160,16 @@ public class GrokInteractionEndPoint {
             }
         } catch (Exception e) {
             log.error("AI API call fatal error: {}", e.getMessage(), e);
+            log.error("Input data {} ", messages);
+
             return null;
+        } finally {
+            currentHistory.remove(); // Always clear
         }
     }
 
     private static HttpURLConnection getHttpURLConnection() throws IOException {
-        URL url = new URL("https://api.x.ai/v1/chat/completions");
+        URL url = new URL("https://api.x.ai/v1/chat/completions"); //TODO: Read from config or settings.
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
         conn.setRequestProperty("Content-Type", "application/json");

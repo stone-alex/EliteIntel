@@ -1,8 +1,10 @@
 package elite.companion.comms;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import elite.companion.comms.handlers.*;
 import elite.companion.robot.VoiceCommandHandler;
+import elite.companion.util.AIContextFactory;
 import elite.companion.util.InaraApiClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,8 +18,9 @@ public class GrokResponseRouter {
     private static final Logger log = LoggerFactory.getLogger(GrokResponseRouter.class);
     private static final GrokResponseRouter INSTANCE = new GrokResponseRouter();
     private final VoiceCommandHandler voiceCommandHandler;
-    private final InaraApiClient inaraApiClient;
+    private final InaraApiClient inaraApiClient;// stub
     private final Map<String, CommandHandler> commandHandlers = new HashMap<>();
+    private final Map<String, QueryHandler> queryHandlers = new HashMap<>();
 
     public static GrokResponseRouter getInstance() {
         return INSTANCE;
@@ -34,6 +37,9 @@ public class GrokResponseRouter {
     }
 
     private void registerCommandHandlers() {
+
+        //Query Handlers
+        queryHandlers.put(CommandAction.GET_CURRENT_SYSTEM.getAction(), new GetCurrentSystemHandler());
 
         //APP COMMANDS
         commandHandlers.put(CommandAction.SET_MINING_TARGET.getAction(), new SetMiningTargetHandler());
@@ -163,6 +169,56 @@ public class GrokResponseRouter {
         }
     }
 
+    private void handleQuery(String action, JsonObject params, String responseText) {
+        QueryHandler handler = queryHandlers.get(action);
+        if (handler == null) {
+            log.warn("Unknown query action: {}", action);
+            handleChat("I couldn't access that data. Please try again.");
+            return;
+        }
+        try {
+            String data = handler.handle(params);
+            // Discard short-term data if applicable
+            // playSessionManager.discardSystemSessionIfConsumed(action); // As before
+
+            // Build follow-up messages
+            JsonArray messages = new JsonArray();
+
+            // Add system prompt first
+            JsonObject systemMessage = new JsonObject();
+            systemMessage.addProperty("role", "system");
+            systemMessage.addProperty("content", AIContextFactory.getInstance().generateSystemPrompt());
+            messages.add(systemMessage);
+
+            // Append original history (assume added method in GrokInteractionEndPoint)
+            JsonArray originalHistory = GrokCommandEndPoint.getCurrentHistory(); // Implement this to return messages sans system
+            for (int i = 0; i < originalHistory.size(); i++) {
+                messages.add(originalHistory.get(i));
+            }
+
+            // Add tool result
+            JsonObject toolResult = new JsonObject();
+            toolResult.addProperty("role", "tool");
+            toolResult.addProperty("name", action);
+            toolResult.addProperty("content", data);
+            messages.add(toolResult);
+
+            // Send to Grok via query endpoint
+            JsonObject followUpResponse = GrokQueryEndPoint.getInstance().sendToGrok(messages);
+
+            if (followUpResponse == null) {
+                handleChat("Error accessing data banks.");
+                return;
+            }
+
+            // Process (expected type: "chat")
+            processGrokResponse(followUpResponse);
+        } catch (Exception e) {
+            log.error("Query handling failed for action {}: {}", action, e.getMessage(), e);
+            handleChat("Error accessing data banks: " + e.getMessage());
+        }
+    }
+
     private static String getAsStringOrEmpty(JsonObject obj, String key) {
         if (obj == null || key == null) return "";
         if (!obj.has(key)) return "";
@@ -201,10 +257,6 @@ public class GrokResponseRouter {
         }
     }
 
-    private void handleQuery(String action, JsonObject params, String responseText) {
-        // similar to handleCommand? have a query handler interface, map of handlers etc?
-        // private final Map<String, QueryHandler> queryHandlers = new HashMap<>();
-    }
 
     private void handleChat(String responseText) {
         VoiceGenerator.getInstance().speak(responseText);

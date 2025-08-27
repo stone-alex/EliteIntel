@@ -25,15 +25,14 @@ public class FSDTargetSubscriber {
             Map<String, NavRouteDto> route = systemSession.getRoute();
             if (route != null && !route.isEmpty()) {
                 NavRouteDto firstStop = route.values().iterator().next();
-                VoiceGenerator.getInstance().speak("First stop in rout " + firstStop.getName() + ", class " + firstStop.getStarClass()+" star ");
+                VoiceGenerator.getInstance().speak("Jumping to " + firstStop.getName() + isFuelStarClause(event.getStarClass()));
             }
         }
+        systemSession.updateSession(SystemSession.FSD_TARGET, event.getName());
+    }
 
-        String jumpingTo = event.getName();
-        String starClass = event.getStarClass();
+    private String isFuelStarClause(String starClass) {
         boolean isFuelStar = "KGBFOAM".contains(starClass);
-
-        systemSession.updateSession(SystemSession.FSD_TARGET, jumpingTo);
-        //systemSession.setSensorData("Next Jump Target Set to Star System: "+jumpingTo+", Star Class: "+starClass+", Fuel Star: "+isFuelStar);
+        return isFuelStar ? " (Fuel Star)" : "";
     }
 }

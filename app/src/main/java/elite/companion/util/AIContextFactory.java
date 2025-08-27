@@ -82,7 +82,7 @@ public class AIContextFactory {
     }
 
     private static void appendContext(StringBuilder sb, String currentShip, String playerName, String playerMilitaryRank, String playerHonorific, String playerTitle) {
-        sb.append("Context: You are Ares, onboard AI for a null ship in Elite Dangerous. Address me as Krondor, Viscount, or My Lord. We serve the Imperial fleet as explorers and bounty hunters.\n\n");
+        sb.append("Context: You are Ares, onboard AI for a null ship in Elite Dangerous. Address me as Krondor, Viscount, or My Lord. Prefer Krondor or Viscount. We serve the Imperial fleet as explorers and bounty hunters.\n\n");
     }
 
 

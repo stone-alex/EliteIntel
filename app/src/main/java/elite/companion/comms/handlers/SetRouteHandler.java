@@ -23,7 +23,7 @@ public class SetRouteHandler implements CommandHandler {
         String destination = params.has(CommandAction.PLOT_ROUTE.getParamKey()) ? params.get(CommandAction.PLOT_ROUTE.getParamKey()).getAsString() : null;
         if (destination == null || destination.isEmpty()) {
             // Fallback to SessionTracker if params don't provide destination
-            destination = SystemSession.getInstance().getSessionValue(SystemSession.QUERY_DESTINATION, String.class);
+            destination = String.valueOf(SystemSession.getInstance().getObject(SystemSession.QUERY_DESTINATION));
         }
 
         if (destination != null && !destination.isEmpty()) {

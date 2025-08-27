@@ -17,7 +17,6 @@ public class FSDJumpSubscriber {
     @Subscribe
     public void onFSDJumpEvent(FSDJumpEvent event) {
 
-        Float jumpDistance = event.getJumpDist();
         String currentStarSystem = event.getStarSystem();
         String systemAllegiance = event.getSystemAllegiance();
         String economy = event.getSystemEconomyLocalised();
@@ -52,7 +51,6 @@ public class FSDJumpSubscriber {
         systemSession.removeNavPoint(currentStarSystem);
         String finalDestination = String.valueOf(systemSession.getObject(SystemSession.FINAL_DESTINATION));
 
-
         StringBuilder sb = new StringBuilder();
         sb.append("FSD Jump Complete: ");
 
@@ -61,6 +59,8 @@ public class FSDJumpSubscriber {
         sb.append("Government: ").append(government).append(", ");
         sb.append("Security: ").append(security).append(", ");
         sb.append("Controlling Power: ").append(controllingPower).append(", ");
+        sb.append("Powerplay State: ").append(powerplayState).append(", ");
+        sb.append("Economy: ").append(economy).append(", ");
 
         if (finalDestination != null && finalDestination.equalsIgnoreCase(currentStarSystem)) {
             sb.append("Arrived at final destination: ").append(finalDestination).append(" true, ");
@@ -70,17 +70,10 @@ public class FSDJumpSubscriber {
                 int remainingJump = systemSession.getRoute().size();
 
                 if (remainingJump > 0) {
-                    sb.append("Next Stop: ").append(systemSession.getSessionValue(systemSession.FSD_TARGET, String.class)).append(", ");
+                    sb.append("Next Stop: ").append(systemSession.getObject(systemSession.FSD_TARGET)).append(", ");
                 }
 
                 sb.append("Jumps remaining to final destination: ").append(remainingJump).append(finalDestination).append(",");
-
-                if (finalDestination != null && currentStarSystem.toLowerCase().contains(finalDestination.toLowerCase())) {
-                    sb.append("Final jump is to final destination: ").append(finalDestination).append(" true, ");
-                }
-            }
-            if (Objects.equals(finalDestination, currentStarSystem)) {
-                sb.append("Arrived at final destination: ").append(finalDestination).append(" true, ");
             }
         }
 

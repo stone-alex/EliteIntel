@@ -19,9 +19,6 @@ public class LiftoffEventSubscriber {
         String liftoffFromType = isOnPlanet ? "Planet" : "Station";
         String localStarSystem = event.getStarSystem();
         String localBody = event.getBody();
-        float latitude = event.getLatitude();
-        float longitude = event.getLongitude();
-        String nearestDestination = event.getNearestDestinationLocalised();
 
         StringBuilder sb = new StringBuilder();
         sb.append("Liftoff: ");

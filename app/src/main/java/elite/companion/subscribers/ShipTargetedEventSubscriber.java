@@ -31,8 +31,6 @@ public class ShipTargetedEventSubscriber {
         String pilotName = event.getPilotNameLocalised();
         String pilotRank = event.getPilotRank();
         String legalStatus = event.getLegalStatus() == null ? null : event.getLegalStatus().toLowerCase();
-        String pledgedPower = event.getPledgePower();
-        String faction = event.getFaction();
         int bounty = event.getBounty();
 
 
@@ -55,10 +53,8 @@ public class ShipTargetedEventSubscriber {
             info.append(legalStatus == null ? " Legal Status Unknown " : legalStatus.replace("_", " "));
             info.append(", ");
 
-            String bountyString = bounty == 0 ? "No Bounty" : bounty + " credits";
-            if (bounty > 0) {
-                SystemSession.getInstance().setSensorData("Targeted ship has bounty of: '"+bountyString+"'");
-            }
+            info.append(bounty == 0 ? "No Bounty" : bounty + " credits");
+            info.append(", ");
 
             if (shieldHealth == 100 && hullHealth == 100) {
                 //info.append("All Systems Normal");

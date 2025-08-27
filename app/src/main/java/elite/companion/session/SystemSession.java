@@ -16,7 +16,6 @@ import java.util.*;
  */
 public class SystemSession {
     public static final String SENSOR_READING = "sensor_reading";
-    public static final String FSS_READING = "fss_reading";
     public static final String CURRENT_SYSTEM = "current_system";
     public static final String QUERY_DESTINATION = "query_destination";
     public static final String SHIP_DATA = "ship_data";
@@ -30,7 +29,6 @@ public class SystemSession {
     private final Map<String, Object> state = new HashMap<>();
     private final Set<String> detectedSignals = new LinkedHashSet<>();
     private final Map<String, NavRouteDto> routeMap = new LinkedHashMap<>(); // Star system name to NavRouteDto
-    private long currentSystemAddress = -1; // Track current system to reset on change
     private long bountyCollectedThisSession = 0;
 
     private SystemSession() {
@@ -45,28 +43,12 @@ public class SystemSession {
         return state.get(key);
     }
 
-    public String getSessionValue(String key, Class<String> stringClass) {
-        return state.get(key) == null ? null : stringClass.cast(state.get(key));
-    }
-
     public void remove(String key) {
         state.remove(key);
     }
 
-    public String getSummary() {
-        StringBuilder summary = new StringBuilder();
-        summary.append("Data from sensors: ");
-        state.forEach((key, value) -> summary.append(key).append(": ").append(value).append("; "));
-        return summary.toString();
-
-    }
-
     public void setSensorData(String sensorReading) {
         state.put(SENSOR_READING, sensorReading);
-    }
-
-    public void updateSession(String sensorReading, Object data) {
-        state.put(sensorReading, data);
     }
 
 
@@ -74,6 +56,13 @@ public class SystemSession {
         state.remove(SENSOR_READING);
     }
 
+    public String getSensorData() {
+        return state.get(SENSOR_READING) == null ? null : (String) state.get(SENSOR_READING);
+    }
+
+    public void updateSession(String sensorReading, Object data) {
+        state.put(sensorReading, data);
+    }
 
     public void addSignal(BaseEvent event) {
         detectedSignals.add(event.toJson());
@@ -90,11 +79,6 @@ public class SystemSession {
 
         return array.length == 0 ? "no data" : sb.toString();
     }
-
-    public String getSensorData() {
-        return state.get(SENSOR_READING) == null ? null : (String) state.get(SENSOR_READING);
-    }
-
 
 
 

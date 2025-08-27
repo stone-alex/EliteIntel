@@ -27,8 +27,7 @@ public class LoadGameEventSubscriber {
         playerSession.updateSession(CURRENT_SHIP_NAME, event.getShipName());
         playerSession.updateSession(PERSONAL_CREDITS_AVAILABLE, event.getCredits());
 
-
-        SystemSession.getInstance().updateSession(SENSOR_READING, "New Game session started (debugging session) " + event.toJson());
+        SystemSession.getInstance().updateSession(SENSOR_READING, "New Game started (debugging session) " + event.toJson());
     }
 
 }

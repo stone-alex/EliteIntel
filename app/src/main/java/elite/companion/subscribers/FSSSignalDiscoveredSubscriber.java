@@ -13,10 +13,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-public class FSSSignalDiscoveredSubscriber { // Or fold into ShipAIModule
-    private static final Logger log = LoggerFactory.getLogger(FSSSignalDiscoveredSubscriber.class);
-    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-    private ScheduledFuture<?> pendingSummaryTask;
+public class FSSSignalDiscoveredSubscriber {
     private final SystemSession systemSession = SystemSession.getInstance();
 
     public FSSSignalDiscoveredSubscriber() {

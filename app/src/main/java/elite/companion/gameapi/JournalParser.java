@@ -1,6 +1,7 @@
-package elite.companion;
+package elite.companion.gameapi;
 
 import com.google.gson.*;
+import elite.companion.EventBusManager;
 import elite.companion.comms.VoiceGenerator;
 import elite.companion.events.*;
 import org.slf4j.Logger;
@@ -16,8 +17,9 @@ import java.util.Comparator;
 
 public class JournalParser {
     private static final Logger log = LoggerFactory.getLogger(JournalParser.class);
-    public static final int THRESHOLD = 10; //Seconds
-    public static final int THRESHOLD_LONG = 60; //Seconds
+    public static final int THRESHOLD = 10000; //10 Seconds
+    public static final int THRESHOLD_SHORT = 250; //0.25 Seconds
+    public static final int THRESHOLD_LONG = 60000; //60 Seconds
     private final Gson gson = new GsonBuilder().setLenient().create();
 
     private final Path journalDir = Paths.get(System.getProperty("user.home"), "Saved Games", "Frontier Developments", "Elite Dangerous");
@@ -103,7 +105,7 @@ public class JournalParser {
                                     if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, FSSSignalDiscoveredEvent.class));
                                     break;
                                 case "FSDJump":
-                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, FSDJumpEvent.class));
+                                    if (isRecent(eventTimestamp, THRESHOLD_LONG)) EventBusManager.publish(gson.fromJson(event, FSDJumpEvent.class));
                                     break;
                                 case "Touchdown":
                                     if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, TouchdownEvent.class));
@@ -115,20 +117,22 @@ public class JournalParser {
                                     if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, CarrierJumpRequestEvent.class));
                                     break;
                                 case "FSDTarget":
-                                    /*if (isRecent(eventTimestamp, THRESHOLD)) */
-                                    EventBusManager.publish(gson.fromJson(event, FSDTargetEvent.class));
+                                    if (isRecent(eventTimestamp, THRESHOLD_SHORT)) EventBusManager.publish(gson.fromJson(event, FSDTargetEvent.class));
                                     break;
                                 case "Scan":
                                     if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, ScanEvent.class));
                                     break;
                                 case "ShipTargeted":
-                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, ShipTargetedEvent.class));
+                                    if (isRecent(eventTimestamp, THRESHOLD_SHORT)) EventBusManager.publish(gson.fromJson(event, ShipTargetedEvent.class));
                                     break;
                                 case "Loadout":
                                     if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, LoadoutEvent.class));
                                     break;
                                 case "SwitchSuitLoadout":
                                     if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, SwitchSuitLoadoutEvent.class));
+                                    break;
+                                case "Rank":
+                                    EventBusManager.publish(gson.fromJson(event, RankEvent.class));
                                     break;
 
                                 default:
@@ -150,11 +154,11 @@ public class JournalParser {
         }
     }
 
-    private boolean isRecent(String timestamp, long secondsThreshold) {
+    private boolean isRecent(String timestamp, long secondsNanoThreshold) {
         try {
             Instant eventTime = Instant.parse(timestamp);
             Instant now = Instant.now();
-            return !eventTime.isBefore(now.minus(secondsThreshold, ChronoUnit.SECONDS));
+            return !eventTime.isBefore(now.minus(secondsNanoThreshold, ChronoUnit.MILLIS));
         } catch (Exception e) {
             log.warn("Invalid timestamp format: {}", timestamp);
             return false;

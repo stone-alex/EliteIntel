@@ -1,6 +1,9 @@
 <configuration scan="true">
     <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener" />
 
+    <!-- Register custom converter -->
+    <conversionRule conversionWord="loggerColor" converterClass="elite.companion.util.LoggerColorConverter"/>
+
     <!-- You can keep properties if you still want overrides -->
     <property name="APP_LOG_LEVEL" value="${APP_LOG_LEVEL:-DEBUG}" />
 
@@ -9,14 +12,28 @@
     <logger name="io.grpc.netty.shaded" level="WARN" />
     <logger name="io.netty" level="WARN" />
     <logger name="com.google" level="WARN" />
-    <logger name="elite.companion.JournalParser" level="ERROR"/>
+
+    <logger name="elite.companion.gameapi.JournalParser" level="ERROR"/>
+    <logger name="elite.companion.gameapi.AuxiliaryFilesMonitor" level="ERROR"/>
+    <logger name="elite.companion.robot.KeyBindingsParser" level="ERROR"/>
+    <logger name="elite.companion.comms.GrokCommandEndPoint" level="ERROR"/>
+
+    <logger name="elite.companion.comms.SpeechRecognizer" level="WARNING"/>
 
     <!-- Set your app to DEBUG explicitly -->
     <logger name="elite.companion" level="DEBUG" />
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>%d{HH:mm:ss.SSS} %highlight(%-5level) %cyan(%logger{36}) - %replace(%.-5000msg){'\s*\[id:[^\]]+\]\s*',''}%n</pattern>
+            <pattern>%d{HH:mm:ss.SSS} %highlight(%-5level) %loggerColor(%logger{36}) - %replace(%.-5000msg){'\s*\[id:[^\]]+\]\s*',''}%n%n</pattern>
+        </encoder>
+    </appender>
+
+
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>logs/elite-companion.log</file>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n%n</pattern>
         </encoder>
     </appender>
 
@@ -24,3 +41,6 @@
         <appender-ref ref="CONSOLE" />
     </root>
 </configuration>
+
+
+

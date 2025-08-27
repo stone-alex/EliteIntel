@@ -5,7 +5,7 @@ import elite.companion.session.SystemSession;
 
 import static elite.companion.session.SystemSession.CURRENT_SYSTEM;
 
-public class GetCurrentSystemHandler implements QueryHandler {
+public class QueryCurrentSystemHandler implements QueryHandler {
 
     @Override
     public String handle(JsonObject params) {

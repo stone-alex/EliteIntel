@@ -6,9 +6,9 @@ import elite.companion.comms.VoiceGenerator;
 import elite.companion.events.ReceiveTextEvent;
 import elite.companion.session.SystemSession;
 
-public class ReceiveTextSubscriber {
+public class TransmissionReceivedSubscriber {
 
-    public ReceiveTextSubscriber() {
+    public TransmissionReceivedSubscriber() {
         EventBusManager.register(this);
     }
 
@@ -16,7 +16,10 @@ public class ReceiveTextSubscriber {
     public void onReceiveTextEvent(ReceiveTextEvent event) {
         if (!event.getMessageLocalised().toLowerCase().contains("entered channel")) {
             boolean isStation = event.getMessage().toLowerCase().contains("station");
-            VoiceGenerator.getInstance().speakInRandomVoice(event.getMessageLocalised());
+            if (!event.getFrom().toLowerCase().contains("cruise")) {
+                VoiceGenerator.getInstance().speakInRandomVoice(event.getMessageLocalised());
+            }
+
             if (isStation) {
                 if (!event.getMessageLocalised().toLowerCase().contains("fire zone")) {
                     SystemSession.getInstance().setSensorData(

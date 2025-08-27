@@ -39,8 +39,8 @@ public class GrokResponseRouter {
     private void registerCommandHandlers() {
 
         //Query Handlers
-        queryHandlers.put(CommandAction.QUERY_CURRENT_SYSTEM.getAction(), new GetCurrentSystemHandler());
-        queryHandlers.put(CommandAction.QUERY_SHIP_LOADOUT.getAction(), new GetShipLoadoutHandler());
+        queryHandlers.put(CommandAction.QUERY_CURRENT_SYSTEM.getAction(), new QueryCurrentSystemHandler());
+        queryHandlers.put(CommandAction.QUERY_SHIP_LOADOUT.getAction(), new QueryShipLoadoutHandler());
         queryHandlers.put(CommandAction.QUERY_FIND_NEAREST_MATERIAL_TRADER.getAction(), new FindMaterialTraderHandler());
 
         //APP COMMANDS
@@ -260,6 +260,6 @@ public class GrokResponseRouter {
 
     private void handleChat(String responseText) {
         VoiceGenerator.getInstance().speak(responseText);
-        log.debug("Sent to VoiceGenerator: {}", responseText);
+        log.info("Sent to VoiceGenerator: {}", responseText);
     }
 }

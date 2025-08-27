@@ -4,6 +4,8 @@ import com.google.common.eventbus.Subscribe;
 import elite.companion.EventBusManager;
 import elite.companion.events.FSSSignalDiscoveredEvent;
 import elite.companion.session.SystemSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -11,7 +13,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public class FSSSignalDiscoveredSubscriber { // Or fold into ShipAIModule
-
+    private static final Logger log = LoggerFactory.getLogger(FSSSignalDiscoveredSubscriber.class);
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
     private ScheduledFuture<?> pendingSummaryTask;
     private final SystemSession systemSession = SystemSession.getInstance();
@@ -31,9 +33,9 @@ public class FSSSignalDiscoveredSubscriber { // Or fold into ShipAIModule
 
         pendingSummaryTask = scheduler.schedule(() -> {
             String summary = systemSession.buildSignalSummary();
+            log.info("FSS signal summary: {}", summary);
             if (summary != null) {
                 systemSession.setFssData(summary);
-                // No need to call grok.processSystemCommand() - your loop handles it
             }
         }, 1, TimeUnit.SECONDS); // 1-second debounce; adjust as needed
     }

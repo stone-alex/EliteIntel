@@ -1,8 +1,10 @@
 package elite.companion.session;
 
 import elite.companion.events.FSSSignalDiscoveredEvent;
+import elite.companion.gameapi.events.NavRouteDto;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -20,9 +22,12 @@ public class SystemSession {
     public static final String SHIP_DATA = "ship_data";
     public static final String SHIP_LOADOUT_JSON = "ship_loadout_json";
     public static final String SUITE_LOADOUT_JSON = "suite_loadout_json";
+    public static final String DESTINATION_TARGET = "destination_target";
+    public static final String FINAL_DESTINATION = "final_destination";
     private static final SystemSession INSTANCE = new SystemSession();
     private final Map<String, Object> state = new HashMap<>();
     private final Map<String, Integer> signalCounts = new HashMap<>(); // For batch accumulation
+    private final Map<String, NavRouteDto> routeMap = new LinkedHashMap<>(); // Star system name to NavRouteDto
     private long currentSystemAddress = -1; // Track current system to reset on change
 
     private SystemSession() {
@@ -149,5 +154,22 @@ public class SystemSession {
 
     public void clearFssData() {
         state.remove(FSS_READING);
+    }
+
+    public void setNavRoute(Map<String, NavRouteDto> routeMap) {
+        this.routeMap.clear();
+        this.routeMap.putAll(routeMap);
+    }
+
+    public void removeNavPoint(String systemName) {
+        routeMap.remove(systemName);
+    }
+
+    public Map<String, NavRouteDto> getRoute() {
+        return routeMap;
+    }
+
+    public void clearRoute() {
+        routeMap.clear();
     }
 }

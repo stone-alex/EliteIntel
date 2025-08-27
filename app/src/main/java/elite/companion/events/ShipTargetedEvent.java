@@ -42,6 +42,9 @@ public class ShipTargetedEvent extends BaseEvent {
     @SerializedName("Ship_Localised")
     private String shipLocalised;
 
+    @SerializedName("Bounty")
+    private int bounty;
+
     public ShipTargetedEvent(String timestamp) {
         super(timestamp, 1, Duration.ofSeconds(30), ShipTargetedEvent.class.getName());
     }
@@ -99,5 +102,9 @@ public class ShipTargetedEvent extends BaseEvent {
 
     public String getFormattedTimestamp(boolean useLocalTime) {
         return TimestampFormatter.formatTimestamp(getTimestamp().toString(), useLocalTime);
+    }
+
+    public int getBounty() {
+        return bounty;
     }
 }

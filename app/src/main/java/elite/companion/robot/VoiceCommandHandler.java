@@ -112,11 +112,11 @@ public class VoiceCommandHandler {
 
     private void handleQuery(String responseText) {
         handleChat(responseText);
-        log.debug("Handled query response: {}", responseText);
+        log.info("Handled query response: {}", responseText);
     }
 
     private void handleChat(String responseText) {
         VoiceGenerator.getInstance().speak(responseText);
-        log.debug("Sent to VoiceGenerator: {}", responseText);
+        log.info("Sent to VoiceGenerator: {}", responseText);
     }
 }

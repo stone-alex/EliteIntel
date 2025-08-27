@@ -2,6 +2,8 @@ package elite.companion;
 
 import elite.companion.comms.SpeechRecognizer;
 import elite.companion.comms.VoiceGenerator;
+import elite.companion.gameapi.AuxiliaryFilesMonitor;
+import elite.companion.gameapi.JournalParser;
 import elite.companion.subscribers.*;
 
 public class AppMain {
@@ -9,7 +11,7 @@ public class AppMain {
     public static void main(String[] args) throws Exception {
         VoiceGenerator.getInstance().speak("Initializing " + Globals.AI_NAME);
 
-        //instantiate subscribers
+        //Journal subscribers
         new CarrierJumpRequestSubscriber();
         new CommanderEventSubscriber();
         new FSDJumpSubscriber();
@@ -19,7 +21,7 @@ public class AppMain {
         new MiningEventSubscriber();
         new PowerPlaySubscriber();
         new ProspectorSubscriber();
-        new ReceiveTextSubscriber();
+        new TransmissionReceivedSubscriber();
         new StatisticsSubscriber();
         new SupercruiseExitedSubscriber();
         new TouchdownEventSubscriber();
@@ -28,10 +30,17 @@ public class AppMain {
         new ShipTargetedEventSubscriber();
         new LoadoutSubscriber();
         new SwitchSuitLoadoutSubscriber();
+        new RankEventSubscriber();
+        new StatusChangeSubscriber();
+
+        //Game API subscribers
+        new RoutePlottedSubscriber();
+
+        AuxiliaryFilesMonitor monitor = new AuxiliaryFilesMonitor();
+        new Thread(monitor).start();
 
         SpeechRecognizer recognizer = new SpeechRecognizer();
         recognizer.start(); // Start STT voice command processing thread
-
 
         JournalParser parser = new JournalParser();
         parser.startReading();

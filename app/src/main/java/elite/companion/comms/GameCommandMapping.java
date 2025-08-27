@@ -78,7 +78,6 @@ public class GameCommandMapping {
         PLAYER_HUDMODE_TOGGLE("combat_or_analysis_mode", "PlayerHUDModeToggle"),
         QUICK_COMMS_PANEL_BUGGY("quick_comms_panel_buggy", "QuickCommsPanel_Buggy"),
         QUICK_COMMS_PANEL_HUMANOID("quick_comms_panel_humanoid", "QuickCommsPanel_Humanoid"),
-        QUIT_CAMERA("quit_camera", "QuitCamera"),
         RADAR_DECREASE_RANGE("radar_decrease_range", "RadarDecreaseRange"),
         RADAR_INCREASE_RANGE("radar_increase_range", "RadarIncreaseRange"),
         RECALL_DISMISS_SHIP("recall_dismiss_ship", "RecallDismissShip"),
@@ -92,7 +91,7 @@ public class GameCommandMapping {
         RESET_POWER_DISTRIBUTION("equalize_power", "ResetPowerDistribution"),
         RESET_POWER_DISTRIBUTION_BUGGY("reset_power_distribution_buggy", "ResetPowerDistribution_Buggy"),
 
-        SELECT_TARGETS_TARGET("select_targets_target", "SelectTargetsTarget"),
+        SELECT_TARGETS_TARGET("select_wingman_target", "SelectTargetsTarget"),
 
         SET_SPEED100("set_speed100", "SetSpeed100"),
         SET_SPEED25("set_speed25", "SetSpeed25"),
@@ -105,22 +104,23 @@ public class GameCommandMapping {
         SYSTEM_MAP_BUGGY("system_map_buggy", "SystemMapOpen_Buggy"),
         SYSTEM_MAP_HUMANOID("system_map_humanoid", "SystemMapOpen_Humanoid"),
 
-        TARGET_NEXT_ROUTE_SYSTEM("target_next_route_system", "TargetNextRouteSystem"),
+        TARGET_NEXT_ROUTE_SYSTEM("target_next_system_in_route", "TargetNextRouteSystem"),
         TARGET_WINGMAN0("target_wingman0", "TargetWingman0"),
         TARGET_WINGMAN1("target_wingman1", "TargetWingman1"),
         TARGET_WINGMAN2("target_wingman2", "TargetWingman2"),
 
-        UI_DOWN("ui_down", "UI_Down"),
-        UI_LEFT("ui_left", "UI_Left"),
-        UI_RIGHT("ui_right", "UI_Right"),
-        UIFOCUS("uifocus", "UIFocus"),
-        UI_SELECT("ui_select", "UI_Select"),
-        UI_TOGGLE("ui_toggle", "UI_Toggle"),
-        UI_UP("ui_up", "UI_Up"),
+        UI_DOWN("down", "UI_Down"),
+        UI_LEFT("left", "UI_Left"),
+        UI_RIGHT("right", "UI_Right"),
+        UIFOCUS("focus", "UIFocus"),
+        UI_SELECT("select", "UI_Select"),
+        UI_ACTIVATE("activate", "UI_Select"),
+        UI_TOGGLE("toggle", "UI_Toggle"),
+        UI_UP("up", "UI_Up"),
         UP_THRUST_BUTTON("up_thrust_button", "UpThrustButton"),
-        USE_SHIELD_CELL("use_shield_cell", "UseShieldCell"),
+        //USE_SHIELD_CELL("use_shield_cell", "UseShieldCell"),
 
-        WING_NAV_LOCK("wing_nav_lock", "WingNavLock");
+        WING_NAV_LOCK("lock_on_wingman", "WingNavLock");
 
 
 

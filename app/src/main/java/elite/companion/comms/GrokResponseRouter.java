@@ -39,9 +39,9 @@ public class GrokResponseRouter {
     private void registerCommandHandlers() {
 
         //Query Handlers
-        queryHandlers.put(CommandAction.QUERY_SEARCH_SIGNAL_DATA.getAction(), new QueryCurrentSystemHandler());
-        queryHandlers.put(CommandAction.QUERY_SHIP_LOADOUT.getAction(), new QueryShipLoadoutHandler());
-        queryHandlers.put(CommandAction.QUERY_FIND_NEAREST_MATERIAL_TRADER.getAction(), new FindMaterialTraderHandler());
+        queryHandlers.put(QueryAction.QUERY_SEARCH_SIGNAL_DATA.getAction(), new QueryCurrentSystemHandler());
+        queryHandlers.put(QueryAction.QUERY_SHIP_LOADOUT.getAction(), new QueryShipLoadoutHandler());
+        queryHandlers.put(QueryAction.QUERY_FIND_NEAREST_MATERIAL_TRADER.getAction(), new FindMaterialTraderHandler());
 
         //APP COMMANDS
         commandHandlers.put(CommandAction.SET_MINING_TARGET.getAction(), new SetMiningTargetHandler());
@@ -127,7 +127,7 @@ public class GrokResponseRouter {
         commandHandlers.put(UI_TOGGLE.getGameBinding(), new GenericGameController(voiceCommandHandler, UI_TOGGLE.getGameBinding()));
         commandHandlers.put(UI_UP.getGameBinding(), new GenericGameController(voiceCommandHandler, UI_UP.getGameBinding()));
         commandHandlers.put(UP_THRUST_BUTTON.getGameBinding(), new GenericGameController(voiceCommandHandler, UP_THRUST_BUTTON.getGameBinding()));
-        commandHandlers.put(USE_SHIELD_CELL.getGameBinding(), new GenericGameController(voiceCommandHandler, USE_SHIELD_CELL.getGameBinding()));
+        commandHandlers.put(UI_ACTIVATE.getGameBinding(), new GenericGameController(voiceCommandHandler, UI_ACTIVATE.getGameBinding()));
     }
 
     public void start() throws Exception {
@@ -205,7 +205,7 @@ public class GrokResponseRouter {
             JsonObject toolResult = new JsonObject();
             toolResult.addProperty("role", "tool");
             toolResult.addProperty("name", action);
-            toolResult.addProperty("content", data);
+            toolResult.addProperty("content", AIContextFactory.getInstance().generateQueryPrompt()+"\n\n"+data);
             messages.add(toolResult);
 
             // Send to Grok via query endpoint

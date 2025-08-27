@@ -21,8 +21,10 @@ public class StatusChangeSubscriber {
         long currentBalance = event.getBalance();
         double onBoardCargo = event.getCargo();
         String fireGroup = toFireGroupDesignation(event.getFireGroup());
-        int[] pips = event.getPips();
-        String powerDistribution = "Systems: " + (pips[0] * 12.5) + " percent " + ", Shields: " + (pips[1] * 12.5) + " percent " + ", Engines: " + (pips[2] * 12.5) + " percent";
+        if(event.getPips() != null) {
+            int[] pips = event.getPips();
+            String powerDistribution = "Systems: " + (pips[0] * 12.5) + " percent " + ", Shields: " + (pips[1] * 12.5) + " percent " + ", Engines: " + (pips[2] * 12.5) + " percent";
+        }
         String localLegalStatus = event.getLegalState();
 
 

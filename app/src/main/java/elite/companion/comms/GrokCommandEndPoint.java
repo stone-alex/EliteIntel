@@ -256,9 +256,7 @@ public class GrokCommandEndPoint {
     }
 
     private String buildVoiceRequest(String transcribedText) {
-        return AIContextFactory.getInstance().generatePlayerInstructions(
-                String.valueOf(transcribedText), PlayerSession.getInstance().getSummary()
-        );
+        return AIContextFactory.getInstance().generatePlayerInstructions(String.valueOf(transcribedText));
     }
 
     private String buildSystemRequest(String systemInput) {

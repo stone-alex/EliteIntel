@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 public class GrokRequestHints {
     private static final Logger log = LoggerFactory.getLogger(GrokRequestHints.class);
     static final List<String> COMMANDS;
+    static final List<String> QUERIES;
     static final List<String> COMMON_PHRASES = Arrays.asList(
             "tritium", "mining", "material trader", "plot route", "supercruise", "landing gear", "cargo scoop",
             "request docking"
@@ -33,9 +34,24 @@ public class GrokRequestHints {
         COMMANDS = commands;
     }
 
+    static {
+        List<String> queries = Arrays.stream(QueryAction.values())
+                .map(QueryAction::getCommandWithPlaceholder)
+                .collect(Collectors.toList());
+
+
+        QUERIES = queries;
+    }
+
     private static String formatCommands() {
         return "Supported commands: '" + String.join("', '", COMMANDS) + "'. ";
     }
 
+    private static String formatQueries() {
+        return "Supported queries: '" + String.join("', '", QUERIES) + "'. ";
+    }
+
     public static final String supportedCommands = formatCommands();
+
+    public static final String supportedQueries = formatQueries();
 }

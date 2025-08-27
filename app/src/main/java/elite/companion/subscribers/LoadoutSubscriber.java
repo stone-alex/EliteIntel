@@ -22,6 +22,6 @@ public class LoadoutSubscriber {
         playerSession.updateSession(PlayerSession.SHIP_CARGO_CAPACITY, event.getCargoCapacity());
 
         SystemSession.getInstance().updateSession(SHIP_LOADOUT_JSON, event.toJson());
-        SystemSession.getInstance().setSensorData("Ship Selected: " + event.toJson());
+        //SystemSession.getInstance().setSensorData("Ship Selected: " + event.toJson());
     }
 }

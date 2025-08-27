@@ -1,4 +1,4 @@
-package elite.companion.comms.handlers;
+package elite.companion.comms.handlers.query;
 
 import com.google.gson.JsonObject;
 

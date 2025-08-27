@@ -1,6 +1,6 @@
 package elite.companion.util;
 
-import elite.companion.comms.GrokRequestHints;
+import elite.companion.comms.ai.GrokRequestHints;
 import elite.companion.session.PlayerSession;
 
 public class AIContextFactory {

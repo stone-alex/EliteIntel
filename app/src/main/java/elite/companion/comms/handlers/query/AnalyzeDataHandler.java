@@ -1,10 +1,9 @@
-package elite.companion.comms.handlers;
+package elite.companion.comms.handlers.query;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import elite.companion.comms.GrokAnalysisEndpoint;
-import elite.companion.comms.QueryAction;
-import elite.companion.comms.VoiceGenerator;
+import elite.companion.comms.ai.GrokAnalysisEndpoint;
+import elite.companion.comms.voice.VoiceGenerator;
 import elite.companion.gameapi.events.NavRouteDto;
 import elite.companion.session.SystemSession;
 

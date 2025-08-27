@@ -1,11 +1,10 @@
 package elite.companion;
 
-import elite.companion.comms.SpeechRecognizer;
-import elite.companion.comms.VoiceGenerator;
+import elite.companion.comms.voice.SpeechRecognizer;
+import elite.companion.comms.voice.VoiceGenerator;
 import elite.companion.gameapi.AuxiliaryFilesMonitor;
 import elite.companion.gameapi.JournalParser;
 import elite.companion.subscribers.*;
-import elite.companion.util.SubscriberScanner;
 
 public class AppMain {
 

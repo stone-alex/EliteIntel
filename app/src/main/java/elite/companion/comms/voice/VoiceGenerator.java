@@ -1,4 +1,4 @@
-package elite.companion.comms;
+package elite.companion.comms.voice;
 
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.texttospeech.v1.*;

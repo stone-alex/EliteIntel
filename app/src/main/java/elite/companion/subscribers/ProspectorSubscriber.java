@@ -3,8 +3,8 @@ package elite.companion.subscribers;
 import com.google.common.eventbus.Subscribe;
 import com.google.gson.JsonObject;
 import elite.companion.EventBusManager;
-import elite.companion.comms.CommandAction;
-import elite.companion.comms.VoiceGenerator;
+import elite.companion.comms.handlers.command.CommandAction;
+import elite.companion.comms.voice.VoiceGenerator;
 import elite.companion.events.ProspectedAsteroidEvent;
 import elite.companion.session.PlayerSession;
 

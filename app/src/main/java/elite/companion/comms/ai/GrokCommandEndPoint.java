@@ -1,7 +1,8 @@
-package elite.companion.comms;
+package elite.companion.comms.ai;
 
 import com.google.gson.*;
 import elite.companion.Globals;
+import elite.companion.comms.voice.VoiceGenerator;
 import elite.companion.session.SystemSession;
 import elite.companion.util.AIContextFactory;
 import elite.companion.util.ConfigManager;

@@ -1,6 +1,6 @@
-package elite.companion.robot;
+package elite.companion.comms.ai.robot;
 
-import elite.companion.comms.VoiceGenerator;
+import elite.companion.comms.voice.VoiceGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

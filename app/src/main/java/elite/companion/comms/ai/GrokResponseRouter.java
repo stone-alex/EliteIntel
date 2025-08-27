@@ -1,9 +1,13 @@
-package elite.companion.comms;
+package elite.companion.comms.ai;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import elite.companion.comms.handlers.*;
-import elite.companion.robot.VoiceCommandHandler;
+import elite.companion.comms.voice.VoiceGenerator;
+import elite.companion.comms.handlers.command.*;
+import elite.companion.comms.handlers.query.AnalyzeDataHandler;
+import elite.companion.comms.handlers.query.QueryAction;
+import elite.companion.comms.handlers.query.QueryHandler;
+import elite.companion.comms.ai.robot.VoiceCommandHandler;
 import elite.companion.util.AIContextFactory;
 import elite.companion.util.InaraApiClient;
 import org.slf4j.Logger;
@@ -13,7 +17,7 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-import static elite.companion.comms.GameCommandMapping.GameCommand.*;
+import static elite.companion.comms.ai.GameCommandMapping.GameCommand.*;
 
 public class GrokResponseRouter {
     private static final Logger log = LoggerFactory.getLogger(GrokResponseRouter.class);

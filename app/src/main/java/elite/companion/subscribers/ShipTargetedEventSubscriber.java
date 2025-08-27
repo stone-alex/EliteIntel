@@ -2,9 +2,8 @@ package elite.companion.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import elite.companion.EventBusManager;
-import elite.companion.comms.VoiceGenerator;
+import elite.companion.comms.voice.VoiceGenerator;
 import elite.companion.events.ShipTargetedEvent;
-import elite.companion.session.SystemSession;
 import elite.companion.util.RomanNumeralConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

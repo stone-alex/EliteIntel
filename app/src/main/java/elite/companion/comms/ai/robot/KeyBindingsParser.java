@@ -1,4 +1,4 @@
-package elite.companion.robot;
+package elite.companion.comms.ai.robot;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -15,10 +15,10 @@
 
     <logger name="elite.companion.gameapi.JournalParser" level="ERROR"/>
     <logger name="elite.companion.gameapi.AuxiliaryFilesMonitor" level="ERROR"/>
-    <logger name="elite.companion.robot.KeyBindingsParser" level="ERROR"/>
-    <logger name="elite.companion.comms.GrokCommandEndPoint" level="DEBUG"/>
+    <logger name="elite.companion.comms.ai.robot.KeyBindingsParser" level="ERROR"/>
+    <logger name="elite.companion.comms.ai.GrokCommandEndPoint" level="DEBUG"/>
 
-    <logger name="elite.companion.comms.SpeechRecognizer" level="WARNING"/>
+    <logger name="elite.companion.comms.voice.SpeechRecognizer" level="WARNING"/>
 
     <!-- Set your app to DEBUG explicitly -->
     <logger name="elite.companion" level="DEBUG" />

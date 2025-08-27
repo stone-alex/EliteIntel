@@ -1,5 +1,7 @@
-package elite.companion.comms;
+package elite.companion.comms.ai;
 
+import elite.companion.comms.handlers.command.CommandAction;
+import elite.companion.comms.handlers.query.QueryAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,17 +11,12 @@ import java.util.stream.Collectors;
 
 public class GrokRequestHints {
     private static final Logger log = LoggerFactory.getLogger(GrokRequestHints.class);
-    static final List<String> COMMANDS;
-    static final List<String> QUERIES;
-    static final List<String> COMMON_PHRASES = Arrays.asList(
+    public static final List<String> COMMANDS;
+    public static final List<String> QUERIES;
+    public static final List<String> COMMON_PHRASES = Arrays.asList(
             "tritium", "mining", "material trader", "plot route", "supercruise", "landing gear", "cargo scoop",
             "request docking"
     );
-/*
-    static final List<String> DOMAIN_CONCEPTS = Arrays.asList(
-            "carrier fuel", "asteroid prospecting", "galaxy map"
-    );
-*/
 
     static {
         List<String> commands = Arrays.stream(CommandAction.values())

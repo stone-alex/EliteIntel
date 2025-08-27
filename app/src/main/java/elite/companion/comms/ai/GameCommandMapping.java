@@ -1,4 +1,4 @@
-package elite.companion.comms;
+package elite.companion.comms.ai;
 
 public class GameCommandMapping {
     public enum GameCommand {

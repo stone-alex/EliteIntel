@@ -2,7 +2,7 @@ package elite.companion.gameapi;
 
 import com.google.gson.*;
 import elite.companion.EventBusManager;
-import elite.companion.comms.VoiceGenerator;
+import elite.companion.comms.voice.VoiceGenerator;
 import elite.companion.events.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

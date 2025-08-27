@@ -1,4 +1,4 @@
-package elite.companion.comms;
+package elite.companion.comms.ai;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;

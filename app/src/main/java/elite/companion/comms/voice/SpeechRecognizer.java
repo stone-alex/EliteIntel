@@ -1,8 +1,10 @@
-package elite.companion.comms;
+package elite.companion.comms.voice;
 
 import com.google.api.gax.rpc.ApiStreamObserver;
 import com.google.cloud.speech.v1p1beta1.*;
 import com.google.protobuf.ByteString;
+import elite.companion.comms.ai.GrokCommandEndPoint;
+import elite.companion.comms.ai.GrokRequestHints;
 import elite.companion.util.StringSanitizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

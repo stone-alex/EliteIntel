@@ -1,9 +1,8 @@
-package elite.companion.comms.handlers;
+package elite.companion.comms.handlers.command;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import elite.companion.comms.CommandAction;
-import elite.companion.comms.VoiceGenerator;
+import elite.companion.comms.voice.VoiceGenerator;
 import elite.companion.session.PlayerSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

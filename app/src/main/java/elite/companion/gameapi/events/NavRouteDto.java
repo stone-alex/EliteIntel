@@ -1,5 +1,7 @@
 package elite.companion.gameapi.events;
 
+import com.google.gson.Gson;
+
 public class NavRouteDto extends BaseJsonDto {
 
     private int leg;
@@ -47,5 +49,9 @@ public class NavRouteDto extends BaseJsonDto {
 
     public void setRemainingJumps(int remainingJumps) {
         this.remainingJumps = remainingJumps;
+    }
+
+    public String toJson() {
+        return new Gson().toJson(this);
     }
 }

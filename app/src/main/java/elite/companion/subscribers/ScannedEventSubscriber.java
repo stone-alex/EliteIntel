@@ -15,11 +15,10 @@ public class ScannedEventSubscriber {
     @Subscribe
     public void onScannedEvent(ScannedEvent event) {
         SystemSession systemSession = SystemSession.getInstance();
+        systemSession.addSignal(event);
 
         if ("cargo".equals(event.getScanType().toLowerCase())) {
             systemSession.setSensorData("Pirate scan detected. Issue a warning. Opportunity to collect bounty");
-        } else {
-            systemSession.setSensorData("Notify pilot that we are being scanned");
         }
     }
 }

@@ -2,7 +2,6 @@ package elite.companion.comms;
 
 import com.google.gson.*;
 import elite.companion.Globals;
-import elite.companion.session.PlayerSession;
 import elite.companion.session.SystemSession;
 import elite.companion.util.AIContextFactory;
 import elite.companion.util.ConfigManager;
@@ -30,16 +29,16 @@ public class GrokCommandEndPoint {
         log.info("Stopped GrokInteractionHandler");
     }
 
-    public void processVoiceCommand(String command) {
+    public void processVoiceCommand(String userInput) {
         // Sanitize input
-        command = escapeJson(command);
-        if (command == null || command.isEmpty()) {
+        userInput = escapeJson(userInput);
+        if (userInput == null || userInput.isEmpty()) {
             VoiceGenerator.getInstance().speak("Sorry, I couldn't process that.");
             return;
         }
 
         // Log sanitized input
-        log.info("Sanitized voice command: [{}]", toDebugString(command));
+        log.info("Sanitized voice userInput: [{}]", toDebugString(userInput));
 
         JsonArray messages = new JsonArray();
         JsonObject systemMessage = new JsonObject();
@@ -50,7 +49,7 @@ public class GrokCommandEndPoint {
 
         JsonObject userMessage = new JsonObject();
         userMessage.addProperty("role", "user");
-        userMessage.addProperty("content", buildVoiceRequest(command));
+        userMessage.addProperty("content", buildVoiceRequest(userInput));
         messages.add(userMessage);
 
         // Create API request body
@@ -71,7 +70,7 @@ public class GrokCommandEndPoint {
                 VoiceGenerator.getInstance().speak("Sorry, I couldn't process that.");
                 return;
             }
-            GrokResponseRouter.getInstance().processGrokResponse(apiResponse);
+            GrokResponseRouter.getInstance().processGrokResponse(apiResponse, userInput);
         } catch (JsonSyntaxException e) {
             log.error("JSON parsing failed for input: [{}]", toDebugString(jsonString), e);
             throw e;
@@ -130,7 +129,7 @@ public class GrokCommandEndPoint {
                 VoiceGenerator.getInstance().speak("Failure processing system request. Check programming");
                 return;
             }
-            GrokResponseRouter.getInstance().processGrokResponse(apiResponse);
+            GrokResponseRouter.getInstance().processGrokResponse(apiResponse, null);
         } catch (JsonSyntaxException e) {
             log.error("JSON parsing failed for input: [{}]", toDebugString(jsonString), e);
             throw e;

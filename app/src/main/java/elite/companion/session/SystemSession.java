@@ -1,6 +1,7 @@
 package elite.companion.session;
 
 import com.google.gson.Gson;
+import elite.companion.events.BaseEvent;
 import elite.companion.events.FSSSignalDiscoveredEvent;
 import elite.companion.gameapi.events.NavRouteDto;
 
@@ -74,16 +75,18 @@ public class SystemSession {
     }
 
 
-    public void addSignal(FSSSignalDiscoveredEvent event) {
+    public void addSignal(BaseEvent event) {
         detectedSignals.add(event.toJson());
     }
 
     public String getSignals() {
         Object[] array = detectedSignals.stream().toArray();
         StringBuilder sb = new StringBuilder();
+        sb.append("[");
         for(Object o : array){
-            sb.append(o).append(". \n\n");
+            sb.append(o).append(", ");
         }
+        sb.append("]");
 
         return array.length == 0 ? "no data" : sb.toString();
     }

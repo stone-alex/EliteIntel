@@ -10,5 +10,5 @@ public interface QueryHandler {
      * @return String representation of the data (e.g., "{\"population\": 20000000, \"economy\": \"High Tech\"}").
      * @throws Exception if data fetch fails.
      */
-    String handle(JsonObject params) throws Exception;
+    String handle(String action, JsonObject params, String originalUserInput) throws Exception;
 }

@@ -9,6 +9,7 @@ import elite.companion.util.InaraApiClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,9 +40,10 @@ public class GrokResponseRouter {
     private void registerCommandHandlers() {
 
         //Query Handlers
-        queryHandlers.put(QueryAction.QUERY_SEARCH_SIGNAL_DATA.getAction(), new QueryCurrentSystemHandler());
-        queryHandlers.put(QueryAction.QUERY_SHIP_LOADOUT.getAction(), new QueryShipLoadoutHandler());
-        queryHandlers.put(QueryAction.QUERY_FIND_NEAREST_MATERIAL_TRADER.getAction(), new FindMaterialTraderHandler());
+        queryHandlers.put(QueryAction.QUERY_SEARCH_SIGNAL_DATA.getAction(), new AnalyzeDataHandler());
+        queryHandlers.put(QueryAction.QUERY_SHIP_LOADOUT.getAction(), new AnalyzeDataHandler());
+        queryHandlers.put(QueryAction.QUERY_ANALYZE_ROUTE.getAction(), new AnalyzeDataHandler());
+        //queryHandlers.put(QueryAction.QUERY_FIND_NEAREST_MATERIAL_TRADER.getAction(), new FindMaterialTraderHandler());
 
         //APP COMMANDS
         commandHandlers.put(CommandAction.SET_MINING_TARGET.getAction(), new SetMiningTargetHandler());
@@ -140,7 +142,7 @@ public class GrokResponseRouter {
         log.info("Stopped GrokResponseRouter");
     }
 
-    public void processGrokResponse(JsonObject jsonResponse) {
+    public void processGrokResponse(JsonObject jsonResponse, @Nullable String userInput) {
         if (jsonResponse == null) {
             log.error("Null Grok response received");
             return;
@@ -159,7 +161,7 @@ public class GrokResponseRouter {
                     handleCommand(action, params, responseText, jsonResponse);
                     break;
                 case "query":
-                    handleQuery(action, params, responseText);
+                    handleQuery(action, params, userInput);//<-- requires user input for further processing
                     break;
                 case "chat":
                     handleChat(responseText);
@@ -174,9 +176,7 @@ public class GrokResponseRouter {
         }
     }
 
-    private void handleQuery(String action, JsonObject params, String responseText) {
-        VoiceGenerator.getInstance().speak(responseText);
-
+    private void handleQuery(String action, JsonObject params, String userInput) {
         QueryHandler handler = queryHandlers.get(action);
         if (handler == null) {
             log.warn("Unknown query action: {}", action);
@@ -184,7 +184,7 @@ public class GrokResponseRouter {
             return;
         }
         try {
-            String data = handler.handle(params);
+            String data = handler.handle(action,params, userInput);
 
             // Build follow-up messages
             JsonArray messages = new JsonArray();
@@ -217,7 +217,7 @@ public class GrokResponseRouter {
             }
 
             // Process (expected type: "chat")
-            processGrokResponse(followUpResponse);
+            processGrokResponse(followUpResponse, userInput);
         } catch (Exception e) {
             log.error("Query handling failed for action {}: {}", action, e.getMessage(), e);
             handleChat("Error accessing data banks: " + e.getMessage());

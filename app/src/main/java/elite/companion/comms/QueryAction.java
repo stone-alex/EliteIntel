@@ -4,6 +4,7 @@ public enum QueryAction {
     //Queries
     QUERY_SEARCH_SIGNAL_DATA("query_search_local_signals_data", null, null),
     QUERY_SHIP_LOADOUT("query_ship_loadout", null, null),
+    QUERY_ANALYZE_ROUTE("query_analyze_route", null, null),
     QUERY_FIND_NEAREST_MATERIAL_TRADER("query_find_nearest_material_trader", null, null),
 
     ; //<-- end of enum

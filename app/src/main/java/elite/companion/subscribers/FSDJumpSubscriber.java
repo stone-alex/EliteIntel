@@ -3,10 +3,10 @@ package elite.companion.subscribers;
 import com.google.common.eventbus.Subscribe;
 import elite.companion.EventBusManager;
 import elite.companion.events.FSDJumpEvent;
-import elite.companion.gameapi.events.NavRouteDto;
 import elite.companion.session.SystemSession;
 
 import java.util.List;
+import java.util.Objects;
 
 public class FSDJumpSubscriber {
 
@@ -18,7 +18,7 @@ public class FSDJumpSubscriber {
     public void onFSDJumpEvent(FSDJumpEvent event) {
 
         Float jumpDistance = event.getJumpDist();
-        String system = event.getStarSystem();
+        String currentStarSystem = event.getStarSystem();
         String systemAllegiance = event.getSystemAllegiance();
         String economy = event.getSystemEconomyLocalised();
         String government = event.getSystemGovernmentLocalised();
@@ -47,41 +47,43 @@ public class FSDJumpSubscriber {
         }
 
         SystemSession systemSession = SystemSession.getInstance();
-        int remainingJump = systemSession.getRoute().size();
+        systemSession.updateSession(systemSession.CURRENT_SYSTEM, event.getStarSystem());
         boolean roueSet = !systemSession.getRoute().isEmpty();
-
+        systemSession.removeNavPoint(currentStarSystem);
         String finalDestination = String.valueOf(systemSession.getObject(SystemSession.FINAL_DESTINATION));
 
 
-        systemSession.removeNavPoint(String.valueOf(systemSession.getObject(SystemSession.DESTINATION_TARGET)));
-
-        
         StringBuilder sb = new StringBuilder();
-        sb.append("FSD Jump Event: ");
-        if (finalDestination != null && system.toLowerCase().contains(finalDestination.toLowerCase())) {
-            sb.append("Final Destination: ").append(finalDestination).append(" true, ");
-        }
-        sb.append("Distance: ").append(jumpDistance).append("ly, ");
-        sb.append("System: ").append(system).append(", ");
+        sb.append("FSD Jump Complete: ");
+
+        sb.append("System name: ").append(event.getStarSystem()).append(", ");
         sb.append("System Allegiance: ").append(systemAllegiance).append(", ");
         sb.append("Government: ").append(government).append(", ");
-        sb.append("Economy: ").append(economy).append(", ");
         sb.append("Security: ").append(security).append(", ");
         sb.append("Controlling Power: ").append(controllingPower).append(", ");
-        //sb.append("Powerplay State: ").append(powerplayState).append(", ");
-        //sb.append("Factions: ").append(factionInfo.toString());
 
+        if (finalDestination != null && finalDestination.equalsIgnoreCase(currentStarSystem)) {
+            sb.append("Arrived at final destination: ").append(finalDestination).append(" true, ");
+        } else {
 
-        if (roueSet) {
-            sb.append("Remaining Jumps: ").append(remainingJump).append(", ");
+            if (roueSet) {
+                int remainingJump = systemSession.getRoute().size();
+
+                if (remainingJump > 0) {
+                    sb.append("Next Stop: ").append(systemSession.getSessionValue(systemSession.FSD_TARGET, String.class)).append(", ");
+                }
+
+                sb.append("Jumps remaining to final destination: ").append(remainingJump).append(finalDestination).append(",");
+
+                if (finalDestination != null && currentStarSystem.toLowerCase().contains(finalDestination.toLowerCase())) {
+                    sb.append("Final jump is to final destination: ").append(finalDestination).append(" true, ");
+                }
+            }
+            if (Objects.equals(finalDestination, currentStarSystem)) {
+                sb.append("Arrived at final destination: ").append(finalDestination).append(" true, ");
+            }
         }
-        if (remainingJump > 0) {
-            NavRouteDto nextStop = systemSession.getRoute().get(systemSession.getRoute().keySet().iterator().next());
-            sb.append("Next Stop: ").append(nextStop.getName()).append(" scoopable=").append(nextStop.isScoopable()).append(", ");
-        }
-
 
         systemSession.setSensorData(sb.toString());
-
     }
 }

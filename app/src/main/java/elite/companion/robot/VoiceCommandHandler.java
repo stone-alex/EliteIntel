@@ -100,8 +100,9 @@ public class VoiceCommandHandler {
             log.info("Executed action: {} with key: {}", action, binding.key);
             handleChat(responseText);
         } else {
+            handleChat(responseText);
             log.warn("No binding found for action: {}", action);
-            handleChat("No key binding found for that action.");
+            //handleChat("No key binding found for that action.");
         }
     }
 

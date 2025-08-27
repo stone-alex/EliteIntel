@@ -17,8 +17,9 @@ import java.util.Comparator;
 
 public class JournalParser {
     private static final Logger log = LoggerFactory.getLogger(JournalParser.class);
+
     public static final int THRESHOLD = 10000; //10 Seconds
-    public static final int THRESHOLD_SHORT = 250; //0.25 Seconds
+
     public static final int THRESHOLD_LONG = 60000; //60 Seconds
     private final Gson gson = new GsonBuilder().setLenient().create();
 
@@ -117,13 +118,13 @@ public class JournalParser {
                                     if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, CarrierJumpRequestEvent.class));
                                     break;
                                 case "FSDTarget":
-                                    if (isRecent(eventTimestamp, THRESHOLD_SHORT)) EventBusManager.publish(gson.fromJson(event, FSDTargetEvent.class));
+                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, FSDTargetEvent.class));
                                     break;
                                 case "Scan":
                                     if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, ScanEvent.class));
                                     break;
                                 case "ShipTargeted":
-                                    if (isRecent(eventTimestamp, THRESHOLD_SHORT)) EventBusManager.publish(gson.fromJson(event, ShipTargetedEvent.class));
+                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, ShipTargetedEvent.class));
                                     break;
                                 case "Loadout":
                                     if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, LoadoutEvent.class));
@@ -133,6 +134,15 @@ public class JournalParser {
                                     break;
                                 case "Rank":
                                     EventBusManager.publish(gson.fromJson(event, RankEvent.class));
+                                    break;
+                                case "Scanned":
+                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, ScannedEvent.class));
+                                    break;
+                                case "Bounty":
+                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, BountyEvent.class));
+                                    break;
+                                case "NavRouteClear":
+                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, NavRouteClearEvent.class));
                                     break;
 
                                 default:

@@ -16,16 +16,20 @@ public class TransmissionReceivedSubscriber {
     public void onReceiveTextEvent(ReceiveTextEvent event) {
         if (!event.getMessageLocalised().toLowerCase().contains("entered channel")) {
             boolean isStation = event.getMessage().toLowerCase().contains("station");
-            if (!event.getFrom().toLowerCase().contains("cruise")) {
-                VoiceGenerator.getInstance().speakInRandomVoice(event.getMessageLocalised());
-            }
+
+            if (event.getFrom().toLowerCase().contains("cruise")) return;
+            if (event.getFrom().toLowerCase().contains("military")) return;
+
+            SystemSession systemSession = SystemSession.getInstance();
 
             if (isStation) {
                 if (!event.getMessageLocalised().toLowerCase().contains("fire zone")) {
-                    SystemSession.getInstance().setSensorData(
+                    systemSession.setSensorData(
                             "radio_transmission:[from:" + event.getFrom() + ", message:" + event.getMessageLocalised() + "]"
                     );
                 }
+            } else {
+                VoiceGenerator.getInstance().speakInRandomVoice(event.getMessageLocalised());
             }
         }
     }

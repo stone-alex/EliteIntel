@@ -80,7 +80,7 @@ public class GrokCommandEndPoint {
 
     public void processSystemCommand() {
         String sensorData = SystemSession.getInstance().getSensorData();
-        String fssData = SystemSession.getInstance().getFssData();
+
 
         // Log raw inputs for debugging
         //log.info("Raw sensorData: [{}]", toDebugString(sensorData));
@@ -88,15 +88,13 @@ public class GrokCommandEndPoint {
 
         // Sanitize inputs
         sensorData = escapeJson(sensorData);
-        fssData = escapeJson(fssData);
-        String input = (sensorData.isEmpty() && fssData.isEmpty()) ? null : sensorData + fssData;
+        String input = (sensorData.isEmpty()) ? null : sensorData;
 
         // Log sanitized input
         //log.info("Sanitized input: [{}]", input);
 
         // Clear session data
         if (sensorData != null) SystemSession.getInstance().clearSensorData();
-        if (fssData != null) SystemSession.getInstance().clearFssData();
 
         if (input == null || input.isEmpty()) {
             return;

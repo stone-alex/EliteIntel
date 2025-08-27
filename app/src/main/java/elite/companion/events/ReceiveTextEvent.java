@@ -8,6 +8,9 @@ public class ReceiveTextEvent extends BaseEvent {
     @SerializedName("From")
     public String from;
 
+    @SerializedName("From_Localised")
+    public String fromLocalised;
+
     @SerializedName("Message")
     public String message;
 
@@ -44,5 +47,9 @@ public class ReceiveTextEvent extends BaseEvent {
     @Override
     public String toString() {
         return String.format("%s: Received text on channel %s: %s", timestamp, channel, messageLocalised);
+    }
+
+    public String getFromLocalised() {
+        return fromLocalised;
     }
 }

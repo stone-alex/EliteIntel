@@ -5,11 +5,15 @@ import elite.companion.comms.VoiceGenerator;
 import elite.companion.gameapi.AuxiliaryFilesMonitor;
 import elite.companion.gameapi.JournalParser;
 import elite.companion.subscribers.*;
+import elite.companion.util.SubscriberScanner;
 
 public class AppMain {
 
     public static void main(String[] args) throws Exception {
         VoiceGenerator.getInstance().speak("Initializing " + Globals.AI_NAME);
+
+
+
 
         //Journal subscribers
         new CarrierJumpRequestSubscriber();
@@ -32,9 +36,15 @@ public class AppMain {
         new SwitchSuitLoadoutSubscriber();
         new RankEventSubscriber();
         new StatusChangeSubscriber();
+        new BountyEventSubscriber();
+        new ScannedEventSubscriber();
+        new RoutClearedSubscriber();
 
         //Game API subscribers
         new RoutePlottedSubscriber();
+
+
+
 
         AuxiliaryFilesMonitor monitor = new AuxiliaryFilesMonitor();
         new Thread(monitor).start();

@@ -21,7 +21,7 @@ public class AIContextFactory {
     public String generateSystemInstructions(String sensorInput) {
         StringBuilder sb = new StringBuilder();
         sb.append("instructions: ");
-        sb.append("Analyze ship sensor input: ");
+        sb.append("Analyze this input: ");
         sb.append(sensorInput);
         sb.append(" ");
 
@@ -46,6 +46,7 @@ public class AIContextFactory {
         sb.append("Classify as: 'input' (data to analyze) or 'command' (trigger app action or keyboard event)");
         sb.append("Use British cadence, NATO phonetic alphabet for star system codes or ship plates (e.g., RH-F = Romeo Hotel dash Foxtrot), and spell out numerals (e.g., 285 = two eight five, 27 = twenty seven). ");
         sb.append("Round billions to nearest million. ");
+        sb.append("Do not start responses with 'Understood'");
         sb.append("Provide an extremely brief summary and optional system_command in JSON: ");
         sb.append("{\"type\": \"system_command|chat\", \"response_text\": \"TTS output\", \"action\": \"set_mining_target|set_current_system|...\", \"params\": {\"key\": \"value\"}}.");
         return sb.toString();
@@ -53,15 +54,17 @@ public class AIContextFactory {
 
     private static void appendBehavior(StringBuilder sb) {
         sb.append("Behavior: ");
-        sb.append("Be very brief, concise, noble and professional in response to each command. ");
+        sb.append("Be very brief, concise, as a military professional in your responses. ");
+        sb.append("Provide no response if " + Globals.AI_NO_REPOSE_REQUIRED + " is detected within input");
     }
 
     private static void appendContext(StringBuilder sb, String currentShip, String playerName, String playerMilitaryRank, String playerHonorific, String playerTitle) {
         sb.append("Context: ");
         sb.append("You are ").append(Globals.AI_NAME).append(", onboard AI");
         sb.append(currentShip == null ? ". " : " for ").append(currentShip).append(" ship. ");
-        sb.append("Address me as either as ").append(playerName).append(", ").append(playerMilitaryRank).append(", ").append(playerHonorific).append(", or ").append(playerTitle).append(". ");
-        sb.append("We part of Imperial fleet");
+        sb.append("Address me as either by my name").append(playerName).append(", my military rank ").append(playerMilitaryRank).append(", or use honorific").append(playerHonorific);
+        sb.append("We in service to Imperial fleet. ");
+        sb.append("We are explorers and bounty hunters. ");
     }
 
 
@@ -71,7 +74,7 @@ public class AIContextFactory {
         }
         StringBuilder sb = new StringBuilder();
         sb.append("Current game state: " + stateSummary + " ");
-        sb.append("instructions: if input has a verb like 'set', 'divert', 'engage', 'open' or similar it is most likely a command, if it has 'find', 'lookup', 'access' or similar it is a query. Else it is chit-chat.");
+        sb.append("Instructions: Input can be command or query or chat.");
         sb.append("Interpret this input: ");
         sb.append(playerVoiceInput);
         sb.append(" ");
@@ -80,6 +83,7 @@ public class AIContextFactory {
         sb.append(" ");
         sb.append("If unclear or noise (e.g., sniff or gibberish), classify as 'chat' and respond lightly like 'Didn't catch that!'. ");
         sb.append("Provide very brief fun Imperial-toned response ");
+        sb.append("provide empty response_text for the singe word commands like 'select', 'cancel' or 'activate'");
         sb.append("Respond in JSON only: {\"type\": \"command|query|chat\", \"response_text\": \"TTS output (concise and fun)\", \"action\": \"set_mining_target|open_cargo_hatch|...\" (if command or query), \"params\": {\"key\": \"value\"} (if command or query)}. ");
         sb.append("Use provided state for queries; say 'I don't know' if data unavailable. ");
         sb.append("Never automate—actions must be user-triggered. ");

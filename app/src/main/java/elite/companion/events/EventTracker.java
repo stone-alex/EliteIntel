@@ -1,4 +1,4 @@
-package elite.companion.subscribers;
+package elite.companion.events;
 
 import java.util.HashMap;
 import java.util.Map;

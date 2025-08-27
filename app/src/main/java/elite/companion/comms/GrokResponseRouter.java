@@ -39,7 +39,7 @@ public class GrokResponseRouter {
     private void registerCommandHandlers() {
 
         //Query Handlers
-        queryHandlers.put(CommandAction.QUERY_CURRENT_SYSTEM.getAction(), new QueryCurrentSystemHandler());
+        queryHandlers.put(CommandAction.QUERY_SEARCH_SIGNAL_DATA.getAction(), new QueryCurrentSystemHandler());
         queryHandlers.put(CommandAction.QUERY_SHIP_LOADOUT.getAction(), new QueryShipLoadoutHandler());
         queryHandlers.put(CommandAction.QUERY_FIND_NEAREST_MATERIAL_TRADER.getAction(), new FindMaterialTraderHandler());
 
@@ -91,7 +91,10 @@ public class GrokResponseRouter {
         commandHandlers.put(GALNET_AUDIO_SKIP_FORWARD.getGameBinding(), new GenericGameController(voiceCommandHandler, GALNET_AUDIO_SKIP_FORWARD.getGameBinding()));
         commandHandlers.put(HYPER_SUPER_COMBINATION.getGameBinding(), new GenericGameController(voiceCommandHandler, HYPER_SUPER_COMBINATION.getGameBinding()));
         commandHandlers.put(JUMP_TO_HYPERSPACE.getGameBinding(), new GenericGameController(voiceCommandHandler, JUMP_TO_HYPERSPACE.getGameBinding()));
+
         commandHandlers.put(LANDING_GEAR_TOGGLE.getGameBinding(), new GenericGameController(voiceCommandHandler, LANDING_GEAR_TOGGLE.getGameBinding()));
+        commandHandlers.put(NIGHT_VISION.getGameBinding(), new GenericGameController(voiceCommandHandler, NIGHT_VISION.getGameBinding()));
+
         commandHandlers.put(OPEN_CODEX_GO_TO_DISCOVERY.getGameBinding(), new GenericGameController(voiceCommandHandler, OPEN_CODEX_GO_TO_DISCOVERY.getGameBinding()));
         commandHandlers.put(OPEN_CODEX_GO_TO_DISCOVERY_BUGGY.getGameBinding(), new GenericGameController(voiceCommandHandler, OPEN_CODEX_GO_TO_DISCOVERY_BUGGY.getGameBinding()));
         commandHandlers.put(PAUSE.getGameBinding(), new GenericGameController(voiceCommandHandler, PAUSE.getGameBinding()));
@@ -172,6 +175,8 @@ public class GrokResponseRouter {
     }
 
     private void handleQuery(String action, JsonObject params, String responseText) {
+        VoiceGenerator.getInstance().speak(responseText);
+
         QueryHandler handler = queryHandlers.get(action);
         if (handler == null) {
             log.warn("Unknown query action: {}", action);

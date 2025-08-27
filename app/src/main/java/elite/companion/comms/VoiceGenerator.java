@@ -105,32 +105,35 @@ public class VoiceGenerator {
         randomVoiceMap.put(MERRY, Merry);
         randomVoiceMap.put(ELYRIA, Elyria);
         randomVoiceMap.put(FAST_JENNY, FastJenny);
-        randomVoiceMap.put(CHARLES, Charles);
+        //randomVoiceMap.put(CHARLES, Charles);
         randomVoiceMap.put(STEVE, Steven);
         randomVoiceMap.put(JOSEPH, Joseph);
-        //randomVoiceMap.put(LEDA, Leda);
+        randomVoiceMap.put(LEDA, Leda);
         randomVoiceMap.put(KAREN, Karen);
     }
 
 
 
     public void speakInRandomVoice(String text) {
+        if(text == null || text.isEmpty()) return;
         speak(text, getRandomVoice());
     }
 
     public String getRandomVoice() {
         if (voiceMap.isEmpty()) {
-            return LEDA;
+            return CHARLES;
         }
         String[] voices = randomVoiceMap.keySet().toArray(new String[0]);
         return voices[new Random().nextInt(voices.length)];
     }
 
     public void speak(String text) {
-        speak(text, LEDA);
+        if(text == null || text.isEmpty()) return;
+        speak(text, CHARLES);
     }
 
     public void speak(String text, String voiceName) {
+        if(text == null || text.isEmpty()) return;
         try {
             voiceQueue.put(new VoiceRequest(text, voiceName));
         } catch (InterruptedException e) {

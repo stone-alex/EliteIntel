@@ -13,7 +13,7 @@ public enum CommandAction {
 
 
     //Queries
-    QUERY_CURRENT_SYSTEM("query_current_system", null, null),
+    QUERY_SEARCH_SIGNAL_DATA("query_search_local_signals_data", null, null),
     QUERY_SHIP_LOADOUT("query_ship_loadout", null, null),
     QUERY_FIND_NEAREST_MATERIAL_TRADER("query_find_nearest_material_trader", null, null),
 

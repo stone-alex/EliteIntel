@@ -71,11 +71,11 @@ public class GameCommandMapping {
         INCREASE_WEAPONS_POWER_BUGGY("increase_weapons_power_buggy", "IncreaseWeaponsPower_Buggy"),
         JUMP_TO_HYPERSPACE("jump_to_hyperspace", "Hyperspace"),
         LANDING_GEAR_TOGGLE("landing_gear_toggle", "LandingGearToggle"),
-
+        NIGHT_VISION("night_vision", "NightVisionToggle"),
         OPEN_CODEX_GO_TO_DISCOVERY("open_codex_go_to_discovery", "OpenCodexGoToDiscovery"),
         OPEN_CODEX_GO_TO_DISCOVERY_BUGGY("open_codex_go_to_discovery_buggy", "OpenCodexGoToDiscovery_Buggy"),
         PAUSE("pause", "Pause"),
-        PLAYER_HUDMODE_TOGGLE("combat_or_analysis_mode_toggle", "PlayerHUDModeToggle"),
+        PLAYER_HUDMODE_TOGGLE("combat_or_analysis_mode", "PlayerHUDModeToggle"),
         QUICK_COMMS_PANEL_BUGGY("quick_comms_panel_buggy", "QuickCommsPanel_Buggy"),
         QUICK_COMMS_PANEL_HUMANOID("quick_comms_panel_humanoid", "QuickCommsPanel_Humanoid"),
         QUIT_CAMERA("quit_camera", "QuitCamera"),

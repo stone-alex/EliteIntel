@@ -2,6 +2,7 @@ package elite.companion.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import elite.companion.EventBusManager;
+import elite.companion.events.EventTracker;
 import elite.companion.events.LoadGameEvent;
 import elite.companion.session.PlayerSession;
 import elite.companion.session.SystemSession;

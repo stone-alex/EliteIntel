@@ -1,11 +1,10 @@
 package elite.companion.session;
 
+import com.google.gson.Gson;
 import elite.companion.events.FSSSignalDiscoveredEvent;
 import elite.companion.gameapi.events.NavRouteDto;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * SystemSession
@@ -24,11 +23,14 @@ public class SystemSession {
     public static final String SUITE_LOADOUT_JSON = "suite_loadout_json";
     public static final String DESTINATION_TARGET = "destination_target";
     public static final String FINAL_DESTINATION = "final_destination";
+    public static final String CURRENT_STATUS = "current_status";
+    public static final String FSD_TARGET = "fsd_target";
     private static final SystemSession INSTANCE = new SystemSession();
     private final Map<String, Object> state = new HashMap<>();
-    private final Map<String, Integer> signalCounts = new HashMap<>(); // For batch accumulation
+    private final Set<String> detectedSignals = new LinkedHashSet<>();
     private final Map<String, NavRouteDto> routeMap = new LinkedHashMap<>(); // Star system name to NavRouteDto
     private long currentSystemAddress = -1; // Track current system to reset on change
+    private long bountyCollectedThisSession = 0;
 
     private SystemSession() {
         // Private constructor to enforce a singleton pattern
@@ -42,8 +44,8 @@ public class SystemSession {
         return state.get(key);
     }
 
-    public String getSessionValue(String queryDestination, Class<String> stringClass) {
-        return null;
+    public String getSessionValue(String key, Class<String> stringClass) {
+        return state.get(key) == null ? null : stringClass.cast(state.get(key));
     }
 
     public void remove(String key) {
@@ -66,95 +68,32 @@ public class SystemSession {
         state.put(sensorReading, data);
     }
 
-    public void clear() {
-        state.clear();
-    }
 
     public void clearSensorData() {
         state.remove(SENSOR_READING);
     }
 
 
-    // New methods for signal batching
     public void addSignal(FSSSignalDiscoveredEvent event) {
-        if (currentSystemAddress == -1) {
-            currentSystemAddress = event.getSystemAddress();
-        } else if (currentSystemAddress != event.getSystemAddress()) {
-            // System changed mid-batch (rare), reset
-            resetSignals();
-            currentSystemAddress = event.getSystemAddress();
-        }
-
-        String friendlyType = getFriendlyType(event.getSignalType());
-        if (friendlyType != null) signalCounts.put(friendlyType, signalCounts.getOrDefault(friendlyType, 0) + 1);
+        detectedSignals.add(event.toJson());
     }
 
-    public String buildSignalSummary() {
-        if (signalCounts.isEmpty()) {
-            return null;
+    public String getSignals() {
+        Object[] array = detectedSignals.stream().toArray();
+        StringBuilder sb = new StringBuilder();
+        for(Object o : array){
+            sb.append(o).append(". \n\n");
         }
 
-        StringBuilder summary = new StringBuilder("System signals discovered: [");
-        boolean first = true;
-        for (Map.Entry<String, Integer> entry : signalCounts.entrySet()) {
-            if (!first) {
-                summary.append(", ");
-            }
-            summary.append(entry.getKey()).append("s discovered: ").append(entry.getValue());
-            first = false;
-        }
-        summary.append("] please provide brief summary of discovered signals.");
-        return summary.toString();
-    }
-
-    public void resetSignals() {
-        signalCounts.clear();
-        currentSystemAddress = -1;
-    }
-
-    private String getFriendlyType(String signalType) {
-        if (signalType == null) {
-            return null;
-        }
-        String result;
-        switch (signalType) {
-            case "Outpost":
-                result = "Outpost";
-                break;
-            case "StationBernalSphere":
-                result = "Station";
-                break;
-            case "FleetCarrier":
-                result = "Carrier";
-                break;
-            case "ResourceExtraction":
-                result = "Extraction site";
-                break;
-            case "Installation":
-                result = "Installation";
-                break;
-            default:
-                result = "Other";
-                break;
-        }
-        return result;
-    }
-
-    public void setFssData(String summary) {
-        state.put(FSS_READING, summary);
+        return array.length == 0 ? "no data" : sb.toString();
     }
 
     public String getSensorData() {
         return state.get(SENSOR_READING) == null ? null : (String) state.get(SENSOR_READING);
     }
 
-    public String getFssData() {
-        return state.get(FSS_READING) == null ? null : (String) state.get(FSS_READING);
-    }
 
-    public void clearFssData() {
-        state.remove(FSS_READING);
-    }
+
 
     public void setNavRoute(Map<String, NavRouteDto> routeMap) {
         this.routeMap.clear();
@@ -171,5 +110,17 @@ public class SystemSession {
 
     public void clearRoute() {
         routeMap.clear();
+    }
+
+    public void addBounty(long totalReward) {
+        bountyCollectedThisSession = bountyCollectedThisSession + totalReward;
+    }
+
+    public long getBountyCollectedThisSession() {
+        return bountyCollectedThisSession;
+    }
+
+    public void clearFssSignals() {
+        detectedSignals.clear();
     }
 }

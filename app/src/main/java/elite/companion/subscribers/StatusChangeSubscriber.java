@@ -1,6 +1,7 @@
 package elite.companion.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import com.google.gson.Gson;
 import elite.companion.EventBusManager;
 import elite.companion.gameapi.events.GameEvents;
 import elite.companion.session.SystemSession;
@@ -14,6 +15,9 @@ public class StatusChangeSubscriber {
 
     @Subscribe
     public void onStatusChange(GameEvents.StatusEvent event) {
+        SystemSession.getInstance().updateSession(SystemSession.CURRENT_STATUS, new Gson().toJson(event));
+
+
         long currentBalance = event.getBalance();
         double onBoardCargo = event.getCargo();
         String fireGroup = toFireGroupDesignation(event.getFireGroup());

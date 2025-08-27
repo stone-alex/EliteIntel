@@ -28,6 +28,18 @@ public class StringSanitizer {
             log.info("Sanitized transcript: {} -> {}", voiceCommand, command);
         }
 
+        if( command.toLowerCase().contains("harris")){
+            command = command.replace("Harris", "Ares");
+            command = command.replace("harris", "Ares");
+            log.info("Sanitized transcript: {} -> {}", voiceCommand, command);
+        }
+
+        if( command.toLowerCase().contains("aries")){
+            command = command.replace("Aries", "Ares");
+            command = command.replace("aries", "Ares");
+            log.info("Sanitized transcript: {} -> {}", voiceCommand, command);
+        }
+
         return command;
     }
 

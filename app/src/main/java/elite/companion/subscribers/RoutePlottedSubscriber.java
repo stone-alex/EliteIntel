@@ -3,6 +3,7 @@ package elite.companion.subscribers;
 import com.google.common.eventbus.Subscribe;
 import com.google.gson.Gson;
 import elite.companion.EventBusManager;
+import elite.companion.comms.VoiceGenerator;
 import elite.companion.gameapi.events.GameEvents;
 import elite.companion.gameapi.events.NavRouteDto;
 import elite.companion.session.SystemSession;

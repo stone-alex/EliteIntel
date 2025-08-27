@@ -16,7 +16,7 @@
     <logger name="elite.companion.gameapi.JournalParser" level="ERROR"/>
     <logger name="elite.companion.gameapi.AuxiliaryFilesMonitor" level="ERROR"/>
     <logger name="elite.companion.robot.KeyBindingsParser" level="ERROR"/>
-    <logger name="elite.companion.comms.GrokCommandEndPoint" level="ERROR"/>
+    <logger name="elite.companion.comms.GrokCommandEndPoint" level="DEBUG"/>
 
     <logger name="elite.companion.comms.SpeechRecognizer" level="WARNING"/>
 

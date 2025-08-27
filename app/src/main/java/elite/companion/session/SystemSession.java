@@ -1,9 +1,7 @@
 package elite.companion.session;
 
-import com.google.gson.Gson;
-import elite.companion.events.BaseEvent;
-import elite.companion.events.FSSSignalDiscoveredEvent;
-import elite.companion.gameapi.events.NavRouteDto;
+import elite.companion.gameapi.journal.events.BaseEvent;
+import elite.companion.gameapi.gamestate.events.NavRouteDto;
 
 import java.util.*;
 
@@ -25,6 +23,8 @@ public class SystemSession {
     public static final String FINAL_DESTINATION = "final_destination";
     public static final String CURRENT_STATUS = "current_status";
     public static final String FSD_TARGET = "fsd_target";
+    public static final String RANK = "rank";
+    public static final String SHIP_CARGO = "ship_cargo";
     private static final SystemSession INSTANCE = new SystemSession();
     private final Map<String, Object> state = new HashMap<>();
     private final Set<String> detectedSignals = new LinkedHashSet<>();

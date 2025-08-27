@@ -4,7 +4,11 @@ import elite.companion.comms.voice.SpeechRecognizer;
 import elite.companion.comms.voice.VoiceGenerator;
 import elite.companion.gameapi.AuxiliaryFilesMonitor;
 import elite.companion.gameapi.JournalParser;
-import elite.companion.subscribers.*;
+import elite.companion.gameapi.gamestate.subscribers.CargoChangedEventSubscriber;
+import elite.companion.gameapi.gamestate.subscribers.RoutePlottedSubscriber;
+import elite.companion.gameapi.gamestate.subscribers.StatusChangeSubscriber;
+import elite.companion.session.SystemSession;
+import elite.companion.gameapi.journal.subscribers.*;
 
 public class AppMain {
 
@@ -20,7 +24,7 @@ public class AppMain {
         new FSDJumpSubscriber();
         new FSDTargetSubscriber();
         new FSSSignalDiscoveredSubscriber();
-        new LoadGameEventSubscriber();
+        new GameStartedEventSubscriber();
         new MiningEventSubscriber();
         new PowerPlaySubscriber();
         new ProspectorSubscriber();
@@ -34,14 +38,14 @@ public class AppMain {
         new LoadoutSubscriber();
         new SwitchSuitLoadoutSubscriber();
         new RankEventSubscriber();
-        new StatusChangeSubscriber();
         new BountyEventSubscriber();
         new ScannedEventSubscriber();
         new RoutClearedSubscriber();
 
         //Game API subscribers
         new RoutePlottedSubscriber();
-
+        new CargoChangedEventSubscriber();
+        new StatusChangeSubscriber();
 
 
 
@@ -50,6 +54,10 @@ public class AppMain {
 
         SpeechRecognizer recognizer = new SpeechRecognizer();
         recognizer.start(); // Start STT voice command processing thread
+
+        if(SystemSession.getInstance().getObject(SystemSession.RANK) == null) {
+            VoiceGenerator.getInstance().speak("No Game session detected.");
+        }
 
         JournalParser parser = new JournalParser();
         parser.startReading();

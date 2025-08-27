@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 public class SubscriberScanner {
 
-    private static final String SUBSCRIBER_PACKAGE = "elite.companion.events";
+    private static final String SUBSCRIBER_PACKAGE = "elite.companion.gameapi.journal.events";
     private static final String SUBSCRIBER_SUFFIX = "Subscriber";
 
     public static void registerAllSubscribers() {

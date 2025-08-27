@@ -2,8 +2,8 @@ package elite.companion.session;
 
 import com.google.common.eventbus.Subscribe;
 import elite.companion.EventBusManager;
-import elite.companion.events.CarrierStatsEvent;
-import elite.companion.events.EventTracker;
+import elite.companion.gameapi.journal.events.CarrierStatsEvent;
+import elite.companion.gameapi.journal.events.EventTracker;
 
 import java.util.HashMap;
 import java.util.Map;

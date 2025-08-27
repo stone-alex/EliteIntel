@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import elite.companion.comms.ai.GrokAnalysisEndpoint;
 import elite.companion.comms.voice.VoiceGenerator;
-import elite.companion.gameapi.events.NavRouteDto;
+import elite.companion.gameapi.gamestate.events.NavRouteDto;
 import elite.companion.session.SystemSession;
 
 import java.util.Collection;

@@ -2,6 +2,7 @@ package elite.companion.util;
 
 import elite.companion.comms.ai.GrokRequestHints;
 import elite.companion.session.PlayerSession;
+import elite.companion.session.SystemSession;
 
 public class AIContextFactory {
     private static AIContextFactory instance;
@@ -32,8 +33,9 @@ public class AIContextFactory {
         String playerName = "Krondor"; // -> not available at start - fix -> playerSession.getSessionValue(PlayerSession.PLAYER_NAME, String.class);
         String playerTitle = "Prince";
         String playerMilitaryRank = "Viscount";
-        int imperialMilitaryRank = 1;
-        int federationMilitaryRank = 0;
+
+        //playerSession.getObject(PlayerSession.PLAYER_RANK)
+        //Ranks.getHighestRankAsString(imperialMilitaryRank,federationMilitaryRank).get(playerMilitaryRank)
         String playerHonorific = "My Lord"; //= Ranks.highestRank(imperialMilitaryRank,federationMilitaryRank).get(playerMilitaryRank);
 
         String currentShip = playerSession.getSessionValue(PlayerSession.CURRENT_SHIP, String.class);
@@ -82,7 +84,14 @@ public class AIContextFactory {
     }
 
     private static void appendContext(StringBuilder sb, String currentShip, String playerName, String playerMilitaryRank, String playerHonorific, String playerTitle) {
-        sb.append("Context: You are Ares, onboard AI for a null ship in Elite Dangerous. Address me as Krondor, Viscount, or My Lord. Prefer Krondor or Viscount. We serve the Imperial fleet as explorers and bounty hunters.\n\n");
+        String aiName = SystemSession.getInstance().getAIVoice().getName();
+        sb.append("Context: You are ")
+                .append(aiName).append(", onboard AI for a ")
+                .append(currentShip).append(" ship in Elite Dangerous. Address me as ")
+                .append(playerName).append(", ").append(playerMilitaryRank)
+                .append(", or ").append(playerHonorific).append(". Prefer ")
+                .append(playerName).append(" or ").append(playerMilitaryRank)
+                .append(". We serve the Imperial fleet as explorers and bounty hunters.\n\n");
     }
 
 

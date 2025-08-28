@@ -1,6 +1,6 @@
-package elite.companion.comms.ai;
+package elite.companion.comms.handlers.command;
 
-public class GameCommandMapping {
+public class CommandActionsGame {
     public enum GameCommand {
         //ADVANCE_MODE("advance_mode", "ToggleAdvanceMode"),
         //AUTO_BREAK_BUGGY_BUTTON("auto_break_buggy_button", "AutoBreakBuggyButton"),
@@ -97,11 +97,11 @@ public class GameCommandMapping {
         SET_SPEED25("set_speed25", "SetSpeed25"),
         SET_SPEED50("set_speed50", "SetSpeed50"),
         SET_SPEED75("set_speed75", "SetSpeed75"),
-        SET_SPEED_ZERO("set_speed_zero", "SetSpeedZero"),
-        AUTO_DOC("engage_auto_docking_auto_pilot_bring_us_in", "SetSpeedZero"),
+        SET_SPEED_ZERO("set_speed_zero_full_stop_cut_engines", "SetSpeedZero"),
+        AUTO_DOC("activate_auto_pilot", "SetSpeedZero"), //id the docking computer installed.
 
         SYSTEM_MAP("system_map", "SystemMapOpen"),
-        SYSTEM_MAP_BUGGY("system_map_buggy", "SystemMapOpen_Buggy"),
+        //SYSTEM_MAP_BUGGY("system_map_buggy", "SystemMapOpen_Buggy"),
         SYSTEM_MAP_HUMANOID("system_map_humanoid", "SystemMapOpen_Humanoid"),
 
         TARGET_NEXT_ROUTE_SYSTEM("target_next_system_in_route", "TargetNextRouteSystem"),

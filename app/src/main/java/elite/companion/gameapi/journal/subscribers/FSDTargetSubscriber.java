@@ -25,7 +25,7 @@ public class FSDTargetSubscriber {
             Map<String, NavRouteDto> route = systemSession.getRoute();
             if (route != null && !route.isEmpty()) {
                 NavRouteDto firstStop = route.values().iterator().next();
-                VoiceGenerator.getInstance().speak("Jumping to " + firstStop.getName() + isFuelStarClause(event.getStarClass()));
+                VoiceGenerator.getInstance().speak("Jumping to " + firstStop.getName() + isFuelStarClause(firstStop.getStarClass()));
             }
         }
         systemSession.updateSession(SystemSession.FSD_TARGET, event.getName());

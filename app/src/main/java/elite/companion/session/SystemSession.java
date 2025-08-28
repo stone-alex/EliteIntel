@@ -1,7 +1,9 @@
 package elite.companion.session;
 
-import elite.companion.gameapi.journal.events.BaseEvent;
+import elite.companion.comms.voice.Voices;
 import elite.companion.gameapi.gamestate.events.NavRouteDto;
+import elite.companion.gameapi.journal.events.BaseEvent;
+import elite.companion.gameapi.journal.events.userfriendly.MissionAccepted;
 
 import java.util.*;
 
@@ -16,20 +18,25 @@ public class SystemSession {
     public static final String SENSOR_READING = "sensor_reading";
     public static final String CURRENT_SYSTEM = "current_system";
     public static final String QUERY_DESTINATION = "query_destination";
-    public static final String SHIP_DATA = "ship_data";
     public static final String SHIP_LOADOUT_JSON = "ship_loadout_json";
     public static final String SUITE_LOADOUT_JSON = "suite_loadout_json";
-    public static final String DESTINATION_TARGET = "destination_target";
     public static final String FINAL_DESTINATION = "final_destination";
     public static final String CURRENT_STATUS = "current_status";
     public static final String FSD_TARGET = "fsd_target";
     public static final String RANK = "rank";
     public static final String SHIP_CARGO = "ship_cargo";
+    public static final String PRIVACY_MODE = "privacy_mode";
+    public static final String RADION_TRANSMISSION_ON_OFF = "radio_transmission_on_off";
+    public static final String ANNOUNCE_BODY_SCANS = "announce_body_scans";
+    public static final String CURRENT_SYSTEM_DATA = "current_system_data";
     private static final SystemSession INSTANCE = new SystemSession();
     private final Map<String, Object> state = new HashMap<>();
     private final Set<String> detectedSignals = new LinkedHashSet<>();
+    private final Map<Long, BaseEvent> missions = new LinkedHashMap();
     private final Map<String, NavRouteDto> routeMap = new LinkedHashMap<>(); // Star system name to NavRouteDto
     private long bountyCollectedThisSession = 0;
+    private Voices aiVoice;
+    private BaseEvent bodySignal;
 
     private SystemSession() {
         // Private constructor to enforce a singleton pattern
@@ -72,14 +79,13 @@ public class SystemSession {
         Object[] array = detectedSignals.stream().toArray();
         StringBuilder sb = new StringBuilder();
         sb.append("[");
-        for(Object o : array){
+        for (Object o : array) {
             sb.append(o).append(", ");
         }
         sb.append("]");
 
         return array.length == 0 ? "no data" : sb.toString();
     }
-
 
 
     public void setNavRoute(Map<String, NavRouteDto> routeMap) {
@@ -109,5 +115,41 @@ public class SystemSession {
 
     public void clearFssSignals() {
         detectedSignals.clear();
+    }
+
+    public void setAIVoice(Voices voice) {
+        this.aiVoice = voice;
+    }
+
+    public Voices getAIVoice() {
+        return this.aiVoice == null ? Voices.MICHAEL : this.aiVoice;
+    }
+
+    public void addBodySignal(BaseEvent event) {
+        this.bodySignal = event;
+    }
+
+    public BaseEvent getBodySignal() {
+        return this.bodySignal;
+    }
+
+    public void addMission(MissionAccepted mission) {
+        missions.put(mission.getMissionId(), mission);
+    }
+
+    public Map<Long, BaseEvent> getMissions() {
+        return missions;
+    }
+
+    public void removeMission(Long missionId) {
+        missions.remove(missionId);
+    }
+
+    public BaseEvent getMission(Long missionId) {
+        return missions.get(missionId);
+    }
+
+    public void clearMissions() {
+        missions.clear();
     }
 }

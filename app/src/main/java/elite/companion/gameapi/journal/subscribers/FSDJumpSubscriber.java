@@ -15,14 +15,12 @@ public class FSDJumpSubscriber {
 
     @Subscribe
     public void onFSDJumpEvent(FSDJumpEvent event) {
+        SystemSession systemSession = SystemSession.getInstance();
+        systemSession.updateSession(SystemSession.CURRENT_SYSTEM, event.getStarSystem());
+        systemSession.updateSession(SystemSession.CURRENT_SYSTEM_DATA, event.toJson());
+
 
         String currentStarSystem = event.getStarSystem();
-        String systemAllegiance = event.getSystemAllegiance();
-        String economy = event.getSystemEconomyLocalised();
-        String government = event.getSystemGovernmentLocalised();
-        String security = event.getSystemSecurityLocalised();
-        String controllingPower = event.getControllingPower();
-        String powerplayState = event.getPowerplayState();
         List<FSDJumpEvent.Faction> factions = event.getFactions();
         StringBuilder factionInfo = new StringBuilder();
         if (factions == null || factions.isEmpty()) {
@@ -44,22 +42,13 @@ public class FSDJumpSubscriber {
             }
         }
 
-        SystemSession systemSession = SystemSession.getInstance();
-        systemSession.updateSession(systemSession.CURRENT_SYSTEM, event.getStarSystem());
+
         boolean roueSet = !systemSession.getRoute().isEmpty();
         systemSession.removeNavPoint(currentStarSystem);
         String finalDestination = String.valueOf(systemSession.getObject(SystemSession.FINAL_DESTINATION));
 
         StringBuilder sb = new StringBuilder();
-        sb.append("FSD Jump Complete: ");
-
-        sb.append("System name: ").append(event.getStarSystem()).append(", ");
-        sb.append("System Allegiance: ").append(systemAllegiance).append(", ");
-        sb.append("Government: ").append(government).append(", ");
-        sb.append("Security: ").append(security).append(", ");
-        sb.append("Controlling Power: ").append(controllingPower).append(", ");
-        sb.append("Powerplay State: ").append(powerplayState).append(", ");
-        sb.append("Economy: ").append(economy).append(", ");
+        sb.append("Hyperspace Jump Successful: ");
 
         if (finalDestination != null && finalDestination.equalsIgnoreCase(currentStarSystem)) {
             sb.append("Arrived at final destination: ").append(finalDestination).append(" true, ");

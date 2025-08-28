@@ -5,15 +5,19 @@ import elite.companion.EventBusManager;
 import elite.companion.gameapi.journal.events.ScanEvent;
 import elite.companion.session.SystemSession;
 
-public class ScanEventSubscriber {
+public class BodyScanEventSubscriber {
 
 
-    public ScanEventSubscriber() {
+    public BodyScanEventSubscriber() {
         EventBusManager.register(this);
     }
 
     @Subscribe
     public void onScanEvent(ScanEvent event) {
-        SystemSession.getInstance().setSensorData(event.toString());
+        SystemSession systemSession = SystemSession.getInstance();
+        boolean announce = Boolean.TRUE.equals(systemSession.getObject(SystemSession.ANNOUNCE_BODY_SCANS));
+        if (announce){
+            systemSession.addBodySignal(event);
+        }
     }
 }

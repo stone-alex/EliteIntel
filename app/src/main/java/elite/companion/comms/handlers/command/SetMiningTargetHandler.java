@@ -19,7 +19,7 @@ public class SetMiningTargetHandler implements CommandHandler {
             log.info("no mining target set");
             VoiceGenerator.getInstance().speak("No material set. Please try again.");
         } else {
-            session.updateSession(CommandAction.SET_MINING_TARGET.getParamKey(), jsonElement.getAsJsonPrimitive().getAsString().replace("\"", ""));
+            session.updateSession(CommandActionsCustom.SET_MINING_TARGET.getParamKey(), jsonElement.getAsJsonPrimitive().getAsString().replace("\"", ""));
             VoiceGenerator.getInstance().speak(responseText);
         }
     }

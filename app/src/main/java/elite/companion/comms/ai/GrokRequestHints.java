@@ -1,7 +1,8 @@
 package elite.companion.comms.ai;
 
-import elite.companion.comms.handlers.command.CommandAction;
-import elite.companion.comms.handlers.query.QueryAction;
+import elite.companion.comms.handlers.command.CommandActionsCustom;
+import elite.companion.comms.handlers.command.CommandActionsGame;
+import elite.companion.comms.handlers.query.QueryActions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,21 +20,21 @@ public class GrokRequestHints {
     );
 
     static {
-        List<String> commands = Arrays.stream(CommandAction.values())
-                .map(CommandAction::getCommandWithPlaceholder)
+        List<String> commands = Arrays.stream(CommandActionsCustom.values())
+                .map(CommandActionsCustom::getCommandWithPlaceholder)
                 .collect(Collectors.toList());
 
         // Add user-friendly commands and queries
-        commands.addAll(Arrays.asList(GameCommandMapping.getUserCommands()));
+        commands.addAll(Arrays.asList(CommandActionsGame.getUserCommands()));
 
         // Load game bindings
-        commands.addAll(Arrays.asList(GameCommandMapping.getUserCommands()));
+        commands.addAll(Arrays.asList(CommandActionsGame.getUserCommands()));
         COMMANDS = commands;
     }
 
     static {
-        List<String> queries = Arrays.stream(QueryAction.values())
-                .map(QueryAction::getCommandWithPlaceholder)
+        List<String> queries = Arrays.stream(QueryActions.values())
+                .map(QueryActions::getCommandWithPlaceholder)
                 .collect(Collectors.toList());
 
 

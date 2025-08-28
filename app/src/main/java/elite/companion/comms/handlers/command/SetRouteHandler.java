@@ -1,7 +1,6 @@
 package elite.companion.comms.handlers.command;
 
 import com.google.gson.JsonObject;
-import elite.companion.comms.ai.GameCommandMapping;
 import elite.companion.comms.voice.VoiceGenerator;
 import elite.companion.comms.ai.robot.KeyProcessor;
 import elite.companion.comms.ai.robot.VoiceCommandHandler;
@@ -19,7 +18,7 @@ public class SetRouteHandler implements CommandHandler {
 
     @Override
     public void handle(JsonObject params, String responseText) {
-        String destination = params.has(CommandAction.PLOT_ROUTE.getParamKey()) ? params.get(CommandAction.PLOT_ROUTE.getParamKey()).getAsString() : null;
+        String destination = params.has(CommandActionsCustom.PLOT_ROUTE.getParamKey()) ? params.get(CommandActionsCustom.PLOT_ROUTE.getParamKey()).getAsString() : null;
         if (destination == null || destination.isEmpty()) {
             // Fallback to SessionTracker if params don't provide destination
             destination = String.valueOf(SystemSession.getInstance().getObject(SystemSession.QUERY_DESTINATION));
@@ -30,7 +29,7 @@ public class SetRouteHandler implements CommandHandler {
                 // Step 1: Open galaxy map
                 JsonObject openMapJson = new JsonObject();
                 openMapJson.addProperty("type", "command");
-                openMapJson.addProperty("action", GameCommandMapping.GameCommand.GALAXY_MAP.getGameBinding());
+                openMapJson.addProperty("action", CommandActionsGame.GameCommand.GALAXY_MAP.getGameBinding());
                 openMapJson.addProperty("response_text", "Opening galaxy map to plot route to " + destination);
                 voiceCommandHandler.handleGrokResponse(openMapJson);
                 Thread.sleep(500); // Wait for map to open
@@ -38,7 +37,7 @@ public class SetRouteHandler implements CommandHandler {
                 // Step 2: Navigate to text field
                 JsonObject tabToTextJson = new JsonObject();
                 tabToTextJson.addProperty("type", "command");
-                tabToTextJson.addProperty("action", GameCommandMapping.GameCommand.UI_TOGGLE.getGameBinding());
+                tabToTextJson.addProperty("action", CommandActionsGame.GameCommand.UI_TOGGLE.getGameBinding());
                 tabToTextJson.addProperty("response_text", "Entering system name");
                 voiceCommandHandler.handleGrokResponse(tabToTextJson);
                 Thread.sleep(200); // Wait for focus
@@ -49,7 +48,7 @@ public class SetRouteHandler implements CommandHandler {
                 // Step 4: Select system
                 JsonObject selectJson = new JsonObject();
                 selectJson.addProperty("type", "command");
-                selectJson.addProperty("action", GameCommandMapping.GameCommand.UI_SELECT.getGameBinding());
+                selectJson.addProperty("action", CommandActionsGame.GameCommand.UI_SELECT.getGameBinding());
                 selectJson.addProperty("response_text", "Selecting " + destination);
                 voiceCommandHandler.handleGrokResponse(selectJson);
                 Thread.sleep(3000); // Wait for map to zoom in
@@ -57,7 +56,7 @@ public class SetRouteHandler implements CommandHandler {
                 // Step 5: Plot route
                 JsonObject plotJson = new JsonObject();
                 plotJson.addProperty("type", "command");
-                plotJson.addProperty("action", GameCommandMapping.GameCommand.UI_SELECT.getGameBinding());
+                plotJson.addProperty("action", CommandActionsGame.GameCommand.UI_SELECT.getGameBinding());
                 plotJson.addProperty("action_press_and_hold_delay", "1000"); //<-- instruction to press and hold for 1s key is passed in a line above as action
                 plotJson.addProperty("response_text", "Route plotted to " + destination);
                 voiceCommandHandler.handleGrokResponse(plotJson);

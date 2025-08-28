@@ -40,6 +40,23 @@ public class StringSanitizer {
             log.info("Sanitized transcript: {} -> {}", voiceCommand, command);
         }
 
+        if(command.toLowerCase().contains("southwest")){
+            command = command.replace("southwest", "set voice to");
+            command = command.replace("southwest", "set voice to");
+            log.info("Sanitized transcript: {} -> {}", voiceCommand, command);
+        }
+
+        if(command.toLowerCase().contains("atlanta")){
+            command = command.replace("atlanta", "lana");
+            command = command.replace("Atlanta", "lana");
+            log.info("Sanitized transcript: {} -> {}", voiceCommand, command);
+        }
+
+        if(command.toLowerCase().contains("supercross")){
+            command = command.replace("supercross", "supercruise");
+            log.info("Sanitized transcript: {} -> {}", voiceCommand, command);
+        }
+
         return command;
     }
 

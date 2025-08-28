@@ -2,10 +2,11 @@ package elite.companion.comms.ai;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import elite.companion.comms.handlers.query.ListAvailableVoices;
 import elite.companion.comms.voice.VoiceGenerator;
 import elite.companion.comms.handlers.command.*;
 import elite.companion.comms.handlers.query.AnalyzeDataHandler;
-import elite.companion.comms.handlers.query.QueryAction;
+import elite.companion.comms.handlers.query.QueryActions;
 import elite.companion.comms.handlers.query.QueryHandler;
 import elite.companion.comms.ai.robot.VoiceCommandHandler;
 import elite.companion.util.AIContextFactory;
@@ -17,7 +18,7 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-import static elite.companion.comms.ai.GameCommandMapping.GameCommand.*;
+import static elite.companion.comms.handlers.command.CommandActionsGame.GameCommand.*;
 
 public class GrokResponseRouter {
     private static final Logger log = LoggerFactory.getLogger(GrokResponseRouter.class);
@@ -44,14 +45,24 @@ public class GrokResponseRouter {
     private void registerCommandHandlers() {
 
         //Query Handlers
-        queryHandlers.put(QueryAction.QUERY_SEARCH_SIGNAL_DATA.getAction(), new AnalyzeDataHandler());
-        queryHandlers.put(QueryAction.QUERY_SHIP_LOADOUT.getAction(), new AnalyzeDataHandler());
-        queryHandlers.put(QueryAction.QUERY_ANALYZE_ROUTE.getAction(), new AnalyzeDataHandler());
+        queryHandlers.put(QueryActions.QUERY_SEARCH_SIGNAL_DATA.getAction(), new AnalyzeDataHandler());
+        queryHandlers.put(QueryActions.QUERY_SHIP_LOADOUT.getAction(), new AnalyzeDataHandler());
+        queryHandlers.put(QueryActions.QUERY_ANALYZE_ROUTE.getAction(), new AnalyzeDataHandler());
+        queryHandlers.put(QueryActions.QUERY_ANALYZE_ON_BOARD_CARGO.getAction(), new AnalyzeDataHandler());
+        queryHandlers.put(QueryActions.LOCAL_SYSTEM_INFO.getAction(), new AnalyzeDataHandler());
+        queryHandlers.put(QueryActions.LIST_AVAILABLE_VOICES.getAction(), new ListAvailableVoices());
+
         //queryHandlers.put(QueryAction.QUERY_FIND_NEAREST_MATERIAL_TRADER.getAction(), new FindMaterialTraderHandler());
 
         //APP COMMANDS
-        commandHandlers.put(CommandAction.SET_MINING_TARGET.getAction(), new SetMiningTargetHandler());
-        commandHandlers.put(CommandAction.PLOT_ROUTE.getAction(), new SetRouteHandler(voiceCommandHandler));
+        commandHandlers.put(CommandActionsCustom.SET_MINING_TARGET.getAction(), new SetMiningTargetHandler());
+        commandHandlers.put(CommandActionsCustom.PLOT_ROUTE.getAction(), new SetRouteHandler(voiceCommandHandler));
+        commandHandlers.put(CommandActionsCustom.SET_PRIVACY_MODE.getAction(), new SetPrivacyMode());
+        commandHandlers.put(CommandActionsCustom.SET_RADIO_TRANSMISSION_MODDE.getAction(), new SetRadioTransmissionOnOff());
+        commandHandlers.put(CommandActionsCustom.SET_AI_VOICE.getAction(), new SetAiVoice());
+        commandHandlers.put(CommandActionsCustom.ANNOUNCE_STELLAR_BODY_SCANS.getAction(), new SetAnnounceBodyScansHandler());
+
+
 
         //CUSTOM GAME CONTROL HANDERS
         commandHandlers.put(INCREASE_ENGINES_POWER.getUserCommand(), new SetPowerToEnginesHandler(voiceCommandHandler));
@@ -119,7 +130,7 @@ public class GrokResponseRouter {
         commandHandlers.put(SET_SPEED75.getGameBinding(), new GenericGameController(voiceCommandHandler, SET_SPEED75.getGameBinding()));
         commandHandlers.put(SET_SPEED_ZERO.getGameBinding(), new GenericGameController(voiceCommandHandler, SET_SPEED_ZERO.getGameBinding()));
         commandHandlers.put(SYSTEM_MAP.getGameBinding(), new GenericGameController(voiceCommandHandler, SYSTEM_MAP.getGameBinding()));
-        commandHandlers.put(SYSTEM_MAP_BUGGY.getGameBinding(), new GenericGameController(voiceCommandHandler, SYSTEM_MAP_BUGGY.getGameBinding()));
+        //commandHandlers.put(SYSTEM_MAP_BUGGY.getGameBinding(), new GenericGameController(voiceCommandHandler, SYSTEM_MAP_BUGGY.getGameBinding()));
         commandHandlers.put(SYSTEM_MAP_HUMANOID.getGameBinding(), new GenericGameController(voiceCommandHandler, SYSTEM_MAP_HUMANOID.getGameBinding()));
         commandHandlers.put(TARGET_NEXT_ROUTE_SYSTEM.getGameBinding(), new GenericGameController(voiceCommandHandler, TARGET_NEXT_ROUTE_SYSTEM.getGameBinding()));
         commandHandlers.put(TARGET_WINGMAN0.getGameBinding(), new GenericGameController(voiceCommandHandler, TARGET_WINGMAN0.getGameBinding()));

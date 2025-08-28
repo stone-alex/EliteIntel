@@ -1,7 +1,7 @@
 package elite.companion.comms.ai.robot;
 
 import com.google.gson.JsonObject;
-import elite.companion.comms.ai.GameCommandMapping;
+import elite.companion.comms.handlers.command.CommandActionsGame;
 import elite.companion.comms.voice.VoiceGenerator;
 import elite.companion.session.SystemSession;
 import org.slf4j.Logger;
@@ -92,7 +92,7 @@ public class VoiceCommandHandler {
         log.debug("Updated SessionTracker with action: {}, params: {}", action, params);
         KeyBindingsParser.KeyBinding binding = monitor.getBindings().get(action);
         if (binding == null) {
-            binding = monitor.getBindings().get(GameCommandMapping.getGameBinding(action));
+            binding = monitor.getBindings().get(CommandActionsGame.getGameBinding(action));
         }
 
         if (binding != null) {

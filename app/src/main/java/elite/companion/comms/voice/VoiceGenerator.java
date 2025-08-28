@@ -2,6 +2,7 @@ package elite.companion.comms.voice;
 
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.texttospeech.v1.*;
+import elite.companion.session.SystemSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,17 +18,6 @@ import static elite.companion.Globals.GOOGLE_API_KEY;
 
 public class VoiceGenerator {
     private static final Logger log = LoggerFactory.getLogger(VoiceGenerator.class);
-    public static final String JAMES = "James";
-    public static final String MICHEAL = "Micheal";
-    public static final String JENNIFER = "Jennifer";
-    public static final String MERRY = "Merry";
-    public static final String FAST_JENNY = "Fast Jenny";
-    public static final String CHARLES = "Charles";
-    public static final String STEVE = "Steve";
-    public static final String JOSEPH = "Joseph";
-    public static final String LEDA = "Leda";
-    public static final String KAREN = "Karen";
-    public static final String ELYRIA = "Elyria";
 
     private final TextToSpeechClient textToSpeechClient;
     private final BlockingQueue<VoiceRequest> voiceQueue;
@@ -74,42 +64,42 @@ public class VoiceGenerator {
         }
 
         VoiceSelectionParams James = VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Wavenet-D").build();
-        VoiceSelectionParams Micheal = VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Algieba").build();
+        VoiceSelectionParams Michael = VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Charon").build();
         VoiceSelectionParams Jennifer = VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Sulafat").build();
-        VoiceSelectionParams Merry = VoiceSelectionParams.newBuilder().setLanguageCode("en-GB").setName("en-GB-Neural2-A").build();
+        VoiceSelectionParams Mary = VoiceSelectionParams.newBuilder().setLanguageCode("en-GB").setName("en-GB-Neural2-A").build();
         VoiceSelectionParams FastJenny = VoiceSelectionParams.newBuilder().setLanguageCode("en-GB").setName("en-GB-Chirp-HD-F").build();
         VoiceSelectionParams Charles = VoiceSelectionParams.newBuilder().setLanguageCode("en-GB").setName("en-GB-Chirp3-HD-Algenib").build();
         VoiceSelectionParams Steven = VoiceSelectionParams.newBuilder().setLanguageCode("en-AU").setName("en-AU-Chirp3-HD-Schedar").build();
-        VoiceSelectionParams Joseph = VoiceSelectionParams.newBuilder().setLanguageCode("en-AU").setName("en-AU-Chirp3-HD-Enceladus").build();
-        VoiceSelectionParams Leda = VoiceSelectionParams.newBuilder().setLanguageCode("en-AU").setName("en-AU-Chirp3-HD-Leda").build();
-        VoiceSelectionParams Karen = VoiceSelectionParams.newBuilder().setLanguageCode("en-AU").setName("en-AU-Chirp3-HD-Gacrux").build();
-        VoiceSelectionParams Elyria = VoiceSelectionParams.newBuilder().setLanguageCode("en-GB").setName("en-GB-Standard-A").build();
+        VoiceSelectionParams Joseph = VoiceSelectionParams.newBuilder().setLanguageCode("en-AU").setName("en-GB-Chirp3-HD-Iapetus").build();
+        VoiceSelectionParams Lana = VoiceSelectionParams.newBuilder().setLanguageCode("en-AU").setName("en-GB-Chirp3-HD-Despina").build();
+        VoiceSelectionParams Karen = VoiceSelectionParams.newBuilder().setLanguageCode("en-AU").setName("en-GB-Chirp3-HD-Aoede").build();
+        VoiceSelectionParams Rachel = VoiceSelectionParams.newBuilder().setLanguageCode("en-GB").setName("en-GB-Standard-A").build();
 
-        voiceMap.put(JAMES, James);
-        voiceMap.put(MICHEAL, Micheal);
-        voiceMap.put(JENNIFER, Jennifer);
+        voiceMap.put(Voices.JAMES.getName(), James);
+        voiceMap.put(Voices.MICHAEL.getName(), Michael);
+        voiceMap.put(Voices.JENNIFER.getName(), Jennifer);
 
-        voiceMap.put(ELYRIA, Elyria);
-        voiceMap.put(MERRY, Merry);
-        voiceMap.put(FAST_JENNY, FastJenny);
-        voiceMap.put(CHARLES, Charles);
+        voiceMap.put(Voices.RACHEL.getName(), Rachel);
+        voiceMap.put(Voices.MARY.getName(), Mary);
+        voiceMap.put(Voices.ANNA.getName(), FastJenny);
+        voiceMap.put(Voices.CHARLES.getName(), Charles);
 
-        voiceMap.put(STEVE, Steven);
-        voiceMap.put(JOSEPH, Joseph);
-        voiceMap.put(LEDA, Leda);
-        voiceMap.put(KAREN, Karen);
+        voiceMap.put(Voices.STEVE.getName(), Steven);
+        voiceMap.put(Voices.JOSEPH.getName(), Joseph);
+        voiceMap.put(Voices.LANA.getName(), Lana);
+        voiceMap.put(Voices.KAREN.getName(), Karen);
 
-        randomVoiceMap.put(JAMES, James);
-        randomVoiceMap.put(MICHEAL, Micheal);
-        randomVoiceMap.put(JENNIFER, Jennifer);
-        randomVoiceMap.put(MERRY, Merry);
-        randomVoiceMap.put(ELYRIA, Elyria);
-        randomVoiceMap.put(FAST_JENNY, FastJenny);
-        //randomVoiceMap.put(CHARLES, Charles);
-        randomVoiceMap.put(STEVE, Steven);
-        randomVoiceMap.put(JOSEPH, Joseph);
-        randomVoiceMap.put(LEDA, Leda);
-        randomVoiceMap.put(KAREN, Karen);
+        randomVoiceMap.put(Voices.JAMES.getName(), James);
+        randomVoiceMap.put(Voices.MICHAEL.getName(), Michael);
+        randomVoiceMap.put(Voices.JENNIFER.getName(), Jennifer);
+        randomVoiceMap.put(Voices.MARY.getName(), Mary);
+        randomVoiceMap.put(Voices.RACHEL.getName(), Rachel);
+        randomVoiceMap.put(Voices.ANNA.getName(), FastJenny);
+        randomVoiceMap.put(Voices.CHARLES.getName(), Charles);
+        randomVoiceMap.put(Voices.STEVE.getName(), Steven);
+        randomVoiceMap.put(Voices.JOSEPH.getName(), Joseph);
+        randomVoiceMap.put(Voices.LANA.getName(), Lana);
+        randomVoiceMap.put(Voices.KAREN.getName(), Karen);
     }
 
 
@@ -121,7 +111,7 @@ public class VoiceGenerator {
 
     public String getRandomVoice() {
         if (voiceMap.isEmpty()) {
-            return CHARLES;
+            return SystemSession.getInstance().getAIVoice().getName();
         }
         String[] voices = randomVoiceMap.keySet().toArray(new String[0]);
         return voices[new Random().nextInt(voices.length)];
@@ -129,7 +119,8 @@ public class VoiceGenerator {
 
     public void speak(String text) {
         if(text == null || text.isEmpty()) return;
-        speak(text, CHARLES);
+
+        new Thread(() -> speak(text, SystemSession.getInstance().getAIVoice().getName())).start();
     }
 
     public void speak(String text, String voiceName) {

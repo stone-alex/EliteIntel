@@ -14,6 +14,11 @@ public class TransmissionReceivedSubscriber {
 
     @Subscribe
     public void onReceiveTextEvent(ReceiveTextEvent event) {
+        Object radioOnOffObject= SystemSession.getInstance().getObject(SystemSession.RADION_TRANSMISSION_ON_OFF);
+        boolean isRadioOn= radioOnOffObject != null && (boolean) radioOnOffObject;
+        if(!isRadioOn) return;
+
+
         if (!event.getMessageLocalised().toLowerCase().contains("entered channel")) {
             boolean isStation = event.getMessage().toLowerCase().contains("station");
 

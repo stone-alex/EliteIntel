@@ -15,9 +15,6 @@ public class AppMain {
     public static void main(String[] args) throws Exception {
         VoiceGenerator.getInstance().speak("Initializing " + Globals.AI_NAME);
 
-
-
-
         //Journal subscribers
         new CarrierJumpRequestSubscriber();
         new CommanderEventSubscriber();
@@ -33,7 +30,7 @@ public class AppMain {
         new SupercruiseExitedSubscriber();
         new TouchdownEventSubscriber();
         new LiftoffEventSubscriber();
-        new ScanEventSubscriber();
+        new BodyScanEventSubscriber();
         new ShipTargetedEventSubscriber();
         new LoadoutSubscriber();
         new SwitchSuitLoadoutSubscriber();
@@ -41,11 +38,13 @@ public class AppMain {
         new BountyEventSubscriber();
         new ScannedEventSubscriber();
         new RoutClearedSubscriber();
+        new MissionAcceptedHandler();
 
         //Game API subscribers
         new RoutePlottedSubscriber();
         new CargoChangedEventSubscriber();
         new StatusChangeSubscriber();
+
 
 
 
@@ -56,31 +55,10 @@ public class AppMain {
         recognizer.start(); // Start STT voice command processing thread
 
         if(SystemSession.getInstance().getObject(SystemSession.RANK) == null) {
-            VoiceGenerator.getInstance().speak("No Game session detected.");
+            VoiceGenerator.getInstance().speak("No Game session data loaded.");
         }
 
         JournalParser parser = new JournalParser();
         parser.startReading();
     }
 }
-
-/*
-* Example
-* SpeechRecognizer recognizer = new SpeechRecognizer();
-        recognizer.start();
-
-        GrokInteractionHandler handler = recognizer.getGrok();
-        handler.processVoiceCommand("set tritium as mining target"); // Sets mining_target in session
-        Thread.sleep(1000);
-        handler.processVoiceCommand("where is the nearest material trader?"); // Queries INARA
-        Thread.sleep(1000);
-        handler.processVoiceCommand("yes"); // Plots route
-        Thread.sleep(1000);
-        handler.processVoiceCommand("deploy landing gear"); // Triggers LandingGearToggle
-        Thread.sleep(1000);
-        handler.processVoiceCommand("open cargo scoop"); // Triggers ToggleCargoScoop
-
-        recognizer.shutdown();
-*
-*
-* */

@@ -144,6 +144,9 @@ public class JournalParser {
                                 case "NavRouteClear":
                                     if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, NavRouteClearEvent.class));
                                     break;
+                                case "MissionAccepted":
+                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, MissionAcceptedEvent.class));
+                                    break;
 
                                 default:
                                     break;

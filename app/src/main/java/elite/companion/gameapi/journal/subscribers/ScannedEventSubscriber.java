@@ -18,7 +18,7 @@ public class ScannedEventSubscriber {
         systemSession.addSignal(event);
 
         if ("cargo".equals(event.getScanType().toLowerCase())) {
-            systemSession.setSensorData("Pirate scan detected. Issue a warning. Opportunity to collect bounty");
+            systemSession.setSensorData("Pirate scan detected.");
         }
     }
 }

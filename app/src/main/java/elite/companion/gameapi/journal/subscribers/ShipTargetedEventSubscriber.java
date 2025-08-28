@@ -52,7 +52,7 @@ public class ShipTargetedEventSubscriber {
             info.append(legalStatus == null ? " Legal Status Unknown " : legalStatus.replace("_", " "));
             info.append(", ");
 
-            info.append(bounty == 0 ? "No Bounty" : bounty + " credits");
+            info.append(bounty == 0 ? "No Bounty" : "bounty: "+ bounty + " credits");
             info.append(", ");
 
             if (shieldHealth == 100 && hullHealth == 100) {

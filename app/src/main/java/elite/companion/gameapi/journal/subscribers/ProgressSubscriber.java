@@ -16,6 +16,6 @@ public class ProgressSubscriber {
     static void setData(int combat, int exobiologist, int explore, int empire, int federation, int soldier, ProgressEvent event) {
         RankDto rankDto = new RankDto();
         rankDto.setData(event);
-        SystemSession.getInstance().updateSession(SystemSession.RANK, rankDto);
+        SystemSession.getInstance().put(SystemSession.RANK, rankDto);
     }
 }

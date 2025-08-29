@@ -44,7 +44,7 @@ public class RoutePlottedSubscriber {
                         .map(Map.Entry::getValue)
                         .orElse(null);
                 if (finalDestination != null) {
-                    systemSession.updateSession(SystemSession.FINAL_DESTINATION, finalDestination.getName());
+                    systemSession.put(SystemSession.FINAL_DESTINATION, finalDestination.getName());
                 }
 
                 systemSession.setNavRoute(routeMap);

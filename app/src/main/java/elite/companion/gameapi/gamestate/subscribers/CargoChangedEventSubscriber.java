@@ -13,6 +13,6 @@ public class CargoChangedEventSubscriber {
 
     @Subscribe
     public void onCargoChangedEvent(GameEvents.CargoEvent event){
-        SystemSession.getInstance().updateSession(SystemSession.SHIP_CARGO, event.toJson());
+        SystemSession.getInstance().put(SystemSession.SHIP_CARGO, event.toJson());
     }
 }

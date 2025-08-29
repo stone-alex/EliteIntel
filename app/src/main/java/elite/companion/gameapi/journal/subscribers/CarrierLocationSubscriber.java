@@ -11,7 +11,7 @@ public class CarrierLocationSubscriber {
 
         if("fleetcarrier".equalsIgnoreCase(event.getCarrierType())) {
             //Fleet Carrier Location Event
-            SystemSession.getInstance().updateSession(SystemSession.CARRIER_LOCATION, event.getStarSystem());
+            SystemSession.getInstance().put(SystemSession.CARRIER_LOCATION, event.getStarSystem());
         }
     }
 }

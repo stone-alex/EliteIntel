@@ -275,7 +275,7 @@ public class Ranks {
     }
 
     public static String getPlayerHonorific() {
-        RankDto rankDto = (RankDto) SystemSession.getInstance().getObject(SystemSession.RANK);
+        RankDto rankDto = (RankDto) SystemSession.getInstance().get(SystemSession.RANK);
         return rankDto.getHonorific();
     }
 }

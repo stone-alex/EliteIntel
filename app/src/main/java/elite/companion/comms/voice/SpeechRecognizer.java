@@ -195,7 +195,7 @@ public class SpeechRecognizer {
                     transcriptionQueue.offer(transcript);
                     log.info("Final transcript: {} (confidence: {})", transcript, confidence);
                     String sanitizedTranscript = StringSanitizer.sanitizeGoogleMistakes(transcript);
-                    Object privacySystemVariable = SystemSession.getInstance().getObject(SystemSession.PRIVACY_MODE);
+                    Object privacySystemVariable = SystemSession.getInstance().get(SystemSession.PRIVACY_MODE);
                     boolean isPrivacyModeOn = privacySystemVariable != null && (boolean) privacySystemVariable;
                     if(isPrivacyModeOn) {
                         if (sanitizedTranscript.toLowerCase().startsWith("computer")) {

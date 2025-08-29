@@ -39,7 +39,7 @@ public class LoadGameEventSubscriber {
         playerSession.updateSession(CURRENT_SHIP_NAME, event.getShipName());
         playerSession.updateSession(PERSONAL_CREDITS_AVAILABLE, event.getCredits());
 
-        RankDto ranks= (RankDto) systemSession.getObject(SystemSession.RANK);
+        RankDto ranks= (RankDto) systemSession.get(SystemSession.RANK);
         GameLoadedInfo info = new GameLoadedInfo(event.toJson(), ranks.toJson());
 
         SystemSession.getInstance().setConsumableData("New Game started (debugging session) " + info.toJson());

@@ -44,26 +44,26 @@ public class AnalyzeDataHandler implements QueryHandler {
 
     private String fetchDataForAction(QueryActions action) {
         SystemSession systemSession = SystemSession.getInstance();
-        systemSession.getObject(CURRENT_SYSTEM);
+        systemSession.get(CURRENT_SYSTEM);
 
         switch (action) {
             case QUERY_SEARCH_SIGNAL_DATA:
                 return new Gson().toJson(String.valueOf(systemSession.getSignals()));
 
             case QUERY_SHIP_LOADOUT:
-                return String.valueOf(systemSession.getObject(SystemSession.SHIP_LOADOUT_JSON));
+                return String.valueOf(systemSession.get(SystemSession.SHIP_LOADOUT_JSON));
                 
             case QUERY_ANALYZE_ROUTE:
                 return getRoute(); // array of json objects wrapped in []
 
             case QUERY_ANALYZE_ON_BOARD_CARGO:
-                return new Gson().toJson(SystemSession.getInstance().getObject(SystemSession.SHIP_CARGO));
+                return new Gson().toJson(SystemSession.getInstance().get(SystemSession.SHIP_CARGO));
 
             case LOCAL_SYSTEM_INFO:
-                return new Gson().toJson(systemSession.getObject(CURRENT_SYSTEM));
+                return new Gson().toJson(systemSession.get(CURRENT_SYSTEM));
 
             case CHECK_LEGAL_STATUS:
-                return new Gson().toJson(systemSession.getObject(SystemSession.CURRENT_STATUS));
+                return new Gson().toJson(systemSession.get(SystemSession.CURRENT_STATUS));
 
 
             // Add other queries...

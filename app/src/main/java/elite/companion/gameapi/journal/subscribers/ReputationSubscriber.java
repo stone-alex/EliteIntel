@@ -10,6 +10,6 @@ public class ReputationSubscriber {
     @Subscribe
     public void onReputationEvent(ReputationEvent event) {
         SystemSession systemSession = SystemSession.getInstance();
-        systemSession.updateSession(SystemSession.REPUTATION, event.toJson());
+        systemSession.put(SystemSession.REPUTATION, event.toJson());
     }
 }

@@ -87,8 +87,8 @@ public class VoiceCommandHandler {
             return;
         }
 
-        SystemSession.getInstance().updateSession("action", action);
-        SystemSession.getInstance().updateSession("params", params);
+        SystemSession.getInstance().put("action", action);
+        SystemSession.getInstance().put("params", params);
         log.debug("Updated SessionTracker with action: {}, params: {}", action, params);
         KeyBindingsParser.KeyBinding binding = monitor.getBindings().get(action);
         if (binding == null) {
@@ -107,7 +107,7 @@ public class VoiceCommandHandler {
     }
 
     private void handleSystemCommand(JsonObject params, String responseText) {
-        SystemSession.getInstance().updateSession("params", params);
+        SystemSession.getInstance().put("params", params);
         handleChat(responseText);
     }
 

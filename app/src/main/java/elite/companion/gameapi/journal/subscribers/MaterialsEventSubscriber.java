@@ -9,6 +9,6 @@ public class MaterialsEventSubscriber {
 
     @Subscribe
     public void onMaterialsEvent(MaterialsEvent event) {
-        SystemSession.getInstance().updateSession(SystemSession.MATERIALS, event.toJson());
+        SystemSession.getInstance().put(SystemSession.MATERIALS, event.toJson());
     }
 }

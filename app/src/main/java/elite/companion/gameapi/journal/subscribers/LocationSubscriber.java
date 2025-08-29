@@ -9,7 +9,7 @@ public class LocationSubscriber {
     @Subscribe
     public void onLocationEvent(LocationEvent event) {
         SystemSession systemSession = SystemSession.getInstance();
-        systemSession.updateSession(SystemSession.CURRENT_LOCATION, event.toJson());
-        systemSession.updateSession(SystemSession.CURRENT_SYSTEM, event.getStarSystem());
+        systemSession.put(SystemSession.CURRENT_LOCATION, event.toJson());
+        systemSession.put(SystemSession.CURRENT_SYSTEM, event.getStarSystem());
     }
 }

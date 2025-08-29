@@ -10,7 +10,7 @@ public class CarrierJumpCompleteSubscriber {
     @Subscribe
     public void onCarrierJumpCompleteEvent(CarrierJumpEvent event) {
         String starSystem = event.getStarSystem();
-        SystemSession.getInstance().updateSession(SystemSession.CURRENT_SYSTEM, "Star System" + starSystem + (event.getBody() == null ? "" : "body " + event.getBody()));
+        SystemSession.getInstance().put(SystemSession.CURRENT_SYSTEM, "Star System" + starSystem + (event.getBody() == null ? "" : "body " + event.getBody()));
 
         SystemSession.getInstance().setConsumableData("Carrier Jump Complete: " + event.toString());
 

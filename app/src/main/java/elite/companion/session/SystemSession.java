@@ -40,6 +40,7 @@ public class SystemSession {
     public static final String REPUTATION = "reputation";
     public static final String CARRIER_LOCATION = "carrier_location";
     public static final String CURRENT_LOCATION = "current_location";
+    public static final String TARGET_FACTION_NAME = "target_faction_name";
 
     private static final SystemSession INSTANCE = new SystemSession();
     public static final String MATERIALS = "materials";
@@ -63,7 +64,7 @@ public class SystemSession {
         return INSTANCE;
     }
 
-    public Object getObject(String key) {
+    public Object get(String key) {
         return state.get(key);
     }
 
@@ -84,7 +85,7 @@ public class SystemSession {
         return state.get(SENSOR_READING) == null ? null : (String) state.get(SENSOR_READING);
     }
 
-    public void updateSession(String key, Object data) {
+    public void put(String key, Object data) {
         state.put(key, data);
     }
 

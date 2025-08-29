@@ -10,7 +10,7 @@ public class TransmissionReceivedSubscriber {
 
     @Subscribe
     public void onReceiveTextEvent(ReceiveTextEvent event) {
-        Object radioOnOffObject = SystemSession.getInstance().getObject(SystemSession.RADION_TRANSMISSION_ON_OFF);
+        Object radioOnOffObject = SystemSession.getInstance().get(SystemSession.RADION_TRANSMISSION_ON_OFF);
         boolean isRadioOn = radioOnOffObject != null && (boolean) radioOnOffObject;
         if (!isRadioOn) return;
 

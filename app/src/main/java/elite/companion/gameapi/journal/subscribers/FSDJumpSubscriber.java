@@ -12,8 +12,8 @@ public class FSDJumpSubscriber {
     @Subscribe
     public void onFSDJumpEvent(FSDJumpEvent event) {
         SystemSession systemSession = SystemSession.getInstance();
-        systemSession.updateSession(SystemSession.CURRENT_SYSTEM, event.getStarSystem());
-        systemSession.updateSession(SystemSession.CURRENT_SYSTEM_DATA, event.toJson());
+        systemSession.put(SystemSession.CURRENT_SYSTEM, event.getStarSystem());
+        systemSession.put(SystemSession.CURRENT_SYSTEM_DATA, event.toJson());
 
 
         String currentStarSystem = event.getStarSystem();
@@ -41,7 +41,7 @@ public class FSDJumpSubscriber {
 
         boolean roueSet = !systemSession.getRoute().isEmpty();
         systemSession.removeNavPoint(currentStarSystem);
-        String finalDestination = String.valueOf(systemSession.getObject(SystemSession.FINAL_DESTINATION));
+        String finalDestination = String.valueOf(systemSession.get(SystemSession.FINAL_DESTINATION));
 
         StringBuilder sb = new StringBuilder();
         sb.append("Hyperspace Jump Successful: ");
@@ -54,7 +54,7 @@ public class FSDJumpSubscriber {
                 int remainingJump = systemSession.getRoute().size();
 
                 if (remainingJump > 0) {
-                    sb.append("Next Stop: ").append(systemSession.getObject(systemSession.FSD_TARGET)).append(", ");
+                    sb.append("Next Stop: ").append(systemSession.get(systemSession.FSD_TARGET)).append(", ");
                 }
 
                 sb.append("Jumps remaining to final destination: ").append(remainingJump).append(finalDestination).append(",");

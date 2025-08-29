@@ -12,6 +12,6 @@ public class RankEventSubscriber {
     public void onRankEvent(RankEvent event) {
         RankDto rankDto = new RankDto();
         rankDto.setData(event);
-        SystemSession.getInstance().updateSession(SystemSession.RANK, rankDto);
+        SystemSession.getInstance().put(SystemSession.RANK, rankDto);
     }
 }

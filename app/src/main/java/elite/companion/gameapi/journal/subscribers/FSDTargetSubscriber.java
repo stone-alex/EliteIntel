@@ -15,7 +15,7 @@ public class FSDTargetSubscriber {
     public void onFSDTargetEvent(FSDTargetEvent event) {
         SystemSession systemSession = SystemSession.getInstance();
         systemSession.clearFssSignals();
-        String fsd_target = String.valueOf(systemSession.getObject(SystemSession.FSD_TARGET));
+        String fsd_target = String.valueOf(systemSession.get(SystemSession.FSD_TARGET));
         if (fsd_target != null && !fsd_target.isEmpty()) {
             Map<String, NavRouteDto> route = systemSession.getRoute();
             if (route != null && !route.isEmpty()) {
@@ -23,7 +23,7 @@ public class FSDTargetSubscriber {
                 VoiceGenerator.getInstance().speak("Jumping to " + firstStop.getName() + isFuelStarClause(firstStop.getStarClass()));
             }
         }
-        systemSession.updateSession(SystemSession.FSD_TARGET, event.getName());
+        systemSession.put(SystemSession.FSD_TARGET, event.getName());
     }
 
     private String isFuelStarClause(String starClass) {

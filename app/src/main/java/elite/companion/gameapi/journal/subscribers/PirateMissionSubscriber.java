@@ -1,10 +1,7 @@
 package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.companion.gameapi.journal.events.BaseEvent;
-import elite.companion.gameapi.journal.events.BountyEvent;
-import elite.companion.gameapi.journal.events.MissionAcceptedEvent;
-import elite.companion.gameapi.journal.events.MissionCompletedEvent;
+import elite.companion.gameapi.journal.events.*;
 import elite.companion.gameapi.journal.events.dto.MissionDto;
 import elite.companion.session.SystemSession;
 
@@ -19,14 +16,15 @@ public class PirateMissionSubscriber {
         if (event instanceof MissionAcceptedEvent) {
             MissionAcceptedEvent mae = (MissionAcceptedEvent) event;
             if (mae.getTargetTypeLocalised().equals(PIRATES.getMissionType())) {
-                session.addPirateMission(new MissionDto(mae));
+                MissionDto mission = new MissionDto(mae);
+                session.put(SystemSession.TARGET_FACTION_NAME, mission.getMissionTargetFaction());
+                session.addPirateMission(mission);
             }
         } else if (event instanceof BountyEvent) {
             session.addPirateBounty((BountyEvent) event);
-        } else if (event instanceof MissionCompletedEvent
-//                ||
-//                event instanceof MissionAbandonedEvent ||
-//                event instanceof MissionFailedEvent
+        } else if (event instanceof MissionCompletedEvent ||
+                event instanceof MissionAbandonedEvent ||
+                event instanceof MissionFailedEvent
         ) {
             long missionID = ((MissionCompletedEvent) event).getMissionID(); // Assumes shared interface
             session.removePirateMission(missionID);

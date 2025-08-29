@@ -21,7 +21,7 @@ public class AppMain {
         SpeechRecognizer recognizer = new SpeechRecognizer();
         recognizer.start(); // Start STT voice command processing thread
 
-        if (SystemSession.getInstance().getObject(SystemSession.RANK) == null) {
+        if (SystemSession.getInstance().get(SystemSession.RANK) == null) {
             VoiceGenerator.getInstance().speak("No Game session data loaded.");
         }
 

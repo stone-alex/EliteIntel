@@ -16,7 +16,7 @@ public class StatusChangeSubscriber {
     @Subscribe
     public void onStatusChange(GameEvents.StatusEvent event) {
         SystemSession systemSession = SystemSession.getInstance();
-        systemSession.updateSession(SystemSession.CURRENT_STATUS, new Gson().toJson(event));
+        systemSession.put(SystemSession.CURRENT_STATUS, new Gson().toJson(event));
         //write a Grok query to access status. this method is called often, but returns same data most of the time.
     }
 }

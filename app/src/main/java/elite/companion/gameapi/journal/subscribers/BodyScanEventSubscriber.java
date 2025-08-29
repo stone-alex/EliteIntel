@@ -10,7 +10,7 @@ public class BodyScanEventSubscriber {
     @Subscribe
     public void onScanEvent(ScanEvent event) {
         SystemSession systemSession = SystemSession.getInstance();
-        boolean announce = Boolean.TRUE.equals(systemSession.getObject(SystemSession.ANNOUNCE_BODY_SCANS));
+        boolean announce = Boolean.TRUE.equals(systemSession.get(SystemSession.ANNOUNCE_BODY_SCANS));
         if (announce) {
             systemSession.addBodySignal(event);
         }

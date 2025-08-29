@@ -17,7 +17,7 @@ public class CommanderEventSubscriber {
         ConfigManager configManager = ConfigManager.getInstance();
 
         String inGameName = event.getName();
-        String alternativeName = configManager.readUserConfig().get("alternative_name");
+        String alternativeName = configManager.readUserConfig().get(ConfigManager.PLAYER_ALTERNATIVE_NAME);
 
         session.put(PLAYER_NAME, StringSanitizer.capitalizeWords(alternativeName != null || !alternativeName.isEmpty() ? alternativeName : inGameName));
     }

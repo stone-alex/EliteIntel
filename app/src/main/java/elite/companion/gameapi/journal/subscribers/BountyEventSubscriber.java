@@ -17,7 +17,7 @@ public class BountyEventSubscriber {
         List<BountyEvent.Reward> rewards = event.getRewards();
         StringBuilder sb = new StringBuilder();
         if (event.getVictimFaction().equalsIgnoreCase(String.valueOf(systemSession.get(SystemSession.TARGET_FACTION_NAME)))) {
-            VoiceGenerator.getInstance().speak("Kill Confirmed!... " + Ranks.getPlayerHonorific()+"!");
+            VoiceGenerator.getInstance().speak("Kill Confirmed, " + Ranks.getPlayerHonorific()+"!");
         }
         for (BountyEvent.Reward reward : rewards) {
             sb.append("Reward: ").append(reward.getReward()).append(" credits ");

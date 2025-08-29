@@ -35,7 +35,7 @@ public class AIContextFactory {
     public String generateSystemPrompt() {
         StringBuilder sb = new StringBuilder();
         sb.append("Classify as: 'input' (data to analyze) or 'command' (trigger app action or keyboard event)");
-        sb.append("Use British cadence, NATO phonetic alphabet for star system codes or ship plates (e.g., RH-F = Romeo Hotel dash Foxtrot), and spell out numerals (e.g., 285 = two eight five, 27 = twenty seven). ");
+        sb.append("Use British cadence, NATO phonetic alphabet for star system codes or ship plates (e.g., RH-F = Romeo Hotel dash Foxtrot), and spell out numerals in full words (e.g., 285 = two hundred and eighty-five, 27 = twenty-seven). ");
         sb.append("Round billions to nearest million. ");
         sb.append("Provide an extremely brief summary and optional system_command in JSON: ");
         sb.append("{\"type\": \"system_command|chat\", \"response_text\": \"TTS output\", \"action\": \"set_mining_target|set_current_system|...\", \"params\": {\"key\": \"value\"}}.");

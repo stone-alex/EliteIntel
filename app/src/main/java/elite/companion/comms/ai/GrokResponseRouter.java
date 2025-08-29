@@ -49,6 +49,7 @@ public class GrokResponseRouter {
         queryHandlers.put(QueryActions.QUERY_ANALYZE_ROUTE.getAction(), new AnalyzeDataHandler());
         queryHandlers.put(QueryActions.QUERY_PIRATE_KILLS_REMAINING.getAction(), new PirateMissionAnalyzer());
         queryHandlers.put(QueryActions.QUERY_PIRATE_MISSION_PROFIT.getAction(), new PirateMissionAnalyzer());
+        queryHandlers.put(QueryActions.QUERY_PIRATE_STATUS.getAction(), new PirateMissionAnalyzer());
         queryHandlers.put(QueryActions.QUERY_SEARCH_SIGNAL_DATA.getAction(), new AnalyzeDataHandler());
         queryHandlers.put(QueryActions.QUERY_SHIP_LOADOUT.getAction(), new AnalyzeDataHandler());
         //queryHandlers.put(QueryAction.QUERY_FIND_NEAREST_MATERIAL_TRADER.getAction(), new FindMaterialTraderHandler());

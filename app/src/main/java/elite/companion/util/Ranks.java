@@ -15,6 +15,7 @@ public class Ranks {
         HashMap<String, String> rankMap = new HashMap<>();
 
         //Imperial ranks
+        rankMap.put("none", "Commander");
         rankMap.put("Outsider", "Outsider");
         rankMap.put("Serf", "Serf");
         rankMap.put("Master", "Master");
@@ -30,6 +31,7 @@ public class Ranks {
         rankMap.put("Prince", "Your Highness");
         rankMap.put("King", "Your Majesty");
 
+        //Federation ranks
         rankMap.put("Recruit", "Recruit");
         rankMap.put("Cadet", "Cadet");
         rankMap.put("Midshipman", "Midshipman");
@@ -55,20 +57,21 @@ public class Ranks {
      */
     public static HashMap<Integer, String> getImperialRankMap() {
         HashMap<Integer, String> rankMap = new HashMap<>();
-        rankMap.put(0, "Outsider");
-        rankMap.put(1, "Serf");
-        rankMap.put(2, "Master");
-        rankMap.put(3, "Squire");
-        rankMap.put(4, "Knight");
-        rankMap.put(5, "Lord");
-        rankMap.put(6, "Baron");
-        rankMap.put(7, "Viscount");
-        rankMap.put(8, "Count");
-        rankMap.put(9, "Earl");
-        rankMap.put(10, "Marquis");
-        rankMap.put(11, "Duke");
-        rankMap.put(12, "Prince");
-        rankMap.put(13, "King");
+        rankMap.put(0, "none");
+        rankMap.put(1, "Outsider");
+        rankMap.put(2, "Serf");
+        rankMap.put(3, "Master");
+        rankMap.put(4, "Squire");
+        rankMap.put(5, "Knight");
+        rankMap.put(6, "Lord");
+        rankMap.put(7, "Baron");
+        rankMap.put(8, "Viscount");
+        rankMap.put(9, "Count");
+        rankMap.put(10, "Earl");
+        rankMap.put(11, "Marquis");
+        rankMap.put(12, "Duke");
+        rankMap.put(13, "Prince");
+        rankMap.put(14, "King");
         return rankMap;
     }
 
@@ -103,20 +106,21 @@ public class Ranks {
      */
     public static HashMap<Integer, String> getFederationRankMap() {
         HashMap<Integer, String> rankMap = new HashMap<>();
-        rankMap.put(0, "Recruit");
-        rankMap.put(1, "Cadet");
-        rankMap.put(2, "Midshipman");
-        rankMap.put(3, "Petty Officer");
-        rankMap.put(4, "Chief Petty Officer");
-        rankMap.put(5, "Warrant Officer");
-        rankMap.put(6, "Ensign");
-        rankMap.put(7, "Lieutenant");
-        rankMap.put(8, "Lieutenant Commander");
-        rankMap.put(9, "Post Commander");
-        rankMap.put(10, "Post Captain");
-        rankMap.put(11, "Rear Admiral");
-        rankMap.put(12, "Vice Admiral");
-        rankMap.put(13, "Admiral");
+        rankMap.put(0, "none");
+        rankMap.put(1, "Recruit");
+        rankMap.put(2, "Cadet");
+        rankMap.put(3, "Midshipman");
+        rankMap.put(4, "Petty Officer");
+        rankMap.put(5, "Chief Petty Officer");
+        rankMap.put(6, "Warrant Officer");
+        rankMap.put(7, "Ensign");
+        rankMap.put(8, "Lieutenant");
+        rankMap.put(9, "Lieutenant Commander");
+        rankMap.put(10, "Post Commander");
+        rankMap.put(11, "Post Captain");
+        rankMap.put(12, "Rear Admiral");
+        rankMap.put(13, "Vice Admiral");
+        rankMap.put(14, "Admiral");
         return rankMap;
     }
 

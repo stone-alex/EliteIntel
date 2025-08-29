@@ -205,3 +205,21 @@ public JsonObject buildRadioRequest(String transmission, boolean isStation) {
         " Respond in JSON...";
     // ...
 }
+
+
+
+
+
+
+
+
+
+
+
+
+Analyze Elite Dangerous pirate massacre data. Group missions by TargetFaction for stacking. Compute remaining kills as max(KillCount) per faction minus count of matching VictimFaction bounties. Potential mission profit is sum of Mission Rewards. Bounties collected is sum of TotalRewards for matching bounties. Ignore expired missions. Data: {"missions":[{"faction":"Baminyi Bridge Group","missionType":"Mission_Massacre","missionDescription":"Kill Xue Davokje Blue Cartel faction Pirates","missionTarget":"Pirates","missionTargetFaction":"Xue Davokje Blue Cartel","killCount":25,"reward":30222222,"destinationSystem":"Xue Davokje","isReputationIncrease":true,"influenceIncrease":true,"missionId":1027206784,"timestamp":"2025-08-30T07:11:54Z","eventName":"elite.companion.gameapi.journal.events.dto.MissionDto","priority":1,"endOfLife":{"seconds":1756537944,"nanos":0},"isProcessed":false},{"faction":"Baminyi Defence Force","missionType":"Mission_Massacre","missionDescription":"Kill Xue Davokje Blue Cartel faction Pirates","missionTarget":"Pirates","missionTargetFaction":"Xue Davokje Blue Cartel","killCount":15,"reward":20716110,"destinationSystem":"Xue Davokje","isReputationIncrease":true,"influenceIncrease":true,"missionId":1027207084,"timestamp":"2025-08-30T07:15:33Z","eventName":"elite.companion.gameapi.journal.events.dto.MissionDto","priority":1,"endOfLife":{"seconds":1756538163,"nanos":0},"isProcessed":false}],"bounties":[]}
+
+User query: what is a potential profit from pirate missions?
+
+Respond with only the total potential mission profit in credits, formatted as: 'Potential profit: [Credits] credits.'
+

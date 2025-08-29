@@ -42,7 +42,8 @@ public class PirateMissionAnalyzer implements QueryHandler {
     private String buildPrompt(QueryActions query, String userInput, String dataJson) {
         String basePrompt = "Analyze Elite Dangerous pirate massacre data. Group missions by TargetFaction for stacking. " +
                 "Compute remaining kills as max(KillCount) per faction minus count of matching VictimFaction bounties. " +
-                "Potential mission profit is sum of Rewards. Bounties collected is sum of TotalRewards for matching bounties. " +
+                "Potential mission profit is sum of Mission Rewards. Bounties collected is sum of TotalRewards for matching bounties. " +
+                "Spell out numerals in full words (e.g., 285 = two hundred and eighty-five, 27 = twenty-seven)"+
                 "Ignore expired missions. Data: " + dataJson + "\nUser query: " + userInput + "\n";
 
         switch (query) {

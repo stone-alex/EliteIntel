@@ -36,13 +36,15 @@ public class PirateMissionAnalyzer implements QueryHandler {
         SystemSession session = SystemSession.getInstance();
         String missions = session.getPirateMissionsJson();
         String bounties = session.getPirateBountiesJson();
-        return "{\"missions\":" + missions + ",\"bounties\":" + bounties + "}";
+        String bountiesCollectedThisSession = session.getBountyCollectedThisSession() + "";
+        return "{\"missions\":" + missions + ",\"bounties\":" + bounties + ",\"bountiesPayOut\":" + bountiesCollectedThisSession +"}";
     }
 
     private String buildPrompt(QueryActions query, String userInput, String dataJson) {
         String basePrompt = "Analyze Elite Dangerous pirate massacre data. Group missions by TargetFaction for stacking. " +
                 "Compute remaining kills as max(KillCount) per faction minus count of matching VictimFaction bounties. " +
                 "Potential mission profit is sum of Mission Rewards. Bounties collected is sum of TotalRewards for matching bounties. " +
+                "Start responses directly with the requested information, avoiding conversational fillers like 'noted,' 'well,' 'right,' 'understood,' or similar phrases. "+
                 "Spell out numerals in full words (e.g., 285 = two hundred and eighty-five, 27 = twenty-seven)"+
                 "Ignore expired missions. Data: " + dataJson + "\nUser query: " + userInput + "\n";
 

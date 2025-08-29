@@ -11,7 +11,6 @@ import elite.companion.util.StringSanitizer;
 
 import static elite.companion.session.PlayerSession.*;
 
-@SuppressWarnings("unused")
 public class LoadGameEventSubscriber {
 
     @Subscribe

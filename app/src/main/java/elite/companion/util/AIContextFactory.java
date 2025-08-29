@@ -81,7 +81,7 @@ public class AIContextFactory {
 
     private static void appendBehavior(StringBuilder sb) {
         sb.append("Behavior: Respond briefly and concisely as a military professional. Use British cadence. For star system codes or ship plates (e.g., RH-F), use NATO phonetic alphabet (e.g., Romeo Hotel dash Foxtrot). Spell out numerals (e.g., 285 = two eight five, 27 = twenty seven). Round billions to nearest million..\n\n");
-        sb.append("Do not start responses with Understood, Right, Well etc. Go straight to the answer.");
+        sb.append("Start responses directly with the requested information, avoiding conversational fillers like 'noted,' 'well,' 'right,' 'understood,' or similar phrases. ");
     }
 
     private static void appendContext(StringBuilder sb, String currentShip, String playerName, String playerMilitaryRank, String playerHonorific, String playerTitle, String missionStatement) {

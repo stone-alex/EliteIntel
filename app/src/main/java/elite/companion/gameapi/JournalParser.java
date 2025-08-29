@@ -65,7 +65,8 @@ public class JournalParser {
                     }
 
                     try {
-                        JsonElement element = JsonParser.parseString(line);
+                        String sanitizedLine = line.replaceAll("[\\p{Cntrl}\\p{Cc}\\p{Cf}]", "").trim();
+                        JsonElement element = JsonParser.parseString(sanitizedLine);
                         if (!element.isJsonObject()) {
                             lastPosition += line.getBytes(StandardCharsets.UTF_8).length + System.lineSeparator().getBytes(StandardCharsets.UTF_8).length;
                             continue;
@@ -174,6 +175,9 @@ public class JournalParser {
                                     break;
                                 case "Friends":
                                     if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, FriendsEvent.class));
+                                    break;
+                                case "RedeemVoucher":
+                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, RedeemVoucherEvent.class));
                                     break;
 
                                 default:

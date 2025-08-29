@@ -42,7 +42,7 @@ public class GrokResponseRouter {
     private void registerCommandHandlers() {
 
         //Query Handlers
-        queryHandlers.put(QueryActions.CHECK_LEGAL_STATUS.getAction(), new ListAvailableVoices());
+        queryHandlers.put(QueryActions.CHECK_LEGAL_STATUS.getAction(), new AnalyzeDataHandler());
         queryHandlers.put(QueryActions.LIST_AVAILABLE_VOICES.getAction(), new ListAvailableVoices());
         queryHandlers.put(QueryActions.LOCAL_SYSTEM_INFO.getAction(), new AnalyzeDataHandler());
         queryHandlers.put(QueryActions.QUERY_ANALYZE_ON_BOARD_CARGO.getAction(), new AnalyzeDataHandler());

@@ -33,7 +33,7 @@ public class LoadGameEventSubscriber {
         RankDto ranks= (RankDto) systemSession.get(SystemSession.RANK);
         GameLoadedInfo info = new GameLoadedInfo(event.toJson(), ranks.toJson());
 
-        SystemSession.getInstance().sendToAiAnalysis("New Game started (debugging session) for " + usePlayerName + ". " + ranks.toJson());
+        SystemSession.getInstance().sendToAiAnalysis("Connected to Elite Dangerous as " + usePlayerName + ". " + ranks.toJson());
 
         initValuesFromConfig(playerSession);
     }

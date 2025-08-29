@@ -13,7 +13,7 @@
     <logger name="io.netty" level="WARN" />
     <logger name="com.google" level="WARN" />
 
-    <logger name="elite.companion.gameapi.JournalParser" level="ERROR"/>
+    <logger name="elite.companion.gameapi.JournalParser" level="INFO"/>
     <logger name="elite.companion.gameapi.AuxiliaryFilesMonitor" level="ERROR"/>
     <logger name="elite.companion.comms.ai.robot.KeyBindingsParser" level="ERROR"/>
     <logger name="elite.companion.comms.ai.GrokCommandEndPoint" level="DEBUG"/>

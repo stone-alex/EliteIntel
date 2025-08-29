@@ -66,7 +66,7 @@ public class AnalyzeDataHandler implements QueryHandler {
                 return GsonFactory.getGson().toJson(systemSession.get(SystemSession.CURRENT_STATUS));
 
             case QUERY_NEXT_STAR_SCOOPABLE:
-                return "Scoopable star class K, G, B, F, O, A, M. Route data:"+ GsonFactory.getGson().toJson(getRoute());
+                return /*"Scoopable star class K, G, B, F, O, A, M. Route data:"+ */GsonFactory.getGson().toJson(getRoute());
 
 
             // Add other queries...

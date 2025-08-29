@@ -12,14 +12,13 @@ public class ProspectorSubscriber {
 
     @Subscribe
     public void onProspectedAsteroidEvent(ProspectedAsteroidEvent event) {
-        JsonObject params = (JsonObject) PlayerSession.getInstance().getObject("params");
 
         boolean foundTargetMaterial = false;
         StringBuilder anouncement = new StringBuilder();
 
         for (ProspectedAsteroidEvent.Material material : event.getMaterials()) {
             String prospectedMaterial = material == null ? "" : material.getName();
-            String targetMaterial = String.valueOf(PlayerSession.getInstance().getObject(CommandActionsCustom.SET_MINING_TARGET.getParamKey())).replaceAll("\"", "");
+            String targetMaterial = String.valueOf(PlayerSession.getInstance().get(CommandActionsCustom.SET_MINING_TARGET.getParamKey())).replaceAll("\"", "");
             if (prospectedMaterial != null && !prospectedMaterial.isEmpty() && prospectedMaterial.toLowerCase().equals(targetMaterial.toLowerCase())) {
                 foundTargetMaterial = true;
 

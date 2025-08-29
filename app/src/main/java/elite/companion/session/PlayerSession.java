@@ -41,6 +41,7 @@ public class PlayerSession {
     public static final String CARRIER_BALANCE = "carrier_balance";
     public static final String CARRIER_RESERVE = "carrier_reserve";
     public static final String PLAYER_NAME = "player_name";
+    public static final String PLAYER_MISSION_STATEMENT = "player_mission_statement";
     public static final String PLEDGED_TO_POWER = "pledged_to_power";
     public static final String POWER_RANK = "pledged_to_rank";
     public static final String MERITS = "pledged_to_merits";
@@ -117,17 +118,17 @@ public class PlayerSession {
 
             long carrierBalance = finance.getCarrierBalance();
             long reserveBalance = finance.getReserveBalance();
-            updateSession(PlayerSession.CARRIER_BALANCE, String.valueOf(carrierBalance));
-            updateSession(PlayerSession.CARRIER_RESERVE, String.valueOf(reserveBalance));
+            put(PlayerSession.CARRIER_BALANCE, String.valueOf(carrierBalance));
+            put(PlayerSession.CARRIER_RESERVE, String.valueOf(reserveBalance));
 
             if (!EventTracker.isProcessed(event.getEventName())) {
                 int jumps = event.getFuelLevel() / 90;
-                updateSession("carrier_stats", "Credit balance: " + carrierBalance + " reserved balance: " + reserveBalance + " fuel level: " + event.getFuelLevel() + " enough for " + event.getFuelLevel() / 90 + " jumps or " + (jumps * 500) + " light years");
+                put("carrier_stats", "Credit balance: " + carrierBalance + " reserved balance: " + reserveBalance + " fuel level: " + event.getFuelLevel() + " enough for " + event.getFuelLevel() / 90 + " jumps or " + (jumps * 500) + " light years");
             }
         }
     }
 
-    public void updateSession(String key, Object data) {
+    public void put(String key, Object data) {
         state.put(key, data);
     }
 
@@ -141,12 +142,8 @@ public class PlayerSession {
         return summary.toString();
     }
 
-    public Object getObject(String key) {
+    public Object get(String key) {
         return state.get(key);
-    }
-
-    public String getSessionValue(String queryDestination, Class<String> stringClass) {
-        return null;
     }
 
     public void remove(String key) {

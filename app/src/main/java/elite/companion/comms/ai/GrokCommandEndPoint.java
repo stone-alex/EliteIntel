@@ -1,7 +1,6 @@
 package elite.companion.comms.ai;
 
 import com.google.gson.*;
-import elite.companion.util.Globals;
 import elite.companion.comms.voice.VoiceGenerator;
 import elite.companion.session.SystemSession;
 import elite.companion.util.AIContextFactory;
@@ -266,7 +265,7 @@ public class GrokCommandEndPoint {
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
         conn.setRequestProperty("Content-Type", "application/json");
-        conn.setRequestProperty("Authorization", "Bearer " + ConfigManager.getInstance().readConfig(Globals.XAI_API_KEY).get("key"));
+        conn.setRequestProperty("Authorization", "Bearer " + ConfigManager.getInstance().readSystemConfig().get("grok_key"));
         conn.setDoOutput(true);
         return conn;
     }

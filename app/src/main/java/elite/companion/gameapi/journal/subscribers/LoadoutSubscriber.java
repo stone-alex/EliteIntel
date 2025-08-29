@@ -12,9 +12,9 @@ public class LoadoutSubscriber {
     @Subscribe
     public void onLoadoutEvent(LoadoutEvent event) {
         PlayerSession playerSession = PlayerSession.getInstance();
-        playerSession.updateSession(PlayerSession.CURRENT_SHIP_NAME, event.getShipName());
-        playerSession.updateSession(PlayerSession.CURRENT_SHIP, event.getShip());
-        playerSession.updateSession(PlayerSession.SHIP_CARGO_CAPACITY, event.getCargoCapacity());
+        playerSession.put(PlayerSession.CURRENT_SHIP_NAME, event.getShipName());
+        playerSession.put(PlayerSession.CURRENT_SHIP, event.getShip());
+        playerSession.put(PlayerSession.SHIP_CARGO_CAPACITY, event.getCargoCapacity());
 
         SystemSession.getInstance().put(SHIP_LOADOUT_JSON, event.toJson());
     }

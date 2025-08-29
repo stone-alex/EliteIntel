@@ -6,6 +6,7 @@ import elite.companion.gameapi.journal.events.LoadGameEvent;
 import elite.companion.gameapi.journal.events.dto.RankDto;
 import elite.companion.session.PlayerSession;
 import elite.companion.session.SystemSession;
+import elite.companion.util.ConfigManager;
 
 import static elite.companion.session.PlayerSession.*;
 
@@ -33,16 +34,24 @@ public class LoadGameEventSubscriber {
         PlayerSession playerSession = PlayerSession.getInstance();
         SystemSession systemSession = SystemSession.getInstance();
 
-        playerSession.updateSession(SHIP_FUEL_LEVEL, event.getFuelLevel());
-        playerSession.updateSession(PLAYER_NAME, event.getCommander().replace("PRINCE OF KRONDOR", "Krondor"));
-        playerSession.updateSession(CURRENT_SHIP, event.getShip());
-        playerSession.updateSession(CURRENT_SHIP_NAME, event.getShipName());
-        playerSession.updateSession(PERSONAL_CREDITS_AVAILABLE, event.getCredits());
+        playerSession.put(SHIP_FUEL_LEVEL, event.getFuelLevel());
+        playerSession.put(PLAYER_NAME, event.getCommander().replace("PRINCE OF KRONDOR", "Krondor"));
+        playerSession.put(CURRENT_SHIP, event.getShip());
+        playerSession.put(CURRENT_SHIP_NAME, event.getShipName());
+        playerSession.put(PERSONAL_CREDITS_AVAILABLE, event.getCredits());
 
         RankDto ranks= (RankDto) systemSession.get(SystemSession.RANK);
         GameLoadedInfo info = new GameLoadedInfo(event.toJson(), ranks.toJson());
 
         SystemSession.getInstance().sendToAiAnalysis("New Game started (debugging session) " + info.toJson());
+
+        initValuesFromConfig(playerSession);
+    }
+
+    private static void initValuesFromConfig(PlayerSession playerSession) {
+        ConfigManager configManager = ConfigManager.getInstance();
+        String mission_statement = configManager.readUserConfig().get("mission_statement");
+        playerSession.put(PLAYER_MISSION_STATEMENT, mission_statement);
     }
 
     private class GameLoadedInfo {

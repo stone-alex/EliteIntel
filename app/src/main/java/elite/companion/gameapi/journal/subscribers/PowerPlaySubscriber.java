@@ -12,9 +12,9 @@ public class PowerPlaySubscriber {
     @Subscribe
     public void onPowerPlayEvent(PowerplayEvent event) {
         PlayerSession session = PlayerSession.getInstance();
-        session.updateSession(PLEDGED_TO_POWER, event.getPower());
-        session.updateSession(POWER_RANK, event.getRank());
-        session.updateSession(MERITS, event.getMerits());
-        session.updateSession(PLEDGED_DURATION, event.getTimePledged());
+        session.put(PLEDGED_TO_POWER, event.getPower());
+        session.put(POWER_RANK, event.getRank());
+        session.put(MERITS, event.getMerits());
+        session.put(PLEDGED_DURATION, event.getTimePledged());
     }
 }

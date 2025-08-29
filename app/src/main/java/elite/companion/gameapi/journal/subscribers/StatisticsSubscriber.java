@@ -13,37 +13,37 @@ public class StatisticsSubscriber {
     public void onStatisticsEvent(StatisticsEvent event) {
         PlayerSession playerSession = PlayerSession.getInstance();
         if (event.getBankAccount() != null) {
-            playerSession.updateSession(PERSONAL_CREDITS_AVAILABLE, event.getBankAccount().getCurrentWealth());
-            playerSession.updateSession(INSURANCE_CLAIMS, event.getBankAccount().getInsuranceClaims());
-            playerSession.updateSession(SHIPS_OWNED, event.getBankAccount().getOwnedShipCount());
+            playerSession.put(PERSONAL_CREDITS_AVAILABLE, event.getBankAccount().getCurrentWealth());
+            playerSession.put(INSURANCE_CLAIMS, event.getBankAccount().getInsuranceClaims());
+            playerSession.put(SHIPS_OWNED, event.getBankAccount().getOwnedShipCount());
         }
 
         if (event.getCombat() != null) {
-            playerSession.updateSession(TOTAL_BOUNTY_CLAIMED, event.getCombat().getBountiesClaimed());
-            playerSession.updateSession(TOTAL_BOUNTY_PROFIT, event.getCombat().getBountyHuntingProfit());
+            playerSession.put(TOTAL_BOUNTY_CLAIMED, event.getCombat().getBountiesClaimed());
+            playerSession.put(TOTAL_BOUNTY_PROFIT, event.getCombat().getBountyHuntingProfit());
         }
 
         if (event.getExploration() != null) {
-            playerSession.updateSession(TOTAL_DISTANCE_TRAVELED, event.getExploration().getGreatestDistanceFromStart());
-            playerSession.updateSession(TOTAL_SYSTEMS_VISITED, event.getExploration().getSystemsVisited());
-            playerSession.updateSession(TOTAL_HIPERSPACE_DISTANCE, event.getExploration().getTotalHyperspaceDistance());
-            playerSession.updateSession(TOTAL_PROFITS_FROM_EXPLORATION, event.getExploration().getExplorationProfits());
+            playerSession.put(TOTAL_DISTANCE_TRAVELED, event.getExploration().getGreatestDistanceFromStart());
+            playerSession.put(TOTAL_SYSTEMS_VISITED, event.getExploration().getSystemsVisited());
+            playerSession.put(TOTAL_HIPERSPACE_DISTANCE, event.getExploration().getTotalHyperspaceDistance());
+            playerSession.put(TOTAL_PROFITS_FROM_EXPLORATION, event.getExploration().getExplorationProfits());
         }
 
         if (event.getExobiology() != null) {
-            playerSession.updateSession(SPECIES_FIRST_LOGGED, event.getExobiology().getFirstLogged());
-            playerSession.updateSession(EXOBIOLOGY_PROFITS, event.getExobiology().getOrganicDataProfits());
+            playerSession.put(SPECIES_FIRST_LOGGED, event.getExobiology().getFirstLogged());
+            playerSession.put(EXOBIOLOGY_PROFITS, event.getExobiology().getOrganicDataProfits());
         }
 
         if (event.getTrading() != null) {
-            playerSession.updateSession(GOODS_SOLD_THIS_SESSION, event.getTrading().getGoodsSold());
-            playerSession.updateSession(HIGHEST_SINGLE_TRANSACTION, event.getTrading().getHighestSingleTransaction());
-            playerSession.updateSession(MARKET_PROFITS, event.getTrading().getMarketProfits());
+            playerSession.put(GOODS_SOLD_THIS_SESSION, event.getTrading().getGoodsSold());
+            playerSession.put(HIGHEST_SINGLE_TRANSACTION, event.getTrading().getHighestSingleTransaction());
+            playerSession.put(MARKET_PROFITS, event.getTrading().getMarketProfits());
         }
 
         if (event.getCrew() != null) {
             if (event.getCrew().getNpcCrewTotalWages() > 1) {
-                playerSession.updateSession(CREW_WAGS_PAYOUT, event.getCrew().getNpcCrewTotalWages());
+                playerSession.put(CREW_WAGS_PAYOUT, event.getCrew().getNpcCrewTotalWages());
             }
         }
     }

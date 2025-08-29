@@ -1,15 +1,11 @@
 package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.companion.EventBusManager;
 import elite.companion.gameapi.journal.events.StartJumpEvent;
 import elite.companion.session.SystemSession;
 
+@SuppressWarnings("unused")
 public class StartJumpSubscriber {
-
-    public StartJumpSubscriber() {
-        EventBusManager.register(this);
-    }
 
     @Subscribe
     public void onStartJumpEvent(StartJumpEvent event) {
@@ -30,6 +26,6 @@ public class StartJumpSubscriber {
         sb.append(scoopable);
         sb.append(". ");
 
-        SystemSession.getInstance().setSensorData(sb.toString());
+        SystemSession.getInstance().setConsumableData(sb.toString());
     }
 }

@@ -4,7 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
-import elite.companion.Globals;
+import elite.companion.util.Globals;
 import elite.companion.util.ConfigManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

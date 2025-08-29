@@ -1,13 +1,11 @@
-package elite.companion.gameapi.journal.events.userfriendly;
+package elite.companion.gameapi.journal.events.dto;
 
-import com.google.gson.Gson;
 import elite.companion.gameapi.journal.events.BaseEvent;
 import elite.companion.gameapi.journal.events.MissionAcceptedEvent;
-import elite.companion.gameapi.journal.events.ScannedEvent;
 
 import java.time.Duration;
 
-public class MissionAccepted extends BaseEvent {
+public class MissionDto extends BaseEvent {
     private String faction;
     private String missionType;
     private String missionDescription;
@@ -21,8 +19,8 @@ public class MissionAccepted extends BaseEvent {
     private long missionId;
 
 
-    public MissionAccepted(MissionAcceptedEvent event) {
-        super(event.getTimestamp(), 1, Duration.ofSeconds(30), MissionAccepted.class.getName());
+    public MissionDto(MissionAcceptedEvent event) {
+        super(event.getTimestamp(), 1, Duration.ofSeconds(30), MissionDto.class.getName());
         setMissionId(event.getMissionID());
         setMissionProvider(event.getFaction());
         setMissionType(event.getName());
@@ -122,9 +120,5 @@ public class MissionAccepted extends BaseEvent {
 
     public long getMissionId() {
         return missionId;
-    }
-
-    public String toJson() {
-        return new Gson().toJson(this);
     }
 }

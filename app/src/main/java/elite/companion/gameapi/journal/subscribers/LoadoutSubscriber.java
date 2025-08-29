@@ -1,7 +1,6 @@
 package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.companion.EventBusManager;
 import elite.companion.gameapi.journal.events.LoadoutEvent;
 import elite.companion.session.PlayerSession;
 import elite.companion.session.SystemSession;
@@ -9,10 +8,6 @@ import elite.companion.session.SystemSession;
 import static elite.companion.session.SystemSession.SHIP_LOADOUT_JSON;
 
 public class LoadoutSubscriber {
-
-    public LoadoutSubscriber() {
-        EventBusManager.register(this);
-    }
 
     @Subscribe
     public void onLoadoutEvent(LoadoutEvent event) {

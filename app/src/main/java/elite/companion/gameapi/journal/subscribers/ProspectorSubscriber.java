@@ -2,17 +2,13 @@ package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import com.google.gson.JsonObject;
-import elite.companion.EventBusManager;
 import elite.companion.comms.handlers.command.CommandActionsCustom;
 import elite.companion.comms.voice.VoiceGenerator;
 import elite.companion.gameapi.journal.events.ProspectedAsteroidEvent;
 import elite.companion.session.PlayerSession;
 
+@SuppressWarnings("unused")
 public class ProspectorSubscriber {
-
-    public ProspectorSubscriber() {
-        EventBusManager.register(this);
-    }
 
     @Subscribe
     public void onProspectedAsteroidEvent(ProspectedAsteroidEvent event) {
@@ -35,7 +31,7 @@ public class ProspectorSubscriber {
             }
         }
 
-        if(foundTargetMaterial) {
+        if (foundTargetMaterial) {
             VoiceGenerator.getInstance().speak(anouncement.toString());
         }
 

@@ -1,17 +1,13 @@
 package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.companion.EventBusManager;
 import elite.companion.gameapi.journal.events.FSDJumpEvent;
 import elite.companion.session.SystemSession;
 
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class FSDJumpSubscriber {
-
-    public FSDJumpSubscriber() {
-        EventBusManager.register(this);
-    }
 
     @Subscribe
     public void onFSDJumpEvent(FSDJumpEvent event) {
@@ -65,6 +61,6 @@ public class FSDJumpSubscriber {
             }
         }
 
-        systemSession.setSensorData(sb.toString());
+        systemSession.setConsumableData(sb.toString());
     }
 }

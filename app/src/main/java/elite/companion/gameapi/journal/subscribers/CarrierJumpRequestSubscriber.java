@@ -1,17 +1,12 @@
 package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.companion.EventBusManager;
 import elite.companion.gameapi.journal.events.CarrierJumpRequestEvent;
 import elite.companion.session.SystemSession;
 import elite.companion.util.TimestampFormatter;
 
+@SuppressWarnings("unused")
 public class CarrierJumpRequestSubscriber {
-
-    public CarrierJumpRequestSubscriber() {
-        EventBusManager.register(this);
-    }
-
 
     @Subscribe
     public void onCarrierJumpRequestEvent(CarrierJumpRequestEvent event) {
@@ -31,6 +26,6 @@ public class CarrierJumpRequestSubscriber {
 
 
         //Carrier Jump Scheduled: null to null at Synuefe XR-H d11-124 A on unknown
-        SystemSession.getInstance().setSensorData(sb.toString());
+        SystemSession.getInstance().setConsumableData(sb.toString());
     }
 }

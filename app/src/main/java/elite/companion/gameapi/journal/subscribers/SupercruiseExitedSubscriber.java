@@ -1,16 +1,11 @@
 package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.companion.EventBusManager;
 import elite.companion.gameapi.journal.events.SupercruiseExitEvent;
 import elite.companion.session.SystemSession;
 
+@SuppressWarnings("unused")
 public class SupercruiseExitedSubscriber {
-
-    public SupercruiseExitedSubscriber() {
-        EventBusManager.register(this);
-    }
-
 
     @Subscribe
     public void onSupercruiseExited(SupercruiseExitEvent event) {
@@ -19,11 +14,8 @@ public class SupercruiseExitedSubscriber {
         String bodyType = event.getBodyType(); // Station Installation or planetary body
 
         StringBuilder sb = new StringBuilder();
-        sb.append("Supercruise exit: Star system: ").append(starSystem);
-        sb.append(" at: ").append(bodyType);
-        sb.append(" ").append(body);
-
-        SystemSession.getInstance().setSensorData(sb.toString());
+        sb.append("Supercruise exit: ").append(" System: ").append(starSystem).append(", ").append(bodyType).append(": ").append(body);
+        SystemSession.getInstance().setConsumableData(sb.toString());
     }
 
 }

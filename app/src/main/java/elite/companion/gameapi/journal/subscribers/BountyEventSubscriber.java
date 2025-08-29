@@ -1,17 +1,13 @@
 package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.companion.EventBusManager;
 import elite.companion.gameapi.journal.events.BountyEvent;
 import elite.companion.session.SystemSession;
 
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class BountyEventSubscriber {
-
-    public BountyEventSubscriber() {
-        EventBusManager.register(this);
-    }
 
     @Subscribe
     public void onBountyEvent(BountyEvent event) {
@@ -29,7 +25,6 @@ public class BountyEventSubscriber {
         systemSession.addBounty(event.getTotalReward());
 
         sb.append("Total bounty collected: ").append(systemSession.getBountyCollectedThisSession()).append(" credits. ");
-
-        systemSession.setSensorData(sb.toString());
+        systemSession.setConsumableData(sb.toString());
     }
 }

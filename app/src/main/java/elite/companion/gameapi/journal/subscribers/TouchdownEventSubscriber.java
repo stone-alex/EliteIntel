@@ -1,14 +1,10 @@
 package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.companion.EventBusManager;
 import elite.companion.gameapi.journal.events.TouchdownEvent;
 
+@SuppressWarnings("unused")
 public class TouchdownEventSubscriber {
-
-    public TouchdownEventSubscriber() {
-        EventBusManager.register(this);
-    }
 
     @Subscribe
     public void onTouchdownEvent(TouchdownEvent event) {

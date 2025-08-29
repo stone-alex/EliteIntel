@@ -54,13 +54,16 @@ public class AnalyzeDataHandler implements QueryHandler {
                 return String.valueOf(systemSession.getObject(SystemSession.SHIP_LOADOUT_JSON));
                 
             case QUERY_ANALYZE_ROUTE:
-                return getRoute();
+                return getRoute(); // array of json objects wrapped in []
 
             case QUERY_ANALYZE_ON_BOARD_CARGO:
-                return getCargo();
+                return new Gson().toJson(SystemSession.getInstance().getObject(SystemSession.SHIP_CARGO));
 
             case LOCAL_SYSTEM_INFO:
                 return new Gson().toJson(systemSession.getObject(CURRENT_SYSTEM));
+
+            case CHECK_LEGAL_STATUS:
+                return new Gson().toJson(systemSession.getObject(SystemSession.CURRENT_STATUS));
 
 
             // Add other queries...
@@ -68,11 +71,6 @@ public class AnalyzeDataHandler implements QueryHandler {
                 return null;
         }
     }
-
-    private String getCargo() {
-        return String.valueOf(SystemSession.getInstance().getObject(SystemSession.SHIP_CARGO));
-    }
-
 
     private String getRoute() {
         StringBuilder sb = new StringBuilder();

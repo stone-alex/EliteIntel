@@ -9,6 +9,10 @@ public enum QueryActions {
     QUERY_FIND_NEAREST_MATERIAL_TRADER("query_find_nearest_material_trader", null, null),
     LIST_AVAILABLE_VOICES("list_available_voices", null, null),
     LOCAL_SYSTEM_INFO("access_local_system_data_and_tell_me_what_you_know", null, null),
+    CHECK_LEGAL_STATUS("check_legal_status", null, null),
+    QUERY_PIRATE_KILLS_REMAINING("query_pirate_kills_remaining", null, null),
+    QUERY_PIRATE_MISSION_PROFIT("query_pirate_mission_profit", null, null),
+    QUERY_PIRATE_STATUS("query_pirate_status", null, null);
 
     ; //<-- end of enum
 

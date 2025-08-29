@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.time.Duration;
 
-public class ProgressEvent extends BaseEvent {
+public class ProgressEvent extends BaseEvent implements PlayerBasicStats {
     @SerializedName("Combat")
     private int combat;
 

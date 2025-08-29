@@ -1,4 +1,4 @@
-package elite.companion.gameapi.journal.events;
+package elite.companion.gameapi.journal.events.dto;
 
 
 public class VoiceCommandDTO {

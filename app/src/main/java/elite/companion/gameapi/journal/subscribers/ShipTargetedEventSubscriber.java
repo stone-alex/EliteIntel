@@ -1,20 +1,16 @@
 package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.companion.EventBusManager;
 import elite.companion.comms.voice.VoiceGenerator;
 import elite.companion.gameapi.journal.events.ShipTargetedEvent;
 import elite.companion.util.RomanNumeralConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@SuppressWarnings("unused")
 public class ShipTargetedEventSubscriber {
 
     private static final Logger log = LoggerFactory.getLogger(ShipTargetedEventSubscriber.class);
-
-    public ShipTargetedEventSubscriber() {
-        EventBusManager.register(this);
-    }
 
     @Subscribe
     public void onShipTargetedEvent(ShipTargetedEvent event) {
@@ -52,7 +48,7 @@ public class ShipTargetedEventSubscriber {
             info.append(legalStatus == null ? " Legal Status Unknown " : legalStatus.replace("_", " "));
             info.append(", ");
 
-            info.append(bounty == 0 ? "No Bounty" : "bounty: "+ bounty + " credits");
+            info.append(bounty == 0 ? "No Bounty" : "bounty: " + bounty + " credits");
             info.append(", ");
 
             if (shieldHealth == 100 && hullHealth == 100) {

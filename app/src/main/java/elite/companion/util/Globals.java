@@ -1,4 +1,4 @@
-package elite.companion;
+package elite.companion.util;
 
 
 public class Globals {

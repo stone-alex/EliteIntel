@@ -1,5 +1,8 @@
 package elite.companion.util;
 
+import elite.companion.gameapi.journal.events.dto.RankDto;
+import elite.companion.session.SystemSession;
+
 import java.util.HashMap;
 
 public class Ranks {
@@ -269,5 +272,10 @@ public class Ranks {
         } else {
             return "Sir/Mam"; //Default value.
         }
+    }
+
+    public static String getPlayerHonorific() {
+        RankDto rankDto = (RankDto) SystemSession.getInstance().getObject(SystemSession.RANK);
+        return rankDto.getHonorific();
     }
 }

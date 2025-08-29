@@ -1,10 +1,16 @@
 package elite.companion.session;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import elite.companion.comms.voice.Voices;
 import elite.companion.gameapi.gamestate.events.NavRouteDto;
 import elite.companion.gameapi.journal.events.BaseEvent;
-import elite.companion.gameapi.journal.events.userfriendly.MissionAccepted;
+import elite.companion.gameapi.journal.events.BountyEvent;
+import elite.companion.gameapi.journal.events.dto.MissionDto;
+import elite.companion.gameapi.journal.events.dto.RankDto;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 /**
@@ -29,7 +35,16 @@ public class SystemSession {
     public static final String RADION_TRANSMISSION_ON_OFF = "radio_transmission_on_off";
     public static final String ANNOUNCE_BODY_SCANS = "announce_body_scans";
     public static final String CURRENT_SYSTEM_DATA = "current_system_data";
+    public static final String PIRATE_MISSIONS = "pirate_missions";
+    public static final String PIRATE_BOUNTIES = "pirate_bounties";
+    public static final String REPUTATION = "reputation";
+    public static final String CARRIER_LOCATION = "carrier_location";
+    public static final String CURRENT_LOCATION = "current_location";
+
     private static final SystemSession INSTANCE = new SystemSession();
+    public static final String MATERIALS = "materials";
+    public static final String ENGINEER_PROGRESS = "engineer_progress";
+    private static final String FRIENDS_STATUS = "friends_status";
     private final Map<String, Object> state = new HashMap<>();
     private final Set<String> detectedSignals = new LinkedHashSet<>();
     private final Map<Long, BaseEvent> missions = new LinkedHashMap();
@@ -39,7 +54,9 @@ public class SystemSession {
     private BaseEvent bodySignal;
 
     private SystemSession() {
-        // Private constructor to enforce a singleton pattern
+        state.put(RANK, new RankDto());
+        state.put(FRIENDS_STATUS, new HashMap<String, String>());
+        state.put(PIRATE_MISSIONS, new ArrayList<MissionDto>());
     }
 
     public static SystemSession getInstance() {
@@ -54,21 +71,21 @@ public class SystemSession {
         state.remove(key);
     }
 
-    public void setSensorData(String sensorReading) {
+    public void setConsumableData(String sensorReading) {
         state.put(SENSOR_READING, sensorReading);
     }
 
 
-    public void clearSensorData() {
+    public void clearConsumableData() {
         state.remove(SENSOR_READING);
     }
 
-    public String getSensorData() {
+    public String getConsumableData() {
         return state.get(SENSOR_READING) == null ? null : (String) state.get(SENSOR_READING);
     }
 
-    public void updateSession(String sensorReading, Object data) {
-        state.put(sensorReading, data);
+    public void updateSession(String key, Object data) {
+        state.put(key, data);
     }
 
     public void addSignal(BaseEvent event) {
@@ -122,7 +139,7 @@ public class SystemSession {
     }
 
     public Voices getAIVoice() {
-        return this.aiVoice == null ? Voices.MICHAEL : this.aiVoice;
+        return this.aiVoice == null ? Voices.JAMES : this.aiVoice;
     }
 
     public void addBodySignal(BaseEvent event) {
@@ -133,7 +150,7 @@ public class SystemSession {
         return this.bodySignal;
     }
 
-    public void addMission(MissionAccepted mission) {
+    public void addMission(MissionDto mission) {
         missions.put(mission.getMissionId(), mission);
     }
 
@@ -151,5 +168,58 @@ public class SystemSession {
 
     public void clearMissions() {
         missions.clear();
+    }
+
+    public void addPirateMission(MissionDto mission) {
+        List<MissionDto> missions = (List<MissionDto>) state.computeIfAbsent(PIRATE_MISSIONS, k -> new ArrayList<MissionDto>());
+        missions.add(mission);
+    }
+
+    public void addPirateBounty(BountyEvent bounty) {
+        List<BountyEvent> bounties = (List<BountyEvent>) state.computeIfAbsent(PIRATE_BOUNTIES, k -> new ArrayList<BountyEvent>());
+        bounties.add(bounty);
+    }
+
+    public void removePirateMission(long missionID) {
+        List<MissionDto> missions = (List<MissionDto>) state.get(PIRATE_MISSIONS);
+        if (missions != null) {
+            missions.removeIf(mission -> mission.getMissionId() == missionID);
+        }
+    }
+
+    public void removeExpiredMissions() {
+        List<MissionDto> missions = (List<MissionDto>) state.get(PIRATE_MISSIONS);
+        if (missions != null) {
+            missions.removeIf(mission -> {
+                String expiry = new Gson().fromJson(mission.toJson(), JsonObject.class).get("Expiry").getAsString();
+                return ZonedDateTime.parse(expiry).isBefore(ZonedDateTime.now(ZoneId.of("Z")));
+            });
+        }
+    }
+
+    public String getPirateMissionsJson() {
+        List<MissionDto> missions = (List<MissionDto>) state.get(PIRATE_MISSIONS);
+        if (missions == null || missions.isEmpty()) {
+            return "[]";
+        }
+        StringBuilder sb = new StringBuilder("[");
+        for (MissionDto mission : missions) {
+            sb.append(mission.toJson()).append(",");
+        }
+        sb.append("]");
+        return sb.toString().replace(",]", "]");
+    }
+
+    public String getPirateBountiesJson() {
+        List<BountyEvent> bounties = (List<BountyEvent>) state.get(PIRATE_BOUNTIES);
+        if (bounties == null || bounties.isEmpty()) {
+            return "[]";
+        }
+        StringBuilder sb = new StringBuilder("[");
+        for (BountyEvent bounty : bounties) {
+            sb.append(bounty.toJson()).append(",");
+        }
+        sb.append("]");
+        return sb.toString().replace(",]", "]");
     }
 }

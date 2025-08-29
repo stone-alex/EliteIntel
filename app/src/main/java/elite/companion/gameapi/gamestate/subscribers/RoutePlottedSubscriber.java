@@ -2,7 +2,7 @@ package elite.companion.gameapi.gamestate.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import com.google.gson.Gson;
-import elite.companion.EventBusManager;
+import elite.companion.util.EventBusManager;
 import elite.companion.gameapi.gamestate.events.GameEvents;
 import elite.companion.gameapi.gamestate.events.NavRouteDto;
 import elite.companion.session.SystemSession;
@@ -48,7 +48,7 @@ public class RoutePlottedSubscriber {
                 }
 
                 systemSession.setNavRoute(routeMap);
-                systemSession.setSensorData("Hyperspace route to " + finalDestination + " is set. Analyze stoppable stars for refuel " + new Gson().toJson(routeMap));
+                systemSession.setConsumableData("Hyperspace route to " + finalDestination + " is set. Analyze stoppable stars for refuel " + new Gson().toJson(routeMap));
             } else {
                 systemSession.clearRoute();
             }

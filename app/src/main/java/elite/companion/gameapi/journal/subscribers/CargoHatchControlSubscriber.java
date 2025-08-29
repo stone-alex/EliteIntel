@@ -1,20 +1,19 @@
 package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.companion.EventBusManager;
 import elite.companion.comms.voice.VoiceGenerator;
-import elite.companion.gameapi.journal.events.VoiceCommandDTO;
+import elite.companion.gameapi.journal.events.dto.VoiceCommandDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.awt.Robot;
 import java.awt.event.KeyEvent;
 
+@SuppressWarnings("unused")
 public class CargoHatchControlSubscriber {
     private static final Logger log = LoggerFactory.getLogger(CargoHatchControlSubscriber.class);
     private final Robot robot;
 
     public CargoHatchControlSubscriber() {
-        EventBusManager.register(this);
         try {
             robot = new Robot(); // For keyboard events
         } catch (Exception e) {

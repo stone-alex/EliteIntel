@@ -2,29 +2,39 @@ package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import com.google.gson.Gson;
-import elite.companion.EventBusManager;
-import elite.companion.gameapi.journal.events.EventTracker;
 import elite.companion.gameapi.journal.events.LoadGameEvent;
-import elite.companion.gameapi.journal.events.userfriendly.RankDto;
+import elite.companion.gameapi.journal.events.dto.RankDto;
 import elite.companion.session.PlayerSession;
 import elite.companion.session.SystemSession;
 
 import static elite.companion.session.PlayerSession.*;
 
-public class GameStartedEventSubscriber {
+@SuppressWarnings("unused")
+public class LoadGameEventSubscriber {
 
-    public GameStartedEventSubscriber() {
-        EventTracker.resetProcessed();
-        EventBusManager.register(this);
-    }
-
+    /**
+     * Events appear in journal file in the following order:
+     * Fileheader
+     * Friends
+     * Commander
+     * Materials
+     * Rank
+     * Progress
+     * Reputation
+     * EngineerProgress
+     * LoadGame <-- this event Assume that the events above had been processed and events below has not
+     * CarrierLocation
+     * Statistics
+     * Location
+     * Powerplay
+     * */
     @Subscribe
     public void onEvent(LoadGameEvent event) {
         PlayerSession playerSession = PlayerSession.getInstance();
         SystemSession systemSession = SystemSession.getInstance();
 
         playerSession.updateSession(SHIP_FUEL_LEVEL, event.getFuelLevel());
-        playerSession.updateSession(PLAYER_NAME, /*event.getCommander()*/"Krondor");
+        playerSession.updateSession(PLAYER_NAME, event.getCommander().replace("PRINCE OF KRONDOR", "Krondor"));
         playerSession.updateSession(CURRENT_SHIP, event.getShip());
         playerSession.updateSession(CURRENT_SHIP_NAME, event.getShipName());
         playerSession.updateSession(PERSONAL_CREDITS_AVAILABLE, event.getCredits());
@@ -32,7 +42,7 @@ public class GameStartedEventSubscriber {
         RankDto ranks= (RankDto) systemSession.getObject(SystemSession.RANK);
         GameLoadedInfo info = new GameLoadedInfo(event.toJson(), ranks.toJson());
 
-        SystemSession.getInstance().setSensorData("New Game started (debugging session) " + info.toJson());
+        SystemSession.getInstance().setConsumableData("New Game started (debugging session) " + info.toJson());
     }
 
     private class GameLoadedInfo {

@@ -1,20 +1,15 @@
 package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.companion.EventBusManager;
 import elite.companion.comms.voice.VoiceGenerator;
-import elite.companion.gameapi.journal.events.FSDTargetEvent;
 import elite.companion.gameapi.gamestate.events.NavRouteDto;
+import elite.companion.gameapi.journal.events.FSDTargetEvent;
 import elite.companion.session.SystemSession;
 
 import java.util.Map;
 
+@SuppressWarnings("unused")
 public class FSDTargetSubscriber {
-
-    public FSDTargetSubscriber() {
-        EventBusManager.register(this);
-    }
-
 
     @Subscribe
     public void onFSDTargetEvent(FSDTargetEvent event) {

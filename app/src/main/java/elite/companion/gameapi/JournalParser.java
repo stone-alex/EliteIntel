@@ -1,7 +1,7 @@
 package elite.companion.gameapi;
 
 import com.google.gson.*;
-import elite.companion.EventBusManager;
+import elite.companion.util.EventBusManager;
 import elite.companion.comms.voice.VoiceGenerator;
 import elite.companion.gameapi.journal.events.*;
 import org.slf4j.Logger;
@@ -75,12 +75,32 @@ public class JournalParser {
                             String eventTimestamp = event.get("timestamp").getAsString();
                             log.info("Processing Journal Event: {} {}", eventType, event.toString());
                             switch (eventType) {
+                                //events not timed. located at the top of the journal file. Generate event regardless of time.
+                                //this will be read on the start of the app, even if the game session is not running.
                                 case "LoadGame":
-                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, LoadGameEvent.class));
+                                    EventBusManager.publish(gson.fromJson(event, LoadGameEvent.class));
                                     break;
                                 case "Commander":
-                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, CommanderEvent.class));
+                                    EventBusManager.publish(gson.fromJson(event, CommanderEvent.class));
                                     break;
+                                case "Statistics":
+                                    EventBusManager.publish(gson.fromJson(event, StatisticsEvent.class));
+                                    break;
+                                case "Loadout":
+                                    EventBusManager.publish(gson.fromJson(event, LoadoutEvent.class));
+                                    break;
+                                case "Rank":
+                                    EventBusManager.publish(gson.fromJson(event, RankEvent.class));
+                                    break;
+                                case "Materials":
+                                    EventBusManager.publish(gson.fromJson(event, MaterialsEvent.class));
+                                    break;
+                                case "EngineerProgress":
+                                    EventBusManager.publish(gson.fromJson(event, EngineerProgressEvent.class));
+                                    break;
+
+
+                                //timed events. only generate event the event is recent
                                 case "MiningRefined":
                                     if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, MiningRefinedEvent.class));
                                     break;
@@ -91,13 +111,7 @@ public class JournalParser {
                                     if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, LaunchDroneEvent.class));
                                     break;
                                 case "CarrierStats":
-                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, CarrierStatsEvent.class));
-                                    break;
-                                case "Powerplay":
-                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, PowerplayEvent.class));
-                                    break;
-                                case "Statistics":
-                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, StatisticsEvent.class));
+                                    EventBusManager.publish(gson.fromJson(event, CarrierStatsEvent.class));
                                     break;
                                 case "ReceiveText":
                                     if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, ReceiveTextEvent.class));
@@ -126,14 +140,8 @@ public class JournalParser {
                                 case "ShipTargeted":
                                     if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, ShipTargetedEvent.class));
                                     break;
-                                case "Loadout":
-                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, LoadoutEvent.class));
-                                    break;
                                 case "SwitchSuitLoadout":
                                     if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, SwitchSuitLoadoutEvent.class));
-                                    break;
-                                case "Rank":
-                                    EventBusManager.publish(gson.fromJson(event, RankEvent.class));
                                     break;
                                 case "Scanned":
                                     if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, ScannedEvent.class));
@@ -147,6 +155,24 @@ public class JournalParser {
                                 case "MissionAccepted":
                                     if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, MissionAcceptedEvent.class));
                                     break;
+                                case "MissionCompleted":
+                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, MissionCompletedEvent.class));
+                                    break;
+                                case "NpcCrewPaidWage":
+                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, NpcCrewPaidWageEvent.class));
+                                    break;
+                                case "SupercruiseExit":
+                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, SupercruiseExitEvent.class));
+                                    break;
+                                case "MissionAbandoned":
+                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, MissionAbandonedEvent.class));
+                                    break;
+                                case "MissionFailed":
+                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, MissionFailedEvent.class));
+                                    break;
+                                case "Friends":
+                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, FriendsEvent.class));
+                                    break;
 
                                 default:
                                     break;
@@ -159,7 +185,7 @@ public class JournalParser {
                     lastPosition += line.getBytes(StandardCharsets.UTF_8).length + System.lineSeparator().getBytes(StandardCharsets.UTF_8).length;
                 }
             } catch (IOException e) {
-                VoiceGenerator.getInstance().speak("Error reading journal: {}", e.getMessage());
+                VoiceGenerator.getInstance().speak("Error reading journal: " + e.getMessage() + " ");
                 log.error("Error reading journal: {}", e.getMessage());
             }
 

@@ -1,17 +1,19 @@
-package elite.companion.gameapi.journal.events.userfriendly;
+package elite.companion.gameapi.journal.events.dto;
 
 import com.google.gson.Gson;
+import elite.companion.gameapi.journal.events.PlayerBasicStats;
+import elite.companion.util.Ranks;
 
 public class RankDto {
 
-    private String combatRank;
-    private String militaryRankEmpire;
-    private String militaryRankFederation;
-    private String highestMilitaryRank;
-    private String honorific;
-    private String exobiologyRank;
-    private String explorationRank;
-    private String mercenaryRank;
+    private String combatRank = "unknown";
+    private String militaryRankEmpire = "unknown";
+    private String militaryRankFederation = "unknown";
+    private String highestMilitaryRank = "unknown";
+    private String honorific = "Commander";
+    private String exobiologyRank = "unknown";
+    private String explorationRank = "unknown";
+    private String mercenaryRank = "unknown";
 
     public String getCombatRank() {
         return combatRank;
@@ -46,7 +48,7 @@ public class RankDto {
     }
 
     public String getHonorific() {
-        return honorific;
+        return honorific == null ? "Commander" : honorific;
     }
 
     public void setHonorific(String honorific) {
@@ -81,4 +83,16 @@ public class RankDto {
     public String toJson() {
         return new Gson().toJson(this);
     }
+
+    public void setData(PlayerBasicStats data) {
+        this.setCombatRank(Ranks.getCombatRankMap().get(data.getCombat()));
+        this.setExobiologyRank(Ranks.getExobiologyRankMap().get(data.getCombat()));
+        this.setExplorationRank(Ranks.getExplorationRankMap().get(data.getCombat()));
+        this.setHighestMilitaryRank(Ranks.getHighestRankAsString(data.getEmpire(), data.getFederation()));
+        this.setMilitaryRankEmpire(Ranks.getImperialRankMap().get(data.getEmpire()));
+        this.setMilitaryRankFederation(Ranks.getFederationRankMap().get(data.getFederation()));
+        this.setMercenaryRank(Ranks.getMercenaryRankMap().get(data.getSoldier()));
+        this.setHonorific(Ranks.getHonorific(data.getEmpire(), data.getFederation()));
+    }
+
 }

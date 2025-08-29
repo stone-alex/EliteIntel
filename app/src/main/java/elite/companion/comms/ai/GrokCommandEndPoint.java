@@ -1,7 +1,7 @@
 package elite.companion.comms.ai;
 
 import com.google.gson.*;
-import elite.companion.Globals;
+import elite.companion.util.Globals;
 import elite.companion.comms.voice.VoiceGenerator;
 import elite.companion.session.SystemSession;
 import elite.companion.util.AIContextFactory;
@@ -79,7 +79,7 @@ public class GrokCommandEndPoint {
     }
 
     public void processSystemCommand() {
-        String sensorData = SystemSession.getInstance().getSensorData();
+        String sensorData = SystemSession.getInstance().getConsumableData();
 
 
         // Log raw inputs for debugging
@@ -94,7 +94,7 @@ public class GrokCommandEndPoint {
         //log.info("Sanitized input: [{}]", input);
 
         // Clear session data
-        if (sensorData != null) SystemSession.getInstance().clearSensorData();
+        if (sensorData != null) SystemSession.getInstance().clearConsumableData();
 
         if (input == null || input.isEmpty()) {
             return;

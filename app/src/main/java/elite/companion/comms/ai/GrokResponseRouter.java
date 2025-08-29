@@ -2,12 +2,9 @@ package elite.companion.comms.ai;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import elite.companion.comms.handlers.query.ListAvailableVoices;
+import elite.companion.comms.handlers.query.*;
 import elite.companion.comms.voice.VoiceGenerator;
 import elite.companion.comms.handlers.command.*;
-import elite.companion.comms.handlers.query.AnalyzeDataHandler;
-import elite.companion.comms.handlers.query.QueryActions;
-import elite.companion.comms.handlers.query.QueryHandler;
 import elite.companion.comms.ai.robot.VoiceCommandHandler;
 import elite.companion.util.AIContextFactory;
 import elite.companion.util.InaraApiClient;
@@ -45,13 +42,15 @@ public class GrokResponseRouter {
     private void registerCommandHandlers() {
 
         //Query Handlers
+        queryHandlers.put(QueryActions.CHECK_LEGAL_STATUS.getAction(), new ListAvailableVoices());
+        queryHandlers.put(QueryActions.LIST_AVAILABLE_VOICES.getAction(), new ListAvailableVoices());
+        queryHandlers.put(QueryActions.LOCAL_SYSTEM_INFO.getAction(), new AnalyzeDataHandler());
+        queryHandlers.put(QueryActions.QUERY_ANALYZE_ON_BOARD_CARGO.getAction(), new AnalyzeDataHandler());
+        queryHandlers.put(QueryActions.QUERY_ANALYZE_ROUTE.getAction(), new AnalyzeDataHandler());
+        queryHandlers.put(QueryActions.QUERY_PIRATE_KILLS_REMAINING.getAction(), new PirateMissionAnalyzer());
+        queryHandlers.put(QueryActions.QUERY_PIRATE_MISSION_PROFIT.getAction(), new PirateMissionAnalyzer());
         queryHandlers.put(QueryActions.QUERY_SEARCH_SIGNAL_DATA.getAction(), new AnalyzeDataHandler());
         queryHandlers.put(QueryActions.QUERY_SHIP_LOADOUT.getAction(), new AnalyzeDataHandler());
-        queryHandlers.put(QueryActions.QUERY_ANALYZE_ROUTE.getAction(), new AnalyzeDataHandler());
-        queryHandlers.put(QueryActions.QUERY_ANALYZE_ON_BOARD_CARGO.getAction(), new AnalyzeDataHandler());
-        queryHandlers.put(QueryActions.LOCAL_SYSTEM_INFO.getAction(), new AnalyzeDataHandler());
-        queryHandlers.put(QueryActions.LIST_AVAILABLE_VOICES.getAction(), new ListAvailableVoices());
-
         //queryHandlers.put(QueryAction.QUERY_FIND_NEAREST_MATERIAL_TRADER.getAction(), new FindMaterialTraderHandler());
 
         //APP COMMANDS

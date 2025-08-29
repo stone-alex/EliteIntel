@@ -1,7 +1,7 @@
 package elite.companion.gameapi.gamestate.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.companion.EventBusManager;
+import elite.companion.util.EventBusManager;
 import elite.companion.gameapi.gamestate.events.GameEvents;
 import elite.companion.session.SystemSession;
 

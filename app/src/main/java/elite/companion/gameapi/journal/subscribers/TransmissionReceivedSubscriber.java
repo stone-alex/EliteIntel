@@ -1,22 +1,18 @@
 package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.companion.EventBusManager;
 import elite.companion.comms.voice.VoiceGenerator;
 import elite.companion.gameapi.journal.events.ReceiveTextEvent;
 import elite.companion.session.SystemSession;
 
+@SuppressWarnings("unused")
 public class TransmissionReceivedSubscriber {
-
-    public TransmissionReceivedSubscriber() {
-        EventBusManager.register(this);
-    }
 
     @Subscribe
     public void onReceiveTextEvent(ReceiveTextEvent event) {
-        Object radioOnOffObject= SystemSession.getInstance().getObject(SystemSession.RADION_TRANSMISSION_ON_OFF);
-        boolean isRadioOn= radioOnOffObject != null && (boolean) radioOnOffObject;
-        if(!isRadioOn) return;
+        Object radioOnOffObject = SystemSession.getInstance().getObject(SystemSession.RADION_TRANSMISSION_ON_OFF);
+        boolean isRadioOn = radioOnOffObject != null && (boolean) radioOnOffObject;
+        if (!isRadioOn) return;
 
 
         if (!event.getMessageLocalised().toLowerCase().contains("entered channel")) {
@@ -29,7 +25,7 @@ public class TransmissionReceivedSubscriber {
 
             if (isStation) {
                 if (!event.getMessageLocalised().toLowerCase().contains("fire zone")) {
-                    systemSession.setSensorData(
+                    systemSession.setConsumableData(
                             "radio_transmission:[from:" + event.getFrom() + ", message:" + event.getMessageLocalised() + "]"
                     );
                 }

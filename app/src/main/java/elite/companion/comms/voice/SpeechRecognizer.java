@@ -3,7 +3,7 @@ package elite.companion.comms.voice;
 import com.google.api.gax.rpc.ApiStreamObserver;
 import com.google.cloud.speech.v1p1beta1.*;
 import com.google.protobuf.ByteString;
-import elite.companion.Globals;
+import elite.companion.util.Globals;
 import elite.companion.comms.ai.GrokCommandEndPoint;
 import elite.companion.comms.ai.GrokRequestHints;
 import elite.companion.session.SystemSession;
@@ -199,7 +199,7 @@ public class SpeechRecognizer {
                     boolean isPrivacyModeOn = privacySystemVariable != null && (boolean) privacySystemVariable;
                     if(isPrivacyModeOn) {
                         if (sanitizedTranscript.toLowerCase().startsWith("computer")) {
-                            sendToAi(sanitizedTranscript);
+                            sendToAi(sanitizedTranscript.replace("computer", Globals.AI_NAME));
                         }
                     } else {
                         sendToAi(sanitizedTranscript);

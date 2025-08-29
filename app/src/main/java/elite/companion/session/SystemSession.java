@@ -155,7 +155,7 @@ public class SystemSession {
     }
 
     public AIPersonality getAIPersonality() {
-        return this.aiPersonality == null ? AIPersonality.PROFESSIONAL : this.aiPersonality;
+        return this.aiPersonality == null ? AIPersonality.UNHINGED : this.aiPersonality;
     }
 
     public void setAICadence(AICadence cadence) {

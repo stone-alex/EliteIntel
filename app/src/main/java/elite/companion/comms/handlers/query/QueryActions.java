@@ -12,7 +12,9 @@ public enum QueryActions {
     CHECK_LEGAL_STATUS("check_legal_status", null, null),
     QUERY_PIRATE_KILLS_REMAINING("query_pirate_massacre_kills_remaining", null, null),
     QUERY_PIRATE_MISSION_PROFIT("query_pirate_massacre_mission_profit", null, null),
-    QUERY_PIRATE_STATUS("query_pirate_massacre_status", null, null);
+    QUERY_PIRATE_STATUS("query_pirate_massacre_status", null, null),
+    QUERY_NEXT_STAR_SCOOPABLE("query_next_star_fuel_scoopable", null, null),
+
 
     ; //<-- end of enum
 

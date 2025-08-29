@@ -16,7 +16,7 @@ public class SetCadenceHandler implements CommandHandler {
             SystemSession.getInstance().setAICadence(aiCadence);
             VoiceGenerator.getInstance().speak(responseText);
         } catch (IllegalArgumentException e) {
-            VoiceGenerator.getInstance().speak("No such cadence. try Imperial, Federation or Alliance");
+            SystemSession.getInstance().sendToAiAnalysis("No such cadence. try Imperial, Federation or Alliance");
         }
 
     }

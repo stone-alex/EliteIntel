@@ -17,7 +17,7 @@ public class SetPersonalityHandler implements CommandHandler{
             SystemSession.getInstance().setAIPersonality(aiPersonality);
             VoiceGenerator.getInstance().speak(responseText);
         } catch (IllegalArgumentException e) {
-            VoiceGenerator.getInstance().speak("No such personality. try Professional, Familiar or Unhinged");
+            SystemSession.getInstance().sendToAiAnalysis("No such personality. try Professional, Familiar or Unhinged");
         }
     }
 }

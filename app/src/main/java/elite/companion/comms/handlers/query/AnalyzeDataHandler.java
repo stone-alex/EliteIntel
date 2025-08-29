@@ -1,6 +1,5 @@
 package elite.companion.comms.handlers.query;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import elite.companion.comms.ai.GrokAnalysisEndpoint;
 import elite.companion.comms.voice.VoiceGenerator;
@@ -65,6 +64,9 @@ public class AnalyzeDataHandler implements QueryHandler {
 
             case CHECK_LEGAL_STATUS:
                 return GsonFactory.getGson().toJson(systemSession.get(SystemSession.CURRENT_STATUS));
+
+            case QUERY_NEXT_STAR_SCOOPABLE:
+                return "Scoopable star class K, G, B, F, O, A, M. Route data:"+ GsonFactory.getGson().toJson(getRoute());
 
 
             // Add other queries...

@@ -52,6 +52,8 @@ public class GrokResponseRouter {
         queryHandlers.put(QueryActions.QUERY_PIRATE_STATUS.getAction(), new PirateMissionAnalyzer());
         queryHandlers.put(QueryActions.QUERY_SEARCH_SIGNAL_DATA.getAction(), new AnalyzeDataHandler());
         queryHandlers.put(QueryActions.QUERY_SHIP_LOADOUT.getAction(), new AnalyzeDataHandler());
+        queryHandlers.put(QueryActions.QUERY_NEXT_STAR_SCOOPABLE.getAction(), new AnalyzeDataHandler());
+
         //queryHandlers.put(QueryAction.QUERY_FIND_NEAREST_MATERIAL_TRADER.getAction(), new FindMaterialTraderHandler());
 
         //APP COMMANDS
@@ -167,8 +169,7 @@ public class GrokResponseRouter {
         try {
             String type = getAsStringOrEmpty(jsonResponse, "type").toLowerCase();
             String responseText = getAsStringOrEmpty(jsonResponse, "response_text");
-            String action = getAsStringOrEmpty(jsonResponse, "action");
-            JsonObject params = getAsObjectOrEmpty(jsonResponse, "params");
+            String action = getAsStringOrEmpty(jsonResponse, "action");JsonObject params = getAsObjectOrEmpty(jsonResponse, "params");
 
             switch (type) {
                 case "command":
@@ -178,7 +179,7 @@ public class GrokResponseRouter {
                     handleCommand(action, params, responseText, jsonResponse);
                     break;
                 case "query":
-                    handleQuery(action, params, userInput);//<-- requires user input for further processing
+                    handleQuery(action, params, userInput, responseText);//<-- requires user input for further processing
                     break;
                 case "chat":
                     handleChat(responseText);
@@ -193,7 +194,8 @@ public class GrokResponseRouter {
         }
     }
 
-    private void handleQuery(String action, JsonObject params, String userInput) {
+    private void handleQuery(String action, JsonObject params, String userInput, String originalResponseText) {
+        VoiceGenerator.getInstance().speak(originalResponseText);
         QueryHandler handler = queryHandlers.get(action);
         if (handler == null) {
             log.warn("Unknown query action: {}", action);

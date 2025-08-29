@@ -20,6 +20,6 @@ public class SetPrivacyMode implements CommandHandler {
         JsonElement jsonElement = extractParameter(CommandActionsCustom.SET_PRIVACY_MODE.getPlaceholder(), params);
         boolean isOn = "on".equalsIgnoreCase(jsonElement.getAsString());
         SystemSession.getInstance().put(SystemSession.PRIVACY_MODE, isOn);
-        VoiceGenerator.getInstance().speak(responseText+" "+(isOn?". Please prefix your commands to me with the word, computer.":" I am now listening to your every word, just like a big brother"));
+        VoiceGenerator.getInstance().speak(responseText+" "+(isOn?". Please prefix your commands to me with the word, computer.":" I am now listening to your every word, just like a big brother."));
     }
 }

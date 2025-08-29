@@ -10,12 +10,7 @@ public class ProgressSubscriber {
 
     @Subscribe
     public void onProgressEvent(ProgressEvent event) {
-        setData(event.getCombat(), event.getExobiologist(), event.getExplore(), event.getEmpire(), event.getFederation(), event.getSoldier(), event);
+        // this looks similar to Rank event, the fields are named the same, but the data is the progress to next rank.
     }
 
-    static void setData(int combat, int exobiologist, int explore, int empire, int federation, int soldier, ProgressEvent event) {
-        RankDto rankDto = new RankDto();
-        rankDto.setData(event);
-        SystemSession.getInstance().put(SystemSession.RANK, rankDto);
-    }
 }

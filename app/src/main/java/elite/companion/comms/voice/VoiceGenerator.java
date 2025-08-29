@@ -3,6 +3,7 @@ package elite.companion.comms.voice;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.texttospeech.v1.*;
 import elite.companion.session.SystemSession;
+import elite.companion.util.GoogleApiKeyProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +15,7 @@ import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import static elite.companion.util.Globals.GOOGLE_API_KEY;
+import static elite.companion.util.Globals.GOOGLE_API_KEY_FILENAME;
 
 public class VoiceGenerator {
     private static final Logger log = LoggerFactory.getLogger(VoiceGenerator.class);
@@ -51,17 +52,17 @@ public class VoiceGenerator {
         this.processingThread = new Thread(this::processVoiceQueue);
         this.processingThread.setDaemon(true);
         this.processingThread.start();
-        // Load credentials from classpath
-        //TODO: Refactor this to use a config file or a user interface.
-        try (InputStream serviceAccountStream = getClass().getResourceAsStream(GOOGLE_API_KEY)) {
-            if (serviceAccountStream == null) {
-                throw new IOException(String.format("Service account JSON file '%s' not found in resources", GOOGLE_API_KEY));
-            }
-            GoogleCredentials credentials = GoogleCredentials.fromStream(serviceAccountStream).createScoped("https://www.googleapis.com/auth/cloud-platform");
-            TextToSpeechSettings settings = TextToSpeechSettings.newBuilder().setCredentialsProvider(() -> credentials).build();
+
+        // Load credentials using GoogleApiKeyProvider
+        try (InputStream serviceAccountStream = GoogleApiKeyProvider.getInstance().getGoogleApiKeyStream()) {
+            GoogleCredentials credentials = GoogleCredentials.fromStream(serviceAccountStream)
+                    .createScoped("https://www.googleapis.com/auth/cloud-platform");
+            TextToSpeechSettings settings = TextToSpeechSettings.newBuilder()
+                    .setCredentialsProvider(() -> credentials)
+                    .build();
             textToSpeechClient = TextToSpeechClient.create(settings);
-        } catch (Exception e) {
-            log.error("Failed to initialize Text To Speech client", e);
+        } catch (IOException e) {
+            log.error("Failed to initialize Text To Speech client: {}", e.getMessage());
             throw new RuntimeException("Failed to initialize Text To Speech client", e);
         }
 

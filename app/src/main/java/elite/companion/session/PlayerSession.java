@@ -1,9 +1,8 @@
 package elite.companion.session;
 
 import com.google.common.eventbus.Subscribe;
-import elite.companion.util.EventBusManager;
 import elite.companion.gameapi.journal.events.CarrierStatsEvent;
-import elite.companion.gameapi.EventTracker;
+import elite.companion.util.EventBusManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -71,6 +70,7 @@ public class PlayerSession {
     public static final String CARRIER_REARM_SUPPLY_TAX = "carrier_rearm_supply_tax";
     public static final String CARRIER_REFUEL_SUPPLY_TAX = "carrier_refuel_supply_tax";
     public static final String CARRIER_REPAIR_SUPPLY_TAX = "carrier_repair_supply_tax";
+    public static final String CARRIER_STATS = "carrier_stats";
 
 
     private final Map<String, Object> state = new HashMap<>();
@@ -121,10 +121,8 @@ public class PlayerSession {
             put(PlayerSession.CARRIER_BALANCE, String.valueOf(carrierBalance));
             put(PlayerSession.CARRIER_RESERVE, String.valueOf(reserveBalance));
 
-            if (!EventTracker.isProcessed(event.getEventName())) {
-                int jumps = event.getFuelLevel() / 90;
-                put("carrier_stats", "Credit balance: " + carrierBalance + " reserved balance: " + reserveBalance + " fuel level: " + event.getFuelLevel() + " enough for " + event.getFuelLevel() / 90 + " jumps or " + (jumps * 500) + " light years");
-            }
+            int jumps = event.getFuelLevel() / 90;
+            put(CARRIER_STATS, "Credit balance: " + carrierBalance + " reserved balance: " + reserveBalance + " fuel level: " + event.getFuelLevel() + " enough for " + event.getFuelLevel() / 90 + " jumps or " + (jumps * 500) + " light years");
         }
     }
 

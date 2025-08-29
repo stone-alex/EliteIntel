@@ -15,10 +15,10 @@ public class RankEventSubscriber {
         RankDto rankDto = new RankDto();
         rankDto.setData(event);
         //Player Name is read from CommanderEvent. This event does not contain it.
-        PlayerSession.getInstance().put(rankDto.getHighestMilitaryRank(), PlayerSession.PLAYER_RANK);
+        PlayerSession.getInstance().put(PlayerSession.PLAYER_RANK, rankDto.getHighestMilitaryRank());
 
         String title = ConfigManager.getInstance().readUserConfig().get("title");
-        PlayerSession.getInstance().put(title, PlayerSession.PLAYER_TITLE);
+        PlayerSession.getInstance().put(PlayerSession.PLAYER_TITLE, title);
         SystemSession.getInstance().put(SystemSession.RANK, rankDto);
     }
 }

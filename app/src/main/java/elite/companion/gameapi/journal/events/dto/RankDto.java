@@ -86,8 +86,8 @@ public class RankDto {
 
     public void setData(PlayerBasicStats data) {
         this.setCombatRank(Ranks.getCombatRankMap().get(data.getCombat()));
-        this.setExobiologyRank(Ranks.getExobiologyRankMap().get(data.getCombat()));
-        this.setExplorationRank(Ranks.getExplorationRankMap().get(data.getCombat()));
+        this.setExobiologyRank(Ranks.getExobiologyRankMap().get(data.getExobiologist()));
+        this.setExplorationRank(Ranks.getExplorationRankMap().get(data.getExplore()));
         this.setHighestMilitaryRank(Ranks.getHighestRankAsString(data.getEmpire(), data.getFederation()));
         this.setMilitaryRankEmpire(Ranks.getImperialRankMap().get(data.getEmpire()));
         this.setMilitaryRankFederation(Ranks.getFederationRankMap().get(data.getFederation()));

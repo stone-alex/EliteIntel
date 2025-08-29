@@ -5,6 +5,7 @@ import elite.companion.comms.voice.VoiceGenerator;
 import elite.companion.session.SystemSession;
 import elite.companion.util.AIContextFactory;
 import elite.companion.util.ConfigManager;
+import elite.companion.util.GsonFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +61,7 @@ public class GrokCommandEndPoint {
         requestBody.add("messages", messages);
 
         // Serialize to JSON string
-        Gson gson = new Gson();
+        Gson gson = GsonFactory.getGson();
         String jsonString = gson.toJson(requestBody);
         log.debug("JSON prepared for callXaiApi: [{}]", toDebugString(jsonString));
 
@@ -117,7 +118,7 @@ public class GrokCommandEndPoint {
         requestBody.add("messages", messages);
 
         // Serialize to JSON string
-        Gson gson = new Gson();
+        Gson gson = GsonFactory.getGson();
         String jsonString = gson.toJson(requestBody);
         log.debug("JSON prepared for callXaiApi: [{}]", toDebugString(jsonString));
 
@@ -141,7 +142,7 @@ public class GrokCommandEndPoint {
             // Log the input string
             log.debug("xAI API call: [{}]", toDebugString(jsonString));
             // Store the messages array from the request body
-            JsonObject requestBody = new Gson().fromJson(jsonString, JsonObject.class);
+            JsonObject requestBody = GsonFactory.getGson().fromJson(jsonString, JsonObject.class);
             JsonArray messages = requestBody.getAsJsonArray("messages");
             currentHistory.set(messages); // Store messages array
 

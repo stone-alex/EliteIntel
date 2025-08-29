@@ -10,6 +10,7 @@ public class SubscriberRegistration {
     public static void registerSubscribers() {
         Reflections reflections = new Reflections(
                 "elite.companion.gameapi.journal.subscribers",
+                "elite.companion.gameapi.gamestate.subscribers",
                 new MethodAnnotationsScanner()
         );
         // Find methods annotated with @Subscribe

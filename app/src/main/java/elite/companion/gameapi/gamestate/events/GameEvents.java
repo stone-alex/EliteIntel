@@ -2,6 +2,7 @@ package elite.companion.gameapi.gamestate.events;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
+import elite.companion.util.GsonFactory;
 
 import java.util.List;
 
@@ -41,7 +42,7 @@ public class GameEvents {
         }
 
         public String toJson(){
-            return new Gson().toJson(this);
+            return GsonFactory.getGson().toJson(this);
         }
     }
 
@@ -74,7 +75,7 @@ public class GameEvents {
             }
 
             public String toJson(){
-                return new Gson().toJson(this);
+                return GsonFactory.getGson().toJson(this);
             }
         }
 
@@ -116,7 +117,7 @@ public class GameEvents {
             }
 
             public String toJson(){
-                return new Gson().toJson(this);
+                return GsonFactory.getGson().toJson(this);
             }
         }
 
@@ -141,7 +142,7 @@ public class GameEvents {
                 return name;
             }
             public String toJson(){
-                return new Gson().toJson(this);
+                return GsonFactory.getGson().toJson(this);
             }
         }
 
@@ -220,7 +221,7 @@ public class GameEvents {
         }
 
         public String toJson(){
-            return new Gson().toJson(this);
+            return GsonFactory.getGson().toJson(this);
         }
     }
 
@@ -264,7 +265,7 @@ public class GameEvents {
         }
 
         public String toJson(){
-            return new Gson().toJson(this);
+            return GsonFactory.getGson().toJson(this);
         }
     }
 
@@ -301,7 +302,7 @@ public class GameEvents {
             }
 
             public String toJson(){
-                return new Gson().toJson(this);
+                return GsonFactory.getGson().toJson(this);
             }
         }
 
@@ -326,7 +327,7 @@ public class GameEvents {
         }
 
         public String toJson(){
-            return new Gson().toJson(this);
+            return GsonFactory.getGson().toJson(this);
         }
     }
 
@@ -370,7 +371,7 @@ public class GameEvents {
         }
 
         public String toJson(){
-            return new Gson().toJson(this);
+            return GsonFactory.getGson().toJson(this);
         }
     }
 
@@ -420,7 +421,7 @@ public class GameEvents {
         }
 
         public String toJson(){
-            return new Gson().toJson(this);
+            return GsonFactory.getGson().toJson(this);
         }
     }
 
@@ -453,7 +454,7 @@ public class GameEvents {
             }
 
             public String toJson(){
-                return new Gson().toJson(this);
+                return GsonFactory.getGson().toJson(this);
             }
         }
 
@@ -508,7 +509,7 @@ public class GameEvents {
         }
 
         public String toJson(){
-            return new Gson().toJson(this);
+            return GsonFactory.getGson().toJson(this);
         }
     }
 
@@ -541,7 +542,7 @@ public class GameEvents {
             }
 
             public String toJson(){
-                return new Gson().toJson(this);
+                return GsonFactory.getGson().toJson(this);
             }
         }
 
@@ -573,7 +574,7 @@ public class GameEvents {
             }
 
             public String toJson(){
-                return new Gson().toJson(this);
+                return GsonFactory.getGson().toJson(this);
             }
         }
 
@@ -616,7 +617,7 @@ public class GameEvents {
         }
 
         public String toJson(){
-            return new Gson().toJson(this);
+            return GsonFactory.getGson().toJson(this);
         }
     }
 
@@ -714,7 +715,7 @@ public class GameEvents {
                 return rare;
             }
             public String toJson(){
-                return new Gson().toJson(this);
+                return GsonFactory.getGson().toJson(this);
             }
         }
 
@@ -763,7 +764,7 @@ public class GameEvents {
         }
 
         public String toJson(){
-            return new Gson().toJson(this);
+            return GsonFactory.getGson().toJson(this);
         }
     }
 }

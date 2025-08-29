@@ -2,6 +2,7 @@ package elite.companion.gameapi.journal.events;
 
 
 import com.google.gson.Gson;
+import elite.companion.util.GsonFactory;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -54,6 +55,6 @@ public abstract class BaseEvent {
     }
 
     public String toJson() {
-        return new Gson().toJson(this);
+        return GsonFactory.getGson().toJson(this);
     }
 }

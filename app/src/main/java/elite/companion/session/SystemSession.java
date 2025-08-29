@@ -1,6 +1,5 @@
 package elite.companion.session;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import elite.companion.comms.voice.Voices;
 import elite.companion.gameapi.gamestate.events.NavRouteDto;
@@ -8,6 +7,9 @@ import elite.companion.gameapi.journal.events.BaseEvent;
 import elite.companion.gameapi.journal.events.BountyEvent;
 import elite.companion.gameapi.journal.events.dto.MissionDto;
 import elite.companion.gameapi.journal.events.dto.RankDto;
+import elite.companion.util.AICadence;
+import elite.companion.util.AIPersonality;
+import elite.companion.util.GsonFactory;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -41,6 +43,8 @@ public class SystemSession {
     public static final String CARRIER_LOCATION = "carrier_location";
     public static final String CURRENT_LOCATION = "current_location";
     public static final String TARGET_FACTION_NAME = "target_faction_name";
+    public static final String CADENCE = "cadence";
+    public static final String PERSONALITY = "personality";
 
     private static final SystemSession INSTANCE = new SystemSession();
     public static final String MATERIALS = "materials";
@@ -52,6 +56,8 @@ public class SystemSession {
     private final Map<String, NavRouteDto> routeMap = new LinkedHashMap<>(); // Star system name to NavRouteDto
     private long bountyCollectedThisSession = 0;
     private Voices aiVoice;
+    private AIPersonality aiPersonality;
+    private AICadence aiCadence;
     private BaseEvent bodySignal;
 
     private SystemSession() {
@@ -144,6 +150,22 @@ public class SystemSession {
         return this.aiVoice == null ? Voices.JAMES : this.aiVoice;
     }
 
+    public void setAIPersonality(AIPersonality personality) {
+        this.aiPersonality = personality;
+    }
+
+    public AIPersonality getAIPersonality() {
+        return this.aiPersonality == null ? AIPersonality.PROFESSIONAL : this.aiPersonality;
+    }
+
+    public void setAICadence(AICadence cadence) {
+        this.aiCadence = cadence;
+    }
+
+    public AICadence getAICadence() {
+        return this.aiCadence == null ? AICadence.IMPERIAL : this.aiCadence;
+    }
+
     public void addBodySignal(BaseEvent event) {
         this.bodySignal = event;
     }
@@ -193,7 +215,7 @@ public class SystemSession {
         List<MissionDto> missions = (List<MissionDto>) state.get(PIRATE_MISSIONS);
         if (missions != null) {
             missions.removeIf(mission -> {
-                String expiry = new Gson().fromJson(mission.toJson(), JsonObject.class).get("Expiry").getAsString();
+                String expiry = GsonFactory.getGson().fromJson(mission.toJson(), JsonObject.class).get("Expiry").getAsString();
                 return ZonedDateTime.parse(expiry).isBefore(ZonedDateTime.now(ZoneId.of("Z")));
             });
         }

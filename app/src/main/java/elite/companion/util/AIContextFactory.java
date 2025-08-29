@@ -8,6 +8,7 @@ import java.util.Objects;
 
 public class AIContextFactory {
 
+
     private static AIContextFactory instance;
 
     private AIContextFactory() {
@@ -35,7 +36,8 @@ public class AIContextFactory {
     public String generateSystemPrompt() {
         StringBuilder sb = new StringBuilder();
         sb.append("Classify as: 'input' (data to analyze) or 'command' (trigger app action or keyboard event)");
-        sb.append("Use British cadence, NATO phonetic alphabet for star system codes or ship plates (e.g., RH-F = Romeo Hotel dash Foxtrot), and spell out numerals in full words (e.g., 285 = two hundred and eighty-five, 27 = twenty-seven). ");
+        sb.append("Use NATO phonetic alphabet for star system codes or ship plates (e.g., RH-F = Romeo Hotel dash Foxtrot), and spell out numerals in full words (e.g., 285 = two hundred and eighty-five, 27 = twenty-seven). ");
+        appendBehavior(sb);
         sb.append("Round billions to nearest million. ");
         sb.append("Provide an extremely brief summary and optional system_command in JSON: ");
         sb.append("{\"type\": \"system_command|chat\", \"response_text\": \"TTS output\", \"action\": \"set_mining_target|set_current_system|...\", \"params\": {\"key\": \"value\"}}.");
@@ -69,8 +71,6 @@ public class AIContextFactory {
         getSessionValues(sb);
 
         sb.append("Classify as: 'input' (data to analyze) or 'command' (trigger app action or keyboard event)");
-        sb.append("Use British cadence, NATO phonetic alphabet for star system codes or ship plates (e.g., RH-F = Romeo Hotel dash Foxtrot), and spell out numerals (e.g., 285 = two eight five, 27 = twenty seven). ");
-        sb.append("Round billions to nearest million. ");
         appendBehavior(sb);
         sb.append("Provide an extremely brief summary and optional system_command in JSON: ");
         sb.append("{\"type\": \"system_command|chat\", \"response_text\": \"TTS output\", \"action\": \"set_mining_target|set_current_system|...\", \"params\": {\"key\": \"value\"}}.");
@@ -78,9 +78,14 @@ public class AIContextFactory {
     }
 
 
-
-    private static void appendBehavior(StringBuilder sb) {
-        sb.append("Behavior: Respond briefly and concisely as a military professional. Use British cadence. For star system codes or ship plates (e.g., RH-F), use NATO phonetic alphabet (e.g., Romeo Hotel dash Foxtrot). Spell out numerals (e.g., 285 = two eight five, 27 = twenty seven). Round billions to nearest million..\n\n");
+    public static void appendBehavior(StringBuilder sb) {
+        SystemSession systemSession = SystemSession.getInstance();
+        AICadence aiCadence = systemSession.getAICadence();
+        AIPersonality aiPersonality = systemSession.getAIPersonality();
+        sb.append("Behavior:");
+        sb.append(aiPersonality.getBehaviorClause());
+        sb.append(aiCadence.getCadenceClause());
+        sb.append("For star system codes or ship plates (e.g., RH-F), use NATO phonetic alphabet (e.g., Romeo Hotel dash Foxtrot). Spell out numerals (e.g., 285 = two eight five, 27 = twenty seven). Round billions to nearest million..\n\n");
         sb.append("Start responses directly with the requested information, avoiding conversational fillers like 'noted,' 'well,' 'right,' 'understood,' or similar phrases. ");
     }
 
@@ -95,7 +100,7 @@ public class AIContextFactory {
                 .append(" or ").append(playerHonorific)
                 .append(". Prefer ")
                 .append(playerName).append(" or ").append(playerMilitaryRank).append(". ");
-        if(missionStatement != null && !missionStatement.isEmpty()){
+        if (missionStatement != null && !missionStatement.isEmpty()) {
             sb.append(missionStatement);
         }
         sb.append("\n\n");
@@ -109,7 +114,7 @@ public class AIContextFactory {
         sb.append(generateSupportedCommandsCause());
         sb.append(generateSupportedQueriesClause());
         appendBehavior(sb);
-        sb.append("Interpret this input: "+playerVoiceInput+"\n\n ");
+        sb.append("Interpret this input: " + playerVoiceInput + "\n\n ");
         sb.append("Output JSON: {\"type\": \"command|query|chat\", \"response_text\": \"TTS output\", \"action\": \"action_name|query_name|null\", \"params\": {\"key\": \"value\"}} \n\n");
         sb.append("    Examples:\n" +
                 "    - Input: 'plot route to Sol' -> {\"type\": \"command\", \"response_text\": \"Plotting route to Sol. Krondor\", \"action\": \"plot_route\", \"params\": {\"destination\": \"Sol\"}}\n" +
@@ -133,7 +138,7 @@ public class AIContextFactory {
                 "            - query_find_nearest_material_trader: Requests nearest material trader location.\n");
         appendBehavior(sb);
         sb.append("Supported commands: ");
-        sb.append("     -"+GrokRequestHints.supportedQueries);
+        sb.append("     -" + GrokRequestHints.supportedQueries);
 
         return sb.toString();
     }
@@ -141,7 +146,7 @@ public class AIContextFactory {
     private String generateSupportedCommandsCause() {
         StringBuilder sb = new StringBuilder();
         sb.append("Supported commands: ");
-        sb.append("     -"+GrokRequestHints.supportedCommands);
+        sb.append("     -" + GrokRequestHints.supportedCommands);
         return sb.toString();
     }
 

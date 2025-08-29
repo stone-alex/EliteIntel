@@ -6,6 +6,7 @@ import elite.companion.comms.ai.GrokAnalysisEndpoint;
 import elite.companion.comms.voice.VoiceGenerator;
 import elite.companion.gameapi.gamestate.events.NavRouteDto;
 import elite.companion.session.SystemSession;
+import elite.companion.util.GsonFactory;
 
 import java.util.Collection;
 
@@ -26,7 +27,7 @@ public class AnalyzeDataHandler implements QueryHandler {
 
         // Send to Grok for analysis
         String analysisJson = grokAnalysisEndpoint.analyzeData(originalUserInput, dataJson);
-        JsonObject analysis = new Gson().fromJson(analysisJson, JsonObject.class);
+        JsonObject analysis = GsonFactory.getGson().fromJson(analysisJson, JsonObject.class);
         return analysis.get("response_text").getAsString(); // Return for TTS
     }
 
@@ -48,7 +49,7 @@ public class AnalyzeDataHandler implements QueryHandler {
 
         switch (action) {
             case QUERY_SEARCH_SIGNAL_DATA:
-                return new Gson().toJson(String.valueOf(systemSession.getSignals()));
+                return GsonFactory.getGson().toJson(String.valueOf(systemSession.getSignals()));
 
             case QUERY_SHIP_LOADOUT:
                 return String.valueOf(systemSession.get(SystemSession.SHIP_LOADOUT_JSON));
@@ -57,13 +58,13 @@ public class AnalyzeDataHandler implements QueryHandler {
                 return getRoute(); // array of json objects wrapped in []
 
             case QUERY_ANALYZE_ON_BOARD_CARGO:
-                return new Gson().toJson(SystemSession.getInstance().get(SystemSession.SHIP_CARGO));
+                return GsonFactory.getGson().toJson(SystemSession.getInstance().get(SystemSession.SHIP_CARGO));
 
             case LOCAL_SYSTEM_INFO:
-                return new Gson().toJson(systemSession.get(CURRENT_SYSTEM));
+                return GsonFactory.getGson().toJson(systemSession.get(CURRENT_SYSTEM));
 
             case CHECK_LEGAL_STATUS:
-                return new Gson().toJson(systemSession.get(SystemSession.CURRENT_STATUS));
+                return GsonFactory.getGson().toJson(systemSession.get(SystemSession.CURRENT_STATUS));
 
 
             // Add other queries...

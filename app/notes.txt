@@ -190,36 +190,44 @@ public class SystemSession {
     }
 }
 
-
-
-
-{
-  "context": "You are Elyria, onboard AI for fleet carrier LONE WOLF (Golf, Hotel, Yankee, Lima, Eight, X-ray). Address me as Viscount, Prince, or Krondor, pledged to Empress Arissa Lavigny-Duval. Use British cadence, spell out numerals, round billions to nearest million.",
-  "instructions": "Analyze ship sensor input: [System signals discovered: [Stations discovered: one, Extraction sites discovered: two, Installations discovered: three, Outposts discovered: two, Carriers discovered: three, Others discovered: one]]. Provide a brief, fun Imperial-toned summary and optional system_command. Respond in JSON: {\"type\": \"system_command|chat\", \"response_text\": \"TTS output\", \"action\": \"set_mining_target|set_current_system|...\", \"params\": {\"key\": \"value\"}}."
-}
-
-
-public JsonObject buildRadioRequest(String transmission, boolean isStation) {
-    String prompt = STATIC_CONTEXT + " Radio transmission: [" + transmission + "]. " +
-        (isStation ? "Message is for us. Respond directly." : "Overheard chatter. Comment briefly.") +
-        " Respond in JSON...";
-    // ...
-}
+-----------------------
 
 
 
 
+Exception in thread "main" com.google.gson.JsonIOException: Failed making field 'java.time.Instant#seconds' accessible; either increase its visibility or write a custom TypeAdapter for its declaring type.
+See https://github.com/google/gson/blob/main/Troubleshooting.md#reflection-inaccessible
+        at com.google.gson.internal.reflect.ReflectionHelper.makeAccessible(ReflectionHelper.java:76)
+        at com.google.gson.internal.bind.ReflectiveTypeAdapterFactory.getBoundFields(ReflectiveTypeAdapterFactory.java:391)
+        at com.google.gson.internal.bind.ReflectiveTypeAdapterFactory.create(ReflectiveTypeAdapterFactory.java:165)
+        at com.google.gson.Gson.getAdapter(Gson.java:628)
+        at com.google.gson.internal.bind.ReflectiveTypeAdapterFactory.createBoundField(ReflectiveTypeAdapterFactory.java:205)
+        at com.google.gson.internal.bind.ReflectiveTypeAdapterFactory.getBoundFields(ReflectiveTypeAdapterFactory.java:398)
+        at com.google.gson.internal.bind.ReflectiveTypeAdapterFactory.create(ReflectiveTypeAdapterFactory.java:165)
+        at com.google.gson.Gson.getAdapter(Gson.java:628)
+        at com.google.gson.Gson.fromJson(Gson.java:1358)
+        at com.google.gson.Gson.fromJson(Gson.java:1472)
+        at com.google.gson.Gson.fromJson(Gson.java:1416)
+        at elite.companion.gameapi.JournalParser.startReading(JournalParser.java:84)
+        at elite.companion.AppMain.main(AppMain.java:29)
+Caused by: java.lang.reflect.InaccessibleObjectException: Unable to make field private final long java.time.Instant.seconds accessible: module java.base does not "opens java.time" to unnamed module @6321e813
+        at java.base/java.lang.reflect.AccessibleObject.checkCanSetAccessible(AccessibleObject.java:354)
+        at java.base/java.lang.reflect.AccessibleObject.checkCanSetAccessible(AccessibleObject.java:297)
+        at java.base/java.lang.reflect.Field.checkCanSetAccessible(Field.java:178)
+        at java.base/java.lang.reflect.Field.setAccessible(Field.java:172)
+        at com.google.gson.internal.reflect.ReflectionHelper.makeAccessible(ReflectionHelper.java:68)
+        ... 12 more
+02:31:56,674 |-INFO in ReconfigureOnChangeTask(born:1756459856669) - Empty watch file list. Disabling
+02:31:57.842 INFO  e.c.comms.voice.SpeechRecognizer - Starting new streaming session...
 
+02:31:57.843 INFO  e.c.comms.voice.SpeechRecognizer - Using streaming format: SampleRate=48000, Channels=1
 
+02:31:57.979 INFO  e.c.comms.voice.SpeechRecognizer - STT streaming completed
 
-
-
-
-
-
-Analyze Elite Dangerous pirate massacre data. Group missions by TargetFaction for stacking. Compute remaining kills as max(KillCount) per faction minus count of matching VictimFaction bounties. Potential mission profit is sum of Mission Rewards. Bounties collected is sum of TotalRewards for matching bounties. Ignore expired missions. Data: {"missions":[{"faction":"Baminyi Bridge Group","missionType":"Mission_Massacre","missionDescription":"Kill Xue Davokje Blue Cartel faction Pirates","missionTarget":"Pirates","missionTargetFaction":"Xue Davokje Blue Cartel","killCount":25,"reward":30222222,"destinationSystem":"Xue Davokje","isReputationIncrease":true,"influenceIncrease":true,"missionId":1027206784,"timestamp":"2025-08-30T07:11:54Z","eventName":"elite.companion.gameapi.journal.events.dto.MissionDto","priority":1,"endOfLife":{"seconds":1756537944,"nanos":0},"isProcessed":false},{"faction":"Baminyi Defence Force","missionType":"Mission_Massacre","missionDescription":"Kill Xue Davokje Blue Cartel faction Pirates","missionTarget":"Pirates","missionTargetFaction":"Xue Davokje Blue Cartel","killCount":15,"reward":20716110,"destinationSystem":"Xue Davokje","isReputationIncrease":true,"influenceIncrease":true,"missionId":1027207084,"timestamp":"2025-08-30T07:15:33Z","eventName":"elite.companion.gameapi.journal.events.dto.MissionDto","priority":1,"endOfLife":{"seconds":1756538163,"nanos":0},"isProcessed":false}],"bounties":[]}
-
-User query: what is a potential profit from pirate missions?
-
-Respond with only the total potential mission profit in credits, formatted as: 'Potential profit: [Credits] credits.'
-
+PS D:\dev\elite_companion\build\libs>
+PS D:\dev\elite_companion\build\libs>
+PS D:\dev\elite_companion\build\libs>
+PS D:\dev\elite_companion\build\libs> java --version
+java 17.0.10 2024-01-16 LTS
+Java(TM) SE Runtime Environment (build 17.0.10+11-LTS-240)
+Java HotSpot(TM) 64-Bit Server VM (build 17.0.10+11-LTS-240, mixed mode, sharing)

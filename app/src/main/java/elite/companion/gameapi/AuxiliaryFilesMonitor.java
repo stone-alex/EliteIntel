@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import elite.companion.util.EventBusManager;
 import elite.companion.gameapi.gamestate.events.GameEvents;
+import elite.companion.util.GsonFactory;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
@@ -26,7 +27,7 @@ import java.util.*;
  */
 public class AuxiliaryFilesMonitor implements Runnable {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(AuxiliaryFilesMonitor.class);
-    private static final Gson GSON = new Gson();
+    private static final Gson GSON = GsonFactory.getGson();
 
     // List of files to monitor
     private static final List<String> MONITORED_FILES = Arrays.asList(

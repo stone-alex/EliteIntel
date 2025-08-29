@@ -4,6 +4,8 @@ import com.google.gson.*;
 import elite.companion.util.EventBusManager;
 import elite.companion.comms.voice.VoiceGenerator;
 import elite.companion.gameapi.journal.events.*;
+import elite.companion.util.GsonFactory;
+import elite.companion.util.InstantTypeAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +23,7 @@ public class JournalParser {
     public static final int THRESHOLD = 10000; //10 Seconds
 
     public static final int THRESHOLD_LONG = 60000; //60 Seconds
-    private final Gson gson = new GsonBuilder().setLenient().create();
+    private final Gson gson = GsonFactory.getGson();
 
     private final Path journalDir = Paths.get(System.getProperty("user.home"), "Saved Games", "Frontier Developments", "Elite Dangerous");
 

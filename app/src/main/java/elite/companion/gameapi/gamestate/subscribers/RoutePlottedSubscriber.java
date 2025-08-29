@@ -6,6 +6,7 @@ import elite.companion.util.EventBusManager;
 import elite.companion.gameapi.gamestate.events.GameEvents;
 import elite.companion.gameapi.gamestate.events.NavRouteDto;
 import elite.companion.session.SystemSession;
+import elite.companion.util.GsonFactory;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -48,7 +49,7 @@ public class RoutePlottedSubscriber {
                 }
 
                 systemSession.setNavRoute(routeMap);
-                systemSession.sendToAiAnalysis("Hyperspace route to " + finalDestination + " is set. Analyze stoppable stars for refuel " + new Gson().toJson(routeMap));
+                systemSession.sendToAiAnalysis("Hyperspace route to " + finalDestination + " is set. Analyze stoppable stars for refuel " + GsonFactory.getGson().toJson(routeMap));
             } else {
                 systemSession.clearRoute();
             }

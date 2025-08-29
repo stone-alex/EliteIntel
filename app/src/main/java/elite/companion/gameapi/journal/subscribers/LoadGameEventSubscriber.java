@@ -7,6 +7,7 @@ import elite.companion.gameapi.journal.events.dto.RankDto;
 import elite.companion.session.PlayerSession;
 import elite.companion.session.SystemSession;
 import elite.companion.util.ConfigManager;
+import elite.companion.util.GsonFactory;
 import elite.companion.util.StringSanitizer;
 
 import static elite.companion.session.PlayerSession.*;
@@ -61,7 +62,7 @@ public class LoadGameEventSubscriber {
         }
 
         public String toJson() {
-            return new Gson().toJson(this);
+            return  GsonFactory.getGson().toJson(this);
         }
     }
 }

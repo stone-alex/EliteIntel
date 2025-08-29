@@ -2,6 +2,7 @@ package elite.companion.comms.ai;
 
 import com.google.gson.*;
 import elite.companion.util.ConfigManager;
+import elite.companion.util.GsonFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,7 +16,7 @@ public class GrokAnalysisEndpoint {
     private static final Logger logger = LoggerFactory.getLogger(GrokAnalysisEndpoint.class);
     public static final String ERROR_REPONSE = "{\"response_text\": \"Analysis error, Check logs.\"}";
     private final String apiUrl = "https://api.x.ai/v1/chat/completions";
-    private final Gson gson = new Gson();
+    private final Gson gson = GsonFactory.getGson();
     private static final GrokAnalysisEndpoint instance = new GrokAnalysisEndpoint();
 
     private GrokAnalysisEndpoint() {

@@ -1,6 +1,7 @@
 package elite.companion.gameapi.gamestate.events;
 
 import com.google.gson.Gson;
+import elite.companion.util.GsonFactory;
 
 public class NavRouteDto extends BaseJsonDto {
 
@@ -52,6 +53,6 @@ public class NavRouteDto extends BaseJsonDto {
     }
 
     public String toJson() {
-        return new Gson().toJson(this);
+        return GsonFactory.getGson().toJson(this);
     }
 }

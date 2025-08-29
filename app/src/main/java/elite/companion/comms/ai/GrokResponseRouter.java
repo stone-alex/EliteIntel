@@ -61,6 +61,8 @@ public class GrokResponseRouter {
         commandHandlers.put(CommandActionsCustom.SET_RADIO_TRANSMISSION_MODDE.getAction(), new SetRadioTransmissionOnOff());
         commandHandlers.put(CommandActionsCustom.SET_AI_VOICE.getAction(), new SetAiVoice());
         commandHandlers.put(CommandActionsCustom.ANNOUNCE_STELLAR_BODY_SCANS.getAction(), new SetAnnounceBodyScansHandler());
+        commandHandlers.put(CommandActionsCustom.SET_PERSONALITY.getAction(), new SetPersonalityHandler());
+        commandHandlers.put(CommandActionsCustom.SET_CADENCE.getAction(), new SetCadenceHandler());
 
 
 

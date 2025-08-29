@@ -5,6 +5,9 @@ import com.google.gson.JsonObject;
 import elite.companion.comms.ai.GrokAnalysisEndpoint;
 import elite.companion.comms.voice.VoiceGenerator;
 import elite.companion.session.SystemSession;
+import elite.companion.util.AIContextFactory;
+import elite.companion.util.AIPersonality;
+import elite.companion.util.GsonFactory;
 
 public class PirateMissionAnalyzer implements QueryHandler {
     @Override
@@ -18,7 +21,7 @@ public class PirateMissionAnalyzer implements QueryHandler {
         GrokAnalysisEndpoint grokAnalysisEndpoint = GrokAnalysisEndpoint.getInstance();
         String prompt = buildPrompt(query, originalUserInput, dataJson);
         String analysisJson = grokAnalysisEndpoint.analyzeData(originalUserInput, prompt);
-        JsonObject analysis = new Gson().fromJson(analysisJson, JsonObject.class);
+        JsonObject analysis = GsonFactory.getGson().fromJson(analysisJson, JsonObject.class);
         return analysis.get("response_text").getAsString();
     }
 
@@ -41,22 +44,29 @@ public class PirateMissionAnalyzer implements QueryHandler {
     }
 
     private String buildPrompt(QueryActions query, String userInput, String dataJson) {
-        String basePrompt = "Analyze Elite Dangerous pirate massacre data. Group missions by TargetFaction for stacking. " +
-                "Compute remaining kills as max(KillCount) per faction minus count of matching VictimFaction bounties. " +
-                "Potential mission profit is sum of Mission Rewards. Bounties collected is sum of TotalRewards for matching bounties. " +
-                "Start responses directly with the requested information, avoiding conversational fillers like 'noted,' 'well,' 'right,' 'understood,' or similar phrases. "+
-                "Spell out numerals in full words (e.g., 285 = two hundred and eighty-five, 27 = twenty-seven)"+
-                "Ignore expired missions. Data: " + dataJson + "\nUser query: " + userInput + "\n";
+
+        StringBuilder basePrompt = new StringBuilder();
+        basePrompt.append("Analyze Elite Dangerous pirate massacre data. Group missions by TargetFaction for stacking. ");
+        basePrompt.append("Compute remaining kills as max(KillCount) per faction minus count of matching VictimFaction bounties. ");
+        basePrompt.append("Potential mission profit is sum of Mission Rewards. Bounties collected is sum of TotalRewards for matching bounties. ");
+        basePrompt.append("Start responses directly with the requested information, avoiding conversational fillers like 'noted,' 'well,' 'right,' 'understood,' or similar phrases. ");
+        basePrompt.append("Spell out numerals in full words (e.g., 285 = two hundred and eighty-five, 27 = twenty-seven)");
+        AIContextFactory.appendBehavior(basePrompt);
+        basePrompt.append("Ignore expired missions. Data: ");
+        basePrompt.append(dataJson);
+        basePrompt.append("\nUser query: ");
+        basePrompt.append(userInput);
+        basePrompt.append("\n");
 
         switch (query) {
             case QUERY_PIRATE_KILLS_REMAINING:
-                return basePrompt + "Respond with only the number of kills remaining per TargetFaction, formatted as: '[Faction]: [Kills] kills left.'";
+                return basePrompt.append("Respond with only the number of kills remaining per TargetFaction, formatted as: '[Faction]: [Kills] kills left.'").toString();
             case QUERY_PIRATE_MISSION_PROFIT:
-                return basePrompt + "Respond with only the total potential mission profit in credits, formatted as: 'Potential profit: [Credits] credits.'";
+                return basePrompt.append("Respond with only the total potential mission profit in credits, formatted as: 'Potential profit: [Credits] credits.'").toString();
             case QUERY_PIRATE_STATUS:
-                return basePrompt + "Provide a full summary including kills remaining, potential profit, and bounties collected per TargetFaction, formatted clearly.";
+                return basePrompt.append("Provide a full summary including kills remaining, potential profit, and bounties collected per TargetFaction, formatted clearly.").toString();
             default:
-                return basePrompt;
+                return basePrompt.toString();
         }
     }
 }

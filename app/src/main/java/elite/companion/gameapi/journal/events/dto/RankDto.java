@@ -2,6 +2,7 @@ package elite.companion.gameapi.journal.events.dto;
 
 import com.google.gson.Gson;
 import elite.companion.gameapi.journal.events.PlayerBasicStats;
+import elite.companion.util.GsonFactory;
 import elite.companion.util.Ranks;
 
 public class RankDto {
@@ -81,7 +82,7 @@ public class RankDto {
 
 
     public String toJson() {
-        return new Gson().toJson(this);
+        return GsonFactory.getGson().toJson(this);
     }
 
     public void setData(PlayerBasicStats data) {

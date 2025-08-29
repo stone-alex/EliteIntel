@@ -26,6 +26,6 @@ public class StartJumpSubscriber {
         sb.append(scoopable);
         sb.append(". ");
 
-        SystemSession.getInstance().setConsumableData(sb.toString());
+        SystemSession.getInstance().sendToAiAnalysis(sb.toString());
     }
 }

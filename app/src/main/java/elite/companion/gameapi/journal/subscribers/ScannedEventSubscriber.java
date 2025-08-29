@@ -13,7 +13,7 @@ public class ScannedEventSubscriber {
         systemSession.addSignal(event);
 
         if ("cargo".equals(event.getScanType().toLowerCase())) {
-            systemSession.setConsumableData("Pirate scan detected.");
+            systemSession.sendToAiAnalysis("Pirate scan detected.");
         }
     }
 }

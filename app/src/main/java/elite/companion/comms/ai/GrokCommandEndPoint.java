@@ -79,7 +79,7 @@ public class GrokCommandEndPoint {
     }
 
     public void processSystemCommand() {
-        String sensorData = SystemSession.getInstance().getConsumableData();
+        String sensorData = SystemSession.getInstance().consumeAnalysisData();
 
 
         // Log raw inputs for debugging
@@ -93,8 +93,6 @@ public class GrokCommandEndPoint {
         // Log sanitized input
         //log.info("Sanitized input: [{}]", input);
 
-        // Clear session data
-        if (sensorData != null) SystemSession.getInstance().clearConsumableData();
 
         if (input == null || input.isEmpty()) {
             return;

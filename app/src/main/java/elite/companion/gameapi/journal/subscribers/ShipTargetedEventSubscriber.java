@@ -3,6 +3,7 @@ package elite.companion.gameapi.journal.subscribers;
 import com.google.common.eventbus.Subscribe;
 import elite.companion.comms.voice.VoiceGenerator;
 import elite.companion.gameapi.journal.events.ShipTargetedEvent;
+import elite.companion.session.SystemSession;
 import elite.companion.util.RomanNumeralConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +28,7 @@ public class ShipTargetedEventSubscriber {
         String pilotRank = event.getPilotRank();
         String legalStatus = event.getLegalStatus() == null ? null : event.getLegalStatus().toLowerCase();
         int bounty = event.getBounty();
-
+        String missionTarget = determineMissionTarget(event);
 
         float shieldHealth = event.getShieldHealth();
         float hullHealth = event.getHullHealth();
@@ -35,6 +36,7 @@ public class ShipTargetedEventSubscriber {
         if (anounceScan(event, legalStatus)) {
 
             info.append("Contact Identified: ");
+            info.append(missionTarget);
 
             info.append(ship == null ? " Unknown Ship " : ship);
             info.append(", ");
@@ -71,6 +73,18 @@ public class ShipTargetedEventSubscriber {
 
             VoiceGenerator.getInstance().speak(info.toString());
         }
+    }
+
+    private String determineMissionTarget(ShipTargetedEvent event) {
+        String faction = event.getFaction();
+        String legalStatus = event.getLegalStatus();
+        if (faction == null || faction.isBlank()) return "";
+        if (legalStatus == null || legalStatus.isBlank()) return "";
+        SystemSession systemSession = SystemSession.getInstance();
+        String targetFaction = String.valueOf(systemSession.get(SystemSession.TARGET_FACTION_NAME));
+        if (targetFaction.equalsIgnoreCase(faction) && legalStatus.equalsIgnoreCase("wanted")) {
+            return "Mission Target! ";
+        } else return "";
     }
 
     private static boolean anounceScan(ShipTargetedEvent event, String legalStatus) {

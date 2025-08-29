@@ -21,7 +21,7 @@ public class MiningEventSubscriber {
         SystemSession systemSession = SystemSession.getInstance();
         if (playerSession.getObject(CommandActionsCustom.SET_MINING_TARGET.getParamKey()) == null) {
             playerSession.updateSession(CommandActionsCustom.SET_MINING_TARGET.getParamKey(), dto.getTypeLocalised().replace("\"", ""));
-            systemSession.setConsumableData("Detected "+dto.getTypeLocalised()+" refined. Set mining target to: " + dto.getTypeLocalised());
+            systemSession.sendToAiAnalysis("Detected "+dto.getTypeLocalised()+" refined. Set mining target to: " + dto.getTypeLocalised());
         }
         log.info("Mining event processed: {}", dto.toString());
     }

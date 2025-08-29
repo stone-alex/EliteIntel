@@ -48,7 +48,7 @@ public class RoutePlottedSubscriber {
                 }
 
                 systemSession.setNavRoute(routeMap);
-                systemSession.setConsumableData("Hyperspace route to " + finalDestination + " is set. Analyze stoppable stars for refuel " + new Gson().toJson(routeMap));
+                systemSession.sendToAiAnalysis("Hyperspace route to " + finalDestination + " is set. Analyze stoppable stars for refuel " + new Gson().toJson(routeMap));
             } else {
                 systemSession.clearRoute();
             }

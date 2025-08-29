@@ -12,7 +12,7 @@ public class CarrierJumpCompleteSubscriber {
         String starSystem = event.getStarSystem();
         SystemSession.getInstance().put(SystemSession.CURRENT_SYSTEM, "Star System" + starSystem + (event.getBody() == null ? "" : "body " + event.getBody()));
 
-        SystemSession.getInstance().setConsumableData("Carrier Jump Complete: " + event.toString());
+        SystemSession.getInstance().sendToAiAnalysis("Carrier Jump Complete: " + event.toString());
 
     }
 }

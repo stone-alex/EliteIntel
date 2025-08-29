@@ -27,6 +27,6 @@ public class LiftoffEventSubscriber {
         sb.append(", in Star system: ");
         sb.append(localStarSystem);
 
-        SystemSession.getInstance().setConsumableData(sb.toString());
+        SystemSession.getInstance().sendToAiAnalysis(sb.toString());
     }
 }

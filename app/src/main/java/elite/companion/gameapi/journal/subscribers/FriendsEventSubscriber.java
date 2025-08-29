@@ -11,6 +11,6 @@ public class FriendsEventSubscriber {
     public void onFriendsEvent(FriendsEvent event) {
         String friendNamer = event.getName();
         String friendStatus = event.getStatus();
-        SystemSession.getInstance().setConsumableData("Friend: " + friendNamer + " is " + friendStatus);
+        SystemSession.getInstance().sendToAiAnalysis("Friend: " + friendNamer + " is " + friendStatus);
     }
 }

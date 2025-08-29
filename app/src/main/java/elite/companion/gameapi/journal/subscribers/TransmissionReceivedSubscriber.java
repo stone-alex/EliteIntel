@@ -25,7 +25,7 @@ public class TransmissionReceivedSubscriber {
 
             if (isStation) {
                 if (!event.getMessageLocalised().toLowerCase().contains("fire zone")) {
-                    systemSession.setConsumableData(
+                    systemSession.sendToAiAnalysis(
                             "radio_transmission:[from:" + event.getFrom() + ", message:" + event.getMessageLocalised() + "]"
                     );
                 }

@@ -72,17 +72,18 @@ public class SystemSession {
         state.remove(key);
     }
 
-    public void setConsumableData(String sensorReading) {
+    public void sendToAiAnalysis(String sensorReading) {
         state.put(SENSOR_READING, sensorReading);
     }
 
-
-    public void clearConsumableData() {
+    public void clearAnalysisData() {
         state.remove(SENSOR_READING);
     }
 
-    public String getConsumableData() {
-        return state.get(SENSOR_READING) == null ? null : (String) state.get(SENSOR_READING);
+    public String consumeAnalysisData() {
+        String data = state.get(SENSOR_READING) == null ? null : (String) state.get(SENSOR_READING);
+        state.remove(SENSOR_READING);
+        return data;
     }
 
     public void put(String key, Object data) {

@@ -14,7 +14,7 @@ public class MissionAcceptedHandler {
         MissionDto mission = new MissionDto(event);
         SystemSession systemSession = SystemSession.getInstance();
         systemSession.addMission(mission);
-        systemSession.setConsumableData("Mission Accepted: " + mission.toJson());
+        systemSession.sendToAiAnalysis("Mission Accepted: " + mission.toJson());
     }
 }
 

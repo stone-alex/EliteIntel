@@ -12,6 +12,6 @@ public class SwitchSuitLoadoutSubscriber {
     @Subscribe
     public void onSwitchSuitLoadoutEvent(SwitchSuitLoadoutEvent event) {
         SystemSession.getInstance().put(SUITE_LOADOUT_JSON, event.toJson());
-        SystemSession.getInstance().setConsumableData("Suit Loadout: " + event.toJson());
+        SystemSession.getInstance().sendToAiAnalysis("Suit Loadout: " + event.toJson());
     }
 }

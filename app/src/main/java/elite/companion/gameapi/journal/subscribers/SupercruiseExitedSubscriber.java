@@ -15,7 +15,7 @@ public class SupercruiseExitedSubscriber {
 
         StringBuilder sb = new StringBuilder();
         sb.append("Supercruise exit: ").append(" System: ").append(starSystem).append(", ").append(bodyType).append(": ").append(body);
-        SystemSession.getInstance().setConsumableData(sb.toString());
+        SystemSession.getInstance().sendToAiAnalysis(sb.toString());
     }
 
 }

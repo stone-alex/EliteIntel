@@ -61,6 +61,6 @@ public class FSDJumpSubscriber {
             }
         }
 
-        systemSession.setConsumableData(sb.toString());
+        systemSession.sendToAiAnalysis(sb.toString());
     }
 }

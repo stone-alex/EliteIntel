@@ -26,6 +26,6 @@ public class CarrierJumpRequestSubscriber {
 
 
         //Carrier Jump Scheduled: null to null at Synuefe XR-H d11-124 A on unknown
-        SystemSession.getInstance().setConsumableData(sb.toString());
+        SystemSession.getInstance().sendToAiAnalysis(sb.toString());
     }
 }

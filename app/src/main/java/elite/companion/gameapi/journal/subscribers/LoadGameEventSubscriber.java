@@ -42,7 +42,7 @@ public class LoadGameEventSubscriber {
         RankDto ranks= (RankDto) systemSession.get(SystemSession.RANK);
         GameLoadedInfo info = new GameLoadedInfo(event.toJson(), ranks.toJson());
 
-        SystemSession.getInstance().setConsumableData("New Game started (debugging session) " + info.toJson());
+        SystemSession.getInstance().sendToAiAnalysis("New Game started (debugging session) " + info.toJson());
     }
 
     private class GameLoadedInfo {

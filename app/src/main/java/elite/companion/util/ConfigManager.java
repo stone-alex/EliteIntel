@@ -1,47 +1,67 @@
 package elite.companion.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class ConfigManager {
     private static final Logger log = LoggerFactory.getLogger(ConfigManager.class);
     private static final ConfigManager INSTANCE = new ConfigManager();
-    public static final int MAX_NUMBER_OF_CHARACTERS = 120;
+    private final String APP_DIR;
+    private final String USER_CONFIG_FILENAME = "player.conf";
+    private final String SYSTEM_CONFIG_FILENAME = "system.conf";
+    private final int MAX_NUMBER_OF_CHARACTERS = 120;
 
-    // Config file names
-    public static final String USER_CONFIG_FILENAME = "player.conf";
-    public static final String SYSTEM_CONFIG_FILENAME = "system.conf";
-
-    // Values expected in config files
-    // system.conf
+    // Config keys (public for external use)
     public static final String GROK_API_KEY = "grok_key";
-
-    // player.conf
     public static final String PLAYER_MISSION_STATEMENT = "mission_statement";
     public static final String PLAYER_TITLE = "title";
     public static final String PLAYER_ALTERNATIVE_NAME = "alternative_name";
 
     // Default config templates
-    private static final Map<String, String> DEFAULT_SYSTEM_CONFIG = new LinkedHashMap<>();
-    private static final Map<String, String> DEFAULT_USER_CONFIG = new LinkedHashMap<>();
+    private final Map<String, String> DEFAULT_SYSTEM_CONFIG = new LinkedHashMap<>();
+    private final Map<String, String> DEFAULT_USER_CONFIG = new LinkedHashMap<>();
 
-    static {
-        // Initialize default system config
+    private ConfigManager() {
+        // Initialize default configs
         DEFAULT_SYSTEM_CONFIG.put(GROK_API_KEY, "");
-
-        // Initialize default user config
         DEFAULT_USER_CONFIG.put(PLAYER_MISSION_STATEMENT, "");
         DEFAULT_USER_CONFIG.put(PLAYER_TITLE, "");
         DEFAULT_USER_CONFIG.put(PLAYER_ALTERNATIVE_NAME, "");
-    }
 
-    private ConfigManager() {
-        // Private constructor to enforce singleton pattern
+        // Initialize APP_DIR
+        String appDir = ""; // Default to empty string for development
+        try {
+            URI jarUri = ConfigManager.class.getProtectionDomain().getCodeSource().getLocation().toURI();
+            File jarFile = new File(jarUri);
+            if (jarFile.getPath().endsWith(".jar")) {
+                String parentDir = jarFile.getParent();
+                if (parentDir != null) {
+                    appDir = parentDir + File.separator;
+                    log.debug("Running from JAR, set APP_DIR to: {}", appDir);
+                } else {
+                    log.warn("JAR parent directory is null, using empty APP_DIR: {}", appDir);
+                }
+            } else {
+                log.debug("Not running from JAR, using empty APP_DIR for classpath resources");
+            }
+        } catch (Exception e) {
+            log.warn("Could not determine JAR location, using empty APP_DIR: {}. Error: {}", appDir, e.getMessage());
+        }
+        APP_DIR = appDir;
+
+        // Initialize config files after APP_DIR is set
         initializeConfigFiles();
     }
 
@@ -55,16 +75,23 @@ public class ConfigManager {
     }
 
     private void createDefaultConfigIfNotExists(String filename, Map<String, String> defaultConfig) {
-        try {
-            // Check if file exists in resources
-            InputStream input = getClass().getClassLoader().getResourceAsStream(filename);
-            if (input == null) {
-                log.info("Configuration file {} not found, creating default", filename);
+        if (filename == null) {
+            log.error("Filename is null, cannot create or update config file");
+            return;
+        }
+        File file = new File(APP_DIR + filename);
+        if (!file.exists()) {
+            log.info("Configuration file {} not found, creating default in {}", filename, file.getAbsolutePath());
+            if (defaultConfig != null) {
                 writeConfigFile(filename, defaultConfig, true);
             } else {
-                // File exists, ensure all expected keys are present
-                Map<String, String> existingConfig = readConfig(filename);
-                boolean updated = false;
+                log.error("Default config for {} is null, cannot create file", filename);
+            }
+        } else {
+            // File exists, ensure all expected keys are present
+            Map<String, String> existingConfig = readConfig(filename);
+            boolean updated = false;
+            if (defaultConfig != null) {
                 for (String key : defaultConfig.keySet()) {
                     if (!existingConfig.containsKey(key)) {
                         existingConfig.put(key, defaultConfig.get(key));
@@ -72,41 +99,66 @@ public class ConfigManager {
                     }
                 }
                 if (updated) {
-                    log.info("Updating configuration file {} with missing keys", filename);
+                    log.info("Updating configuration file {} with missing keys in {}", filename, file.getAbsolutePath());
                     writeConfigFile(filename, existingConfig, false);
                 }
-                input.close();
+            } else {
+                log.error("Default config for {} is null, cannot update missing keys", filename);
             }
-        } catch (Exception e) {
-            log.error("Error initializing configuration file {}: {}", filename, e.getMessage());
         }
     }
 
     private Map<String, String> readConfig(String filename) {
+        if (filename == null) {
+            log.error("Filename is null, cannot read config");
+            return new HashMap<>();
+        }
         Map<String, String> config = new HashMap<>();
-        try {
-            InputStream input = getClass().getClassLoader().getResourceAsStream(filename);
-            if (input == null) {
-                log.error("Unable to find configuration file: {}", filename);
-                return config;
-            }
+        File file = new File(APP_DIR + filename);
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                if (line.trim().isEmpty() || line.startsWith("#")) continue;
-                String[] parts = line.split("=", 2);
-                if (parts.length == 2) {
-                    String value = parts[1].trim();
-                    if (filename.equals(USER_CONFIG_FILENAME)) {
-                        value = value.substring(0, Math.min(value.length(), MAX_NUMBER_OF_CHARACTERS));
+        // Try reading from app directory first
+        if (file.exists()) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    if (line.trim().isEmpty() || line.startsWith("#")) continue;
+                    String[] parts = line.split("=", 2);
+                    if (parts.length == 2) {
+                        String value = parts[1].trim();
+                        if (filename.equals(USER_CONFIG_FILENAME)) {
+                            value = value.substring(0, Math.min(value.length(), MAX_NUMBER_OF_CHARACTERS));
+                        }
+                        config.put(parts[0].trim(), value);
                     }
-                    config.put(parts[0].trim(), value);
                 }
+                log.debug("Successfully read config file: {}", file.getAbsolutePath());
+            } catch (Exception e) {
+                log.error("Error reading configuration file {}: {}", file.getAbsolutePath(), e.getMessage());
             }
-            reader.close();
-        } catch (Exception e) {
-            log.error("Error reading configuration file {}: {}", filename, e.getMessage());
+        } else {
+            // Fallback to resources
+            try (InputStream input = getClass().getClassLoader().getResourceAsStream(filename)) {
+                if (input == null) {
+                    log.warn("Configuration file {} not found in resources", filename);
+                    return config;
+                }
+                BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    if (line.trim().isEmpty() || line.startsWith("#")) continue;
+                    String[] parts = line.split("=", 2);
+                    if (parts.length == 2) {
+                        String value = parts[1].trim();
+                        if (filename.equals(USER_CONFIG_FILENAME)) {
+                            value = value.substring(0, Math.min(value.length(), MAX_NUMBER_OF_CHARACTERS));
+                        }
+                        config.put(parts[0].trim(), value);
+                    }
+                }
+                log.debug("Successfully read config file from resources: {}", filename);
+            } catch (Exception e) {
+                log.error("Error reading resource configuration file {}: {}", filename, e.getMessage());
+            }
         }
         return config;
     }
@@ -120,11 +172,12 @@ public class ConfigManager {
     }
 
     private void writeConfigFile(String filename, Map<String, String> config, boolean includeComments) {
-        try {
-            // For resources, we assume a writable directory (e.g., project root or config dir)
-            File file = new File(filename);
-            BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-
+        if (filename == null) {
+            log.error("Filename is null, cannot write config file");
+            return;
+        }
+        File file = new File(APP_DIR + filename);
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
             if (includeComments) {
                 if (filename.equals(USER_CONFIG_FILENAME)) {
                     writer.write("## Provide brief description of your overall mission. Example:\n");
@@ -146,11 +199,9 @@ public class ConfigManager {
                     }
                 }
             }
-
-            writer.close();
-            log.info("Successfully wrote configuration file: {}", filename);
+            log.info("Successfully wrote configuration file: {}", file.getAbsolutePath());
         } catch (Exception e) {
-            log.error("Error writing configuration file {}: {}", filename, e.getMessage());
+            log.error("Error writing configuration file {}: {}", file.getAbsolutePath(), e.getMessage());
         }
     }
 }

@@ -1,17 +1,7 @@
-/*
-allprojects {
-    repositories {
-        mavenCentral() // For Azure Speech SDK, Gson, Guava
-        maven {
-            url 'https://oss.sonatype.org/content/repositories/snapshots' // For CMU Sphinx
-        }
-    }
-}
-*/
-
 plugins {
     id 'java'
     id 'application'
+    id 'com.github.johnrengelman.shadow' version '8.1.1' apply false
 }
 
 java {
@@ -20,43 +10,25 @@ java {
     }
 }
 
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'com.github.johnrengelman.shadow'
+
+    repositories {
+        mavenCentral()
+        maven {
+            url 'https://oss.sonatype.org/content/repositories/snapshots'
+        }
+    }
+
+    sourceCompatibility = 11
+    targetCompatibility = 11
+}
 
 application {
-    // Your main class
     mainClass = 'elite.companion.AppMain'
 }
 
-
-
-repositories {
-    mavenCentral()
-}
-
-
-
-tasks.jar {
-    manifest {
-        attributes(
-                'Main-Class': application.mainClass.get()
-        )
-    }
-}
-
-// Task to copy runtime deps next to the JAR (build/dist)
-tasks.register('copyRuntimeLibs', Copy) {
-    dependsOn configurations.runtimeClasspath
-    from configurations.runtimeClasspath
-    into "${buildDir}/dist/libs"
-}
-
-tasks.register('assembleDistLike') {
-    dependsOn tasks.jar, tasks.named('copyRuntimeLibs')
-    doLast {
-        copy {
-            from tasks.jar.get().archiveFile
-            into "${buildDir}/dist"
-        }
-        println "Thin distribution created at: ${buildDir}/dist"
-        println "Run with: java -cp dist${File.separator}*${File.pathSeparator}dist${File.separator}libs${File.separator}* elite.companion.AppMain"
-    }
+tasks.named('build') {
+    dependsOn project(':app').tasks.shadowJar
 }

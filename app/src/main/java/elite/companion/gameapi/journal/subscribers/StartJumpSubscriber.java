@@ -26,6 +26,8 @@ public class StartJumpSubscriber {
         sb.append(scoopable);
         sb.append(". ");
 
-        SystemSession.getInstance().sendToAiAnalysis(sb.toString());
+        if(!"Supercruise".equalsIgnoreCase(event.getJumpType())) {
+            SystemSession.getInstance().sendToAiAnalysis(sb.toString());
+        }
     }
 }

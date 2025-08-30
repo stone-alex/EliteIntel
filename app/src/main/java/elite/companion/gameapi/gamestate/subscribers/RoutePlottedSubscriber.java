@@ -38,7 +38,7 @@ public class RoutePlottedSubscriber {
 
             SystemSession systemSession = SystemSession.getInstance();
 
-            NavRouteDto finalDestination = null;
+            NavRouteDto finalDestination;
             if (!routeMap.isEmpty()) {
                 finalDestination = routeMap.entrySet().stream()
                         .reduce((first, second) -> second) // Keep the last entry
@@ -47,9 +47,7 @@ public class RoutePlottedSubscriber {
                 if (finalDestination != null) {
                     systemSession.put(SystemSession.FINAL_DESTINATION, finalDestination.getName());
                 }
-
                 systemSession.setNavRoute(routeMap);
-                systemSession.sendToAiAnalysis("Hyperspace route to " + finalDestination + " is set. Analyze stoppable stars for refuel " + GsonFactory.getGson().toJson(routeMap));
             } else {
                 systemSession.clearRoute();
             }

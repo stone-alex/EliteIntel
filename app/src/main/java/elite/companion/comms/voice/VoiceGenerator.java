@@ -160,7 +160,6 @@ public class VoiceGenerator {
     private void processVoiceRequest(String text, String voiceName, double speechRate) {
         if (text == null || text.isEmpty()) {return;}
         log.info(voiceName + " Speaking: {}", text);
-        //SessionTracker.getInstance().updateSession("context_your_last_transmission", "Timestamp:"+ Instant.now().toString()+" text: " + text);
         try {
             SynthesisInput input = SynthesisInput.newBuilder().setText(text).build();
             VoiceSelectionParams voice = voiceMap.get(voiceName);
@@ -176,8 +175,9 @@ public class VoiceGenerator {
                 audioData = even;
             }
 
-            // Apply a short linear fade-in (~20 ms) to avoid initial discontinuity
-            applyFadeIn(audioData, 20);
+            // Apply a short linear fade-in and fade out (~20 ms) to avoid initial discontinuity
+            applyFade(audioData, 20, true);
+            applyFade(audioData, 20, false);
 
             // Play audio directly using Java Sound
             javax.sound.sampled.AudioFormat format = new javax.sound.sampled.AudioFormat(24000, 16, 1, true, false);
@@ -203,7 +203,22 @@ public class VoiceGenerator {
         }
     }
 
-    private static void applyFadeIn(byte[] audioData, int fadeMs) {
+
+    public static void applyFade(byte[] audioData, int fadeMs, boolean isFadeIn) {
+        int samplesToFade = (24000 * fadeMs) / 1000; // 24kHz mono
+        int startIndex = isFadeIn ? 0 : Math.max(0, audioData.length / 2 - samplesToFade);
+        for (int i = startIndex; i < startIndex + samplesToFade && (i * 2 + 1) < audioData.length; i++) {
+            int lo = audioData[2 * i] & 0xFF;
+            int hi = audioData[2 * i + 1] & 0xFF;
+            short sample = (short) ((hi << 8) | lo);
+            float gain = isFadeIn ? (float) i / samplesToFade : (float) (startIndex + samplesToFade - i) / samplesToFade;
+            int scaled = Math.round(sample * gain);
+            audioData[2 * i] = (byte) (scaled & 0xFF);
+            audioData[2 * i + 1] = (byte) ((scaled >>> 8) & 0xFF);
+        }
+    }
+
+    /*private static void applyFadeIn(byte[] audioData, int fadeMs) {
         int samplesToFade = (24000 * fadeMs) / 1000; // 24kHz mono
         for (int i = 0; i < samplesToFade && (i * 2 + 1) < audioData.length; i++) {
             // little-endian 16-bit sample
@@ -215,5 +230,5 @@ public class VoiceGenerator {
             audioData[2 * i] = (byte) (scaled & 0xFF);
             audioData[2 * i + 1] = (byte) ((scaled >>> 8) & 0xFF);
         }
-    }
+    }*/
 }

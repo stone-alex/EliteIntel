@@ -18,10 +18,6 @@ public class FSDTargetSubscriber {
         String fsd_target = String.valueOf(systemSession.get(SystemSession.FSD_TARGET));
         if (fsd_target != null && !fsd_target.isEmpty()) {
             Map<String, NavRouteDto> route = systemSession.getRoute();
-            if (route != null && !route.isEmpty()) {
-                NavRouteDto firstStop = route.values().iterator().next();
-                VoiceGenerator.getInstance().speak("Jumping to " + firstStop.getName() + isFuelStarClause(firstStop.getStarClass()));
-            }
         }
         systemSession.put(SystemSession.FSD_TARGET, event.getName());
     }

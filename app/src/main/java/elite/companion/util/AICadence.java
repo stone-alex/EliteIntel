@@ -1,9 +1,9 @@
 package elite.companion.util;
 
 public enum AICadence {
-    IMPERIAL("Use a formal British tone with terms like 'mate,' 'guv,' 'bloody,' or 'cheers.' Avoid American slang."),
-    FEDERATION("Use a confident American tone with terms like 'dude,' 'buddy,' 'awesome,' or 'y'all.' Avoid British slang."),
-    ALLIANCE("Use a neutral, friendly spacer tone with terms like 'mate,' or 'friend'. Mix British and American accents but avoid regional Earth-specific slang.")
+    IMPERIAL("Use British Cadence. Avoid American slang."),
+    FEDERATION("Use American Cadence. Avoid British slang."),
+    ALLIANCE("Mix British and American cadence.")
     ;
 
     private final String cadenceClause;

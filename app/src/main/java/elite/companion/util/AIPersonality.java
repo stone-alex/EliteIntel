@@ -1,10 +1,10 @@
 package elite.companion.util;
 
 public enum AIPersonality {
-    PROFESSIONAL("Respond briefly and concisely as a military professional."),
-    FAMILIAR("Respond in a friendly, casual tone like a close friend."),
-    UNHINGED("Respond with playful, cheeky energy, emphasizing humor and light sarcasm within the selected cadence."),
-    ROGUE("Respond with bold, in-your-face energy inspired by George Carlin, staying sharp and witty within the selected cadence.")
+    PROFESSIONAL("Respond extremely briefly and concisely as a military professional."),
+    FAMILIAR("Respond extremely briefly and concisely in a friendly, casual tone like a close friend. Use slang."),
+    UNHINGED("Respond extremely briefly  and concisely with playful, cheeky energy, emphasizing humor and light sarcasm within the selected cadence. Use slang."),
+    ROGUE("Respond extremely briefly  and concisely with bold, in-your-face energy inspired by George Carlin, staying sharp and witty within the selected cadence. avoid regional Earth-specific slang")
     ;
 
     private final String behaviorClause;

@@ -2,11 +2,13 @@ package elite.companion.comms.ai;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 import elite.companion.comms.handlers.query.*;
 import elite.companion.comms.voice.VoiceGenerator;
 import elite.companion.comms.handlers.command.*;
 import elite.companion.comms.ai.robot.VoiceCommandHandler;
 import elite.companion.util.AIContextFactory;
+import elite.companion.util.GsonFactory;
 import elite.companion.util.InaraApiClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +56,7 @@ public class GrokResponseRouter {
         queryHandlers.put(QueryActions.QUERY_SHIP_LOADOUT.getAction(), new AnalyzeDataHandler());
         queryHandlers.put(QueryActions.QUERY_NEXT_STAR_SCOOPABLE.getAction(), new AnalyzeDataHandler());
         queryHandlers.put(QueryActions.QUERY_CARRIER_STATS.getAction(), new AnalyzeDataHandler());
-        queryHandlers.put(QueryActions.QUERY_CURRENT_VOICE.getAction(), new AnalyzeDataHandler());
+        queryHandlers.put(QueryActions.QUERY_TELL_ME_YOUR_NAME.getAction(), new AnalyzeDataHandler());
 
 
         //APP COMMANDS
@@ -196,7 +198,6 @@ public class GrokResponseRouter {
     }
 
     private void handleQuery(String action, JsonObject params, String userInput, String originalResponseText) {
-        VoiceGenerator.getInstance().speak(originalResponseText);
         QueryHandler handler = queryHandlers.get(action);
         if (handler == null) {
             log.warn("Unknown query action: {}", action);
@@ -204,45 +205,61 @@ public class GrokResponseRouter {
             return;
         }
         try {
-            String data = handler.handle(action,params, userInput);
+            String data = handler.handle(action, params, userInput);
+
+            // Parse data to ensure it’s a JSON object with response_text
+            JsonObject dataJson;
+            try {
+                dataJson = GsonFactory.getGson().fromJson(data, JsonObject.class);
+            } catch (JsonSyntaxException e) {
+                log.error("Invalid JSON data from handler for action {}: {}", action, data, e);
+                handleChat("Error processing query data.");
+                return;
+            }
+
+            // Ensure data contains response_text; otherwise, use a fallback
+            String responseTextToUse = dataJson.has("response_text")
+                    ? dataJson.get("response_text").getAsString()
+                    : "Error retrieving query data.";
 
             // Build follow-up messages
             JsonArray messages = new JsonArray();
-
-            // Add system prompt first
             JsonObject systemMessage = new JsonObject();
             systemMessage.addProperty("role", "system");
             systemMessage.addProperty("content", AIContextFactory.getInstance().generateSystemPrompt());
             messages.add(systemMessage);
 
-            // Append original history (assume added method in GrokCommandEndPoint)
-            JsonArray originalHistory = GrokCommandEndPoint.getCurrentHistory(); // Implement this to return messages sans system
+            JsonArray originalHistory = GrokCommandEndPoint.getCurrentHistory();
             for (int i = 0; i < originalHistory.size(); i++) {
                 messages.add(originalHistory.get(i));
             }
 
-            // Add tool result
             JsonObject toolResult = new JsonObject();
             toolResult.addProperty("role", "tool");
-            toolResult.addProperty("name", action);
-            toolResult.addProperty("content", AIContextFactory.getInstance().generateQueryPrompt()+"\n\n"+data);
+            toolResult.addProperty("name", action); // "what_is_your_designation"
+            String content = "Query Action: " + action +
+                    "\nResponse Text: " + responseTextToUse +
+                    "\nInstructions: Use the provided 'Response Text' as the 'response_text' in the output JSON. Set 'type' to 'query', 'action' to '" + action + "', 'params' to {}, and 'expect_followup' to false. Do not generate new conversational text.";
+            toolResult.addProperty("content", content);
             messages.add(toolResult);
 
-            // Send to Grok via query endpoint
+            log.debug("Sending messages to GrokQueryEndPoint: {}", messages.toString());
             JsonObject followUpResponse = GrokQueryEndPoint.getInstance().sendToGrok(messages);
 
             if (followUpResponse == null) {
+                log.warn("Follow-up response is null for action: {}", action);
                 handleChat("Error accessing data banks.");
                 return;
             }
 
-            // Process (expected type: "chat")
+            log.debug("Received follow-up response: {}", followUpResponse.toString());
             processGrokResponse(followUpResponse, userInput);
         } catch (Exception e) {
             log.error("Query handling failed for action {}: {}", action, e.getMessage(), e);
             handleChat("Error accessing data banks: " + e.getMessage());
         }
     }
+
 
     private static String getAsStringOrEmpty(JsonObject obj, String key) {
         if (obj == null || key == null) return "";

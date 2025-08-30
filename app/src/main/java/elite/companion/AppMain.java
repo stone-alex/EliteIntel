@@ -11,7 +11,7 @@ import elite.companion.util.SubscriberRegistration;
 public class AppMain {
 
     public static void main(String[] args) throws Exception {
-        VoiceGenerator.getInstance().speak("Initializing " + Globals.AI_NAME);
+
 
         SubscriberRegistration.registerSubscribers();
 
@@ -25,6 +25,7 @@ public class AppMain {
             VoiceGenerator.getInstance().speak("No Game session data loaded.");
         }
 
+        VoiceGenerator.getInstance().speak(Globals.AI_NAME+" is online...");
         JournalParser parser = new JournalParser();
         parser.startReading();
     }

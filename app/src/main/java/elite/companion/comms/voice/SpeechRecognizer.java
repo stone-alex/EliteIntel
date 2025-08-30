@@ -75,8 +75,8 @@ public class SpeechRecognizer {
     }
 
     public void start() {
+        SystemSession.getInstance().put(SystemSession.PRIVACY_MODE, true);
         new Thread(this::startStreaming).start();
-        VoiceGenerator.getInstance().speak("Standing-by");
         log.info("SpeechRecognizer started in background thread");
     }
 
@@ -200,10 +200,10 @@ public class SpeechRecognizer {
                     if(isPrivacyModeOn) {
                         String voiceName = SystemSession.getInstance().getAIVoice().getName();
                         if (sanitizedTranscript.toLowerCase().startsWith("computer") || sanitizedTranscript.toLowerCase().startsWith(voiceName.toLowerCase())) {
-                            sendToAi(sanitizedTranscript.replace("computer", Globals.AI_NAME));
+                            sendToAi(sanitizedTranscript.replace("computer,", ""), confidence);
                         }
                     } else {
-                        sendToAi(sanitizedTranscript);
+                        sendToAi(sanitizedTranscript, confidence);
                     }
                 } else {
                     log.info("Discarded transcript: {} (confidence: {})", transcript, confidence);
@@ -212,9 +212,9 @@ public class SpeechRecognizer {
         }
     }
 
-    private void sendToAi(String sanitizedTranscript) {
+    private void sendToAi(String sanitizedTranscript, float confidence) {
         log.info("Processing sanitizedTranscript: {}", sanitizedTranscript);
-        grok.processVoiceCommand(sanitizedTranscript, 0.5f);
+        grok.processVoiceCommand(sanitizedTranscript, confidence);
     }
 
     /**

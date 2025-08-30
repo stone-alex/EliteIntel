@@ -20,6 +20,7 @@ public enum CommandActionsCustom {
     SET_PERSONALITY("set_personality", "<personality>", SystemSession.PERSONALITY),
 
 
+
     ; //<-- end of enum
 
     private final String action;

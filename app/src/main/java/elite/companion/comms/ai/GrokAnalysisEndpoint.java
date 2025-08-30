@@ -1,6 +1,7 @@
 package elite.companion.comms.ai;
 
 import com.google.gson.*;
+import elite.companion.session.SystemSession;
 import elite.companion.util.ConfigManager;
 import elite.companion.util.GsonFactory;
 import org.slf4j.Logger;
@@ -29,8 +30,8 @@ public class GrokAnalysisEndpoint {
     public String analyzeData(String userIntent, String dataJson) {
         try {
             HttpURLConnection conn = getHttpURLConnection();
-
-            String systemPrompt = " Context: You are Ares, onboard AI for Elite Dangerous. Address as My Lord. Brief, concise, military professional. British cadence, NATO phonetic alphabet for codes (e.g., RH-F = Romeo Hotel dash Foxtrot), spell out numerals (e.g., 285 = two eight five).\n" +
+            String aiName = SystemSession.getInstance().getAIVoice().getName();
+            String systemPrompt = " Context: You are " + aiName + ", onboard AI for Elite Dangerous. Address as My Lord. Brief, concise, military professional. British cadence, NATO phonetic alphabet for codes (e.g., RH-F = Romeo Hotel dash Foxtrot), spell out numerals (e.g., 285 = two eight five).\n" +
                     "   Task: Analyze provided JSON data against user intent. Return precise answers (e.g., yes/no for specific searches) or summaries as requested. Output JSON: {\"response_text\": \"TTS output\", \"details\": \"optional extra info\"}\n" +
                     "   Data format: JSON array of signals, e.g., [{\"name\": \"Fleet Carrier XYZ\", \"type\": \"Carrier\"}, {\"name\": \"Distress Signal\", \"type\": \"USS\"}]\n" +
                     "   Examples:\n" +

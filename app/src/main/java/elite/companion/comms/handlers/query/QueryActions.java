@@ -15,7 +15,7 @@ public enum QueryActions {
     QUERY_PIRATE_STATUS("query_pirate_massacre_status", null, null),
     QUERY_NEXT_STAR_SCOOPABLE("query_next_star_fuel_scoopable", null, null),
     QUERY_CARRIER_STATS("query_fleet_carrier_stats", null, null),
-    QUERY_CURRENT_VOICE("what_is_your_voice_or_your_name", null, null),
+    QUERY_TELL_ME_YOUR_NAME("query_what_is_your_designation", null, null),
 
 
     ; //<-- end of enum

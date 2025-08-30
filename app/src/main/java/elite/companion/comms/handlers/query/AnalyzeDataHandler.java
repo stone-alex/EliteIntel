@@ -16,19 +16,21 @@ public class AnalyzeDataHandler implements QueryHandler {
 
     @Override
     public String handle(String action, JsonObject params, String originalUserInput) {
-
         QueryActions query = findQuery(action);
         String dataJson = fetchDataForAction(query);
         if (dataJson == null || dataJson.isEmpty()) {
-            return "No data available, My Lord.";
+            JsonObject response = new JsonObject();
+            response.addProperty("response_text", "No data available, My Lord.");
+            return GsonFactory.getGson().toJson(response);
+        }
+
+        if (query == QueryActions.QUERY_TELL_ME_YOUR_NAME) {
+            return dataJson; // Return directly for simple query
         }
 
         GrokAnalysisEndpoint grokAnalysisEndpoint = GrokAnalysisEndpoint.getInstance();
-
-        // Send to Grok for analysis
         String analysisJson = grokAnalysisEndpoint.analyzeData(originalUserInput, dataJson);
-        JsonObject analysis = GsonFactory.getGson().fromJson(analysisJson, JsonObject.class);
-        return analysis.get("response_text").getAsString(); // Return for TTS
+        return analysisJson;
     }
 
     private QueryActions findQuery(String action) {
@@ -38,10 +40,9 @@ public class AnalyzeDataHandler implements QueryHandler {
                 return qa;
             }
         }
-        VoiceGenerator.getInstance().speak("Sorry, no query action found for: "+action);
-        throw new IllegalArgumentException("No query action found for: "+action);
+        VoiceGenerator.getInstance().speak("Sorry, no query action found for: " + action);
+        throw new IllegalArgumentException("No query action found for: " + action);
     }
-
 
     private String fetchDataForAction(QueryActions action) {
         SystemSession systemSession = SystemSession.getInstance();
@@ -54,9 +55,9 @@ public class AnalyzeDataHandler implements QueryHandler {
 
             case QUERY_SHIP_LOADOUT:
                 return String.valueOf(systemSession.get(SystemSession.SHIP_LOADOUT_JSON));
-                
+
             case QUERY_ANALYZE_ROUTE:
-                return getRoute(); // array of json objects wrapped in []
+                return getRoute();
 
             case QUERY_ANALYZE_ON_BOARD_CARGO:
                 return GsonFactory.getGson().toJson(SystemSession.getInstance().get(SystemSession.SHIP_CARGO));
@@ -73,10 +74,12 @@ public class AnalyzeDataHandler implements QueryHandler {
             case QUERY_CARRIER_STATS:
                 return GsonFactory.getGson().toJson(playerSession.get(PlayerSession.CARRIER_STATS));
 
-            case QUERY_CURRENT_VOICE:
-                return GsonFactory.getGson().toJson(systemSession.getAIVoice().getName());
+            case QUERY_TELL_ME_YOUR_NAME:
+                String voiceName = systemSession.getAIVoice().getName();
+                JsonObject response = new JsonObject();
+                response.addProperty("response_text", "My name is " + voiceName + ", My Lord. How may I assist?");
+                return GsonFactory.getGson().toJson(response);
 
-            // Add other queries...
             default:
                 return null;
         }

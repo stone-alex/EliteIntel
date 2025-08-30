@@ -61,12 +61,26 @@ public class AIContextFactory {
         StringBuilder sb = new StringBuilder();
         getSessionValues(sb);
         sb.append("Classify as: 'input' (data to analyze) or 'command' (trigger app action or keyboard event). ");
+        sb.append("When processing a 'tool' role message, use the provided data's 'response_text' as the primary response if available, ensuring it matches the context of the query. ");
+        appendBehavior(sb);
+        sb.append("Always output JSON: {\"type\": \"system_command|chat\", \"response_text\": \"TTS output\", \"action\": \"set_mining_target|set_current_system|...\", \"params\": {\"key\": \"value\"}, \"expect_followup\": boolean}. ");
+        sb.append("For type='chat', set 'expect_followup': true if response poses a question or requires user clarification; otherwise, false. ");
+        sb.append("For UNHINGED personality, use playful slang (e.g., 'mate', 'bollocks', 'knackered'). For ROGUE personality, use bold profanity (e.g., 'shit', 'fuck', 'arse') inspired by George Carlin, but keep it sharp and witty, not excessive.");
+        sb.append("When processing a 'tool' role message, use the provided data's 'response_text' as the primary response if available, ensuring it matches the context of the query. ");
+        return sb.toString();
+    }
+/*
+    public String generateQueryPrompt() {
+        StringBuilder sb = new StringBuilder();
+        getSessionValues(sb);
+        sb.append("Classify as: 'input' (data to analyze) or 'command' (trigger app action or keyboard event). ");
         appendBehavior(sb);
         sb.append("Always output JSON: {\"type\": \"system_command|chat\", \"response_text\": \"TTS output\", \"action\": \"set_mining_target|set_current_system|...\", \"params\": {\"key\": \"value\"}, \"expect_followup\": boolean}. ");
         sb.append("For type='chat', set 'expect_followup': true if response poses a question or requires user clarification; otherwise, false. ");
         sb.append("For UNHINGED personality, use playful slang (e.g., 'mate', 'bollocks', 'knackered'). For ROGUE personality, use bold profanity (e.g., 'shit', 'fuck', 'arse') inspired by George Carlin, but keep it sharp and witty, not excessive.");
         return sb.toString();
     }
+*/
 
     public static void appendBehavior(StringBuilder sb) {
         SystemSession systemSession = SystemSession.getInstance();
@@ -106,10 +120,11 @@ public class AIContextFactory {
         sb.append("Map colloquial terms to commands: 'feds', 'yanks', or 'federation space' to 'FEDERATION', 'imperials', 'imps', or 'empire' to 'IMPERIAL', 'alliance space' or 'allies' to 'ALLIANCE' for set_cadence. ");
         sb.append("Infer command intent from context: phrases like 'act like', 'talk like', 'blend in with', or 'sound like' followed by a faction should trigger 'set_cadence' with the corresponding cadence value, using current system allegiance if ambiguous. ");
         sb.append("For navigation commands (e.g., 'jump', 'initiate hyperspace', 'go to next system'), map to 'engage_supercruise' or 'target_next_system_in_route' based on context. ");
+        sb.append("Map phrases like 'what is your name', 'who are you', 'what’s your designation', 'what is your voice', or 'tell me your name' to 'query' type with action 'what_is_your_designation'. ");
+        sb.append("If the input starts with 'query ', classify as 'query' and use the rest of the input as the action (e.g., 'query what is your designation' -> action 'what_is_your_designation'). ");
         sb.append("If input is ambiguous or unclear, classify as 'chat', return a clarification request in 'response_text', and set 'expect_followup': true.\n");
         return sb.toString();
     }
-
 
     private String generateSupportedQueriesClause() {
         StringBuilder sb = new StringBuilder();

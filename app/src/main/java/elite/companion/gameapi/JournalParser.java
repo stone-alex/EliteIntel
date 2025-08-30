@@ -28,7 +28,6 @@ public class JournalParser {
 
         Path currentFile = getLatestJournalFile();
         long lastPosition = 0;
-        VoiceGenerator.getInstance().speak("Monitoring Journal");
         System.out.println("Monitoring " + currentFile.getFileName());
 
         while (true) {

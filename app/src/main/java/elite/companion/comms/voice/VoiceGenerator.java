@@ -15,8 +15,6 @@ import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import static elite.companion.util.Globals.GOOGLE_API_KEY_FILENAME;
-
 public class VoiceGenerator {
     private static final Logger log = LoggerFactory.getLogger(VoiceGenerator.class);
 
@@ -66,18 +64,23 @@ public class VoiceGenerator {
             throw new RuntimeException("Failed to initialize Text To Speech client", e);
         }
 
-        VoiceSelectionParams Charles = VoiceSelectionParams.newBuilder().setLanguageCode("en-GB").setName("en-GB-Chirp3-HD-Algenib").build();
-        VoiceSelectionParams Anna = VoiceSelectionParams.newBuilder().setLanguageCode("en-GB").setName("en-GB-Chirp-HD-F").build();
+        //IMPS
         VoiceSelectionParams James = VoiceSelectionParams.newBuilder().setLanguageCode("en-AU").setName("en-AU-Chirp3-HD-Algieba").build();
-        VoiceSelectionParams Jennifer = VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Sulafat").build();
-        VoiceSelectionParams Joseph = VoiceSelectionParams.newBuilder().setLanguageCode("en-AU").setName("en-GB-Chirp3-HD-Iapetus").build();
-        VoiceSelectionParams Karen = VoiceSelectionParams.newBuilder().setLanguageCode("en-AU").setName("en-GB-Chirp3-HD-Aoede").build();
-        VoiceSelectionParams Lana = VoiceSelectionParams.newBuilder().setLanguageCode("en-AU").setName("en-GB-Chirp3-HD-Despina").build();
+        VoiceSelectionParams Charles = VoiceSelectionParams.newBuilder().setLanguageCode("en-GB").setName("en-GB-Chirp3-HD-Algenib").build();
+        VoiceSelectionParams Jake = VoiceSelectionParams.newBuilder().setLanguageCode("en-AU").setName("en-GB-Chirp3-HD-Despina").build();
+        VoiceSelectionParams Anna = VoiceSelectionParams.newBuilder().setLanguageCode("en-GB").setName("en-GB-Chirp-HD-F").build();
         VoiceSelectionParams Mary = VoiceSelectionParams.newBuilder().setLanguageCode("en-GB").setName("en-GB-Neural2-A").build();
-        VoiceSelectionParams Michael = VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Charon").build();
-        VoiceSelectionParams Rachel = VoiceSelectionParams.newBuilder().setLanguageCode("en-GB").setName("en-GB-Standard-A").build();
-        VoiceSelectionParams Steven = VoiceSelectionParams.newBuilder().setLanguageCode("en-AU").setName("en-AU-Chirp3-HD-Schedar").build();
+        VoiceSelectionParams Betty = VoiceSelectionParams.newBuilder().setLanguageCode("en-GB").setName("en-GB-Chirp3-HD-Aoede").build();
+        VoiceSelectionParams Olivia = VoiceSelectionParams.newBuilder().setLanguageCode("en-GB").setName("en-GB-Chirp3-HD-Aoede").build();
 
+        //FEDS
+        VoiceSelectionParams Michael = VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Charon").build();
+        VoiceSelectionParams Steve = VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Algenib").build();
+        VoiceSelectionParams Joseph = VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Sadachbia").build();
+        VoiceSelectionParams Jennifer = VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Sulafat").build();
+        VoiceSelectionParams Rachel = VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Zephyr").build();
+        VoiceSelectionParams Karen = VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Despina").build();
+        VoiceSelectionParams Emma = VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Despina").build();
 
         voiceMap.put(Voices.ANNA.getName(), Anna);
         voiceMap.put(Voices.CHARLES.getName(), Charles);
@@ -85,11 +88,14 @@ public class VoiceGenerator {
         voiceMap.put(Voices.JENNIFER.getName(), Jennifer);
         voiceMap.put(Voices.JOSEPH.getName(), Joseph);
         voiceMap.put(Voices.KAREN.getName(), Karen);
-        voiceMap.put(Voices.LANA.getName(), Lana);
+        voiceMap.put(Voices.JAKE.getName(), Jake);
         voiceMap.put(Voices.MARY.getName(), Mary);
         voiceMap.put(Voices.MICHAEL.getName(), Michael);
         voiceMap.put(Voices.RACHEL.getName(), Rachel);
-        voiceMap.put(Voices.STEVE.getName(), Steven);
+        voiceMap.put(Voices.STEVE.getName(), Steve);
+        voiceMap.put(Voices.BETTY.getName(), Betty);
+        voiceMap.put(Voices.EMMA.getName(), Emma);
+        voiceMap.put(Voices.OLIVIA.getName(), Olivia);
 
         randomVoiceMap.put(Voices.ANNA.getName(), Anna);
         randomVoiceMap.put(Voices.CHARLES.getName(), Charles);
@@ -97,11 +103,14 @@ public class VoiceGenerator {
         randomVoiceMap.put(Voices.JENNIFER.getName(), Jennifer);
         randomVoiceMap.put(Voices.JOSEPH.getName(), Joseph);
         randomVoiceMap.put(Voices.KAREN.getName(), Karen);
-        randomVoiceMap.put(Voices.LANA.getName(), Lana);
+        randomVoiceMap.put(Voices.JAKE.getName(), Jake);
         randomVoiceMap.put(Voices.MARY.getName(), Mary);
         randomVoiceMap.put(Voices.MICHAEL.getName(), Michael);
         randomVoiceMap.put(Voices.RACHEL.getName(), Rachel);
-        randomVoiceMap.put(Voices.STEVE.getName(), Steven);
+        randomVoiceMap.put(Voices.STEVE.getName(), Steve);
+        randomVoiceMap.put(Voices.BETTY.getName(), Betty);
+        randomVoiceMap.put(Voices.EMMA.getName(), Emma);
+        randomVoiceMap.put(Voices.OLIVIA.getName(), Olivia);
     }
 
 

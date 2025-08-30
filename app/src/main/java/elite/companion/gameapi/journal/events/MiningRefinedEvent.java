@@ -1,22 +1,38 @@
 package elite.companion.gameapi.journal.events;
 
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
-
+import elite.companion.util.GsonFactory;
 import java.time.Duration;
 import java.util.StringJoiner;
 
 public class MiningRefinedEvent extends BaseEvent {
-
     @SerializedName("Type")
     private String type;
 
     @SerializedName("Type_Localised")
     private String typeLocalised;
 
-    public MiningRefinedEvent(String timestamp, String type, String typeLocalised) {
-        super(timestamp, 1, Duration.ZERO, MiningRefinedEvent.class.getName());
-        this.type = type;
-        this.typeLocalised = typeLocalised;
+    public MiningRefinedEvent(JsonObject json) {
+        super(json.get("timestamp").getAsString(), 1, Duration.ZERO, "MiningRefined");
+        MiningRefinedEvent event = GsonFactory.getGson().fromJson(json, MiningRefinedEvent.class);
+        this.type = event.type;
+        this.typeLocalised = event.typeLocalised;
+    }
+
+    @Override
+    public String getEventType() {
+        return "MiningRefined";
+    }
+
+    @Override
+    public String toJson() {
+        return GsonFactory.getGson().toJson(this);
+    }
+
+    @Override
+    public JsonObject toJsonObject() {
+        return GsonFactory.toJsonObject(this);
     }
 
     public String getType() {
@@ -27,7 +43,8 @@ public class MiningRefinedEvent extends BaseEvent {
         return typeLocalised;
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return new StringJoiner(", ", MiningRefinedEvent.class.getSimpleName() + "[", "]")
                 .add("type='" + type + "'")
                 .add("typeLocalised='" + typeLocalised + "'")

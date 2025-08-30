@@ -1,12 +1,13 @@
 package elite.companion.gameapi.journal.events;
 
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
+import elite.companion.util.GsonFactory;
 
 import java.time.Duration;
 import java.util.List;
 
 public class BountyEvent extends BaseEvent {
-
     @SerializedName("Rewards")
     private List<Reward> rewards;
 
@@ -25,8 +26,30 @@ public class BountyEvent extends BaseEvent {
     @SerializedName("VictimFaction")
     private String victimFaction;
 
-    public BountyEvent(String timestamp) {
-        super(timestamp, 1, Duration.ofSeconds(30), BountyEvent.class.getName());
+    public BountyEvent(JsonObject json) {
+        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "Bounty");
+        BountyEvent event = GsonFactory.getGson().fromJson(json, BountyEvent.class);
+        this.rewards = event.rewards;
+        this.pilotName = event.pilotName;
+        this.pilotNameLocalised = event.pilotNameLocalised;
+        this.target = event.target;
+        this.totalReward = event.totalReward;
+        this.victimFaction = event.victimFaction;
+    }
+
+    @Override
+    public String getEventType() {
+        return "Bounty";
+    }
+
+    @Override
+    public String toJson() {
+        return GsonFactory.getGson().toJson(this);
+    }
+
+    @Override
+    public JsonObject toJsonObject() {
+        return GsonFactory.toJsonObject(this);
     }
 
     public List<Reward> getRewards() {

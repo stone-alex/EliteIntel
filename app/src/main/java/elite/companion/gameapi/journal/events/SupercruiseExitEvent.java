@@ -1,30 +1,59 @@
 package elite.companion.gameapi.journal.events;
 
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
-
+import elite.companion.util.GsonFactory;
 import java.time.Duration;
 import java.util.Objects;
 import java.util.StringJoiner;
 
 public class SupercruiseExitEvent extends BaseEvent {
-
     @SerializedName("Taxi")
     private boolean taxi;
+
     @SerializedName("Multicrew")
     private boolean multicrew;
+
     @SerializedName("StarSystem")
     private String starSystem;
+
     @SerializedName("SystemAddress")
     private long systemAddress;
+
     @SerializedName("Body")
     private String body;
+
     @SerializedName("BodyID")
     private int bodyId;
+
     @SerializedName("BodyType")
     private String bodyType;
 
-    public SupercruiseExitEvent(String timestamp) {
-        super(timestamp, 1, Duration.ofSeconds(30), SupercruiseExitEvent.class.getName());
+    public SupercruiseExitEvent(JsonObject json) {
+        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "SupercruiseExit");
+        SupercruiseExitEvent event = GsonFactory.getGson().fromJson(json, SupercruiseExitEvent.class);
+        this.taxi = event.taxi;
+        this.multicrew = event.multicrew;
+        this.starSystem = event.starSystem;
+        this.systemAddress = event.systemAddress;
+        this.body = event.body;
+        this.bodyId = event.bodyId;
+        this.bodyType = event.bodyType;
+    }
+
+    @Override
+    public String getEventType() {
+        return "SupercruiseExit";
+    }
+
+    @Override
+    public String toJson() {
+        return GsonFactory.getGson().toJson(this);
+    }
+
+    @Override
+    public JsonObject toJsonObject() {
+        return GsonFactory.toJsonObject(this);
     }
 
     public boolean isTaxi() {

@@ -1,6 +1,8 @@
 package elite.companion.gameapi.journal.events;
 
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
+import elite.companion.util.GsonFactory;
 import elite.companion.util.TimestampFormatter;
 
 import java.time.Duration;
@@ -11,17 +13,40 @@ public class CargoTransferEvent extends BaseEvent {
     @SerializedName("Transfers")
     private List<Transfer> transfers;
 
-    public CargoTransferEvent(String timestamp) {
-        super(timestamp, 1, Duration.ofSeconds(30), CargoTransferEvent.class.getName());
+    public CargoTransferEvent(JsonObject json) {
+        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "CargoTransfer");
+        CargoTransferEvent event = GsonFactory.getGson().fromJson(json, CargoTransferEvent.class);
+        this.transfers = event.transfers;
     }
 
-    // Getter
+    @Override
+    public String getEventType() {
+        return "CargoTransfer";
+    }
+
+    @Override
+    public String toJson() {
+        return GsonFactory.getGson().toJson(this);
+    }
+
+    @Override
+    public JsonObject toJsonObject() {
+        return GsonFactory.toJsonObject(this);
+    }
+
     public List<Transfer> getTransfers() {
         return transfers;
     }
 
     public String getFormattedTimestamp(boolean useLocalTime) {
         return TimestampFormatter.formatTimestamp(getTimestamp().toString(), useLocalTime);
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner("Cargo transfer detected: ")
+                .add("transfers=" + transfers)
+                .toString();
     }
 
     public static class Transfer {
@@ -52,12 +77,5 @@ public class CargoTransferEvent extends BaseEvent {
         public String getDirection() {
             return direction;
         }
-    }
-
-    @Override
-    public String toString() {
-        return new StringJoiner("Cargo transfer detected: ")
-                .add("transfers=" + transfers)
-                .toString();
     }
 }

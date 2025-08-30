@@ -1,8 +1,9 @@
 package elite.companion.gameapi.journal.events;
 
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
+import elite.companion.util.GsonFactory;
 import elite.companion.util.TimestampFormatter;
-
 import java.time.Duration;
 import java.util.List;
 import java.util.StringJoiner;
@@ -125,11 +126,65 @@ public class ScanEvent extends BaseEvent {
     @SerializedName("Composition")
     private Composition composition;
 
-    public ScanEvent(String timestamp) {
-        super(timestamp, 1, Duration.ofSeconds(30), ScanEvent.class.getName());
+    public ScanEvent(JsonObject json) {
+        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "Scan");
+        ScanEvent event = GsonFactory.getGson().fromJson(json, ScanEvent.class);
+        this.scanType = event.scanType;
+        this.bodyName = event.bodyName;
+        this.bodyId = event.bodyId;
+        this.parents = event.parents;
+        this.starSystem = event.starSystem;
+        this.systemAddress = event.systemAddress;
+        this.distanceFromArrivalLS = event.distanceFromArrivalLS;
+        this.starType = event.starType;
+        this.subclass = event.subclass;
+        this.stellarMass = event.stellarMass;
+        this.radius = event.radius;
+        this.absoluteMagnitude = event.absoluteMagnitude;
+        this.ageMY = event.ageMY;
+        this.surfaceTemperature = event.surfaceTemperature;
+        this.luminosity = event.luminosity;
+        this.semiMajorAxis = event.semiMajorAxis;
+        this.eccentricity = event.eccentricity;
+        this.orbitalInclination = event.orbitalInclination;
+        this.periapsis = event.periapsis;
+        this.orbitalPeriod = event.orbitalPeriod;
+        this.ascendingNode = event.ascendingNode;
+        this.meanAnomaly = event.meanAnomaly;
+        this.rotationPeriod = event.rotationPeriod;
+        this.axialTilt = event.axialTilt;
+        this.wasDiscovered = event.wasDiscovered;
+        this.wasMapped = event.wasMapped;
+        this.tidalLock = event.tidalLock;
+        this.terraformState = event.terraformState;
+        this.planetClass = event.planetClass;
+        this.atmosphere = event.atmosphere;
+        this.atmosphereType = event.atmosphereType;
+        this.atmosphereComposition = event.atmosphereComposition;
+        this.volcanism = event.volcanism;
+        this.massEM = event.massEM;
+        this.surfaceGravity = event.surfaceGravity;
+        this.surfacePressure = event.surfacePressure;
+        this.landable = event.landable;
+        this.materials = event.materials;
+        this.composition = event.composition;
     }
 
-    // Getters
+    @Override
+    public String getEventType() {
+        return "Scan";
+    }
+
+    @Override
+    public String toJson() {
+        return GsonFactory.getGson().toJson(this);
+    }
+
+    @Override
+    public JsonObject toJsonObject() {
+        return GsonFactory.toJsonObject(this);
+    }
+
     public String getScanType() {
         return scanType;
     }

@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import elite.companion.comms.ai.GrokAnalysisEndpoint;
 import elite.companion.comms.voice.VoiceGenerator;
 import elite.companion.gameapi.gamestate.events.NavRouteDto;
+import elite.companion.session.PlayerSession;
 import elite.companion.session.SystemSession;
 import elite.companion.util.GsonFactory;
 
@@ -44,6 +45,7 @@ public class AnalyzeDataHandler implements QueryHandler {
 
     private String fetchDataForAction(QueryActions action) {
         SystemSession systemSession = SystemSession.getInstance();
+        PlayerSession playerSession = PlayerSession.getInstance();
         systemSession.get(CURRENT_SYSTEM);
 
         switch (action) {
@@ -66,7 +68,10 @@ public class AnalyzeDataHandler implements QueryHandler {
                 return GsonFactory.getGson().toJson(systemSession.get(SystemSession.CURRENT_STATUS));
 
             case QUERY_NEXT_STAR_SCOOPABLE:
-                return /*"Scoopable star class K, G, B, F, O, A, M. Route data:"+ */GsonFactory.getGson().toJson(getRoute());
+                return GsonFactory.getGson().toJson(getRoute());
+
+            case QUERY_CARRIER_STATS:
+                return GsonFactory.getGson().toJson(playerSession.get(PlayerSession.CARRIER_STATS));
 
 
             // Add other queries...

@@ -1,7 +1,8 @@
 package elite.companion.gameapi.journal.events;
 
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
-
+import elite.companion.util.GsonFactory;
 import java.time.Duration;
 
 public class RankEvent extends BaseEvent implements PlayerBasicStats {
@@ -29,8 +30,32 @@ public class RankEvent extends BaseEvent implements PlayerBasicStats {
     @SerializedName("CQC")
     private int cqc;
 
-    public RankEvent(String timestamp) {
-        super(timestamp, 1, Duration.ofSeconds(30), RankEvent.class.getName());
+    public RankEvent(JsonObject json) {
+        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "Rank");
+        RankEvent event = GsonFactory.getGson().fromJson(json, RankEvent.class);
+        this.combat = event.combat;
+        this.trade = event.trade;
+        this.explore = event.explore;
+        this.soldier = event.soldier;
+        this.exobiologist = event.exobiologist;
+        this.empire = event.empire;
+        this.federation = event.federation;
+        this.cqc = event.cqc;
+    }
+
+    @Override
+    public String getEventType() {
+        return "Rank";
+    }
+
+    @Override
+    public String toJson() {
+        return GsonFactory.getGson().toJson(this);
+    }
+
+    @Override
+    public JsonObject toJsonObject() {
+        return GsonFactory.toJsonObject(this);
     }
 
     public int getCombat() {

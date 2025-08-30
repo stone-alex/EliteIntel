@@ -1,10 +1,11 @@
 package elite.companion.gameapi.journal.events;
 
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
+import elite.companion.util.GsonFactory;
 import java.time.Duration;
 
 public class StatisticsEvent extends BaseEvent {
-
     @SerializedName("Bank_Account")
     public BankAccount bankAccount;
 
@@ -53,42 +54,173 @@ public class StatisticsEvent extends BaseEvent {
     @SerializedName("Exobiology")
     public Exobiology exobiology;
 
-    public StatisticsEvent(
-            String timestamp,
-            BankAccount bankAccount,
-            Combat combat,
-            Crime crime,
-            Smuggling smuggling,
-            Trading trading,
-            Mining mining,
-            Exploration exploration,
-            Passengers passengers,
-            SearchAndRescue searchAndRescue,
-            Squadron squadron,
-            Crafting crafting,
-            Crew crew,
-            Multicrew multicrew,
-            MaterialTraderStats materialTraderStats,
-            FleetCarrier fleetCarrier,
-            Exobiology exobiology
-    ) {
-        super(timestamp, 1, Duration.ofHours(1), StatisticsEvent.class.getName());
+    public StatisticsEvent(JsonObject json) {
+        super(json.get("timestamp").getAsString(), 1, Duration.ofHours(1), "Statistics");
+        StatisticsEvent event = GsonFactory.getGson().fromJson(json, StatisticsEvent.class);
+        this.bankAccount = event.bankAccount;
+        this.combat = event.combat;
+        this.crime = event.crime;
+        this.smuggling = event.smuggling;
+        this.trading = event.trading;
+        this.mining = event.mining;
+        this.exploration = event.exploration;
+        this.passengers = event.passengers;
+        this.searchAndRescue = event.searchAndRescue;
+        this.squadron = event.squadron;
+        this.crafting = event.crafting;
+        this.crew = event.crew;
+        this.multicrew = event.multicrew;
+        this.materialTraderStats = event.materialTraderStats;
+        this.fleetCarrier = event.fleetCarrier;
+        this.exobiology = event.exobiology;
+    }
+
+    @Override
+    public String getEventType() {
+        return "Statistics";
+    }
+
+    @Override
+    public String toJson() {
+        return GsonFactory.getGson().toJson(this);
+    }
+
+    @Override
+    public JsonObject toJsonObject() {
+        return GsonFactory.toJsonObject(this);
+    }
+
+    public BankAccount getBankAccount() {
+        return bankAccount;
+    }
+
+    public void setBankAccount(BankAccount bankAccount) {
         this.bankAccount = bankAccount;
+    }
+
+    public Combat getCombat() {
+        return combat;
+    }
+
+    public void setCombat(Combat combat) {
         this.combat = combat;
+    }
+
+    public Crime getCrime() {
+        return crime;
+    }
+
+    public void setCrime(Crime crime) {
         this.crime = crime;
+    }
+
+    public Smuggling getSmuggling() {
+        return smuggling;
+    }
+
+    public void setSmuggling(Smuggling smuggling) {
         this.smuggling = smuggling;
+    }
+
+    public Trading getTrading() {
+        return trading;
+    }
+
+    public void setTrading(Trading trading) {
         this.trading = trading;
+    }
+
+    public Mining getMining() {
+        return mining;
+    }
+
+    public void setMining(Mining mining) {
         this.mining = mining;
+    }
+
+    public Exploration getExploration() {
+        return exploration;
+    }
+
+    public void setExploration(Exploration exploration) {
         this.exploration = exploration;
+    }
+
+    public Passengers getPassengers() {
+        return passengers;
+    }
+
+    public void setPassengers(Passengers passengers) {
         this.passengers = passengers;
+    }
+
+    public SearchAndRescue getSearchAndRescue() {
+        return searchAndRescue;
+    }
+
+    public void setSearchAndRescue(SearchAndRescue searchAndRescue) {
         this.searchAndRescue = searchAndRescue;
+    }
+
+    public Squadron getSquadron() {
+        return squadron;
+    }
+
+    public void setSquadron(Squadron squadron) {
         this.squadron = squadron;
+    }
+
+    public Crafting getCrafting() {
+        return crafting;
+    }
+
+    public void setCrafting(Crafting crafting) {
         this.crafting = crafting;
+    }
+
+    public Crew getCrew() {
+        return crew;
+    }
+
+    public void setCrew(Crew crew) {
         this.crew = crew;
+    }
+
+    public Multicrew getMulticrew() {
+        return multicrew;
+    }
+
+    public void setMulticrew(Multicrew multicrew) {
         this.multicrew = multicrew;
+    }
+
+    public MaterialTraderStats getMaterialTraderStats() {
+        return materialTraderStats;
+    }
+
+    public void setMaterialTraderStats(MaterialTraderStats materialTraderStats) {
         this.materialTraderStats = materialTraderStats;
+    }
+
+    public FleetCarrier getFleetCarrier() {
+        return fleetCarrier;
+    }
+
+    public void setFleetCarrier(FleetCarrier fleetCarrier) {
         this.fleetCarrier = fleetCarrier;
+    }
+
+    public Exobiology getExobiology() {
+        return exobiology;
+    }
+
+    public void setExobiology(Exobiology exobiology) {
         this.exobiology = exobiology;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s: Statistics event with wealth: %d", timestamp, bankAccount != null ? bankAccount.currentWealth : 0);
     }
 
     public static class BankAccount {
@@ -1419,139 +1551,5 @@ public class StatisticsEvent extends BaseEvent {
         public int getOrganicSpecies() {
             return organicSpecies;
         }
-    }
-
-
-    public BankAccount getBankAccount() {
-        return bankAccount;
-    }
-
-    public void setBankAccount(BankAccount bankAccount) {
-        this.bankAccount = bankAccount;
-    }
-
-    public Combat getCombat() {
-        return combat;
-    }
-
-    public void setCombat(Combat combat) {
-        this.combat = combat;
-    }
-
-    public Crime getCrime() {
-        return crime;
-    }
-
-    public void setCrime(Crime crime) {
-        this.crime = crime;
-    }
-
-    public Smuggling getSmuggling() {
-        return smuggling;
-    }
-
-    public void setSmuggling(Smuggling smuggling) {
-        this.smuggling = smuggling;
-    }
-
-    public Trading getTrading() {
-        return trading;
-    }
-
-    public void setTrading(Trading trading) {
-        this.trading = trading;
-    }
-
-    public Mining getMining() {
-        return mining;
-    }
-
-    public void setMining(Mining mining) {
-        this.mining = mining;
-    }
-
-    public Exploration getExploration() {
-        return exploration;
-    }
-
-    public void setExploration(Exploration exploration) {
-        this.exploration = exploration;
-    }
-
-    public Passengers getPassengers() {
-        return passengers;
-    }
-
-    public void setPassengers(Passengers passengers) {
-        this.passengers = passengers;
-    }
-
-    public SearchAndRescue getSearchAndRescue() {
-        return searchAndRescue;
-    }
-
-    public void setSearchAndRescue(SearchAndRescue searchAndRescue) {
-        this.searchAndRescue = searchAndRescue;
-    }
-
-    public Squadron getSquadron() {
-        return squadron;
-    }
-
-    public void setSquadron(Squadron squadron) {
-        this.squadron = squadron;
-    }
-
-    public Crafting getCrafting() {
-        return crafting;
-    }
-
-    public void setCrafting(Crafting crafting) {
-        this.crafting = crafting;
-    }
-
-    public Crew getCrew() {
-        return crew;
-    }
-
-    public void setCrew(Crew crew) {
-        this.crew = crew;
-    }
-
-    public Multicrew getMulticrew() {
-        return multicrew;
-    }
-
-    public void setMulticrew(Multicrew multicrew) {
-        this.multicrew = multicrew;
-    }
-
-    public MaterialTraderStats getMaterialTraderStats() {
-        return materialTraderStats;
-    }
-
-    public void setMaterialTraderStats(MaterialTraderStats materialTraderStats) {
-        this.materialTraderStats = materialTraderStats;
-    }
-
-    public FleetCarrier getFleetCarrier() {
-        return fleetCarrier;
-    }
-
-    public void setFleetCarrier(FleetCarrier fleetCarrier) {
-        this.fleetCarrier = fleetCarrier;
-    }
-
-    public Exobiology getExobiology() {
-        return exobiology;
-    }
-
-    public void setExobiology(Exobiology exobiology) {
-        this.exobiology = exobiology;
-    }
-
-    @Override
-    public String toString() {
-        return String.format("%s: Statistics event with wealth: %d", timestamp, bankAccount.currentWealth);
     }
 }

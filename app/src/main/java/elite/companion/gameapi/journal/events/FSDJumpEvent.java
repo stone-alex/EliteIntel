@@ -1,7 +1,8 @@
 package elite.companion.gameapi.journal.events;
 
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
-
+import elite.companion.util.GsonFactory;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
@@ -95,11 +96,55 @@ public class FSDJumpEvent extends BaseEvent {
     @SerializedName("SystemFaction")
     private SystemFaction systemFaction;
 
-    public FSDJumpEvent(String timestamp) {
-        super(timestamp, 1, Duration.ofSeconds(30), FSDJumpEvent.class.getName());
+    public FSDJumpEvent(JsonObject json) {
+        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "FSDJump");
+        FSDJumpEvent event = GsonFactory.getGson().fromJson(json, FSDJumpEvent.class);
+        this.taxi = event.taxi;
+        this.multicrew = event.multicrew;
+        this.starSystem = event.starSystem;
+        this.systemAddress = event.systemAddress;
+        this.starPos = event.starPos;
+        this.systemAllegiance = event.systemAllegiance;
+        this.systemEconomy = event.systemEconomy;
+        this.systemEconomyLocalised = event.systemEconomyLocalised;
+        this.systemSecondEconomy = event.systemSecondEconomy;
+        this.systemSecondEconomyLocalised = event.systemSecondEconomyLocalised;
+        this.systemGovernment = event.systemGovernment;
+        this.systemGovernmentLocalised = event.systemGovernmentLocalised;
+        this.systemSecurity = event.systemSecurity;
+        this.systemSecurityLocalised = event.systemSecurityLocalised;
+        this.population = event.population;
+        this.body = event.body;
+        this.bodyId = event.bodyId;
+        this.bodyType = event.bodyType;
+        this.controllingPower = event.controllingPower;
+        this.powers = event.powers;
+        this.powerplayState = event.powerplayState;
+        this.powerplayStateControlProgress = event.powerplayStateControlProgress;
+        this.powerplayStateReinforcement = event.powerplayStateReinforcement;
+        this.powerplayStateUndermining = event.powerplayStateUndermining;
+        this.jumpDist = event.jumpDist;
+        this.fuelUsed = event.fuelUsed;
+        this.fuelLevel = event.fuelLevel;
+        this.factions = event.factions;
+        this.systemFaction = event.systemFaction;
     }
 
-    // Getters
+    @Override
+    public String getEventType() {
+        return "FSDJump";
+    }
+
+    @Override
+    public String toJson() {
+        return GsonFactory.getGson().toJson(this);
+    }
+
+    @Override
+    public JsonObject toJsonObject() {
+        return GsonFactory.toJsonObject(this);
+    }
+
     public boolean isTaxi() {
         return taxi;
     }
@@ -228,7 +273,6 @@ public class FSDJumpEvent extends BaseEvent {
         @SerializedName("ActiveStates")
         private List<ActiveState> activeStates;
 
-        // Getters
         public String getName() {
             return name;
         }
@@ -287,8 +331,8 @@ public class FSDJumpEvent extends BaseEvent {
         }
     }
 
-
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return new StringJoiner(", ", FSDJumpEvent.class.getSimpleName() + "[", "]")
                 .add("taxi=" + taxi)
                 .add("multicrew=" + multicrew)

@@ -1,6 +1,8 @@
 package elite.companion.gameapi.journal.events;
 
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
+import elite.companion.util.GsonFactory;
 import elite.companion.util.TimestampFormatter;
 import java.time.Duration;
 
@@ -14,11 +16,29 @@ public class MissionAbandonedEvent extends BaseEvent {
     @SerializedName("MissionID")
     private long missionID;
 
-    public MissionAbandonedEvent(String timestamp) {
-        super(timestamp, 1, Duration.ofSeconds(30), MissionAbandonedEvent.class.getName());
+    public MissionAbandonedEvent(JsonObject json) {
+        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "MissionAbandoned");
+        MissionAbandonedEvent event = GsonFactory.getGson().fromJson(json, MissionAbandonedEvent.class);
+        this.name = event.name;
+        this.localisedName = event.localisedName;
+        this.missionID = event.missionID;
     }
 
-    // Getters
+    @Override
+    public String getEventType() {
+        return "MissionAbandoned";
+    }
+
+    @Override
+    public String toJson() {
+        return GsonFactory.getGson().toJson(this);
+    }
+
+    @Override
+    public JsonObject toJsonObject() {
+        return GsonFactory.toJsonObject(this);
+    }
+
     public String getName() {
         return name;
     }

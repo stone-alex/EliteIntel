@@ -1,10 +1,11 @@
 package elite.companion.gameapi.journal.events;
 
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
+import elite.companion.util.GsonFactory;
 import java.time.Duration;
 
 public class ProspectedAsteroidEvent extends BaseEvent {
-
     @SerializedName("Materials")
     public Material[] materials;
 
@@ -17,37 +18,29 @@ public class ProspectedAsteroidEvent extends BaseEvent {
     @SerializedName("Remaining")
     public double remaining;
 
-    public ProspectedAsteroidEvent(String timestamp, Material[] materials, String content, String contentLocalised, double remaining) {
-        super(timestamp, 2, Duration.ofMinutes(10), ProspectedAsteroidEvent.class.getName());
-        this.materials = materials;
-        this.content = content;
-        this.contentLocalised = contentLocalised;
-        this.remaining = remaining;
+    public ProspectedAsteroidEvent(JsonObject json) {
+        super(json.get("timestamp").getAsString(), 2, Duration.ofMinutes(10), "ProspectedAsteroid");
+        ProspectedAsteroidEvent event = GsonFactory.getGson().fromJson(json, ProspectedAsteroidEvent.class);
+        this.materials = event.materials;
+        this.content = event.content;
+        this.contentLocalised = event.contentLocalised;
+        this.remaining = event.remaining;
     }
 
-    public static class Material {
-        @SerializedName("Name")
-        public String name;
-
-        @SerializedName("Name_Localised")
-        public String nameLocalised;
-
-        @SerializedName("Proportion")
-        public double proportion;
-
-        public String getName() {
-            return name;
-        }
-
-        public String getNameLocalised() {
-            return nameLocalised;
-        }
-
-        public double getProportion() {
-            return proportion;
-        }
+    @Override
+    public String getEventType() {
+        return "ProspectedAsteroid";
     }
 
+    @Override
+    public String toJson() {
+        return GsonFactory.getGson().toJson(this);
+    }
+
+    @Override
+    public JsonObject toJsonObject() {
+        return GsonFactory.toJsonObject(this);
+    }
 
     public Material[] getMaterials() {
         return materials;
@@ -78,7 +71,29 @@ public class ProspectedAsteroidEvent extends BaseEvent {
 
     @Override
     public String toString() {
-
         return String.format("%s: Prospected asteroid (%s) with materials: %s", timestamp, contentLocalised, getMaterialSummary());
+    }
+
+    public static class Material {
+        @SerializedName("Name")
+        public String name;
+
+        @SerializedName("Name_Localised")
+        public String nameLocalised;
+
+        @SerializedName("Proportion")
+        public double proportion;
+
+        public String getName() {
+            return name;
+        }
+
+        public String getNameLocalised() {
+            return nameLocalised;
+        }
+
+        public double getProportion() {
+            return proportion;
+        }
     }
 }

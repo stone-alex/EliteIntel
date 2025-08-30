@@ -1,29 +1,95 @@
 package elite.companion.gameapi.journal.events;
 
+import com.google.gson.JsonObject;
+import com.google.gson.annotations.SerializedName;
+import elite.companion.util.GsonFactory;
 import java.time.Duration;
 import java.util.Objects;
 import java.util.StringJoiner;
 
 public class LoadGameEvent extends BaseEvent {
+    @SerializedName("FID")
     private String FID;
+
+    @SerializedName("Commander")
     private String Commander;
+
+    @SerializedName("Horizons")
     private boolean Horizons;
+
+    @SerializedName("Odyssey")
     private boolean Odyssey;
+
+    @SerializedName("Ship")
     private String Ship;
+
+    @SerializedName("ShipID")
     private int ShipID;
+
+    @SerializedName("ShipName")
     private String ShipName;
+
+    @SerializedName("ShipIdent")
     private String ShipIdent;
+
+    @SerializedName("FuelLevel")
     private double FuelLevel;
+
+    @SerializedName("FuelCapacity")
     private double FuelCapacity;
+
+    @SerializedName("GameMode")
     private String GameMode;
+
+    @SerializedName("Credits")
     private long Credits;
+
+    @SerializedName("Loan")
     private long Loan;
+
+    @SerializedName("language")
     private String language;
+
+    @SerializedName("gameversion")
     private String gameversion;
+
+    @SerializedName("build")
     private String build;
 
-    public LoadGameEvent(String timestamp) {
-        super(timestamp, 1, Duration.ofSeconds(30), LoadGameEvent.class.getName());
+    public LoadGameEvent(JsonObject json) {
+        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "LoadGame");
+        LoadGameEvent event = GsonFactory.getGson().fromJson(json, LoadGameEvent.class);
+        this.FID = event.FID;
+        this.Commander = event.Commander;
+        this.Horizons = event.Horizons;
+        this.Odyssey = event.Odyssey;
+        this.Ship = event.Ship;
+        this.ShipID = event.ShipID;
+        this.ShipName = event.ShipName;
+        this.ShipIdent = event.ShipIdent;
+        this.FuelLevel = event.FuelLevel;
+        this.FuelCapacity = event.FuelCapacity;
+        this.GameMode = event.GameMode;
+        this.Credits = event.Credits;
+        this.Loan = event.Loan;
+        this.language = event.language;
+        this.gameversion = event.gameversion;
+        this.build = event.build;
+    }
+
+    @Override
+    public String getEventType() {
+        return "LoadGame";
+    }
+
+    @Override
+    public String toJson() {
+        return GsonFactory.getGson().toJson(this);
+    }
+
+    @Override
+    public JsonObject toJsonObject() {
+        return GsonFactory.toJsonObject(this);
     }
 
     public String getFID() {
@@ -204,5 +270,4 @@ public class LoadGameEvent extends BaseEvent {
                 .add("build='" + build + "'")
                 .toString();
     }
-
 }

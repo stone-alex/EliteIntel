@@ -1,6 +1,8 @@
 package elite.companion.gameapi.journal.events;
 
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
+import elite.companion.util.GsonFactory;
 import java.time.Duration;
 import java.util.List;
 
@@ -122,125 +124,65 @@ public class LocationEvent extends BaseEvent {
     @SerializedName("SystemFaction")
     private Faction systemFaction;
 
-    public LocationEvent(String timestamp) {
-        super(timestamp, 1, Duration.ofSeconds(30), LocationEvent.class.getName());
+    public LocationEvent(JsonObject json) {
+        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "Location");
+        LocationEvent event = GsonFactory.getGson().fromJson(json, LocationEvent.class);
+        this.distFromStarLS = event.distFromStarLS;
+        this.docked = event.docked;
+        this.stationName = event.stationName;
+        this.stationType = event.stationType;
+        this.marketID = event.marketID;
+        this.stationFaction = event.stationFaction;
+        this.stationGovernment = event.stationGovernment;
+        this.stationGovernmentLocalised = event.stationGovernmentLocalised;
+        this.stationAllegiance = event.stationAllegiance;
+        this.stationServices = event.stationServices;
+        this.stationEconomy = event.stationEconomy;
+        this.stationEconomyLocalised = event.stationEconomyLocalised;
+        this.stationEconomies = event.stationEconomies;
+        this.taxi = event.taxi;
+        this.multicrew = event.multicrew;
+        this.starSystem = event.starSystem;
+        this.systemAddress = event.systemAddress;
+        this.starPos = event.starPos;
+        this.systemAllegiance = event.systemAllegiance;
+        this.systemEconomy = event.systemEconomy;
+        this.systemEconomyLocalised = event.systemEconomyLocalised;
+        this.systemSecondEconomy = event.systemSecondEconomy;
+        this.systemSecondEconomyLocalised = event.systemSecondEconomyLocalised;
+        this.systemGovernment = event.systemGovernment;
+        this.systemGovernmentLocalised = event.systemGovernmentLocalised;
+        this.systemSecurity = event.systemSecurity;
+        this.systemSecurityLocalised = event.systemSecurityLocalised;
+        this.population = event.population;
+        this.body = event.body;
+        this.bodyID = event.bodyID;
+        this.bodyType = event.bodyType;
+        this.controllingPower = event.controllingPower;
+        this.powers = event.powers;
+        this.powerplayState = event.powerplayState;
+        this.powerplayStateControlProgress = event.powerplayStateControlProgress;
+        this.powerplayStateReinforcement = event.powerplayStateReinforcement;
+        this.powerplayStateUndermining = event.powerplayStateUndermining;
+        this.factions = event.factions;
+        this.systemFaction = event.systemFaction;
     }
 
-    public static class Faction {
-        @SerializedName("Name")
-        private String name;
-
-        @SerializedName("FactionState")
-        private String factionState;
-
-        @SerializedName("Government")
-        private String government;
-
-        @SerializedName("Influence")
-        private double influence;
-
-        @SerializedName("Allegiance")
-        private String allegiance;
-
-        @SerializedName("Happiness")
-        private String happiness;
-
-        @SerializedName("Happiness_Localised")
-        private String happinessLocalised;
-
-        @SerializedName("MyReputation")
-        private double myReputation;
-
-        @SerializedName("ActiveStates")
-        private List<State> activeStates;
-
-        @SerializedName("RecoveringStates")
-        private List<State> recoveringStates;
-
-        // Getters
-        public String getName() {
-            return name;
-        }
-
-        public String getFactionState() {
-            return factionState;
-        }
-
-        public String getGovernment() {
-            return government;
-        }
-
-        public double getInfluence() {
-            return influence;
-        }
-
-        public String getAllegiance() {
-            return allegiance;
-        }
-
-        public String getHappiness() {
-            return happiness;
-        }
-
-        public String getHappinessLocalised() {
-            return happinessLocalised;
-        }
-
-        public double getMyReputation() {
-            return myReputation;
-        }
-
-        public List<State> getActiveStates() {
-            return activeStates;
-        }
-
-        public List<State> getRecoveringStates() {
-            return recoveringStates;
-        }
+    @Override
+    public String getEventType() {
+        return "Location";
     }
 
-    public static class State {
-        @SerializedName("State")
-        private String state;
-
-        @SerializedName("Trend")
-        private int trend;
-
-        // Getters
-        public String getState() {
-            return state;
-        }
-
-        public int getTrend() {
-            return trend;
-        }
+    @Override
+    public String toJson() {
+        return GsonFactory.getGson().toJson(this);
     }
 
-    public static class Economy {
-        @SerializedName("Name")
-        private String name;
-
-        @SerializedName("Name_Localised")
-        private String nameLocalised;
-
-        @SerializedName("Proportion")
-        private double proportion;
-
-        // Getters
-        public String getName() {
-            return name;
-        }
-
-        public String getNameLocalised() {
-            return nameLocalised;
-        }
-
-        public double getProportion() {
-            return proportion;
-        }
+    @Override
+    public JsonObject toJsonObject() {
+        return GsonFactory.toJsonObject(this);
     }
 
-    // Getters
     public double getDistFromStarLS() {
         return distFromStarLS;
     }
@@ -395,5 +337,116 @@ public class LocationEvent extends BaseEvent {
 
     public Faction getSystemFaction() {
         return systemFaction;
+    }
+
+    public static class Faction {
+        @SerializedName("Name")
+        private String name;
+
+        @SerializedName("FactionState")
+        private String factionState;
+
+        @SerializedName("Government")
+        private String government;
+
+        @SerializedName("Influence")
+        private double influence;
+
+        @SerializedName("Allegiance")
+        private String allegiance;
+
+        @SerializedName("Happiness")
+        private String happiness;
+
+        @SerializedName("Happiness_Localised")
+        private String happinessLocalised;
+
+        @SerializedName("MyReputation")
+        private double myReputation;
+
+        @SerializedName("ActiveStates")
+        private List<State> activeStates;
+
+        @SerializedName("RecoveringStates")
+        private List<State> recoveringStates;
+
+        public String getName() {
+            return name;
+        }
+
+        public String getFactionState() {
+            return factionState;
+        }
+
+        public String getGovernment() {
+            return government;
+        }
+
+        public double getInfluence() {
+            return influence;
+        }
+
+        public String getAllegiance() {
+            return allegiance;
+        }
+
+        public String getHappiness() {
+            return happiness;
+        }
+
+        public String getHappinessLocalised() {
+            return happinessLocalised;
+        }
+
+        public double getMyReputation() {
+            return myReputation;
+        }
+
+        public List<State> getActiveStates() {
+            return activeStates;
+        }
+
+        public List<State> getRecoveringStates() {
+            return recoveringStates;
+        }
+    }
+
+    public static class State {
+        @SerializedName("State")
+        private String state;
+
+        @SerializedName("Trend")
+        private int trend;
+
+        public String getState() {
+            return state;
+        }
+
+        public int getTrend() {
+            return trend;
+        }
+    }
+
+    public static class Economy {
+        @SerializedName("Name")
+        private String name;
+
+        @SerializedName("Name_Localised")
+        private String nameLocalised;
+
+        @SerializedName("Proportion")
+        private double proportion;
+
+        public String getName() {
+            return name;
+        }
+
+        public String getNameLocalised() {
+            return nameLocalised;
+        }
+
+        public double getProportion() {
+            return proportion;
+        }
     }
 }

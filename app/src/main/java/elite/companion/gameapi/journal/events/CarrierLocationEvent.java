@@ -1,6 +1,8 @@
 package elite.companion.gameapi.journal.events;
 
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
+import elite.companion.util.GsonFactory;
 import elite.companion.util.TimestampFormatter;
 import java.time.Duration;
 
@@ -20,11 +22,31 @@ public class CarrierLocationEvent extends BaseEvent {
     @SerializedName("BodyID")
     private int bodyID;
 
-    public CarrierLocationEvent(String timestamp) {
-        super(timestamp, 1, Duration.ofSeconds(30), CarrierLocationEvent.class.getName());
+    public CarrierLocationEvent(JsonObject json) {
+        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "CarrierLocation");
+        CarrierLocationEvent event = GsonFactory.getGson().fromJson(json, CarrierLocationEvent.class);
+        this.carrierType = event.carrierType;
+        this.carrierID = event.carrierID;
+        this.starSystem = event.starSystem;
+        this.systemAddress = event.systemAddress;
+        this.bodyID = event.bodyID;
     }
 
-    // Getters
+    @Override
+    public String getEventType() {
+        return "CarrierLocation";
+    }
+
+    @Override
+    public String toJson() {
+        return GsonFactory.getGson().toJson(this);
+    }
+
+    @Override
+    public JsonObject toJsonObject() {
+        return GsonFactory.toJsonObject(this);
+    }
+
     public String getCarrierType() {
         return carrierType;
     }

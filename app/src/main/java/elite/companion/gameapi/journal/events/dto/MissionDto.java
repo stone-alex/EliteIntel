@@ -1,7 +1,9 @@
 package elite.companion.gameapi.journal.events.dto;
 
+import com.google.gson.JsonObject;
 import elite.companion.gameapi.journal.events.BaseEvent;
 import elite.companion.gameapi.journal.events.MissionAcceptedEvent;
+import elite.companion.util.GsonFactory;
 
 import java.time.Duration;
 
@@ -120,5 +122,13 @@ public class MissionDto extends BaseEvent {
 
     public long getMissionId() {
         return missionId;
+    }
+
+    @Override public String getEventType() {
+        return "Mission";
+    }
+
+    @Override public JsonObject toJsonObject() {
+        return GsonFactory.toJsonObject(this);
     }
 }

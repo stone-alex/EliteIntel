@@ -2,6 +2,7 @@ package elite.companion.gameapi.journal.events;
 
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
+import elite.companion.util.GsonFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,29 +21,39 @@ public class FSSSignalDiscoveredEvent extends BaseEvent {
     private final String signalType;
 
     @SerializedName("SignalName_Localised")
-    private final String signalNameLocalised; // Nullable
+    private final String signalNameLocalised;
 
     @SerializedName("IsStation")
-    private final Boolean isStation; // Nullable, defaults to null if absent
+    private final Boolean isStation;
 
     public FSSSignalDiscoveredEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 3, Duration.ofMinutes(30), FSSSignalDiscoveredEvent.class.getName());
-
-        // Debug log to inspect JSON input
+        super(json.get("timestamp").getAsString(), 3, Duration.ofMinutes(30), "FSSSignalDiscovered");
         logger.debug("Parsing FSSSignalDiscoveredEvent: {}", json.toString());
-
-        this.systemAddress = json.get("SystemAddress").getAsLong();
-        this.signalName = json.get("SignalName").getAsString();
-        this.signalType = json.get("SignalType").getAsString();
-        this.signalNameLocalised = json.has("SignalName_Localised") ? json.get("SignalName_Localised").getAsString() : null;
-        this.isStation = json.has("IsStation") ? json.get("IsStation").getAsBoolean() : null;
-
-        // Debug log to verify field values
+        FSSSignalDiscoveredEvent event = GsonFactory.getGson().fromJson(json, FSSSignalDiscoveredEvent.class);
+        this.systemAddress = event.systemAddress;
+        this.signalName = event.signalName;
+        this.signalType = event.signalType;
+        this.signalNameLocalised = event.signalNameLocalised;
+        this.isStation = event.isStation;
         logger.debug("Parsed values: systemAddress={}, signalName={}, signalType={}, signalNameLocalised={}, isStation={}",
                 systemAddress, signalName, signalType, signalNameLocalised, isStation);
     }
 
-    // Getters
+    @Override
+    public String getEventType() {
+        return "FSSSignalDiscovered";
+    }
+
+    @Override
+    public String toJson() {
+        return GsonFactory.getGson().toJson(this);
+    }
+
+    @Override
+    public JsonObject toJsonObject() {
+        return GsonFactory.toJsonObject(this);
+    }
+
     public long getSystemAddress() {
         return systemAddress;
     }
@@ -63,7 +74,6 @@ public class FSSSignalDiscoveredEvent extends BaseEvent {
         return isStation;
     }
 
-    // Helper methods
     public boolean isFleetCarrier() {
         return "FleetCarrier".equals(signalType);
     }

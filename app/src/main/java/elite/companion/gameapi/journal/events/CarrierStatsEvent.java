@@ -1,35 +1,114 @@
 package elite.companion.gameapi.journal.events;
 
+import com.google.gson.JsonObject;
+import com.google.gson.annotations.SerializedName;
+import elite.companion.util.GsonFactory;
 import java.time.Duration;
-import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
 public class CarrierStatsEvent extends BaseEvent {
+    @SerializedName("CarrierID")
     private long CarrierID;
+
+    @SerializedName("CarrierType")
     private String CarrierType;
+
+    @SerializedName("Callsign")
     private String Callsign;
+
+    @SerializedName("Name")
     private String Name;
+
+    @SerializedName("DockingAccess")
     private String DockingAccess;
+
+    @SerializedName("AllowNotorious")
     private boolean AllowNotorious;
+
+    @SerializedName("FuelLevel")
     private int FuelLevel;
+
+    @SerializedName("JumpRangeCurr")
     private double JumpRangeCurr;
+
+    @SerializedName("JumpRangeMax")
     private double JumpRangeMax;
+
+    @SerializedName("PendingDecommission")
     private boolean PendingDecommission;
+
+    @SerializedName("SpaceUsage")
     private SpaceUsage SpaceUsage;
+
+    @SerializedName("Finance")
     private Finance Finance;
+
+    @SerializedName("Crew")
     private List<Crew> Crew;
+
+    @SerializedName("ShipPacks")
     private List<Object> ShipPacks;
+
+    @SerializedName("ModulePacks")
     private List<Object> ModulePacks;
 
+    public CarrierStatsEvent(JsonObject json) {
+        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(10), "CarrierStats");
+        CarrierStatsEvent event = GsonFactory.getGson().fromJson(json, CarrierStatsEvent.class);
+        this.CarrierID = event.CarrierID;
+        this.CarrierType = event.CarrierType;
+        this.Callsign = event.Callsign;
+        this.Name = event.Name;
+        this.DockingAccess = event.DockingAccess;
+        this.AllowNotorious = event.AllowNotorious;
+        this.FuelLevel = event.FuelLevel;
+        this.JumpRangeCurr = event.JumpRangeCurr;
+        this.JumpRangeMax = event.JumpRangeMax;
+        this.PendingDecommission = event.PendingDecommission;
+        this.SpaceUsage = event.SpaceUsage;
+        this.Finance = event.Finance;
+        this.Crew = event.Crew;
+        this.ShipPacks = event.ShipPacks;
+        this.ModulePacks = event.ModulePacks;
+    }
+
+    @Override
+    public String getEventType() {
+        return "CarrierStats";
+    }
+
+    @Override
+    public String toJson() {
+        return GsonFactory.getGson().toJson(this);
+    }
+
+    @Override
+    public JsonObject toJsonObject() {
+        return GsonFactory.toJsonObject(this);
+    }
+
     public static class SpaceUsage {
+        @SerializedName("TotalCapacity")
         private int TotalCapacity;
+
+        @SerializedName("Crew")
         private int Crew;
+
+        @SerializedName("Cargo")
         private int Cargo;
+
+        @SerializedName("CargoSpaceReserved")
         private int CargoSpaceReserved;
+
+        @SerializedName("ShipPacks")
         private int ShipPacks;
+
+        @SerializedName("ModulePacks")
         private int ModulePacks;
+
+        @SerializedName("FreeSpace")
         private int FreeSpace;
 
         public int getTotalCapacity() {
@@ -90,13 +169,28 @@ public class CarrierStatsEvent extends BaseEvent {
     }
 
     public static class Finance {
+        @SerializedName("CarrierBalance")
         private long CarrierBalance;
+
+        @SerializedName("ReserveBalance")
         private long ReserveBalance;
+
+        @SerializedName("AvailableBalance")
         private long AvailableBalance;
+
+        @SerializedName("TaxRate_pioneersupplies")
         private int TaxRate_pioneersupplies;
+
+        @SerializedName("TaxRate_shipyard")
         private int TaxRate_shipyard;
+
+        @SerializedName("TaxRate_rearm")
         private int TaxRate_rearm;
+
+        @SerializedName("TaxRate_refuel")
         private int TaxRate_refuel;
+
+        @SerializedName("TaxRate_repair")
         private int TaxRate_repair;
 
         public long getCarrierBalance() {
@@ -165,9 +259,16 @@ public class CarrierStatsEvent extends BaseEvent {
     }
 
     public static class Crew {
+        @SerializedName("CrewRole")
         private String CrewRole;
+
+        @SerializedName("Activated")
         private boolean Activated;
+
+        @SerializedName("Enabled")
         private boolean Enabled;
+
+        @SerializedName("CrewName")
         private String CrewName;
 
         public String getCrewRole() {
@@ -201,11 +302,6 @@ public class CarrierStatsEvent extends BaseEvent {
         public void setCrewName(String crewName) {
             this.CrewName = crewName;
         }
-    }
-
-    public CarrierStatsEvent(String timestamp) {
-        //super(timestamp, 1, Duration.ofSeconds(10));
-        super(String.valueOf(Instant.now()), 1, Duration.ofSeconds(10), CarrierStatsEvent.class.getName());
     }
 
     public long getCarrierID() {

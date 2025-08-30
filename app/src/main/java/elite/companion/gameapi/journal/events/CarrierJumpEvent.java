@@ -1,6 +1,8 @@
 package elite.companion.gameapi.journal.events;
 
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
+import elite.companion.util.GsonFactory;
 import elite.companion.util.TimestampFormatter;
 
 import java.time.Duration;
@@ -87,11 +89,52 @@ public class CarrierJumpEvent extends BaseEvent {
     @SerializedName("SystemFaction")
     private SystemFaction systemFaction;
 
-    public CarrierJumpEvent(String timestamp) {
-        super(timestamp, 1, Duration.ofSeconds(30), CarrierJumpEvent.class.getName());
+    public CarrierJumpEvent(JsonObject json) {
+        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "CarrierJump");
+        CarrierJumpEvent event = GsonFactory.getGson().fromJson(json, CarrierJumpEvent.class);
+        this.docked = event.docked;
+        this.onFoot = event.onFoot;
+        this.starSystem = event.starSystem;
+        this.systemAddress = event.systemAddress;
+        this.starPos = event.starPos;
+        this.systemAllegiance = event.systemAllegiance;
+        this.systemEconomy = event.systemEconomy;
+        this.systemEconomyLocalised = event.systemEconomyLocalised;
+        this.systemSecondEconomy = event.systemSecondEconomy;
+        this.systemSecondEconomyLocalised = event.systemSecondEconomyLocalised;
+        this.systemGovernment = event.systemGovernment;
+        this.systemGovernmentLocalised = event.systemGovernmentLocalised;
+        this.systemSecurity = event.systemSecurity;
+        this.systemSecurityLocalised = event.systemSecurityLocalised;
+        this.population = event.population;
+        this.body = event.body;
+        this.bodyId = event.bodyId;
+        this.bodyType = event.bodyType;
+        this.controllingPower = event.controllingPower;
+        this.powers = event.powers;
+        this.powerplayState = event.powerplayState;
+        this.powerplayStateControlProgress = event.powerplayStateControlProgress;
+        this.powerplayStateReinforcement = event.powerplayStateReinforcement;
+        this.powerplayStateUndermining = event.powerplayStateUndermining;
+        this.factions = event.factions;
+        this.systemFaction = event.systemFaction;
     }
 
-    // Getters
+    @Override
+    public String getEventType() {
+        return "CarrierJump";
+    }
+
+    @Override
+    public String toJson() {
+        return GsonFactory.getGson().toJson(this);
+    }
+
+    @Override
+    public JsonObject toJsonObject() {
+        return GsonFactory.toJsonObject(this);
+    }
+
     public boolean isDocked() {
         return docked;
     }
@@ -218,7 +261,6 @@ public class CarrierJumpEvent extends BaseEvent {
         @SerializedName("RecoveringStates")
         private List<RecoveringState> recoveringStates;
 
-        // Getters
         public String getName() {
             return name;
         }
@@ -317,8 +359,8 @@ public class CarrierJumpEvent extends BaseEvent {
         }
     }
 
-
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return new StringJoiner("")
                 .add("docked=" + docked)
                 .add("onFoot=" + onFoot)
@@ -344,7 +386,7 @@ public class CarrierJumpEvent extends BaseEvent {
                 .add("powerplayStateControlProgress=" + powerplayStateControlProgress)
                 .add("powerplayStateReinforcement=" + powerplayStateReinforcement)
                 .add("powerplayStateUndermining=" + powerplayStateUndermining)
-                //.add("factions=" + factions.)
+                .add("factions=" + factions)
                 .add("systemFaction=" + systemFaction)
                 .toString();
     }

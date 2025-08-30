@@ -213,7 +213,7 @@ public class SpeechRecognizer {
 
     private void sendToAi(String sanitizedTranscript) {
         log.info("Processing sanitizedTranscript: {}", sanitizedTranscript);
-        grok.processVoiceCommand(sanitizedTranscript);
+        grok.processVoiceCommand(sanitizedTranscript, 0.5f);
     }
 
     /**

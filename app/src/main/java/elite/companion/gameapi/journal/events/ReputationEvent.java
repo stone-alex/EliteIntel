@@ -1,6 +1,8 @@
 package elite.companion.gameapi.journal.events;
 
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
+import elite.companion.util.GsonFactory;
 import elite.companion.util.TimestampFormatter;
 import java.time.Duration;
 import java.text.DecimalFormat;
@@ -20,11 +22,30 @@ public class ReputationEvent extends BaseEvent {
 
     private static final DecimalFormat PERCENT_FORMAT = new DecimalFormat("0.00%");
 
-    public ReputationEvent(String timestamp) {
-        super(timestamp, 1, Duration.ofSeconds(30), ReputationEvent.class.getName());
+    public ReputationEvent(JsonObject json) {
+        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "Reputation");
+        ReputationEvent event = GsonFactory.getGson().fromJson(json, ReputationEvent.class);
+        this.empire = event.empire;
+        this.federation = event.federation;
+        this.independent = event.independent;
+        this.alliance = event.alliance;
     }
 
-    // Getters (raw doubles)
+    @Override
+    public String getEventType() {
+        return "Reputation";
+    }
+
+    @Override
+    public String toJson() {
+        return GsonFactory.getGson().toJson(this);
+    }
+
+    @Override
+    public JsonObject toJsonObject() {
+        return GsonFactory.toJsonObject(this);
+    }
+
     public double getEmpire() {
         return empire;
     }
@@ -41,7 +62,6 @@ public class ReputationEvent extends BaseEvent {
         return alliance;
     }
 
-    // Helper methods to format as percentages
     public String getEmpirePercent() {
         return PERCENT_FORMAT.format(empire / 100.0);
     }

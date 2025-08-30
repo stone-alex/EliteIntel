@@ -1,7 +1,8 @@
 package elite.companion.gameapi.journal.events;
 
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
-
+import elite.companion.util.GsonFactory;
 import java.time.Duration;
 
 public class FSDTargetEvent extends BaseEvent {
@@ -17,11 +18,30 @@ public class FSDTargetEvent extends BaseEvent {
     @SerializedName("RemainingJumpsInRoute")
     private int remainingJumpsInRoute;
 
-    public FSDTargetEvent(String timestamp) {
-        super(timestamp, 1, Duration.ofSeconds(30), FSDTargetEvent.class.getName());
+    public FSDTargetEvent(JsonObject json) {
+        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "FSDTarget");
+        FSDTargetEvent event = GsonFactory.getGson().fromJson(json, FSDTargetEvent.class);
+        this.name = event.name;
+        this.systemAddress = event.systemAddress;
+        this.starClass = event.starClass;
+        this.remainingJumpsInRoute = event.remainingJumpsInRoute;
     }
 
-    // Getters
+    @Override
+    public String getEventType() {
+        return "FSDTarget";
+    }
+
+    @Override
+    public String toJson() {
+        return GsonFactory.getGson().toJson(this);
+    }
+
+    @Override
+    public JsonObject toJsonObject() {
+        return GsonFactory.toJsonObject(this);
+    }
+
     public String getName() {
         return name;
     }

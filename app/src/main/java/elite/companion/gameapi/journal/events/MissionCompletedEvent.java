@@ -1,8 +1,9 @@
 package elite.companion.gameapi.journal.events;
 
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
+import elite.companion.util.GsonFactory;
 import elite.companion.util.TimestampFormatter;
-
 import java.time.Duration;
 import java.util.List;
 import java.util.StringJoiner;
@@ -44,11 +45,38 @@ public class MissionCompletedEvent extends BaseEvent {
     @SerializedName("FactionEffects")
     private List<FactionEffect> factionEffects;
 
-    public MissionCompletedEvent(String timestamp) {
-        super(timestamp, 1, Duration.ofSeconds(30), MissionCompletedEvent.class.getName());
+    public MissionCompletedEvent(JsonObject json) {
+        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "MissionCompleted");
+        MissionCompletedEvent event = GsonFactory.getGson().fromJson(json, MissionCompletedEvent.class);
+        this.faction = event.faction;
+        this.name = event.name;
+        this.localisedName = event.localisedName;
+        this.missionID = event.missionID;
+        this.targetType = event.targetType;
+        this.targetTypeLocalised = event.targetTypeLocalised;
+        this.targetFaction = event.targetFaction;
+        this.killCount = event.killCount;
+        this.destinationSystem = event.destinationSystem;
+        this.destinationStation = event.destinationStation;
+        this.reward = event.reward;
+        this.factionEffects = event.factionEffects;
     }
 
-    // Getters
+    @Override
+    public String getEventType() {
+        return "MissionCompleted";
+    }
+
+    @Override
+    public String toJson() {
+        return GsonFactory.getGson().toJson(this);
+    }
+
+    @Override
+    public JsonObject toJsonObject() {
+        return GsonFactory.toJsonObject(this);
+    }
+
     public String getFaction() {
         return faction;
     }

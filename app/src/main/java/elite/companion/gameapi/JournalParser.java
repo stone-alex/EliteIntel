@@ -1,11 +1,12 @@
 package elite.companion.gameapi;
 
-import com.google.gson.*;
-import elite.companion.util.EventBusManager;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import elite.companion.comms.voice.VoiceGenerator;
-import elite.companion.gameapi.journal.events.*;
-import elite.companion.util.GsonFactory;
-import elite.companion.util.InstantTypeAdapter;
+import elite.companion.gameapi.journal.EventRegistry;
+import elite.companion.gameapi.journal.events.BaseEvent;
+import elite.companion.util.EventBusManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,18 +14,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 
 public class JournalParser {
     private static final Logger log = LoggerFactory.getLogger(JournalParser.class);
-
-    public static final int THRESHOLD = 10000; //10 Seconds
-
-    public static final int THRESHOLD_LONG = 60000; //60 Seconds
-    private final Gson gson = GsonFactory.getGson();
-
     private final Path journalDir = Paths.get(System.getProperty("user.home"), "Saved Games", "Frontier Developments", "Elite Dangerous");
 
     public void startReading() throws IOException, InterruptedException {
@@ -37,6 +30,7 @@ public class JournalParser {
         long lastPosition = 0;
         VoiceGenerator.getInstance().speak("Monitoring Journal");
         System.out.println("Monitoring " + currentFile.getFileName());
+
         while (true) {
             WatchKey key = watchService.take();
             Path latestFile = getLatestJournalFile();
@@ -72,141 +66,29 @@ public class JournalParser {
                             continue;
                         }
 
-                        JsonObject event = element.getAsJsonObject();
-                        if (event.has("event")) {
-                            String eventType = event.get("event").getAsString();
-                            String eventTimestamp = event.get("timestamp").getAsString();
-                            log.info("Processing Journal Event: {} {}", eventType, event.toString());
-                            switch (eventType) {
-                                //events not timed. located at the top of the journal file. Generate event regardless of time.
-                                //this will be read on the start of the app, even if the game session is not running.
-                                case "LoadGame":
-                                    EventBusManager.publish(gson.fromJson(event, LoadGameEvent.class));
-                                    break;
-                                case "Commander":
-                                    EventBusManager.publish(gson.fromJson(event, CommanderEvent.class));
-                                    break;
-                                case "Statistics":
-                                    EventBusManager.publish(gson.fromJson(event, StatisticsEvent.class));
-                                    break;
-                                case "Loadout":
-                                    EventBusManager.publish(gson.fromJson(event, LoadoutEvent.class));
-                                    break;
-                                case "Rank":
-                                    EventBusManager.publish(gson.fromJson(event, RankEvent.class));
-                                    break;
-                                case "Materials":
-                                    EventBusManager.publish(gson.fromJson(event, MaterialsEvent.class));
-                                    break;
-                                case "EngineerProgress":
-                                    EventBusManager.publish(gson.fromJson(event, EngineerProgressEvent.class));
-                                    break;
-
-
-                                //timed events. only generate event the event is recent
-                                case "MiningRefined":
-                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, MiningRefinedEvent.class));
-                                    break;
-                                case "ProspectedAsteroid":
-                                    if (isRecent(eventTimestamp, THRESHOLD_LONG)) EventBusManager.publish(gson.fromJson(event, ProspectedAsteroidEvent.class));
-                                    break;
-                                case "LaunchDrone":
-                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, LaunchDroneEvent.class));
-                                    break;
-                                case "CarrierStats":
-                                    EventBusManager.publish(gson.fromJson(event, CarrierStatsEvent.class));
-                                    break;
-                                case "ReceiveText":
-                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, ReceiveTextEvent.class));
-                                    break;
-                                case "FSSSignalDiscovered":
-                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, FSSSignalDiscoveredEvent.class));
-                                    break;
-                                case "FSDJump":
-                                    if (isRecent(eventTimestamp, THRESHOLD_LONG)) EventBusManager.publish(gson.fromJson(event, FSDJumpEvent.class));
-                                    break;
-                                case "Touchdown":
-                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, TouchdownEvent.class));
-                                    break;
-                                case "Liftoff":
-                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, LiftoffEvent.class));
-                                    break;
-                                case "CarrierJumpRequest":
-                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, CarrierJumpRequestEvent.class));
-                                    break;
-                                case "FSDTarget":
-                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, FSDTargetEvent.class));
-                                    break;
-                                case "Scan":
-                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, ScanEvent.class));
-                                    break;
-                                case "ShipTargeted":
-                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, ShipTargetedEvent.class));
-                                    break;
-                                case "SwitchSuitLoadout":
-                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, SwitchSuitLoadoutEvent.class));
-                                    break;
-                                case "Scanned":
-                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, ScannedEvent.class));
-                                    break;
-                                case "Bounty":
-                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, BountyEvent.class));
-                                    break;
-                                case "NavRouteClear":
-                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, NavRouteClearEvent.class));
-                                    break;
-                                case "MissionAccepted":
-                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, MissionAcceptedEvent.class));
-                                    break;
-                                case "MissionCompleted":
-                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, MissionCompletedEvent.class));
-                                    break;
-                                case "NpcCrewPaidWage":
-                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, NpcCrewPaidWageEvent.class));
-                                    break;
-                                case "SupercruiseExit":
-                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, SupercruiseExitEvent.class));
-                                    break;
-                                case "MissionAbandoned":
-                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, MissionAbandonedEvent.class));
-                                    break;
-                                case "MissionFailed":
-                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, MissionFailedEvent.class));
-                                    break;
-                                case "Friends":
-                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, FriendsEvent.class));
-                                    break;
-                                case "RedeemVoucher":
-                                    if (isRecent(eventTimestamp, THRESHOLD)) EventBusManager.publish(gson.fromJson(event, RedeemVoucherEvent.class));
-                                    break;
-
-                                default:
-                                    break;
+                        JsonObject eventJson = element.getAsJsonObject();
+                        if (eventJson.has("event")) {
+                            String eventType = eventJson.get("event").getAsString();
+                            BaseEvent event = EventRegistry.createEvent(eventType, eventJson);
+                            if (event != null) {
+                                EventBusManager.publish(event);
+                                log.info("Processing Journal Event: {} {}", eventType, event.toJsonObject());
+                            } else {
+                                log.warn("Skipping event: {}", eventType);
                             }
                         }
-                    } catch (JsonSyntaxException jse) {
-                        System.err.println("Skipping malformed journal line: " + jse.getMessage());
+                    } catch (Exception e) {
+                        log.error("Failed to parse journal entry: {}", line, e);
                     }
 
                     lastPosition += line.getBytes(StandardCharsets.UTF_8).length + System.lineSeparator().getBytes(StandardCharsets.UTF_8).length;
                 }
             } catch (IOException e) {
-                VoiceGenerator.getInstance().speak("Error reading journal: " + e.getMessage() + " ");
-                log.error("Error reading journal: {}", e.getMessage());
+                VoiceGenerator.getInstance().speak("Error reading journal: " + e.getMessage());
+                log.error("Error reading journal: {}", e.getMessage(), e);
             }
 
             key.reset();
-        }
-    }
-
-    private boolean isRecent(String timestamp, long secondsNanoThreshold) {
-        try {
-            Instant eventTime = Instant.parse(timestamp);
-            Instant now = Instant.now();
-            return !eventTime.isBefore(now.minus(secondsNanoThreshold, ChronoUnit.MILLIS));
-        } catch (Exception e) {
-            log.warn("Invalid timestamp format: {}", timestamp);
-            return false;
         }
     }
 

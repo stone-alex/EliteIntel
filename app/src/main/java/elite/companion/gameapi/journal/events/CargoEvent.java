@@ -1,6 +1,8 @@
 package elite.companion.gameapi.journal.events;
 
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
+import elite.companion.util.GsonFactory;
 import elite.companion.util.TimestampFormatter;
 
 import java.time.Duration;
@@ -13,11 +15,28 @@ public class CargoEvent extends BaseEvent {
     @SerializedName("Count")
     private int count;
 
-    public CargoEvent(String timestamp) {
-        super(timestamp, 1, Duration.ofSeconds(30), CargoEvent.class.getName());
+    public CargoEvent(JsonObject json) {
+        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "Cargo");
+        CargoEvent event = GsonFactory.getGson().fromJson(json, CargoEvent.class);
+        this.vessel = event.vessel;
+        this.count = event.count;
     }
 
-    // Getters
+    @Override
+    public String getEventType() {
+        return "Cargo";
+    }
+
+    @Override
+    public String toJson() {
+        return GsonFactory.getGson().toJson(this);
+    }
+
+    @Override
+    public JsonObject toJsonObject() {
+        return GsonFactory.toJsonObject(this);
+    }
+
     public String getVessel() {
         return vessel;
     }

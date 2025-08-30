@@ -1,6 +1,8 @@
 package elite.companion.gameapi.journal.events;
 
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
+import elite.companion.util.GsonFactory;
 import elite.companion.util.TimestampFormatter;
 import java.time.Duration;
 import java.util.List;
@@ -9,11 +11,27 @@ public class EngineerProgressEvent extends BaseEvent {
     @SerializedName("Engineers")
     private List<Engineer> engineers;
 
-    public EngineerProgressEvent(String timestamp) {
-        super(timestamp, 1, Duration.ofSeconds(30), EngineerProgressEvent.class.getName());
+    public EngineerProgressEvent(JsonObject json) {
+        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "EngineerProgress");
+        EngineerProgressEvent event = GsonFactory.getGson().fromJson(json, EngineerProgressEvent.class);
+        this.engineers = event.engineers;
     }
 
-    // Getter
+    @Override
+    public String getEventType() {
+        return "EngineerProgress";
+    }
+
+    @Override
+    public String toJson() {
+        return GsonFactory.getGson().toJson(this);
+    }
+
+    @Override
+    public JsonObject toJsonObject() {
+        return GsonFactory.toJsonObject(this);
+    }
+
     public List<Engineer> getEngineers() {
         return engineers;
     }
@@ -38,7 +56,6 @@ public class EngineerProgressEvent extends BaseEvent {
         @SerializedName("Rank")
         private int rank;
 
-        // Getters
         public String getName() {
             return name;
         }
@@ -59,7 +76,6 @@ public class EngineerProgressEvent extends BaseEvent {
             return rank;
         }
 
-        // Helper to check if engineer is fully unlocked (Rank 5, no progress needed)
         public boolean isFullyUnlocked() {
             return "Unlocked".equals(progress) && rank == 5 && rankProgress == 0;
         }

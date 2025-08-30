@@ -1,17 +1,39 @@
 package elite.companion.gameapi.journal.events;
 
+import com.google.gson.JsonObject;
+import com.google.gson.annotations.SerializedName;
+import elite.companion.util.GsonFactory;
 import java.time.Duration;
 import java.util.Objects;
 import java.util.StringJoiner;
 
 public class CommanderEvent extends BaseEvent {
+    @SerializedName("FID")
     private String FID;
+
+    @SerializedName("Name")
     private String Name;
 
-    public CommanderEvent(String timestamp, String FID, String Name) {
-        super(timestamp, 1, Duration.ofSeconds(30), CommanderEvent.class.getName());
-        this.FID = FID;
-        this.Name = Name;
+    public CommanderEvent(JsonObject json) {
+        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "Commander");
+        CommanderEvent event = GsonFactory.getGson().fromJson(json, CommanderEvent.class);
+        this.FID = event.FID;
+        this.Name = event.Name;
+    }
+
+    @Override
+    public String getEventType() {
+        return "Commander";
+    }
+
+    @Override
+    public String toJson() {
+        return GsonFactory.getGson().toJson(this);
+    }
+
+    @Override
+    public JsonObject toJsonObject() {
+        return GsonFactory.toJsonObject(this);
     }
 
     public String getFID() {
@@ -27,7 +49,7 @@ public class CommanderEvent extends BaseEvent {
     }
 
     public void setName(String name) {
-        Name = name;
+        this.Name = name;
     }
 
     @Override
@@ -50,5 +72,4 @@ public class CommanderEvent extends BaseEvent {
                 .add("Name='" + Name + "'")
                 .toString();
     }
-
 }

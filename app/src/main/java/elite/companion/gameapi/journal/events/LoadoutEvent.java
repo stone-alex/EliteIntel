@@ -1,8 +1,9 @@
 package elite.companion.gameapi.journal.events;
 
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
+import elite.companion.util.GsonFactory;
 import elite.companion.util.TimestampFormatter;
-
 import java.time.Duration;
 import java.util.List;
 
@@ -43,11 +44,38 @@ public class LoadoutEvent extends BaseEvent {
     @SerializedName("Modules")
     private List<Module> modules;
 
-    public LoadoutEvent(String timestamp) {
-        super(timestamp, 1, Duration.ofSeconds(30), LoadoutEvent.class.getName());
+    public LoadoutEvent(JsonObject json) {
+        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "Loadout");
+        LoadoutEvent event = GsonFactory.getGson().fromJson(json, LoadoutEvent.class);
+        this.ship = event.ship;
+        this.shipId = event.shipId;
+        this.shipName = event.shipName;
+        this.shipIdent = event.shipIdent;
+        this.modulesValue = event.modulesValue;
+        this.hullHealth = event.hullHealth;
+        this.unladenMass = event.unladenMass;
+        this.cargoCapacity = event.cargoCapacity;
+        this.maxJumpRange = event.maxJumpRange;
+        this.fuelCapacity = event.fuelCapacity;
+        this.rebuy = event.rebuy;
+        this.modules = event.modules;
     }
 
-    // Getters
+    @Override
+    public String getEventType() {
+        return "Loadout";
+    }
+
+    @Override
+    public String toJson() {
+        return GsonFactory.getGson().toJson(this);
+    }
+
+    @Override
+    public JsonObject toJsonObject() {
+        return GsonFactory.toJsonObject(this);
+    }
+
     public String getShip() {
         return ship;
     }
@@ -133,16 +161,16 @@ public class LoadoutEvent extends BaseEvent {
         private float health;
 
         @SerializedName("Value")
-        private Long value; // Nullable
+        private Long value;
 
         @SerializedName("AmmoInClip")
-        private Integer ammoInClip; // Nullable
+        private Integer ammoInClip;
 
         @SerializedName("AmmoInHopper")
-        private Integer ammoInHopper; // Nullable
+        private Integer ammoInHopper;
 
         @SerializedName("Engineering")
-        private Engineering engineering; // Nullable
+        private Engineering engineering;
 
         public String getSlot() {
             return slot;

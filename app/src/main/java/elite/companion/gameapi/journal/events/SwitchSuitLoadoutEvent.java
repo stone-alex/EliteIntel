@@ -1,7 +1,8 @@
 package elite.companion.gameapi.journal.events;
 
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
-
+import elite.companion.util.GsonFactory;
 import java.time.Duration;
 import java.util.List;
 
@@ -26,6 +27,61 @@ public class SwitchSuitLoadoutEvent extends BaseEvent {
 
     @SerializedName("Modules")
     private List<Module> modules;
+
+    public SwitchSuitLoadoutEvent(JsonObject json) {
+        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "SwitchSuitLoadout");
+        SwitchSuitLoadoutEvent event = GsonFactory.getGson().fromJson(json, SwitchSuitLoadoutEvent.class);
+        this.suitID = event.suitID;
+        this.suitName = event.suitName;
+        this.suitNameLocalised = event.suitNameLocalised;
+        this.suitMods = event.suitMods;
+        this.loadoutID = event.loadoutID;
+        this.loadoutName = event.loadoutName;
+        this.modules = event.modules;
+    }
+
+    @Override
+    public String getEventType() {
+        return "SwitchSuitLoadout";
+    }
+
+    @Override
+    public String toJson() {
+        return GsonFactory.getGson().toJson(this);
+    }
+
+    @Override
+    public JsonObject toJsonObject() {
+        return GsonFactory.toJsonObject(this);
+    }
+
+    public long getSuitID() {
+        return suitID;
+    }
+
+    public String getSuitName() {
+        return suitName;
+    }
+
+    public String getSuitNameLocalised() {
+        return suitNameLocalised;
+    }
+
+    public List<String> getSuitMods() {
+        return suitMods;
+    }
+
+    public long getLoadoutID() {
+        return loadoutID;
+    }
+
+    public String getLoadoutName() {
+        return loadoutName;
+    }
+
+    public List<Module> getModules() {
+        return modules;
+    }
 
     public static class Module {
         @SerializedName("SlotName")
@@ -69,37 +125,5 @@ public class SwitchSuitLoadoutEvent extends BaseEvent {
         public List<String> getWeaponMods() {
             return weaponMods;
         }
-    }
-
-    public SwitchSuitLoadoutEvent(String timestamp) {
-        super(timestamp, 1, Duration.ofSeconds(30), SwitchSuitLoadoutEvent.class.getName());
-    }
-
-    public long getSuitID() {
-        return suitID;
-    }
-
-    public String getSuitName() {
-        return suitName;
-    }
-
-    public String getSuitNameLocalised() {
-        return suitNameLocalised;
-    }
-
-    public List<String> getSuitMods() {
-        return suitMods;
-    }
-
-    public long getLoadoutID() {
-        return loadoutID;
-    }
-
-    public String getLoadoutName() {
-        return loadoutName;
-    }
-
-    public List<Module> getModules() {
-        return modules;
     }
 }

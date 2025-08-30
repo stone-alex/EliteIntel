@@ -8,7 +8,6 @@ import elite.companion.util.RomanNumeralConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings("unused")
 public class ShipTargetedEventSubscriber {
 
     private static final Logger log = LoggerFactory.getLogger(ShipTargetedEventSubscriber.class);

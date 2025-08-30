@@ -1,13 +1,13 @@
 package elite.companion.gameapi.journal.events;
 
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
-
+import elite.companion.util.GsonFactory;
 import java.time.Duration;
-import java.util.Set;
 import java.util.HashSet;
+import java.util.Set;
 
 public class StartJumpEvent extends BaseEvent {
-
     @SerializedName("JumpType")
     private String jumpType;
 
@@ -27,9 +27,30 @@ public class StartJumpEvent extends BaseEvent {
 
     private static final Set<String> SCOOPABLE_STARS = new HashSet<>(Set.of("K", "G", "B", "F", "O", "A", "M"));
 
-    public StartJumpEvent(String timestamp) {
-        super(timestamp, 1, Duration.ofSeconds(30), StartJumpEvent.class.getName());
+    public StartJumpEvent(JsonObject json) {
+        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "StartJump");
+        StartJumpEvent event = GsonFactory.getGson().fromJson(json, StartJumpEvent.class);
+        this.jumpType = event.jumpType;
+        this.taxi = event.taxi;
+        this.starSystem = event.starSystem;
+        this.systemAddress = event.systemAddress;
+        this.starClass = event.starClass;
         this.isScoopable = starClass != null && SCOOPABLE_STARS.contains(starClass.toUpperCase());
+    }
+
+    @Override
+    public String getEventType() {
+        return "StartJump";
+    }
+
+    @Override
+    public String toJson() {
+        return GsonFactory.getGson().toJson(this);
+    }
+
+    @Override
+    public JsonObject toJsonObject() {
+        return GsonFactory.toJsonObject(this);
     }
 
     public String getJumpType() {

@@ -1,19 +1,40 @@
 package elite.companion.gameapi.journal.events;
 
+import com.google.gson.JsonObject;
+import com.google.gson.annotations.SerializedName;
+import elite.companion.util.GsonFactory;
 import java.time.Duration;
 import java.util.Objects;
 import java.util.StringJoiner;
 
 public class LaunchDroneEvent extends BaseEvent {
-    private String Type; // e.g., "Prospector"
-    private String droneId; // Custom: Use timestamp as unique ID
+    @SerializedName("Type")
+    private String Type;
 
-    public LaunchDroneEvent(String timestamp, String type) {
-        super(timestamp, 3, Duration.ofMinutes(5), LaunchDroneEvent.class.getName()); // Low priority, short TTL
-        this.Type = type;
-        this.droneId = String.valueOf(timestamp); // Custom field for tracking
+    @SerializedName("DroneId")
+    private String droneId;
+
+    public LaunchDroneEvent(JsonObject json) {
+        super(json.get("timestamp").getAsString(), 3, Duration.ofMinutes(5), "LaunchDrone");
+        LaunchDroneEvent event = GsonFactory.getGson().fromJson(json, LaunchDroneEvent.class);
+        this.Type = event.Type;
+        this.droneId = String.valueOf(json.get("timestamp").getAsString());
     }
 
+    @Override
+    public String getEventType() {
+        return "LaunchDrone";
+    }
+
+    @Override
+    public String toJson() {
+        return GsonFactory.getGson().toJson(this);
+    }
+
+    @Override
+    public JsonObject toJsonObject() {
+        return GsonFactory.toJsonObject(this);
+    }
 
     public String getType() {
         return Type;
@@ -31,20 +52,22 @@ public class LaunchDroneEvent extends BaseEvent {
         this.droneId = droneId;
     }
 
-    @Override public boolean equals(Object o) {
+    @Override
+    public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-
         LaunchDroneEvent that = (LaunchDroneEvent) o;
         return Objects.equals(getType(), that.getType()) && Objects.equals(getDroneId(), that.getDroneId());
     }
 
-    @Override public int hashCode() {
+    @Override
+    public int hashCode() {
         int result = Objects.hashCode(getType());
         result = 31 * result + Objects.hashCode(getDroneId());
         return result;
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return new StringJoiner(", ", LaunchDroneEvent.class.getSimpleName() + "[", "]")
                 .add("timestamp='" + timestamp + "'")
                 .add("priority=" + priority)

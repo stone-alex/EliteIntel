@@ -1,6 +1,8 @@
 package elite.companion.gameapi.journal.events;
 
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
+import elite.companion.util.GsonFactory;
 import elite.companion.util.TimestampFormatter;
 import java.time.Duration;
 import java.util.List;
@@ -15,11 +17,29 @@ public class MaterialsEvent extends BaseEvent {
     @SerializedName("Encoded")
     private List<Material> encoded;
 
-    public MaterialsEvent(String timestamp) {
-        super(timestamp, 1, Duration.ofSeconds(30), MaterialsEvent.class.getName());
+    public MaterialsEvent(JsonObject json) {
+        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "Materials");
+        MaterialsEvent event = GsonFactory.getGson().fromJson(json, MaterialsEvent.class);
+        this.raw = event.raw;
+        this.manufactured = event.manufactured;
+        this.encoded = event.encoded;
     }
 
-    // Getters
+    @Override
+    public String getEventType() {
+        return "Materials";
+    }
+
+    @Override
+    public String toJson() {
+        return GsonFactory.getGson().toJson(this);
+    }
+
+    @Override
+    public JsonObject toJsonObject() {
+        return GsonFactory.toJsonObject(this);
+    }
+
     public List<Material> getRaw() {
         return raw;
     }
@@ -46,7 +66,6 @@ public class MaterialsEvent extends BaseEvent {
         @SerializedName("Count")
         private int count;
 
-        // Getters
         public String getName() {
             return name;
         }

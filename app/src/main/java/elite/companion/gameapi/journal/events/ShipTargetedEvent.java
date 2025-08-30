@@ -1,8 +1,9 @@
 package elite.companion.gameapi.journal.events;
 
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
+import elite.companion.util.GsonFactory;
 import elite.companion.util.TimestampFormatter;
-
 import java.time.Duration;
 
 public class ShipTargetedEvent extends BaseEvent {
@@ -45,11 +46,39 @@ public class ShipTargetedEvent extends BaseEvent {
     @SerializedName("Bounty")
     private int bounty;
 
-    public ShipTargetedEvent(String timestamp) {
-        super(timestamp, 1, Duration.ofSeconds(30), ShipTargetedEvent.class.getName());
+    public ShipTargetedEvent(JsonObject json) {
+        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "ShipTargeted");
+        ShipTargetedEvent event = GsonFactory.getGson().fromJson(json, ShipTargetedEvent.class);
+        this.targetLocked = event.targetLocked;
+        this.ship = event.ship;
+        this.scanStage = event.scanStage;
+        this.pilotName = event.pilotName;
+        this.pilotNameLocalised = event.pilotNameLocalised;
+        this.pilotRank = event.pilotRank;
+        this.shieldHealth = event.shieldHealth;
+        this.hullHealth = event.hullHealth;
+        this.legalStatus = event.legalStatus;
+        this.pledgePower = event.pledgePower;
+        this.faction = event.faction;
+        this.shipLocalised = event.shipLocalised;
+        this.bounty = event.bounty;
     }
 
-    // Getters
+    @Override
+    public String getEventType() {
+        return "ShipTargeted";
+    }
+
+    @Override
+    public String toJson() {
+        return GsonFactory.getGson().toJson(this);
+    }
+
+    @Override
+    public JsonObject toJsonObject() {
+        return GsonFactory.toJsonObject(this);
+    }
+
     public boolean isTargetLocked() {
         return targetLocked;
     }
@@ -86,7 +115,6 @@ public class ShipTargetedEvent extends BaseEvent {
         return legalStatus;
     }
 
-
     public String getPledgePower() {
         return pledgePower;
     }
@@ -95,16 +123,15 @@ public class ShipTargetedEvent extends BaseEvent {
         return faction;
     }
 
-
     public String getShipLocalised() {
         return shipLocalised;
     }
 
-    public String getFormattedTimestamp(boolean useLocalTime) {
-        return TimestampFormatter.formatTimestamp(getTimestamp().toString(), useLocalTime);
-    }
-
     public int getBounty() {
         return bounty;
+    }
+
+    public String getFormattedTimestamp(boolean useLocalTime) {
+        return TimestampFormatter.formatTimestamp(getTimestamp().toString(), useLocalTime);
     }
 }

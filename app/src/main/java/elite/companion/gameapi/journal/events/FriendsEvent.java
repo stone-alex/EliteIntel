@@ -1,6 +1,8 @@
 package elite.companion.gameapi.journal.events;
 
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
+import elite.companion.util.GsonFactory;
 import elite.companion.util.TimestampFormatter;
 import java.time.Duration;
 
@@ -11,11 +13,28 @@ public class FriendsEvent extends BaseEvent {
     @SerializedName("Name")
     private String name;
 
-    public FriendsEvent(String timestamp) {
-        super(timestamp, 1, Duration.ofSeconds(30), FriendsEvent.class.getName());
+    public FriendsEvent(JsonObject json) {
+        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "Friends");
+        FriendsEvent event = GsonFactory.getGson().fromJson(json, FriendsEvent.class);
+        this.status = event.status;
+        this.name = event.name;
     }
 
-    // Getters
+    @Override
+    public String getEventType() {
+        return "Friends";
+    }
+
+    @Override
+    public String toJson() {
+        return GsonFactory.getGson().toJson(this);
+    }
+
+    @Override
+    public JsonObject toJsonObject() {
+        return GsonFactory.toJsonObject(this);
+    }
+
     public String getStatus() {
         return status;
     }

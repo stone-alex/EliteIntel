@@ -1,8 +1,9 @@
 package elite.companion.gameapi.journal.events;
 
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
+import elite.companion.util.GsonFactory;
 import elite.companion.util.TimestampFormatter;
-
 import java.time.Duration;
 
 public class TouchdownEvent extends BaseEvent {
@@ -45,11 +46,39 @@ public class TouchdownEvent extends BaseEvent {
     @SerializedName("NearestDestination_Localised")
     private String nearestDestinationLocalised;
 
-    public TouchdownEvent(String timestamp) {
-        super(timestamp, 1, Duration.ofSeconds(30), TouchdownEvent.class.getName());
+    public TouchdownEvent(JsonObject json) {
+        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "Touchdown");
+        TouchdownEvent event = GsonFactory.getGson().fromJson(json, TouchdownEvent.class);
+        this.playerControlled = event.playerControlled;
+        this.taxi = event.taxi;
+        this.multicrew = event.multicrew;
+        this.starSystem = event.starSystem;
+        this.systemAddress = event.systemAddress;
+        this.body = event.body;
+        this.bodyId = event.bodyId;
+        this.onStation = event.onStation;
+        this.onPlanet = event.onPlanet;
+        this.latitude = event.latitude;
+        this.longitude = event.longitude;
+        this.nearestDestination = event.nearestDestination;
+        this.nearestDestinationLocalised = event.nearestDestinationLocalised;
     }
 
-    // Getters
+    @Override
+    public String getEventType() {
+        return "Touchdown";
+    }
+
+    @Override
+    public String toJson() {
+        return GsonFactory.getGson().toJson(this);
+    }
+
+    @Override
+    public JsonObject toJsonObject() {
+        return GsonFactory.toJsonObject(this);
+    }
+
     public boolean isPlayerControlled() {
         return playerControlled;
     }

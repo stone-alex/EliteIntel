@@ -1,8 +1,9 @@
 package elite.companion.gameapi.journal.events;
 
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
+import elite.companion.util.GsonFactory;
 import elite.companion.util.TimestampFormatter;
-
 import java.time.Duration;
 import java.util.StringJoiner;
 
@@ -16,11 +17,29 @@ public class NpcCrewPaidWageEvent extends BaseEvent {
     @SerializedName("Amount")
     private long amount;
 
-    public NpcCrewPaidWageEvent(String timestamp) {
-        super(timestamp, 1, Duration.ofSeconds(30), NpcCrewPaidWageEvent.class.getName());
+    public NpcCrewPaidWageEvent(JsonObject json) {
+        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "NpcCrewPaidWage");
+        NpcCrewPaidWageEvent event = GsonFactory.getGson().fromJson(json, NpcCrewPaidWageEvent.class);
+        this.npcCrewName = event.npcCrewName;
+        this.npcCrewId = event.npcCrewId;
+        this.amount = event.amount;
     }
 
-    // Getters
+    @Override
+    public String getEventType() {
+        return "NpcCrewPaidWage";
+    }
+
+    @Override
+    public String toJson() {
+        return GsonFactory.getGson().toJson(this);
+    }
+
+    @Override
+    public JsonObject toJsonObject() {
+        return GsonFactory.toJsonObject(this);
+    }
+
     public String getNpcCrewName() {
         return npcCrewName;
     }

@@ -53,6 +53,8 @@ public class GrokResponseRouter {
         queryHandlers.put(QueryActions.QUERY_SEARCH_SIGNAL_DATA.getAction(), new AnalyzeDataHandler());
         queryHandlers.put(QueryActions.QUERY_SHIP_LOADOUT.getAction(), new AnalyzeDataHandler());
         queryHandlers.put(QueryActions.QUERY_NEXT_STAR_SCOOPABLE.getAction(), new AnalyzeDataHandler());
+        queryHandlers.put(QueryActions.QUERY_CARRIER_STATS.getAction(), new AnalyzeDataHandler());
+
 
         //queryHandlers.put(QueryAction.QUERY_FIND_NEAREST_MATERIAL_TRADER.getAction(), new FindMaterialTraderHandler());
 

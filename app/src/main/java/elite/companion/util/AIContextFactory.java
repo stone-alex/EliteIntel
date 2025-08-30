@@ -68,7 +68,7 @@ public class AIContextFactory {
         return sb.toString();
     }
 
-    private static void appendBehavior(StringBuilder sb) {
+    public static void appendBehavior(StringBuilder sb) {
         SystemSession systemSession = SystemSession.getInstance();
         AICadence aiCadence = systemSession.getAICadence();
         AIPersonality aiPersonality = systemSession.getAIPersonality();

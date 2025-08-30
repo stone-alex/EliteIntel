@@ -159,7 +159,7 @@ public class VoiceGenerator {
 
     private void processVoiceRequest(String text, String voiceName, double speechRate) {
         if (text == null || text.isEmpty()) {return;}
-        log.info("Speaking: {}", text);
+        log.info(voiceName + " Speaking: {}", text);
         //SessionTracker.getInstance().updateSession("context_your_last_transmission", "Timestamp:"+ Instant.now().toString()+" text: " + text);
         try {
             SynthesisInput input = SynthesisInput.newBuilder().setText(text).build();

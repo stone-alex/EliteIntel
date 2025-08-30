@@ -73,6 +73,8 @@ public class AnalyzeDataHandler implements QueryHandler {
             case QUERY_CARRIER_STATS:
                 return GsonFactory.getGson().toJson(playerSession.get(PlayerSession.CARRIER_STATS));
 
+            case QUERY_CURRENT_VOICE:
+                return GsonFactory.getGson().toJson(systemSession.getAIVoice().getName());
 
             // Add other queries...
             default:

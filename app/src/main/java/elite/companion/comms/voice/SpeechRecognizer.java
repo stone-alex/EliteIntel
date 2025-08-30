@@ -198,7 +198,8 @@ public class SpeechRecognizer {
                     Object privacySystemVariable = SystemSession.getInstance().get(SystemSession.PRIVACY_MODE);
                     boolean isPrivacyModeOn = privacySystemVariable != null && (boolean) privacySystemVariable;
                     if(isPrivacyModeOn) {
-                        if (sanitizedTranscript.toLowerCase().startsWith("computer")) {
+                        String voiceName = SystemSession.getInstance().getAIVoice().getName();
+                        if (sanitizedTranscript.toLowerCase().startsWith("computer") || sanitizedTranscript.toLowerCase().startsWith(voiceName.toLowerCase())) {
                             sendToAi(sanitizedTranscript.replace("computer", Globals.AI_NAME));
                         }
                     } else {

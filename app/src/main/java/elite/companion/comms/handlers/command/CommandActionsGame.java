@@ -25,7 +25,7 @@ public class CommandActionsGame {
         CYCLE_PREVIOUS_PAGE("cycle_previous_page", "CyclePreviousPage"),
         CYCLE_PREVIOUS_PANEL("cycle_previous_panel", "CyclePreviousPanel"),
         CYCLE_PREVIOUS_SUBSYSTEM("cycle_previous_subsystem", "CyclePreviousSubsystem"),
-        DEPLOY_HARDPOINT_TOGGLE("deploy_hardpoint_toggle", "DeployHardpointToggle"),
+        DEPLOY_HARDPOINT_TOGGLE("hardpoint_toggle", "DeployHardpointToggle"),
         DEPLOY_HEAT_SINK("deploy_heat_sink", "DeployHeatSink"),
         DOWN_THRUST_BUTTON("down_thrust_button", "DownThrustButton"),
         DRIVE_ASSIST("drive_assist", "ToggleDriveAssist"),

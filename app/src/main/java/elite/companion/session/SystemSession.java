@@ -1,5 +1,6 @@
 package elite.companion.session;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import elite.companion.comms.voice.Voices;
 import elite.companion.gameapi.gamestate.events.NavRouteDto;
@@ -59,6 +60,8 @@ public class SystemSession {
     private AIPersonality aiPersonality;
     private AICadence aiCadence;
     private BaseEvent bodySignal;
+
+    private JsonArray chatHistory = new JsonArray();
 
     private SystemSession() {
         state.put(RANK, new RankDto());
@@ -245,5 +248,19 @@ public class SystemSession {
         }
         sb.append("]");
         return sb.toString().replace(",]", "]");
+    }
+
+    // Add methods
+    public JsonArray getChatHistory() {
+        return chatHistory;
+    }
+
+    public void appendToChatHistory(JsonObject userMessage, JsonObject assistantMessage) {
+        chatHistory.add(userMessage);
+        chatHistory.add(assistantMessage);
+    }
+
+    public void clearChatHistory() {
+        chatHistory = new JsonArray();
     }
 }

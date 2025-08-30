@@ -6,6 +6,7 @@ import elite.companion.session.SystemSession;
 import elite.companion.util.AIContextFactory;
 import elite.companion.util.ConfigManager;
 import elite.companion.util.GsonFactory;
+import elite.companion.util.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,16 +31,52 @@ public class GrokCommandEndPoint {
         log.info("Stopped GrokInteractionHandler");
     }
 
-    public void processVoiceCommand(String userInput) {
+
+    public void processVoiceCommand(String userInput, float confidence) {
         // Sanitize input
         userInput = escapeJson(userInput);
         if (userInput == null || userInput.isEmpty()) {
             VoiceGenerator.getInstance().speak("Sorry, I couldn't process that.");
+            SystemSession.getInstance().clearChatHistory();
+            return;
+        }
+
+        // Check STT confidence
+        if (confidence < 0.5f) {
+            JsonArray messages = new JsonArray();
+            JsonObject systemMessage = new JsonObject();
+            systemMessage.addProperty("role", "system");
+            String systemPrompt = AIContextFactory.getInstance().generateSystemPrompt();
+            systemMessage.addProperty("content", systemPrompt);
+            messages.add(systemMessage);
+
+            JsonObject userMessage = new JsonObject();
+            userMessage.addProperty("role", "user");
+            String userContent = buildVoiceRequest(userInput);
+            userMessage.addProperty("content", userContent);
+            messages.add(userMessage);
+
+            // Create clarification response
+            JsonObject clarification = new JsonObject();
+            clarification.addProperty("type", "chat");
+            clarification.addProperty("response_text", "Sorry, mate, didn't quite catch that. Could you repeat or clarify?");
+            clarification.addProperty("action", (String) null);
+            clarification.add("params", new JsonObject());
+            clarification.addProperty("expect_followup", true);
+
+            // Route the clarification response
+            GrokResponseRouter.getInstance().processGrokResponse(clarification, userInput);
+
+            // Store user message in history for follow-up
+            JsonObject assistantMessage = new JsonObject();
+            assistantMessage.addProperty("role", "assistant");
+            assistantMessage.addProperty("content", "Sorry, mate, didn't quite catch that. Could you repeat or clarify?");
+            SystemSession.getInstance().appendToChatHistory(userMessage, assistantMessage);
             return;
         }
 
         // Log sanitized input
-        log.info("Sanitized voice userInput: [{}]", toDebugString(userInput));
+        log.info("Sanitized voice userInput: [{}] (confidence: {})", toDebugString(userInput), confidence);
 
         JsonArray messages = new JsonArray();
         JsonObject systemMessage = new JsonObject();
@@ -48,33 +85,47 @@ public class GrokCommandEndPoint {
         systemMessage.addProperty("content", systemPrompt);
         messages.add(systemMessage);
 
+        // Append existing chat history if any
+        JsonArray history = SystemSession.getInstance().getChatHistory();
+        for (int i = 0; i < history.size(); i++) {
+            messages.add(history.get(i));
+        }
+
+        // Add current user message
         JsonObject userMessage = new JsonObject();
         userMessage.addProperty("role", "user");
-        userMessage.addProperty("content", buildVoiceRequest(userInput));
+        String userContent = buildVoiceRequest(userInput);
+        userMessage.addProperty("content", userContent);
         messages.add(userMessage);
 
-        // Create API request body
-        JsonObject requestBody = new JsonObject();
-        requestBody.addProperty("model", "grok-3-fast");
-        requestBody.addProperty("temperature", 0.7);
-        requestBody.addProperty("stream", false);
-        requestBody.add("messages", messages);
+        // Send via GrokChatEndPoint
+        JsonObject apiResponse = GrokChatEndPoint.getInstance().sendToGrok(messages);
+        if (apiResponse == null) {
+            VoiceGenerator.getInstance().speak("Sorry, I couldn't process that.");
+            SystemSession.getInstance().clearChatHistory();
+            return;
+        }
 
-        // Serialize to JSON string
-        Gson gson = GsonFactory.getGson();
-        String jsonString = gson.toJson(requestBody);
-        log.debug("JSON prepared for callXaiApi: [{}]", toDebugString(jsonString));
+        // Route the response
+        GrokResponseRouter.getInstance().processGrokResponse(apiResponse, userInput);
 
-        try {
-            JsonObject apiResponse = callXaiApi(jsonString);
-            if (apiResponse == null) {
-                VoiceGenerator.getInstance().speak("Sorry, I couldn't process that.");
-                return;
+        // Handle history updates for chat continuations
+        String type = JsonUtils.getAsStringOrEmpty(apiResponse, "type").toLowerCase();
+        if ("chat".equals(type)) {
+            String responseText = JsonUtils.getAsStringOrEmpty(apiResponse, "response_text");
+            boolean expectFollowup = apiResponse.has("expect_followup") && apiResponse.get("expect_followup").getAsBoolean();
+
+            JsonObject assistantMessage = new JsonObject();
+            assistantMessage.addProperty("role", "assistant");
+            assistantMessage.addProperty("content", responseText);
+
+            if (expectFollowup) {
+                SystemSession.getInstance().appendToChatHistory(userMessage, assistantMessage);
+            } else {
+                SystemSession.getInstance().clearChatHistory();
             }
-            GrokResponseRouter.getInstance().processGrokResponse(apiResponse, userInput);
-        } catch (JsonSyntaxException e) {
-            log.error("JSON parsing failed for input: [{}]", toDebugString(jsonString), e);
-            throw e;
+        } else {
+            SystemSession.getInstance().clearChatHistory();
         }
     }
 

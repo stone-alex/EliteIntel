@@ -2,17 +2,17 @@ package elite.companion.comms.handlers.command;
 
 import com.google.gson.JsonObject;
 import elite.companion.comms.voice.VoiceGenerator;
-import elite.companion.comms.ai.robot.VoiceCommandHandler;
+import elite.companion.comms.ai.robot.GameCommandHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class GenericGameController implements CommandHandler {
     private static final Logger log = LoggerFactory.getLogger(GenericGameController.class);
-    private final VoiceCommandHandler voiceCommandHandler;
+    private final GameCommandHandler _gameCommandHandler;
     private final String gameBinding;
 
-    public GenericGameController(VoiceCommandHandler voiceCommandHandler, String gameBinding) {
-        this.voiceCommandHandler = voiceCommandHandler;
+    public GenericGameController(GameCommandHandler gameCommandHandler, String gameBinding) {
+        this._gameCommandHandler = gameCommandHandler;
         this.gameBinding = gameBinding;
     }
 
@@ -27,7 +27,7 @@ public class GenericGameController implements CommandHandler {
         json.addProperty("type", "command");
         json.addProperty("action", gameBinding);
         json.addProperty("response_text", responseText);
-        voiceCommandHandler.handleGrokResponse(json);
+        _gameCommandHandler.handleGrokResponse(json);
         log.info(gameBinding + " command handled");
     }
 

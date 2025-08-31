@@ -156,7 +156,7 @@ public class AIContextFactory {
 
         for (QueryActions query : QueryActions.values()) {
             String description = getQueryDescription(query);
-            if (query.isQuick()) {
+            if (query.isRequiresFollowUp()) {
                 quickQueries.append("    - ").append(query.getAction()).append(": ").append(description).append("\n");
             } else {
                 dataQueries.append("    - ").append(query.getAction()).append(": ").append(description).append("\n");
@@ -185,10 +185,8 @@ public class AIContextFactory {
                 return "Analyzes cargo hold contents.";
             case QUERY_SHIP_LOADOUT:
                 return "Requests current ship details (e.g., 'what is my ship loadout').";
-            case QUERY_SEARCH_LOCAL_SIGNALS_DATA:
+            case QUERY_SEARCH_SIGNAL_DATA:
                 return "Requests current system and signal data (e.g., 'what signals are here').";
-            case QUERY_FIND_NEAREST_MATERIAL_TRADER:
-                return "Requests nearest material trader location.";
             default:
                 return "Handles " + query.getAction() + " query.";
         }

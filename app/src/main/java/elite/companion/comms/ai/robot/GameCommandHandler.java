@@ -11,8 +11,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public class VoiceCommandHandler {
-    private static final Logger log = LoggerFactory.getLogger(VoiceCommandHandler.class);
+public class GameCommandHandler {
+    private static final Logger log = LoggerFactory.getLogger(GameCommandHandler.class);
     private final KeyBindingsParser parser;
     private final KeyBindingExecutor executor;
     private final BindingsMonitor monitor;
@@ -21,7 +21,7 @@ public class VoiceCommandHandler {
             "BuggyPrimaryFireButton", "BuggySecondaryFireButton"
     ));
 
-    public VoiceCommandHandler() throws Exception {
+    public GameCommandHandler() throws Exception {
         this.parser = new KeyBindingsParser();
         this.executor = new KeyBindingExecutor();
         this.monitor = new BindingsMonitor(parser);

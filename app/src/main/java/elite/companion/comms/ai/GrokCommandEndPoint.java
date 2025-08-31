@@ -20,14 +20,20 @@ public class GrokCommandEndPoint {
     private static final Logger log = LoggerFactory.getLogger(GrokCommandEndPoint.class);
 
     private static final ThreadLocal<JsonArray> currentHistory = new ThreadLocal<>();
+    private final GrokResponseRouter router;
+
+    public GrokCommandEndPoint() {
+        this.router = GrokResponseRouter.getInstance();
+    }
+
 
     public void start() throws Exception {
-        GrokResponseRouter.getInstance().start();
+        router.start();
         log.info("Started GrokInteractionHandler");
     }
 
     public void stop() {
-        GrokResponseRouter.getInstance().stop();
+        router.stop();
         log.info("Stopped GrokInteractionHandler");
     }
 
@@ -144,7 +150,7 @@ public class GrokCommandEndPoint {
     private boolean isQuickQuery(String action) {
         for (QueryActions query : QueryActions.values()) {
             if (query.getAction().equals(action)) {
-                return query.isQuick();
+                return query.isRequiresFollowUp();
             }
         }
         return false; // Default to data query if action not found

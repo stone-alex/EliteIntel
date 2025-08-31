@@ -2,7 +2,7 @@ package elite.companion.comms.ai;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import elite.companion.comms.ai.robot.VoiceCommandHandler;
+import elite.companion.comms.ai.robot.GameCommandHandler;
 import elite.companion.comms.handlers.command.*;
 import elite.companion.comms.handlers.query.*;
 import elite.companion.comms.voice.VoiceGenerator;
@@ -10,15 +10,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
+import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
-
-import static elite.companion.comms.handlers.command.CommandActionsGame.GameCommand.*;
 
 public class GrokResponseRouter {
     private static final Logger log = LoggerFactory.getLogger(GrokResponseRouter.class);
     private static final GrokResponseRouter INSTANCE = new GrokResponseRouter();
-    private final VoiceCommandHandler voiceCommandHandler;
+    private final GameCommandHandler _gameCommandHandler;
     private final Map<String, CommandHandler> commandHandlers = new HashMap<>();
     private final Map<String, QueryHandler> queryHandlers = new HashMap<>();
 
@@ -28,128 +27,110 @@ public class GrokResponseRouter {
 
     private GrokResponseRouter() {
         try {
-            this.voiceCommandHandler = new VoiceCommandHandler();
+            this._gameCommandHandler = new GameCommandHandler();
             registerCommandHandlers();
         } catch (Exception e) {
-            throw new RuntimeException("Failed to initialize GrokResponseRouter", e);
+            log.error("Failed to initialize GrokResponseRouter", e);
+            throw new RuntimeException("GrokResponseRouter initialization failed", e);
         }
     }
 
     private void registerCommandHandlers() {
-        // Query Handlers
-        queryHandlers.put(QueryActions.CHECK_LEGAL_STATUS.getAction(), new AnalyzeDataHandler());
-        queryHandlers.put(QueryActions.LIST_AVAILABLE_VOICES.getAction(), new ListAvailableVoices());
-        queryHandlers.put(QueryActions.LOCAL_SYSTEM_INFO.getAction(), new AnalyzeDataHandler());
-        queryHandlers.put(QueryActions.QUERY_ANALYZE_ON_BOARD_CARGO.getAction(), new AnalyzeDataHandler());
-        queryHandlers.put(QueryActions.QUERY_ANALYZE_ROUTE.getAction(), new AnalyzeDataHandler());
-        queryHandlers.put(QueryActions.QUERY_PIRATE_KILLS_REMAINING.getAction(), new PirateMissionAnalyzer());
-        queryHandlers.put(QueryActions.QUERY_PIRATE_MISSION_PROFIT.getAction(), new PirateMissionAnalyzer());
-        queryHandlers.put(QueryActions.QUERY_PIRATE_STATUS.getAction(), new PirateMissionAnalyzer());
-        queryHandlers.put(QueryActions.QUERY_SEARCH_SIGNAL_DATA.getAction(), new AnalyzeDataHandler());
-        queryHandlers.put(QueryActions.QUERY_SHIP_LOADOUT.getAction(), new AnalyzeDataHandler());
-        queryHandlers.put(QueryActions.QUERY_NEXT_STAR_SCOOPABLE.getAction(), new AnalyzeDataHandler());
-        queryHandlers.put(QueryActions.QUERY_CARRIER_STATS.getAction(), new AnalyzeDataHandler());
-        queryHandlers.put(QueryActions.WHAT_IS_YOUR_DESIGNATION.getAction(), new WhatIsYourNameHandler());
-        queryHandlers.put(QueryActions.WHAT_ARE_YOUR_CAPABILITIES.getAction(), new WhatAreYourCapabilitiesHandler());
-        queryHandlers.put(QueryActions.QUERY_PLAYER_STATS_ANALYSIS.getAction(), new PlayerStatsAnalyzer());
+        // Register Query Handlers
+        for (QueryActions action : QueryActions.values()) {
+            try {
+                QueryHandler handler = instantiateHandler(action.getHandlerClass(), QueryHandler.class);
+                queryHandlers.put(action.getAction(), handler);
+                log.debug("Registered query handler for action: {}, requiresFollowUp: {}",
+                        action.getAction(), action.isRequiresFollowUp());
+            } catch (Exception e) {
+                log.error("Failed to register query handler for action: {}", action.getAction(), e);
+                throw new RuntimeException("Query handler registration failed for action: " + action.getAction(), e);
+            }
+        }
 
-        // APP COMMANDS
-        commandHandlers.put(CommandActionsCustom.SET_MINING_TARGET.getAction(), new SetMiningTargetHandler());
-        commandHandlers.put(CommandActionsCustom.PLOT_ROUTE.getAction(), new SetRouteHandler(voiceCommandHandler));
-        commandHandlers.put(CommandActionsCustom.SET_PRIVACY_MODE.getAction(), new SetPrivacyMode());
-        commandHandlers.put(CommandActionsCustom.SET_RADIO_TRANSMISSION_MODDE.getAction(), new SetRadioTransmissionOnOff());
-        commandHandlers.put(CommandActionsCustom.SET_AI_VOICE.getAction(), new SetAiVoice());
-        commandHandlers.put(CommandActionsCustom.ANNOUNCE_STELLAR_BODY_SCANS.getAction(), new SetAnnounceBodyScansHandler());
-        commandHandlers.put(CommandActionsCustom.SET_PERSONALITY.getAction(), new SetPersonalityHandler());
-        commandHandlers.put(CommandActionsCustom.SET_CADENCE.getAction(), new SetCadenceHandler());
+        // Register Custom Command Handlers
+        for (CommandActionsCustom action : CommandActionsCustom.values()) {
+            try {
+                CommandHandler handler = instantiateCommandHandler(action.getHandlerClass(), action.getAction());
+                commandHandlers.put(action.getAction(), handler);
+                log.debug("Registered custom command handler for action: {}", action.getAction());
+            } catch (Exception e) {
+                log.error("Failed to register custom command handler for action: {}", action.getAction(), e);
+                throw new RuntimeException("Custom command handler registration failed for action: " + action.getAction(), e);
+            }
+        }
 
-        // CUSTOM GAME CONTROL HANDLERS
-        commandHandlers.put(INCREASE_ENGINES_POWER.getUserCommand(), new SetPowerToEnginesHandler(voiceCommandHandler));
-        commandHandlers.put(INCREASE_SYSTEMS_POWER.getUserCommand(), new SetPowerToSystemsHandler(voiceCommandHandler));
-        commandHandlers.put(INCREASE_SHIELDS_POWER.getUserCommand(), new SetPowerToSystemsHandler(voiceCommandHandler));
-        commandHandlers.put(INCREASE_WEAPONS_POWER.getUserCommand(), new SetPowerToWeaponsHandler(voiceCommandHandler));
+        // Register Game Command Handlers
+        for (CommandActionsGame.GameCommand command : CommandActionsGame.GameCommand.values()) {
+            try {
+                CommandHandler handler = instantiateCommandHandler(command.getHandlerClass(), command.getGameBinding());
+                commandHandlers.put(command.getGameBinding(), handler);
+                log.debug("Registered game command handler for binding: {}", command.getGameBinding());
+            } catch (Exception e) {
+                log.error("Failed to register game command handler for binding: {}", command.getGameBinding(), e);
+                throw new RuntimeException("Game command handler registration failed for binding: " + command.getGameBinding(), e);
+            }
+        }
+    }
 
-        // GENERIC GAME CONTROL HANDLERS
-        commandHandlers.put(BACKWARD_KEY.getGameBinding(), new GenericGameController(voiceCommandHandler, BACKWARD_KEY.getGameBinding()));
-        commandHandlers.put(AUTO_DOC.getGameBinding(), new GenericGameController(voiceCommandHandler, AUTO_DOC.getGameBinding()));
-        commandHandlers.put(CARGO_SCOOP.getGameBinding(), new GenericGameController(voiceCommandHandler, CARGO_SCOOP.getGameBinding()));
-        commandHandlers.put(CARGO_SCOOP_BUGGY.getGameBinding(), new GenericGameController(voiceCommandHandler, CARGO_SCOOP_BUGGY.getGameBinding()));
-        commandHandlers.put(DEPLOY_HARDPOINT_TOGGLE.getGameBinding(), new GenericGameController(voiceCommandHandler, DEPLOY_HARDPOINT_TOGGLE.getGameBinding()));
-        commandHandlers.put(DEPLOY_HEAT_SINK.getGameBinding(), new GenericGameController(voiceCommandHandler, DEPLOY_HEAT_SINK.getGameBinding()));
-        commandHandlers.put(DOWN_THRUST_BUTTON.getGameBinding(), new GenericGameController(voiceCommandHandler, DOWN_THRUST_BUTTON.getGameBinding()));
-        commandHandlers.put(ENGAGE_SUPERCRUISE.getGameBinding(), new GenericGameController(voiceCommandHandler, ENGAGE_SUPERCRUISE.getGameBinding()));
-        commandHandlers.put(EXIT_SETTLEMENT_PLACEMENT_CAMERA.getGameBinding(), new GenericGameController(voiceCommandHandler, EXIT_SETTLEMENT_PLACEMENT_CAMERA.getGameBinding()));
-        commandHandlers.put(EXPLORATION_FSSDISCOVERY_SCAN.getGameBinding(), new GenericGameController(voiceCommandHandler, EXPLORATION_FSSDISCOVERY_SCAN.getGameBinding()));
-        commandHandlers.put(EXPLORATION_FSSENTER.getGameBinding(), new GenericGameController(voiceCommandHandler, EXPLORATION_FSSENTER.getGameBinding()));
-        commandHandlers.put(EXPLORATION_FSSQUIT.getGameBinding(), new GenericGameController(voiceCommandHandler, EXPLORATION_FSSQUIT.getGameBinding()));
-        commandHandlers.put(EXPLORATION_SAACHANGE_SCANNED_AREA_VIEW_TOGGLE.getGameBinding(), new GenericGameController(voiceCommandHandler, EXPLORATION_SAACHANGE_SCANNED_AREA_VIEW_TOGGLE.getGameBinding()));
-        commandHandlers.put(EXPLORATION_SAANEXT_GENUS.getGameBinding(), new GenericGameController(voiceCommandHandler, EXPLORATION_SAANEXT_GENUS.getGameBinding()));
-        commandHandlers.put(EXPLORATION_SAAPREVIOUS_GENUS.getGameBinding(), new GenericGameController(voiceCommandHandler, EXPLORATION_SAAPREVIOUS_GENUS.getGameBinding()));
-        commandHandlers.put(FOCUS_COMMS_PANEL.getGameBinding(), new GenericGameController(voiceCommandHandler, FOCUS_COMMS_PANEL.getGameBinding()));
-        commandHandlers.put(FOCUS_COMMS_PANEL_BUGGY.getGameBinding(), new GenericGameController(voiceCommandHandler, FOCUS_COMMS_PANEL_BUGGY.getGameBinding()));
-        commandHandlers.put(FOCUS_COMMS_PANEL_HUMANOID.getGameBinding(), new GenericGameController(voiceCommandHandler, FOCUS_COMMS_PANEL_HUMANOID.getGameBinding()));
-        commandHandlers.put(FOCUS_LEFT_PANEL.getGameBinding(), new GenericGameController(voiceCommandHandler, FOCUS_LEFT_PANEL.getGameBinding()));
-        commandHandlers.put(FOCUS_LEFT_PANEL_BUGGY.getGameBinding(), new GenericGameController(voiceCommandHandler, FOCUS_LEFT_PANEL_BUGGY.getGameBinding()));
-        commandHandlers.put(FOCUS_RADAR_PANEL.getGameBinding(), new GenericGameController(voiceCommandHandler, FOCUS_RADAR_PANEL.getGameBinding()));
-        commandHandlers.put(FOCUS_RADAR_PANEL_BUGGY.getGameBinding(), new GenericGameController(voiceCommandHandler, FOCUS_RADAR_PANEL_BUGGY.getGameBinding()));
-        commandHandlers.put(FOCUS_RIGHT_PANEL.getGameBinding(), new GenericGameController(voiceCommandHandler, FOCUS_RIGHT_PANEL.getGameBinding()));
-        commandHandlers.put(FOCUS_RIGHT_PANEL_BUGGY.getGameBinding(), new GenericGameController(voiceCommandHandler, FOCUS_RIGHT_PANEL_BUGGY.getGameBinding()));
-        commandHandlers.put(FORWARD_KEY.getGameBinding(), new GenericGameController(voiceCommandHandler, FORWARD_KEY.getGameBinding()));
-        commandHandlers.put(FSTOP_DEC.getGameBinding(), new GenericGameController(voiceCommandHandler, FSTOP_DEC.getGameBinding()));
-        commandHandlers.put(FSTOP_INC.getGameBinding(), new GenericGameController(voiceCommandHandler, FSTOP_INC.getGameBinding()));
-        commandHandlers.put(GALAXY_MAP.getGameBinding(), new GenericGameController(voiceCommandHandler, GALAXY_MAP.getGameBinding()));
-        commandHandlers.put(GALAXY_MAP_BUGGY.getGameBinding(), new GenericGameController(voiceCommandHandler, GALAXY_MAP_BUGGY.getGameBinding()));
-        commandHandlers.put(GALAXY_MAP_HOME.getGameBinding(), new GenericGameController(voiceCommandHandler, GALAXY_MAP_HOME.getGameBinding()));
-        commandHandlers.put(GALAXY_MAP_HUMANOID.getGameBinding(), new GenericGameController(voiceCommandHandler, GALAXY_MAP_HUMANOID.getGameBinding()));
-        commandHandlers.put(GALNET_AUDIO_CLEAR_QUEUE.getGameBinding(), new GenericGameController(voiceCommandHandler, GALNET_AUDIO_CLEAR_QUEUE.getGameBinding()));
-        commandHandlers.put(GALNET_AUDIO_PLAY_PAUSE.getGameBinding(), new GenericGameController(voiceCommandHandler, GALNET_AUDIO_PLAY_PAUSE.getGameBinding()));
-        commandHandlers.put(GALNET_AUDIO_SKIP_BACKWARD.getGameBinding(), new GenericGameController(voiceCommandHandler, GALNET_AUDIO_SKIP_BACKWARD.getGameBinding()));
-        commandHandlers.put(GALNET_AUDIO_SKIP_FORWARD.getGameBinding(), new GenericGameController(voiceCommandHandler, GALNET_AUDIO_SKIP_FORWARD.getGameBinding()));
-        commandHandlers.put(HYPER_SUPER_COMBINATION.getGameBinding(), new GenericGameController(voiceCommandHandler, HYPER_SUPER_COMBINATION.getGameBinding()));
-        commandHandlers.put(JUMP_TO_HYPERSPACE.getGameBinding(), new GenericGameController(voiceCommandHandler, JUMP_TO_HYPERSPACE.getGameBinding()));
-        commandHandlers.put(LANDING_GEAR_TOGGLE.getGameBinding(), new GenericGameController(voiceCommandHandler, LANDING_GEAR_TOGGLE.getGameBinding()));
-        commandHandlers.put(NIGHT_VISION.getGameBinding(), new GenericGameController(voiceCommandHandler, NIGHT_VISION.getGameBinding()));
-        commandHandlers.put(OPEN_CODEX_GO_TO_DISCOVERY.getGameBinding(), new GenericGameController(voiceCommandHandler, OPEN_CODEX_GO_TO_DISCOVERY.getGameBinding()));
-        commandHandlers.put(OPEN_CODEX_GO_TO_DISCOVERY_BUGGY.getGameBinding(), new GenericGameController(voiceCommandHandler, OPEN_CODEX_GO_TO_DISCOVERY_BUGGY.getGameBinding()));
-        commandHandlers.put(PAUSE.getGameBinding(), new GenericGameController(voiceCommandHandler, PAUSE.getGameBinding()));
-        commandHandlers.put(PLAYER_HUDMODE_TOGGLE.getGameBinding(), new GenericGameController(voiceCommandHandler, PLAYER_HUDMODE_TOGGLE.getGameBinding()));
-        commandHandlers.put(QUICK_COMMS_PANEL_BUGGY.getGameBinding(), new GenericGameController(voiceCommandHandler, QUICK_COMMS_PANEL_BUGGY.getGameBinding()));
-        commandHandlers.put(QUICK_COMMS_PANEL_HUMANOID.getGameBinding(), new GenericGameController(voiceCommandHandler, QUICK_COMMS_PANEL_HUMANOID.getGameBinding()));
-        commandHandlers.put(RADAR_DECREASE_RANGE.getGameBinding(), new GenericGameController(voiceCommandHandler, RADAR_DECREASE_RANGE.getGameBinding()));
-        commandHandlers.put(RADAR_INCREASE_RANGE.getGameBinding(), new GenericGameController(voiceCommandHandler, RADAR_INCREASE_RANGE.getGameBinding()));
-        commandHandlers.put(RECALL_DISMISS_SHIP.getGameBinding(), new GenericGameController(voiceCommandHandler, RECALL_DISMISS_SHIP.getGameBinding()));
-        commandHandlers.put(REQUEST_REQUEST_DOCK.getGameBinding(), new GenericGameController(voiceCommandHandler, REQUEST_REQUEST_DOCK.getGameBinding()));
-        commandHandlers.put(RESET_POWER_DISTRIBUTION.getGameBinding(), new GenericGameController(voiceCommandHandler, RESET_POWER_DISTRIBUTION.getGameBinding()));
-        commandHandlers.put(RESET_POWER_DISTRIBUTION_BUGGY.getGameBinding(), new GenericGameController(voiceCommandHandler, RESET_POWER_DISTRIBUTION_BUGGY.getGameBinding()));
-        commandHandlers.put(SET_SPEED100.getGameBinding(), new GenericGameController(voiceCommandHandler, SET_SPEED100.getGameBinding()));
-        commandHandlers.put(SET_SPEED25.getGameBinding(), new GenericGameController(voiceCommandHandler, SET_SPEED25.getGameBinding()));
-        commandHandlers.put(SET_SPEED50.getGameBinding(), new GenericGameController(voiceCommandHandler, SET_SPEED50.getGameBinding()));
-        commandHandlers.put(SET_SPEED75.getGameBinding(), new GenericGameController(voiceCommandHandler, SET_SPEED75.getGameBinding()));
-        commandHandlers.put(SET_SPEED_ZERO.getGameBinding(), new GenericGameController(voiceCommandHandler, SET_SPEED_ZERO.getGameBinding()));
-        commandHandlers.put(SYSTEM_MAP.getGameBinding(), new GenericGameController(voiceCommandHandler, SYSTEM_MAP.getGameBinding()));
-        commandHandlers.put(SYSTEM_MAP_HUMANOID.getGameBinding(), new GenericGameController(voiceCommandHandler, SYSTEM_MAP_HUMANOID.getGameBinding()));
-        commandHandlers.put(TARGET_NEXT_ROUTE_SYSTEM.getGameBinding(), new GenericGameController(voiceCommandHandler, TARGET_NEXT_ROUTE_SYSTEM.getGameBinding()));
-        commandHandlers.put(TARGET_WINGMAN0.getGameBinding(), new GenericGameController(voiceCommandHandler, TARGET_WINGMAN0.getGameBinding()));
-        commandHandlers.put(TARGET_WINGMAN1.getGameBinding(), new GenericGameController(voiceCommandHandler, TARGET_WINGMAN1.getGameBinding()));
-        commandHandlers.put(TARGET_WINGMAN2.getGameBinding(), new GenericGameController(voiceCommandHandler, TARGET_WINGMAN2.getGameBinding()));
-        commandHandlers.put(UI_DOWN.getGameBinding(), new GenericGameController(voiceCommandHandler, UI_DOWN.getGameBinding()));
-        commandHandlers.put(UI_LEFT.getGameBinding(), new GenericGameController(voiceCommandHandler, UI_LEFT.getGameBinding()));
-        commandHandlers.put(UI_RIGHT.getGameBinding(), new GenericGameController(voiceCommandHandler, UI_RIGHT.getGameBinding()));
-        commandHandlers.put(UIFOCUS.getGameBinding(), new GenericGameController(voiceCommandHandler, UIFOCUS.getGameBinding()));
-        commandHandlers.put(UI_SELECT.getGameBinding(), new GenericGameController(voiceCommandHandler, UI_SELECT.getGameBinding()));
-        commandHandlers.put(UI_TOGGLE.getGameBinding(), new GenericGameController(voiceCommandHandler, UI_TOGGLE.getGameBinding()));
-        commandHandlers.put(UI_UP.getGameBinding(), new GenericGameController(voiceCommandHandler, UI_UP.getGameBinding()));
-        commandHandlers.put(UP_THRUST_BUTTON.getGameBinding(), new GenericGameController(voiceCommandHandler, UP_THRUST_BUTTON.getGameBinding()));
-        commandHandlers.put(UI_ACTIVATE.getGameBinding(), new GenericGameController(voiceCommandHandler, UI_ACTIVATE.getGameBinding()));
+    private <T> T instantiateHandler(Class<? extends T> handlerClass, Class<T> expectedType) {
+        try {
+            Constructor<? extends T> constructor = handlerClass.getDeclaredConstructor();
+            constructor.setAccessible(true);
+            T handler = constructor.newInstance();
+            if (!expectedType.isInstance(handler)) {
+                throw new IllegalStateException("Handler class " + handlerClass.getName() + " does not implement " + expectedType.getName());
+            }
+            return handler;
+        } catch (NoSuchMethodException e) {
+            log.error("No no-arg constructor found for handler: {}", handlerClass.getName());
+            throw new RuntimeException("Failed to instantiate handler: " + handlerClass.getName(), e);
+        } catch (Exception e) {
+            log.error("Failed to instantiate handler: {}", handlerClass.getName(), e);
+            throw new RuntimeException("Failed to instantiate handler: " + handlerClass.getName(), e);
+        }
+    }
+
+    private CommandHandler instantiateCommandHandler(Class<? extends CommandHandler> handlerClass, String actionOrBinding) {
+        try {
+            if (handlerClass == GenericGameController.class) {
+                Constructor<? extends CommandHandler> constructor = handlerClass.getDeclaredConstructor(GameCommandHandler.class, String.class);
+                constructor.setAccessible(true);
+                return constructor.newInstance(_gameCommandHandler, actionOrBinding);
+            } else if (handlerClass == SetRouteHandler.class) {
+                Constructor<? extends CommandHandler> constructor = handlerClass.getDeclaredConstructor(GameCommandHandler.class);
+                constructor.setAccessible(true);
+                return constructor.newInstance(_gameCommandHandler);
+            } else {
+                // Try constructor with GameCommandHandler first (for specialized handlers like SetPowerToEnginesHandler)
+                try {
+                    Constructor<? extends CommandHandler> constructor = handlerClass.getDeclaredConstructor(GameCommandHandler.class);
+                    constructor.setAccessible(true);
+                    return constructor.newInstance(_gameCommandHandler);
+                } catch (NoSuchMethodException e) {
+                    // Fallback to no-arg constructor
+                    Constructor<? extends CommandHandler> constructor = handlerClass.getDeclaredConstructor();
+                    constructor.setAccessible(true);
+                    return constructor.newInstance();
+                }
+            }
+        } catch (NoSuchMethodException e) {
+            log.error("No suitable constructor found for handler: {}, action/binding: {}", handlerClass.getName(), actionOrBinding);
+            throw new RuntimeException("Failed to instantiate command handler: " + handlerClass.getName(), e);
+        } catch (Exception e) {
+            log.error("Failed to instantiate command handler: {}, action/binding: {}", handlerClass.getName(), actionOrBinding, e);
+            throw new RuntimeException("Failed to instantiate command handler: " + handlerClass.getName(), e);
+        }
     }
 
     public void start() throws Exception {
-        voiceCommandHandler.start();
+        _gameCommandHandler.start();
         log.info("Started GrokResponseRouter");
     }
 
     public void stop() {
-        voiceCommandHandler.stop();
+        _gameCommandHandler.stop();
         log.info("Stopped GrokResponseRouter");
     }
 
@@ -164,7 +145,6 @@ public class GrokResponseRouter {
             String action = getAsStringOrEmpty(jsonResponse, "action");
             JsonObject params = getAsObjectOrEmpty(jsonResponse, "params");
 
-            // Speak initial response_text only for non-chat types (e.g., query placeholders)
             if (!responseText.isEmpty() && !type.equals("chat")) {
                 VoiceGenerator.getInstance().speak(responseText);
                 log.info("Spoke initial response: {}", responseText);
@@ -205,12 +185,18 @@ public class GrokResponseRouter {
                     ? dataJson.get("response_text").getAsString()
                     : null;
 
+            boolean requiresFollowUp = false;
+            for (QueryActions qa : QueryActions.values()) {
+                if (qa.getAction().equals(action)) {
+                    requiresFollowUp = qa.isRequiresFollowUp();
+                    break;
+                }
+            }
+
             if (responseTextToUse != null && !responseTextToUse.isEmpty()) {
-                // Speak final handler response directly
                 VoiceGenerator.getInstance().speak(responseTextToUse);
                 log.info("Spoke final query response (action: {}): {}", action, responseTextToUse);
-            } else {
-                // Fallback: Use GrokQueryEndPoint with query-specific prompt
+            } else if (requiresFollowUp) {
                 JsonArray messages = new JsonArray();
                 JsonObject systemMessage = new JsonObject();
                 systemMessage.addProperty("role", "system");
@@ -229,7 +215,7 @@ public class GrokResponseRouter {
                         "\nInstructions: Set 'type' to 'chat', use the provided 'Response Text' as 'response_text' if non-empty, otherwise generate a response, set 'action' to null, 'params' to {}, and 'expect_followup' to false.");
                 messages.add(toolResult);
 
-                log.debug("Sending follow-up to GrokQueryEndPoint: {}", messages.toString());
+                log.debug("Sending follow-up to GrokQueryEndPoint for action: {}", action);
                 JsonObject followUpResponse = GrokQueryEndPoint.getInstance().sendToGrok(messages);
 
                 if (followUpResponse == null) {
@@ -246,6 +232,9 @@ public class GrokResponseRouter {
                     log.warn("No response_text in follow-up for action: {}", action);
                     handleChat("Error accessing data banks.");
                 }
+            } else {
+                log.warn("No response_text for action: {}, and no follow-up required", action);
+                handleChat("No data available for that query.");
             }
         } catch (Exception e) {
             log.error("Query handling failed for action {}: {}", action, e.getMessage(), e);
@@ -259,8 +248,8 @@ public class GrokResponseRouter {
             handler.handle(params, responseText);
             log.debug("Handled command action: {}", action);
         } else {
-            voiceCommandHandler.handleGrokResponse(jsonResponse);
-            log.debug("Delegated unhandled command to VoiceCommandHandler: {}", action);
+            _gameCommandHandler.handleGrokResponse(jsonResponse);
+            log.debug("Delegated unhandled command to GameCommandHandler: {}", action);
         }
     }
 

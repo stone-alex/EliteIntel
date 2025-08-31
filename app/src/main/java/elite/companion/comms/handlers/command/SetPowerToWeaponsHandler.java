@@ -1,8 +1,7 @@
 package elite.companion.comms.handlers.command;
 
 import com.google.gson.JsonObject;
-import elite.companion.comms.voice.VoiceGenerator;
-import elite.companion.comms.ai.robot.VoiceCommandHandler;
+import elite.companion.comms.ai.robot.GameCommandHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,10 +9,10 @@ public class SetPowerToWeaponsHandler implements CommandHandler {
 
     private static final Logger log = LoggerFactory.getLogger(SetPowerToWeaponsHandler.class);
     public static final int DELAY = 25;
-    private final VoiceCommandHandler voiceCommandHandler;
+    private final GameCommandHandler _gameCommandHandler;
 
-    public SetPowerToWeaponsHandler(VoiceCommandHandler voiceCommandHandler) {
-        this.voiceCommandHandler = voiceCommandHandler;
+    public SetPowerToWeaponsHandler(GameCommandHandler gameCommandHandler) {
+        this._gameCommandHandler = gameCommandHandler;
     }
 
     @Override public void handle(JsonObject params, String responseText) {
@@ -22,38 +21,38 @@ public class SetPowerToWeaponsHandler implements CommandHandler {
             JsonObject resetPowerJson = new JsonObject();
             resetPowerJson.addProperty("type", "command");
             resetPowerJson.addProperty("action", CommandActionsGame.GameCommand.RESET_POWER_DISTRIBUTION.getGameBinding());
-            voiceCommandHandler.handleGrokResponse(resetPowerJson);
+            _gameCommandHandler.handleGrokResponse(resetPowerJson);
             Thread.sleep(DELAY);
 
 
             JsonObject stepOne = new JsonObject();
             stepOne.addProperty("type", "command");
             stepOne.addProperty("action", CommandActionsGame.GameCommand.INCREASE_WEAPONS_POWER.getGameBinding());
-            voiceCommandHandler.handleGrokResponse(stepOne);
+            _gameCommandHandler.handleGrokResponse(stepOne);
             Thread.sleep(DELAY);
 
             JsonObject stepTwo = new JsonObject();
             stepTwo.addProperty("type", "command");
             stepTwo.addProperty("action", CommandActionsGame.GameCommand.INCREASE_ENGINES_POWER.getGameBinding());
-            voiceCommandHandler.handleGrokResponse(stepTwo);
+            _gameCommandHandler.handleGrokResponse(stepTwo);
             Thread.sleep(DELAY);
 
             JsonObject stepThree = new JsonObject();
             stepThree.addProperty("type", "command");
             stepThree.addProperty("action", CommandActionsGame.GameCommand.INCREASE_WEAPONS_POWER.getGameBinding());
-            voiceCommandHandler.handleGrokResponse(stepThree);
+            _gameCommandHandler.handleGrokResponse(stepThree);
             Thread.sleep(DELAY);
 
             JsonObject stepFour = new JsonObject();
             stepFour.addProperty("type", "command");
             stepFour.addProperty("action", CommandActionsGame.GameCommand.INCREASE_ENGINES_POWER.getGameBinding());
-            voiceCommandHandler.handleGrokResponse(stepFour);
+            _gameCommandHandler.handleGrokResponse(stepFour);
             Thread.sleep(DELAY);
 
             JsonObject stepFive = new JsonObject();
             stepFive.addProperty("type", "command");
             stepFive.addProperty("action", CommandActionsGame.GameCommand.INCREASE_WEAPONS_POWER.getGameBinding());
-            voiceCommandHandler.handleGrokResponse(stepFive);
+            _gameCommandHandler.handleGrokResponse(stepFive);
             Thread.sleep(DELAY);
 
             log.info("Diverting power to weapons");

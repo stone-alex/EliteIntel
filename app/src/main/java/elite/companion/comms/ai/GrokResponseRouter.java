@@ -2,11 +2,10 @@ package elite.companion.comms.ai;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import elite.companion.comms.ai.robot.VoiceCommandHandler;
+import elite.companion.comms.handlers.command.*;
 import elite.companion.comms.handlers.query.*;
 import elite.companion.comms.voice.VoiceGenerator;
-import elite.companion.comms.handlers.command.*;
-import elite.companion.comms.ai.robot.VoiceCommandHandler;
-import elite.companion.util.InaraApiClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +19,6 @@ public class GrokResponseRouter {
     private static final Logger log = LoggerFactory.getLogger(GrokResponseRouter.class);
     private static final GrokResponseRouter INSTANCE = new GrokResponseRouter();
     private final VoiceCommandHandler voiceCommandHandler;
-    private final InaraApiClient inaraApiClient;
     private final Map<String, CommandHandler> commandHandlers = new HashMap<>();
     private final Map<String, QueryHandler> queryHandlers = new HashMap<>();
 
@@ -31,7 +29,6 @@ public class GrokResponseRouter {
     private GrokResponseRouter() {
         try {
             this.voiceCommandHandler = new VoiceCommandHandler();
-            this.inaraApiClient = new InaraApiClient();
             registerCommandHandlers();
         } catch (Exception e) {
             throw new RuntimeException("Failed to initialize GrokResponseRouter", e);

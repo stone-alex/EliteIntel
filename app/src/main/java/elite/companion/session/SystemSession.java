@@ -7,7 +7,6 @@ import elite.companion.gameapi.gamestate.events.NavRouteDto;
 import elite.companion.gameapi.journal.events.BaseEvent;
 import elite.companion.gameapi.journal.events.BountyEvent;
 import elite.companion.gameapi.journal.events.dto.MissionDto;
-import elite.companion.gameapi.journal.events.dto.RankDto;
 import elite.companion.comms.ai.AICadence;
 import elite.companion.comms.ai.AIPersonality;
 import elite.companion.util.GsonFactory;
@@ -26,13 +25,11 @@ import java.util.*;
 public class SystemSession {
     public static final String SENSOR_READING = "sensor_reading";
     public static final String CURRENT_SYSTEM = "current_system";
-    public static final String QUERY_DESTINATION = "query_destination";
     public static final String SHIP_LOADOUT_JSON = "ship_loadout_json";
     public static final String SUITE_LOADOUT_JSON = "suite_loadout_json";
     public static final String FINAL_DESTINATION = "final_destination";
     public static final String CURRENT_STATUS = "current_status";
     public static final String FSD_TARGET = "fsd_target";
-    public static final String RANK = "rank";
     public static final String SHIP_CARGO = "ship_cargo";
     public static final String PRIVACY_MODE = "privacy_mode";
     public static final String RADION_TRANSMISSION_ON_OFF = "radio_transmission_on_off";
@@ -44,7 +41,7 @@ public class SystemSession {
     public static final String CARRIER_LOCATION = "carrier_location";
     public static final String CURRENT_LOCATION = "current_location";
     public static final String TARGET_FACTION_NAME = "target_faction_name";
-    public static final String CADENCE = "cadence";
+    public static final String PROFILE = "profile";
     public static final String PERSONALITY = "personality";
 
     private static final SystemSession INSTANCE = new SystemSession();
@@ -60,11 +57,10 @@ public class SystemSession {
     private AIPersonality aiPersonality;
     private AICadence aiCadence;
     private BaseEvent bodySignal;
-
     private JsonArray chatHistory = new JsonArray();
 
+
     private SystemSession() {
-        state.put(RANK, new RankDto());
         state.put(FRIENDS_STATUS, new HashMap<String, String>());
         state.put(PIRATE_MISSIONS, new ArrayList<MissionDto>());
     }
@@ -158,7 +154,7 @@ public class SystemSession {
     }
 
     public AIPersonality getAIPersonality() {
-        return this.aiPersonality == null ? AIPersonality.PROFESSIONAL : this.aiPersonality;
+        return this.aiPersonality == null ? AIPersonality.FRIENDLY : this.aiPersonality;
     }
 
     public void setAICadence(AICadence cadence) {
@@ -262,5 +258,13 @@ public class SystemSession {
 
     public void clearChatHistory() {
         chatHistory = new JsonArray();
+    }
+
+    public void clearOnShutDown() {
+        state.clear();
+        detectedSignals.clear();
+        missions.clear();
+        routeMap.clear();
+        bountyCollectedThisSession = 0;
     }
 }

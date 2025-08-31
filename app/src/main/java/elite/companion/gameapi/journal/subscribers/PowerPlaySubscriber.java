@@ -1,10 +1,16 @@
 package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.companion.comms.ai.AICadence;
+import elite.companion.comms.ai.AIPersonality;
+import elite.companion.comms.voice.VoiceToAllegiances;
+import elite.companion.comms.voice.Voices;
+import elite.companion.data.PowerDetails;
+import elite.companion.data.PowerPlayData;
 import elite.companion.gameapi.journal.events.PowerplayEvent;
+import elite.companion.gameapi.journal.events.dto.RankAndProgressDto;
 import elite.companion.session.PlayerSession;
-
-import static elite.companion.session.PlayerSession.*;
+import elite.companion.session.SystemSession;
 
 @SuppressWarnings("unused")
 public class PowerPlaySubscriber {
@@ -12,9 +18,38 @@ public class PowerPlaySubscriber {
     @Subscribe
     public void onPowerPlayEvent(PowerplayEvent event) {
         PlayerSession session = PlayerSession.getInstance();
-        session.put(PLEDGED_TO_POWER, event.getPower());
-        session.put(POWER_RANK, event.getRank());
-        session.put(MERITS, event.getMerits());
-        session.put(PLEDGED_DURATION, event.getTimePledged());
+        RankAndProgressDto rp = session.getRankAndProgressDto();
+        PowerDetails powerDetails = PowerPlayData.getPowerDetails(event.getPower());
+
+        SystemSession systemSession = SystemSession.getInstance();
+        if (powerDetails != null) {
+            String allegiance = powerDetails.getAllegiance();
+            rp.setAllegiance(allegiance);
+            VoiceToAllegiances voiceToAllegiances = VoiceToAllegiances.getInstance();
+            if ("Empire".equalsIgnoreCase(allegiance)) {
+                systemSession.setAICadence(AICadence.IMPERIAL);
+                voiceToAllegiances.getVoiceForCadence(AICadence.IMPERIAL, systemSession.getAIVoice());
+            } else if ("Federation".equalsIgnoreCase(allegiance)) {
+                systemSession.setAICadence(AICadence.FEDERATION);
+                voiceToAllegiances.getVoiceForCadence(AICadence.FEDERATION, systemSession.getAIVoice());
+            } else {
+                systemSession.setAICadence(AICadence.ALLIANCE);
+                voiceToAllegiances.getVoiceForCadence(AICadence.ALLIANCE, systemSession.getAIVoice());
+            }
+        } else {
+            System.out.println(
+                    "Power [" + event.getPower() + "] is not included in programming. Please notify developer with exact power name as shown in this line"
+            );
+            //default to Empire, British cadence in honor of the country that made this game.
+            systemSession.setAICadence(AICadence.IMPERIAL);
+            systemSession.setAIPersonality(AIPersonality.FRIENDLY);
+            systemSession.setAIVoice(Voices.JAMES);
+        }
+
+        rp.setPledgedToPower(event.getPower());
+        rp.setPowerRank(event.getRank());
+        rp.setMerrits(event.getMerits());
+        rp.setTimePledged(event.getTimePledged());
+        session.setRankAndProgressDto(rp);
     }
 }

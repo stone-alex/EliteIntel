@@ -2,7 +2,7 @@ package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import elite.companion.gameapi.journal.events.LoadGameEvent;
-import elite.companion.gameapi.journal.events.dto.RankDto;
+import elite.companion.gameapi.journal.events.dto.RankAndProgressDto;
 import elite.companion.session.PlayerSession;
 import elite.companion.session.SystemSession;
 import elite.companion.util.ConfigManager;
@@ -28,11 +28,6 @@ public class LoadGameEventSubscriber {
         playerSession.put(CURRENT_SHIP, event.getShip());
         playerSession.put(CURRENT_SHIP_NAME, event.getShipName());
         playerSession.put(PERSONAL_CREDITS_AVAILABLE, event.getCredits());
-
-        RankDto ranks= (RankDto) systemSession.get(SystemSession.RANK);
-        GameLoadedInfo info = new GameLoadedInfo(event.toJson(), ranks.toJson());
-
-        //SystemSession.getInstance().sendToAiAnalysis("Connected to Elite Dangerous as " + usePlayerName + ". " + ranks.toJson());
 
         initValuesFromConfig(playerSession);
     }

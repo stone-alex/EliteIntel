@@ -1,6 +1,6 @@
 package elite.companion.gameapi.journal.events;
 
-public interface PlayerBasicStats {
+public interface PlayerProgressStats {
     public int getCombat();
 
     public int getTrade();
@@ -16,4 +16,5 @@ public interface PlayerBasicStats {
     public int getFederation();
 
     public int getCQC();
+
 }

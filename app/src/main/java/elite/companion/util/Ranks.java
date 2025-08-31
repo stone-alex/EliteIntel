@@ -1,6 +1,7 @@
 package elite.companion.util;
 
-import elite.companion.gameapi.journal.events.dto.RankDto;
+import elite.companion.gameapi.journal.events.dto.RankAndProgressDto;
+import elite.companion.session.PlayerSession;
 import elite.companion.session.SystemSession;
 
 import java.util.HashMap;
@@ -279,7 +280,7 @@ public class Ranks {
     }
 
     public static String getPlayerHonorific() {
-        RankDto rankDto = (RankDto) SystemSession.getInstance().get(SystemSession.RANK);
+        RankAndProgressDto rankDto = PlayerSession.getInstance().getRankAndProgressDto();
         return rankDto.getHonorific();
     }
 }

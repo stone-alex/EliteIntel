@@ -21,7 +21,7 @@ public class PowerplayEvent extends BaseEvent {
     private long timePledged;
 
     public PowerplayEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "PlayerPower");
+        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "Powerplay");
         PowerplayEvent event = GsonFactory.getGson().fromJson(json, PowerplayEvent.class);
         this.power = event.power;
         this.rank = event.rank;
@@ -31,7 +31,7 @@ public class PowerplayEvent extends BaseEvent {
 
     @Override
     public String getEventType() {
-        return "PlayerPower";
+        return "Powerplay";
     }
 
     @Override

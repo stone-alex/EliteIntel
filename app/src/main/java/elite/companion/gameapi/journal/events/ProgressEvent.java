@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import elite.companion.util.GsonFactory;
 import java.time.Duration;
 
-public class ProgressEvent extends BaseEvent implements PlayerBasicStats {
+public class ProgressEvent extends BaseEvent implements PlayerProgressStats {
     @SerializedName("Combat")
     private int combat;
 

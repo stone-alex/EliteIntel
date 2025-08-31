@@ -74,7 +74,7 @@ public class AIContextFactory {
         PlayerSession playerSession = PlayerSession.getInstance();
         String playerName = String.valueOf(playerSession.get(PlayerSession.PLAYER_NAME));
         String playerTitle = String.valueOf(playerSession.get(PlayerSession.PLAYER_TITLE));
-        String playerMilitaryRank = String.valueOf(playerSession.get(PlayerSession.PLAYER_RANK));
+        String playerMilitaryRank = String.valueOf(playerSession.get(PlayerSession.PLAYER_HIGHEST_MILITARY_RANK));
         String playerHonorific = Ranks.getPlayerHonorific();
         String currentShip = String.valueOf(playerSession.get(PlayerSession.CURRENT_SHIP));
         String missionStatement = String.valueOf(playerSession.get(PlayerSession.PLAYER_MISSION_STATEMENT));

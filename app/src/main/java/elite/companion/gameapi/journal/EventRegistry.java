@@ -49,6 +49,7 @@ public class EventRegistry {
         registerEvent("MissionAccepted", MissionAcceptedEvent.class);
         registerEvent("MissionCompleted", MissionCompletedEvent.class);
         registerEvent("MissionFailed", MissionFailedEvent.class);
+        registerEvent("NavRoute", NavRouteEvent.class);
         registerEvent("NavRouteClear", NavRouteClearEvent.class);
         registerEvent("NpcCrewPaidWage", NpcCrewPaidWageEvent.class);
         registerEvent("Powerplay", PowerplayEvent.class);
@@ -67,6 +68,7 @@ public class EventRegistry {
         registerEvent("SupercruiseExit", SupercruiseExitEvent.class);
         registerEvent("SwitchSuitLoadout", SwitchSuitLoadoutEvent.class);
         registerEvent("Touchdown", TouchdownEvent.class);
+        registerEvent("ShutdownEvent", ShutdownEvent.class);
     }
 
     private static void registerEvent(String eventName, Class<? extends BaseEvent> eventClass) {

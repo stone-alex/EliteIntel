@@ -2,6 +2,7 @@ package elite.companion.session;
 
 import com.google.common.eventbus.Subscribe;
 import elite.companion.gameapi.journal.events.CarrierStatsEvent;
+import elite.companion.gameapi.journal.events.dto.RankAndProgressDto;
 import elite.companion.util.EventBusManager;
 
 import java.util.HashMap;
@@ -31,9 +32,8 @@ public class PlayerSession {
     public static final String MARKET_PROFITS = "market_profits";
     public static final String CREW_WAGS_PAYOUT = "crew_wags_payout";
     public static final String SHIP_CARGO_CAPACITY = "ship_cargo_capacity";
-    public static final String SHIP_FUEL_CAPACITY = "ship_fuel_capacity";
     public static final String PLAYER_TITLE = "player_title";
-    public static final String PLAYER_RANK = "player_rank";
+    public static final String PLAYER_HIGHEST_MILITARY_RANK = "player_highest_military_rank";
 
     private static final PlayerSession INSTANCE = new PlayerSession();
 
@@ -41,10 +41,6 @@ public class PlayerSession {
     public static final String CARRIER_RESERVE = "carrier_reserve";
     public static final String PLAYER_NAME = "player_name";
     public static final String PLAYER_MISSION_STATEMENT = "player_mission_statement";
-    public static final String PLEDGED_TO_POWER = "pledged_to_power";
-    public static final String POWER_RANK = "pledged_to_rank";
-    public static final String MERITS = "pledged_to_merits";
-    public static final String PLEDGED_DURATION = "pledged_to_time";
     public static final String CURRENT_SHIP = "current_ship";
     public static final String CURRENT_SHIP_NAME = "current_ship_name";
     public static final String CARRIER_FUEL_LEVEL = "carrier_fuel_level";
@@ -72,6 +68,7 @@ public class PlayerSession {
     public static final String CARRIER_REPAIR_SUPPLY_TAX = "carrier_repair_supply_tax";
     public static final String CARRIER_STATS = "carrier_stats";
 
+    private RankAndProgressDto rankAndProgressDto = new RankAndProgressDto();
 
     private final Map<String, Object> state = new HashMap<>();
 
@@ -130,21 +127,23 @@ public class PlayerSession {
         state.put(key, data);
     }
 
-    public String getSummary() {
-        StringBuilder summary = new StringBuilder();
-        for (Map.Entry<String, Object> entry : state.entrySet()) {
-            String key = entry.getKey();
-            Object value = String.valueOf(entry.getValue());
-            summary.append(key).append(": ").append(String.valueOf(value)).append("; ");
-        }
-        return summary.toString();
-    }
-
     public Object get(String key) {
         return state.get(key);
     }
 
     public void remove(String key) {
         state.remove(key);
+    }
+
+    public void clearOnShutDown() {
+        state.clear();
+    }
+
+    public RankAndProgressDto getRankAndProgressDto() {
+        return rankAndProgressDto;
+    }
+
+    public void setRankAndProgressDto(RankAndProgressDto rankAndProgressDto) {
+        this.rankAndProgressDto = rankAndProgressDto;
     }
 }

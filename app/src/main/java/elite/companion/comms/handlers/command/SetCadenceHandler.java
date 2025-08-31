@@ -2,7 +2,6 @@ package elite.companion.comms.handlers.command;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import elite.companion.comms.voice.VoiceGenerator;
 import elite.companion.comms.voice.VoiceToAllegiances;
 import elite.companion.comms.voice.Voices;
 import elite.companion.session.SystemSession;
@@ -14,7 +13,7 @@ public class SetCadenceHandler implements CommandHandler {
     @Override public void handle(JsonObject params, String responseText) {
         SystemSession systemSession = SystemSession.getInstance();
         try {
-            JsonElement jsonElement = extractParameter(CommandActionsCustom.SET_CADENCE.getPlaceholder(), params);
+            JsonElement jsonElement = extractParameter(CommandActionsCustom.SET_PROFILE.getPlaceholder(), params);
             AICadence aiCadence = AICadence.valueOf(jsonElement.getAsString().toUpperCase());
 
             Voices currentVoice = systemSession.getAIVoice();

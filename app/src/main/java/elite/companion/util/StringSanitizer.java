@@ -70,6 +70,12 @@ public class StringSanitizer {
             log.info("Sanitized transcript: {} -> {}", voiceCommand, command);
         }
 
+        if(command.toLowerCase().contains("hannah")){
+            command = command.replace("Hannah", "Anna");
+            command = command.replace("hannah", "Anna");
+            log.info("Sanitized transcript: {} -> {}", voiceCommand, command);
+        }
+
         return command.toLowerCase();
     }
 

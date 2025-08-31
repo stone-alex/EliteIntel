@@ -36,7 +36,13 @@ public class GrokCommandEndPoint {
         // Sanitize input
         userInput = escapeJson(userInput);
         if (userInput == null || userInput.isEmpty()) {
-            VoiceGenerator.getInstance().speak("Sorry, I couldn't process that.");
+            JsonObject errorResponse = new JsonObject();
+            errorResponse.addProperty("type", "chat");
+            errorResponse.addProperty("response_text", "Sorry, I couldn't process that.");
+            errorResponse.addProperty("action", (String) null);
+            errorResponse.add("params", new JsonObject());
+            errorResponse.addProperty("expect_followup", true);
+            GrokResponseRouter.getInstance().processGrokResponse(errorResponse, userInput);
             SystemSession.getInstance().clearChatHistory();
             return;
         }
@@ -64,7 +70,7 @@ public class GrokCommandEndPoint {
             clarification.add("params", new JsonObject());
             clarification.addProperty("expect_followup", true);
 
-            // Route the clarification response
+            // Route clarification without direct TTS
             GrokResponseRouter.getInstance().processGrokResponse(clarification, userInput);
 
             // Store user message in history for follow-up
@@ -101,29 +107,23 @@ public class GrokCommandEndPoint {
         // Send via GrokChatEndPoint
         JsonObject apiResponse = GrokChatEndPoint.getInstance().sendToGrok(messages);
         if (apiResponse == null) {
-            VoiceGenerator.getInstance().speak("Sorry, I couldn't process that.");
+            JsonObject errorResponse = new JsonObject();
+            errorResponse.addProperty("type", "chat");
+            errorResponse.addProperty("response_text", "Sorry, I couldn't process that.");
+            errorResponse.addProperty("action", (String) null);
+            errorResponse.add("params", new JsonObject());
+            errorResponse.addProperty("expect_followup", true);
+            GrokResponseRouter.getInstance().processGrokResponse(errorResponse, userInput);
             SystemSession.getInstance().clearChatHistory();
             return;
         }
 
-
-
-        // Speak response_text only for chat or quick queries
-        String type = JsonUtils.getAsStringOrEmpty(apiResponse, "type").toLowerCase();
-        String responseText = JsonUtils.getAsStringOrEmpty(apiResponse, "response_text");
-        String action = JsonUtils.getAsStringOrEmpty(apiResponse, "action");
-
-        if ("chat".equals(type) || ("query".equals(type) && isQuickQuery(action))) {
-            if (!responseText.isEmpty()) {
-                VoiceGenerator.getInstance().speak(responseText);
-                log.info("Spoke initial response in processVoiceCommand: {}", responseText);
-            }
-        }
-
-        // Route the response
+        // Route the response without speaking here
         GrokResponseRouter.getInstance().processGrokResponse(apiResponse, userInput);
 
         // Handle history updates for chat continuations
+        String type = JsonUtils.getAsStringOrEmpty(apiResponse, "type").toLowerCase();
+        String responseText = JsonUtils.getAsStringOrEmpty(apiResponse, "response_text");
         if ("chat".equals(type)) {
             boolean expectFollowup = apiResponse.has("expect_followup") && apiResponse.get("expect_followup").getAsBoolean();
             JsonObject assistantMessage = new JsonObject();
@@ -139,8 +139,6 @@ public class GrokCommandEndPoint {
             SystemSession.getInstance().clearChatHistory();
         }
     }
-
-
 
     // Helper to check if query is quick
     private boolean isQuickQuery(String action) {

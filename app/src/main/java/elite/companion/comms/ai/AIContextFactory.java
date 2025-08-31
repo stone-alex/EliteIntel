@@ -1,9 +1,9 @@
 package elite.companion.comms.ai;
 
-import elite.companion.comms.handlers.query.QueryActions;
 import elite.companion.session.PlayerSession;
 import elite.companion.session.SystemSession;
 import elite.companion.util.Ranks;
+import elite.companion.comms.handlers.query.QueryActions;
 
 import java.util.Objects;
 
@@ -33,11 +33,11 @@ public class AIContextFactory {
         sb.append("Classify as: 'input' (data to analyze) or 'command' (trigger app action or keyboard event). ");
         sb.append("When processing a 'tool' role message, use the provided data's 'response_text' as the primary response if available, ensuring it matches the context of the query. ");
         appendBehavior(sb);
-        sb.append(generateSupportedQueriesClause()); // Add dynamic queries
+        sb.append(generateSupportedQueriesClause());
         sb.append("Always output JSON: {\"type\": \"system_command|chat\", \"response_text\": \"TTS output\", \"action\": \"set_mining_target|set_current_system|...\", \"params\": {\"key\": \"value\"}, \"expect_followup\": boolean}. ");
         sb.append("For type='query' in initial classification, follow response_text rules from player instructions. For tool/follow-up, use full analyzed response in 'response_text'. ");
         sb.append("For type='chat', set 'expect_followup': true if response poses a question or requires user clarification; otherwise, false. ");
-        sb.append("For UNHINGED personality, use playful slang (e.g., 'mate', 'bollocks', 'knackered'). For ROGUE personality, use bold profanity (e.g., 'shit', 'fuck', 'arse') inspired by George Carlin, but keep it sharp and witty, not excessive.");
+        sb.append("For UNHINGED personality, use playful slang (e.g., 'mate', 'bollocks', 'knackered'). For ROGUE personality, use bold profanity (e.g., 'shit', 'fuck', 'arse'), but keep it sharp and witty, not excessive.");
         return sb.toString();
     }
 
@@ -46,16 +46,29 @@ public class AIContextFactory {
         sb.append("Classify as: 'input' (data to analyze) or 'command' (trigger app action or keyboard event). ");
         sb.append("Use NATO phonetic alphabet for star system codes or ship plates (e.g., RH-F = Romeo Hotel dash Foxtrot), and spell out numerals in full words (e.g., 285 = two hundred and eighty-five, 27 = twenty-seven). ");
         appendBehavior(sb);
-        sb.append(generateSupportedQueriesClause()); // Add dynamic queries
+        sb.append(generateSupportedQueriesClause());
         sb.append("Round billions to nearest million. ");
         sb.append("Always output JSON: {\"type\": \"system_command|chat\", \"response_text\": \"TTS output\", \"action\": \"set_mining_target|set_current_system|...\", \"params\": {\"key\": \"value\"}, \"expect_followup\": boolean}. ");
         sb.append("For type='query' in initial classification, follow response_text rules from player instructions. For tool/follow-up, use full analyzed response in 'response_text'. ");
         sb.append("For type='chat', set 'expect_followup': true if response poses a question or requires user clarification; otherwise, false. ");
-        sb.append("For UNHINGED personality, use playful slang (e.g., 'mate', 'bollocks', 'knackered'). For ROGUE personality, use bold profanity (e.g., 'shit', 'fuck', 'arse') inspired by George Carlin, but keep it sharp and witty, not excessive.");
+        sb.append("For UNHINGED personality, use playful slang (e.g., 'mate', 'bollocks', 'knackered'). For ROGUE personality, use bold profanity (e.g., 'shit', 'fuck', 'arse'), but keep it sharp and witty, not excessive.");
         return sb.toString();
     }
 
-
+    public String generateAnalysisPrompt(String userIntent, String dataJson) {
+        StringBuilder sb = new StringBuilder();
+        getSessionValues(sb);
+        appendBehavior(sb);
+        sb.append("Task: Analyze the provided JSON data against the user's intent: ").append(userIntent).append(". Return precise answers (e.g., yes/no for specific searches) or summaries as requested, using the configured personality and cadence in 'response_text'.\n");
+        sb.append("Output JSON: {\"response_text\": \"TTS output in the configured personality and cadence\", \"details\": \"optional extra info\"}\n");
+        sb.append("Data format: JSON array or object, e.g., for signals: [{\"name\": \"Fleet Carrier XYZ\", \"type\": \"Carrier\"}, {\"name\": \"Distress Signal\", \"type\": \"USS\"}]\n");
+        sb.append("Examples for ROGUE personality (brief, bold, witty, with profanity):\n" +
+                "    - Intent: 'tell me if carrier XYZ is here' Data: [{\"name\": \"Fleet Carrier XYZ\", \"type\": \"Carrier\"}] -> {\"response_text\": \"Carrier XYZ’s right here, Commander. Bloody massive thing.\", \"details\": \"Detected in local signals.\"}\n" +
+                "    - Intent: 'tell me if carrier ABC is here' Data: [{\"name\": \"Fleet Carrier XYZ\", \"type\": \"Carrier\"}] -> {\"response_text\": \"No fucking carrier ABC around, Commander.\", \"details\": \"No such carrier in local signals.\"}\n" +
+                "    - Intent: 'summarize local signals' Data: [{\"name\": \"Fleet Carrier XYZ\", \"type\": \"Carrier\"}, {\"name\": \"Distress Signal\", \"type\": \"USS\"}] -> {\"response_text\": \"One carrier, one distress signal. Shit’s lively out here, Commander.\", \"details\": \"Carrier: XYZ, USS: Distress Signal\"}\n" +
+                "    - Intent: 'what can you do' Data: [{\"capabilities\": \"Voice commands, data analysis, route plotting, ship control\"}] -> {\"response_text\": \"I can fly this ship, analyze data, plot routes, and fuck with your enemies, Commander. What’s the plan?\", \"details\": \"Full app capabilities.\"}\n");
+        return sb.toString();
+    }
 
     private static void getSessionValues(StringBuilder sb) {
         PlayerSession playerSession = PlayerSession.getInstance();
@@ -75,7 +88,6 @@ public class AIContextFactory {
                 Objects.equals(missionStatement, "null") ? "" : missionStatement
         );
     }
-
 
     public static void appendBehavior(StringBuilder sb) {
         SystemSession systemSession = SystemSession.getInstance();
@@ -102,7 +114,6 @@ public class AIContextFactory {
         sb.append("\n\n");
     }
 
-
     public String generatePlayerInstructions(String playerVoiceInput) {
         StringBuilder sb = new StringBuilder();
         sb.append("Instructions:\n\n");
@@ -115,31 +126,36 @@ public class AIContextFactory {
         sb.append("For type='command': Provide empty response_text for single word commands (e.g., 'deploy landing gear').\n");
         sb.append("For type='query': \n" +
                 "    - If action is a quick query (listed in quick queries section), set 'response_text' to '' (empty string, no initial TTS).\n" +
-                "    - If action is a data query (listed in data queries section), set 'response_text' to 'Accessing data banks...' for user feedback during delay.\n" +
+                "    - If action is a data query (listed in data queries section), set 'response_text' to 'Moment...' for user feedback during delay.\n" +
                 "    - Do not generate or infer answers here; the app will handle final response via handlers.\n");
-        sb.append("For type='chat', set 'expect_followup': true if response poses a question or requires user clarification; otherwise, false. ");
+        sb.append("For type='chat': \n" +
+                "    - Classify as 'chat' for general conversation, lore questions, opinions, or casual talk (e.g., 'How’s it going?', 'Tell me about the Thargoids', 'What’s your favorite system?').\n" +
+                "    - Generate a relevant conversational response in 'response_text' strictly adhering to the configured personality and cadence (e.g., for ROGUE: extremely brief, bold, witty with profanity like 'shit', 'fuck', 'arse'; for UNHINGED: playful slang like 'mate', 'bollocks').\n" +
+                "    - If input is ambiguous, unrecognized, or gibberish (e.g., 'voice to an', 'asdf'), set 'response_text' to 'Sorry, mate, didn't quite catch that. Could you repeat or clarify?', 'action' to null, and 'expect_followup' to true. Do not generate custom clarification messages.\n" +
+                "    - Set 'expect_followup' to true if the response poses a question or invites further conversation; otherwise, false.\n");
         sb.append("Map colloquial terms to commands: 'feds', 'yanks', or 'federation space' to 'FEDERATION', 'imperials', 'imps', or 'empire' to 'IMPERIAL', 'alliance space' or 'allies' to 'ALLIANCE' for set_cadence. ");
         sb.append("Infer command intent from context: phrases like 'act like', 'talk like', 'blend in with', or 'sound like' followed by a faction should trigger 'set_cadence' with the corresponding cadence value, using current system allegiance if ambiguous. ");
         sb.append("For navigation commands (e.g., 'jump', 'initiate hyperspace', 'go to next system'), map to 'engage_supercruise' or 'target_next_system_in_route' based on context. ");
         sb.append("Map phrases like 'what is your name', 'who are you', 'what’s your designation', 'what is your voice', or 'tell me your name' to 'query' type with action 'what_is_your_designation'. ");
         sb.append("If the input starts with 'query ', classify as 'query' and use the rest of the input as the action (e.g., 'query what is your designation' -> action 'what_is_your_designation'). ");
-        sb.append("If input is ambiguous or unclear, classify as 'chat', return a clarification request in 'response_text', and set 'expect_followup': true.\n");
+        sb.append("Examples:\n" +
+                "    - Input 'How’s it going?' -> {\"type\": \"chat\", \"response_text\": \"Ship’s running like a bloody dream, Commander! You holding up?\", \"action\": null, \"params\": {}, \"expect_followup\": true}\n" +
+                "    - Input 'Tell me about the Thargoids' -> {\"type\": \"chat\", \"response_text\": \"Thargoids? Bug-like bastards with tech that’ll fuck your ship in seconds. Want tips to survive 'em?\", \"action\": null, \"params\": {}, \"expect_followup\": true}\n" +
+                "    - Input 'What’s your favorite system?' -> {\"type\": \"chat\", \"response_text\": \"Sol’s the shit, Commander—humanity’s cradle, warts and all. Got a system you fancy?\", \"action\": null, \"params\": {}, \"expect_followup\": true}\n" +
+                "    - Input 'voice to an' -> {\"type\": \"chat\", \"response_text\": \"Sorry, mate, didn't quite catch that. Could you repeat or clarify?\", \"action\": null, \"params\": {}, \"expect_followup\": true}\n" +
+                "    - Input 'asdf' -> {\"type\": \"chat\", \"response_text\": \"Sorry, mate, didn't quite catch that. Could you repeat or clarify?\", \"action\": null, \"params\": {}, \"expect_followup\": true}\n");
         return sb.toString();
     }
-
-
-
 
     private String generateSupportedQueriesClause() {
         StringBuilder sb = new StringBuilder();
         sb.append("Supported queries:\n");
 
-        // Separate quick and data queries
         StringBuilder quickQueries = new StringBuilder();
         StringBuilder dataQueries = new StringBuilder();
 
         for (QueryActions query : QueryActions.values()) {
-            String description = getQueryDescription(query); // Map to user-friendly description
+            String description = getQueryDescription(query);
             if (query.isQuick()) {
                 quickQueries.append("    - ").append(query.getAction()).append(": ").append(description).append("\n");
             } else {
@@ -147,7 +163,6 @@ public class AIContextFactory {
             }
         }
 
-        // Combine sections
         sb.append("Quick queries (simple, direct info, no data analysis delay):\n");
         sb.append(quickQueries.length() > 0 ? quickQueries : "    - None defined.\n");
         sb.append("Data queries (require analyzing game state, may have delay):\n");
@@ -158,7 +173,6 @@ public class AIContextFactory {
         return sb.toString();
     }
 
-    // Helper to map actions to descriptions (customize as needed or pull from external config)
     private String getQueryDescription(QueryActions query) {
         switch (query) {
             case WHAT_IS_YOUR_DESIGNATION:
@@ -175,7 +189,6 @@ public class AIContextFactory {
                 return "Requests current system and signal data (e.g., 'what signals are here').";
             case QUERY_FIND_NEAREST_MATERIAL_TRADER:
                 return "Requests nearest material trader location.";
-            // Add others as needed
             default:
                 return "Handles " + query.getAction() + " query.";
         }

@@ -1,7 +1,6 @@
 package elite.companion.comms.ai;
 
 import com.google.gson.*;
-import elite.companion.session.SystemSession;
 import elite.companion.util.ConfigManager;
 import elite.companion.util.GsonFactory;
 import org.slf4j.Logger;
@@ -29,14 +28,7 @@ public class GrokAnalysisEndpoint {
     public JsonObject analyzeData(String userIntent, String dataJson) {
         try {
             HttpURLConnection conn = getHttpURLConnection();
-            String aiName = SystemSession.getInstance().getAIVoice().getName();
-            String systemPrompt = " Context: You are " + aiName + ", onboard AI for Elite Dangerous. Address as My Lord. Brief, concise, military professional. British cadence, NATO phonetic alphabet for codes (e.g., RH-F = Romeo Hotel dash Foxtrot), spell out numerals (e.g., 285 = two eight five).\n" +
-                    "   Task: Analyze provided JSON data against user intent. Return precise answers (e.g., yes/no for specific searches) or summaries as requested. Output JSON: {\"response_text\": \"TTS output\", \"details\": \"optional extra info\"}\n" +
-                    "   Data format: JSON array of signals, e.g., [{\"name\": \"Fleet Carrier XYZ\", \"type\": \"Carrier\"}, {\"name\": \"Distress Signal\", \"type\": \"USS\"}]\n" +
-                    "   Examples:\n" +
-                    "       - Intent: 'tell me if carrier XYZ is here' Data: [{\"name\": \"Fleet Carrier XYZ\", \"type\": \"Carrier\"}] -> {\"response_text\": \"Fleet carrier XYZ is present, My Lord.\", \"details\": \"Detected in local signals.\"}\n" +
-                    "       - Intent: 'tell me if carrier ABC is here' Data: [{\"name\": \"Fleet Carrier XYZ\", \"type\": \"Carrier\"}] -> {\"response_text\": \"No match for fleet carrier ABC, My Lord.\", \"details\": \"No such carrier in local signals.\"}\n" +
-                    "       - Intent: 'summarize local signals' Data: [{\"name\": \"Fleet Carrier XYZ\", \"type\": \"Carrier\"}, {\"name\": \"Distress Signal\", \"type\": \"USS\"}] -> {\"response_text\": \"Local signals: one fleet carrier, one distress signal, My Lord.\", \"details\": \"Carrier: XYZ, USS: Distress Signal\"}";
+            String systemPrompt = AIContextFactory.getInstance().generateAnalysisPrompt(userIntent, dataJson);
 
             JsonObject request = new JsonObject();
             request.addProperty("model", "grok-3-fast");
@@ -83,7 +75,7 @@ public class GrokAnalysisEndpoint {
                 }
                 logger.error("xAI API error: {} - {}", responseCode, conn.getResponseMessage());
                 logger.info("Error response body: {}", errorResponse);
-                return createErrorResponse("Analysis error, My Lord.");
+                return createErrorResponse("Analysis error.");
             }
 
             // Parse response
@@ -92,26 +84,26 @@ public class GrokAnalysisEndpoint {
                 json = JsonParser.parseString(response).getAsJsonObject();
             } catch (JsonSyntaxException e) {
                 logger.error("Failed to parse API response: [{}]", toDebugString(response), e);
-                return createErrorResponse("Analysis error, My Lord.");
+                return createErrorResponse("Analysis error.");
             }
 
             // Extract content safely
             JsonArray choices = json.getAsJsonArray("choices");
             if (choices == null || choices.isEmpty()) {
                 logger.error("No choices in API response: [{}]", toDebugString(response));
-                return createErrorResponse("Analysis error, My Lord.");
+                return createErrorResponse("Analysis error.");
             }
 
             JsonObject message = choices.get(0).getAsJsonObject().getAsJsonObject("message");
             if (message == null) {
                 logger.error("No message in API response choices: [{}]", toDebugString(response));
-                return createErrorResponse("Analysis error, My Lord.");
+                return createErrorResponse("Analysis error.");
             }
 
             String content = message.get("content").getAsString();
             if (content == null) {
                 logger.error("No content in API response message: [{}]", toDebugString(response));
-                return createErrorResponse("Analysis error, My Lord.");
+                return createErrorResponse("Analysis error.");
             }
 
             logger.debug("API response content: [{}]", toDebugString(content));
@@ -125,7 +117,7 @@ public class GrokAnalysisEndpoint {
                 jsonStart = content.indexOf("{");
                 if (jsonStart == -1) {
                     logger.error("No JSON object found in content: [{}]", toDebugString(content));
-                    return createErrorResponse("Analysis error, My Lord.");
+                    return createErrorResponse("Analysis error.");
                 }
                 jsonContent = content.substring(jsonStart);
             }
@@ -137,7 +129,7 @@ public class GrokAnalysisEndpoint {
                 return JsonParser.parseString(jsonContent).getAsJsonObject();
             } catch (JsonSyntaxException e) {
                 logger.error("Failed to parse API response content: [{}]", toDebugString(jsonContent), e);
-                return createErrorResponse("Analysis error, My Lord.");
+                return createErrorResponse("Analysis error.");
             }
         } catch (Exception e) {
             logger.error("AI API call fatal error: {}", e.getMessage(), e);

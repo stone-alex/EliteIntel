@@ -1,20 +1,20 @@
 package elite.companion.comms.voice;
 
 public enum Voices {
-    ANNA("Anna", 1.2, false),
-    CHARLES("Charles", 1.2, true),
-    JAMES("James", 1.1, true),
-    JENNIFER("Jennifer", 1.2, false),
-    JOSEPH("Joseph", 1.2, true),
-    KAREN("Karen", 1.2, false),
-    JAKE("Lana", 1.2, false),
-    MARY("Mary", 1.2, false),
-    MICHAEL("Michael", 1.2, true),
-    RACHEL("Rachel", 1.2, false),
-    STEVE("Steve", 1.2, true),
-    BETTY("Betty", 1.2, false),
-    EMMA("Emma", 1.2, false),
-    OLIVIA("Olivia", 1.2, false),
+    ANNA("Anna", 1.1, false),           // en-GB-Chirp-HD-F
+    BETTY("Betty", 1.2, false),         // en-GB-Chirp3-HD-Aoede
+    CHARLES("Charles", 1.2, true),      // en-GB-Chirp3-HD-Algenib
+    EMMA("Emma", 1.2, false),           // en-US-Chirp3-HD-Despina
+    JAKE("Jake", 1.2, false),           // en-US-Chirp3-HD-Iapetus
+    JAMES("James", 1.1, true),          // en-AU-Chirp3-HD-Algieba
+    JENNIFER("Jennifer", 1.2, false),   // en-US-Chirp3-HD-Sulafat
+    JOSEPH("Joseph", 1.2, true),        // en-US-Chirp3-HD-Sadachbia
+    KAREN("Karen", 1.2, false),         // en-GB-Chirp3-HD-Zephyr
+    MARY("Mary", 1.2, false),           // en-GB-Neural2-A
+    MICHAEL("Michael", 1.2, true),      // en-US-Chirp3-HD-Charon
+    OLIVIA("Olivia", 1.2, false),       // en-GB-Chirp3-HD-Aoede
+    RACHEL("Rachel", 1.2, false),       // en-US-Chirp3-HD-Zephyr
+    STEVE("Steve", 1.2, true),          // en-US-Chirp3-HD-Algenib
     ;
 
     // Default voice settings

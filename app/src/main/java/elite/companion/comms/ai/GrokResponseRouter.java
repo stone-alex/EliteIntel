@@ -20,7 +20,7 @@ public class GrokResponseRouter {
     private static final Logger log = LoggerFactory.getLogger(GrokResponseRouter.class);
     private static final GrokResponseRouter INSTANCE = new GrokResponseRouter();
     private final VoiceCommandHandler voiceCommandHandler;
-    private final InaraApiClient inaraApiClient;// stub
+    private final InaraApiClient inaraApiClient;
     private final Map<String, CommandHandler> commandHandlers = new HashMap<>();
     private final Map<String, QueryHandler> queryHandlers = new HashMap<>();
 
@@ -39,8 +39,7 @@ public class GrokResponseRouter {
     }
 
     private void registerCommandHandlers() {
-
-        //Query Handlers
+        // Query Handlers
         queryHandlers.put(QueryActions.CHECK_LEGAL_STATUS.getAction(), new AnalyzeDataHandler());
         queryHandlers.put(QueryActions.LIST_AVAILABLE_VOICES.getAction(), new ListAvailableVoices());
         queryHandlers.put(QueryActions.LOCAL_SYSTEM_INFO.getAction(), new AnalyzeDataHandler());
@@ -57,8 +56,7 @@ public class GrokResponseRouter {
         queryHandlers.put(QueryActions.WHAT_ARE_YOUR_CAPABILITIES.getAction(), new WhatAreYourCapabilitiesHandler());
         queryHandlers.put(QueryActions.QUERY_PLAYER_STATS_ANALYSIS.getAction(), new PlayerStatsAnalyzer());
 
-
-        //APP COMMANDS
+        // APP COMMANDS
         commandHandlers.put(CommandActionsCustom.SET_MINING_TARGET.getAction(), new SetMiningTargetHandler());
         commandHandlers.put(CommandActionsCustom.PLOT_ROUTE.getAction(), new SetRouteHandler(voiceCommandHandler));
         commandHandlers.put(CommandActionsCustom.SET_PRIVACY_MODE.getAction(), new SetPrivacyMode());
@@ -68,14 +66,13 @@ public class GrokResponseRouter {
         commandHandlers.put(CommandActionsCustom.SET_PERSONALITY.getAction(), new SetPersonalityHandler());
         commandHandlers.put(CommandActionsCustom.SET_CADENCE.getAction(), new SetCadenceHandler());
 
-
-        //CUSTOM GAME CONTROL HANDERS
+        // CUSTOM GAME CONTROL HANDLERS
         commandHandlers.put(INCREASE_ENGINES_POWER.getUserCommand(), new SetPowerToEnginesHandler(voiceCommandHandler));
         commandHandlers.put(INCREASE_SYSTEMS_POWER.getUserCommand(), new SetPowerToSystemsHandler(voiceCommandHandler));
         commandHandlers.put(INCREASE_SHIELDS_POWER.getUserCommand(), new SetPowerToSystemsHandler(voiceCommandHandler));
         commandHandlers.put(INCREASE_WEAPONS_POWER.getUserCommand(), new SetPowerToWeaponsHandler(voiceCommandHandler));
 
-        //GENERIC GAME CONTROL HANDLERS
+        // GENERIC GAME CONTROL HANDLERS
         commandHandlers.put(BACKWARD_KEY.getGameBinding(), new GenericGameController(voiceCommandHandler, BACKWARD_KEY.getGameBinding()));
         commandHandlers.put(AUTO_DOC.getGameBinding(), new GenericGameController(voiceCommandHandler, AUTO_DOC.getGameBinding()));
         commandHandlers.put(CARGO_SCOOP.getGameBinding(), new GenericGameController(voiceCommandHandler, CARGO_SCOOP.getGameBinding()));
@@ -113,10 +110,8 @@ public class GrokResponseRouter {
         commandHandlers.put(GALNET_AUDIO_SKIP_FORWARD.getGameBinding(), new GenericGameController(voiceCommandHandler, GALNET_AUDIO_SKIP_FORWARD.getGameBinding()));
         commandHandlers.put(HYPER_SUPER_COMBINATION.getGameBinding(), new GenericGameController(voiceCommandHandler, HYPER_SUPER_COMBINATION.getGameBinding()));
         commandHandlers.put(JUMP_TO_HYPERSPACE.getGameBinding(), new GenericGameController(voiceCommandHandler, JUMP_TO_HYPERSPACE.getGameBinding()));
-
         commandHandlers.put(LANDING_GEAR_TOGGLE.getGameBinding(), new GenericGameController(voiceCommandHandler, LANDING_GEAR_TOGGLE.getGameBinding()));
         commandHandlers.put(NIGHT_VISION.getGameBinding(), new GenericGameController(voiceCommandHandler, NIGHT_VISION.getGameBinding()));
-
         commandHandlers.put(OPEN_CODEX_GO_TO_DISCOVERY.getGameBinding(), new GenericGameController(voiceCommandHandler, OPEN_CODEX_GO_TO_DISCOVERY.getGameBinding()));
         commandHandlers.put(OPEN_CODEX_GO_TO_DISCOVERY_BUGGY.getGameBinding(), new GenericGameController(voiceCommandHandler, OPEN_CODEX_GO_TO_DISCOVERY_BUGGY.getGameBinding()));
         commandHandlers.put(PAUSE.getGameBinding(), new GenericGameController(voiceCommandHandler, PAUSE.getGameBinding()));
@@ -135,7 +130,6 @@ public class GrokResponseRouter {
         commandHandlers.put(SET_SPEED75.getGameBinding(), new GenericGameController(voiceCommandHandler, SET_SPEED75.getGameBinding()));
         commandHandlers.put(SET_SPEED_ZERO.getGameBinding(), new GenericGameController(voiceCommandHandler, SET_SPEED_ZERO.getGameBinding()));
         commandHandlers.put(SYSTEM_MAP.getGameBinding(), new GenericGameController(voiceCommandHandler, SYSTEM_MAP.getGameBinding()));
-        //commandHandlers.put(SYSTEM_MAP_BUGGY.getGameBinding(), new GenericGameController(voiceCommandHandler, SYSTEM_MAP_BUGGY.getGameBinding()));
         commandHandlers.put(SYSTEM_MAP_HUMANOID.getGameBinding(), new GenericGameController(voiceCommandHandler, SYSTEM_MAP_HUMANOID.getGameBinding()));
         commandHandlers.put(TARGET_NEXT_ROUTE_SYSTEM.getGameBinding(), new GenericGameController(voiceCommandHandler, TARGET_NEXT_ROUTE_SYSTEM.getGameBinding()));
         commandHandlers.put(TARGET_WINGMAN0.getGameBinding(), new GenericGameController(voiceCommandHandler, TARGET_WINGMAN0.getGameBinding()));
@@ -162,7 +156,6 @@ public class GrokResponseRouter {
         log.info("Stopped GrokResponseRouter");
     }
 
-
     public void processGrokResponse(JsonObject jsonResponse, @Nullable String userInput) {
         if (jsonResponse == null) {
             log.error("Null Grok response received");
@@ -174,8 +167,8 @@ public class GrokResponseRouter {
             String action = getAsStringOrEmpty(jsonResponse, "action");
             JsonObject params = getAsObjectOrEmpty(jsonResponse, "params");
 
-            // Speak initial response_text (e.g., "Accessing data banks...") if non-empty
-            if (!responseText.isEmpty()) {
+            // Speak initial response_text only for non-chat types (e.g., query placeholders)
+            if (!responseText.isEmpty() && !type.equals("chat")) {
                 VoiceGenerator.getInstance().speak(responseText);
                 log.info("Spoke initial response: {}", responseText);
             }

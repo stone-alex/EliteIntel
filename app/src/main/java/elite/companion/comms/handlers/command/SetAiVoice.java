@@ -24,9 +24,6 @@ public class SetAiVoice implements CommandHandler {
         SystemSession systemSession = SystemSession.getInstance();
         try {
             systemSession.setAIVoice(Voices.valueOf(jsonElement.getAsString().toUpperCase()));
-
-            //NOTE: In this case it is OK to do a call to speak() here. This will not cause duplicate voice requests.
-            VoiceGenerator.getInstance().speak("Voice set to " + systemSession.getAIVoice().getName());
         } catch (IllegalArgumentException e) {
             VoiceGenerator.getInstance().speak("Sorry, I don't understand voice name: " + jsonElement.getAsString().toUpperCase() + ". Error: " + e.getMessage());
         }

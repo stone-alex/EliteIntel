@@ -1,11 +1,11 @@
 package elite.companion.gameapi.journal.events.dto;
 
-import com.google.gson.Gson;
 import elite.companion.gameapi.journal.events.PlayerBasicStats;
 import elite.companion.util.GsonFactory;
 import elite.companion.util.Ranks;
+import elite.companion.util.ToJsonConvertible;
 
-public class RankDto {
+public class RankDto implements ToJsonConvertible {
 
     private String combatRank = "unknown";
     private String militaryRankEmpire = "unknown";

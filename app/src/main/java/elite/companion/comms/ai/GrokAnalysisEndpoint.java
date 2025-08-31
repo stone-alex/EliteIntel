@@ -15,7 +15,6 @@ import java.util.Scanner;
 
 public class GrokAnalysisEndpoint {
     private static final Logger logger = LoggerFactory.getLogger(GrokAnalysisEndpoint.class);
-    public static final String ERROR_REPONSE = "{\"response_text\": \"Analysis error, Check logs.\"}";
     private final String apiUrl = "https://api.x.ai/v1/chat/completions";
     private final Gson gson = GsonFactory.getGson();
     private static final GrokAnalysisEndpoint instance = new GrokAnalysisEndpoint();
@@ -27,7 +26,7 @@ public class GrokAnalysisEndpoint {
         return instance;
     }
 
-    public String analyzeData(String userIntent, String dataJson) {
+    public JsonObject analyzeData(String userIntent, String dataJson) {
         try {
             HttpURLConnection conn = getHttpURLConnection();
             String aiName = SystemSession.getInstance().getAIVoice().getName();
@@ -84,7 +83,7 @@ public class GrokAnalysisEndpoint {
                 }
                 logger.error("xAI API error: {} - {}", responseCode, conn.getResponseMessage());
                 logger.info("Error response body: {}", errorResponse);
-                return "{\"response_text\": \"Analysis error, My Lord.\"}";
+                return createErrorResponse("Analysis error, My Lord.");
             }
 
             // Parse response
@@ -93,26 +92,26 @@ public class GrokAnalysisEndpoint {
                 json = JsonParser.parseString(response).getAsJsonObject();
             } catch (JsonSyntaxException e) {
                 logger.error("Failed to parse API response: [{}]", toDebugString(response), e);
-                return "{\"response_text\": \"Analysis error, My Lord.\"}";
+                return createErrorResponse("Analysis error, My Lord.");
             }
 
             // Extract content safely
             JsonArray choices = json.getAsJsonArray("choices");
             if (choices == null || choices.isEmpty()) {
                 logger.error("No choices in API response: [{}]", toDebugString(response));
-                return "{\"response_text\": \"Analysis error, My Lord.\"}";
+                return createErrorResponse("Analysis error, My Lord.");
             }
 
             JsonObject message = choices.get(0).getAsJsonObject().getAsJsonObject("message");
             if (message == null) {
                 logger.error("No message in API response choices: [{}]", toDebugString(response));
-                return ERROR_REPONSE;
+                return createErrorResponse("Analysis error, My Lord.");
             }
 
             String content = message.get("content").getAsString();
             if (content == null) {
                 logger.error("No content in API response message: [{}]", toDebugString(response));
-                return ERROR_REPONSE;
+                return createErrorResponse("Analysis error, My Lord.");
             }
 
             logger.debug("API response content: [{}]", toDebugString(content));
@@ -126,23 +125,30 @@ public class GrokAnalysisEndpoint {
                 jsonStart = content.indexOf("{");
                 if (jsonStart == -1) {
                     logger.error("No JSON object found in content: [{}]", toDebugString(content));
-                    return ERROR_REPONSE;
+                    return createErrorResponse("Analysis error, My Lord.");
                 }
                 jsonContent = content.substring(jsonStart);
-                try {
-                    JsonParser.parseString(jsonContent);
-                } catch (JsonSyntaxException e) {
-                    logger.error("Invalid JSON object in content: [{}]", toDebugString(jsonContent), e);
-                    return ERROR_REPONSE;
-                }
             }
 
             logger.info("Extracted JSON content: [{}]", toDebugString(jsonContent));
-            return jsonContent; // Return JSON string for AnalyzeDataHandler to parse
+
+            // Parse extracted JSON content
+            try {
+                return JsonParser.parseString(jsonContent).getAsJsonObject();
+            } catch (JsonSyntaxException e) {
+                logger.error("Failed to parse API response content: [{}]", toDebugString(jsonContent), e);
+                return createErrorResponse("Analysis error, My Lord.");
+            }
         } catch (Exception e) {
             logger.error("AI API call fatal error: {}", e.getMessage(), e);
-            return "{\"response_text\": \"Analysis error. Check logs.\"}";
+            return createErrorResponse("Analysis error. Check logs.");
         }
+    }
+
+    private JsonObject createErrorResponse(String message) {
+        JsonObject error = new JsonObject();
+        error.addProperty("response_text", message);
+        return error;
     }
 
     private HttpURLConnection getHttpURLConnection() throws IOException {

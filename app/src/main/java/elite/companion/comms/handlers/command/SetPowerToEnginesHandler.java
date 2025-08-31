@@ -58,7 +58,6 @@ public class SetPowerToEnginesHandler implements CommandHandler {
             Thread.sleep(DELAY);
 
             log.info("Diverting power to engines");
-            VoiceGenerator.getInstance().speak(responseText);
         } catch (InterruptedException e) {
             //ok
         }

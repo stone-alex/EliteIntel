@@ -1,48 +1,38 @@
 package elite.companion.comms.handlers.query;
 
 public enum QueryActions {
-    //Queries
-    QUERY_SEARCH_SIGNAL_DATA("query_search_local_signals_data", null, null),
-    QUERY_SHIP_LOADOUT("query_ship_loadout", null, null),
-    QUERY_ANALYZE_ROUTE("query_analyze_route", null, null),
-    QUERY_ANALYZE_ON_BOARD_CARGO("query_analyze_onboard_cargo_manifest", null, null),
-    QUERY_FIND_NEAREST_MATERIAL_TRADER("query_find_nearest_material_trader", null, null),
-    LIST_AVAILABLE_VOICES("list_available_voices", null, null),
-    LOCAL_SYSTEM_INFO("access_local_system_data_and_tell_me_what_you_know", null, null),
-    CHECK_LEGAL_STATUS("check_legal_status", null, null),
-    QUERY_PIRATE_KILLS_REMAINING("query_pirate_massacre_kills_remaining", null, null),
-    QUERY_PIRATE_MISSION_PROFIT("query_pirate_massacre_mission_profit", null, null),
-    QUERY_PIRATE_STATUS("query_pirate_massacre_status", null, null),
-    QUERY_NEXT_STAR_SCOOPABLE("query_next_star_fuel_scoopable", null, null),
-    QUERY_CARRIER_STATS("query_fleet_carrier_stats", null, null),
-    QUERY_TELL_ME_YOUR_NAME("query_what_is_your_designation", null, null),
-
-
-    ; //<-- end of enum
+    CHECK_LEGAL_STATUS("check_legal_status", false), // Data
+    LIST_AVAILABLE_VOICES("list_available_voices", true), // Quick
+    LOCAL_SYSTEM_INFO("local_system_info", false), // Data
+    QUERY_ANALYZE_ON_BOARD_CARGO("query_analyze_on_board_cargo", false), // Data
+    QUERY_ANALYZE_ROUTE("query_analyze_route", false), // Data
+    QUERY_CARRIER_STATS("query_carrier_stats", false), // Data
+    QUERY_FIND_NEAREST_MATERIAL_TRADER("query_find_nearest_material_trader", false), // Data
+    QUERY_NEXT_STAR_SCOOPABLE("query_next_star_scoopable", false), // Data
+    QUERY_PIRATE_KILLS_REMAINING("query_pirate_kills_remaining", false), // Data
+    QUERY_PIRATE_MISSION_PROFIT("query_pirate_mission_profit", false),//Data
+    QUERY_PIRATE_STATUS("query_pirate_status", false), // Data
+    QUERY_PLAYER_STATS_ANALYSIS("query_player_stats_analysis", false), // Data
+    QUERY_SEARCH_LOCAL_SIGNALS_DATA("query_search_local_signals_data", false), // Data
+    QUERY_SEARCH_SIGNAL_DATA("query_search_signal_data", false), // Data
+    QUERY_SHIP_LOADOUT("query_ship_loadout", false), // Data
+    WHAT_ARE_YOUR_CAPABILITIES("what_are_your_capabilities", false), // Data (if analysis delay; adjust if static)
+    WHAT_IS_YOUR_DESIGNATION("what_is_your_designation", true) // Quick
+    ;
 
     private final String action;
-    private final String placeholder;
-    private final String paramKey;
+    private final boolean isQuick;
 
-    QueryActions(String action, String placeholder, String paramKey) {
+    QueryActions(String action, boolean isQuick) {
         this.action = action;
-        this.placeholder = placeholder;
-        this.paramKey = paramKey;
+        this.isQuick = isQuick;
     }
 
     public String getAction() {
         return action;
     }
 
-    public String getPlaceholder() {
-        return placeholder;
-    }
-
-    public String getParamKey() {
-        return paramKey;
-    }
-
-    public String getCommandWithPlaceholder() {
-        return placeholder != null ? action + " " + placeholder : action;
+    public boolean isQuick() {
+        return isQuick;
     }
 }

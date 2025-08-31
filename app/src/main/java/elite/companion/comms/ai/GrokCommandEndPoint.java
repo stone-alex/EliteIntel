@@ -1,9 +1,9 @@
 package elite.companion.comms.ai;
 
+import elite.companion.comms.handlers.query.QueryActions;
 import com.google.gson.*;
 import elite.companion.comms.voice.VoiceGenerator;
 import elite.companion.session.SystemSession;
-import elite.companion.util.AIContextFactory;
 import elite.companion.util.ConfigManager;
 import elite.companion.util.GsonFactory;
 import elite.companion.util.JsonUtils;
@@ -106,15 +106,26 @@ public class GrokCommandEndPoint {
             return;
         }
 
+
+
+        // Speak response_text only for chat or quick queries
+        String type = JsonUtils.getAsStringOrEmpty(apiResponse, "type").toLowerCase();
+        String responseText = JsonUtils.getAsStringOrEmpty(apiResponse, "response_text");
+        String action = JsonUtils.getAsStringOrEmpty(apiResponse, "action");
+
+        if ("chat".equals(type) || ("query".equals(type) && isQuickQuery(action))) {
+            if (!responseText.isEmpty()) {
+                VoiceGenerator.getInstance().speak(responseText);
+                log.info("Spoke initial response in processVoiceCommand: {}", responseText);
+            }
+        }
+
         // Route the response
         GrokResponseRouter.getInstance().processGrokResponse(apiResponse, userInput);
 
         // Handle history updates for chat continuations
-        String type = JsonUtils.getAsStringOrEmpty(apiResponse, "type").toLowerCase();
         if ("chat".equals(type)) {
-            String responseText = JsonUtils.getAsStringOrEmpty(apiResponse, "response_text");
             boolean expectFollowup = apiResponse.has("expect_followup") && apiResponse.get("expect_followup").getAsBoolean();
-
             JsonObject assistantMessage = new JsonObject();
             assistantMessage.addProperty("role", "assistant");
             assistantMessage.addProperty("content", responseText);
@@ -128,6 +139,19 @@ public class GrokCommandEndPoint {
             SystemSession.getInstance().clearChatHistory();
         }
     }
+
+
+
+    // Helper to check if query is quick
+    private boolean isQuickQuery(String action) {
+        for (QueryActions query : QueryActions.values()) {
+            if (query.getAction().equals(action)) {
+                return query.isQuick();
+            }
+        }
+        return false; // Default to data query if action not found
+    }
+
 
     public void processSystemCommand() {
         String sensorData = SystemSession.getInstance().consumeAnalysisData();

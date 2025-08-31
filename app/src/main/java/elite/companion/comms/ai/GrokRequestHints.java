@@ -34,7 +34,7 @@ public class GrokRequestHints {
 
     static {
         List<String> queries = Arrays.stream(QueryActions.values())
-                .map(QueryActions::getCommandWithPlaceholder)
+                .map(QueryActions::getAction)
                 .collect(Collectors.toList());
 
 

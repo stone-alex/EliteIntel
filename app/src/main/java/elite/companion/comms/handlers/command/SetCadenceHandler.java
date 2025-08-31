@@ -6,7 +6,7 @@ import elite.companion.comms.voice.VoiceGenerator;
 import elite.companion.comms.voice.VoiceToAllegiances;
 import elite.companion.comms.voice.Voices;
 import elite.companion.session.SystemSession;
-import elite.companion.util.AICadence;
+import elite.companion.comms.ai.AICadence;
 
 import static elite.companion.util.JsonParameterExtractor.extractParameter;
 
@@ -21,7 +21,6 @@ public class SetCadenceHandler implements CommandHandler {
             VoiceToAllegiances.getInstance().getVoiceForCadence(aiCadence, currentVoice);
 
             systemSession.setAICadence(aiCadence);
-            VoiceGenerator.getInstance().speak(responseText);
         } catch (IllegalArgumentException e) {
             systemSession.sendToAiAnalysis("No such cadence. try Imperial, Federation or Alliance");
         }

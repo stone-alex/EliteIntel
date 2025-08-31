@@ -8,8 +8,8 @@ import elite.companion.gameapi.journal.events.BaseEvent;
 import elite.companion.gameapi.journal.events.BountyEvent;
 import elite.companion.gameapi.journal.events.dto.MissionDto;
 import elite.companion.gameapi.journal.events.dto.RankDto;
-import elite.companion.util.AICadence;
-import elite.companion.util.AIPersonality;
+import elite.companion.comms.ai.AICadence;
+import elite.companion.comms.ai.AIPersonality;
 import elite.companion.util.GsonFactory;
 
 import java.time.ZoneId;

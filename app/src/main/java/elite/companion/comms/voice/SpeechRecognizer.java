@@ -200,7 +200,7 @@ public class SpeechRecognizer {
                     if(isPrivacyModeOn) {
                         String voiceName = SystemSession.getInstance().getAIVoice().getName();
                         if (sanitizedTranscript.toLowerCase().startsWith("computer") || sanitizedTranscript.toLowerCase().startsWith(voiceName.toLowerCase())) {
-                            sendToAi(sanitizedTranscript.replace("computer,", ""), confidence);
+                            sendToAi(sanitizedTranscript.replace("computer,", "").replace(voiceName.toLowerCase()+",", "")  , confidence);
                         }
                     } else {
                         sendToAi(sanitizedTranscript, confidence);

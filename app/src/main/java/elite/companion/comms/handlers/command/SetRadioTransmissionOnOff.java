@@ -13,7 +13,5 @@ public class SetRadioTransmissionOnOff implements CommandHandler{
         JsonElement jsonElement = extractParameter(CommandActionsCustom.SET_RADIO_TRANSMISSION_MODDE.getPlaceholder(), params);
         boolean isOn = "on".equalsIgnoreCase(jsonElement.getAsString());
         SystemSession.getInstance().put(SystemSession.RADION_TRANSMISSION_ON_OFF, isOn);
-        VoiceGenerator.getInstance().speak(responseText);
-
     }
 }

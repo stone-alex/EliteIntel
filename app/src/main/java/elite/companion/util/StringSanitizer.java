@@ -70,7 +70,7 @@ public class StringSanitizer {
             log.info("Sanitized transcript: {} -> {}", voiceCommand, command);
         }
 
-        return command;
+        return command.toLowerCase();
     }
 
 }

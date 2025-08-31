@@ -1,6 +1,6 @@
 package elite.companion.comms.voice;
 
-import elite.companion.util.AICadence;
+import elite.companion.comms.ai.AICadence;
 
 import java.util.*;
 import java.util.stream.Collectors;

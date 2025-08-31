@@ -2,13 +2,10 @@ package elite.companion.comms.ai;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
 import elite.companion.comms.handlers.query.*;
 import elite.companion.comms.voice.VoiceGenerator;
 import elite.companion.comms.handlers.command.*;
 import elite.companion.comms.ai.robot.VoiceCommandHandler;
-import elite.companion.util.AIContextFactory;
-import elite.companion.util.GsonFactory;
 import elite.companion.util.InaraApiClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +53,9 @@ public class GrokResponseRouter {
         queryHandlers.put(QueryActions.QUERY_SHIP_LOADOUT.getAction(), new AnalyzeDataHandler());
         queryHandlers.put(QueryActions.QUERY_NEXT_STAR_SCOOPABLE.getAction(), new AnalyzeDataHandler());
         queryHandlers.put(QueryActions.QUERY_CARRIER_STATS.getAction(), new AnalyzeDataHandler());
-        queryHandlers.put(QueryActions.QUERY_TELL_ME_YOUR_NAME.getAction(), new AnalyzeDataHandler());
+        queryHandlers.put(QueryActions.WHAT_IS_YOUR_DESIGNATION.getAction(), new WhatIsYourNameHandler());
+        queryHandlers.put(QueryActions.WHAT_ARE_YOUR_CAPABILITIES.getAction(), new WhatAreYourCapabilitiesHandler());
+        queryHandlers.put(QueryActions.QUERY_PLAYER_STATS_ANALYSIS.getAction(), new PlayerStatsAnalyzer());
 
 
         //APP COMMANDS
@@ -68,7 +67,6 @@ public class GrokResponseRouter {
         commandHandlers.put(CommandActionsCustom.ANNOUNCE_STELLAR_BODY_SCANS.getAction(), new SetAnnounceBodyScansHandler());
         commandHandlers.put(CommandActionsCustom.SET_PERSONALITY.getAction(), new SetPersonalityHandler());
         commandHandlers.put(CommandActionsCustom.SET_CADENCE.getAction(), new SetCadenceHandler());
-
 
 
         //CUSTOM GAME CONTROL HANDERS
@@ -164,6 +162,7 @@ public class GrokResponseRouter {
         log.info("Stopped GrokResponseRouter");
     }
 
+
     public void processGrokResponse(JsonObject jsonResponse, @Nullable String userInput) {
         if (jsonResponse == null) {
             log.error("Null Grok response received");
@@ -172,17 +171,22 @@ public class GrokResponseRouter {
         try {
             String type = getAsStringOrEmpty(jsonResponse, "type").toLowerCase();
             String responseText = getAsStringOrEmpty(jsonResponse, "response_text");
-            String action = getAsStringOrEmpty(jsonResponse, "action");JsonObject params = getAsObjectOrEmpty(jsonResponse, "params");
+            String action = getAsStringOrEmpty(jsonResponse, "action");
+            JsonObject params = getAsObjectOrEmpty(jsonResponse, "params");
+
+            // Speak initial response_text (e.g., "Accessing data banks...") if non-empty
+            if (!responseText.isEmpty()) {
+                VoiceGenerator.getInstance().speak(responseText);
+                log.info("Spoke initial response: {}", responseText);
+            }
 
             switch (type) {
                 case "command":
-                    handleCommand(action, params, responseText, jsonResponse);
-                    break;
                 case "system_command":
                     handleCommand(action, params, responseText, jsonResponse);
                     break;
                 case "query":
-                    handleQuery(action, params, userInput, responseText);//<-- requires user input for further processing
+                    handleQuery(action, params, userInput);
                     break;
                 case "chat":
                     handleChat(responseText);
@@ -197,95 +201,66 @@ public class GrokResponseRouter {
         }
     }
 
-    private void handleQuery(String action, JsonObject params, String userInput, String originalResponseText) {
+    private void handleQuery(String action, JsonObject params, String userInput) {
         QueryHandler handler = queryHandlers.get(action);
         if (handler == null) {
             log.warn("Unknown query action: {}", action);
             handleChat("I couldn't access that data. Please try again.");
             return;
         }
+
         try {
-            String data = handler.handle(action, params, userInput);
-
-            // Parse data to ensure it’s a JSON object with response_text
-            JsonObject dataJson;
-            try {
-                dataJson = GsonFactory.getGson().fromJson(data, JsonObject.class);
-            } catch (JsonSyntaxException e) {
-                log.error("Invalid JSON data from handler for action {}: {}", action, data, e);
-                handleChat("Error processing query data.");
-                return;
-            }
-
-            // Ensure data contains response_text; otherwise, use a fallback
+            JsonObject dataJson = handler.handle(action, params, userInput);
             String responseTextToUse = dataJson.has("response_text")
                     ? dataJson.get("response_text").getAsString()
-                    : "Error retrieving query data.";
+                    : null;
 
-            // Build follow-up messages
-            JsonArray messages = new JsonArray();
-            JsonObject systemMessage = new JsonObject();
-            systemMessage.addProperty("role", "system");
-            systemMessage.addProperty("content", AIContextFactory.getInstance().generateSystemPrompt());
-            messages.add(systemMessage);
+            if (responseTextToUse != null && !responseTextToUse.isEmpty()) {
+                // Speak final handler response directly
+                VoiceGenerator.getInstance().speak(responseTextToUse);
+                log.info("Spoke final query response (action: {}): {}", action, responseTextToUse);
+            } else {
+                // Fallback: Use GrokQueryEndPoint with query-specific prompt
+                JsonArray messages = new JsonArray();
+                JsonObject systemMessage = new JsonObject();
+                systemMessage.addProperty("role", "system");
+                systemMessage.addProperty("content", AIContextFactory.getInstance().generateQueryPrompt());
+                messages.add(systemMessage);
 
-            JsonArray originalHistory = GrokCommandEndPoint.getCurrentHistory();
-            for (int i = 0; i < originalHistory.size(); i++) {
-                messages.add(originalHistory.get(i));
+                JsonObject userMessage = new JsonObject();
+                userMessage.addProperty("role", "user");
+                userMessage.addProperty("content", "Query Action: " + action + "\nUser Input: " + userInput);
+                messages.add(userMessage);
+
+                JsonObject toolResult = new JsonObject();
+                toolResult.addProperty("role", "tool");
+                toolResult.addProperty("name", action);
+                toolResult.addProperty("content", "Query Action: " + action + "\nResponse Text: " + responseTextToUse +
+                        "\nInstructions: Set 'type' to 'chat', use the provided 'Response Text' as 'response_text' if non-empty, otherwise generate a response, set 'action' to null, 'params' to {}, and 'expect_followup' to false.");
+                messages.add(toolResult);
+
+                log.debug("Sending follow-up to GrokQueryEndPoint: {}", messages.toString());
+                JsonObject followUpResponse = GrokQueryEndPoint.getInstance().sendToGrok(messages);
+
+                if (followUpResponse == null) {
+                    log.warn("Follow-up response is null for action: {}", action);
+                    handleChat("Error accessing data banks.");
+                    return;
+                }
+
+                String finalResponseText = getAsStringOrEmpty(followUpResponse, "response_text");
+                if (!finalResponseText.isEmpty()) {
+                    VoiceGenerator.getInstance().speak(finalResponseText);
+                    log.info("Spoke follow-up query response (action: {}): {}", action, finalResponseText);
+                } else {
+                    log.warn("No response_text in follow-up for action: {}", action);
+                    handleChat("Error accessing data banks.");
+                }
             }
-
-            JsonObject toolResult = new JsonObject();
-            toolResult.addProperty("role", "tool");
-            toolResult.addProperty("name", action); // "what_is_your_designation"
-            String content = "Query Action: " + action +
-                    "\nResponse Text: " + responseTextToUse +
-                    "\nInstructions: Use the provided 'Response Text' as the 'response_text' in the output JSON. Set 'type' to 'query', 'action' to '" + action + "', 'params' to {}, and 'expect_followup' to false. Do not generate new conversational text.";
-            toolResult.addProperty("content", content);
-            messages.add(toolResult);
-
-            log.debug("Sending messages to GrokQueryEndPoint: {}", messages.toString());
-            JsonObject followUpResponse = GrokQueryEndPoint.getInstance().sendToGrok(messages);
-
-            if (followUpResponse == null) {
-                log.warn("Follow-up response is null for action: {}", action);
-                handleChat("Error accessing data banks.");
-                return;
-            }
-
-            log.debug("Received follow-up response: {}", followUpResponse.toString());
-            processGrokResponse(followUpResponse, userInput);
         } catch (Exception e) {
             log.error("Query handling failed for action {}: {}", action, e.getMessage(), e);
             handleChat("Error accessing data banks: " + e.getMessage());
         }
-    }
-
-
-    private static String getAsStringOrEmpty(JsonObject obj, String key) {
-        if (obj == null || key == null) return "";
-        if (!obj.has(key)) return "";
-        var el = obj.get(key);
-        if (el == null || el.isJsonNull()) return "";
-        if (el.isJsonPrimitive()) {
-            try {
-                return el.getAsString();
-            } catch (UnsupportedOperationException ignored) {
-                // fallthrough
-            }
-        }
-        // Not a primitive string; log and return empty
-        log.debug("Expected string for key '{}' but got {}", key, el);
-        return "";
-    }
-
-    private static JsonObject getAsObjectOrEmpty(JsonObject obj, String key) {
-        if (obj == null || key == null) return new JsonObject();
-        if (!obj.has(key)) return new JsonObject();
-        var el = obj.get(key);
-        if (el == null || el.isJsonNull()) return new JsonObject();
-        if (el.isJsonObject()) return el.getAsJsonObject();
-        log.debug("Expected object for key '{}' but got {}", key, el);
-        return new JsonObject();
     }
 
     private void handleCommand(String action, JsonObject params, String responseText, JsonObject jsonResponse) {
@@ -299,9 +274,36 @@ public class GrokResponseRouter {
         }
     }
 
-
     private void handleChat(String responseText) {
-        VoiceGenerator.getInstance().speak(responseText);
-        log.info("Sent to VoiceGenerator: {}", responseText);
+        if (!responseText.isEmpty()) {
+            VoiceGenerator.getInstance().speak(responseText);
+            log.info("Sent to VoiceGenerator: {}", responseText);
+        }
+    }
+
+    private static String getAsStringOrEmpty(JsonObject obj, String key) {
+        if (obj == null || key == null) return "";
+        if (!obj.has(key)) return "";
+        var el = obj.get(key);
+        if (el == null || el.isJsonNull()) return "";
+        if (el.isJsonPrimitive()) {
+            try {
+                return el.getAsString();
+            } catch (UnsupportedOperationException ignored) {
+                // fallthrough
+            }
+        }
+        log.debug("Expected string for key '{}' but got {}", key, el);
+        return "";
+    }
+
+    private static JsonObject getAsObjectOrEmpty(JsonObject obj, String key) {
+        if (obj == null || key == null) return new JsonObject();
+        if (!obj.has(key)) return new JsonObject();
+        var el = obj.get(key);
+        if (el == null || el.isJsonNull()) return new JsonObject();
+        if (el.isJsonObject()) return el.getAsJsonObject();
+        log.debug("Expected object for key '{}' but got {}", key, el);
+        return new JsonObject();
     }
 }

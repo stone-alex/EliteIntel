@@ -1,28 +1,24 @@
 package elite.companion.comms.handlers.query;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import elite.companion.comms.ai.GrokAnalysisEndpoint;
 import elite.companion.comms.voice.VoiceGenerator;
 import elite.companion.session.SystemSession;
-import elite.companion.util.AIContextFactory;
-import elite.companion.util.AIPersonality;
-import elite.companion.util.GsonFactory;
+import elite.companion.comms.ai.AIContextFactory;
 
 public class PirateMissionAnalyzer implements QueryHandler {
+
     @Override
-    public String handle(String action, JsonObject params, String originalUserInput) {
+    public JsonObject handle(String action, JsonObject params, String originalUserInput) {
         QueryActions query = findQuery(action);
         String dataJson = fetchDataForAction();
         if (dataJson == null || dataJson.equals("{\"missions\":[],\"bounties\":[]}") || dataJson.equals("{\"missions\":[]")) {
-            return "No active pirate massacre missions detected, My Lord.";
+            return GenericResponse.getInstance().genericResponse("No active pirate massacre missions detected");
         }
 
         GrokAnalysisEndpoint grokAnalysisEndpoint = GrokAnalysisEndpoint.getInstance();
         String prompt = buildPrompt(query, originalUserInput, dataJson);
-        String analysisJson = grokAnalysisEndpoint.analyzeData(originalUserInput, prompt);
-        JsonObject analysis = GsonFactory.getGson().fromJson(analysisJson, JsonObject.class);
-        return analysis.get("response_text").getAsString();
+        return grokAnalysisEndpoint.analyzeData(originalUserInput, prompt);
     }
 
     private QueryActions findQuery(String action) {
@@ -40,7 +36,7 @@ public class PirateMissionAnalyzer implements QueryHandler {
         String missions = session.getPirateMissionsJson();
         String bounties = session.getPirateBountiesJson();
         String bountiesCollectedThisSession = session.getBountyCollectedThisSession() + "";
-        return "{\"missions\":" + missions + ",\"bounties\":" + bounties + ",\"bountiesPayOut\":" + bountiesCollectedThisSession +"}";
+        return "{\"missions\":" + missions + ",\"bounties\":" + bounties + ",\"bountiesPayOut\":" + bountiesCollectedThisSession + "}";
     }
 
     private String buildPrompt(QueryActions query, String userInput, String dataJson) {

@@ -1,21 +1,28 @@
 package elite.companion.comms.handlers.query;
 
 import com.google.gson.JsonObject;
-import elite.companion.comms.voice.VoiceGenerator;
 import elite.companion.comms.voice.Voices;
+import elite.companion.session.PlayerSession;
+import elite.companion.session.SystemSession;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ListAvailableVoices implements QueryHandler {
-
-    @Override public String handle(String action, JsonObject params, String originalUserInput) throws Exception {
-
+    @Override
+    public JsonObject handle(String action, JsonObject params, String originalUserInput) {
+        SystemSession session = SystemSession.getInstance();
+        PlayerSession playerSession = PlayerSession.getInstance();
         Voices[] voices = Voices.values();
-        StringBuilder sb = new StringBuilder();
-        sb.append("Available voices are: ");
-        for(Voices voice : voices) {
-            sb.append(voice.getName()).append(", ");
+        List<String> voiceNames = new ArrayList<>();
+        for (Voices voice : voices) {
+            if (!voice.getName().equals(session.getAIVoice().getName())) {
+                voiceNames.add(voice.getName());
+            }
         }
-        VoiceGenerator.getInstance().speak(sb.toString());
-
-        return sb.toString();
+        return GenericResponse.getInstance().genericResponseWithList(
+                "Available voices: " + String.join(", ", voiceNames) + ", " + playerSession.get(PlayerSession.PLAYER_NAME),
+                voiceNames
+        );
     }
 }

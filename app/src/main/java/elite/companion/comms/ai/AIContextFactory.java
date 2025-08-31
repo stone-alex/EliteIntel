@@ -1,8 +1,9 @@
-package elite.companion.util;
+package elite.companion.comms.ai;
 
-import elite.companion.comms.ai.GrokRequestHints;
+import elite.companion.comms.handlers.query.QueryActions;
 import elite.companion.session.PlayerSession;
 import elite.companion.session.SystemSession;
+import elite.companion.util.Ranks;
 
 import java.util.Objects;
 
@@ -26,17 +27,35 @@ public class AIContextFactory {
         return sb.toString();
     }
 
+    public String generateQueryPrompt() {
+        StringBuilder sb = new StringBuilder();
+        getSessionValues(sb);
+        sb.append("Classify as: 'input' (data to analyze) or 'command' (trigger app action or keyboard event). ");
+        sb.append("When processing a 'tool' role message, use the provided data's 'response_text' as the primary response if available, ensuring it matches the context of the query. ");
+        appendBehavior(sb);
+        sb.append(generateSupportedQueriesClause()); // Add dynamic queries
+        sb.append("Always output JSON: {\"type\": \"system_command|chat\", \"response_text\": \"TTS output\", \"action\": \"set_mining_target|set_current_system|...\", \"params\": {\"key\": \"value\"}, \"expect_followup\": boolean}. ");
+        sb.append("For type='query' in initial classification, follow response_text rules from player instructions. For tool/follow-up, use full analyzed response in 'response_text'. ");
+        sb.append("For type='chat', set 'expect_followup': true if response poses a question or requires user clarification; otherwise, false. ");
+        sb.append("For UNHINGED personality, use playful slang (e.g., 'mate', 'bollocks', 'knackered'). For ROGUE personality, use bold profanity (e.g., 'shit', 'fuck', 'arse') inspired by George Carlin, but keep it sharp and witty, not excessive.");
+        return sb.toString();
+    }
+
     public String generateSystemPrompt() {
         StringBuilder sb = new StringBuilder();
         sb.append("Classify as: 'input' (data to analyze) or 'command' (trigger app action or keyboard event). ");
         sb.append("Use NATO phonetic alphabet for star system codes or ship plates (e.g., RH-F = Romeo Hotel dash Foxtrot), and spell out numerals in full words (e.g., 285 = two hundred and eighty-five, 27 = twenty-seven). ");
         appendBehavior(sb);
+        sb.append(generateSupportedQueriesClause()); // Add dynamic queries
         sb.append("Round billions to nearest million. ");
         sb.append("Always output JSON: {\"type\": \"system_command|chat\", \"response_text\": \"TTS output\", \"action\": \"set_mining_target|set_current_system|...\", \"params\": {\"key\": \"value\"}, \"expect_followup\": boolean}. ");
+        sb.append("For type='query' in initial classification, follow response_text rules from player instructions. For tool/follow-up, use full analyzed response in 'response_text'. ");
         sb.append("For type='chat', set 'expect_followup': true if response poses a question or requires user clarification; otherwise, false. ");
         sb.append("For UNHINGED personality, use playful slang (e.g., 'mate', 'bollocks', 'knackered'). For ROGUE personality, use bold profanity (e.g., 'shit', 'fuck', 'arse') inspired by George Carlin, but keep it sharp and witty, not excessive.");
         return sb.toString();
     }
+
+
 
     private static void getSessionValues(StringBuilder sb) {
         PlayerSession playerSession = PlayerSession.getInstance();
@@ -57,30 +76,6 @@ public class AIContextFactory {
         );
     }
 
-    public String generateQueryPrompt() {
-        StringBuilder sb = new StringBuilder();
-        getSessionValues(sb);
-        sb.append("Classify as: 'input' (data to analyze) or 'command' (trigger app action or keyboard event). ");
-        sb.append("When processing a 'tool' role message, use the provided data's 'response_text' as the primary response if available, ensuring it matches the context of the query. ");
-        appendBehavior(sb);
-        sb.append("Always output JSON: {\"type\": \"system_command|chat\", \"response_text\": \"TTS output\", \"action\": \"set_mining_target|set_current_system|...\", \"params\": {\"key\": \"value\"}, \"expect_followup\": boolean}. ");
-        sb.append("For type='chat', set 'expect_followup': true if response poses a question or requires user clarification; otherwise, false. ");
-        sb.append("For UNHINGED personality, use playful slang (e.g., 'mate', 'bollocks', 'knackered'). For ROGUE personality, use bold profanity (e.g., 'shit', 'fuck', 'arse') inspired by George Carlin, but keep it sharp and witty, not excessive.");
-        sb.append("When processing a 'tool' role message, use the provided data's 'response_text' as the primary response if available, ensuring it matches the context of the query. ");
-        return sb.toString();
-    }
-/*
-    public String generateQueryPrompt() {
-        StringBuilder sb = new StringBuilder();
-        getSessionValues(sb);
-        sb.append("Classify as: 'input' (data to analyze) or 'command' (trigger app action or keyboard event). ");
-        appendBehavior(sb);
-        sb.append("Always output JSON: {\"type\": \"system_command|chat\", \"response_text\": \"TTS output\", \"action\": \"set_mining_target|set_current_system|...\", \"params\": {\"key\": \"value\"}, \"expect_followup\": boolean}. ");
-        sb.append("For type='chat', set 'expect_followup': true if response poses a question or requires user clarification; otherwise, false. ");
-        sb.append("For UNHINGED personality, use playful slang (e.g., 'mate', 'bollocks', 'knackered'). For ROGUE personality, use bold profanity (e.g., 'shit', 'fuck', 'arse') inspired by George Carlin, but keep it sharp and witty, not excessive.");
-        return sb.toString();
-    }
-*/
 
     public static void appendBehavior(StringBuilder sb) {
         SystemSession systemSession = SystemSession.getInstance();
@@ -107,6 +102,7 @@ public class AIContextFactory {
         sb.append("\n\n");
     }
 
+
     public String generatePlayerInstructions(String playerVoiceInput) {
         StringBuilder sb = new StringBuilder();
         sb.append("Instructions:\n\n");
@@ -116,6 +112,11 @@ public class AIContextFactory {
         appendBehavior(sb);
         sb.append("Interpret this input: ").append(playerVoiceInput).append("\n\n ");
         sb.append("Always output JSON: {\"type\": \"command|query|chat\", \"response_text\": \"TTS output\", \"action\": \"action_name|query_name|null\", \"params\": {\"key\": \"value\"}, \"expect_followup\": boolean} \n");
+        sb.append("For type='command': Provide empty response_text for single word commands (e.g., 'deploy landing gear').\n");
+        sb.append("For type='query': \n" +
+                "    - If action is a quick query (listed in quick queries section), set 'response_text' to '' (empty string, no initial TTS).\n" +
+                "    - If action is a data query (listed in data queries section), set 'response_text' to 'Accessing data banks...' for user feedback during delay.\n" +
+                "    - Do not generate or infer answers here; the app will handle final response via handlers.\n");
         sb.append("For type='chat', set 'expect_followup': true if response poses a question or requires user clarification; otherwise, false. ");
         sb.append("Map colloquial terms to commands: 'feds', 'yanks', or 'federation space' to 'FEDERATION', 'imperials', 'imps', or 'empire' to 'IMPERIAL', 'alliance space' or 'allies' to 'ALLIANCE' for set_cadence. ");
         sb.append("Infer command intent from context: phrases like 'act like', 'talk like', 'blend in with', or 'sound like' followed by a faction should trigger 'set_cadence' with the corresponding cadence value, using current system allegiance if ambiguous. ");
@@ -126,15 +127,58 @@ public class AIContextFactory {
         return sb.toString();
     }
 
+
+
+
     private String generateSupportedQueriesClause() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Supported queries (game state info):\n" +
-                "    - query_search_local_signals_data: Requests current system and signal data (e.g., 'query local signals', 'what signals are here', 'what do you see on scanners', 'access local signals and tell me if you see X, Y or Z').\n" +
-                "    - query_ship_loadout: Requests current ship details (e.g., 'what is my ship loadout').\n" +
-                "    - query_find_nearest_material_trader: Requests nearest material trader location.\n");
+        sb.append("Supported queries:\n");
+
+        // Separate quick and data queries
+        StringBuilder quickQueries = new StringBuilder();
+        StringBuilder dataQueries = new StringBuilder();
+
+        for (QueryActions query : QueryActions.values()) {
+            String description = getQueryDescription(query); // Map to user-friendly description
+            if (query.isQuick()) {
+                quickQueries.append("    - ").append(query.getAction()).append(": ").append(description).append("\n");
+            } else {
+                dataQueries.append("    - ").append(query.getAction()).append(": ").append(description).append("\n");
+            }
+        }
+
+        // Combine sections
+        sb.append("Quick queries (simple, direct info, no data analysis delay):\n");
+        sb.append(quickQueries.length() > 0 ? quickQueries : "    - None defined.\n");
+        sb.append("Data queries (require analyzing game state, may have delay):\n");
+        sb.append(dataQueries.length() > 0 ? dataQueries : "    - None defined.\n");
+
         appendBehavior(sb);
-        sb.append("Supported queries: ").append(GrokRequestHints.supportedQueries);
+        sb.append("All supported queries: ").append(GrokRequestHints.supportedQueries).append("\n");
         return sb.toString();
+    }
+
+    // Helper to map actions to descriptions (customize as needed or pull from external config)
+    private String getQueryDescription(QueryActions query) {
+        switch (query) {
+            case WHAT_IS_YOUR_DESIGNATION:
+                return "Responds with AI name (e.g., 'what is your name', 'who are you').";
+            case LIST_AVAILABLE_VOICES:
+                return "Lists available AI voices.";
+            case WHAT_ARE_YOUR_CAPABILITIES:
+                return "Summarizes app capabilities.";
+            case QUERY_ANALYZE_ON_BOARD_CARGO:
+                return "Analyzes cargo hold contents.";
+            case QUERY_SHIP_LOADOUT:
+                return "Requests current ship details (e.g., 'what is my ship loadout').";
+            case QUERY_SEARCH_LOCAL_SIGNALS_DATA:
+                return "Requests current system and signal data (e.g., 'what signals are here').";
+            case QUERY_FIND_NEAREST_MATERIAL_TRADER:
+                return "Requests nearest material trader location.";
+            // Add others as needed
+            default:
+                return "Handles " + query.getAction() + " query.";
+        }
     }
 
     private String generateSupportedCommandsCause() {

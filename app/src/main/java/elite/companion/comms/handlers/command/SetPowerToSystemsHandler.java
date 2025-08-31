@@ -17,8 +17,6 @@ public class SetPowerToSystemsHandler implements CommandHandler {
     }
 
     @Override public void handle(JsonObject params, String responseText) {
-
-
         try {
 
             JsonObject resetPowerJson = new JsonObject();
@@ -65,7 +63,6 @@ public class SetPowerToSystemsHandler implements CommandHandler {
             Thread.sleep(DELAY);
 
             log.info("Power distribution complete");
-            VoiceGenerator.getInstance().speak(responseText);
         } catch (InterruptedException e) {
             //ok
         }

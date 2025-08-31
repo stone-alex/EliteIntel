@@ -68,11 +68,8 @@ public class SetRouteHandler implements CommandHandler {
             }
         } else {
             log.warn("No destination found for plot_route");
-            VoiceGenerator.getInstance().speak("No destination available to plot route.");
+            //VoiceGenerator.getInstance().speak("No destination available to plot route.");
         }
-
-        // Speak the provided response text
-        VoiceGenerator.getInstance().speak(responseText);
     }
 
     private void simulateTextEntry(String text) {

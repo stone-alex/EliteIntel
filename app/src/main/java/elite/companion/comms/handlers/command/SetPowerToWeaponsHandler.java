@@ -57,7 +57,6 @@ public class SetPowerToWeaponsHandler implements CommandHandler {
             Thread.sleep(DELAY);
 
             log.info("Diverting power to weapons");
-            VoiceGenerator.getInstance().speak(responseText);
         } catch (InterruptedException e) {
             //ok
         }

@@ -13,6 +13,5 @@ public class SetAnnounceBodyScansHandler implements CommandHandler {
         JsonElement jsonElement = extractParameter(CommandActionsCustom.ANNOUNCE_STELLAR_BODY_SCANS.getPlaceholder(), params);
         boolean isOn = "on".equalsIgnoreCase(jsonElement.getAsString());
         SystemSession.getInstance().put(SystemSession.ANNOUNCE_BODY_SCANS, isOn);
-        VoiceGenerator.getInstance().speak(responseText);
     }
 }

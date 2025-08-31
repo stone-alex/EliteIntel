@@ -1,4 +1,4 @@
-package elite.companion.util;
+package elite.companion.comms.ai;
 
 public enum AICadence {
     IMPERIAL("Use British Cadence. Avoid American slang."),

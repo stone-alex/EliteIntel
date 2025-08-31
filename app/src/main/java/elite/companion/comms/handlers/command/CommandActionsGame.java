@@ -20,7 +20,7 @@ public class CommandActionsGame {
         EJECT_ALL_CARGO_BUGGY("eject_all_cargo_buggy", "EjectAllCargo_Buggy", GenericGameController.class),
         ENGAGE_SUPERCRUISE("engage_supercruise", "Supercruise", GenericGameController.class),
         EXIT_SETTLEMENT_PLACEMENT_CAMERA("exit_settlement_placement_camera", "ExitSettlementPlacementCamera", GenericGameController.class),
-        EXPLORATION_FSSDISCOVERY_SCAN("exploration_fssdiscovery_scan", "ExplorationFSSDiscoveryScan", GenericGameController.class),
+
         EXPLORATION_FSSENTER("exploration_fssenter", "ExplorationFSSEnter", GenericGameController.class),
         EXPLORATION_FSSQUIT("exploration_fssquit", "ExplorationFSSQuit", GenericGameController.class),
         EXPLORATION_SAACHANGE_SCANNED_AREA_VIEW_TOGGLE("exploration_saachange_scanned_area_view_toggle", "ExplorationSAAChangeScannedAreaViewToggle", GenericGameController.class),
@@ -49,11 +49,7 @@ public class CommandActionsGame {
         GALNET_AUDIO_SKIP_BACKWARD("galnet_audio_skip_backward", "GalnetAudio_SkipBackward", GenericGameController.class),
         GALNET_AUDIO_SKIP_FORWARD("galnet_audio_skip_forward", "GalnetAudio_SkipForward", GenericGameController.class),
         HYPER_SUPER_COMBINATION("hyper_super_combination", "HyperSuperCombination", GenericGameController.class),
-        INCREASE_ENGINES_POWER("power_to_engines", "IncreaseEnginesPower", SetPowerToEnginesHandler.class),
         INCREASE_ENGINES_POWER_BUGGY("increase_engines_power_buggy", "IncreaseEnginesPower_Buggy", GenericGameController.class),
-        INCREASE_SYSTEMS_POWER("power_to_systems", "IncreaseSystemsPower", SetPowerToSystemsHandler.class),
-        INCREASE_SHIELDS_POWER("power_to_shields", "IncreaseSystemsPower", SetPowerToSystemsHandler.class),
-        INCREASE_WEAPONS_POWER("power_to_weapons", "IncreaseWeaponsPower", SetPowerToWeaponsHandler.class),
         INCREASE_WEAPONS_POWER_BUGGY("increase_weapons_power_buggy", "IncreaseWeaponsPower_Buggy", GenericGameController.class),
         JUMP_TO_HYPERSPACE("jump_to_hyperspace", "Hyperspace", GenericGameController.class),
         LANDING_GEAR_TOGGLE("landing_gear_toggle", "LandingGearToggle", GenericGameController.class),
@@ -95,7 +91,18 @@ public class CommandActionsGame {
         UI_TOGGLE("toggle", "UI_Toggle", GenericGameController.class),
         UI_UP("up", "UI_Up", GenericGameController.class),
         UP_THRUST_BUTTON("up_thrust_button", "UpThrustButton", GenericGameController.class),
-        WING_NAV_LOCK("lock_on_wingman", "WingNavLock", GenericGameController.class);
+        WING_NAV_LOCK("lock_on_wingman", "WingNavLock", GenericGameController.class),
+
+
+        //excluded, but needed for bindings. used in custom handler
+        //these are special cases for excluded commands not sent to Grok, handled via a custom action
+        INCREASE_ENGINES_POWER("_", "IncreaseEnginesPower", SetPowerToEnginesHandler.class),
+        INCREASE_SYSTEMS_POWER("_", "IncreaseSystemsPower", SetPowerToSystemsHandler.class),
+        INCREASE_SHIELDS_POWER("_", "IncreaseSystemsPower", SetPowerToSystemsHandler.class),
+        INCREASE_WEAPONS_POWER("_", "IncreaseWeaponsPower", SetPowerToWeaponsHandler.class),
+        EXPLORATION_FSSDISCOVERY_SCAN("_", "ExplorationFSSDiscoveryScan", PerformFSSScanHandler.class)
+
+;
 
         private final String userCommand;
         private final String gameBinding;
@@ -132,6 +139,12 @@ public class CommandActionsGame {
     public static String[] getUserCommands() {
         String[] commands = new String[GameCommand.values().length];
         for (int i = 0; i < GameCommand.values().length; i++) {
+            // special cases for excluded commands
+            if( GameCommand.values()[i] == GameCommand.INCREASE_ENGINES_POWER) continue;
+            if( GameCommand.values()[i] == GameCommand.INCREASE_SHIELDS_POWER) continue;
+            if( GameCommand.values()[i] == GameCommand.INCREASE_SYSTEMS_POWER) continue;
+            if( GameCommand.values()[i] == GameCommand.EXPLORATION_FSSDISCOVERY_SCAN) continue;
+
             commands[i] = GameCommand.values()[i].getUserCommand();
         }
         return commands;

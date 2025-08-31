@@ -163,7 +163,7 @@ public class GrokResponseRouter {
                     break;
                 default:
                     log.warn("Unknown or missing response type: '{}'", type);
-                    handleChat(responseText.isEmpty() ? "I'm not sure what you meant. Please try again." : responseText);
+                    //handleChat(responseText.isEmpty() ? "I'm not sure what you meant. Please try again." : responseText);
             }
         } catch (Exception e) {
             log.error("Failed to process Grok response: {}", e.getMessage(), e);

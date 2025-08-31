@@ -22,12 +22,16 @@ public class StartJumpSubscriber {
         sb.append("Star Class: ");
         sb.append(starClass);
         sb.append(", ");
-        sb.append("Is Fuel Star: ");
-        sb.append(scoopable);
-        sb.append(". ");
+        sb.append(isFuelStarClause(starClass));
 
         if(!"Supercruise".equalsIgnoreCase(event.getJumpType())) {
             SystemSession.getInstance().sendToAiAnalysis(sb.toString());
         }
     }
+
+    private String isFuelStarClause(String starClass) {
+        boolean isFuelStar = "KGBFOAM".contains(starClass);
+        return isFuelStar ? " Fuel Star" : " Warning! - Not a Fuel Star!";
+    }
+
 }

@@ -11,7 +11,7 @@ public class RoutClearedSubscriber {
     @Subscribe
     public void onRouteCleared(NavRouteClearEvent event) {
         SystemSession.getInstance().clearRoute();
-        VoiceGenerator.getInstance().speak("Route cleared");
+        //VoiceGenerator.getInstance().speak("Route cleared");
     }
 
 }

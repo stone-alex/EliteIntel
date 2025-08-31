@@ -5,61 +5,36 @@ import elite.companion.comms.ai.robot.GameCommandHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SetPowerToSystemsHandler implements CommandHandler {
+import static elite.companion.comms.handlers.command.CommandActionsGame.GameCommand.*;
+
+public class SetPowerToSystemsHandler extends CustomCommandOperator implements CommandHandler {
 
     private static final Logger log = LoggerFactory.getLogger(SetPowerToSystemsHandler.class);
     public static final int DELAY = 25;
-    private final GameCommandHandler _gameCommandHandler;
 
-    public SetPowerToSystemsHandler(GameCommandHandler gameCommandHandler) {
-        this._gameCommandHandler = gameCommandHandler;
+
+    public SetPowerToSystemsHandler(GameCommandHandler commandHandler) throws Exception {
+        super(commandHandler.getMonitor(),commandHandler.getExecutor());
     }
 
     @Override public void handle(JsonObject params, String responseText) {
         try {
 
-            JsonObject resetPowerJson = new JsonObject();
-            resetPowerJson.addProperty("type", "command");
-            resetPowerJson.addProperty("action", CommandActionsGame.GameCommand.RESET_POWER_DISTRIBUTION.getGameBinding());
-            _gameCommandHandler.handleGrokResponse(resetPowerJson);
-            log.info("Resetting power distribution");
-            Thread.sleep(DELAY);
+            String resetPowerDistribution = RESET_POWER_DISTRIBUTION.getGameBinding();
+            String increaseSystemsPower = INCREASE_SYSTEMS_POWER.getGameBinding();
+            String increaseEnginesPower = INCREASE_ENGINES_POWER.getGameBinding();
 
-
-            JsonObject stepOne = new JsonObject();
-            stepOne.addProperty("type", "command");
-            stepOne.addProperty("action", CommandActionsGame.GameCommand.INCREASE_SYSTEMS_POWER.getGameBinding());
-            _gameCommandHandler.handleGrokResponse(stepOne);
-            log.info("Diverting power step 1");
+            operateKeyboard(resetPowerDistribution, 0);
             Thread.sleep(DELAY);
-
-            JsonObject stepTwo = new JsonObject();
-            stepTwo.addProperty("type", "command");
-            stepTwo.addProperty("action", CommandActionsGame.GameCommand.INCREASE_ENGINES_POWER.getGameBinding());
-            _gameCommandHandler.handleGrokResponse(stepTwo);
-            log.info("Diverting power step 2");
+            operateKeyboard(increaseSystemsPower, 0);
             Thread.sleep(DELAY);
-
-            JsonObject stepThree = new JsonObject();
-            stepThree.addProperty("type", "command");
-            stepThree.addProperty("action", CommandActionsGame.GameCommand.INCREASE_SYSTEMS_POWER.getGameBinding());
-            _gameCommandHandler.handleGrokResponse(stepThree);
-            log.info("Diverting power step 3");
+            operateKeyboard(increaseEnginesPower, 0);
             Thread.sleep(DELAY);
-
-            JsonObject stepFour = new JsonObject();
-            stepFour.addProperty("type", "command");
-            stepFour.addProperty("action", CommandActionsGame.GameCommand.INCREASE_ENGINES_POWER.getGameBinding());
-            _gameCommandHandler.handleGrokResponse(stepFour);
-            log.info("Diverting power step 4");
+            operateKeyboard(increaseSystemsPower, 0);
             Thread.sleep(DELAY);
-
-            JsonObject stepFive = new JsonObject();
-            stepFive.addProperty("type", "command");
-            stepFive.addProperty("action", CommandActionsGame.GameCommand.INCREASE_SYSTEMS_POWER.getGameBinding());
-            _gameCommandHandler.handleGrokResponse(stepFive);
-            log.info("Diverting power step 5");
+            operateKeyboard(increaseEnginesPower, 0);
             Thread.sleep(DELAY);
+            operateKeyboard(increaseSystemsPower, 0);
 
             log.info("Power distribution complete");
         } catch (InterruptedException e) {

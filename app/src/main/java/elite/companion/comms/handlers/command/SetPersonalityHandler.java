@@ -16,7 +16,7 @@ public class SetPersonalityHandler implements CommandHandler{
             AIPersonality aiPersonality = AIPersonality.valueOf(jsonElement.getAsString().toUpperCase());
             SystemSession.getInstance().setAIPersonality(aiPersonality);
         } catch (IllegalArgumentException e) {
-            SystemSession.getInstance().sendToAiAnalysis("No such personality. try Professional, Familiar or Unhinged");
+            SystemSession.getInstance().sendToAiAnalysis("No such personality. try Professional, Friendly, Unhinged or Rogue");
         }
     }
 }

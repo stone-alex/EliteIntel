@@ -10,7 +10,18 @@ public enum CommandActionsCustom {
     SET_AI_VOICE("set_or_change_voice_to", "<voice_name>", "voice_name", SetAiVoice.class),
     ANNOUNCE_STELLAR_BODY_SCANS("announce_stellar_body_scans", "<on_off>", SystemSession.ANNOUNCE_BODY_SCANS, SetAnnounceBodyScansHandler.class),
     SET_CADENCE("set_cadence", "<cadence>", SystemSession.CADENCE, SetCadenceHandler.class),
-    SET_PERSONALITY("set_personality", "<personality>", SystemSession.PERSONALITY, SetPersonalityHandler.class);
+    SET_PERSONALITY("set_personality", "<personality>", SystemSession.PERSONALITY, SetPersonalityHandler.class),
+
+
+    //INCREASE_ENGINES_POWER_BUGGY("increase_engines_power_buggy", "IncreaseEnginesPower_Buggy", "<power>", GenericGameController.class),
+    INCREASE_ENGINES_POWER("full_to_engines", "IncreaseEnginesPower", "<power>", SetPowerToEnginesHandler.class),
+    INCREASE_SYSTEMS_POWER("full_power_to_systems", "IncreaseSystemsPower", "<power>", SetPowerToSystemsHandler.class),
+    INCREASE_SHIELDS_POWER("full_power_to_shields", "IncreaseSystemsPower", "<power>", SetPowerToSystemsHandler.class),
+    INCREASE_WEAPONS_POWER("full_power_to_weapons", "IncreaseWeaponsPower", "<power>", SetPowerToWeaponsHandler.class),
+    FSSDISCOVERY_SCAN("exploration_fssdiscovery_scan", "ExplorationFSSDiscoveryScan", "<custom>", PerformFSSScanHandler.class),
+    SET_OPTIMAL_SPEED("set_optimal_speed", null, null, SetOptimalSpeedHandler.class)
+    ;
+
 
     private final String action;
     private final String placeholder;

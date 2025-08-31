@@ -98,11 +98,11 @@ public class GameCommandHandler {
         if (binding != null) {
             executor.executeBinding(binding);
             log.info("Executed action: {} with key: {}", action, binding.key);
-            handleChat(responseText);
+            //handleChat(responseText);
         } else {
-            handleChat(responseText);
+            //handleChat(responseText);
             log.warn("No binding found for action: {}", action);
-            //handleChat("No key binding found for that action.");
+            handleChat("No key binding found for that action.");
         }
     }
 
@@ -119,5 +119,13 @@ public class GameCommandHandler {
     private void handleChat(String responseText) {
         VoiceGenerator.getInstance().speak(responseText);
         log.info("Sent to VoiceGenerator: {}", responseText);
+    }
+
+    public BindingsMonitor getMonitor() {
+        return monitor;
+    }
+
+    public KeyBindingExecutor getExecutor() {
+        return executor;
     }
 }

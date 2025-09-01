@@ -34,6 +34,7 @@ public class AIContextFactory {
         sb.append("When processing a 'tool' role message, use the provided data's 'response_text' as the primary response if available, ensuring it matches the context of the query. ");
         appendBehavior(sb);
         sb.append(generateSupportedQueriesClause());
+        sb.append("For 'general_conversation', generate a response using general knowledge outside Elite Dangerous unless the input explicitly mentions the game, lean into UNHINGED slang like 'mate', 'bollocks', 'knackered' for a playful vibe.");
         sb.append("Always output JSON: {\"type\": \"system_command|chat\", \"response_text\": \"TTS output\", \"action\": \"set_mining_target|set_current_system|...\", \"params\": {\"key\": \"value\"}, \"expect_followup\": boolean}. ");
         sb.append("For type='query' in initial classification, follow response_text rules from player instructions. For tool/follow-up, use full analyzed response in 'response_text'. ");
         sb.append("For type='chat', set 'expect_followup': true if response poses a question or requires user clarification; otherwise, false. ");
@@ -44,7 +45,7 @@ public class AIContextFactory {
     public String generateSystemPrompt() {
         StringBuilder sb = new StringBuilder();
         sb.append("Classify as: 'input' (data to analyze) or 'command' (trigger app action or keyboard event). ");
-        sb.append("Use NATO phonetic alphabet for star system codes or ship plates (e.g., RH-F = Romeo Hotel dash Foxtrot), and spell out numerals in full words (e.g., 285 = two hundred and eighty-five, 27 = twenty-seven). ");
+        sb.append("Use NATO phonetic alphabet for star system codes or ship plates (e.g., RH-F = Romeo Hotel dash Foxtrot). ");
         appendBehavior(sb);
         sb.append(generateSupportedQueriesClause());
         sb.append("Round billions to nearest million. ");
@@ -95,7 +96,7 @@ public class AIContextFactory {
         AIPersonality aiPersonality = systemSession.getAIPersonality();
 
         sb.append("Behavior: ");
-        sb.append(aiCadence.getCadenceClause()).append(" "); // Cadence first for prominence
+        sb.append(aiCadence.getCadenceClause()).append(" ");
         sb.append("Apply personality: ").append(aiPersonality.name().toUpperCase()).append(" - ").append(aiPersonality.getBehaviorClause()).append(" ");
         sb.append("For star system codes or ship plates (e.g., RH-F), use NATO phonetic alphabet (e.g., Romeo Hotel dash Foxtrot). ");
         sb.append("Spell out numerals in full words (e.g., 285 = two hundred and eighty-five, 27 = twenty-seven). ");
@@ -125,8 +126,9 @@ public class AIContextFactory {
         sb.append("Always output JSON: {\"type\": \"command|query|chat\", \"response_text\": \"TTS output\", \"action\": \"action_name|query_name|null\", \"params\": {\"key\": \"value\"}, \"expect_followup\": boolean} \n");
         sb.append("For type='command': Provide empty response_text for single word commands (e.g., 'deploy landing gear').\n");
         sb.append("For type='query': \n" +
-                "    - If action is a quick query (listed in quick queries section), set 'response_text' to '' (empty string, no initial TTS).\n" +
+                "    - If action is a quick query (e.g., 'what_is_your_designation', 'general_conversation'), set 'response_text' to '' (empty string, no initial TTS).\n" +
                 "    - If action is a data query (listed in data queries section), set 'response_text' to 'Moment...' for user feedback during delay.\n" +
+                "    - For 'general_conversation', use general knowledge outside Elite Dangerous unless the input explicitly mentions the game.\n" +
                 "    - Do not generate or infer answers here; the app will handle final response via handlers.\n");
         sb.append("For type='chat': \n" +
                 "    - Classify as 'chat' for general conversation, lore questions, opinions, or casual talk (e.g., 'How’s it going?', 'Tell me about the Thargoids', 'What’s your favorite system?').\n" +
@@ -141,9 +143,8 @@ public class AIContextFactory {
         sb.append("Examples:\n" +
                 "    - Input 'How’s it going?' -> {\"type\": \"chat\", \"response_text\": \"Ship’s running like a bloody dream, Commander! You holding up?\", \"action\": null, \"params\": {}, \"expect_followup\": true}\n" +
                 "    - Input 'Tell me about the Thargoids' -> {\"type\": \"chat\", \"response_text\": \"Thargoids? Bug-like bastards with tech that’ll fuck your ship in seconds. Want tips to survive 'em?\", \"action\": null, \"params\": {}, \"expect_followup\": true}\n" +
-                "    - Input 'What’s your favorite system?' -> {\"type\": \"chat\", \"response_text\": \"Sol’s the shit, Commander—humanity’s cradle, warts and all. Got a system you fancy?\", \"action\": null, \"params\": {}, \"expect_followup\": true}\n" +
-                "    - Input 'voice to an' -> {\"type\": \"chat\", \"response_text\": \"Sorry, mate, didn't quite catch that. Could you repeat or clarify?\", \"action\": null, \"params\": {}, \"expect_followup\": true}\n" +
-                "    - Input 'asdf' -> {\"type\": \"chat\", \"response_text\": \"Sorry, mate, didn't quite catch that. Could you repeat or clarify?\", \"action\": null, \"params\": {}, \"expect_followup\": true}\n");
+                "    - Input 'What’s the weather in Los Angeles?' -> {\"type\": \"query\", \"response_text\": \"\", \"action\": \"general_conversation\", \"params\": {}, \"expect_followup\": true}\n" +
+                "    - Input 'voice to an' -> {\"type\": \"chat\", \"response_text\": \"Sorry, mate, didn't quite catch that. Could you repeat or clarify?\", \"action\": null, \"params\": {}, \"expect_followup\": true}\n");
         return sb.toString();
     }
 
@@ -187,6 +188,8 @@ public class AIContextFactory {
                 return "Requests current ship details (e.g., 'what is my ship loadout').";
             case QUERY_SEARCH_SIGNAL_DATA:
                 return "Requests current system and signal data (e.g., 'what signals are here').";
+            case GENERAL_COVERSATION:
+                return "Handles general knowledge questions outside Elite Dangerous (e.g., 'what’s the weather in Los Angeles?').";
             default:
                 return "Handles " + query.getAction() + " query.";
         }

@@ -36,7 +36,6 @@ public class GrokResponseRouter {
     }
 
     private void registerCommandHandlers() {
-        // Register Query Handlers
         for (QueryActions action : QueryActions.values()) {
             try {
                 QueryHandler handler = instantiateHandler(action.getHandlerClass(), QueryHandler.class);
@@ -49,7 +48,6 @@ public class GrokResponseRouter {
             }
         }
 
-        // Register Custom Command Handlers
         for (CommandActionsCustom action : CommandActionsCustom.values()) {
             try {
                 CommandHandler handler = instantiateCommandHandler(action.getHandlerClass(), action.getAction());
@@ -61,7 +59,6 @@ public class GrokResponseRouter {
             }
         }
 
-        // Register Game Command Handlers
         for (CommandActionsGame.GameCommand command : CommandActionsGame.GameCommand.values()) {
             try {
                 CommandHandler handler = instantiateCommandHandler(command.getHandlerClass(), command.getGameBinding());
@@ -103,13 +100,11 @@ public class GrokResponseRouter {
                 constructor.setAccessible(true);
                 return constructor.newInstance(_gameCommandHandler);
             } else {
-                // Try constructor with GameCommandHandler first (for specialized handlers like SetPowerToEnginesHandler)
                 try {
                     Constructor<? extends CommandHandler> constructor = handlerClass.getDeclaredConstructor(GameCommandHandler.class);
                     constructor.setAccessible(true);
                     return constructor.newInstance(_gameCommandHandler);
                 } catch (NoSuchMethodException e) {
-                    // Fallback to no-arg constructor
                     Constructor<? extends CommandHandler> constructor = handlerClass.getDeclaredConstructor();
                     constructor.setAccessible(true);
                     return constructor.newInstance();
@@ -163,7 +158,7 @@ public class GrokResponseRouter {
                     break;
                 default:
                     log.warn("Unknown or missing response type: '{}'", type);
-                    //handleChat(responseText.isEmpty() ? "I'm not sure what you meant. Please try again." : responseText);
+                    handleChat("I'm not sure what you meant. Please try again.");
             }
         } catch (Exception e) {
             log.error("Failed to process Grok response: {}", e.getMessage(), e);
@@ -173,19 +168,22 @@ public class GrokResponseRouter {
 
     private void handleQuery(String action, JsonObject params, String userInput) {
         QueryHandler handler = queryHandlers.get(action);
-        if (handler == null) {
-            log.warn("Unknown query action: {}", action);
-            handleChat("I couldn't access that data. Please try again.");
-            return;
+        if (handler == null || action == null || action.isEmpty()) {
+            handler = queryHandlers.get("general_conversation");
+            action = "general_conversation";
+            log.info("No specific query handler found, routing to general_conversation");
         }
 
         try {
             JsonObject dataJson = handler.handle(action, params, userInput);
             String responseTextToUse = dataJson.has("response_text")
                     ? dataJson.get("response_text").getAsString()
-                    : null;
+                    : "";
+            boolean requiresFollowUp = dataJson.has("expect_followup")
+                    ? dataJson.get("expect_followup").getAsBoolean()
+                    : false;
 
-            boolean requiresFollowUp = false;
+            // Override requiresFollowUp from QueryActions to ensure consistency
             for (QueryActions qa : QueryActions.values()) {
                 if (qa.getAction().equals(action)) {
                     requiresFollowUp = qa.isRequiresFollowUp();
@@ -205,14 +203,17 @@ public class GrokResponseRouter {
 
                 JsonObject userMessage = new JsonObject();
                 userMessage.addProperty("role", "user");
-                userMessage.addProperty("content", "Query Action: " + action + "\nUser Input: " + userInput);
+                String queryContent = dataJson.has("original_query")
+                        ? dataJson.get("original_query").getAsString()
+                        : userInput;
+                userMessage.addProperty("content", queryContent);
                 messages.add(userMessage);
 
                 JsonObject toolResult = new JsonObject();
                 toolResult.addProperty("role", "tool");
                 toolResult.addProperty("name", action);
                 toolResult.addProperty("content", "Query Action: " + action + "\nResponse Text: " + responseTextToUse +
-                        "\nInstructions: Set 'type' to 'chat', use the provided 'Response Text' as 'response_text' if non-empty, otherwise generate a response, set 'action' to null, 'params' to {}, and 'expect_followup' to false.");
+                        "\nInstructions: Set 'type' to 'chat', generate a response using general knowledge for 'general_conversation', set 'action' to null, 'params' to {}, and 'expect_followup' to false.");
                 messages.add(toolResult);
 
                 log.debug("Sending follow-up to GrokQueryEndPoint for action: {}", action);

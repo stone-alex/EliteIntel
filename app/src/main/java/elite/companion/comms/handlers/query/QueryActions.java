@@ -16,7 +16,9 @@ public enum QueryActions {
     WHAT_IS_YOUR_DESIGNATION("what_is_your_designation", WhatIsYourNameHandler.class, false),
     WHAT_ARE_YOUR_CAPABILITIES("what_are_your_capabilities", WhatAreYourCapabilitiesHandler.class, false),
     QUERY_PLAYER_STATS_ANALYSIS("query_player_stats_analysis", PlayerStatsAnalyzer.class, true),
-    WHER_IS_OUR_CARRIER("what_is_our_fleet_carrier_location", WhatIsOurCarrierLocationHandler.class, false)
+    WHERE_IS_OUR_CARRIER("what_is_our_fleet_carrier_location", WhatIsOurCarrierLocationHandler.class, false),
+    GENERAL_COVERSATION("general_conversation", ConversationalQueryHandler.class, true),
+    TRIVIA("trivia", TriviaQueryHandler.class, true)
     ;
 
     private final String action;

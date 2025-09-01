@@ -20,9 +20,12 @@ public class AppMain {
         SpeechRecognizer recognizer = new SpeechRecognizer();
         recognizer.start(); // Start STT voice command processing thread
 
-        VoiceGenerator.getInstance(); //.speak(Globals.AI_NAME + " is online...");
+        //noinspection ResultOfMethodCallIgnored
+        VoiceGenerator.getInstance();// Start the voice generator thread
+
         EventBusManager.publish(new VoiceProcessEvent(Globals.AI_NAME + " is online..."));
+
         JournalParser parser = new JournalParser();
-        parser.startReading();
+        parser.startReading(); //NOTE: blocking in command line mode
     }
 }

@@ -144,7 +144,9 @@ public class AIContextFactory {
                 "    - Input 'How’s it going?' -> {\"type\": \"chat\", \"response_text\": \"Ship’s running like a bloody dream, Commander! You holding up?\", \"action\": null, \"params\": {}, \"expect_followup\": true}\n" +
                 "    - Input 'Tell me about the Thargoids' -> {\"type\": \"chat\", \"response_text\": \"Thargoids? Bug-like bastards with tech that’ll fuck your ship in seconds. Want tips to survive 'em?\", \"action\": null, \"params\": {}, \"expect_followup\": true}\n" +
                 "    - Input 'What’s the weather in Los Angeles?' -> {\"type\": \"query\", \"response_text\": \"\", \"action\": \"general_conversation\", \"params\": {}, \"expect_followup\": true}\n" +
-                "    - Input 'voice to an' -> {\"type\": \"chat\", \"response_text\": \"Sorry, mate, didn't quite catch that. Could you repeat or clarify?\", \"action\": null, \"params\": {}, \"expect_followup\": true}\n");
+                "    - Input 'voice to an' -> {\"type\": \"chat\", \"response_text\": \"Sorry, mate, didn't quite catch that. Could you repeat or clarify?\", \"action\": null, \"params\": {}, \"expect_followup\": true}\n" +
+                "    - Input 'Find a material trader' -> {\"type\": \"query\", \"response_text\": \"Moment...\", \"action\": \"find_material_trader\", \"params\": {}, \"expect_followup\": false}\\n\" +\n" +
+                "    - Input 'Where can I buy Painite?' -> {\"type\": \"query\", \"response_text\": \"Moment...\", \"action\": \"find_commodity\", \"params\": {\"commodity\": \"painite\"}, \"expect_followup\": false}\n");
         return sb.toString();
     }
 

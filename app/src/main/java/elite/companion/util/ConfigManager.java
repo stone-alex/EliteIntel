@@ -25,6 +25,7 @@ public class ConfigManager {
 
     // Config keys (public for external use)
     public static final String GROK_API_KEY = "grok_key";
+    public static final String EDSM_KEY = "edsm_key";
     public static final String PLAYER_MISSION_STATEMENT = "mission_statement";
     public static final String PLAYER_TITLE = "title";
     public static final String PLAYER_ALTERNATIVE_NAME = "alternative_name";
@@ -39,6 +40,7 @@ public class ConfigManager {
         DEFAULT_USER_CONFIG.put(PLAYER_MISSION_STATEMENT, "");
         DEFAULT_USER_CONFIG.put(PLAYER_TITLE, "");
         DEFAULT_USER_CONFIG.put(PLAYER_ALTERNATIVE_NAME, "");
+        DEFAULT_USER_CONFIG.put(EDSM_KEY, "");
 
         // Initialize APP_DIR
         String appDir = ""; // Default to empty string for development
@@ -184,6 +186,8 @@ public class ConfigManager {
                     writer.write("# Note all entries will be trimmed to 120 characters. So be brief.\n");
                     writer.write("# Provides context for:\n");
                     writer.write("# mission_statement=We serve the Imperial fleet as explorers and bounty hunters\n\n");
+                    writer.write("# edsm_key=your_edsm_key\n\n");
+                    writer.write("# edsm_key=your_edsm_key\n\n");
                 }
             }
 

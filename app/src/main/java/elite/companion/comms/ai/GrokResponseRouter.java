@@ -40,8 +40,7 @@ public class GrokResponseRouter {
             try {
                 QueryHandler handler = instantiateHandler(action.getHandlerClass(), QueryHandler.class);
                 queryHandlers.put(action.getAction(), handler);
-                log.debug("Registered query handler for action: {}, requiresFollowUp: {}",
-                        action.getAction(), action.isRequiresFollowUp());
+                log.debug("Registered query handler for action: {}, requiresFollowUp: {}", action.getAction(), action.isRequiresFollowUp());
             } catch (Exception e) {
                 log.error("Failed to register query handler for action: {}", action.getAction(), e);
                 throw new RuntimeException("Query handler registration failed for action: " + action.getAction(), e);

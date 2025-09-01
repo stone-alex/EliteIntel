@@ -1,6 +1,7 @@
 package elite.companion.comms.ai.robot;
 
 import com.google.gson.JsonObject;
+import elite.companion.comms.handlers.command.CommandActionsCustom;
 import elite.companion.comms.handlers.command.CommandActionsGame;
 import elite.companion.comms.voice.VoiceGenerator;
 import elite.companion.session.SystemSession;

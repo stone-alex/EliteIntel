@@ -2,8 +2,8 @@ package elite.companion.comms.handlers.query;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import elite.companion.searchc.api.EdsmApiClient;
-import elite.companion.searchc.api.SpanshApiClient;
+import elite.companion.search.api.EdsmApiClient;
+import elite.companion.search.api.SpanshApiClient;
 import elite.companion.session.SystemSession;
 
 public class MaterialTraderQueryHandler implements QueryHandler {

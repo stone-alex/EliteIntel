@@ -1,4 +1,4 @@
-package elite.companion.searchc.api;
+package elite.companion.search.api;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;

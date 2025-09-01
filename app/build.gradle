@@ -1,5 +1,7 @@
 plugins {
     id 'java'
+    id 'application'
+    id 'org.openjfx.javafxplugin' version '0.1.0'
     id 'com.github.johnrengelman.shadow'
 }
 
@@ -48,12 +50,31 @@ dependencies {
     implementation 'org.openjfx:javafx-fxml:21'
 }
 
+
+javafx {
+    version = '21'
+    modules = ['javafx.controls', 'javafx.fxml']
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17) // Enforce JDK 17
+    }
+}
+
+application {
+    mainClass = 'elite.companion.ui.MainApp'
+    applicationDefaultJvmArgs = ['--add-modules', 'javafx.controls,javafx.fxml']
+}
+
 sourceSets {
     main {
         resources {
             srcDirs = ['src/main/resources']
             include '**/*.json'
             include '**/*.conf'
+            include '**/*.fxml'
+            include '**/*.css'
             include 'logback.xml'
             include 'META-INF/MANIFEST.MF'
         }
@@ -68,3 +89,19 @@ shadowJar {
     mergeServiceFiles()
     destinationDirectory = file("${rootProject.projectDir}/build/libs")
 }
+
+
+
+/*
+shadowJar {
+    archiveBaseName.set('elite-companion')
+    archiveVersion.set('1.0')
+    archiveClassifier.set('')
+    manifest {
+        attributes 'Main-Class': 'elite.companion.ui.MainApp'
+        attributes 'JavaFX-Version': '21'
+    }
+    // Merge service provider configurations (needed for Google Cloud APIs)
+    mergeServiceFiles()
+}
+*/

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<VBox stylesheets="@style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="elite.companion.ui.controller.MainController" spacing="10" alignment="CENTER" prefWidth="800">
+    <Label text="Elite Dangerous Companion"/>
+    <HBox spacing="10" alignment="CENTER">
+        <TextField fx:id="googleApiKeyField" promptText="Google API Key" prefWidth="250"/>
+        <TextField fx:id="grokApiKeyField" promptText="Grok" prefWidth="250"/>
+        <Button fx:id="saveButton" text="Save" onAction="#saveApiKey"/>
+    </HBox>
+    <Button fx:id="testVoiceButton" text="Test Voice Trigger" onAction="#testVoice"/>
+    <CheckBox fx:id="minimizeCheckBox" text="Minimize for VR"/>
+    <TextArea fx:id="journalLog" editable="false" prefHeight="200" wrapText="true"/>
+</VBox>

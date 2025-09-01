@@ -16,7 +16,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.Comparator;
 
-public class JournalParser {
+public class JournalParser implements Runnable {
     private static final Logger log = LoggerFactory.getLogger(JournalParser.class);
     private final Path journalDir = Paths.get(System.getProperty("user.home"), "Saved Games", "Frontier Developments", "Elite Dangerous");
 
@@ -76,7 +76,10 @@ public class JournalParser {
                                 log.warn("Skipping event: {}", eventType);
                             }
                         }
-                    } catch (Exception e) {
+                    } catch (IllegalMonitorStateException exiting) {
+                        // system exit
+                    }
+                    catch (Exception e) {
                         log.error("Failed to parse journal entry: {}", line, e);
                     }
 
@@ -96,5 +99,17 @@ public class JournalParser {
                 .filter(p -> p.toString().endsWith(".log"))
                 .max(Comparator.comparingLong(p -> p.toFile().lastModified()))
                 .orElseThrow(() -> new IOException("No journal files found in " + journalDir));
+    }
+
+    @Override public void run() {
+        try {
+            startReading();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalMonitorStateException exit) {
+            // system exit
+        }
     }
 }

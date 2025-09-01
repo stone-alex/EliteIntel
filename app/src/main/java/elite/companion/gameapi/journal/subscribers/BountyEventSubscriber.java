@@ -18,10 +18,8 @@ public class BountyEventSubscriber {
         StringBuilder sb = new StringBuilder();
         String killConfirmed = "";
         if (event.getVictimFaction().equalsIgnoreCase(String.valueOf(systemSession.get(SystemSession.TARGET_FACTION_NAME)))) {
-            //VoiceGenerator.getInstance().speak("Mission Kill Confirmed, " + Ranks.getPlayerHonorific()+"!");
             killConfirmed  = "Mission Kill Confirmed, ";
         } else {
-            //VoiceGenerator.getInstance().speak("Kill Confirmed, " + Ranks.getPlayerHonorific()+"!");
             killConfirmed  = "Kill Confirmed, ";
         }
         sb.append(killConfirmed);

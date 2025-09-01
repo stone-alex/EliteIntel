@@ -3,6 +3,7 @@ package elite.companion.gameapi.journal;
 import com.google.gson.JsonObject;
 import elite.companion.gameapi.UserInputEvent;
 import elite.companion.gameapi.SensorDataEvent;
+import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.gameapi.journal.events.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,7 @@ public class EventRegistry {
     private static final long THRESHOLD_LONG = 60000; // 60 seconds
 
     static {
+        registerEvent("VoiceProcess", VoiceProcessEvent.class);
         registerEvent("UserInput", UserInputEvent.class);
         registerEvent("SensorData", SensorDataEvent.class);
         registerEvent("Bounty", BountyEvent.class);
@@ -72,7 +74,7 @@ public class EventRegistry {
         registerEvent("SupercruiseExit", SupercruiseExitEvent.class);
         registerEvent("SwitchSuitLoadout", SwitchSuitLoadoutEvent.class);
         registerEvent("Touchdown", TouchdownEvent.class);
-        registerEvent("ShutdownEvent", ShutdownEvent.class);
+        registerEvent("Shutdown", ShutdownEvent.class);
     }
 
     private static void registerEvent(String eventName, Class<? extends BaseEvent> eventClass) {

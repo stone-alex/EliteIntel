@@ -4,7 +4,9 @@ import com.google.gson.JsonObject;
 import elite.companion.comms.handlers.command.CommandActionsCustom;
 import elite.companion.comms.handlers.command.CommandActionsGame;
 import elite.companion.comms.voice.VoiceGenerator;
+import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.session.SystemSession;
+import elite.companion.util.EventBusManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,9 +101,7 @@ public class GameCommandHandler {
         if (binding != null) {
             executor.executeBinding(binding);
             log.info("Executed action: {} with key: {}", action, binding.key);
-            //handleChat(responseText);
         } else {
-            //handleChat(responseText);
             log.warn("No binding found for action: {}", action);
             handleChat("Game Command Handler No key binding found for that action.");
         }
@@ -118,7 +118,7 @@ public class GameCommandHandler {
     }
 
     private void handleChat(String responseText) {
-        VoiceGenerator.getInstance().speak(responseText);
+        EventBusManager.publish(new VoiceProcessEvent(responseText));
         log.info("Sent to VoiceGenerator: {}", responseText);
     }
 

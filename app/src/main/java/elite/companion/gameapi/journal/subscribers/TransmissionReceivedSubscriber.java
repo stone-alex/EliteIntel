@@ -3,6 +3,7 @@ package elite.companion.gameapi.journal.subscribers;
 import com.google.common.eventbus.Subscribe;
 import elite.companion.comms.voice.VoiceGenerator;
 import elite.companion.gameapi.SensorDataEvent;
+import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.gameapi.journal.events.ReceiveTextEvent;
 import elite.companion.session.SystemSession;
 import elite.companion.util.EventBusManager;
@@ -30,7 +31,7 @@ public class TransmissionReceivedSubscriber {
                     EventBusManager.publish(new SensorDataEvent("radio_transmission:[from:" + event.getFrom() + ", message:" + event.getMessageLocalised() + "]"));
                 }
             } else {
-                VoiceGenerator.getInstance().speakInRandomVoice(event.getMessageLocalised());
+                EventBusManager.publish(new VoiceProcessEvent("radio_transmission:[from:" + event.getFrom() + ", message:" + event.getMessageLocalised() + "]", true));
             }
         }
     }

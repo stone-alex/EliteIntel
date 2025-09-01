@@ -3,8 +3,10 @@ package elite.companion.comms.handlers.query;
 import com.google.gson.JsonObject;
 import elite.companion.comms.ai.GrokAnalysisEndpoint;
 import elite.companion.comms.voice.VoiceGenerator;
+import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.session.SystemSession;
 import elite.companion.comms.ai.AIContextFactory;
+import elite.companion.util.EventBusManager;
 
 public class PirateMissionAnalyzer implements QueryHandler {
 
@@ -27,7 +29,7 @@ public class PirateMissionAnalyzer implements QueryHandler {
                 return qa;
             }
         }
-        VoiceGenerator.getInstance().speak("Sorry, no query action found for: " + action);
+        EventBusManager.publish(new VoiceProcessEvent("Sorry, no query action found for: " + action));
         throw new IllegalArgumentException("No query action found for: " + action);
     }
 

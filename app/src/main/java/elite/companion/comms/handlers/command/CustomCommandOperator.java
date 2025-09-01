@@ -3,7 +3,8 @@ package elite.companion.comms.handlers.command;
 import elite.companion.comms.ai.robot.BindingsMonitor;
 import elite.companion.comms.ai.robot.KeyBindingExecutor;
 import elite.companion.comms.ai.robot.KeyBindingsParser;
-import elite.companion.comms.voice.VoiceGenerator;
+import elite.companion.gameapi.VoiceProcessEvent;
+import elite.companion.util.EventBusManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +30,7 @@ public class CustomCommandOperator {
             log.info("Executed action: {} with key: {}", action, binding);
         } else {
             log.warn("No binding found for action: {}", action);
-            VoiceGenerator.getInstance().speak("Custom command operator. No key binding found for action " + action);
+            EventBusManager.publish(new VoiceProcessEvent("Custom command operator. No key binding found for action " + action));
         }
     }
 }

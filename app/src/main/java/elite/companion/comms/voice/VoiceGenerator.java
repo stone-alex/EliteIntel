@@ -2,7 +2,10 @@ package elite.companion.comms.voice;
 
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.texttospeech.v1.*;
+import com.google.common.eventbus.Subscribe;
+import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.session.SystemSession;
+import elite.companion.util.EventBusManager;
 import elite.companion.util.GoogleApiKeyProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +48,7 @@ public class VoiceGenerator {
     }
 
     private VoiceGenerator() {
+        EventBusManager.register(this);
         this.voiceQueue = new LinkedBlockingQueue<>();
         this.running = true;
         this.processingThread = new Thread(this::processVoiceQueue);
@@ -114,12 +118,6 @@ public class VoiceGenerator {
     }
 
 
-
-    public void speakInRandomVoice(String text) {
-        if(text == null || text.isEmpty()) return;
-        speak(text, getRandomVoice());
-    }
-
     public Voices getRandomVoice() {
         if (voiceMap.isEmpty()) {
             return SystemSession.getInstance().getAIVoice();
@@ -128,15 +126,25 @@ public class VoiceGenerator {
         return voices[new Random().nextInt(voices.length)];
     }
 
-    public void speak(String text) {
-        if(text == null || text.isEmpty()) return;
-        if(text.toLowerCase().contains("moment")) return;
+    @Subscribe
+    public void onVoiceProcessEvent(VoiceProcessEvent event) {
+        if(event.isUseRandom()){
+            speak(event.getText(), getRandomVoice());
+        } else {
+            speak(event.getText());
+        }
+    }
+
+    private void speak(String text) {
+        if (text == null || text.isEmpty()) return;
+        if (text.toLowerCase().contains("moment")) return;
 
         new Thread(() -> speak(text, SystemSession.getInstance().getAIVoice())).start();
     }
 
-    public void speak(String text, Voices aiVoice) {
-        if(text == null || text.isEmpty()) return;
+
+    private void speak(String text, Voices aiVoice) {
+        if (text == null || text.isEmpty()) return;
         try {
             voiceQueue.put(new VoiceRequest(text, aiVoice.getName(), aiVoice.getSpeechRate()));
         } catch (InterruptedException e) {
@@ -159,7 +167,9 @@ public class VoiceGenerator {
     }
 
     private void processVoiceRequest(String text, String voiceName, double speechRate) {
-        if (text == null || text.isEmpty()) {return;}
+        if (text == null || text.isEmpty()) {
+            return;
+        }
         log.info(voiceName + " Speaking: {}", text);
         try {
             SynthesisInput input = SynthesisInput.newBuilder().setText(text).build();

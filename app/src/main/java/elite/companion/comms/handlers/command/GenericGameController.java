@@ -3,6 +3,8 @@ package elite.companion.comms.handlers.command;
 import com.google.gson.JsonObject;
 import elite.companion.comms.voice.VoiceGenerator;
 import elite.companion.comms.ai.robot.GameCommandHandler;
+import elite.companion.gameapi.VoiceProcessEvent;
+import elite.companion.util.EventBusManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +21,7 @@ public class GenericGameController implements CommandHandler {
     @Override public void handle(JsonObject params, String responseText) {
         if (gameBinding == null) {
             log.error("No game binding found for command: {}", params.get("action").getAsString());
-            VoiceGenerator.getInstance().speak("Generic Game controller No key binding found for " + gameBinding);
+            EventBusManager.publish(new VoiceProcessEvent("Generic Game controller No key binding found for " + gameBinding));
             return;
         }
 

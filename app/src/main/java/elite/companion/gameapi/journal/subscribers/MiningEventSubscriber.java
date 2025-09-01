@@ -4,6 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import elite.companion.comms.handlers.command.CommandActionsCustom;
 import elite.companion.comms.voice.VoiceGenerator;
 import elite.companion.gameapi.SensorDataEvent;
+import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.gameapi.journal.events.MiningRefinedEvent;
 import elite.companion.session.PlayerSession;
 import elite.companion.session.SystemSession;
@@ -18,7 +19,6 @@ public class MiningEventSubscriber {
 
     @Subscribe
     public void onMiningRefined(MiningRefinedEvent dto) {
-        VoiceGenerator.getInstance().speak("One ton of " + dto.getTypeLocalised() + " has been refined!");
         PlayerSession playerSession = PlayerSession.getInstance();
         SystemSession systemSession = SystemSession.getInstance();
         if (playerSession.get(CommandActionsCustom.SET_MINING_TARGET.getParamKey()) == null) {

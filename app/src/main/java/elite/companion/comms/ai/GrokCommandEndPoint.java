@@ -6,6 +6,7 @@ import com.google.gson.*;
 import elite.companion.comms.voice.VoiceGenerator;
 import elite.companion.gameapi.UserInputEvent;
 import elite.companion.gameapi.SensorDataEvent;
+import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.session.SystemSession;
 import elite.companion.util.ConfigManager;
 import elite.companion.util.EventBusManager;
@@ -198,7 +199,7 @@ public class GrokCommandEndPoint {
         try {
             JsonObject apiResponse = callXaiApi(jsonString);
             if (apiResponse == null) {
-                VoiceGenerator.getInstance().speak("Failure processing system request. Check programming");
+                EventBusManager.publish(new VoiceProcessEvent("Failure processing system request. Check programming"));
                 return;
             }
             GrokResponseRouter.getInstance().processGrokResponse(apiResponse, null);

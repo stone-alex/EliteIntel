@@ -2,8 +2,10 @@ package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import elite.companion.comms.voice.VoiceGenerator;
+import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.gameapi.journal.events.ShipTargetedEvent;
 import elite.companion.session.SystemSession;
+import elite.companion.util.EventBusManager;
 import elite.companion.util.RomanNumeralConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +20,7 @@ public class ShipTargetedEventSubscriber {
         log.info(event.toJson());
 
         if (!event.isTargetLocked()) {
-            VoiceGenerator.getInstance().speak("Contact Lost");
+            EventBusManager.publish(new VoiceProcessEvent("Contact Lost"));
         }
 
         String localizedShipName = event.getShipLocalised();
@@ -70,7 +72,7 @@ public class ShipTargetedEventSubscriber {
                 }
             }
 
-            VoiceGenerator.getInstance().speak(info.toString());
+            EventBusManager.publish(new VoiceProcessEvent(info.toString()));
         }
     }
 

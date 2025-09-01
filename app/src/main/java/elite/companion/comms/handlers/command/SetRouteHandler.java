@@ -4,7 +4,9 @@ import com.google.gson.JsonObject;
 import elite.companion.comms.voice.VoiceGenerator;
 import elite.companion.comms.ai.robot.KeyProcessor;
 import elite.companion.comms.ai.robot.GameCommandHandler;
+import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.session.SystemSession;
+import elite.companion.util.EventBusManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +24,7 @@ public class SetRouteHandler extends CustomCommandOperator implements CommandHan
         String destination = params.has(paramKey) ? params.get(paramKey).getAsString() : null;
 
         if(destination == null || destination.isEmpty()){
-            VoiceGenerator.getInstance().speak("No destination set. Please try again.");
+            EventBusManager.publish(new VoiceProcessEvent("No destination set. Please try again."));
         }
 
 

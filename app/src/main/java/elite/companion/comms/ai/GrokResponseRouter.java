@@ -6,6 +6,8 @@ import elite.companion.comms.ai.robot.GameCommandHandler;
 import elite.companion.comms.handlers.command.*;
 import elite.companion.comms.handlers.query.*;
 import elite.companion.comms.voice.VoiceGenerator;
+import elite.companion.gameapi.VoiceProcessEvent;
+import elite.companion.util.EventBusManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -140,7 +142,7 @@ public class GrokResponseRouter {
             JsonObject params = getAsObjectOrEmpty(jsonResponse, "params");
 
             if (!responseText.isEmpty() && !type.equals("chat")) {
-                VoiceGenerator.getInstance().speak(responseText);
+                EventBusManager.publish(new VoiceProcessEvent(responseText));
                 log.info("Spoke initial response: {}", responseText);
             }
 
@@ -191,7 +193,7 @@ public class GrokResponseRouter {
             }
 
             if (responseTextToUse != null && !responseTextToUse.isEmpty()) {
-                VoiceGenerator.getInstance().speak(responseTextToUse);
+                EventBusManager.publish(new VoiceProcessEvent(responseTextToUse));
                 log.info("Spoke final query response (action: {}): {}", action, responseTextToUse);
             } else if (requiresFollowUp) {
                 JsonArray messages = new JsonArray();
@@ -226,7 +228,7 @@ public class GrokResponseRouter {
 
                 String finalResponseText = getAsStringOrEmpty(followUpResponse, "response_text");
                 if (!finalResponseText.isEmpty()) {
-                    VoiceGenerator.getInstance().speak(finalResponseText);
+                    EventBusManager.publish(new VoiceProcessEvent(finalResponseText));
                     log.info("Spoke follow-up query response (action: {}): {}", action, finalResponseText);
                 } else {
                     log.warn("No response_text in follow-up for action: {}", action);
@@ -255,7 +257,7 @@ public class GrokResponseRouter {
 
     private void handleChat(String responseText) {
         if (!responseText.isEmpty()) {
-            VoiceGenerator.getInstance().speak(responseText);
+            EventBusManager.publish(new VoiceProcessEvent(responseText));
             log.info("Sent to VoiceGenerator: {}", responseText);
         }
     }

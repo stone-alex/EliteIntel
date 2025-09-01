@@ -19,7 +19,7 @@ public class GenericGameController implements CommandHandler {
     @Override public void handle(JsonObject params, String responseText) {
         if (gameBinding == null) {
             log.error("No game binding found for command: {}", params.get("action").getAsString());
-            VoiceGenerator.getInstance().speak("No key binding found for " + gameBinding);
+            VoiceGenerator.getInstance().speak("Generic Game controller No key binding found for " + gameBinding);
             return;
         }
 

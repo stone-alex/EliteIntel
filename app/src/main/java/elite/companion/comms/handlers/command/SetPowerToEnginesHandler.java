@@ -10,7 +10,7 @@ import static elite.companion.comms.handlers.command.CommandActionsGame.GameComm
 public class SetPowerToEnginesHandler extends CustomCommandOperator implements CommandHandler {
 
     private static final Logger log = LoggerFactory.getLogger(SetPowerToEnginesHandler.class);
-    public static final int DELAY = 25;
+    public static final int DELAY = 5;
 
     public SetPowerToEnginesHandler(GameCommandHandler commandHandler) throws Exception {
         super(commandHandler.getMonitor(),commandHandler.getExecutor());

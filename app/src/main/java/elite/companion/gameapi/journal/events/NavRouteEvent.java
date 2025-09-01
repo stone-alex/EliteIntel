@@ -9,7 +9,7 @@ import java.util.StringJoiner;
 
 public class NavRouteEvent extends BaseEvent {
     public NavRouteEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "NavRoute");
+        super(json.get("timestamp").getAsString(), 1, Duration.ofHours(12), "NavRoute");
     }
 
     @Override

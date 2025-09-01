@@ -23,7 +23,7 @@ public class FSDTargetSubscriber {
     }
 
     private String isFuelStarClause(String starClass) {
-        boolean isFuelStar = "KGBFOAM".contains(starClass);
+        boolean isFuelStar = "KGBFOAM".toUpperCase().contains(starClass.toUpperCase());
         return isFuelStar ? " (Fuel Star)" : "";
     }
 }

@@ -18,18 +18,18 @@ public class CustomCommandOperator {
     }
 
 
-    protected void operateKeyboard(String actionSetThrottleToZero, int holdTime) {
-        KeyBindingsParser.KeyBinding binding = monitor.getBindings().get(actionSetThrottleToZero);
+    protected void operateKeyboard(String action, int holdTime) {
+        KeyBindingsParser.KeyBinding binding = monitor.getBindings().get(action);
         if (binding == null) {
-            binding = monitor.getBindings().get(CommandActionsGame.getGameBinding(actionSetThrottleToZero));
+            binding = monitor.getBindings().get(CommandActionsGame.getGameBinding(action));
         }
 
         if (binding != null) {
             executor.executeBindingWithHold(binding, holdTime);
-            log.info("Executed action: {} with key: {}", actionSetThrottleToZero, binding);
+            log.info("Executed action: {} with key: {}", action, binding);
         } else {
-            log.warn("No binding found for action: {}", actionSetThrottleToZero);
-            VoiceGenerator.getInstance().speak("No key binding found for that action.");
+            log.warn("No binding found for action: {}", action);
+            VoiceGenerator.getInstance().speak("Custom command operator. No key binding found for action " + action);
         }
     }
 }

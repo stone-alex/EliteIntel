@@ -2,7 +2,6 @@ package elite.companion.comms.handlers.command;
 
 public class CommandActionsGame {
     public enum GameCommand {
-        BACKWARD_KEY("cancel_back_backout_ui", "BackwardKey", GenericGameController.class),
         CARGO_SCOOP("cargo_scoop", "ToggleCargoScoop", GenericGameController.class),
         CARGO_SCOOP_BUGGY("cargo_scoop_buggy", "ToggleCargoScoop_Buggy", GenericGameController.class),
         CHANGE_CONSTRUCTION_OPTION("change_construction_option", "ChangeConstructionOption", GenericGameController.class),
@@ -40,10 +39,6 @@ public class CommandActionsGame {
         FREE_CAM("free_cam", "ToggleFreeCam", GenericGameController.class),
         FSTOP_DEC("fstop_dec", "FStopDec", GenericGameController.class),
         FSTOP_INC("fstop_inc", "FStopInc", GenericGameController.class),
-        GALAXY_MAP("galaxy_map", "GalaxyMapOpen", GenericGameController.class),
-        GALAXY_MAP_BUGGY("galaxy_map_buggy", "GalaxyMapOpen_Buggy", GenericGameController.class),
-        GALAXY_MAP_HOME("galaxy_map_home", "GalaxyMapHome", GenericGameController.class),
-        GALAXY_MAP_HUMANOID("galaxy_map_humanoid", "GalaxyMapOpen_Humanoid", GenericGameController.class),
         GALNET_AUDIO_CLEAR_QUEUE("galnet_audio_clear_queue", "GalnetAudio_ClearQueue", GenericGameController.class),
         GALNET_AUDIO_PLAY_PAUSE("galnet_audio_play_pause", "GalnetAudio_Play_Pause", GenericGameController.class),
         GALNET_AUDIO_SKIP_BACKWARD("galnet_audio_skip_backward", "GalnetAudio_SkipBackward", GenericGameController.class),
@@ -76,31 +71,39 @@ public class CommandActionsGame {
         SET_SPEED75("set_speed75", "SetSpeed75", GenericGameController.class),
         SET_SPEED_ZERO("set_speed_zero_full_stop_cut_engines", "SetSpeedZero", GenericGameController.class),
         AUTO_DOC("activate_auto_pilot", "SetSpeedZero", GenericGameController.class),
-        SYSTEM_MAP("system_map", "SystemMapOpen", GenericGameController.class),
-        SYSTEM_MAP_HUMANOID("system_map_humanoid", "SystemMapOpen_Humanoid", GenericGameController.class),
         TARGET_NEXT_ROUTE_SYSTEM("target_next_system_in_route", "TargetNextRouteSystem", GenericGameController.class),
         TARGET_WINGMAN0("target_wingman0", "TargetWingman0", GenericGameController.class),
         TARGET_WINGMAN1("target_wingman1", "TargetWingman1", GenericGameController.class),
         TARGET_WINGMAN2("target_wingman2", "TargetWingman2", GenericGameController.class),
-        UI_DOWN("down", "UI_Down", GenericGameController.class),
-        UI_LEFT("left", "UI_Left", GenericGameController.class),
-        UI_RIGHT("right", "UI_Right", GenericGameController.class),
-        UIFOCUS("focus", "UIFocus", GenericGameController.class),
-        UI_SELECT("select", "UI_Select", GenericGameController.class),
-        UI_ACTIVATE("activate", "UI_Select", GenericGameController.class),
-        UI_TOGGLE("toggle", "UI_Toggle", GenericGameController.class),
-        UI_UP("up", "UI_Up", GenericGameController.class),
+        UI_ACTIVATE("ui_activate", "UI_Select", GenericGameController.class),
         UP_THRUST_BUTTON("up_thrust_button", "UpThrustButton", GenericGameController.class),
         WING_NAV_LOCK("lock_on_wingman", "WingNavLock", GenericGameController.class),
 
 
+
+        EXIT_KEY("ui_exit", "UI_Back", GenericGameController.class),
         //excluded, but needed for bindings. used in custom handler
         //these are special cases for excluded commands not sent to Grok, handled via a custom action
         INCREASE_ENGINES_POWER("_", "IncreaseEnginesPower", SetPowerToEnginesHandler.class),
         INCREASE_SYSTEMS_POWER("_", "IncreaseSystemsPower", SetPowerToSystemsHandler.class),
         INCREASE_SHIELDS_POWER("_", "IncreaseSystemsPower", SetPowerToSystemsHandler.class),
         INCREASE_WEAPONS_POWER("_", "IncreaseWeaponsPower", SetPowerToWeaponsHandler.class),
-        EXPLORATION_FSSDISCOVERY_SCAN("_", "ExplorationFSSDiscoveryScan", PerformFSSScanHandler.class)
+        UI_DOWN("ui_down", "UI_Down", GenericGameController.class),
+        UI_LEFT("ui_left", "UI_Left", GenericGameController.class),
+        UI_RIGHT("ui_right", "UI_Right", GenericGameController.class),
+        UIFOCUS("ui_focus", "UIFocus", GenericGameController.class),
+        UI_SELECT("ui_select", "UI_Select", GenericGameController.class),
+        UI_TOGGLE("ui_toggle", "UI_Toggle", GenericGameController.class),
+        UI_UP("ui_up", "UI_Up", GenericGameController.class),
+        GALAXY_MAP("gm", "GalaxyMapOpen", OpenGalaxyMapHandler.class),
+        GALAXY_MAP_BUGGY("gm_buggy", "GalaxyMapOpen_Buggy", GenericGameController.class),
+        GALAXY_MAP_HOME("gm_home", "GalaxyMapHome", GenericGameController.class),
+        GALAXY_MAP_HUMANOID("gm_humanoid", "GalaxyMapOpen_Humanoid", GenericGameController.class),
+        SYSTEM_MAP("system_map", "SystemMapOpen", GenericGameController.class),
+        SYSTEM_MAP_HUMANOID("system_map_humanoid", "SystemMapOpen_Humanoid", GenericGameController.class),
+
+
+        EXPLORATION_FSSDISCOVERY_SCAN("_", "", PerformFSSScanHandler.class)
 
 ;
 
@@ -143,7 +146,20 @@ public class CommandActionsGame {
             if( GameCommand.values()[i] == GameCommand.INCREASE_ENGINES_POWER) continue;
             if( GameCommand.values()[i] == GameCommand.INCREASE_SHIELDS_POWER) continue;
             if( GameCommand.values()[i] == GameCommand.INCREASE_SYSTEMS_POWER) continue;
+            if( GameCommand.values()[i] == GameCommand.INCREASE_WEAPONS_POWER) continue;
+            if( GameCommand.values()[i] == GameCommand.INCREASE_WEAPONS_POWER_BUGGY) continue;
             if( GameCommand.values()[i] == GameCommand.EXPLORATION_FSSDISCOVERY_SCAN) continue;
+            if( GameCommand.values()[i] == GameCommand.UI_DOWN) continue;
+            if( GameCommand.values()[i] == GameCommand.UI_LEFT) continue;
+            if( GameCommand.values()[i] == GameCommand.UI_RIGHT) continue;
+            if( GameCommand.values()[i] == GameCommand.UI_UP) continue;
+            if( GameCommand.values()[i] == GameCommand.UI_TOGGLE) continue;
+            if( GameCommand.values()[i] == GameCommand.GALAXY_MAP) continue;
+            if( GameCommand.values()[i] == GameCommand.GALAXY_MAP_BUGGY) continue;
+            if( GameCommand.values()[i] == GameCommand.GALAXY_MAP_HOME) continue;
+            if( GameCommand.values()[i] == GameCommand.GALAXY_MAP_HUMANOID) continue;
+            if( GameCommand.values()[i] == GameCommand.SYSTEM_MAP) continue;
+            if( GameCommand.values()[i] == GameCommand.SYSTEM_MAP_HUMANOID) continue;
 
             commands[i] = GameCommand.values()[i].getUserCommand();
         }

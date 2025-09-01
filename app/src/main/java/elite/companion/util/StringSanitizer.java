@@ -76,6 +76,10 @@ public class StringSanitizer {
             log.info("Sanitized transcript: {} -> {}", voiceCommand, command);
         }
 
+        if(command.toLowerCase().contains("privacy mode of")) {
+            command = command.replace("privacy mode of", "privacy mode off");
+            log.info("Sanitized transcript: {} -> {}", voiceCommand, command);
+        }
         return command.toLowerCase();
     }
 

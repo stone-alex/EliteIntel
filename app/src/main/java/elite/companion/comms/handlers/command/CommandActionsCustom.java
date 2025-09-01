@@ -14,12 +14,17 @@ public enum CommandActionsCustom {
 
 
     //INCREASE_ENGINES_POWER_BUGGY("increase_engines_power_buggy", "IncreaseEnginesPower_Buggy", "<power>", GenericGameController.class),
-    INCREASE_ENGINES_POWER("full_to_engines", "IncreaseEnginesPower", "<power>", SetPowerToEnginesHandler.class),
+    INCREASE_ENGINES_POWER("full_power_to_engines", "IncreaseEnginesPower", "<power>", SetPowerToEnginesHandler.class),
     INCREASE_SYSTEMS_POWER("full_power_to_systems", "IncreaseSystemsPower", "<power>", SetPowerToSystemsHandler.class),
     INCREASE_SHIELDS_POWER("full_power_to_shields", "IncreaseSystemsPower", "<power>", SetPowerToSystemsHandler.class),
     INCREASE_WEAPONS_POWER("full_power_to_weapons", "IncreaseWeaponsPower", "<power>", SetPowerToWeaponsHandler.class),
     FSSDISCOVERY_SCAN("exploration_fssdiscovery_scan", "ExplorationFSSDiscoveryScan", "<custom>", PerformFSSScanHandler.class),
-    SET_OPTIMAL_SPEED("set_optimal_speed", null, null, SetOptimalSpeedHandler.class)
+    SET_OPTIMAL_SPEED("set_optimal_speed", null, null, SetOptimalSpeedHandler.class),
+    OPEN_GALAXY_MAP("open_galaxy_map", null, null, OpenGalaxyMapHandler.class),
+    CLOSE_GALAXY_MAP("close_galaxy_map", null, null, CloseMapHandler.class),
+
+    OPEN_SYSTEM_MAP("open_local_starsystem_map", null, null, OpenSystemMapHandler.class),
+    CLOSE_SYSTEM_MAP("close_local_starsystem_map", null, null, CloseMapHandler.class),
     ;
 
 

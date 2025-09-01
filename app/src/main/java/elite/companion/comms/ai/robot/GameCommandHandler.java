@@ -103,7 +103,7 @@ public class GameCommandHandler {
         } else {
             //handleChat(responseText);
             log.warn("No binding found for action: {}", action);
-            handleChat("No key binding found for that action.");
+            handleChat("Game Command Handler No key binding found for that action.");
         }
     }
 

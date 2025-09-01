@@ -13,13 +13,15 @@ public class SetPrivacyMode implements CommandHandler {
 
     private static final Logger log = LoggerFactory.getLogger(SetRouteHandler.class);
 
-    public SetPrivacyMode() {
-    }
-
     @Override public void handle(JsonObject params, String responseText) {
         JsonElement jsonElement = extractParameter(CommandActionsCustom.SET_PRIVACY_MODE.getPlaceholder(), params);
         boolean isOn = "on".equalsIgnoreCase(jsonElement.getAsString());
         SystemSession systemSession = SystemSession.getInstance();
         systemSession.put(SystemSession.PRIVACY_MODE, isOn);
+        if(isOn){
+            VoiceGenerator.getInstance().speak("Privacy mode is on. Please prefix your commands to me with Computer or "+systemSession.getAIVoice().getName());
+        } else {
+            VoiceGenerator.getInstance().speak("Privacy mode is off... I am listening.");
+        }
     }
 }

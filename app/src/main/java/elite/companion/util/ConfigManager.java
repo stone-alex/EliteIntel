@@ -23,27 +23,28 @@ public class ConfigManager {
     private final String SYSTEM_CONFIG_FILENAME = "system.conf";
     private final int MAX_NUMBER_OF_CHARACTERS = 120;
 
-    // Config keys (public for external use)
+    // Config keys
     public static final String GROK_API_KEY = "grok_key";
+    public static final String GOOGLE_API_KEY = "google_api_key"; // New key for Google API
     public static final String EDSM_KEY = "edsm_key";
     public static final String PLAYER_MISSION_STATEMENT = "mission_statement";
     public static final String PLAYER_TITLE = "title";
     public static final String PLAYER_ALTERNATIVE_NAME = "alternative_name";
 
-    // Default config templates
     private final Map<String, String> DEFAULT_SYSTEM_CONFIG = new LinkedHashMap<>();
     private final Map<String, String> DEFAULT_USER_CONFIG = new LinkedHashMap<>();
 
     private ConfigManager() {
         // Initialize default configs
         DEFAULT_SYSTEM_CONFIG.put(GROK_API_KEY, "");
+        DEFAULT_SYSTEM_CONFIG.put(GOOGLE_API_KEY, ""); // Add Google API key
+        DEFAULT_SYSTEM_CONFIG.put(EDSM_KEY, "");
         DEFAULT_USER_CONFIG.put(PLAYER_MISSION_STATEMENT, "");
         DEFAULT_USER_CONFIG.put(PLAYER_TITLE, "");
         DEFAULT_USER_CONFIG.put(PLAYER_ALTERNATIVE_NAME, "");
-        DEFAULT_USER_CONFIG.put(EDSM_KEY, "");
 
-        // Initialize APP_DIR
-        String appDir = ""; // Default to empty string for development
+        // Initialize APP_DIR (unchanged)
+        String appDir = "";
         try {
             URI jarUri = ConfigManager.class.getProtectionDomain().getCodeSource().getLocation().toURI();
             File jarFile = new File(jarUri);
@@ -63,7 +64,6 @@ public class ConfigManager {
         }
         APP_DIR = appDir;
 
-        // Initialize config files after APP_DIR is set
         initializeConfigFiles();
     }
 
@@ -90,7 +90,6 @@ public class ConfigManager {
                 log.error("Default config for {} is null, cannot create file", filename);
             }
         } else {
-            // File exists, ensure all expected keys are present
             Map<String, String> existingConfig = readConfig(filename);
             boolean updated = false;
             if (defaultConfig != null) {
@@ -104,8 +103,6 @@ public class ConfigManager {
                     log.info("Updating configuration file {} with missing keys in {}", filename, file.getAbsolutePath());
                     writeConfigFile(filename, existingConfig, false);
                 }
-            } else {
-                log.error("Default config for {} is null, cannot update missing keys", filename);
             }
         }
     }
@@ -118,7 +115,6 @@ public class ConfigManager {
         Map<String, String> config = new HashMap<>();
         File file = new File(APP_DIR + filename);
 
-        // Try reading from app directory first
         if (file.exists()) {
             try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
                 String line;
@@ -138,7 +134,6 @@ public class ConfigManager {
                 log.error("Error reading configuration file {}: {}", file.getAbsolutePath(), e.getMessage());
             }
         } else {
-            // Fallback to resources
             try (InputStream input = getClass().getClassLoader().getResourceAsStream(filename)) {
                 if (input == null) {
                     log.warn("Configuration file {} not found in resources", filename);
@@ -181,13 +176,15 @@ public class ConfigManager {
         File file = new File(APP_DIR + filename);
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
             if (includeComments) {
-                if (filename.equals(USER_CONFIG_FILENAME)) {
+                if (filename.equals(SYSTEM_CONFIG_FILENAME)) {
+                    writer.write("## System configuration for API keys\n");
+                    writer.write("# grok_key: API key for Grok (xAI)\n");
+                    writer.write("# google_api_key: API key for Google Cloud Speech-to-Text and Text-to-Speech\n");
+                    writer.write("# edsm_key: API key for EDSM\n\n");
+                } else if (filename.equals(USER_CONFIG_FILENAME)) {
                     writer.write("## Provide brief description of your overall mission. Example:\n");
                     writer.write("# Note all entries will be trimmed to 120 characters. So be brief.\n");
-                    writer.write("# Provides context for:\n");
                     writer.write("# mission_statement=We serve the Imperial fleet as explorers and bounty hunters\n\n");
-                    writer.write("# edsm_key=your_edsm_key\n\n");
-                    writer.write("# edsm_key=your_edsm_key\n\n");
                 }
             }
 

@@ -55,17 +55,16 @@ public class VoiceGenerator {
         this.processingThread.setDaemon(true);
         this.processingThread.start();
 
-        // Load credentials using GoogleApiKeyProvider
-        try (InputStream serviceAccountStream = GoogleApiKeyProvider.getInstance().getGoogleApiKeyStream()) {
-            GoogleCredentials credentials = GoogleCredentials.fromStream(serviceAccountStream)
-                    .createScoped("https://www.googleapis.com/auth/cloud-platform");
+        try {
+            String apiKey = GoogleApiKeyProvider.getInstance().getGoogleApiKey();
             TextToSpeechSettings settings = TextToSpeechSettings.newBuilder()
-                    .setCredentialsProvider(() -> credentials)
+                    .setApiKey(apiKey)
                     .build();
             textToSpeechClient = TextToSpeechClient.create(settings);
-        } catch (IOException e) {
-            log.error("Failed to initialize Text To Speech client: {}", e.getMessage());
-            throw new RuntimeException("Failed to initialize Text To Speech client", e);
+            log.info("TextToSpeechClient initialized successfully with API key");
+        } catch (Exception e) {
+            log.error("Failed to initialize TextToSpeechClient: {}", e.getMessage());
+            throw new RuntimeException("Failed to initialize TextToSpeechClient", e);
         }
 
         //IMPS

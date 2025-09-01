@@ -8,6 +8,7 @@ import elite.companion.util.EventBusManager;
 import elite.companion.comms.ai.GrokCommandEndPoint;
 import elite.companion.comms.ai.GrokRequestHints;
 import elite.companion.session.SystemSession;
+import elite.companion.util.GoogleApiKeyProvider;
 import elite.companion.util.StringSanitizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,13 +56,27 @@ public class SpeechRecognizer {
         SpeechClient tempClient;
         try {
             this.grok.start();
-            tempClient = SpeechClient.create();
+          //  tempClient = SpeechClient.create();
             log.info("SpeechClient initialized successfully");
         } catch (Exception e) {
             log.error("Failed to initialize SpeechClient", e);
             throw new RuntimeException("SpeechRecognizer initialization failed", e);
         }
-        this.speechClient = tempClient;
+        //this.speechClient = tempClient;
+
+        try {
+            String apiKey = GoogleApiKeyProvider.getInstance().getGoogleApiKey();
+            SpeechSettings settings = SpeechSettings.newBuilder()
+                    .setApiKey(apiKey)
+                    .build();
+            this.speechClient = SpeechClient.create(settings);
+            log.info("SpeechClient initialized successfully with API key");
+        } catch (Exception e) {
+            log.error("Failed to initialize SpeechClient: {}", e.getMessage());
+            throw new RuntimeException("Failed to initialize SpeechClient", e);
+        }
+
+
     }
 
     public void stopWavRecording() {

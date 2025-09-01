@@ -42,6 +42,10 @@ dependencies {
 
     //Utils
     implementation 'org.apache.commons:commons-lang3:3.12.0'
+
+    //JavaFX
+    implementation 'org.openjfx:javafx-controls:21'
+    implementation 'org.openjfx:javafx-fxml:21'
 }
 
 sourceSets {

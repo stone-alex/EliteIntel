@@ -1,7 +1,7 @@
 package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.companion.gameapi.SendToGrokEvent;
+import elite.companion.gameapi.SensorDataEvent;
 import elite.companion.gameapi.journal.events.CarrierJumpRequestEvent;
 import elite.companion.util.EventBusManager;
 import elite.companion.util.TimestampFormatter;
@@ -27,6 +27,6 @@ public class CarrierJumpRequestSubscriber {
 
 
         //Carrier Jump Scheduled: null to null at Synuefe XR-H d11-124 A on unknown
-        EventBusManager.publish(new SendToGrokEvent(sb.toString()));
+        EventBusManager.publish(new SensorDataEvent(sb.toString()));
     }
 }

@@ -1,7 +1,7 @@
 package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.companion.gameapi.SendToGrokEvent;
+import elite.companion.gameapi.SensorDataEvent;
 import elite.companion.gameapi.journal.events.MissionCompletedEvent;
 import elite.companion.session.SystemSession;
 import elite.companion.util.EventBusManager;
@@ -14,6 +14,6 @@ public class MissionCompletedSubscriber {
         SystemSession systemSession = SystemSession.getInstance();
         systemSession.removePirateMission(event.getMissionID());
         String targetFaction = String.valueOf(systemSession.get(SystemSession.TARGET_FACTION_NAME));
-        EventBusManager.publish(new SendToGrokEvent("Mission against Faction:\""+targetFaction+"\" Completed: " + event.toJson()));
+        EventBusManager.publish(new SensorDataEvent("Mission against Faction:\""+targetFaction+"\" Completed: " + event.toJson()));
     }
 }

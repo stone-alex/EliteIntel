@@ -1,9 +1,8 @@
 package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.companion.gameapi.SendToGrokEvent;
+import elite.companion.gameapi.SensorDataEvent;
 import elite.companion.gameapi.journal.events.StartJumpEvent;
-import elite.companion.session.SystemSession;
 import elite.companion.util.EventBusManager;
 
 @SuppressWarnings("unused")
@@ -27,7 +26,7 @@ public class StartJumpSubscriber {
         sb.append(isFuelStarClause(starClass));
 
         if(!"Supercruise".equalsIgnoreCase(event.getJumpType())) {
-            EventBusManager.publish(new SendToGrokEvent(sb.toString()));
+            EventBusManager.publish(new SensorDataEvent(sb.toString()));
         }
     }
 

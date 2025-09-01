@@ -1,7 +1,7 @@
 package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.companion.gameapi.SendToGrokEvent;
+import elite.companion.gameapi.SensorDataEvent;
 import elite.companion.gameapi.journal.events.CarrierJumpEvent;
 import elite.companion.session.SystemSession;
 import elite.companion.util.EventBusManager;
@@ -14,7 +14,7 @@ public class CarrierJumpCompleteSubscriber {
         String starSystem = event.getStarSystem();
         SystemSession.getInstance().put(SystemSession.CURRENT_SYSTEM, "Star System" + starSystem + (event.getBody() == null ? "" : "body " + event.getBody()));
 
-        EventBusManager.publish(new SendToGrokEvent("Carrier Jump Complete: " + event.toJson()));
+        EventBusManager.publish(new SensorDataEvent("Carrier Jump Complete: " + event.toJson()));
 
     }
 }

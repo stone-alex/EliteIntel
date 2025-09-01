@@ -4,7 +4,8 @@ import com.google.common.eventbus.Subscribe;
 import elite.companion.comms.handlers.query.QueryActions;
 import com.google.gson.*;
 import elite.companion.comms.voice.VoiceGenerator;
-import elite.companion.gameapi.SendToGrokEvent;
+import elite.companion.gameapi.UserInputEvent;
+import elite.companion.gameapi.SensorDataEvent;
 import elite.companion.session.SystemSession;
 import elite.companion.util.ConfigManager;
 import elite.companion.util.EventBusManager;
@@ -42,7 +43,7 @@ public class GrokCommandEndPoint {
     }
 
     @Subscribe
-    public void onUserInput(SendToGrokEvent event) {
+    public void onUserInput(UserInputEvent event) {
         processVoiceCommand(event.getUserInput(), event.getConfidence());
     }
 
@@ -165,25 +166,10 @@ public class GrokCommandEndPoint {
     }
 
 
-    public void processSystemCommand() {
-        String sensorData = SystemSession.getInstance().consumeAnalysisData();
+    @Subscribe
+    public void onSensorDataEvent(SensorDataEvent event) {
+        String input = event.getSensorData();
 
-
-        // Log raw inputs for debugging
-        //log.info("Raw sensorData: [{}]", toDebugString(sensorData));
-        //log.info("Raw fssData: [{}]", toDebugString(fssData));
-
-        // Sanitize inputs
-        sensorData = escapeJson(sensorData);
-        String input = (sensorData.isEmpty()) ? null : sensorData;
-
-        // Log sanitized input
-        //log.info("Sanitized input: [{}]", input);
-
-
-        if (input == null || input.isEmpty()) {
-            return;
-        }
 
         JsonArray messages = new JsonArray();
         JsonObject systemMessage = new JsonObject();

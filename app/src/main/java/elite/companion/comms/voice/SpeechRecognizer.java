@@ -3,7 +3,7 @@ package elite.companion.comms.voice;
 import com.google.api.gax.rpc.ApiStreamObserver;
 import com.google.cloud.speech.v1p1beta1.*;
 import com.google.protobuf.ByteString;
-import elite.companion.gameapi.SendToGrokEvent;
+import elite.companion.gameapi.UserInputEvent;
 import elite.companion.util.EventBusManager;
 import elite.companion.comms.ai.GrokCommandEndPoint;
 import elite.companion.comms.ai.GrokRequestHints;
@@ -153,9 +153,6 @@ public class SpeechRecognizer {
                                     .build());
                             lastAudioSentTime = currentTime;
                         }
-
-                        //Reads SystemSession.getInstance().getSensorData() reacts to it and removes it from system session.
-                        grok.processSystemCommand();
                     }
                 } catch (LineUnavailableException | IllegalArgumentException e) {
                     log.error("Audio capture failed: {}", e.getMessage());
@@ -215,7 +212,7 @@ public class SpeechRecognizer {
 
     private void sendToAi(String sanitizedTranscript, float confidence) {
         log.info("Processing sanitizedTranscript: {}", sanitizedTranscript);
-        EventBusManager.publish(new SendToGrokEvent(sanitizedTranscript, confidence));
+        EventBusManager.publish(new UserInputEvent(sanitizedTranscript, confidence));
         // decouple this
         //grok.processVoiceCommand(sanitizedTranscript, confidence);
     }

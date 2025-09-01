@@ -1,7 +1,7 @@
 package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.companion.gameapi.SendToGrokEvent;
+import elite.companion.gameapi.SensorDataEvent;
 import elite.companion.gameapi.journal.events.MissionAcceptedEvent;
 import elite.companion.gameapi.journal.events.dto.MissionDto;
 import elite.companion.session.SystemSession;
@@ -16,7 +16,7 @@ public class MissionAcceptedHandler {
         MissionDto mission = new MissionDto(event);
         SystemSession systemSession = SystemSession.getInstance();
         systemSession.addMission(mission);
-        EventBusManager.publish(new SendToGrokEvent("Mission Accepted: " + mission.toJson()));
+        EventBusManager.publish(new SensorDataEvent("Mission Accepted: " + mission.toJson()));
     }
 }
 

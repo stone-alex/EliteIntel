@@ -2,7 +2,7 @@ package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import elite.companion.comms.voice.VoiceGenerator;
-import elite.companion.gameapi.SendToGrokEvent;
+import elite.companion.gameapi.SensorDataEvent;
 import elite.companion.gameapi.journal.events.ReceiveTextEvent;
 import elite.companion.session.SystemSession;
 import elite.companion.util.EventBusManager;
@@ -27,7 +27,7 @@ public class TransmissionReceivedSubscriber {
 
             if (isStation) {
                 if (!event.getMessageLocalised().toLowerCase().contains("fire zone")) {
-                    EventBusManager.publish(new SendToGrokEvent("radio_transmission:[from:" + event.getFrom() + ", message:" + event.getMessageLocalised() + "]"));
+                    EventBusManager.publish(new SensorDataEvent("radio_transmission:[from:" + event.getFrom() + ", message:" + event.getMessageLocalised() + "]"));
                 }
             } else {
                 VoiceGenerator.getInstance().speakInRandomVoice(event.getMessageLocalised());

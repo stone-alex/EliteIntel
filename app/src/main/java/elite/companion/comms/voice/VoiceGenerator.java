@@ -130,6 +130,7 @@ public class VoiceGenerator {
 
     public void speak(String text) {
         if(text == null || text.isEmpty()) return;
+        if(text.toLowerCase().contains("moment")) return;
 
         new Thread(() -> speak(text, SystemSession.getInstance().getAIVoice())).start();
     }

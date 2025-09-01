@@ -28,7 +28,7 @@ public class MainApp extends Application {
         }
         System.out.println("Loading FXML from: " + fxmlUrl);
         FXMLLoader loader = new FXMLLoader(fxmlUrl);
-        Scene scene = new Scene(loader.load(), 800, 300);
+        Scene scene = new Scene(loader.load(), 900, 800);
         MainController controller = loader.getController();
         controller.setStage(primaryStage);
         primaryStage.setTitle("Elite Dangerous Companion");

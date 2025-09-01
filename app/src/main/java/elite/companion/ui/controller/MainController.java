@@ -1,5 +1,6 @@
 package elite.companion.ui.controller;
 
+import elite.companion.gameapi.SensorDataEvent;
 import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.gameapi.journal.events.BaseEvent;
 import elite.companion.util.ConfigManager;
@@ -21,10 +22,14 @@ public class MainController {
 
     @FXML private TextField googleApiKeyField;
     @FXML private TextField grokApiKeyField;
+    @FXML private TextField edsmApiKeyField;
     @FXML private Button saveButton;
     @FXML private Button testVoiceButton;
     @FXML private CheckBox minimizeCheckBox;
     @FXML private TextArea journalLog;
+    @FXML private CheckBox lockGoogleKeyFieldCheckBox;
+    @FXML private CheckBox lockGrokFieldCheckBox;
+    @FXML private CheckBox lockEdsmFieldCheckBox;
 
     public MainController() {
         EventBusManager.register(this); // Subscribe to event bus
@@ -38,23 +43,41 @@ public class MainController {
     public void initialize() {
         googleApiKeyField.setText(configManager.readSystemConfig().get(ConfigManager.GOOGLE_API_KEY));
         grokApiKeyField.setText(configManager.readSystemConfig().get(ConfigManager.GROK_API_KEY));
+        edsmApiKeyField.setText(configManager.readSystemConfig().get(ConfigManager.EDSM_KEY));
         journalLog.setText("Companion App Ready\n");
+
+        googleApiKeyField.setDisable(true);
+        lockGoogleKeyFieldCheckBox.setSelected(true);
+        lockGoogleKeyFieldCheckBox.setText("Locked");
+
+        grokApiKeyField.setDisable(true);
+        lockGrokFieldCheckBox.setSelected(true);
+        lockGrokFieldCheckBox.setText("Locked");
+
+        edsmApiKeyField.setDisable(true);
+        lockEdsmFieldCheckBox.setSelected(true);
+        lockEdsmFieldCheckBox.setText("Locked");
     }
 
     @FXML
     private void saveApiKey() {
-        String apiKey = googleApiKeyField.getText();
+        String googleApiKey = googleApiKeyField.getText();
         String grokApiKey = grokApiKeyField.getText();
-        if (apiKey != null && !apiKey.trim().isEmpty()) {
-            configManager.readSystemConfig().put(ConfigManager.GOOGLE_API_KEY, apiKey);
-            configManager.readSystemConfig().put(ConfigManager.GROK_API_KEY, grokApiKey);
+        String edsmApiKey = edsmApiKeyField.getText();
+
+        if (googleApiKey != null && !googleApiKey.trim().isEmpty()) {
+            configManager.readSystemConfig().put(ConfigManager.GOOGLE_API_KEY, googleApiKey);
             journalLog.appendText("Google API key saved.\n");
-            log.info("Google API key updated in system.conf");
-            EventBusManager.publish(new VoiceProcessEvent("API keys updated successfully"));
-        } else {
-            journalLog.appendText("Error: Invalid API key.\n");
-            log.error("Invalid Google API key entered");
         }
+        if(grokApiKey != null && !grokApiKey.trim().isEmpty()) {
+            configManager.readSystemConfig().put(ConfigManager.GROK_API_KEY, grokApiKey);
+            journalLog.appendText("Grok API key saved.\n");
+        }
+        if(edsmApiKey != null && !edsmApiKey.trim().isEmpty()){
+            configManager.readSystemConfig().put(ConfigManager.EDSM_KEY, edsmApiKey);
+            journalLog.appendText("EDSM API key saved.\n");
+        }
+        EventBusManager.publish(new VoiceProcessEvent("Configuration file saved."));
     }
 
     @FXML
@@ -75,10 +98,44 @@ public class MainController {
         }
     }
 
+
+    @FXML
+    private void onLockGoogleKeyMouseClicked() {
+        if (lockGoogleKeyFieldCheckBox.isSelected()) {
+            googleApiKeyField.setDisable(true);
+            lockGoogleKeyFieldCheckBox.setText("Locked");
+        } else {
+            googleApiKeyField.setDisable(false);
+            lockGoogleKeyFieldCheckBox.setText("Unlocked");
+        }
+    }
+
+    @FXML
+    private void lockGrokKeyMouseClicked() {
+        if (lockGrokFieldCheckBox.isSelected()) {
+            grokApiKeyField.setDisable(true);
+            lockGrokFieldCheckBox.setText("Locked");
+        } else {
+            grokApiKeyField.setDisable(false);
+            lockGrokFieldCheckBox.setText("Unlocked");
+        }
+    }
+
+    @FXML
+    private void onLockEdsmMouseClicked(){
+        if(lockEdsmFieldCheckBox.isSelected()){
+            edsmApiKeyField.setDisable(true);
+            lockEdsmFieldCheckBox.setText("Locked");
+        }else{
+            edsmApiKeyField.setDisable(false);
+            lockEdsmFieldCheckBox.setText("Unlocked");
+        }
+    }
+
     @com.google.common.eventbus.Subscribe
     public void handleJournalEvent(BaseEvent event) {
         Platform.runLater(() -> {
-            journalLog.appendText("Journal Event: " + event.getEventType() + " at " + event.getTimestamp() + "\n");
+            journalLog.appendText("Journal Event: " + event.getEventType() + "\n");
         });
     }
 
@@ -86,6 +143,13 @@ public class MainController {
     public void handleVoiceEvent(VoiceProcessEvent event) {
         Platform.runLater(() -> {
             journalLog.appendText("Voice Event: " + event.getText() + "\n");
+        });
+    }
+
+    @com.google.common.eventbus.Subscribe
+    public void handleSystemEvent(SensorDataEvent event) {
+        Platform.runLater(() -> {
+            journalLog.appendText("System Event: " + event.getSensorData() + "\n");
         });
     }
 }

@@ -18,3 +18,8 @@
     -fx-font-size: 16px;
     -fx-font-weight: bold;
 }
+.text-area {
+    -fx-background-color: #545353;
+    -fx-text-fill: white;
+    -fx-font-size: 24px;
+}

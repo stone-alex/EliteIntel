@@ -4,8 +4,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import elite.companion.comms.voice.VoiceToAllegiances;
 import elite.companion.comms.voice.Voices;
+import elite.companion.gameapi.SendToGrokEvent;
 import elite.companion.session.SystemSession;
 import elite.companion.comms.ai.AICadence;
+import elite.companion.util.EventBusManager;
 
 import static elite.companion.util.JsonParameterExtractor.extractParameter;
 
@@ -21,7 +23,7 @@ public class SetCadenceHandler implements CommandHandler {
 
             systemSession.setAICadence(aiCadence);
         } catch (IllegalArgumentException e) {
-            systemSession.sendToAiAnalysis("No such cadence. try Imperial, Federation or Alliance");
+            EventBusManager.publish(new SendToGrokEvent("No such cadence. try Imperial, Federation or Alliance"));
         }
 
     }

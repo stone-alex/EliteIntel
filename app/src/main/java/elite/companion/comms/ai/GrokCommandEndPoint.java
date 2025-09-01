@@ -1,10 +1,13 @@
 package elite.companion.comms.ai;
 
+import com.google.common.eventbus.Subscribe;
 import elite.companion.comms.handlers.query.QueryActions;
 import com.google.gson.*;
 import elite.companion.comms.voice.VoiceGenerator;
+import elite.companion.gameapi.SendToGrokEvent;
 import elite.companion.session.SystemSession;
 import elite.companion.util.ConfigManager;
+import elite.companion.util.EventBusManager;
 import elite.companion.util.GsonFactory;
 import elite.companion.util.JsonUtils;
 import org.slf4j.Logger;
@@ -24,6 +27,7 @@ public class GrokCommandEndPoint {
 
     public GrokCommandEndPoint() {
         this.router = GrokResponseRouter.getInstance();
+        EventBusManager.register(this);
     }
 
 
@@ -37,8 +41,12 @@ public class GrokCommandEndPoint {
         log.info("Stopped GrokInteractionHandler");
     }
 
+    @Subscribe
+    public void onUserInput(SendToGrokEvent event) {
+        processVoiceCommand(event.getUserInput(), event.getConfidence());
+    }
 
-    public void processVoiceCommand(String userInput, float confidence) {
+    private void processVoiceCommand(String userInput, float confidence) {
         // Sanitize input
         userInput = escapeJson(userInput);
         if (userInput == null || userInput.isEmpty()) {

@@ -23,7 +23,6 @@ import java.util.*;
  *
  */
 public class SystemSession {
-    public static final String SENSOR_READING = "sensor_reading";
     public static final String CURRENT_SYSTEM = "current_system";
     public static final String SHIP_LOADOUT_JSON = "ship_loadout_json";
     public static final String SUITE_LOADOUT_JSON = "suite_loadout_json";
@@ -75,20 +74,6 @@ public class SystemSession {
 
     public void remove(String key) {
         state.remove(key);
-    }
-
-    public void sendToAiAnalysis(String sensorReading) {
-        state.put(SENSOR_READING, sensorReading);
-    }
-
-    public void clearAnalysisData() {
-        state.remove(SENSOR_READING);
-    }
-
-    public String consumeAnalysisData() {
-        String data = state.get(SENSOR_READING) == null ? null : (String) state.get(SENSOR_READING);
-        state.remove(SENSOR_READING);
-        return data;
     }
 
     public void put(String key, Object data) {

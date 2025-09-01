@@ -1,6 +1,7 @@
 package elite.companion.gameapi.journal;
 
 import com.google.gson.JsonObject;
+import elite.companion.gameapi.SendToGrokEvent;
 import elite.companion.gameapi.journal.events.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +26,7 @@ public class EventRegistry {
     private static final long THRESHOLD_LONG = 60000; // 60 seconds
 
     static {
+        registerEvent("UserInput", SendToGrokEvent.class);
         registerEvent("Bounty", BountyEvent.class);
         registerEvent("Cargo", CargoEvent.class);
         registerEvent("CargoTransfer", CargoTransferEvent.class);

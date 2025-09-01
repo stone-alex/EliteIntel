@@ -1,8 +1,10 @@
 package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.companion.gameapi.SendToGrokEvent;
 import elite.companion.gameapi.journal.events.FSDJumpEvent;
 import elite.companion.session.SystemSession;
+import elite.companion.util.EventBusManager;
 
 import java.util.List;
 
@@ -61,6 +63,6 @@ public class FSDJumpSubscriber {
             }
         }
 
-        systemSession.sendToAiAnalysis(sb.toString());
+        EventBusManager.publish(new SendToGrokEvent(sb.toString()));
     }
 }

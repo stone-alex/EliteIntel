@@ -1,10 +1,10 @@
 package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.companion.comms.voice.VoiceGenerator;
+import elite.companion.gameapi.SendToGrokEvent;
 import elite.companion.gameapi.journal.events.BountyEvent;
 import elite.companion.session.SystemSession;
-import elite.companion.util.Ranks;
+import elite.companion.util.EventBusManager;
 
 import java.util.List;
 
@@ -34,6 +34,6 @@ public class BountyEventSubscriber {
         systemSession.addBounty(event.getTotalReward());
 
         sb.append("Total bounties collected: ").append(systemSession.getBountyCollectedThisSession()).append(" credits. ");
-        systemSession.sendToAiAnalysis(sb.toString());
+        EventBusManager.publish(new SendToGrokEvent(sb.toString()));
     }
 }

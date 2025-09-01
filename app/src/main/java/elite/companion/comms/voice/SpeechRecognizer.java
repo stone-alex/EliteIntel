@@ -3,7 +3,8 @@ package elite.companion.comms.voice;
 import com.google.api.gax.rpc.ApiStreamObserver;
 import com.google.cloud.speech.v1p1beta1.*;
 import com.google.protobuf.ByteString;
-import elite.companion.util.Globals;
+import elite.companion.gameapi.SendToGrokEvent;
+import elite.companion.util.EventBusManager;
 import elite.companion.comms.ai.GrokCommandEndPoint;
 import elite.companion.comms.ai.GrokRequestHints;
 import elite.companion.session.SystemSession;
@@ -214,7 +215,9 @@ public class SpeechRecognizer {
 
     private void sendToAi(String sanitizedTranscript, float confidence) {
         log.info("Processing sanitizedTranscript: {}", sanitizedTranscript);
-        grok.processVoiceCommand(sanitizedTranscript, confidence);
+        EventBusManager.publish(new SendToGrokEvent(sanitizedTranscript, confidence));
+        // decouple this
+        //grok.processVoiceCommand(sanitizedTranscript, confidence);
     }
 
     /**

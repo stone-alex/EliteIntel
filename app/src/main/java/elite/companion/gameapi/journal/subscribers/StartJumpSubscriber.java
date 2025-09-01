@@ -1,8 +1,10 @@
 package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.companion.gameapi.SendToGrokEvent;
 import elite.companion.gameapi.journal.events.StartJumpEvent;
 import elite.companion.session.SystemSession;
+import elite.companion.util.EventBusManager;
 
 @SuppressWarnings("unused")
 public class StartJumpSubscriber {
@@ -25,7 +27,7 @@ public class StartJumpSubscriber {
         sb.append(isFuelStarClause(starClass));
 
         if(!"Supercruise".equalsIgnoreCase(event.getJumpType())) {
-            SystemSession.getInstance().sendToAiAnalysis(sb.toString());
+            EventBusManager.publish(new SendToGrokEvent(sb.toString()));
         }
     }
 

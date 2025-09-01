@@ -1,8 +1,9 @@
 package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.companion.gameapi.SendToGrokEvent;
 import elite.companion.gameapi.journal.events.LiftoffEvent;
-import elite.companion.session.SystemSession;
+import elite.companion.util.EventBusManager;
 
 @SuppressWarnings("unused")
 public class LiftoffEventSubscriber {
@@ -27,6 +28,6 @@ public class LiftoffEventSubscriber {
         sb.append(", in Star system: ");
         sb.append(localStarSystem);
 
-        SystemSession.getInstance().sendToAiAnalysis(sb.toString());
+        EventBusManager.publish(new SendToGrokEvent(sb.toString()));
     }
 }

@@ -1,9 +1,11 @@
 package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.companion.gameapi.SendToGrokEvent;
 import elite.companion.gameapi.journal.events.MissionAcceptedEvent;
 import elite.companion.gameapi.journal.events.dto.MissionDto;
 import elite.companion.session.SystemSession;
+import elite.companion.util.EventBusManager;
 
 @SuppressWarnings("unused")
 public class MissionAcceptedHandler {
@@ -14,7 +16,7 @@ public class MissionAcceptedHandler {
         MissionDto mission = new MissionDto(event);
         SystemSession systemSession = SystemSession.getInstance();
         systemSession.addMission(mission);
-        systemSession.sendToAiAnalysis("Mission Accepted: " + mission.toJson());
+        EventBusManager.publish(new SendToGrokEvent("Mission Accepted: " + mission.toJson()));
     }
 }
 

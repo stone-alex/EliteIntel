@@ -46,6 +46,20 @@ public class AuxiliaryFilesMonitor implements Runnable {
     // Map file names to their corresponding event classes
     private static final Map<String, Class<?>> FILE_TO_EVENT_CLASS = new HashMap<>();
 
+    private Thread processingThread;
+    private volatile boolean isRunning;
+
+    public void stop() {
+        this.processingThread.stop();
+        this.isRunning = false;
+    }
+
+    public void start() {
+        this.processingThread = new Thread(this::run);
+        this.processingThread.start();
+        this.isRunning = true;
+    }
+
     static {
         FILE_TO_EVENT_CLASS.put("Cargo.json", GameEvents.CargoEvent.class);
         FILE_TO_EVENT_CLASS.put("ModulesInfo.json", GameEvents.ModulesInfoEvent.class);
@@ -78,7 +92,7 @@ public class AuxiliaryFilesMonitor implements Runnable {
 
             log.info("Auxiliary files monitor started, watching directory: " + directory);
 
-            while (true) {
+            while (this.isRunning) {
                 WatchKey key = watchService.take();
                 for (WatchEvent<?> event : key.pollEvents()) {
                     WatchEvent.Kind<?> kind = event.kind();

@@ -1,5 +1,10 @@
 package elite.companion.ui.view;
 
+import elite.companion.gameapi.VoiceProcessEvent;
+import elite.companion.util.ConfigManager;
+import elite.companion.util.EventBusManager;
+import elite.companion.util.StringSanitizer;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
@@ -8,8 +13,6 @@ import javax.swing.plaf.basic.BasicTabbedPaneUI;
 import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.HashMap;
@@ -30,7 +33,7 @@ import java.util.Map;
  * - setServicesRunning(boolean)
  * - addActionListener(ActionListener)  // action commands: saveSystemConfig, toggleServices, saveUserConfig
  */
-public class ConfigMainView extends JFrame implements PropertyChangeListener, IView {
+public class AppView extends JFrame implements PropertyChangeListener, AppViewInterface {
 
     // ----- COLORS (adjust to taste) -----
     private static final Color BG        = new Color(0x1E1F22); // base background
@@ -41,6 +44,8 @@ public class ConfigMainView extends JFrame implements PropertyChangeListener, IV
     private static final Color SEL_BG    = new Color(0x3A3D41); // selection background
     private static final Color TAB_UNSELECTED = new Color(0x2A2C2F);
     private static final Color TAB_SELECTED   = new Color(0x33363A);
+    // ----- END COLORS -----
+
 
 
     // Title
@@ -69,7 +74,7 @@ public class ConfigMainView extends JFrame implements PropertyChangeListener, IV
     // Help tab
     private JEditorPane helpPane; // HTML rendering
 
-    public ConfigMainView() {
+    public AppView() {
         super("Elite Companion");
         // Apply a readable, Windows-friendly font to the entire UI BEFORE creating components
         installUIFont(getPlatformDefaultFont(15f)); // Adjust base size here (e.g., 14f, 15f, 16f)
@@ -156,7 +161,7 @@ public class ConfigMainView extends JFrame implements PropertyChangeListener, IV
             }
         };
         styleButton(saveSystemButton);
-        saveSystemButton.setActionCommand("saveSystemConfig");
+        saveSystemButton.setActionCommand(ACTION_SAVE_SYSTEM_CONFIG);
 
 
 
@@ -175,7 +180,7 @@ public class ConfigMainView extends JFrame implements PropertyChangeListener, IV
                 super.paintComponent(g);
             }
         };
-        startStopServicesButton.setActionCommand("toggleServices");
+        startStopServicesButton.setActionCommand(ACTION_TOGGLE_SERVICES);
         styleButton(startStopServicesButton);
 
         buttons.add(saveSystemButton);
@@ -252,7 +257,7 @@ public class ConfigMainView extends JFrame implements PropertyChangeListener, IV
             }
         };
         styleButton(saveUserButton);
-        saveUserButton.setActionCommand("saveUserConfig");;
+        saveUserButton.setActionCommand(ACTION_SAVE_USER_CONFIG);;
         btns.add(saveUserButton);
         panel.add(btns, gbc);
 
@@ -441,7 +446,22 @@ public class ConfigMainView extends JFrame implements PropertyChangeListener, IV
     }
 
     @Override public void displaySystemConfig(Map<String, String> config) {
-
+        for(Map.Entry<String, String> entry : config.entrySet()) {
+            switch (entry.getKey()) {
+                case ConfigManager.GOOGLE_API_KEY:
+                    googleApiKeyField.setText(entry.getValue());
+                    googleLockedCheck.setSelected(Boolean.parseBoolean(config.getOrDefault(ConfigManager.GOOGLE_API_KEY, "false")));
+                    break;
+                case ConfigManager.GROK_API_KEY:
+                    grokApiKeyField.setText(entry.getValue());
+                    grokLockedCheck.setSelected(Boolean.parseBoolean(config.getOrDefault(ConfigManager.GROK_API_KEY, "false")));
+                    break;
+                case ConfigManager.EDSM_KEY:
+                    edsmApiKeyField.setText(entry.getValue());
+                    edsmLockedCheck.setSelected(Boolean.parseBoolean(config.getOrDefault(ConfigManager.EDSM_KEY, "false")));
+                    break;
+            }
+        }
     }
 
     @Override public void displayUserConfig(Map<String, String> config) {
@@ -493,7 +513,7 @@ public class ConfigMainView extends JFrame implements PropertyChangeListener, IV
 
     public void setHelpMarkdown(String markdown) {
         if (helpPane == null) return;
-        String html = markdownToHtml(markdown == null ? "" : markdown);
+        String html = StringSanitizer.markdownToHtml(markdown == null ? "" : markdown);
         helpPane.setText(html);
         helpPane.setCaretPosition(0);
     }
@@ -538,48 +558,12 @@ public class ConfigMainView extends JFrame implements PropertyChangeListener, IV
         gbc.gridy++;
     }
 
-    // Very small Markdown -> HTML converter for common cases
-    private static String markdownToHtml(String md) {
-        String html = md
-                .replace("&", "&amp;")
-                .replace("<", "&lt;")
-                .replace(">", "&gt;");
 
-        // Headers
-        html = html.replaceAll("(?m)^######\\s*(.*)$", "<h6>$1</h6>");
-        html = html.replaceAll("(?m)^#####\\s*(.*)$", "<h5>$1</h5>");
-        html = html.replaceAll("(?m)^####\\s*(.*)$", "<h4>$1</h4>");
-        html = html.replaceAll("(?m)^###\\s*(.*)$", "<h3>$1</h3>");
-        html = html.replaceAll("(?m)^##\\s*(.*)$", "<h2>$1</h2>");
-        html = html.replaceAll("(?m)^#\\s*(.*)$", "<h1>$1</h1>");
-
-        // Bold/italic
-        html = html.replaceAll("\\*\\*(.+?)\\*\\*", "<b>$1</b>");
-        html = html.replaceAll("__(.+?)__", "<b>$1</b>");
-        html = html.replaceAll("(?<!\\*)\\*(?!\\*)(.+?)(?<!\\*)\\*(?!\\*)", "<i>$1</i>");
-        html = html.replaceAll("(?<!_)_(?!_)(.+?)(?<!_)_(?!_)", "<i>$1</i>");
-
-        // Inline code
-        html = html.replaceAll("`([^`]+)`", "<code>$1</code>");
-
-        // Links [text](url)
-        html = html.replaceAll("\\[(.+?)\\]\\((https?://[^\\s)]+)\\)", "<a href=\"$2\">$1</a>");
-
-        // Lists
-        html = html.replaceAll("(?m)^\\s*[-*]\\s+(.+)$", "<li>$1</li>");
-        html = html.replaceAll("(?s)(<li>.*?</li>)", "<ul>$1</ul>");
-
-        // Paragraphs (very naive)
-        html = "<html><body style='font-family:Segoe UI, Sans-Serif;'>" +
-                html.replaceAll("(?m)^(?!<h\\d>|<ul>|<li>|</ul>|<p>|</p>|<code>|</code>|<b>|</b>|<i>|</i>|<a |</a>)(.+)$", "<p>$1</p>") +
-                "</body></html>";
-        return html;
-    }
 
     // Quick demo launcher (optional)
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            ConfigMainView view = new ConfigMainView();
+            AppView view = new AppView();
             view.setVisible(true);
         });
     }
@@ -621,7 +605,6 @@ public class ConfigMainView extends JFrame implements PropertyChangeListener, IV
             }
         });
     }
-
 
 
     // Keep button styling lightweight; painting is handled by the inline subclass above
@@ -699,13 +682,61 @@ public class ConfigMainView extends JFrame implements PropertyChangeListener, IV
 
 
 
+    // ----- ACTION COMMANDS -----
+    // Action commands are used to trigger specific actions in the UI.
+    // They are passed to the controller via the actionPerformed() method.
+    // The controller can then use the action command to determine what to do.
+    //
+    // Note: Action commands are not intended to be used for communication between the UI and the controller.
+    //       They are only intended to be used for communication between the UI and the model.
+    //
+    // Action commands are defined here and referenced in the UI code.
+    //
+    public static final String ACTION_SAVE_USER_CONFIG = "saveUserConfig";
+    public static final String ACTION_SAVE_SYSTEM_CONFIG = "saveSystemConfig";
+    public static final String ACTION_TOGGLE_SERVICES = "toggleServices";
+    // ----- END ACTION COMMANDS -----
 
 
-
+    // ----- PROPERTY CHANGE EVENTS -----
+    // Property change events are used to notify the UI of changes in the model.
+    // They are passed to the controller via the propertyChange() method.
+    // The controller can then use the property name to determine what to do.
+    //
+    // Note: Property change events are not intended to be used for communication between the UI and the controller.
+    //       They are only intended to be used for communication between the UI and the model.
+    //
+    // Property change events are defined here and referenced in the UI code.
+    //
+    public static final String PROPERTY_SYSTEM_CONFIG_UPDATED = "systemConfigUpdated";
+    public static final String PROPERTY_LOG_UPDATED = "logUpdated";
+    public static final String PROPERTY_USER_CONFIG_UPDATED = "userConfigUpdated";
+    public static final String PROPERTY_SERVICES_RUNNING_UPDATED = "servicesRunningUpdated";
 
 
     @Override public void propertyChange(PropertyChangeEvent evt) {
+//        setLogText("Property change: " + evt.getPropertyName());
+//        setLogText("Old value: " + evt.getOldValue());
+//        setLogText("New value: " + evt.getNewValue());
+//
 
+        if (evt.getPropertyName().equals("systemConfig")) {
+            setSystemConfig((Map<String, String>) evt.getNewValue());
+        } else if (evt.getPropertyName().equals(PROPERTY_USER_CONFIG_UPDATED)) {
+            setUserConfig((Map<String, String>) evt.getNewValue());
+        } else if (evt.getPropertyName().equals(PROPERTY_LOG_UPDATED)) {
+            setLogText((String) evt.getNewValue());
+        } else if (evt.getPropertyName().equals("servicesRunning")) {
+            logArea.append("Services running: " + evt.getNewValue() + "\n");
+        } else if (evt.getPropertyName().equals(PROPERTY_SERVICES_RUNNING_UPDATED)) {
+            startStopServicesButton.setText((Boolean) evt.getNewValue() ? "Stop Services" : "Start Services");
+        }
+
+/*
+        else if (evt.getPropertyName().equals("help")) {
+            //static and never changes, unless app is updated with new version
+        }
+*/
     }
 
 

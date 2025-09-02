@@ -15,13 +15,12 @@ public class AppMain {
         SubscriberRegistration.registerSubscribers();
 
         AuxiliaryFilesMonitor monitor = new AuxiliaryFilesMonitor();
-        new Thread(monitor).start();
+        monitor.start();
 
         SpeechRecognizer recognizer = new SpeechRecognizer();
         recognizer.start(); // Start STT voice command processing thread
 
-        //noinspection ResultOfMethodCallIgnored
-        VoiceGenerator.getInstance();// Start the voice generator thread
+        VoiceGenerator.getInstance().start();// Start the voice generator thread
 
         EventBusManager.publish(new VoiceProcessEvent(Globals.AI_NAME + " is online..."));
 

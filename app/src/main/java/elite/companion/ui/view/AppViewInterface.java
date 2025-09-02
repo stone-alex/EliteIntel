@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.awt.event.ActionListener;
 import java.util.Map;
 
-public interface IView {
+public interface AppViewInterface {
     void displaySystemConfig(Map<String, String> config);
     void displayUserConfig(Map<String, String> config);
     void displayLog(String log);

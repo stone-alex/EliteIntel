@@ -3,17 +3,18 @@ package elite.companion.comms.voice;
 import com.google.api.gax.rpc.ApiStreamObserver;
 import com.google.cloud.speech.v1p1beta1.*;
 import com.google.protobuf.ByteString;
-import elite.companion.gameapi.UserInputEvent;
-import elite.companion.util.EventBusManager;
 import elite.companion.comms.ai.GrokCommandEndPoint;
 import elite.companion.comms.ai.GrokRequestHints;
+import elite.companion.gameapi.UserInputEvent;
 import elite.companion.session.SystemSession;
+import elite.companion.util.EventBusManager;
 import elite.companion.util.GoogleApiKeyProvider;
 import elite.companion.util.StringSanitizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sound.sampled.*;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -43,6 +44,7 @@ public class SpeechRecognizer {
     private static final int KEEP_ALIVE_INTERVAL_MS = 2000;
     private static final int STREAM_DURATION_MS = 30000; // 30s
     private static final int RESTART_DELAY_MS = 50; // 50ms sleep after stream close
+    private File wavFile = null; // Output WAV for debugging
     private final BlockingQueue<String> transcriptionQueue = new LinkedBlockingQueue<>();
     private final SpeechClient speechClient;
     private final GrokCommandEndPoint grok;
@@ -51,18 +53,30 @@ public class SpeechRecognizer {
     private byte[] lastBuffer = null;
     private AudioInputStream audioInputStream = null;
 
-    public SpeechRecognizer() {
-        this.grok = new GrokCommandEndPoint();
-        SpeechClient tempClient;
+
+    private Thread processingThread;
+
+    public void stop() {
+        shutdown();
+        this.processingThread.stop();
+    }
+
+    public void start() {
+        SystemSession.getInstance().put(SystemSession.PRIVACY_MODE, true);
+        this.processingThread = new Thread(this::startStreaming);
+        this.processingThread.start();
         try {
             this.grok.start();
-          //  tempClient = SpeechClient.create();
-            log.info("SpeechClient initialized successfully");
+            log.info("SpeechRecognizer started in background thread");
         } catch (Exception e) {
-            log.error("Failed to initialize SpeechClient", e);
-            throw new RuntimeException("SpeechRecognizer initialization failed", e);
+            log.error("Failed to initialize Grok", e);
+            throw new RuntimeException(e);
         }
-        //this.speechClient = tempClient;
+    }
+
+
+    public SpeechRecognizer() {
+        this.grok = new GrokCommandEndPoint();
 
         try {
             String apiKey = GoogleApiKeyProvider.getInstance().getGoogleApiKey();
@@ -75,8 +89,6 @@ public class SpeechRecognizer {
             log.error("Failed to initialize SpeechClient: {}", e.getMessage());
             throw new RuntimeException("Failed to initialize SpeechClient", e);
         }
-
-
     }
 
     public void stopWavRecording() {
@@ -90,11 +102,29 @@ public class SpeechRecognizer {
         }
     }
 
-    public void start() {
-        SystemSession.getInstance().put(SystemSession.PRIVACY_MODE, true);
-        new Thread(this::startStreaming).start();
-        log.info("SpeechRecognizer started in background thread");
+    // Start/stop WAV recording
+    public void startWavRecording() {
+        try {
+            AudioFormat format = new AudioFormat(SAMPLE_RATE_HERTZ, 16, 1, true, false);
+            wavFile = new File("audio_debug.wav");
+            DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
+            TargetDataLine line = (TargetDataLine) AudioSystem.getLine(info);
+            line.open(format, BUFFER_SIZE);
+            line.start();
+            audioInputStream = new AudioInputStream(line); // Fixed constructor
+            new Thread(() -> {
+                try {
+                    AudioSystem.write(audioInputStream, AudioFileFormat.Type.WAVE, wavFile); // Fixed method
+                    log.info("Started WAV recording to {}", wavFile.getAbsolutePath());
+                } catch (Exception e) {
+                    log.error("Failed to write WAV file", e);
+                }
+            }).start();
+        } catch (Exception e) {
+            log.error("Failed to start WAV recording", e);
+        }
     }
+
 
     /**
      * Stream audio to Google STT and process the final result returned as text.
@@ -210,10 +240,10 @@ public class SpeechRecognizer {
                     String sanitizedTranscript = StringSanitizer.sanitizeGoogleMistakes(transcript);
                     Object privacySystemVariable = SystemSession.getInstance().get(SystemSession.PRIVACY_MODE);
                     boolean isPrivacyModeOn = privacySystemVariable != null && (boolean) privacySystemVariable;
-                    if(isPrivacyModeOn) {
+                    if (isPrivacyModeOn) {
                         String voiceName = SystemSession.getInstance().getAIVoice().getName();
                         if (sanitizedTranscript.toLowerCase().startsWith("computer") || sanitizedTranscript.toLowerCase().startsWith(voiceName.toLowerCase())) {
-                            sendToAi(sanitizedTranscript.replace("computer,", "").replace(voiceName.toLowerCase()+",", "")  , confidence);
+                            sendToAi(sanitizedTranscript.replace("computer,", "").replace(voiceName.toLowerCase() + ",", ""), confidence);
                         }
                     } else {
                         sendToAi(sanitizedTranscript, confidence);
@@ -228,8 +258,6 @@ public class SpeechRecognizer {
     private void sendToAi(String sanitizedTranscript, float confidence) {
         log.info("Processing sanitizedTranscript: {}", sanitizedTranscript);
         EventBusManager.publish(new UserInputEvent(sanitizedTranscript, confidence));
-        // decouple this
-        //grok.processVoiceCommand(sanitizedTranscript, confidence);
     }
 
     /**
@@ -325,6 +353,7 @@ public class SpeechRecognizer {
             speechClient.close();
             log.info("SpeechClient closed");
         }
-        stopWavRecording();
+        //for debugging
+        //stopWavRecording();
     }
 }

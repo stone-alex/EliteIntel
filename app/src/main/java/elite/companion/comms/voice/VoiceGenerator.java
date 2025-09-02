@@ -23,7 +23,7 @@ public class VoiceGenerator {
 
     private final TextToSpeechClient textToSpeechClient;
     private final BlockingQueue<VoiceRequest> voiceQueue;
-    private final Thread processingThread;
+    private Thread processingThread;
     private volatile boolean running;
 
     private final static VoiceGenerator INSTANCE = new VoiceGenerator();
@@ -34,6 +34,7 @@ public class VoiceGenerator {
 
     private Map<String, VoiceSelectionParams> voiceMap = new HashMap<>();
     private Map<String, VoiceSelectionParams> randomVoiceMap = new HashMap<>();
+
 
     private static class VoiceRequest {
         final String text;
@@ -47,13 +48,20 @@ public class VoiceGenerator {
         }
     }
 
+    public void stop() {
+        this.processingThread.stop();
+        this.running = false;
+    }
+
+    public void start() {
+        this.processingThread = new Thread(this::processVoiceQueue);
+        this.processingThread.start();
+        this.running = true;
+    }
+
     private VoiceGenerator() {
         EventBusManager.register(this);
         this.voiceQueue = new LinkedBlockingQueue<>();
-        this.running = true;
-        this.processingThread = new Thread(this::processVoiceQueue);
-        this.processingThread.setDaemon(true);
-        this.processingThread.start();
 
         try {
             String apiKey = GoogleApiKeyProvider.getInstance().getGoogleApiKey();

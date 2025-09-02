@@ -1,11 +1,14 @@
 package elite.companion.ui.model;
 
-import java.beans.PropertyChangeSupport;
+import elite.companion.ui.view.AppView;
+import elite.companion.util.ConfigManager;
+
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SimpleModel implements IModel {
+public class AppModel implements AppModelInterface {
     private Map<String, String> systemConfig = new HashMap<>();
     private Map<String, String> userConfig = new HashMap<>();
     private String log = "";
@@ -13,12 +16,12 @@ public class SimpleModel implements IModel {
 
     @Override
     public Map<String, String> getSystemConfig() {
-        return new HashMap<>(systemConfig); // Defensive copy
+        return ConfigManager.getInstance().readSystemConfig();
     }
 
     @Override
     public Map<String, String> getUserConfig() {
-        return new HashMap<>(userConfig); // Defensive copy
+        return ConfigManager.getInstance().readUserConfig();
     }
 
     @Override
@@ -39,7 +42,7 @@ public class SimpleModel implements IModel {
     public void appendLog(String message) {
         String oldLog = log;
         log += message + "\n";
-        pcs.firePropertyChange("log", oldLog, log);
+        pcs.firePropertyChange(AppView.PROPERTY_LOG_UPDATED, oldLog, log);
     }
 
     @Override

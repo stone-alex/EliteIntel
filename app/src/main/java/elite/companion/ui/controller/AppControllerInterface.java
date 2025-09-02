@@ -4,5 +4,5 @@ public interface AppControllerInterface {
     void handleSaveSystemConfig();
     void handleSaveUserConfig();
     void handleStartStop();
-    void handlePushToTalk();
+    void togglePrivacyMode();
 }

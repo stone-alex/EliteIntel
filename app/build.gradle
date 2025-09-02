@@ -54,8 +54,7 @@ java {
 }
 
 application {
-    mainClass = 'elite.companion.ui.MainApp'
-    applicationDefaultJvmArgs = ['--add-modules', 'javafx.controls,javafx.fxml']
+    mainClass = 'elite.companion.App'
 }
 
 sourceSets {
@@ -75,7 +74,7 @@ sourceSets {
 shadowJar {
     archiveFileName = 'elite_companion.jar'
     manifest {
-        attributes 'Main-Class': 'elite.companion.AppMain'
+        attributes 'Main-Class': 'elite.companion.App'
     }
     mergeServiceFiles()
     destinationDirectory = file("${rootProject.projectDir}/build/libs")

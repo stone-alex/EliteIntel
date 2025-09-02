@@ -1,8 +1,6 @@
 package elite.companion.ui.view;
 
-import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.util.ConfigManager;
-import elite.companion.util.EventBusManager;
 import elite.companion.util.StringSanitizer;
 
 import javax.swing.*;
@@ -63,13 +61,14 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     private JCheckBox edsmLockedCheck;
     private JButton saveSystemButton;
     private JButton startStopServicesButton;
+    private JButton togglePrivacyModeButton;
     private JTextArea logArea;
 
     // Player tab components
-    private JTextField altNameField;
-    private JTextField titleField;
-    private JTextField missionStatementField; // was JTextArea
-    private JButton saveUserButton;
+    private JTextField playerAltNameField;
+    private JTextField playerTitleField;
+    private JTextField playerMissionDescription; // was JTextArea
+    private JButton savePlayerInfoButton;
 
     // Help tab
     private JEditorPane helpPane; // HTML rendering
@@ -77,9 +76,8 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     public AppView() {
         super("Elite Companion");
         // Apply a readable, Windows-friendly font to the entire UI BEFORE creating components
-        installUIFont(getPlatformDefaultFont(15f)); // Adjust base size here (e.g., 14f, 15f, 16f)
+        installUIFont(getPlatformDefaultFont(18f)); // Adjust base size here (e.g., 14f, 15f, 16f)
         installDarkDefaults(); // set dark defaults before components are created
-
 
 
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/images/elite-logo.png")));
@@ -104,6 +102,10 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         tabs.addTab("Help", buildHelpTab());
         root.add(tabs, BorderLayout.CENTER);
         applyDarkPalette(getContentPane());
+
+        bindLock(googleLockedCheck, googleApiKeyField, true);
+        bindLock(grokLockedCheck, grokApiKeyField, true);
+        bindLock(edsmLockedCheck, edsmApiKeyField, true);
     }
 
     private JPanel buildSystemTab() {
@@ -183,8 +185,27 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         startStopServicesButton.setActionCommand(ACTION_TOGGLE_SERVICES);
         styleButton(startStopServicesButton);
 
+        togglePrivacyModeButton = new JButton("Toggle Privacy Mode") {
+            @Override protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                try {
+                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    Color base = BG_PANEL;
+                    ButtonModel m = getModel();
+                    if (m.isPressed()) base = base.darker();
+                    else if (m.isRollover()) base = base.brighter();
+                    g2.setColor(base);
+                    g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
+                } finally { g2.dispose(); }
+                super.paintComponent(g);
+            }
+        };
+        togglePrivacyModeButton.setActionCommand(ACTION_TOGGLE_PRIVACY_MODE);
+        styleButton(togglePrivacyModeButton);
+
         buttons.add(saveSystemButton);
         buttons.add(startStopServicesButton);
+        buttons.add(togglePrivacyModeButton);
 
         panel.add(buttons, gbc);
 
@@ -213,22 +234,21 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
 
         // Row 0: Alternative Name
         addLabel(panel, "Alternative Name:", gbc, 0);
-        altNameField = new JTextField();
-        addField(panel, altNameField, gbc, 1, 1.0); // full width in Player tab (no checkbox)
+        playerAltNameField = new JTextField();
+        addField(panel, playerAltNameField, gbc, 1, 1.0); // full width in Player tab (no checkbox)
 
         // Row 1: Title
         nextRow(gbc);
         addLabel(panel, "Title:", gbc, 0);
-        titleField = new JTextField();
-        addField(panel, titleField, gbc, 1, 1.0);
+        playerTitleField = new JTextField();
+        addField(panel, playerTitleField, gbc, 1, 1.0);
 
         // Row 2: Mission Statement (multi-line)
         nextRow(gbc);
         addLabel(panel, "Current Mission:", gbc, 0);
-        missionStatementField = new JTextField();
-        installTextLimit(missionStatementField, 120);
-        JScrollPane missionScroll = new JScrollPane(missionStatementField, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        addField(panel, missionScroll, gbc, 1, 1.0);
+        playerMissionDescription = new JTextField();
+        installTextLimit(playerMissionDescription, 120);
+        addField(panel, playerMissionDescription, gbc, 1, 1.0);
 
         // Row 3: Save button
         nextRow(gbc);
@@ -241,7 +261,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         JPanel btns = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
         btns.setOpaque(false);
 
-        saveUserButton = new JButton("Save Player Configuration") {
+        savePlayerInfoButton = new JButton("Save Player Configuration") {
             @Override protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 try {
@@ -256,9 +276,9 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
                 super.paintComponent(g);
             }
         };
-        styleButton(saveUserButton);
-        saveUserButton.setActionCommand(ACTION_SAVE_USER_CONFIG);;
-        btns.add(saveUserButton);
+        styleButton(savePlayerInfoButton);
+        savePlayerInfoButton.setActionCommand(ACTION_SAVE_USER_CONFIG);;
+        btns.add(savePlayerInfoButton);
         panel.add(btns, gbc);
 
         // Row 4: Filler area (reserved for future use)
@@ -419,12 +439,33 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         return panel;
     }
 
+
+    private static void bindLock(JCheckBox lockCheck, JComponent field, boolean disableInsteadOfReadOnly) {
+        Runnable apply = () -> {
+            boolean locked = lockCheck.isSelected();
+            if (field instanceof JTextComponent tc) {
+                if (disableInsteadOfReadOnly) {
+                    tc.setEnabled(!locked);
+                } else {
+                    tc.setEditable(!locked);
+                    // optionally style to reflect read-only state
+                }
+            } else {
+                field.setEnabled(!locked);
+            }
+        };
+        lockCheck.addItemListener(e -> apply.run());
+        apply.run(); // initialize once
+    }
+
+
     // ---------- Public API ----------
 
     public void addActionListener(ActionListener l) {
         if (saveSystemButton != null) saveSystemButton.addActionListener(l);
         if (startStopServicesButton != null) startStopServicesButton.addActionListener(l);
-        if (saveUserButton != null) saveUserButton.addActionListener(l);
+        if (savePlayerInfoButton != null) savePlayerInfoButton.addActionListener(l);
+        if (togglePrivacyModeButton != null) togglePrivacyModeButton.addActionListener(l);
     }
 
     @Override public JFrame getUiComponent() {
@@ -440,31 +481,53 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     // System config I/O
     public void setSystemConfig(Map<String, String> cfg) {
         if (cfg == null) return;
-        if (googleApiKeyField != null) googleApiKeyField.setText(cfg.getOrDefault("google_api_key", ""));
-        if (grokApiKeyField != null) grokApiKeyField.setText(cfg.getOrDefault("grok_key", ""));
-        if (edsmApiKeyField != null) edsmApiKeyField.setText(cfg.getOrDefault("edsm_key", ""));
+        if (googleApiKeyField != null) {
+            googleApiKeyField.setText(cfg.getOrDefault(ConfigManager.GOOGLE_API_KEY, ""));
+            googleLockedCheck.setSelected(!cfg.getOrDefault(ConfigManager.GOOGLE_API_KEY, "").isEmpty());
+        }
+        if (grokApiKeyField != null) {
+            grokApiKeyField.setText(cfg.getOrDefault(ConfigManager.GROK_API_KEY, ""));
+            grokLockedCheck.setSelected(!cfg.getOrDefault(ConfigManager.GROK_API_KEY, "").isEmpty());
+        }
+        if (edsmApiKeyField != null) {
+            edsmApiKeyField.setText(cfg.getOrDefault(ConfigManager.EDSM_KEY, ""));
+            edsmLockedCheck.setSelected(!cfg.getOrDefault(ConfigManager.EDSM_KEY, "").isEmpty());
+        }
     }
 
-    @Override public void displaySystemConfig(Map<String, String> config) {
-        for(Map.Entry<String, String> entry : config.entrySet()) {
+    @Override public void displaySystemConfig(Map<String, String> cfg) {
+        for(Map.Entry<String, String> entry : cfg.entrySet()) {
             switch (entry.getKey()) {
                 case ConfigManager.GOOGLE_API_KEY:
                     googleApiKeyField.setText(entry.getValue());
-                    googleLockedCheck.setSelected(Boolean.parseBoolean(config.getOrDefault(ConfigManager.GOOGLE_API_KEY, "false")));
+                    googleLockedCheck.setSelected(!cfg.getOrDefault(ConfigManager.GOOGLE_API_KEY, "").isEmpty());
                     break;
                 case ConfigManager.GROK_API_KEY:
                     grokApiKeyField.setText(entry.getValue());
-                    grokLockedCheck.setSelected(Boolean.parseBoolean(config.getOrDefault(ConfigManager.GROK_API_KEY, "false")));
+                    grokLockedCheck.setSelected(!cfg.getOrDefault(ConfigManager.GROK_API_KEY, "").isEmpty());
                     break;
                 case ConfigManager.EDSM_KEY:
                     edsmApiKeyField.setText(entry.getValue());
-                    edsmLockedCheck.setSelected(Boolean.parseBoolean(config.getOrDefault(ConfigManager.EDSM_KEY, "false")));
+                    edsmLockedCheck.setSelected(!cfg.getOrDefault(ConfigManager.EDSM_KEY, "").isEmpty());
                     break;
             }
         }
     }
 
-    @Override public void displayUserConfig(Map<String, String> config) {
+    @Override public void displayUserConfig(Map<String, String> cfg) {
+        for(Map.Entry<String, String> entry : cfg.entrySet()) {
+            switch (entry.getKey()) {
+                case ConfigManager.PLAYER_ALTERNATIVE_NAME:
+                    playerAltNameField.setText(entry.getValue());
+                    break;
+                case ConfigManager.PLAYER_TITLE:
+                    playerTitleField.setText(entry.getValue());
+                    break;
+                case ConfigManager.EDSM_KEY:
+                    playerMissionDescription.setText(entry.getValue());
+                    break;
+            }
+        }
 
     }
 
@@ -478,28 +541,25 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
 
     public Map<String, String> getSystemConfigInput() {
         Map<String, String> cfg = new HashMap<>();
-        if (googleApiKeyField != null) cfg.put("google_api_key", new String(googleApiKeyField.getPassword()));
-        if (grokApiKeyField != null) cfg.put("grok_key", new String(grokApiKeyField.getPassword()));
-        if (edsmApiKeyField != null) cfg.put("edsm_key", new String(edsmApiKeyField.getPassword()));
-        cfg.put("google_api_key_locked", String.valueOf(googleLockedCheck != null && googleLockedCheck.isSelected()));
-        cfg.put("grok_key_locked", String.valueOf(grokLockedCheck != null && grokLockedCheck.isSelected()));
-        cfg.put("edsm_key_locked", String.valueOf(edsmLockedCheck != null && edsmLockedCheck.isSelected()));
+        if (googleApiKeyField != null) cfg.put(ConfigManager.GOOGLE_API_KEY, new String(googleApiKeyField.getPassword()));
+        if (grokApiKeyField != null) cfg.put(ConfigManager.GROK_API_KEY, new String(grokApiKeyField.getPassword()));
+        if (edsmApiKeyField != null) cfg.put(ConfigManager.EDSM_KEY, new String(edsmApiKeyField.getPassword()));
         return cfg;
     }
 
     // User config I/O
     public void setUserConfig(Map<String, String> cfg) {
         if (cfg == null) return;
-        if (altNameField != null) altNameField.setText(cfg.getOrDefault("alternative_name", ""));
-        if (titleField != null) titleField.setText(cfg.getOrDefault("title", ""));
-        if (missionStatementField != null) missionStatementField.setText(cfg.getOrDefault("mission_statement", ""));
+        if (playerAltNameField != null) playerAltNameField.setText(cfg.getOrDefault(ConfigManager.PLAYER_ALTERNATIVE_NAME, ""));
+        if (playerTitleField != null) playerTitleField.setText(cfg.getOrDefault(ConfigManager.PLAYER_TITLE, ""));
+        if (playerMissionDescription != null) playerMissionDescription.setText(cfg.getOrDefault(ConfigManager.EDSM_KEY, ""));
     }
 
     public Map<String, String> getUserConfigInput() {
         Map<String, String> cfg = new HashMap<>();
-        if (altNameField != null) cfg.put("alternative_name", altNameField.getText());
-        if (titleField != null) cfg.put("title", titleField.getText());
-        if (missionStatementField != null) cfg.put("mission_statement", missionStatementField.getText());
+        if (playerAltNameField != null) cfg.put(ConfigManager.PLAYER_ALTERNATIVE_NAME, playerAltNameField.getText());
+        if (playerTitleField != null) cfg.put(ConfigManager.PLAYER_TITLE, playerTitleField.getText());
+        if (playerMissionDescription != null) cfg.put(ConfigManager.PLAYER_MISSION_STATEMENT, playerMissionDescription.getText());
         return cfg;
     }
 
@@ -560,6 +620,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
 
 
 
+/*
     // Quick demo launcher (optional)
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
@@ -567,6 +628,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
             view.setVisible(true);
         });
     }
+*/
 
     private static void installTextLimit(JTextField field, int maxChars) {
         ((AbstractDocument) field.getDocument()).setDocumentFilter(new DocumentFilter() {
@@ -695,6 +757,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     public static final String ACTION_SAVE_USER_CONFIG = "saveUserConfig";
     public static final String ACTION_SAVE_SYSTEM_CONFIG = "saveSystemConfig";
     public static final String ACTION_TOGGLE_SERVICES = "toggleServices";
+    public static final String ACTION_TOGGLE_PRIVACY_MODE = "togglePrivacyMode";
     // ----- END ACTION COMMANDS -----
 
 
@@ -728,8 +791,12 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
             setLogText((String) evt.getNewValue());
         } else if (evt.getPropertyName().equals("servicesRunning")) {
             logArea.append("Services running: " + evt.getNewValue() + "\n");
+            setServicesRunning((Boolean) evt.getNewValue());
         } else if (evt.getPropertyName().equals(PROPERTY_SERVICES_RUNNING_UPDATED)) {
             startStopServicesButton.setText((Boolean) evt.getNewValue() ? "Stop Services" : "Start Services");
+        } else if (evt.getPropertyName().equals(ACTION_TOGGLE_PRIVACY_MODE)) {
+            togglePrivacyModeButton.setText((Boolean) evt.getNewValue() ? "Privacy mode On" : "Privacy mode Off");
+            togglePrivacyModeButton.setForeground((Boolean) evt.getNewValue() ? Color.RED : Color.GREEN);
         }
 
 /*

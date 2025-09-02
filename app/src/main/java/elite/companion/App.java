@@ -1,4 +1,4 @@
-package elite.companion.ui;
+package elite.companion;
 
 //import elite.companion.ui.controller.MainController;
 

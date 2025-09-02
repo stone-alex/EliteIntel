@@ -4,6 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import elite.companion.gameapi.SensorDataEvent;
 import elite.companion.gameapi.journal.events.FSDJumpEvent;
 import elite.companion.session.SystemSession;
+import elite.companion.ui.event.AppLogEvent;
 import elite.companion.util.EventBusManager;
 
 import java.util.List;
@@ -14,55 +15,36 @@ public class FSDJumpSubscriber {
     @Subscribe
     public void onFSDJumpEvent(FSDJumpEvent event) {
         SystemSession systemSession = SystemSession.getInstance();
-        systemSession.put(SystemSession.CURRENT_SYSTEM, event.getStarSystem());
         systemSession.put(SystemSession.CURRENT_SYSTEM_DATA, event.toJson());
 
-
         String currentStarSystem = event.getStarSystem();
-        List<FSDJumpEvent.Faction> factions = event.getFactions();
-        StringBuilder factionInfo = new StringBuilder();
-        if (factions == null || factions.isEmpty()) {
-            for (FSDJumpEvent.Faction faction : factions) {
-                factionInfo.append("Faction Name: ");
-                factionInfo.append(faction.getName()).append(" ");
-                factionInfo.append(", Government: ");
-                factionInfo.append(faction.getGovernment());
-                ;
-                factionInfo.append(", Allegiance: ");
-                factionInfo.append(faction.getAllegiance());
-                ;
-                factionInfo.append(", Influence: ");
-                factionInfo.append(faction.getInfluence());
-                ;
-                factionInfo.append(", Happiness");
-                factionInfo.append(faction.getHappinessLocalised());
-                factionInfo.append(". ");
-            }
-        }
-
 
         boolean roueSet = !systemSession.getRoute().isEmpty();
         systemSession.removeNavPoint(currentStarSystem);
         String finalDestination = String.valueOf(systemSession.get(SystemSession.FINAL_DESTINATION));
+        String arrivedAt = String.valueOf(systemSession.get(SystemSession.JUMPING_TO));
+        systemSession.put(SystemSession.CURRENT_SYSTEM, arrivedAt);
 
         StringBuilder sb = new StringBuilder();
         sb.append("Hyperspace Jump Successful: ");
+        sb.append("We are in: ").append(currentStarSystem).append(" system, ");
 
         if (finalDestination != null && finalDestination.equalsIgnoreCase(currentStarSystem)) {
-            sb.append("Arrived at final destination: ").append(finalDestination).append(" true, ");
+            sb.append("Arrived at final destination: ").append(finalDestination);
         } else {
 
             if (roueSet) {
                 int remainingJump = systemSession.getRoute().size();
 
                 if (remainingJump > 0) {
-                    sb.append("Next Stop: ").append(systemSession.get(systemSession.FSD_TARGET)).append(", ");
+                    sb.append("next stop: ").append(systemSession.get(systemSession.FSD_TARGET)).append(", ");
                 }
 
-                sb.append("Jumps remaining to final destination: ").append(remainingJump).append(finalDestination).append(",");
+                sb.append(remainingJump).append(" jumps remaining: ").append(" to ").append(finalDestination).append(".");
             }
         }
 
+        EventBusManager.publish(new AppLogEvent("Processing Event: FSDJumpEvent sending sensor data to AI: "+sb.toString()));
         EventBusManager.publish(new SensorDataEvent(sb.toString()));
     }
 }

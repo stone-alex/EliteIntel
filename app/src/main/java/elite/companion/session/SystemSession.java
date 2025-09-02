@@ -42,6 +42,7 @@ public class SystemSession {
     public static final String TARGET_FACTION_NAME = "target_faction_name";
     public static final String PROFILE = "profile";
     public static final String PERSONALITY = "personality";
+    public static final String JUMPING_TO = "jumping_to_starsystem";
 
     private static final SystemSession INSTANCE = new SystemSession();
     public static final String MATERIALS = "materials";

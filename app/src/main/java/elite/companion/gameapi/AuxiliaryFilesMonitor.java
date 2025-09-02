@@ -118,6 +118,7 @@ public class AuxiliaryFilesMonitor implements Runnable {
         } catch (IOException | InterruptedException e) {
             log.error("Error in auxiliary files monitor", e);
         } catch (IllegalMonitorStateException exiting) {
+            exiting.printStackTrace();
             // system exit
         }
     }

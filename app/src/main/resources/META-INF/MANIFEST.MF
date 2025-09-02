@@ -1,2 +1,2 @@
 Manifest-Version: 1.0
-Main-Class: elite.companion.AppMain
+Main-Class: elite.companion.App

@@ -3,9 +3,9 @@ package elite.companion.gameapi;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import elite.companion.comms.voice.VoiceGenerator;
 import elite.companion.gameapi.journal.EventRegistry;
 import elite.companion.gameapi.journal.events.BaseEvent;
+import elite.companion.ui.event.AppLogEvent;
 import elite.companion.util.EventBusManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +20,22 @@ public class JournalParser implements Runnable {
     private static final Logger log = LoggerFactory.getLogger(JournalParser.class);
     private final Path journalDir = Paths.get(System.getProperty("user.home"), "Saved Games", "Frontier Developments", "Elite Dangerous");
 
+
+    private Thread processingThread;
+    private volatile boolean isRunning;
+
+    public void stop() {
+        this.isRunning = false;
+        this.processingThread.stop();
+    }
+
+    public void start() {
+            this.isRunning = true;
+            this.processingThread = new Thread(this::run);
+            this.processingThread.start();
+    }
+
+
     public void startReading() throws IOException, InterruptedException {
         log.info("Starting Journal Parser");
 
@@ -30,7 +46,7 @@ public class JournalParser implements Runnable {
         long lastPosition = 0;
         System.out.println("Monitoring " + currentFile.getFileName());
 
-        while (true) {
+        while (this.isRunning) {
             WatchKey key = watchService.take();
             Path latestFile = getLatestJournalFile();
 
@@ -71,6 +87,7 @@ public class JournalParser implements Runnable {
                             BaseEvent event = EventRegistry.createEvent(eventType, eventJson);
                             if (event != null) {
                                 EventBusManager.publish(event);
+                                EventBusManager.publish(new AppLogEvent("Processing Event: "+eventType));
                                 log.info("Processing Journal Event: {} {}", eventType, event.toJsonObject());
                             } else {
                                 log.warn("Skipping event: {}", eventType);
@@ -109,6 +126,7 @@ public class JournalParser implements Runnable {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         } catch (IllegalMonitorStateException exit) {
+            exit.printStackTrace();
             // system exit
         }
     }

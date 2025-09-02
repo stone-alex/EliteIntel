@@ -5,6 +5,8 @@ import elite.companion.comms.voice.VoiceGenerator;
 import elite.companion.gameapi.gamestate.events.NavRouteDto;
 import elite.companion.gameapi.journal.events.FSDTargetEvent;
 import elite.companion.session.SystemSession;
+import elite.companion.ui.event.AppLogEvent;
+import elite.companion.util.EventBusManager;
 
 import java.util.Map;
 
@@ -15,11 +17,11 @@ public class FSDTargetSubscriber {
     public void onFSDTargetEvent(FSDTargetEvent event) {
         SystemSession systemSession = SystemSession.getInstance();
         systemSession.clearFssSignals();
-        String fsd_target = String.valueOf(systemSession.get(SystemSession.FSD_TARGET));
-        if (fsd_target != null && !fsd_target.isEmpty()) {
-            Map<String, NavRouteDto> route = systemSession.getRoute();
-        }
-        systemSession.put(SystemSession.FSD_TARGET, event.getName());
+
+        String fsdTarget = event.getName()+ isFuelStarClause(event.getStarClass());
+
+        EventBusManager.publish(new AppLogEvent("Processing FSDTargetEvent. Storing in session only: " +fsdTarget));
+        systemSession.put(SystemSession.FSD_TARGET, fsdTarget);
     }
 
     private String isFuelStarClause(String starClass) {

@@ -4,10 +4,12 @@ import com.google.common.eventbus.Subscribe;
 import elite.companion.comms.voice.SpeechRecognizer;
 import elite.companion.comms.voice.VoiceGenerator;
 import elite.companion.gameapi.AuxiliaryFilesMonitor;
+import elite.companion.gameapi.JournalParser;
 import elite.companion.gameapi.UserInputEvent;
 import elite.companion.gameapi.VoiceProcessEvent;
+import elite.companion.session.SystemSession;
+import elite.companion.ui.event.AppLogEvent;
 import elite.companion.ui.model.AppModelInterface;
-import elite.companion.ui.view.AppView;
 import elite.companion.ui.view.AppViewInterface;
 import elite.companion.util.ConfigManager;
 import elite.companion.util.EventBusManager;
@@ -16,6 +18,8 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Map;
+
+import static elite.companion.ui.view.AppView.*;
 
 public class AppController implements AppControllerInterface, ActionListener {
     private final AppModelInterface model;
@@ -26,6 +30,7 @@ public class AppController implements AppControllerInterface, ActionListener {
     AuxiliaryFilesMonitor fileMonitor = new AuxiliaryFilesMonitor();
     SpeechRecognizer speechRecognizer = new SpeechRecognizer();
     VoiceGenerator voiceGenerator;
+    JournalParser journalParser = new JournalParser();
 
     public AppController(AppModelInterface model, AppViewInterface view) {
         this.model = model;
@@ -40,12 +45,17 @@ public class AppController implements AppControllerInterface, ActionListener {
 
     @Subscribe
     public void onUserInputEvent(UserInputEvent event) {
-        model.appendLog("User: " + event.getUserInput());
+        model.appendLog("PLAYER: " + event.getUserInput());
     }
 
     @Subscribe
     public void onVoiceProcessEvent(VoiceProcessEvent event) {
         model.appendLog("AI: " + event.getText());
+    }
+
+    @Subscribe
+    public void onAppLogEvent(AppLogEvent event) {
+        model.appendLog("SYSTEM: "+event.getData());
     }
 
     @Override
@@ -66,6 +76,7 @@ public class AppController implements AppControllerInterface, ActionListener {
     public void handleStartStop() {
         isServiceRunning = !isServiceRunning;
         if (isServiceRunning) {
+            journalParser.start();
             voiceGenerator = VoiceGenerator.getInstance();
             speechRecognizer.start();
             fileMonitor.start();
@@ -78,7 +89,9 @@ public class AppController implements AppControllerInterface, ActionListener {
             try {
                 Thread.sleep(5000);
                 // Stop services
-                voiceGenerator.stop(); voiceGenerator = null;
+                journalParser.stop();
+                voiceGenerator.stop();
+                voiceGenerator = null;
                 speechRecognizer.stop();
                 fileMonitor.stop();
                 model.appendLog("Systems offline...");
@@ -88,26 +101,30 @@ public class AppController implements AppControllerInterface, ActionListener {
         }
     }
 
+    private SystemSession systemSession = SystemSession.getInstance();
+    private boolean privacyMode = Boolean.parseBoolean(String.valueOf(systemSession.get(SystemSession.PRIVACY_MODE)));
     @Override
-    public void handlePushToTalk() {
-        // Trigger voice recognition (TOS-compliant, user-initiated)
-        //speechRecognizer.start();
-        model.appendLog("Push-to-talk activated");
+    public void togglePrivacyMode() {
+        model.appendLog("Toggle privacy mode");
+        privacyMode = !privacyMode;
+        systemSession.put(SystemSession.PRIVACY_MODE, privacyMode);
+        model.appendLog("Privacy mode is " + (privacyMode ? "on (voice to text will still be processing, but AI will not hear you) " : "off"));
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() instanceof JButton) {
             String command = e.getActionCommand();
-            if (AppView.ACTION_SAVE_SYSTEM_CONFIG.equals(command)) {
+            if (ACTION_SAVE_SYSTEM_CONFIG.equals(command)) {
                 handleSaveSystemConfig();
-            } else if (AppView.ACTION_SAVE_USER_CONFIG.equals(command)) {
+            } else if (ACTION_SAVE_USER_CONFIG.equals(command)) {
                 handleSaveUserConfig();
-            } else if (AppView.ACTION_TOGGLE_SERVICES.equals(command)) {
+            } else if (ACTION_TOGGLE_SERVICES.equals(command)) {
                 handleStartStop();
                 ((JButton) e.getSource()).setText(isServiceRunning ? "Stop Service" : "Start Service");
-            } else if ("Push to Talk".equals(command)) {
-                handlePushToTalk();
+            } else if (ACTION_TOGGLE_PRIVACY_MODE.equals(command)) {
+                togglePrivacyMode();
+                ((JButton) e.getSource()).setText(isServiceRunning ? "Privacy Mode On" : "Privacy Mode Off");
             }
         }
     }

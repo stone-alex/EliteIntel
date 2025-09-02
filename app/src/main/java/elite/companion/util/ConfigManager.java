@@ -19,8 +19,8 @@ public class ConfigManager {
     private static final Logger log = LoggerFactory.getLogger(ConfigManager.class);
     private static final ConfigManager INSTANCE = new ConfigManager();
     private final String APP_DIR;
-    private final String USER_CONFIG_FILENAME = "player.conf";
-    private final String SYSTEM_CONFIG_FILENAME = "system.conf";
+    public static final String USER_CONFIG_FILENAME = "player.conf";
+    public static final String SYSTEM_CONFIG_FILENAME = "system.conf";
     private final int MAX_NUMBER_OF_CHARACTERS = 120;
 
     // Config keys
@@ -76,7 +76,7 @@ public class ConfigManager {
         createDefaultConfigIfNotExists(USER_CONFIG_FILENAME, DEFAULT_USER_CONFIG);
     }
 
-    public void saveSystemConfig() {
+    private void saveSystemConfig() {
         writeConfigFile(SYSTEM_CONFIG_FILENAME, readSystemConfig(), true);
     }
 
@@ -172,7 +172,7 @@ public class ConfigManager {
         return readConfig(USER_CONFIG_FILENAME);
     }
 
-    private void writeConfigFile(String filename, Map<String, String> config, boolean includeComments) {
+    public void writeConfigFile(String filename, Map<String, String> config, boolean includeComments) {
         if (filename == null) {
             log.error("Filename is null, cannot write config file");
             return;

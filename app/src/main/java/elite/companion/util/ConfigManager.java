@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import elite.companion.session.SystemSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,6 +117,7 @@ public class ConfigManager {
             log.error("Filename is null, cannot read config");
             return new HashMap<>();
         }
+
         Map<String, String> config = new HashMap<>();
         File file = new File(APP_DIR + filename);
 
@@ -162,6 +164,39 @@ public class ConfigManager {
             }
         }
         return config;
+    }
+
+    public String getSystemKey(String keyType) {
+        SystemSession systemSession = SystemSession.getInstance();
+        String key = String.valueOf(systemSession.get(keyType));
+        if (key == null || key.isEmpty() || key.equals("null")) {
+            String value = readConfig(SYSTEM_CONFIG_FILENAME).get(keyType);
+            if (value != null || !value.isEmpty()) {
+                systemSession.put(keyType, value);
+                return value;
+            } else {
+                throw new IllegalStateException(String.format("No value found for system key %s", keyType));
+            }
+        } else {
+            return key;
+        }
+    }
+
+
+    public String getPlayerKey(String keyType) {
+        SystemSession systemSession = SystemSession.getInstance();
+        String key = String.valueOf(systemSession.get(keyType));
+        if(key == null || key.isEmpty() || key.equals("null")) {
+            String value = readConfig(USER_CONFIG_FILENAME).get(keyType);
+            if(value != null || !value.isEmpty()) {
+                systemSession.put(keyType, value);
+                return value;
+            } else {
+                throw new IllegalStateException(String.format("No value found for user key %s", keyType));
+            }
+        } else {
+            return key;
+        }
     }
 
     public Map<String, String> readSystemConfig() {

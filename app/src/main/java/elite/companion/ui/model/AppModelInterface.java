@@ -12,4 +12,8 @@ public interface AppModelInterface {
     void removePropertyChangeListener(PropertyChangeListener listener);
     void appendLog(String message);
     String getHelpText();
+    boolean isPrivacyModeOn();
+    void showSystemLog(boolean show);
+    boolean showSystemLog();
+    void setPrivacyModeOn(boolean on);
 }

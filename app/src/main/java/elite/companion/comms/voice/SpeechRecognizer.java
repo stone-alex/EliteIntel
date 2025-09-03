@@ -7,6 +7,7 @@ import elite.companion.comms.ai.GrokCommandEndPoint;
 import elite.companion.comms.ai.GrokRequestHints;
 import elite.companion.gameapi.UserInputEvent;
 import elite.companion.session.SystemSession;
+import elite.companion.util.ConfigManager;
 import elite.companion.util.EventBusManager;
 import elite.companion.util.GoogleApiKeyProvider;
 import elite.companion.util.StringSanitizer;
@@ -46,7 +47,7 @@ public class SpeechRecognizer {
     private static final int RESTART_DELAY_MS = 50; // 50ms sleep after stream close
     private File wavFile = null; // Output WAV for debugging
     private final BlockingQueue<String> transcriptionQueue = new LinkedBlockingQueue<>();
-    private final SpeechClient speechClient;
+    private SpeechClient speechClient;
     private final GrokCommandEndPoint grok;
     private final AtomicBoolean isListening = new AtomicBoolean(true);
     private long lastAudioSentTime = System.currentTimeMillis();
@@ -62,6 +63,29 @@ public class SpeechRecognizer {
     }
 
     public void start() {
+        if (processingThread != null && processingThread.isAlive()) {
+            log.warn("Speech recognition is already running");
+            return;
+        }
+
+        try {
+            String apiKey = ConfigManager.getInstance().getSystemKey(ConfigManager.GOOGLE_API_KEY);
+            if(apiKey == null || apiKey.trim().isEmpty()) {
+                log.error("Google API key not found in system.conf");
+                return;
+            }
+
+            SpeechSettings settings = SpeechSettings.newBuilder()
+                    .setApiKey(apiKey)
+                    .build();
+            this.speechClient = SpeechClient.create(settings);
+            log.info("SpeechClient initialized successfully with API key");
+        } catch (Exception e) {
+            log.error("Failed to initialize SpeechClient: {}", e.getMessage());
+            throw new RuntimeException("Failed to initialize SpeechClient", e);
+        }
+
+
         SystemSession.getInstance().put(SystemSession.PRIVACY_MODE, true);
         this.processingThread = new Thread(this::startStreaming);
         this.processingThread.start();
@@ -78,17 +102,6 @@ public class SpeechRecognizer {
     public SpeechRecognizer() {
         this.grok = new GrokCommandEndPoint();
 
-        try {
-            String apiKey = GoogleApiKeyProvider.getInstance().getGoogleApiKey();
-            SpeechSettings settings = SpeechSettings.newBuilder()
-                    .setApiKey(apiKey)
-                    .build();
-            this.speechClient = SpeechClient.create(settings);
-            log.info("SpeechClient initialized successfully with API key");
-        } catch (Exception e) {
-            log.error("Failed to initialize SpeechClient: {}", e.getMessage());
-            throw new RuntimeException("Failed to initialize SpeechClient", e);
-        }
     }
 
     public void stopWavRecording() {

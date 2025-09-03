@@ -3,9 +3,11 @@ package elite.companion.gameapi;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import elite.companion.ui.event.AppLogEvent;
 import elite.companion.util.EventBusManager;
 import elite.companion.gameapi.gamestate.events.GameEvents;
 import elite.companion.util.GsonFactory;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
@@ -13,6 +15,7 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Monitors auxiliary JSON files in the Elite Dangerous saved games directory.
@@ -22,11 +25,9 @@ import java.util.*;
  * re-publishes updated DTOs.
  * <p>
  * This runs in a separate thread to avoid blocking the main application.
- * <p>
- * Usage: Create an instance and start the thread, e.g., new Thread(new AuxiliaryFilesMonitor()).start();
  */
 public class AuxiliaryFilesMonitor implements Runnable {
-    private static final org.slf4j.Logger log = LoggerFactory.getLogger(AuxiliaryFilesMonitor.class);
+    private static final Logger log = LoggerFactory.getLogger(AuxiliaryFilesMonitor.class);
     private static final Gson GSON = GsonFactory.getGson();
 
     // List of files to monitor
@@ -46,20 +47,6 @@ public class AuxiliaryFilesMonitor implements Runnable {
     // Map file names to their corresponding event classes
     private static final Map<String, Class<?>> FILE_TO_EVENT_CLASS = new HashMap<>();
 
-    private Thread processingThread;
-    private volatile boolean isRunning;
-
-    public void stop() {
-        this.processingThread.stop();
-        this.isRunning = false;
-    }
-
-    public void start() {
-        this.processingThread = new Thread(this::run);
-        this.processingThread.start();
-        this.isRunning = true;
-    }
-
     static {
         FILE_TO_EVENT_CLASS.put("Cargo.json", GameEvents.CargoEvent.class);
         FILE_TO_EVENT_CLASS.put("ModulesInfo.json", GameEvents.ModulesInfoEvent.class);
@@ -75,25 +62,73 @@ public class AuxiliaryFilesMonitor implements Runnable {
 
     private final Path directory;
     private final Set<String> monitoredFileSet = new HashSet<>(MONITORED_FILES);
+    private Thread processingThread;
+    private volatile boolean isRunning;
 
     public AuxiliaryFilesMonitor() {
         this.directory = Paths.get(System.getProperty("user.home"), "Saved Games", "Frontier Developments", "Elite Dangerous");
     }
 
+    public synchronized void start() {
+        if (processingThread != null && processingThread.isAlive()) {
+            log.warn("AuxiliaryFilesMonitor is already running");
+            return;
+        }
+        isRunning = true;
+        processingThread = new Thread(this, "AuxiliaryFilesMonitorThread");
+        processingThread.start();
+        log.info("AuxiliaryFilesMonitor started");
+    }
+
+    public synchronized void stop() {
+        if (processingThread == null || !processingThread.isAlive()) {
+            log.warn("AuxiliaryFilesMonitor is not running");
+            return;
+        }
+        isRunning = false;
+        processingThread.interrupt();
+        try {
+            processingThread.join(5000); // Wait up to 5 seconds for clean shutdown
+            log.info("AuxiliaryFilesMonitor stopped");
+        } catch (InterruptedException e) {
+            log.error("Interrupted while waiting for AuxiliaryFilesMonitor to stop", e);
+            Thread.currentThread().interrupt(); // Restore interrupted status
+        }
+        processingThread = null;
+    }
+
     @Override
     public void run() {
         try {
-            // Initial read and publish for all existing files
             readAndPublishInitialFiles();
+            monitorFiles();
+        } catch (IOException e) {
+            log.error("IOException in AuxiliaryFilesMonitor", e);
+            EventBusManager.publish(new AppLogEvent("AuxiliaryFilesMonitor failed: " + e.getMessage()));
+        } catch (InterruptedException e) {
+            log.info("AuxiliaryFilesMonitor interrupted, shutting down");
+            Thread.currentThread().interrupt(); // Restore interrupted status
+        } catch (Exception e) {
+            log.error("Unexpected error in AuxiliaryFilesMonitor", e);
+            EventBusManager.publish(new AppLogEvent("Unexpected error in AuxiliaryFilesMonitor: " + e.getMessage()));
+        }
+    }
 
-            // Set up WatchService for ongoing monitoring
-            WatchService watchService = FileSystems.getDefault().newWatchService();
+    private void monitorFiles() throws IOException, InterruptedException {
+        try (WatchService watchService = FileSystems.getDefault().newWatchService()) {
             directory.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_CREATE);
+            log.info("Auxiliary files monitor started, watching directory: {}", directory);
 
-            log.info("Auxiliary files monitor started, watching directory: " + directory);
+            while (isRunning) {
+                WatchKey key = watchService.poll(1, TimeUnit.SECONDS);
+                if (key == null) {
+                    if (Thread.currentThread().isInterrupted() || !isRunning) {
+                        log.info("Shutting down AuxiliaryFilesMonitor due to interruption or stop signal");
+                        return;
+                    }
+                    continue;
+                }
 
-            while (this.isRunning) {
-                WatchKey key = watchService.take();
                 for (WatchEvent<?> event : key.pollEvents()) {
                     WatchEvent.Kind<?> kind = event.kind();
                     if (kind == StandardWatchEventKinds.ENTRY_MODIFY || kind == StandardWatchEventKinds.ENTRY_CREATE) {
@@ -104,22 +139,18 @@ public class AuxiliaryFilesMonitor implements Runnable {
                             Object eventObject = readAndParseFile(fullPath, fileName);
                             if (eventObject != null) {
                                 EventBusManager.publish(eventObject);
-                                log.info("Published update for file: " + fileName);
+                                log.info("Published update for file: {}", fileName);
                             }
                         }
                     }
                 }
+
                 boolean valid = key.reset();
                 if (!valid) {
-                    log.error("Watch key no longer valid; directory may be inaccessible.");
+                    log.error("Watch key no longer valid; directory may be inaccessible");
                     break;
                 }
             }
-        } catch (IOException | InterruptedException e) {
-            log.error("Error in auxiliary files monitor", e);
-        } catch (IllegalMonitorStateException exiting) {
-            exiting.printStackTrace();
-            // system exit
         }
     }
 
@@ -133,7 +164,7 @@ public class AuxiliaryFilesMonitor implements Runnable {
                 Object eventObject = readAndParseFile(filePath, fileName);
                 if (eventObject != null) {
                     EventBusManager.publish(eventObject);
-                    log.info("Published initial event for file: " + fileName);
+                    log.info("Published initial event for file: {}", fileName);
                 }
             }
         }
@@ -151,13 +182,13 @@ public class AuxiliaryFilesMonitor implements Runnable {
                 if (eventClass != null) {
                     return GSON.fromJson(jsonObject, eventClass);
                 } else {
-                    log.warn("No event class mapped for file: " + fileName);
+                    log.warn("No event class mapped for file: {}", fileName);
                 }
             }
         } catch (IOException e) {
-            log.error("Failed to read file: " + filePath, e);
+            log.error("Failed to read file: {}", filePath, e);
         } catch (JsonParseException e) {
-            log.error("Failed to parse JSON in file: " + filePath, e);
+            log.error("Failed to parse JSON in file: {}", filePath, e);
         }
         return null;
     }

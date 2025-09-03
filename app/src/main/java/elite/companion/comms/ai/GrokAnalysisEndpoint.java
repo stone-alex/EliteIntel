@@ -148,7 +148,7 @@ public class GrokAnalysisEndpoint {
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
         conn.setRequestProperty("Content-Type", "application/json");
-        conn.setRequestProperty("Authorization", "Bearer " + ConfigManager.getInstance().readSystemConfig().get("grok_key"));
+        conn.setRequestProperty("Authorization", "Bearer " + ConfigManager.getInstance().getSystemKey(ConfigManager.GROK_API_KEY));
         conn.setDoOutput(true);
         return conn;
     }

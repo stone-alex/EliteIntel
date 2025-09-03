@@ -29,7 +29,7 @@ import java.util.Map;
  * - setLogText(String)
  * - setHelpMarkdown(String)
  * - setServicesRunning(boolean)
- * - addActionListener(ActionListener)  // action commands: saveSystemConfig, toggleServices, saveUserConfig
+ * - addActionListener(ActionListener)
  */
 public class AppView extends JFrame implements PropertyChangeListener, AppViewInterface {
 
@@ -57,6 +57,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     private JCheckBox googleLockedCheck;
     private JPasswordField grokApiKeyField;
     private JCheckBox grokLockedCheck;
+    private JCheckBox showDetailedLog;
     private JPasswordField edsmApiKeyField;
     private JCheckBox edsmLockedCheck;
     private JButton saveSystemButton;
@@ -82,7 +83,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
 
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/images/elite-logo.png")));
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setMinimumSize(new Dimension(1000, 700));
+        setMinimumSize(new Dimension(1200, 900));
         setSize(new Dimension(1200, 900));
         setLocationRelativeTo(null);
 
@@ -103,9 +104,14 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         root.add(tabs, BorderLayout.CENTER);
         applyDarkPalette(getContentPane());
 
+        //initial state
         bindLock(googleLockedCheck, googleApiKeyField, true);
         bindLock(grokLockedCheck, grokApiKeyField, true);
         bindLock(edsmLockedCheck, edsmApiKeyField, true);
+        togglePrivacyModeButton.setEnabled(false);
+        togglePrivacyModeButton.setToolTipText("Toggle privacy mode");
+        togglePrivacyModeButton.setText("Privacy Mode On");
+        togglePrivacyModeButton.setForeground(Color.GREEN);
     }
 
     private JPanel buildSystemTab() {
@@ -206,6 +212,10 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         buttons.add(saveSystemButton);
         buttons.add(startStopServicesButton);
         buttons.add(togglePrivacyModeButton);
+
+        showDetailedLog = new JCheckBox("Show Detailed Log", false);
+        buttons.add(showDetailedLog);
+
 
         panel.add(buttons, gbc);
 
@@ -389,8 +399,8 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
 
         // Help pane specific
         if (c instanceof JEditorPane ep) {
-            ep.setBackground(BG_PANEL);
-            ep.setForeground(FG);
+            ep.setBackground(Color.WHITE);
+            ep.setForeground(Color.BLACK);
         }
 
         // Title label slightly accent
@@ -536,7 +546,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     }
 
     @Override public void displayHelp(String helpText) {
-
+        setHelpMarkdown(helpText);
     }
 
     public Map<String, String> getSystemConfigInput() {
@@ -573,8 +583,8 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
 
     public void setHelpMarkdown(String markdown) {
         if (helpPane == null) return;
-        String html = StringSanitizer.markdownToHtml(markdown == null ? "" : markdown);
-        helpPane.setText(html);
+        //String html = StringSanitizer.markdownToHtml(markdown == null ? "" : markdown);
+        helpPane.setText(markdown);
         helpPane.setCaretPosition(0);
     }
 
@@ -617,18 +627,6 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     private void nextRow(GridBagConstraints gbc) {
         gbc.gridy++;
     }
-
-
-
-/*
-    // Quick demo launcher (optional)
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            AppView view = new AppView();
-            view.setVisible(true);
-        });
-    }
-*/
 
     private static void installTextLimit(JTextField field, int maxChars) {
         ((AbstractDocument) field.getDocument()).setDocumentFilter(new DocumentFilter() {
@@ -758,6 +756,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     public static final String ACTION_SAVE_SYSTEM_CONFIG = "saveSystemConfig";
     public static final String ACTION_TOGGLE_SERVICES = "toggleServices";
     public static final String ACTION_TOGGLE_PRIVACY_MODE = "togglePrivacyMode";
+    public static final String ACTION_TOGGLE_SYSTEM_LOG = "toggleSystemLog";
     // ----- END ACTION COMMANDS -----
 
 
@@ -775,38 +774,25 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     public static final String PROPERTY_LOG_UPDATED = "logUpdated";
     public static final String PROPERTY_USER_CONFIG_UPDATED = "userConfigUpdated";
     public static final String PROPERTY_SERVICES_RUNNING_UPDATED = "servicesRunningUpdated";
+    public static final String PROPERTY_PRIVACY_MODE = "privacyModeUpdated";
+    public static final String PROPERTY_HELP_MARKDOWN = "helpMarkdownUpdated";
 
 
     @Override public void propertyChange(PropertyChangeEvent evt) {
-//        setLogText("Property change: " + evt.getPropertyName());
-//        setLogText("Old value: " + evt.getOldValue());
-//        setLogText("New value: " + evt.getNewValue());
-//
-
-        if (evt.getPropertyName().equals("systemConfig")) {
+        if (evt.getPropertyName().equals(PROPERTY_SYSTEM_CONFIG_UPDATED)) {
             setSystemConfig((Map<String, String>) evt.getNewValue());
         } else if (evt.getPropertyName().equals(PROPERTY_USER_CONFIG_UPDATED)) {
             setUserConfig((Map<String, String>) evt.getNewValue());
         } else if (evt.getPropertyName().equals(PROPERTY_LOG_UPDATED)) {
             setLogText((String) evt.getNewValue());
-        } else if (evt.getPropertyName().equals("servicesRunning")) {
+        } else if (evt.getPropertyName().equals(PROPERTY_SERVICES_RUNNING_UPDATED)) {
             logArea.append("Services running: " + evt.getNewValue() + "\n");
             setServicesRunning((Boolean) evt.getNewValue());
-        } else if (evt.getPropertyName().equals(PROPERTY_SERVICES_RUNNING_UPDATED)) {
-            startStopServicesButton.setText((Boolean) evt.getNewValue() ? "Stop Services" : "Start Services");
-        } else if (evt.getPropertyName().equals(ACTION_TOGGLE_PRIVACY_MODE)) {
-            togglePrivacyModeButton.setText((Boolean) evt.getNewValue() ? "Privacy mode On" : "Privacy mode Off");
+        } else if (evt.getPropertyName().equals(PROPERTY_PRIVACY_MODE)) {
+            togglePrivacyModeButton.setEnabled(true);
             togglePrivacyModeButton.setForeground((Boolean) evt.getNewValue() ? Color.RED : Color.GREEN);
+        } else if (evt.getPropertyName().equals(PROPERTY_HELP_MARKDOWN)) {
+            setHelpMarkdown((String) evt.getNewValue());
         }
-
-/*
-        else if (evt.getPropertyName().equals("help")) {
-            //static and never changes, unless app is updated with new version
-        }
-*/
     }
-
-
-
-
 }

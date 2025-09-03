@@ -21,7 +21,7 @@ public class LoadGameEventSubscriber {
         playerSession.put(SHIP_FUEL_LEVEL, event.getFuelLevel());
 
         String inGameName = event.getCommander();
-        String alternativeName = ConfigManager.getInstance().readUserConfig().get(ConfigManager.PLAYER_ALTERNATIVE_NAME);
+        String alternativeName = ConfigManager.getInstance().getPlayerKey(ConfigManager.PLAYER_ALTERNATIVE_NAME);
         String usePlayerName = StringSanitizer.capitalizeWords(alternativeName != null || !alternativeName.isEmpty() ? alternativeName : inGameName);
         playerSession.put(PLAYER_NAME, usePlayerName);
 
@@ -34,7 +34,7 @@ public class LoadGameEventSubscriber {
 
     private static void initValuesFromConfig(PlayerSession playerSession) {
         ConfigManager configManager = ConfigManager.getInstance();
-        String mission_statement = configManager.readUserConfig().get("mission_statement");
+        String mission_statement = configManager.getPlayerKey(ConfigManager.PLAYER_MISSION_STATEMENT);
         playerSession.put(PLAYER_MISSION_STATEMENT, mission_statement);
     }
 

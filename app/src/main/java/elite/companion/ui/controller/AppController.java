@@ -55,7 +55,7 @@ public class AppController implements AppControllerInterface, ActionListener {
 
     @Subscribe
     public void onAppLogEvent(AppLogEvent event) {
-        model.appendLog("SYSTEM: "+event.getData());
+        if(model.showSystemLog()) model.appendLog("SYSTEM: " + event.getData());
     }
 
     @Override
@@ -73,21 +73,39 @@ public class AppController implements AppControllerInterface, ActionListener {
     }
 
     @Override
-    public void handleStartStop() {
+    public boolean handleStartStop() {
         isServiceRunning = !isServiceRunning;
         if (isServiceRunning) {
+
+            String googleKey = String.valueOf(configManager.getSystemKey(ConfigManager.GOOGLE_API_KEY));
+            if(googleKey == null || googleKey.trim().isEmpty() || googleKey.equals("null")) {
+                model.appendLog("SYSTEM: Google API key not found in system.conf");
+                isServiceRunning = false;
+                return false;
+            }
+
+            String grokKey = String.valueOf(configManager.getSystemKey(ConfigManager.GROK_API_KEY));
+            if(grokKey == null || grokKey.trim().isEmpty() || grokKey.equals("null")) {
+                model.appendLog("SYSTEM: Grok API key not found in system.conf");
+                isServiceRunning = false;
+                return false;
+            }
+
+
+            systemSession.put(SystemSession.PRIVACY_MODE, true);
+            model.appendLog(privacyMode ? privacyModeIsOnMessage() : privacyModeIsOffMessage());
+            model.setPrivacyModeOn(privacyMode);
+
             journalParser.start();
             voiceGenerator = VoiceGenerator.getInstance();
             speechRecognizer.start();
             fileMonitor.start();
             voiceGenerator.start();
-            model.appendLog("Systems online...");
-
             EventBusManager.publish(new VoiceProcessEvent("Systems online..."));
         } else {
             EventBusManager.publish(new VoiceProcessEvent("Systems offline..."));
             try {
-                Thread.sleep(5000);
+                Thread.sleep(3000); // let the app announce shut down
                 // Stop services
                 journalParser.stop();
                 voiceGenerator.stop();
@@ -99,20 +117,42 @@ public class AppController implements AppControllerInterface, ActionListener {
                 //
             }
         }
+        return true;
     }
 
     private SystemSession systemSession = SystemSession.getInstance();
     private boolean privacyMode = Boolean.parseBoolean(String.valueOf(systemSession.get(SystemSession.PRIVACY_MODE)));
+
     @Override
     public void togglePrivacyMode() {
         model.appendLog("Toggle privacy mode");
         privacyMode = !privacyMode;
         systemSession.put(SystemSession.PRIVACY_MODE, privacyMode);
-        model.appendLog("Privacy mode is " + (privacyMode ? "on (voice to text will still be processing, but AI will not hear you) " : "off"));
+        EventBusManager.publish(new VoiceProcessEvent(privacyMode ? privacyModeIsOnMessage() : privacyModeIsOffMessage()));
+        model.appendLog(privacyMode ? privacyModeIsOnMessage() : privacyModeIsOffMessage());
+        model.setPrivacyModeOn(privacyMode);
+    }
+
+    private String privacyModeIsOffMessage() {
+        return "Privacy mode is Off. " + systemSession.getAIVoice().getName() + " is listening to you.";
+    }
+
+    private String privacyModeIsOnMessage() {
+        return "Privacy mode is On. (voice to text will still be processing, but "+systemSession.getAIVoice().getName()+" will not hear you. Prefix your command with word computer or " + systemSession.getAIVoice().getName() + ") ";
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
+
+        if(e.getSource() instanceof JCheckBox){
+            String command = e.getActionCommand();
+            if(ACTION_TOGGLE_SYSTEM_LOG.equals(command)){
+                boolean show = ((JCheckBox)e.getSource()).isSelected();
+                model.showSystemLog(show);
+                model.appendLog("Further System log is now " + (show ? "shown" : "filtered"));
+            }
+        }
+
         if (e.getSource() instanceof JButton) {
             String command = e.getActionCommand();
             if (ACTION_SAVE_SYSTEM_CONFIG.equals(command)) {
@@ -120,11 +160,11 @@ public class AppController implements AppControllerInterface, ActionListener {
             } else if (ACTION_SAVE_USER_CONFIG.equals(command)) {
                 handleSaveUserConfig();
             } else if (ACTION_TOGGLE_SERVICES.equals(command)) {
-                handleStartStop();
-                ((JButton) e.getSource()).setText(isServiceRunning ? "Stop Service" : "Start Service");
+
+                ((JButton) e.getSource()).setText(handleStartStop() ? "Stop Service" : "Start Service");
             } else if (ACTION_TOGGLE_PRIVACY_MODE.equals(command)) {
                 togglePrivacyMode();
-                ((JButton) e.getSource()).setText(isServiceRunning ? "Privacy Mode On" : "Privacy Mode Off");
+                ((JButton) e.getSource()).setText(this.model.isPrivacyModeOn() ? "Turn off privacy mode" : "Turn on privacy mode");
             }
         }
     }

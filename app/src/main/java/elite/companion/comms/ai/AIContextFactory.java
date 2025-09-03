@@ -79,6 +79,8 @@ public class AIContextFactory {
         String playerHonorific = Ranks.getPlayerHonorific();
         String currentShip = String.valueOf(playerSession.get(PlayerSession.CURRENT_SHIP));
         String missionStatement = String.valueOf(playerSession.get(PlayerSession.PLAYER_MISSION_STATEMENT));
+        String carrierName = String.valueOf(playerSession.get(PlayerSession.CARRIER_NAME));
+        String carrierCallSign = String.valueOf(playerSession.get(PlayerSession.CARRIER_CALLSIGN));
 
         appendContext(sb,
                 Objects.equals(currentShip, "null") ? "ship" : currentShip,
@@ -86,7 +88,9 @@ public class AIContextFactory {
                 Objects.equals(playerMilitaryRank, "null") ? "Commander" : playerMilitaryRank,
                 Objects.equals(playerHonorific, "null") ? "Commander" : playerHonorific,
                 Objects.equals(playerTitle, "null") ? "Commander" : playerTitle,
-                Objects.equals(missionStatement, "null") ? "" : missionStatement
+                Objects.equals(missionStatement, "null") ? "" : missionStatement,
+                Objects.equals(carrierName, "null") ? "" : carrierName,
+                Objects.equals(carrierCallSign, "null") ? "" : carrierCallSign
         );
     }
 
@@ -104,9 +108,12 @@ public class AIContextFactory {
         sb.append("Start responses directly with the requested information, avoiding conversational fillers like 'noted,' 'well,' 'right,' 'understood,' or similar phrases. ");
     }
 
-    private static void appendContext(StringBuilder sb, String currentShip, String playerName, String playerMilitaryRank, String playerHonorific, String playerTitle, String missionStatement) {
+    private static void appendContext(StringBuilder sb, String currentShip, String playerName, String playerMilitaryRank, String playerHonorific, String playerTitle, String missionStatement, String carrierName, String carrierCallSign) {
         String aiName = SystemSession.getInstance().getAIVoice().getName();
         sb.append("Context: You are ").append(aiName).append(", onboard AI for a ").append(currentShip).append(" ship in Elite Dangerous. ");
+        if (carrierName != null && !carrierName.isEmpty()) {
+            sb.append("Our home base is FleetCarrier "+carrierName+", callsign "+carrierCallSign+". ");
+        }
         sb.append("Address me as ").append(playerName).append(", ").append(playerMilitaryRank).append(", ").append(playerTitle).append(", or ").append(playerHonorific).append(". ");
         sb.append("Prefer ").append(playerName).append(" or ").append(playerMilitaryRank).append(". ");
         if (missionStatement != null && !missionStatement.isEmpty()) {

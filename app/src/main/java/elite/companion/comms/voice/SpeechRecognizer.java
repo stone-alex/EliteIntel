@@ -7,6 +7,7 @@ import elite.companion.comms.ai.GrokCommandEndPoint;
 import elite.companion.comms.ai.GrokRequestHints;
 import elite.companion.gameapi.UserInputEvent;
 import elite.companion.session.SystemSession;
+import elite.companion.ui.event.AppLogEvent;
 import elite.companion.util.ConfigManager;
 import elite.companion.util.EventBusManager;
 import elite.companion.util.GoogleApiKeyProvider;
@@ -251,6 +252,9 @@ public class SpeechRecognizer {
                     transcriptionQueue.offer(transcript);
                     log.info("Final transcript: {} (confidence: {})", transcript, confidence);
                     String sanitizedTranscript = StringSanitizer.sanitizeGoogleMistakes(transcript);
+
+                    EventBusManager.publish(new AppLogEvent("STT heard: "+transcript+". Sanitized: "+sanitizedTranscript+"."));
+
                     Object privacySystemVariable = SystemSession.getInstance().get(SystemSession.PRIVACY_MODE);
                     boolean isPrivacyModeOn = privacySystemVariable != null && (boolean) privacySystemVariable;
                     if (isPrivacyModeOn) {

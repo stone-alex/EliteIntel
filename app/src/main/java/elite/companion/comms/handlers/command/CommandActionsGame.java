@@ -13,11 +13,12 @@ public class CommandActionsGame {
         CYCLE_PREVIOUS_SUBSYSTEM("cycle_previous_subsystem", "CyclePreviousSubsystem", GenericGameController.class),
         DEPLOY_HARDPOINT_TOGGLE("hardpoint_toggle", "DeployHardpointToggle", GenericGameController.class),
         DEPLOY_HEAT_SINK("deploy_heat_sink", "DeployHeatSink", GenericGameController.class),
-        DOWN_THRUST_BUTTON("down_thrust_button", "DownThrustButton", GenericGameController.class),
+        DOWN_THRUST_BUTTON("reduce_speed_by_1", "DownThrustButton", GenericGameController.class),
         DRIVE_ASSIST("drive_assist", "ToggleDriveAssist", GenericGameController.class),
         EJECT_ALL_CARGO("eject_all_cargo", "EjectAllCargo", GenericGameController.class),
         EJECT_ALL_CARGO_BUGGY("eject_all_cargo_buggy", "EjectAllCargo_Buggy", GenericGameController.class),
-        ENGAGE_SUPERCRUISE("engage_supercruise", "Supercruise", GenericGameController.class),
+        ENGAGE_SUPERCRUISE("toggle_supercruise", "Supercruise", GenericGameController.class),
+        TOGGLE_FTL("toggle_ftl", "Supercruise", GenericGameController.class),
         EXIT_SETTLEMENT_PLACEMENT_CAMERA("exit_settlement_placement_camera", "ExitSettlementPlacementCamera", GenericGameController.class),
 
         EXPLORATION_FSSENTER("exploration_fssenter", "ExplorationFSSEnter", GenericGameController.class),
@@ -29,8 +30,9 @@ public class CommandActionsGame {
         FOCUS_COMMS_PANEL("focus_comms_panel", "FocusCommsPanel", GenericGameController.class),
         FOCUS_COMMS_PANEL_BUGGY("focus_comms_panel_buggy", "FocusCommsPanel_Buggy", GenericGameController.class),
         FOCUS_COMMS_PANEL_HUMANOID("focus_comms_panel_humanoid", "FocusCommsPanel_Humanoid", GenericGameController.class),
-        FOCUS_LEFT_PANEL("focus_left_panel", "FocusLeftPanel", GenericGameController.class),
-        FOCUS_LEFT_PANEL_BUGGY("focus_left_panel_buggy", "FocusLeftPanel_Buggy", GenericGameController.class),
+        FOCUS_LEFT_PANEL("focus_navigation_panel", "FocusLeftPanel", GenericGameController.class),
+        FOCUS_CONTACTS_PANEL("focus_contacts_panel", "FocusLeftPanel", GenericGameController.class),
+        FOCUS_LEFT_PANEL_BUGGY("focus_navigation_panel_buggy", "FocusLeftPanel_Buggy", GenericGameController.class),
         FOCUS_RADAR_PANEL("focus_radar_panel", "FocusRadarPanel", GenericGameController.class),
         FOCUS_RADAR_PANEL_BUGGY("focus_radar_panel_buggy", "FocusRadarPanel_Buggy", GenericGameController.class),
         FOCUS_RIGHT_PANEL("focus_right_panel", "FocusRightPanel", GenericGameController.class),
@@ -44,8 +46,6 @@ public class CommandActionsGame {
         GALNET_AUDIO_SKIP_BACKWARD("galnet_audio_skip_backward", "GalnetAudio_SkipBackward", GenericGameController.class),
         GALNET_AUDIO_SKIP_FORWARD("galnet_audio_skip_forward", "GalnetAudio_SkipForward", GenericGameController.class),
         HYPER_SUPER_COMBINATION("hyper_super_combination", "HyperSuperCombination", GenericGameController.class),
-        INCREASE_ENGINES_POWER_BUGGY("increase_engines_power_buggy", "IncreaseEnginesPower_Buggy", GenericGameController.class),
-        INCREASE_WEAPONS_POWER_BUGGY("increase_weapons_power_buggy", "IncreaseWeaponsPower_Buggy", GenericGameController.class),
         JUMP_TO_HYPERSPACE("jump_to_hyperspace", "Hyperspace", GenericGameController.class),
         LANDING_GEAR_TOGGLE("landing_gear_toggle", "LandingGearToggle", GenericGameController.class),
         NIGHT_VISION("night_vision", "NightVisionToggle", GenericGameController.class),
@@ -63,20 +63,23 @@ public class CommandActionsGame {
         REQUEST_HOLD_FIRE("fighter_hold_your_fire", "OrderHoldFire", GenericGameController.class),
         REQUEST_REQUEST_DOCK("fighter_return_to_base", "OrderRequestDock", GenericGameController.class),
         RESET_POWER_DISTRIBUTION("equalize_power", "ResetPowerDistribution", GenericGameController.class),
-        RESET_POWER_DISTRIBUTION_BUGGY("reset_power_distribution_buggy", "ResetPowerDistribution_Buggy", GenericGameController.class),
+        RESET_POWER_DISTRIBUTION_BUGGY("equalize_power_distribution_buggy", "ResetPowerDistribution_Buggy", GenericGameController.class),
         SELECT_TARGETS_TARGET("select_wingman_target", "SelectTargetsTarget", GenericGameController.class),
-        SET_SPEED100("set_speed100", "SetSpeed100", GenericGameController.class),
-        SET_SPEED25("set_speed25", "SetSpeed25", GenericGameController.class),
-        SET_SPEED50("set_speed50", "SetSpeed50", GenericGameController.class),
-        SET_SPEED75("set_speed75", "SetSpeed75", GenericGameController.class),
-        SET_SPEED_ZERO("set_speed_zero_full_stop_cut_engines", "SetSpeedZero", GenericGameController.class),
-        AUTO_DOC("activate_auto_pilot", "SetSpeedZero", GenericGameController.class),
+        SET_SPEED100("set_speed_to_maximum", "SetSpeed100", GenericGameController.class),
+        SET_SPEED25("set_speed_to_low", "SetSpeed25", GenericGameController.class),
+        SET_SPEED50("set_speed_to_medium", "SetSpeed50", GenericGameController.class),
+        SET_SPEED75("set_speed_to_optimal", "SetSpeed75", GenericGameController.class),
+        SET_SPEED_ZERO("set_speed_to_zero", "SetSpeedZero", GenericGameController.class),
+        UP_THRUST_BUTTON("increase_speed_by_1", "UpThrustButton", GenericGameController.class),
+        AUTO_DOC1("activate_auto_pilot", "SetSpeedZero", GenericGameController.class),
+        AUTO_DOC2("take_us_in", "SetSpeedZero", GenericGameController.class),
+        AUTO_DOC3("automatic_docking", "SetSpeedZero", GenericGameController.class),
         TARGET_NEXT_ROUTE_SYSTEM("target_next_system_in_route", "TargetNextRouteSystem", GenericGameController.class),
         TARGET_WINGMAN0("target_wingman0", "TargetWingman0", GenericGameController.class),
         TARGET_WINGMAN1("target_wingman1", "TargetWingman1", GenericGameController.class),
         TARGET_WINGMAN2("target_wingman2", "TargetWingman2", GenericGameController.class),
+        SELECT_HIGHEST_THREAT("select_highest_threat", "SelectHighestThreat", GenericGameController.class),
         UI_ACTIVATE("ui_activate", "UI_Select", GenericGameController.class),
-        UP_THRUST_BUTTON("up_thrust_button", "UpThrustButton", GenericGameController.class),
         WING_NAV_LOCK("lock_on_wingman", "WingNavLock", GenericGameController.class),
 
 
@@ -84,10 +87,10 @@ public class CommandActionsGame {
         EXIT_KEY("ui_exit", "UI_Back", GenericGameController.class),
         //excluded, but needed for bindings. used in custom handler
         //these are special cases for excluded commands not sent to Grok, handled via a custom action
-        INCREASE_ENGINES_POWER("_", "IncreaseEnginesPower", SetPowerToEnginesHandler.class),
-        INCREASE_SYSTEMS_POWER("_", "IncreaseSystemsPower", SetPowerToSystemsHandler.class),
-        INCREASE_SHIELDS_POWER("_", "IncreaseSystemsPower", SetPowerToSystemsHandler.class),
-        INCREASE_WEAPONS_POWER("_", "IncreaseWeaponsPower", SetPowerToWeaponsHandler.class),
+        INCREASE_ENGINES_POWER("_", "IncreaseEnginesPower", GenericGameController.class),
+        INCREASE_SYSTEMS_POWER("_", "IncreaseSystemsPower", GenericGameController.class),
+        INCREASE_SHIELDS_POWER("_", "IncreaseSystemsPower", GenericGameController.class),
+        INCREASE_WEAPONS_POWER("_", "IncreaseWeaponsPower", GenericGameController.class),
         UI_DOWN("ui_down", "UI_Down", GenericGameController.class),
         UI_LEFT("ui_left", "UI_Left", GenericGameController.class),
         UI_RIGHT("ui_right", "UI_Right", GenericGameController.class),
@@ -147,7 +150,6 @@ public class CommandActionsGame {
             if( GameCommand.values()[i] == GameCommand.INCREASE_SHIELDS_POWER) continue;
             if( GameCommand.values()[i] == GameCommand.INCREASE_SYSTEMS_POWER) continue;
             if( GameCommand.values()[i] == GameCommand.INCREASE_WEAPONS_POWER) continue;
-            if( GameCommand.values()[i] == GameCommand.INCREASE_WEAPONS_POWER_BUGGY) continue;
             if( GameCommand.values()[i] == GameCommand.EXPLORATION_FSSDISCOVERY_SCAN) continue;
             if( GameCommand.values()[i] == GameCommand.UI_DOWN) continue;
             if( GameCommand.values()[i] == GameCommand.UI_LEFT) continue;

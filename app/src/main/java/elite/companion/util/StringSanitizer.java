@@ -48,38 +48,55 @@ public class StringSanitizer {
             }
         }
 
-        if (command.toLowerCase().contains("Australia".toLowerCase())) {
+        if (command.contains("Australia".toLowerCase())) {
             command = command.replace("australia", Globals.AI_NAME);
             log.info("Sanitized transcript: {} -> {}", voiceCommand, command);
         }
 
-        if(command.toLowerCase().contains("southwest")){
+        if(command.contains("southwest")){
             command = command.replace("southwest", "set voice to");
             command = command.replace("southwest", "set voice to");
             log.info("Sanitized transcript: {} -> {}", voiceCommand, command);
         }
 
-        if(command.toLowerCase().contains("atlanta")){
+        if(command.contains("atlanta")){
             command = command.replace("atlanta", "lana");
             command = command.replace("Atlanta", "lana");
             log.info("Sanitized transcript: {} -> {}", voiceCommand, command);
         }
 
-        if(command.toLowerCase().contains("supercross")){
+        if(command.contains("supercross")){
             command = command.replace("supercross", "supercruise");
             log.info("Sanitized transcript: {} -> {}", voiceCommand, command);
         }
 
-        if(command.toLowerCase().contains("hannah")){
+        if(command.contains("hannah")){
             command = command.replace("Hannah", "Anna");
             command = command.replace("hannah", "Anna");
             log.info("Sanitized transcript: {} -> {}", voiceCommand, command);
         }
 
-        if(command.toLowerCase().contains("privacy mode of")) {
+        if(command.contains("privacy mode of")) {
             command = command.replace("privacy mode of", "privacy mode off");
             log.info("Sanitized transcript: {} -> {}", voiceCommand, command);
         }
+
+        if(command.contains("bunch of tl")) {
+            command = command.replace("bunch of tl", "toggle ftl");
+        }
+
+        if(command.contains("bunch of cl")) {
+            command = command.replace("bunch of cl", "toggle ftl");
+        }
+
+        if(command.contains("bunch of tail")) {
+            command = command.replace("bunch of tail", "toggle ftl");
+        }
+
+        if(command.contains("bunch it")) {
+            command = command.replace("bunch it", "toggle ftl");
+        }
+
         return command.toLowerCase();
     }
 

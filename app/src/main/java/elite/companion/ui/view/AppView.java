@@ -110,8 +110,8 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         bindLock(edsmLockedCheck, edsmApiKeyField, true);
         togglePrivacyModeButton.setEnabled(false);
         togglePrivacyModeButton.setToolTipText("Toggle privacy mode");
-        togglePrivacyModeButton.setText("Privacy Mode On");
-        togglePrivacyModeButton.setForeground(Color.GREEN);
+        togglePrivacyModeButton.setText("Privacy OFF");
+        togglePrivacyModeButton.setForeground(Color.RED);
     }
 
     private JPanel buildSystemTab() {
@@ -214,6 +214,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         buttons.add(togglePrivacyModeButton);
 
         showDetailedLog = new JCheckBox("Show Detailed Log", false);
+        showDetailedLog.setActionCommand(ACTION_TOGGLE_SYSTEM_LOG);
         buttons.add(showDetailedLog);
 
 
@@ -476,6 +477,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         if (startStopServicesButton != null) startStopServicesButton.addActionListener(l);
         if (savePlayerInfoButton != null) savePlayerInfoButton.addActionListener(l);
         if (togglePrivacyModeButton != null) togglePrivacyModeButton.addActionListener(l);
+        if (showDetailedLog != null) showDetailedLog.addActionListener(l);
     }
 
     @Override public JFrame getUiComponent() {
@@ -773,7 +775,6 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     public static final String PROPERTY_SYSTEM_CONFIG_UPDATED = "systemConfigUpdated";
     public static final String PROPERTY_LOG_UPDATED = "logUpdated";
     public static final String PROPERTY_USER_CONFIG_UPDATED = "userConfigUpdated";
-    public static final String PROPERTY_SERVICES_RUNNING_UPDATED = "servicesRunningUpdated";
     public static final String PROPERTY_PRIVACY_MODE = "privacyModeUpdated";
     public static final String PROPERTY_HELP_MARKDOWN = "helpMarkdownUpdated";
 
@@ -785,9 +786,6 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
             setUserConfig((Map<String, String>) evt.getNewValue());
         } else if (evt.getPropertyName().equals(PROPERTY_LOG_UPDATED)) {
             setLogText((String) evt.getNewValue());
-        } else if (evt.getPropertyName().equals(PROPERTY_SERVICES_RUNNING_UPDATED)) {
-            logArea.append("Services running: " + evt.getNewValue() + "\n");
-            setServicesRunning((Boolean) evt.getNewValue());
         } else if (evt.getPropertyName().equals(PROPERTY_PRIVACY_MODE)) {
             togglePrivacyModeButton.setEnabled(true);
             togglePrivacyModeButton.setForeground((Boolean) evt.getNewValue() ? Color.RED : Color.GREEN);

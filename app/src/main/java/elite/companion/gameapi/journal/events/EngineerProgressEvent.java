@@ -12,7 +12,7 @@ public class EngineerProgressEvent extends BaseEvent {
     private List<Engineer> engineers;
 
     public EngineerProgressEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "EngineerProgress");
+        super(json.get("timestamp").getAsString(), 1, Duration.ofDays(30), "EngineerProgress");
         EngineerProgressEvent event = GsonFactory.getGson().fromJson(json, EngineerProgressEvent.class);
         this.engineers = event.engineers;
     }

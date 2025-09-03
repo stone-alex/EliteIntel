@@ -3,13 +3,13 @@ package elite.companion.comms.ai.robot;
 import com.google.gson.JsonObject;
 import elite.companion.comms.handlers.command.CommandActionsCustom;
 import elite.companion.comms.handlers.command.CommandActionsGame;
-import elite.companion.comms.voice.VoiceGenerator;
 import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.session.SystemSession;
 import elite.companion.util.EventBusManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -19,6 +19,8 @@ public class GameCommandHandler {
     private final KeyBindingsParser parser;
     private final KeyBindingExecutor executor;
     private final BindingsMonitor monitor;
+    private Thread processingThread;
+    private volatile boolean running;
     private static final Set<String> BLACKLISTED_ACTIONS = new HashSet<>(Arrays.asList(
             "PrimaryFire", "SecondaryFire", "TriggerFieldNeutraliser",
             "BuggyPrimaryFireButton", "BuggySecondaryFireButton"
@@ -28,26 +30,52 @@ public class GameCommandHandler {
         this.parser = new KeyBindingsParser();
         this.executor = new KeyBindingExecutor();
         this.monitor = new BindingsMonitor(parser);
-        log.info("VoiceCommandHandler initialized");
+        log.info("GameCommandHandler initialized");
     }
 
-    public void start() {
-        new Thread(() -> {
-            try {
-                monitor.startMonitoring();
-            } catch (Exception e) {
-                log.error("Error in bindings monitor: {}", e.getMessage());
-            }
-        }).start();
-        log.info("Started VoiceCommandHandler monitoring");
+    public synchronized void start() {
+        if (processingThread != null && processingThread.isAlive()) {
+            log.warn("GameCommandHandler is already running");
+            return;
+        }
+        running = true;
+        processingThread = new Thread(this::run, "GameCommandHandlerThread");
+        processingThread.start();
+        log.info("GameCommandHandler started");
     }
 
-    public void stop() {
+    public synchronized void stop() {
+        if (processingThread == null || !processingThread.isAlive()) {
+            log.warn("GameCommandHandler is not running");
+            return;
+        }
+        running = false;
+        processingThread.interrupt();
         try {
             monitor.stopMonitoring();
-            log.info("Stopped VoiceCommandHandler monitoring");
+        }catch (Exception e) {
+            log.error("Error stopping monitoring: {}", e.getMessage(), e);
+        }
+
+        try {
+            processingThread.join(5000); // Wait up to 5 seconds for clean shutdown
+            log.info("GameCommandHandler stopped");
+        } catch (InterruptedException e) {
+            log.error("Interrupted while waiting for GameCommandHandler to stop", e);
+            Thread.currentThread().interrupt(); // Restore interrupted status
+        }
+        processingThread = null;
+    }
+
+    private void run() {
+        try {
+            monitor.startMonitoring();
+        } catch (IOException e) {
+            log.info("GameCommandHandler interrupted, shutting down");
+            Thread.currentThread().interrupt(); // Restore interrupted status
         } catch (Exception e) {
-            log.error("Error stopping bindings monitor: {}", e.getMessage());
+            log.error("Error in GameCommandHandler: {}", e.getMessage(), e);
+            EventBusManager.publish(new VoiceProcessEvent("Error in command handler: " + e.getMessage()));
         }
     }
 
@@ -66,7 +94,6 @@ public class GameCommandHandler {
                     JsonObject system_params = jsonResponse.has("params") ? jsonResponse.get("params").getAsJsonObject() : new JsonObject();
                     handleSystemCommand(system_params, responseText);
                     break;
-
                 case "query":
                     handleQuery(responseText);
                     break;
@@ -78,7 +105,7 @@ public class GameCommandHandler {
                     handleChat("I'm not sure what you meant. Please try again.");
             }
         } catch (Exception e) {
-            log.error("Failed to process Grok response: {}", e.getMessage());
+            log.error("Failed to process Grok response: {}", e.getMessage(), e);
             handleChat("Error processing command.");
         }
     }
@@ -103,7 +130,7 @@ public class GameCommandHandler {
             log.info("Executed action: {} with key: {}", action, binding.key);
         } else {
             log.warn("No binding found for action: {}", action);
-            handleChat("Game Command Handler No key binding found for that action.");
+            handleChat("No key binding found for that action.");
         }
     }
 

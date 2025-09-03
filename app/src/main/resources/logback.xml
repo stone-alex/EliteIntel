@@ -28,7 +28,7 @@
     <!-- Console appender -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>%d{HH:mm:ss.SSS} %highlight(%-5level) %loggerColor(%logger{36}) - %replace(%.-5000msg){'\s*\[id:[^\]]+\]\s*',''}%n%n</pattern>
+            <pattern>%d{HH:mm:ss.SSS} %highlight(%-5level) %loggerColor(%logger{36}) - %replace(%.-5000msg){'\s*\[id:[^\]]+\]\s*',''}%n</pattern>
         </encoder>
     </appender>
 
@@ -36,7 +36,7 @@
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
         <file>${LOG_FILE_PATH}</file>
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n%n</pattern>
+            <pattern>%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
@@ -51,7 +51,7 @@
             <totalSizeCap>1GB</totalSizeCap>
         </rollingPolicy>
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n%n</pattern>
+            <pattern>%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 

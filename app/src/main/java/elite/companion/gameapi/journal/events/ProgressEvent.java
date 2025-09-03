@@ -31,7 +31,7 @@ public class ProgressEvent extends BaseEvent implements PlayerProgressStats {
     private int cqc;
 
     public ProgressEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "Progress");
+        super(json.get("timestamp").getAsString(), 1, Duration.ofDays(30), "Progress");
         ProgressEvent event = GsonFactory.getGson().fromJson(json, ProgressEvent.class);
         this.combat = event.combat;
         this.trade = event.trade;

@@ -23,7 +23,7 @@ public class ReputationEvent extends BaseEvent {
     private static final DecimalFormat PERCENT_FORMAT = new DecimalFormat("0.00%");
 
     public ReputationEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "Reputation");
+        super(json.get("timestamp").getAsString(), 1, Duration.ofDays(30), "Reputation");
         ReputationEvent event = GsonFactory.getGson().fromJson(json, ReputationEvent.class);
         this.empire = event.empire;
         this.federation = event.federation;

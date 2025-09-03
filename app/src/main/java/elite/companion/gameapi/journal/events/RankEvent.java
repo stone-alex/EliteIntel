@@ -31,7 +31,7 @@ public class RankEvent extends BaseEvent implements PlayerRankStats {
     private int cqc;
 
     public RankEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "Rank");
+        super(json.get("timestamp").getAsString(), 1, Duration.ofDays(30), "Rank");
         RankEvent event = GsonFactory.getGson().fromJson(json, RankEvent.class);
         this.combat = event.combat;
         this.trade = event.trade;

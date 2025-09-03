@@ -16,7 +16,6 @@ public class LoadGameEventSubscriber {
     @Subscribe
     public void onEvent(LoadGameEvent event) {
         PlayerSession playerSession = PlayerSession.getInstance();
-        SystemSession systemSession = SystemSession.getInstance();
 
         playerSession.put(SHIP_FUEL_LEVEL, event.getFuelLevel());
 
@@ -36,27 +35,5 @@ public class LoadGameEventSubscriber {
         ConfigManager configManager = ConfigManager.getInstance();
         String mission_statement = configManager.getPlayerKey(ConfigManager.PLAYER_MISSION_STATEMENT);
         playerSession.put(PLAYER_MISSION_STATEMENT, mission_statement);
-    }
-
-    private class GameLoadedInfo {
-        String loadGameEventData;
-        String ranks;
-
-        public GameLoadedInfo(String loadGameEventData, String ranks) {
-            this.loadGameEventData = loadGameEventData;
-            this.ranks = ranks;
-        }
-
-        public String getLoadGameEventData() {
-            return loadGameEventData;
-        }
-
-        public String getRanks() {
-            return ranks;
-        }
-
-        public String toJson() {
-            return  GsonFactory.getGson().toJson(this);
-        }
     }
 }

@@ -57,7 +57,7 @@ public class LoadGameEvent extends BaseEvent {
     private String build;
 
     public LoadGameEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "LoadGame");
+        super(json.get("timestamp").getAsString(), 1, Duration.ofDays(30), "LoadGame");
         LoadGameEvent event = GsonFactory.getGson().fromJson(json, LoadGameEvent.class);
         this.FID = event.FID;
         this.Commander = event.Commander;

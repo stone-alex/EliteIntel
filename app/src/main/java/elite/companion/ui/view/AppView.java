@@ -1,7 +1,6 @@
 package elite.companion.ui.view;
 
 import elite.companion.util.ConfigManager;
-import elite.companion.util.StringSanitizer;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -34,7 +33,7 @@ import java.util.Map;
 public class AppView extends JFrame implements PropertyChangeListener, AppViewInterface {
 
     // ----- COLORS (adjust to taste) -----
-    private static final Color BG        = new Color(0x1E1F22); // base background
+    private static final Color BG        = new Color(0x1D1D1D); // base background
     private static final Color BG_PANEL  = new Color(0x2B2D30); // panels/inputs background
     private static final Color FG        = new Color(0xE6E6E6); // primary text
     private static final Color FG_MUTED  = new Color(0xB0B0B0); // secondary text
@@ -62,7 +61,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     private JCheckBox edsmLockedCheck;
     private JButton saveSystemButton;
     private JButton startStopServicesButton;
-    private JButton togglePrivacyModeButton;
+    private JCheckBox togglePrivacyModeCheckBox;
     private JTextArea logArea;
 
     // Player tab components
@@ -92,7 +91,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         setContentPane(root);
 
         titleLabel = new JLabel("Elite Companion", SwingConstants.CENTER);
-        // Make title a bit larger than base
+        // Make the title a bit larger than the base
         titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, titleLabel.getFont().getSize2D() + 3f));
         root.add(titleLabel, BorderLayout.NORTH);
 
@@ -108,10 +107,10 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         bindLock(googleLockedCheck, googleApiKeyField, true);
         bindLock(grokLockedCheck, grokApiKeyField, true);
         bindLock(edsmLockedCheck, edsmApiKeyField, true);
-        togglePrivacyModeButton.setEnabled(false);//enabled when services start
-        togglePrivacyModeButton.setToolTipText("Prevent AI from listening to everything on/off, prefix commands with word 'computer' or AI voice name");
-        togglePrivacyModeButton.setText("Toggle Privacy Mode");
-        togglePrivacyModeButton.setForeground(Color.GREEN);
+        togglePrivacyModeCheckBox.setEnabled(false);//enabled when services start
+        togglePrivacyModeCheckBox.setToolTipText("Prevent AI from listening to everything on/off, prefix commands with word 'computer' or AI voice name");
+        togglePrivacyModeCheckBox.setText("Toggle Privacy Mode");
+        togglePrivacyModeCheckBox.setForeground(Color.GREEN);
     }
 
     private JPanel buildSystemTab() {
@@ -191,31 +190,16 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         startStopServicesButton.setActionCommand(ACTION_TOGGLE_SERVICES);
         styleButton(startStopServicesButton);
 
-        togglePrivacyModeButton = new JButton("Toggle Privacy Mode") {
-            @Override protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                try {
-                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    Color base = BG_PANEL;
-                    ButtonModel m = getModel();
-                    if (m.isPressed()) base = base.darker();
-                    else if (m.isRollover()) base = base.brighter();
-                    g2.setColor(base);
-                    g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
-                } finally { g2.dispose(); }
-                super.paintComponent(g);
-            }
-        };
-        togglePrivacyModeButton.setActionCommand(ACTION_TOGGLE_PRIVACY_MODE);
-        styleButton(togglePrivacyModeButton);
+        showDetailedLog = new JCheckBox("Show Detailed Log", false);
+        showDetailedLog.setActionCommand(ACTION_TOGGLE_SYSTEM_LOG);
+
+        togglePrivacyModeCheckBox = new JCheckBox("Toggle Privacy Mode", false);
+        togglePrivacyModeCheckBox.setActionCommand(ACTION_TOGGLE_PRIVACY_MODE);
 
         buttons.add(saveSystemButton);
         buttons.add(startStopServicesButton);
-        buttons.add(togglePrivacyModeButton);
-
-        showDetailedLog = new JCheckBox("Show Detailed Log", false);
-        showDetailedLog.setActionCommand(ACTION_TOGGLE_SYSTEM_LOG);
         buttons.add(showDetailedLog);
+        buttons.add(togglePrivacyModeCheckBox);
 
 
         panel.add(buttons, gbc);
@@ -476,7 +460,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         if (saveSystemButton != null) saveSystemButton.addActionListener(l);
         if (startStopServicesButton != null) startStopServicesButton.addActionListener(l);
         if (savePlayerInfoButton != null) savePlayerInfoButton.addActionListener(l);
-        if (togglePrivacyModeButton != null) togglePrivacyModeButton.addActionListener(l);
+        if (togglePrivacyModeCheckBox != null) togglePrivacyModeCheckBox.addActionListener(l);
         if (showDetailedLog != null) showDetailedLog.addActionListener(l);
     }
 
@@ -789,13 +773,13 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
             setLogText((String) evt.getNewValue());
         } else if (evt.getPropertyName().equals(PROPERTY_PRIVACY_MODE)) {
             Boolean privacyModeOn = (Boolean) evt.getNewValue();
-            togglePrivacyModeButton.setForeground(privacyModeOn ? Color.GREEN : Color.RED);
-            togglePrivacyModeButton.setText(privacyModeOn ? "I am ignoring you" : "I am listening");
-            togglePrivacyModeButton.setToolTipText(privacyModeOn ? "Privacy Mode is currently enabled." : "Privacy Mode is currently disabled.");
+            togglePrivacyModeCheckBox.setSelected(privacyModeOn);
+            togglePrivacyModeCheckBox.setForeground(privacyModeOn ? Color.RED : Color.GREEN);
+            togglePrivacyModeCheckBox.setText(privacyModeOn ? "I am Ignoring You (say computer to talk to me)" : "I am Listening to your every word");
         } else if (evt.getPropertyName().equals(PROPERTY_HELP_MARKDOWN)) {
             setHelpMarkdown((String) evt.getNewValue());
         } else if (evt.getPropertyName().equals(PROPERTY_SERVICES_TOGGLE)) {
-            togglePrivacyModeButton.setEnabled((Boolean) evt.getNewValue());
+            togglePrivacyModeCheckBox.setEnabled((Boolean) evt.getNewValue());
         }
     }
 }

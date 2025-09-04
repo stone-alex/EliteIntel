@@ -4,5 +4,5 @@ public interface AppControllerInterface {
     void handleSaveSystemConfig();
     void handleSaveUserConfig();
     boolean handleStartStop();
-    void togglePrivacyMode();
+    void togglePrivacyMode(boolean isOn);
 }

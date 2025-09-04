@@ -7,7 +7,6 @@ import elite.companion.gameapi.AuxiliaryFilesMonitor;
 import elite.companion.gameapi.JournalParser;
 import elite.companion.gameapi.UserInputEvent;
 import elite.companion.gameapi.VoiceProcessEvent;
-import elite.companion.session.LoadSessionEvent;
 import elite.companion.session.SystemSession;
 import elite.companion.ui.event.AppLogEvent;
 import elite.companion.ui.model.AppModelInterface;
@@ -122,13 +121,12 @@ public class AppController implements AppControllerInterface, ActionListener {
     private final SystemSession systemSession = SystemSession.getInstance();
 
     @Override
-    public void togglePrivacyMode() {
-        boolean privacyMode = !model.isPrivacyModeOn();
+    public void togglePrivacyMode(boolean privacyModeOn) {
         model.appendLog("Toggle privacy mode");
-        systemSession.setPrivacyMode(privacyMode);
-        model.setPrivacyModeOn(privacyMode);
-        EventBusManager.publish(new VoiceProcessEvent(privacyMode ? privacyModeIsOffMessage() : privacyModeIsOnMessage()));
-        model.appendLog(privacyMode ? privacyModeIsOffMessage() : privacyModeIsOnMessage());
+        systemSession.setPrivacyMode(privacyModeOn);
+        model.setPrivacyModeOn(privacyModeOn);
+        EventBusManager.publish(new VoiceProcessEvent(privacyModeOn ? privacyModeIsOnMessage() : privacyModeIsOffMessage()));
+        model.appendLog(privacyModeOn ? privacyModeIsOnMessage() : privacyModeIsOffMessage());
     }
 
     private String privacyModeIsOffMessage() {
@@ -148,6 +146,10 @@ public class AppController implements AppControllerInterface, ActionListener {
                 boolean show = ((JCheckBox) e.getSource()).isSelected();
                 model.showSystemLog(show);
                 model.appendLog("Further System log will be " + (show ? "shown" : "filtered"));
+            } else if (ACTION_TOGGLE_PRIVACY_MODE.equals(command)) {
+                boolean isSelected = ((JCheckBox) e.getSource()).isSelected();
+                togglePrivacyMode(isSelected);
+                //((JCheckBox) e.getSource()).setText(this.model.isPrivacyModeOn() ? "Privacy ON" : "Privacy OFF");
             }
         }
 
@@ -159,9 +161,6 @@ public class AppController implements AppControllerInterface, ActionListener {
                 handleSaveUserConfig();
             } else if (ACTION_TOGGLE_SERVICES.equals(command)) {
                 ((JButton) e.getSource()).setText(handleStartStop() ? "Stop Service" : "Start Service");
-            } else if (ACTION_TOGGLE_PRIVACY_MODE.equals(command)) {
-                togglePrivacyMode();
-                ((JButton) e.getSource()).setText(this.model.isPrivacyModeOn() ? "Privacy ON" : "Privacy OFF");
             }
         }
     }

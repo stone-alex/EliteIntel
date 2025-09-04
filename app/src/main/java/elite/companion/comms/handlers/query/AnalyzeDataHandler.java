@@ -34,21 +34,12 @@ public class AnalyzeDataHandler extends BaseQueryAnalyzer implements QueryHandle
         return analyzeData(dataJsonStr, originalUserInput);
     }
 
-/*
-    private QueryActions findQuery(String action) {
-        for (QueryActions qa : QueryActions.values()) {
-            if (qa.getAction().equals(action)) {
-                return qa;
-            }
-        }
-        throw new IllegalArgumentException("No query action found for: " + action);
-    }
-*/
-
     private String fetchDataForAction(QueryActions action) {
         SystemSession systemSession = SystemSession.getInstance();
         PlayerSession playerSession = PlayerSession.getInstance();
 
+        //TODO: Ever growing case switch. A subject for refactoring.
+        //NOTE: Consider either braking these into individual handlers, or implement data factory.
         return switch (action) {
             case QUERY_SEARCH_SIGNAL_DATA -> {
                 Object signals = systemSession.getSignals();
@@ -77,6 +68,11 @@ public class AnalyzeDataHandler extends BaseQueryAnalyzer implements QueryHandle
             case QUERY_CARRIER_STATS -> {
                 Object stats = playerSession.get(PlayerSession.CARRIER_STATS);
                 yield stats != null ? GSON.toJson(stats) : null;
+            }
+
+            case ANALYZE_SCAN -> {
+                Object scan = playerSession.get(PlayerSession.LAST_SCAN);
+                yield scan != null ? GSON.toJson(scan) : null;
             }
             default -> null;
         };

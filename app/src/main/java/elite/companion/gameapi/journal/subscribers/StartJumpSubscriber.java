@@ -36,6 +36,7 @@ public class StartJumpSubscriber {
     }
 
     private String isFuelStarClause(String starClass) {
+        if(starClass == null) {return "";}
         boolean isFuelStar = "KGBFOAM".contains(starClass);
         return isFuelStar ? " Fuel Star" : " Warning! - Not a Fuel Star!";
     }

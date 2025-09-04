@@ -34,6 +34,7 @@ public class PlayerSession {
     public static final String SHIP_CARGO_CAPACITY = "ship_cargo_capacity";
     public static final String PLAYER_TITLE = "player_title";
     public static final String PLAYER_HIGHEST_MILITARY_RANK = "player_highest_military_rank";
+    public static final String LAST_SCAN = "last_scan";
 
     private static final PlayerSession INSTANCE = new PlayerSession();
 
@@ -71,6 +72,7 @@ public class PlayerSession {
     private RankAndProgressDto rankAndProgressDto = new RankAndProgressDto();
 
     private final Map<String, Object> state = new HashMap<>();
+    private final Map<String, String> shipScans = new HashMap<>();
 
     public static PlayerSession getInstance() {
         return INSTANCE;
@@ -78,6 +80,15 @@ public class PlayerSession {
 
     private PlayerSession() {
         EventBusManager.register(this);
+    }
+
+
+    public void putShipScan(String shipName, String scan) {
+        shipScans.put(shipName, scan);
+    }
+
+    public String getShipScan(String shipName) {
+        return shipScans.get(shipName);
     }
 
     @Subscribe
@@ -145,5 +156,9 @@ public class PlayerSession {
 
     public void setRankAndProgressDto(RankAndProgressDto rankAndProgressDto) {
         this.rankAndProgressDto = rankAndProgressDto;
+    }
+
+    public void clearShipScans() {
+        shipScans.clear();
     }
 }

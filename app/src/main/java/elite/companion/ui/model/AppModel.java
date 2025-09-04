@@ -123,6 +123,9 @@ public class AppModel implements AppModelInterface {
         pcs.firePropertyChange(AppView.PROPERTY_PRIVACY_MODE, !on, on);
     }
 
+    @Override public void setServicesRunning(boolean isServiceRunning) {
+        pcs.firePropertyChange(AppView.PROPERTY_SERVICES_TOGGLE, !isServiceRunning, isServiceRunning);
+    }
     @Override
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         pcs.addPropertyChangeListener(listener);

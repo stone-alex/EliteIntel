@@ -54,7 +54,7 @@ public class MissionAcceptedEvent extends BaseEvent {
     private long missionID;
 
     public MissionAcceptedEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "MissionAccepted");
+        super(json.get("timestamp").getAsString(), 1, Duration.ofDays(7), "MissionAccepted");
         MissionAcceptedEvent event = GsonFactory.getGson().fromJson(json, MissionAcceptedEvent.class);
         this.faction = event.faction;
         this.name = event.name;

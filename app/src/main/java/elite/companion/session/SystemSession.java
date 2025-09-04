@@ -140,7 +140,7 @@ public class SystemSession {
     }
 
     public AIPersonality getAIPersonality() {
-        return this.aiPersonality == null ? AIPersonality.FRIENDLY : this.aiPersonality;
+        return this.aiPersonality == null ? AIPersonality.ROGUE : this.aiPersonality;
     }
 
     public void setAICadence(AICadence cadence) {
@@ -148,7 +148,7 @@ public class SystemSession {
     }
 
     public AICadence getAICadence() {
-        return this.aiCadence == null ? AICadence.IMPERIAL : this.aiCadence;
+        return this.aiCadence == null ? AICadence.FEDERATION : this.aiCadence;
     }
 
     public void addBodySignal(BaseEvent event) {

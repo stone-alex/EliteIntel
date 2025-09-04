@@ -3,6 +3,7 @@ package elite.companion.gameapi.journal.subscribers;
 import com.google.common.eventbus.Subscribe;
 import elite.companion.gameapi.SensorDataEvent;
 import elite.companion.gameapi.journal.events.BountyEvent;
+import elite.companion.session.PlayerSession;
 import elite.companion.session.SystemSession;
 import elite.companion.util.EventBusManager;
 
@@ -13,6 +14,7 @@ public class BountyEventSubscriber {
 
     @Subscribe
     public void onBountyEvent(BountyEvent event) {
+        PlayerSession.getInstance().clearShipScans();
         SystemSession systemSession = SystemSession.getInstance();
         List<BountyEvent.Reward> rewards = event.getRewards();
         StringBuilder sb = new StringBuilder();

@@ -8,7 +8,6 @@ public enum CommandActionsCustom {
     SET_PRIVACY_MODE("set_privacy_mode", "<privacy_mode_on_off>", SystemSession.PRIVACY_MODE, SetPrivacyMode.class),
     SET_RADIO_TRANSMISSION_MODDE("turn_radio_transmission_on_off", "<radio_transmission_on_off>", SystemSession.RADION_TRANSMISSION_ON_OFF, SetRadioTransmissionOnOff.class),
     SET_AI_VOICE("set_or_change_voice_to", "<voice_name>", "voice_name", SetAiVoice.class),
-    ANNOUNCE_STELLAR_BODY_SCANS("announce_stellar_body_scans", "<on_off>", SystemSession.ANNOUNCE_BODY_SCANS, SetAnnounceBodyScansHandler.class),
     SET_PROFILE("set_profile", "<profile>", SystemSession.PROFILE, SetCadenceHandler.class),
     SET_PERSONALITY("set_personality", "<personality>", SystemSession.PERSONALITY, SetPersonalityHandler.class),
 

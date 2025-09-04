@@ -17,7 +17,7 @@ public class MissionFailedEvent extends BaseEvent {
     private long missionID;
 
     public MissionFailedEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "MissionFailed");
+        super(json.get("timestamp").getAsString(), 1, Duration.ofDays(7), "MissionFailed");
         MissionFailedEvent event = GsonFactory.getGson().fromJson(json, MissionFailedEvent.class);
         this.name = event.name;
         this.localisedName = event.localisedName;

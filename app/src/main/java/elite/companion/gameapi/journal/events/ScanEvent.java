@@ -3,9 +3,9 @@ package elite.companion.gameapi.journal.events;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 import elite.companion.util.GsonFactory;
-import elite.companion.util.TimestampFormatter;
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
 
 public class ScanEvent extends BaseEvent {
@@ -16,7 +16,7 @@ public class ScanEvent extends BaseEvent {
     private String bodyName;
 
     @SerializedName("BodyID")
-    private int bodyId;
+    private int bodyID;
 
     @SerializedName("Parents")
     private List<Parent> parents;
@@ -28,64 +28,7 @@ public class ScanEvent extends BaseEvent {
     private long systemAddress;
 
     @SerializedName("DistanceFromArrivalLS")
-    private float distanceFromArrivalLS;
-
-    @SerializedName("StarType")
-    private String starType;
-
-    @SerializedName("Subclass")
-    private int subclass;
-
-    @SerializedName("StellarMass")
-    private float stellarMass;
-
-    @SerializedName("Radius")
-    private double radius;
-
-    @SerializedName("AbsoluteMagnitude")
-    private float absoluteMagnitude;
-
-    @SerializedName("Age_MY")
-    private int ageMY;
-
-    @SerializedName("SurfaceTemperature")
-    private float surfaceTemperature;
-
-    @SerializedName("Luminosity")
-    private String luminosity;
-
-    @SerializedName("SemiMajorAxis")
-    private double semiMajorAxis;
-
-    @SerializedName("Eccentricity")
-    private float eccentricity;
-
-    @SerializedName("OrbitalInclination")
-    private float orbitalInclination;
-
-    @SerializedName("Periapsis")
-    private float periapsis;
-
-    @SerializedName("OrbitalPeriod")
-    private double orbitalPeriod;
-
-    @SerializedName("AscendingNode")
-    private float ascendingNode;
-
-    @SerializedName("MeanAnomaly")
-    private float meanAnomaly;
-
-    @SerializedName("RotationPeriod")
-    private float rotationPeriod;
-
-    @SerializedName("AxialTilt")
-    private float axialTilt;
-
-    @SerializedName("WasDiscovered")
-    private boolean wasDiscovered;
-
-    @SerializedName("WasMapped")
-    private boolean wasMapped;
+    private double distanceFromArrivalLS;
 
     @SerializedName("TidalLock")
     private boolean tidalLock;
@@ -102,20 +45,23 @@ public class ScanEvent extends BaseEvent {
     @SerializedName("AtmosphereType")
     private String atmosphereType;
 
-    @SerializedName("AtmosphereComposition")
-    private List<AtmosphereComposition> atmosphereComposition;
-
     @SerializedName("Volcanism")
     private String volcanism;
 
     @SerializedName("MassEM")
-    private float massEM;
+    private double massEM;
+
+    @SerializedName("Radius")
+    private double radius;
 
     @SerializedName("SurfaceGravity")
-    private float surfaceGravity;
+    private double surfaceGravity;
+
+    @SerializedName("SurfaceTemperature")
+    private double surfaceTemperature;
 
     @SerializedName("SurfacePressure")
-    private float surfacePressure;
+    private double surfacePressure;
 
     @SerializedName("Landable")
     private boolean landable;
@@ -126,24 +72,146 @@ public class ScanEvent extends BaseEvent {
     @SerializedName("Composition")
     private Composition composition;
 
+    @SerializedName("SemiMajorAxis")
+    private double semiMajorAxis;
+
+    @SerializedName("Eccentricity")
+    private double eccentricity;
+
+    @SerializedName("OrbitalInclination")
+    private double orbitalInclination;
+
+    @SerializedName("Periapsis")
+    private double periapsis;
+
+    @SerializedName("OrbitalPeriod")
+    private double orbitalPeriod;
+
+    @SerializedName("AscendingNode")
+    private double ascendingNode;
+
+    @SerializedName("MeanAnomaly")
+    private double meanAnomaly;
+
+    @SerializedName("RotationPeriod")
+    private double rotationPeriod;
+
+    @SerializedName("AxialTilt")
+    private double axialTilt;
+
+    @SerializedName("WasDiscovered")
+    private boolean wasDiscovered;
+
+    @SerializedName("WasMapped")
+    private boolean wasMapped;
+
+    // Nested class for Parents
+    public static class Parent {
+        @SerializedName("Planet")
+        private Integer planet;
+
+        @SerializedName("Star")
+        private Integer star;
+
+        public Integer getPlanet() {
+            return planet;
+        }
+
+        public Integer getStar() {
+            return star;
+        }
+
+        @Override
+        public String toString() {
+            return new StringJoiner(", ", Parent.class.getSimpleName() + "[", "]")
+                    .add("planet=" + planet)
+                    .add("star=" + star)
+                    .toString();
+        }
+    }
+
+    // Nested class for Materials
+    public static class Material {
+        @SerializedName("Name")
+        private String name;
+
+        @SerializedName("Percent")
+        private double percent;
+
+        public String getName() {
+            return name;
+        }
+
+        public double getPercent() {
+            return percent;
+        }
+
+        @Override
+        public String toString() {
+            return new StringJoiner(", ", Material.class.getSimpleName() + "[", "]")
+                    .add("name='" + name + "'")
+                    .add("percent=" + percent)
+                    .toString();
+        }
+    }
+
+    // Nested class for Composition
+    public static class Composition {
+        @SerializedName("Ice")
+        private double ice;
+
+        @SerializedName("Rock")
+        private double rock;
+
+        @SerializedName("Metal")
+        private double metal;
+
+        public double getIce() {
+            return ice;
+        }
+
+        public double getRock() {
+            return rock;
+        }
+
+        public double getMetal() {
+            return metal;
+        }
+
+        @Override
+        public String toString() {
+            return new StringJoiner(", ", Composition.class.getSimpleName() + "[", "]")
+                    .add("ice=" + ice)
+                    .add("rock=" + rock)
+                    .add("metal=" + metal)
+                    .toString();
+        }
+    }
+
     public ScanEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "Scan");
+        super(json.get("timestamp").getAsString(), 1, Duration.ZERO, "Scan");
         ScanEvent event = GsonFactory.getGson().fromJson(json, ScanEvent.class);
         this.scanType = event.scanType;
         this.bodyName = event.bodyName;
-        this.bodyId = event.bodyId;
+        this.bodyID = event.bodyID;
         this.parents = event.parents;
         this.starSystem = event.starSystem;
         this.systemAddress = event.systemAddress;
         this.distanceFromArrivalLS = event.distanceFromArrivalLS;
-        this.starType = event.starType;
-        this.subclass = event.subclass;
-        this.stellarMass = event.stellarMass;
+        this.tidalLock = event.tidalLock;
+        this.terraformState = event.terraformState;
+        this.planetClass = event.planetClass;
+        this.atmosphere = event.atmosphere;
+        this.atmosphereType = event.atmosphereType;
+        this.volcanism = event.volcanism;
+        this.massEM = event.massEM;
         this.radius = event.radius;
-        this.absoluteMagnitude = event.absoluteMagnitude;
-        this.ageMY = event.ageMY;
+        this.surfaceGravity = event.surfaceGravity;
         this.surfaceTemperature = event.surfaceTemperature;
-        this.luminosity = event.luminosity;
+        this.surfacePressure = event.surfacePressure;
+        this.landable = event.landable;
+        this.materials = event.materials;
+        this.composition = event.composition;
         this.semiMajorAxis = event.semiMajorAxis;
         this.eccentricity = event.eccentricity;
         this.orbitalInclination = event.orbitalInclination;
@@ -155,19 +223,6 @@ public class ScanEvent extends BaseEvent {
         this.axialTilt = event.axialTilt;
         this.wasDiscovered = event.wasDiscovered;
         this.wasMapped = event.wasMapped;
-        this.tidalLock = event.tidalLock;
-        this.terraformState = event.terraformState;
-        this.planetClass = event.planetClass;
-        this.atmosphere = event.atmosphere;
-        this.atmosphereType = event.atmosphereType;
-        this.atmosphereComposition = event.atmosphereComposition;
-        this.volcanism = event.volcanism;
-        this.massEM = event.massEM;
-        this.surfaceGravity = event.surfaceGravity;
-        this.surfacePressure = event.surfacePressure;
-        this.landable = event.landable;
-        this.materials = event.materials;
-        this.composition = event.composition;
     }
 
     @Override
@@ -185,6 +240,7 @@ public class ScanEvent extends BaseEvent {
         return GsonFactory.toJsonObject(this);
     }
 
+    // Getters
     public String getScanType() {
         return scanType;
     }
@@ -193,8 +249,8 @@ public class ScanEvent extends BaseEvent {
         return bodyName;
     }
 
-    public int getBodyId() {
-        return bodyId;
+    public int getBodyID() {
+        return bodyID;
     }
 
     public List<Parent> getParents() {
@@ -209,84 +265,8 @@ public class ScanEvent extends BaseEvent {
         return systemAddress;
     }
 
-    public float getDistanceFromArrivalLS() {
+    public double getDistanceFromArrivalLS() {
         return distanceFromArrivalLS;
-    }
-
-    public String getStarType() {
-        return starType;
-    }
-
-    public int getSubclass() {
-        return subclass;
-    }
-
-    public float getStellarMass() {
-        return stellarMass;
-    }
-
-    public double getRadius() {
-        return radius;
-    }
-
-    public float getAbsoluteMagnitude() {
-        return absoluteMagnitude;
-    }
-
-    public int getAgeMY() {
-        return ageMY;
-    }
-
-    public float getSurfaceTemperature() {
-        return surfaceTemperature;
-    }
-
-    public String getLuminosity() {
-        return luminosity;
-    }
-
-    public double getSemiMajorAxis() {
-        return semiMajorAxis;
-    }
-
-    public float getEccentricity() {
-        return eccentricity;
-    }
-
-    public float getOrbitalInclination() {
-        return orbitalInclination;
-    }
-
-    public float getPeriapsis() {
-        return periapsis;
-    }
-
-    public double getOrbitalPeriod() {
-        return orbitalPeriod;
-    }
-
-    public float getAscendingNode() {
-        return ascendingNode;
-    }
-
-    public float getMeanAnomaly() {
-        return meanAnomaly;
-    }
-
-    public float getRotationPeriod() {
-        return rotationPeriod;
-    }
-
-    public float getAxialTilt() {
-        return axialTilt;
-    }
-
-    public boolean isWasDiscovered() {
-        return wasDiscovered;
-    }
-
-    public boolean isWasMapped() {
-        return wasMapped;
     }
 
     public boolean isTidalLock() {
@@ -309,23 +289,27 @@ public class ScanEvent extends BaseEvent {
         return atmosphereType;
     }
 
-    public List<AtmosphereComposition> getAtmosphereComposition() {
-        return atmosphereComposition;
-    }
-
     public String getVolcanism() {
         return volcanism;
     }
 
-    public float getMassEM() {
+    public double getMassEM() {
         return massEM;
     }
 
-    public float getSurfaceGravity() {
+    public double getRadius() {
+        return radius;
+    }
+
+    public double getSurfaceGravity() {
         return surfaceGravity;
     }
 
-    public float getSurfacePressure() {
+    public double getSurfaceTemperature() {
+        return surfaceTemperature;
+    }
+
+    public double getSurfacePressure() {
         return surfacePressure;
     }
 
@@ -341,99 +325,74 @@ public class ScanEvent extends BaseEvent {
         return composition;
     }
 
-    public String getFormattedTimestamp(boolean useLocalTime) {
-        return TimestampFormatter.formatTimestamp(getTimestamp().toString(), useLocalTime);
+    public double getSemiMajorAxis() {
+        return semiMajorAxis;
     }
 
-    public static class Parent {
-        @SerializedName("Null")
-        private Integer nullId;
-
-        @SerializedName("Star")
-        private Integer starId;
-
-        public Integer getNullId() {
-            return nullId;
-        }
-
-        public Integer getStarId() {
-            return starId;
-        }
+    public double getEccentricity() {
+        return eccentricity;
     }
 
-    public static class AtmosphereComposition {
-        @SerializedName("Name")
-        private String name;
-
-        @SerializedName("Percent")
-        private float percent;
-
-        public String getName() {
-            return name;
-        }
-
-        public float getPercent() {
-            return percent;
-        }
+    public double getOrbitalInclination() {
+        return orbitalInclination;
     }
 
-    public static class Material {
-        @SerializedName("Name")
-        private String name;
-
-        @SerializedName("Percent")
-        private float percent;
-
-        public String getName() {
-            return name;
-        }
-
-        public float getPercent() {
-            return percent;
-        }
+    public double getPeriapsis() {
+        return periapsis;
     }
 
-    public static class Composition {
-        @SerializedName("Ice")
-        private float ice;
+    public double getOrbitalPeriod() {
+        return orbitalPeriod;
+    }
 
-        @SerializedName("Rock")
-        private float rock;
+    public double getAscendingNode() {
+        return ascendingNode;
+    }
 
-        @SerializedName("Metal")
-        private float metal;
+    public double getMeanAnomaly() {
+        return meanAnomaly;
+    }
 
-        public float getIce() {
-            return ice;
-        }
+    public double getRotationPeriod() {
+        return rotationPeriod;
+    }
 
-        public float getRock() {
-            return rock;
-        }
+    public double getAxialTilt() {
+        return axialTilt;
+    }
 
-        public float getMetal() {
-            return metal;
-        }
+    public boolean isWasDiscovered() {
+        return wasDiscovered;
+    }
+
+    public boolean isWasMapped() {
+        return wasMapped;
     }
 
     @Override
     public String toString() {
-        return new StringJoiner("Sensors detected: ")
+        return new StringJoiner(", ", ScanEvent.class.getSimpleName() + "[", "]")
                 .add("scanType='" + scanType + "'")
                 .add("bodyName='" + bodyName + "'")
-                .add("bodyId=" + bodyId)
+                .add("bodyID=" + bodyID)
                 .add("parents=" + parents)
                 .add("starSystem='" + starSystem + "'")
                 .add("systemAddress=" + systemAddress)
                 .add("distanceFromArrivalLS=" + distanceFromArrivalLS)
-                .add("starType='" + starType + "'")
-                .add("subclass=" + subclass)
-                .add("stellarMass=" + stellarMass)
+                .add("tidalLock=" + tidalLock)
+                .add("terraformState='" + terraformState + "'")
+                .add("planetClass='" + planetClass + "'")
+                .add("atmosphere='" + atmosphere + "'")
+                .add("atmosphereType='" + atmosphereType + "'")
+                .add("volcanism='" + volcanism + "'")
+                .add("massEM=" + massEM)
                 .add("radius=" + radius)
-                .add("absoluteMagnitude=" + absoluteMagnitude)
-                .add("ageMY=" + ageMY)
+                .add("surfaceGravity=" + surfaceGravity)
                 .add("surfaceTemperature=" + surfaceTemperature)
-                .add("luminosity='" + luminosity + "'")
+                .add("surfacePressure=" + surfacePressure)
+                .add("landable=" + landable)
+                .add("materials=" + materials)
+                .add("composition=" + composition)
                 .add("semiMajorAxis=" + semiMajorAxis)
                 .add("eccentricity=" + eccentricity)
                 .add("orbitalInclination=" + orbitalInclination)
@@ -445,19 +404,11 @@ public class ScanEvent extends BaseEvent {
                 .add("axialTilt=" + axialTilt)
                 .add("wasDiscovered=" + wasDiscovered)
                 .add("wasMapped=" + wasMapped)
-                .add("tidalLock=" + tidalLock)
-                .add("terraformState='" + terraformState + "'")
-                .add("planetClass='" + planetClass + "'")
-                .add("atmosphere='" + atmosphere + "'")
-                .add("atmosphereType='" + atmosphereType + "'")
-                .add("atmosphereComposition=" + atmosphereComposition)
-                .add("volcanism='" + volcanism + "'")
-                .add("massEM=" + massEM)
-                .add("surfaceGravity=" + surfaceGravity)
-                .add("surfacePressure=" + surfacePressure)
-                .add("landable=" + landable)
-                .add("materials=" + materials)
-                .add("composition=" + composition)
+                .add("timestamp='" + timestamp + "'")
+                .add("eventName='" + eventName + "'")
+                .add("priority=" + priority)
+                .add("endOfLife=" + endOfLife)
+                .add("isProcessed=" + isProcessed)
                 .toString();
     }
 }

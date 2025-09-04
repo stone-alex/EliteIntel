@@ -108,10 +108,10 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         bindLock(googleLockedCheck, googleApiKeyField, true);
         bindLock(grokLockedCheck, grokApiKeyField, true);
         bindLock(edsmLockedCheck, edsmApiKeyField, true);
-        togglePrivacyModeButton.setEnabled(false);
+        togglePrivacyModeButton.setEnabled(false);//enabled when services start
         togglePrivacyModeButton.setToolTipText("Toggle privacy mode");
-        togglePrivacyModeButton.setText("Privacy OFF");
-        togglePrivacyModeButton.setForeground(Color.RED);
+        togglePrivacyModeButton.setText("Privacy ON ");
+        togglePrivacyModeButton.setForeground(Color.GREEN);
     }
 
     private JPanel buildSystemTab() {
@@ -777,6 +777,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     public static final String PROPERTY_USER_CONFIG_UPDATED = "userConfigUpdated";
     public static final String PROPERTY_PRIVACY_MODE = "privacyModeUpdated";
     public static final String PROPERTY_HELP_MARKDOWN = "helpMarkdownUpdated";
+    public static final String PROPERTY_SERVICES_TOGGLE = "servicesToggled";
 
 
     @Override public void propertyChange(PropertyChangeEvent evt) {
@@ -787,10 +788,12 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         } else if (evt.getPropertyName().equals(PROPERTY_LOG_UPDATED)) {
             setLogText((String) evt.getNewValue());
         } else if (evt.getPropertyName().equals(PROPERTY_PRIVACY_MODE)) {
-            togglePrivacyModeButton.setEnabled(true);
-            togglePrivacyModeButton.setForeground((Boolean) evt.getNewValue() ? Color.RED : Color.GREEN);
+            Boolean privacyModeOn = (Boolean) evt.getNewValue();
+            togglePrivacyModeButton.setForeground(privacyModeOn ? Color.GREEN : Color.RED);
         } else if (evt.getPropertyName().equals(PROPERTY_HELP_MARKDOWN)) {
             setHelpMarkdown((String) evt.getNewValue());
+        } else if (evt.getPropertyName().equals(PROPERTY_SERVICES_TOGGLE)) {
+            togglePrivacyModeButton.setEnabled((Boolean) evt.getNewValue());
         }
     }
 }

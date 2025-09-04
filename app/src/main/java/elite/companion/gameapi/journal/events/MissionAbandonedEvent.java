@@ -17,7 +17,7 @@ public class MissionAbandonedEvent extends BaseEvent {
     private long missionID;
 
     public MissionAbandonedEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "MissionAbandoned");
+        super(json.get("timestamp").getAsString(), 1, Duration.ofDays(7), "MissionAbandoned");
         MissionAbandonedEvent event = GsonFactory.getGson().fromJson(json, MissionAbandonedEvent.class);
         this.name = event.name;
         this.localisedName = event.localisedName;

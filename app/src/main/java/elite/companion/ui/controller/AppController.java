@@ -92,9 +92,9 @@ public class AppController implements AppControllerInterface, ActionListener {
             }
 
 
-            systemSession.put(SystemSession.PRIVACY_MODE, false);
-            model.appendLog(privacyModeIsOffMessage());
-            model.setPrivacyModeOn(false);
+            systemSession.put(SystemSession.PRIVACY_MODE, true);
+            model.appendLog(privacyModeIsOnMessage());
+            model.setPrivacyModeOn(true);
 
             journalParser.start();
             voiceGenerator = VoiceGenerator.getInstance();
@@ -102,7 +102,9 @@ public class AppController implements AppControllerInterface, ActionListener {
             fileMonitor.start();
             voiceGenerator.start();
             EventBusManager.publish(new VoiceProcessEvent("Systems online..."));
+            EventBusManager.publish(new VoiceProcessEvent("Privacy mode is On. Please prefix your commands with the word \"computer\" or \"" + systemSession.getAIVoice().getName() + "\""));
             isServiceRunning = true;
+
         } else {
             EventBusManager.publish(new VoiceProcessEvent("Systems offline..."));
             // Stop services
@@ -114,16 +116,16 @@ public class AppController implements AppControllerInterface, ActionListener {
             model.appendLog("Systems offline...");
             isServiceRunning = false;
         }
+        model.setServicesRunning(isServiceRunning);
         return isServiceRunning;
     }
 
     private SystemSession systemSession = SystemSession.getInstance();
-    private boolean privacyMode = Boolean.parseBoolean(String.valueOf(systemSession.get(SystemSession.PRIVACY_MODE)));
 
     @Override
     public void togglePrivacyMode() {
+        boolean privacyMode = !model.isPrivacyModeOn();
         model.appendLog("Toggle privacy mode");
-        privacyMode = !privacyMode;
         systemSession.put(SystemSession.PRIVACY_MODE, privacyMode);
         EventBusManager.publish(new VoiceProcessEvent(privacyMode ? privacyModeIsOnMessage() : privacyModeIsOffMessage()));
         model.appendLog(privacyMode ? privacyModeIsOnMessage() : privacyModeIsOffMessage());

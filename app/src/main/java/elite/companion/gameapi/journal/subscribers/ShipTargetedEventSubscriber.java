@@ -1,14 +1,19 @@
 package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.companion.comms.voice.VoiceGenerator;
+import elite.companion.gameapi.SensorDataEvent;
 import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.gameapi.journal.events.ShipTargetedEvent;
+import elite.companion.session.PlayerSession;
 import elite.companion.session.SystemSession;
 import elite.companion.util.EventBusManager;
 import elite.companion.util.RomanNumeralConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class ShipTargetedEventSubscriber {
 
@@ -16,7 +21,7 @@ public class ShipTargetedEventSubscriber {
 
     @Subscribe
     public void onShipTargetedEvent(ShipTargetedEvent event) {
-
+        PlayerSession playerSession = PlayerSession.getInstance();
         log.info(event.toJson());
 
         if (!event.isTargetLocked()) {
@@ -34,7 +39,7 @@ public class ShipTargetedEventSubscriber {
         float shieldHealth = event.getShieldHealth();
         float hullHealth = event.getHullHealth();
         StringBuilder info = new StringBuilder();
-        if (anounceScan(event, legalStatus)) {
+        if (anounceScan(event, legalStatus, missionTarget)) {
 
             info.append("Contact Identified: ");
             info.append(missionTarget);
@@ -57,23 +62,52 @@ public class ShipTargetedEventSubscriber {
             if (shieldHealth == 100 && hullHealth == 100) {
                 //info.append("All Systems Normal");
             } else {
-                if (shieldHealth > 0) {
+                if(shieldHealth == 0) {
+                    info.append("Shields off line");
+                } else if (shieldHealth < 50) {
                     info.append(", ");
                     info.append("Shields: ");
                     info.append(String.format("%.0f", shieldHealth)).append(" percent");
-                } else {
-                    info.append("shields off line");
                 }
+
                 info.append(", ");
-                if (hullHealth > 0) {
+                if (hullHealth < 50) {
                     info.append(", ");
                     info.append("Hull: ");
                     info.append(String.format("%.0f", hullHealth)).append(" percent");
                 }
             }
-
-            EventBusManager.publish(new VoiceProcessEvent(info.toString()));
+            String data = buildCanonicalShipString(event);
+            String key;
+            try {
+                MessageDigest md5 = MessageDigest.getInstance("MD5");
+                md5.update(data.getBytes(StandardCharsets.UTF_8));
+                byte[] digest = md5.digest();
+                StringBuilder sb = new StringBuilder();
+                for (byte b : digest) {
+                    sb.append(String.format("%02x", b & 0xff));
+                }
+                key = sb.toString();
+                if (playerSession.getShipScan(key) == null || playerSession.getShipScan(key).isEmpty()) {
+                    //new scan
+                    playerSession.putShipScan(key, data);
+                    EventBusManager.publish(new VoiceProcessEvent(sb.toString()));
+                }
+            } catch (NoSuchAlgorithmException e) {
+                throw new RuntimeException(e);
+            }
         }
+    }
+
+
+    private String buildCanonicalShipString(ShipTargetedEvent event) {  // Cast to actual type, e.g., ScanEvent
+        // Example assuming info is a ScanEvent POJO with getters
+        String pilot = event.getPilotNameLocalised();
+        String shipType = event.getShipLocalised();
+        String faction = event.getFaction();
+        String legalStatus = event.getLegalStatus();
+        // Concat with delimiters to avoid ambiguity (e.g., "JohnDoe|Anaconda|Empire|Clean")
+        return pilot + "|" + shipType + "|" + faction + "|" + legalStatus;
     }
 
     private String determineMissionTarget(ShipTargetedEvent event) {
@@ -88,7 +122,8 @@ public class ShipTargetedEventSubscriber {
         } else return "";
     }
 
-    private static boolean anounceScan(ShipTargetedEvent event, String legalStatus) {
+    private static boolean anounceScan(ShipTargetedEvent event, String legalStatus, String missionTarget) {
+        if (missionTarget == null || missionTarget.isBlank()) return false;
         if (legalStatus == null) return false;
         if (event == null) return false;
         if (legalStatus.isBlank()) return false;

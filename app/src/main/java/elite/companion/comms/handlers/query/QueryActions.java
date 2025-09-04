@@ -19,8 +19,9 @@ public enum QueryActions {
     WHERE_IS_OUR_CARRIER("what_is_our_fleet_carrier_location", WhatIsOurCarrierLocationHandler.class, false),
     FIND_MATERIAL_TRADER("find_material_trader", MaterialTraderQueryHandler.class, false),
     GENERAL_COVERSATION("general_conversation", ConversationalQueryHandler.class, true),
-    TRIVIA("trivia", TriviaQueryHandler.class, true)
-    ;
+    ANALYZE_SCAN("query_analyze_stellar_object", AnalyzerStellarObjectHandler.class, false),
+
+    TRIVIA("trivia", TriviaQueryHandler.class, true);
 
     private final String action;
     private final Class<? extends QueryHandler> handlerClass;

@@ -14,12 +14,13 @@ public class BountyEventSubscriber {
 
     @Subscribe
     public void onBountyEvent(BountyEvent event) {
-        PlayerSession.getInstance().clearShipScans();
-        SystemSession systemSession = SystemSession.getInstance();
+        PlayerSession playerSession = PlayerSession.getInstance();
+        playerSession.clearShipScans();
+        //SystemSession systemSession = SystemSession.getInstance();
         List<BountyEvent.Reward> rewards = event.getRewards();
         StringBuilder sb = new StringBuilder();
         String killConfirmed = "";
-        if (event.getVictimFaction().equalsIgnoreCase(String.valueOf(systemSession.get(SystemSession.TARGET_FACTION_NAME)))) {
+        if (event.getVictimFaction().equalsIgnoreCase(String.valueOf(playerSession.get(PlayerSession.TARGET_FACTION_NAME)))) {
             killConfirmed  = "Mission Kill Confirmed, ";
         } else {
             killConfirmed  = "Kill Confirmed, ";
@@ -31,9 +32,9 @@ public class BountyEventSubscriber {
         }
         if(rewards.size() > 1) sb.append("Rewards sum: ").append(event.getTotalReward()).append(" credits. ");
         //sb.append("Loosing Faction: ").append(event.getVictimFaction());
-        systemSession.addBounty(event.getTotalReward());
+        playerSession.addBounty(event.getTotalReward());
 
-        sb.append("Total bounties collected: ").append(systemSession.getBountyCollectedThisSession()).append(" credits. ");
+        sb.append("Total bounties collected: ").append(playerSession.getBountyCollectedThisSession()).append(" credits. ");
         EventBusManager.publish(new SensorDataEvent(sb.toString()));
     }
 }

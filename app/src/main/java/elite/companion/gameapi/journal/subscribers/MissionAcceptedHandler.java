@@ -4,6 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import elite.companion.gameapi.SensorDataEvent;
 import elite.companion.gameapi.journal.events.MissionAcceptedEvent;
 import elite.companion.gameapi.journal.events.dto.MissionDto;
+import elite.companion.session.PlayerSession;
 import elite.companion.session.SystemSession;
 import elite.companion.util.EventBusManager;
 
@@ -14,8 +15,8 @@ public class MissionAcceptedHandler {
     public void onMissionAcceptedEvent(MissionAcceptedEvent event) {
 
         MissionDto mission = new MissionDto(event);
-        SystemSession systemSession = SystemSession.getInstance();
-        systemSession.addMission(mission);
+        PlayerSession playerSession = PlayerSession.getInstance();
+        playerSession.addMission(mission);
         EventBusManager.publish(new SensorDataEvent("Mission Accepted: " + mission.toJson()));
     }
 }

@@ -5,7 +5,8 @@ import elite.companion.gameapi.journal.events.LoadoutEvent;
 import elite.companion.session.PlayerSession;
 import elite.companion.session.SystemSession;
 
-import static elite.companion.session.SystemSession.SHIP_LOADOUT_JSON;
+import static elite.companion.session.PlayerSession.SHIP_LOADOUT_JSON;
+
 
 public class LoadoutSubscriber {
 

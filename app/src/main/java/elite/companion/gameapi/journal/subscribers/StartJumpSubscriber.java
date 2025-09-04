@@ -3,6 +3,7 @@ package elite.companion.gameapi.journal.subscribers;
 import com.google.common.eventbus.Subscribe;
 import elite.companion.gameapi.SensorDataEvent;
 import elite.companion.gameapi.journal.events.StartJumpEvent;
+import elite.companion.session.PlayerSession;
 import elite.companion.session.SystemSession;
 import elite.companion.ui.event.AppLogEvent;
 import elite.companion.util.EventBusManager;
@@ -27,7 +28,7 @@ public class StartJumpSubscriber {
         sb.append(", ");
         sb.append(isFuelStarClause(starClass));
 
-        SystemSession.getInstance().put(SystemSession.JUMPING_TO, jumpingTo);
+        SystemSession.getInstance().put(PlayerSession.JUMPING_TO, jumpingTo);
 
         if(!"Supercruise".equalsIgnoreCase(event.getJumpType())) {
             EventBusManager.publish(new AppLogEvent("Processing Event: StartJumpEvent sending sensor data to AI: "+sb.toString()));

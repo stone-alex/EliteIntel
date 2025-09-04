@@ -105,7 +105,7 @@ public class AppController implements AppControllerInterface, ActionListener {
             EventBusManager.publish(new VoiceProcessEvent("Systems online..."));
             EventBusManager.publish(new VoiceProcessEvent("Privacy mode is On. Please prefix your commands with the word \"computer\" or \"" + systemSession.getAIVoice().getName() + "\""));
             isServiceRunning = true;
-            EventBusManager.publish(new LoadSessionEvent());
+            //EventBusManager.publish(new LoadSessionEvent());
         } else {
             EventBusManager.publish(new VoiceProcessEvent("Systems offline..."));
             // Stop services

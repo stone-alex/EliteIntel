@@ -116,7 +116,7 @@ public class ShipTargetedEventSubscriber {
         if (faction == null || faction.isBlank()) return "";
         if (legalStatus == null || legalStatus.isBlank()) return "";
         SystemSession systemSession = SystemSession.getInstance();
-        String targetFaction = String.valueOf(systemSession.get(SystemSession.TARGET_FACTION_NAME));
+        String targetFaction = String.valueOf(systemSession.get(PlayerSession.TARGET_FACTION_NAME));
         if (targetFaction.equalsIgnoreCase(faction) && legalStatus.equalsIgnoreCase("wanted")) {
             return "Mission Target! ";
         } else return "";

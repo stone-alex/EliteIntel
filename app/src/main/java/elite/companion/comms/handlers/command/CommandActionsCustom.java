@@ -1,5 +1,6 @@
 package elite.companion.comms.handlers.command;
 
+import elite.companion.session.PlayerSession;
 import elite.companion.session.SystemSession;
 
 public enum CommandActionsCustom {
@@ -8,8 +9,8 @@ public enum CommandActionsCustom {
     SET_PRIVACY_MODE("set_privacy_mode", "<privacy_mode_on_off>", "privacy_mode", SetPrivacyMode.class),
     SET_RADIO_TRANSMISSION_MODDE("turn_radio_transmission_on_off", "<radio_transmission_on_off>", SystemSession.RADION_TRANSMISSION_ON_OFF, SetRadioTransmissionOnOff.class),
     SET_AI_VOICE("set_or_change_voice_to", "<voice_name>", "voice_name", SetAiVoice.class),
-    SET_PROFILE("set_profile", "<profile>", SystemSession.PROFILE, SetCadenceHandler.class),
-    SET_PERSONALITY("set_personality", "<personality>", SystemSession.PERSONALITY, SetPersonalityHandler.class),
+    SET_PROFILE("set_profile", "<profile>", PlayerSession.PROFILE, SetCadenceHandler.class),
+    SET_PERSONALITY("set_personality", "<personality>", PlayerSession.PERSONALITY, SetPersonalityHandler.class),
     CLEAR_SESSION("clear_session", "<session_clear>", "session_clear", ClearSessionHandler.class),
 
 

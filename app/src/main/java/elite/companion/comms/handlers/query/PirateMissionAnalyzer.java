@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import elite.companion.comms.ai.GrokAnalysisEndpoint;
 import elite.companion.comms.voice.VoiceGenerator;
 import elite.companion.gameapi.VoiceProcessEvent;
+import elite.companion.session.PlayerSession;
 import elite.companion.session.SystemSession;
 import elite.companion.comms.ai.AIContextFactory;
 import elite.companion.util.EventBusManager;
@@ -34,7 +35,7 @@ public class PirateMissionAnalyzer implements QueryHandler {
     }
 
     private String fetchDataForAction() {
-        SystemSession session = SystemSession.getInstance();
+        PlayerSession session = PlayerSession.getInstance();
         String missions = session.getPirateMissionsJson();
         String bounties = session.getPirateBountiesJson();
         String bountiesCollectedThisSession = session.getBountyCollectedThisSession() + "";

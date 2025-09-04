@@ -2,6 +2,7 @@ package elite.companion.gameapi.gamestate.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import com.google.gson.Gson;
+import elite.companion.session.PlayerSession;
 import elite.companion.util.EventBusManager;
 import elite.companion.gameapi.gamestate.events.GameEvents;
 import elite.companion.session.SystemSession;
@@ -17,7 +18,7 @@ public class StatusChangeSubscriber {
     @Subscribe
     public void onStatusChange(GameEvents.StatusEvent event) {
         SystemSession systemSession = SystemSession.getInstance();
-        systemSession.put(SystemSession.CURRENT_STATUS, GsonFactory.getGson().toJson(event));
+        systemSession.put(PlayerSession.CURRENT_STATUS, GsonFactory.getGson().toJson(event));
         //write a Grok query to access status. this method is called often, but returns same data most of the time.
     }
 }

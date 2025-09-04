@@ -2,6 +2,7 @@ package elite.companion.gameapi.gamestate.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import com.google.gson.Gson;
+import elite.companion.session.PlayerSession;
 import elite.companion.util.EventBusManager;
 import elite.companion.gameapi.gamestate.events.GameEvents;
 import elite.companion.gameapi.gamestate.events.NavRouteDto;
@@ -36,7 +37,7 @@ public class RoutePlottedSubscriber {
                 routeMap.put(dto.getName(), dto);
             }
 
-            SystemSession systemSession = SystemSession.getInstance();
+            PlayerSession playerSession = PlayerSession.getInstance();
 
             NavRouteDto finalDestination;
             if (!routeMap.isEmpty()) {
@@ -45,11 +46,11 @@ public class RoutePlottedSubscriber {
                         .map(Map.Entry::getValue)
                         .orElse(null);
                 if (finalDestination != null) {
-                    systemSession.put(SystemSession.FINAL_DESTINATION, finalDestination.getName());
+                    playerSession.put(PlayerSession.FINAL_DESTINATION, finalDestination.getName());
                 }
-                systemSession.setNavRoute(routeMap);
+                playerSession.setNavRoute(routeMap);
             } else {
-                systemSession.clearRoute();
+                playerSession.clearRoute();
             }
         }
     }

@@ -46,23 +46,23 @@ public class AnalyzeDataHandler extends BaseQueryAnalyzer implements QueryHandle
                 yield signals != null ? GSON.toJson(String.valueOf(signals)) : null;
             }
             case QUERY_SHIP_LOADOUT -> {
-                Object loadout = systemSession.get(SystemSession.SHIP_LOADOUT_JSON);
+                Object loadout = systemSession.get(PlayerSession.SHIP_LOADOUT_JSON);
                 yield loadout != null ? String.valueOf(loadout) : null;
             }
             case QUERY_ANALYZE_ROUTE, QUERY_NEXT_STAR_SCOOPABLE -> {
-                Collection<? extends ToJsonConvertible> route = systemSession.getRoute().values();
+                Collection<? extends ToJsonConvertible> route = playerSession.getRoute().values();
                 yield JsonDataFactory.getInstance().toJsonArrayString(route);
             }
             case QUERY_ANALYZE_ON_BOARD_CARGO -> {
-                Object cargo = systemSession.get(SystemSession.SHIP_CARGO);
+                Object cargo = systemSession.get(PlayerSession.SHIP_CARGO);
                 yield cargo != null ? GSON.toJson(cargo) : null;
             }
             case LOCAL_SYSTEM_INFO -> {
-                Object system = systemSession.get(SystemSession.CURRENT_SYSTEM);
+                Object system = systemSession.get(PlayerSession.CURRENT_SYSTEM);
                 yield system != null ? GSON.toJson(system) : null;
             }
             case CHECK_LEGAL_STATUS -> {
-                Object status = systemSession.get(SystemSession.CURRENT_STATUS);
+                Object status = systemSession.get(PlayerSession.CURRENT_STATUS);
                 yield status != null ? GSON.toJson(status) : null;
             }
             case QUERY_CARRIER_STATS -> {

@@ -8,7 +8,7 @@ public class WhatIsOurCarrierLocationHandler extends BaseQueryAnalyzer implement
 
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        String carrierLocation = String.valueOf(SystemSession.getInstance().get(SystemSession.CARRIER_LOCATION));
+        String carrierLocation = String.valueOf(SystemSession.getInstance().get(PlayerSession.CARRIER_LOCATION));
         String playerRank = String.valueOf(PlayerSession.getInstance().get(PlayerSession.PLAYER_HIGHEST_MILITARY_RANK));
         return GenericResponse.getInstance().genericResponse("Carrier is located in" + carrierLocation + ", " + playerRank);
     }

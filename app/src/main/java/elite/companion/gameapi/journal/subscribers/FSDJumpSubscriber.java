@@ -3,6 +3,7 @@ package elite.companion.gameapi.journal.subscribers;
 import com.google.common.eventbus.Subscribe;
 import elite.companion.gameapi.SensorDataEvent;
 import elite.companion.gameapi.journal.events.FSDJumpEvent;
+import elite.companion.session.PlayerSession;
 import elite.companion.session.SystemSession;
 import elite.companion.ui.event.AppLogEvent;
 import elite.companion.util.EventBusManager;
@@ -14,16 +15,16 @@ public class FSDJumpSubscriber {
 
     @Subscribe
     public void onFSDJumpEvent(FSDJumpEvent event) {
-        SystemSession systemSession = SystemSession.getInstance();
-        systemSession.put(SystemSession.CURRENT_SYSTEM_DATA, event.toJson());
+        PlayerSession systemSession = PlayerSession.getInstance();
+        systemSession.put(PlayerSession.CURRENT_SYSTEM_DATA, event.toJson());
 
         String currentStarSystem = event.getStarSystem();
 
         boolean roueSet = !systemSession.getRoute().isEmpty();
         systemSession.removeNavPoint(currentStarSystem);
-        String finalDestination = String.valueOf(systemSession.get(SystemSession.FINAL_DESTINATION));
-        String arrivedAt = String.valueOf(systemSession.get(SystemSession.JUMPING_TO));
-        systemSession.put(SystemSession.CURRENT_SYSTEM, arrivedAt);
+        String finalDestination = String.valueOf(systemSession.get(PlayerSession.FINAL_DESTINATION));
+        String arrivedAt = String.valueOf(systemSession.get(PlayerSession.JUMPING_TO));
+        systemSession.put(PlayerSession.CURRENT_SYSTEM, arrivedAt);
 
         StringBuilder sb = new StringBuilder();
         sb.append("Hyperspace Jump Successful: ");

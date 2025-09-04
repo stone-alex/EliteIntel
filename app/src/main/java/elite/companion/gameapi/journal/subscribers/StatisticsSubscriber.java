@@ -26,7 +26,7 @@ public class StatisticsSubscriber {
         if (event.getExploration() != null) {
             playerSession.put(TOTAL_DISTANCE_TRAVELED, event.getExploration().getGreatestDistanceFromStart());
             playerSession.put(TOTAL_SYSTEMS_VISITED, event.getExploration().getSystemsVisited());
-            playerSession.put(TOTAL_HIPERSPACE_DISTANCE, event.getExploration().getTotalHyperspaceDistance());
+            playerSession.put(TOTAL_HYPERSPACE_DISTANCE, event.getExploration().getTotalHyperspaceDistance());
             playerSession.put(TOTAL_PROFITS_FROM_EXPLORATION, event.getExploration().getExplorationProfits());
         }
 

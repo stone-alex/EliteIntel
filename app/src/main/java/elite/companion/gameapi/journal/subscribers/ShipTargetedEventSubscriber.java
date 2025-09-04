@@ -1,13 +1,13 @@
 package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.companion.gameapi.SensorDataEvent;
 import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.gameapi.journal.events.ShipTargetedEvent;
 import elite.companion.session.PlayerSession;
 import elite.companion.session.SystemSession;
 import elite.companion.util.EventBusManager;
 import elite.companion.util.RomanNumeralConverter;
+import elite.companion.util.TTSFriendlyNumberConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +17,7 @@ import java.security.NoSuchAlgorithmException;
 
 public class ShipTargetedEventSubscriber {
 
-    private static final Logger log = LoggerFactory.getLogger(ShipTargetedEventSubscriber.class);
+    private  final Logger log = LoggerFactory.getLogger(ShipTargetedEventSubscriber.class);
 
     @Subscribe
     public void onShipTargetedEvent(ShipTargetedEvent event) {
@@ -41,7 +41,7 @@ public class ShipTargetedEventSubscriber {
         StringBuilder info = new StringBuilder();
         if (anounceScan(event, legalStatus, missionTarget)) {
 
-            info.append("Contact Identified: ");
+            info.append("Contact: ");
             info.append(missionTarget);
 
             info.append(ship == null ? " Unknown Ship " : ship);
@@ -56,7 +56,7 @@ public class ShipTargetedEventSubscriber {
             info.append(legalStatus == null ? " Legal Status Unknown " : legalStatus.replace("_", " "));
             info.append(", ");
 
-            info.append(bounty == 0 ? "No Bounty" : "bounty: " + bounty + " credits");
+            info.append(bounty == 0 ? "No Bounty" : "bounty: " + TTSFriendlyNumberConverter.formatBountyForSpeech(bounty));
             info.append(", ");
 
             if (shieldHealth == 100 && hullHealth == 100) {
@@ -91,7 +91,7 @@ public class ShipTargetedEventSubscriber {
                 if (playerSession.getShipScan(key) == null || playerSession.getShipScan(key).isEmpty()) {
                     //new scan
                     playerSession.putShipScan(key, data);
-                    EventBusManager.publish(new VoiceProcessEvent(sb.toString()));
+                    EventBusManager.publish(new VoiceProcessEvent(info.toString()));
                 }
             } catch (NoSuchAlgorithmException e) {
                 throw new RuntimeException(e);
@@ -122,7 +122,7 @@ public class ShipTargetedEventSubscriber {
         } else return "";
     }
 
-    private static boolean anounceScan(ShipTargetedEvent event, String legalStatus, String missionTarget) {
+    private  boolean anounceScan(ShipTargetedEvent event, String legalStatus, String missionTarget) {
         if (missionTarget == null || missionTarget.isBlank()) return false;
         if (legalStatus == null) return false;
         if (event == null) return false;
@@ -133,4 +133,5 @@ public class ShipTargetedEventSubscriber {
 
         return true;
     }
+
 }

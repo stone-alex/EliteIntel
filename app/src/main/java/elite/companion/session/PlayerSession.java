@@ -23,7 +23,7 @@ public class PlayerSession {
     public static final String TOTAL_BOUNTY_PROFIT = "total_bounty_profit";
     public static final String TOTAL_DISTANCE_TRAVELED = "total_distance_traveled_in_light_years";
     public static final String TOTAL_SYSTEMS_VISITED = "total_systems_visited";
-    public static final String TOTAL_HIPERSPACE_DISTANCE = "total_hyperspace_distance_in_light_years";
+    public static final String TOTAL_HYPERSPACE_DISTANCE = "total_hyperspace_distance_in_light_years";
     public static final String TOTAL_PROFITS_FROM_EXPLORATION = "total_profits_from_exploration";
     public static final String SPECIES_FIRST_LOGGED = "species_first_logged";
     public static final String EXOBIOLOGY_PROFITS = "exobiology_profits";

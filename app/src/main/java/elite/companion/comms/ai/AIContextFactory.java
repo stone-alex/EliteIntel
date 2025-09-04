@@ -20,6 +20,13 @@ public class AIContextFactory {
         return instance;
     }
 
+    private static String getProfanityExamples() {
+        SystemSession systemSession = SystemSession.getInstance();
+        AICadence aiCadence = systemSession.getAICadence() != null ? systemSession.getAICadence() : AICadence.FEDERATION;
+        String third = aiCadence == AICadence.IMPERIAL ? "arse" : "ass";
+        return "'shit', 'fuck', '" + third + "'";
+    }
+
     public String generateSystemInstructions(String sensorInput) {
         StringBuilder sb = new StringBuilder();
         getSessionValues(sb);
@@ -39,7 +46,7 @@ public class AIContextFactory {
         sb.append("Always output JSON: {\"type\": \"system_command|chat\", \"response_text\": \"TTS output\", \"action\": \"set_mining_target|set_current_system|...\", \"params\": {\"key\": \"value\"}, \"expect_followup\": boolean}. ");
         sb.append("For type='query' in initial classification, follow response_text rules from player instructions. For tool/follow-up, use full analyzed response in 'response_text'. ");
         sb.append("For type='chat', set 'expect_followup': true if response poses a question or requires user clarification; otherwise, false. ");
-        sb.append("For UNHINGED personality, use playful slang matching cadence. For ROGUE personality, use bold profanity (e.g., 'shit', 'fuck', 'arse'), but keep it sharp and witty, not excessive.");
+        sb.append("For UNHINGED personality, use playful slang matching cadence. For ROGUE personality, use bold profanity (e.g., " + getProfanityExamples() + "), but keep it sharp and witty, not excessive.");
         return sb.toString();
     }
 
@@ -54,7 +61,7 @@ public class AIContextFactory {
         sb.append("Always output JSON: {\"type\": \"system_command|chat\", \"response_text\": \"TTS output\", \"action\": \"set_mining_target|set_current_system|...\", \"params\": {\"key\": \"value\"}, \"expect_followup\": boolean}. ");
         sb.append("For type='query' in initial classification, follow response_text rules from player instructions. For tool/follow-up, use full analyzed response in 'response_text'. ");
         sb.append("For type='chat', set 'expect_followup': true if response poses a question or requires user clarification; otherwise, false. ");
-        sb.append("For UNHINGED personality, use playful slang matching cadence. For ROGUE personality, use bold profanity (e.g., 'shit', 'fuck', 'arse'), but keep it sharp and witty, not excessive.");
+        sb.append("For UNHINGED personality, use playful slang matching cadence. For ROGUE personality, use bold profanity (e.g., " + getProfanityExamples() + "), but keep it sharp and witty, not excessive.");
         return sb.toString();
     }
 
@@ -142,7 +149,7 @@ public class AIContextFactory {
                 "    - Do not generate or infer answers here; the app will handle final response via handlers.\n");
         sb.append("For type='chat': \n" +
                 "    - Classify as 'chat' for general conversation, lore questions, opinions, or casual talk (e.g., 'How’s it going?', 'Tell me about the Thargoids', 'What’s your favorite system?').\n" +
-                "    - Generate a relevant conversational response in 'response_text' strictly adhering to the configured personality and cadence (e.g., for ROGUE: extremely brief, bold, witty with profanity like 'shit', 'fuck', 'arse'; for UNHINGED: playful slang matching cadence).\n" +
+                "    - Generate a relevant conversational response in 'response_text' strictly adhering to the configured personality and cadence (e.g., for ROGUE: extremely brief, bold, witty with profanity like " + getProfanityExamples() + "; for UNHINGED: playful slang matching cadence).\n" +
                 "    - If input is ambiguous, unrecognized, or gibberish (e.g., 'voice to an', 'asdf'), set 'response_text' to 'Sorry, didn't quite catch that. Could you repeat or clarify?', 'action' to null, and 'expect_followup' to true. Do not generate custom clarification messages.\n" +
                 "    - Set 'expect_followup' to true if the response poses a question or invites further conversation; otherwise, false.\n");
         sb.append("Map colloquial terms to commands: 'feds', 'yanks', or 'federation space' to 'FEDERATION', 'imperials', 'imps', or 'empire' to 'IMPERIAL', 'alliance space' or 'allies' to 'ALLIANCE' for set_cadence. ");
@@ -155,7 +162,7 @@ public class AIContextFactory {
                 "    - Input 'Tell me about the Thargoids' -> {\"type\": \"chat\", \"response_text\": \"Thargoids? Bug-like bastards with tech that’ll fuck your ship in seconds. Want tips to survive 'em?\", \"action\": null, \"params\": {}, \"expect_followup\": true}\n" +
                 "    - Input 'What’s the weather in Los Angeles?' -> {\"type\": \"query\", \"response_text\": \"\", \"action\": \"general_conversation\", \"params\": {}, \"expect_followup\": true}\n" +
                 "    - Input 'voice to an' -> {\"type\": \"chat\", \"response_text\": \"Sorry, didn't quite catch that. Could you repeat or clarify?\", \"action\": null, \"params\": {}, \"expect_followup\": true}\n" +
-                "    - Input 'Find a material trader' -> {\"type\": \"query\", \"response_text\": \"Moment...\", \"action\": \"find_material_trader\", \"params\": {}, \"expect_followup\": false}\\n\" +\n" +
+                "    - Input 'Find a material trader' -> {\"type\": \"query\", \"response_text\": \"Moment...\", \"action\": \"find_material_trader\", \"params\": {}, \"expect_followup\": false}\n" +
                 "    - Input 'Where can I buy Painite?' -> {\"type\": \"query\", \"response_text\": \"Moment...\", \"action\": \"find_commodity\", \"params\": {\"commodity\": \"painite\"}, \"expect_followup\": false}\n");
         return sb.toString();
     }
@@ -168,7 +175,7 @@ public class AIContextFactory {
         StringBuilder dataQueries = new StringBuilder();
 
         for (QueryActions query : QueryActions.values()) {
-            String description = getQueryDescription(query);
+            String description = query.getDescription();
             if (query.isRequiresFollowUp()) {
                 quickQueries.append("    - ").append(query.getAction()).append(": ").append(description).append("\n");
             } else {
@@ -184,27 +191,6 @@ public class AIContextFactory {
         appendBehavior(sb);
         sb.append("All supported queries: ").append(GrokRequestHints.supportedQueries).append("\n");
         return sb.toString();
-    }
-
-    private String getQueryDescription(QueryActions query) {
-        switch (query) {
-            case WHAT_IS_YOUR_DESIGNATION:
-                return "Responds with AI name (e.g., 'what is your name', 'who are you').";
-            case LIST_AVAILABLE_VOICES:
-                return "Lists available AI voices.";
-            case WHAT_ARE_YOUR_CAPABILITIES:
-                return "Summarizes app capabilities.";
-            case QUERY_ANALYZE_ON_BOARD_CARGO:
-                return "Analyzes cargo hold contents.";
-            case QUERY_SHIP_LOADOUT:
-                return "Requests current ship details (e.g., 'what is my ship loadout').";
-            case QUERY_SEARCH_SIGNAL_DATA:
-                return "Requests current system and signal data (e.g., 'what signals are here').";
-            case GENERAL_COVERSATION:
-                return "Handles general knowledge questions outside Elite Dangerous (e.g., 'what’s the weather in Los Angeles?').";
-            default:
-                return "Handles " + query.getAction() + " query.";
-        }
     }
 
     private String generateSupportedCommandsCause() {

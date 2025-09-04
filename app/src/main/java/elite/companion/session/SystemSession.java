@@ -32,7 +32,6 @@ public class SystemSession {
     public static final String SHIP_CARGO = "ship_cargo";
     public static final String PRIVACY_MODE = "privacy_mode";
     public static final String RADION_TRANSMISSION_ON_OFF = "radio_transmission_on_off";
-    public static final String ANNOUNCE_BODY_SCANS = "announce_body_scans";
     public static final String CURRENT_SYSTEM_DATA = "current_system_data";
     public static final String PIRATE_MISSIONS = "pirate_missions";
     public static final String PIRATE_BOUNTIES = "pirate_bounties";

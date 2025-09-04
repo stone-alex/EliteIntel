@@ -26,6 +26,7 @@ public class PowerPlaySubscriber {
             String allegiance = powerDetails.getAllegiance();
             rp.setAllegiance(allegiance);
             VoiceToAllegiances voiceToAllegiances = VoiceToAllegiances.getInstance();
+/*
             if ("Empire".equalsIgnoreCase(allegiance)) {
                 systemSession.setAICadence(AICadence.IMPERIAL);
                 voiceToAllegiances.getVoiceForCadence(AICadence.IMPERIAL, systemSession.getAIVoice());
@@ -36,6 +37,7 @@ public class PowerPlaySubscriber {
                 systemSession.setAICadence(AICadence.ALLIANCE);
                 voiceToAllegiances.getVoiceForCadence(AICadence.ALLIANCE, systemSession.getAIVoice());
             }
+*/
         } else {
             System.out.println(
                     "Power [" + event.getPower() + "] is not included in programming. Please notify developer with exact power name as shown in this line"

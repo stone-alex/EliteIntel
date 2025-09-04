@@ -1,2 +1,4 @@
 app/src/main/resources/elite-companion-xai-api-key.conf
 /app/build
+/logs
+/misc

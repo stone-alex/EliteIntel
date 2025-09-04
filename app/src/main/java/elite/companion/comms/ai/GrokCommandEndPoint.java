@@ -7,6 +7,7 @@ import elite.companion.comms.voice.VoiceGenerator;
 import elite.companion.gameapi.UserInputEvent;
 import elite.companion.gameapi.SensorDataEvent;
 import elite.companion.gameapi.VoiceProcessEvent;
+import elite.companion.session.PlayerSession;
 import elite.companion.session.SystemSession;
 import elite.companion.util.ConfigManager;
 import elite.companion.util.EventBusManager;

@@ -1,26 +1,24 @@
 package elite.companion.session;
 
 import com.google.common.eventbus.Subscribe;
-import com.google.gson.*;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import elite.companion.comms.ai.AICadence;
 import elite.companion.comms.ai.AIPersonality;
 import elite.companion.comms.voice.Voices;
-import elite.companion.gameapi.journal.events.FSSSignalDiscoveredEvent;
+import elite.companion.gameapi.journal.events.BaseEvent;
 import elite.companion.gameapi.journal.events.LoadGameEvent;
 import elite.companion.util.EventBusManager;
-import elite.companion.util.GsonFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
 
 public class SystemSession {
     private static final Logger LOG = LoggerFactory.getLogger(SystemSession.class);
 
     public static final String RADION_TRANSMISSION_ON_OFF = "radio_transmission_on_off";
+    private static final String SESSION_FILE = "session/system_session.json";
 
     private static final SystemSession INSTANCE = new SystemSession();
     private final Map<String, Object> state = new HashMap<>();
@@ -30,11 +28,18 @@ public class SystemSession {
     private AICadence aiCadence;
     private JsonArray chatHistory = new JsonArray();
     private boolean isPrivacyModeOn = false;
-
-    private static final String SESSION_FILE = "session/system_session.json";
-    private static final Gson GSON = GsonFactory.getGson();
+    private final SessionPersistence persistence = new SessionPersistence(SESSION_FILE);
 
     private SystemSession() {
+        persistence.registerField("detectedSignals", this::getDetectedSignals, v -> {
+            detectedSignals.clear();
+            detectedSignals.addAll((Set<String>) v);
+        }, Set.class);
+        persistence.registerField("aiVoice", this::getAIVoice, this::setAIVoice, Voices.class);
+        persistence.registerField("aiPersonality", this::getAIPersonality, this::setAIPersonality, AIPersonality.class);
+        persistence.registerField("aiCadence", this::getAICadence, this::setAICadence, AICadence.class);
+        persistence.registerField("chatHistory", this::getChatHistory, this::setChatHistory, JsonArray.class);
+        persistence.registerField("isPrivacyModeOn", this::isPrivacyModeOn, this::setPrivacyMode, Boolean.class);
         EventBusManager.register(this);
         addShutdownHook();
     }
@@ -47,125 +52,12 @@ public class SystemSession {
         return INSTANCE;
     }
 
-    private File ensureSessionDirectory() {
-        String root = System.getProperty("user.dir");
-        File file = new File(root, SESSION_FILE);
-        File parentDir = file.getParentFile();
-        if (!parentDir.exists()) {
-            if (!parentDir.mkdirs()) {
-                LOG.error("Failed to create session directory: {}", parentDir.getPath());
-                return null;
-            }
-        }
-        return file;
-    }
-
-
     public void saveSession() {
-        loadSavedStateFromDisk();
-        File file = ensureSessionDirectory();
-        if (file == null) {
-            return;
-        }
-
-        // Load existing session to merge with in-memory state
-        JsonObject existingJson = loadSessionForMerge();
-
-        // Prepare new JSON
-        JsonObject json = new JsonObject();
-        JsonObject stateJson = existingJson.has("state") ? existingJson.getAsJsonObject("state") : new JsonObject();
-        // Update state entries, preserving existing ones
-        for (Map.Entry<String, Object> entry : state.entrySet()) {
-            stateJson.add(entry.getKey(), GSON.toJsonTree(entry.getValue()));
-        }
-        json.add("state", stateJson);
-
-        // Preserve or update other fields
-        json.add("detectedSignals", existingJson.has("detectedSignals") ? existingJson.get("detectedSignals") : GSON.toJsonTree(detectedSignals));
-        json.addProperty("aiVoice", aiVoice != null ? aiVoice.name() : (existingJson.has("aiVoice") && !existingJson.get("aiVoice").isJsonNull() ? existingJson.get("aiVoice").getAsString() : null));
-        json.addProperty("aiPersonality", aiPersonality != null ? aiPersonality.name() : (existingJson.has("aiPersonality") && !existingJson.get("aiPersonality").isJsonNull() ? existingJson.get("aiPersonality").getAsString() : null));
-        json.addProperty("aiCadence", aiCadence != null ? aiCadence.name() : (existingJson.has("aiCadence") && !existingJson.get("aiCadence").isJsonNull() ? existingJson.get("aiCadence").getAsString() : null));
-        json.add("chatHistory", existingJson.has("chatHistory") ? existingJson.get("chatHistory") : chatHistory);
-
-        try (Writer writer = new FileWriter(file)) {
-            GSON.toJson(json, writer);
-            LOG.debug("Saved system session to: {}", file.getPath());
-        } catch (IOException e) {
-            LOG.error("Failed to save system session to {}: {}", file.getPath(), e.getMessage(), e);
-        }
-    }
-
-    private JsonObject loadSessionForMerge() {
-        File file = ensureSessionDirectory();
-        if (file == null || !file.exists()) {
-            return new JsonObject();
-        }
-
-        try (Reader reader = new FileReader(file)) {
-            return JsonParser.parseReader(reader).getAsJsonObject();
-        } catch (IOException e) {
-            LOG.error("Failed to load system session for merge from {}: {}", file.getPath(), e.getMessage(), e);
-            return new JsonObject();
-        }
+        persistence.saveSession(state);
     }
 
     private void loadSavedStateFromDisk() {
-        File file = ensureSessionDirectory();
-        if (file == null) {
-            return;
-        }
-
-        if (!file.exists()) {
-            try {
-                JsonObject emptyJson = new JsonObject();
-                emptyJson.add("state", new JsonObject());
-                emptyJson.add("detectedSignals", new JsonArray());
-                emptyJson.add("chatHistory", new JsonArray());
-                Files.write(file.toPath(), GSON.toJson(emptyJson).getBytes());
-                LOG.info("Created empty system session file: {}", file.getPath());
-            } catch (IOException e) {
-                LOG.error("Failed to create empty system session file {}: {}", file.getPath(), e.getMessage(), e);
-                return;
-            }
-        }
-
-        try (Reader reader = new FileReader(file)) {
-            JsonObject json = JsonParser.parseReader(reader).getAsJsonObject();
-
-            // Load state map
-            if (json.has("state")) {
-                JsonObject stateJson = json.getAsJsonObject("state");
-                for (Map.Entry<String, JsonElement> entry : stateJson.entrySet()) {
-                    state.put(entry.getKey(), GSON.fromJson(entry.getValue(), Object.class));
-                }
-            }
-
-            // Load detected signals
-            if (json.has("detectedSignals")) {
-                JsonArray signalsArray = json.getAsJsonArray("detectedSignals");
-                for (JsonElement elem : signalsArray) {
-                    detectedSignals.add(elem.getAsString());
-                }
-                LOG.debug("Deserialized {} detected signals", detectedSignals.size());
-            }
-
-            // Load other fields
-            if (json.has("aiVoice") && !json.get("aiVoice").isJsonNull()) {
-                aiVoice = Voices.valueOf(json.get("aiVoice").getAsString());
-            }
-            if (json.has("aiPersonality") && !json.get("aiPersonality").isJsonNull()) {
-                aiPersonality = AIPersonality.valueOf(json.get("aiPersonality").getAsString());
-            }
-            if (json.has("aiCadence") && !json.get("aiCadence").isJsonNull()) {
-                aiCadence = AICadence.valueOf(json.get("aiCadence").getAsString());
-            }
-            if (json.has("chatHistory")) {
-                chatHistory = json.getAsJsonArray("chatHistory");
-            }
-            LOG.debug("Loaded system session from: {}", file.getPath());
-        } catch (IOException | JsonSyntaxException e) {
-            LOG.error("Failed to load system session from {}: {}", file.getPath(), e.getMessage(), e);
-        }
+        persistence.loadSession(json -> persistence.loadFields(json, state));
     }
 
     public Object get(String key) {
@@ -182,7 +74,7 @@ public class SystemSession {
         saveSession();
     }
 
-    public void addSignal(FSSSignalDiscoveredEvent event) {
+    public void addSignal(BaseEvent event) {
         detectedSignals.add(event.toJson());
         saveSession();
     }
@@ -233,6 +125,11 @@ public class SystemSession {
         return chatHistory;
     }
 
+    public void setChatHistory(JsonArray chatHistory) {
+        this.chatHistory = chatHistory;
+        saveSession();
+    }
+
     public void appendToChatHistory(JsonObject userMessage, JsonObject assistantMessage) {
         chatHistory.add(userMessage);
         chatHistory.add(assistantMessage);
@@ -253,6 +150,10 @@ public class SystemSession {
         saveSession();
     }
 
+    private Set<String> getDetectedSignals() {
+        return detectedSignals;
+    }
+
     @Subscribe
     public void clearOnShutDown(ClearSessionCacheEvent event) {
         state.clear();
@@ -261,20 +162,7 @@ public class SystemSession {
         aiPersonality = null;
         aiCadence = null;
         chatHistory = new JsonArray();
-        deleteSessionFile();
-    }
-
-    private void deleteSessionFile() {
-        String root = System.getProperty("user.dir");
-        File file = new File(root, SESSION_FILE);
-        if (file.exists()) {
-            try {
-                Files.delete(Paths.get(file.getPath()));
-                LOG.debug("Deleted system session file: {}", file.getPath());
-            } catch (IOException e) {
-                LOG.error("Failed to delete system session file {}: {}", file.getPath(), e.getMessage(), e);
-            }
-        }
+        persistence.deleteSessionFile();
     }
 
     @Subscribe

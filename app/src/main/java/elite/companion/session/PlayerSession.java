@@ -12,10 +12,6 @@ import elite.companion.util.GsonFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
-import java.lang.reflect.Type;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
 
 public class PlayerSession {
@@ -99,12 +95,24 @@ public class PlayerSession {
     private final Map<String, NavRouteDto> routeMap = new LinkedHashMap<>();
     private long bountyCollectedThisSession = 0;
     private RankAndProgressDto rankAndProgressDto = new RankAndProgressDto();
-
-    private static final String SESSION_FILE = "session/player_session.json";
-    private static final Gson GSON = GsonFactory.getGson();
+    private final SessionPersistence persistence = new SessionPersistence("session/player_session.json");
 
     private PlayerSession() {
         state.put(FRIENDS_STATUS, new HashMap<String, String>());
+        persistence.registerField("shipScans", this::getShipScans, v -> {
+            shipScans.clear();
+            shipScans.putAll((Map<String, String>) v);
+        }, Map.class);
+        persistence.registerField(MISSIONS, this::getMissions, v -> {
+            missions.clear();
+            missions.putAll((Map<Long, MissionDto>) v);
+        }, Map.class);
+        persistence.registerField("routeMap", this::getRoute, v -> {
+            routeMap.clear();
+            routeMap.putAll((Map<String, NavRouteDto>) v);
+        }, Map.class);
+        persistence.registerField("bountyCollectedThisSession", this::getBountyCollectedThisSession, this::setBountyCollectedThisSession, Long.class);
+        persistence.registerField("rankAndProgressDto", this::getRankAndProgressDto, this::setRankAndProgressDto, RankAndProgressDto.class);
         EventBusManager.register(this);
         addShutdownHook();
     }
@@ -117,170 +125,12 @@ public class PlayerSession {
         return INSTANCE;
     }
 
-    private File ensureSessionDirectory() {
-        String root = System.getProperty("user.dir");
-        File file = new File(root, SESSION_FILE);
-        File parentDir = file.getParentFile();
-        if (!parentDir.exists()) {
-            if (!parentDir.mkdirs()) {
-                LOG.error("Failed to create session directory: {}", parentDir.getPath());
-                return null;
-            }
-        }
-        return file;
-    }
-
     public void saveSession() {
-        File file = ensureSessionDirectory();
-        if (file == null) {
-            return;
-        }
-
-        // Load existing session to merge with in-memory state
-        JsonObject existingJson = loadSessionForMerge();
-
-        // Prepare new JSON
-        JsonObject json = new JsonObject();
-        JsonObject stateJson = existingJson.has("state") ? existingJson.getAsJsonObject("state") : new JsonObject();
-        // Update missions in state.player_missions
-        stateJson.add(MISSIONS, GSON.toJsonTree(missions));
-        // Update bounties in state.pirate_bounties
-        stateJson.add(PIRATE_BOUNTIES, GSON.toJsonTree(state.get(PIRATE_BOUNTIES)));
-        // Update other state entries, preserving existing ones
-        for (Map.Entry<String, Object> entry : state.entrySet()) {
-            if (!entry.getKey().equals(MISSIONS) && !entry.getKey().equals(PIRATE_BOUNTIES)) {
-                stateJson.add(entry.getKey(), GSON.toJsonTree(entry.getValue()));
-            }
-        }
-        json.add("state", stateJson);
-        json.add("shipScans", GSON.toJsonTree(shipScans));
-        json.add("routeMap", GSON.toJsonTree(routeMap));
-        json.addProperty("bountyCollectedThisSession", bountyCollectedThisSession);
-        json.add("rankAndProgressDto", GSON.toJsonTree(rankAndProgressDto));
-
-        try (Writer writer = new FileWriter(file)) {
-            GSON.toJson(json, writer);
-            LOG.debug("Saved player session to: {}", file.getPath());
-        } catch (IOException e) {
-            LOG.error("Failed to save player session to {}: {}", file.getPath(), e.getMessage(), e);
-        }
-    }
-
-    private JsonObject loadSessionForMerge() {
-        File file = ensureSessionDirectory();
-        if (file == null || !file.exists()) {
-            return new JsonObject();
-        }
-
-        try (Reader reader = new FileReader(file)) {
-            return JsonParser.parseReader(reader).getAsJsonObject();
-        } catch (IOException e) {
-            LOG.error("Failed to load player session for merge from {}: {}", file.getPath(), e.getMessage(), e);
-            return new JsonObject();
-        }
+        persistence.saveSession(state);
     }
 
     private void loadSavedStateFromDisk() {
-        File file = ensureSessionDirectory();
-        if (file == null) {
-            return;
-        }
-
-        if (!file.exists()) {
-            try {
-                JsonObject emptyJson = new JsonObject();
-                emptyJson.add("state", new JsonObject());
-                emptyJson.add("shipScans", new JsonObject());
-                emptyJson.add("routeMap", new JsonObject());
-                emptyJson.addProperty("bountyCollectedThisSession", 0);
-                emptyJson.add("rankAndProgressDto", GSON.toJsonTree(new RankAndProgressDto()));
-                Files.write(file.toPath(), GSON.toJson(emptyJson).getBytes());
-                LOG.info("Created empty player session file: {}", file.getPath());
-            } catch (IOException e) {
-                LOG.error("Failed to create empty player session file {}: {}", file.getPath(), e.getMessage(), e);
-                return;
-            }
-        }
-
-        try (Reader reader = new FileReader(file)) {
-            JsonObject json = JsonParser.parseReader(reader).getAsJsonObject();
-
-            // Load state map
-            if (json.has("state")) {
-                JsonObject stateJson = json.getAsJsonObject("state");
-                // Handle player_missions specifically
-                if (stateJson.has(MISSIONS)) {
-                    try {
-                        Type missionMapType = new TypeToken<Map<Long, MissionDto>>() {}.getType();
-                        Map<Long, MissionDto> loadedMissions = GSON.fromJson(stateJson.get(MISSIONS), missionMapType);
-                        if (loadedMissions != null) {
-                            missions.putAll(loadedMissions);
-                            LOG.debug("Deserialized player_missions with {} entries", loadedMissions.size());
-                        } else {
-                            LOG.warn("player_missions JSON is null or empty");
-                            missions.clear();
-                        }
-                    } catch (JsonSyntaxException | IllegalStateException e) {
-                        LOG.error("Failed to deserialize player_missions from JSON: {}. Error: {}", stateJson.get(MISSIONS), e.getMessage(), e);
-                        missions.clear();
-                    }
-                }
-                // Load other state entries
-                for (Map.Entry<String, JsonElement> entry : stateJson.entrySet()) {
-                    if (!entry.getKey().equals(MISSIONS)) {
-                        state.put(entry.getKey(), GSON.fromJson(entry.getValue(), Object.class));
-                    }
-                }
-            }
-
-            // Load ship scans
-            if (json.has("shipScans")) {
-                JsonObject scansJson = json.getAsJsonObject("shipScans");
-                for (Map.Entry<String, JsonElement> entry : scansJson.entrySet()) {
-                    shipScans.put(entry.getKey(), entry.getValue().getAsString());
-                }
-                LOG.debug("Deserialized {} ship scans", shipScans.size());
-            }
-
-            // Load route map
-            if (json.has("routeMap") && !json.get("routeMap").isJsonObject()) {
-                LOG.error("routeMap JSON is not an object: {}", json.get("routeMap"));
-                routeMap.clear();
-            } else if (json.has("routeMap")) {
-                try {
-                    Type routeMapType = new TypeToken<Map<String, NavRouteDto>>() {}.getType();
-                    Map<String, NavRouteDto> loadedRouteMap = GSON.fromJson(json.get("routeMap"), routeMapType);
-                    if (loadedRouteMap != null) {
-                        for (Map.Entry<String, NavRouteDto> entry : loadedRouteMap.entrySet()) {
-                            NavRouteDto route = entry.getValue();
-                            if (route == null || route.getName() == null || route.getName().trim().isEmpty()) {
-                                LOG.warn("Invalid NavRouteDto for system: {}. Skipping entry.", entry.getKey());
-                                continue;
-                            }
-                            routeMap.put(entry.getKey(), route);
-                        }
-                        LOG.debug("Deserialized routeMap with {} valid entries", routeMap.size());
-                    } else {
-                        LOG.warn("routeMap JSON is null or empty");
-                        routeMap.clear();
-                    }
-                } catch (JsonSyntaxException | IllegalStateException e) {
-                    LOG.error("Failed to deserialize routeMap from JSON: {}. Error: {}", json.get("routeMap"), e.getMessage(), e);
-                    routeMap.clear();
-                }
-            }
-
-            // Load other fields
-            if (json.has("bountyCollectedThisSession")) {
-                bountyCollectedThisSession = json.get("bountyCollectedThisSession").getAsLong();
-            }
-            if (json.has("rankAndProgressDto")) {
-                rankAndProgressDto = GSON.fromJson(json.get("rankAndProgressDto"), RankAndProgressDto.class);
-            }
-            LOG.debug("Loaded player session from: {}", file.getPath());
-        } catch (IOException | JsonSyntaxException e) {
-            LOG.error("Failed to load player session from {}: {}", file.getPath(), e.getMessage(), e);
-        }
+        persistence.loadSession(json -> persistence.loadFields(json, state));
     }
 
     public void putShipScan(String shipName, String scan) {
@@ -290,6 +140,10 @@ public class PlayerSession {
 
     public String getShipScan(String shipName) {
         return shipScans.get(shipName);
+    }
+
+    private Map<String, String> getShipScans() {
+        return shipScans;
     }
 
     public void put(String key, Object data) {
@@ -307,12 +161,16 @@ public class PlayerSession {
     }
 
     public void addBounty(long totalReward) {
-        bountyCollectedThisSession = bountyCollectedThisSession + totalReward;
+        bountyCollectedThisSession += totalReward;
         saveSession();
     }
 
     public long getBountyCollectedThisSession() {
         return bountyCollectedThisSession;
+    }
+
+    private void setBountyCollectedThisSession(long value) {
+        this.bountyCollectedThisSession = value;
     }
 
     public void addMission(MissionDto mission) {
@@ -355,12 +213,12 @@ public class PlayerSession {
     }
 
     public String getPirateMissionsJson() {
-        return missions.isEmpty() ? "{}" : GSON.toJson(missions);
+        return missions.isEmpty() ? "{}" : GsonFactory.getGson().toJson(missions);
     }
 
     public String getPirateBountiesJson() {
         List<BountyEvent> bounties = (List<BountyEvent>) state.get(PIRATE_BOUNTIES);
-        return bounties == null || bounties.isEmpty() ? "[]" : GSON.toJson(bounties);
+        return bounties == null || bounties.isEmpty() ? "[]" : GsonFactory.getGson().toJson(bounties);
     }
 
     public void setNavRoute(Map<String, NavRouteDto> routeMap) {
@@ -384,8 +242,7 @@ public class PlayerSession {
     }
 
     public String getRouteMapJson() {
-        Map<String, NavRouteDto> routes = routeMap;
-        return routes == null || routes.isEmpty() ? "{}" : GSON.toJson(routes);
+        return routeMap.isEmpty() ? "{}" : GsonFactory.getGson().toJson(routeMap);
     }
 
     public RankAndProgressDto getRankAndProgressDto() {
@@ -409,20 +266,7 @@ public class PlayerSession {
         routeMap.clear();
         bountyCollectedThisSession = 0;
         rankAndProgressDto = new RankAndProgressDto();
-        deleteSessionFile();
-    }
-
-    private void deleteSessionFile() {
-        String root = System.getProperty("user.dir");
-        File file = new File(root, SESSION_FILE);
-        if (file.exists()) {
-            try {
-                Files.delete(Paths.get(file.getPath()));
-                LOG.debug("Deleted player session file: {}", file.getPath());
-            } catch (IOException e) {
-                LOG.error("Failed to delete player session file {}: {}", file.getPath(), e.getMessage(), e);
-            }
-        }
+        persistence.deleteSessionFile();
     }
 
     @Subscribe

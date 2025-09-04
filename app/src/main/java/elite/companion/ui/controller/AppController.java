@@ -94,7 +94,7 @@ public class AppController implements AppControllerInterface, ActionListener {
 
 
             boolean privacyModeOn = systemSession.isPrivacyModeOn();
-            model.appendLog(privacyModeOn ? privacyModeIsOffMessage() : privacyModeIsOnMessage());
+
             model.setPrivacyModeOn(privacyModeOn);
 
             journalParser.start();

@@ -34,17 +34,21 @@ public class MissionAnalyzer implements QueryHandler {
 
     private String fetchDataForAction() {
         PlayerSession session = PlayerSession.getInstance();
-        String missions = session.getPirateMissionsJson();
-        String bounties = session.getPirateBountiesJson();
+        String missions = session.getMissionsJson();
+        String bounties = session.getBountiesJson();
+        String missionKills = session.getMissionKillsJson();
         String bountiesCollectedThisSession = session.getBountyCollectedThisSession() + "";
-        return "{\"missions\":" + missions + ",\"bounties\":" + bounties + ",\"bountiesPayOut\":" + bountiesCollectedThisSession + "}";
+        return "{\"missions\":" + missions
+                + ",\"missionKills\":" + missionKills
+                + ",\"bounties\":" + bounties
+                + ",\"bountiesPayOut\":" + bountiesCollectedThisSession + "}";
     }
 
     private String buildPrompt(QueryActions query, String userInput, String dataJson) {
 
         StringBuilder basePrompt = new StringBuilder();
         basePrompt.append("Analyze Elite Dangerous mission data. Group missions by TargetFaction for stacking. ");
-        basePrompt.append("Compute remaining kills as max(KillCount) per faction minus count of matching VictimFaction bounties. ");
+        basePrompt.append("Compute remaining kills as max(KillCount) per faction minus count of missionKills. ");
         basePrompt.append("Potential mission profit is sum of Mission Rewards. Bounties collected is sum of TotalRewards for matching bounties. ");
         basePrompt.append("Start responses directly with the requested information, avoiding conversational fillers like 'noted,' 'well,' 'right,' 'understood,' or similar phrases. ");
         basePrompt.append("Spell out numerals in full words (e.g., 285 = two hundred and eighty-five, 27 = twenty-seven)");

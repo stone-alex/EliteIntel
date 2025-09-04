@@ -4,16 +4,14 @@ import com.google.common.eventbus.Subscribe;
 import elite.companion.gameapi.gamestate.events.NavRouteDto;
 import elite.companion.gameapi.journal.events.*;
 import elite.companion.gameapi.journal.events.dto.MissionDto;
+import elite.companion.gameapi.journal.events.dto.MissionKillDto;
 import elite.companion.gameapi.journal.events.dto.RankAndProgressDto;
 import elite.companion.util.EventBusManager;
 import elite.companion.util.GsonFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
 public class PlayerSession {
-    private static final Logger LOG = LoggerFactory.getLogger(PlayerSession.class);
 
     public static final String CURRENT_SYSTEM = "current_system";
     public static final String SHIP_LOADOUT_JSON = "ship_loadout_json";
@@ -28,7 +26,6 @@ public class PlayerSession {
     public static final String REPUTATION = "reputation";
     public static final String CARRIER_LOCATION = "carrier_location";
     public static final String CURRENT_LOCATION = "current_location";
-    public static final String TARGET_FACTION_NAME = "target_faction_name";
     public static final String PROFILE = "profile";
     public static final String PERSONALITY = "personality";
     public static final String JUMPING_TO = "jumping_to_starsystem";
@@ -90,8 +87,10 @@ public class PlayerSession {
     private final Map<String, Object> state = new HashMap<>();
     private final Map<String, String> shipScans = new HashMap<>();
     private final Map<Long, MissionDto> missions = new LinkedHashMap<>();
+    private final Set<MissionKillDto> missionKills = new LinkedHashSet<>();
     private final Map<String, NavRouteDto> routeMap = new LinkedHashMap<>();
     private final Set<String> detectedSignals = new LinkedHashSet<>();
+    private final Set<String> targetFactions = new LinkedHashSet<>();
     private long bountyCollectedThisSession = 0;
     private RankAndProgressDto rankAndProgressDto = new RankAndProgressDto();
     private final SessionPersistence persistence = new SessionPersistence("session/player_session.json");
@@ -113,6 +112,14 @@ public class PlayerSession {
         persistence.registerField("detectedSignals", this::getDetectedSignals, v -> {
             detectedSignals.clear();
             detectedSignals.addAll((Set<String>) v);
+        }, Set.class);
+        persistence.registerField("targetFactions", this::getTargetFactions, v -> {
+            targetFactions.clear();
+            targetFactions.addAll((Set<String>) v);
+        }, Set.class);
+        persistence.registerField("missionKills", this::getMissionKills, v -> {
+            missionKills.clear();
+            missionKills.addAll((Set<MissionKillDto>) v);
         }, Set.class);
 
         persistence.registerField("bountyCollectedThisSession", this::getBountyCollectedThisSession, this::setBountyCollectedThisSession, Long.class);
@@ -200,29 +207,25 @@ public class PlayerSession {
         saveSession();
     }
 
-    public void addPirateMission(MissionDto mission) {
-        missions.put(mission.getMissionId(), mission);
-        saveSession();
-    }
 
-    public void addPirateBounty(BountyEvent bounty) {
+    public void addBounty(BountyEvent bounty) {
         List<BountyEvent> bounties = (List<BountyEvent>) state.computeIfAbsent(BOUNTIES, k -> new ArrayList<BountyEvent>());
         bounties.add(bounty);
         saveSession();
     }
 
-    public void removePirateMission(long missionId) {
-        missions.remove(missionId);
-        saveSession();
-    }
 
-    public String getPirateMissionsJson() {
+    public String getMissionsJson() {
         return missions.isEmpty() ? "{}" : GsonFactory.getGson().toJson(missions);
     }
 
-    public String getPirateBountiesJson() {
+    public String getBountiesJson() {
         List<BountyEvent> bounties = (List<BountyEvent>) state.get(BOUNTIES);
         return bounties == null || bounties.isEmpty() ? "[]" : GsonFactory.getGson().toJson(bounties);
+    }
+
+    public String getMissionKillsJson() {
+        return missionKills.isEmpty() ? "{}" : GsonFactory.getGson().toJson(missionKills);
     }
 
     public void setNavRoute(Map<String, NavRouteDto> routeMap) {
@@ -267,7 +270,9 @@ public class PlayerSession {
         state.clear();
         shipScans.clear();
         missions.clear();
+        missionKills.clear();
         routeMap.clear();
+        targetFactions.clear();
         detectedSignals.clear();
         bountyCollectedThisSession = 0;
         rankAndProgressDto = new RankAndProgressDto();
@@ -355,7 +360,7 @@ public class PlayerSession {
 
     @Subscribe
     public void onBounty(BountyEvent event) {
-        addPirateBounty(event);
+        addBounty(event);
         addBounty(event.getTotalReward());
         saveSession();
     }
@@ -370,5 +375,30 @@ public class PlayerSession {
     public void onMissionCompleted(MissionCompletedEvent event) {
         removeMission(event.getMissionID());
         saveSession();
+    }
+
+    public void addMissionKill(MissionKillDto missionKillDto) {
+        missionKills.add(missionKillDto);
+    }
+
+    public Set<MissionKillDto> getMissionKills() {
+        return missionKills;
+    }
+
+    public void addTargetFaction(String faction) {
+        targetFactions.add(faction);
+        saveSession();
+    }
+
+    public Set<String> getTargetFactions() {
+        return targetFactions;
+    }
+
+
+    public void clearBounties() {
+        bountyCollectedThisSession = 0;
+        state.remove(BOUNTIES);
+        state.remove(TOTAL_BOUNTY_PROFIT);
+        state.remove(TOTAL_BOUNTY_CLAIMED);
     }
 }

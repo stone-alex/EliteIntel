@@ -4,7 +4,6 @@ import com.google.common.eventbus.Subscribe;
 import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.gameapi.journal.events.ShipTargetedEvent;
 import elite.companion.session.PlayerSession;
-import elite.companion.session.SystemSession;
 import elite.companion.util.EventBusManager;
 import elite.companion.util.RomanNumeralConverter;
 import elite.companion.util.TTSFriendlyNumberConverter;
@@ -14,10 +13,11 @@ import org.slf4j.LoggerFactory;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Set;
 
 public class ShipTargetedEventSubscriber {
 
-    private  final Logger log = LoggerFactory.getLogger(ShipTargetedEventSubscriber.class);
+    private final Logger log = LoggerFactory.getLogger(ShipTargetedEventSubscriber.class);
 
     @Subscribe
     public void onShipTargetedEvent(ShipTargetedEvent event) {
@@ -34,15 +34,15 @@ public class ShipTargetedEventSubscriber {
         String pilotRank = event.getPilotRank();
         String legalStatus = event.getLegalStatus() == null ? null : event.getLegalStatus().toLowerCase();
         int bounty = event.getBounty();
-        String missionTarget = determineMissionTarget(event);
+        String missionTargetOrNull = isMissionTargetOrNull(event);
 
         float shieldHealth = event.getShieldHealth();
         float hullHealth = event.getHullHealth();
         StringBuilder info = new StringBuilder();
-        if (anounceScan(event, legalStatus, missionTarget)) {
+        if (announceScan(event, legalStatus, missionTargetOrNull)) {
 
             info.append("Contact: ");
-            info.append(missionTarget);
+            info.append(missionTargetOrNull);
 
             info.append(ship == null ? " Unknown Ship " : ship);
             info.append(", ");
@@ -62,7 +62,7 @@ public class ShipTargetedEventSubscriber {
             if (shieldHealth == 100 && hullHealth == 100) {
                 //info.append("All Systems Normal");
             } else {
-                if(shieldHealth == 0) {
+                if (shieldHealth == 0) {
                     info.append("Shields off line");
                 } else if (shieldHealth < 50) {
                     info.append(", ");
@@ -110,19 +110,25 @@ public class ShipTargetedEventSubscriber {
         return pilot + "|" + shipType + "|" + faction + "|" + legalStatus;
     }
 
-    private String determineMissionTarget(ShipTargetedEvent event) {
+    private String isMissionTargetOrNull(ShipTargetedEvent event) {
         String faction = event.getFaction();
         String legalStatus = event.getLegalStatus();
-        if (faction == null || faction.isBlank()) return "";
-        if (legalStatus == null || legalStatus.isBlank()) return "";
+        if (faction == null || faction.isBlank()) return null;
+        if (legalStatus == null || legalStatus.isBlank()) return null;
         PlayerSession playerSession = PlayerSession.getInstance();
-        String targetFaction = String.valueOf(playerSession.get(PlayerSession.TARGET_FACTION_NAME));
-        if (targetFaction.equalsIgnoreCase(faction) && legalStatus.equalsIgnoreCase("wanted")) {
+
+        String targetFaction = null;
+        Set<String> targetFactions = playerSession.getTargetFactions();
+        if (!targetFactions.contains(faction)) {
+            targetFaction = faction;
+        }
+
+        if (targetFaction != null && legalStatus.equalsIgnoreCase("wanted")) {
             return "Mission Target! ";
-        } else return "";
+        } else return null;
     }
 
-    private  boolean anounceScan(ShipTargetedEvent event, String legalStatus, String missionTarget) {
+    private boolean announceScan(ShipTargetedEvent event, String legalStatus, String missionTarget) {
         if (missionTarget == null || missionTarget.isBlank()) return false;
         if (legalStatus == null) return false;
         if (event == null) return false;

@@ -12,9 +12,9 @@ public class MissionCompletedSubscriber {
 
     @Subscribe
     public void onMissionCompletedEvent(MissionCompletedEvent event) {
-        PlayerSession systemSession = PlayerSession.getInstance();
-        systemSession.removePirateMission(event.getMissionID());
-        String targetFaction = String.valueOf(systemSession.get(PlayerSession.TARGET_FACTION_NAME));
+        PlayerSession playerSession = PlayerSession.getInstance();
+        playerSession.removePirateMission(event.getMissionID());
+        String targetFaction = String.valueOf(playerSession.get(PlayerSession.TARGET_FACTION_NAME));
         EventBusManager.publish(new SensorDataEvent("Mission against Faction:\""+targetFaction+"\" Completed: " + event.toJson()));
     }
 }

@@ -1,8 +1,6 @@
 package elite.companion.session;
 
 import com.google.common.eventbus.Subscribe;
-import com.google.gson.*;
-import com.google.gson.reflect.TypeToken;
 import elite.companion.gameapi.gamestate.events.NavRouteDto;
 import elite.companion.gameapi.journal.events.*;
 import elite.companion.gameapi.journal.events.dto.MissionDto;
@@ -26,7 +24,7 @@ public class PlayerSession {
     public static final String SHIP_CARGO = "ship_cargo";
     public static final String CURRENT_SYSTEM_DATA = "current_system_data";
     public static final String MISSIONS = "player_missions";
-    public static final String PIRATE_BOUNTIES = "pirate_bounties";
+    public static final String BOUNTIES = "bounties";
     public static final String REPUTATION = "reputation";
     public static final String CARRIER_LOCATION = "carrier_location";
     public static final String CURRENT_LOCATION = "current_location";
@@ -93,6 +91,7 @@ public class PlayerSession {
     private final Map<String, String> shipScans = new HashMap<>();
     private final Map<Long, MissionDto> missions = new LinkedHashMap<>();
     private final Map<String, NavRouteDto> routeMap = new LinkedHashMap<>();
+    private final Set<String> detectedSignals = new LinkedHashSet<>();
     private long bountyCollectedThisSession = 0;
     private RankAndProgressDto rankAndProgressDto = new RankAndProgressDto();
     private final SessionPersistence persistence = new SessionPersistence("session/player_session.json");
@@ -111,6 +110,11 @@ public class PlayerSession {
             routeMap.clear();
             routeMap.putAll((Map<String, NavRouteDto>) v);
         }, Map.class);
+        persistence.registerField("detectedSignals", this::getDetectedSignals, v -> {
+            detectedSignals.clear();
+            detectedSignals.addAll((Set<String>) v);
+        }, Set.class);
+
         persistence.registerField("bountyCollectedThisSession", this::getBountyCollectedThisSession, this::setBountyCollectedThisSession, Long.class);
         persistence.registerField("rankAndProgressDto", this::getRankAndProgressDto, this::setRankAndProgressDto, RankAndProgressDto.class);
         EventBusManager.register(this);
@@ -202,7 +206,7 @@ public class PlayerSession {
     }
 
     public void addPirateBounty(BountyEvent bounty) {
-        List<BountyEvent> bounties = (List<BountyEvent>) state.computeIfAbsent(PIRATE_BOUNTIES, k -> new ArrayList<BountyEvent>());
+        List<BountyEvent> bounties = (List<BountyEvent>) state.computeIfAbsent(BOUNTIES, k -> new ArrayList<BountyEvent>());
         bounties.add(bounty);
         saveSession();
     }
@@ -217,7 +221,7 @@ public class PlayerSession {
     }
 
     public String getPirateBountiesJson() {
-        List<BountyEvent> bounties = (List<BountyEvent>) state.get(PIRATE_BOUNTIES);
+        List<BountyEvent> bounties = (List<BountyEvent>) state.get(BOUNTIES);
         return bounties == null || bounties.isEmpty() ? "[]" : GsonFactory.getGson().toJson(bounties);
     }
 
@@ -264,9 +268,35 @@ public class PlayerSession {
         shipScans.clear();
         missions.clear();
         routeMap.clear();
+        detectedSignals.clear();
         bountyCollectedThisSession = 0;
         rankAndProgressDto = new RankAndProgressDto();
         persistence.deleteSessionFile();
+    }
+
+
+    public void addSignal(BaseEvent event) {
+        detectedSignals.add(event.toJson());
+        saveSession();
+    }
+
+    public String getSignals() {
+        Object[] array = detectedSignals.stream().toArray();
+        StringBuilder sb = new StringBuilder("[");
+        for (Object o : array) {
+            sb.append(o).append(", ");
+        }
+        sb.append("]");
+        return array.length == 0 ? "no data" : sb.toString();
+    }
+
+    public void clearFssSignals() {
+        detectedSignals.clear();
+        saveSession();
+    }
+
+    private Set<String> getDetectedSignals() {
+        return detectedSignals;
     }
 
     @Subscribe

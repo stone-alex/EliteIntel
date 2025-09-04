@@ -15,16 +15,16 @@ public class FSDJumpSubscriber {
 
     @Subscribe
     public void onFSDJumpEvent(FSDJumpEvent event) {
-        PlayerSession systemSession = PlayerSession.getInstance();
-        systemSession.put(PlayerSession.CURRENT_SYSTEM_DATA, event.toJson());
+        PlayerSession playerSession = PlayerSession.getInstance();
+        playerSession.put(PlayerSession.CURRENT_SYSTEM_DATA, event.toJson());
 
         String currentStarSystem = event.getStarSystem();
 
-        boolean roueSet = !systemSession.getRoute().isEmpty();
-        systemSession.removeNavPoint(currentStarSystem);
-        String finalDestination = String.valueOf(systemSession.get(PlayerSession.FINAL_DESTINATION));
-        String arrivedAt = String.valueOf(systemSession.get(PlayerSession.JUMPING_TO));
-        systemSession.put(PlayerSession.CURRENT_SYSTEM, arrivedAt);
+        boolean roueSet = !playerSession.getRoute().isEmpty();
+        playerSession.removeNavPoint(currentStarSystem);
+        String finalDestination = String.valueOf(playerSession.get(PlayerSession.FINAL_DESTINATION));
+        String arrivedAt = String.valueOf(playerSession.get(PlayerSession.JUMPING_TO));
+        playerSession.put(PlayerSession.CURRENT_SYSTEM, arrivedAt);
 
         StringBuilder sb = new StringBuilder();
         sb.append("Hyperspace Jump Successful: ");
@@ -35,10 +35,10 @@ public class FSDJumpSubscriber {
         } else {
 
             if (roueSet) {
-                int remainingJump = systemSession.getRoute().size();
+                int remainingJump = playerSession.getRoute().size();
 
                 if (remainingJump > 0) {
-                    sb.append("next stop: ").append(systemSession.get(systemSession.FSD_TARGET)).append(", ");
+                    sb.append("next stop: ").append(playerSession.get(playerSession.FSD_TARGET)).append(", ");
                 }
 
                 sb.append(remainingJump).append(" jumps remaining: ").append(" to ").append(finalDestination).append(".");

@@ -22,7 +22,7 @@ public class SystemSession {
 
     private static final SystemSession INSTANCE = new SystemSession();
     private final Map<String, Object> state = new HashMap<>();
-    private final Set<String> detectedSignals = new LinkedHashSet<>();
+
     private Voices aiVoice;
     private AIPersonality aiPersonality;
     private AICadence aiCadence;
@@ -31,10 +31,6 @@ public class SystemSession {
     private final SessionPersistence persistence = new SessionPersistence(SESSION_FILE);
 
     private SystemSession() {
-        persistence.registerField("detectedSignals", this::getDetectedSignals, v -> {
-            detectedSignals.clear();
-            detectedSignals.addAll((Set<String>) v);
-        }, Set.class);
         persistence.registerField("aiVoice", this::getAIVoice, this::setAIVoice, Voices.class);
         persistence.registerField("aiPersonality", this::getAIPersonality, this::setAIPersonality, AIPersonality.class);
         persistence.registerField("aiCadence", this::getAICadence, this::setAICadence, AICadence.class);
@@ -74,25 +70,6 @@ public class SystemSession {
         saveSession();
     }
 
-    public void addSignal(BaseEvent event) {
-        detectedSignals.add(event.toJson());
-        saveSession();
-    }
-
-    public String getSignals() {
-        Object[] array = detectedSignals.stream().toArray();
-        StringBuilder sb = new StringBuilder("[");
-        for (Object o : array) {
-            sb.append(o).append(", ");
-        }
-        sb.append("]");
-        return array.length == 0 ? "no data" : sb.toString();
-    }
-
-    public void clearFssSignals() {
-        detectedSignals.clear();
-        saveSession();
-    }
 
     public void setAIVoice(Voices voice) {
         this.aiVoice = voice;
@@ -150,14 +127,9 @@ public class SystemSession {
         saveSession();
     }
 
-    private Set<String> getDetectedSignals() {
-        return detectedSignals;
-    }
-
     @Subscribe
     public void clearOnShutDown(ClearSessionCacheEvent event) {
         state.clear();
-        detectedSignals.clear();
         aiVoice = null;
         aiPersonality = null;
         aiCadence = null;

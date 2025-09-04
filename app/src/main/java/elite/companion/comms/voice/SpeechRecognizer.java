@@ -87,7 +87,6 @@ public class SpeechRecognizer {
         }
 
 
-        SystemSession.getInstance().setPrivacyMode(true);
         this.processingThread = new Thread(this::startStreaming);
         this.processingThread.start();
         try {

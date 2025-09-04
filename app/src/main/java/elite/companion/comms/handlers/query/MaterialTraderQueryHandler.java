@@ -11,8 +11,8 @@ public class MaterialTraderQueryHandler implements QueryHandler {
     @Override
     public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         JsonObject response = new JsonObject();
-        PlayerSession systemSession = PlayerSession.getInstance();
-        String currentSystem = String.valueOf(systemSession.get(PlayerSession.CURRENT_SYSTEM));
+        PlayerSession playerSession = PlayerSession.getInstance();
+        String currentSystem = String.valueOf(playerSession.get(PlayerSession.CURRENT_SYSTEM));
 
         // Try Spansh first
         JsonArray stations = SpanshApiClient.searchStations(currentSystem, "materialtrader", null, null);
@@ -21,7 +21,7 @@ public class MaterialTraderQueryHandler implements QueryHandler {
             String stationName = nearest.get("name").getAsString();
             String systemName = nearest.get("system").getAsString();
             float distance = nearest.get("distance").getAsFloat();
-            systemSession.put(systemName, PlayerSession.CURRENT_STATUS); // Store target
+            playerSession.put(systemName, PlayerSession.CURRENT_STATUS); // Store target
             response.addProperty("response_text", "Nearest material trader is at " + stationName + " in " + systemName + ", " + distance + " light years away. Say 'plot route' to navigate there.");
         } else {
             // Fallback to EDSM
@@ -30,7 +30,7 @@ public class MaterialTraderQueryHandler implements QueryHandler {
                 JsonObject nearest = stations.get(0).getAsJsonObject();
                 String stationName = nearest.get("stationName").getAsString();
                 String systemName = nearest.get("systemName").getAsString();
-                systemSession.put(systemName, PlayerSession.CURRENT_STATUS); // Store target
+                playerSession.put(systemName, PlayerSession.CURRENT_STATUS); // Store target
                 response.addProperty("response_text", "Nearest material trader via EDSM is at " + stationName + " in " + systemName + ". Say 'plot route' to navigate there.");
             } else {
                 response.addProperty("response_text", "No material traders found near " + currentSystem + ".");

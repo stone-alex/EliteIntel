@@ -28,7 +28,8 @@ public class StartJumpSubscriber {
         sb.append(", ");
         sb.append(isFuelStarClause(starClass));
 
-        SystemSession.getInstance().put(PlayerSession.JUMPING_TO, jumpingTo);
+        PlayerSession.getInstance().put(PlayerSession.JUMPING_TO, jumpingTo);
+        PlayerSession.getInstance().clearFssSignals();
 
         if(!"Supercruise".equalsIgnoreCase(event.getJumpType())) {
             EventBusManager.publish(new AppLogEvent("Processing Event: StartJumpEvent sending sensor data to AI: "+sb.toString()));

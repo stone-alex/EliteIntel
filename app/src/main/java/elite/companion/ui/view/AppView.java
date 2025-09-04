@@ -109,8 +109,8 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         bindLock(grokLockedCheck, grokApiKeyField, true);
         bindLock(edsmLockedCheck, edsmApiKeyField, true);
         togglePrivacyModeButton.setEnabled(false);//enabled when services start
-        togglePrivacyModeButton.setToolTipText("Toggle privacy mode");
-        togglePrivacyModeButton.setText("Privacy ON ");
+        togglePrivacyModeButton.setToolTipText("Prevent AI from listening to everything on/off, prefix commands with word 'computer' or AI voice name");
+        togglePrivacyModeButton.setText("Toggle Privacy Mode");
         togglePrivacyModeButton.setForeground(Color.GREEN);
     }
 
@@ -790,6 +790,8 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         } else if (evt.getPropertyName().equals(PROPERTY_PRIVACY_MODE)) {
             Boolean privacyModeOn = (Boolean) evt.getNewValue();
             togglePrivacyModeButton.setForeground(privacyModeOn ? Color.GREEN : Color.RED);
+            togglePrivacyModeButton.setText(privacyModeOn ? "I am ignoring you" : "I am listening");
+            togglePrivacyModeButton.setToolTipText(privacyModeOn ? "Privacy Mode is currently enabled." : "Privacy Mode is currently disabled.");
         } else if (evt.getPropertyName().equals(PROPERTY_HELP_MARKDOWN)) {
             setHelpMarkdown((String) evt.getNewValue());
         } else if (evt.getPropertyName().equals(PROPERTY_SERVICES_TOGGLE)) {

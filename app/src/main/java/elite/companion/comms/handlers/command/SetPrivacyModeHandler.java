@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import static elite.companion.util.JsonParameterExtractor.extractParameter;
 
-public class SetPrivacyMode implements CommandHandler {
+public class SetPrivacyModeHandler implements CommandHandler {
 
     private static final Logger log = LoggerFactory.getLogger(SetRouteHandler.class);
 

@@ -1,21 +1,29 @@
 package elite.companion.session;
 
 import com.google.common.eventbus.Subscribe;
-import elite.companion.gameapi.journal.events.CarrierStatsEvent;
+import com.google.gson.*;
+import elite.companion.gameapi.journal.events.*;
 import elite.companion.gameapi.journal.events.dto.RankAndProgressDto;
 import elite.companion.util.EventBusManager;
+import elite.companion.util.GsonFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * PlayerSession
- * A Singleton instance. Keeps track of the player state withing the current game session.
- * Provides broad context for AI interactions. Keeps information such as running player stats
+ * A Singleton instance. Keeps track of the player state within the current game session.
+ * Provides broad context for AI interactions. Keeps information such as running player stats.
  * Does not store internal ship variables or sensor data. Consumed by Grok voice interactions.
- *
  */
 public class PlayerSession {
+    private static final Logger LOG = LoggerFactory.getLogger(PlayerSession.class);
+
     public static final String SHIP_FUEL_LEVEL = "ship_fuel_level";
     public static final String INSURANCE_CLAIMS = "insurance_claims";
     public static final String SHIPS_OWNED = "ships_owned";
@@ -35,8 +43,6 @@ public class PlayerSession {
     public static final String PLAYER_TITLE = "player_title";
     public static final String PLAYER_HIGHEST_MILITARY_RANK = "player_highest_military_rank";
     public static final String LAST_SCAN = "last_scan";
-
-    private static final PlayerSession INSTANCE = new PlayerSession();
 
     public static final String CARRIER_BALANCE = "carrier_balance";
     public static final String CARRIER_RESERVE = "carrier_reserve";
@@ -74,17 +80,101 @@ public class PlayerSession {
     private final Map<String, Object> state = new HashMap<>();
     private final Map<String, String> shipScans = new HashMap<>();
 
+    private static final String SESSION_FILE = "session/player_session.json";
+    private static final Gson GSON = GsonFactory.getGson();
+    private static final PlayerSession INSTANCE = new PlayerSession();
+
     public static PlayerSession getInstance() {
         return INSTANCE;
     }
 
     private PlayerSession() {
         EventBusManager.register(this);
+        addShutdownHook();
+    }
+
+    private void addShutdownHook() {
+        Runtime.getRuntime().addShutdownHook(new Thread(this::saveSession));
+    }
+
+    public void saveSession() {
+        loadSession();
+
+        File file = ensureSessionDirectory();
+
+        JsonObject json = new JsonObject();
+        json.add("state", GSON.toJsonTree(state));
+        json.add("rankAndProgressDto", GSON.toJsonTree(rankAndProgressDto));
+        json.add("shipScans", GSON.toJsonTree(shipScans));
+
+        try (Writer writer = new FileWriter(file)) {
+            GSON.toJson(json, writer);
+            LOG.debug("Saved player session to: {}", file.getPath());
+            Files.write(file.toPath(), GSON.toJson(json).getBytes());
+        } catch (IOException e) {
+            LOG.error("Failed to save player session to {}: {}", file.getPath(), e.getMessage(), e);
+        }
     }
 
 
+    private File ensureSessionDirectory() {
+        String root = System.getProperty("user.dir");
+        File file = new File(root, SESSION_FILE);
+        File parentDir = file.getParentFile();
+        if (!parentDir.exists()) {
+            if (!parentDir.mkdirs()) {
+                LOG.error("Failed to create session directory: {}", parentDir.getPath());
+                return null;
+            }
+        }
+        return file;
+    }
+
+
+    private void loadSession() {
+        File file = ensureSessionDirectory();
+        if (!file.exists()) {
+            try {
+                JsonObject emptyJson = new JsonObject();
+                emptyJson.add("state", new JsonObject());
+                emptyJson.add("rankAndProgressDto", GSON.toJsonTree(new RankAndProgressDto()));
+                emptyJson.add("shipScans", new JsonObject());
+                Files.write(file.toPath(), GSON.toJson(emptyJson).getBytes());
+                LOG.info("Created empty player session file: {}", file.getPath());
+            } catch (IOException e) {
+                LOG.error("Failed to create empty player session file {}: {}", file.getPath(), e.getMessage(), e);
+                clearOnShutDown();
+                return;
+            }
+        }
+
+        try (Reader reader = new FileReader(file)) {
+            JsonObject json = JsonParser.parseReader(reader).getAsJsonObject();
+            if (json.has("state")) {
+                JsonObject stateJson = json.getAsJsonObject("state");
+                for (Map.Entry<String, JsonElement> entry : stateJson.entrySet()) {
+                    state.put(entry.getKey(), GSON.fromJson(entry.getValue(), Object.class));
+                }
+            }
+            if (json.has("rankAndProgressDto")) {
+                rankAndProgressDto = GSON.fromJson(json.get("rankAndProgressDto"), RankAndProgressDto.class);
+            }
+            if (json.has("shipScans")) {
+                JsonObject scansJson = json.getAsJsonObject("shipScans");
+                for (Map.Entry<String, JsonElement> entry : scansJson.entrySet()) {
+                    shipScans.put(entry.getKey(), entry.getValue().getAsString());
+                }
+            }
+            LOG.debug("Loaded player session from: {}", file.getPath());
+        } catch (IOException | JsonSyntaxException e) {
+            LOG.error("Failed to load player session from {}: {}", file.getPath(), e.getMessage(), e);
+            clearOnShutDown();
+        }
+    }
+
     public void putShipScan(String shipName, String scan) {
         shipScans.put(shipName, scan);
+        saveSession(); // Auto-save on update
     }
 
     public String getShipScan(String shipName) {
@@ -126,16 +216,18 @@ public class PlayerSession {
 
             long carrierBalance = finance.getCarrierBalance();
             long reserveBalance = finance.getReserveBalance();
-            put(PlayerSession.CARRIER_BALANCE, String.valueOf(carrierBalance));
-            put(PlayerSession.CARRIER_RESERVE, String.valueOf(reserveBalance));
+            put(CARRIER_BALANCE, String.valueOf(carrierBalance));
+            put(CARRIER_RESERVE, String.valueOf(reserveBalance));
 
             int jumps = event.getFuelLevel() / 90;
             put(CARRIER_STATS, "Credit balance: " + carrierBalance + " reserved balance: " + reserveBalance + " fuel level: " + event.getFuelLevel() + " enough for " + event.getFuelLevel() / 90 + " jumps or " + (jumps * 500) + " light years");
         }
+        saveSession(); // Auto-save on event
     }
 
     public void put(String key, Object data) {
         state.put(key, data);
+        saveSession(); // Auto-save on put
     }
 
     public Object get(String key) {
@@ -144,10 +236,27 @@ public class PlayerSession {
 
     public void remove(String key) {
         state.remove(key);
+        saveSession(); // Auto-save on remove
     }
 
     public void clearOnShutDown() {
         state.clear();
+        rankAndProgressDto = new RankAndProgressDto();
+        shipScans.clear();
+        deleteSessionFile();
+    }
+
+    private void deleteSessionFile() {
+        String root = System.getProperty("user.dir");
+        File file = new File(root, SESSION_FILE);
+        if (file.exists()) {
+            try {
+                Files.delete(Paths.get(file.getPath()));
+                LOG.debug("Deleted player session file: {}", file.getPath());
+            } catch (IOException e) {
+                LOG.error("Failed to delete player session file {}: {}", file.getPath(), e.getMessage(), e);
+            }
+        }
     }
 
     public RankAndProgressDto getRankAndProgressDto() {
@@ -156,9 +265,40 @@ public class PlayerSession {
 
     public void setRankAndProgressDto(RankAndProgressDto rankAndProgressDto) {
         this.rankAndProgressDto = rankAndProgressDto;
+        saveSession(); // Auto-save
     }
 
     public void clearShipScans() {
         shipScans.clear();
+        saveSession(); // Auto-save
+    }
+
+
+    @Subscribe
+    public void onLoadGame(LoadGameEvent event) {
+        loadSession();
+    }
+
+    @Subscribe
+    public void onLoadSession(LoadSessionEvent event) {
+        loadSession();
+    }
+
+    @Subscribe
+    public void onBounty(BountyEvent event) {
+        // Handle bounty logic if needed
+        saveSession();
+    }
+
+    @Subscribe
+    public void onMissionAccepted(MissionAcceptedEvent event) {
+        // Handle mission logic if needed
+        saveSession();
+    }
+
+    @Subscribe
+    public void onMissionCompleted(MissionCompletedEvent event) {
+        // Handle mission logic if needed
+        saveSession();
     }
 }

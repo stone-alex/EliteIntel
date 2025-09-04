@@ -7,6 +7,7 @@ import elite.companion.gameapi.AuxiliaryFilesMonitor;
 import elite.companion.gameapi.JournalParser;
 import elite.companion.gameapi.UserInputEvent;
 import elite.companion.gameapi.VoiceProcessEvent;
+import elite.companion.session.LoadSessionEvent;
 import elite.companion.session.SystemSession;
 import elite.companion.ui.event.AppLogEvent;
 import elite.companion.ui.model.AppModelInterface;
@@ -92,7 +93,7 @@ public class AppController implements AppControllerInterface, ActionListener {
             }
 
 
-            systemSession.put(SystemSession.PRIVACY_MODE, true);
+            systemSession.setPrivacyMode(true);
             model.appendLog(privacyModeIsOnMessage());
             model.setPrivacyModeOn(true);
 
@@ -104,7 +105,7 @@ public class AppController implements AppControllerInterface, ActionListener {
             EventBusManager.publish(new VoiceProcessEvent("Systems online..."));
             EventBusManager.publish(new VoiceProcessEvent("Privacy mode is On. Please prefix your commands with the word \"computer\" or \"" + systemSession.getAIVoice().getName() + "\""));
             isServiceRunning = true;
-
+            EventBusManager.publish(new LoadSessionEvent());
         } else {
             EventBusManager.publish(new VoiceProcessEvent("Systems offline..."));
             // Stop services
@@ -126,7 +127,7 @@ public class AppController implements AppControllerInterface, ActionListener {
     public void togglePrivacyMode() {
         boolean privacyMode = !model.isPrivacyModeOn();
         model.appendLog("Toggle privacy mode");
-        systemSession.put(SystemSession.PRIVACY_MODE, privacyMode);
+        systemSession.setPrivacyMode(privacyMode);
         EventBusManager.publish(new VoiceProcessEvent(privacyMode ? privacyModeIsOnMessage() : privacyModeIsOffMessage()));
         model.appendLog(privacyMode ? privacyModeIsOnMessage() : privacyModeIsOffMessage());
         model.setPrivacyModeOn(privacyMode);

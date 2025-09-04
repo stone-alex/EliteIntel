@@ -87,7 +87,7 @@ public class SpeechRecognizer {
         }
 
 
-        SystemSession.getInstance().put(SystemSession.PRIVACY_MODE, true);
+        SystemSession.getInstance().setPrivacyMode(true);
         this.processingThread = new Thread(this::startStreaming);
         this.processingThread.start();
         try {
@@ -255,8 +255,7 @@ public class SpeechRecognizer {
 
                     EventBusManager.publish(new AppLogEvent("STT heard: "+transcript+". Sanitized: "+sanitizedTranscript+"."));
 
-                    Object privacySystemVariable = SystemSession.getInstance().get(SystemSession.PRIVACY_MODE);
-                    boolean isPrivacyModeOn = privacySystemVariable != null && (boolean) privacySystemVariable;
+                    boolean isPrivacyModeOn = SystemSession.getInstance().isPrivacyModeOn();
                     if (isPrivacyModeOn) {
                         String voiceName = SystemSession.getInstance().getAIVoice().getName();
                         if (sanitizedTranscript.toLowerCase().startsWith("computer") || sanitizedTranscript.toLowerCase().startsWith(voiceName.toLowerCase())) {

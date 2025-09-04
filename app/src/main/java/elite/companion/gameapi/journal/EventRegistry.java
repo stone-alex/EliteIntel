@@ -5,6 +5,8 @@ import elite.companion.gameapi.UserInputEvent;
 import elite.companion.gameapi.SensorDataEvent;
 import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.gameapi.journal.events.*;
+import elite.companion.session.ClearSessionCacheEvent;
+import elite.companion.session.LoadSessionEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +30,8 @@ public class EventRegistry {
     private static final long THRESHOLD_LONG = 60000; // 60 seconds
 
     static {
+        registerEvent("SaveSessionEvent", LoadSessionEvent.class);
+        registerEvent("ClearSessionCache", ClearSessionCacheEvent.class);
         registerEvent("VoiceProcess", VoiceProcessEvent.class);
         registerEvent("UserInput", UserInputEvent.class);
         registerEvent("SensorData", SensorDataEvent.class);

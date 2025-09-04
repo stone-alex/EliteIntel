@@ -1,13 +1,11 @@
 package elite.companion.gameapi.journal.events.dto;
 
 import com.google.gson.JsonObject;
-import elite.companion.gameapi.journal.events.BaseEvent;
+import elite.companion.gameapi.gamestate.events.BaseJsonDto;
 import elite.companion.gameapi.journal.events.MissionAcceptedEvent;
 import elite.companion.util.GsonFactory;
 
-import java.time.Duration;
-
-public class MissionDto extends BaseEvent {
+public class MissionDto extends BaseJsonDto {
     private String faction;
     private String missionType;
     private String missionDescription;
@@ -22,7 +20,6 @@ public class MissionDto extends BaseEvent {
 
 
     public MissionDto(MissionAcceptedEvent event) {
-        super(event.getTimestamp(), 1, Duration.ofSeconds(30), MissionDto.class.getName());
         setMissionId(event.getMissionID());
         setMissionProvider(event.getFaction());
         setMissionType(event.getName());
@@ -41,7 +38,7 @@ public class MissionDto extends BaseEvent {
     }
 
     private void setInfluence(boolean b) {
-        this.influenceIncrease =b;
+        this.influenceIncrease = b;
     }
 
     private void setReputationIncrease(boolean b) {
@@ -124,11 +121,11 @@ public class MissionDto extends BaseEvent {
         return missionId;
     }
 
-    @Override public String getEventType() {
+    public String getEventType() {
         return "Mission";
     }
 
-    @Override public JsonObject toJsonObject() {
+    public JsonObject toJsonObject() {
         return GsonFactory.toJsonObject(this);
     }
 }

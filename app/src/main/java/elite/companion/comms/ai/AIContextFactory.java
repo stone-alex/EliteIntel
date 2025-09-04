@@ -22,9 +22,9 @@ public class AIContextFactory {
 
     private static String getProfanityExamples() {
         SystemSession systemSession = SystemSession.getInstance();
-        AICadence aiCadence = systemSession.getAICadence() != null ? systemSession.getAICadence() : AICadence.FEDERATION;
-        String third = aiCadence == AICadence.IMPERIAL ? "arse" : "ass";
-        return "'shit', 'fuck', '" + third + "'";
+        AICadence aiCadence = systemSession.getAICadence() != null ? systemSession.getAICadence() : AICadence.IMPERIAL;
+        String third = aiCadence == AICadence.IMPERIAL ? "'arse', 'bloke', 'bollocks'" : "'ass', 'dude', 'rad'";
+        return "'shit', 'piss', 'cunt', 'cock', 'cocksucker', 'motherfucker', 'tits', 'fuck', " + third;
     }
 
     public String generateSystemInstructions(String sensorInput) {
@@ -125,7 +125,7 @@ public class AIContextFactory {
             sb.append("Our home base is FleetCarrier "+carrierName+", callsign "+carrierCallSign+". ");
         }
         sb.append("Address me as ").append(playerName).append(", ").append(playerMilitaryRank).append(", ").append(playerTitle).append(", or ").append(playerHonorific).append(". ");
-        sb.append("Prefer ").append(playerName).append(" or ").append(playerMilitaryRank).append(". ");
+        //sb.append("Prefer ").append(playerName).append(" or ").append(playerMilitaryRank).append(". ");
         if (missionStatement != null && !missionStatement.isEmpty()) {
             sb.append(missionStatement);
         }

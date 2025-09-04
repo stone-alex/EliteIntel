@@ -6,7 +6,7 @@
 
     <!-- Properties for flexibility -->
     <property name="APP_LOG_LEVEL" value="${APP_LOG_LEVEL:-DEBUG}" />
-    <property name="LOG_FILE_PATH" value="./elite-companion.log" />
+    <property name="LOG_FILE_PATH" value="./logs/elite-companion.log" />
 
     <!-- Suppress noisy third-party logs -->
     <logger name="io.grpc" level="WARN" />

@@ -58,7 +58,7 @@ public class PirateMissionAnalyzer implements QueryHandler {
 
         switch (query) {
             case QUERY_PIRATE_KILLS_REMAINING:
-                return basePrompt.append("Respond with only the number of kills remaining per TargetFaction, formatted as: '[Faction]: [Kills] kills left.'").toString();
+                return basePrompt.append("Respond with only the number of kills remaining per TargetFaction, formatted as: '[Faction]: [ kills] kills left.'").toString();
             case QUERY_PIRATE_MISSION_PROFIT:
                 return basePrompt.append("Respond with only the total potential mission profit in credits, formatted as: 'Potential profit: [Credits] credits.'").toString();
             case QUERY_PIRATE_STATUS:

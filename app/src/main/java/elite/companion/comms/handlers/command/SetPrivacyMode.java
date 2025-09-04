@@ -2,7 +2,6 @@ package elite.companion.comms.handlers.command;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import elite.companion.comms.voice.VoiceGenerator;
 import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.session.SystemSession;
 import elite.companion.util.EventBusManager;
@@ -19,7 +18,7 @@ public class SetPrivacyMode implements CommandHandler {
         JsonElement jsonElement = extractParameter(CommandActionsCustom.SET_PRIVACY_MODE.getPlaceholder(), params);
         boolean isOn = "on".equalsIgnoreCase(jsonElement.getAsString());
         SystemSession systemSession = SystemSession.getInstance();
-        systemSession.put(SystemSession.PRIVACY_MODE, isOn);
+        systemSession.setPrivacyMode(isOn);
 
         if(isOn){
             EventBusManager.publish(new VoiceProcessEvent("Privacy mode is on. Please prefix your commands to me with Computer or "+systemSession.getAIVoice().getName()));

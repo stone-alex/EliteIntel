@@ -12,7 +12,7 @@ public class ShutDownEventSubscriber {
     @Subscribe
     public void onShutDownEvent(ShutdownEvent event) {
         EventBusManager.publish(new VoiceProcessEvent("Session off line..."));
-        PlayerSession.getInstance().clearOnShutDown();
-        SystemSession.getInstance().clearOnShutDown();
+        //PlayerSession.getInstance().clearOnShutDown();
+        //SystemSession.getInstance().clearOnShutDown();
     }
 }

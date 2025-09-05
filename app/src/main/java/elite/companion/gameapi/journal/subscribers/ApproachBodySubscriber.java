@@ -1,10 +1,12 @@
 package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.companion.gameapi.SensorDataEvent;
 import elite.companion.gameapi.journal.events.ApproachBodyEvent;
 import elite.companion.gameapi.journal.events.dto.MaterialDto;
 import elite.companion.gameapi.journal.events.dto.StellarObjectDto;
 import elite.companion.session.PlayerSession;
+import elite.companion.util.EventBusManager;
 
 import java.util.List;
 
@@ -33,13 +35,18 @@ public class ApproachBodySubscriber {
             List<MaterialDto> materials = stellarObject.getMaterials();
             if (materials != null && !materials.isEmpty()) {
                 sb.append(" Materials: ");
-            }
-            for (MaterialDto material : materials) {
-                sb.append(material.getMaterialName()).append(", ");
+                for (MaterialDto material : materials) {
+                    sb.append(material.getMaterialName()).append(", ");
+                }
             }
             sb.append(".");
             double surfaceTemperature = stellarObject.getSurfaceTemperature() - TEMP_CONVERSION_FROM_K_TO_C;
             sb.append(" Surface Temperature: ").append(surfaceTemperature).append(" C");
+        } else {
+            sb.append(" No data available for ").append(event.getBody()).append(".");
+            sb.append(" Check gravity and temperature data before landing");
         }
+
+        EventBusManager.publish(new SensorDataEvent(sb.toString()));
     }
 }

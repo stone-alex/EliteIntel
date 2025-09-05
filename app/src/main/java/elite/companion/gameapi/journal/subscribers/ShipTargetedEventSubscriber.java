@@ -22,7 +22,7 @@ public class ShipTargetedEventSubscriber {
     @Subscribe
     public void onShipTargetedEvent(ShipTargetedEvent event) {
         PlayerSession playerSession = PlayerSession.getInstance();
-        log.info(event.toJson());
+        log.debug(event.toJson());
 
         if (!event.isTargetLocked()) {
             EventBusManager.publish(new VoiceProcessEvent("Contact Lost"));
@@ -100,13 +100,11 @@ public class ShipTargetedEventSubscriber {
     }
 
 
-    private String buildCanonicalShipString(ShipTargetedEvent event) {  // Cast to actual type, e.g., ScanEvent
-        // Example assuming info is a ScanEvent POJO with getters
+    private String buildCanonicalShipString(ShipTargetedEvent event) {
         String pilot = event.getPilotNameLocalised();
         String shipType = event.getShipLocalised();
         String faction = event.getFaction();
         String legalStatus = event.getLegalStatus();
-        // Concat with delimiters to avoid ambiguity (e.g., "JohnDoe|Anaconda|Empire|Clean")
         return pilot + "|" + shipType + "|" + faction + "|" + legalStatus;
     }
 
@@ -117,14 +115,13 @@ public class ShipTargetedEventSubscriber {
         if (legalStatus == null || legalStatus.isBlank()) return null;
         PlayerSession playerSession = PlayerSession.getInstance();
 
-        String targetFaction = null;
         Set<String> targetFactions = playerSession.getTargetFactions();
         if (!targetFactions.contains(faction)) {
-            targetFaction = faction;
+            return "Mission Target! ";
         }
 
-        if (targetFaction != null && legalStatus.equalsIgnoreCase("wanted")) {
-            return "Mission Target! ";
+        if (legalStatus.equalsIgnoreCase("wanted")) {
+            return "Legal Target!";
         } else return null;
     }
 
@@ -133,11 +130,8 @@ public class ShipTargetedEventSubscriber {
         if (legalStatus == null) return false;
         if (event == null) return false;
         if (legalStatus.isBlank()) return false;
-        if ("wanted".contains(legalStatus.toLowerCase())) return true;
         if ("clean".contains(legalStatus.toLowerCase())) return false;
         if (event.getScanStage() == 0) return false;
-
-        return true;
+        return "wanted".contains(legalStatus.toLowerCase());
     }
-
 }

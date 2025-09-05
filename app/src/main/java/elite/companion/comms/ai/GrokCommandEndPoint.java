@@ -80,7 +80,7 @@ public class GrokCommandEndPoint {
             // Create clarification response
             JsonObject clarification = new JsonObject();
             clarification.addProperty("type", "chat");
-            clarification.addProperty("response_text", "Sorry, didn't quite catch that. Could you repeat or clarify?");
+            clarification.addProperty("response_text", "Sorry, missed that. Say again?");
             clarification.addProperty("action", (String) null);
             clarification.add("params", new JsonObject());
             clarification.addProperty("expect_followup", true);
@@ -91,7 +91,7 @@ public class GrokCommandEndPoint {
             // Store user message in history for follow-up
             JsonObject assistantMessage = new JsonObject();
             assistantMessage.addProperty("role", "assistant");
-            assistantMessage.addProperty("content", "Sorry, didn't quite catch that. Could you repeat or clarify?");
+            assistantMessage.addProperty("content", "Sorry, missed that. Say again?");
             SystemSession.getInstance().appendToChatHistory(userMessage, assistantMessage);
             return;
         }

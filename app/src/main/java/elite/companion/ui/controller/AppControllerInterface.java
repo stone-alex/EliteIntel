@@ -3,6 +3,6 @@ package elite.companion.ui.controller;
 public interface AppControllerInterface {
     void handleSaveSystemConfig();
     void handleSaveUserConfig();
-    boolean handleStartStop();
+    boolean startStopServices();
     void togglePrivacyMode(boolean isOn);
 }

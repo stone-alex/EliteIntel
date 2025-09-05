@@ -7,6 +7,7 @@ import elite.companion.gameapi.AuxiliaryFilesMonitor;
 import elite.companion.gameapi.JournalParser;
 import elite.companion.gameapi.UserInputEvent;
 import elite.companion.gameapi.VoiceProcessEvent;
+import elite.companion.session.PlayerSession;
 import elite.companion.session.SystemSession;
 import elite.companion.ui.event.AppLogEvent;
 import elite.companion.ui.model.AppModelInterface;
@@ -19,6 +20,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Map;
 
+import static elite.companion.session.PlayerSession.PLAYER_MISSION_STATEMENT;
 import static elite.companion.ui.view.AppView.*;
 
 public class AppController implements AppControllerInterface, ActionListener {
@@ -73,7 +75,7 @@ public class AppController implements AppControllerInterface, ActionListener {
     }
 
     @Override
-    public boolean handleStartStop() {
+    public boolean startStopServices() {
         isServiceRunning = !isServiceRunning;
         if (isServiceRunning) {
 
@@ -91,7 +93,6 @@ public class AppController implements AppControllerInterface, ActionListener {
                 return false;
             }
 
-
             boolean privacyModeOn = systemSession.isPrivacyModeOn();
 
             model.setPrivacyModeOn(privacyModeOn);
@@ -101,6 +102,11 @@ public class AppController implements AppControllerInterface, ActionListener {
             speechRecognizer.start();
             fileMonitor.start();
             voiceGenerator.start();
+
+            ConfigManager configManager = ConfigManager.getInstance();
+            String mission_statement = configManager.getPlayerKey(ConfigManager.PLAYER_MISSION_STATEMENT);
+            PlayerSession.getInstance().put(PLAYER_MISSION_STATEMENT, mission_statement);
+
             EventBusManager.publish(new VoiceProcessEvent("Systems online..."));
             isServiceRunning = true;
         } else {
@@ -160,7 +166,7 @@ public class AppController implements AppControllerInterface, ActionListener {
             } else if (ACTION_SAVE_USER_CONFIG.equals(command)) {
                 handleSaveUserConfig();
             } else if (ACTION_TOGGLE_SERVICES.equals(command)) {
-                ((JButton) e.getSource()).setText(handleStartStop() ? "Stop Service" : "Start Service");
+                ((JButton) e.getSource()).setText(startStopServices() ? "Stop Service" : "Start Service");
             }
         }
     }

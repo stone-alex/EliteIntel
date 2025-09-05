@@ -5,6 +5,8 @@ import elite.companion.gameapi.SensorDataEvent;
 import elite.companion.gameapi.journal.events.ApproachSettlementEvent;
 import elite.companion.util.EventBusManager;
 
+import java.util.List;
+
 public class ApproachSettlementSubscriber {
 
     @Subscribe
@@ -20,9 +22,13 @@ public class ApproachSettlementSubscriber {
             sb.append(event.getStationFaction().getName());
             sb.append(", ");
         }
-        for (String services : event.getStationServices()) {
-            sb.append(services);
-            sb.append(", ");
+        List<String> stationServices = event.getStationServices();
+        if (stationServices != null && !stationServices.isEmpty()) {
+            sb.append("Services: ");
+            for (String services : stationServices) {
+                sb.append(services);
+                sb.append(", ");
+            }
         }
 
         EventBusManager.publish(new SensorDataEvent(sb.toString()));

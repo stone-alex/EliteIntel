@@ -380,6 +380,7 @@ public class PlayerSession {
     @Subscribe
     public void onMissionCompleted(MissionCompletedEvent event) {
         removeMission(event.getMissionID());
+        if (missions.isEmpty()) targetFactions.clear();
         saveSession();
     }
 

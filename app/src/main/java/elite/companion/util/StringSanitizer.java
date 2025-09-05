@@ -97,45 +97,18 @@ public class StringSanitizer {
             command = command.replace("bunch it", "toggle ftl");
         }
 
+        if (command.contains("display enough panel")) {
+            command = command.replace("display enough panel", "display navigation panel");
+        }
+
+        if (command.contains("display nav panel")) {
+            command = command.replace("display nav panel", "display navigation panel");
+        }
+
+        if (command.contains("play the navigation panel")) {
+            command = command.replace("play the navigation panel", "display navigation panel");
+        }
+
         return command.toLowerCase();
-    }
-
-
-    // Very small Markdown -> HTML converter for common cases
-    public static String markdownToHtml(String md) {
-        String html = md
-                .replace("&", "&amp;")
-                .replace("<", "&lt;")
-                .replace(">", "&gt;");
-
-        // Headers
-        html = html.replaceAll("(?m)^######\\s*(.*)$", "<h6>$1</h6>");
-        html = html.replaceAll("(?m)^#####\\s*(.*)$", "<h5>$1</h5>");
-        html = html.replaceAll("(?m)^####\\s*(.*)$", "<h4>$1</h4>");
-        html = html.replaceAll("(?m)^###\\s*(.*)$", "<h3>$1</h3>");
-        html = html.replaceAll("(?m)^##\\s*(.*)$", "<h2>$1</h2>");
-        html = html.replaceAll("(?m)^#\\s*(.*)$", "<h1>$1</h1>");
-
-        // Bold/italic
-        html = html.replaceAll("\\*\\*(.+?)\\*\\*", "<b>$1</b>");
-        html = html.replaceAll("__(.+?)__", "<b>$1</b>");
-        html = html.replaceAll("(?<!\\*)\\*(?!\\*)(.+?)(?<!\\*)\\*(?!\\*)", "<i>$1</i>");
-        html = html.replaceAll("(?<!_)_(?!_)(.+?)(?<!_)_(?!_)", "<i>$1</i>");
-
-        // Inline code
-        html = html.replaceAll("`([^`]+)`", "<code>$1</code>");
-
-        // Links [text](url)
-        html = html.replaceAll("\\[(.+?)\\]\\((https?://[^\\s)]+)\\)", "<a href=\"$2\">$1</a>");
-
-        // Lists
-        html = html.replaceAll("(?m)^\\s*[-*]\\s+(.+)$", "<li>$1</li>");
-        html = html.replaceAll("(?s)(<li>.*?</li>)", "<ul>$1</ul>");
-
-        // Paragraphs (very naive)
-        html = "<html><body style='font-family:Segoe UI, Sans-Serif;'>" +
-                html.replaceAll("(?m)^(?!<h\\d>|<ul>|<li>|</ul>|<p>|</p>|<code>|</code>|<b>|</b>|<i>|</i>|<a |</a>)(.+)$", "<p>$1</p>") +
-                "</body></html>";
-        return html;
     }
 }

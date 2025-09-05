@@ -10,7 +10,6 @@ import elite.companion.session.SystemSession;
 import elite.companion.ui.event.AppLogEvent;
 import elite.companion.util.ConfigManager;
 import elite.companion.util.EventBusManager;
-import elite.companion.util.GoogleApiKeyProvider;
 import elite.companion.util.StringSanitizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,7 +70,7 @@ public class SpeechRecognizer {
 
         try {
             String apiKey = ConfigManager.getInstance().getSystemKey(ConfigManager.GOOGLE_API_KEY);
-            if(apiKey == null || apiKey.trim().isEmpty()) {
+            if (apiKey == null || apiKey.trim().isEmpty()) {
                 log.error("Google API key not found in system.conf");
                 return;
             }
@@ -252,7 +251,7 @@ public class SpeechRecognizer {
                     log.info("Final transcript: {} (confidence: {})", transcript, confidence);
                     String sanitizedTranscript = StringSanitizer.sanitizeGoogleMistakes(transcript);
 
-                    EventBusManager.publish(new AppLogEvent("STT heard: "+transcript+". Sanitized: "+sanitizedTranscript+"."));
+                    EventBusManager.publish(new AppLogEvent("STT heard: " + transcript + ". Sanitized: " + sanitizedTranscript + "."));
 
                     boolean isPrivacyModeOn = SystemSession.getInstance().isPrivacyModeOn();
                     if (isPrivacyModeOn) {

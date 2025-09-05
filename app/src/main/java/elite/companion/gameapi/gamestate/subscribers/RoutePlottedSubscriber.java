@@ -1,13 +1,10 @@
 package elite.companion.gameapi.gamestate.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import com.google.gson.Gson;
-import elite.companion.session.PlayerSession;
-import elite.companion.util.EventBusManager;
 import elite.companion.gameapi.gamestate.events.GameEvents;
 import elite.companion.gameapi.gamestate.events.NavRouteDto;
-import elite.companion.session.SystemSession;
-import elite.companion.util.GsonFactory;
+import elite.companion.session.PlayerSession;
+import elite.companion.util.EventBusManager;
 
 import java.util.LinkedHashMap;
 import java.util.List;

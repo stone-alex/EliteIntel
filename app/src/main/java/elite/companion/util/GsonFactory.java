@@ -3,6 +3,7 @@ package elite.companion.util;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+
 import java.time.Instant;
 import java.time.ZonedDateTime;
 
@@ -23,6 +24,7 @@ public final class GsonFactory {
 
     /**
      * Converts an object to a JsonObject using the configured Gson instance.
+     *
      * @param object The object to serialize.
      * @return A JsonObject representation of the object.
      */
@@ -31,5 +33,6 @@ public final class GsonFactory {
     }
 
     // Prevent instantiation
-    private GsonFactory() {}
+    private GsonFactory() {
+    }
 }

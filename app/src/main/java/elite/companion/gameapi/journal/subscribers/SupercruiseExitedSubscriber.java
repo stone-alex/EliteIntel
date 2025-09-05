@@ -2,7 +2,6 @@ package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import elite.companion.gameapi.journal.events.SupercruiseExitEvent;
-import elite.companion.session.SystemSession;
 
 @SuppressWarnings("unused")
 public class SupercruiseExitedSubscriber {

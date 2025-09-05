@@ -1,8 +1,6 @@
 package elite.companion.comms.handlers.command;
 
 import com.google.gson.JsonObject;
-import elite.companion.session.PlayerSession;
-import elite.companion.session.SystemSession;
 import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.util.EventBusManager;
 

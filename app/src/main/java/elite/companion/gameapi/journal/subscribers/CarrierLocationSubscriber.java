@@ -12,7 +12,7 @@ public class CarrierLocationSubscriber {
     @Subscribe
     public void onCarrierLocationEvent(CarrierLocationEvent event) {
 
-        if("FleetCarrier".equalsIgnoreCase(event.getCarrierType())) {
+        if ("FleetCarrier".equalsIgnoreCase(event.getCarrierType())) {
             SystemSession.getInstance().put(PlayerSession.CARRIER_LOCATION, event.getStarSystem());
             EventBusManager.publish(new SensorDataEvent("FleetCarrier jump complete, new location: " + event.getStarSystem()));
         }

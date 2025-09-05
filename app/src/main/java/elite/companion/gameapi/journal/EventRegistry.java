@@ -1,8 +1,8 @@
 package elite.companion.gameapi.journal;
 
 import com.google.gson.JsonObject;
-import elite.companion.gameapi.UserInputEvent;
 import elite.companion.gameapi.SensorDataEvent;
+import elite.companion.gameapi.UserInputEvent;
 import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.gameapi.journal.events.*;
 import elite.companion.session.ClearSessionCacheEvent;

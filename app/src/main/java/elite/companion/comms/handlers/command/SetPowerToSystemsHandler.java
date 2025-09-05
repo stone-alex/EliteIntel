@@ -14,7 +14,7 @@ public class SetPowerToSystemsHandler extends CustomCommandOperator implements C
 
 
     public SetPowerToSystemsHandler(GameCommandHandler commandHandler) throws Exception {
-        super(commandHandler.getMonitor(),commandHandler.getExecutor());
+        super(commandHandler.getMonitor(), commandHandler.getExecutor());
     }
 
     @Override public void handle(JsonObject params, String responseText) {

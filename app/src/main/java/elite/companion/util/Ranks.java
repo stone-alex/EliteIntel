@@ -2,7 +2,6 @@ package elite.companion.util;
 
 import elite.companion.gameapi.journal.events.dto.RankAndProgressDto;
 import elite.companion.session.PlayerSession;
-import elite.companion.session.SystemSession;
 
 import java.util.HashMap;
 

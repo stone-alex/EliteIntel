@@ -23,7 +23,7 @@ public class AINameDto {
         return description;
     }
 
-    public String toJson(){
-        return GsonFactory.getGson().toJson( this);
+    public String toJson() {
+        return GsonFactory.getGson().toJson(this);
     }
 }

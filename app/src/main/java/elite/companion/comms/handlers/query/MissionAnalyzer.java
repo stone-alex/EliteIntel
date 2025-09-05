@@ -1,10 +1,10 @@
 package elite.companion.comms.handlers.query;
 
 import com.google.gson.JsonObject;
+import elite.companion.comms.ai.AIContextFactory;
 import elite.companion.comms.ai.GrokAnalysisEndpoint;
 import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.session.PlayerSession;
-import elite.companion.comms.ai.AIContextFactory;
 import elite.companion.util.EventBusManager;
 
 public class MissionAnalyzer implements QueryHandler {

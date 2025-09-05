@@ -19,8 +19,8 @@ public class RankAndProgressDto implements ToJsonConvertible {
 
     private String pledgedToPower = "unknown";
     private String allegiance = "unknown";
-    private int  powerRank = 0;
-    private int  merrits = 0;
+    private int powerRank = 0;
+    private int merrits = 0;
     private long timePledged = 0;
 
     private int combatProgressToNextRankInPercent = 0;
@@ -206,7 +206,7 @@ public class RankAndProgressDto implements ToJsonConvertible {
         this.setMercenaryRank(Ranks.getMercenaryRankMap().get(data.getSoldier()));
         this.setHonorific(Ranks.getHonorific(data.getEmpire(), data.getFederation()));
     }
-    
+
     public void setProgressData(PlayerProgressStats data) {
         this.setCombatProgressToNextRankInPercent(data.getCombat());
         this.setCqcRankProgressToNextRankInPercent(data.getCQC());

@@ -108,7 +108,7 @@ public class TTSFriendlyNumberConverter {
         }
     }
 
-    private static  String tensWord(int n) {
+    private static String tensWord(int n) {
         // Assumes n is a multiple of 10 (common after rounding), but handles 20..99
         int tens = n / 10;
         int ones = n % 10;

@@ -1,6 +1,6 @@
 package elite.companion.util;
 
-import com.google.common.eventbus.Subscribe;  // Adjust if using custom EventBus
+import com.google.common.eventbus.Subscribe;
 
 import java.io.IOException;
 import java.lang.reflect.Method;

@@ -81,7 +81,6 @@ public class CommandActionsGame {
         WING_NAV_LOCK("lock_on_wingman", "WingNavLock", GenericGameController.class),
 
 
-
         EXIT_KEY("ui_exit", "UI_Back", GenericGameController.class),
         //excluded, but needed for bindings. used in custom handler
         //these are special cases for excluded commands not sent to Grok, handled via a custom action
@@ -104,9 +103,7 @@ public class CommandActionsGame {
         SYSTEM_MAP_HUMANOID("system_map_humanoid", "SystemMapOpen_Humanoid", GenericGameController.class),
 
 
-        EXPLORATION_FSSDISCOVERY_SCAN("_", "", PerformFSSScanHandler.class)
-
-;
+        EXPLORATION_FSSDISCOVERY_SCAN("_", "", PerformFSSScanHandler.class);
 
         private final String userCommand;
         private final String gameBinding;
@@ -144,22 +141,22 @@ public class CommandActionsGame {
         String[] commands = new String[GameCommand.values().length];
         for (int i = 0; i < GameCommand.values().length; i++) {
             // special cases for excluded commands
-            if( GameCommand.values()[i] == GameCommand.INCREASE_ENGINES_POWER) continue;
-            if( GameCommand.values()[i] == GameCommand.INCREASE_SHIELDS_POWER) continue;
-            if( GameCommand.values()[i] == GameCommand.INCREASE_SYSTEMS_POWER) continue;
-            if( GameCommand.values()[i] == GameCommand.INCREASE_WEAPONS_POWER) continue;
-            if( GameCommand.values()[i] == GameCommand.EXPLORATION_FSSDISCOVERY_SCAN) continue;
-            if( GameCommand.values()[i] == GameCommand.UI_DOWN) continue;
-            if( GameCommand.values()[i] == GameCommand.UI_LEFT) continue;
-            if( GameCommand.values()[i] == GameCommand.UI_RIGHT) continue;
-            if( GameCommand.values()[i] == GameCommand.UI_UP) continue;
-            if( GameCommand.values()[i] == GameCommand.UI_TOGGLE) continue;
-            if( GameCommand.values()[i] == GameCommand.GALAXY_MAP) continue;
-            if( GameCommand.values()[i] == GameCommand.GALAXY_MAP_BUGGY) continue;
-            if( GameCommand.values()[i] == GameCommand.GALAXY_MAP_HOME) continue;
-            if( GameCommand.values()[i] == GameCommand.GALAXY_MAP_HUMANOID) continue;
-            if( GameCommand.values()[i] == GameCommand.SYSTEM_MAP) continue;
-            if( GameCommand.values()[i] == GameCommand.SYSTEM_MAP_HUMANOID) continue;
+            if (GameCommand.values()[i] == GameCommand.INCREASE_ENGINES_POWER) continue;
+            if (GameCommand.values()[i] == GameCommand.INCREASE_SHIELDS_POWER) continue;
+            if (GameCommand.values()[i] == GameCommand.INCREASE_SYSTEMS_POWER) continue;
+            if (GameCommand.values()[i] == GameCommand.INCREASE_WEAPONS_POWER) continue;
+            if (GameCommand.values()[i] == GameCommand.EXPLORATION_FSSDISCOVERY_SCAN) continue;
+            if (GameCommand.values()[i] == GameCommand.UI_DOWN) continue;
+            if (GameCommand.values()[i] == GameCommand.UI_LEFT) continue;
+            if (GameCommand.values()[i] == GameCommand.UI_RIGHT) continue;
+            if (GameCommand.values()[i] == GameCommand.UI_UP) continue;
+            if (GameCommand.values()[i] == GameCommand.UI_TOGGLE) continue;
+            if (GameCommand.values()[i] == GameCommand.GALAXY_MAP) continue;
+            if (GameCommand.values()[i] == GameCommand.GALAXY_MAP_BUGGY) continue;
+            if (GameCommand.values()[i] == GameCommand.GALAXY_MAP_HOME) continue;
+            if (GameCommand.values()[i] == GameCommand.GALAXY_MAP_HUMANOID) continue;
+            if (GameCommand.values()[i] == GameCommand.SYSTEM_MAP) continue;
+            if (GameCommand.values()[i] == GameCommand.SYSTEM_MAP_HUMANOID) continue;
 
             commands[i] = GameCommand.values()[i].getUserCommand();
         }

@@ -1,13 +1,11 @@
 package elite.companion.comms.ai;
 
 import com.google.common.eventbus.Subscribe;
-import elite.companion.comms.handlers.query.QueryActions;
 import com.google.gson.*;
-import elite.companion.comms.voice.VoiceGenerator;
-import elite.companion.gameapi.UserInputEvent;
+import elite.companion.comms.handlers.query.QueryActions;
 import elite.companion.gameapi.SensorDataEvent;
+import elite.companion.gameapi.UserInputEvent;
 import elite.companion.gameapi.VoiceProcessEvent;
-import elite.companion.session.PlayerSession;
 import elite.companion.session.SystemSession;
 import elite.companion.util.ConfigManager;
 import elite.companion.util.EventBusManager;

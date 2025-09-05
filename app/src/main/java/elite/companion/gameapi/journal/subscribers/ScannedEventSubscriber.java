@@ -1,7 +1,6 @@
 package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.companion.gameapi.SensorDataEvent;
 import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.gameapi.journal.events.ScannedEvent;
 import elite.companion.session.SystemSession;

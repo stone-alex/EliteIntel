@@ -2,11 +2,8 @@ package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import elite.companion.gameapi.journal.events.LoadGameEvent;
-import elite.companion.gameapi.journal.events.dto.RankAndProgressDto;
 import elite.companion.session.PlayerSession;
-import elite.companion.session.SystemSession;
 import elite.companion.util.ConfigManager;
-import elite.companion.util.GsonFactory;
 import elite.companion.util.StringSanitizer;
 
 import static elite.companion.session.PlayerSession.*;

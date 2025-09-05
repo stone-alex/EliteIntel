@@ -2,9 +2,7 @@ package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import elite.companion.comms.handlers.command.CommandActionsCustom;
-import elite.companion.comms.voice.VoiceGenerator;
 import elite.companion.gameapi.SensorDataEvent;
-import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.gameapi.journal.events.MiningRefinedEvent;
 import elite.companion.session.PlayerSession;
 import elite.companion.session.SystemSession;

@@ -6,7 +6,7 @@ import elite.companion.util.ToJsonConvertible;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StellarObjectDto  implements ToJsonConvertible {
+public class StellarObjectDto implements ToJsonConvertible {
 
 
     private String name;

@@ -4,8 +4,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 import elite.companion.util.GsonFactory;
 import elite.companion.util.TimestampFormatter;
-import java.time.Duration;
+
 import java.text.DecimalFormat;
+import java.time.Duration;
 
 public class ReputationEvent extends BaseEvent {
     @SerializedName("Empire")

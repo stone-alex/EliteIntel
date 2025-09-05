@@ -108,14 +108,13 @@ public class AppModel implements AppModelInterface {
         return this.privacyMode;
     }
 
-    @Override public void showSystemLog(boolean show){
+    @Override public void showSystemLog(boolean show) {
         this.showSystemLog = show;
     }
 
-    @Override public boolean showSystemLog(){
+    @Override public boolean showSystemLog() {
         return this.showSystemLog;
     }
-
 
 
     @Override public void setPrivacyModeOn(boolean on) {
@@ -126,6 +125,7 @@ public class AppModel implements AppModelInterface {
     @Override public void setServicesRunning(boolean isServiceRunning) {
         pcs.firePropertyChange(AppView.PROPERTY_SERVICES_TOGGLE, !isServiceRunning, isServiceRunning);
     }
+
     @Override
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         pcs.addPropertyChangeListener(listener);

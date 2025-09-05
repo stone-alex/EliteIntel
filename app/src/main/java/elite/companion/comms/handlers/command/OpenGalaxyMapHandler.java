@@ -20,7 +20,7 @@ public class OpenGalaxyMapHandler extends CustomCommandOperator implements Comma
 
             String uiRight = CommandActionsGame.GameCommand.UI_RIGHT.getGameBinding();
             operateKeyboard(uiRight, 0);
-        } catch (InterruptedException oops){
+        } catch (InterruptedException oops) {
             //ok
         }
 

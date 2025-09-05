@@ -6,13 +6,13 @@ import com.google.gson.JsonObject;
 import elite.companion.comms.ai.AICadence;
 import elite.companion.comms.ai.AIPersonality;
 import elite.companion.comms.voice.Voices;
-import elite.companion.gameapi.journal.events.BaseEvent;
 import elite.companion.gameapi.journal.events.LoadGameEvent;
 import elite.companion.util.EventBusManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SystemSession {
     private static final Logger LOG = LoggerFactory.getLogger(SystemSession.class);

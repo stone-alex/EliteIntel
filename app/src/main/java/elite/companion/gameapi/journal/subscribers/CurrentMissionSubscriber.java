@@ -14,7 +14,8 @@ import java.util.List;
  * Handles the list of missions we get when the user logs in to the game.
  * There is no useful information here, except the expiration time.
  * The expiration time is represented in the number of seconds.
- * */
+ *
+ */
 public class CurrentMissionSubscriber {
 
     @Subscribe

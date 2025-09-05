@@ -1,8 +1,5 @@
 package elite.companion.data;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Represents details for a Power Play power, including their capital, allegiance, and ethoses.
  * This is static data from the Elite Dangerous wiki.
@@ -24,11 +21,25 @@ public class PowerDetails {
     }
 
     // Getters
-    public String getCapital() { return capital; }
-    public String getAllegiance() { return allegiance; }
-    public String getPreparationEthos() { return preparationEthos; }
-    public String getExpansionEthos() { return expansionEthos; }
-    public String getControlEthos() { return controlEthos; }
+    public String getCapital() {
+        return capital;
+    }
+
+    public String getAllegiance() {
+        return allegiance;
+    }
+
+    public String getPreparationEthos() {
+        return preparationEthos;
+    }
+
+    public String getExpansionEthos() {
+        return expansionEthos;
+    }
+
+    public String getControlEthos() {
+        return controlEthos;
+    }
 
     @Override
     public String toString() {

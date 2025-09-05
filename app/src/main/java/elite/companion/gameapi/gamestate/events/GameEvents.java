@@ -1,6 +1,5 @@
 package elite.companion.gameapi.gamestate.events;
 
-import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import elite.companion.util.GsonFactory;
 
@@ -41,7 +40,7 @@ public class GameEvents {
             return inventory;
         }
 
-        public String toJson(){
+        public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }
     }
@@ -74,7 +73,7 @@ public class GameEvents {
                 return priority;
             }
 
-            public String toJson(){
+            public String toJson() {
                 return GsonFactory.getGson().toJson(this);
             }
         }
@@ -116,7 +115,7 @@ public class GameEvents {
                 return fuelReservoir;
             }
 
-            public String toJson(){
+            public String toJson() {
                 return GsonFactory.getGson().toJson(this);
             }
         }
@@ -141,7 +140,8 @@ public class GameEvents {
             public String getName() {
                 return name;
             }
-            public String toJson(){
+
+            public String toJson() {
                 return GsonFactory.getGson().toJson(this);
             }
         }
@@ -220,7 +220,7 @@ public class GameEvents {
             return destination;
         }
 
-        public String toJson(){
+        public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }
     }
@@ -264,7 +264,7 @@ public class GameEvents {
             return data;
         }
 
-        public String toJson(){
+        public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }
     }
@@ -301,7 +301,7 @@ public class GameEvents {
                 return "KGBFOAM".contains(starClass.toUpperCase());
             }
 
-            public String toJson(){
+            public String toJson() {
                 return GsonFactory.getGson().toJson(this);
             }
         }
@@ -326,7 +326,7 @@ public class GameEvents {
             return route;
         }
 
-        public String toJson(){
+        public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }
     }
@@ -370,7 +370,7 @@ public class GameEvents {
             return items;
         }
 
-        public String toJson(){
+        public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }
     }
@@ -420,7 +420,7 @@ public class GameEvents {
             return items;
         }
 
-        public String toJson(){
+        public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }
     }
@@ -453,7 +453,7 @@ public class GameEvents {
                 return shipPrice;
             }
 
-            public String toJson(){
+            public String toJson() {
                 return GsonFactory.getGson().toJson(this);
             }
         }
@@ -508,7 +508,7 @@ public class GameEvents {
             return priceList;
         }
 
-        public String toJson(){
+        public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }
     }
@@ -541,7 +541,7 @@ public class GameEvents {
                 return count;
             }
 
-            public String toJson(){
+            public String toJson() {
                 return GsonFactory.getGson().toJson(this);
             }
         }
@@ -573,7 +573,7 @@ public class GameEvents {
                 return count;
             }
 
-            public String toJson(){
+            public String toJson() {
                 return GsonFactory.getGson().toJson(this);
             }
         }
@@ -616,7 +616,7 @@ public class GameEvents {
             return data;
         }
 
-        public String toJson(){
+        public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }
     }
@@ -714,7 +714,8 @@ public class GameEvents {
             public boolean isRare() {
                 return rare;
             }
-            public String toJson(){
+
+            public String toJson() {
                 return GsonFactory.getGson().toJson(this);
             }
         }
@@ -763,7 +764,7 @@ public class GameEvents {
             return items;
         }
 
-        public String toJson(){
+        public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }
     }

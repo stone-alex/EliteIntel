@@ -5,7 +5,6 @@ import com.google.gson.JsonObject;
 import elite.companion.search.api.EdsmApiClient;
 import elite.companion.search.api.SpanshApiClient;
 import elite.companion.session.PlayerSession;
-import elite.companion.session.SystemSession;
 
 public class MaterialTraderQueryHandler implements QueryHandler {
     @Override

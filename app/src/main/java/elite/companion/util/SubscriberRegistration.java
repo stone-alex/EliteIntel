@@ -3,6 +3,7 @@ package elite.companion.util;
 import com.google.common.eventbus.Subscribe;
 import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
+
 import java.lang.reflect.Method;
 import java.util.Set;
 

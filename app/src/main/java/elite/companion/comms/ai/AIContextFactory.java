@@ -1,9 +1,9 @@
 package elite.companion.comms.ai;
 
+import elite.companion.comms.handlers.query.QueryActions;
 import elite.companion.session.PlayerSession;
 import elite.companion.session.SystemSession;
 import elite.companion.util.Ranks;
-import elite.companion.comms.handlers.query.QueryActions;
 
 import java.util.Objects;
 
@@ -122,7 +122,7 @@ public class AIContextFactory {
         String aiName = SystemSession.getInstance().getAIVoice().getName();
         sb.append("Context: You are ").append(aiName).append(", onboard AI for a ").append(currentShip).append(" ship in Elite Dangerous. ");
         if (carrierName != null && !carrierName.isEmpty()) {
-            sb.append("Our home base is FleetCarrier "+carrierName+", callsign "+carrierCallSign+". ");
+            sb.append("Our home base is FleetCarrier " + carrierName + ", callsign " + carrierCallSign + ". ");
         }
         sb.append("Address me as ").append(playerName).append(", ").append(playerMilitaryRank).append(", ").append(playerTitle).append(", or ").append(playerHonorific).append(". ");
         //sb.append("Prefer ").append(playerName).append(" or ").append(playerMilitaryRank).append(". ");

@@ -20,8 +20,8 @@ public class SetPrivacyModeHandler implements CommandHandler {
         SystemSession systemSession = SystemSession.getInstance();
         systemSession.setPrivacyMode(isOn);
 
-        if(isOn){
-            EventBusManager.publish(new VoiceProcessEvent("Privacy mode is on. Please prefix your commands to me with Computer or "+systemSession.getAIVoice().getName()));
+        if (isOn) {
+            EventBusManager.publish(new VoiceProcessEvent("Privacy mode is on. Please prefix your commands to me with Computer or " + systemSession.getAIVoice().getName()));
         } else {
             EventBusManager.publish(new VoiceProcessEvent("Privacy mode is off... I am listening."));
         }

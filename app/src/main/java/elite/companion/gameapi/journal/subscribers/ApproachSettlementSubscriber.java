@@ -15,12 +15,12 @@ public class ApproachSettlementSubscriber {
         sb.append(event.getName());
         sb.append(", ");
 
-        if("$government_Engineer;".equalsIgnoreCase(event.getStationGovernment())) {
+        if ("$government_Engineer;".equalsIgnoreCase(event.getStationGovernment())) {
             sb.append("Engineer: ");
             sb.append(event.getStationFaction().getName());
             sb.append(", ");
         }
-        for(String services : event.getStationServices()){
+        for (String services : event.getStationServices()) {
             sb.append(services);
             sb.append(", ");
         }

@@ -13,7 +13,7 @@ public class SetPowerToWeaponsHandler extends CustomCommandOperator implements C
     public static final int DELAY = 5;
 
     public SetPowerToWeaponsHandler(GameCommandHandler commandHandler) throws Exception {
-        super(commandHandler.getMonitor(),commandHandler.getExecutor());
+        super(commandHandler.getMonitor(), commandHandler.getExecutor());
     }
 
     @Override public void handle(JsonObject params, String responseText) {

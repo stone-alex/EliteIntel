@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 import elite.companion.util.GsonFactory;
 import elite.companion.util.TimestampFormatter;
+
 import java.time.Duration;
 
 public class FriendsEvent extends BaseEvent {

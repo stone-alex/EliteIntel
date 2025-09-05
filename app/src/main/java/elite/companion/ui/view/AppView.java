@@ -21,7 +21,7 @@ import java.util.Map;
  * - 10px padding around content
  * - Title at top center
  * - Three tabs: System, Player, Help
- *
+ * <p>
  * Exposed methods:
  * - setSystemConfig(Map), getSystemConfigInput()
  * - setUserConfig(Map), getUserConfigInput()
@@ -33,16 +33,15 @@ import java.util.Map;
 public class AppView extends JFrame implements PropertyChangeListener, AppViewInterface {
 
     // ----- COLORS (adjust to taste) -----
-    private static final Color BG        = new Color(0x1D1D1D); // base background
-    private static final Color BG_PANEL  = new Color(0x2B2D30); // panels/inputs background
-    private static final Color FG        = new Color(0xE6E6E6); // primary text
-    private static final Color FG_MUTED  = new Color(0xB0B0B0); // secondary text
-    private static final Color ACCENT    = new Color(0xFF8C00); // orange
-    private static final Color SEL_BG    = new Color(0x3A3D41); // selection background
+    private static final Color BG = new Color(0x1D1D1D); // base background
+    private static final Color BG_PANEL = new Color(0x2B2D30); // panels/inputs background
+    private static final Color FG = new Color(0xE6E6E6); // primary text
+    private static final Color FG_MUTED = new Color(0xB0B0B0); // secondary text
+    private static final Color ACCENT = new Color(0xFF8C00); // orange
+    private static final Color SEL_BG = new Color(0x3A3D41); // selection background
     private static final Color TAB_UNSELECTED = new Color(0x2A2C2F);
-    private static final Color TAB_SELECTED   = new Color(0x33363A);
+    private static final Color TAB_SELECTED = new Color(0x33363A);
     // ----- END COLORS -----
-
 
 
     // Title
@@ -163,13 +162,14 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
                     else if (m.isRollover()) base = base.brighter();
                     g2.setColor(base);
                     g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
-                } finally { g2.dispose(); }
+                } finally {
+                    g2.dispose();
+                }
                 super.paintComponent(g);
             }
         };
         styleButton(saveSystemButton);
         saveSystemButton.setActionCommand(ACTION_SAVE_SYSTEM_CONFIG);
-
 
 
         startStopServicesButton = new JButton("Start Services") {
@@ -183,7 +183,9 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
                     else if (m.isRollover()) base = base.brighter();
                     g2.setColor(base);
                     g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
-                } finally { g2.dispose(); }
+                } finally {
+                    g2.dispose();
+                }
                 super.paintComponent(g);
             }
         };
@@ -267,12 +269,15 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
                     else if (m.isRollover()) base = base.brighter();
                     g2.setColor(base);
                     g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
-                } finally { g2.dispose(); }
+                } finally {
+                    g2.dispose();
+                }
                 super.paintComponent(g);
             }
         };
         styleButton(savePlayerInfoButton);
-        savePlayerInfoButton.setActionCommand(ACTION_SAVE_USER_CONFIG);;
+        savePlayerInfoButton.setActionCommand(ACTION_SAVE_USER_CONFIG);
+        ;
         btns.add(savePlayerInfoButton);
         panel.add(btns, gbc);
 
@@ -492,7 +497,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     }
 
     @Override public void displaySystemConfig(Map<String, String> cfg) {
-        for(Map.Entry<String, String> entry : cfg.entrySet()) {
+        for (Map.Entry<String, String> entry : cfg.entrySet()) {
             switch (entry.getKey()) {
                 case ConfigManager.GOOGLE_API_KEY:
                     googleApiKeyField.setText(entry.getValue());
@@ -511,7 +516,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     }
 
     @Override public void displayUserConfig(Map<String, String> cfg) {
-        for(Map.Entry<String, String> entry : cfg.entrySet()) {
+        for (Map.Entry<String, String> entry : cfg.entrySet()) {
             switch (entry.getKey()) {
                 case ConfigManager.PLAYER_ALTERNATIVE_NAME:
                     playerAltNameField.setText(entry.getValue());
@@ -725,7 +730,6 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
             }
         });
     }
-
 
 
     // ----- ACTION COMMANDS -----

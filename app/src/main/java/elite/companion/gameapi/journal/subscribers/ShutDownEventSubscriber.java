@@ -3,8 +3,6 @@ package elite.companion.gameapi.journal.subscribers;
 import com.google.common.eventbus.Subscribe;
 import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.gameapi.journal.events.ShutdownEvent;
-import elite.companion.session.PlayerSession;
-import elite.companion.session.SystemSession;
 import elite.companion.util.EventBusManager;
 
 public class ShutDownEventSubscriber {

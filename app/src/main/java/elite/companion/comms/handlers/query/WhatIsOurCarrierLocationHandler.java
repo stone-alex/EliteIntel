@@ -2,7 +2,6 @@ package elite.companion.comms.handlers.query;
 
 import com.google.gson.JsonObject;
 import elite.companion.session.PlayerSession;
-import elite.companion.session.SystemSession;
 
 public class WhatIsOurCarrierLocationHandler extends BaseQueryAnalyzer implements QueryHandler {
 

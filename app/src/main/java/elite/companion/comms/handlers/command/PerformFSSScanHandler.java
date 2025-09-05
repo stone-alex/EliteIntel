@@ -13,7 +13,7 @@ public class PerformFSSScanHandler extends CustomCommandOperator implements Comm
     private static final Logger log = LoggerFactory.getLogger(PerformFSSScanHandler.class);
 
     public PerformFSSScanHandler(GameCommandHandler commandHandler) throws Exception {
-        super(commandHandler.getMonitor(),commandHandler.getExecutor());
+        super(commandHandler.getMonitor(), commandHandler.getExecutor());
     }
 
     @Override public void handle(JsonObject params, String responseText) {

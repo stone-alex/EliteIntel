@@ -4,11 +4,8 @@ import com.google.common.eventbus.Subscribe;
 import elite.companion.gameapi.SensorDataEvent;
 import elite.companion.gameapi.journal.events.FSDJumpEvent;
 import elite.companion.session.PlayerSession;
-import elite.companion.session.SystemSession;
 import elite.companion.ui.event.AppLogEvent;
 import elite.companion.util.EventBusManager;
-
-import java.util.List;
 
 @SuppressWarnings("unused")
 public class FSDJumpSubscriber {
@@ -45,7 +42,7 @@ public class FSDJumpSubscriber {
             }
         }
 
-        EventBusManager.publish(new AppLogEvent("Processing Event: FSDJumpEvent sending sensor data to AI: "+sb.toString()));
+        EventBusManager.publish(new AppLogEvent("Processing Event: FSDJumpEvent sending sensor data to AI: " + sb.toString()));
         EventBusManager.publish(new SensorDataEvent(sb.toString()));
     }
 }

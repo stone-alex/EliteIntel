@@ -2,8 +2,7 @@ package elite.companion.gameapi;
 
 public enum MissionTypes {
 
-    PIRATES("Pirates")
-    ;
+    PIRATES("Pirates");
 
     private final String missionType;
 

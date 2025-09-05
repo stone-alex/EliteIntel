@@ -2,6 +2,7 @@ package elite.companion.gameapi.journal.events;
 
 import com.google.gson.JsonObject;
 import elite.companion.util.GsonFactory;
+
 import java.time.Duration;
 
 public class NavRouteClearEvent extends BaseEvent {

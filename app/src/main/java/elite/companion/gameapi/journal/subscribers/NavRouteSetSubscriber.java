@@ -1,7 +1,6 @@
 package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.companion.comms.voice.VoiceGenerator;
 import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.gameapi.journal.events.NavRouteEvent;
 import elite.companion.util.EventBusManager;

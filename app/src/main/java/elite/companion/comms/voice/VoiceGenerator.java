@@ -1,17 +1,14 @@
 package elite.companion.comms.voice;
 
-import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.texttospeech.v1.*;
 import com.google.common.eventbus.Subscribe;
 import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.session.SystemSession;
 import elite.companion.util.ConfigManager;
 import elite.companion.util.EventBusManager;
-import elite.companion.util.GoogleApiKeyProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -109,7 +106,7 @@ public class VoiceGenerator {
         TextToSpeechClient client;
         try {
             String apiKey = ConfigManager.getInstance().getSystemKey(ConfigManager.GOOGLE_API_KEY);
-            if(apiKey == null || apiKey.trim().isEmpty()) {
+            if (apiKey == null || apiKey.trim().isEmpty()) {
                 log.error("Google API key not found in system.conf");
                 return;
             }

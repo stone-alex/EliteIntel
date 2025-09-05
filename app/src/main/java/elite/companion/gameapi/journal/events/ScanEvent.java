@@ -3,9 +3,9 @@ package elite.companion.gameapi.journal.events;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 import elite.companion.util.GsonFactory;
+
 import java.time.Duration;
 import java.util.List;
-import java.util.Map;
 import java.util.StringJoiner;
 
 public class ScanEvent extends BaseEvent {

@@ -25,7 +25,9 @@ public abstract class BaseEvent {
     }
 
     public boolean isExpired() {
-        if (endOfLife == null) {return false;}
+        if (endOfLife == null) {
+            return false;
+        }
         return Instant.now().isAfter(endOfLife);
     }
 
@@ -57,8 +59,8 @@ public abstract class BaseEvent {
 
     public abstract String getEventType();
 
-    public String toJson(){
-        return GsonFactory.getGson().toJson( this);
+    public String toJson() {
+        return GsonFactory.getGson().toJson(this);
     }
 
     public abstract JsonObject toJsonObject();

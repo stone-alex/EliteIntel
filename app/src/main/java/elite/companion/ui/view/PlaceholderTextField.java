@@ -40,13 +40,26 @@ public class PlaceholderTextField extends JTextField {
 
     private void installRepaintOnChanges() {
         getDocument().addDocumentListener(new DocumentListener() {
-            @Override public void insertUpdate(DocumentEvent e) { repaint(); }
-            @Override public void removeUpdate(DocumentEvent e) { repaint(); }
-            @Override public void changedUpdate(DocumentEvent e) { repaint(); }
+            @Override public void insertUpdate(DocumentEvent e) {
+                repaint();
+            }
+
+            @Override public void removeUpdate(DocumentEvent e) {
+                repaint();
+            }
+
+            @Override public void changedUpdate(DocumentEvent e) {
+                repaint();
+            }
         });
         addFocusListener(new java.awt.event.FocusAdapter() {
-            @Override public void focusGained(java.awt.event.FocusEvent e) { if (!showHintWhileFocused) repaint(); }
-            @Override public void focusLost(java.awt.event.FocusEvent e) { if (!showHintWhileFocused) repaint(); }
+            @Override public void focusGained(java.awt.event.FocusEvent e) {
+                if (!showHintWhileFocused) repaint();
+            }
+
+            @Override public void focusLost(java.awt.event.FocusEvent e) {
+                if (!showHintWhileFocused) repaint();
+            }
         });
     }
 

@@ -1,7 +1,6 @@
 package elite.companion.comms.ai.robot;
 
 import com.google.gson.JsonObject;
-import elite.companion.comms.handlers.command.CommandActionsCustom;
 import elite.companion.comms.handlers.command.CommandActionsGame;
 import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.session.SystemSession;
@@ -53,7 +52,7 @@ public class GameCommandHandler {
         processingThread.interrupt();
         try {
             monitor.stopMonitoring();
-        }catch (Exception e) {
+        } catch (Exception e) {
             log.error("Error stopping monitoring: {}", e.getMessage(), e);
         }
 

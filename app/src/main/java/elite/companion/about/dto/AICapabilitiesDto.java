@@ -1,7 +1,7 @@
 package elite.companion.about.dto;
 
-import elite.companion.util.GsonFactory;
 import com.google.gson.annotations.SerializedName;
+import elite.companion.util.GsonFactory;
 import elite.companion.util.ToJsonConvertible;
 
 
@@ -13,8 +13,6 @@ public class AICapabilitiesDto implements ToJsonConvertible {
 
     @SerializedName("limitations")
     private String limitations;
-
-
 
 
     public AICapabilitiesDto() {
@@ -33,7 +31,6 @@ public class AICapabilitiesDto implements ToJsonConvertible {
                 "- **Custom Commands:** Beyond standard bindings, supports app-specific actions like `set_mining_target` or `plot_route`, executed as sequences of key presses with configurable delays.\n";
 
 
-
         limitations = "## What the App Does NOT Do\n" +
                 "\n" +
                 "- **No Automation or AFK Play:** The app requires explicit voice triggers from the user for every action. It cannot play the game autonomously, farm resources, or perform any unattended operations. This ensures full TOS compliance—no macros, bots, or exploits.\n" +
@@ -48,8 +45,6 @@ public class AICapabilitiesDto implements ToJsonConvertible {
     }
 
 
-
-
     public String getCapabilities() {
         return capabilities;
     }
@@ -58,8 +53,8 @@ public class AICapabilitiesDto implements ToJsonConvertible {
         return limitations;
     }
 
-    public String toJson(){
-        return GsonFactory.getGson().toJson( this);
+    public String toJson() {
+        return GsonFactory.getGson().toJson(this);
     }
 
 }

@@ -4,7 +4,6 @@ import com.google.common.eventbus.Subscribe;
 import elite.companion.gameapi.SensorDataEvent;
 import elite.companion.gameapi.journal.events.StartJumpEvent;
 import elite.companion.session.PlayerSession;
-import elite.companion.session.SystemSession;
 import elite.companion.ui.event.AppLogEvent;
 import elite.companion.util.EventBusManager;
 
@@ -31,8 +30,8 @@ public class StartJumpSubscriber {
         PlayerSession playerSession = PlayerSession.getInstance();
         playerSession.put(PlayerSession.JUMPING_TO, jumpingTo);
 
-        if(!"Supercruise".equalsIgnoreCase(event.getJumpType())) {
-            EventBusManager.publish(new AppLogEvent("Processing Event: StartJumpEvent sending sensor data to AI: "+sb.toString()));
+        if (!"Supercruise".equalsIgnoreCase(event.getJumpType())) {
+            EventBusManager.publish(new AppLogEvent("Processing Event: StartJumpEvent sending sensor data to AI: " + sb));
             EventBusManager.publish(new SensorDataEvent(sb.toString()));
         }
 
@@ -42,7 +41,9 @@ public class StartJumpSubscriber {
     }
 
     private String isFuelStarClause(String starClass) {
-        if(starClass == null) {return "";}
+        if (starClass == null) {
+            return "";
+        }
         boolean isFuelStar = "KGBFOAM".contains(starClass);
         return isFuelStar ? " Fuel Star" : " Warning! - Not a Fuel Star!";
     }

@@ -5,7 +5,6 @@ import elite.companion.gameapi.SensorDataEvent;
 import elite.companion.gameapi.journal.events.MissionAcceptedEvent;
 import elite.companion.gameapi.journal.events.dto.MissionDto;
 import elite.companion.session.PlayerSession;
-import elite.companion.session.SystemSession;
 import elite.companion.util.EventBusManager;
 
 @SuppressWarnings("unused")

@@ -83,7 +83,7 @@ public class KeyBindingExecutor {
                 keyProcessor.releaseKey(mainKeyCode);
                 log.debug("Executed hold binding: key={}, modifiers={}", binding.key, binding.modifiers);
             } else {
-                 keyProcessor.pressKey(mainKeyCode);
+                keyProcessor.pressKey(mainKeyCode);
                 log.debug("Executed press binding: key={}, modifiers={}", binding.key, binding.modifiers);
             }
 

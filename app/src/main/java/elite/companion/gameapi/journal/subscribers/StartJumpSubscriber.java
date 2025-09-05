@@ -47,5 +47,4 @@ public class StartJumpSubscriber {
         boolean isFuelStar = "KGBFOAM".contains(starClass);
         return isFuelStar ? " Fuel Star" : " Warning! - Not a Fuel Star!";
     }
-
 }

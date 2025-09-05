@@ -524,7 +524,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
                 case ConfigManager.PLAYER_TITLE:
                     playerTitleField.setText(entry.getValue());
                     break;
-                case ConfigManager.EDSM_KEY:
+                case ConfigManager.PLAYER_MISSION_STATEMENT:
                     playerMissionDescription.setText(entry.getValue());
                     break;
             }
@@ -553,7 +553,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         if (cfg == null) return;
         if (playerAltNameField != null) playerAltNameField.setText(cfg.getOrDefault(ConfigManager.PLAYER_ALTERNATIVE_NAME, ""));
         if (playerTitleField != null) playerTitleField.setText(cfg.getOrDefault(ConfigManager.PLAYER_TITLE, ""));
-        if (playerMissionDescription != null) playerMissionDescription.setText(cfg.getOrDefault(ConfigManager.EDSM_KEY, ""));
+        if (playerMissionDescription != null) playerMissionDescription.setText(cfg.getOrDefault(ConfigManager.PLAYER_MISSION_STATEMENT, ""));
     }
 
     public Map<String, String> getUserConfigInput() {

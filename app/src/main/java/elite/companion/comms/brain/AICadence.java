@@ -1,4 +1,4 @@
-package elite.companion.comms.ai;
+package elite.companion.comms.brain;
 
 public enum AICadence {
     IMPERIAL("Use British Cadence. Avoid American slang like dude."),

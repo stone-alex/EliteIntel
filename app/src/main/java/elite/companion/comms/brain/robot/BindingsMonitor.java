@@ -1,4 +1,4 @@
-package elite.companion.comms.ai.robot;
+package elite.companion.comms.brain.robot;
 
 import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.util.EventBusManager;

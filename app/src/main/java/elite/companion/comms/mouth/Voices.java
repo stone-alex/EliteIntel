@@ -1,4 +1,4 @@
-package elite.companion.comms.voice;
+package elite.companion.comms.mouth;
 
 public enum Voices {
     ANNA("Anna", 1.1, false),           // en-GB-Chirp-HD-F

@@ -1,11 +1,13 @@
 package elite.companion.ui.controller;
 
 import com.google.common.eventbus.Subscribe;
-import elite.companion.comms.ai.AICadence;
-import elite.companion.comms.ai.AIPersonality;
-import elite.companion.comms.voice.SpeechRecognizer;
-import elite.companion.comms.voice.VoiceGenerator;
-import elite.companion.comms.voice.Voices;
+import elite.companion.comms.brain.AICadence;
+import elite.companion.comms.brain.AIPersonality;
+import elite.companion.comms.ears.EarsInterface;
+import elite.companion.comms.ears.google.GoogleSTTImpl;
+import elite.companion.comms.mouth.MouthInterface;
+import elite.companion.comms.mouth.Voices;
+import elite.companion.comms.mouth.google.GoogleTTSImpl;
 import elite.companion.gameapi.AuxiliaryFilesMonitor;
 import elite.companion.gameapi.JournalParser;
 import elite.companion.gameapi.UserInputEvent;
@@ -34,8 +36,8 @@ public class AppController implements AppControllerInterface, ActionListener {
     private boolean isServiceRunning = false;
 
     AuxiliaryFilesMonitor fileMonitor = new AuxiliaryFilesMonitor();
-    SpeechRecognizer speechRecognizer = new SpeechRecognizer();
-    VoiceGenerator voiceGenerator;
+    EarsInterface ears = new GoogleSTTImpl();
+    MouthInterface mouth;
     JournalParser journalParser = new JournalParser();
 
     public AppController(AppModelInterface model, AppViewInterface view) {
@@ -102,10 +104,10 @@ public class AppController implements AppControllerInterface, ActionListener {
             model.setPrivacyModeOn(privacyModeOn);
 
             journalParser.start();
-            voiceGenerator = VoiceGenerator.getInstance();
-            speechRecognizer.start();
+            mouth = GoogleTTSImpl.getInstance();
+            ears.start();
             fileMonitor.start();
-            voiceGenerator.start();
+            mouth.start();
 
             ConfigManager configManager = ConfigManager.getInstance();
             String mission_statement = configManager.getPlayerKey(ConfigManager.PLAYER_MISSION_STATEMENT);
@@ -125,9 +127,9 @@ public class AppController implements AppControllerInterface, ActionListener {
             EventBusManager.publish(new VoiceProcessEvent("Systems offline..."));
             // Stop services
             journalParser.stop();
-            voiceGenerator.stop();
-            voiceGenerator = null;
-            speechRecognizer.stop();
+            mouth.stop();
+            mouth = null;
+            ears.stop();
             fileMonitor.stop();
             isServiceRunning = false;
         }

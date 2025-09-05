@@ -1,9 +1,10 @@
-package elite.companion.comms.ai;
+package elite.companion.comms.brain.grok;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
+import elite.companion.comms.brain.AiQueryInterface;
 import elite.companion.util.ConfigManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +15,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
-public class GrokQueryEndPoint {
+public class GrokQueryEndPoint implements AiQueryInterface {
     private static final Logger log = LoggerFactory.getLogger(GrokQueryEndPoint.class);
     private static final GrokQueryEndPoint INSTANCE = new GrokQueryEndPoint();
 
@@ -31,7 +32,7 @@ public class GrokQueryEndPoint {
      * The first message should be the system prompt (role: system).
      * Returns the parsed JSON response content or null on error.
      */
-    public JsonObject sendToGrok(JsonArray messages) {
+    @Override public JsonObject sendToAi(JsonArray messages) {
         String bodyString = null;
         try {
             // Sanitize messages

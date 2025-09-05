@@ -1,7 +1,7 @@
 package elite.companion.comms.handlers.command;
 
 import com.google.gson.JsonObject;
-import elite.companion.comms.ai.robot.GameCommandHandler;
+import elite.companion.comms.brain.robot.GameCommandHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

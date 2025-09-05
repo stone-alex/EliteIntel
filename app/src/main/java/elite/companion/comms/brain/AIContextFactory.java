@@ -1,5 +1,6 @@
-package elite.companion.comms.ai;
+package elite.companion.comms.brain;
 
+import elite.companion.comms.brain.grok.GrokRequestHints;
 import elite.companion.comms.handlers.query.QueryActions;
 import elite.companion.session.PlayerSession;
 import elite.companion.session.SystemSession;

@@ -1,8 +1,9 @@
 package elite.companion.comms.handlers.query;
 
 import com.google.gson.JsonObject;
-import elite.companion.comms.ai.AIContextFactory;
-import elite.companion.comms.ai.GrokAnalysisEndpoint;
+import elite.companion.comms.brain.AIContextFactory;
+import elite.companion.comms.brain.AiAnalysisInterface;
+import elite.companion.comms.brain.grok.GrokAnalysisEndpoint;
 import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.session.PlayerSession;
 import elite.companion.util.EventBusManager;
@@ -17,9 +18,9 @@ public class MissionAnalyzer implements QueryHandler {
             return GenericResponse.getInstance().genericResponse("No active missions detected");
         }
 
-        GrokAnalysisEndpoint grokAnalysisEndpoint = GrokAnalysisEndpoint.getInstance();
+        AiAnalysisInterface aiAnalysisInterface = GrokAnalysisEndpoint.getInstance();
         String prompt = buildPrompt(query, originalUserInput, dataJson);
-        return grokAnalysisEndpoint.analyzeData(originalUserInput, prompt);
+        return aiAnalysisInterface.analyzeData(originalUserInput, prompt);
     }
 
     private QueryActions findQuery(String action) {

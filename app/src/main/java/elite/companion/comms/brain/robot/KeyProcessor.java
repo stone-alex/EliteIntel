@@ -1,4 +1,4 @@
-package elite.companion.comms.ai.robot;
+package elite.companion.comms.brain.robot;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;

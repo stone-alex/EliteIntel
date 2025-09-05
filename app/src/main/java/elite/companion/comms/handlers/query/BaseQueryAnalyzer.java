@@ -1,7 +1,8 @@
 package elite.companion.comms.handlers.query;
 
 import com.google.gson.JsonObject;
-import elite.companion.comms.ai.GrokAnalysisEndpoint;
+import elite.companion.comms.brain.AiAnalysisInterface;
+import elite.companion.comms.brain.grok.GrokAnalysisEndpoint;
 
 public class BaseQueryAnalyzer {
 
@@ -17,8 +18,8 @@ public class BaseQueryAnalyzer {
 
     protected JsonObject analyzeData(String dataJsonStr, String originalUserInput) {
         // For analysis-needed queries
-        GrokAnalysisEndpoint grokAnalysisEndpoint = GrokAnalysisEndpoint.getInstance();
-        JsonObject analysis = grokAnalysisEndpoint.analyzeData(originalUserInput, dataJsonStr);
+        AiAnalysisInterface aiAnalysisInterface = GrokAnalysisEndpoint.getInstance();
+        JsonObject analysis = aiAnalysisInterface.analyzeData(originalUserInput, dataJsonStr);
         // Ensure response_text is present
         if (!analysis.has("response_text")) {
             analysis = GenericResponse.getInstance().genericResponse("Analysis incomplete");

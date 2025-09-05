@@ -1,8 +1,11 @@
-package elite.companion.comms.ai;
+package elite.companion.comms.brain.grok;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import elite.companion.comms.ai.robot.GameCommandHandler;
+import elite.companion.comms.brain.AIContextFactory;
+import elite.companion.comms.brain.AIRouterInterface;
+import elite.companion.comms.brain.AiQueryInterface;
+import elite.companion.comms.brain.robot.GameCommandHandler;
 import elite.companion.comms.handlers.command.*;
 import elite.companion.comms.handlers.query.QueryActions;
 import elite.companion.comms.handlers.query.QueryHandler;
@@ -16,12 +19,13 @@ import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GrokResponseRouter {
+public class GrokResponseRouter implements AIRouterInterface {
     private static final Logger log = LoggerFactory.getLogger(GrokResponseRouter.class);
     private static final GrokResponseRouter INSTANCE = new GrokResponseRouter();
-    private final GameCommandHandler _gameCommandHandler;
+    private final GameCommandHandler gameCommandHandler;
     private final Map<String, CommandHandler> commandHandlers = new HashMap<>();
     private final Map<String, QueryHandler> queryHandlers = new HashMap<>();
+    private final AiQueryInterface queryInterface;
 
     public static GrokResponseRouter getInstance() {
         return INSTANCE;
@@ -29,7 +33,8 @@ public class GrokResponseRouter {
 
     private GrokResponseRouter() {
         try {
-            this._gameCommandHandler = new GameCommandHandler();
+            this.gameCommandHandler = new GameCommandHandler();
+            queryInterface = GrokQueryEndPoint.getInstance();
             registerCommandHandlers();
         } catch (Exception e) {
             log.error("Failed to initialize GrokResponseRouter", e);
@@ -95,16 +100,16 @@ public class GrokResponseRouter {
             if (handlerClass == GenericGameController.class) {
                 Constructor<? extends CommandHandler> constructor = handlerClass.getDeclaredConstructor(GameCommandHandler.class, String.class);
                 constructor.setAccessible(true);
-                return constructor.newInstance(_gameCommandHandler, actionOrBinding);
+                return constructor.newInstance(gameCommandHandler, actionOrBinding);
             } else if (handlerClass == SetRouteHandler.class) {
                 Constructor<? extends CommandHandler> constructor = handlerClass.getDeclaredConstructor(GameCommandHandler.class);
                 constructor.setAccessible(true);
-                return constructor.newInstance(_gameCommandHandler);
+                return constructor.newInstance(gameCommandHandler);
             } else {
                 try {
                     Constructor<? extends CommandHandler> constructor = handlerClass.getDeclaredConstructor(GameCommandHandler.class);
                     constructor.setAccessible(true);
-                    return constructor.newInstance(_gameCommandHandler);
+                    return constructor.newInstance(gameCommandHandler);
                 } catch (NoSuchMethodException e) {
                     Constructor<? extends CommandHandler> constructor = handlerClass.getDeclaredConstructor();
                     constructor.setAccessible(true);
@@ -120,17 +125,17 @@ public class GrokResponseRouter {
         }
     }
 
-    public void start() throws Exception {
-        _gameCommandHandler.start();
+    @Override public void start() throws Exception {
+        gameCommandHandler.start();
         log.info("Started GrokResponseRouter");
     }
 
-    public void stop() {
-        _gameCommandHandler.stop();
+    @Override public void stop() {
+        gameCommandHandler.stop();
         log.info("Stopped GrokResponseRouter");
     }
 
-    public void processGrokResponse(JsonObject jsonResponse, @Nullable String userInput) {
+    @Override public void processAiResponse(JsonObject jsonResponse, @Nullable String userInput) {
         if (jsonResponse == null) {
             log.error("Null Grok response received");
             return;
@@ -218,7 +223,7 @@ public class GrokResponseRouter {
                 messages.add(toolResult);
 
                 log.debug("Sending follow-up to GrokQueryEndPoint for action: {}", action);
-                JsonObject followUpResponse = GrokQueryEndPoint.getInstance().sendToGrok(messages);
+                JsonObject followUpResponse = queryInterface.sendToAi(messages);
 
                 if (followUpResponse == null) {
                     log.warn("Follow-up response is null for action: {}", action);
@@ -250,7 +255,7 @@ public class GrokResponseRouter {
             handler.handle(params, responseText);
             log.debug("Handled command action: {}", action);
         } else {
-            _gameCommandHandler.handleGrokResponse(jsonResponse);
+            gameCommandHandler.handleGrokResponse(jsonResponse);
             log.debug("Delegated unhandled command to GameCommandHandler: {}", action);
         }
     }

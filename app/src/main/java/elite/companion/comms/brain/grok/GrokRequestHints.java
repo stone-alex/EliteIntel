@@ -1,4 +1,4 @@
-package elite.companion.comms.ai;
+package elite.companion.comms.brain.grok;
 
 import elite.companion.comms.handlers.command.CommandActionsCustom;
 import elite.companion.comms.handlers.command.CommandActionsGame;

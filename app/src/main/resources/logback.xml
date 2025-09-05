@@ -18,9 +18,9 @@
     <!-- Specific logger levels -->
     <logger name="elite.companion.gameapi.JournalParser" level="INFO"/>
     <logger name="elite.companion.gameapi.AuxiliaryFilesMonitor" level="ERROR"/>
-    <logger name="elite.companion.comms.ai.robot.KeyBindingsParser" level="ERROR"/>
-    <logger name="elite.companion.comms.ai.GrokCommandEndPoint" level="DEBUG"/>
-    <logger name="elite.companion.comms.voice.SpeechRecognizer" level="WARNING"/>
+    <logger name="elite.companion.comms.brain.robot.KeyBindingsParser" level="ERROR"/>
+    <logger name="elite.companion.comms.brain.grok.GrokCommandEndPoint" level="DEBUG"/>
+    <logger name="elite.companion.comms.ears.google.GoogleSTTImpl" level="WARNING"/>
 
     <!-- Set your app to DEBUG explicitly -->
     <logger name="elite.companion" level="DEBUG" />

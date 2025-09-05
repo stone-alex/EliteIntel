@@ -1,8 +1,11 @@
-package elite.companion.comms.ai;
+package elite.companion.comms.brain.grok;
 
 import com.google.common.eventbus.Subscribe;
 import com.google.gson.*;
-import elite.companion.comms.handlers.query.QueryActions;
+import elite.companion.comms.brain.AIChatInterface;
+import elite.companion.comms.brain.AIContextFactory;
+import elite.companion.comms.brain.AIRouterInterface;
+import elite.companion.comms.brain.AiCommandInterface;
 import elite.companion.gameapi.SensorDataEvent;
 import elite.companion.gameapi.UserInputEvent;
 import elite.companion.gameapi.VoiceProcessEvent;
@@ -20,30 +23,31 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
-public class GrokCommandEndPoint {
+public class GrokCommandEndPoint implements AiCommandInterface {
     private static final Logger log = LoggerFactory.getLogger(GrokCommandEndPoint.class);
 
     private static final ThreadLocal<JsonArray> currentHistory = new ThreadLocal<>();
-    private final GrokResponseRouter router;
+    private final AIRouterInterface router;
+    private final AIChatInterface chatInterface;
 
     public GrokCommandEndPoint() {
         this.router = GrokResponseRouter.getInstance();
+        this.chatInterface = GrokChatEndPoint.getInstance();
         EventBusManager.register(this);
     }
 
 
-    public void start() throws Exception {
+    @Override public void start() throws Exception {
         router.start();
         log.info("Started GrokInteractionHandler");
     }
 
-    public void stop() {
+    @Override public void stop() {
         router.stop();
         log.info("Stopped GrokInteractionHandler");
     }
 
-    @Subscribe
-    public void onUserInput(UserInputEvent event) {
+    @Subscribe @Override public void onUserInput(UserInputEvent event) {
         processVoiceCommand(event.getUserInput(), event.getConfidence());
     }
 
@@ -57,7 +61,7 @@ public class GrokCommandEndPoint {
             errorResponse.addProperty("action", (String) null);
             errorResponse.add("params", new JsonObject());
             errorResponse.addProperty("expect_followup", true);
-            GrokResponseRouter.getInstance().processGrokResponse(errorResponse, userInput);
+            router.processAiResponse(errorResponse, userInput);
             SystemSession.getInstance().clearChatHistory();
             return;
         }
@@ -86,7 +90,7 @@ public class GrokCommandEndPoint {
             clarification.addProperty("expect_followup", true);
 
             // Route clarification without direct TTS
-            GrokResponseRouter.getInstance().processGrokResponse(clarification, userInput);
+            router.processAiResponse(clarification, userInput);
 
             // Store user message in history for follow-up
             JsonObject assistantMessage = new JsonObject();
@@ -120,7 +124,7 @@ public class GrokCommandEndPoint {
         messages.add(userMessage);
 
         // Send via GrokChatEndPoint
-        JsonObject apiResponse = GrokChatEndPoint.getInstance().sendToGrok(messages);
+        JsonObject apiResponse = chatInterface.sendToAi(messages);
         if (apiResponse == null) {
             JsonObject errorResponse = new JsonObject();
             errorResponse.addProperty("type", "chat");
@@ -128,13 +132,13 @@ public class GrokCommandEndPoint {
             errorResponse.addProperty("action", (String) null);
             errorResponse.add("params", new JsonObject());
             errorResponse.addProperty("expect_followup", true);
-            GrokResponseRouter.getInstance().processGrokResponse(errorResponse, userInput);
+            router.processAiResponse(errorResponse, userInput);
             SystemSession.getInstance().clearChatHistory();
             return;
         }
 
         // Route the response without speaking here
-        GrokResponseRouter.getInstance().processGrokResponse(apiResponse, userInput);
+        router.processAiResponse(apiResponse, userInput);
 
         // Handle history updates for chat continuations
         String type = JsonUtils.getAsStringOrEmpty(apiResponse, "type").toLowerCase();
@@ -155,19 +159,7 @@ public class GrokCommandEndPoint {
         }
     }
 
-    // Helper to check if query is quick
-    private boolean isQuickQuery(String action) {
-        for (QueryActions query : QueryActions.values()) {
-            if (query.getAction().equals(action)) {
-                return query.isRequiresFollowUp();
-            }
-        }
-        return false; // Default to data query if action not found
-    }
-
-
-    @Subscribe
-    public void onSensorDataEvent(SensorDataEvent event) {
+    @Subscribe @Override public void onSensorDataEvent(SensorDataEvent event) {
         String input = event.getSensorData();
 
 
@@ -201,7 +193,7 @@ public class GrokCommandEndPoint {
                 EventBusManager.publish(new VoiceProcessEvent("Failure processing system request. Check programming"));
                 return;
             }
-            GrokResponseRouter.getInstance().processGrokResponse(apiResponse, null);
+            router.processAiResponse(apiResponse, null);
         } catch (JsonSyntaxException e) {
             log.error("JSON parsing failed for input: [{}]", toDebugString(jsonString), e);
             throw e;

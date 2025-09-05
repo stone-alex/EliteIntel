@@ -1,8 +1,8 @@
 package elite.companion.comms.handlers.command;
 
-import elite.companion.comms.ai.robot.BindingsMonitor;
-import elite.companion.comms.ai.robot.KeyBindingExecutor;
-import elite.companion.comms.ai.robot.KeyBindingsParser;
+import elite.companion.comms.brain.robot.BindingsMonitor;
+import elite.companion.comms.brain.robot.KeyBindingExecutor;
+import elite.companion.comms.brain.robot.KeyBindingsParser;
 import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.util.EventBusManager;
 import org.slf4j.Logger;

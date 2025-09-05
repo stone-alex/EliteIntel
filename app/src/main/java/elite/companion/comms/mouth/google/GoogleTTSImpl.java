@@ -1,7 +1,9 @@
-package elite.companion.comms.voice;
+package elite.companion.comms.mouth.google;
 
 import com.google.cloud.texttospeech.v1.*;
 import com.google.common.eventbus.Subscribe;
+import elite.companion.comms.mouth.MouthInterface;
+import elite.companion.comms.mouth.Voices;
 import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.session.SystemSession;
 import elite.companion.util.ConfigManager;
@@ -16,17 +18,17 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-public class VoiceGenerator {
-    private static final Logger log = LoggerFactory.getLogger(VoiceGenerator.class);
+public class GoogleTTSImpl implements MouthInterface {
+    private static final Logger log = LoggerFactory.getLogger(GoogleTTSImpl.class);
 
     private TextToSpeechClient textToSpeechClient;
     private final BlockingQueue<VoiceRequest> voiceQueue;
     private Thread processingThread;
     private volatile boolean running;
 
-    private static final VoiceGenerator INSTANCE = new VoiceGenerator();
+    private static final GoogleTTSImpl INSTANCE = new GoogleTTSImpl();
 
-    public static VoiceGenerator getInstance() {
+    public static GoogleTTSImpl getInstance() {
         return INSTANCE;
     }
 
@@ -45,7 +47,7 @@ public class VoiceGenerator {
         }
     }
 
-    private VoiceGenerator() {
+    private GoogleTTSImpl() {
         EventBusManager.register(this);
         this.voiceQueue = new LinkedBlockingQueue<>();
 
@@ -97,7 +99,7 @@ public class VoiceGenerator {
         randomVoiceMap.put(Voices.OLIVIA.getName(), Olivia);
     }
 
-    public synchronized void start() {
+    @Override public synchronized void start() {
         if (processingThread != null && processingThread.isAlive()) {
             log.warn("VoiceGenerator is already running");
             return;
@@ -125,7 +127,7 @@ public class VoiceGenerator {
         log.info("VoiceGenerator started");
     }
 
-    public synchronized void stop() {
+    @Override public synchronized void stop() {
         if (processingThread == null || !processingThread.isAlive()) {
             log.warn("VoiceGenerator is not running");
             return;
@@ -148,7 +150,7 @@ public class VoiceGenerator {
         processingThread = null;
     }
 
-    public Voices getRandomVoice() {
+    private Voices getRandomVoice() {
         if (voiceMap.isEmpty()) {
             return SystemSession.getInstance().getAIVoice();
         }
@@ -156,8 +158,7 @@ public class VoiceGenerator {
         return voices[new Random().nextInt(voices.length)];
     }
 
-    @Subscribe
-    public void onVoiceProcessEvent(VoiceProcessEvent event) {
+    @Subscribe @Override public void onVoiceProcessEvent(VoiceProcessEvent event) {
         if (event.isUseRandom()) {
             speak(event.getText(), getRandomVoice());
         } else {
@@ -260,7 +261,7 @@ public class VoiceGenerator {
         }
     }
 
-    public static void applyFade(byte[] audioData, int fadeMs, boolean isFadeIn) {
+    private static void applyFade(byte[] audioData, int fadeMs, boolean isFadeIn) {
         int samplesToFade = (24000 * fadeMs) / 1000; // 24kHz mono
         int startIndex = isFadeIn ? 0 : Math.max(0, audioData.length / 2 - samplesToFade);
         for (int i = startIndex; i < startIndex + samplesToFade && (i * 2 + 1) < audioData.length; i++) {

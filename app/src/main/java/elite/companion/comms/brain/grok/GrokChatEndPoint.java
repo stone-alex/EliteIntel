@@ -1,9 +1,10 @@
-package elite.companion.comms.ai;
+package elite.companion.comms.brain.grok;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
+import elite.companion.comms.brain.AIChatInterface;
 import elite.companion.util.ConfigManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +20,7 @@ import java.util.Scanner;
  * Sends a full message history (including system prompt as the first message) and returns the parsed JSON response content.
  * This enables multi-turn conversations by maintaining context across requests, with history managed externally (e.g., via SystemSession).
  */
-public class GrokChatEndPoint {
+public class GrokChatEndPoint implements AIChatInterface {
     private static final Logger log = LoggerFactory.getLogger(GrokChatEndPoint.class);
     private static final GrokChatEndPoint INSTANCE = new GrokChatEndPoint();
 
@@ -36,7 +37,7 @@ public class GrokChatEndPoint {
      * The first message should be the system prompt (role: system).
      * Returns the parsed JSON response content or null on error.
      */
-    public JsonObject sendToGrok(JsonArray messages) {
+    @Override public JsonObject sendToAi(JsonArray messages) {
         String bodyString = null;
         try {
             // Sanitize messages

@@ -1,10 +1,10 @@
 package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.companion.comms.ai.AICadence;
-import elite.companion.comms.ai.AIPersonality;
-import elite.companion.comms.voice.VoiceToAllegiances;
-import elite.companion.comms.voice.Voices;
+import elite.companion.comms.brain.AICadence;
+import elite.companion.comms.brain.AIPersonality;
+import elite.companion.comms.mouth.VoiceToAllegiances;
+import elite.companion.comms.mouth.Voices;
 import elite.companion.data.PowerDetails;
 import elite.companion.data.PowerPlayData;
 import elite.companion.gameapi.journal.events.PowerplayEvent;

@@ -1,7 +1,7 @@
 package elite.companion.tools;
 
-import elite.companion.comms.ai.robot.BindingsLoader;
-import elite.companion.comms.ai.robot.KeyBindingsParser;
+import elite.companion.comms.brain.robot.BindingsLoader;
+import elite.companion.comms.brain.robot.KeyBindingsParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

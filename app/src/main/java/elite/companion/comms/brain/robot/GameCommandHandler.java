@@ -1,4 +1,4 @@
-package elite.companion.comms.ai.robot;
+package elite.companion.comms.brain.robot;
 
 import com.google.gson.JsonObject;
 import elite.companion.comms.handlers.command.CommandActionsGame;

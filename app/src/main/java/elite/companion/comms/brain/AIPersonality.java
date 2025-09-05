@@ -1,4 +1,4 @@
-package elite.companion.comms.ai;
+package elite.companion.comms.brain;
 
 public enum AIPersonality {
     PROFESSIONAL("Respond extremely briefly and concisely as a military professional."),

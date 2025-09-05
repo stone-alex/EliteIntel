@@ -1,6 +1,8 @@
-package elite.companion.comms.ai;
+package elite.companion.comms.brain.grok;
 
 import com.google.gson.*;
+import elite.companion.comms.brain.AIContextFactory;
+import elite.companion.comms.brain.AiAnalysisInterface;
 import elite.companion.util.ConfigManager;
 import elite.companion.util.GsonFactory;
 import org.slf4j.Logger;
@@ -12,7 +14,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
-public class GrokAnalysisEndpoint {
+public class GrokAnalysisEndpoint implements AiAnalysisInterface {
     private static final Logger logger = LoggerFactory.getLogger(GrokAnalysisEndpoint.class);
     private final String apiUrl = "https://api.x.ai/v1/chat/completions";
     private final Gson gson = GsonFactory.getGson();
@@ -25,7 +27,7 @@ public class GrokAnalysisEndpoint {
         return instance;
     }
 
-    public JsonObject analyzeData(String userIntent, String dataJson) {
+    @Override public JsonObject analyzeData(String userIntent, String dataJson) {
         try {
             HttpURLConnection conn = getHttpURLConnection();
             String systemPrompt = AIContextFactory.getInstance().generateAnalysisPrompt(userIntent, dataJson);

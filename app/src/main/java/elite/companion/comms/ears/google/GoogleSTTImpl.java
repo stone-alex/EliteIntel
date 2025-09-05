@@ -1,10 +1,12 @@
-package elite.companion.comms.voice;
+package elite.companion.comms.ears.google;
 
 import com.google.api.gax.rpc.ApiStreamObserver;
 import com.google.cloud.speech.v1p1beta1.*;
 import com.google.protobuf.ByteString;
-import elite.companion.comms.ai.GrokCommandEndPoint;
-import elite.companion.comms.ai.GrokRequestHints;
+import elite.companion.comms.brain.AiCommandInterface;
+import elite.companion.comms.brain.grok.GrokCommandEndPoint;
+import elite.companion.comms.brain.grok.GrokRequestHints;
+import elite.companion.comms.ears.EarsInterface;
 import elite.companion.gameapi.UserInputEvent;
 import elite.companion.session.SystemSession;
 import elite.companion.ui.event.AppLogEvent;
@@ -29,8 +31,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * The STT (Speech-to-Text) API will return a final result which will be processed by Grok API.
  *
  */
-public class SpeechRecognizer {
-    private static final Logger log = LoggerFactory.getLogger(SpeechRecognizer.class);
+public class GoogleSTTImpl implements EarsInterface {
+    private static final Logger log = LoggerFactory.getLogger(GoogleSTTImpl.class);
     private int sampleRateHertz; // Dynamically detected
     private int bufferSize; // Dynamically calculated based on sample rate
     private static final int CHANNELS = 1; // Mono
@@ -40,7 +42,7 @@ public class SpeechRecognizer {
     private File wavFile = null; // Output WAV for debugging
     private final BlockingQueue<String> transcriptionQueue = new LinkedBlockingQueue<>();
     private SpeechClient speechClient;
-    private final GrokCommandEndPoint grok;
+    private final AiCommandInterface aiCommandInterface;
     private final AtomicBoolean isListening = new AtomicBoolean(true);
     private long lastAudioSentTime = System.currentTimeMillis();
     private byte[] lastBuffer = null;
@@ -48,12 +50,12 @@ public class SpeechRecognizer {
 
     private Thread processingThread;
 
-    public void stop() {
+    @Override public void stop() {
         shutdown();
-        this.processingThread.stop();
+        this.processingThread.interrupt();
     }
 
-    public void start() {
+    @Override public void start() {
         if (processingThread != null && processingThread.isAlive()) {
             log.warn("Speech recognition is already running");
             return;
@@ -81,7 +83,7 @@ public class SpeechRecognizer {
         this.processingThread = new Thread(this::startStreaming);
         this.processingThread.start();
         try {
-            this.grok.start();
+            this.aiCommandInterface.start();
             log.info("SpeechRecognizer started in background thread");
         } catch (Exception e) {
             log.error("Failed to initialize Grok", e);
@@ -89,8 +91,8 @@ public class SpeechRecognizer {
         }
     }
 
-    public SpeechRecognizer() {
-        this.grok = new GrokCommandEndPoint();
+    public GoogleSTTImpl() {
+        this.aiCommandInterface = new GrokCommandEndPoint();
     }
 
     private void detectAudioFormat() {
@@ -108,7 +110,7 @@ public class SpeechRecognizer {
         throw new RuntimeException("No supported audio format found for mono 16-bit input");
     }
 
-    public void stopWavRecording() {
+    private void stopWavRecording() {
         if (audioInputStream != null) {
             try {
                 audioInputStream.close();
@@ -120,7 +122,7 @@ public class SpeechRecognizer {
     }
 
     // Start/stop WAV recording
-    public void startWavRecording() {
+    private void startWavRecording() {
         try {
             AudioFormat format = new AudioFormat(sampleRateHertz, 16, CHANNELS, true, false);
             wavFile = new File("audio_debug.wav");
@@ -288,49 +290,6 @@ public class SpeechRecognizer {
                 .setBoost(35.0f)
                 .build();
 
-        // Trimmed command context with increased tritium boost (probably does not help much to be honest)
-        SpeechAdaptation adaptation = SpeechAdaptation.newBuilder()
-                .addPhraseSets(PhraseSet.newBuilder()
-                        .setBoost(15.0f)
-                        .addPhrases(PhraseSet.Phrase.newBuilder()
-                                .setValue("Astraea").setBoost(50.0f))
-                        .addPhrases(PhraseSet.Phrase.newBuilder()
-                                .setValue("tritium").setBoost(30.0f))
-                        .addPhrases(PhraseSet.Phrase.newBuilder()
-                                .setValue("tri-tium").setBoost(30.0f))
-                        .addPhrases(PhraseSet.Phrase.newBuilder()
-                                .setValue("try-tee-um").setBoost(30.0f))
-                        .addPhrases(PhraseSet.Phrase.newBuilder()
-                                .setValue("tree-tee-um").setBoost(30.0f))
-                        .addPhrases(PhraseSet.Phrase.newBuilder()
-                                .setValue("trit-ee-um").setBoost(30.0f))
-                        .addPhrases(PhraseSet.Phrase.newBuilder()
-                                .setValue("trish-ium").setBoost(30.0f))
-                        .addPhrases(PhraseSet.Phrase.newBuilder()
-                                .setValue("try-tium").setBoost(30.0f))
-                        .addPhrases(PhraseSet.Phrase.newBuilder()
-                                .setValue("t-r-i-t-i-u-m").setBoost(30.0f))
-                        .addPhrases(PhraseSet.Phrase.newBuilder()
-                                .setValue("trit-ium").setBoost(30.0f))
-                        .addPhrases(PhraseSet.Phrase.newBuilder()
-                                .setValue("tritium fuel").setBoost(30.0f))
-                        .addPhrases(PhraseSet.Phrase.newBuilder()
-                                .setValue("try-tium fuel").setBoost(30.0f))
-                        .addPhrases(PhraseSet.Phrase.newBuilder()
-                                .setValue("hydrogen 3").setBoost(30.0f))
-                        .addPhrases(PhraseSet.Phrase.newBuilder()
-                                .setValue("hydrogen three").setBoost(30.0f))
-                        .addPhrases(PhraseSet.Phrase.newBuilder()
-                                .setValue("tritium mining").setBoost(30.0f))
-                        .addPhrases(PhraseSet.Phrase.newBuilder()
-                                .setValue("try-tium mining").setBoost(30.0f))
-                        .addPhrases(PhraseSet.Phrase.newBuilder()
-                                .setValue("open cargo scoop").setBoost(25.0f))
-                        .addPhrases(PhraseSet.Phrase.newBuilder()
-                                .setValue("engage supercruise").setBoost(30.0f))
-                        .build())
-                .build();
-
         RecognitionConfig config = RecognitionConfig.newBuilder()
                 .setEncoding(RecognitionConfig.AudioEncoding.LINEAR16)
                 .setSampleRateHertz(sampleRateHertz)
@@ -338,30 +297,28 @@ public class SpeechRecognizer {
                 .setLanguageCode("en-US")
                 .setEnableAutomaticPunctuation(true)
                 .addSpeechContexts(commandContext)
-                .setAdaptation(adaptation)
                 .setModel("phone_call")
                 .setEnableWordTimeOffsets(true)
                 .build();
 
-        StreamingRecognitionConfig streamingConfig = StreamingRecognitionConfig.newBuilder()
+        return StreamingRecognitionConfig.newBuilder()
                 .setConfig(config)
                 .setInterimResults(true)
                 .setSingleUtterance(false)
                 .build();
-        return streamingConfig;
     }
 
-    public String getNextTranscription() throws InterruptedException {
+    @Override public String getNextTranscription() throws InterruptedException {
         return transcriptionQueue.take();
     }
 
-    public void stopListening() {
+    @Override public void stopListening() {
         isListening.set(false);
     }
 
-    public void shutdown() {
+    @Override public void shutdown() {
         stopListening();
-        grok.stop();
+        aiCommandInterface.stop();
         if (speechClient != null) {
             speechClient.close();
             log.info("SpeechClient closed");

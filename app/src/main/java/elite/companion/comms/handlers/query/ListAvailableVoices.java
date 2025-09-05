@@ -1,7 +1,7 @@
 package elite.companion.comms.handlers.query;
 
 import com.google.gson.JsonObject;
-import elite.companion.comms.voice.Voices;
+import elite.companion.comms.mouth.Voices;
 import elite.companion.session.PlayerSession;
 import elite.companion.session.SystemSession;
 

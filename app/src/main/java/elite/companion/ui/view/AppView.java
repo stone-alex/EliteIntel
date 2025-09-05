@@ -21,14 +21,6 @@ import java.util.Map;
  * - 10px padding around content
  * - Title at top center
  * - Three tabs: System, Player, Help
- * <p>
- * Exposed methods:
- * - setSystemConfig(Map), getSystemConfigInput()
- * - setUserConfig(Map), getUserConfigInput()
- * - setLogText(String)
- * - setHelpMarkdown(String)
- * - setServicesRunning(boolean)
- * - addActionListener(ActionListener)
  */
 public class AppView extends JFrame implements PropertyChangeListener, AppViewInterface {
 

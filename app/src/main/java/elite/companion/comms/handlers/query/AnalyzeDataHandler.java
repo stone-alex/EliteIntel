@@ -3,7 +3,6 @@ package elite.companion.comms.handlers.query;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import elite.companion.session.PlayerSession;
-import elite.companion.session.SystemSession;
 import elite.companion.util.GsonFactory;
 import elite.companion.util.JsonDataFactory;
 import elite.companion.util.ToJsonConvertible;
@@ -35,7 +34,6 @@ public class AnalyzeDataHandler extends BaseQueryAnalyzer implements QueryHandle
     }
 
     private String fetchDataForAction(QueryActions action) {
-        SystemSession systemSession = SystemSession.getInstance();
         PlayerSession playerSession = PlayerSession.getInstance();
 
         //TODO: Ever growing case switch. A subject for refactoring.
@@ -69,10 +67,13 @@ public class AnalyzeDataHandler extends BaseQueryAnalyzer implements QueryHandle
                 Object stats = playerSession.get(PlayerSession.CARRIER_STATS);
                 yield stats != null ? GSON.toJson(stats) : null;
             }
-
             case ANALYZE_SCAN -> {
                 Object scan = playerSession.get(PlayerSession.LAST_SCAN);
                 yield scan != null ? GSON.toJson(scan) : null;
+            }
+            case ANALYZE_STELLAR_OBJECTS -> {
+                Collection<? extends ToJsonConvertible> data = playerSession.getStellarObjects().values();
+                yield GSON.toJson(data);
             }
             default -> null;
         };

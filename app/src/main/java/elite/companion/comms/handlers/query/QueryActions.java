@@ -5,6 +5,7 @@ public enum QueryActions {
     LOCAL_SYSTEM_INFO("local_system_info", "Provide information about local star system", AnalyzeDataHandler.class, false),
     QUERY_ANALYZE_ON_BOARD_CARGO("query_analyze_on_board_cargo", "Analyzes cargo hold contents.", AnalyzeDataHandler.class, false),
     QUERY_ANALYZE_ROUTE("query_analyze_route", "Analyze our plotted route", AnalyzeDataHandler.class, false),
+    ANALYZE_STELLAR_OBJECTS("query_analyze_stellar_objects", "Analyze current star system and nearby stellar objects", AnalyzeDataHandler.class, false),
     QUERY_SEARCH_SIGNAL_DATA("query_search_signal_data", "Requests current system and signal data (e.g., 'what signals are here').", AnalyzeDataHandler.class, false),
     QUERY_SHIP_LOADOUT("query_ship_loadout", "Requests current ship details (e.g., 'what is my ship loadout').", AnalyzeDataHandler.class, false),
     QUERY_NEXT_STAR_SCOOPABLE("query_next_star_scoopable", "Check if we can get fuel at the next star", AnalyzeDataHandler.class, false),

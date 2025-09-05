@@ -27,6 +27,7 @@ public class MissionSubscriber {
                 event instanceof MissionAbandonedEvent ||
                 event instanceof MissionFailedEvent
         ) {
+            assert event instanceof MissionCompletedEvent;
             long missionID = ((MissionCompletedEvent) event).getMissionID(); // Assumes shared interface
             session.removeMission(missionID);
         }

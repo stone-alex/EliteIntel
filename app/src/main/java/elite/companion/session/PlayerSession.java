@@ -6,6 +6,7 @@ import elite.companion.gameapi.journal.events.*;
 import elite.companion.gameapi.journal.events.dto.MissionDto;
 import elite.companion.gameapi.journal.events.dto.MissionKillDto;
 import elite.companion.gameapi.journal.events.dto.RankAndProgressDto;
+import elite.companion.gameapi.journal.events.dto.StellarObjectDto;
 import elite.companion.util.EventBusManager;
 import elite.companion.util.GsonFactory;
 
@@ -88,6 +89,7 @@ public class PlayerSession {
     private final Map<String, String> shipScans = new HashMap<>();
     private final Map<Long, MissionDto> missions = new LinkedHashMap<>();
     private final Set<MissionKillDto> missionKills = new LinkedHashSet<>();
+    private final Map<String, StellarObjectDto> stellarObjects = new HashMap<>();
     private final Map<String, NavRouteDto> routeMap = new LinkedHashMap<>();
     private final Set<String> detectedSignals = new LinkedHashSet<>();
     private final Set<String> targetFactions = new LinkedHashSet<>();
@@ -121,6 +123,10 @@ public class PlayerSession {
             missionKills.clear();
             missionKills.addAll((Set<MissionKillDto>) v);
         }, Set.class);
+        persistence.registerField("stellarObjects", this::getStellarObjects, v -> {
+            stellarObjects.clear();
+            stellarObjects.putAll((Map<String, StellarObjectDto>) v);
+        }, Map.class);
 
         persistence.registerField("bountyCollectedThisSession", this::getBountyCollectedThisSession, this::setBountyCollectedThisSession, Long.class);
         persistence.registerField("rankAndProgressDto", this::getRankAndProgressDto, this::setRankAndProgressDto, RankAndProgressDto.class);
@@ -392,6 +398,24 @@ public class PlayerSession {
 
     public Set<String> getTargetFactions() {
         return targetFactions;
+    }
+
+    public void addStellarObject(StellarObjectDto object) {
+        stellarObjects.put(object.getName(), object);
+        saveSession();
+    }
+
+    public Map<String, StellarObjectDto> getStellarObjects() {
+        return stellarObjects;
+    }
+
+    public StellarObjectDto getStellarObject(String name) {
+        return stellarObjects.get(name);
+    }
+
+    public void clearStellarObjects() {
+        stellarObjects.clear();
+        saveSession();
     }
 
 

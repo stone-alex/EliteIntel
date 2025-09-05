@@ -30,7 +30,14 @@ public class EventRegistry {
     private static final long THRESHOLD_LONG = 60000; // 60 seconds
 
     static {
-        registerEvent("SaveSessionEvent", LoadSessionEvent.class);
+        registerEvent("FSSBodySignals", FSSBodySignalsEvent.class);
+        registerEvent("ApproachSettlement", ApproachSettlementEvent.class);
+        registerEvent("Missions", MissionsEvent.class);
+        registerEvent("ScanOrganic", ScanOrganicEvent.class);
+        registerEvent("SAASignalsFound", SAASignalsFoundEvent.class);
+        registerEvent("SAAScanComplete", SAAScanCompleteEvent.class);
+        registerEvent("ApproachBody", ApproachBodyEvent.class);
+        registerEvent("SaveSession", LoadSessionEvent.class);
         registerEvent("ClearSessionCache", ClearSessionCacheEvent.class);
         registerEvent("VoiceProcess", VoiceProcessEvent.class);
         registerEvent("UserInput", UserInputEvent.class);

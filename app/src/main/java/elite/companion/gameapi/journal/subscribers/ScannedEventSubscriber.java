@@ -13,8 +13,8 @@ public class ScannedEventSubscriber {
     @Subscribe
     public void onScannedEvent(ScannedEvent event) {
         SystemSession systemSession = SystemSession.getInstance();
-        if ("cargo".equals(event.getScanType().toLowerCase())) {
-            EventBusManager.publish(new VoiceProcessEvent("Pirate scan detected!"));
+        if ("cargo".equalsIgnoreCase(event.getScanType())) {
+            EventBusManager.publish(new VoiceProcessEvent("Cargo scan detected!"));
         }
     }
 }

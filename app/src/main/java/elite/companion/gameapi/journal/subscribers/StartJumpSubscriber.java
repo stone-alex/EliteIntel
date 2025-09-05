@@ -28,13 +28,17 @@ public class StartJumpSubscriber {
         sb.append(", ");
         sb.append(isFuelStarClause(starClass));
 
-        PlayerSession.getInstance().put(PlayerSession.JUMPING_TO, jumpingTo);
-        PlayerSession.getInstance().clearFssSignals();
+        PlayerSession playerSession = PlayerSession.getInstance();
+        playerSession.put(PlayerSession.JUMPING_TO, jumpingTo);
 
         if(!"Supercruise".equalsIgnoreCase(event.getJumpType())) {
             EventBusManager.publish(new AppLogEvent("Processing Event: StartJumpEvent sending sensor data to AI: "+sb.toString()));
             EventBusManager.publish(new SensorDataEvent(sb.toString()));
         }
+
+        playerSession.clearFssSignals();
+        playerSession.clearStellarObjects();
+        playerSession.clearShipScans();
     }
 
     private String isFuelStarClause(String starClass) {

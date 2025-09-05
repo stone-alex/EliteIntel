@@ -1,7 +1,9 @@
 package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.companion.gameapi.SensorDataEvent;
 import elite.companion.gameapi.journal.events.TouchdownEvent;
+import elite.companion.util.EventBusManager;
 
 @SuppressWarnings("unused")
 public class TouchdownEventSubscriber {
@@ -20,8 +22,11 @@ public class TouchdownEventSubscriber {
         StringBuilder sb = new StringBuilder();
         sb.append("Touchdown: ");
         sb.append(" ");
-        sb.append("Star System: ");
-        sb.append(starSystem);
+        sb.append(event.isPlayerControlled() ? "Manual" : "Unmanned");
+        sb.append(" ");
+        if (isStation) sb.append(" On Station ");
+        if (isStation) sb.append(" On ").append(event.getBody()).append(". ").append("Nearest Destination: ").append(pointOfInterest).append(".");
+
         sb.append(" ");
         sb.append(locationType == null ? "Unknown" : locationType);
         sb.append(" ");
@@ -35,6 +40,8 @@ public class TouchdownEventSubscriber {
         sb.append(" ");
         sb.append("Point of Interest: ");
         sb.append(pointOfInterest);
+
+        EventBusManager.publish(new SensorDataEvent(sb.toString()));
 
     }
 }

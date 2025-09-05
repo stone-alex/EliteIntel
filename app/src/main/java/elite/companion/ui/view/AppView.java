@@ -224,18 +224,21 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         // Row 0: Alternative Name
         addLabel(panel, "Alternative Name:", gbc, 0);
         playerAltNameField = new JTextField();
+        playerAltNameField.setToolTipText("If your name can't be pronounced properly by TTS, provide an alternative name here. (optional) ");
         addField(panel, playerAltNameField, gbc, 1, 1.0); // full width in Player tab (no checkbox)
 
         // Row 1: Title
         nextRow(gbc);
         addLabel(panel, "Title:", gbc, 0);
         playerTitleField = new JTextField();
+        playerTitleField.setToolTipText("Optional title. AI will occasionally refer to you by your title. If not provided, title will be based on your highest military rank");
         addField(panel, playerTitleField, gbc, 1, 1.0);
 
         // Row 2: Mission Statement (multi-line)
         nextRow(gbc);
-        addLabel(panel, "Current Mission:", gbc, 0);
+        addLabel(panel, "Session Theme:", gbc, 0);
         playerMissionDescription = new JTextField();
+        playerMissionDescription.setToolTipText("Session theme description (optional). 'We are bounty hunters' or 'We are deep-space explorers' or 'We are pirates' ");
         installTextLimit(playerMissionDescription, 120);
         addField(panel, playerMissionDescription, gbc, 1, 1.0);
 

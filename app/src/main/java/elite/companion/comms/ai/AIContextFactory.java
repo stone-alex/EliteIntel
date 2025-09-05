@@ -125,9 +125,10 @@ public class AIContextFactory {
             sb.append("Our home base is FleetCarrier " + carrierName + ", callsign " + carrierCallSign + ". ");
         }
         sb.append("Address me as ").append(playerName).append(", ").append(playerMilitaryRank).append(", ").append(playerTitle).append(", or ").append(playerHonorific).append(". ");
-        //sb.append("Prefer ").append(playerName).append(" or ").append(playerMilitaryRank).append(". ");
         if (missionStatement != null && !missionStatement.isEmpty()) {
+            sb.append(" Session theme: ").append(missionStatement).append(": ");
             sb.append(missionStatement);
+            sb.append("\n\n");
         }
         sb.append("\n\n");
     }

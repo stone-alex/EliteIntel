@@ -39,7 +39,7 @@ public class Ranks {
         rankMap.put("Chief Petty Officer", "Chief");
         rankMap.put("Warrant Officer", "Warrant");
         rankMap.put("Ensign", "Ensign");
-        rankMap.put("Lieutenant", "LT");
+        rankMap.put("Lieutenant", "Lieutenant");
         rankMap.put("Lieutenant Commander", "Commander");
         rankMap.put("Post Commander", "Commander");
         rankMap.put("Post Captain", "Captain");
@@ -89,7 +89,7 @@ public class Ranks {
         rankMap.put("Chief Petty Officer", "Chief");
         rankMap.put("Warrant Officer", "Warrant");
         rankMap.put("Ensign", "Ensign");
-        rankMap.put("Lieutenant", "LT");
+        rankMap.put("Lieutenant", "Lieutenant");
         rankMap.put("Lieutenant Commander", "Commander");
         rankMap.put("Post Commander", "Commander");
         rankMap.put("Post Captain", "Captain");

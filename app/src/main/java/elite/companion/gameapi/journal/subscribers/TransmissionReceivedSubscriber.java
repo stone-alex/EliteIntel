@@ -37,10 +37,9 @@ public class TransmissionReceivedSubscriber {
                     EventBusManager.publish(new SensorDataEvent("radio_transmission:[from:" + event.getFrom() + ", message:" + event.getMessageLocalised() + "]"));
                 }
             } else {
-                EventBusManager.publish(new VoiceProcessEvent("radio_transmission:[from:" + event.getFrom() + ", message:" + event.getMessageLocalised() + "]", true));
+                EventBusManager.publish(new VoiceProcessEvent(event.getMessageLocalised(), true));
             }
         }
-
     }
 
     private boolean isPirateMessage(String message) {

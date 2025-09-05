@@ -1,8 +1,11 @@
 package elite.companion.ui.controller;
 
 import com.google.common.eventbus.Subscribe;
+import elite.companion.comms.ai.AICadence;
+import elite.companion.comms.ai.AIPersonality;
 import elite.companion.comms.voice.SpeechRecognizer;
 import elite.companion.comms.voice.VoiceGenerator;
+import elite.companion.comms.voice.Voices;
 import elite.companion.gameapi.AuxiliaryFilesMonitor;
 import elite.companion.gameapi.JournalParser;
 import elite.companion.gameapi.UserInputEvent;
@@ -14,6 +17,7 @@ import elite.companion.ui.model.AppModelInterface;
 import elite.companion.ui.view.AppViewInterface;
 import elite.companion.util.ConfigManager;
 import elite.companion.util.EventBusManager;
+import elite.companion.util.StringSanitizer;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -108,6 +112,14 @@ public class AppController implements AppControllerInterface, ActionListener {
             PlayerSession.getInstance().put(PLAYER_MISSION_STATEMENT, mission_statement);
 
             EventBusManager.publish(new VoiceProcessEvent("Systems online..."));
+            model.appendLog(
+                    systemSession.getAIVoice().getName() + " is listening to you... AI is set to "
+                            + StringSanitizer.capitalizeWords(systemSession.getAICadence().name()) + " "
+                            + StringSanitizer.capitalizeWords(systemSession.getAIPersonality().name())
+            );
+            model.appendLog("Available voices: " + listVoices());
+            model.appendLog("Available personalities: " + listPersonalities());
+            model.appendLog("Available profiles: " + listCadences());
             isServiceRunning = true;
         } else {
             EventBusManager.publish(new VoiceProcessEvent("Systems offline..."));
@@ -117,11 +129,43 @@ public class AppController implements AppControllerInterface, ActionListener {
             voiceGenerator = null;
             speechRecognizer.stop();
             fileMonitor.stop();
-            model.appendLog("Systems offline...");
             isServiceRunning = false;
         }
         model.setServicesRunning(isServiceRunning);
         return isServiceRunning;
+    }
+
+    private String listVoices() {
+        StringBuilder sb = new StringBuilder();
+        Voices[] voices = Voices.values();
+        sb.append("[");
+        for (Voices voice : voices) {
+            sb.append(StringSanitizer.capitalizeWords(voice.name())).append(", ");
+        }
+        sb.append("]");
+        return sb.toString().replace(", ]", "]");
+    }
+
+    private String listPersonalities() {
+        AIPersonality[] personalities = AIPersonality.values();
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        for (AIPersonality personality : personalities) {
+            sb.append(StringSanitizer.capitalizeWords(personality.name())).append(", ");
+        }
+        sb.append("]");
+        return sb.toString().replace(", ]", "]");
+    }
+
+    private String listCadences() {
+        AICadence[] cadences = AICadence.values();
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        for (AICadence cadence : cadences) {
+            sb.append(StringSanitizer.capitalizeWords(cadence.name())).append(", ");
+        }
+        sb.append("]");
+        return sb.toString().replace(", ]", "]");
     }
 
     private final SystemSession systemSession = SystemSession.getInstance();
@@ -155,7 +199,6 @@ public class AppController implements AppControllerInterface, ActionListener {
             } else if (ACTION_TOGGLE_PRIVACY_MODE.equals(command)) {
                 boolean isSelected = ((JCheckBox) e.getSource()).isSelected();
                 togglePrivacyMode(isSelected);
-                //((JCheckBox) e.getSource()).setText(this.model.isPrivacyModeOn() ? "Privacy ON" : "Privacy OFF");
             }
         }
 

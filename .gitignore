@@ -2,3 +2,9 @@ app/src/main/resources/elite-companion-xai-api-key.conf
 /app/build
 /logs
 /misc
+/session
+/temp
+./player.conf
+./system.conf
+./brainstorming.txt
+./test.json

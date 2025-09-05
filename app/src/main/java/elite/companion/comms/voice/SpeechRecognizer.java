@@ -22,7 +22,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-
 /**
  * NOTE $$$ This method is not free. Calls will incur charges on both Google and Grok platforms. $$$
  * <p>
@@ -32,8 +31,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class SpeechRecognizer {
     private static final Logger log = LoggerFactory.getLogger(SpeechRecognizer.class);
-    private static final int SAMPLE_RATE_HERTZ = 48000; // Locked to 48kHz
-    private static final int BUFFER_SIZE = 9600; // ~100ms at 48kHz, mono
+    private int sampleRateHertz; // Dynamically detected
+    private int bufferSize; // Dynamically calculated based on sample rate
     private static final int CHANNELS = 1; // Mono
     private static final int KEEP_ALIVE_INTERVAL_MS = 2000;
     private static final int STREAM_DURATION_MS = 30000; // 30s
@@ -47,7 +46,6 @@ public class SpeechRecognizer {
     private byte[] lastBuffer = null;
     private AudioInputStream audioInputStream = null;
 
-
     private Thread processingThread;
 
     public void stop() {
@@ -60,6 +58,8 @@ public class SpeechRecognizer {
             log.warn("Speech recognition is already running");
             return;
         }
+
+        detectAudioFormat(); // Detect sample rate and set buffer size
 
         try {
             String apiKey = ConfigManager.getInstance().getSystemKey(ConfigManager.GOOGLE_API_KEY);
@@ -78,7 +78,6 @@ public class SpeechRecognizer {
             throw new RuntimeException("Failed to initialize SpeechClient", e);
         }
 
-
         this.processingThread = new Thread(this::startStreaming);
         this.processingThread.start();
         try {
@@ -90,10 +89,23 @@ public class SpeechRecognizer {
         }
     }
 
-
     public SpeechRecognizer() {
         this.grok = new GrokCommandEndPoint();
+    }
 
+    private void detectAudioFormat() {
+        int[] possibleRates = {48000, 44100, 16000}; // Preferred rates in order
+        for (int rate : possibleRates) {
+            AudioFormat format = new AudioFormat(rate, 16, CHANNELS, true, false);
+            DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
+            if (AudioSystem.isLineSupported(info)) {
+                this.sampleRateHertz = rate;
+                this.bufferSize = (int) (rate * 0.1 * 2 * CHANNELS); // ~100ms buffer
+                log.info("Detected supported sample rate: {} Hz, buffer size: {}", sampleRateHertz, bufferSize);
+                return;
+            }
+        }
+        throw new RuntimeException("No supported audio format found for mono 16-bit input");
     }
 
     public void stopWavRecording() {
@@ -110,16 +122,16 @@ public class SpeechRecognizer {
     // Start/stop WAV recording
     public void startWavRecording() {
         try {
-            AudioFormat format = new AudioFormat(SAMPLE_RATE_HERTZ, 16, 1, true, false);
+            AudioFormat format = new AudioFormat(sampleRateHertz, 16, CHANNELS, true, false);
             wavFile = new File("audio_debug.wav");
             DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
             TargetDataLine line = (TargetDataLine) AudioSystem.getLine(info);
-            line.open(format, BUFFER_SIZE);
+            line.open(format, bufferSize);
             line.start();
-            audioInputStream = new AudioInputStream(line); // Fixed constructor
+            audioInputStream = new AudioInputStream(line);
             new Thread(() -> {
                 try {
-                    AudioSystem.write(audioInputStream, AudioFileFormat.Type.WAVE, wavFile); // Fixed method
+                    AudioSystem.write(audioInputStream, AudioFileFormat.Type.WAVE, wavFile);
                     log.info("Started WAV recording to {}", wavFile.getAbsolutePath());
                 } catch (Exception e) {
                     log.error("Failed to write WAV file", e);
@@ -130,7 +142,6 @@ public class SpeechRecognizer {
         }
     }
 
-
     /**
      * Stream audio to Google STT and process the final result returned as text.
      * This method will call Grok API with the final result returned from Google STT.
@@ -139,8 +150,6 @@ public class SpeechRecognizer {
      */
     private void startStreaming() {
         while (isListening.get()) {
-
-
             log.info("Starting new streaming session...");
             long streamStartTime = System.currentTimeMillis();
             ApiStreamObserver<StreamingRecognizeRequest> requestObserver = null;
@@ -181,13 +190,13 @@ public class SpeechRecognizer {
                     requestObserver.onNext(request);
                 }
 
-                AudioFormat format = new AudioFormat(SAMPLE_RATE_HERTZ, 16, CHANNELS, true, false);
+                AudioFormat format = new AudioFormat(sampleRateHertz, 16, CHANNELS, true, false);
                 DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
                 try (TargetDataLine line = (TargetDataLine) AudioSystem.getLine(info)) {
-                    log.info("Using streaming format: SampleRate={}, Channels={}", SAMPLE_RATE_HERTZ, CHANNELS);
-                    line.open(format, BUFFER_SIZE);
+                    log.info("Using streaming format: SampleRate={}, Channels={}", sampleRateHertz, CHANNELS);
+                    line.open(format, bufferSize);
                     line.start();
-                    byte[] buffer = new byte[BUFFER_SIZE];
+                    byte[] buffer = new byte[bufferSize];
 
                     while (isListening.get() && line.isOpen() && (System.currentTimeMillis() - streamStartTime) < STREAM_DURATION_MS) {
                         int bytesRead = line.read(buffer, 0, buffer.length);
@@ -211,7 +220,7 @@ public class SpeechRecognizer {
                         requestObserver.onCompleted();
                     }
                     try {
-                        Thread.sleep(RESTART_DELAY_MS); // 1s delay before restarting
+                        Thread.sleep(RESTART_DELAY_MS); // 50ms delay before restarting
                     } catch (InterruptedException e) {
                         log.error("Restart delay interrupted", e);
                         Thread.currentThread().interrupt();
@@ -220,7 +229,7 @@ public class SpeechRecognizer {
             } catch (Exception e) {
                 log.error("Streaming recognition failed: {}", e.getMessage());
                 try {
-                    Thread.sleep(RESTART_DELAY_MS); // 1s delay on failure
+                    Thread.sleep(RESTART_DELAY_MS); // 50ms delay on failure
                 } catch (InterruptedException ie) {
                     log.error("Restart delay interrupted", ie);
                     Thread.currentThread().interrupt();
@@ -228,7 +237,6 @@ public class SpeechRecognizer {
             }
         }
     }
-
 
     /**
      * We receive a stream of results from Google STT and process the final one only.
@@ -274,13 +282,11 @@ public class SpeechRecognizer {
      * Sets a recognition model to phone_call. and language to en-US.
      *
      */
-    private static StreamingRecognitionConfig getStreamingRecognitionConfig() {
-
+    private StreamingRecognitionConfig getStreamingRecognitionConfig() {
         SpeechContext commandContext = SpeechContext.newBuilder()
                 .addAllPhrases(GrokRequestHints.COMMON_PHRASES)
                 .setBoost(35.0f)
                 .build();
-
 
         // Trimmed command context with increased tritium boost (probably does not help much to be honest)
         SpeechAdaptation adaptation = SpeechAdaptation.newBuilder()
@@ -327,7 +333,7 @@ public class SpeechRecognizer {
 
         RecognitionConfig config = RecognitionConfig.newBuilder()
                 .setEncoding(RecognitionConfig.AudioEncoding.LINEAR16)
-                .setSampleRateHertz(SAMPLE_RATE_HERTZ)
+                .setSampleRateHertz(sampleRateHertz)
                 .setAudioChannelCount(CHANNELS)
                 .setLanguageCode("en-US")
                 .setEnableAutomaticPunctuation(true)

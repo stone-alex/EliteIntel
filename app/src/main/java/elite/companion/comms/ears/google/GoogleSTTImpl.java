@@ -4,12 +4,12 @@ import com.google.api.gax.rpc.ApiStreamObserver;
 import com.google.cloud.speech.v1p1beta1.*;
 import com.google.protobuf.ByteString;
 import elite.companion.comms.brain.AiCommandInterface;
-import elite.companion.comms.brain.grok.GrokCommandEndPoint;
 import elite.companion.comms.brain.grok.GrokRequestHints;
 import elite.companion.comms.ears.EarsInterface;
 import elite.companion.gameapi.UserInputEvent;
 import elite.companion.session.SystemSession;
 import elite.companion.ui.event.AppLogEvent;
+import elite.companion.util.ApiFactory;
 import elite.companion.util.ConfigManager;
 import elite.companion.util.EventBusManager;
 import elite.companion.util.StringSanitizer;
@@ -64,7 +64,7 @@ public class GoogleSTTImpl implements EarsInterface {
         detectAudioFormat(); // Detect sample rate and set buffer size
 
         try {
-            String apiKey = ConfigManager.getInstance().getSystemKey(ConfigManager.GOOGLE_API_KEY);
+            String apiKey = ConfigManager.getInstance().getSystemKey(ConfigManager.STT_API_KEY);
             if (apiKey == null || apiKey.trim().isEmpty()) {
                 log.error("Google API key not found in system.conf");
                 return;
@@ -92,7 +92,8 @@ public class GoogleSTTImpl implements EarsInterface {
     }
 
     public GoogleSTTImpl() {
-        this.aiCommandInterface = new GrokCommandEndPoint();
+        //this.aiCommandInterface = new GrokCommandEndPoint();
+        this.aiCommandInterface = ApiFactory.getInstance().getCommandEndpoint();
     }
 
     private void detectAudioFormat() {

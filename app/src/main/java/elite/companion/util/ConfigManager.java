@@ -19,9 +19,9 @@ public class ConfigManager {
     private final int MAX_NUMBER_OF_CHARACTERS = 120;
 
     // Config keys
-    public static final String GROK_API_KEY = "grok_key";
-    public static final String GOOGLE_API_KEY = "google_api_key"; // New key for Google API
-    public static final String EDSM_KEY = "edsm_key";
+    public static final String AI_API_KEY = "ai_api_key";
+    public static final String TTS_API_KEY = "tts_api_key"; // New key for Google API
+    public static final String STT_API_KEY = "stt_api_key";
     public static final String PLAYER_MISSION_STATEMENT = "mission_statement";
     public static final String PLAYER_TITLE = "title";
     public static final String PLAYER_ALTERNATIVE_NAME = "alternative_name";
@@ -31,9 +31,9 @@ public class ConfigManager {
 
     private ConfigManager() {
         // Initialize default configs
-        DEFAULT_SYSTEM_CONFIG.put(GROK_API_KEY, "");
-        DEFAULT_SYSTEM_CONFIG.put(GOOGLE_API_KEY, ""); // Add Google API key
-        DEFAULT_SYSTEM_CONFIG.put(EDSM_KEY, "");
+        DEFAULT_SYSTEM_CONFIG.put(AI_API_KEY, "");
+        DEFAULT_SYSTEM_CONFIG.put(TTS_API_KEY, "");
+        DEFAULT_SYSTEM_CONFIG.put(STT_API_KEY, "");
         DEFAULT_USER_CONFIG.put(PLAYER_MISSION_STATEMENT, "");
         DEFAULT_USER_CONFIG.put(PLAYER_TITLE, "");
         DEFAULT_USER_CONFIG.put(PLAYER_ALTERNATIVE_NAME, "");
@@ -211,9 +211,9 @@ public class ConfigManager {
             if (includeComments) {
                 if (filename.equals(SYSTEM_CONFIG_FILENAME)) {
                     writer.write("## System configuration for API keys\n");
-                    writer.write("# grok_key: API key for Grok (xAI)\n");
-                    writer.write("# google_api_key: API key for Google Cloud Speech-to-Text and Text-to-Speech\n");
-                    writer.write("# edsm_key: API key for EDSM\n\n");
+                    writer.write("# ai_api_key: API key for LLM\n");
+                    writer.write("# tts_api_key: API key for TTS\n");
+                    writer.write("# stt_api_key: API key for STT\n\n");
                 } else if (filename.equals(USER_CONFIG_FILENAME)) {
                     writer.write("## Provide brief description of your overall mission. Example:\n");
                     writer.write("# Note all entries will be trimmed to 120 characters. So be brief.\n");

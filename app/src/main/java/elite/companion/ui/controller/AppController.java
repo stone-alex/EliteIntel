@@ -4,10 +4,8 @@ import com.google.common.eventbus.Subscribe;
 import elite.companion.comms.brain.AICadence;
 import elite.companion.comms.brain.AIPersonality;
 import elite.companion.comms.ears.EarsInterface;
-import elite.companion.comms.ears.google.GoogleSTTImpl;
 import elite.companion.comms.mouth.MouthInterface;
 import elite.companion.comms.mouth.Voices;
-import elite.companion.comms.mouth.google.GoogleTTSImpl;
 import elite.companion.gameapi.AuxiliaryFilesMonitor;
 import elite.companion.gameapi.JournalParser;
 import elite.companion.gameapi.UserInputEvent;
@@ -17,6 +15,7 @@ import elite.companion.session.SystemSession;
 import elite.companion.ui.event.AppLogEvent;
 import elite.companion.ui.model.AppModelInterface;
 import elite.companion.ui.view.AppViewInterface;
+import elite.companion.util.ApiFactory;
 import elite.companion.util.ConfigManager;
 import elite.companion.util.EventBusManager;
 import elite.companion.util.StringSanitizer;
@@ -36,7 +35,8 @@ public class AppController implements AppControllerInterface, ActionListener {
     private boolean isServiceRunning = false;
 
     AuxiliaryFilesMonitor fileMonitor = new AuxiliaryFilesMonitor();
-    EarsInterface ears = new GoogleSTTImpl();
+    //EarsInterface ears = new GoogleSTTImpl();
+    EarsInterface ears = ApiFactory.getInstance().getEarsImpl();
     MouthInterface mouth;
     JournalParser journalParser = new JournalParser();
 
@@ -85,14 +85,14 @@ public class AppController implements AppControllerInterface, ActionListener {
         isServiceRunning = !isServiceRunning;
         if (isServiceRunning) {
 
-            String googleKey = String.valueOf(configManager.getSystemKey(ConfigManager.GOOGLE_API_KEY));
+            String googleKey = String.valueOf(configManager.getSystemKey(ConfigManager.TTS_API_KEY));
             if (googleKey == null || googleKey.trim().isEmpty() || googleKey.equals("null")) {
                 model.appendLog("SYSTEM: Google API key not found in system.conf");
                 isServiceRunning = false;
                 return false;
             }
 
-            String grokKey = String.valueOf(configManager.getSystemKey(ConfigManager.GROK_API_KEY));
+            String grokKey = String.valueOf(configManager.getSystemKey(ConfigManager.AI_API_KEY));
             if (grokKey == null || grokKey.trim().isEmpty() || grokKey.equals("null")) {
                 model.appendLog("SYSTEM: Grok API key not found in system.conf");
                 isServiceRunning = false;
@@ -104,7 +104,8 @@ public class AppController implements AppControllerInterface, ActionListener {
             model.setPrivacyModeOn(privacyModeOn);
 
             journalParser.start();
-            mouth = GoogleTTSImpl.getInstance();
+            //mouth = GoogleTTSImpl.getInstance();
+            mouth = ApiFactory.getInstance().getMouthImpl();
             ears.start();
             fileMonitor.start();
             mouth.start();

@@ -6,7 +6,7 @@ import elite.companion.comms.brain.robot.GameCommandHandler;
 public class CloseMapHandler extends CustomCommandOperator implements CommandHandler {
 
 
-    public CloseMapHandler(GameCommandHandler commandHandler) throws Exception {
+    public CloseMapHandler(GameCommandHandler commandHandler) {
         super(commandHandler.getMonitor(), commandHandler.getExecutor());
     }
 

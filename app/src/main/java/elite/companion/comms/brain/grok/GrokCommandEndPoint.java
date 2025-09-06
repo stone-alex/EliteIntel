@@ -10,10 +10,7 @@ import elite.companion.gameapi.SensorDataEvent;
 import elite.companion.gameapi.UserInputEvent;
 import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.session.SystemSession;
-import elite.companion.util.ConfigManager;
-import elite.companion.util.EventBusManager;
-import elite.companion.util.GsonFactory;
-import elite.companion.util.JsonUtils;
+import elite.companion.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,8 +28,10 @@ public class GrokCommandEndPoint implements AiCommandInterface {
     private final AIChatInterface chatInterface;
 
     public GrokCommandEndPoint() {
-        this.router = GrokResponseRouter.getInstance();
-        this.chatInterface = GrokChatEndPoint.getInstance();
+        this.router = ApiFactory.getInstance().getAiRouter();
+        //this.router = GrokResponseRouter.getInstance();
+        //this.chatInterface = GrokChatEndPoint.getInstance();
+        this.chatInterface = ApiFactory.getInstance().getChatEndpoint();
         EventBusManager.register(this);
     }
 
@@ -331,7 +330,7 @@ public class GrokCommandEndPoint implements AiCommandInterface {
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
         conn.setRequestProperty("Content-Type", "application/json");
-        conn.setRequestProperty("Authorization", "Bearer " + ConfigManager.getInstance().getSystemKey(ConfigManager.GROK_API_KEY));
+        conn.setRequestProperty("Authorization", "Bearer " + ConfigManager.getInstance().getSystemKey(ConfigManager.AI_API_KEY));
         conn.setDoOutput(true);
         return conn;
     }

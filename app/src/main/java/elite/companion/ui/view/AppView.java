@@ -43,13 +43,13 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     private JTabbedPane tabs;
 
     // System tab components
-    private JPasswordField googleApiKeyField;
-    private JCheckBox googleLockedCheck;
-    private JPasswordField grokApiKeyField;
-    private JCheckBox grokLockedCheck;
+    private JPasswordField sttApiKeyField;
+    private JCheckBox sttLockedCheck;
+    private JPasswordField llmApiKeyField;
+    private JCheckBox llmLockedCheck;
     private JCheckBox showDetailedLog;
-    private JPasswordField edsmApiKeyField;
-    private JCheckBox edsmLockedCheck;
+    private JPasswordField ttsApiKeyField;
+    private JCheckBox ttsLockedCheck;
     private JButton saveSystemButton;
     private JButton startStopServicesButton;
     private JCheckBox togglePrivacyModeCheckBox;
@@ -95,9 +95,9 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         applyDarkPalette(getContentPane());
 
         //initial state
-        bindLock(googleLockedCheck, googleApiKeyField, true);
-        bindLock(grokLockedCheck, grokApiKeyField, true);
-        bindLock(edsmLockedCheck, edsmApiKeyField, true);
+        bindLock(sttLockedCheck, sttApiKeyField, true);
+        bindLock(llmLockedCheck, llmApiKeyField, true);
+        bindLock(ttsLockedCheck, ttsApiKeyField, true);
         togglePrivacyModeCheckBox.setEnabled(false);//enabled when services start
         togglePrivacyModeCheckBox.setToolTipText("Prevent AI from listening to everything on/off, prefix commands with word 'computer' or AI voice name");
         togglePrivacyModeCheckBox.setText("Toggle Privacy Mode");
@@ -109,28 +109,30 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         GridBagConstraints gbc = baseGbc();
 
         // Fields (80% width field, 20% checkbox)
-        // Row 0: Google API Key
-        addLabel(panel, "Google API Key:", gbc, 0);
-        googleApiKeyField = new JPasswordField();
-        addField(panel, googleApiKeyField, gbc, 1, 0.8);
-        googleLockedCheck = new JCheckBox("Locked", true);
-        addCheck(panel, googleLockedCheck, gbc, 2, 0.2);
 
-        // Row 1: Grok API Key
+        // Row 0: Grok API Key
         nextRow(gbc);
-        addLabel(panel, "Grok API Key:", gbc, 0);
-        grokApiKeyField = new JPasswordField();
-        addField(panel, grokApiKeyField, gbc, 1, 0.8);
-        grokLockedCheck = new JCheckBox("Locked", true);
-        addCheck(panel, grokLockedCheck, gbc, 2, 0.2);
+        addLabel(panel, "LLM API Key:", gbc, 0);
+        llmApiKeyField = new JPasswordField();
+        addField(panel, llmApiKeyField, gbc, 1, 0.8);
+        llmLockedCheck = new JCheckBox("Locked", true);
+        addCheck(panel, llmLockedCheck, gbc, 2, 0.2);
 
-        // Row 2: EDSM API Key
+        // Row 1: STT Key
         nextRow(gbc);
-        addLabel(panel, "EDSM API Key:", gbc, 0);
-        edsmApiKeyField = new JPasswordField();
-        addField(panel, edsmApiKeyField, gbc, 1, 0.8);
-        edsmLockedCheck = new JCheckBox("Locked", true);
-        addCheck(panel, edsmLockedCheck, gbc, 2, 0.2);
+        addLabel(panel, "Speech to Text API Key:", gbc, 0);
+        sttApiKeyField = new JPasswordField();
+        addField(panel, sttApiKeyField, gbc, 1, 0.8);
+        sttLockedCheck = new JCheckBox("Locked", true);
+        addCheck(panel, sttLockedCheck, gbc, 2, 0.2);
+
+        // Row 2: TTS Key
+        nextRow(gbc);
+        addLabel(panel, "Text to Speech API Key:", gbc, 0);
+        ttsApiKeyField = new JPasswordField();
+        addField(panel, ttsApiKeyField, gbc, 1, 0.8);
+        ttsLockedCheck = new JCheckBox("Locked", true);
+        addCheck(panel, ttsLockedCheck, gbc, 2, 0.2);
 
         // Row 3: Buttons
         nextRow(gbc);
@@ -477,34 +479,34 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     // System config I/O
     public void setSystemConfig(Map<String, String> cfg) {
         if (cfg == null) return;
-        if (googleApiKeyField != null) {
-            googleApiKeyField.setText(cfg.getOrDefault(ConfigManager.GOOGLE_API_KEY, ""));
-            googleLockedCheck.setSelected(!cfg.getOrDefault(ConfigManager.GOOGLE_API_KEY, "").isEmpty());
+        if (sttApiKeyField != null) {
+            sttApiKeyField.setText(cfg.getOrDefault(ConfigManager.STT_API_KEY, ""));
+            sttLockedCheck.setSelected(!cfg.getOrDefault(ConfigManager.STT_API_KEY, "").isEmpty());
         }
-        if (grokApiKeyField != null) {
-            grokApiKeyField.setText(cfg.getOrDefault(ConfigManager.GROK_API_KEY, ""));
-            grokLockedCheck.setSelected(!cfg.getOrDefault(ConfigManager.GROK_API_KEY, "").isEmpty());
+        if (llmApiKeyField != null) {
+            llmApiKeyField.setText(cfg.getOrDefault(ConfigManager.AI_API_KEY, ""));
+            llmLockedCheck.setSelected(!cfg.getOrDefault(ConfigManager.AI_API_KEY, "").isEmpty());
         }
-        if (edsmApiKeyField != null) {
-            edsmApiKeyField.setText(cfg.getOrDefault(ConfigManager.EDSM_KEY, ""));
-            edsmLockedCheck.setSelected(!cfg.getOrDefault(ConfigManager.EDSM_KEY, "").isEmpty());
+        if (ttsApiKeyField != null) {
+            ttsApiKeyField.setText(cfg.getOrDefault(ConfigManager.TTS_API_KEY, ""));
+            ttsLockedCheck.setSelected(!cfg.getOrDefault(ConfigManager.TTS_API_KEY, "").isEmpty());
         }
     }
 
     @Override public void displaySystemConfig(Map<String, String> cfg) {
         for (Map.Entry<String, String> entry : cfg.entrySet()) {
             switch (entry.getKey()) {
-                case ConfigManager.GOOGLE_API_KEY:
-                    googleApiKeyField.setText(entry.getValue());
-                    googleLockedCheck.setSelected(!cfg.getOrDefault(ConfigManager.GOOGLE_API_KEY, "").isEmpty());
+                case ConfigManager.TTS_API_KEY:
+                    sttApiKeyField.setText(entry.getValue());
+                    sttLockedCheck.setSelected(!cfg.getOrDefault(ConfigManager.STT_API_KEY, "").isEmpty());
                     break;
-                case ConfigManager.GROK_API_KEY:
-                    grokApiKeyField.setText(entry.getValue());
-                    grokLockedCheck.setSelected(!cfg.getOrDefault(ConfigManager.GROK_API_KEY, "").isEmpty());
+                case ConfigManager.AI_API_KEY:
+                    llmApiKeyField.setText(entry.getValue());
+                    llmLockedCheck.setSelected(!cfg.getOrDefault(ConfigManager.AI_API_KEY, "").isEmpty());
                     break;
-                case ConfigManager.EDSM_KEY:
-                    edsmApiKeyField.setText(entry.getValue());
-                    edsmLockedCheck.setSelected(!cfg.getOrDefault(ConfigManager.EDSM_KEY, "").isEmpty());
+                case ConfigManager.STT_API_KEY:
+                    ttsApiKeyField.setText(entry.getValue());
+                    ttsLockedCheck.setSelected(!cfg.getOrDefault(ConfigManager.TTS_API_KEY, "").isEmpty());
                     break;
             }
         }
@@ -537,9 +539,9 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
 
     public Map<String, String> getSystemConfigInput() {
         Map<String, String> cfg = new HashMap<>();
-        if (googleApiKeyField != null) cfg.put(ConfigManager.GOOGLE_API_KEY, new String(googleApiKeyField.getPassword()));
-        if (grokApiKeyField != null) cfg.put(ConfigManager.GROK_API_KEY, new String(grokApiKeyField.getPassword()));
-        if (edsmApiKeyField != null) cfg.put(ConfigManager.EDSM_KEY, new String(edsmApiKeyField.getPassword()));
+        if (sttApiKeyField != null) cfg.put(ConfigManager.TTS_API_KEY, new String(sttApiKeyField.getPassword()));
+        if (llmApiKeyField != null) cfg.put(ConfigManager.AI_API_KEY, new String(llmApiKeyField.getPassword()));
+        if (ttsApiKeyField != null) cfg.put(ConfigManager.STT_API_KEY, new String(ttsApiKeyField.getPassword()));
         return cfg;
     }
 

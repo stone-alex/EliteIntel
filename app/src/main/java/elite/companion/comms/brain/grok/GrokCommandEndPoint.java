@@ -5,9 +5,9 @@ import com.google.gson.*;
 import elite.companion.comms.ApiFactory;
 import elite.companion.comms.ConfigManager;
 import elite.companion.comms.brain.AIChatInterface;
-import elite.companion.comms.brain.AIContextFactory;
 import elite.companion.comms.brain.AIRouterInterface;
 import elite.companion.comms.brain.AiCommandInterface;
+import elite.companion.comms.brain.AiContextFactory;
 import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.SensorDataEvent;
 import elite.companion.gameapi.UserInputEvent;
@@ -30,10 +30,12 @@ public class GrokCommandEndPoint implements AiCommandInterface {
     private static final ThreadLocal<JsonArray> currentHistory = new ThreadLocal<>();
     private final AIRouterInterface router;
     private final AIChatInterface chatInterface;
+    private final AiContextFactory contextFactory;
 
     public GrokCommandEndPoint() {
         this.router = ApiFactory.getInstance().getAiRouter();
         this.chatInterface = ApiFactory.getInstance().getChatEndpoint();
+        this.contextFactory = ApiFactory.getInstance().getAiContextFactory();
         EventBusManager.register(this);
     }
 
@@ -72,7 +74,7 @@ public class GrokCommandEndPoint implements AiCommandInterface {
             JsonArray messages = new JsonArray();
             JsonObject systemMessage = new JsonObject();
             systemMessage.addProperty("role", "system");
-            String systemPrompt = AIContextFactory.getInstance().generateSystemPrompt();
+            String systemPrompt = contextFactory.generateSystemPrompt();
             systemMessage.addProperty("content", systemPrompt);
             messages.add(systemMessage);
 
@@ -107,7 +109,7 @@ public class GrokCommandEndPoint implements AiCommandInterface {
         JsonArray messages = new JsonArray();
         JsonObject systemMessage = new JsonObject();
         systemMessage.addProperty("role", "system");
-        String systemPrompt = AIContextFactory.getInstance().generateSystemPrompt();
+        String systemPrompt = contextFactory.generateSystemPrompt();
         systemMessage.addProperty("content", systemPrompt);
         messages.add(systemMessage);
 
@@ -167,7 +169,7 @@ public class GrokCommandEndPoint implements AiCommandInterface {
         JsonArray messages = new JsonArray();
         JsonObject systemMessage = new JsonObject();
         systemMessage.addProperty("role", "system");
-        String systemPrompt = AIContextFactory.getInstance().generateSystemPrompt();
+        String systemPrompt = contextFactory.generateSystemPrompt();
         systemMessage.addProperty("content", systemPrompt);
         messages.add(systemMessage);
 
@@ -320,11 +322,11 @@ public class GrokCommandEndPoint implements AiCommandInterface {
     }
 
     private String buildVoiceRequest(String transcribedText) {
-        return AIContextFactory.getInstance().generatePlayerInstructions(String.valueOf(transcribedText));
+        return contextFactory.generatePlayerInstructions(String.valueOf(transcribedText));
     }
 
     private String buildSystemRequest(String systemInput) {
-        return AIContextFactory.getInstance().generateSystemInstructions(systemInput);
+        return contextFactory.generateSystemInstructions(systemInput);
     }
 
     private static HttpURLConnection getHttpURLConnection() throws IOException {

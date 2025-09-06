@@ -1,8 +1,8 @@
 package elite.companion.comms.brain.grok;
 
 import com.google.gson.*;
+import elite.companion.comms.ApiFactory;
 import elite.companion.comms.ConfigManager;
-import elite.companion.comms.brain.AIContextFactory;
 import elite.companion.comms.brain.AiAnalysisInterface;
 import elite.companion.util.json.GsonFactory;
 import org.slf4j.Logger;
@@ -30,7 +30,7 @@ public class GrokAnalysisEndpoint implements AiAnalysisInterface {
     @Override public JsonObject analyzeData(String userIntent, String dataJson) {
         try {
             HttpURLConnection conn = getHttpURLConnection();
-            String systemPrompt = AIContextFactory.getInstance().generateAnalysisPrompt(userIntent, dataJson);
+            String systemPrompt = ApiFactory.getInstance().getAiContextFactory().generateAnalysisPrompt(userIntent, dataJson);
 
             JsonObject request = new JsonObject();
             request.addProperty("model", "grok-3-fast");

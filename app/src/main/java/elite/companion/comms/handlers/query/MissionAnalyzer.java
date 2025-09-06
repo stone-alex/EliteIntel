@@ -2,7 +2,6 @@ package elite.companion.comms.handlers.query;
 
 import com.google.gson.JsonObject;
 import elite.companion.comms.ApiFactory;
-import elite.companion.comms.brain.AIContextFactory;
 import elite.companion.comms.brain.AiAnalysisInterface;
 import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.VoiceProcessEvent;
@@ -54,7 +53,7 @@ public class MissionAnalyzer implements QueryHandler {
         basePrompt.append("Potential mission profit is sum of Mission Rewards. Bounties collected is sum of TotalRewards for matching bounties. ");
         basePrompt.append("Start responses directly with the requested information, avoiding conversational fillers like 'noted,' 'well,' 'right,' 'understood,' or similar phrases. ");
         basePrompt.append("Spell out numerals in full words (e.g., 285 = two hundred and eighty-five, 27 = twenty-seven)");
-        AIContextFactory.appendBehavior(basePrompt);
+        ApiFactory.getInstance().getAiContextFactory().appendBehavior(basePrompt);
         basePrompt.append("Ignore expired missions. Data: ");
         basePrompt.append(dataJson);
         basePrompt.append("\nUser query: ");

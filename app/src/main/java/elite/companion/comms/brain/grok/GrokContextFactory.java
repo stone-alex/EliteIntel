@@ -1,6 +1,8 @@
-package elite.companion.comms.brain;
+package elite.companion.comms.brain.grok;
 
-import elite.companion.comms.brain.grok.GrokRequestHints;
+import elite.companion.comms.brain.AICadence;
+import elite.companion.comms.brain.AIPersonality;
+import elite.companion.comms.brain.AiContextFactory;
 import elite.companion.comms.handlers.query.QueryActions;
 import elite.companion.session.PlayerSession;
 import elite.companion.session.SystemSession;
@@ -8,15 +10,15 @@ import elite.companion.util.Ranks;
 
 import java.util.Objects;
 
-public class AIContextFactory {
-    private static AIContextFactory instance;
+public class GrokContextFactory implements AiContextFactory {
+    private static GrokContextFactory instance;
 
-    private AIContextFactory() {
+    private GrokContextFactory() {
     }
 
-    public static AIContextFactory getInstance() {
+    public static GrokContextFactory getInstance() {
         if (instance == null) {
-            instance = new AIContextFactory();
+            instance = new GrokContextFactory();
         }
         return instance;
     }
@@ -28,7 +30,7 @@ public class AIContextFactory {
         return "'shit', 'piss', 'cunt', 'cock', 'cocksucker', 'motherfucker', 'tits', 'fuck', " + third;
     }
 
-    public String generateSystemInstructions(String sensorInput) {
+    @Override public String generateSystemInstructions(String sensorInput) {
         StringBuilder sb = new StringBuilder();
         getSessionValues(sb);
         appendBehavior(sb);
@@ -36,7 +38,7 @@ public class AIContextFactory {
         return sb.toString();
     }
 
-    public String generateQueryPrompt() {
+    @Override public String generateQueryPrompt() {
         StringBuilder sb = new StringBuilder();
         getSessionValues(sb);
         sb.append("Classify as: 'input' (data to analyze) or 'command' (trigger app action or keyboard event). ");
@@ -51,7 +53,7 @@ public class AIContextFactory {
         return sb.toString();
     }
 
-    public String generateSystemPrompt() {
+    @Override public String generateSystemPrompt() {
         StringBuilder sb = new StringBuilder();
         sb.append("Classify as: 'input' (data to analyze) or 'command' (trigger app action or keyboard event). ");
         sb.append("Use NATO phonetic alphabet for star system codes or ship plates (e.g., RH-F = Romeo Hotel dash Foxtrot). ");
@@ -66,7 +68,7 @@ public class AIContextFactory {
         return sb.toString();
     }
 
-    public String generateAnalysisPrompt(String userIntent, String dataJson) {
+    @Override public String generateAnalysisPrompt(String userIntent, String dataJson) {
         StringBuilder sb = new StringBuilder();
         getSessionValues(sb);
         appendBehavior(sb);
@@ -81,7 +83,7 @@ public class AIContextFactory {
         return sb.toString();
     }
 
-    private static void getSessionValues(StringBuilder sb) {
+    private void getSessionValues(StringBuilder sb) {
         PlayerSession playerSession = PlayerSession.getInstance();
         String playerName = String.valueOf(playerSession.get(PlayerSession.PLAYER_NAME));
         String playerTitle = String.valueOf(playerSession.get(PlayerSession.PLAYER_TITLE));
@@ -104,7 +106,7 @@ public class AIContextFactory {
         );
     }
 
-    public static void appendBehavior(StringBuilder sb) {
+    @Override public void appendBehavior(StringBuilder sb) {
         SystemSession systemSession = SystemSession.getInstance();
         AICadence aiCadence = systemSession.getAICadence();
         AIPersonality aiPersonality = systemSession.getAIPersonality();
@@ -119,7 +121,7 @@ public class AIContextFactory {
         sb.append("Start responses directly with the requested information, avoiding conversational fillers like 'noted,' 'well,' 'right,' 'understood,' or similar phrases. ");
     }
 
-    private static void appendContext(StringBuilder sb, String currentShip, String playerName, String playerMilitaryRank, String playerHonorific, String playerTitle, String missionStatement, String carrierName, String carrierCallSign) {
+    private void appendContext(StringBuilder sb, String currentShip, String playerName, String playerMilitaryRank, String playerHonorific, String playerTitle, String missionStatement, String carrierName, String carrierCallSign) {
         String aiName = SystemSession.getInstance().getAIVoice().getName();
         sb.append("Context: You are ").append(aiName).append(", onboard AI for a ").append(currentShip).append(" ship in Elite Dangerous. ");
         if (carrierName != null && !carrierName.isEmpty()) {
@@ -134,7 +136,7 @@ public class AIContextFactory {
         sb.append("\n\n");
     }
 
-    public String generatePlayerInstructions(String playerVoiceInput) {
+    @Override public String generatePlayerInstructions(String playerVoiceInput) {
         StringBuilder sb = new StringBuilder();
         sb.append("Instructions:\n\n");
         sb.append(generateClassifyClause());

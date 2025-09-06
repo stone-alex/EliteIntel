@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 
 public class KeyDetector {
     private static final Map<ProviderEnum, Pattern> PATTERNS = Map.ofEntries(
-            Map.entry(ProviderEnum.GROK, Pattern.compile("^[a-zA-Z0-9]{64}$")),
+            Map.entry(ProviderEnum.GROK, Pattern.compile("^[a-zA-Z0-9-]{40,100}$")),
             Map.entry(ProviderEnum.GOOGLE_STT, Pattern.compile("^AIzaSy[a-zA-Z0-9_-]{33}$")),
             Map.entry(ProviderEnum.GOOGLE_TTS, Pattern.compile("^AIzaSy[a-zA-Z0-9_-]{33}$")),
             Map.entry(ProviderEnum.ANTHROPIC, Pattern.compile("^sk-ant-[a-zA-Z0-9-]{80,90}$")),
@@ -27,6 +27,13 @@ public class KeyDetector {
             Map.entry(ProviderEnum.IBM_WATSON_TTS, Pattern.compile("^[a-zA-Z0-9+/=]{40,50}$"))
     );
 
+    /**
+     * Detects the provider based on the API key format and category.
+     *
+     * @param key      The API key to analyze.
+     * @param category The expected category ("LLM", "STT", "TTS").
+     * @return The matched ProviderEnum or UNKNOWN if no match.
+     */
     public static ProviderEnum detectProvider(String key, String category) {
         List<ProviderEnum> matches = new ArrayList<>();
         for (Map.Entry<ProviderEnum, Pattern> entry : PATTERNS.entrySet()) {

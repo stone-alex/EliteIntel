@@ -35,6 +35,10 @@ public class ApiFactory {
         return getAiImpl(ConfigManager.AI_API_KEY, "LLM", GrokChatEndPoint::getInstance);
     }
 
+    public AiContextFactory getAiContextFactory() {
+        return getAiImpl(ConfigManager.AI_API_KEY, "LLM", GrokContextFactory::getInstance);
+    }
+
     public AiCommandInterface getCommandEndpoint() {
         String apiKey = ConfigManager.getInstance().getSystemKey(ConfigManager.AI_API_KEY);
         ProviderEnum provider = KeyDetector.detectProvider(apiKey, "LLM");

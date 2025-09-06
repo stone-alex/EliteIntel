@@ -3,8 +3,8 @@ package elite.companion.comms.brain.grok;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import elite.companion.comms.ApiFactory;
-import elite.companion.comms.brain.AIContextFactory;
 import elite.companion.comms.brain.AIRouterInterface;
+import elite.companion.comms.brain.AiContextFactory;
 import elite.companion.comms.brain.AiQueryInterface;
 import elite.companion.comms.brain.robot.GameCommandHandler;
 import elite.companion.comms.handlers.command.*;
@@ -27,6 +27,7 @@ public class GrokResponseRouter implements AIRouterInterface {
     private final Map<String, CommandHandler> commandHandlers = new HashMap<>();
     private final Map<String, QueryHandler> queryHandlers = new HashMap<>();
     private final AiQueryInterface queryInterface;
+    private final AiContextFactory contextFactory;
 
     public static GrokResponseRouter getInstance() {
         return INSTANCE;
@@ -36,6 +37,7 @@ public class GrokResponseRouter implements AIRouterInterface {
         try {
             this.gameCommandHandler = new GameCommandHandler();
             queryInterface = ApiFactory.getInstance().getQueryEndpoint();
+            contextFactory = ApiFactory.getInstance().getAiContextFactory();
             registerCommandHandlers();
         } catch (Exception e) {
             log.error("Failed to initialize GrokResponseRouter", e);
@@ -205,7 +207,7 @@ public class GrokResponseRouter implements AIRouterInterface {
                 JsonArray messages = new JsonArray();
                 JsonObject systemMessage = new JsonObject();
                 systemMessage.addProperty("role", "system");
-                systemMessage.addProperty("content", AIContextFactory.getInstance().generateQueryPrompt());
+                systemMessage.addProperty("content", contextFactory.generateQueryPrompt());
                 messages.add(systemMessage);
 
                 JsonObject userMessage = new JsonObject();

@@ -65,7 +65,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     private JEditorPane helpPane; // HTML rendering
 
     public AppView() {
-        super("Elite Companion");
+        super("Elite Companion (version 9-5-2025)");
         // Apply a readable, Windows-friendly font to the entire UI BEFORE creating components
         installUIFont(getPlatformDefaultFont(18f)); // Adjust base size here (e.g., 14f, 15f, 16f)
         installDarkDefaults(); // set dark defaults before components are created

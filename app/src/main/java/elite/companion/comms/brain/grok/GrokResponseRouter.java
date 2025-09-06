@@ -10,6 +10,7 @@ import elite.companion.comms.handlers.command.*;
 import elite.companion.comms.handlers.query.QueryActions;
 import elite.companion.comms.handlers.query.QueryHandler;
 import elite.companion.gameapi.VoiceProcessEvent;
+import elite.companion.util.ApiFactory;
 import elite.companion.util.EventBusManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +35,7 @@ public class GrokResponseRouter implements AIRouterInterface {
     private GrokResponseRouter() {
         try {
             this.gameCommandHandler = new GameCommandHandler();
-            queryInterface = GrokQueryEndPoint.getInstance();
+            queryInterface = ApiFactory.getInstance().getQueryEndpoint();
             registerCommandHandlers();
         } catch (Exception e) {
             log.error("Failed to initialize GrokResponseRouter", e);

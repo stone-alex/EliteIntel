@@ -85,7 +85,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
      * - Applies custom styling and properties such as font sizes, colors, and borders to enhance
      * readability and usability.
      * - Sets initial states and bindings for UI elements related to user preferences and
-     * privacy mode controls.
+     * streaming mode controls.
      * <p>
      * Behavior:
      * - The constructor initializes the application's primary JFrame with specific
@@ -225,7 +225,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         showDetailedLog.setActionCommand(ACTION_TOGGLE_SYSTEM_LOG);
 
         togglePrivacyModeCheckBox = new JCheckBox("Toggle Privacy Mode", false);
-        togglePrivacyModeCheckBox.setActionCommand(ACTION_TOGGLE_PRIVACY_MODE);
+        togglePrivacyModeCheckBox.setActionCommand(ACTION_TOGGLE_STREAMING_MODE);
 
         buttons.add(saveSystemButton);
         buttons.add(startStopServicesButton);
@@ -854,7 +854,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     public static final String ACTION_SAVE_USER_CONFIG = "saveUserConfig";
     public static final String ACTION_SAVE_SYSTEM_CONFIG = "saveSystemConfig";
     public static final String ACTION_TOGGLE_SERVICES = "toggleServices";
-    public static final String ACTION_TOGGLE_PRIVACY_MODE = "togglePrivacyMode";
+    public static final String ACTION_TOGGLE_STREAMING_MODE = "toggleStreamingMode";
     public static final String ACTION_TOGGLE_SYSTEM_LOG = "toggleSystemLog";
     // ----- END ACTION COMMANDS -----
 
@@ -872,7 +872,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     public static final String PROPERTY_SYSTEM_CONFIG_UPDATED = "systemConfigUpdated";
     public static final String PROPERTY_LOG_UPDATED = "logUpdated";
     public static final String PROPERTY_USER_CONFIG_UPDATED = "userConfigUpdated";
-    public static final String PROPERTY_PRIVACY_MODE = "privacyModeUpdated";
+    public static final String PROPERTY_STREAMING_MODE = "streamingModeUpdated";
     public static final String PROPERTY_HELP_MARKDOWN = "helpMarkdownUpdated";
     public static final String PROPERTY_SERVICES_TOGGLE = "servicesToggled";
 
@@ -884,11 +884,11 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
             setUserConfig((Map<String, String>) evt.getNewValue());
         } else if (evt.getPropertyName().equals(PROPERTY_LOG_UPDATED)) {
             setLogText((String) evt.getNewValue());
-        } else if (evt.getPropertyName().equals(PROPERTY_PRIVACY_MODE)) {
-            Boolean privacyModeOn = (Boolean) evt.getNewValue();
-            togglePrivacyModeCheckBox.setSelected(privacyModeOn);
-            togglePrivacyModeCheckBox.setForeground(privacyModeOn ? Color.RED : Color.GREEN);
-            togglePrivacyModeCheckBox.setText(privacyModeOn ? "I am Ignoring You (say computer to talk to me)" : "I am Listening to your every word");
+        } else if (evt.getPropertyName().equals(PROPERTY_STREAMING_MODE)) {
+            Boolean streamingModeOn = (Boolean) evt.getNewValue();
+            togglePrivacyModeCheckBox.setSelected(streamingModeOn);
+            togglePrivacyModeCheckBox.setForeground(streamingModeOn ? Color.RED : Color.GREEN);
+            togglePrivacyModeCheckBox.setText(streamingModeOn ? "I am Ignoring You (say computer to talk to me)" : "I am Listening to your every word");
         } else if (evt.getPropertyName().equals(PROPERTY_HELP_MARKDOWN)) {
             setHelpMarkdown((String) evt.getNewValue());
         } else if (evt.getPropertyName().equals(PROPERTY_SERVICES_TOGGLE)) {

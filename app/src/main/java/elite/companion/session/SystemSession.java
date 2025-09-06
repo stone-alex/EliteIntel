@@ -17,14 +17,14 @@ import java.util.Map;
 /**
  * The SystemSession class manages the state and configuration of the system session,
  * allowing persistence, loading, and manipulation of various properties such as AI voice,
- * personality, cadence, privacy settings, and chat history. This class maintains a singleton
+ * personality, cadence, streaming settings, and chat history. This class maintains a singleton
  * instance to ensure a consistent session state throughout the application lifecycle.
  * <p>
  * Key responsibilities include:
  * - Managing session data through persistence and disk operations.
  * - Handling AI-related settings such as voice, personality, and cadence.
  * - Maintaining and modifying the chat history.
- * - Supporting privacy mode and resetting session data on shutdown or specific events.
+ * - Supporting streaming mode and resetting session data on shutdown or specific events.
  */
 public class SystemSession {
     private static final Logger LOG = LoggerFactory.getLogger(SystemSession.class);
@@ -39,7 +39,7 @@ public class SystemSession {
     private AIPersonality aiPersonality;
     private AICadence aiCadence;
     private JsonArray chatHistory = new JsonArray();
-    private boolean isPrivacyModeOn = false;
+    private boolean isStreamingModeOn = false;
     private final SessionPersistence persistence = new SessionPersistence(SESSION_FILE);
 
     private SystemSession() {
@@ -47,7 +47,7 @@ public class SystemSession {
         persistence.registerField("aiPersonality", this::getAIPersonality, this::setAIPersonality, AIPersonality.class);
         persistence.registerField("aiCadence", this::getAICadence, this::setAICadence, AICadence.class);
         persistence.registerField("chatHistory", this::getChatHistory, this::setChatHistory, JsonArray.class);
-        persistence.registerField("isPrivacyModeOn", this::isPrivacyModeOn, this::setPrivacyMode, Boolean.class);
+        persistence.registerField("isPrivacyModeOn", this::isStreamingModeOn, this::setStreamingMode, Boolean.class);
         EventBusManager.register(this);
         addShutdownHook();
     }
@@ -125,12 +125,12 @@ public class SystemSession {
         saveSession();
     }
 
-    public boolean isPrivacyModeOn() {
-        return isPrivacyModeOn;
+    public boolean isStreamingModeOn() {
+        return isStreamingModeOn;
     }
 
-    public void setPrivacyMode(boolean privacyModeOn) {
-        this.isPrivacyModeOn = privacyModeOn;
+    public void setStreamingMode(boolean streamingModeOn) {
+        this.isStreamingModeOn = streamingModeOn;
         saveSession();
     }
 

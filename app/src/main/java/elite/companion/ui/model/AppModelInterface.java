@@ -12,9 +12,9 @@ public interface AppModelInterface {
     void removePropertyChangeListener(PropertyChangeListener listener);
     void appendLog(String message);
     String getHelpText();
-    boolean isPrivacyModeOn();
+    boolean isStreamingModeOn();
     void showSystemLog(boolean show);
     boolean showSystemLog();
-    void setPrivacyModeOn(boolean on);
+    void setStreamingModeOn(boolean on);
     void setServicesRunning(boolean isServiceRunning);
 }

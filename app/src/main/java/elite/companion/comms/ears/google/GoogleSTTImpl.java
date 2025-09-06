@@ -258,7 +258,7 @@ public class GoogleSTTImpl implements EarsInterface {
 
                     EventBusManager.publish(new AppLogEvent("STT heard: " + transcript + ". Sanitized: " + sanitizedTranscript + "."));
 
-                    boolean isPrivacyModeOn = SystemSession.getInstance().isPrivacyModeOn();
+                    boolean isPrivacyModeOn = SystemSession.getInstance().isStreamingModeOn();
                     if (isPrivacyModeOn) {
                         String voiceName = SystemSession.getInstance().getAIVoice().getName();
                         if (sanitizedTranscript.toLowerCase().startsWith("computer") || sanitizedTranscript.toLowerCase().startsWith(voiceName.toLowerCase())) {

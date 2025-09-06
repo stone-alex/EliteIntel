@@ -75,8 +75,8 @@ public class StringSanitizer {
             log.info("Sanitized transcript: {} -> {}", voiceCommand, command);
         }
 
-        if (command.contains("privacy mode of")) {
-            command = command.replace("privacy mode of", "privacy mode off");
+        if (command.contains("streaming mode of")) {
+            command = command.replace("streaming mode of", "streaming mode off");
             log.info("Sanitized transcript: {} -> {}", voiceCommand, command);
         }
 

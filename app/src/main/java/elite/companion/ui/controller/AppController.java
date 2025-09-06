@@ -36,7 +36,7 @@ import static elite.companion.ui.view.AppView.*;
  * - Managing application configuration settings by handling system and user configurations.
  * - Starting, stopping, and monitoring auxiliary services, such as voice processing
  * and file monitoring systems.
- * - Managing privacy mode and system logging settings.
+ * - Managing streaming mode and system logging settings.
  * - Responding to user events via the event bus and UI components.
  * - Maintaining application state, such as whether services are running.
  * <p>
@@ -44,7 +44,7 @@ import static elite.companion.ui.view.AppView.*;
  * - Uses Google voices, personalities, and cadences to define system behavior.
  * - Implements an event-driven architecture using an event bus (EventBusManager).
  * - Starts and stops auxiliary processes dynamically based on user input.
- * - Includes privacy mode control for voice and text processing.
+ * - Includes streaming mode control for voice and text processing.
  * - Maintains logs for user, voice process, and system activities.
  * - Dynamic loading of configuration keys for runtime functionality.
  */
@@ -119,9 +119,9 @@ public class AppController implements AppControllerInterface, ActionListener {
                 return false;
             }
 
-            boolean privacyModeOn = systemSession.isPrivacyModeOn();
+            boolean streamingModeOn = systemSession.isStreamingModeOn();
 
-            model.setPrivacyModeOn(privacyModeOn);
+            model.setStreamingModeOn(streamingModeOn);
 
             journalParser.start();
             //mouth = GoogleTTSImpl.getInstance();
@@ -136,7 +136,7 @@ public class AppController implements AppControllerInterface, ActionListener {
 
             EventBusManager.publish(new VoiceProcessEvent("Systems online..."));
             model.appendLog(
-                    systemSession.getAIVoice().getName() + " is listening to you... AI is set to "
+                    "I am listening to you... AI is set to "
                             + StringSanitizer.capitalizeWords(systemSession.getAICadence().name()) + " "
                             + StringSanitizer.capitalizeWords(systemSession.getAIPersonality().name())
             );
@@ -194,20 +194,20 @@ public class AppController implements AppControllerInterface, ActionListener {
     private final SystemSession systemSession = SystemSession.getInstance();
 
     @Override
-    public void togglePrivacyMode(boolean privacyModeOn) {
-        model.appendLog("Toggle privacy mode");
-        systemSession.setPrivacyMode(privacyModeOn);
-        model.setPrivacyModeOn(privacyModeOn);
-        EventBusManager.publish(new VoiceProcessEvent(privacyModeOn ? privacyModeIsOnMessage() : privacyModeIsOffMessage()));
-        model.appendLog(privacyModeOn ? privacyModeIsOnMessage() : privacyModeIsOffMessage());
+    public void toggleStreamingMode(boolean streamingModeOnOff) {
+        model.appendLog("Toggle streaming mode");
+        systemSession.setStreamingMode(streamingModeOnOff);
+        model.setStreamingModeOn(streamingModeOnOff);
+        EventBusManager.publish(new VoiceProcessEvent(streamingModeOnOff ? streamingModeIsOnMessage() : streamingModeIsOffMessage()));
+        model.appendLog(streamingModeOnOff ? streamingModeIsOnMessage() : streamingModeIsOffMessage());
     }
 
-    private String privacyModeIsOffMessage() {
-        return "Privacy mode is Off. " + systemSession.getAIVoice().getName() + " is listening to you.";
+    private String streamingModeIsOffMessage() {
+        return "Streaming mode is Off. " + systemSession.getAIVoice().getName() + " is listening to you.";
     }
 
-    private String privacyModeIsOnMessage() {
-        return "Privacy mode is On. (voice to text will still be processing, but " + systemSession.getAIVoice().getName() + " will not hear you. Prefix your command with word computer or " + systemSession.getAIVoice().getName() + ") ";
+    private String streamingModeIsOnMessage() {
+        return "Streaming mode is On. (voice to text will still be processing, but I will not hear you. Prefix your command with word computer or " + systemSession.getAIVoice().getName() + ") ";
     }
 
     @Override
@@ -219,9 +219,9 @@ public class AppController implements AppControllerInterface, ActionListener {
                 boolean show = ((JCheckBox) e.getSource()).isSelected();
                 model.showSystemLog(show);
                 model.appendLog("Further System log will be " + (show ? "shown" : "filtered"));
-            } else if (ACTION_TOGGLE_PRIVACY_MODE.equals(command)) {
+            } else if (ACTION_TOGGLE_STREAMING_MODE.equals(command)) {
                 boolean isSelected = ((JCheckBox) e.getSource()).isSelected();
-                togglePrivacyMode(isSelected);
+                toggleStreamingMode(isSelected);
             }
         }
 

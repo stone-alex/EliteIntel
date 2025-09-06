@@ -18,7 +18,7 @@ public class AppModel implements AppModelInterface {
     private Map<String, String> userConfig = new HashMap<>();
     private String log = "";
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
-    private boolean privacyMode;
+    private boolean streamingMode;
     private boolean showSystemLog;
 
     @Override
@@ -109,8 +109,8 @@ public class AppModel implements AppModelInterface {
                 "</html>";
     }
 
-    @Override public boolean isPrivacyModeOn() {
-        return this.privacyMode;
+    @Override public boolean isStreamingModeOn() {
+        return this.streamingMode;
     }
 
     @Override public void showSystemLog(boolean show) {
@@ -122,9 +122,9 @@ public class AppModel implements AppModelInterface {
     }
 
 
-    @Override public void setPrivacyModeOn(boolean on) {
-        this.privacyMode = on;
-        pcs.firePropertyChange(AppView.PROPERTY_PRIVACY_MODE, !on, on);
+    @Override public void setStreamingModeOn(boolean on) {
+        this.streamingMode = on;
+        pcs.firePropertyChange(AppView.PROPERTY_STREAMING_MODE, !on, on);
     }
 
     @Override public void setServicesRunning(boolean isServiceRunning) {

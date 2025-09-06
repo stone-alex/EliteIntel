@@ -8,7 +8,6 @@ import java.util.List;
 
 public class StellarObjectDto implements ToJsonConvertible {
 
-
     private String name;
     private double surfaceGravity;
     private double surfaceTemperature;

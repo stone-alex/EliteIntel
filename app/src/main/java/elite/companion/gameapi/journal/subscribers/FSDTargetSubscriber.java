@@ -12,10 +12,7 @@ public class FSDTargetSubscriber {
     @Subscribe
     public void onFSDTargetEvent(FSDTargetEvent event) {
         PlayerSession playerSession = PlayerSession.getInstance();
-        playerSession.clearFssSignals();
-
         String fsdTarget = event.getName() + isFuelStarClause(event.getStarClass());
-
         EventBusManager.publish(new AppLogEvent("Processing FSDTargetEvent. Storing in session only: " + fsdTarget));
         playerSession.put(PlayerSession.FSD_TARGET, fsdTarget);
     }

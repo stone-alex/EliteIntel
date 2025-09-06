@@ -20,7 +20,6 @@ import java.util.Set;
  */
 public class GameCommandHandler {
     private static final Logger log = LoggerFactory.getLogger(GameCommandHandler.class);
-    private final KeyBindingsParser parser;
     private final KeyBindingExecutor executor;
     private final BindingsMonitor monitor;
     private Thread processingThread;
@@ -31,7 +30,6 @@ public class GameCommandHandler {
     ));
 
     public GameCommandHandler() throws Exception {
-        this.parser = KeyBindingsParser.getInstance();
         this.executor = KeyBindingExecutor.getInstance();
         this.monitor = BindingsMonitor.getInstance();
         log.info("GameCommandHandler initialized");

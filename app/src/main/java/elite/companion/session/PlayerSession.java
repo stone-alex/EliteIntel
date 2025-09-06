@@ -228,8 +228,18 @@ public class PlayerSession {
     private RankAndProgressDto rankAndProgressDto = new RankAndProgressDto();
     private final SessionPersistence persistence = new SessionPersistence("session/player_session.json");
 
+    private Map<String, Object> getState() {
+        return state;
+    }
+
     private PlayerSession() {
         state.put(FRIENDS_STATUS, new HashMap<String, String>());
+/*
+        persistence.registerField("state", this::getState, v ->{
+            state.clear();
+            state.putAll((Map<String, Object>) v);
+        }, new TypeToken<Map<String, Object>>(){}.getType());
+*/
         persistence.registerField("shipScans", this::getShipScans, v -> {
             shipScans.clear();
             shipScans.putAll((Map<String, String>) v);

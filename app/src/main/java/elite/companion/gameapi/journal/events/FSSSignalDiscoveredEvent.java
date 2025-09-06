@@ -2,41 +2,63 @@ package elite.companion.gameapi.journal.events;
 
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
+import elite.companion.util.TimestampFormatter;
 import elite.companion.util.json.GsonFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 
 public class FSSSignalDiscoveredEvent extends BaseEvent {
-    private static final Logger logger = LoggerFactory.getLogger(FSSSignalDiscoveredEvent.class);
-
     @SerializedName("SystemAddress")
-    private final long systemAddress;
+    private long systemAddress;
 
     @SerializedName("SignalName")
-    private final String signalName;
-
-    @SerializedName("SignalType")
-    private final String signalType;
+    private String signalName;
 
     @SerializedName("SignalName_Localised")
-    private final String signalNameLocalised;
+    private String signalNameLocalised;
 
-    @SerializedName("IsStation")
-    private final Boolean isStation;
+    @SerializedName("SignalType")
+    private String signalType;
+
+    @SerializedName("USSType")
+    private String ussType;
+
+    @SerializedName("USSType_Localised")
+    private String ussTypeLocalised;
+
+    @SerializedName("SpawningState")
+    private String spawningState;
+
+    @SerializedName("SpawningState_Localised")
+    private String spawningStateLocalised;
+
+    @SerializedName("SpawningFaction")
+    private String spawningFaction;
+
+    @SerializedName("SpawningFaction_Localised")
+    private String spawningFactionLocalised;
+
+    @SerializedName("ThreatLevel")
+    private int threatLevel;
+
+    @SerializedName("TimeRemaining")
+    private double timeRemaining;
 
     public FSSSignalDiscoveredEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 3, Duration.ofSeconds(30), "FSSSignalDiscovered");
-        logger.debug("Parsing FSSSignalDiscoveredEvent: {}", json.toString());
+        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "FSSSignalDiscovered");
         FSSSignalDiscoveredEvent event = GsonFactory.getGson().fromJson(json, FSSSignalDiscoveredEvent.class);
         this.systemAddress = event.systemAddress;
         this.signalName = event.signalName;
-        this.signalType = event.signalType;
         this.signalNameLocalised = event.signalNameLocalised;
-        this.isStation = event.isStation;
-        logger.debug("Parsed values: systemAddress={}, signalName={}, signalType={}, signalNameLocalised={}, isStation={}",
-                systemAddress, signalName, signalType, signalNameLocalised, isStation);
+        this.signalType = event.signalType;
+        this.ussType = event.ussType;
+        this.ussTypeLocalised = event.ussTypeLocalised;
+        this.spawningState = event.spawningState;
+        this.spawningStateLocalised = event.spawningStateLocalised;
+        this.spawningFaction = event.spawningFaction;
+        this.spawningFactionLocalised = event.spawningFactionLocalised;
+        this.threatLevel = event.threatLevel;
+        this.timeRemaining = event.timeRemaining;
     }
 
     @Override
@@ -62,27 +84,47 @@ public class FSSSignalDiscoveredEvent extends BaseEvent {
         return signalName;
     }
 
-    public String getSignalType() {
-        return signalType;
-    }
-
     public String getSignalNameLocalised() {
         return signalNameLocalised;
     }
 
-    public Boolean getIsStation() {
-        return isStation;
+    public String getSignalType() {
+        return signalType;
     }
 
-    public boolean isFleetCarrier() {
-        return "FleetCarrier".equals(signalType);
+    public String getUssType() {
+        return ussType;
     }
 
-    public boolean isResourceExtractionSite() {
-        return "ResourceExtraction".equals(signalType);
+    public String getUssTypeLocalised() {
+        return ussTypeLocalised;
     }
 
-    public boolean isInstallation() {
-        return "Installation".equals(signalType);
+    public String getSpawningState() {
+        return spawningState;
+    }
+
+    public String getSpawningStateLocalised() {
+        return spawningStateLocalised;
+    }
+
+    public String getSpawningFaction() {
+        return spawningFaction;
+    }
+
+    public String getSpawningFactionLocalised() {
+        return spawningFactionLocalised;
+    }
+
+    public int getThreatLevel() {
+        return threatLevel;
+    }
+
+    public double getTimeRemaining() {
+        return timeRemaining;
+    }
+
+    public String getFormattedTimestamp(boolean useLocalTime) {
+        return TimestampFormatter.formatTimestamp(getTimestamp().toString(), useLocalTime);
     }
 }

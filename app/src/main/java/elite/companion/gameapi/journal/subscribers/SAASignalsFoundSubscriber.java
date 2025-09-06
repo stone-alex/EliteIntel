@@ -31,7 +31,6 @@ public class SAASignalsFoundSubscriber {
                     sb.append(", ");
                 }
             }
-
             EventBusManager.publish(new SensorDataEvent(sb.toString()));
         }
     }

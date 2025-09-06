@@ -108,6 +108,22 @@ public class StringSanitizer {
             command = command.replace("play the navigation panel", "display navigation panel");
         }
 
+        if (command.contains("display hard")) {
+            command = command.replace("display hard", "display hud");
+        }
+
+        if (command.contains("exit to head")) {
+            command = command.replace("exit to head", "display hud");
+        }
+
+        if (command.contains("exit to hard")) {
+            command = command.replace("exit to hard", "display hud");
+        }
+
+        if (command.contains("despite galaxy map")) {
+            command = command.replace("despite galaxy map", "display galaxy map");
+        }
+
         return command.toLowerCase();
     }
 }

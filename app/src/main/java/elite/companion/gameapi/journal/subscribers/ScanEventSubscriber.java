@@ -19,7 +19,7 @@ public class ScanEventSubscriber {
         PlayerSession playerSession = PlayerSession.getInstance();
 
         // data for questions on last scan
-        playerSession.put(PlayerSession.LAST_SCAN, event.toJson());
+        playerSession.put(PlayerSession.LAST_SCAN, event.toString());
 
 
 
@@ -44,8 +44,8 @@ public class ScanEventSubscriber {
                 for (ScanEvent.Material material : event.getMaterials()) {
                     materials.add(new MaterialDto(material.getName(), material.getPercent()));
                 }
+                stellarObject.setMaterials(materials);
             }
-            stellarObject.setMaterials(materials);
             playerSession.addStellarObject(stellarObject);
 
             if (!wasDiscovered) {
@@ -55,11 +55,14 @@ public class ScanEventSubscriber {
 
         } else if ("AutoScan".equalsIgnoreCase(event.getScanType())) {
 
+            boolean isStar = event.getDistanceFromArrivalLS() == 0;
             if (!wasDiscovered) {
                 EventBusManager.publish(new SensorDataEvent("New Discovery: " + event.getBodyName()));
             }
-            if (wasDiscovered && !wasMapped) {
-                EventBusManager.publish(new SensorDataEvent(event.getBodyName() + " was previously discovered, but not mapped."));
+            if (!isStar) {
+                if (wasDiscovered && !wasMapped) {
+                    EventBusManager.publish(new SensorDataEvent(event.getBodyName() + " was previously discovered, but not mapped."));
+                }
             }
         }
     }

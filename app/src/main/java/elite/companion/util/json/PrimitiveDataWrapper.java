@@ -5,6 +5,14 @@ import com.google.gson.JsonObject;
 
 import java.util.List;
 
+/**
+ * A singleton class that acts as a utility for converting primitive data types or collections
+ * of primitive data into JSON objects. The class is designed to handle operations involving
+ * instances of {@code PrimitiveData} and directly converts their string representations or lists
+ * into JSON, leveraging Gson for serialization.
+ * <p>
+ * This class prevents external instantiation and provides a single globally accessible instance.
+ */
 public class PrimitiveDataWrapper {
 
 

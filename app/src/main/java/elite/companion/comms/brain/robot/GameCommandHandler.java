@@ -13,6 +13,11 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * The GameCommandHandler class manages game command execution, monitoring of key bindings,
+ * and handles responses received from external input systems such as JSON-based AI responses.
+ * It handles the lifecycle of processing threads and coordinates command execution through key bindings.
+ */
 public class GameCommandHandler {
     private static final Logger log = LoggerFactory.getLogger(GameCommandHandler.class);
     private final KeyBindingsParser parser;
@@ -104,7 +109,7 @@ public class GameCommandHandler {
                     handleChat("I'm not sure what you meant. Please try again.");
             }
         } catch (Exception e) {
-            log.error("Failed to process Grok response: {}", e.getMessage(), e);
+            log.error("Failed to process AI response: {}", e.getMessage(), e);
             handleChat("Error processing command.");
         }
     }

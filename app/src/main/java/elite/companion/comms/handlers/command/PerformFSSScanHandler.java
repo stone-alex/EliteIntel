@@ -8,6 +8,20 @@ import org.slf4j.LoggerFactory;
 import static elite.companion.comms.handlers.command.CommandActionsGame.GameCommand.EXPLORATION_FSSDISCOVERY_SCAN;
 import static elite.companion.comms.handlers.command.CommandActionsGame.GameCommand.SET_SPEED_ZERO;
 
+/**
+ * The PerformFSSScanHandler class is responsible for executing a sequence of key bindings
+ * to perform a Full Spectrum System (FSS) scan within the game. It extends the
+ * CustomCommandOperator class to utilize its keyboard operation capabilities and implements
+ * the CommandHandler interface to define the command handling contract.
+ * <p>
+ * This handler ensures the proper sequence and timing of actions required for the FSS scan,
+ * including setting the throttle to zero and triggering the FSS discovery scan key bindings.
+ * It makes use of the BindingsMonitor and KeyBindingExecutor provided by the base class for
+ * managing and executing the required key bindings.
+ * <p>
+ * The class also manages error handling during the scan process and logs relevant information
+ * to assist in debugging or issue resolution.
+ */
 public class PerformFSSScanHandler extends CustomCommandOperator implements CommandHandler {
 
     private static final Logger log = LoggerFactory.getLogger(PerformFSSScanHandler.class);

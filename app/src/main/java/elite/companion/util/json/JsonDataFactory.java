@@ -8,10 +8,18 @@ import com.google.gson.JsonSyntaxException;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * A singleton factory class that provides utility methods for working with JSON data.
+ * This class simplifies serialization and deserialization of objects and collections
+ * into JSON strings or structures.
+ * <p>
+ * The class is designed to be thread-safe and ensures that only one instance is created.
+ */
 public class JsonDataFactory {
     private static final JsonDataFactory INSTANCE = new JsonDataFactory();
 
     private JsonDataFactory() {
+        // private constructor to prevent instantiation
     }
 
     public static JsonDataFactory getInstance() {

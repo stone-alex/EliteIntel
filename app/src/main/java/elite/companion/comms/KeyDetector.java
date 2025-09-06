@@ -10,6 +10,32 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 public class KeyDetector {
+    /**
+     * A mapping of ProviderEnum constants to their corresponding regular expression patterns used
+     * for validating API key formats for specific providers. Each entry maps a provider to its key
+     * format validation pattern.
+     * <p>
+     * The patterns are designed to match the unique structure of API keys associated with various
+     * providers and their respective functionalities, such as LLM (Large Language Model), STT
+     * (Speech-to-Text), or TTS (Text-to-Speech).
+     * <p>
+     * Example provider mappings and their corresponding patterns:
+     * - GROK: Matches keys consisting of 40 to 100 alphanumeric characters or hyphens.
+     * - GOOGLE_STT and GOOGLE_TTS: Matches keys starting with "AIzaSy" followed by 33 alphanumeric
+     * characters, underscores, or hyphens.
+     * - ANTHROPIC: Matches keys starting with "sk-ant-" followed by 80 to 90 alphanumeric characters
+     * or hyphens.
+     * - AWS_LLM, AWS_STT, AWS_TTS: Matches keys starting with "AKIA" or "ASIA," followed by 16
+     * alphanumeric characters.
+     * - AZURE_LLM, AZURE_STT, AZURE_TTS: Matches keys consisting of exactly 32 hexadecimal characters.
+     * - ELEVEN_LABS: Matches keys consisting of exactly 32 characters in hexadecimal or mixed case.
+     * - DEEP_GRAM: Matches keys in a UUID format (e.g., 8-4-4-4-12 hexadecimal segments).
+     * - IBM_WATSON_STT and IBM_WATSON_TTS: Matches keys containing 40 to 50 characters, which may
+     * include alphanumeric characters, plus signs (+), forward slashes (/), or equals signs (=).
+     * <p>
+     * This map is primarily used to validate and detect the provider of a given API key based on
+     * its format.
+     */
     private static final Map<ProviderEnum, Pattern> PATTERNS = Map.ofEntries(
             Map.entry(ProviderEnum.GROK, Pattern.compile("^[a-zA-Z0-9-]{40,100}$")),
             Map.entry(ProviderEnum.GOOGLE_STT, Pattern.compile("^AIzaSy[a-zA-Z0-9_-]{33}$")),

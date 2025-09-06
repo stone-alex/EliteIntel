@@ -10,6 +10,30 @@ import java.nio.file.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * The SubscriberScanner class provides functionality to locate and register subscriber classes
+ * dynamically based on specific naming conventions and annotations.
+ * It scans the specified package for classes that end with a defined suffix and checks if
+ * they contain methods annotated with `@Subscribe`. If such methods are present, the class
+ * is registered using an event bus (e.g., `EventBusManager`).
+ * <p>
+ * This class is particularly useful for managing event-driven architectures where subscriber
+ * components need to be dynamically discovered and registered without manual intervention.
+ * <p>
+ * Key operations:
+ * - Scans a specified package for subscriber classes.
+ * - Verifies that subscriber classes have methods annotated with `@Subscribe`.
+ * - Automatically registers valid subscriber classes to the event bus.
+ * <p>
+ * The registration process involves:
+ * - Searching for `.class` files in the given package (supports both file-based and JAR-based structures).
+ * - Filtering class names based on a predefined suffix (`SUBSCRIBER_SUFFIX`).
+ * - Ensuring the presence of annotated methods (`@Subscribe`) before registration.
+ * <p>
+ * Error handling:
+ * - Logs errors encountered during the scanning, instantiation, or registration process.
+ * - Provides diagnostic messages for missing resources or invalid class configurations.
+ */
 public class SubscriberScanner {
 
     private static final String SUBSCRIBER_PACKAGE = "elite.companion.gameapi.journal.events";

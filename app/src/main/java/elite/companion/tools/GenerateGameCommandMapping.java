@@ -13,6 +13,27 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * The GenerateGameCommandMapping class is responsible for generating a Java class that maps
+ * game command actions to user-friendly command names. It includes parsing key bindings
+ * from a configuration file, filtering out blacklisted actions, and generating a mapping
+ * as a Java enum structure that can be used in other parts of the application.
+ * <p>
+ * The generated output is written to a predefined file path and includes methods for:
+ * - Retrieving game bindings based on user commands.
+ * - Listing all user commands available in the mapping.
+ * <p>
+ * The class uses a specified blacklist of actions and ignores actions starting with the
+ * "Humanoid" prefix while processing the key bindings. It also ensures that mappings are
+ * formatted in a user-friendly, readable manner by converting CamelCase into snake_case and
+ * applying specific naming transformations.
+ * <p>
+ * Key functionality includes:
+ * - Reading the latest key bindings configuration file.
+ * - Parsing actions and their associated bindings.
+ * - Generating a class with enum definitions for game commands.
+ * - Writing the generated class to a file for use in the application.
+ */
 public class GenerateGameCommandMapping {
     private static final Logger log = LoggerFactory.getLogger(GenerateGameCommandMapping.class);
     private static final Set<String> BLACKLISTED_ACTIONS = new HashSet<>(Arrays.asList(

@@ -25,11 +25,12 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * NOTE $$$ This method is not free. Calls will incur charges on both Google and Grok platforms. $$$
- * <p>
- * This class connects to the Google Speech API endpoint and streams audio to it.
- * The STT (Speech-to-Text) API will return a final result which will be processed by Grok API.
+ * Implementation of the `EarsInterface` that integrates with Google Speech-to-Text (STT) API
+ * for real-time speech recognition and transcription.
  *
+ * Handles streaming of audio data to the Google STT API and processes the text results.
+ * Configures the audio input format dynamically, manages streaming sessions, and interacts
+ * with downstream AI command services.
  */
 public class GoogleSTTImpl implements EarsInterface {
     private static final Logger log = LoggerFactory.getLogger(GoogleSTTImpl.class);

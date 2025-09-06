@@ -8,6 +8,11 @@ import java.beans.PropertyChangeSupport;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The AppModel class implements the AppModelInterface and serves as the data model for the application.
+ * It manages system and user-level configurations, logs, and application state.
+ * This class provides support for property change listeners to notify observers of state changes.
+ */
 public class AppModel implements AppModelInterface {
     private Map<String, String> systemConfig = new HashMap<>();
     private Map<String, String> userConfig = new HashMap<>();

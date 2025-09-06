@@ -5,6 +5,12 @@ import elite.companion.session.PlayerSession;
 
 import java.util.HashMap;
 
+/**
+ * The Ranks class provides various static methods to manage and retrieve mappings
+ * of different ranks, honorific titles, and their respective hierarchical levels.
+ * These mappings include data for Imperial, Federation, Combat, Exobiology, Exploration,
+ * and Trade ranks.
+ */
 public class Ranks {
 
     /**

@@ -28,9 +28,13 @@ public class GrokQueryEndPoint implements AiQueryInterface {
     }
 
     /**
-     * Sends a full message history to Grok for query follow-up.
-     * The first message should be the system prompt (role: system).
-     * Returns the parsed JSON response content or null on error.
+     * Sends a list of messages to the AI service, processes the response, and returns a parsed JSON object.
+     * This method handles request preparation, sanitization of messages, response parsing, and error handling.
+     *
+     * @param messages a JsonArray containing the messages to be sent to the AI service. Each message is expected
+     *                 to have a "role" and "content" property. The array is sanitized before being included in the request payload.
+     * @return a JsonObject representing the processed response content from the AI service. If any error occurs
+     *         during the request, response parsing, or if the response does not contain the expected data, returns null.
      */
     @Override public JsonObject sendToAi(JsonArray messages) {
         String bodyString = null;

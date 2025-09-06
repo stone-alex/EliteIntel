@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 public class VoiceToAllegiances {
     private static final VoiceToAllegiances instance = new VoiceToAllegiances();
-    private final Map<AICadence, List<Voices>> cadenceToVoices;
+    private final Map<AICadence, List<GoogleVoices>> cadenceToVoices;
 
     public static VoiceToAllegiances getInstance() {
         return instance;
@@ -16,35 +16,35 @@ public class VoiceToAllegiances {
     private VoiceToAllegiances() {
         cadenceToVoices = new EnumMap<>(AICadence.class);
         cadenceToVoices.put(AICadence.IMPERIAL, Arrays.asList(
-                Voices.CHARLES, // en-GB-Chirp3-HD-Algenib
-                Voices.ANNA,    // en-GB-Chirp-HD-F
-                Voices.MARY,    // en-GB-Neural2-A
-                Voices.BETTY,   // en-GB-Chirp3-HD-Aoede
-                Voices.OLIVIA   // en-GB-Chirp3-HD-Aoede
+                GoogleVoices.CHARLES, // en-GB-Chirp3-HD-Algenib
+                GoogleVoices.ANNA,    // en-GB-Chirp-HD-F
+                GoogleVoices.MARY,    // en-GB-Neural2-A
+                GoogleVoices.BETTY,   // en-GB-Chirp3-HD-Aoede
+                GoogleVoices.OLIVIA   // en-GB-Chirp3-HD-Aoede
         ));
         cadenceToVoices.put(AICadence.FEDERATION, Arrays.asList(
-                Voices.MICHAEL, // en-US-Chirp3-HD-Charon
-                Voices.STEVE,   // en-US-Chirp3-HD-Algenib
-                Voices.JOSEPH,  // en-US-Chirp3-HD-Sadachbia
-                Voices.JENNIFER,// en-US-Chirp3-HD-Sulafat
-                Voices.RACHEL,  // en-US-Chirp3-HD-Zephyr
-                Voices.KAREN,   // en-US-Chirp3-HD-Despina
-                Voices.EMMA     // en-US-Chirp3-HD-Despina
+                GoogleVoices.MICHAEL, // en-US-Chirp3-HD-Charon
+                GoogleVoices.STEVE,   // en-US-Chirp3-HD-Algenib
+                GoogleVoices.JOSEPH,  // en-US-Chirp3-HD-Sadachbia
+                GoogleVoices.JENNIFER,// en-US-Chirp3-HD-Sulafat
+                GoogleVoices.RACHEL,  // en-US-Chirp3-HD-Zephyr
+                GoogleVoices.KAREN,   // en-US-Chirp3-HD-Despina
+                GoogleVoices.EMMA     // en-US-Chirp3-HD-Despina
         ));
         cadenceToVoices.put(AICadence.ALLIANCE, Arrays.asList(
-                Voices.CHARLES, // en-GB-Chirp3-HD-Algenib (British)
-                Voices.STEVE,   // en-US-Chirp3-HD-Algenib (US)
-                Voices.RACHEL,  // en-US-Chirp3-HD-Zephyr (US, diverse)
-                Voices.MARY     // en-GB-Neural2-A (British)
+                GoogleVoices.CHARLES, // en-GB-Chirp3-HD-Algenib (British)
+                GoogleVoices.STEVE,   // en-US-Chirp3-HD-Algenib (US)
+                GoogleVoices.RACHEL,  // en-US-Chirp3-HD-Zephyr (US, diverse)
+                GoogleVoices.MARY     // en-GB-Neural2-A (British)
         ));
     }
 
-    public Voices getVoiceForCadence(AICadence cadence, Voices currentVoice) {
-        List<Voices> voices = cadenceToVoices.getOrDefault(cadence, List.of());
+    public GoogleVoices getVoiceForCadence(AICadence cadence, GoogleVoices currentVoice) {
+        List<GoogleVoices> voices = cadenceToVoices.getOrDefault(cadence, List.of());
         boolean isMale = currentVoice.isMale();
         Random random = new Random();
 
-        List<Voices> matchingVoices = voices.stream()
+        List<GoogleVoices> matchingVoices = voices.stream()
                 .filter(voice -> !voice.equals(currentVoice))
                 .filter(voice -> voice.isMale() == isMale)
                 .collect(Collectors.toList());

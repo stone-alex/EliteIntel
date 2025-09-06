@@ -24,6 +24,35 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
+/**
+ * The GrokCommandEndPoint class implements the AiCommandInterface to handle
+ * AI conversational interactions and sensor data events. It processes user-inputted
+ * commands, sensor data, and communicates with AI services to generate responses.
+ * This class interacts with various components including a router, chat interface,
+ * and context factory.
+ * <p>
+ * It provides mechanisms to:
+ * - Start and stop the endpoint.
+ * - Process user voice commands with error-handling, confidence-checking, and sanitization.
+ * - Process sensor data events with system context and generate AI responses.
+ * - Manage chat history for continued conversations.
+ * - Communicate with external AI APIs via JSON serialization and HTTP calls.
+ * <p>
+ * The class utilizes the thread-safe ThreadLocal storage for maintaining the context
+ * of current conversations and ensures robust error handling and logging during its operation.
+ * <p>
+ * Events handled:
+ * - UserInputEvent: Captures user voice commands and processes them.
+ * - SensorDataEvent: Handles system-generated sensor data for AI interaction.
+ * <p>
+ * Dependencies:
+ * - Router for handling AI response routing.
+ * - AI Chat Interface for communicating with the AI engine.
+ * - AI Context Factory for generating system prompts.
+ * - Gson for JSON processing.
+ * - EventBus for subscribing and publishing events.
+ * - Logging framework for detailed debugging and error reporting.
+ */
 public class GrokCommandEndPoint implements AiCommandInterface {
     private static final Logger log = LoggerFactory.getLogger(GrokCommandEndPoint.class);
 

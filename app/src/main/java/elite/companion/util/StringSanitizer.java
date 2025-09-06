@@ -3,6 +3,9 @@ package elite.companion.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * This class provides utility methods for transforming and sanitizing strings.
+ */
 public class StringSanitizer {
     private static final Logger log = LoggerFactory.getLogger(StringSanitizer.class);
 
@@ -48,10 +51,6 @@ public class StringSanitizer {
             }
         }
 
-        if (command.contains("Australia".toLowerCase())) {
-            command = command.replace("australia", Globals.AI_NAME);
-            log.info("Sanitized transcript: {} -> {}", voiceCommand, command);
-        }
 
         if (command.contains("southwest")) {
             command = command.replace("southwest", "set voice to");

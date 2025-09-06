@@ -20,6 +20,18 @@ import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * GrokResponseRouter acts as a central router for handling AI responses, commands, and queries.
+ * It processes input from AI services and delegates the execution to specific handlers based on
+ * the type of response received.
+ * <p>
+ * This class ensures modularity in handling a variety of commands and queries by dynamically
+ * registering and invoking command and query handlers. It also integrates with external systems
+ * and supports features like follow-up actions and context management as part of its operation.
+ * <p>
+ * GrokResponseRouter implements the AIRouterInterface, thereby defining the lifecycle methods
+ * for managing the router's operation and response processing.
+ */
 public class GrokResponseRouter implements AIRouterInterface {
     private static final Logger log = LoggerFactory.getLogger(GrokResponseRouter.class);
     private static final GrokResponseRouter INSTANCE = new GrokResponseRouter();
@@ -175,6 +187,16 @@ public class GrokResponseRouter implements AIRouterInterface {
         }
     }
 
+    /**
+     * Handles the processing of a given query based on the specified action, parameters,
+     * and user input. Routes the query to the appropriate query handler and manages
+     * the response, including follow-up actions if required.
+     *
+     * @param action The action identifier for the query, used to determine which query handler to invoke.
+     *               If null or empty, it defaults to "general_conversation".
+     * @param params The parameters associated with the query to provide additional context or data for processing.
+     * @param userInput The original user input prompting the query, used as a fallback in certain processing paths.
+     */
     private void handleQuery(String action, JsonObject params, String userInput) {
         QueryHandler handler = queryHandlers.get(action);
         if (handler == null || action == null || action.isEmpty()) {

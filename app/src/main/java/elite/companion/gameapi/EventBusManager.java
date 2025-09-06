@@ -2,6 +2,11 @@ package elite.companion.gameapi;
 
 import com.google.common.eventbus.EventBus;
 
+/**
+ * The EventBusManager class provides a centralized communication mechanism for publishing events
+ * and managing subscribers using an underlying EventBus.
+ * It acts as a utility for dispatching events across different components of an application.
+ */
 public class EventBusManager {
     private static final EventBus bus = new EventBus();
 

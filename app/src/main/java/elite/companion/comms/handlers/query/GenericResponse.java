@@ -8,10 +8,16 @@ import elite.companion.session.PlayerSession;
 
 import java.util.List;
 
+/**
+ * The GenericResponse class provides methods for generating standardized JSON responses
+ * with optional data elements or lists. This class implements a singleton pattern
+ * to ensure a single shared instance across usage.
+ */
 public class GenericResponse {
     private static GenericResponse instance;
 
     private GenericResponse() {
+        // Prevent instantiation.
     }
 
     public static GenericResponse getInstance() {

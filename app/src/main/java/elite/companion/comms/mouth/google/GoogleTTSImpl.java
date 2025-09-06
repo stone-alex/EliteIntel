@@ -3,8 +3,8 @@ package elite.companion.comms.mouth.google;
 import com.google.cloud.texttospeech.v1.*;
 import com.google.common.eventbus.Subscribe;
 import elite.companion.comms.ConfigManager;
+import elite.companion.comms.mouth.GoogleVoices;
 import elite.companion.comms.mouth.MouthInterface;
-import elite.companion.comms.mouth.Voices;
 import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.session.SystemSession;
@@ -18,6 +18,19 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Implementation of the MouthInterface that utilizes Google Cloud Text-to-Speech API
+ * to generate human-like speech audio from text. This class contains methods for initializing
+ * and managing the Text-to-Speech client, processing voice requests, and handling events
+ * related to text-to-speech actions.
+ *
+ * <p>The class maintains a queue system for handling multiple voice requests asynchronously.
+ * It also supports selecting different voices for speech synthesis and provides functionality
+ * for managing the lifecycle of the text-to-speech processing thread.
+ * <p>
+ * This class implements the Singleton design pattern, allowing one instance to manage
+ * all text-to-speech operations within the system.
+ */
 public class GoogleTTSImpl implements MouthInterface {
     private static final Logger log = LoggerFactory.getLogger(GoogleTTSImpl.class);
 
@@ -68,35 +81,35 @@ public class GoogleTTSImpl implements MouthInterface {
         VoiceSelectionParams Karen = VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Despina").build();
         VoiceSelectionParams Emma = VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Despina").build();
 
-        voiceMap.put(Voices.ANNA.getName(), Anna);
-        voiceMap.put(Voices.CHARLES.getName(), Charles);
-        voiceMap.put(Voices.JAMES.getName(), James);
-        voiceMap.put(Voices.JENNIFER.getName(), Jennifer);
-        voiceMap.put(Voices.JOSEPH.getName(), Joseph);
-        voiceMap.put(Voices.KAREN.getName(), Karen);
-        voiceMap.put(Voices.JAKE.getName(), Jake);
-        voiceMap.put(Voices.MARY.getName(), Mary);
-        voiceMap.put(Voices.MICHAEL.getName(), Michael);
-        voiceMap.put(Voices.RACHEL.getName(), Rachel);
-        voiceMap.put(Voices.STEVE.getName(), Steve);
-        voiceMap.put(Voices.BETTY.getName(), Betty);
-        voiceMap.put(Voices.EMMA.getName(), Emma);
-        voiceMap.put(Voices.OLIVIA.getName(), Olivia);
+        voiceMap.put(GoogleVoices.ANNA.getName(), Anna);
+        voiceMap.put(GoogleVoices.CHARLES.getName(), Charles);
+        voiceMap.put(GoogleVoices.JAMES.getName(), James);
+        voiceMap.put(GoogleVoices.JENNIFER.getName(), Jennifer);
+        voiceMap.put(GoogleVoices.JOSEPH.getName(), Joseph);
+        voiceMap.put(GoogleVoices.KAREN.getName(), Karen);
+        voiceMap.put(GoogleVoices.JAKE.getName(), Jake);
+        voiceMap.put(GoogleVoices.MARY.getName(), Mary);
+        voiceMap.put(GoogleVoices.MICHAEL.getName(), Michael);
+        voiceMap.put(GoogleVoices.RACHEL.getName(), Rachel);
+        voiceMap.put(GoogleVoices.STEVE.getName(), Steve);
+        voiceMap.put(GoogleVoices.BETTY.getName(), Betty);
+        voiceMap.put(GoogleVoices.EMMA.getName(), Emma);
+        voiceMap.put(GoogleVoices.OLIVIA.getName(), Olivia);
 
-        randomVoiceMap.put(Voices.ANNA.getName(), Anna);
-        randomVoiceMap.put(Voices.CHARLES.getName(), Charles);
-        randomVoiceMap.put(Voices.JAMES.getName(), James);
-        randomVoiceMap.put(Voices.JENNIFER.getName(), Jennifer);
-        randomVoiceMap.put(Voices.JOSEPH.getName(), Joseph);
-        randomVoiceMap.put(Voices.KAREN.getName(), Karen);
-        randomVoiceMap.put(Voices.JAKE.getName(), Jake);
-        randomVoiceMap.put(Voices.MARY.getName(), Mary);
-        randomVoiceMap.put(Voices.MICHAEL.getName(), Michael);
-        randomVoiceMap.put(Voices.RACHEL.getName(), Rachel);
-        randomVoiceMap.put(Voices.STEVE.getName(), Steve);
-        randomVoiceMap.put(Voices.BETTY.getName(), Betty);
-        randomVoiceMap.put(Voices.EMMA.getName(), Emma);
-        randomVoiceMap.put(Voices.OLIVIA.getName(), Olivia);
+        randomVoiceMap.put(GoogleVoices.ANNA.getName(), Anna);
+        randomVoiceMap.put(GoogleVoices.CHARLES.getName(), Charles);
+        randomVoiceMap.put(GoogleVoices.JAMES.getName(), James);
+        randomVoiceMap.put(GoogleVoices.JENNIFER.getName(), Jennifer);
+        randomVoiceMap.put(GoogleVoices.JOSEPH.getName(), Joseph);
+        randomVoiceMap.put(GoogleVoices.KAREN.getName(), Karen);
+        randomVoiceMap.put(GoogleVoices.JAKE.getName(), Jake);
+        randomVoiceMap.put(GoogleVoices.MARY.getName(), Mary);
+        randomVoiceMap.put(GoogleVoices.MICHAEL.getName(), Michael);
+        randomVoiceMap.put(GoogleVoices.RACHEL.getName(), Rachel);
+        randomVoiceMap.put(GoogleVoices.STEVE.getName(), Steve);
+        randomVoiceMap.put(GoogleVoices.BETTY.getName(), Betty);
+        randomVoiceMap.put(GoogleVoices.EMMA.getName(), Emma);
+        randomVoiceMap.put(GoogleVoices.OLIVIA.getName(), Olivia);
     }
 
     @Override public synchronized void start() {
@@ -150,11 +163,11 @@ public class GoogleTTSImpl implements MouthInterface {
         processingThread = null;
     }
 
-    private Voices getRandomVoice() {
+    private GoogleVoices getRandomVoice() {
         if (voiceMap.isEmpty()) {
             return SystemSession.getInstance().getAIVoice();
         }
-        Voices[] voices = randomVoiceMap.keySet().toArray(new Voices[0]);
+        GoogleVoices[] voices = randomVoiceMap.keySet().toArray(new GoogleVoices[0]);
         return voices[new Random().nextInt(voices.length)];
     }
 
@@ -173,7 +186,7 @@ public class GoogleTTSImpl implements MouthInterface {
         new Thread(() -> speak(text, SystemSession.getInstance().getAIVoice())).start();
     }
 
-    private void speak(String text, Voices aiVoice) {
+    private void speak(String text, GoogleVoices aiVoice) {
         if (text == null || text.isEmpty()) return;
         try {
             voiceQueue.put(new VoiceRequest(text, aiVoice.getName(), aiVoice.getSpeechRate()));

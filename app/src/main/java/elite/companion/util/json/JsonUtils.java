@@ -4,6 +4,16 @@ import com.google.gson.JsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * A utility class for handling JSON operations with safety and default values.
+ * This class provides static methods to extract values from {@link JsonObject}
+ * in a null-safe manner, returning default empty values when necessary.
+ * <p>
+ * The purpose of this class is to simplify JSON parsing and handling common edge cases,
+ * such as missing keys, `null` values, and unexpected types.
+ * <p>
+ * This class is designed to be used statically and cannot be instantiated.
+ */
 public final class JsonUtils {
     private static final Logger log = LoggerFactory.getLogger(JsonUtils.class);
 

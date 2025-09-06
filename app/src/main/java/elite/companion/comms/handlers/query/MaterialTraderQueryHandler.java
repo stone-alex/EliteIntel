@@ -6,7 +6,23 @@ import elite.companion.search.api.EdsmApiClient;
 import elite.companion.search.api.SpanshApiClient;
 import elite.companion.session.PlayerSession;
 
+/**
+ * MaterialTraderQueryHandler is responsible for processing queries to locate the nearest material
+ * trader based on the user's current location in the game universe. It integrates with external
+ * APIs such as Spansh and EDSM to perform the search and provide relevant responses.
+ */
 public class MaterialTraderQueryHandler implements QueryHandler {
+    /**
+     * Handles the query for finding the nearest material trader based on the current system.
+     * Uses Spansh API as the primary source and falls back to EDSM API if no results are found.
+     *
+     * @param action            The requested action to be performed.
+     * @param params            Additional parameters provided for the query handling process.
+     * @param originalUserInput The original input from the user triggering this handler.
+     * @return A JsonObject containing the result of the query, including information about the nearest material trader
+     * and any additional metadata for further actions.
+     * @throws Exception If an error occurs during the process of querying or constructing a response.
+     */
     @Override
     public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         JsonObject response = new JsonObject();

@@ -1,5 +1,10 @@
 package elite.companion.util;
 
+/**
+ * Utility class for converting numbers into text-to-speech (TTS)-friendly
+ * representations for amounts. Primarily designed to assist in generating
+ * easily understandable phrases for numerical bounties or values.
+ */
 public class TTSFriendlyNumberConverter {
 
     public static String formatBountyForSpeech(int bounty) {

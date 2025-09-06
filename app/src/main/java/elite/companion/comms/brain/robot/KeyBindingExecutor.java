@@ -7,6 +7,13 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * This class is responsible for executing key bindings as defined in the Elite Dangerous key binding parser.
+ * It maps the key binding definitions to corresponding key codes recognized by the KeyProcessor class
+ * and performs the required actions, including pressing, holding, and releasing keys.
+ * <p>
+ * The mapping between Elite Dangerous key names and KeyProcessor key codes is initialized statically during class loading.
+ */
 public class KeyBindingExecutor {
     private static final Logger log = LoggerFactory.getLogger(KeyBindingExecutor.class);
     private final KeyProcessor keyProcessor;

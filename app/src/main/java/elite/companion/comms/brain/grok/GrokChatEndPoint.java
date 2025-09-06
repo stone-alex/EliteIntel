@@ -16,9 +16,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
 /**
- * Dedicated endpoint for stateful chat interactions with Grok, modeled after GrokQueryEndPoint.
- * Sends a full message history (including system prompt as the first message) and returns the parsed JSON response content.
- * This enables multi-turn conversations by maintaining context across requests, with history managed externally (e.g., via SystemSession).
+ * Singleton class representing an AI chat communication endpoint with Grok.
+ * Implements the AIChatInterface to provide functionality for sending message history
+ * and receiving AI-generated responses.
  */
 public class GrokChatEndPoint implements AIChatInterface {
     private static final Logger log = LoggerFactory.getLogger(GrokChatEndPoint.class);

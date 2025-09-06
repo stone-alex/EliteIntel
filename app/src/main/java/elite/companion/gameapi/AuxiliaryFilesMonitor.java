@@ -17,13 +17,11 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Monitors auxiliary JSON files in the Elite Dangerous saved games directory.
- * These files contain event-like JSON data (e.g., Market.json with "event":"Market").
- * The monitor reads them initially, deserializes them into specific Event DTOs,
- * and publishes the DTOs to the event bus. It then watches for modifications and
- * re-publishes updated DTOs.
- * <p>
- * This runs in a separate thread to avoid blocking the main application.
+ * AuxiliaryFilesMonitor is responsible for monitoring specific auxiliary files in the Elite Dangerous game directory.
+ * It observes changes in the monitored files, reads their contents, parses them into corresponding event objects,
+ * and publishes those events for further processing.
+ *
+ * This class implements the Runnable interface and can run as a separate thread to continuously monitor file changes.
  */
 public class AuxiliaryFilesMonitor implements Runnable {
     private static final Logger log = LoggerFactory.getLogger(AuxiliaryFilesMonitor.class);

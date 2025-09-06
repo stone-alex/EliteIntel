@@ -5,7 +5,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import elite.companion.comms.brain.AICadence;
 import elite.companion.comms.brain.AIPersonality;
-import elite.companion.comms.mouth.Voices;
+import elite.companion.comms.mouth.GoogleVoices;
 import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.journal.events.LoadGameEvent;
 import org.slf4j.Logger;
@@ -14,6 +14,18 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The SystemSession class manages the state and configuration of the system session,
+ * allowing persistence, loading, and manipulation of various properties such as AI voice,
+ * personality, cadence, privacy settings, and chat history. This class maintains a singleton
+ * instance to ensure a consistent session state throughout the application lifecycle.
+ * <p>
+ * Key responsibilities include:
+ * - Managing session data through persistence and disk operations.
+ * - Handling AI-related settings such as voice, personality, and cadence.
+ * - Maintaining and modifying the chat history.
+ * - Supporting privacy mode and resetting session data on shutdown or specific events.
+ */
 public class SystemSession {
     private static final Logger LOG = LoggerFactory.getLogger(SystemSession.class);
 
@@ -23,7 +35,7 @@ public class SystemSession {
     private static final SystemSession INSTANCE = new SystemSession();
     private final Map<String, Object> state = new HashMap<>();
 
-    private Voices aiVoice;
+    private GoogleVoices aiVoice;
     private AIPersonality aiPersonality;
     private AICadence aiCadence;
     private JsonArray chatHistory = new JsonArray();
@@ -31,7 +43,7 @@ public class SystemSession {
     private final SessionPersistence persistence = new SessionPersistence(SESSION_FILE);
 
     private SystemSession() {
-        persistence.registerField("aiVoice", this::getAIVoice, this::setAIVoice, Voices.class);
+        persistence.registerField("aiVoice", this::getAIVoice, this::setAIVoice, GoogleVoices.class);
         persistence.registerField("aiPersonality", this::getAIPersonality, this::setAIPersonality, AIPersonality.class);
         persistence.registerField("aiCadence", this::getAICadence, this::setAICadence, AICadence.class);
         persistence.registerField("chatHistory", this::getChatHistory, this::setChatHistory, JsonArray.class);
@@ -71,13 +83,13 @@ public class SystemSession {
     }
 
 
-    public void setAIVoice(Voices voice) {
+    public void setAIVoice(GoogleVoices voice) {
         this.aiVoice = voice;
         saveSession();
     }
 
-    public Voices getAIVoice() {
-        return this.aiVoice == null ? Voices.JENNIFER : this.aiVoice;
+    public GoogleVoices getAIVoice() {
+        return this.aiVoice == null ? GoogleVoices.JENNIFER : this.aiVoice;
     }
 
     public void setAIPersonality(AIPersonality personality) {

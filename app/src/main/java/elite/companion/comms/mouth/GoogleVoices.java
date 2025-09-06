@@ -1,6 +1,6 @@
 package elite.companion.comms.mouth;
 
-public enum Voices {
+public enum GoogleVoices {
     ANNA("Anna", 1.1, false),           // en-GB-Chirp-HD-F
     BETTY("Betty", 1.2, false),         // en-GB-Chirp3-HD-Aoede
     CHARLES("Charles", 1.2, true),      // en-GB-Chirp3-HD-Algenib
@@ -23,7 +23,7 @@ public enum Voices {
     private boolean isMale = true;
 
 
-    Voices(String name, double speechRate, boolean gender) {
+    GoogleVoices(String name, double speechRate, boolean gender) {
         this.name = name;
         this.speechRate = speechRate;
         this.isMale = gender;

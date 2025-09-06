@@ -3,8 +3,8 @@ package elite.companion.gameapi.journal.subscribers;
 import com.google.common.eventbus.Subscribe;
 import elite.companion.comms.brain.AICadence;
 import elite.companion.comms.brain.AIPersonality;
+import elite.companion.comms.mouth.GoogleVoices;
 import elite.companion.comms.mouth.VoiceToAllegiances;
-import elite.companion.comms.mouth.Voices;
 import elite.companion.data.PowerDetails;
 import elite.companion.data.PowerPlayData;
 import elite.companion.gameapi.journal.events.PowerplayEvent;
@@ -23,7 +23,7 @@ public class PowerPlaySubscriber {
 
         SystemSession systemSession = SystemSession.getInstance();
         if (powerDetails != null) {
-            String allegiance = powerDetails.getAllegiance();
+            String allegiance = powerDetails.allegiance();
             rp.setAllegiance(allegiance);
             VoiceToAllegiances voiceToAllegiances = VoiceToAllegiances.getInstance();
 /*
@@ -45,7 +45,7 @@ public class PowerPlaySubscriber {
             //default to Empire, British cadence in honor of the country that made this game.
             systemSession.setAICadence(AICadence.IMPERIAL);
             systemSession.setAIPersonality(AIPersonality.FRIENDLY);
-            systemSession.setAIVoice(Voices.JAMES);
+            systemSession.setAIVoice(GoogleVoices.JAMES);
         }
 
         rp.setPledgedToPower(event.getPower());

@@ -13,7 +13,12 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class SessionPersistence {
+/**
+ * The SessionPersistence class provides methods to manage the persistence of session data.
+ * It handles saving, loading, and deleting session files and manages the serialization
+ * and deserialization of field data.
+ */
+class SessionPersistence {
     private static final Logger LOG = LoggerFactory.getLogger(SessionPersistence.class);
     private final String sessionFile;
     private final Map<String, FieldHandler<?>> fields = new HashMap<>();
@@ -30,15 +35,15 @@ public class SessionPersistence {
         }
     }
 
-    public SessionPersistence(String sessionFile) {
+    protected SessionPersistence(String sessionFile) {
         this.sessionFile = sessionFile;
     }
 
-    public <T> void registerField(String name, Supplier<T> getter, Consumer<T> setter, Class<T> type) {
+    protected <T> void registerField(String name, Supplier<T> getter, Consumer<T> setter, Class<T> type) {
         fields.put(name, new FieldHandler<>(getter, setter, type));
     }
 
-    public void saveSession(Map<String, Object> stateMap) {
+    protected void saveSession(Map<String, Object> stateMap) {
         File file = ensureSessionDirectory();
         if (file == null) {
             return;
@@ -67,7 +72,7 @@ public class SessionPersistence {
         }
     }
 
-    public void loadSession(Consumer<JsonObject> jsonConsumer) {
+    protected void loadSession(Consumer<JsonObject> jsonConsumer) {
         File file = ensureSessionDirectory();
         if (file == null) {
             return;
@@ -109,7 +114,7 @@ public class SessionPersistence {
         }
     }
 
-    public void loadFields(JsonObject json, Map<String, Object> stateMap) {
+    protected void loadFields(JsonObject json, Map<String, Object> stateMap) {
         if (json.has("state")) {
             JsonObject stateJson = json.getAsJsonObject("state");
             for (Map.Entry<String, JsonElement> entry : stateJson.entrySet()) {
@@ -131,7 +136,7 @@ public class SessionPersistence {
         }
     }
 
-    public void deleteSessionFile() {
+    protected void deleteSessionFile() {
         String root = System.getProperty("user.dir");
         File file = new File(root, sessionFile);
         if (file.exists()) {

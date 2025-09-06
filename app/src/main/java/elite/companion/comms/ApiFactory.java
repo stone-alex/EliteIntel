@@ -12,6 +12,11 @@ import elite.companion.ui.event.AppLogEvent;
 
 import java.util.function.Supplier;
 
+/**
+ * A singleton factory class responsible for providing various AI-related endpoint instances.
+ * The instances provided include LLM, STT, TTS, and other AI services based on API keys
+ * specified in the application configuration.
+ */
 public class ApiFactory {
     private static ApiFactory instance;
 
@@ -20,6 +25,7 @@ public class ApiFactory {
      *
      */
     private ApiFactory() {
+        // Prevent instantiation.
     }
 
     public static synchronized ApiFactory getInstance() {

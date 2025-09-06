@@ -7,6 +7,17 @@ import java.util.regex.Pattern;
 
 public class RomanNumeralConverter {
 
+    /**
+     * Converts Roman numerals present in the input string to their corresponding integer values.
+     * If the Roman numeral is preceded by a prefix such as "Mk" or "MK", the prefix is preserved in the result.
+     *
+     * @param input the input string that may include Roman numerals to be converted.
+     *              Roman numerals can appear standalone or with a prefix such as "Mk" or "MK".
+     *              If the input is null or empty, the method returns it unchanged.
+     * @return a string where all Roman numerals have been replaced with their integer equivalents,
+     * preserving any valid prefixes. Returns the input string unchanged if it contains no Roman numerals.
+     * Throws an IllegalArgumentException if an invalid Roman numeral is found in the input.
+     */
     public static String convertRomanInName(String input) {
         if (input == null || input.isEmpty()) {
             return input;

@@ -1,6 +1,17 @@
 package elite.companion.comms.handlers.command;
 
+/**
+ * Represents the available actions and their associated game commands for
+ * the in-game control system. The class helps in mapping specific actions
+ * to their respective commands, which are linked with identifiers and
+ * associated classes for controlling the game behavior.
+ */
 public class CommandActionsGame {
+    /**
+     * Enumeration representing various game commands and their associated attributes.
+     * Each game command is linked with a binding name, an action, and a controller class.
+     * This enum is used to map specific in-game actions to identifiers for processing and handling user inputs.
+     */
     public enum GameCommand {
         CARGO_SCOOP("cargo_scoop", "ToggleCargoScoop", GenericGameController.class),
         CARGO_SCOOP_BUGGY("cargo_scoop_buggy", "ToggleCargoScoop_Buggy", GenericGameController.class),

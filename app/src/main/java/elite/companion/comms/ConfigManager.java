@@ -10,6 +10,31 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * The ConfigManager class is a singleton responsible for managing
+ * configuration files and default values for both system and user-specific configurations.
+ * It provides features to read, write, and initialize configuration values dynamically.
+ * <p>
+ * System Configuration:
+ * - Stores settings like API keys (e.g., AI API, TTS API, STT API).
+ * <p>
+ * User Configuration:
+ * - Maintains user-specific details such as mission statement, title, and alternative name.
+ * <p>
+ * Key responsibilities:
+ * - Ensures initialization of config files with default values if they do not exist.
+ * - Reads configuration from files or classpath resources, with support for comments and trimming user inputs.
+ * - Updates missing keys in configuration files with defaults during initialization.
+ * - Provides utility methods to retrieve specific configuration keys for system or user use.
+ * <p>
+ * Thread Safety:
+ * - The singleton pattern used in this class ensures that only one instance of ConfigManager
+ * is created and accessed during the lifecycle of the application.
+ * <p>
+ * Logging:
+ * - The class uses SLF4J for logging activities and errors during operations like reading or
+ * writing configuration files.
+ */
 public class ConfigManager {
     private static final Logger log = LoggerFactory.getLogger(ConfigManager.class);
     private static final ConfigManager INSTANCE = new ConfigManager();

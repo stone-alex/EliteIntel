@@ -3,6 +3,21 @@ package elite.companion.comms.handlers.command;
 import com.google.gson.JsonObject;
 import elite.companion.comms.brain.robot.GameCommandHandler;
 
+/**
+ * OpenSystemMapHandler is responsible for handling the "Open System Map" game command.
+ * This class extends CustomCommandOperator to utilize its functionality for
+ * executing key bindings associated with the specified game action via the keyboard.
+ * Implements the CommandHandler interface to process input parameters and response text
+ * for handling the command logic.
+ * <p>
+ * Constructor:
+ * - Initializes the handler by utilizing the given GameCommandHandler to retrieve
+ * the necessary BindingsMonitor and KeyBindingExecutor for command execution.
+ * <p>
+ * Method:
+ * - handle(JsonObject params, String responseText): Invokes the keyboard operation
+ * for the SYSTEM_MAP command based on the associated key binding.
+ */
 public class OpenSystemMapHandler extends CustomCommandOperator implements CommandHandler {
 
     public OpenSystemMapHandler(GameCommandHandler commandHandler) throws Exception {

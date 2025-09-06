@@ -11,6 +11,15 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.util.*;
 
+/**
+ * A parser that reads and processes key binding configurations from an XML file.
+ * The class is designed to handle mappings between actions and their associated
+ * keyboard inputs, including modifiers and an optional hold property.
+ * <p>
+ * This parser supports excluding certain predefined blacklisted actions and
+ * specific patterns, such as actions starting with "Humanoid". It processes
+ * both primary and secondary key bindings defined in the XML structure.
+ */
 public class KeyBindingsParser {
     private static final Logger log = LoggerFactory.getLogger(KeyBindingsParser.class);
 

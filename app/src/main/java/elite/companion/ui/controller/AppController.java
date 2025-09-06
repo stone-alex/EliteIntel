@@ -6,8 +6,8 @@ import elite.companion.comms.ConfigManager;
 import elite.companion.comms.brain.AICadence;
 import elite.companion.comms.brain.AIPersonality;
 import elite.companion.comms.ears.EarsInterface;
+import elite.companion.comms.mouth.GoogleVoices;
 import elite.companion.comms.mouth.MouthInterface;
-import elite.companion.comms.mouth.Voices;
 import elite.companion.gameapi.*;
 import elite.companion.session.PlayerSession;
 import elite.companion.session.SystemSession;
@@ -24,6 +24,30 @@ import java.util.Map;
 import static elite.companion.session.PlayerSession.PLAYER_MISSION_STATEMENT;
 import static elite.companion.ui.view.AppView.*;
 
+/**
+ * The AppController class acts as the primary controller in the Model-View-Controller (MVC)
+ * architectural pattern. It mediates communication between the model (AppModelInterface)
+ * and the view (AppViewInterface) while handling business logic and user actions.
+ * <p>
+ * This class implements the AppControllerInterface and ActionListener to define
+ * the core behavior of the application and handle UI actions respectively.
+ * <p>
+ * Responsibilities:
+ * - Managing application configuration settings by handling system and user configurations.
+ * - Starting, stopping, and monitoring auxiliary services, such as voice processing
+ * and file monitoring systems.
+ * - Managing privacy mode and system logging settings.
+ * - Responding to user events via the event bus and UI components.
+ * - Maintaining application state, such as whether services are running.
+ * <p>
+ * Key Features:
+ * - Uses Google voices, personalities, and cadences to define system behavior.
+ * - Implements an event-driven architecture using an event bus (EventBusManager).
+ * - Starts and stops auxiliary processes dynamically based on user input.
+ * - Includes privacy mode control for voice and text processing.
+ * - Maintains logs for user, voice process, and system activities.
+ * - Dynamic loading of configuration keys for runtime functionality.
+ */
 public class AppController implements AppControllerInterface, ActionListener {
     private final AppModelInterface model;
     private final AppViewInterface view;
@@ -136,9 +160,9 @@ public class AppController implements AppControllerInterface, ActionListener {
 
     private String listVoices() {
         StringBuilder sb = new StringBuilder();
-        Voices[] voices = Voices.values();
+        GoogleVoices[] voices = GoogleVoices.values();
         sb.append("[");
-        for (Voices voice : voices) {
+        for (GoogleVoices voice : voices) {
             sb.append(StringSanitizer.capitalizeWords(voice.name())).append(", ");
         }
         sb.append("]");

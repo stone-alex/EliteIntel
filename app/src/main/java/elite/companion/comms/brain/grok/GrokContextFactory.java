@@ -10,6 +10,74 @@ import elite.companion.util.Ranks;
 
 import java.util.Objects;
 
+/**
+ * The GrokContextFactory class is a singleton implementation that serves as a factory
+ * for generating prompts, instructions, and contextual responses for an AI system. It extends
+ * the capabilities provided by the AiContextFactory interface and includes additional methods
+ * for handling specific contextual data and operations. This class encapsulates utility methods
+ * and data to manage contextual information for generating AI-driven responses.
+ * <p>
+ * Fields:
+ * - instance: Singleton instance of the GrokContextFactory class.
+ * <p>
+ * Methods:
+ * - private GrokContextFactory():
+ * Private constructor to enforce the singleton pattern. Prevents direct instantiation
+ * from outside the class.
+ * <p>
+ * - public static GrokContextFactory getInstance():
+ * Returns the singleton instance of the GrokContextFactory. If the instance does not exist,
+ * it initializes it.
+ * <p>
+ * - private static String getProfanityExamples():
+ * Retrieves a set of example profanities, used internally to handle language processing rules.
+ * <p>
+ * - @Override public String generateSystemInstructions(String sensorInput):
+ * Generates system-level instructions based on the provided sensor input. Implements the
+ * method from the AiContextFactory interface.
+ * <p>
+ * - @Override public String generateQueryPrompt():
+ * Creates and returns a prompt for query input. Implements the method from the AiContextFactory
+ * interface.
+ * <p>
+ * - @Override public String generateSystemPrompt():
+ * Produces and returns the AI system prompt. Implements the method from the AiContextFactory
+ * interface.
+ * <p>
+ * - @Override public String generateAnalysisPrompt(String userIntent, String dataJson):
+ * Forms an analysis prompt by leveraging user intent and structured data in JSON format.
+ * Implements the method from the AiContextFactory interface.
+ * <p>
+ * - private void getSessionValues(StringBuilder sb):
+ * Populates session-related values into the provided StringBuilder instance. Used internally
+ * to enrich contextual data.
+ * <p>
+ * - @Override public void appendBehavior(StringBuilder sb):
+ * Appends behavioral information for the AI system into the provided StringBuilder.
+ * This method is an implementation of the corresponding method in AiContextFactory.
+ * <p>
+ * - private void appendContext(StringBuilder sb, String currentShip, String playerName,
+ * String playerMilitaryRank, String playerHonorific, String playerTitle, String missionStatement,
+ * String carrierName, String carrierCallSign):
+ * Adds context-specific details to the provided StringBuilder. Combines details about the player's
+ * current status, associated ship, and other mission details.
+ * <p>
+ * - @Override public String generatePlayerInstructions(String playerVoiceInput):
+ * Generates instructions or responses tailored to the player's input via voice commands. This
+ * method overrides the method from AiContextFactory.
+ * <p>
+ * - private String generateSupportedQueriesClause():
+ * Constructs and returns a textual clause describing supported player queries. Used internally for
+ * constructing help or system messages.
+ * <p>
+ * - private String generateSupportedCommandsCause():
+ * Creates and returns a textual clause containing the list of supported commands. Used internally
+ * to assist in command-related response generation.
+ * <p>
+ * - private String generateClassifyClause():
+ * Builds and returns a clause used for classifying user input or other contextual data.
+ * This is used internally for classification tasks.
+ */
 public class GrokContextFactory implements AiContextFactory {
     private static GrokContextFactory instance;
 

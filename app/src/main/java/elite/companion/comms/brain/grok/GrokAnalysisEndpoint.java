@@ -14,6 +14,15 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
+/**
+ * The GrokAnalysisEndpoint class provides functionality for analyzing user-provided data using
+ * an AI-based service. It implements the AiAnalysisInterface and communicates with an external
+ * API to process user intents and data for generating analysis results.
+ * <p>
+ * This class is designed as a singleton, ensuring only one instance is created and utilized
+ * throughout the application. It makes HTTP requests to an AI endpoint to analyze the input,
+ * processes the response, and extracts relevant content as a JSON object.
+ */
 public class GrokAnalysisEndpoint implements AiAnalysisInterface {
     private static final Logger logger = LoggerFactory.getLogger(GrokAnalysisEndpoint.class);
     private final String apiUrl = "https://api.x.ai/v1/chat/completions";

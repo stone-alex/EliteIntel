@@ -12,6 +12,136 @@ import elite.companion.util.json.GsonFactory;
 
 import java.util.*;
 
+/**
+ * The PlayerSession class manages and stores information related to the player's current session
+ * in the game. This includes details about the player’s actions, status, missions, bounties,
+ * ship scans, navigation routes, and other session-specific data. The class is designed
+ * to persist session state, enable data retrieval, update session information, and handle
+ * game-specific events.
+ * <p>
+ * Fields:
+ * - CURRENT_SYSTEM: Tracks the player's current star system.
+ * - SHIP_LOADOUT_JSON: JSON representation of the player's ship loadout.
+ * - SUITE_LOADOUT_JSON: JSON representation of the player's suit loadout.
+ * - FINAL_DESTINATION: Represents the player’s final destination.
+ * - CURRENT_STATUS: Indicates the current in-game status of the player.
+ * - FSD_TARGET: Stores details about the current frameshift drive target.
+ * - SHIP_CARGO: Holds information about the cargo stored on the player's ship.
+ * - CURRENT_SYSTEM_DATA: Stores detailed data about the player's current system.
+ * - MISSIONS: Maintains a map of the player’s active missions.
+ * - BOUNTIES: Records the bounty claims made by the player.
+ * - REPUTATION: Tracks the player’s reputation across factions.
+ * - CARRIER_LOCATION: Details the carrier's current location.
+ * - CURRENT_LOCATION: Records the player's physical in-game location.
+ * - PROFILE: Stores player profile-specific data.
+ * - PERSONALITY: Represents traits or metadata about the player's gameplay style.
+ * - JUMPING_TO: Indicates the system the player is jumping to (if in transit).
+ * - MATERIALS: Tracks materials collected by the player.
+ * - ENGINEER_PROGRESS: Details the player's progress with engineering unlocks.
+ * - FRIENDS_STATUS: Tracks the player's friends list activity and connection status.
+ * - SHIP_FUEL_LEVEL: Indicates the amount of fuel in the player’s ship.
+ * - INSURANCE_CLAIMS: Tracks the number of ship insurance claims made by the player.
+ * - SHIPS_OWNED: The total number of ships owned by the player.
+ * - TOTAL_BOUNTY_CLAIMED: The cumulative bounty claimed by the player.
+ * - TOTAL_BOUNTY_PROFIT: The total profit from bounty hunting operations.
+ * - TOTAL_DISTANCE_TRAVELED: The total distance the player has traveled in the game.
+ * - TOTAL_SYSTEMS_VISITED: The total number of star systems the player has visited.
+ * - TOTAL_HYPERSPACE_DISTANCE: Tracks the hyperspace distance traveled.
+ * - TOTAL_PROFITS_FROM_EXPLORATION: The total profits earned through exploration activities.
+ * - SPECIES_FIRST_LOGGED: A record of species first logged by the player.
+ * - EXOBIOLOGY_PROFITS: Total profits from exobiology discoveries.
+ * - GOODS_SOLD_THIS_SESSION: Tracks goods sold during the current session.
+ * - HIGHEST_SINGLE_TRANSACTION: The highest value from any single transaction in the game.
+ * - MARKET_PROFITS: Cumulative profits from market trade.
+ * - CREW_WAGS_PAYOUT: Total payout to crew during the session.
+ * - SHIP_CARGO_CAPACITY: The cargo capacity of the player's ship.
+ * - PLAYER_TITLE: The player's title (e.g., rank or status).
+ * - PLAYER_HIGHEST_MILITARY_RANK: The highest military rank achieved by the player.
+ * - LAST_SCAN: Data from the last scan performed.
+ * - CARRIER_BALANCE: The credit balance associated with the carrier.
+ * - CARRIER_RESERVE: Reserve credits stored for carrier operations.
+ * - PLAYER_NAME: The name of the player.
+ * - PLAYER_MISSION_STATEMENT: A user-defined mission statement or gameplay intention.
+ * - CURRENT_SHIP: The identifier for the player's current ship.
+ * - CURRENT_SHIP_NAME: The name of the ship currently in use.
+ * - CARRIER_FUEL_LEVEL: Fuel level for the player-owned carrier.
+ * - CARGO_SPACE_USED: Tracks how much of the cargo space has been used.
+ * - PERSONAL_CREDITS_AVAILABLE: Credits available to the player.
+ * - CARRIER_CALLSIGN: The carrier's unique identifier or callsign.
+ * - CARRIER_NAME: The name of the player-owned carrier.
+ * - CARRIER_TYPE: Specifies the type of the player-owned carrier.
+ * - CARRIER_DOCKING_ACCESS: Determines docking access permissions for the carrier.
+ * - CARRIER_CURRENT_JUMP_RANGE: Current available jump range of the carrier.
+ * - CARRIER_MAX_JUMP_RANGE: Maximum jump range of the carrier.
+ * - CARRIER_ALLOWS_NOTORIOUS_ACCESS: Indicates if the carrier allows access to notorious players.
+ * - CARRIER_PENDING_DECOMMISSION: Flags whether the carrier is pending decommission.
+ * - CARRIER_TOTAL_CARGO_SPACE_USED: Total cargo space of the carrier currently in use.
+ * - CARRIER_CARGO_SPACE_RESERVED: Reserved cargo space on the carrier.
+ * - CARRIER_SHIP_PACKS: List of available ship packs on the carrier.
+ * - CARRIER_MODULE_PACKS: List of available module packs on the carrier.
+ * - CARRIER_FREE_SPACE: Total free space available on the carrier.
+ * - CARRIER_TOTAL_CAPACITY: Total capacity of the carrier.
+ * - CARRIER_ALLOCATED_MARKET_BALANCE: Allocated credits for the carrier market.
+ * - CARRIER_PIONEER_SUPPLY_TAX: Tax for pioneer supplies provided by the carrier.
+ * - CARRIER_SHIPYARD_SUPPLY_TAX: Tax for shipyard supplies provided by the carrier.
+ * - CARRIER_REARM_SUPPLY_TAX: Tax for rearm supplies provided by the carrier.
+ * - CARRIER_REFUEL_SUPPLY_TAX: Tax for refuel supplies provided by the carrier.
+ * - CARRIER_REPAIR_SUPPLY_TAX: Tax for repair supplies provided by the carrier.
+ * - CARRIER_STATS: Holds detailed carrier statistics.
+ * - INSTANCE: Singleton instance of PlayerSession.
+ * - state: State management object tracking session parameters.
+ * - shipScans: A map of ships scanned during the session.
+ * - missions: A map of active missions during the session.
+ * - missionKills: A set of mission-related kills tracked.
+ * - stellarObjects: A map of celestial objects encountered.
+ * - routeMap: Navigation route information.
+ * - detectedSignals: A set of signals detected by the player.
+ * - targetFactions: A set of target factions identified by the player.
+ * - bountyCollectedThisSession: Tracks bounties collected during the session.
+ * - rankAndProgressDto: Data transfer object representing rank and progress information.
+ * - persistence: Handles persistence of session data.
+ * <p>
+ * Methods:
+ * - getInstance(): Provides the singleton instance of the PlayerSession.
+ * - saveSession(): Persists the current session state to disk.
+ * - putShipScan(shipName, scan): Adds a ship scan record for the given ship.
+ * - getShipScan(shipName): Retrieves the scan data for a specific ship.
+ * - put(key, data): Adds arbitrary session-related data to the session store.
+ * - get(key): Retrieves data from the session store.
+ * - remove(key): Removes a specific piece of session data using its key.
+ * - addBounty(totalReward): Adds the bounty amount to the session’s total.
+ * - getBountyCollectedThisSession(): Returns the total bounties collected this session.
+ * - addMission(mission): Adds a mission to the session.
+ * - getMissions(): Retrieves all active missions.
+ * - removeMission(missionId): Removes a mission by its ID.
+ * - getMission(missionId): Retrieves a mission by its ID.
+ * - clearMissions(): Removes all active missions.
+ * - addBounty(bounty): Processes a bounty event and adds it to the session.
+ * - getMissionsJson(): Returns mission data in JSON format.
+ * - getBountiesJson(): Returns collected bounties in JSON format.
+ * - getMissionKillsJson(): Returns mission kills in JSON format.
+ * - setNavRoute(route): Sets the navigation route for the session.
+ * - removeNavPoint(systemName): Removes a specific navigation point.
+ * - getRoute(): Retrieves the entire navigation route.
+ * - clearRoute(): Clears the navigation route.
+ * - getRouteMapJson(): Returns navigation route information in JSON format.
+ * - getRankAndProgressDto(): Retrieves player rank and progress information.
+ * - setRankAndProgressDto(rankAndProgress): Sets data related to player rank and progress.
+ * - clearShipScans(): Removes all stored ship scans.
+ * - clearOnShutDown(): Clears session data upon shutdown.
+ * - addSignal(event): Processes a signal event during the session.
+ * - getSignals(): Retrieves signals detected during the session.
+ * - clearFssSignals(): Clears the full-spectrum system (FSS) scans.
+ * - addMissionKill(missionKill): Adds a mission-related kill to the session.
+ * - getMissionKills(): Retrieves all mission-related kills.
+ * - addTargetFaction(faction): Adds a faction as a target.
+ * - getTargetFactions(): Retrieves all targeted factions.
+ * - addStellarObject(object): Adds a stellar object to the session.
+ * - getStellarObjects(): Retrieves all stored stellar object data.
+ * - getStellarObject(name): Retrieves a specific stellar object by name.
+ * - clearStellarObjects(): Removes all stored stellar objects.
+ * - clearBounties(): Resets all bounty-related data.
+ */
 public class PlayerSession {
 
     public static final String CURRENT_SYSTEM = "current_system";

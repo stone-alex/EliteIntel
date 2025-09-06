@@ -5,6 +5,14 @@ import elite.companion.util.json.GsonFactory;
 import elite.companion.util.json.ToJsonConvertible;
 
 
+/**
+ * Represents a Data Transfer Object (DTO) for defining the AI capabilities and limitations
+ * of an Elite Dangerous AI companion application. This class includes detailed descriptions
+ * of what features the application provides and what actions it does not perform.
+ * <p>
+ * The primary purpose of this class is to encapsulate the capabilities and limitations
+ * as structured information, with the ability to convert this structure into a JSON format.
+ */
 public class AICapabilitiesDto implements ToJsonConvertible {
 
 

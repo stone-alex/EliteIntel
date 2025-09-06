@@ -9,6 +9,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
 
+/**
+ * The BindingsLoader class is responsible for loading binding files from the bindings directory,
+ * specifically identifying and retrieving the most recently modified ".binds" file.
+ * This is useful for applications or systems that leverage the binding configurations from
+ * the Elite Dangerous game by Frontier Developments.
+ */
 public class BindingsLoader {
     private static final Logger log = LoggerFactory.getLogger(BindingsLoader.class);
     private final Path bindingsDir = Paths.get(System.getProperty("user.home"),

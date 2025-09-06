@@ -16,11 +16,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Minimal, code-only main window for configuration.
- * - 1200x900
- * - 10px padding around content
- * - Title at top center
- * - Three tabs: System, Player, Help
+ * AppView is the main UI frame of the application responsible for displaying and controlling
+ * various aspects of the system and user configuration, logs, and help content. It extends
+ * JFrame and implements the AppViewInterface for standardized interaction.
+ *
+ * The class includes predefined UI styles for a dark theme and organizes its interface
+ * into multiple tabs: System, Player, and Help. It also allows for integration with external
+ * listeners to handle UI control actions.
+ *
+ * Features:
+ * - Displays and updates system configuration, user configuration, logs, and help content.
+ * - Supports user inputs for various text fields and checkboxes.
+ * - Integrates with action listeners for handling events.
+ * - Implements custom styles for a cohesive dark-themed UI.
  */
 public class AppView extends JFrame implements PropertyChangeListener, AppViewInterface {
 
@@ -64,6 +72,33 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     // Help tab
     private JEditorPane helpPane; // HTML rendering
 
+    /**
+     * Constructs a new instance of the AppView GUI.
+     * This class represents the primary user interface for the application, initialized with
+     * a specific layout and various UI components such as tabs, labels, buttons, and checkboxes.
+     * <p>
+     * Key Functionalities:
+     * - Sets up the window's size, location, and appearance, including a default dark theme
+     * and global font settings.
+     * - Configures the main UI components including a tabbed panel for System, Player,
+     * and Help sections.
+     * - Applies custom styling and properties such as font sizes, colors, and borders to enhance
+     * readability and usability.
+     * - Sets initial states and bindings for UI elements related to user preferences and
+     * privacy mode controls.
+     * <p>
+     * Behavior:
+     * - The constructor initializes the application's primary JFrame with specific
+     * properties like dimensions, a window icon, and close operation behavior.
+     * - It prepares UI components, applies consistent dark styling, and binds
+     * interactive elements for enabling/disabling features based on user actions.
+     * <p>
+     * Constraints:
+     * - Requires initialization of style defaults and font settings on Swing components
+     * prior to component creation to apply them consistently.
+     * - Assumes a dark theme and utilizes a predefined set of color and font resources for
+     * styling UI elements.
+     */
     public AppView() {
         super("Elite Companion (version 9-5-2025)");
         // Apply a readable, Windows-friendly font to the entire UI BEFORE creating components
@@ -330,6 +365,15 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         UIManager.put("EditorPane.inactiveForeground", FG_MUTED);
     }
 
+    /**
+     * Recursively applies a dark theme to the specified UI component and its children.
+     * This method updates the background, foreground, borders, and other style aspects
+     * based on the component type, ensuring a consistent dark palette across the user
+     * interface.
+     *
+     * @param c The root component or container to which the dark theme will be applied.
+     *          If the component is null, the method does nothing.
+     */
     // Recursively apply background/foreground and add orange outline to inputs/buttons
     private void applyDarkPalette(Component c) {
         if (c == null) return;
@@ -437,6 +481,16 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     }
 
 
+    /**
+     * Binds a lock checkbox to a specific field, allowing the field's state
+     * (enabled, editable, or read-only) to be toggled based on the checkbox selection.
+     *
+     * @param lockCheck The checkbox that controls the locking mechanism.
+     * @param field The UI component whose state will be controlled by the checkbox.
+     *              Supports JTextComponent and other JComponent types.
+     * @param disableInsteadOfReadOnly If true, the field is disabled when locked.
+     *                                 If false, the field is made read-only (if applicable).
+     */
     private static void bindLock(JCheckBox lockCheck, JComponent field, boolean disableInsteadOfReadOnly) {
         Runnable apply = () -> {
             boolean locked = lockCheck.isSelected();
@@ -468,12 +522,6 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
 
     @Override public JFrame getUiComponent() {
         return this;
-    }
-
-    public void setServicesRunning(boolean running) {
-        if (startStopServicesButton != null) {
-            startStopServicesButton.setText(running ? "Stop Services" : "Start Services");
-        }
     }
 
     // System config I/O
@@ -529,14 +577,21 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
 
     }
 
-    @Override public void displayLog(String log) {
-
-    }
-
     @Override public void displayHelp(String helpText) {
         setHelpMarkdown(helpText);
     }
 
+    /**
+     * Retrieves the system configuration input provided by the user.
+     * This method collects and returns the configuration details
+     * populated in the user interface fields for system-related settings.
+     * It includes API keys for TTS, STT, and AI features, if available.
+     *
+     * @return A map containing system configuration key-value pairs,
+     *         such as API keys for various services. If a field is not
+     *         populated, its corresponding key will not be included in
+     *         the map.
+     */
     public Map<String, String> getSystemConfigInput() {
         Map<String, String> cfg = new HashMap<>();
         if (sttApiKeyField != null) cfg.put(ConfigManager.TTS_API_KEY, new String(sttApiKeyField.getPassword()));
@@ -545,6 +600,18 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         return cfg;
     }
 
+    /**
+     * Updates the user configuration by applying the provided key-value mappings
+     * to the relevant user interface fields.
+     * This method updates specific fields like the player's alternative name,
+     * title, and mission description based on the configuration values.
+     * If a field is null, no updates are made to that field.
+     *
+     * @param cfg A map containing user configuration key-value pairs.
+     *            The keys should correspond to predefined configuration constants
+     *            (e.g., PLAYER_ALTERNATIVE_NAME, PLAYER_TITLE, PLAYER_MISSION_STATEMENT).
+     *            If the map is null, the method does nothing.
+     */
     // User config I/O
     public void setUserConfig(Map<String, String> cfg) {
         if (cfg == null) return;
@@ -553,6 +620,18 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         if (playerMissionDescription != null) playerMissionDescription.setText(cfg.getOrDefault(ConfigManager.PLAYER_MISSION_STATEMENT, ""));
     }
 
+    /**
+     * Retrieves the user configuration input provided through the user interface.
+     * This method collects and returns the configuration details entered in specific
+     * fields such as the player's alternative name, title, and mission description.
+     * If certain fields are not populated, their corresponding keys will not be included
+     * in the resulting map.
+     *
+     * @return A map containing key-value pairs for user configuration. The keys correspond
+     *         to predefined configuration identifiers (e.g., PLAYER_ALTERNATIVE_NAME,
+     *         PLAYER_TITLE, PLAYER_MISSION_STATEMENT). If no input is provided, the map
+     *         will only include non-null field values.
+     */
     public Map<String, String> getUserConfigInput() {
         Map<String, String> cfg = new HashMap<>();
         if (playerAltNameField != null) cfg.put(ConfigManager.PLAYER_ALTERNATIVE_NAME, playerAltNameField.getText());
@@ -561,6 +640,14 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         return cfg;
     }
 
+    /**
+     * Updates the log text displayed in the log area of the user interface.
+     * If the provided text is null, the log area will be cleared.
+     * The method also ensures that the caret (text cursor) is positioned
+     * at the end of the updated text.
+     *
+     * @param text The new text to display in the log area. If null, the log area will be cleared.
+     */
     // Logs and Help
     public void setLogText(String text) {
         if (logArea != null) {
@@ -571,13 +658,21 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
 
     public void setHelpMarkdown(String markdown) {
         if (helpPane == null) return;
-        //String html = StringSanitizer.markdownToHtml(markdown == null ? "" : markdown);
         helpPane.setText(markdown);
         helpPane.setCaretPosition(0);
     }
 
     // ---------- Helpers ----------
 
+    /**
+     * Creates and initializes a basic instance of {@link GridBagConstraints} with default styling
+     * and layout parameters. This method configures the constraints such that components are
+     * aligned to the west, have no fill, and include uniform insets. The grid coordinates and the
+     * weight for both axes are set to zero.
+     *
+     * @return A {@link GridBagConstraints} object preconfigured with default grid position, padding,
+     *         alignment, and other layout properties.
+     */
     private GridBagConstraints baseGbc() {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -616,6 +711,16 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         gbc.gridy++;
     }
 
+    /**
+     * Applies a character limit on a specified {@link JTextField}.
+     * This method ensures that users cannot input or paste text exceeding the given maximum number of characters.
+     * It achieves this by utilizing a {@link DocumentFilter} on the text field's document.
+     *
+     * @param field The {@link JTextField} component on which the character limit will be applied.
+     *              If the field is null, the method does nothing.
+     * @param maxChars The maximum allowed number of characters in the {@link JTextField}.
+     *                 Input exceeding this limit will be truncated or ignored.
+     */
     private static void installTextLimit(JTextField field, int maxChars) {
         ((AbstractDocument) field.getDocument()).setDocumentFilter(new DocumentFilter() {
             @Override
@@ -668,6 +773,13 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     }
 
 
+    /**
+     * Styles the specified JTabbedPane with a dark theme and custom tab rendering.
+     * Configures the tab background, accent underline for the selected tab,
+     * minimal borders, and scroll tab layout policy.
+     *
+     * @param tp the JTabbedPane to be styled
+     */
     // Paint dark tabs with ACCENT underline for the selected tab
     private void styleTabbedPane(JTabbedPane tp) {
         tp.setOpaque(true);

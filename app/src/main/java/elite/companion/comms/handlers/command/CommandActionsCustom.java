@@ -3,6 +3,21 @@ package elite.companion.comms.handlers.command;
 import elite.companion.session.PlayerSession;
 import elite.companion.session.SystemSession;
 
+/**
+ * CommandActionsCustom represents an enumeration of customizable command actions,
+ * each associated with specific functionality in the system. This enum facilitates
+ * the mapping of commands to their corresponding handlers, placeholders, and parameter keys.
+ * <p>
+ * Each command action consists of:
+ * - A string representing the action keyword.
+ * - An optional placeholder for parameters within the command.
+ * - A parameter key used to store or retrieve the parameter value from a session.
+ * - A handler class responsible for processing the command's execution logic.
+ * <p>
+ * CommandActionsCustom is used to centralize and define the behavior for a variety
+ * of commands, ensuring a consistent mechanism for handling user input and executing
+ * corresponding actions.
+ */
 public enum CommandActionsCustom {
     SET_MINING_TARGET("set_mining_target", "<material>", "mining_target", SetMiningTargetHandler.class),
     PLOT_ROUTE("plot_route", "<destination>", "destination", SetRouteHandler.class),

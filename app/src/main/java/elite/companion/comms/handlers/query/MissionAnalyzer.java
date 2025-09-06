@@ -7,8 +7,24 @@ import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.session.PlayerSession;
 
+/**
+ * The MissionAnalyzer class is responsible for analyzing mission-related data within the
+ * context of Elite Dangerous and returning relevant responses based on specific user queries.
+ * It implements the QueryHandler interface and processes various actions related to missions,
+ * including summarizing progress, calculating potential profits, and other mission-related analyses.
+ */
 public class MissionAnalyzer implements QueryHandler {
 
+    /**
+     * Handles an incoming action request by identifying the query type, fetching relevant data,
+     * constructing a prompt, and delegating the analysis to an AI analysis interface.
+     *
+     * @param action            the action string used to determine the type of query to execute
+     * @param params            additional parameters related to the action (currently unused)
+     * @param originalUserInput the original input provided by the user to assist in creating contextual responses
+     * @return a JsonObject containing the response from the AI analysis or a generic response if no data is available
+     * @throws IllegalArgumentException if the provided action does not map to any known query
+     */
     @Override
     public JsonObject handle(String action, JsonObject params, String originalUserInput) {
         QueryActions query = findQuery(action);
@@ -17,7 +33,6 @@ public class MissionAnalyzer implements QueryHandler {
             return GenericResponse.getInstance().genericResponse("No active missions detected");
         }
 
-        //AiAnalysisInterface aiAnalysisInterface = GrokAnalysisEndpoint.getInstance();
         AiAnalysisInterface aiAnalysisInterface = ApiFactory.getInstance().getAnalysisEndpoint();
         String prompt = buildPrompt(query, originalUserInput, dataJson);
         return aiAnalysisInterface.analyzeData(originalUserInput, prompt);

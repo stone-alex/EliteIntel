@@ -11,6 +11,31 @@ import java.nio.file.*;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * The BindingsMonitor class is responsible for monitoring changes to
+ * key bindings files in the specified directory and updating the internal
+ * bindings map accordingly. It continuously monitors the target directory
+ * for file events and processes changes to ensure the bindings remain up to date.
+ * <p>
+ * This class relies on the {@link KeyBindingsParser} to parse the contents of key
+ * bindings files and determine the mapping of actions to key bindings.
+ * <p>
+ * Features:
+ * - Monitors a directory for changes to "*.binds" files.
+ * - Automatically reloads and parses bindings when a new or modified file is detected.
+ * - Provides access to the current bindings map.
+ * <p>
+ * Thread Safety:
+ * - This class uses synchronization to ensure thread-safe access to start and stop
+ * monitoring operations.
+ * <p>
+ * Logging:
+ * - Uses SLF4J for logging to provide information on status, errors, and events during monitoring.
+ * <p>
+ * Exceptions:
+ * - Captures and logs IOExceptions, InterruptedExceptions, and other unexpected errors
+ * during the monitoring process.
+ */
 public class BindingsMonitor {
     private static final Logger log = LoggerFactory.getLogger(BindingsMonitor.class);
     private final KeyBindingsParser parser;

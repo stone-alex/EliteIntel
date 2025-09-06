@@ -8,6 +8,11 @@ import elite.companion.gameapi.VoiceProcessEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * CustomCommandOperator serves as a base class for handling custom keyboard operations
+ * tied to game-related commands. It facilitates executing key bindings with a specified
+ * hold duration and logs the results of the execution.
+ */
 public class CustomCommandOperator {
     private static final Logger log = LoggerFactory.getLogger(CustomCommandOperator.class);
     private final BindingsMonitor monitor;

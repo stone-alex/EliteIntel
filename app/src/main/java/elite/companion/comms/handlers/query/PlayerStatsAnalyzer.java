@@ -7,6 +7,28 @@ import elite.companion.util.json.JsonDataFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The PlayerStatsAnalyzer class is responsible for handling and analyzing player statistics queries.
+ * It extends the BaseQueryAnalyzer class to leverage core query analysis functionalities
+ * and implements the QueryHandler interface to ensure compliance with standard query processing requirements.
+ * <p>
+ * Responsibilities:
+ * - Processes player statistics-related queries by analyzing the relevant data.
+ * - Validates the integrity of player statistics data before performing any analysis.
+ * - Delegates specific data analysis tasks to the functionality provided by the BaseQueryAnalyzer.
+ * <p>
+ * Key Methods:
+ * - handle: Processes incoming actions, retrieves corresponding player statistics, validates the data,
+ * and returns the analyzed result based on the query's requirements.
+ * <p>
+ * Logging:
+ * The class makes use of SLF4J for logging error scenarios, such as invalid data or other processing issues.
+ * <p>
+ * Behavior:
+ * - If the required stats data (extracted from RankAndProgressDto) is unavailable, it returns an error message.
+ * - Ensures that JSON data following serialization is valid before proceeding with analysis.
+ * - Utilizes BaseQueryAnalyzer to perform actionable steps, such as data analysis through AI interfaces.
+ */
 public class PlayerStatsAnalyzer extends BaseQueryAnalyzer implements QueryHandler {
 
     private static final Logger log = LoggerFactory.getLogger(PlayerStatsAnalyzer.class);

@@ -14,8 +14,6 @@ import elite.companion.util.SubscriberRegistration;
 
 import javax.swing.*;
 
-/* testing github setting */
-
 public class App {
 
     public static void main(String[] args) {

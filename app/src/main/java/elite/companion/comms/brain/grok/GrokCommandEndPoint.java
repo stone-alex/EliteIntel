@@ -61,7 +61,16 @@ public class GrokCommandEndPoint implements AiCommandInterface {
     private final AIChatInterface chatInterface;
     private final AiContextFactory contextFactory;
 
-    public GrokCommandEndPoint() {
+    private static GrokCommandEndPoint instance;
+
+    public static GrokCommandEndPoint getInstance() {
+        if (instance == null) {
+            instance = new GrokCommandEndPoint();
+        }
+        return instance;
+    }
+
+    private GrokCommandEndPoint() {
         this.router = ApiFactory.getInstance().getAiRouter();
         this.chatInterface = ApiFactory.getInstance().getChatEndpoint();
         this.contextFactory = ApiFactory.getInstance().getAiContextFactory();

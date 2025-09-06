@@ -46,17 +46,7 @@ public class ApiFactory {
     }
 
     public AiCommandInterface getCommandEndpoint() {
-        String apiKey = ConfigManager.getInstance().getSystemKey(ConfigManager.AI_API_KEY);
-        ProviderEnum provider = KeyDetector.detectProvider(apiKey, "LLM");
-        switch (provider) {
-            case GROK:
-                return new GrokCommandEndPoint(); // Non-singleton per design
-            // TODO: Add OpenAI, Anthropic, etc.
-            default:
-                EventBusManager.publish(new AppLogEvent("Unknown AI key format"));
-                EventBusManager.publish(new VoiceProcessEvent("Using default Grok AI—select provider?"));
-                return new GrokCommandEndPoint();
-        }
+        return getAiImpl(ConfigManager.AI_API_KEY, "LLM", GrokCommandEndPoint::getInstance);
     }
 
     public AiQueryInterface getQueryEndpoint() {

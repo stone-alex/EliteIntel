@@ -67,7 +67,7 @@ public class GoogleSTTImpl implements EarsInterface {
         try {
             String apiKey = ConfigManager.getInstance().getSystemKey(ConfigManager.STT_API_KEY);
             if (apiKey == null || apiKey.trim().isEmpty()) {
-                log.error("Google API key not found in system.conf");
+                log.error("STT API key not found in system.conf");
                 return;
             }
 

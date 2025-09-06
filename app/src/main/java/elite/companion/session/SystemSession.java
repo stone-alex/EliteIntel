@@ -3,6 +3,7 @@ package elite.companion.session;
 import com.google.common.eventbus.Subscribe;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import elite.companion.comms.ConfigManager;
 import elite.companion.comms.brain.AICadence;
 import elite.companion.comms.brain.AIPersonality;
 import elite.companion.comms.mouth.GoogleVoices;
@@ -157,5 +158,11 @@ public class SystemSession {
     @Subscribe
     public void onLoadSession(LoadSessionEvent event) {
         loadSavedStateFromDisk();
+    }
+
+    public void clearSystemConfigValues() {
+        state.remove(ConfigManager.STT_API_KEY);
+        state.remove(ConfigManager.TTS_API_KEY);
+        state.remove(ConfigManager.AI_API_KEY);
     }
 }

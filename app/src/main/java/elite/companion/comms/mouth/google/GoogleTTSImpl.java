@@ -122,7 +122,7 @@ public class GoogleTTSImpl implements MouthInterface {
         try {
             String apiKey = ConfigManager.getInstance().getSystemKey(ConfigManager.TTS_API_KEY);
             if (apiKey == null || apiKey.trim().isEmpty()) {
-                log.error("Google API key not found in system.conf");
+                log.error("TTS API key not found in system.conf");
                 return;
             }
             TextToSpeechSettings settings = TextToSpeechSettings.newBuilder().setApiKey(apiKey).build();

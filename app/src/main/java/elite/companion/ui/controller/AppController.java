@@ -88,6 +88,7 @@ public class AppController implements AppControllerInterface, ActionListener {
 
     @Override
     public void handleSaveSystemConfig() {
+        SystemSession.getInstance().clearSystemConfigValues();
         Map<String, String> systemConfig = view.getSystemConfigInput();
         configManager.writeConfigFile(ConfigManager.SYSTEM_CONFIG_FILENAME, systemConfig, true);
         model.setSystemConfig(systemConfig);
@@ -105,19 +106,32 @@ public class AppController implements AppControllerInterface, ActionListener {
         isServiceRunning = !isServiceRunning;
         if (isServiceRunning) {
 
-            String googleKey = String.valueOf(configManager.getSystemKey(ConfigManager.TTS_API_KEY));
-            if (googleKey == null || googleKey.trim().isEmpty() || googleKey.equals("null")) {
-                model.appendLog("SYSTEM: Google API key not found in system.conf");
+            boolean haveKeys = true;
+            String ttsApiKey = String.valueOf(configManager.getSystemKey(ConfigManager.TTS_API_KEY));
+            if (ttsApiKey == null || ttsApiKey.trim().isEmpty() || ttsApiKey.equals("null")) {
+                model.appendLog("SYSTEM: TTS API key not found in system.conf. I have no mouth to speak with");
                 isServiceRunning = false;
+                haveKeys = false;
+            }
+
+            String sttApiKey = String.valueOf(configManager.getSystemKey(ConfigManager.STT_API_KEY));
+            if (sttApiKey == null || sttApiKey.trim().isEmpty() || sttApiKey.equals("null")) {
+                model.appendLog("SYSTEM: STT API key not found in system.conf. I have no ears to hear with");
+                isServiceRunning = false;
+                haveKeys = false;
+            }
+
+            String aiApiKey = String.valueOf(configManager.getSystemKey(ConfigManager.AI_API_KEY));
+            if (aiApiKey == null || aiApiKey.trim().isEmpty() || aiApiKey.equals("null")) {
+                model.appendLog("SYSTEM: AI API key not found in system.conf. I have no brain to process with");
+                isServiceRunning = false;
+                haveKeys = false;
+            }
+
+            if (!haveKeys) {
                 return false;
             }
 
-            String grokKey = String.valueOf(configManager.getSystemKey(ConfigManager.AI_API_KEY));
-            if (grokKey == null || grokKey.trim().isEmpty() || grokKey.equals("null")) {
-                model.appendLog("SYSTEM: Grok API key not found in system.conf");
-                isServiceRunning = false;
-                return false;
-            }
 
             boolean streamingModeOn = systemSession.isStreamingModeOn();
 

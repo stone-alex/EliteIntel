@@ -5,8 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import elite.companion.gameapi.gamestate.events.GameEvents;
 import elite.companion.ui.event.AppLogEvent;
-import elite.companion.util.EventBusManager;
-import elite.companion.util.GsonFactory;
+import elite.companion.util.json.GsonFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

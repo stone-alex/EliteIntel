@@ -1,10 +1,10 @@
 package elite.companion.comms.brain.grok;
 
 import com.google.gson.*;
+import elite.companion.comms.ConfigManager;
 import elite.companion.comms.brain.AIContextFactory;
 import elite.companion.comms.brain.AiAnalysisInterface;
-import elite.companion.util.ConfigManager;
-import elite.companion.util.GsonFactory;
+import elite.companion.util.json.GsonFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

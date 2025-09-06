@@ -2,13 +2,13 @@ package elite.companion.comms.handlers.command;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.session.SystemSession;
-import elite.companion.util.EventBusManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static elite.companion.util.JsonParameterExtractor.extractParameter;
+import static elite.companion.util.json.JsonParameterExtractor.extractParameter;
 
 public class SetPrivacyModeHandler implements CommandHandler {
 

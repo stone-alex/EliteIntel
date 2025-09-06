@@ -3,7 +3,7 @@ package elite.companion.search.api;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import elite.companion.util.ConfigManager;
+import elite.companion.comms.ConfigManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

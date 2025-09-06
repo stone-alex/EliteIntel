@@ -1,7 +1,7 @@
 package elite.companion.session;
 
 import com.google.gson.*;
-import elite.companion.util.GsonFactory;
+import elite.companion.util.json.GsonFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

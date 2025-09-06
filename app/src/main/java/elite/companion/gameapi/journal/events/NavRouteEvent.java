@@ -1,8 +1,8 @@
 package elite.companion.gameapi.journal.events;
 
 import com.google.gson.JsonObject;
-import elite.companion.util.GsonFactory;
 import elite.companion.util.TimestampFormatter;
+import elite.companion.util.json.GsonFactory;
 
 import java.time.Duration;
 import java.util.StringJoiner;

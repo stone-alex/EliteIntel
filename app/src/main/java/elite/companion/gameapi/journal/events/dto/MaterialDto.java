@@ -1,7 +1,7 @@
 package elite.companion.gameapi.journal.events.dto;
 
-import elite.companion.util.GsonFactory;
-import elite.companion.util.ToJsonConvertible;
+import elite.companion.util.json.GsonFactory;
+import elite.companion.util.json.ToJsonConvertible;
 
 public class MaterialDto implements ToJsonConvertible {
 

@@ -1,11 +1,11 @@
 package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.SensorDataEvent;
 import elite.companion.gameapi.journal.events.FSDJumpEvent;
 import elite.companion.session.PlayerSession;
 import elite.companion.ui.event.AppLogEvent;
-import elite.companion.util.EventBusManager;
 
 @SuppressWarnings("unused")
 public class FSDJumpSubscriber {

@@ -3,7 +3,7 @@ package elite.companion.gameapi.journal.events.dto;
 import com.google.gson.JsonObject;
 import elite.companion.gameapi.gamestate.events.BaseJsonDto;
 import elite.companion.gameapi.journal.events.MissionAcceptedEvent;
-import elite.companion.util.GsonFactory;
+import elite.companion.util.json.GsonFactory;
 
 public class MissionDto extends BaseJsonDto {
     private String faction;

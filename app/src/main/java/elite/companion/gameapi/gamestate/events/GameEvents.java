@@ -1,7 +1,7 @@
 package elite.companion.gameapi.gamestate.events;
 
 import com.google.gson.annotations.SerializedName;
-import elite.companion.util.GsonFactory;
+import elite.companion.util.json.GsonFactory;
 
 import java.util.List;
 

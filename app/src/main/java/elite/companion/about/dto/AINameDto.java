@@ -2,7 +2,7 @@ package elite.companion.about.dto;
 
 
 import com.google.gson.annotations.SerializedName;
-import elite.companion.util.GsonFactory;
+import elite.companion.util.json.GsonFactory;
 
 public class AINameDto {
     @SerializedName("name")

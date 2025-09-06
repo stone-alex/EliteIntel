@@ -2,11 +2,11 @@ package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import elite.companion.comms.handlers.command.CommandActionsCustom;
+import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.SensorDataEvent;
 import elite.companion.gameapi.journal.events.MiningRefinedEvent;
 import elite.companion.session.PlayerSession;
 import elite.companion.session.SystemSession;
-import elite.companion.util.EventBusManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,10 +1,10 @@
 package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.gameapi.journal.events.ShipTargetedEvent;
 import elite.companion.session.PlayerSession;
-import elite.companion.util.EventBusManager;
 import elite.companion.util.RomanNumeralConverter;
 import elite.companion.util.TTSFriendlyNumberConverter;
 import org.slf4j.Logger;

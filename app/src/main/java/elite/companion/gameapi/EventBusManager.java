@@ -1,4 +1,4 @@
-package elite.companion.util;
+package elite.companion.gameapi;
 
 import com.google.common.eventbus.EventBus;
 

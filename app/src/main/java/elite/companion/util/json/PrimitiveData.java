@@ -1,4 +1,4 @@
-package elite.companion.util;
+package elite.companion.util.json;
 
 import elite.companion.gameapi.gamestate.events.BaseJsonDto;
 

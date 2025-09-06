@@ -2,12 +2,12 @@ package elite.companion.comms.mouth.google;
 
 import com.google.cloud.texttospeech.v1.*;
 import com.google.common.eventbus.Subscribe;
+import elite.companion.comms.ConfigManager;
 import elite.companion.comms.mouth.MouthInterface;
 import elite.companion.comms.mouth.Voices;
+import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.session.SystemSession;
-import elite.companion.util.ConfigManager;
-import elite.companion.util.EventBusManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

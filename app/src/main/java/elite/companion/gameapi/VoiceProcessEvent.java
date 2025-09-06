@@ -2,7 +2,7 @@ package elite.companion.gameapi;
 
 import com.google.gson.JsonObject;
 import elite.companion.gameapi.journal.events.BaseEvent;
-import elite.companion.util.GsonFactory;
+import elite.companion.util.json.GsonFactory;
 
 import java.time.Duration;
 import java.time.Instant;

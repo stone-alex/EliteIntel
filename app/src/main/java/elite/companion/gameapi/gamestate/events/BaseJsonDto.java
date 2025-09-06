@@ -1,6 +1,6 @@
 package elite.companion.gameapi.gamestate.events;
 
-import elite.companion.util.GsonFactory;
+import elite.companion.util.json.GsonFactory;
 
 public class BaseJsonDto {
 

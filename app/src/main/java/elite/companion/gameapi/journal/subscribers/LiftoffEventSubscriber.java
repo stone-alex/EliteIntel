@@ -1,9 +1,9 @@
 package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.SensorDataEvent;
 import elite.companion.gameapi.journal.events.LiftoffEvent;
-import elite.companion.util.EventBusManager;
 
 @SuppressWarnings("unused")
 public class LiftoffEventSubscriber {
@@ -27,7 +27,10 @@ public class LiftoffEventSubscriber {
         sb.append(localBody);
         sb.append(", in Star system: ");
         sb.append(localStarSystem);
+        sb.append(".");
+        if (isPlayerControlled && isOnPlanet) sb.append(" Retract landing gear ");
 
         EventBusManager.publish(new SensorDataEvent(sb.toString()));
+
     }
 }

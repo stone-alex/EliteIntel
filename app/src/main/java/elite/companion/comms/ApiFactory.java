@@ -1,4 +1,4 @@
-package elite.companion.util;
+package elite.companion.comms;
 
 import elite.companion.comms.brain.*;
 import elite.companion.comms.brain.grok.*;
@@ -6,6 +6,7 @@ import elite.companion.comms.ears.EarsInterface;
 import elite.companion.comms.ears.google.GoogleSTTImpl;
 import elite.companion.comms.mouth.MouthInterface;
 import elite.companion.comms.mouth.google.GoogleTTSImpl;
+import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.ui.event.AppLogEvent;
 
@@ -14,6 +15,10 @@ import java.util.function.Supplier;
 public class ApiFactory {
     private static ApiFactory instance;
 
+    /**
+     * Provides LLM/STT/TTS endpoint instances based on the API key provided in the config file.
+     *
+     */
     private ApiFactory() {
     }
 

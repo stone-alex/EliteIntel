@@ -5,11 +5,11 @@ import com.google.gson.JsonObject;
 import elite.companion.comms.brain.AICadence;
 import elite.companion.comms.mouth.VoiceToAllegiances;
 import elite.companion.comms.mouth.Voices;
+import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.SensorDataEvent;
 import elite.companion.session.SystemSession;
-import elite.companion.util.EventBusManager;
 
-import static elite.companion.util.JsonParameterExtractor.extractParameter;
+import static elite.companion.util.json.JsonParameterExtractor.extractParameter;
 
 public class SetCadenceHandler implements CommandHandler {
     @Override public void handle(JsonObject params, String responseText) {

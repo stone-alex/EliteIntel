@@ -1,7 +1,7 @@
 package elite.companion.gameapi.gamestate.events;
 
-import elite.companion.util.GsonFactory;
-import elite.companion.util.ToJsonConvertible;
+import elite.companion.util.json.GsonFactory;
+import elite.companion.util.json.ToJsonConvertible;
 
 public class NavRouteDto extends BaseJsonDto implements ToJsonConvertible {
 

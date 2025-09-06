@@ -1,8 +1,8 @@
 package elite.companion.comms.handlers.query;
 
 import com.google.gson.JsonObject;
+import elite.companion.comms.ApiFactory;
 import elite.companion.comms.brain.AiAnalysisInterface;
-import elite.companion.util.ApiFactory;
 
 public class BaseQueryAnalyzer {
 

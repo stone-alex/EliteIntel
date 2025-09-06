@@ -4,7 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import elite.companion.session.SystemSession;
 
-import static elite.companion.util.JsonParameterExtractor.extractParameter;
+import static elite.companion.util.json.JsonParameterExtractor.extractParameter;
 
 public class SetRadioTransmissionOnOff implements CommandHandler {
 

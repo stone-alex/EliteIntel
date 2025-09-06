@@ -6,7 +6,6 @@ import com.google.gson.JsonParser;
 import elite.companion.gameapi.journal.EventRegistry;
 import elite.companion.gameapi.journal.events.BaseEvent;
 import elite.companion.ui.event.AppLogEvent;
-import elite.companion.util.EventBusManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -2,6 +2,7 @@ package elite.companion.comms.brain.grok;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import elite.companion.comms.ApiFactory;
 import elite.companion.comms.brain.AIContextFactory;
 import elite.companion.comms.brain.AIRouterInterface;
 import elite.companion.comms.brain.AiQueryInterface;
@@ -9,9 +10,8 @@ import elite.companion.comms.brain.robot.GameCommandHandler;
 import elite.companion.comms.handlers.command.*;
 import elite.companion.comms.handlers.query.QueryActions;
 import elite.companion.comms.handlers.query.QueryHandler;
+import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.VoiceProcessEvent;
-import elite.companion.util.ApiFactory;
-import elite.companion.util.EventBusManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

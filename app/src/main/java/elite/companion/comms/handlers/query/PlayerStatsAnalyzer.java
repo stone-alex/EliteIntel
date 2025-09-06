@@ -3,7 +3,7 @@ package elite.companion.comms.handlers.query;
 import com.google.gson.JsonObject;
 import elite.companion.gameapi.journal.events.dto.RankAndProgressDto;
 import elite.companion.session.PlayerSession;
-import elite.companion.util.JsonDataFactory;
+import elite.companion.util.json.JsonDataFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

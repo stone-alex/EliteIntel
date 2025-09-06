@@ -1,11 +1,11 @@
 package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.gameapi.journal.events.MissionsEvent;
 import elite.companion.gameapi.journal.events.dto.MissionDto;
 import elite.companion.session.PlayerSession;
-import elite.companion.util.EventBusManager;
 
 import java.util.List;
 

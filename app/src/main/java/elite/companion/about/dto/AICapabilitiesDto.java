@@ -1,8 +1,8 @@
 package elite.companion.about.dto;
 
 import com.google.gson.annotations.SerializedName;
-import elite.companion.util.GsonFactory;
-import elite.companion.util.ToJsonConvertible;
+import elite.companion.util.json.GsonFactory;
+import elite.companion.util.json.ToJsonConvertible;
 
 
 public class AICapabilitiesDto implements ToJsonConvertible {

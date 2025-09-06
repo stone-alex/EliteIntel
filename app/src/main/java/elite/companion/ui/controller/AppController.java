@@ -1,23 +1,19 @@
 package elite.companion.ui.controller;
 
 import com.google.common.eventbus.Subscribe;
+import elite.companion.comms.ApiFactory;
+import elite.companion.comms.ConfigManager;
 import elite.companion.comms.brain.AICadence;
 import elite.companion.comms.brain.AIPersonality;
 import elite.companion.comms.ears.EarsInterface;
 import elite.companion.comms.mouth.MouthInterface;
 import elite.companion.comms.mouth.Voices;
-import elite.companion.gameapi.AuxiliaryFilesMonitor;
-import elite.companion.gameapi.JournalParser;
-import elite.companion.gameapi.UserInputEvent;
-import elite.companion.gameapi.VoiceProcessEvent;
+import elite.companion.gameapi.*;
 import elite.companion.session.PlayerSession;
 import elite.companion.session.SystemSession;
 import elite.companion.ui.event.AppLogEvent;
 import elite.companion.ui.model.AppModelInterface;
 import elite.companion.ui.view.AppViewInterface;
-import elite.companion.util.ApiFactory;
-import elite.companion.util.ConfigManager;
-import elite.companion.util.EventBusManager;
 import elite.companion.util.StringSanitizer;
 
 import javax.swing.*;

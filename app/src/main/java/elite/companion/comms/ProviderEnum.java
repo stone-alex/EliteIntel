@@ -1,4 +1,4 @@
-package elite.companion.util;
+package elite.companion.comms;
 
 public enum ProviderEnum {
     GROK("LLM"),

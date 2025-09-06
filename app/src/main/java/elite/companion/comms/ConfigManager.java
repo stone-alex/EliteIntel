@@ -1,4 +1,4 @@
-package elite.companion.util;
+package elite.companion.comms;
 
 import elite.companion.session.SystemSession;
 import org.slf4j.Logger;

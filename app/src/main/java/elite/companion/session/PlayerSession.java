@@ -1,14 +1,14 @@
 package elite.companion.session;
 
 import com.google.common.eventbus.Subscribe;
+import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.gamestate.events.NavRouteDto;
 import elite.companion.gameapi.journal.events.*;
 import elite.companion.gameapi.journal.events.dto.MissionDto;
 import elite.companion.gameapi.journal.events.dto.MissionKillDto;
 import elite.companion.gameapi.journal.events.dto.RankAndProgressDto;
 import elite.companion.gameapi.journal.events.dto.StellarObjectDto;
-import elite.companion.util.EventBusManager;
-import elite.companion.util.GsonFactory;
+import elite.companion.util.json.GsonFactory;
 
 import java.util.*;
 

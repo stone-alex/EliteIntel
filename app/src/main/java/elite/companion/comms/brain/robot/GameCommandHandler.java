@@ -2,9 +2,9 @@ package elite.companion.comms.brain.robot;
 
 import com.google.gson.JsonObject;
 import elite.companion.comms.handlers.command.CommandActionsGame;
+import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.session.SystemSession;
-import elite.companion.util.EventBusManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

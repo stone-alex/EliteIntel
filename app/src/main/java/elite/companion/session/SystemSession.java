@@ -6,8 +6,8 @@ import com.google.gson.JsonObject;
 import elite.companion.comms.brain.AICadence;
 import elite.companion.comms.brain.AIPersonality;
 import elite.companion.comms.mouth.Voices;
+import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.journal.events.LoadGameEvent;
-import elite.companion.util.EventBusManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,7 +77,7 @@ public class SystemSession {
     }
 
     public Voices getAIVoice() {
-        return this.aiVoice == null ? Voices.JAMES : this.aiVoice;
+        return this.aiVoice == null ? Voices.JENNIFER : this.aiVoice;
     }
 
     public void setAIPersonality(AIPersonality personality) {
@@ -86,7 +86,7 @@ public class SystemSession {
     }
 
     public AIPersonality getAIPersonality() {
-        return this.aiPersonality == null ? AIPersonality.ROGUE : this.aiPersonality;
+        return this.aiPersonality == null ? AIPersonality.PROFESSIONAL : this.aiPersonality;
     }
 
     public void setAICadence(AICadence cadence) {
@@ -95,7 +95,7 @@ public class SystemSession {
     }
 
     public AICadence getAICadence() {
-        return this.aiCadence == null ? AICadence.IMPERIAL : this.aiCadence;
+        return this.aiCadence == null ? AICadence.FEDERATION : this.aiCadence;
     }
 
     public JsonArray getChatHistory() {

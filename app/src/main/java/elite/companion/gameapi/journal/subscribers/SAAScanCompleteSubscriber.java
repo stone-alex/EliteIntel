@@ -1,9 +1,9 @@
 package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.SensorDataEvent;
 import elite.companion.gameapi.journal.events.SAAScanCompleteEvent;
-import elite.companion.util.EventBusManager;
 
 public class SAAScanCompleteSubscriber {
 

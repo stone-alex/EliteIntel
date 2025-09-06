@@ -1,5 +1,6 @@
-package elite.companion.util;
+package elite.companion.comms;
 
+import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.ui.event.AppLogEvent;
 

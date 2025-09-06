@@ -2,15 +2,19 @@ package elite.companion.comms.brain.grok;
 
 import com.google.common.eventbus.Subscribe;
 import com.google.gson.*;
+import elite.companion.comms.ApiFactory;
+import elite.companion.comms.ConfigManager;
 import elite.companion.comms.brain.AIChatInterface;
 import elite.companion.comms.brain.AIContextFactory;
 import elite.companion.comms.brain.AIRouterInterface;
 import elite.companion.comms.brain.AiCommandInterface;
+import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.SensorDataEvent;
 import elite.companion.gameapi.UserInputEvent;
 import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.session.SystemSession;
-import elite.companion.util.*;
+import elite.companion.util.json.GsonFactory;
+import elite.companion.util.json.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,8 +33,6 @@ public class GrokCommandEndPoint implements AiCommandInterface {
 
     public GrokCommandEndPoint() {
         this.router = ApiFactory.getInstance().getAiRouter();
-        //this.router = GrokResponseRouter.getInstance();
-        //this.chatInterface = GrokChatEndPoint.getInstance();
         this.chatInterface = ApiFactory.getInstance().getChatEndpoint();
         EventBusManager.register(this);
     }

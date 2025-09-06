@@ -9,10 +9,8 @@ public interface AppModelInterface {
     void setSystemConfig(Map<String, String> config);
     void setUserConfig(Map<String, String> config);
     void addPropertyChangeListener(PropertyChangeListener listener);
-    void removePropertyChangeListener(PropertyChangeListener listener);
     void appendLog(String message);
     String getHelpText();
-    boolean isStreamingModeOn();
     void showSystemLog(boolean show);
     boolean showSystemLog();
     void setStreamingModeOn(boolean on);

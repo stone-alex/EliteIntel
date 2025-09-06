@@ -19,11 +19,11 @@ import java.util.Map;
  * AppView is the main UI frame of the application responsible for displaying and controlling
  * various aspects of the system and user configuration, logs, and help content. It extends
  * JFrame and implements the AppViewInterface for standardized interaction.
- *
+ * <p>
  * The class includes predefined UI styles for a dark theme and organizes its interface
  * into multiple tabs: System, Player, and Help. It also allows for integration with external
  * listeners to handle UI control actions.
- *
+ * <p>
  * Features:
  * - Displays and updates system configuration, user configuration, logs, and help content.
  * - Supports user inputs for various text fields and checkboxes.
@@ -45,10 +45,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
 
 
     // Title
-    private JLabel titleLabel;
-
-    // Tabs
-    private JTabbedPane tabs;
+    private final JLabel titleLabel;
 
     // System tab components
     private JPasswordField sttApiKeyField;
@@ -121,7 +118,8 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, titleLabel.getFont().getSize2D() + 3f));
         root.add(titleLabel, BorderLayout.NORTH);
 
-        tabs = new JTabbedPane();
+        // Tabs
+        JTabbedPane tabs = new JTabbedPane();
         styleTabbedPane(tabs);
         tabs.addTab("System", buildSystemTab());
         tabs.addTab("Player", buildPlayerTab());
@@ -130,9 +128,9 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         applyDarkPalette(getContentPane());
 
         //initial state
-        bindLock(sttLockedCheck, sttApiKeyField, true);
-        bindLock(llmLockedCheck, llmApiKeyField, true);
-        bindLock(ttsLockedCheck, ttsApiKeyField, true);
+        bindLock(sttLockedCheck, sttApiKeyField);
+        bindLock(llmLockedCheck, llmApiKeyField);
+        bindLock(ttsLockedCheck, ttsApiKeyField);
         togglePrivacyModeCheckBox.setEnabled(false);//enabled when services start
         togglePrivacyModeCheckBox.setToolTipText("Prevent AI from listening to everything on/off, prefix commands with word 'computer' or AI voice name");
         togglePrivacyModeCheckBox.setText("Toggle Privacy Mode");
@@ -309,7 +307,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         };
         styleButton(savePlayerInfoButton);
         savePlayerInfoButton.setActionCommand(ACTION_SAVE_USER_CONFIG);
-        ;
+
         btns.add(savePlayerInfoButton);
         panel.add(btns, gbc);
 
@@ -447,7 +445,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     }
 
     // Choose a sensible Windows-default font, fallback to Dialog if not available
-    private static Font getPlatformDefaultFont(float size) {
+    private static Font getPlatformDefaultFont(@SuppressWarnings("SameParameterValue") /*configured above for convenience*/ float size) {
         String[] candidates = {
                 "Segoe UI",       // Windows 10/11
                 "Tahoma",         // Older Windows
@@ -485,22 +483,15 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
      * Binds a lock checkbox to a specific field, allowing the field's state
      * (enabled, editable, or read-only) to be toggled based on the checkbox selection.
      *
-     * @param lockCheck The checkbox that controls the locking mechanism.
-     * @param field The UI component whose state will be controlled by the checkbox.
-     *              Supports JTextComponent and other JComponent types.
-     * @param disableInsteadOfReadOnly If true, the field is disabled when locked.
-     *                                 If false, the field is made read-only (if applicable).
+     * @param lockCheck                The checkbox that controls the locking mechanism.
+     * @param field                    The UI component whose state will be controlled by the checkbox.
+     *                                 Supports JTextComponent and other JComponent types.
      */
-    private static void bindLock(JCheckBox lockCheck, JComponent field, boolean disableInsteadOfReadOnly) {
+    private static void bindLock(JCheckBox lockCheck, JComponent field) {
         Runnable apply = () -> {
             boolean locked = lockCheck.isSelected();
             if (field instanceof JTextComponent tc) {
-                if (disableInsteadOfReadOnly) {
-                    tc.setEnabled(!locked);
-                } else {
-                    tc.setEditable(!locked);
-                    // optionally style to reflect read-only state
-                }
+                tc.setEnabled(!locked);
             } else {
                 field.setEnabled(!locked);
             }
@@ -588,9 +579,9 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
      * It includes API keys for TTS, STT, and AI features, if available.
      *
      * @return A map containing system configuration key-value pairs,
-     *         such as API keys for various services. If a field is not
-     *         populated, its corresponding key will not be included in
-     *         the map.
+     * such as API keys for various services. If a field is not
+     * populated, its corresponding key will not be included in
+     * the map.
      */
     public Map<String, String> getSystemConfigInput() {
         Map<String, String> cfg = new HashMap<>();
@@ -628,9 +619,9 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
      * in the resulting map.
      *
      * @return A map containing key-value pairs for user configuration. The keys correspond
-     *         to predefined configuration identifiers (e.g., PLAYER_ALTERNATIVE_NAME,
-     *         PLAYER_TITLE, PLAYER_MISSION_STATEMENT). If no input is provided, the map
-     *         will only include non-null field values.
+     * to predefined configuration identifiers (e.g., PLAYER_ALTERNATIVE_NAME,
+     * PLAYER_TITLE, PLAYER_MISSION_STATEMENT). If no input is provided, the map
+     * will only include non-null field values.
      */
     public Map<String, String> getUserConfigInput() {
         Map<String, String> cfg = new HashMap<>();
@@ -671,7 +662,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
      * weight for both axes are set to zero.
      *
      * @return A {@link GridBagConstraints} object preconfigured with default grid position, padding,
-     *         alignment, and other layout properties.
+     * alignment, and other layout properties.
      */
     private GridBagConstraints baseGbc() {
         GridBagConstraints gbc = new GridBagConstraints();
@@ -716,8 +707,8 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
      * This method ensures that users cannot input or paste text exceeding the given maximum number of characters.
      * It achieves this by utilizing a {@link DocumentFilter} on the text field's document.
      *
-     * @param field The {@link JTextField} component on which the character limit will be applied.
-     *              If the field is null, the method does nothing.
+     * @param field    The {@link JTextField} component on which the character limit will be applied.
+     *                 If the field is null, the method does nothing.
      * @param maxChars The maximum allowed number of characters in the {@link JTextField}.
      *                 Input exceeding this limit will be truncated or ignored.
      */

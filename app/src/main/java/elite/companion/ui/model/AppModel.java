@@ -14,8 +14,6 @@ import java.util.Map;
  * This class provides support for property change listeners to notify observers of state changes.
  */
 public class AppModel implements AppModelInterface {
-    private Map<String, String> systemConfig = new HashMap<>();
-    private Map<String, String> userConfig = new HashMap<>();
     private String log = "";
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
     private boolean streamingMode;
@@ -34,14 +32,14 @@ public class AppModel implements AppModelInterface {
     @Override
     public void setSystemConfig(Map<String, String> config) {
         Map<String, String> oldConfig = getSystemConfig();
-        systemConfig = new HashMap<>(config);
+        Map<String, String> systemConfig = new HashMap<>(config);
         pcs.firePropertyChange("systemConfig", oldConfig, systemConfig);
     }
 
     @Override
     public void setUserConfig(Map<String, String> config) {
         Map<String, String> oldConfig = getUserConfig();
-        userConfig = new HashMap<>(config);
+        Map<String, String> userConfig = new HashMap<>(config);
         pcs.firePropertyChange("userConfig", oldConfig, userConfig);
     }
 
@@ -54,6 +52,7 @@ public class AppModel implements AppModelInterface {
 
     @Override
     public String getHelpText() {
+        //noinspection TextBlockMigration
         return "<html>\n" +
                 "<body>\n" +
                 "<h1>Elite Companion Help</h1>\n" +
@@ -109,9 +108,6 @@ public class AppModel implements AppModelInterface {
                 "</html>";
     }
 
-    @Override public boolean isStreamingModeOn() {
-        return this.streamingMode;
-    }
 
     @Override public void showSystemLog(boolean show) {
         this.showSystemLog = show;
@@ -134,10 +130,5 @@ public class AppModel implements AppModelInterface {
     @Override
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         pcs.addPropertyChangeListener(listener);
-    }
-
-    @Override
-    public void removePropertyChangeListener(PropertyChangeListener listener) {
-        pcs.removePropertyChangeListener(listener);
     }
 }

@@ -1,6 +1,7 @@
 package elite.companion.session;
 
 import com.google.common.eventbus.Subscribe;
+import com.google.gson.reflect.TypeToken;
 import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.gamestate.events.NavRouteDto;
 import elite.companion.gameapi.journal.events.*;
@@ -232,31 +233,38 @@ public class PlayerSession {
         persistence.registerField("shipScans", this::getShipScans, v -> {
             shipScans.clear();
             shipScans.putAll((Map<String, String>) v);
-        }, Map.class);
+        }, new TypeToken<Map<String, String>>() {
+        }.getType());
         persistence.registerField(MISSIONS, this::getMissions, v -> {
             missions.clear();
             missions.putAll((Map<Long, MissionDto>) v);
-        }, Map.class);
+        }, new TypeToken<Map<Long, MissionDto>>() {
+        }.getType());
         persistence.registerField("routeMap", this::getRoute, v -> {
             routeMap.clear();
             routeMap.putAll((Map<String, NavRouteDto>) v);
-        }, Map.class);
+        }, new TypeToken<Map<String, NavRouteDto>>() {
+        }.getType());
         persistence.registerField("detectedSignals", this::getDetectedSignals, v -> {
             detectedSignals.clear();
             detectedSignals.addAll((Set<String>) v);
-        }, Set.class);
+        }, new TypeToken<Set<String>>() {
+        }.getType());
         persistence.registerField("targetFactions", this::getTargetFactions, v -> {
             targetFactions.clear();
             targetFactions.addAll((Set<String>) v);
-        }, Set.class);
+        }, new TypeToken<Set<String>>() {
+        }.getType());
         persistence.registerField("missionKills", this::getMissionKills, v -> {
             missionKills.clear();
             missionKills.addAll((Set<MissionKillDto>) v);
-        }, Set.class);
+        }, new TypeToken<Set<MissionDto>>() {
+        }.getType());
         persistence.registerField("stellarObjects", this::getStellarObjects, v -> {
             stellarObjects.clear();
             stellarObjects.putAll((Map<String, StellarObjectDto>) v);
-        }, Map.class);
+        }, new TypeToken<Map<String, StellarObjectDto>>() {
+        }.getType());
 
         persistence.registerField("bountyCollectedThisSession", this::getBountyCollectedThisSession, this::setBountyCollectedThisSession, Long.class);
         persistence.registerField("rankAndProgressDto", this::getRankAndProgressDto, this::setRankAndProgressDto, RankAndProgressDto.class);

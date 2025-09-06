@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -26,9 +27,9 @@ class SessionPersistence {
     public static class FieldHandler<T> {
         private final Supplier<T> getter;
         private final Consumer<T> setter;
-        private final Class<T> type;
+        private final Type type;
 
-        public FieldHandler(Supplier<T> getter, Consumer<T> setter, Class<T> type) {
+        public FieldHandler(Supplier<T> getter, Consumer<T> setter, Type type) {
             this.getter = getter;
             this.setter = setter;
             this.type = type;
@@ -39,7 +40,7 @@ class SessionPersistence {
         this.sessionFile = sessionFile;
     }
 
-    protected <T> void registerField(String name, Supplier<T> getter, Consumer<T> setter, Class<T> type) {
+    protected <T> void registerField(String name, Supplier<T> getter, Consumer<T> setter, Type type) {
         fields.put(name, new FieldHandler<>(getter, setter, type));
     }
 

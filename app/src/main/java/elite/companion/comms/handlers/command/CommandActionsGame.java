@@ -81,7 +81,7 @@ public class CommandActionsGame {
         SET_SPEED50("set_speed_to_medium", "SetSpeed50", GenericGameController.class),
         SET_SPEED75("set_speed_to_optimal", "SetSpeed75", GenericGameController.class),
         SET_SPEED_ZERO("set_speed_to_zero", "SetSpeedZero", GenericGameController.class),
-        AUTO_DOC1("activate_auto_pilot", "SetSpeedZero", GenericGameController.class),
+        AUTO_DOC1("set_auto_pilot", "SetSpeedZero", GenericGameController.class),
         AUTO_DOC2("take_us_in", "SetSpeedZero", GenericGameController.class),
         AUTO_DOC3("automatic_docking", "SetSpeedZero", GenericGameController.class),
         TARGET_NEXT_ROUTE_SYSTEM("target_next_system_in_route", "TargetNextRouteSystem", GenericGameController.class),

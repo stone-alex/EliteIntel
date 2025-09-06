@@ -38,6 +38,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class BindingsMonitor {
     private static final Logger log = LoggerFactory.getLogger(BindingsMonitor.class);
+    private static volatile BindingsMonitor instance;
     private final KeyBindingsParser parser;
     private final Path bindingsDir;
     private Map<String, KeyBindingsParser.KeyBinding> bindings;
@@ -45,8 +46,19 @@ public class BindingsMonitor {
     private Thread processingThread;
     private volatile boolean running;
 
-    public BindingsMonitor(KeyBindingsParser parser) {
-        this.parser = parser;
+    public static BindingsMonitor getInstance() {
+        if (instance == null) {
+            synchronized (BindingsMonitor.class) {
+                if (instance == null) {
+                    instance = new BindingsMonitor();
+                }
+            }
+        }
+        return instance;
+    }
+
+    private BindingsMonitor() {
+        this.parser = KeyBindingsParser.getInstance();
         this.bindingsDir = Paths.get(System.getProperty("user.home"),
                 "AppData", "Local", "Frontier Developments", "Elite Dangerous", "Options", "Bindings");
     }

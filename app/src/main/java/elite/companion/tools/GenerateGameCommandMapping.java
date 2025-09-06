@@ -43,7 +43,7 @@ public class GenerateGameCommandMapping {
 
     public static void main(String[] args) {
         try {
-            KeyBindingsParser parser = new KeyBindingsParser();
+            KeyBindingsParser parser = KeyBindingsParser.getInstance();
             File bindingsFile = new BindingsLoader().getLatestBindsFile();
             Map<String, KeyBindingsParser.KeyBinding> bindings = parser.parseBindings(bindingsFile);
 

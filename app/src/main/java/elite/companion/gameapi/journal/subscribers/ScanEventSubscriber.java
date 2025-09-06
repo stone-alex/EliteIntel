@@ -22,10 +22,12 @@ public class ScanEventSubscriber {
         playerSession.put(PlayerSession.LAST_SCAN, event.toJson());
 
 
+
         boolean wasDiscovered = event.isWasDiscovered();
         boolean wasMapped = event.isWasMapped();
 
         if ("Detailed".equalsIgnoreCase(event.getScanType())) {
+
             //data for discovery missions - detailed scans
             StellarObjectDto stellarObject = new StellarObjectDto();
             stellarObject.setName(event.getBodyName());
@@ -38,8 +40,10 @@ public class ScanEventSubscriber {
             stellarObject.setAtmosphere(event.getAtmosphereType());
 
             List<MaterialDto> materials = new ArrayList<>();
-            for (ScanEvent.Material material : event.getMaterials()) {
-                materials.add(new MaterialDto(material.getName(), material.getPercent()));
+            if (event.getMaterials() != null) {
+                for (ScanEvent.Material material : event.getMaterials()) {
+                    materials.add(new MaterialDto(material.getName(), material.getPercent()));
+                }
             }
             stellarObject.setMaterials(materials);
             playerSession.addStellarObject(stellarObject);

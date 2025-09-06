@@ -21,6 +21,7 @@
     <logger name="elite.companion.comms.brain.robot.KeyBindingsParser" level="ERROR"/>
     <logger name="elite.companion.comms.brain.grok.GrokCommandEndPoint" level="DEBUG"/>
     <logger name="elite.companion.comms.ears.google.GoogleSTTImpl" level="WARNING"/>
+    <logger name="elite.companion.session.SessionPersistence" level="ERROR"/>
 
     <!-- Set your app to DEBUG explicitly -->
     <logger name="elite.companion" level="DEBUG" />

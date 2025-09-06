@@ -22,8 +22,20 @@ import java.util.*;
  */
 public class KeyBindingsParser {
     private static final Logger log = LoggerFactory.getLogger(KeyBindingsParser.class);
+    private static KeyBindingsParser instance;
 
-    public static class KeyBinding {
+    private KeyBindingsParser() {
+        // Private constructor for singleton
+    }
+
+    public static synchronized KeyBindingsParser getInstance() {
+        if (instance == null) {
+            instance = new KeyBindingsParser();
+        }
+        return instance;
+    }
+
+    public class KeyBinding {
         String key;
         String[] modifiers;
         boolean hold;
@@ -35,7 +47,7 @@ public class KeyBindingsParser {
         }
     }
 
-    private static final Set<String> BLACKLISTED_ACTIONS = new HashSet<>(Arrays.asList(
+    private final Set<String> BLACKLISTED_ACTIONS = new HashSet<>(Arrays.asList(
             "PrimaryFire", "SecondaryFire", "TriggerFieldNeutraliser",
             "BuggyPrimaryFireButton", "BuggySecondaryFireButton"
     ));

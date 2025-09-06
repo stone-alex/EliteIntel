@@ -31,9 +31,9 @@ public class GameCommandHandler {
     ));
 
     public GameCommandHandler() throws Exception {
-        this.parser = new KeyBindingsParser();
-        this.executor = new KeyBindingExecutor();
-        this.monitor = new BindingsMonitor(parser);
+        this.parser = KeyBindingsParser.getInstance();
+        this.executor = KeyBindingExecutor.getInstance();
+        this.monitor = BindingsMonitor.getInstance();
         log.info("GameCommandHandler initialized");
     }
 

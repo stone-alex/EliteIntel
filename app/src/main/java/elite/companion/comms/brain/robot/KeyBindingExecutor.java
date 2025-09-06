@@ -19,6 +19,19 @@ public class KeyBindingExecutor {
     private final KeyProcessor keyProcessor;
     private static final Map<String, Integer> ELITE_TO_KEYPROCESSOR_MAP = new HashMap<>();
 
+    private static KeyBindingExecutor instance;
+
+    private KeyBindingExecutor() {
+        this.keyProcessor = KeyProcessor.getInstance();
+    }
+
+    public static synchronized KeyBindingExecutor getInstance() {
+        if (instance == null) {
+            instance = new KeyBindingExecutor();
+        }
+        return instance;
+    }
+
     static {
         try {
             for (Field field : KeyProcessor.class.getDeclaredFields()) {
@@ -48,10 +61,6 @@ public class KeyBindingExecutor {
             }
         }
         return eliteKey.toString().toUpperCase();
-    }
-
-    public KeyBindingExecutor() throws Exception {
-        this.keyProcessor = KeyProcessor.getInstance();
     }
 
     public void executeBinding(KeyBindingsParser.KeyBinding binding) {

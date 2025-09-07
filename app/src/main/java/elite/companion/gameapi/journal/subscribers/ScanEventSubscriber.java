@@ -61,7 +61,9 @@ public class ScanEventSubscriber {
             }
             if (!isStar) {
                 if (wasDiscovered && !wasMapped) {
-                    EventBusManager.publish(new SensorDataEvent(event.getBodyName() + " was previously discovered, but not mapped."));
+                    if (!event.getBodyName().contains("Belt Cluster")) {
+                        EventBusManager.publish(new SensorDataEvent(event.getBodyName() + " was previously discovered, but not mapped."));
+                    }
                 }
             }
         }

@@ -185,7 +185,8 @@ public class GrokContextFactory implements AiContextFactory {
         sb.append("Apply personality: ").append(aiPersonality.name().toUpperCase()).append(" - ").append(aiPersonality.getBehaviorClause()).append(" ");
         sb.append("For star system codes or ship plates (e.g., RH-F), use NATO phonetic alphabet (e.g., Romeo Hotel dash Foxtrot). ");
         sb.append("Spell out numerals in full words (e.g., 285 = two hundred and eighty-five, 27 = twenty-seven). ");
-        sb.append("Gravity units in G, Temperature units Celsius, Mass units Kilograms, Distance units Light Years/seconds. ");
+        sb.append("Gravity units in G, Temperature units Kelvin provide conversion to Celsius. Mass units metric");
+        sb.append("Distances between stars in light years. Distance between planets in light seconds.");
         sb.append("Round billions to nearest million. ");
         sb.append("Round millions to nearest 250000. ");
         sb.append("Start responses directly with the requested information, avoiding conversational fillers like 'noted,' 'well,' 'right,' 'understood,' or similar phrases. ");
@@ -224,7 +225,7 @@ public class GrokContextFactory implements AiContextFactory {
         sb.append("For type='chat': \n" +
                 "    - Classify as 'chat' for general conversation, lore questions, opinions, or casual talk (e.g., 'How’s it going?', 'Tell me about the Thargoids', 'What’s your favorite system?').\n" +
                 "    - Generate a relevant conversational response in 'response_text' strictly adhering to the configured personality and cadence (e.g., for ROGUE: extremely brief, bold, witty with profanity like " + getProfanityExamples() + "; for UNHINGED: playful slang matching cadence).\n" +
-                "    - If input is ambiguous, unrecognized, or gibberish (e.g., 'voice to an', 'asdf'), set 'response_text' to 'Sorry, missed that. Say again?', 'action' to null, and 'expect_followup' to true. Do not generate custom clarification messages.\n" +
+                "    - If input is ambiguous, unrecognized, or gibberish (e.g., 'voice to an', 'asdf'), set 'response_text' to 'Say again?', 'action' to null, and 'expect_followup' to true. Do not generate custom clarification messages.\n" +
                 "    - Set 'expect_followup' to true if the response poses a question or invites further conversation; otherwise, false.\n");
         sb.append("Map colloquial terms to commands: 'feds', 'yanks', or 'federation space' to 'FEDERATION', 'imperials', 'imps', or 'empire' to 'IMPERIAL', 'alliance space' or 'allies' to 'ALLIANCE' for set_cadence. ");
         sb.append("Infer command intent from context: phrases like 'act like', 'talk like', 'blend in with', or 'sound like' followed by a faction should trigger 'set_cadence' with the corresponding cadence value, using current system allegiance if ambiguous. ");
@@ -235,7 +236,7 @@ public class GrokContextFactory implements AiContextFactory {
                 "    - Input 'How’s it going?' -> {\"type\": \"chat\", \"response_text\": \"Ship’s running like a dream, Commander! You holding up?\", \"action\": null, \"params\": {}, \"expect_followup\": true}\n" +
                 "    - Input 'Tell me about the Thargoids' -> {\"type\": \"chat\", \"response_text\": \"Thargoids? Bug-like bastards with tech that’ll fuck your ship in seconds. Want tips to survive 'em?\", \"action\": null, \"params\": {}, \"expect_followup\": true}\n" +
                 "    - Input 'What’s the weather in Los Angeles?' -> {\"type\": \"query\", \"response_text\": \"\", \"action\": \"general_conversation\", \"params\": {}, \"expect_followup\": true}\n" +
-                "    - Input 'voice to an' -> {\"type\": \"chat\", \"response_text\": \"Sorry, missed that. Say again?\", \"action\": null, \"params\": {}, \"expect_followup\": true}\n" +
+                "    - Input 'voice to an' -> {\"type\": \"chat\", \"response_text\": \"Say again?\", \"action\": null, \"params\": {}, \"expect_followup\": true}\n" +
                 "    - Input 'Find a material trader' -> {\"type\": \"query\", \"response_text\": \"Moment...\", \"action\": \"find_material_trader\", \"params\": {}, \"expect_followup\": false}\n" +
                 "    - Input 'Where can I buy Painite?' -> {\"type\": \"query\", \"response_text\": \"Moment...\", \"action\": \"find_commodity\", \"params\": {\"commodity\": \"painite\"}, \"expect_followup\": false}\n");
         return sb.toString();

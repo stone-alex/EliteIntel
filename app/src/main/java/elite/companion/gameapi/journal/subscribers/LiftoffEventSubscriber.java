@@ -7,7 +7,6 @@ import elite.companion.comms.brain.robot.KeyBindingsParser;
 import elite.companion.comms.handlers.command.CommandActionsGame;
 import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.SensorDataEvent;
-import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.gameapi.journal.events.LiftoffEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +64,6 @@ public class LiftoffEventSubscriber {
             log.info("Executed action: {} with key: {}", action, binding);
         } else {
             log.warn("No binding found for action: {}", action);
-            EventBusManager.publish(new VoiceProcessEvent("Custom command operator. No key binding found for action " + action));
         }
     }
 

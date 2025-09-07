@@ -21,10 +21,12 @@ public class SAAScanCompleteSubscriber {
     private String efficiency(SAAScanCompleteEvent event) {
         if (event.getEfficiencyTarget() > event.getProbesUsed()) {
             return " Efficiency Excellent: Only " + event.getProbesUsed() + " probes used out of " + event.getEfficiencyTarget() + ". ";
-        } else if (event.getEfficiencyTarget() == event.getProbesUsed()) {
+        } else if (event.getEfficiencyTarget() == event.getProbesUsed() || event.getBodyName().contains("Ring")) {
             return " Efficiency Target Met. ";
         } else {
             return " Efficiency Poor: " + event.getProbesUsed() + " exceeding efficiency target of " + event.getEfficiencyTarget() + " probes. ";
         }
+
+
     }
 }

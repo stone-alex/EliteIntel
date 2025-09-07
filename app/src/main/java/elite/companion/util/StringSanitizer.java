@@ -128,6 +128,10 @@ public class StringSanitizer {
             command = command.replace("despite galaxy map", "display galaxy map");
         }
 
+        if (command.contains("and their super cruise")) {
+            command = command.replace("and their super cruise", "enter supercruise");
+        }
+
         return command.toLowerCase();
     }
 }

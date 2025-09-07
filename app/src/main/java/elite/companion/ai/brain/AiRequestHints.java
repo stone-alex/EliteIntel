@@ -1,7 +1,7 @@
 package elite.companion.ai.brain;
 
-import elite.companion.ai.brain.handlers.command.CommandActionsCustom;
-import elite.companion.ai.brain.handlers.command.CommandActionsGame;
+import elite.companion.ai.brain.handlers.command.CustomCommands;
+import elite.companion.ai.brain.handlers.command.GameCommands;
 import elite.companion.ai.brain.handlers.query.QueryActions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,15 +36,15 @@ public class AiRequestHints {
     );
 
     static {
-        List<String> commands = Arrays.stream(CommandActionsCustom.values())
-                .map(CommandActionsCustom::getCommandWithPlaceholder)
+        List<String> commands = Arrays.stream(CustomCommands.values())
+                .map(CustomCommands::getCommandWithPlaceholder)
                 .collect(Collectors.toList());
 
         // Add user-friendly commands and queries
-        commands.addAll(Arrays.asList(CommandActionsGame.getUserCommands()));
+        commands.addAll(Arrays.asList(GameCommands.getUserCommands()));
 
         // Load game bindings
-        commands.addAll(Arrays.asList(CommandActionsGame.getUserCommands()));
+        commands.addAll(Arrays.asList(GameCommands.getUserCommands()));
         COMMANDS = commands;
     }
 

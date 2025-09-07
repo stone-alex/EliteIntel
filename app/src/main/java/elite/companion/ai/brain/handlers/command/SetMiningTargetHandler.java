@@ -25,7 +25,7 @@ public class SetMiningTargetHandler implements CommandHandler {
         if (jsonElement == null || jsonElement.getAsString().isEmpty()) {
             log.info("no mining target set");
         } else {
-            session.put(CommandActionsCustom.SET_MINING_TARGET.getParamKey(), jsonElement.getAsJsonPrimitive().getAsString().replace("\"", ""));
+            session.put(CustomCommands.SET_MINING_TARGET.getParamKey(), jsonElement.getAsJsonPrimitive().getAsString().replace("\"", ""));
         }
     }
 }

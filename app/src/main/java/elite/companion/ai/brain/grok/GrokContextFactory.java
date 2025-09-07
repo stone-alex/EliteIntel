@@ -11,9 +11,9 @@ import elite.companion.util.Ranks;
 
 import java.util.Objects;
 
-import static elite.companion.ai.brain.handlers.command.CommandActionsCustom.SET_PERSONALITY;
-import static elite.companion.ai.brain.handlers.command.CommandActionsGame.GameCommand.ENTER_SUPERCRUISE;
-import static elite.companion.ai.brain.handlers.command.CommandActionsGame.GameCommand.SET_SPEED_ZERO;
+import static elite.companion.ai.brain.handlers.command.CustomCommands.SET_PERSONALITY;
+import static elite.companion.ai.brain.handlers.command.GameCommands.GameCommand.ENTER_SUPERCRUISE;
+import static elite.companion.ai.brain.handlers.command.GameCommands.GameCommand.SET_SPEED_ZERO;
 import static elite.companion.ai.brain.handlers.query.QueryActions.GENERAL_CONVERSATION;
 import static elite.companion.ai.brain.handlers.query.QueryActions.WHAT_IS_YOUR_DESIGNATION;
 

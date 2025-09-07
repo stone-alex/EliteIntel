@@ -24,9 +24,9 @@ public class ExitToHud extends CustomCommandOperator implements CommandHandler {
 
     @Override public void handle(JsonObject params, String responseText) {
         try {
-            String exit = CommandActionsGame.GameCommand.EXIT_KEY.getGameBinding();
-            String headLookReset = CommandActionsGame.GameCommand.HEAD_LOOK_RESET.getGameBinding();
-            String quitFFS = CommandActionsGame.GameCommand.EXPLORATION_FSSQUIT.getGameBinding();
+            String exit = GameCommands.GameCommand.EXIT_KEY.getGameBinding();
+            String headLookReset = GameCommands.GameCommand.HEAD_LOOK_RESET.getGameBinding();
+            String quitFFS = GameCommands.GameCommand.EXPLORATION_FSSQUIT.getGameBinding();
             //back out of nested menus and sub windows
             operateKeyboard(quitFFS, 0);
             Thread.sleep(DELAY);

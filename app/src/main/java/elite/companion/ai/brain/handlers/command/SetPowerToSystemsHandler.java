@@ -5,7 +5,7 @@ import elite.companion.ai.hands.GameCommandHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static elite.companion.ai.brain.handlers.command.CommandActionsGame.GameCommand.*;
+import static elite.companion.ai.brain.handlers.command.GameCommands.GameCommand.*;
 
 /**
  * The SetPowerToSystemsHandler class extends the CustomCommandOperator and implements

@@ -5,8 +5,8 @@ import elite.companion.ai.hands.GameCommandHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static elite.companion.ai.brain.handlers.command.CommandActionsGame.GameCommand.EXPLORATION_FSSDISCOVERY_SCAN;
-import static elite.companion.ai.brain.handlers.command.CommandActionsGame.GameCommand.SET_SPEED_ZERO;
+import static elite.companion.ai.brain.handlers.command.GameCommands.GameCommand.EXPLORATION_FSSDISCOVERY_SCAN;
+import static elite.companion.ai.brain.handlers.command.GameCommands.GameCommand.SET_SPEED_ZERO;
 
 /**
  * The PerformFSSScanHandler class is responsible for executing a sequence of key bindings

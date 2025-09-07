@@ -36,7 +36,7 @@ public class SetStreamingModeHandler implements CommandHandler {
     private static final Logger log = LoggerFactory.getLogger(SetRouteHandler.class);
 
     @Override public void handle(JsonObject params, String responseText) {
-        JsonElement jsonElement = extractParameter(CommandActionsCustom.SET_STREAMING_MODE.getPlaceholder(), params);
+        JsonElement jsonElement = extractParameter(CustomCommands.SET_STREAMING_MODE.getPlaceholder(), params);
         boolean isOn = "on".equalsIgnoreCase(jsonElement.getAsString());
         SystemSession systemSession = SystemSession.getInstance();
         systemSession.setStreamingMode(isOn);

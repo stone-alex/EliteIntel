@@ -1,7 +1,7 @@
 package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.companion.ai.brain.handlers.command.CommandActionsCustom;
+import elite.companion.ai.brain.handlers.command.CustomCommands;
 import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.gameapi.journal.events.ProspectedAsteroidEvent;
@@ -18,7 +18,7 @@ public class ProspectorSubscriber {
 
         for (ProspectedAsteroidEvent.Material material : event.getMaterials()) {
             String prospectedMaterial = material == null ? "" : material.getName();
-            String targetMaterial = String.valueOf(PlayerSession.getInstance().get(CommandActionsCustom.SET_MINING_TARGET.getParamKey())).replaceAll("\"", "");
+            String targetMaterial = String.valueOf(PlayerSession.getInstance().get(CustomCommands.SET_MINING_TARGET.getParamKey())).replaceAll("\"", "");
             if (prospectedMaterial != null && !prospectedMaterial.isEmpty() && prospectedMaterial.toLowerCase().equals(targetMaterial.toLowerCase())) {
                 foundTargetMaterial = true;
 

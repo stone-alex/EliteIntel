@@ -3,7 +3,7 @@ package elite.companion.ai.brain.handlers.command;
 import com.google.gson.JsonObject;
 import elite.companion.ai.hands.GameCommandHandler;
 
-import static elite.companion.ai.brain.handlers.command.CommandActionsGame.GameCommand.SET_SPEED75;
+import static elite.companion.ai.brain.handlers.command.GameCommands.GameCommand.SET_SPEED75;
 
 /**
  * The SetOptimalSpeedHandler class is responsible for handling the command

@@ -29,9 +29,9 @@ package elite.companion.ai.brain;
  */
 public interface AiContextFactory {
     String generateSystemInstructions(String sensorInput);
-    String generateQueryPrompt();
-    String generateSystemPrompt();
-    String generateAnalysisPrompt(String userIntent, String dataJson);
-    void appendBehavior(StringBuilder sb);
     String generatePlayerInstructions(String playerVoiceInput);
+    String generateAnalysisPrompt(String userIntent, String dataJson);
+    String generateSystemPrompt();
+    String generateQueryPrompt();
+    void appendBehavior(StringBuilder sb);
 }

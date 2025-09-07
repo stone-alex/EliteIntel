@@ -27,7 +27,7 @@ public class CustomCommandOperator {
     protected void operateKeyboard(String action, int holdTime) {
         KeyBindingsParser.KeyBinding binding = monitor.getBindings().get(action);
         if (binding == null) {
-            binding = monitor.getBindings().get(CommandActionsGame.getGameBinding(action));
+            binding = monitor.getBindings().get(GameCommands.getGameBinding(action));
         }
 
         if (binding != null) {

@@ -7,6 +7,22 @@ import elite.companion.gameapi.VoiceProcessEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The GenericGameController class acts as a mediator between the game command input and
+ * the GameCommandHandler, translating commands and passing necessary information for
+ * execution. It specifically processes JSON-based parameters and forwards them to the
+ * GameCommandHandler after associating them with a defined game binding.
+ * <p>
+ * This class implements the CommandHandler interface, ensuring any incoming commands
+ * are handled following the specified contract. It also manages error scenarios where
+ * no valid game binding is found, logging the issue and publishing an error event.
+ * <p>
+ * Key responsibilities:
+ * - Interpret and map incoming command parameters using a pre-defined game binding.
+ * - Forward structured command data to the GameCommandHandler for actual processing.
+ * - Most of the game controller commands go through this class.
+ * - Log handling activities and provide feedback when no valid binding is defined.
+ */
 public class GenericGameController implements CommandHandler {
     private static final Logger log = LoggerFactory.getLogger(GenericGameController.class);
     private final GameCommandHandler _gameCommandHandler;

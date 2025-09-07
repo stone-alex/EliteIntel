@@ -6,7 +6,7 @@ package elite.companion.ai.brain.handlers.command;
  * to their respective commands, which are linked with identifiers and
  * associated classes for controlling the game behavior.
  */
-public class CommandActionsGame {
+public class GameCommands {
     /**
      * Enumeration representing various game commands and their associated attributes.
      * Each game command is linked with a binding name, an action, and a controller class.

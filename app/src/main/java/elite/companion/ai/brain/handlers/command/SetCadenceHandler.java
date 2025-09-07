@@ -38,7 +38,7 @@ public class SetCadenceHandler implements CommandHandler {
     @Override public void handle(JsonObject params, String responseText) {
         SystemSession systemSession = SystemSession.getInstance();
         try {
-            JsonElement jsonElement = extractParameter(CommandActionsCustom.SET_PROFILE.getPlaceholder(), params);
+            JsonElement jsonElement = extractParameter(CustomCommands.SET_PROFILE.getPlaceholder(), params);
             AICadence aiCadence = AICadence.valueOf(jsonElement.getAsString().toUpperCase());
 
             AiVoices currentVoice = systemSession.getAIVoice();

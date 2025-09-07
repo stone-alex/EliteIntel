@@ -91,8 +91,6 @@ public class GoogleSTTImpl implements EarsInterface {
     private int sampleRateHertz; // Dynamically detected
     private int bufferSize; // Dynamically calculated based on sample rate
     private static final int CHANNELS = 1; // Mono
-    //private static final int KEEP_ALIVE_INTERVAL_MS = 2000;
-    //private static final int STREAM_DURATION_MS = 30000; // 30s
     private static final int RESTART_DELAY_MS = 50; // 50ms sleep after stream close
     private File wavFile = null; // Output WAV for debugging
     private final BlockingQueue<String> transcriptionQueue = new LinkedBlockingQueue<>();
@@ -537,15 +535,11 @@ public class GoogleSTTImpl implements EarsInterface {
                 .build();
     }
 
-    @Override public String getNextTranscription() throws InterruptedException {
-        return transcriptionQueue.take();
-    }
-
-    @Override public void stopListening() {
+    private void stopListening() {
         isListening.set(false);
     }
 
-    @Override public void shutdown() {
+    public void shutdown() {
         stopListening();
         aiCommandInterface.stop();
         if (speechClient != null) {

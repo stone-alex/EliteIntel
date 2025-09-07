@@ -6,7 +6,10 @@ import elite.companion.ai.ApiFactory;
 import elite.companion.ai.brain.AIRouterInterface;
 import elite.companion.ai.brain.AiContextFactory;
 import elite.companion.ai.brain.AiQueryInterface;
-import elite.companion.ai.brain.handlers.command.*;
+import elite.companion.ai.brain.handlers.command.CommandHandler;
+import elite.companion.ai.brain.handlers.command.CustomCommands;
+import elite.companion.ai.brain.handlers.command.GameCommands;
+import elite.companion.ai.brain.handlers.command.GenericGameController;
 import elite.companion.ai.brain.handlers.query.QueryActions;
 import elite.companion.ai.brain.handlers.query.QueryHandler;
 import elite.companion.ai.hands.GameCommandHandler;
@@ -69,7 +72,7 @@ public class GrokResponseRouter implements AIRouterInterface {
             }
         }
 
-        for (CommandActionsCustom action : CommandActionsCustom.values()) {
+        for (CustomCommands action : CustomCommands.values()) {
             try {
                 CommandHandler handler = instantiateCommandHandler(action.getHandlerClass(), action.getAction());
                 commandHandlers.put(action.getAction(), handler);
@@ -80,7 +83,7 @@ public class GrokResponseRouter implements AIRouterInterface {
             }
         }
 
-        for (CommandActionsGame.GameCommand command : CommandActionsGame.GameCommand.values()) {
+        for (GameCommands.GameCommand command : GameCommands.GameCommand.values()) {
             try {
                 CommandHandler handler = instantiateCommandHandler(command.getHandlerClass(), command.getGameBinding());
                 commandHandlers.put(command.getGameBinding(), handler);
@@ -116,10 +119,6 @@ public class GrokResponseRouter implements AIRouterInterface {
                 Constructor<? extends CommandHandler> constructor = handlerClass.getDeclaredConstructor(GameCommandHandler.class, String.class);
                 constructor.setAccessible(true);
                 return constructor.newInstance(gameCommandHandler, actionOrBinding);
-            } else if (handlerClass == SetRouteHandler.class) {
-                Constructor<? extends CommandHandler> constructor = handlerClass.getDeclaredConstructor(GameCommandHandler.class);
-                constructor.setAccessible(true);
-                return constructor.newInstance(gameCommandHandler);
             } else {
                 try {
                     Constructor<? extends CommandHandler> constructor = handlerClass.getDeclaredConstructor(GameCommandHandler.class);
@@ -192,9 +191,9 @@ public class GrokResponseRouter implements AIRouterInterface {
      * and user input. Routes the query to the appropriate query handler and manages
      * the response, including follow-up actions if required.
      *
-     * @param action The action identifier for the query, used to determine which query handler to invoke.
-     *               If null or empty, it defaults to "general_conversation".
-     * @param params The parameters associated with the query to provide additional context or data for processing.
+     * @param action    The action identifier for the query, used to determine which query handler to invoke.
+     *                  If null or empty, it defaults to "general_conversation".
+     * @param params    The parameters associated with the query to provide additional context or data for processing.
      * @param userInput The original user input prompting the query, used as a fallback in certain processing paths.
      */
     private void handleQuery(String action, JsonObject params, String userInput) {

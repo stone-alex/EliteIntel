@@ -1,7 +1,7 @@
 package elite.companion.ai.hands;
 
 import com.google.gson.JsonObject;
-import elite.companion.ai.brain.handlers.command.CommandActionsGame;
+import elite.companion.ai.brain.handlers.command.GameCommands;
 import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.session.SystemSession;
@@ -124,7 +124,7 @@ public class GameCommandHandler {
         log.debug("Updated SessionTracker with action: {}, params: {}", action, params);
         KeyBindingsParser.KeyBinding binding = monitor.getBindings().get(action);
         if (binding == null) {
-            binding = monitor.getBindings().get(CommandActionsGame.getGameBinding(action));
+            binding = monitor.getBindings().get(GameCommands.getGameBinding(action));
         }
 
         if (binding != null) {

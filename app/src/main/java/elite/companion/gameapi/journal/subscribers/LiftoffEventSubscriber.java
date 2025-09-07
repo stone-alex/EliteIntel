@@ -1,7 +1,7 @@
 package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.companion.ai.brain.handlers.command.CommandActionsGame;
+import elite.companion.ai.brain.handlers.command.GameCommands;
 import elite.companion.ai.hands.BindingsMonitor;
 import elite.companion.ai.hands.KeyBindingExecutor;
 import elite.companion.ai.hands.KeyBindingsParser;
@@ -32,7 +32,7 @@ public class LiftoffEventSubscriber {
         PlayerSession.getInstance().remove(PlayerSession.STATION_DATA);
 
         if (isPlayerControlled) {
-            String landingGearToggle = CommandActionsGame.GameCommand.LANDING_GEAR_TOGGLE.getGameBinding();
+            String landingGearToggle = GameCommands.GameCommand.LANDING_GEAR_TOGGLE.getGameBinding();
             try {
                 Thread.sleep(1500);
                 operateKeyboard(landingGearToggle, 0);
@@ -45,7 +45,7 @@ public class LiftoffEventSubscriber {
     protected void operateKeyboard(String action, int holdTime) {
         KeyBindingsParser.KeyBinding binding = monitor.getBindings().get(action);
         if (binding == null) {
-            binding = monitor.getBindings().get(CommandActionsGame.getGameBinding(action));
+            binding = monitor.getBindings().get(GameCommands.getGameBinding(action));
         }
 
         if (binding != null) {

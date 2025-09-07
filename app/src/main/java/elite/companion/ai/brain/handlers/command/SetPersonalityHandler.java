@@ -33,7 +33,7 @@ public class SetPersonalityHandler implements CommandHandler {
 
     @Override public void handle(JsonObject params, String responseText) {
         try {
-            JsonElement jsonElement = extractParameter(CommandActionsCustom.SET_PERSONALITY.getPlaceholder(), params);
+            JsonElement jsonElement = extractParameter(CustomCommands.SET_PERSONALITY.getPlaceholder(), params);
             AIPersonality aiPersonality = AIPersonality.valueOf(jsonElement.getAsString().toUpperCase());
             SystemSession.getInstance().setAIPersonality(aiPersonality);
             if (AIPersonality.PROFESSIONAL.equals(aiPersonality)) {

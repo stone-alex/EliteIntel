@@ -25,7 +25,7 @@ public class OpenSystemMapHandler extends CustomCommandOperator implements Comma
     }
 
     @Override public void handle(JsonObject params, String responseText) {
-        String openMap = CommandActionsGame.GameCommand.SYSTEM_MAP.getGameBinding();
+        String openMap = GameCommands.GameCommand.SYSTEM_MAP.getGameBinding();
         operateKeyboard(openMap, 0);
     }
 }

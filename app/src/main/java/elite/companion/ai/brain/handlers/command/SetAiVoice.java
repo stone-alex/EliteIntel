@@ -20,7 +20,7 @@ import static elite.companion.util.json.JsonParameterExtractor.extractParameter;
 public class SetAiVoice implements CommandHandler {
 
     @Override public void handle(JsonObject params, String responseText) {
-        JsonElement jsonElement = extractParameter(CommandActionsCustom.SET_AI_VOICE.getPlaceholder(), params);
+        JsonElement jsonElement = extractParameter(CustomCommands.SET_AI_VOICE.getPlaceholder(), params);
         if (jsonElement == null || jsonElement.getAsString().isEmpty()) {
             EventBusManager.publish(new VoiceProcessEvent("Sorry, the value returned was null or empty. I am unable to process your request."));
             return;

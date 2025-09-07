@@ -18,7 +18,7 @@ import elite.companion.session.SystemSession;
  * of commands, ensuring a consistent mechanism for handling user input and executing
  * corresponding actions.
  */
-public enum CommandActionsCustom {
+public enum CustomCommands {
     SET_MINING_TARGET("set_mining_target", "<material>", "mining_target", SetMiningTargetHandler.class),
     PLOT_ROUTE("plot_route", "<destination>", "destination", SetRouteHandler.class),
     SET_STREAMING_MODE("set_streaming_mode", "<streaming_mode_on_off>", "streaming_mode", SetStreamingModeHandler.class),
@@ -50,7 +50,7 @@ public enum CommandActionsCustom {
     private final String paramKey;
     private final Class<? extends CommandHandler> handlerClass;
 
-    CommandActionsCustom(String action, String placeholder, String paramKey, Class<? extends CommandHandler> handlerClass) {
+    CustomCommands(String action, String placeholder, String paramKey, Class<? extends CommandHandler> handlerClass) {
         this.action = action;
         this.placeholder = placeholder;
         this.paramKey = paramKey;

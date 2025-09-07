@@ -12,8 +12,6 @@ import java.util.List;
 
 public class ApproachBodySubscriber {
 
-    public static final double TEMP_CONVERSION_FROM_K_TO_C = 273.15;
-
     @Subscribe
     public void onApproachBodyEvent(ApproachBodyEvent event) {
         PlayerSession playerSession = PlayerSession.getInstance();
@@ -21,8 +19,7 @@ public class ApproachBodySubscriber {
 
         StellarObjectDto stellarObject = playerSession.getStellarObject(event.getBody());
         if (stellarObject != null) {
-            sb.append("Approaching ").append(event.getBody()).append(". ");
-            if (stellarObject.isTidalLocked()) sb.append(" The planet is tidally locked. ");
+            sb.append("Entering orbit for ").append(event.getBody()).append(". ");
             double surfaceGravity = stellarObject.getSurfaceGravity();
             sb.append(" Surface Gravity: ").append(surfaceGravity).append(" g/cm3 ");
             if (surfaceGravity > 1) {
@@ -40,8 +37,9 @@ public class ApproachBodySubscriber {
                 }
             }
             sb.append(".");
-            double surfaceTemperature = stellarObject.getSurfaceTemperature() - TEMP_CONVERSION_FROM_K_TO_C;
+            double surfaceTemperature = stellarObject.getSurfaceTemperature();
             sb.append(" Surface Temperature: ").append(surfaceTemperature).append(" C");
+            if (stellarObject.isTidalLocked()) sb.append(" The planet is tidally locked. ");
         } else {
             sb.append(" No data available for ").append(event.getBody()).append(".");
             sb.append(" Check gravity and temperature data before landing");

@@ -6,7 +6,7 @@ import elite.companion.ai.ConfigManager;
 import elite.companion.ai.brain.AICadence;
 import elite.companion.ai.brain.AIPersonality;
 import elite.companion.ai.ears.EarsInterface;
-import elite.companion.ai.mouth.GoogleVoices;
+import elite.companion.ai.mouth.AiVoices;
 import elite.companion.ai.mouth.MouthInterface;
 import elite.companion.gameapi.*;
 import elite.companion.session.PlayerSession;
@@ -174,9 +174,9 @@ public class AppController implements AppControllerInterface, ActionListener {
 
     private String listVoices() {
         StringBuilder sb = new StringBuilder();
-        GoogleVoices[] voices = GoogleVoices.values();
+        AiVoices[] voices = AiVoices.values();
         sb.append("[");
-        for (GoogleVoices voice : voices) {
+        for (AiVoices voice : voices) {
             sb.append(StringSanitizer.capitalizeWords(voice.name())).append(", ");
         }
         sb.append("]");

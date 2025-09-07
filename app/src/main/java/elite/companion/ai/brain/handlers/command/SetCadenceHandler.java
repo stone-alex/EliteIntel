@@ -3,7 +3,7 @@ package elite.companion.ai.brain.handlers.command;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import elite.companion.ai.brain.AICadence;
-import elite.companion.ai.mouth.GoogleVoices;
+import elite.companion.ai.mouth.AiVoices;
 import elite.companion.ai.mouth.VoiceToAllegiances;
 import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.SensorDataEvent;
@@ -41,7 +41,7 @@ public class SetCadenceHandler implements CommandHandler {
             JsonElement jsonElement = extractParameter(CommandActionsCustom.SET_PROFILE.getPlaceholder(), params);
             AICadence aiCadence = AICadence.valueOf(jsonElement.getAsString().toUpperCase());
 
-            GoogleVoices currentVoice = systemSession.getAIVoice();
+            AiVoices currentVoice = systemSession.getAIVoice();
             VoiceToAllegiances.getInstance().getVoiceForCadence(aiCadence, currentVoice);
 
             systemSession.setAICadence(aiCadence);

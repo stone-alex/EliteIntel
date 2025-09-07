@@ -1,7 +1,7 @@
 package elite.companion.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
-import elite.companion.ai.mouth.GoogleVoices;
+import elite.companion.ai.mouth.AiVoices;
 import elite.companion.session.PlayerSession;
 import elite.companion.session.SystemSession;
 
@@ -13,9 +13,9 @@ public class ListAvailableVoices implements QueryHandler {
     public JsonObject handle(String action, JsonObject params, String originalUserInput) {
         SystemSession session = SystemSession.getInstance();
         PlayerSession playerSession = PlayerSession.getInstance();
-        GoogleVoices[] voices = GoogleVoices.values();
+        AiVoices[] voices = AiVoices.values();
         List<String> voiceNames = new ArrayList<>();
-        for (GoogleVoices voice : voices) {
+        for (AiVoices voice : voices) {
             if (!voice.getName().equals(session.getAIVoice().getName())) {
                 voiceNames.add(voice.getName());
             }

@@ -6,7 +6,7 @@ import com.google.gson.JsonObject;
 import elite.companion.ai.ConfigManager;
 import elite.companion.ai.brain.AICadence;
 import elite.companion.ai.brain.AIPersonality;
-import elite.companion.ai.mouth.GoogleVoices;
+import elite.companion.ai.mouth.AiVoices;
 import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.journal.events.LoadGameEvent;
 import org.slf4j.Logger;
@@ -36,7 +36,7 @@ public class SystemSession {
     private static final SystemSession INSTANCE = new SystemSession();
     private final Map<String, Object> state = new HashMap<>();
 
-    private GoogleVoices aiVoice;
+    private AiVoices aiVoice;
     private AIPersonality aiPersonality;
     private AICadence aiCadence;
     private JsonArray chatHistory = new JsonArray();
@@ -44,7 +44,7 @@ public class SystemSession {
     private final SessionPersistence persistence = new SessionPersistence(SESSION_FILE);
 
     private SystemSession() {
-        persistence.registerField("aiVoice", this::getAIVoice, this::setAIVoice, GoogleVoices.class);
+        persistence.registerField("aiVoice", this::getAIVoice, this::setAIVoice, AiVoices.class);
         persistence.registerField("aiPersonality", this::getAIPersonality, this::setAIPersonality, AIPersonality.class);
         persistence.registerField("aiCadence", this::getAICadence, this::setAICadence, AICadence.class);
         persistence.registerField("chatHistory", this::getChatHistory, this::setChatHistory, JsonArray.class);
@@ -84,13 +84,13 @@ public class SystemSession {
     }
 
 
-    public void setAIVoice(GoogleVoices voice) {
+    public void setAIVoice(AiVoices voice) {
         this.aiVoice = voice;
         saveSession();
     }
 
-    public GoogleVoices getAIVoice() {
-        return this.aiVoice == null ? GoogleVoices.JENNIFER : this.aiVoice;
+    public AiVoices getAIVoice() {
+        return this.aiVoice == null ? AiVoices.JENNIFER : this.aiVoice;
     }
 
     public void setAIPersonality(AIPersonality personality) {

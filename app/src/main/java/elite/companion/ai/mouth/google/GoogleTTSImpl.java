@@ -3,7 +3,7 @@ package elite.companion.ai.mouth.google;
 import com.google.cloud.texttospeech.v1.*;
 import com.google.common.eventbus.Subscribe;
 import elite.companion.ai.ConfigManager;
-import elite.companion.ai.mouth.GoogleVoices;
+import elite.companion.ai.mouth.AiVoices;
 import elite.companion.ai.mouth.MouthInterface;
 import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.VoiceProcessEvent;
@@ -81,35 +81,35 @@ public class GoogleTTSImpl implements MouthInterface {
         VoiceSelectionParams Karen = VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Despina").build();
         VoiceSelectionParams Emma = VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Despina").build();
 
-        voiceMap.put(GoogleVoices.ANNA.getName(), Anna);
-        voiceMap.put(GoogleVoices.CHARLES.getName(), Charles);
-        voiceMap.put(GoogleVoices.JAMES.getName(), James);
-        voiceMap.put(GoogleVoices.JENNIFER.getName(), Jennifer);
-        voiceMap.put(GoogleVoices.JOSEPH.getName(), Joseph);
-        voiceMap.put(GoogleVoices.KAREN.getName(), Karen);
-        voiceMap.put(GoogleVoices.JAKE.getName(), Jake);
-        voiceMap.put(GoogleVoices.MARY.getName(), Mary);
-        voiceMap.put(GoogleVoices.MICHAEL.getName(), Michael);
-        voiceMap.put(GoogleVoices.RACHEL.getName(), Rachel);
-        voiceMap.put(GoogleVoices.STEVE.getName(), Steve);
-        voiceMap.put(GoogleVoices.BETTY.getName(), Betty);
-        voiceMap.put(GoogleVoices.EMMA.getName(), Emma);
-        voiceMap.put(GoogleVoices.OLIVIA.getName(), Olivia);
+        voiceMap.put(AiVoices.ANNA.getName(), Anna);
+        voiceMap.put(AiVoices.CHARLES.getName(), Charles);
+        voiceMap.put(AiVoices.JAMES.getName(), James);
+        voiceMap.put(AiVoices.JENNIFER.getName(), Jennifer);
+        voiceMap.put(AiVoices.JOSEPH.getName(), Joseph);
+        voiceMap.put(AiVoices.KAREN.getName(), Karen);
+        voiceMap.put(AiVoices.JAKE.getName(), Jake);
+        voiceMap.put(AiVoices.MARY.getName(), Mary);
+        voiceMap.put(AiVoices.MICHAEL.getName(), Michael);
+        voiceMap.put(AiVoices.RACHEL.getName(), Rachel);
+        voiceMap.put(AiVoices.STEVE.getName(), Steve);
+        voiceMap.put(AiVoices.BETTY.getName(), Betty);
+        voiceMap.put(AiVoices.EMMA.getName(), Emma);
+        voiceMap.put(AiVoices.OLIVIA.getName(), Olivia);
 
-        randomVoiceMap.put(GoogleVoices.ANNA.getName(), Anna);
-        randomVoiceMap.put(GoogleVoices.CHARLES.getName(), Charles);
-        randomVoiceMap.put(GoogleVoices.JAMES.getName(), James);
-        randomVoiceMap.put(GoogleVoices.JENNIFER.getName(), Jennifer);
-        randomVoiceMap.put(GoogleVoices.JOSEPH.getName(), Joseph);
-        randomVoiceMap.put(GoogleVoices.KAREN.getName(), Karen);
-        randomVoiceMap.put(GoogleVoices.JAKE.getName(), Jake);
-        randomVoiceMap.put(GoogleVoices.MARY.getName(), Mary);
-        randomVoiceMap.put(GoogleVoices.MICHAEL.getName(), Michael);
-        randomVoiceMap.put(GoogleVoices.RACHEL.getName(), Rachel);
-        randomVoiceMap.put(GoogleVoices.STEVE.getName(), Steve);
-        randomVoiceMap.put(GoogleVoices.BETTY.getName(), Betty);
-        randomVoiceMap.put(GoogleVoices.EMMA.getName(), Emma);
-        randomVoiceMap.put(GoogleVoices.OLIVIA.getName(), Olivia);
+        randomVoiceMap.put(AiVoices.ANNA.getName(), Anna);
+        randomVoiceMap.put(AiVoices.CHARLES.getName(), Charles);
+        randomVoiceMap.put(AiVoices.JAMES.getName(), James);
+        randomVoiceMap.put(AiVoices.JENNIFER.getName(), Jennifer);
+        randomVoiceMap.put(AiVoices.JOSEPH.getName(), Joseph);
+        randomVoiceMap.put(AiVoices.KAREN.getName(), Karen);
+        randomVoiceMap.put(AiVoices.JAKE.getName(), Jake);
+        randomVoiceMap.put(AiVoices.MARY.getName(), Mary);
+        randomVoiceMap.put(AiVoices.MICHAEL.getName(), Michael);
+        randomVoiceMap.put(AiVoices.RACHEL.getName(), Rachel);
+        randomVoiceMap.put(AiVoices.STEVE.getName(), Steve);
+        randomVoiceMap.put(AiVoices.BETTY.getName(), Betty);
+        randomVoiceMap.put(AiVoices.EMMA.getName(), Emma);
+        randomVoiceMap.put(AiVoices.OLIVIA.getName(), Olivia);
     }
 
     @Override public synchronized void start() {
@@ -163,11 +163,11 @@ public class GoogleTTSImpl implements MouthInterface {
         processingThread = null;
     }
 
-    private GoogleVoices getRandomVoice() {
+    private AiVoices getRandomVoice() {
         if (voiceMap.isEmpty()) {
             return SystemSession.getInstance().getAIVoice();
         }
-        GoogleVoices[] voices = randomVoiceMap.keySet().toArray(new GoogleVoices[0]);
+        AiVoices[] voices = randomVoiceMap.keySet().toArray(new AiVoices[0]);
         return voices[new Random().nextInt(voices.length)];
     }
 
@@ -186,7 +186,7 @@ public class GoogleTTSImpl implements MouthInterface {
         new Thread(() -> speak(text, SystemSession.getInstance().getAIVoice())).start();
     }
 
-    private void speak(String text, GoogleVoices aiVoice) {
+    private void speak(String text, AiVoices aiVoice) {
         if (text == null || text.isEmpty()) return;
         try {
             voiceQueue.put(new VoiceRequest(text, aiVoice.getName(), aiVoice.getSpeechRate()));

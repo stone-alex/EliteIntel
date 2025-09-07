@@ -30,6 +30,10 @@ public class EventRegistry {
     private static final long THRESHOLD_LONG = 60000; // 60 seconds
 
     static {
+        registerEvent("ScanBaryCentre", ScanBaryCentreEvent.class);
+        registerEvent("Docked", DockedEvent.class);
+        registerEvent("DockSRV", DockSRVEvent.class);
+        registerEvent("LaunchSRV", LaunchSRVEvent.class);
         registerEvent("FSSBodySignals", FSSBodySignalsEvent.class);
         registerEvent("ApproachSettlement", ApproachSettlementEvent.class);
         registerEvent("Missions", MissionsEvent.class);
@@ -95,7 +99,7 @@ public class EventRegistry {
     public static BaseEvent createEvent(String eventName, JsonObject json) {
         Class<? extends BaseEvent> eventClass = eventMap.get(eventName);
         if (eventClass == null) {
-            log.warn("Unknown event type: {}", eventName);
+            log.info("Event not registered or programmed: {}", eventName);
             return null;
         }
 

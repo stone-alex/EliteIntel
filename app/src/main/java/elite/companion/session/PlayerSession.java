@@ -163,6 +163,7 @@ public class PlayerSession {
     public static final String JUMPING_TO = "jumping_to_starsystem";
     public static final String MATERIALS = "materials";
     public static final String ENGINEER_PROGRESS = "engineer_progress";
+    public static final String STATION_DATA = "station_data";
     private static final String FRIENDS_STATUS = "friends_status";
 
     public static final String SHIP_FUEL_LEVEL = "ship_fuel_level";
@@ -234,12 +235,6 @@ public class PlayerSession {
 
     private PlayerSession() {
         state.put(FRIENDS_STATUS, new HashMap<String, String>());
-/*
-        persistence.registerField("state", this::getState, v ->{
-            state.clear();
-            state.putAll((Map<String, Object>) v);
-        }, new TypeToken<Map<String, Object>>(){}.getType());
-*/
         persistence.registerField("shipScans", this::getShipScans, v -> {
             shipScans.clear();
             shipScans.putAll((Map<String, String>) v);

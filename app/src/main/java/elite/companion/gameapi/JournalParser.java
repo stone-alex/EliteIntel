@@ -154,9 +154,8 @@ public class JournalParser implements Runnable {
                                     EventBusManager.publish(event);
                                     EventBusManager.publish(new AppLogEvent("Processing Event: " + eventType));
                                     log.info("Processing Journal Event: {} {}", eventType, event.toJsonObject());
-                                } else {
-                                    String reason = event == null ? "Event not registered" : "Event expired";
-                                    log.warn("Skipping event: {}, reason {}", eventType, reason);
+                                } else if (event != null && event.isExpired()) {
+                                    log.warn("Skipping event: {}, reason {}", eventType, "Event expired");
                                 }
                             }
                         } catch (Exception e) {

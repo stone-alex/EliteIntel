@@ -21,7 +21,8 @@ public enum QueryActions {
     WHERE_IS_OUR_CARRIER("what_is_our_fleet_carrier_location", "Check on our carrier current location", WhatIsOurCarrierLocationHandler.class, false),
     FIND_MATERIAL_TRADER("find_material_trader", "Find us a material trader", MaterialTraderQueryHandler.class, false),
     GENERAL_CONVERSATION("general_conversation", "Handles general knowledge questions outside Elite Dangerous (e.g., 'what’s the weather in Los Angeles?').", ConversationalQueryHandler.class, true),
-    TRIVIA("trivia", "General conversion question, use your own knowledge to respond", TriviaQueryHandler.class, true);
+    TRIVIA("trivia", "General conversion question, use your own knowledge to respond", TriviaQueryHandler.class, true),
+    STATION_DATA("query_station_data", "Access station data, provide analysis", StationDataHandler.class, false);
 
     private final String action;
     private final String description;

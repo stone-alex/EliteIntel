@@ -112,6 +112,10 @@ public class StringSanitizer {
             command = command.replace("display hard", "display hud");
         }
 
+        if (command.contains("display hot")) {
+            command = command.replace("display hot", "display hud");
+        }
+
         if (command.contains("exit to head")) {
             command = command.replace("exit to head", "display hud");
         }

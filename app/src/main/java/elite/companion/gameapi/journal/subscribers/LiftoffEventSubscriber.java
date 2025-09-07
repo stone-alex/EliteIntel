@@ -6,6 +6,7 @@ import elite.companion.comms.brain.robot.KeyBindingExecutor;
 import elite.companion.comms.brain.robot.KeyBindingsParser;
 import elite.companion.comms.handlers.command.CommandActionsGame;
 import elite.companion.gameapi.journal.events.LiftoffEvent;
+import elite.companion.session.PlayerSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,11 +29,12 @@ public class LiftoffEventSubscriber {
     public void onLiftoffEvent(LiftoffEvent event) {
         boolean isPlayerControlled = event.isPlayerControlled();
         boolean isOnPlanet = event.isOnPlanet();
+        PlayerSession.getInstance().remove(PlayerSession.STATION_DATA);
 
-        if (isPlayerControlled /*&& isOnPlanet*/) {
+        if (isPlayerControlled) {
             String landingGearToggle = CommandActionsGame.GameCommand.LANDING_GEAR_TOGGLE.getGameBinding();
             try {
-                Thread.sleep(2500);
+                Thread.sleep(1500);
                 operateKeyboard(landingGearToggle, 0);
             } catch (InterruptedException e) {
                 //oh well WE GOT INTERRUPTED! So what...

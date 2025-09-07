@@ -122,11 +122,13 @@ public class GrokChatEndPoint implements AIChatInterface {
             if (jsonStart != -1) {
                 jsonContent = content.substring(jsonStart + 2); // Skip \n\n
             } else {
-                // Fallback: Find first { that starts a valid JSON object
+                // Fallback: This always have a chat response. So we route it to chat.
                 jsonStart = content.indexOf("{");
                 if (jsonStart == -1) {
-                    log.error("No JSON object found in content: [{}]", toDebugString(content));
-                    return null;
+                    JsonObject result = new JsonObject();
+                    result.addProperty("type", "chat");
+                    result.addProperty("response_text", content);
+                    return result;
                 }
                 jsonContent = content.substring(jsonStart);
                 // Validate JSON

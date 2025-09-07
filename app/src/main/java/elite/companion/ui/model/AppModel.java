@@ -1,6 +1,6 @@
 package elite.companion.ui.model;
 
-import elite.companion.comms.ConfigManager;
+import elite.companion.ai.ConfigManager;
 import elite.companion.ui.view.AppView;
 
 import java.beans.PropertyChangeListener;

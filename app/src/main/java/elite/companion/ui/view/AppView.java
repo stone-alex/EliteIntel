@@ -1,6 +1,6 @@
 package elite.companion.ui.view;
 
-import elite.companion.comms.ConfigManager;
+import elite.companion.ai.ConfigManager;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;

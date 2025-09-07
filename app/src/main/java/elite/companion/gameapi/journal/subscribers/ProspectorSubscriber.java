@@ -1,7 +1,7 @@
 package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.companion.comms.handlers.command.CommandActionsCustom;
+import elite.companion.ai.brain.handlers.command.CommandActionsCustom;
 import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.gameapi.journal.events.ProspectedAsteroidEvent;

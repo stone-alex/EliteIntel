@@ -1,13 +1,13 @@
 package elite.companion.ui.controller;
 
 import com.google.common.eventbus.Subscribe;
-import elite.companion.comms.ApiFactory;
-import elite.companion.comms.ConfigManager;
-import elite.companion.comms.brain.AICadence;
-import elite.companion.comms.brain.AIPersonality;
-import elite.companion.comms.ears.EarsInterface;
-import elite.companion.comms.mouth.GoogleVoices;
-import elite.companion.comms.mouth.MouthInterface;
+import elite.companion.ai.ApiFactory;
+import elite.companion.ai.ConfigManager;
+import elite.companion.ai.brain.AICadence;
+import elite.companion.ai.brain.AIPersonality;
+import elite.companion.ai.ears.EarsInterface;
+import elite.companion.ai.mouth.GoogleVoices;
+import elite.companion.ai.mouth.MouthInterface;
 import elite.companion.gameapi.*;
 import elite.companion.session.PlayerSession;
 import elite.companion.session.SystemSession;

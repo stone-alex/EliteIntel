@@ -1,7 +1,7 @@
 package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.companion.comms.ConfigManager;
+import elite.companion.ai.ConfigManager;
 import elite.companion.gameapi.journal.events.CommanderEvent;
 import elite.companion.session.PlayerSession;
 import elite.companion.util.StringSanitizer;

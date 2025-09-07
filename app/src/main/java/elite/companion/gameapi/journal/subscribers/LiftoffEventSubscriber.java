@@ -1,10 +1,10 @@
 package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.companion.comms.brain.robot.BindingsMonitor;
-import elite.companion.comms.brain.robot.KeyBindingExecutor;
-import elite.companion.comms.brain.robot.KeyBindingsParser;
-import elite.companion.comms.handlers.command.CommandActionsGame;
+import elite.companion.ai.brain.handlers.command.CommandActionsGame;
+import elite.companion.ai.hands.BindingsMonitor;
+import elite.companion.ai.hands.KeyBindingExecutor;
+import elite.companion.ai.hands.KeyBindingsParser;
 import elite.companion.gameapi.journal.events.LiftoffEvent;
 import elite.companion.session.PlayerSession;
 import org.slf4j.Logger;

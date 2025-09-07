@@ -5,8 +5,6 @@ import elite.companion.comms.brain.robot.BindingsMonitor;
 import elite.companion.comms.brain.robot.KeyBindingExecutor;
 import elite.companion.comms.brain.robot.KeyBindingsParser;
 import elite.companion.comms.handlers.command.CommandActionsGame;
-import elite.companion.gameapi.EventBusManager;
-import elite.companion.gameapi.SensorDataEvent;
 import elite.companion.gameapi.journal.events.LiftoffEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,27 +28,16 @@ public class LiftoffEventSubscriber {
     public void onLiftoffEvent(LiftoffEvent event) {
         boolean isPlayerControlled = event.isPlayerControlled();
         boolean isOnPlanet = event.isOnPlanet();
-        String liftoffType = isPlayerControlled ? "Manual" : "Unmanned";
-        String liftoffFromType = isOnPlanet ? "Planet" : "Station";
-        String localStarSystem = event.getStarSystem();
-        String localBody = event.getBody();
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("Liftoff: ");
-        sb.append(" Type:");
-        sb.append(liftoffType);
-        sb.append(", From:");
-        sb.append(liftoffFromType);
-        sb.append(", ");
-        sb.append(localBody);
-        sb.append(".");
-        if (isPlayerControlled && isOnPlanet) {
+        if (isPlayerControlled /*&& isOnPlanet*/) {
             String landingGearToggle = CommandActionsGame.GameCommand.LANDING_GEAR_TOGGLE.getGameBinding();
-            operateKeyboard(landingGearToggle, 0);
+            try {
+                Thread.sleep(2500);
+                operateKeyboard(landingGearToggle, 0);
+            } catch (InterruptedException e) {
+                //oh well WE GOT INTERRUPTED! So what...
+            }
         }
-        ;
-
-        EventBusManager.publish(new SensorDataEvent(sb.toString()));
     }
 
     protected void operateKeyboard(String action, int holdTime) {

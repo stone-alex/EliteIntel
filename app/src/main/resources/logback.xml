@@ -14,6 +14,7 @@
     <logger name="io.grpc.netty.shaded" level="WARN" />
     <logger name="io.netty" level="WARN" />
     <logger name="com.google" level="WARN" />
+    <logger name="ch.qos.logback" level="ERROR"/>
 
     <!-- Specific logger levels -->
     <logger name="elite.companion.gameapi.JournalParser" level="INFO"/>
@@ -21,7 +22,7 @@
     <logger name="elite.companion.comms.brain.robot.KeyBindingsParser" level="ERROR"/>
     <logger name="elite.companion.comms.brain.grok.GrokCommandEndPoint" level="DEBUG"/>
     <logger name="elite.companion.comms.ears.google.GoogleSTTImpl" level="WARNING"/>
-    <logger name="elite.companion.session.SessionPersistence" level="ERROR"/>
+    <logger name="elite.companion.session.SessionPersistence" level="INFO"/>
     <logger name="elite.companion.comms.ConfigManager" level="ERROR"/>
 
     <!-- Set your app to DEBUG explicitly -->
@@ -42,8 +43,8 @@
             <fileNamePattern>elite-companion.%d{yyyy-MM-dd}.log</fileNamePattern>
             <!-- Keep 30 days of logs -->
             <maxHistory>30</maxHistory>
-            <!-- Optional: limit total size to 1GB -->
-            <totalSizeCap>1GB</totalSizeCap>
+            <!-- Optional: limit total size to 2MB -->
+            <totalSizeCap>2MB</totalSizeCap>
         </rollingPolicy>
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n</pattern>

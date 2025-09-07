@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.lang.reflect.Type;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -20,24 +21,47 @@ import java.util.function.Supplier;
  * and deserialization of field data.
  */
 class SessionPersistence {
-    private static final Logger LOG = LoggerFactory.getLogger(SessionPersistence.class);
+    private static final Logger log = LoggerFactory.getLogger(SessionPersistence.class);
+    private String APP_DIR;
     private final String sessionFile;
     private final Map<String, FieldHandler<?>> fields = new HashMap<>();
+
+    protected SessionPersistence(String sessionFile) {
+
+        String appDir = "session/";
+        try {
+            URI jarUri = SessionPersistence.class.getProtectionDomain().getCodeSource().getLocation().toURI();
+            File jarFile = new File(jarUri);
+            if (jarFile.getPath().endsWith(".jar")) {
+                String parentDir = jarFile.getParent();
+                if (parentDir != null) {
+                    appDir = parentDir + File.separator + "session/";
+                    log.debug("Running from JAR, set APP_DIR to: {}", appDir);
+                } else {
+                    log.warn("JAR parent directory is null, using empty APP_DIR: {}", appDir);
+                }
+            } else {
+                log.debug("Not running from JAR, using empty APP_DIR for classpath resources");
+            }
+        } catch (Exception e) {
+            log.warn("Could not determine JAR location, using empty APP_DIR: {}. Error: {}", appDir, e.getMessage());
+        }
+        APP_DIR = appDir;
+        this.sessionFile = sessionFile;
+    }
+
 
     public static class FieldHandler<T> {
         private final Supplier<T> getter;
         private final Consumer<T> setter;
-        private final Type type;
 
+        private final Type type;
         public FieldHandler(Supplier<T> getter, Consumer<T> setter, Type type) {
             this.getter = getter;
             this.setter = setter;
             this.type = type;
         }
-    }
 
-    protected SessionPersistence(String sessionFile) {
-        this.sessionFile = sessionFile;
     }
 
     protected <T> void registerField(String name, Supplier<T> getter, Consumer<T> setter, Type type) {
@@ -67,9 +91,9 @@ class SessionPersistence {
 
         try (Writer writer = new FileWriter(file)) {
             GsonFactory.getGson().toJson(json, writer);
-            LOG.debug("Saved session to: {}", file.getPath());
+            log.debug("Saved session to: {}", file.getPath());
         } catch (IOException e) {
-            LOG.error("Failed to save session to {}: {}", file.getPath(), e.getMessage(), e);
+            log.error("Failed to save session to {}: {}", file.getPath(), e.getMessage(), e);
         }
     }
 
@@ -84,10 +108,10 @@ class SessionPersistence {
                 JsonObject emptyJson = new JsonObject();
                 emptyJson.add("state", new JsonObject());
                 Files.write(file.toPath(), GsonFactory.getGson().toJson(emptyJson).getBytes());
-                LOG.info("Created empty session file: {}", file.getPath());
+                log.info("Created empty session file: {}", file.getPath());
                 jsonConsumer.accept(emptyJson);
             } catch (IOException e) {
-                LOG.error("Failed to create empty session file {}: {}", file.getPath(), e.getMessage(), e);
+                log.error("Failed to create empty session file {}: {}", file.getPath(), e.getMessage(), e);
             }
             return;
         }
@@ -95,9 +119,9 @@ class SessionPersistence {
         try (Reader reader = new FileReader(file)) {
             JsonObject json = JsonParser.parseReader(reader).getAsJsonObject();
             jsonConsumer.accept(json);
-            LOG.debug("Loaded session from: {}", file.getPath());
+            log.debug("Loaded session from: {}", file.getPath());
         } catch (IOException | JsonSyntaxException e) {
-            LOG.error("Failed to load session from {}: {}", file.getPath(), e.getMessage(), e);
+            log.error("Failed to load session from {}: {}", file.getPath(), e.getMessage(), e);
         }
     }
 
@@ -109,8 +133,8 @@ class SessionPersistence {
 
         try (Reader reader = new FileReader(file)) {
             return JsonParser.parseReader(reader).getAsJsonObject();
-        } catch (IOException e) {
-            LOG.error("Failed to load session for merge from {}: {}", file.getPath(), e.getMessage(), e);
+        } catch (Exception e) {
+            log.error("Failed to load session for merge from {}: {}", file.getPath(), e.getMessage(), e);
             return new JsonObject();
         }
     }
@@ -131,35 +155,34 @@ class SessionPersistence {
                     Object value = GsonFactory.getGson().fromJson(json.get(name), handler.type);
                     ((Consumer<Object>) handler.setter).accept(value);
                 } catch (JsonSyntaxException e) {
-                    LOG.error("Failed to deserialize field {}: {}", name, e.getMessage(), e);
+                    log.error("Failed to deserialize field {}: {}", name, e.getMessage(), e);
                 }
             }
         }
     }
 
     protected void deleteSessionFile() {
-        String root = System.getProperty("user.dir");
-        File file = new File(root, sessionFile);
+        File file = new File(APP_DIR, sessionFile);
         if (file.exists()) {
             try {
                 Files.delete(Paths.get(file.getPath()));
-                LOG.debug("Deleted session file: {}", file.getPath());
+                log.debug("Deleted session file: {}", file.getPath());
             } catch (IOException e) {
-                LOG.error("Failed to delete session file {}: {}", file.getPath(), e.getMessage(), e);
+                log.error("Failed to delete session file {}: {}", file.getPath(), e.getMessage(), e);
             }
         }
     }
 
     private File ensureSessionDirectory() {
-        String root = System.getProperty("user.dir");
-        File file = new File(root, sessionFile);
+        File file = new File(APP_DIR, sessionFile);
         File parentDir = file.getParentFile();
         if (!parentDir.exists()) {
             if (!parentDir.mkdirs()) {
-                LOG.error("Failed to create session directory: {}", parentDir.getPath());
+                log.error("Failed to create session directory: {}", parentDir.getPath());
                 return null;
             }
         }
+        log.info("Session file: {}", file.getAbsolutePath());
         return file;
     }
 }

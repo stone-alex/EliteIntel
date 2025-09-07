@@ -63,7 +63,7 @@ public class ConfigManager {
         DEFAULT_USER_CONFIG.put(PLAYER_TITLE, "");
         DEFAULT_USER_CONFIG.put(PLAYER_ALTERNATIVE_NAME, "");
 
-        // Initialize APP_DIR (unchanged)
+        // Initialize APP_DIR
         String appDir = "";
         try {
             URI jarUri = ConfigManager.class.getProtectionDomain().getCodeSource().getLocation().toURI();

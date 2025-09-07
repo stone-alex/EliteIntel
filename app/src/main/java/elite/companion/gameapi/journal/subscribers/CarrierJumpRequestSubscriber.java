@@ -25,8 +25,6 @@ public class CarrierJumpRequestSubscriber {
         sb.append(departureTime);
         sb.append(".");
 
-
-        //Carrier Jump Scheduled: null to null at Synuefe XR-H d11-124 A on unknown
         EventBusManager.publish(new SensorDataEvent(sb.toString()));
     }
 }

@@ -226,7 +226,7 @@ public class PlayerSession {
     private final Set<String> targetFactions = new LinkedHashSet<>();
     private long bountyCollectedThisSession = 0;
     private RankAndProgressDto rankAndProgressDto = new RankAndProgressDto();
-    private final SessionPersistence persistence = new SessionPersistence("session/player_session.json");
+    private final SessionPersistence persistence = new SessionPersistence("player_session.json");
 
     private Map<String, Object> getState() {
         return state;

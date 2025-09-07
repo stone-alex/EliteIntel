@@ -31,7 +31,7 @@ public class SystemSession {
     private static final Logger LOG = LoggerFactory.getLogger(SystemSession.class);
 
     public static final String RADION_TRANSMISSION_ON_OFF = "radio_transmission_on_off";
-    private static final String SESSION_FILE = "session/system_session.json";
+    private static final String SESSION_FILE = "system_session.json";
 
     private static final SystemSession INSTANCE = new SystemSession();
     private final Map<String, Object> state = new HashMap<>();

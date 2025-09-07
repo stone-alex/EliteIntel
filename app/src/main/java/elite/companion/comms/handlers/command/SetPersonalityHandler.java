@@ -36,6 +36,11 @@ public class SetPersonalityHandler implements CommandHandler {
             JsonElement jsonElement = extractParameter(CommandActionsCustom.SET_PERSONALITY.getPlaceholder(), params);
             AIPersonality aiPersonality = AIPersonality.valueOf(jsonElement.getAsString().toUpperCase());
             SystemSession.getInstance().setAIPersonality(aiPersonality);
+            if (AIPersonality.PROFESSIONAL.equals(aiPersonality)) {
+                EventBusManager.publish(new SensorDataEvent("In professional personality the general chat is disabled"));
+            } else {
+                EventBusManager.publish(new SensorDataEvent("In " + aiPersonality.name().toLowerCase() + " personality the general chat is enabled"));
+            }
         } catch (IllegalArgumentException e) {
             EventBusManager.publish(new SensorDataEvent("No such personality. try Professional, Friendly, Unhinged or Rogue"));
         }

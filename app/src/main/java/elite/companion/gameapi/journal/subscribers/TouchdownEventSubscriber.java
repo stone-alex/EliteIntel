@@ -3,6 +3,7 @@ package elite.companion.gameapi.journal.subscribers;
 import com.google.common.eventbus.Subscribe;
 import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.SensorDataEvent;
+import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.gameapi.journal.events.TouchdownEvent;
 
 @SuppressWarnings("unused")
@@ -41,7 +42,10 @@ public class TouchdownEventSubscriber {
         sb.append("Point of Interest: ");
         sb.append(pointOfInterest);
 
-        EventBusManager.publish(new SensorDataEvent(sb.toString()));
-
+        if (pointOfInterest != null && !pointOfInterest.isEmpty()) {
+            EventBusManager.publish(new SensorDataEvent(sb.toString()));
+        } else {
+            EventBusManager.publish(new VoiceProcessEvent("Touchdown!"));
+        }
     }
 }

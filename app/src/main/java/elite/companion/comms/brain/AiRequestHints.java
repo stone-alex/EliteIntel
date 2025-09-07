@@ -1,4 +1,4 @@
-package elite.companion.comms.brain.grok;
+package elite.companion.comms.brain;
 
 import elite.companion.comms.handlers.command.CommandActionsCustom;
 import elite.companion.comms.handlers.command.CommandActionsGame;
@@ -26,8 +26,8 @@ import java.util.stream.Collectors;
  * - Maintain and initialize a list of supported queries based on predefined queries.
  * - Provide formatted strings presenting the list of commands or queries.
  */
-public class GrokRequestHints {
-    private static final Logger log = LoggerFactory.getLogger(GrokRequestHints.class);
+public class AiRequestHints {
+    private static final Logger log = LoggerFactory.getLogger(AiRequestHints.class);
     public static final List<String> COMMANDS;
     public static final List<String> QUERIES;
     public static final List<String> COMMON_PHRASES = Arrays.asList(

@@ -3,6 +3,7 @@ package elite.companion.comms.brain.grok;
 import elite.companion.comms.brain.AICadence;
 import elite.companion.comms.brain.AIPersonality;
 import elite.companion.comms.brain.AiContextFactory;
+import elite.companion.comms.brain.AiRequestHints;
 import elite.companion.comms.handlers.query.QueryActions;
 import elite.companion.session.PlayerSession;
 import elite.companion.session.SystemSession;
@@ -274,13 +275,13 @@ public class GrokContextFactory implements AiContextFactory {
         sb.append(dataQueries.length() > 0 ? dataQueries : "    - None defined.\n");
 
         appendBehavior(sb);
-        sb.append("All supported queries: ").append(GrokRequestHints.supportedQueries).append("\n");
+        sb.append("All supported queries: ").append(AiRequestHints.supportedQueries).append("\n");
         return sb.toString();
     }
 
     private String generateSupportedCommandsCause() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Supported commands: ").append(GrokRequestHints.supportedCommands);
+        sb.append("Supported commands: ").append(AiRequestHints.supportedCommands);
         return sb.toString();
     }
 

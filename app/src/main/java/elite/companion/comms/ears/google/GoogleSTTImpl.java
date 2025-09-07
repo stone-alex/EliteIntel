@@ -6,7 +6,7 @@ import com.google.protobuf.ByteString;
 import elite.companion.comms.ApiFactory;
 import elite.companion.comms.ConfigManager;
 import elite.companion.comms.brain.AiCommandInterface;
-import elite.companion.comms.brain.grok.GrokRequestHints;
+import elite.companion.comms.brain.AiRequestHints;
 import elite.companion.comms.ears.EarsInterface;
 import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.UserInputEvent;
@@ -515,7 +515,7 @@ public class GoogleSTTImpl implements EarsInterface {
      */
     private StreamingRecognitionConfig getStreamingRecognitionConfig() {
         SpeechContext commandContext = SpeechContext.newBuilder()
-                .addAllPhrases(GrokRequestHints.COMMON_PHRASES)
+                .addAllPhrases(AiRequestHints.COMMON_PHRASES)
                 .setBoost(35.0f)
                 .build();
 

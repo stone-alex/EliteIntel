@@ -24,6 +24,7 @@
     <logger name="elite.companion.comms.ears.google.GoogleSTTImpl" level="WARNING"/>
     <logger name="elite.companion.session.SessionPersistence" level="INFO"/>
     <logger name="elite.companion.comms.ConfigManager" level="ERROR"/>
+    <logger name="elite.companion.comms.ears.google.GoogleSTTImpl" level="ERROR"/>
 
     <!-- Set your app to DEBUG explicitly -->
     <logger name="elite.companion" level="DEBUG" />

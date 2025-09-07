@@ -29,11 +29,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * The GoogleSTTImpl class is an implementation of the EarsInterface that integrates with Google Speech-to-Text (STT)
  * API to perform voice-to-text operations. It streams audio data to Google STT, processes recognition results, and
  * interacts with AI commands as needed.
- *
+ * <p>
  * It provides methods to manage the audio streaming process, handle transcription results, and configure Google
  * STT settings. This class is designed to handle continuous or interrupted streaming of audio, adapting to audio
  * formats and thresholds dynamically.
- *
+ * <p>
  * Fields:
  * - log: Logger utility for debugging and monitoring.
  * - sampleRateHertz: Sample rate in Hertz for audio input.
@@ -58,7 +58,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * - consecutiveVoice: Counter for consecutive frames of active voice detected.
  * - consecutiveSilence: Counter for consecutive frames of silence detected.
  * - processingThread: Thread responsible for audio streaming and processing.
- *
+ * <p>
  * Methods:
  * - stop(): Stops the audio streaming or listening process.
  * - start(): Starts the audio streaming or listening process.
@@ -80,7 +80,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *   block if no transcriptions are currently available.
  * - stopListening(): Stops the listening process without shutting down other operations.
  * - shutdown(): Completely shuts down all operations, closes resources, and releases any held resources.
- *
+ * <p>
  * Superclasses:
  * - java.lang.Object: Base class in the Java hierarchy.
  * - elite.companion.comms.ears.EarsInterface: Interface defining the general structure for listening and
@@ -218,6 +218,8 @@ public class GoogleSTTImpl implements EarsInterface {
         throw new RuntimeException("No supported audio format found for mono 16-bit input");
     }
 
+
+    //for debugging audio quality
     private void stopWavRecording() {
         if (audioInputStream != null) {
             try {
@@ -229,7 +231,7 @@ public class GoogleSTTImpl implements EarsInterface {
         }
     }
 
-    // Start/stop WAV recording
+    //for debugging audio quality
     private void startWavRecording() {
         try {
             AudioFormat format = new AudioFormat(sampleRateHertz, 16, CHANNELS, true, false);
@@ -457,12 +459,13 @@ public class GoogleSTTImpl implements EarsInterface {
             String transcript = alt.getTranscript();
             float confidence = alt.getConfidence();
             if (result.getIsFinal()) {
+                EventBusManager.publish(new AppLogEvent("STT Heard: [" + transcript + "]. Confidence: " + confidence + "."));
                 if (!transcript.isBlank() && transcript.length() >= 3 && confidence > 0.3) {
                     transcriptionQueue.offer(transcript);
                     log.info("Final transcript: {} (confidence: {})", transcript, confidence);
                     String sanitizedTranscript = StringSanitizer.sanitizeGoogleMistakes(transcript);
 
-                    EventBusManager.publish(new AppLogEvent("STT heard: " + transcript + ". Sanitized: " + sanitizedTranscript + "."));
+                    EventBusManager.publish(new AppLogEvent("STT Sanitized: [" + sanitizedTranscript + "]."));
 
                     boolean isPrivacyModeOn = SystemSession.getInstance().isStreamingModeOn();
                     if (isPrivacyModeOn) {

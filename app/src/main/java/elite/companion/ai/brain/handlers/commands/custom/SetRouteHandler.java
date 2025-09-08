@@ -1,7 +1,8 @@
-package elite.companion.ai.brain.handlers.command;
+package elite.companion.ai.brain.handlers.commands.custom;
 
 import com.google.gson.JsonObject;
-import elite.companion.ai.hands.GameCommandHandler;
+import elite.companion.ai.brain.handlers.commands.CommandHandler;
+import elite.companion.ai.hands.GameHandler;
 import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.VoiceProcessEvent;
 import org.slf4j.Logger;
@@ -11,8 +12,8 @@ public class SetRouteHandler extends CustomCommandOperator implements CommandHan
     private static final Logger log = LoggerFactory.getLogger(SetRouteHandler.class);
 
 
-    public SetRouteHandler(GameCommandHandler gameCommandHandler) {
-        super(gameCommandHandler.getMonitor(), gameCommandHandler.getExecutor());
+    public SetRouteHandler(GameHandler gameHandler) {
+        super(gameHandler.getMonitor(), gameHandler.getExecutor());
     }
 
     @Override

@@ -3,6 +3,8 @@ package elite.companion.gameapi;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import elite.companion.ai.brain.handlers.CommandHandlerFactory;
+import elite.companion.ai.hands.GameHandler;
 import elite.companion.gameapi.gamestate.events.GameEvents;
 import elite.companion.ui.event.AppLogEvent;
 import elite.companion.util.json.GsonFactory;
@@ -61,9 +63,11 @@ public class AuxiliaryFilesMonitor implements Runnable {
     private final Set<String> monitoredFileSet = new HashSet<>(MONITORED_FILES);
     private Thread processingThread;
     private volatile boolean isRunning;
+    private final GameHandler _gameHandler;
 
     public AuxiliaryFilesMonitor() {
         this.directory = Paths.get(System.getProperty("user.home"), "Saved Games", "Frontier Developments", "Elite Dangerous");
+        this._gameHandler = CommandHandlerFactory.getInstance().getGameCommandHandler();
     }
 
     public synchronized void start() {
@@ -74,10 +78,12 @@ public class AuxiliaryFilesMonitor implements Runnable {
         isRunning = true;
         processingThread = new Thread(this, "AuxiliaryFilesMonitorThread");
         processingThread.start();
+        _gameHandler.start();
         log.info("AuxiliaryFilesMonitor started");
     }
 
     public synchronized void stop() {
+        _gameHandler.stop();
         if (processingThread == null || !processingThread.isAlive()) {
             log.warn("AuxiliaryFilesMonitor is not running");
             return;

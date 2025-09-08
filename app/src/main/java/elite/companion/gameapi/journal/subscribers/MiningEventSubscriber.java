@@ -1,7 +1,7 @@
 package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.companion.ai.brain.handlers.command.CustomCommands;
+import elite.companion.ai.brain.handlers.commands.custom.CustomCommands;
 import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.SensorDataEvent;
 import elite.companion.gameapi.journal.events.MiningRefinedEvent;

@@ -1,7 +1,9 @@
-package elite.companion.ai.brain.handlers.command;
+package elite.companion.ai.brain.handlers.commands.custom;
 
 import com.google.gson.JsonObject;
-import elite.companion.ai.hands.GameCommandHandler;
+import elite.companion.ai.brain.handlers.commands.CommandHandler;
+import elite.companion.ai.brain.handlers.commands.GameCommands;
+import elite.companion.ai.hands.GameHandler;
 
 
 /**
@@ -18,7 +20,7 @@ public class ExitToHud extends CustomCommandOperator implements CommandHandler {
 
     public static final int DELAY = 20;
 
-    public ExitToHud(GameCommandHandler commandHandler) {
+    public ExitToHud(GameHandler commandHandler) {
         super(commandHandler.getMonitor(), commandHandler.getExecutor());
     }
 

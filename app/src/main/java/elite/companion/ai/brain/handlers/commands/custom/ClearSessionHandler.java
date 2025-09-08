@@ -1,6 +1,7 @@
-package elite.companion.ai.brain.handlers.command;
+package elite.companion.ai.brain.handlers.commands.custom;
 
 import com.google.gson.JsonObject;
+import elite.companion.ai.brain.handlers.commands.CommandHandler;
 import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.VoiceProcessEvent;
 

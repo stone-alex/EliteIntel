@@ -1,12 +1,13 @@
-package elite.companion.ai.brain.handlers.command;
+package elite.companion.ai.brain.handlers.commands.custom;
 
 import com.google.gson.JsonObject;
-import elite.companion.ai.hands.GameCommandHandler;
+import elite.companion.ai.brain.handlers.commands.CommandHandler;
+import elite.companion.ai.hands.GameHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static elite.companion.ai.brain.handlers.command.GameCommands.GameCommand.EXPLORATION_FSSDISCOVERY_SCAN;
-import static elite.companion.ai.brain.handlers.command.GameCommands.GameCommand.SET_SPEED_ZERO;
+import static elite.companion.ai.brain.handlers.commands.GameCommands.GameCommand.EXPLORATION_FSSDISCOVERY_SCAN;
+import static elite.companion.ai.brain.handlers.commands.GameCommands.GameCommand.SET_SPEED_ZERO;
 
 /**
  * The PerformFSSScanHandler class is responsible for executing a sequence of key bindings
@@ -26,7 +27,7 @@ public class PerformFSSScanHandler extends CustomCommandOperator implements Comm
 
     private static final Logger log = LoggerFactory.getLogger(PerformFSSScanHandler.class);
 
-    public PerformFSSScanHandler(GameCommandHandler commandHandler) throws Exception {
+    public PerformFSSScanHandler(GameHandler commandHandler) throws Exception {
         super(commandHandler.getMonitor(), commandHandler.getExecutor());
     }
 

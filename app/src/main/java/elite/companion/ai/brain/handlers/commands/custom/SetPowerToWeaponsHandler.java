@@ -1,11 +1,12 @@
-package elite.companion.ai.brain.handlers.command;
+package elite.companion.ai.brain.handlers.commands.custom;
 
 import com.google.gson.JsonObject;
-import elite.companion.ai.hands.GameCommandHandler;
+import elite.companion.ai.brain.handlers.commands.CommandHandler;
+import elite.companion.ai.hands.GameHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static elite.companion.ai.brain.handlers.command.GameCommands.GameCommand.*;
+import static elite.companion.ai.brain.handlers.commands.GameCommands.GameCommand.*;
 
 /**
  * The SetPowerToWeaponsHandler class is responsible for executing a series of predefined
@@ -23,7 +24,7 @@ public class SetPowerToWeaponsHandler extends CustomCommandOperator implements C
     private static final Logger log = LoggerFactory.getLogger(SetPowerToWeaponsHandler.class);
     public static final int DELAY = 5;
 
-    public SetPowerToWeaponsHandler(GameCommandHandler commandHandler) throws Exception {
+    public SetPowerToWeaponsHandler(GameHandler commandHandler) throws Exception {
         super(commandHandler.getMonitor(), commandHandler.getExecutor());
     }
 

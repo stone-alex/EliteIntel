@@ -14,7 +14,7 @@ import elite.companion.session.SystemSession;
 import elite.companion.ui.event.AppLogEvent;
 import elite.companion.ui.model.AppModelInterface;
 import elite.companion.ui.view.AppViewInterface;
-import elite.companion.util.StringSanitizer;
+import elite.companion.util.DaftSecretarySanitizer;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -52,6 +52,7 @@ public class AppController implements AppControllerInterface, ActionListener {
     private final AppModelInterface model;
     private final AppViewInterface view;
     private final ConfigManager configManager = ConfigManager.getInstance();
+    private final DaftSecretarySanitizer _daftSecretarySanitizer = DaftSecretarySanitizer.getInstance();
     private boolean isServiceRunning = false;
 
     AuxiliaryFilesMonitor fileMonitor = new AuxiliaryFilesMonitor();
@@ -151,8 +152,8 @@ public class AppController implements AppControllerInterface, ActionListener {
             EventBusManager.publish(new VoiceProcessEvent("Systems online..."));
             model.appendLog(
                     "I am listening to you... AI is set to "
-                            + StringSanitizer.capitalizeWords(systemSession.getAICadence().name()) + " "
-                            + StringSanitizer.capitalizeWords(systemSession.getAIPersonality().name())
+                            + _daftSecretarySanitizer.capitalizeWords(systemSession.getAICadence().name()) + " "
+                            + _daftSecretarySanitizer.capitalizeWords(systemSession.getAIPersonality().name())
             );
             model.appendLog("Available voices: " + listVoices());
             model.appendLog("Available personalities: " + listPersonalities());
@@ -177,7 +178,7 @@ public class AppController implements AppControllerInterface, ActionListener {
         AiVoices[] voices = AiVoices.values();
         sb.append("[");
         for (AiVoices voice : voices) {
-            sb.append(StringSanitizer.capitalizeWords(voice.name())).append(", ");
+            sb.append(_daftSecretarySanitizer.capitalizeWords(voice.name())).append(", ");
         }
         sb.append("]");
         return sb.toString().replace(", ]", "]");
@@ -188,7 +189,7 @@ public class AppController implements AppControllerInterface, ActionListener {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
         for (AIPersonality personality : personalities) {
-            sb.append(StringSanitizer.capitalizeWords(personality.name())).append(", ");
+            sb.append(_daftSecretarySanitizer.capitalizeWords(personality.name())).append(", ");
         }
         sb.append("]");
         return sb.toString().replace(", ]", "]");
@@ -199,7 +200,7 @@ public class AppController implements AppControllerInterface, ActionListener {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
         for (AICadence cadence : cadences) {
-            sb.append(StringSanitizer.capitalizeWords(cadence.name())).append(", ");
+            sb.append(_daftSecretarySanitizer.capitalizeWords(cadence.name())).append(", ");
         }
         sb.append("]");
         return sb.toString().replace(", ]", "]");

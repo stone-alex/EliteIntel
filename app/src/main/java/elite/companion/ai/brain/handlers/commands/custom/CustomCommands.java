@@ -1,5 +1,6 @@
-package elite.companion.ai.brain.handlers.command;
+package elite.companion.ai.brain.handlers.commands.custom;
 
+import elite.companion.ai.brain.handlers.commands.CommandHandler;
 import elite.companion.session.PlayerSession;
 import elite.companion.session.SystemSession;
 

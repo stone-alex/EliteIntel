@@ -1,4 +1,7 @@
-package elite.companion.ai.brain.handlers.command;
+package elite.companion.ai.brain.handlers.commands;
+
+import elite.companion.ai.brain.handlers.commands.custom.OpenGalaxyMapHandler;
+import elite.companion.ai.brain.handlers.commands.custom.PerformFSSScanHandler;
 
 /**
  * Represents the available actions and their associated game commands for

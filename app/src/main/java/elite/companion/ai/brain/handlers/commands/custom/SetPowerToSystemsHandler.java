@@ -1,11 +1,12 @@
-package elite.companion.ai.brain.handlers.command;
+package elite.companion.ai.brain.handlers.commands.custom;
 
 import com.google.gson.JsonObject;
-import elite.companion.ai.hands.GameCommandHandler;
+import elite.companion.ai.brain.handlers.commands.CommandHandler;
+import elite.companion.ai.hands.GameHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static elite.companion.ai.brain.handlers.command.GameCommands.GameCommand.*;
+import static elite.companion.ai.brain.handlers.commands.GameCommands.GameCommand.*;
 
 /**
  * The SetPowerToSystemsHandler class extends the CustomCommandOperator and implements
@@ -22,7 +23,7 @@ public class SetPowerToSystemsHandler extends CustomCommandOperator implements C
     public static final int DELAY = 5;
 
 
-    public SetPowerToSystemsHandler(GameCommandHandler commandHandler) throws Exception {
+    public SetPowerToSystemsHandler(GameHandler commandHandler) throws Exception {
         super(commandHandler.getMonitor(), commandHandler.getExecutor());
     }
 

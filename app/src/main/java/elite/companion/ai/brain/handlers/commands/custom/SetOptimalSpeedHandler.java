@@ -1,9 +1,10 @@
-package elite.companion.ai.brain.handlers.command;
+package elite.companion.ai.brain.handlers.commands.custom;
 
 import com.google.gson.JsonObject;
-import elite.companion.ai.hands.GameCommandHandler;
+import elite.companion.ai.brain.handlers.commands.CommandHandler;
+import elite.companion.ai.hands.GameHandler;
 
-import static elite.companion.ai.brain.handlers.command.GameCommands.GameCommand.SET_SPEED75;
+import static elite.companion.ai.brain.handlers.commands.GameCommands.GameCommand.SET_SPEED75;
 
 /**
  * The SetOptimalSpeedHandler class is responsible for handling the command
@@ -17,7 +18,7 @@ import static elite.companion.ai.brain.handlers.command.GameCommands.GameCommand
  */
 public class SetOptimalSpeedHandler extends CustomCommandOperator implements CommandHandler {
 
-    public SetOptimalSpeedHandler(GameCommandHandler commandHandler) {
+    public SetOptimalSpeedHandler(GameHandler commandHandler) {
         super(commandHandler.getMonitor(), commandHandler.getExecutor());
     }
 

@@ -1,7 +1,7 @@
 package elite.companion.ai.hands;
 
 import com.google.gson.JsonObject;
-import elite.companion.ai.brain.handlers.command.GameCommands;
+import elite.companion.ai.brain.handlers.commands.GameCommands;
 import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.session.SystemSession;
@@ -14,22 +14,26 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * The GameCommandHandler class manages game command execution, monitoring of key bindings,
- * and handles responses received from external input systems such as JSON-based AI responses.
- * It handles the lifecycle of processing threads and coordinates command execution through key bindings.
+ * The GameHandler class is responsible for managing game-related commands and actions,
+ * including execution of bindings, monitoring of key bindings, and handling AI command
+ * responses. It acts as a central component that interacts with multiple subsystems
+ * like BindingsMonitor, KeyBindingExecutor, and EventBusManager.
+ *
+ * The GameHandler initializes the necessary resources and starts a processing thread
+ * to handle gameplay-related operations. It also provides mechanisms to stop the thread
+ * and clean up resources when necessary.
  */
-public class GameCommandHandler {
-    private static final Logger log = LoggerFactory.getLogger(GameCommandHandler.class);
+public class GameHandler {
+    private static final Logger log = LoggerFactory.getLogger(GameHandler.class);
     private final KeyBindingExecutor executor;
     private final BindingsMonitor monitor;
     private Thread processingThread;
-    private volatile boolean running;
     private static final Set<String> BLACKLISTED_ACTIONS = new HashSet<>(Arrays.asList(
             "PrimaryFire", "SecondaryFire", "TriggerFieldNeutraliser",
             "BuggyPrimaryFireButton", "BuggySecondaryFireButton"
     ));
 
-    public GameCommandHandler() throws Exception {
+    public GameHandler() throws Exception {
         this.executor = KeyBindingExecutor.getInstance();
         this.monitor = BindingsMonitor.getInstance();
         log.info("GameCommandHandler initialized");
@@ -40,7 +44,6 @@ public class GameCommandHandler {
             log.warn("GameCommandHandler is already running");
             return;
         }
-        running = true;
         processingThread = new Thread(this::run, "GameCommandHandlerThread");
         processingThread.start();
         log.info("GameCommandHandler started");
@@ -51,7 +54,6 @@ public class GameCommandHandler {
             log.warn("GameCommandHandler is not running");
             return;
         }
-        running = false;
         processingThread.interrupt();
         try {
             monitor.stopMonitoring();
@@ -81,34 +83,36 @@ public class GameCommandHandler {
         }
     }
 
-    public void handleGrokResponse(JsonObject jsonResponse) {
+
+    /**
+     * Processes the AI-generated response received in the form of a JSON object.
+     * Depending on the type of response, this method either handles a command or logs an error.
+     * If the response type is identified as a "command," it extracts the action and parameters
+     * from the JSON object and delegates handling to the appropriate command handler.
+     * In case of an unrecognized response type, it logs a warning and provides feedback via chat handling.
+     * Any exceptions encountered during processing are logged and handled appropriately.
+     *
+     * @param jsonResponse the JSON object containing the AI-generated response. It is expected
+     *                     to contain keys such as "type", "response_text", "action", and "params".
+     *                     The "type" value determines how the response is processed. If the type is
+     *                     "command", additional fields like "action" and "params" are used for further processing.
+     */
+    public void processAiCommand(JsonObject jsonResponse) {
         try {
             String type = jsonResponse.has("type") ? jsonResponse.get("type").getAsString() : "";
             String responseText = jsonResponse.has("response_text") ? jsonResponse.get("response_text").getAsString() : "";
 
-            switch (type.toLowerCase()) {
-                case "command":
-                    String action = jsonResponse.has("action") ? jsonResponse.get("action").getAsString() : "";
-                    JsonObject params = jsonResponse.has("params") ? jsonResponse.get("params").getAsJsonObject() : new JsonObject();
-                    handleCommand(action, params, responseText);
-                    break;
-                case "system_command":
-                    JsonObject system_params = jsonResponse.has("params") ? jsonResponse.get("params").getAsJsonObject() : new JsonObject();
-                    handleSystemCommand(system_params, responseText);
-                    break;
-                case "query":
-                    handleQuery(responseText);
-                    break;
-                case "chat":
-                    handleChat(responseText);
-                    break;
-                default:
-                    log.warn("Unknown response type: {}", type);
-                    handleChat("I'm not sure what you meant. Please try again.");
+            if (type.equalsIgnoreCase("command")) {
+                String action = jsonResponse.has("action") ? jsonResponse.get("action").getAsString() : "";
+                JsonObject params = jsonResponse.has("params") ? jsonResponse.get("params").getAsJsonObject() : new JsonObject();
+                handleCommand(action, params, responseText);
+            } else {
+                log.warn("Unknown response type: {}", type);
+                handleChat(responseText + " GameCommandHandler - command handler not found for type: " + type + " check programming");
             }
         } catch (Exception e) {
             log.error("Failed to process AI response: {}", e.getMessage(), e);
-            handleChat("Error processing command.");
+            handleChat("GameCommandHandler - Error processing command.");
         }
     }
 
@@ -134,16 +138,6 @@ public class GameCommandHandler {
             log.warn("No binding found for action: {}", action);
             handleChat("No key binding found for that action.");
         }
-    }
-
-    private void handleSystemCommand(JsonObject params, String responseText) {
-        SystemSession.getInstance().put("params", params);
-        handleChat(responseText);
-    }
-
-    private void handleQuery(String responseText) {
-        handleChat(responseText);
-        log.info("Handled query response: {}", responseText);
     }
 
     private void handleChat(String responseText) {

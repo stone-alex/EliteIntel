@@ -4,7 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import elite.companion.ai.ConfigManager;
 import elite.companion.gameapi.journal.events.LoadGameEvent;
 import elite.companion.session.PlayerSession;
-import elite.companion.util.StringSanitizer;
+import elite.companion.util.DaftSecretarySanitizer;
 
 import static elite.companion.session.PlayerSession.*;
 
@@ -18,7 +18,7 @@ public class LoadGameEventSubscriber {
 
         String inGameName = event.getCommander();
         String alternativeName = ConfigManager.getInstance().getPlayerKey(ConfigManager.PLAYER_ALTERNATIVE_NAME);
-        String usePlayerName = StringSanitizer.capitalizeWords(alternativeName != null || !alternativeName.isEmpty() ? alternativeName : inGameName);
+        String usePlayerName = DaftSecretarySanitizer.getInstance().capitalizeWords(alternativeName != null || !alternativeName.isEmpty() ? alternativeName : inGameName);
         playerSession.put(PLAYER_NAME, usePlayerName);
 
         playerSession.put(CURRENT_SHIP, event.getShip());

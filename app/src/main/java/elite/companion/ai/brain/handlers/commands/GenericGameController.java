@@ -1,7 +1,7 @@
-package elite.companion.ai.brain.handlers.command;
+package elite.companion.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
-import elite.companion.ai.hands.GameCommandHandler;
+import elite.companion.ai.hands.GameHandler;
 import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.VoiceProcessEvent;
 import org.slf4j.Logger;
@@ -25,11 +25,11 @@ import org.slf4j.LoggerFactory;
  */
 public class GenericGameController implements CommandHandler {
     private static final Logger log = LoggerFactory.getLogger(GenericGameController.class);
-    private final GameCommandHandler _gameCommandHandler;
+    private final GameHandler gameHandler;
     private final String gameBinding;
 
-    public GenericGameController(GameCommandHandler gameCommandHandler, String gameBinding) {
-        this._gameCommandHandler = gameCommandHandler;
+    public GenericGameController(GameHandler gameHandler, String gameBinding) {
+        this.gameHandler = gameHandler;
         this.gameBinding = gameBinding;
     }
 
@@ -44,7 +44,7 @@ public class GenericGameController implements CommandHandler {
         json.addProperty("type", "command");
         json.addProperty("action", gameBinding);
         json.addProperty("response_text", responseText);
-        _gameCommandHandler.handleGrokResponse(json);
+        gameHandler.processAiCommand(json);
         log.info(gameBinding + " command handled");
     }
 

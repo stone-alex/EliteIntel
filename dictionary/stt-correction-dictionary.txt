@@ -1,0 +1,66 @@
+###########################################################################
+# STT is a deff and dumb secretary. We have to correct it's mistakes.
+# List of words or phrases to be corrected
+# Add your own, if the Speech To Text can't understand you well.
+# Surround the key and value with quotes
+
+###########################################################################
+## set voice to corrections
+#-
+"southwest"="set voice to"
+"so it was to"="set voice to"
+"the voice to"="set voice to"
+"that was to"="set voice to"
+"that voice to"="set voice to"
+"said voice to"="set voice to"
+"said the voice to"="set voice to"
+"that the voice to"="set voice to"
+"so, the rest of"="set voice to"
+"said the voice of"="set voice to"
+"beth was to"="set voice to"
+"the voice of"="set voice to"
+"southwest of"="set voice to"
+"said wish to"="set voice to"
+"that wish to"="set voice to"
+"with voice to"="set voice to"
+"wo, the voice to"="set voice to"
+"seth voice to"="set voice to"
+
+
+###########################################################################
+"atlanta"="lana"
+"supercross"="supercruise"
+"supercross"="supercruise"
+"hannah"="Anna"
+"streaming mode of"="streaming mode off"
+"bunch of tl"="punch ftl"
+"bunch of cl"="punch ftl"
+"bunch of tail"="punch ftl"
+"bunch it"="punch it"
+"display enough panel"="display navigation panel"
+"display nav panel"="display navigation panel"
+"play the navigation panel"="display navigation panel"
+"display hard"="display hud"
+"display hot"="display hud"
+"exit to head"="exit to hud"
+"exit to hard"="exit to hud"
+"despite galaxy map"="display galaxy map"
+"and their super cruise"="enter supercruise"
+"super cruise"="supercruise"
+
+
+###########################################################################
+"treat you"="tritium"
+"trees you"="tritium"
+"3 tube"="tritium"
+"hydrogen 3"="tritium"
+"hydrogen three"="tritium"
+"32"="tritium"
+"carrier juice"="tritium"
+"carrier fuel"="tritium"
+"carrier juice"="tritium"
+"treatyou"="tritium"
+"treesyou"="tritium"
+"3tube"="tritium"
+"hydrogen3"="tritium"
+"hydrogenthree"="tritium"

@@ -1,7 +1,8 @@
-package elite.companion.ai.brain.handlers.command;
+package elite.companion.ai.brain.handlers.commands.custom;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import elite.companion.ai.brain.handlers.commands.CommandHandler;
 import elite.companion.session.PlayerSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

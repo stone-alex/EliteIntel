@@ -1,8 +1,9 @@
-package elite.companion.ai.brain.handlers.command;
+package elite.companion.ai.brain.handlers.commands.custom;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import elite.companion.ai.brain.AICadence;
+import elite.companion.ai.brain.handlers.commands.CommandHandler;
 import elite.companion.ai.mouth.AiVoices;
 import elite.companion.ai.mouth.VoiceToAllegiances;
 import elite.companion.gameapi.EventBusManager;

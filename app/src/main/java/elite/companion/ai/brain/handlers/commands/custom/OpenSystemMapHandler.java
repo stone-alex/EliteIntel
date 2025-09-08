@@ -1,7 +1,9 @@
-package elite.companion.ai.brain.handlers.command;
+package elite.companion.ai.brain.handlers.commands.custom;
 
 import com.google.gson.JsonObject;
-import elite.companion.ai.hands.GameCommandHandler;
+import elite.companion.ai.brain.handlers.commands.CommandHandler;
+import elite.companion.ai.brain.handlers.commands.GameCommands;
+import elite.companion.ai.hands.GameHandler;
 
 /**
  * OpenSystemMapHandler is responsible for handling the "Open System Map" game command.
@@ -20,7 +22,7 @@ import elite.companion.ai.hands.GameCommandHandler;
  */
 public class OpenSystemMapHandler extends CustomCommandOperator implements CommandHandler {
 
-    public OpenSystemMapHandler(GameCommandHandler commandHandler) throws Exception {
+    public OpenSystemMapHandler(GameHandler commandHandler) throws Exception {
         super(commandHandler.getMonitor(), commandHandler.getExecutor());
     }
 

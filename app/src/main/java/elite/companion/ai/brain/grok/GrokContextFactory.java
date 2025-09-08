@@ -11,9 +11,9 @@ import elite.companion.util.Ranks;
 
 import java.util.Objects;
 
-import static elite.companion.ai.brain.handlers.command.CustomCommands.SET_PERSONALITY;
-import static elite.companion.ai.brain.handlers.command.GameCommands.GameCommand.ENTER_SUPERCRUISE;
-import static elite.companion.ai.brain.handlers.command.GameCommands.GameCommand.SET_SPEED_ZERO;
+import static elite.companion.ai.brain.handlers.commands.GameCommands.GameCommand.ENTER_SUPERCRUISE;
+import static elite.companion.ai.brain.handlers.commands.GameCommands.GameCommand.SET_SPEED_ZERO;
+import static elite.companion.ai.brain.handlers.commands.custom.CustomCommands.SET_PERSONALITY;
 import static elite.companion.ai.brain.handlers.query.QueryActions.GENERAL_CONVERSATION;
 import static elite.companion.ai.brain.handlers.query.QueryActions.WHAT_IS_YOUR_DESIGNATION;
 
@@ -122,7 +122,7 @@ public class GrokContextFactory implements AiContextFactory {
         sb.append(generateSupportedQueriesClause());
 
         sb.append("For 'general_conversation', generate a response using general knowledge outside Elite Dangerous unless the input explicitly mentions the game, lean into UNHINGED slang matching cadence for a playful vibe.");
-        sb.append("Always output JSON: {\"type\": \"system_command|chat\", \"response_text\": \"TTS output\", \"action\": \"set_mining_target|set_current_system|...\", \"params\": {\"key\": \"value\"}, \"expect_followup\": boolean}. ");
+        sb.append("Always output JSON: {\"type\": \"command|chat\", \"response_text\": \"TTS output\", \"action\": \"set_mining_target|set_current_system|...\", \"params\": {\"key\": \"value\"}, \"expect_followup\": boolean}. ");
         sb.append("For type='query' in initial classification, follow response_text rules from player instructions. For tool/follow-up, use full analyzed response in 'response_text'. ");
         sb.append("For type='chat', set 'expect_followup': true if response poses a question or requires user clarification; otherwise, false. ");
         return sb.toString();
@@ -136,7 +136,7 @@ public class GrokContextFactory implements AiContextFactory {
         sb.append(generateSupportedQueriesClause());
         sb.append("Round billions to nearest million. ");
         sb.append("Round millions to nearest 250000. ");
-        sb.append("Always output JSON: {\"type\": \"system_command|chat\", \"response_text\": \"TTS output\", \"action\": \"set_mining_target|set_current_system|...\", \"params\": {\"key\": \"value\"}, \"expect_followup\": boolean}. ");
+        sb.append("Always output JSON: {\"type\": \"command|chat\", \"response_text\": \"TTS output\", \"action\": \"set_mining_target|set_current_system|...\", \"params\": {\"key\": \"value\"}, \"expect_followup\": boolean}. ");
         sb.append("For type='query' in initial classification, follow response_text rules from player instructions. For tool/follow-up, use full analyzed response in 'response_text'. ");
         sb.append("For type='chat', set 'expect_followup': true if response poses a question or requires user clarification; otherwise, false. ");
 

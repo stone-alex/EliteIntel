@@ -1,7 +1,7 @@
 package elite.companion.ai.brain;
 
-import elite.companion.ai.brain.handlers.command.CustomCommands;
-import elite.companion.ai.brain.handlers.command.GameCommands;
+import elite.companion.ai.brain.handlers.commands.GameCommands;
+import elite.companion.ai.brain.handlers.commands.custom.CustomCommands;
 import elite.companion.ai.brain.handlers.query.QueryActions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

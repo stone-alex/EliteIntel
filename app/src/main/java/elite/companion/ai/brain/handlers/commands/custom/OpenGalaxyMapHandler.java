@@ -1,7 +1,9 @@
-package elite.companion.ai.brain.handlers.command;
+package elite.companion.ai.brain.handlers.commands.custom;
 
 import com.google.gson.JsonObject;
-import elite.companion.ai.hands.GameCommandHandler;
+import elite.companion.ai.brain.handlers.commands.CommandHandler;
+import elite.companion.ai.brain.handlers.commands.GameCommands;
+import elite.companion.ai.hands.GameHandler;
 
 /**
  * The OpenGalaxyMapHandler class is responsible for handling commands related to opening
@@ -30,7 +32,7 @@ import elite.companion.ai.hands.GameCommandHandler;
  */
 public class OpenGalaxyMapHandler extends CustomCommandOperator implements CommandHandler {
 
-    public OpenGalaxyMapHandler(GameCommandHandler commandHandler) throws Exception {
+    public OpenGalaxyMapHandler(GameHandler commandHandler) throws Exception {
         super(commandHandler.getMonitor(), commandHandler.getExecutor());
     }
 

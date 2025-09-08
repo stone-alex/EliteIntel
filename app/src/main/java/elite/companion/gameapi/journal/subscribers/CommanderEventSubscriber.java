@@ -4,7 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import elite.companion.ai.ConfigManager;
 import elite.companion.gameapi.journal.events.CommanderEvent;
 import elite.companion.session.PlayerSession;
-import elite.companion.util.StringSanitizer;
+import elite.companion.util.DaftSecretarySanitizer;
 
 import static elite.companion.session.PlayerSession.PLAYER_NAME;
 
@@ -19,6 +19,6 @@ public class CommanderEventSubscriber {
         String inGameName = event.getName();
         String alternativeName = configManager.getPlayerKey(ConfigManager.PLAYER_ALTERNATIVE_NAME);
 
-        session.put(PLAYER_NAME, StringSanitizer.capitalizeWords(alternativeName != null || !alternativeName.isEmpty() ? alternativeName : inGameName));
+        session.put(PLAYER_NAME, DaftSecretarySanitizer.getInstance().capitalizeWords(alternativeName != null || !alternativeName.isEmpty() ? alternativeName : inGameName));
     }
 }

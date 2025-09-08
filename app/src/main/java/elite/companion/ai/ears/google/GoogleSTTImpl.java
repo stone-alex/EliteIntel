@@ -12,7 +12,9 @@ import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.UserInputEvent;
 import elite.companion.session.SystemSession;
 import elite.companion.ui.event.AppLogEvent;
-import elite.companion.util.StringSanitizer;
+import elite.companion.util.AudioFormatDetector;
+import elite.companion.util.AudioSettingsTuple;
+import elite.companion.util.DaftSecretarySanitizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,72 +26,54 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-
 /**
- * The GoogleSTTImpl class is an implementation of the EarsInterface that integrates with Google Speech-to-Text (STT)
- * API to perform voice-to-text operations. It streams audio data to Google STT, processes recognition results, and
- * interacts with AI commands as needed.
- * <p>
- * It provides methods to manage the audio streaming process, handle transcription results, and configure Google
- * STT settings. This class is designed to handle continuous or interrupted streaming of audio, adapting to audio
- * formats and thresholds dynamically.
- * <p>
+ * Implements Google Speech-to-Text (STT) functionality with real-time audio processing,
+ * transcription, and integration with AI command systems through the `EarsInterface`.
+ * This class uses Google Cloud Speech-to-Text API to convert audio input into textual
+ * transcriptions while providing voice activity detection, audio stream management, and
+ * recognition configuration customization.
+ *
+ * Core Responsibilities:
+ * - Handles initialization and management of Google Speech Client for streaming audio transcription.
+ * - Integrates with AI systems to process recognized speech commands.
+ * - Manages voice activity detection (VAD) to optimize streaming operations.
+ * - Provides thread-safe handling of audio input, transcription queuing, and session lifecycle.
+ *
+ * Key Features:
+ * - Automatic handling of Google STT API configuration, including language and contextual boosting.
+ * - Detection of speech and silence using RMS thresholds for efficient resource utilization.
+ * - Support for audio buffer management and system configurations for high-quality recognition.
+ *
  * Fields:
- * - log: Logger utility for debugging and monitoring.
- * - sampleRateHertz: Sample rate in Hertz for audio input.
- * - bufferSize: Byte size of audio buffer used for processing.
- * - CHANNELS: Number of audio channels utilized.
- * - RESTART_DELAY_MS: Delay time in milliseconds before restarting a stream.
- * - wavFile: File handler for WAV recordings.
- * - transcriptionQueue: Queue to store transcribed text from Google STT.
- * - speechClient: Client object to communicate with Google Speech-to-Text.
- * - aiCommandInterface: Interface to handle AI commands based on transcriptions.
- * - isListening: Flag indicating if the system is currently listening for audio.
- * - lastAudioSentTime: Timestamp of the last audio data sent for streaming.
- * - lastBuffer: The last audio buffer processed.
- * - audioInputStream: Input stream for capturing microphone audio.
- * - RMS_THRESHOLD_HIGH: Root Mean Square (RMS) value threshold for determining loud voices.
- * - RMS_THRESHOLD_LOW: RMS value threshold for determining silence.
- * - ENTER_VOICE_FRAMES: Consecutive audio frames required to detect active voice.
- * - EXIT_SILENCE_FRAMES: Consecutive audio frames required to detect silence.
- * - STREAM_DURATION_MS: Duration of each audio stream in milliseconds.
- * - KEEP_ALIVE_INTERVAL_MS: Interval for keep-alive messages during streaming.
- * - isActive: Flag indicating if processing is active.
- * - consecutiveVoice: Counter for consecutive frames of active voice detected.
- * - consecutiveSilence: Counter for consecutive frames of silence detected.
- * - processingThread: Thread responsible for audio streaming and processing.
- * <p>
- * Methods:
- * - stop(): Stops the audio streaming or listening process.
- * - start(): Starts the audio streaming or listening process.
- * - GoogleSTTImpl(): Constructor to initialize all required resources and configurations.
- * - detectAudioFormat(): Detects the audio format of the input audio stream.
- * - stopWavRecording(): Stops recording audio to a WAV file.
- * - startWavRecording(): Initiates recording of audio to a WAV file.
- * - startStreaming(): Streams audio to Google STT and processes the transcription results. In case of a
- *   prolonged session, the method restarts the stream periodically.
- * - calculateRMS(byte[] buffer, int length): Calculates the RMS value of an audio buffer to determine sound
- *   thresholds dynamically.
- * - processStreamingRecognitionResult(StreamingRecognitionResult result): Handles the processing of the
- *   streaming recognition result from Google STT and focuses on the final recognized result.
- * - sendToAi(String sanitizedTranscript, float confidence): Sends processed transcription to an AI
- *   command interface for further actions.
- * - getStreamingRecognitionConfig(): Creates a streaming recognition configuration tailored to the
- *   application's needs, including speech adaptations, domain-specific terms, and context.
- * - getNextTranscription(): Retrieves the next available transcription from the queue. This method may
- *   block if no transcriptions are currently available.
- * - stopListening(): Stops the listening process without shutting down other operations.
- * - shutdown(): Completely shuts down all operations, closes resources, and releases any held resources.
- * <p>
- * Superclasses:
- * - java.lang.Object: Base class in the Java hierarchy.
- * - elite.companion.comms.ears.EarsInterface: Interface defining the general structure for listening and
- *   processing ears implementations.
+ * - log: Logger utility for capturing runtime states, errors, and debugging information.
+ * - sampleRateHertz, bufferSize, CHANNELS: Audio configuration parameters for stream processing.
+ * - RESTART_DELAY_MS, STREAM_DURATION_MS, KEEP_ALIVE_INTERVAL_MS: Timing configurations for streaming sessions.
+ * - isListening, isActive: Flags to monitor the state and activity of the recognition process.
+ * - wavFile: Optional file used for debugging and recording live audio input.
+ * - transcriptionQueue: Queue to store transcriptions for further processing.
+ * - speechClient: Instance of Google Cloud Speech API client for managing STT operations.
+ * - aiCommandInterface: Interface to handle recognized commands and delegate to AI systems for processing.
+ * - RMS_THRESHOLD_HIGH, RMS_THRESHOLD_LOW: Threshold values for detecting voice and silence.
+ * - lastAudioSentTime, lastBuffer: Metadata for the last processed audio segment.
+ * - consecutiveVoice, consecutiveSilence: Counters for voice activity detection transitions.
+ * - audioInputStream: Input audio stream for processing by the recognition system.
+ * - processingThread: Thread responsible for running the audio processing and recognition pipeline.
+ *
+ * Threading:
+ * - Manages multiple threads for audio capture, real-time streaming, and processing.
+ * - Ensures proper synchronization between audio input, transcription retrieval, and AI communication.
+ *
+ * Exceptions:
+ * - Logs and handles runtime errors during initialization, audio processing, and API communication.
+ * - Ensures proper resource cleanup to handle failures gracefully.
  */
 public class GoogleSTTImpl implements EarsInterface {
     private static final Logger log = LoggerFactory.getLogger(GoogleSTTImpl.class);
-    private int sampleRateHertz; // Dynamically detected
+
+    private int sampleRateHertz;  // Dynamically detected
     private int bufferSize; // Dynamically calculated based on sample rate
+
+
     private static final int CHANNELS = 1; // Mono
     private static final int RESTART_DELAY_MS = 50; // 50ms sleep after stream close
     private File wavFile = null; // Output WAV for debugging
@@ -121,28 +105,28 @@ public class GoogleSTTImpl implements EarsInterface {
     }
 
     /**
-     * Starts the Google speech-to-text (STT) service by initializing necessary configurations
-     * and launching the audio processing in a separate thread. This method ensures proper
-     * setup of the speech client, manages threading, and delegates necessary audio and AI-related
-     * operations.
+     * Starts the speech recognition process by initializing necessary resources,
+     * configuring audio input settings, and launching the processing thread.
      * <p>
-     * Key Steps:
-     * - Checks if the speech recognition service is already running. If active, logs a warning and exits.
-     * - Detects and configures the audio format including sample rate and buffer size by calling the
-     * detectAudioFormat method.
-     * - Retrieves the system-wide STT API key from the configuration. If the key is invalid or not found,
-     * logs an error and terminates the startup process.
-     * - Initializes a SpeechClient instance using the retrieved API key to facilitate Google STT operations.
-     * - Starts a new thread to handle audio streaming to Google STT via the startStreaming method.
-     * - Initializes any dependent AI interface for processing recognized speech commands.
+     * This method ensures that only one active recognition session runs at any time.
+     * It detects and sets supported audio formats, initializes the Google SpeechClient
+     * with an API key, and starts a background thread for handling audio streaming
+     * and transcription.
      * <p>
-     * Logs:
-     * - Warns if the service is already running.
-     * - Logs success or failure during SpeechClient initialization.
-     * - Logs errors related to missing API keys or runtime exceptions during startup.
+     * Logs warnings and errors to indicate the state of initialization and operation.
+     * Handles exceptions occurring during SpeechClient setup and processing thread creation.
      * <p>
-     * Exceptions:
-     * - Throws RuntimeException if initialization of the SpeechClient or the AI command interface fails.
+     * Preconditions:
+     * - Requires the API key for Google Speech-to-Text to be configured in the system.
+     * - Relies on external dependencies, including `AudioFormatDetector` and `ConfigManager`,
+     * to fetch audio settings and system configurations.
+     * <p>
+     * Threading:
+     * - Operates asynchronously in a dedicated background thread for audio streaming.
+     * <p>
+     * Failures:
+     * - Logs and throws runtime exceptions if the initialization of core components fails.
+     * - Returns silently if a speech recognition process is already active.
      */
     @Override public void start() {
         if (processingThread != null && processingThread.isAlive()) {
@@ -150,7 +134,9 @@ public class GoogleSTTImpl implements EarsInterface {
             return;
         }
 
-        detectAudioFormat(); // Detect sample rate and set buffer size
+        AudioSettingsTuple<Integer, Integer> formatResult = AudioFormatDetector.detectSupportedFormat();
+        this.sampleRateHertz = formatResult.getSampleRate();
+        this.bufferSize = formatResult.getBufferSize();
 
         try {
             String apiKey = ConfigManager.getInstance().getSystemKey(ConfigManager.STT_API_KEY);
@@ -181,75 +167,7 @@ public class GoogleSTTImpl implements EarsInterface {
     }
 
     public GoogleSTTImpl() {
-        //this.aiCommandInterface = new GrokCommandEndPoint();
         this.aiCommandInterface = ApiFactory.getInstance().getCommandEndpoint();
-    }
-
-    /**
-     * Detects a supported audio format for mono 16-bit input by checking available sample rates
-     * and sets the sample rate and buffer size accordingly. The method iterates over a predefined
-     * list of preferred sample rates (48000 Hz, 44100 Hz, 16000 Hz) to determine the first one
-     * that is supported by the underlying audio system.
-     *
-     * If a supported sample rate is found, it sets up the audio configuration using the detected
-     * sample rate and calculates the buffer size based on a ~100 ms duration.
-     *
-     * Logging provides details of the selected sample rate and corresponding buffer size for
-     * clarity during runtime.
-     *
-     * Throws:
-     * - RuntimeException if no supported audio format is found, indicating that the system does not
-     *   support the required configuration for mono 16-bit input.
-     */
-    private void detectAudioFormat() {
-        int[] possibleRates = {48000, 44100, 16000}; // Preferred rates in order
-        for (int rate : possibleRates) {
-            AudioFormat format = new AudioFormat(rate, 16, CHANNELS, true, false);
-            DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
-            if (AudioSystem.isLineSupported(info)) {
-                this.sampleRateHertz = rate;
-                this.bufferSize = (int) (rate * 0.1 * 2 * CHANNELS); // ~100ms buffer
-                log.info("Detected supported sample rate: {} Hz, buffer size: {}", sampleRateHertz, bufferSize);
-                return;
-            }
-        }
-        throw new RuntimeException("No supported audio format found for mono 16-bit input");
-    }
-
-
-    //for debugging audio quality
-    private void stopWavRecording() {
-        if (audioInputStream != null) {
-            try {
-                audioInputStream.close();
-                log.info("Stopped WAV recording");
-            } catch (Exception e) {
-                log.error("Failed to stop WAV recording", e);
-            }
-        }
-    }
-
-    //for debugging audio quality
-    private void startWavRecording() {
-        try {
-            AudioFormat format = new AudioFormat(sampleRateHertz, 16, CHANNELS, true, false);
-            wavFile = new File("audio_debug.wav");
-            DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
-            TargetDataLine line = (TargetDataLine) AudioSystem.getLine(info);
-            line.open(format, bufferSize);
-            line.start();
-            audioInputStream = new AudioInputStream(line);
-            new Thread(() -> {
-                try {
-                    AudioSystem.write(audioInputStream, AudioFileFormat.Type.WAVE, wavFile);
-                    log.info("Started WAV recording to {}", wavFile.getAbsolutePath());
-                } catch (Exception e) {
-                    log.error("Failed to write WAV file", e);
-                }
-            }).start();
-        } catch (Exception e) {
-            log.error("Failed to start WAV recording", e);
-        }
     }
 
     /**
@@ -257,31 +175,31 @@ public class GoogleSTTImpl implements EarsInterface {
      * This method repeatedly attempts to capture audio from the system microphone, process it in real-time,
      * and send it to the Google Speech API for transcription. It manages voice activity detection (VAD),
      * keep-alive packets, and session reinitialization upon completion or failure.
-     *
+     * <p>
      * Key Functions:
      * - Configures the audio input format and initializes audio capture through `TargetDataLine`.
      * - Creates and manages an `ApiStreamObserver` for bidirectional streaming communication with the Google Speech API.
      * - Sends initial configuration and buffered audio data if available at the start of streaming.
      * - Reads audio data from the microphone, processes it, and performs voice activity detection to determine whether
-     *   to send audio blocks or silence-based keep-alive packets.
+     * to send audio blocks or silence-based keep-alive packets.
      * - Manages streaming session duration and reinitializes upon session end or error.
-     *
+     * <p>
      * Logs:
      * - Logs audio session states, including initialization, audio format details, and VAD transitions.
      * - Provides debug logs for active audio packets and keep-alive transmissions.
      * - Captures and logs errors, including audio capture issues and streaming session failures.
-     *
+     * <p>
      * Threading:
      * Operates within a loop that respects the `isListening` flag, ensuring the session halts cleanly
      * when directed to stop. Uses thread priorities for performance optimization. Implements delays
      * between session restarts to avoid overloading resources.
-     *
+     * <p>
      * Exceptions:
      * - Handles `LineUnavailableException`, `IllegalArgumentException`, and other runtime exceptions during
-     *   audio capture setup and streaming operation.
+     * audio capture setup and streaming operation.
      * - Ensures proper resource cleanup through `try-with-resources` for audio lines and sends completion signals
-     *   to the stream observer.
-     *
+     * to the stream observer.
+     * <p>
      * Preconditions:
      * - Assumes `speechClient` is properly initialized and configured for speech recognition.
      * - Relies on class-level configurations for sample rate, buffer size, VAD thresholds, and streaming duration.
@@ -461,7 +379,7 @@ public class GoogleSTTImpl implements EarsInterface {
                 if (!transcript.isBlank() && transcript.length() >= 3 && confidence > 0.3) {
                     transcriptionQueue.offer(transcript);
                     log.info("Final transcript: {} (confidence: {})", transcript, confidence);
-                    String sanitizedTranscript = StringSanitizer.sanitizeGoogleMistakes(transcript);
+                    String sanitizedTranscript = DaftSecretarySanitizer.getInstance().correctMistakes(transcript);
 
                     EventBusManager.publish(new AppLogEvent("STT Sanitized: [" + sanitizedTranscript + "]."));
 
@@ -487,7 +405,7 @@ public class GoogleSTTImpl implements EarsInterface {
      * {@link UserInputEvent} on the {@link EventBusManager} for further handling by registered listeners.
      *
      * @param sanitizedTranscript the sanitized transcription of the user's input
-     * @param confidence the confidence score of the transcription, represented as a float
+     * @param confidence          the confidence score of the transcription, represented as a float
      */
     private void sendToAi(String sanitizedTranscript, float confidence) {
         log.info("Processing sanitizedTranscript: {}", sanitizedTranscript);
@@ -499,17 +417,17 @@ public class GoogleSTTImpl implements EarsInterface {
      * streaming speech recognition. This configuration is tailored for handling audio in the
      * "en-US" language code, enabling features such as automatic punctuation, word time offsets,
      * and contextual phrase boosting.
-     *
+     * <p>
      * The method:
      * - Configures a {@link SpeechContext} to add contextual phrases with an associated boost value.
      * - Sets up a {@link RecognitionConfig} with audio encoding, sample rate, channel count, model type,
-     *   and other recognition options.
+     * and other recognition options.
      * - Builds a {@link StreamingRecognitionConfig} enabling specific streaming features such as
-     *   interim result reporting for ongoing audio streams.
+     * interim result reporting for ongoing audio streams.
      *
      * @return a {@link StreamingRecognitionConfig} object configured for streaming recognition with
-     *         language support, phrase context boosting, interim result updates, and other
-     *         recognition options.
+     * language support, phrase context boosting, interim result updates, and other
+     * recognition options.
      */
     private StreamingRecognitionConfig getStreamingRecognitionConfig() {
         SpeechContext commandContext = SpeechContext.newBuilder()
@@ -548,5 +466,42 @@ public class GoogleSTTImpl implements EarsInterface {
         }
         //for debugging
         //stopWavRecording();
+    }
+
+
+    /// ////////////////////////////////////////////////////////////////////////////////
+    //for debugging audio quality
+    private void stopWavRecording() {
+        if (audioInputStream != null) {
+            try {
+                audioInputStream.close();
+                log.info("Stopped WAV recording");
+            } catch (Exception e) {
+                log.error("Failed to stop WAV recording", e);
+            }
+        }
+    }
+
+    //for debugging audio quality
+    private void startWavRecording() {
+        try {
+            AudioFormat format = new AudioFormat(sampleRateHertz, 16, CHANNELS, true, false);
+            wavFile = new File("audio_debug.wav");
+            DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
+            TargetDataLine line = (TargetDataLine) AudioSystem.getLine(info);
+            line.open(format, bufferSize);
+            line.start();
+            audioInputStream = new AudioInputStream(line);
+            new Thread(() -> {
+                try {
+                    AudioSystem.write(audioInputStream, AudioFileFormat.Type.WAVE, wavFile);
+                    log.info("Started WAV recording to {}", wavFile.getAbsolutePath());
+                } catch (Exception e) {
+                    log.error("Failed to write WAV file", e);
+                }
+            }).start();
+        } catch (Exception e) {
+            log.error("Failed to start WAV recording", e);
+        }
     }
 }

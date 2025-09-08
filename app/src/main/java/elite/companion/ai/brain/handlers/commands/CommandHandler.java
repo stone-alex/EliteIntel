@@ -1,4 +1,4 @@
-package elite.companion.ai.brain.handlers.command;
+package elite.companion.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
 

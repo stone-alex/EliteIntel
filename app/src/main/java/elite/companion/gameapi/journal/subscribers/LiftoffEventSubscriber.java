@@ -1,7 +1,7 @@
 package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.companion.ai.brain.handlers.command.GameCommands;
+import elite.companion.ai.brain.handlers.commands.GameCommands;
 import elite.companion.ai.hands.BindingsMonitor;
 import elite.companion.ai.hands.KeyBindingExecutor;
 import elite.companion.ai.hands.KeyBindingsParser;

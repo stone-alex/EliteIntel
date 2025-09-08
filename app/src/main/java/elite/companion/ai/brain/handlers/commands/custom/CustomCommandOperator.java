@@ -1,5 +1,6 @@
-package elite.companion.ai.brain.handlers.command;
+package elite.companion.ai.brain.handlers.commands.custom;
 
+import elite.companion.ai.brain.handlers.commands.GameCommands;
 import elite.companion.ai.hands.BindingsMonitor;
 import elite.companion.ai.hands.KeyBindingExecutor;
 import elite.companion.ai.hands.KeyBindingsParser;

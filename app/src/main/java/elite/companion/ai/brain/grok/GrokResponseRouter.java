@@ -6,21 +6,17 @@ import elite.companion.ai.ApiFactory;
 import elite.companion.ai.brain.AIRouterInterface;
 import elite.companion.ai.brain.AiContextFactory;
 import elite.companion.ai.brain.AiQueryInterface;
-import elite.companion.ai.brain.handlers.command.CommandHandler;
-import elite.companion.ai.brain.handlers.command.CustomCommands;
-import elite.companion.ai.brain.handlers.command.GameCommands;
-import elite.companion.ai.brain.handlers.command.GenericGameController;
+import elite.companion.ai.brain.handlers.CommandHandlerFactory;
+import elite.companion.ai.brain.handlers.QueryHandlerFactory;
+import elite.companion.ai.brain.handlers.commands.CommandHandler;
 import elite.companion.ai.brain.handlers.query.QueryActions;
 import elite.companion.ai.brain.handlers.query.QueryHandler;
-import elite.companion.ai.hands.GameCommandHandler;
 import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.VoiceProcessEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
-import java.lang.reflect.Constructor;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -38,9 +34,8 @@ import java.util.Map;
 public class GrokResponseRouter implements AIRouterInterface {
     private static final Logger log = LoggerFactory.getLogger(GrokResponseRouter.class);
     private static final GrokResponseRouter INSTANCE = new GrokResponseRouter();
-    private final GameCommandHandler gameCommandHandler;
-    private final Map<String, CommandHandler> commandHandlers = new HashMap<>();
-    private final Map<String, QueryHandler> queryHandlers = new HashMap<>();
+    private final Map<String, CommandHandler> commandHandlers;
+    private final Map<String, QueryHandler> queryHandlers;
     private final AiQueryInterface queryInterface;
     private final AiContextFactory contextFactory;
 
@@ -50,102 +45,22 @@ public class GrokResponseRouter implements AIRouterInterface {
 
     private GrokResponseRouter() {
         try {
-            this.gameCommandHandler = new GameCommandHandler();
-            queryInterface = ApiFactory.getInstance().getQueryEndpoint();
-            contextFactory = ApiFactory.getInstance().getAiContextFactory();
-            registerCommandHandlers();
+            CommandHandlerFactory commandHandlerFactory = CommandHandlerFactory.getInstance();
+            this.commandHandlers = commandHandlerFactory.registerCommandHandlers();
+            this.queryHandlers = QueryHandlerFactory.getInstance().registerQueryHandlers();
+            this.queryInterface = ApiFactory.getInstance().getQueryEndpoint();
+            this.contextFactory = ApiFactory.getInstance().getAiContextFactory();
         } catch (Exception e) {
             log.error("Failed to initialize GrokResponseRouter", e);
             throw new RuntimeException("GrokResponseRouter initialization failed", e);
         }
     }
 
-    private void registerCommandHandlers() {
-        for (QueryActions action : QueryActions.values()) {
-            try {
-                QueryHandler handler = instantiateHandler(action.getHandlerClass(), QueryHandler.class);
-                queryHandlers.put(action.getAction(), handler);
-                log.debug("Registered query handler for action: {}, requiresFollowUp: {}", action.getAction(), action.isRequiresFollowUp());
-            } catch (Exception e) {
-                log.error("Failed to register query handler for action: {}", action.getAction(), e);
-                throw new RuntimeException("Query handler registration failed for action: " + action.getAction(), e);
-            }
-        }
-
-        for (CustomCommands action : CustomCommands.values()) {
-            try {
-                CommandHandler handler = instantiateCommandHandler(action.getHandlerClass(), action.getAction());
-                commandHandlers.put(action.getAction(), handler);
-                log.debug("Registered custom command handler for action: {}", action.getAction());
-            } catch (Exception e) {
-                log.error("Failed to register custom command handler for action: {}", action.getAction(), e);
-                throw new RuntimeException("Custom command handler registration failed for action: " + action.getAction(), e);
-            }
-        }
-
-        for (GameCommands.GameCommand command : GameCommands.GameCommand.values()) {
-            try {
-                CommandHandler handler = instantiateCommandHandler(command.getHandlerClass(), command.getGameBinding());
-                commandHandlers.put(command.getGameBinding(), handler);
-                log.debug("Registered game command handler for binding: {}", command.getGameBinding());
-            } catch (Exception e) {
-                log.error("Failed to register game command handler for binding: {}", command.getGameBinding(), e);
-                throw new RuntimeException("Game command handler registration failed for binding: " + command.getGameBinding(), e);
-            }
-        }
-    }
-
-    private <T> T instantiateHandler(Class<? extends T> handlerClass, Class<T> expectedType) {
-        try {
-            Constructor<? extends T> constructor = handlerClass.getDeclaredConstructor();
-            constructor.setAccessible(true);
-            T handler = constructor.newInstance();
-            if (!expectedType.isInstance(handler)) {
-                throw new IllegalStateException("Handler class " + handlerClass.getName() + " does not implement " + expectedType.getName());
-            }
-            return handler;
-        } catch (NoSuchMethodException e) {
-            log.error("No no-arg constructor found for handler: {}", handlerClass.getName());
-            throw new RuntimeException("Failed to instantiate handler: " + handlerClass.getName(), e);
-        } catch (Exception e) {
-            log.error("Failed to instantiate handler: {}", handlerClass.getName(), e);
-            throw new RuntimeException("Failed to instantiate handler: " + handlerClass.getName(), e);
-        }
-    }
-
-    private CommandHandler instantiateCommandHandler(Class<? extends CommandHandler> handlerClass, String actionOrBinding) {
-        try {
-            if (handlerClass == GenericGameController.class) {
-                Constructor<? extends CommandHandler> constructor = handlerClass.getDeclaredConstructor(GameCommandHandler.class, String.class);
-                constructor.setAccessible(true);
-                return constructor.newInstance(gameCommandHandler, actionOrBinding);
-            } else {
-                try {
-                    Constructor<? extends CommandHandler> constructor = handlerClass.getDeclaredConstructor(GameCommandHandler.class);
-                    constructor.setAccessible(true);
-                    return constructor.newInstance(gameCommandHandler);
-                } catch (NoSuchMethodException e) {
-                    Constructor<? extends CommandHandler> constructor = handlerClass.getDeclaredConstructor();
-                    constructor.setAccessible(true);
-                    return constructor.newInstance();
-                }
-            }
-        } catch (NoSuchMethodException e) {
-            log.error("No suitable constructor found for handler: {}, action/binding: {}", handlerClass.getName(), actionOrBinding);
-            throw new RuntimeException("Failed to instantiate command handler: " + handlerClass.getName(), e);
-        } catch (Exception e) {
-            log.error("Failed to instantiate command handler: {}, action/binding: {}", handlerClass.getName(), actionOrBinding, e);
-            throw new RuntimeException("Failed to instantiate command handler: " + handlerClass.getName(), e);
-        }
-    }
-
     @Override public void start() throws Exception {
-        gameCommandHandler.start();
         log.info("Started GrokResponseRouter");
     }
 
     @Override public void stop() {
-        gameCommandHandler.stop();
         log.info("Stopped GrokResponseRouter");
     }
 
@@ -167,7 +82,6 @@ public class GrokResponseRouter implements AIRouterInterface {
 
             switch (type) {
                 case "command":
-                case "system_command":
                     handleCommand(action, params, responseText, jsonResponse);
                     break;
                 case "query":
@@ -278,9 +192,6 @@ public class GrokResponseRouter implements AIRouterInterface {
         if (handler != null) {
             handler.handle(params, responseText);
             log.debug("Handled command action: {}", action);
-        } else {
-            gameCommandHandler.handleGrokResponse(jsonResponse);
-            log.debug("Delegated unhandled command to GameCommandHandler: {}", action);
         }
     }
 

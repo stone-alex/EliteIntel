@@ -7,13 +7,13 @@ import elite.companion.ai.mouth.AiVoices;
 import elite.companion.ai.mouth.MouthInterface;
 import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.VoiceProcessEvent;
-import elite.companion.session.SystemSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.SourceDataLine;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -38,15 +38,13 @@ public class GoogleTTSImpl implements MouthInterface {
     private final BlockingQueue<VoiceRequest> voiceQueue;
     private Thread processingThread;
     private volatile boolean running;
+    private final GoogleVoiceProvider googleVoiceProvider;
 
     private static final GoogleTTSImpl INSTANCE = new GoogleTTSImpl();
 
     public static GoogleTTSImpl getInstance() {
         return INSTANCE;
     }
-
-    private final Map<String, VoiceSelectionParams> voiceMap = new HashMap<>();
-    private final Map<String, VoiceSelectionParams> randomVoiceMap = new HashMap<>();
 
     private static class VoiceRequest {
         final String text;
@@ -63,56 +61,26 @@ public class GoogleTTSImpl implements MouthInterface {
     private GoogleTTSImpl() {
         EventBusManager.register(this);
         this.voiceQueue = new LinkedBlockingQueue<>();
-
-
-        // Initialize voice mappings
-        VoiceSelectionParams James = VoiceSelectionParams.newBuilder().setLanguageCode("en-AU").setName("en-AU-Chirp3-HD-Algieba").build();
-        VoiceSelectionParams Charles = VoiceSelectionParams.newBuilder().setLanguageCode("en-GB").setName("en-GB-Chirp3-HD-Algenib").build();
-        VoiceSelectionParams Jake = VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Iapetus").build();
-        VoiceSelectionParams Anna = VoiceSelectionParams.newBuilder().setLanguageCode("en-GB").setName("en-GB-Chirp-HD-F").build();
-        VoiceSelectionParams Mary = VoiceSelectionParams.newBuilder().setLanguageCode("en-GB").setName("en-GB-Neural2-A").build();
-        VoiceSelectionParams Betty = VoiceSelectionParams.newBuilder().setLanguageCode("en-GB").setName("en-GB-Chirp3-HD-Aoede").build();
-        VoiceSelectionParams Olivia = VoiceSelectionParams.newBuilder().setLanguageCode("en-GB").setName("en-GB-Chirp3-HD-Aoede").build();
-        VoiceSelectionParams Michael = VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Charon").build();
-        VoiceSelectionParams Steve = VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Algenib").build();
-        VoiceSelectionParams Joseph = VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Sadachbia").build();
-        VoiceSelectionParams Jennifer = VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Sulafat").build();
-        VoiceSelectionParams Rachel = VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Zephyr").build();
-        VoiceSelectionParams Karen = VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Despina").build();
-        VoiceSelectionParams Emma = VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Despina").build();
-
-        voiceMap.put(AiVoices.ANNA.getName(), Anna);
-        voiceMap.put(AiVoices.CHARLES.getName(), Charles);
-        voiceMap.put(AiVoices.JAMES.getName(), James);
-        voiceMap.put(AiVoices.JENNIFER.getName(), Jennifer);
-        voiceMap.put(AiVoices.JOSEPH.getName(), Joseph);
-        voiceMap.put(AiVoices.KAREN.getName(), Karen);
-        voiceMap.put(AiVoices.JAKE.getName(), Jake);
-        voiceMap.put(AiVoices.MARY.getName(), Mary);
-        voiceMap.put(AiVoices.MICHAEL.getName(), Michael);
-        voiceMap.put(AiVoices.RACHEL.getName(), Rachel);
-        voiceMap.put(AiVoices.STEVE.getName(), Steve);
-        voiceMap.put(AiVoices.BETTY.getName(), Betty);
-        voiceMap.put(AiVoices.EMMA.getName(), Emma);
-        voiceMap.put(AiVoices.OLIVIA.getName(), Olivia);
-
-        randomVoiceMap.put(AiVoices.ANNA.getName(), Anna);
-        randomVoiceMap.put(AiVoices.CHARLES.getName(), Charles);
-        randomVoiceMap.put(AiVoices.JAMES.getName(), James);
-        randomVoiceMap.put(AiVoices.JENNIFER.getName(), Jennifer);
-        randomVoiceMap.put(AiVoices.JOSEPH.getName(), Joseph);
-        randomVoiceMap.put(AiVoices.KAREN.getName(), Karen);
-        randomVoiceMap.put(AiVoices.JAKE.getName(), Jake);
-        randomVoiceMap.put(AiVoices.MARY.getName(), Mary);
-        randomVoiceMap.put(AiVoices.MICHAEL.getName(), Michael);
-        randomVoiceMap.put(AiVoices.RACHEL.getName(), Rachel);
-        randomVoiceMap.put(AiVoices.STEVE.getName(), Steve);
-        randomVoiceMap.put(AiVoices.BETTY.getName(), Betty);
-        randomVoiceMap.put(AiVoices.EMMA.getName(), Emma);
-        randomVoiceMap.put(AiVoices.OLIVIA.getName(), Olivia);
+        googleVoiceProvider = GoogleVoiceProvider.getInstance();
     }
 
-    @Override public synchronized void start() {
+    /**
+     * Starts the VoiceGenerator service. This method initializes the TextToSpeechClient
+     * using the API key from the system configuration, sets up the required resources,
+     * and starts a separate processing thread to handle the voice generation tasks.
+     * If the service is already running, the start operation is skipped with
+     * a warning log.
+     * <p>
+     * Throws:
+     * - RuntimeException if the TextToSpeechClient initialization fails.
+     * <p>
+     * Ensures:
+     * - The TextToSpeechClient is successfully created and ready for use.
+     * - A dedicated thread (VoiceGeneratorThread) is launched to process the
+     * voice requests from the queue.
+     */
+    @Override
+    public synchronized void start() {
         if (processingThread != null && processingThread.isAlive()) {
             log.warn("VoiceGenerator is already running");
             return;
@@ -140,7 +108,32 @@ public class GoogleTTSImpl implements MouthInterface {
         log.info("VoiceGenerator started");
     }
 
-    @Override public synchronized void stop() {
+    /**
+     * Stops the VoiceGenerator service if it is currently running. This method ensures that the
+     * service is cleanly terminated by interrupting the processing thread, waiting for it to
+     * finish, and releasing resources like the TextToSpeechClient.
+     * <p>
+     * Behavior:
+     * - If the service is not running, logs a warning and exits without performing any actions.
+     * - If the service is running:
+     * - Sets the running flag to false to signal termination.
+     * - Interrupts the processing thread and waits for it to stop, with a timeout of 5 seconds.
+     * - Logs an error if interrupted while waiting for the thread to stop and restores the
+     * interrupted status.
+     * - Attempts to close the TextToSpeechClient and logs an error if this operation fails.
+     * <p>
+     * Postconditions:
+     * - The processing thread is stopped and set to null.
+     * - The TextToSpeechClient is closed, releasing its resources.
+     * <p>
+     * Thread Safety:
+     * - This method is synchronized to prevent concurrent modifications while stopping the service.
+     * <p>
+     * Logging:
+     * - Logs warnings, informational messages, and errors as appropriate during the stop process.
+     */
+    @Override
+    public synchronized void stop() {
         if (processingThread == null || !processingThread.isAlive()) {
             log.warn("VoiceGenerator is not running");
             return;
@@ -163,31 +156,34 @@ public class GoogleTTSImpl implements MouthInterface {
         processingThread = null;
     }
 
-    private AiVoices getRandomVoice() {
-        if (voiceMap.isEmpty()) {
-            return SystemSession.getInstance().getAIVoice();
-        }
-        AiVoices[] voices = randomVoiceMap.keySet().toArray(new AiVoices[0]);
-        return voices[new Random().nextInt(voices.length)];
-    }
-
-    @Subscribe @Override public void onVoiceProcessEvent(VoiceProcessEvent event) {
+    /**
+     * Handles the VoiceProcessEvent to generate speech based on the event's configuration.
+     * If the event specifies random voice usage, a random voice is selected for speech synthesis.
+     * Otherwise, the user-selected voice is used.
+     *
+     * @param event the VoiceProcessEvent containing the text to synthesize and the voice configuration.
+     */
+    @Subscribe
+    @Override
+    public void onVoiceProcessEvent(VoiceProcessEvent event) {
         if (event.isUseRandom()) {
-            speak(event.getText(), getRandomVoice());
+            speak(event.getText(), googleVoiceProvider.getRandomVoice());
         } else {
-            speak(event.getText());
+            speak(event.getText(), googleVoiceProvider.getUserSelectedVoice());
         }
     }
 
-    private void speak(String text) {
-        if (text == null || text.isEmpty()) return;
-        if (text.toLowerCase().contains("moment")) return;
-
-        new Thread(() -> speak(text, SystemSession.getInstance().getAIVoice())).start();
-    }
-
+    /**
+     * Adds a voice synthesis request to the processing queue if the provided text is not null or empty.
+     * The request includes the text to be spoken, the selected voice, and its speech rate.
+     *
+     * @param text the text to be synthesized into speech, must not be null or empty
+     * @param aiVoice the voice configuration used for speech synthesis including name and speech rate
+     */
     private void speak(String text, AiVoices aiVoice) {
-        if (text == null || text.isEmpty()) return;
+        if (text == null || text.isEmpty()) {
+            return;
+        }
         try {
             voiceQueue.put(new VoiceRequest(text, aiVoice.getName(), aiVoice.getSpeechRate()));
         } catch (InterruptedException e) {
@@ -196,6 +192,35 @@ public class GoogleTTSImpl implements MouthInterface {
         }
     }
 
+    /**
+     * Continuously processes requests from the voice generation queue while the service is running.
+     * This method retrieves voice synthesis tasks from the queue, processes them, and handles any
+     * interruption or errors that occur during execution.
+     *
+     * Behavior:
+     * - Polls the `voiceQueue` for voice synthesis requests with a timeout of 1 second.
+     * - If a request is retrieved, it invokes the `processVoiceRequest` method to handle the synthesis.
+     * - If the queue is empty after the timeout, it checks if the thread is interrupted or the service
+     *   has been stopped, and exits if required.
+     * - Logs shutdown messages when interrupted or stopped.
+     * - Catches and logs unexpected errors during processing without halting the service.
+     *
+     * Threading:
+     * - Designed to run in a dedicated thread to continuously process the voice queue.
+     *
+     * Exception Handling:
+     * - If interrupted, the thread's interrupted status is restored with `Thread.currentThread().interrupt()`
+     *   and the service shuts down gracefully.
+     * - Logs any unexpected exceptions without disrupting queue processing.
+     *
+     * Prerequisites:
+     * - The `voiceQueue` must be properly initialized before invoking this method.
+     * - The `processVoiceRequest` method must be implemented for handling individual synthesis requests.
+     *
+     * Postconditions:
+     * - The method terminates when the `running` flag is set to false or the thread is interrupted.
+     * - Ensures graceful shutdown by logging interruptions and maintaining service integrity.
+     */
     private void processVoiceQueue() {
         while (running) {
             try {
@@ -218,19 +243,30 @@ public class GoogleTTSImpl implements MouthInterface {
         }
     }
 
+    /**
+     * Processes a voice synthesis request by converting the provided text into speech
+     * using the specified voice and speech rate. The synthesized audio is then played
+     * directly using the Java Sound API. If the voice name is not found, a default voice
+     * is used for synthesis. Ensures audio is prepared and played with minimal distortion
+     * using various audio processing techniques, such as fade-in and fade-out.
+     *
+     * @param text       the text to be synthesized into speech; must not be null or empty
+     * @param voiceName  the name of the voice to use for speech synthesis
+     * @param speechRate the rate at which the speech is synthesized; greater values imply faster speech
+     */
     private void processVoiceRequest(String text, String voiceName, double speechRate) {
         if (text == null || text.isEmpty()) {
             return;
         }
-        log.info("{} Speaking: {}", voiceName, text);
+        log.info("Speaking with voice {}: {}", voiceName, text);
         try {
-            SynthesisInput input = SynthesisInput.newBuilder().setText(text).build();
-            VoiceSelectionParams voice = voiceMap.get(voiceName);
+            VoiceSelectionParams voice = googleVoiceProvider.getVoiceParams(voiceName);
             if (voice == null) {
                 log.warn("No voice found for name: {}, using default", voiceName);
-                return;
+                voice = googleVoiceProvider.getVoiceParams(AiVoices.JENNIFER.getName());
             }
 
+            SynthesisInput input = SynthesisInput.newBuilder().setText(text).build();
             AudioConfig config = AudioConfig.newBuilder()
                     .setAudioEncoding(AudioEncoding.LINEAR16)
                     .setSpeakingRate(speechRate)
@@ -251,22 +287,17 @@ public class GoogleTTSImpl implements MouthInterface {
             applyFade(audioData, 20, false);
 
             // Play audio directly using Java Sound
-            javax.sound.sampled.AudioFormat format = new javax.sound.sampled.AudioFormat(24000, 16, 1, true, false);
-            javax.sound.sampled.DataLine.Info info = new javax.sound.sampled.DataLine.Info(javax.sound.sampled.SourceDataLine.class, format);
-            try (javax.sound.sampled.SourceDataLine line = (javax.sound.sampled.SourceDataLine) javax.sound.sampled.AudioSystem.getLine(info)) {
-                // Increase buffer size a bit to avoid underrun at start (e.g., ~100ms)
+            AudioFormat format = new AudioFormat(24000, 16, 1, true, false);
+            DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
+            try (SourceDataLine line = (SourceDataLine) AudioSystem.getLine(info)) {
                 int bufferBytes = (int) (format.getFrameSize() * format.getSampleRate() / 10); // ~100ms
                 line.open(format, bufferBytes);
-
-                // Pre-buffer with ~20ms of silence (do NOT flush afterward)
                 int silenceFrames = (int) (format.getSampleRate() / 50); // 20 ms
                 byte[] silenceBuffer = new byte[silenceFrames * format.getFrameSize()];
                 line.write(silenceBuffer, 0, silenceBuffer.length); // Prime the line
                 line.start();
-
-                // Write the actual audio data
                 line.write(audioData, 0, audioData.length);
-                line.drain(); // Wait for playback to complete
+                line.drain();
                 line.stop();
             }
         } catch (Exception e) {
@@ -274,6 +305,18 @@ public class GoogleTTSImpl implements MouthInterface {
         }
     }
 
+    /**
+     * Applies a fade-in or fade-out effect to the given audio data.
+     * This method modifies the raw audio data in place to gradually change the volume
+     * over the specified duration, starting from or ending at full volume, depending
+     * on the type of fade effect requested.
+     *
+     * @param audioData the array of raw audio data in 24kHz mono format, where each sample
+     *                  is represented by two consecutive bytes (little-endian format)
+     * @param fadeMs    the duration of the fade effect in milliseconds
+     * @param isFadeIn  a boolean indicating the type of fade effect;
+     *                  true for fade-in (volume increases over time), false for fade-out (volume decreases over time)
+     */
     private static void applyFade(byte[] audioData, int fadeMs, boolean isFadeIn) {
         int samplesToFade = (24000 * fadeMs) / 1000; // 24kHz mono
         int startIndex = isFadeIn ? 0 : Math.max(0, audioData.length / 2 - samplesToFade);

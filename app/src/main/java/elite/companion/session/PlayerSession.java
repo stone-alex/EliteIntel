@@ -227,13 +227,11 @@ public class PlayerSession {
     private final Set<String> targetFactions = new LinkedHashSet<>();
     private long bountyCollectedThisSession = 0;
     private RankAndProgressDto rankAndProgressDto = new RankAndProgressDto();
-    private final SessionPersistence persistence = new SessionPersistence("player_session.json");
 
-    private Map<String, Object> getState() {
-        return state;
-    }
+    SessionPersistence persistence = SessionPersistence.getInstance();
 
     private PlayerSession() {
+        persistence.ensureFileAndDirectoryExist("player_session.json");
         state.put(FRIENDS_STATUS, new HashMap<String, String>());
         persistence.registerField("shipScans", this::getShipScans, v -> {
             shipScans.clear();

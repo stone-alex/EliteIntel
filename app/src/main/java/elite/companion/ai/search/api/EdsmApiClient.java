@@ -1,6 +1,6 @@
 package elite.companion.ai.search.api;
 
-import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import elite.companion.ai.ConfigManager;
@@ -12,32 +12,112 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
 public class EdsmApiClient {
     private static final Logger log = LoggerFactory.getLogger(EdsmApiClient.class);
-    private static final String BASE_URL = "https://www.edsm.net/api-v1";
+    private static final String BASE_URL = "https://www.edsm.net";
 
-    private static final String API_KEY = ConfigManager.getInstance().getSystemKey(ConfigManager.PLAYER_EDSM_KEY);
+    private static final String API_KEY = ConfigManager.getInstance().getPlayerKey(ConfigManager.PLAYER_EDSM_KEY);
 
-    private static final ConcurrentHashMap<String, JsonArray> cache = new ConcurrentHashMap<>();
-    private static final long CACHE_TTL = TimeUnit.MINUTES.toMillis(30);
+    private static StringBuilder authenticatedUrl(String endpoint) {
+        return new StringBuilder(BASE_URL + endpoint + "?apiKey=" + API_KEY);
+    }
 
-    public static JsonArray searchStations(String system, String service) {
-        String cacheKey = system + ":" + service;
-        if (cache.containsKey(cacheKey) && cache.get(cacheKey).getAsJsonObject().has("timestamp") &&
-                System.currentTimeMillis() - cache.get(cacheKey).getAsJsonObject().get("timestamp").getAsLong() < CACHE_TTL) {
-            log.debug("Returning cached EDSM response for key: {}", cacheKey);
-            return cache.get(cacheKey);
+    public static JsonObject searchStarSystem(String starSystemName, int showInformation) {
+        if (starSystemName == null) return new JsonObject();
+        String endpoint = "/api-v1/system";
+        StringBuilder query = authenticatedUrl(endpoint);
+        query.append("&systemName=").append(URLEncoder.encode(starSystemName, StandardCharsets.UTF_8));
+        query.append("&showInformation=").append(showInformation);
+        return query(query);
+    }
+
+    public static JsonObject searchFaction(String starSystemName, int showHistory) {
+        if (starSystemName == null) return new JsonObject();
+        String endpoint = "/api-system-v1/factions";
+        StringBuilder query = authenticatedUrl(endpoint);
+        query.append("&systemName=").append(URLEncoder.encode(starSystemName, StandardCharsets.UTF_8));
+        query.append("&showInformation=").append(showHistory);
+        return query(query);
+    }
+
+
+    public static JsonObject searchSystemBodies(String starSystemName) {
+        if (starSystemName == null) return new JsonObject();
+        String endpoint = "/api-system-v1/bodies";
+        StringBuilder query = authenticatedUrl(endpoint);
+        query.append("&systemName=").append(URLEncoder.encode(starSystemName, StandardCharsets.UTF_8));
+        return query(query);
+    }
+
+    public static JsonObject searchTraffic(String starSystemName) {
+        if (starSystemName == null) return new JsonObject();
+        String endpoint = "/api-system-v1/traffic";
+        StringBuilder query = authenticatedUrl(endpoint);
+        query.append("&systemName=").append(URLEncoder.encode(starSystemName, StandardCharsets.UTF_8));
+        return query(query);
+    }
+
+    public static JsonObject searchDeaths(String starSystemName) {
+        if (starSystemName == null) return new JsonObject();
+        String endpoint = "/api-system-v1/deaths";
+        StringBuilder query = authenticatedUrl(endpoint);
+        query.append("&systemName=").append(URLEncoder.encode(starSystemName, StandardCharsets.UTF_8));
+        return query(query);
+    }
+
+
+    public static JsonObject searchEstimatedScanValues(String starSystemName) {
+        if (starSystemName == null) return new JsonObject();
+        String endpoint = "/api-system-v1/estimated-value";
+        StringBuilder query = authenticatedUrl(endpoint);
+        query.append("&systemName=").append(URLEncoder.encode(starSystemName, StandardCharsets.UTF_8));
+        return query(query);
+    }
+
+    public static JsonObject searchStations(String starSystemName) {
+        if (starSystemName == null) return new JsonObject();
+        String endpoint = "/api-system-v1/stations";
+        StringBuilder query = authenticatedUrl(endpoint);
+        query.append("&systemName=").append(URLEncoder.encode(starSystemName, StandardCharsets.UTF_8));
+        return query(query);
+    }
+
+    public static JsonObject searchMarket(String marketId, String orSystemName, String andStationName) {
+        if (marketId == null && orSystemName == null && andStationName == null) return new JsonObject();
+
+        String endpoint = "/api-system-v1/stations/market";
+        return servicesSearch(marketId, orSystemName, andStationName, endpoint);
+    }
+
+    public static JsonObject searchShipyard(String marketId, String orSystemName, String andStationName) {
+        if (marketId == null && orSystemName == null && andStationName == null) return new JsonObject();
+        String endpoint = "/api-system-v1/stations/shipyard";
+        return servicesSearch(marketId, orSystemName, andStationName, endpoint);
+    }
+
+
+    public static JsonObject searchOutfitting(String marketId, String orSystemName, String andStationName) {
+        if (marketId == null && orSystemName == null && andStationName == null) return new JsonObject();
+        String endpoint = "/api-system-v1/stations/outfitting";
+        return servicesSearch(marketId, orSystemName, andStationName, endpoint);
+    }
+
+
+    private static JsonObject servicesSearch(String marketId, String orSystemName, String andStationName, String endpoint) {
+        StringBuilder query = authenticatedUrl(endpoint);
+        if (marketId != null && !marketId.isEmpty()) {
+            query.append("&marketId=").append(URLEncoder.encode(marketId, StandardCharsets.UTF_8));
+        } else {
+            query.append("&systemName=").append(URLEncoder.encode(orSystemName, StandardCharsets.UTF_8));
+            query.append("&stationName=").append(URLEncoder.encode(andStationName, StandardCharsets.UTF_8));
         }
+        return query(query);
+    }
 
+
+    private static JsonObject query(StringBuilder query) {
         try {
-            String endpoint = "/stations";
-            StringBuilder query = new StringBuilder(BASE_URL + endpoint + "?apiKey=" + API_KEY);
-            if (system != null) query.append("&systemName=").append(URLEncoder.encode(system, StandardCharsets.UTF_8));
-            if (service != null) query.append("&services=").append(service);
-
             HttpURLConnection conn = (HttpURLConnection) new URL(query.toString()).openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");
@@ -45,22 +125,22 @@ public class EdsmApiClient {
             int responseCode = conn.getResponseCode();
             if (responseCode != 200) {
                 log.error("EDSM API error: {} - {}", responseCode, conn.getResponseMessage());
-                return new JsonArray();
+                return new JsonObject();
             }
 
             try (Scanner scanner = new Scanner(conn.getInputStream(), StandardCharsets.UTF_8)) {
                 String response = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
                 log.debug("EDSM API response: {}", response);
-                JsonArray result = JsonParser.parseString(response).getAsJsonArray();
+                JsonElement jsonElement = JsonParser.parseString(response);
+
                 JsonObject wrapper = new JsonObject();
-                wrapper.add("data", result);
+                wrapper.add("data", jsonElement);
                 wrapper.addProperty("timestamp", System.currentTimeMillis());
-                cache.put(cacheKey, wrapper.getAsJsonArray("data"));
-                return result;
+                return wrapper;
             }
         } catch (Exception e) {
             log.error("Failed to query EDSM API: {}", e.getMessage(), e);
-            return new JsonArray();
+            return new JsonObject();
         }
     }
 }

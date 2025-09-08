@@ -90,7 +90,7 @@ public class GoogleSTTImpl implements EarsInterface {
     private static final int ENTER_VOICE_FRAMES = 1; // Quick enter to avoid initial clipping (100ms buffer = ~0.1s delay max)
     private static final int EXIT_SILENCE_FRAMES = 20; // ~2s silence to exit (handles pauses in speech)
     private static final int STREAM_DURATION_MS = 300000; // 5 min; matches Google V1 limit
-    private static final int KEEP_ALIVE_INTERVAL_MS = 8000; // Increase to 5s to minimize silence sends (5000 is a good number)
+    private static final int KEEP_ALIVE_INTERVAL_MS = 5000; // Increase to 5s to minimize silence sends (5000 is a good number)
 
     // New state trackers
     private boolean isActive = false;
@@ -320,7 +320,7 @@ public class GoogleSTTImpl implements EarsInterface {
                     try {
                         Thread.sleep(RESTART_DELAY_MS);
                     } catch (InterruptedException e) {
-                        log.error("Restart delay interrupted", e);
+                        log.warn("Restart delay interrupted. System exiting?", e);
                         Thread.currentThread().interrupt();
                     }
                 }

@@ -12,6 +12,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -23,11 +25,27 @@ import java.util.function.Supplier;
 class SessionPersistence {
     private static final Logger log = LoggerFactory.getLogger(SessionPersistence.class);
     private String APP_DIR;
-    private final String sessionFile;
+    private String sessionFile = "system_session.json";
     private final Map<String, FieldHandler<?>> fields = new HashMap<>();
+    private final BlockingQueue<SaveOperation> saveQueue = new LinkedBlockingQueue<>();
+    private final Thread workerThread;
+    private volatile boolean isShutdown = false;
 
-    protected SessionPersistence(String sessionFile) {
+    private static final SessionPersistence INSTANCE = new SessionPersistence();
 
+    private SessionPersistence() {
+        // Private constructor for singleton
+        workerThread = new Thread(this::processQueue);
+        workerThread.setDaemon(true);
+        workerThread.start();
+    }
+
+    public static SessionPersistence getInstance() {
+        return INSTANCE;
+    }
+
+
+    public void ensureFileAndDirectoryExist(String sessionFile) {
         String appDir = "session/";
         try {
             URI jarUri = SessionPersistence.class.getProtectionDomain().getCodeSource().getLocation().toURI();
@@ -68,7 +86,40 @@ class SessionPersistence {
         fields.put(name, new FieldHandler<>(getter, setter, type));
     }
 
+
+    private static class SaveOperation {
+        private final Map<String, Object> stateMap;
+
+        public SaveOperation(Map<String, Object> stateMap) {
+            this.stateMap = new HashMap<>(stateMap);
+        }
+    }
+
     protected void saveSession(Map<String, Object> stateMap) {
+        try {
+            saveQueue.put(new SaveOperation(stateMap));
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.error("Interrupted while queueing save operation", e);
+        }
+    }
+
+    private void processQueue() {
+        while (!isShutdown) {
+            try {
+                SaveOperation operation = saveQueue.take();
+                processSaveOperation(operation);
+            } catch (InterruptedException e) {
+                if (isShutdown) {
+                    break;
+                }
+                Thread.currentThread().interrupt();
+                log.error("Save worker thread interrupted", e);
+            }
+        }
+    }
+
+    private void processSaveOperation(SaveOperation operation) {
         File file = ensureSessionDirectory();
         if (file == null) {
             return;
@@ -78,7 +129,7 @@ class SessionPersistence {
         JsonObject json = new JsonObject();
         JsonObject stateJson = existingJson.has("state") ? existingJson.getAsJsonObject("state") : new JsonObject();
 
-        for (Map.Entry<String, Object> entry : stateMap.entrySet()) {
+        for (Map.Entry<String, Object> entry : operation.stateMap.entrySet()) {
             stateJson.add(entry.getKey(), GsonFactory.getGson().toJsonTree(entry.getValue()));
         }
         json.add("state", stateJson);
@@ -95,6 +146,11 @@ class SessionPersistence {
         } catch (IOException e) {
             log.error("Failed to save session to {}: {}", file.getPath(), e.getMessage(), e);
         }
+    }
+
+    public void shutdown() {
+        isShutdown = true;
+        workerThread.interrupt();
     }
 
     protected void loadSession(Consumer<JsonObject> jsonConsumer) {
@@ -117,7 +173,9 @@ class SessionPersistence {
         }
 
         try (Reader reader = new FileReader(file)) {
-            JsonObject json = JsonParser.parseReader(reader).getAsJsonObject();
+            JsonElement jsonElement = JsonParser.parseReader(reader);
+            if (jsonElement == null || !jsonElement.isJsonObject()) return;
+            JsonObject json = jsonElement.getAsJsonObject();
             jsonConsumer.accept(json);
             log.debug("Loaded session from: {}", file.getPath());
         } catch (IOException | JsonSyntaxException e) {

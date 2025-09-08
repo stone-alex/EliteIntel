@@ -22,7 +22,7 @@
     <logger name="elite.companion.ai.hands.KeyBindingsParser" level="ERROR"/>
     <logger name="elite.companion.ai.brain.grok.GrokCommandEndPoint" level="DEBUG"/>
     <logger name="elite.companion.ai.ears.google.GoogleSTTImpl" level="WARNING"/>
-    <logger name="elite.companion.session.SessionPersistence" level="INFO"/>
+    <logger name="elite.companion.session.SessionPersistence" level="ERROR"/>
     <logger name="elite.companion.ai.ConfigManager" level="ERROR"/>
     <logger name="elite.companion.ai.ears.google.GoogleSTTImpl" level="ERROR"/>
 

@@ -151,7 +151,8 @@ public class AppController implements AppControllerInterface, ActionListener {
 
             EventBusManager.publish(new VoiceProcessEvent("Systems online..."));
             model.appendLog(
-                    "I am listening to you... AI is set to "
+                    systemSession.getAIVoice().getName() +
+                            " is listening to you... AI is set to "
                             + _daftSecretarySanitizer.capitalizeWords(systemSession.getAICadence().name()) + " "
                             + _daftSecretarySanitizer.capitalizeWords(systemSession.getAIPersonality().name())
             );

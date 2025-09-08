@@ -41,9 +41,12 @@ public class SystemSession {
     private AICadence aiCadence;
     private JsonArray chatHistory = new JsonArray();
     private boolean isStreamingModeOn = false;
-    private final SessionPersistence persistence = new SessionPersistence(SESSION_FILE);
+    private final SessionPersistence persistence = SessionPersistence.getInstance();
+
+
 
     private SystemSession() {
+        persistence.ensureFileAndDirectoryExist(SESSION_FILE);
         persistence.registerField("aiVoice", this::getAIVoice, this::setAIVoice, AiVoices.class);
         persistence.registerField("aiPersonality", this::getAIPersonality, this::setAIPersonality, AIPersonality.class);
         persistence.registerField("aiCadence", this::getAICadence, this::setAICadence, AICadence.class);
@@ -66,7 +69,11 @@ public class SystemSession {
     }
 
     private void loadSavedStateFromDisk() {
-        persistence.loadSession(json -> persistence.loadFields(json, state));
+        persistence.loadSession(json -> {
+            if (json != null) {
+                persistence.loadFields(json, state);
+            }
+        });
     }
 
     public Object get(String key) {

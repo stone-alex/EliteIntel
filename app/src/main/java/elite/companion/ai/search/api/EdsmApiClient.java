@@ -19,8 +19,7 @@ public class EdsmApiClient {
     private static final Logger log = LoggerFactory.getLogger(EdsmApiClient.class);
     private static final String BASE_URL = "https://www.edsm.net/api-v1";
 
-    private static final String API_KEY = ConfigManager.getInstance().getSystemKey(ConfigManager.STT_API_KEY);
-
+    private static final String API_KEY = ConfigManager.getInstance().getSystemKey(ConfigManager.PLAYER_EDSM_KEY);
 
     private static final ConcurrentHashMap<String, JsonArray> cache = new ConcurrentHashMap<>();
     private static final long CACHE_TTL = TimeUnit.MINUTES.toMillis(30);

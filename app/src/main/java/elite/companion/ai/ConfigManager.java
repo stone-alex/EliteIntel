@@ -50,6 +50,7 @@ public class ConfigManager {
     public static final String PLAYER_MISSION_STATEMENT = "mission_statement";
     public static final String PLAYER_TITLE = "title";
     public static final String PLAYER_ALTERNATIVE_NAME = "alternative_name";
+    public static final String PLAYER_EDSM_KEY = "edsm_key";
 
     private final Map<String, String> DEFAULT_SYSTEM_CONFIG = new LinkedHashMap<>();
     private final Map<String, String> DEFAULT_USER_CONFIG = new LinkedHashMap<>();

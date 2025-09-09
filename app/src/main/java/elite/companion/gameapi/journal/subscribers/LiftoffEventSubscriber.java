@@ -29,7 +29,9 @@ public class LiftoffEventSubscriber {
     public void onLiftoffEvent(LiftoffEvent event) {
         boolean isPlayerControlled = event.isPlayerControlled();
         boolean isOnPlanet = event.isOnPlanet();
-        PlayerSession.getInstance().remove(PlayerSession.STATION_DATA);
+        PlayerSession playerSession = PlayerSession.getInstance();
+        playerSession.remove(PlayerSession.STATION_DATA);
+        LocalServicesData.clearLocalServicesData();
 
         if (isPlayerControlled) {
             String landingGearToggle = GameCommands.GameCommand.LANDING_GEAR_TOGGLE.getGameBinding();

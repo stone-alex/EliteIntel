@@ -3,6 +3,7 @@ package elite.companion.gameapi.journal.subscribers;
 import com.google.common.eventbus.Subscribe;
 import elite.companion.ai.search.api.EdsmApiClient;
 import elite.companion.ai.search.api.dto.DeathsDto;
+import elite.companion.ai.search.api.dto.StarSystemDto;
 import elite.companion.ai.search.api.dto.TrafficDto;
 import elite.companion.ai.search.api.dto.data.DeathsStats;
 import elite.companion.ai.search.api.dto.data.TrafficStats;
@@ -26,24 +27,32 @@ public class FSDJumpSubscriber {
         playerSession.removeNavPoint(currentStarSystem);
         String finalDestination = String.valueOf(playerSession.get(PlayerSession.FINAL_DESTINATION));
         String arrivedAt = String.valueOf(playerSession.get(PlayerSession.JUMPING_TO));
-        playerSession.put(PlayerSession.CURRENT_SYSTEM, arrivedAt);
+        playerSession.put(PlayerSession.CURRENT_SYSTEM_NAME, arrivedAt);
 
         StringBuilder sb = new StringBuilder();
-        sb.append("Hyperspace Jump Successful: ");
-        sb.append("We are in: ").append(currentStarSystem).append(" system, ");
+        sb.append(" Hyperspace Jump Successful: ");
+        sb.append(" We are in: ").append(currentStarSystem).append(" system, ");
+        StarSystemDto systemDto = EdsmApiClient.searchStarSystem(currentStarSystem, 1);
+        if (systemDto.getData() != null) {
+            sb.append(" Allegiance: ").append(systemDto.getData().getInformation().getAllegiance());
+            sb.append(" Security: ").append(systemDto.getData().getInformation().getSecurity());
+            sb.append(".");
+        }
 
         if (finalDestination != null && finalDestination.equalsIgnoreCase(currentStarSystem)) {
-            sb.append("Arrived at final destination: ").append(finalDestination);
+            sb.append(" Arrived at final destination: ").append(finalDestination);
             TrafficDto trafficDto = EdsmApiClient.searchTraffic(finalDestination);
-            TrafficStats trafficStats = trafficDto.getData().getTraffic();
-            sb.append("Local traffic: ").append(trafficStats.toString());
-
+            if (trafficDto.getData() != null && trafficDto.getData().getTraffic() != null) {
+                TrafficStats trafficStats = trafficDto.getData().getTraffic();
+                sb.append("Local traffic: ").append(trafficStats.toString());
+            }
             DeathsDto deathsDto = EdsmApiClient.searchDeaths(finalDestination);
-            DeathsStats deathsStats = deathsDto.getData().getDeaths();
-            sb.append("Local deaths: ").append(deathsStats.toString());
+            if (deathsDto.getData() != null && deathsDto.getData().getDeaths() != null) {
+                DeathsStats deathsStats = deathsDto.getData().getDeaths();
+                sb.append("Local deaths: ").append(deathsStats.toString());
+            }
 
         } else {
-
             if (roueSet) {
                 int remainingJump = playerSession.getRoute().size();
 

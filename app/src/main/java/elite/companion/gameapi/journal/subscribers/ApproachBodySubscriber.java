@@ -5,23 +5,26 @@ import elite.companion.ai.search.api.EdsmApiClient;
 import elite.companion.ai.search.api.dto.SystemBodiesDto;
 import elite.companion.ai.search.api.dto.data.BodyData;
 import elite.companion.gameapi.EventBusManager;
-import elite.companion.gameapi.SensorDataEvent;
+import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.gameapi.journal.events.ApproachBodyEvent;
 import elite.companion.gameapi.journal.events.dto.MaterialDto;
 import elite.companion.gameapi.journal.events.dto.StellarObjectDto;
 import elite.companion.session.PlayerSession;
 
 import java.util.List;
+import java.util.Map;
 
 public class ApproachBodySubscriber {
+    private static double formatDouble(double value) {
+        return Math.round(value * 100.0) / 100.0;
+    }
 
     @Subscribe
     public void onApproachBodyEvent(ApproachBodyEvent event) {
         PlayerSession playerSession = PlayerSession.getInstance();
         StringBuilder sb = new StringBuilder();
         sb.append("Entering orbit for ").append(event.getBody()).append(". ");
-
-        String currentSystem = String.valueOf(playerSession.get(PlayerSession.CURRENT_STATUS));
+        String currentSystem = event.getStarSystem();
         SystemBodiesDto systemBodiesDto = EdsmApiClient.searchSystemBodies(currentSystem);
 
         boolean hasBodiesData = systemBodiesDto.getData() != null
@@ -32,23 +35,29 @@ public class ApproachBodySubscriber {
             List<BodyData> bodies = systemBodiesDto.getData().getBodies();
             for (BodyData bodyData : bodies) {
                 if (bodyData.getName().equalsIgnoreCase(event.getBody())) {
-                    double gravity = bodyData.getGravity();
-                    sb.append(" Surface Gravity: ").append(gravity).append(" g/cm3, ");
+                    double gravity = formatDouble(bodyData.getGravity());
+                    sb.append(" Surface Gravity: ").append(gravity).append("G, ");
                     if (gravity > 1) {
                         sb.append(" Gravity Warning!!! ");
                     }
-                    sb.append(" Surface Temperature: ").append(bodyData.getSurfaceTemperature()).append(" K,");
+                    int surfaceTemperatureKelvin = bodyData.getSurfaceTemperature();
+                    int surfaceTemperatureCelsius = (int) (surfaceTemperatureKelvin - 273.15);
+                    sb.append(" Surface Temperature: ").append(surfaceTemperatureKelvin).append(" Kelvin,").append(" or ").append(surfaceTemperatureCelsius).append(" Celsius");
                     if (bodyData.getAtmosphereType() != null && !bodyData.getAtmosphereType().isEmpty()) {
                         sb.append(" Atmosphere: ").append(bodyData.getAtmosphereType());
                         sb.append(". ");
+                    }
+                    Map<String, Double> materials = bodyData.getMaterials();
+                    for (Map.Entry<String, Double> material : materials.entrySet()) {
+                        sb.append(material.getKey()).append(": ").append(material.getValue()).append(" %, ");
                     }
                 }
             }
         } else {
             StellarObjectDto stellarObject = playerSession.getStellarObject(event.getBody());
             if (stellarObject != null) {
-                double surfaceGravity = stellarObject.getSurfaceGravity();
-                sb.append(" Surface Gravity: ").append(surfaceGravity).append(" g/cm3 ");
+                double surfaceGravity = formatDouble(stellarObject.getSurfaceGravity());
+                sb.append(" Surface Gravity: ").append(surfaceGravity).append("G ");
                 if (surfaceGravity > 1) {
                     sb.append(" Gravity Warning!!! ");
                 }
@@ -72,6 +81,8 @@ public class ApproachBodySubscriber {
                 sb.append(" Check gravity and temperature data before landing");
             }
         }
-        EventBusManager.publish(new SensorDataEvent(sb.toString()));
+        EventBusManager.publish(new VoiceProcessEvent(sb.toString()));
     }
+
+
 }

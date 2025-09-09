@@ -93,6 +93,7 @@ public class GrokCommandEndPoint implements AiCommandInterface {
     }
 
     private void processVoiceCommand(String userInput, float confidence) {
+
         // Sanitize input
         userInput = escapeJson(userInput);
         if (userInput == null || userInput.isEmpty()) {

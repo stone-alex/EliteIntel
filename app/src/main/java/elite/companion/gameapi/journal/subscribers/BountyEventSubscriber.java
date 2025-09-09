@@ -21,7 +21,7 @@ public class BountyEventSubscriber {
         StringBuilder sb = new StringBuilder();
         String killConfirmed = "";
         Set<String> targetFactions = playerSession.getTargetFactions();
-        if (targetFactions.contains(event.getVictimFaction())) {
+        if (!targetFactions.isEmpty() && targetFactions.contains(event.getVictimFaction())) {
             killConfirmed = "Mission Kill Confirmed, ";
             MissionKillDto missionKillDto = new MissionKillDto();
             missionKillDto.setTargetFaction(event.getVictimFaction());

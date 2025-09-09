@@ -116,7 +116,7 @@ public class ShipTargetedEventSubscriber {
         PlayerSession playerSession = PlayerSession.getInstance();
 
         Set<String> targetFactions = playerSession.getTargetFactions();
-        if (targetFactions.contains(faction)) {
+        if (!targetFactions.isEmpty() && targetFactions.contains(faction)) {
             return "Mission Target! ";
         }
 

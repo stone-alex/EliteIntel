@@ -190,8 +190,8 @@ public class EdsmApiClient {
         return dto;
     }
 
-    public static MarketDto searchMarket(String marketId, String orSystemName, String andStationName) {
-        if (marketId == null && orSystemName == null && andStationName == null) return new MarketDto();
+    public static MarketDto searchMarket(long marketId, String orSystemName, String andStationName) {
+        if (marketId > 0 || orSystemName == null && andStationName == null) return new MarketDto();
         String endpoint = "/api-system-v1/stations/market";
         String response = getServicesResponse(marketId, orSystemName, andStationName, endpoint);
         long timestamp = System.currentTimeMillis();
@@ -207,8 +207,8 @@ public class EdsmApiClient {
         return dto;
     }
 
-    public static ShipyardDto searchShipyard(String marketId, String orSystemName, String andStationName) {
-        if (marketId == null && orSystemName == null && andStationName == null) return new ShipyardDto();
+    public static ShipyardDto searchShipyard(long marketId, String orSystemName, String andStationName) {
+        if (marketId > 0 || orSystemName == null && andStationName == null) return new ShipyardDto();
         String endpoint = "/api-system-v1/stations/shipyard";
         String response = getServicesResponse(marketId, orSystemName, andStationName, endpoint);
         long timestamp = System.currentTimeMillis();
@@ -224,8 +224,8 @@ public class EdsmApiClient {
         return dto;
     }
 
-    public static OutfittingDto searchOutfitting(String marketId, String orSystemName, String andStationName) {
-        if (marketId == null && orSystemName == null && andStationName == null) return new OutfittingDto();
+    public static OutfittingDto searchOutfitting(long marketId, String orSystemName, String andStationName) {
+        if (marketId > 0 || orSystemName == null && andStationName == null) return new OutfittingDto();
         String endpoint = "/api-system-v1/stations/outfitting";
         String response = getServicesResponse(marketId, orSystemName, andStationName, endpoint);
         long timestamp = System.currentTimeMillis();
@@ -241,11 +241,11 @@ public class EdsmApiClient {
         return dto;
     }
 
-    private static String getServicesResponse(String marketId, String orSystemName, String andStationName, String endpoint) {
+    private static String getServicesResponse(long marketId, String orSystemName, String andStationName, String endpoint) {
         StringBuilder query = authenticatedUrl(endpoint);
         try {
-            if (marketId != null && !marketId.isEmpty()) {
-                query.append("&marketId=").append(URLEncoder.encode(marketId, StandardCharsets.UTF_8));
+            if (marketId > 0) {
+                query.append("&marketId=").append(marketId);
             } else {
                 query.append("&systemName=").append(URLEncoder.encode(orSystemName, StandardCharsets.UTF_8));
                 query.append("&stationName=").append(URLEncoder.encode(andStationName, StandardCharsets.UTF_8));

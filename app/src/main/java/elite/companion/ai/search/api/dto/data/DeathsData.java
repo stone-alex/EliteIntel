@@ -9,8 +9,10 @@ public class DeathsData {
     public long id64;
     @SerializedName("name")
     public String name;
-    @SerializedName("url")
-    public String url;
+    /*
+        @SerializedName("url")
+        public String url;
+    */
     @SerializedName("deaths")
     public DeathsStats deaths;
 
@@ -26,9 +28,11 @@ public class DeathsData {
         return name;
     }
 
+/*
     public String getUrl() {
         return url;
     }
+*/
 
     public DeathsStats getDeaths() {
         return deaths;

@@ -1,6 +1,8 @@
 package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.companion.gameapi.EventBusManager;
+import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.gameapi.journal.events.DockedEvent;
 import elite.companion.session.PlayerSession;
 
@@ -10,8 +12,6 @@ public class DockedSubscriber {
 
     @Subscribe
     public void onDockedEvent(DockedEvent event) {
-        //implement docked event
-
         StringBuilder sb = new StringBuilder();
         List<String> stationServices = event.getStationServices();
         if (stationServices != null && !stationServices.isEmpty()) {
@@ -29,6 +29,11 @@ public class DockedSubscriber {
             sb.append(" Large: ").append(landingPads.getLarge()).append(", ");
             sb.append(" Medium: ").append(landingPads.getMedium()).append(", ");
             sb.append(" Small: ").append(landingPads.getSmall()).append(".");
+        }
+
+        String availableData = LocalServicesData.setLocalServicesData(event.getMarketID());
+        if (!availableData.isEmpty()) {
+            EventBusManager.publish(new VoiceProcessEvent("Data available for: " + availableData + "."));
         }
 
         PlayerSession.getInstance().put(PlayerSession.STATION_DATA, sb.toString());

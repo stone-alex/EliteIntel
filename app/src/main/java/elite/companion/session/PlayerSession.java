@@ -145,7 +145,7 @@ import java.util.*;
  */
 public class PlayerSession {
 
-    public static final String CURRENT_SYSTEM = "current_system";
+    public static final String CURRENT_SYSTEM_NAME = "current_system";
     public static final String SHIP_LOADOUT_JSON = "ship_loadout_json";
     public static final String SUITE_LOADOUT_JSON = "suite_loadout_json";
     public static final String FINAL_DESTINATION = "final_destination";
@@ -164,6 +164,9 @@ public class PlayerSession {
     public static final String MATERIALS = "materials";
     public static final String ENGINEER_PROGRESS = "engineer_progress";
     public static final String STATION_DATA = "station_data";
+    public static final String LOCAL_MARKET_JSON = "local_market_json";
+    public static final String LOCAL_OUTFITING_JSON = "local_outfiting_json";
+    public static final String LOCAL_SHIP_YARD_JSON = "local_shipyard_json";
     private static final String FRIENDS_STATUS = "friends_status";
 
     public static final String SHIP_FUEL_LEVEL = "ship_fuel_level";
@@ -228,7 +231,7 @@ public class PlayerSession {
     private long bountyCollectedThisSession = 0;
     private RankAndProgressDto rankAndProgressDto = new RankAndProgressDto();
 
-    SessionPersistence persistence = SessionPersistence.getInstance();
+    SessionPersistence persistence = new SessionPersistence();
 
     private PlayerSession() {
         persistence.ensureFileAndDirectoryExist("player_session.json");
@@ -539,6 +542,9 @@ public class PlayerSession {
     }
 
     public Set<String> getTargetFactions() {
+        if (getMissions() == null || getMissions().isEmpty()) {
+            targetFactions.clear();
+        }
         return targetFactions;
     }
 

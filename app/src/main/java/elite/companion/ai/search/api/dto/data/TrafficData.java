@@ -11,8 +11,10 @@ public class TrafficData {
     public long id64;
     @SerializedName("name")
     public String name;
-    @SerializedName("url")
-    public String url;
+    /*
+        @SerializedName("url")
+        public String url;
+    */
     @SerializedName("discovery")
     public DiscoveryData discovery;
     @SerializedName("traffic")
@@ -32,9 +34,11 @@ public class TrafficData {
         return name;
     }
 
+/*
     public String getUrl() {
         return url;
     }
+*/
 
     public DiscoveryData getDiscovery() {
         return discovery;

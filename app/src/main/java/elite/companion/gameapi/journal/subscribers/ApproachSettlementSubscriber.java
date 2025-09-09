@@ -2,7 +2,7 @@ package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import elite.companion.gameapi.EventBusManager;
-import elite.companion.gameapi.SensorDataEvent;
+import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.gameapi.journal.events.ApproachSettlementEvent;
 
 import java.util.List;
@@ -31,6 +31,9 @@ public class ApproachSettlementSubscriber {
             }
         }
 
-        EventBusManager.publish(new SensorDataEvent(sb.toString()));
+        String availableData = LocalServicesData.setLocalServicesData(event.getMarketID());
+        if (!availableData.isEmpty()) sb.append(". More data may be available on request.");
+
+        EventBusManager.publish(new VoiceProcessEvent(sb.toString()));
     }
 }

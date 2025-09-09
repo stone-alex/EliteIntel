@@ -12,7 +12,7 @@ public class CarrierJumpCompleteSubscriber {
     @Subscribe
     public void onCarrierJumpCompleteEvent(CarrierJumpEvent event) {
         String starSystem = event.getStarSystem();
-        PlayerSession.getInstance().put(PlayerSession.CURRENT_SYSTEM, "Star System" + starSystem + (event.getBody() == null ? "" : "body " + event.getBody()));
+        PlayerSession.getInstance().put(PlayerSession.CARRIER_LOCATION, "StarSystem: " + starSystem + ", planet " + event.getBody());
         EventBusManager.publish(new SensorDataEvent("Carrier Location: " + event.toJson()));
     }
 }

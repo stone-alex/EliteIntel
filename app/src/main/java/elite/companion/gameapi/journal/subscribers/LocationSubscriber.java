@@ -10,6 +10,6 @@ public class LocationSubscriber {
     public void onLocationEvent(LocationEvent event) {
         PlayerSession playerSession = PlayerSession.getInstance();
         playerSession.put(PlayerSession.CURRENT_LOCATION, event.toJson());
-        playerSession.put(PlayerSession.CURRENT_SYSTEM, event.getStarSystem());
+        playerSession.put(PlayerSession.CURRENT_SYSTEM_NAME, event.getStarSystem());
     }
 }

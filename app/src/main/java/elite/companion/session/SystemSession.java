@@ -41,7 +41,7 @@ public class SystemSession {
     private AICadence aiCadence;
     private JsonArray chatHistory = new JsonArray();
     private boolean isStreamingModeOn = false;
-    private final SessionPersistence persistence = SessionPersistence.getInstance();
+    private final SessionPersistence persistence = new SessionPersistence();
 
 
 

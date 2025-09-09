@@ -31,18 +31,14 @@ class SessionPersistence {
     private final Thread workerThread;
     private volatile boolean isShutdown = false;
 
-    private static final SessionPersistence INSTANCE = new SessionPersistence();
 
-    private SessionPersistence() {
+    public SessionPersistence() {
         // Private constructor for singleton
         workerThread = new Thread(this::processQueue);
         workerThread.setDaemon(true);
         workerThread.start();
     }
 
-    public static SessionPersistence getInstance() {
-        return INSTANCE;
-    }
 
 
     public void ensureFileAndDirectoryExist(String sessionFile) {

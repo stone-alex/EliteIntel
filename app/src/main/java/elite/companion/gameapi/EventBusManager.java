@@ -17,4 +17,8 @@ public class EventBusManager {
     public static void register(Object subscriber) {
         bus.register(subscriber);
     }
+
+    public static void unregister(Object o) {
+        bus.unregister(o);
+    }
 }

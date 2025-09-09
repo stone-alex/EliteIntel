@@ -57,7 +57,7 @@ public class AppController implements AppControllerInterface, ActionListener {
 
     AuxiliaryFilesMonitor fileMonitor = new AuxiliaryFilesMonitor();
     //EarsInterface ears = new GoogleSTTImpl();
-    EarsInterface ears = ApiFactory.getInstance().getEarsImpl();
+    EarsInterface ears;
     MouthInterface mouth;
     JournalParser journalParser = new JournalParser();
 
@@ -140,11 +140,13 @@ public class AppController implements AppControllerInterface, ActionListener {
             model.setStreamingModeOn(streamingModeOn);
 
             journalParser.start();
-            //mouth = GoogleTTSImpl.getInstance();
-            mouth = ApiFactory.getInstance().getMouthImpl();
-            ears.start();
             fileMonitor.start();
+
+            mouth = ApiFactory.getInstance().getMouthImpl();
             mouth.start();
+
+            ears = ApiFactory.getInstance().getEarsImpl();
+            ears.start();
 
             ConfigManager configManager = ConfigManager.getInstance();
             String mission_statement = configManager.getPlayerKey(ConfigManager.PLAYER_MISSION_STATEMENT);

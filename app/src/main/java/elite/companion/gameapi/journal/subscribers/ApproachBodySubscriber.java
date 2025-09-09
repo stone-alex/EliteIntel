@@ -25,6 +25,7 @@ public class ApproachBodySubscriber {
         StringBuilder sb = new StringBuilder();
         sb.append("Entering orbit for ").append(event.getBody()).append(". ");
         String currentSystem = event.getStarSystem();
+        playerSession.put(PlayerSession.LANDED_ON_BODY, event.getBody());
         SystemBodiesDto systemBodiesDto = EdsmApiClient.searchSystemBodies(currentSystem);
 
         boolean hasBodiesData = systemBodiesDto.getData() != null
@@ -48,9 +49,11 @@ public class ApproachBodySubscriber {
                         sb.append(". ");
                     }
                     Map<String, Double> materials = bodyData.getMaterials();
-                    for (Map.Entry<String, Double> material : materials.entrySet()) {
-                        sb.append(material.getKey()).append(": ").append(material.getValue()).append(" %, ");
+                    if (!materials.isEmpty()) {
+                        sb.append(" ").append(materials.size()).append(" materials detected. Details available on request. ");
                     }
+
+
                 }
             }
         } else {

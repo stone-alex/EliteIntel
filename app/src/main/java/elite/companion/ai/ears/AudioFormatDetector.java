@@ -1,4 +1,4 @@
-package elite.companion.util;
+package elite.companion.ai.ears;
 
 
 import org.slf4j.Logger;

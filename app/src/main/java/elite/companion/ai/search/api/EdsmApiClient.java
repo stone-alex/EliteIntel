@@ -45,6 +45,29 @@ public class EdsmApiClient {
         return dto;
     }
 
+    public static StarsWithinRadiusDto searchStarSystems(String starSystemName, int radius) {
+        if (starSystemName == null) return new StarsWithinRadiusDto();
+        String endpoint = "/api-v1/sphere-systems";
+        StringBuilder query = authenticatedUrl(endpoint);
+        try {
+            query.append("systemName=").append(URLEncoder.encode(starSystemName, StandardCharsets.UTF_8));
+            query.append("&minRadius=").append(0);
+            query.append("&radius=").append(radius);
+        } catch (Exception e) {
+            log.error("Failed to encode query parameters", e);
+            return new StarsWithinRadiusDto();
+        }
+        String response = getResponse(query);
+        StarsWithinRadiusDto data;
+        if (response.isEmpty()) {
+            data = new StarsWithinRadiusDto();
+        } else {
+            data = GsonFactory.getGson().fromJson(response, StarsWithinRadiusDto.class);
+        }
+
+        return data;
+    }
+
     public static SystemBodiesDto searchSystemBodies(String starSystemName) {
         if (starSystemName == null) return new SystemBodiesDto();
         String endpoint = "/api-system-v1/bodies";

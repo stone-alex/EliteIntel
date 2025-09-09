@@ -3,6 +3,7 @@ package elite.companion.ai.mouth.google;
 import com.google.cloud.texttospeech.v1.*;
 import com.google.common.eventbus.Subscribe;
 import elite.companion.ai.ConfigManager;
+import elite.companion.ai.ears.TTSPlaybackStartEvent;
 import elite.companion.ai.mouth.AiVoices;
 import elite.companion.ai.mouth.MouthInterface;
 import elite.companion.gameapi.EventBusManager;
@@ -10,10 +11,7 @@ import elite.companion.gameapi.VoiceProcessEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.DataLine;
-import javax.sound.sampled.SourceDataLine;
+import javax.sound.sampled.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -254,11 +252,82 @@ public class GoogleTTSImpl implements MouthInterface {
      * @param voiceName  the name of the voice to use for speech synthesis
      * @param speechRate the rate at which the speech is synthesized; greater values imply faster speech
      */
+
     private void processVoiceRequest(String text, String voiceName, double speechRate) {
         if (text == null || text.isEmpty()) {
             return;
         }
-        log.info("Speaking with voice {}: {}", voiceName, text);
+        long startTime = System.currentTimeMillis();
+        Thread currentThread = Thread.currentThread();
+        log.debug("Processing VoiceRequest: text='{}', voice='{}', threadName='{}', threadId={}, threadState={}",
+                text, voiceName, currentThread.getName(), currentThread.getId(), currentThread.getState());
+
+        try {
+            VoiceSelectionParams voice = googleVoiceProvider.getVoiceParams(voiceName);
+            if (voice == null) {
+                log.warn("No voice found for name: {}, using default", voiceName);
+                voice = googleVoiceProvider.getVoiceParams(AiVoices.JENNIFER.getName());
+            }
+
+            log.debug("Calling Google TTS API");
+            long apiStartTime = System.currentTimeMillis();
+            SynthesisInput input = SynthesisInput.newBuilder().setText(text).build();
+            AudioConfig config = AudioConfig.newBuilder()
+                    .setAudioEncoding(AudioEncoding.LINEAR16)
+                    .setSpeakingRate(speechRate)
+                    .setSampleRateHertz(24000)
+                    .build();
+            SynthesizeSpeechResponse response = textToSpeechClient.synthesizeSpeech(input, voice, config);
+            long apiEndTime = System.currentTimeMillis();
+            log.debug("Google TTS API call completed in {}ms", apiEndTime - apiStartTime);
+
+            byte[] audioData = response.getAudioContent().toByteArray();
+            if ((audioData.length & 1) != 0) {
+                byte[] even = new byte[audioData.length - 1];
+                System.arraycopy(audioData, 0, even, 0, even.length);
+                audioData = even;
+            }
+            applyFade(audioData, 20, true);
+            applyFade(audioData, 20, false);
+
+            log.debug("Opening SourceDataLine");
+            long lineOpenStartTime = System.currentTimeMillis();
+            AudioFormat format = new AudioFormat(24000, 16, 1, true, false);
+            DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
+            try (SourceDataLine line = (SourceDataLine) AudioSystem.getLine(info)) {
+                int bufferBytes = (int) (format.getFrameSize() * format.getSampleRate() / 10);
+                line.open(format, bufferBytes);
+                long lineOpenEndTime = System.currentTimeMillis();
+                log.debug("SourceDataLine opened in {}ms", lineOpenEndTime - lineOpenStartTime);
+
+                log.debug("Starting playback");
+                int silenceFrames = (int) (format.getSampleRate() / 50);
+                byte[] silenceBuffer = new byte[silenceFrames * format.getFrameSize()];
+                line.write(silenceBuffer, 0, silenceBuffer.length);
+                line.start();
+                log.info("Spoke with voice {}: {}", voiceName, text); // Moved before event
+                EventBusManager.publish(new TTSPlaybackStartEvent(text));
+
+                long writeStartTime = System.currentTimeMillis();
+                line.write(audioData, 0, audioData.length);
+                line.drain();
+                long writeEndTime = System.currentTimeMillis();
+                log.debug("Audio playback completed in {}ms", writeEndTime - writeStartTime);
+            } catch (LineUnavailableException e) {
+                log.error("Audio device unavailable, possible contention: {}", e.getMessage());
+            }
+            log.debug("VoiceRequest processing completed in {}ms", System.currentTimeMillis() - startTime);
+        } catch (Exception e) {
+            log.error("Text-to-speech error: {}", e.getMessage(), e);
+        }
+    }
+
+    /*
+    private void processVoiceRequest(String text, String voiceName, double speechRate) {
+        if (text == null || text.isEmpty()) {
+            return;
+        }
+        log.info("About to speak with voice {}: {}", voiceName, text);
         try {
             VoiceSelectionParams voice = googleVoiceProvider.getVoiceParams(voiceName);
             if (voice == null) {
@@ -300,10 +369,14 @@ public class GoogleTTSImpl implements MouthInterface {
                 line.drain();
                 line.stop();
             }
+            log.info("Spoke with voice {}: {}", voiceName, text);
         } catch (Exception e) {
             log.error("Text-to-speech error: {}", e.getMessage(), e);
         }
     }
+    */
+
+
 
     /**
      * Applies a fade-in or fade-out effect to the given audio data.

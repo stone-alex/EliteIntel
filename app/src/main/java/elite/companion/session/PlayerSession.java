@@ -167,6 +167,7 @@ public class PlayerSession {
     public static final String LOCAL_MARKET_JSON = "local_market_json";
     public static final String LOCAL_OUTFITING_JSON = "local_outfiting_json";
     public static final String LOCAL_SHIP_YARD_JSON = "local_shipyard_json";
+    public static final String LANDED_ON_BODY = "landed_on_body";
     private static final String FRIENDS_STATUS = "friends_status";
 
     public static final String SHIP_FUEL_LEVEL = "ship_fuel_level";

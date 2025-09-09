@@ -31,6 +31,7 @@ public class LiftoffEventSubscriber {
         boolean isOnPlanet = event.isOnPlanet();
         PlayerSession playerSession = PlayerSession.getInstance();
         playerSession.remove(PlayerSession.STATION_DATA);
+        playerSession.remove(PlayerSession.LANDED_ON_BODY);
         LocalServicesData.clearLocalServicesData();
 
         if (isPlayerControlled) {

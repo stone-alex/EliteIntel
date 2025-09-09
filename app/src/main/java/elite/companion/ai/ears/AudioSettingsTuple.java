@@ -1,5 +1,12 @@
-package elite.companion.util;
+package elite.companion.ai.ears;
 
+/**
+ * A generic class representing a pair of audio settings, typically used for
+ * storing and managing configurations such as sample rate and buffer size.
+ *
+ * @param <K> the type of the sample rate value
+ * @param <V> the type of the buffer size value
+ */
 public class AudioSettingsTuple<K, V> {
     private final K sampleRate;
     private final V bufferSize;

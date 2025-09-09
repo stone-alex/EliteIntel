@@ -68,3 +68,5 @@
 
 ###########################################################################
 "are the engines"="power to engines"
+"Petty"="Betty"
+"SLO"="set low"

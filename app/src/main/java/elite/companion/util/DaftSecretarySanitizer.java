@@ -118,7 +118,7 @@ public class DaftSecretarySanitizer {
         for (Map.Entry<String, String> entry : GOOGLE_CORRECTIONS.entrySet()) {
             sanitized = sanitized.replaceAll("\\b" + Pattern.quote(entry.getKey()) + "\\b", entry.getValue());
         }
-        return sanitized;
+        return sanitized.trim();
     }
 
 

@@ -13,6 +13,7 @@ import elite.companion.ai.brain.handlers.query.QueryActions;
 import elite.companion.ai.brain.handlers.query.QueryHandler;
 import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.VoiceProcessEvent;
+import elite.companion.ui.event.AppLogEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -188,8 +189,10 @@ public class GrokResponseRouter implements AIRouterInterface {
     }
 
     private void handleCommand(String action, JsonObject params, String responseText, JsonObject jsonResponse) {
+        EventBusManager.publish(new AppLogEvent("DEBUG: Processing action: " + action + " with params: " + params.toString()));
         CommandHandler handler = commandHandlers.get(action);
         if (handler != null) {
+            EventBusManager.publish(new AppLogEvent("DEBUG: Command handler: " + handler.getClass().getSimpleName()));
             handler.handle(params, responseText);
             log.debug("Handled command action: {}", action);
         }

@@ -85,12 +85,12 @@ public class GoogleSTTImpl implements EarsInterface {
     private byte[] lastBuffer = null;
     private AudioInputStream audioInputStream = null;
 
-    private static final double RMS_THRESHOLD_HIGH = 800.0; // Configurable: Enter active on voice (calibrate: 500-1500 typical)
-    private static final double RMS_THRESHOLD_LOW = 300.0; // Configurable: Exit active on sustained silence
+    private static final double RMS_THRESHOLD_HIGH = 250.0; // Configurable: Enter active on voice (calibrate: 200-1500 typical)
+    private static final double RMS_THRESHOLD_LOW = 20.0; // Configurable: Exit active on sustained silence (calibrate: 10-100 typical)
     private static final int ENTER_VOICE_FRAMES = 1; // Quick enter to avoid initial clipping (100ms buffer = ~0.1s delay max)
     private static final int EXIT_SILENCE_FRAMES = 20; // ~2s silence to exit (handles pauses in speech)
     private static final int STREAM_DURATION_MS = 300000; // 5 min; matches Google V1 limit
-    private static final int KEEP_ALIVE_INTERVAL_MS = 5000; // Increase to 5s to minimize silence sends (5000 is a good number)
+    private static final int KEEP_ALIVE_INTERVAL_MS = 3000; // Increase to 5s to minimize silence sends (5000 is a good number)
 
     // New state trackers
     private boolean isActive = false;
@@ -232,7 +232,7 @@ public class GoogleSTTImpl implements EarsInterface {
 
                             @Override
                             public void onError(Throwable t) {
-                                log.error("STT error: {}", t.getMessage());
+                                log.error("STT error: {}", t.getMessage(), t);
                             }
 
                             @Override
@@ -304,7 +304,7 @@ public class GoogleSTTImpl implements EarsInterface {
                                     log.debug("Sending voice audio, RMS: {}", rms);
                                 }
                             } else {
-                                //log.debug("Skipping send (silence, RMS: {})", rms);
+                                log.debug("Skipping send (silence, RMS: {})", rms);
                             }
 
                             // Update lastBuffer for continuity on restart
@@ -372,7 +372,7 @@ public class GoogleSTTImpl implements EarsInterface {
     private void processStreamingRecognitionResult(StreamingRecognitionResult result) {
         if (result.getAlternativesCount() > 0) {
             SpeechRecognitionAlternative alt = result.getAlternatives(0);
-            String transcript = alt.getTranscript();
+            String transcript = alt.getTranscript().trim();
             float confidence = alt.getConfidence();
             if (result.getIsFinal()) {
                 EventBusManager.publish(new AppLogEvent("STT Heard: [" + transcript + "]. Confidence: " + confidence + "."));

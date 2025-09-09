@@ -11,8 +11,7 @@ import elite.companion.util.Ranks;
 
 import java.util.Objects;
 
-import static elite.companion.ai.brain.handlers.commands.GameCommands.GameCommand.ENTER_SUPERCRUISE;
-import static elite.companion.ai.brain.handlers.commands.GameCommands.GameCommand.SET_SPEED_ZERO;
+import static elite.companion.ai.brain.handlers.commands.GameCommands.GameCommand.*;
 import static elite.companion.ai.brain.handlers.commands.custom.CustomCommands.SET_PERSONALITY;
 import static elite.companion.ai.brain.handlers.query.QueryActions.GENERAL_CONVERSATION;
 import static elite.companion.ai.brain.handlers.query.QueryActions.WHAT_IS_YOUR_DESIGNATION;
@@ -240,7 +239,7 @@ public class GrokContextFactory implements AiContextFactory {
                 "    - Set 'expect_followup' to true if the response poses a question or invites further conversation; otherwise, false.\n");
         sb.append("Map colloquial terms to commands: 'feds', 'yanks', or 'federation space' to 'FEDERATION', 'imperials', 'imps', or 'empire' to 'IMPERIAL', 'alliance space' or 'allies' to 'ALLIANCE' for set_cadence. ");
         sb.append("Infer command intent from context: phrases like 'act like', 'talk like', 'blend in with', or 'sound like' followed by a faction should trigger '" + SET_PERSONALITY.getAction() + "' with the corresponding cadence value, using current system allegiance if ambiguous. ");
-        sb.append("For navigation commands (e.g., 'jump', 'enter hyperspace', 'go to next system'), map to '" + ENTER_SUPERCRUISE.getGameBinding() + "'. Stop map to speed commands " + SET_SPEED_ZERO.getGameBinding() + ". ");
+        sb.append("For navigation commands (e.g., 'jump', 'enter hyperspace', 'go to next system'), map to '" + ENTER_SUPERCRUISE.getUserCommand() + "'. 'Stop', 'cut engines' map to speed commands " + SET_SPEED_ZERO.getUserCommand() + ". 'Activate', 'toggle', 'left', 'right', 'up', 'down' to UI commands like" + UI_ACTIVATE.getUserCommand() + ", " + UI_TOGGLE.getUserCommand() + ". ");
         sb.append("Map phrases like 'what is your name', 'who are you', 'what’s your designation', 'what is your voice', or 'tell me your name' to 'query' type with action '" + WHAT_IS_YOUR_DESIGNATION.getAction() + "'. ");
         sb.append("If the input starts with 'query ', classify as 'query' and use the rest of the input as the action (e.g., 'query what is your designation' -> action '" + WHAT_IS_YOUR_DESIGNATION.getAction() + "'). ");
         sb.append("Examples:\n" +

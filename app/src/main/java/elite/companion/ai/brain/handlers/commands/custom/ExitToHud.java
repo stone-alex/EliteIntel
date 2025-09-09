@@ -18,7 +18,7 @@ import elite.companion.ai.hands.GameHandler;
 public class ExitToHud extends CustomCommandOperator implements CommandHandler {
 
 
-    public static final int DELAY = 20;
+    public static final int DELAY = 120;
 
     public ExitToHud(GameHandler commandHandler) {
         super(commandHandler.getMonitor(), commandHandler.getExecutor());
@@ -31,6 +31,10 @@ public class ExitToHud extends CustomCommandOperator implements CommandHandler {
             String quitFFS = GameCommands.GameCommand.EXPLORATION_FSSQUIT.getGameBinding();
             //back out of nested menus and sub windows
             operateKeyboard(quitFFS, 0);
+            Thread.sleep(DELAY);
+            operateKeyboard(exit, 0);
+            Thread.sleep(DELAY);
+            operateKeyboard(exit, 0);
             Thread.sleep(DELAY);
             operateKeyboard(exit, 0);
             Thread.sleep(DELAY);

@@ -1,6 +1,11 @@
 package elite.companion.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.companion.ai.search.api.EdsmApiClient;
+import elite.companion.ai.search.api.dto.DeathsDto;
+import elite.companion.ai.search.api.dto.TrafficDto;
+import elite.companion.ai.search.api.dto.data.DeathsStats;
+import elite.companion.ai.search.api.dto.data.TrafficStats;
 import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.SensorDataEvent;
 import elite.companion.gameapi.journal.events.FSDJumpEvent;
@@ -29,6 +34,14 @@ public class FSDJumpSubscriber {
 
         if (finalDestination != null && finalDestination.equalsIgnoreCase(currentStarSystem)) {
             sb.append("Arrived at final destination: ").append(finalDestination);
+            TrafficDto trafficDto = EdsmApiClient.searchTraffic(finalDestination);
+            TrafficStats trafficStats = trafficDto.getData().getTraffic();
+            sb.append("Local traffic: ").append(trafficStats.toString());
+
+            DeathsDto deathsDto = EdsmApiClient.searchDeaths(finalDestination);
+            DeathsStats deathsStats = deathsDto.getData().getDeaths();
+            sb.append("Local deaths: ").append(deathsStats.toString());
+
         } else {
 
             if (roueSet) {

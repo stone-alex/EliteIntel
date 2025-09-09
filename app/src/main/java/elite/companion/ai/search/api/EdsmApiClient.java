@@ -1,9 +1,8 @@
 package elite.companion.ai.search.api;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import elite.companion.ai.ConfigManager;
+import elite.companion.ai.search.api.dto.*;
+import elite.companion.ai.search.api.dto.data.*;
+import elite.companion.util.json.GsonFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,106 +16,248 @@ public class EdsmApiClient {
     private static final Logger log = LoggerFactory.getLogger(EdsmApiClient.class);
     private static final String BASE_URL = "https://www.edsm.net";
 
-    private static final String API_KEY = ConfigManager.getInstance().getPlayerKey(ConfigManager.PLAYER_EDSM_KEY);
-
     private static StringBuilder authenticatedUrl(String endpoint) {
-        return new StringBuilder(BASE_URL + endpoint + "?apiKey=" + API_KEY);
+        return new StringBuilder(BASE_URL + endpoint + "?");
     }
 
-    public static JsonObject searchStarSystem(String starSystemName, int showInformation) {
-        if (starSystemName == null) return new JsonObject();
+    public static StarSystemDto searchStarSystem(String starSystemName, int showInformation) {
+        if (starSystemName == null) return new StarSystemDto();
         String endpoint = "/api-v1/system";
         StringBuilder query = authenticatedUrl(endpoint);
-        query.append("&systemName=").append(URLEncoder.encode(starSystemName, StandardCharsets.UTF_8));
-        query.append("&showInformation=").append(showInformation);
-        return query(query);
+        try {
+            query.append("&systemName=").append(URLEncoder.encode(starSystemName, StandardCharsets.UTF_8));
+            query.append("&showInformation=").append(showInformation);
+        } catch (Exception e) {
+            log.error("Failed to encode query parameters", e);
+            return new StarSystemDto();
+        }
+        String response = getResponse(query);
+        long timestamp = System.currentTimeMillis();
+        StarSystemData data;
+        if (response.isEmpty()) {
+            data = new StarSystemData();
+        } else {
+            data = GsonFactory.getGson().fromJson(response, StarSystemData.class);
+        }
+        StarSystemDto dto = new StarSystemDto();
+        dto.data = data;
+        dto.timestamp = timestamp;
+        return dto;
     }
 
-    public static JsonObject searchFaction(String starSystemName, int showHistory) {
-        if (starSystemName == null) return new JsonObject();
-        String endpoint = "/api-system-v1/factions";
-        StringBuilder query = authenticatedUrl(endpoint);
-        query.append("&systemName=").append(URLEncoder.encode(starSystemName, StandardCharsets.UTF_8));
-        query.append("&showInformation=").append(showHistory);
-        return query(query);
-    }
-
-
-    public static JsonObject searchSystemBodies(String starSystemName) {
-        if (starSystemName == null) return new JsonObject();
+    public static SystemBodiesDto searchSystemBodies(String starSystemName) {
+        if (starSystemName == null) return new SystemBodiesDto();
         String endpoint = "/api-system-v1/bodies";
         StringBuilder query = authenticatedUrl(endpoint);
-        query.append("&systemName=").append(URLEncoder.encode(starSystemName, StandardCharsets.UTF_8));
-        return query(query);
+        try {
+            query.append("&systemName=").append(URLEncoder.encode(starSystemName, StandardCharsets.UTF_8));
+        } catch (Exception e) {
+            log.error("Failed to encode query parameters", e);
+            return new SystemBodiesDto();
+        }
+        String response = getResponse(query);
+        long timestamp = System.currentTimeMillis();
+        SystemBodiesData data;
+        if (response.isEmpty()) {
+            data = new SystemBodiesData();
+        } else {
+            data = GsonFactory.getGson().fromJson(response, SystemBodiesData.class);
+        }
+        SystemBodiesDto dto = new SystemBodiesDto();
+        dto.data = data;
+        dto.timestamp = timestamp;
+        return dto;
     }
 
-    public static JsonObject searchTraffic(String starSystemName) {
-        if (starSystemName == null) return new JsonObject();
-        String endpoint = "/api-system-v1/traffic";
-        StringBuilder query = authenticatedUrl(endpoint);
-        query.append("&systemName=").append(URLEncoder.encode(starSystemName, StandardCharsets.UTF_8));
-        return query(query);
-    }
-
-    public static JsonObject searchDeaths(String starSystemName) {
-        if (starSystemName == null) return new JsonObject();
-        String endpoint = "/api-system-v1/deaths";
-        StringBuilder query = authenticatedUrl(endpoint);
-        query.append("&systemName=").append(URLEncoder.encode(starSystemName, StandardCharsets.UTF_8));
-        return query(query);
-    }
-
-
-    public static JsonObject searchEstimatedScanValues(String starSystemName) {
-        if (starSystemName == null) return new JsonObject();
+    public static EstimatedScanValuesDto searchEstimatedScanValues(String starSystemName) {
+        if (starSystemName == null) return new EstimatedScanValuesDto();
         String endpoint = "/api-system-v1/estimated-value";
         StringBuilder query = authenticatedUrl(endpoint);
-        query.append("&systemName=").append(URLEncoder.encode(starSystemName, StandardCharsets.UTF_8));
-        return query(query);
+        try {
+            query.append("&systemName=").append(URLEncoder.encode(starSystemName, StandardCharsets.UTF_8));
+        } catch (Exception e) {
+            log.error("Failed to encode query parameters", e);
+            return new EstimatedScanValuesDto();
+        }
+        String response = getResponse(query);
+        long timestamp = System.currentTimeMillis();
+        EstimatedScanValuesData data;
+        if (response.isEmpty()) {
+            data = new EstimatedScanValuesData();
+        } else {
+            data = GsonFactory.getGson().fromJson(response, EstimatedScanValuesData.class);
+        }
+        EstimatedScanValuesDto dto = new EstimatedScanValuesDto();
+        dto.data = data;
+        dto.timestamp = timestamp;
+        return dto;
     }
 
-    public static JsonObject searchStations(String starSystemName) {
-        if (starSystemName == null) return new JsonObject();
+    public static StationsDto searchStations(String starSystemName) {
+        if (starSystemName == null) return new StationsDto();
         String endpoint = "/api-system-v1/stations";
         StringBuilder query = authenticatedUrl(endpoint);
-        query.append("&systemName=").append(URLEncoder.encode(starSystemName, StandardCharsets.UTF_8));
-        return query(query);
-    }
-
-    public static JsonObject searchMarket(String marketId, String orSystemName, String andStationName) {
-        if (marketId == null && orSystemName == null && andStationName == null) return new JsonObject();
-
-        String endpoint = "/api-system-v1/stations/market";
-        return servicesSearch(marketId, orSystemName, andStationName, endpoint);
-    }
-
-    public static JsonObject searchShipyard(String marketId, String orSystemName, String andStationName) {
-        if (marketId == null && orSystemName == null && andStationName == null) return new JsonObject();
-        String endpoint = "/api-system-v1/stations/shipyard";
-        return servicesSearch(marketId, orSystemName, andStationName, endpoint);
-    }
-
-
-    public static JsonObject searchOutfitting(String marketId, String orSystemName, String andStationName) {
-        if (marketId == null && orSystemName == null && andStationName == null) return new JsonObject();
-        String endpoint = "/api-system-v1/stations/outfitting";
-        return servicesSearch(marketId, orSystemName, andStationName, endpoint);
-    }
-
-
-    private static JsonObject servicesSearch(String marketId, String orSystemName, String andStationName, String endpoint) {
-        StringBuilder query = authenticatedUrl(endpoint);
-        if (marketId != null && !marketId.isEmpty()) {
-            query.append("&marketId=").append(URLEncoder.encode(marketId, StandardCharsets.UTF_8));
-        } else {
-            query.append("&systemName=").append(URLEncoder.encode(orSystemName, StandardCharsets.UTF_8));
-            query.append("&stationName=").append(URLEncoder.encode(andStationName, StandardCharsets.UTF_8));
+        try {
+            query.append("&systemName=").append(URLEncoder.encode(starSystemName, StandardCharsets.UTF_8));
+        } catch (Exception e) {
+            log.error("Failed to encode query parameters", e);
+            return new StationsDto();
         }
-        return query(query);
+        String response = getResponse(query);
+        long timestamp = System.currentTimeMillis();
+        StationsData data;
+        if (response.isEmpty()) {
+            data = new StationsData();
+        } else {
+            data = GsonFactory.getGson().fromJson(response, StationsData.class);
+        }
+        StationsDto dto = new StationsDto();
+        dto.data = data;
+        dto.timestamp = timestamp;
+        return dto;
     }
 
+    public static FactionDto searchFaction(String starSystemName, int showHistory) {
+        if (starSystemName == null) return new FactionDto();
+        String endpoint = "/api-system-v1/factions";
+        StringBuilder query = authenticatedUrl(endpoint);
+        try {
+            query.append("&systemName=").append(URLEncoder.encode(starSystemName, StandardCharsets.UTF_8));
+            query.append("&showHistory=").append(showHistory);
+        } catch (Exception e) {
+            log.error("Failed to encode query parameters", e);
+            return new FactionDto();
+        }
+        String response = getResponse(query);
+        long timestamp = System.currentTimeMillis();
+        FactionStats data;
+        if (response.isEmpty()) {
+            data = new FactionStats();
+        } else {
+            data = GsonFactory.getGson().fromJson(response, FactionStats.class);
+        }
+        FactionDto dto = new FactionDto();
+        dto.data = data;
+        dto.timestamp = timestamp;
+        return dto;
+    }
 
-    private static JsonObject query(StringBuilder query) {
+    public static TrafficDto searchTraffic(String starSystemName) {
+        if (starSystemName == null) return new TrafficDto();
+        String endpoint = "/api-system-v1/traffic";
+        StringBuilder query = authenticatedUrl(endpoint);
+        try {
+            query.append("&systemName=").append(URLEncoder.encode(starSystemName, StandardCharsets.UTF_8));
+        } catch (Exception e) {
+            log.error("Failed to encode query parameters", e);
+            return new TrafficDto();
+        }
+        String response = getResponse(query);
+        long timestamp = System.currentTimeMillis();
+        TrafficData data;
+        if (response.isEmpty()) {
+            data = new TrafficData();
+        } else {
+            data = GsonFactory.getGson().fromJson(response, TrafficData.class);
+        }
+        TrafficDto dto = new TrafficDto();
+        dto.data = data;
+        dto.timestamp = timestamp;
+        return dto;
+    }
+
+    public static DeathsDto searchDeaths(String starSystemName) {
+        if (starSystemName == null) return new DeathsDto();
+        String endpoint = "/api-system-v1/deaths";
+        StringBuilder query = authenticatedUrl(endpoint);
+        try {
+            query.append("&systemName=").append(URLEncoder.encode(starSystemName, StandardCharsets.UTF_8));
+        } catch (Exception e) {
+            log.error("Failed to encode query parameters", e);
+            return new DeathsDto();
+        }
+        String response = getResponse(query);
+        long timestamp = System.currentTimeMillis();
+        DeathsData data;
+        if (response.isEmpty()) {
+            data = new DeathsData();
+        } else {
+            data = GsonFactory.getGson().fromJson(response, DeathsData.class);
+        }
+        DeathsDto dto = new DeathsDto();
+        dto.data = data;
+        dto.timestamp = timestamp;
+        return dto;
+    }
+
+    public static MarketDto searchMarket(String marketId, String orSystemName, String andStationName) {
+        if (marketId == null && orSystemName == null && andStationName == null) return new MarketDto();
+        String endpoint = "/api-system-v1/stations/market";
+        String response = getServicesResponse(marketId, orSystemName, andStationName, endpoint);
+        long timestamp = System.currentTimeMillis();
+        MarketStats data;
+        if (response.isEmpty()) {
+            data = new MarketStats();
+        } else {
+            data = GsonFactory.getGson().fromJson(response, MarketStats.class);
+        }
+        MarketDto dto = new MarketDto();
+        dto.data = data;
+        dto.timestamp = timestamp;
+        return dto;
+    }
+
+    public static ShipyardDto searchShipyard(String marketId, String orSystemName, String andStationName) {
+        if (marketId == null && orSystemName == null && andStationName == null) return new ShipyardDto();
+        String endpoint = "/api-system-v1/stations/shipyard";
+        String response = getServicesResponse(marketId, orSystemName, andStationName, endpoint);
+        long timestamp = System.currentTimeMillis();
+        ShipyardData data;
+        if (response.isEmpty()) {
+            data = new ShipyardData();
+        } else {
+            data = GsonFactory.getGson().fromJson(response, ShipyardData.class);
+        }
+        ShipyardDto dto = new ShipyardDto();
+        dto.data = data;
+        dto.timestamp = timestamp;
+        return dto;
+    }
+
+    public static OutfittingDto searchOutfitting(String marketId, String orSystemName, String andStationName) {
+        if (marketId == null && orSystemName == null && andStationName == null) return new OutfittingDto();
+        String endpoint = "/api-system-v1/stations/outfitting";
+        String response = getServicesResponse(marketId, orSystemName, andStationName, endpoint);
+        long timestamp = System.currentTimeMillis();
+        OutfittingData data;
+        if (response.isEmpty()) {
+            data = new OutfittingData();
+        } else {
+            data = GsonFactory.getGson().fromJson(response, OutfittingData.class);
+        }
+        OutfittingDto dto = new OutfittingDto();
+        dto.data = data;
+        dto.timestamp = timestamp;
+        return dto;
+    }
+
+    private static String getServicesResponse(String marketId, String orSystemName, String andStationName, String endpoint) {
+        StringBuilder query = authenticatedUrl(endpoint);
+        try {
+            if (marketId != null && !marketId.isEmpty()) {
+                query.append("&marketId=").append(URLEncoder.encode(marketId, StandardCharsets.UTF_8));
+            } else {
+                query.append("&systemName=").append(URLEncoder.encode(orSystemName, StandardCharsets.UTF_8));
+                query.append("&stationName=").append(URLEncoder.encode(andStationName, StandardCharsets.UTF_8));
+            }
+        } catch (Exception e) {
+            log.error("Failed to encode query parameters", e);
+            return "";
+        }
+        return getResponse(query);
+    }
+
+    private static String getResponse(StringBuilder query) {
         try {
             HttpURLConnection conn = (HttpURLConnection) new URL(query.toString()).openConnection();
             conn.setRequestMethod("GET");
@@ -125,22 +266,17 @@ public class EdsmApiClient {
             int responseCode = conn.getResponseCode();
             if (responseCode != 200) {
                 log.error("EDSM API error: {} - {}", responseCode, conn.getResponseMessage());
-                return new JsonObject();
+                return "";
             }
 
             try (Scanner scanner = new Scanner(conn.getInputStream(), StandardCharsets.UTF_8)) {
                 String response = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
                 log.debug("EDSM API response: {}", response);
-                JsonElement jsonElement = JsonParser.parseString(response);
-
-                JsonObject wrapper = new JsonObject();
-                wrapper.add("data", jsonElement);
-                wrapper.addProperty("timestamp", System.currentTimeMillis());
-                return wrapper;
+                return response;
             }
         } catch (Exception e) {
             log.error("Failed to query EDSM API: {}", e.getMessage(), e);
-            return new JsonObject();
+            return "";
         }
     }
 }

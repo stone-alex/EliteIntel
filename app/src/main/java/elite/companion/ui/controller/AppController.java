@@ -19,6 +19,7 @@ import elite.companion.util.DaftSecretarySanitizer;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.Map;
 
 import static elite.companion.session.PlayerSession.PLAYER_MISSION_STATEMENT;
@@ -242,6 +243,32 @@ public class AppController implements AppControllerInterface, ActionListener {
         return "Streaming mode is On. (voice to text will still be processing, but I will not hear you. Prefix your command with word computer or " + systemSession.getAIVoice().getName() + ") ";
     }
 
+    private void handleSelectJournalDir() {
+        JFileChooser chooser = new JFileChooser();
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        chooser.setDialogTitle("Select Journal Directory");
+        chooser.setCurrentDirectory(ConfigManager.getInstance().getJournalPath().toFile().getAbsoluteFile());
+        if (chooser.showOpenDialog(view.getUiComponent()) == JFileChooser.APPROVE_OPTION) {
+            File selectedDir = chooser.getSelectedFile();
+            view.getUserConfigInput().put(ConfigManager.JOURNAL_DIR, selectedDir.getAbsolutePath());
+            handleSaveUserConfig();
+            model.appendLog("Selected custom journal directory: " + selectedDir.getAbsolutePath());
+        }
+    }
+
+    private void handleSelectBindingsDir() {
+        JFileChooser chooser = new JFileChooser();
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        chooser.setDialogTitle("Select Bindings Directory");
+        chooser.setCurrentDirectory(ConfigManager.getInstance().getBindingsPath().toFile().getAbsoluteFile());
+        if (chooser.showOpenDialog(view.getUiComponent()) == JFileChooser.APPROVE_OPTION) {
+            File selectedDir = chooser.getSelectedFile();
+            view.getUserConfigInput().put(ConfigManager.BINDINGS_DIR, selectedDir.getAbsolutePath());
+            handleSaveUserConfig();
+            model.appendLog("Selected custom bindings directory: " + selectedDir.getAbsolutePath());
+        }
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
 
@@ -268,6 +295,10 @@ public class AppController implements AppControllerInterface, ActionListener {
                 handleSaveUserConfig();
             } else if (ACTION_TOGGLE_SERVICES.equals(command)) {
                 ((JButton) e.getSource()).setText(startStopServices() ? "Stop Service" : "Start Service");
+            } else if (ACTION_SELECT_JOURNAL_DIR.equals(command)) {
+                handleSelectJournalDir();
+            } else if (ACTION_SELECT_BINDINGS_DIR.equals(command)) {
+                handleSelectBindingsDir();
             }
         }
     }

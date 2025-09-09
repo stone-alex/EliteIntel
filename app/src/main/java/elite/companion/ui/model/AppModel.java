@@ -34,14 +34,14 @@ public class AppModel implements AppModelInterface {
     public void setSystemConfig(Map<String, String> config) {
         Map<String, String> oldConfig = getSystemConfig();
         Map<String, String> systemConfig = new HashMap<>(config);
-        pcs.firePropertyChange("systemConfig", oldConfig, systemConfig);
+        pcs.firePropertyChange(AppView.PROPERTY_SYSTEM_CONFIG_UPDATED, oldConfig, systemConfig);
     }
 
     @Override
     public void setUserConfig(Map<String, String> config) {
         Map<String, String> oldConfig = getUserConfig();
         Map<String, String> userConfig = new HashMap<>(config);
-        pcs.firePropertyChange("userConfig", oldConfig, userConfig);
+        pcs.firePropertyChange(AppView.PROPERTY_USER_CONFIG_UPDATED, oldConfig, userConfig);
     }
 
     @Override

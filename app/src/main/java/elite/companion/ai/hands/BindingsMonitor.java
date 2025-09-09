@@ -1,5 +1,6 @@
 package elite.companion.ai.hands;
 
+import elite.companion.ai.ConfigManager;
 import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.VoiceProcessEvent;
 import elite.companion.ui.event.AppLogEvent;
@@ -60,8 +61,7 @@ public class BindingsMonitor {
 
     private BindingsMonitor() {
         this.parser = KeyBindingsParser.getInstance();
-        this.bindingsDir = Paths.get(System.getProperty("user.home"),
-                "AppData", "Local", "Frontier Developments", "Elite Dangerous", "Options", "Bindings");
+        this.bindingsDir = ConfigManager.getInstance().getBindingsPath();
     }
 
     public synchronized void startMonitoring() throws IOException {

@@ -6,6 +6,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.URI;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -51,6 +53,8 @@ public class ConfigManager {
     public static final String PLAYER_TITLE = "title";
     public static final String PLAYER_ALTERNATIVE_NAME = "alternative_name";
     public static final String PLAYER_EDSM_KEY = "edsm_key";
+    public static final String JOURNAL_DIR = "journal_dir";
+    public static final String BINDINGS_DIR = "bindings_dir";
 
     private final Map<String, String> DEFAULT_SYSTEM_CONFIG = new LinkedHashMap<>();
     private final Map<String, String> DEFAULT_USER_CONFIG = new LinkedHashMap<>();
@@ -63,6 +67,8 @@ public class ConfigManager {
         DEFAULT_USER_CONFIG.put(PLAYER_MISSION_STATEMENT, "");
         DEFAULT_USER_CONFIG.put(PLAYER_TITLE, "");
         DEFAULT_USER_CONFIG.put(PLAYER_ALTERNATIVE_NAME, "");
+        DEFAULT_USER_CONFIG.put(JOURNAL_DIR, "");
+        DEFAULT_USER_CONFIG.put(BINDINGS_DIR, "");
 
         // Initialize APP_DIR
         String appDir = "";
@@ -96,6 +102,25 @@ public class ConfigManager {
         createDefaultConfigIfNotExists(SYSTEM_CONFIG_FILENAME, DEFAULT_SYSTEM_CONFIG);
         createDefaultConfigIfNotExists(USER_CONFIG_FILENAME, DEFAULT_USER_CONFIG);
     }
+
+    public Path getJournalPath() {
+        String customJournalDir = ConfigManager.getInstance().getPlayerKey(ConfigManager.JOURNAL_DIR);
+        if (customJournalDir == null || customJournalDir.isBlank()) {
+            return Paths.get(System.getProperty("user.home"), "Saved Games", "Frontier Developments", "Elite Dangerous");
+        } else {
+            return Paths.get(customJournalDir);
+        }
+    }
+
+    public Path getBindingsPath() {
+        String customBindingsDir = ConfigManager.getInstance().getPlayerKey(ConfigManager.BINDINGS_DIR);
+        if (customBindingsDir == null || customBindingsDir.isBlank()) {
+            return Paths.get(System.getProperty("user.home"), "AppData", "Local", "Frontier Developments", "Elite Dangerous", "Options", "Bindings");
+        } else {
+            return Paths.get(customBindingsDir);
+        }
+    }
+
 
     private void saveSystemConfig() {
         writeConfigFile(SYSTEM_CONFIG_FILENAME, readSystemConfig(), true);
@@ -256,6 +281,10 @@ public class ConfigManager {
                     } else if (entry.getKey().equals(PLAYER_TITLE)) {
                         writer.write("\n# Use this to provide an alternative name. This is in case your in-game name is unpronounceable by the AI\n");
                         writer.write("# such as \"CMDR-PAPABARE123\"\n");
+                    } else if (entry.getKey().equals(JOURNAL_DIR)) {
+                        writer.write("\n# Custom directory path for Elite Dangerous journal files (leave blank for default)\n");
+                    } else if (entry.getKey().equals(BINDINGS_DIR)) {
+                        writer.write("\n# Custom directory path for Elite Dangerous key bindings files (leave blank for default)\n");
                     }
                 }
             }

@@ -3,6 +3,7 @@ package elite.companion.gameapi;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import elite.companion.ai.ConfigManager;
 import elite.companion.gameapi.journal.EventRegistry;
 import elite.companion.gameapi.journal.events.BaseEvent;
 import elite.companion.ui.event.AppLogEvent;
@@ -43,7 +44,12 @@ import java.util.concurrent.TimeUnit;
  */
 public class JournalParser implements Runnable {
     private static final Logger log = LoggerFactory.getLogger(JournalParser.class);
-    private final Path journalDir = Paths.get(System.getProperty("user.home"), "Saved Games", "Frontier Developments", "Elite Dangerous");
+    private final Path journalDir;
+
+    public JournalParser() {
+        journalDir = ConfigManager.getInstance().getJournalPath();
+    }
+
 
     private Thread processingThread;
     private volatile boolean isRunning;

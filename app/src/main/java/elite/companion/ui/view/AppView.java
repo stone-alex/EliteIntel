@@ -65,7 +65,11 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     private JTextField playerAltNameField;
     private JTextField playerTitleField;
     private JTextField playerMissionDescription; // was JTextArea
+    private JTextField journalDirField;
+    private JTextField bindingsDirField;
     private JButton savePlayerInfoButton;
+    private JButton selectJournalDirButton;
+    private JButton selectBindingsDirButton;
 
     // Help tab
     private JEditorPane helpPane; // HTML rendering
@@ -141,6 +145,9 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         togglePrivacyModeCheckBox.setToolTipText("Temporary disable Speech to Text completely");
         togglePrivacyModeCheckBox.setText("Toggle Privacy Mode");
         togglePrivacyModeCheckBox.setForeground(Color.GREEN);
+
+        journalDirField.setEditable(false);
+        bindingsDirField.setEditable(false);
     }
 
     private JPanel buildSystemTab() {
@@ -185,7 +192,8 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         buttons.setOpaque(false);
         // Use inline subclass to custom-paint the dark background (no reassignment issues)
         saveSystemButton = new JButton("Save Configuration") {
-            @Override protected void paintComponent(Graphics g) {
+            @Override
+            protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 try {
                     g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -206,7 +214,8 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
 
 
         startStopServicesButton = new JButton("Start Services") {
-            @Override protected void paintComponent(Graphics g) {
+            @Override
+            protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 try {
                     g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -288,10 +297,67 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         installTextLimit(playerMissionDescription, 120);
         addField(panel, playerMissionDescription, gbc, 1, 1.0);
 
-        // Row 3: Save button
+        // Row 3: Journal Directory
+        nextRow(gbc);
+        addLabel(panel, "Journal Directory:", gbc, 0);
+        journalDirField = new JTextField();
+        journalDirField.setToolTipText("Custom directory for Elite Dangerous journal files (optional; defaults to standard location if blank)");
+        //journalDirField.setText(ConfigManager.getInstance().getJournalPath().toAbsolutePath().toString());
+        addField(panel, journalDirField, gbc, 1, 0.8);
+        selectJournalDirButton = new JButton("Select...") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                try {
+                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    Color base = BG_PANEL;
+                    ButtonModel m = getModel();
+                    if (m.isPressed()) base = base.darker();
+                    else if (m.isRollover()) base = base.brighter();
+                    g2.setColor(base);
+                    g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
+                } finally {
+                    g2.dispose();
+                }
+                super.paintComponent(g);
+            }
+        };
+        styleButton(selectJournalDirButton);
+        selectJournalDirButton.setActionCommand(ACTION_SELECT_JOURNAL_DIR);
+        addField(panel, selectJournalDirButton, gbc, 2, 0.2);
+
+        // Row 4: Bindings Directory
+        nextRow(gbc);
+        addLabel(panel, "Bindings Directory:", gbc, 0);
+        bindingsDirField = new JTextField();
+        bindingsDirField.setToolTipText("Custom directory for Elite Dangerous key bindings files (optional; defaults to standard location if blank)");
+        addField(panel, bindingsDirField, gbc, 1, 0.8);
+        selectBindingsDirButton = new JButton("Select...") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                try {
+                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    Color base = BG_PANEL;
+                    ButtonModel m = getModel();
+                    if (m.isPressed()) base = base.darker();
+                    else if (m.isRollover()) base = base.brighter();
+                    g2.setColor(base);
+                    g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
+                } finally {
+                    g2.dispose();
+                }
+                super.paintComponent(g);
+            }
+        };
+        styleButton(selectBindingsDirButton);
+        selectBindingsDirButton.setActionCommand(ACTION_SELECT_BINDINGS_DIR);
+        addField(panel, selectBindingsDirButton, gbc, 2, 0.2);
+
+        // Row 5: Save button
         nextRow(gbc);
         gbc.gridx = 0;
-        gbc.gridwidth = 2;
+        gbc.gridwidth = 3;
         gbc.weightx = 1;
         gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.WEST;
@@ -300,7 +366,8 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         btns.setOpaque(false);
 
         savePlayerInfoButton = new JButton("Save Player Configuration") {
-            @Override protected void paintComponent(Graphics g) {
+            @Override
+            protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 try {
                     g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -322,10 +389,10 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         btns.add(savePlayerInfoButton);
         panel.add(btns, gbc);
 
-        // Row 4: Filler area (reserved for future use)
+        // Row 6: Filler area (reserved for future use)
         nextRow(gbc);
         gbc.gridx = 0;
-        gbc.gridwidth = 2;
+        gbc.gridwidth = 3;
         gbc.weightx = 1;
         gbc.weighty = 1; // take the rest of the space
         gbc.fill = GridBagConstraints.BOTH;
@@ -494,9 +561,9 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
      * Binds a lock checkbox to a specific field, allowing the field's state
      * (enabled, editable, or read-only) to be toggled based on the checkbox selection.
      *
-     * @param lockCheck                The checkbox that controls the locking mechanism.
-     * @param field                    The UI component whose state will be controlled by the checkbox.
-     *                                 Supports JTextComponent and other JComponent types.
+     * @param lockCheck The checkbox that controls the locking mechanism.
+     * @param field     The UI component whose state will be controlled by the checkbox.
+     *                  Supports JTextComponent and other JComponent types.
      */
     private static void bindLock(JCheckBox lockCheck, JComponent field) {
         Runnable apply = () -> {
@@ -521,9 +588,12 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         if (toggleStreamingModeCheckBox != null) toggleStreamingModeCheckBox.addActionListener(l);
         if (togglePrivacyModeCheckBox != null) togglePrivacyModeCheckBox.addActionListener(l);
         if (showDetailedLog != null) showDetailedLog.addActionListener(l);
+        if (selectJournalDirButton != null) selectJournalDirButton.addActionListener(l);
+        if (selectBindingsDirButton != null) selectBindingsDirButton.addActionListener(l);
     }
 
-    @Override public JFrame getUiComponent() {
+    @Override
+    public JFrame getUiComponent() {
         return this;
     }
 
@@ -544,7 +614,8 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         }
     }
 
-    @Override public void displaySystemConfig(Map<String, String> cfg) {
+    @Override
+    public void displaySystemConfig(Map<String, String> cfg) {
         for (Map.Entry<String, String> entry : cfg.entrySet()) {
             switch (entry.getKey()) {
                 case ConfigManager.TTS_API_KEY:
@@ -563,7 +634,8 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         }
     }
 
-    @Override public void displayUserConfig(Map<String, String> cfg) {
+    @Override
+    public void displayUserConfig(Map<String, String> cfg) {
         for (Map.Entry<String, String> entry : cfg.entrySet()) {
             switch (entry.getKey()) {
                 case ConfigManager.PLAYER_ALTERNATIVE_NAME:
@@ -575,12 +647,18 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
                 case ConfigManager.PLAYER_MISSION_STATEMENT:
                     playerMissionDescription.setText(entry.getValue());
                     break;
+                case ConfigManager.BINDINGS_DIR:
+                    bindingsDirField.setText(ConfigManager.getInstance().getBindingsPath().toAbsolutePath().toString());
+                case ConfigManager.JOURNAL_DIR:
+                    journalDirField.setText(ConfigManager.getInstance().getJournalPath().toAbsolutePath().toString());
+                    break;
             }
         }
 
     }
 
-    @Override public void displayHelp(String helpText) {
+    @Override
+    public void displayHelp(String helpText) {
         setHelpMarkdown(helpText);
     }
 
@@ -618,9 +696,13 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     // User config I/O
     public void setUserConfig(Map<String, String> cfg) {
         if (cfg == null) return;
-        if (playerAltNameField != null) playerAltNameField.setText(cfg.getOrDefault(ConfigManager.PLAYER_ALTERNATIVE_NAME, ""));
+        if (playerAltNameField != null)
+            playerAltNameField.setText(cfg.getOrDefault(ConfigManager.PLAYER_ALTERNATIVE_NAME, ""));
         if (playerTitleField != null) playerTitleField.setText(cfg.getOrDefault(ConfigManager.PLAYER_TITLE, ""));
-        if (playerMissionDescription != null) playerMissionDescription.setText(cfg.getOrDefault(ConfigManager.PLAYER_MISSION_STATEMENT, ""));
+        if (playerMissionDescription != null)
+            playerMissionDescription.setText(cfg.getOrDefault(ConfigManager.PLAYER_MISSION_STATEMENT, ""));
+        if (journalDirField != null) journalDirField.setText(cfg.getOrDefault(ConfigManager.JOURNAL_DIR, ""));
+        if (bindingsDirField != null) bindingsDirField.setText(cfg.getOrDefault(ConfigManager.BINDINGS_DIR, ""));
     }
 
     /**
@@ -639,7 +721,10 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         Map<String, String> cfg = new HashMap<>();
         if (playerAltNameField != null) cfg.put(ConfigManager.PLAYER_ALTERNATIVE_NAME, playerAltNameField.getText());
         if (playerTitleField != null) cfg.put(ConfigManager.PLAYER_TITLE, playerTitleField.getText());
-        if (playerMissionDescription != null) cfg.put(ConfigManager.PLAYER_MISSION_STATEMENT, playerMissionDescription.getText());
+        if (playerMissionDescription != null)
+            cfg.put(ConfigManager.PLAYER_MISSION_STATEMENT, playerMissionDescription.getText());
+        if (journalDirField != null) cfg.put(ConfigManager.JOURNAL_DIR, journalDirField.getText());
+        if (bindingsDirField != null) cfg.put(ConfigManager.BINDINGS_DIR, bindingsDirField.getText());
         return cfg;
     }
 
@@ -860,6 +945,8 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     public static final String ACTION_TOGGLE_STREAMING_MODE = "toggleStreamingMode";
     public static final String ACTION_TOGGLE_PRIVACY_MODE = "togglePrivacyMode";
     public static final String ACTION_TOGGLE_SYSTEM_LOG = "toggleSystemLog";
+    public static final String ACTION_SELECT_JOURNAL_DIR = "selectJournalDir";
+    public static final String ACTION_SELECT_BINDINGS_DIR = "selectBindingsDir";
     // ----- END ACTION COMMANDS -----
 
 
@@ -882,7 +969,8 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     public static final String PROPERTY_SERVICES_TOGGLE = "servicesToggled";
 
 
-    @Override public void propertyChange(PropertyChangeEvent evt) {
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals(PROPERTY_SYSTEM_CONFIG_UPDATED)) {
             setSystemConfig((Map<String, String>) evt.getNewValue());
         } else if (evt.getPropertyName().equals(PROPERTY_USER_CONFIG_UPDATED)) {

@@ -1,7 +1,6 @@
 package elite.companion.gameapi.gamestate.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.gamestate.events.GameEvents;
 import elite.companion.gameapi.gamestate.events.NavRouteDto;
 import elite.companion.session.PlayerSession;
@@ -11,10 +10,6 @@ import java.util.List;
 import java.util.Map;
 
 public class RoutePlottedSubscriber {
-
-    public RoutePlottedSubscriber() {
-        EventBusManager.register(this); // Register this instance
-    }
 
     @Subscribe
     public void onGameEvent(GameEvents.NavRouteEvent event) {

@@ -34,9 +34,11 @@ public class FSDJumpSubscriber {
         sb.append(" We are in: ").append(currentStarSystem).append(" system, ");
         StarSystemDto systemDto = EdsmApiClient.searchStarSystem(currentStarSystem, 1);
         if (systemDto.getData() != null) {
-            sb.append(" Allegiance: ").append(systemDto.getData().getInformation().getAllegiance());
-            sb.append(" Security: ").append(systemDto.getData().getInformation().getSecurity());
-            sb.append(".");
+            if (systemDto.getData().getInformation().getAllegiance() != null)
+                sb.append(" Allegiance: ").append(systemDto.getData().getInformation().getAllegiance());
+            if (systemDto.getData().getInformation().getSecurity() != null)
+                sb.append(" Security: ").append(systemDto.getData().getInformation().getSecurity());
+            sb.append(". ");
         }
 
         if (finalDestination != null && finalDestination.equalsIgnoreCase(currentStarSystem)) {
@@ -44,12 +46,12 @@ public class FSDJumpSubscriber {
             TrafficDto trafficDto = EdsmApiClient.searchTraffic(finalDestination);
             if (trafficDto.getData() != null && trafficDto.getData().getTraffic() != null) {
                 TrafficStats trafficStats = trafficDto.getData().getTraffic();
-                sb.append("Local traffic: ").append(trafficStats.toString());
+                if (trafficStats.getTotal() > 0) sb.append("Local traffic: ").append(trafficStats);
             }
             DeathsDto deathsDto = EdsmApiClient.searchDeaths(finalDestination);
             if (deathsDto.getData() != null && deathsDto.getData().getDeaths() != null) {
                 DeathsStats deathsStats = deathsDto.getData().getDeaths();
-                sb.append("Local deaths: ").append(deathsStats.toString());
+                if (deathsStats.getTotal() > 0) sb.append("Local deaths: ").append(deathsStats);
             }
 
         } else {
@@ -57,14 +59,14 @@ public class FSDJumpSubscriber {
                 int remainingJump = playerSession.getRoute().size();
 
                 if (remainingJump > 0) {
-                    sb.append("next stop: ").append(playerSession.get(playerSession.FSD_TARGET)).append(", ");
+                    sb.append(" Next stop: ").append(playerSession.get(playerSession.FSD_TARGET)).append(", ");
                 }
 
                 sb.append(remainingJump).append(" jumps remaining: ").append(" to ").append(finalDestination).append(".");
             }
         }
 
-        EventBusManager.publish(new AppLogEvent("Processing Event: FSDJumpEvent sending sensor data to AI: " + sb.toString()));
+        EventBusManager.publish(new AppLogEvent("Processing Event: FSDJumpEvent sending sensor data to AI: " + sb));
         EventBusManager.publish(new SensorDataEvent(sb.toString()));
     }
 }

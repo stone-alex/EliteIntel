@@ -1,6 +1,7 @@
 package elite.companion.ai.brain.handlers.query;
 
 public enum QueryActions {
+    ANALYZE_FSD_TARGET("query_analyze_fsd_target", "Analyze FSD target data and provide summary for allegiance, traffic and security. FSD target is the destination.", AnalyzeFsdTargetHandler.class, false),
     ANALYZE_LOCAL_MARKETS("query_analyze_market", "Analyze  local market contents.", AnalyzeLocalMarketsHandler.class, false),
     ANALYZE_LOCAL_OUTFITTING("query_analyze_outfitting", "Analyze outfitting options. ", AnalyzeLocalOutfittingHandler.class, false),
     ANALYZE_LOCAL_SHIPYARD("query_shipyard_data", "Analyse shipyard contents. ", AnalyzeShipyardHandler.class, false),

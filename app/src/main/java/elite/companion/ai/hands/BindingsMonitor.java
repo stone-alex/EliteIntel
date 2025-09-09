@@ -2,6 +2,7 @@ package elite.companion.ai.hands;
 
 import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.VoiceProcessEvent;
+import elite.companion.ui.event.AppLogEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -148,6 +149,8 @@ public class BindingsMonitor {
         try {
             currentBindsFile = new BindingsLoader().getLatestBindsFile();
             bindings = parser.parseBindings(currentBindsFile);
+            EventBusManager.publish(new VoiceProcessEvent("Key bindings updated."));
+            EventBusManager.publish(new AppLogEvent("SYSTEM: Key bindings updated from file " + currentBindsFile.getAbsolutePath()));
             log.info("Key bindings updated from: {}", currentBindsFile.getName());
         } catch (Exception e) {
             log.error("Failed to parse key bindings from: {}", currentBindsFile != null ? currentBindsFile.getName() : "null", e);

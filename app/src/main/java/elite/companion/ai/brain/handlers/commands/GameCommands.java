@@ -132,7 +132,7 @@ public class GameCommands {
         SYSTEM_MAP_HUMANOID("system_map_humanoid", "SystemMapOpen_Humanoid", GenericGameController.class),
 
 
-        EXPLORATION_FSSDISCOVERY_SCAN("_", "", PerformFSSScanHandler.class);
+        EXPLORATION_FSSDISCOVERY_SCAN("_", "ExplorationFSSEnter", PerformFSSScanHandler.class);
 
         private final String userCommand;
         private final String gameBinding;

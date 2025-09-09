@@ -43,6 +43,9 @@ public class SystemSession {
     private boolean isStreamingModeOn = false;
     private final SessionPersistence persistence = new SessionPersistence();
 
+    public final static String RMS_THRESHOLD_HIGH = "RMS_THRESHOLD_HIGH";
+    public final static String RMS_THRESHOLD_LOW = "RMS_THRESHOLD_LOW";
+
 
 
     private SystemSession() {

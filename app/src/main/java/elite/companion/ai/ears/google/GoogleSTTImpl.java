@@ -34,7 +34,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * <p>
  * Key Features:
  * - Streams audio data to Google STT API with configurable parameters such as sampling rate,
- *   buffer size, and thresholds.
+ * buffer size, and thresholds.
  * - Utilizes Voice Activity Detection (VAD) to identify active speech and handle silence effectively.
  * - Supports dynamic audio format detection and calibration of RMS thresholds.
  * - Manages the lifecycle of the speech recognition process, including start, stop, and error handling.
@@ -86,7 +86,7 @@ public class GoogleSTTImpl implements EarsInterface {
     /**
      * Starts the speech recognition process by setting up the necessary configurations,
      * initializing resources, and launching a background thread for processing audio input.
-     *
+     * <p>
      * This method performs the following steps:
      * 1. Ensures that speech recognition is not already running.
      * 2. Resets the listening state to active.
@@ -102,7 +102,7 @@ public class GoogleSTTImpl implements EarsInterface {
      * Exceptions thrown during setup or initialization are logged and re-thrown as runtime exceptions.
      *
      * @throws RuntimeException if the speech client initialization or AI command interface
-     *         startup fails.
+     *                          startup fails.
      */
     @Override
     public void start() {
@@ -119,12 +119,21 @@ public class GoogleSTTImpl implements EarsInterface {
         this.sampleRateHertz = formatResult.getSampleRate();
         this.bufferSize = formatResult.getBufferSize();
 
-        // Calibrate RMS thresholds
-        EventBusManager.publish(new AppLogEvent("Calibrating audio..."));
-        AudioSettingsTuple<Double, Double> rmsThresholds = AudioCalibrator.calibrateRMS(sampleRateHertz, bufferSize);
-        this.RMS_THRESHOLD_HIGH = rmsThresholds.getSampleRate(); // First tuple element
-        this.RMS_THRESHOLD_LOW = rmsThresholds.getBufferSize();  // Second tuple element
+        SystemSession systemSession = SystemSession.getInstance();
+        Double rms_threshold_high = (Double) systemSession.get(SystemSession.RMS_THRESHOLD_HIGH);
+        Double rms_threshold_low = (Double) systemSession.get(SystemSession.RMS_THRESHOLD_LOW);
 
+        if (rms_threshold_high == null && rms_threshold_low == null) {
+            // Calibrate RMS thresholds
+            EventBusManager.publish(new AppLogEvent("Calibrating audio..."));
+            AudioSettingsTuple<Double, Double> rmsThresholds = AudioCalibrator.calibrateRMS(sampleRateHertz, bufferSize);
+            this.RMS_THRESHOLD_HIGH = rmsThresholds.getSampleRate(); // First tuple element
+            this.RMS_THRESHOLD_LOW = rmsThresholds.getBufferSize();  // Second tuple element
+        } else {
+            this.RMS_THRESHOLD_HIGH = rms_threshold_high;
+            this.RMS_THRESHOLD_LOW = rms_threshold_low;
+            log.info("RMS thresholds already calibrated: High: {}, Low: {}", this.RMS_THRESHOLD_HIGH, this.RMS_THRESHOLD_LOW);
+        }
 
         // Initialize SpeechClient
         try {
@@ -171,20 +180,20 @@ public class GoogleSTTImpl implements EarsInterface {
      * <p>
      * The method operates in a loop while listening is active and handles several tasks:
      * - Configuring the streaming recognition with necessary settings such as audio
-     *   format and API parameters.
+     * format and API parameters.
      * - Initiating the audio input from the system's microphone using the specified
-     *   audio format and sample rate.
+     * audio format and sample rate.
      * - Sending audio input in real-time to the speech recognition API for processing.
      * - Handling the Voice Activity Detection (VAD) mechanism to manage periods of silence
-     *   and distinguish active speech from background noise or inactivity.
+     * and distinguish active speech from background noise or inactivity.
      * - Continuously updating the state of voice activity (active or silent) based on
-     *   computed RMS (Root Mean Square) values of the audio buffer.
+     * computed RMS (Root Mean Square) values of the audio buffer.
      * - Sending keep-alive signals to maintain the connection during long periods of silence.
      * <p>
      * An observer is attached to the API stream to process the responses, handle errors,
      * and manage session completions:
      * - Responses from the API are processed to extract recognition results and handle them
-     *   appropriately.
+     * appropriately.
      * - Errors occurring during the streaming are logged for further troubleshooting.
      * - A completion handler ensures proper termination of the streaming session.
      * <p>

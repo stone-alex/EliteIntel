@@ -3,6 +3,7 @@ package elite.companion.ai.ears;
 import com.google.common.eventbus.Subscribe;
 import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.VoiceProcessEvent;
+import elite.companion.session.SystemSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,6 +106,10 @@ public class AudioCalibrator {
         // Clamp thresholds
         highThreshold = Math.max(400.0, Math.min(highThreshold, 800.0));
         lowThreshold = Math.max(50.0, Math.min(lowThreshold, 80.0));
+
+        SystemSession systemSession = SystemSession.getInstance();
+        systemSession.put(SystemSession.RMS_THRESHOLD_HIGH, highThreshold);
+        systemSession.put(SystemSession.RMS_THRESHOLD_LOW, lowThreshold);
 
         log.info("Calibrated RMS thresholds: HIGH={}, LOW={}", highThreshold, lowThreshold);
         return new AudioSettingsTuple<>(highThreshold, lowThreshold);

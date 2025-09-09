@@ -14,5 +14,8 @@ public interface AppModelInterface {
     void showSystemLog(boolean show);
     boolean showSystemLog();
     void setStreamingModeOn(boolean on);
+
+    void setPrivacyModeOn(boolean on);
+
     void setServicesRunning(boolean isServiceRunning);
 }

@@ -155,6 +155,7 @@ public class GoogleSTTImpl implements EarsInterface {
             throw new RuntimeException("Failed to initialize SpeechClient", e);
         }
 
+        isListening.set(true);
         this.processingThread = new Thread(this::startStreaming);
         this.processingThread.start();
         try {
@@ -363,7 +364,7 @@ public class GoogleSTTImpl implements EarsInterface {
      * Processes the result of a streaming speech recognition operation.
      * Extracts the most probable transcription alternative, discards low-confidence or
      * irrelevant transcriptions, and queues them for further processing when applicable.
-     * Sanitizes and delegates commands to an AI system based on privacy settings and keywords.
+     * Sanitizes and delegates commands to an AI system based on streaming mode settings and keywords.
      *
      * @param result the {@link StreamingRecognitionResult} object containing recognition
      *               alternatives, confidence scores, and finality status for a segment of
@@ -383,8 +384,8 @@ public class GoogleSTTImpl implements EarsInterface {
 
                     EventBusManager.publish(new AppLogEvent("STT Sanitized: [" + sanitizedTranscript + "]."));
 
-                    boolean isPrivacyModeOn = SystemSession.getInstance().isStreamingModeOn();
-                    if (isPrivacyModeOn) {
+                    boolean isStreamingModeOn = SystemSession.getInstance().isStreamingModeOn();
+                    if (isStreamingModeOn) {
                         String voiceName = SystemSession.getInstance().getAIVoice().getName();
                         if (sanitizedTranscript.toLowerCase().startsWith("computer") || sanitizedTranscript.toLowerCase().startsWith(voiceName.toLowerCase())) {
                             sendToAi(sanitizedTranscript.replace("computer,", "").replace(voiceName.toLowerCase() + ",", ""), confidence);

@@ -96,7 +96,8 @@ public class AppController implements AppControllerInterface, ActionListener {
         model.appendLog("Saved configs");
     }
 
-    @Override public void handleSaveUserConfig() {
+    @Override
+    public void handleSaveUserConfig() {
         Map<String, String> userConfig = view.getUserConfigInput();
         configManager.writeConfigFile(ConfigManager.USER_CONFIG_FILENAME, userConfig, true);
         model.setUserConfig(userConfig);
@@ -218,6 +219,19 @@ public class AppController implements AppControllerInterface, ActionListener {
         model.appendLog(streamingModeOnOff ? streamingModeIsOnMessage() : streamingModeIsOffMessage());
     }
 
+    @Override
+    public void togglePrivacyMode(boolean isPrivacyModeEnabled) {
+        if (isPrivacyModeEnabled) {
+            EventBusManager.publish(new VoiceProcessEvent("one way comms, I can't hear you anymore"));
+            ears.stop();
+        } else {
+            EventBusManager.publish(new VoiceProcessEvent("I am listening..."));
+            ears.start();
+        }
+        model.setPrivacyModeOn(isPrivacyModeEnabled);
+        //model.appendLog(isPrivacyModeEnabled ? "one way comms, I can't hear you" : "I am listening...");
+    }
+
     private String streamingModeIsOffMessage() {
         return "Streaming mode is Off. " + systemSession.getAIVoice().getName() + " is listening to you.";
     }
@@ -238,6 +252,9 @@ public class AppController implements AppControllerInterface, ActionListener {
             } else if (ACTION_TOGGLE_STREAMING_MODE.equals(command)) {
                 boolean isSelected = ((JCheckBox) e.getSource()).isSelected();
                 toggleStreamingMode(isSelected);
+            } else if (ACTION_TOGGLE_PRIVACY_MODE.equals(command)) {
+                boolean isSelected = ((JCheckBox) e.getSource()).isSelected();
+                togglePrivacyMode(isSelected);
             }
         }
 

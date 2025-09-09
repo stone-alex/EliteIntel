@@ -57,6 +57,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     private JCheckBox ttsLockedCheck;
     private JButton saveSystemButton;
     private JButton startStopServicesButton;
+    private JCheckBox toggleStreamingModeCheckBox;
     private JCheckBox togglePrivacyModeCheckBox;
     private JTextArea logArea;
 
@@ -131,8 +132,13 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         bindLock(sttLockedCheck, sttApiKeyField);
         bindLock(llmLockedCheck, llmApiKeyField);
         bindLock(ttsLockedCheck, ttsApiKeyField);
-        togglePrivacyModeCheckBox.setEnabled(false);//enabled when services start
-        togglePrivacyModeCheckBox.setToolTipText("Prevent AI from listening to everything on/off, prefix commands with word 'computer' or AI voice name");
+        toggleStreamingModeCheckBox.setEnabled(false);//enabled when services start
+        toggleStreamingModeCheckBox.setToolTipText("Prevent AI from processing unless you prefix your command or query with word 'computer'");
+        toggleStreamingModeCheckBox.setText("Toggle Streaming Mode");
+        toggleStreamingModeCheckBox.setForeground(Color.GREEN);
+
+        togglePrivacyModeCheckBox.setEnabled(false); // enabled when services start
+        togglePrivacyModeCheckBox.setToolTipText("Temporary disable Speech to Text completely");
         togglePrivacyModeCheckBox.setText("Toggle Privacy Mode");
         togglePrivacyModeCheckBox.setForeground(Color.GREEN);
     }
@@ -222,12 +228,17 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         showDetailedLog = new JCheckBox("Show Detailed Log", false);
         showDetailedLog.setActionCommand(ACTION_TOGGLE_SYSTEM_LOG);
 
-        togglePrivacyModeCheckBox = new JCheckBox("Toggle Privacy Mode", false);
-        togglePrivacyModeCheckBox.setActionCommand(ACTION_TOGGLE_STREAMING_MODE);
+        toggleStreamingModeCheckBox = new JCheckBox("Toggle Streaming Mode", false);
+        toggleStreamingModeCheckBox.setActionCommand(ACTION_TOGGLE_STREAMING_MODE);
+
+        togglePrivacyModeCheckBox = new JCheckBox("Toggle Streaming Mode", false);
+        togglePrivacyModeCheckBox.setActionCommand(ACTION_TOGGLE_PRIVACY_MODE);
+
 
         buttons.add(saveSystemButton);
         buttons.add(startStopServicesButton);
         buttons.add(showDetailedLog);
+        buttons.add(toggleStreamingModeCheckBox);
         buttons.add(togglePrivacyModeCheckBox);
 
 
@@ -507,6 +518,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         if (saveSystemButton != null) saveSystemButton.addActionListener(l);
         if (startStopServicesButton != null) startStopServicesButton.addActionListener(l);
         if (savePlayerInfoButton != null) savePlayerInfoButton.addActionListener(l);
+        if (toggleStreamingModeCheckBox != null) toggleStreamingModeCheckBox.addActionListener(l);
         if (togglePrivacyModeCheckBox != null) togglePrivacyModeCheckBox.addActionListener(l);
         if (showDetailedLog != null) showDetailedLog.addActionListener(l);
     }
@@ -846,6 +858,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     public static final String ACTION_SAVE_SYSTEM_CONFIG = "saveSystemConfig";
     public static final String ACTION_TOGGLE_SERVICES = "toggleServices";
     public static final String ACTION_TOGGLE_STREAMING_MODE = "toggleStreamingMode";
+    public static final String ACTION_TOGGLE_PRIVACY_MODE = "togglePrivacyMode";
     public static final String ACTION_TOGGLE_SYSTEM_LOG = "toggleSystemLog";
     // ----- END ACTION COMMANDS -----
 
@@ -864,6 +877,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     public static final String PROPERTY_LOG_UPDATED = "logUpdated";
     public static final String PROPERTY_USER_CONFIG_UPDATED = "userConfigUpdated";
     public static final String PROPERTY_STREAMING_MODE = "streamingModeUpdated";
+    public static final String PROPERTY_PRIVACY_MODE = "privacyModeUpdated";
     public static final String PROPERTY_HELP_MARKDOWN = "helpMarkdownUpdated";
     public static final String PROPERTY_SERVICES_TOGGLE = "servicesToggled";
 
@@ -877,12 +891,18 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
             setLogText((String) evt.getNewValue());
         } else if (evt.getPropertyName().equals(PROPERTY_STREAMING_MODE)) {
             Boolean streamingModeOn = (Boolean) evt.getNewValue();
-            togglePrivacyModeCheckBox.setSelected(streamingModeOn);
-            togglePrivacyModeCheckBox.setForeground(streamingModeOn ? Color.RED : Color.GREEN);
-            togglePrivacyModeCheckBox.setText(streamingModeOn ? "I am Ignoring You (say computer to talk to me)" : "I am Listening to your every word");
+            toggleStreamingModeCheckBox.setSelected(streamingModeOn);
+            toggleStreamingModeCheckBox.setForeground(streamingModeOn ? Color.RED : Color.GREEN);
+            toggleStreamingModeCheckBox.setText(streamingModeOn ? "I am Ignoring You" : "Streaming Mode Off");
+        } else if (evt.getPropertyName().equals(PROPERTY_PRIVACY_MODE)) {
+            Boolean privacyModeOn = (Boolean) evt.getNewValue();
+            togglePrivacyModeCheckBox.setSelected(privacyModeOn);
+            togglePrivacyModeCheckBox.setForeground(privacyModeOn ? Color.RED : Color.GREEN);
+            togglePrivacyModeCheckBox.setText(privacyModeOn ? "I can't hear You" : "I am Listening...");
         } else if (evt.getPropertyName().equals(PROPERTY_HELP_MARKDOWN)) {
             setHelpMarkdown((String) evt.getNewValue());
         } else if (evt.getPropertyName().equals(PROPERTY_SERVICES_TOGGLE)) {
+            toggleStreamingModeCheckBox.setEnabled((Boolean) evt.getNewValue());
             togglePrivacyModeCheckBox.setEnabled((Boolean) evt.getNewValue());
         }
     }

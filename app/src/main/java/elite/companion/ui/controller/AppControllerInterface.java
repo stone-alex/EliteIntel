@@ -5,4 +5,6 @@ public interface AppControllerInterface {
     void handleSaveUserConfig();
     boolean startStopServices();
     void toggleStreamingMode(boolean isOn);
+
+    void togglePrivacyMode(boolean isPrivacyModeEnabled);
 }

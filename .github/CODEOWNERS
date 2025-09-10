@@ -1,0 +1,6 @@
+# Global fallback: everything
+* @stone-alex
+
+app/** @stone-alex
+distribution/** @stone-alex
+.github/** @stone-alex

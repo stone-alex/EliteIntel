@@ -58,40 +58,46 @@ so feel free to check out the code and contribute. (see [DEVELOPERS.md](DEVELOPE
     - **Unhinged**: Super brief, playful, and cheeky with humor and light sarcasm; slang matches the cadence.
     - **Rogue**: Bold and witty, extremely concise with heavy jargon and occasional cheeky language (nothing too wild,
       but watch out for that edge).
-      Switch them on the fly. and it'll address you by your pilot name, rank, or honorific.
-    - **Variable User Addressing**: The AI will address you by your name, rank, or honorific.
-        - **Name**: Address by your pilot name or overridden name in user setting if you in-game name is
+      Switch them on the fly whenever you wish.
+  - **Variable User Addressing**: The AI will address you choosing either your name, rank, or honorific at random.
+      - **Name**: Address by your pilot name or overridden name in user setting if your in-game name is
           unpronounceable.
         - **Rank**: Address by your rank (e.g., "Viscount" or "Ensign"). depending on which of your navy ranks is
           higher.
-        - **Honorific**: Address by your honorific (e.g., "My Lord", "Your Grace", "Sarg" or "Lieutenant"). derived from
-          highest navy rank.
-            - **NOTE** If your navy ranks are too low, it will address you as "Commander".
+      - **Honorific**: Address by your honorific (e.g., "My Lord", "Your Grace", "PO", "Chief" or "Lieutenant"). derived
+        from
+        highest navy rank. (highest from federation and imperial navies)
+          - **NOTE** If you have no rank, your honorific is "Commander".
 
 
 - **Event-Driven Responses**: Events like planetary approach trigger automatic info (e.g., "Entering orbital cruise,
   gravity 1.2G, temperature 254 Kelvin—gravity warning") if data's available from journals or EDSM. Similarly hyperspace
   jumps will trigger announcement of the target system suitability for fuel. You can ask the AI for specific information
-  on the current or target system, such as allegiances, security or anything else. The AI will reply with summary if
-  legal data is available (Journal Files, EDSM query). But it will not read in-game hidden memory.
+  on the current or target system, such as allegiances, security or anything else. Similarly you can ask AI to analyze
+  the plotted route. The AI will reply with summary if legal data is available (Journal Files, EDSM query),
+  but it will not and can not read in-game memory.
 
+### Legal data only
 The app sticks to legal data sources only—no memory reading or hidden game hacks. When it tells you that no data
-available even if you
-see it on in-game screens, it means this data indeed not available in either journals or EDSM.
+available even if you see it on in-game screens, it means this data indeed not available in either journals or EDSM.
 
+### Session Persistence
 The app maintains persisted session and recovers from crashes or restarts without losing your session progress.
 You can delete your session data by removing files from the session folder.
 
+### Mic Calibration and STT corrections
+
+The app will automatically calibrate your microphone settings to match your system's microphone.
 The Speech to Text (STT) sometimes makes mistakes such as "southwest" instead of "switch voice to" etc. There is a
-dictionary
-directory that contains a dictionary file for corrections. If you encounter new mistakes, you can add a correction to
+dictionary directory that contains a dictionary file for corrections. If you encounter new mistakes, you can add a
+correction to
 the dictionary.
 
 The correction dictionary format is:
 
 ```"incorrect word or phrase"="correct word or phrase".```
 
-## Limitations
+## Limitations (by design)
 
 - No autonomous decisions, AFK activity, or macros that could violate TOS. It won't operate weapons, steer your ship, or
   handle harvesting/mining.

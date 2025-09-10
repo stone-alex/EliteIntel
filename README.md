@@ -31,21 +31,21 @@ so feel free to check out the code and contribute. (see [DEVELOPERS.md](DEVELOPE
 
 
 - **AI-Powered Analysis**: On-demand breakdowns of game data, like security assessments for your next jump, biological
-  signals on nearby planets, mission progress, ship loadouts, market info, local signals, and route suggestions. It
-  combines journal scans, auxiliary files, and EDSM data and general knowledge for accurate insights.
+  signals on nearby planets, mission progress, ship loadouts, market info, local signals, and route analysis. It
+  combines journal scans, auxiliary files, with EDSM data and general knowledge for accurate insights.
 
 
 - **Mission Tracking and Announcements**: Keeps tabs on stacked missions (e.g., pirate massacres) and alerts you to
-  critical stuff like enemy scans, wanted ships, mission targets, or system jumps with fuel status. Unprompted
-  announcements are limited to route data and mission-critical info.
+  critical stuff like enemy scans, wanted ships, mission targets, or system jumps with fuel status. **Unprompted
+  announcements are limited to route data and mission-critical info.**
 
 
-- **Streaming Mode**: Ignores background noise unless you address it by name (e.g., "Jennifer" or "computer")—perfect
-  for streamers or noisy setups.
+- **Streaming Mode**: Ignores voice input unless you address it by name (e.g., "Jennifer" or "computer")—perfect
+  for streamers or team play.
 
 
 - **Privacy Mode**: Temporarily stops and disables Speech to text recognition. The app will still announce critical
-  events, but will not be able to hear you.
+   events but will not be able to hear you.
 
 
 - **Automatic Audio Calibration**: Adjusts audio settings for best performance matching your system's microphone.
@@ -59,7 +59,7 @@ so feel free to check out the code and contribute. (see [DEVELOPERS.md](DEVELOPE
     - **Rogue**: Bold and witty, extremely concise with heavy jargon and occasional cheeky language (nothing too wild,
       but watch out for that edge).
       Switch them on the fly whenever you wish.
-  - **Variable User Addressing**: The AI will address you choosing either your name, rank, or honorific at random.
+  - **Variable User Addressing**: The AI will address you by either your name, rank, or honorific at random.
       - **Name**: Address by your pilot name or overridden name in user setting if your in-game name is
           unpronounceable.
         - **Rank**: Address by your rank (e.g., "Viscount" or "Ensign"). depending on which of your navy ranks is
@@ -130,6 +130,15 @@ As this is an early beta, here are some known areas we're still refining:
 4. While the app has automatic audio detection and calibration, it hasn't been tested on a wide variety of systems. If
    you run into audio issues, please report them on GitHub with logs and a description of your audio setup.
 
+
+5. Only Google STT / TTS and Grok AI are supported. But you are welcome to implement your own providers. The apps' 
+   code is structured, modular, event-driven, and documented.
+
+
+6. Currently, there is no support for colonization. You are welcome to contribute ideas or implementations. 
+   (contact project owner)   
+
+
 ## Usage Examples
 
 These aren't rigid, pre-set commands—the AI understands natural language, so you can phrase things however feels right.
@@ -197,6 +206,7 @@ chat. Here are some examples to give you an idea:
 
 4. **Extract and Run**: Unzip to any folder. Double-click `run.bat` to start, or use `debug.bat` from a terminal for
    troubleshooting.- **NOTE**: If updating existing installation, unzip in temp folder and grab only the JAR file.
+   keep the configs and session files intact. 
 
 
 5. **Configure**: In the app's UI ("System" tab), plug in your API keys and tweak voice/profile settings.

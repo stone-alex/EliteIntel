@@ -13,7 +13,7 @@ Welcome to developing for Elite Companion, a Java-based QoL app for *Elite Dange
     - Use event-driven design in `elite.companion.gameapi` (e.g., `EventBusManager.publish`).
 - **Modularity**: New features should subscribe to journal events (`elite.companion.gameapi.journal.events`) or custom events via `@Subscribe`.
 - **TOS Compliance**: No AFK automation or game file modifications. All actions require user input.
-- **Testing**: Unit tests for parsers (`elite.companion.gameapi.JournalParser`), handlers (`elite.companion.ai.brain.GrokResponseRouter`), and UI components. Simulate events (e.g., `UserInputEvent`, `SensorDataEvent`).
+
 
 ## Contribution Workflow
 
@@ -29,6 +29,15 @@ Welcome to developing for Elite Companion, a Java-based QoL app for *Elite Dange
     - `UserInputEvent`: Triggered by STT (`elite.companion.ai.ears`) for user voice input.
     - `SensorDataEvent`: Sent directly to AI for cadence or analysis, used in query/command handlers.
     - `VoiceProcessEvent`: Initiates TTS processing (`elite.companion.ai.mouth`).
+    - `YourJournalEvent extends BaseEvent`: Journal file events, wrappers. Registered in `elite.companion.gameapi.journal.EventRegistry`.
+- **Event Bus**:
+    - Use `elite.companion.gameapi.EventBusManager` to publish events.
+    - Use `elite.companion.gameapi.journal.EventRegistry` to register journal events.
+
+- **Subscribers**:
+    - Use `elite.companion.gameapi.EventBusManager` to subscribe to events.
+    - Use `elite.companion.gameapi.journal.subscribers` for journal event subscribers.
+    - Use `elite.companion.gameapi.journal.events` for journal event wrappers.
 - **Registration**:
     - Use `elite.companion.util.SubscriberRegistration` to register event listeners by package.
     - For singletons, add `EventBusManager.register(this)` in the constructor.
@@ -41,6 +50,8 @@ Welcome to developing for Elite Companion, a Java-based QoL app for *Elite Dange
 - **Interface**: Implement `elite.companion.ai.ears.EarsInterface`.
     - Methods: `start()`, `stop()`, `getNextTranscription()`, `stopListening()`, `shutdown()`.
     - Run in a separate thread, stream mic input to STT, and throw `UserInputEvent` on API callback.
+    - Use `AudioCalibrator` to automatically set up Root Mean Square (RMS) thresholds based on real time audio analysis.
+    - Use `AudioFormatDetector` to automatically detect the audio device, bitrate, and sample rate.
 - **Example**: See `elite.companion.ai.ears.google` for Google STT integration.
 
 ### TTS (Text-to-Speech)
@@ -80,4 +91,4 @@ If open-sourced, code falls under Creative Commons (e.g., CC BY-NC-SA 4.0). Attr
 
 ## Contact
 
-For private contributions, contact the maintainer directly.
+Submit a pull request. Open an issue on GitHub. Or contact me via Discord: [discord.gg/3qAqBENsBm](https://discord.gg/3qAqBENsBm).

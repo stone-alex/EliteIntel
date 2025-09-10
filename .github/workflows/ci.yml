@@ -100,6 +100,7 @@ jobs:
         shell: pwsh
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
         run: |
           $ErrorActionPreference = 'Stop'
           $tag = "${{ github.ref_name }}"
@@ -107,9 +108,9 @@ jobs:
           if (-not $zip) { throw "ZIP not found in workspace." }
 
           # If release doesn't exist, create; otherwise upload/overwrite asset
-          gh release view $tag *> $null
+          gh release view $tag --repo "$env:REPO" *> $null
           if ($LASTEXITCODE -ne 0) {
-            gh release create $tag $zip.FullName --title "Release $tag" --notes "Automated release for $tag"
+            gh release create $tag $zip.FullName --repo "$env:REPO" --title "Release $tag" --notes "Automated release for $tag"
           } else {
-            gh release upload $tag $zip.FullName --clobber
+            gh release upload $tag $zip.FullName --repo "$env:REPO" --clobber
           }

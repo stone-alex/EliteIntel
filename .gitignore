@@ -12,8 +12,6 @@ app/src/main/resources/elite-companion-xai-api-key.conf
 ./session
 ./config
 ./logs
-./player.conf
-./system.conf
 ./.idea
 ./build
 ./.gradle

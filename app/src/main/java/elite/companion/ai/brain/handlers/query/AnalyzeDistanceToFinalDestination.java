@@ -43,10 +43,6 @@ public class AnalyzeDistanceToFinalDestination extends BaseQueryAnalyzer impleme
         orderedRoute.sort(Comparator.comparingInt(NavRouteDto::getLeg));
 
         String distanceData = getDistanceDataForAnnouncement(currentLocation, orderedRoute);
-
-        // Direct vocalization
-        // EventBusManager.publish(new VoiceProcessEvent(distanceData));
-
         // AI cadence or error response
         return analyzeData(GSON.toJson(distanceData), originalUserInput);
     }
@@ -66,8 +62,6 @@ public class AnalyzeDistanceToFinalDestination extends BaseQueryAnalyzer impleme
                     next.getX(), next.getY(), next.getZ()
             );
             totalDistance += legDistance;
-            // Log for debugging (use your logging utility)
-            // Logger.log("Leg from " + previous.getName() + " to " + next.getName() + ": " + String.format("%.2f", legDistance) + " ly");
             previous = next;
         }
 
@@ -79,23 +73,16 @@ public class AnalyzeDistanceToFinalDestination extends BaseQueryAnalyzer impleme
         );
 
         StringBuilder sb = new StringBuilder();
-        if (straightLineDistance != totalDistance) {
-            sb.append("The straight-line distance is ");
-            sb.append(String.format("%.2f", straightLineDistance));
-            sb.append(" light years. ");
-        }
-        sb.append("The total route distance from ");
+        sb.append("The straight-line distance is ");
+        sb.append(String.format("%.2f", straightLineDistance));
+        sb.append(" light years, ");
+        sb.append(" The total route distance from ");
         sb.append(currentSystem.getName());
         sb.append(" to ");
         sb.append(last.getName());
         sb.append(" is ");
         sb.append(String.format("%.2f", totalDistance));
-        sb.append(" light years.");
-
-        // Warn about potential coordinate issue
-        if (Math.abs(totalDistance - 76.02) > 0.1) {
-            sb.append(" Warning: Total distance does not match expected 76.02 ly. Check route coordinates.");
-        }
+        sb.append(" light years, accounting for the actual jumps.");
 
         return sb.toString();
     }

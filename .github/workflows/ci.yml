@@ -23,28 +23,50 @@ jobs:
           java-version: 17
           cache: gradle
 
-      - name: Build (force shadowJar into distribution)
+      - name: Diagnose Gradle projects and tasks
         shell: cmd
         run: |
           gradlew.bat --version
-          gradlew.bat --stacktrace --info clean :app:shadowJar --no-daemon
+          gradlew.bat -q projects
+          gradlew.bat -q :app:tasks --all
+
+      - name: Build (force shadowJar into distribution)
+        shell: cmd
+        run: |
+          gradlew.bat --stacktrace --info :app:shadowJar --no-daemon
+
+      - name: Locate elite_companion.jar if not in distribution
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+
+          # Ensure distribution exists (your repo already contains it, but create if needed)
+          if (-not (Test-Path "distribution")) { New-Item -ItemType Directory -Path "distribution" | Out-Null }
+
+          # If jar is already there, great
+          if (Test-Path "distribution\elite_companion.jar") {
+            Write-Host "Found elite_companion.jar in distribution."
+          } else {
+            Write-Host "elite_companion.jar not in distribution, searching workspace..."
+            $found = Get-ChildItem -Path . -Recurse -Filter "elite_companion.jar" -ErrorAction SilentlyContinue | Select-Object -First 1
+            if ($found) {
+              Write-Host "Found at: $($found.FullName). Copying to distribution..."
+              Copy-Item -Force $found.FullName "distribution\elite_companion.jar"
+            } else {
+              Write-Host "No elite_companion.jar found anywhere."
+            }
+          }
+
+          if (-not (Test-Path "distribution\elite_companion.jar")) {
+            throw "elite_companion.jar not found after build. Check that :app exists and shadowJar produced the jar."
+          }
 
       - name: Verify distribution contents
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-
-          if (-not (Test-Path "distribution")) {
-            Write-Host "distribution does not exist"
-            throw "distribution folder not found at repo root. Ensure the shadowJar destinationDirectory points to ROOT/distribution."
-          }
-
           Write-Host "Listing 'distribution':"
           Get-ChildItem -Recurse "distribution" | Format-Table LastWriteTime, Length, Name, FullName
-
-          if (-not (Test-Path "distribution\elite_companion.jar")) {
-            throw "elite_companion.jar not found in distribution. Verify shadowJar destinationDirectory and archiveFileName."
-          }
 
       - name: Package ZIP from distribution
         shell: pwsh

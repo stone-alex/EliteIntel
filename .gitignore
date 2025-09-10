@@ -14,3 +14,9 @@ app/src/main/resources/elite-companion-xai-api-key.conf
 ./logs
 ./player.conf
 ./system.conf
+./.idea
+./build
+./.gradle
+./.gradle/file-system.probe
+./.gradle/buildOutputCleanup
+./.gradle/buildOutputCleanup/*

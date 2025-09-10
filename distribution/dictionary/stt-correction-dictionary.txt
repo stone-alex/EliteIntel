@@ -1,0 +1,7 @@
+###########################################################################
+# STT is a deff and dumb secretary. We have to correct it's mistakes.
+# List of words or phrases to be corrected
+# Add your own, if the Speech To Text can't understand you well.
+# Surround the key and value with quotes
+# Speech to Text corrections (format: "misheard"="corrected")
+# Example: "treat you"=tritium

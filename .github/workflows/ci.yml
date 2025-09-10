@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Oracle JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: oracle
+          java-version: 17
+          cache: gradle
+
+      - name: Build and test (Gradle)
+        shell: cmd
+        run: |
+          gradlew.bat --version
+          gradlew.bat build --no-daemon
+
+      - name: Package ZIP from distribution
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+
+          if (-not (Test-Path "distribution")) {
+            throw "distribution folder not found at repo root. Ensure the build writes outputs to ROOT/distribution."
+          }
+          if (-not (Test-Path "distribution\elite_companion.jar")) {
+            throw "elite_companion.jar not found in distribution. Verify your build output configuration."
+          }
+
+          $zipName = "elite-companion-${{ github.run_number }}.zip"
+          if (Test-Path $zipName) { Remove-Item $zipName -Force }
+
+          # Zip the CONTENTS of distribution (not the folder itself)
+          Compress-Archive -Path "distribution\*" -DestinationPath $zipName
+
+          Write-Host "Packaged $zipName"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-zip
+          path: elite-companion-*.zip
+          if-no-files-found: error

@@ -2,9 +2,10 @@
 
 ### NOTE: This is an early public beta release—expect bugs and ongoing improvements! ###
 
+
 **It's not a stable version yet. I'll be posting frequent updates on the GitHub releases page and announcing them in our
-Discord server: [discord.gg/3qAqBENsBm](https://discord.gg/3qAqBENsBm). Your feedback is crucial to making this better.
-**
+Discord server: [discord.gg/3qAqBENsBm](https://discord.gg/3qAqBENsBm).
+Your feedback is crucial to making this better.**
 
 ## Overview
 

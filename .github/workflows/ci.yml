@@ -23,11 +23,23 @@ jobs:
           java-version: 17
           cache: gradle
 
-      - name: Build and test (Gradle)
+      - name: Build (force shadowJar)
         shell: cmd
         run: |
           gradlew.bat --version
-          gradlew.bat build --no-daemon
+          gradlew.bat --stacktrace --info clean :app:shadowJar --no-daemon
+
+      - name: Verify outputs
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Write-Host "Listing app/build/libs:"
+          if (Test-Path "app\build\libs") { Get-ChildItem -Recurse "app\build\libs" | Format-List Name,FullName,LastWriteTime }
+          else { Write-Host "app\build\libs does not exist" }
+
+          Write-Host "Listing distribution:"
+          if (Test-Path "distribution") { Get-ChildItem -Recurse "distribution" | Format-List Name,FullName,LastWriteTime }
+          else { Write-Host "distribution does not exist" }
 
       - name: Package ZIP from distribution
         shell: pwsh
@@ -44,7 +56,6 @@ jobs:
           $zipName = "elite-companion-${{ github.run_number }}.zip"
           if (Test-Path $zipName) { Remove-Item $zipName -Force }
 
-          # Zip the CONTENTS of distribution (not the folder itself)
           Compress-Archive -Path "distribution\*" -DestinationPath $zipName
 
           Write-Host "Packaged $zipName"

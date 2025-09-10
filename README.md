@@ -7,6 +7,36 @@
 Discord server: [discord.gg/3qAqBENsBm](https://discord.gg/3qAqBENsBm).
 Your feedback is crucial to making this better.**
 
+## Installation & Setup
+
+1. **Requirements**: Minimum Java 17 or newer (developed and tested on 21). Grab Oracle Java
+   from [oracle.com/java/technologies/downloads/](https://www.oracle.com/java/technologies/downloads/). Verify with
+   `java --version` in your terminal—it should show something like Java 17+ or better.
+   **NOTE: The current long-term support (LTS) version is Java 21.**
+
+
+2. **API Keys**: Get STT/TTS keys from [Google Cloud Console](https://console.cloud.google.com/). For AI, snag a Grok
+   key from [xAI Console](https://console.x.ai/).
+
+
+3. **Download**: Grab the ZIP 👉👉👉[**Download The App Here**](https://github.com/stone-alex/elite-companion/releases) 👈👈👈
+
+
+4. **Extract and Run**: Unzip to any folder. Double-click `run.bat` to start, or use `debug.bat` from a terminal for
+   troubleshooting.- **NOTE**: If updating existing installation, unzip in temp folder and grab only the JAR file.
+   keep the configs and session files intact.
+
+
+5. **Configure**: In the app's UI ("System" tab), plug in your API keys. The audio settings and callibration will be
+   automatically set up once you turn on the services with valid keys.
+
+
+6. **Go Time**: Launch, start voice listening (will run mic calibration initially), and you're set.
+
+If you run into issues, hit us up on GitHub issues or 👉👉👉[**Discord**](https://discord.gg/3qAqBENsBm).👈👈👈
+Feedback and bug reports are super welcome!
+
+
 ## Overview
 
 Elite Companion is your AI-powered, TOS-compliant sidekick for *Elite Dangerous*.
@@ -190,32 +220,6 @@ chat. Here are some examples to give you an idea:
   Even off-topic stuff: "What's your favorite Motorhead album?" → Handles general chat or trivia. (mine like Ace of
   Spades)
 
-## Installation & Setup
-
-1. **Requirements**: Minimum Java 17 or newer (tested up to 21). Grab Oracle Java
-   from [oracle.com/java/technologies/downloads/](https://www.oracle.com/java/technologies/downloads/). Verify with
-   `java --version` in your terminal—it should show something like Java 17+ or better.
-
-
-2. **API Keys**: Get STT/TTS keys from [Google Cloud Console](https://console.cloud.google.com/). For AI, snag a Grok
-   key from [xAI Console](https://console.x.ai/).
-
-
-3. **Download**: Grab the ZIP from releases (on the right side of this GitHub page).
-
-
-4. **Extract and Run**: Unzip to any folder. Double-click `run.bat` to start, or use `debug.bat` from a terminal for
-   troubleshooting.- **NOTE**: If updating existing installation, unzip in temp folder and grab only the JAR file.
-   keep the configs and session files intact. 
-
-
-5. **Configure**: In the app's UI ("System" tab), plug in your API keys and tweak voice/profile settings.
-
-
-6. **Go Time**: Launch, start voice listening (will run mic calibration initially), and you're set.
-
-If you run into issues, hit us up on GitHub issues or Discord: [discord.gg/3qAqBENsBm](https://discord.gg/3qAqBENsBm).
-Feedback and bug reports are super welcome!
 
 ## Contributing
 

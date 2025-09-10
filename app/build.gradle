@@ -35,21 +35,21 @@ dependencies {
     implementation 'com.google.guava:guava:33.0.0-jre'
 
     // Logging
-    implementation 'ch.qos.logback:logback-classic:1.5.6'
+    implementation 'ch.qos.logback:logback-classic:1.5.13'
     implementation 'org.slf4j:slf4j-api:2.0.16'
 
     // Reflections
     implementation 'org.reflections:reflections:0.9.12'
 
     //Utils
-    implementation 'org.apache.commons:commons-lang3:3.12.0'
+    implementation 'org.apache.commons:commons-lang3:3.18.0'
 }
 
 
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17) // Enforce JDK 17
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 

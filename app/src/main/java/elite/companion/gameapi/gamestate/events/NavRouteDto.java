@@ -10,9 +10,9 @@ public class NavRouteDto extends BaseJsonDto implements ToJsonConvertible {
     private String starClass;
     private String name;
     private boolean isScoopable;
-    float X;
-    float  Y;
-    float  Z;
+    double X;
+    double  Y;
+    double  Z;
 
 
     public int getLeg() {
@@ -59,27 +59,27 @@ public class NavRouteDto extends BaseJsonDto implements ToJsonConvertible {
         return GsonFactory.getGson().toJson(this);
     }
 
-    public float getX() {
+    public double getX() {
         return X;
     }
 
-    public void setX(float x) {
+    public void setX(double x) {
         X = x;
     }
 
-    public float getY() {
+    public double getY() {
         return Y;
     }
 
-    public void setY(float y) {
+    public void setY(double y) {
         Y = y;
     }
 
-    public float getZ() {
+    public double getZ() {
         return Z;
     }
 
-    public void setZ(float z) {
+    public void setZ(double z) {
         Z = z;
     }
 }

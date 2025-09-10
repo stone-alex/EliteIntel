@@ -121,11 +121,6 @@ public class ConfigManager {
         }
     }
 
-
-    private void saveSystemConfig() {
-        writeConfigFile(SYSTEM_CONFIG_FILENAME, readSystemConfig(), true);
-    }
-
     private void createDefaultConfigIfNotExists(String filename, Map<String, String> defaultConfig) {
         if (filename == null) {
             log.error("Filename is null, cannot create or update config file");

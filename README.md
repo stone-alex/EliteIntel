@@ -234,3 +234,7 @@ reflection) and principles like DRY and SRP. All PRs go through review.
 Released under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0).
 See [creativecommons.org/licenses/by-nc-sa/4.0/](https://creativecommons.org/licenses/by-nc-sa/4.0/) for details. Share
 and adapt, but give credit, don't sell it, and keep the same license.
+
+------
+
+Developed by  (CMDR PRINCE OF KRONDOR)

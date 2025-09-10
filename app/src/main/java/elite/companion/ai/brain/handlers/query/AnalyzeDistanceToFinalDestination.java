@@ -3,6 +3,7 @@ package elite.companion.ai.brain.handlers.query;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import elite.companion.gameapi.gamestate.events.NavRouteDto;
+import elite.companion.gameapi.journal.events.dto.LocationDto;
 import elite.companion.session.PlayerSession;
 import elite.companion.util.DistanceCalculator;
 import elite.companion.util.json.GsonFactory;
@@ -19,15 +20,29 @@ public class AnalyzeDistanceToFinalDestination extends BaseQueryAnalyzer impleme
     @Override
     public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         PlayerSession playerSession = PlayerSession.getInstance();
+        LocationDto here = playerSession.getCurrentLocation();
         Map<String, NavRouteDto> route = playerSession.getRoute();
 
-        // It is a LinkedHashMap, but it is serialized and deserialized via Gson which defaults to -
-        // LinkedTreeMap, which is key-sorted. We can't guarantee the order of the route,
-        // so we sort it by 'leg'
+        if (here == null) {
+            return analyzeData(GSON.toJson("Current location data unavailable."), originalUserInput);
+        }
+        if (route == null || route.isEmpty()) {
+            return analyzeData(GSON.toJson("No route data available."), originalUserInput);
+        }
+
+        // Create NavRouteDto for current location
+        NavRouteDto currentLocation = new NavRouteDto();
+        currentLocation.setLeg(-1); // Distinct from route legs
+        currentLocation.setName(here.getStarName());
+        currentLocation.setX(here.getX());
+        currentLocation.setY(here.getY());
+        currentLocation.setZ(here.getZ());
+
+        // Sort route by leg
         List<NavRouteDto> orderedRoute = new ArrayList<>(route.values());
         orderedRoute.sort(Comparator.comparingInt(NavRouteDto::getLeg));
 
-        String distanceData = getDistanceDataForAnnouncement(orderedRoute);
+        String distanceData = getDistanceDataForAnnouncement(currentLocation, orderedRoute);
 
         // Direct vocalization
         // EventBusManager.publish(new VoiceProcessEvent(distanceData));
@@ -36,31 +51,51 @@ public class AnalyzeDistanceToFinalDestination extends BaseQueryAnalyzer impleme
         return analyzeData(GSON.toJson(distanceData), originalUserInput);
     }
 
-    private static String getDistanceDataForAnnouncement(List<NavRouteDto> route) {
-        if (route.size() < 2) {
-            return "Insufficient route data to calculate distance.";
+    private static String getDistanceDataForAnnouncement(NavRouteDto currentSystem, List<NavRouteDto> route) {
+        if (route.isEmpty()) {
+            return "No route data available.";
         }
 
         double totalDistance = 0.0;
-        for (int i = 0; i < route.size() - 1; i++) {
-            NavRouteDto current = route.get(i);
-            NavRouteDto next = route.get(i + 1);
-            totalDistance += DistanceCalculator.calculateDistance(
-                    current.getX(), current.getY(), current.getZ(),
+        NavRouteDto previous = currentSystem;
+
+        // Sum distances for all legs, starting from current system
+        for (NavRouteDto next : route) {
+            double legDistance = DistanceCalculator.calculateDistance(
+                    previous.getX(), previous.getY(), previous.getZ(),
                     next.getX(), next.getY(), next.getZ()
             );
+            totalDistance += legDistance;
+            // Log for debugging (use your logging utility)
+            // Logger.log("Leg from " + previous.getName() + " to " + next.getName() + ": " + String.format("%.2f", legDistance) + " ly");
+            previous = next;
         }
 
-        NavRouteDto first = route.get(0);
+        // Straight-line distance from current to final system
         NavRouteDto last = route.get(route.size() - 1);
+        double straightLineDistance = DistanceCalculator.calculateDistance(
+                currentSystem.getX(), currentSystem.getY(), currentSystem.getZ(),
+                last.getX(), last.getY(), last.getZ()
+        );
+
         StringBuilder sb = new StringBuilder();
+        if (straightLineDistance != totalDistance) {
+            sb.append("The straight-line distance is ");
+            sb.append(String.format("%.2f", straightLineDistance));
+            sb.append(" light years. ");
+        }
         sb.append("The total route distance from ");
-        sb.append(first.getName());
+        sb.append(currentSystem.getName());
         sb.append(" to ");
         sb.append(last.getName());
         sb.append(" is ");
         sb.append(String.format("%.2f", totalDistance));
         sb.append(" light years.");
+
+        // Warn about potential coordinate issue
+        if (Math.abs(totalDistance - 76.02) > 0.1) {
+            sb.append(" Warning: Total distance does not match expected 76.02 ly. Check route coordinates.");
+        }
 
         return sb.toString();
     }

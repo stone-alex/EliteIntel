@@ -5,10 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.gamestate.events.NavRouteDto;
 import elite.companion.gameapi.journal.events.*;
-import elite.companion.gameapi.journal.events.dto.MissionDto;
-import elite.companion.gameapi.journal.events.dto.MissionKillDto;
-import elite.companion.gameapi.journal.events.dto.RankAndProgressDto;
-import elite.companion.gameapi.journal.events.dto.StellarObjectDto;
+import elite.companion.gameapi.journal.events.dto.*;
 import elite.companion.util.json.GsonFactory;
 
 import java.util.*;
@@ -157,7 +154,6 @@ public class PlayerSession {
     public static final String BOUNTIES = "bounties";
     public static final String REPUTATION = "reputation";
     public static final String CARRIER_LOCATION = "carrier_location";
-    public static final String CURRENT_LOCATION = "current_location";
     public static final String PROFILE = "profile";
     public static final String PERSONALITY = "personality";
     public static final String JUMPING_TO = "jumping_to_starsystem";
@@ -168,6 +164,8 @@ public class PlayerSession {
     public static final String LOCAL_OUTFITING_JSON = "local_outfiting_json";
     public static final String LOCAL_SHIP_YARD_JSON = "local_shipyard_json";
     public static final String LANDED_ON_BODY = "landed_on_body";
+
+    private static final String CURRENT_LOCATION = "current_location";
     private static final String FRIENDS_STATUS = "friends_status";
 
     public static final String SHIP_FUEL_LEVEL = "ship_fuel_level";
@@ -232,6 +230,8 @@ public class PlayerSession {
     private final Set<String> targetFactions = new LinkedHashSet<>();
     private long bountyCollectedThisSession = 0;
     private RankAndProgressDto rankAndProgressDto = new RankAndProgressDto();
+    private LocationDto currentLocation = new LocationDto();
+
 
     SessionPersistence persistence = new SessionPersistence();
 
@@ -273,6 +273,7 @@ public class PlayerSession {
             stellarObjects.putAll((Map<String, StellarObjectDto>) v);
         }, new TypeToken<Map<String, StellarObjectDto>>() {
         }.getType());
+        persistence.registerField(CURRENT_LOCATION, this::getCurrentLocation, this::setCurrentLocation, LocationDto.class);
 
         persistence.registerField("bountyCollectedThisSession", this::getBountyCollectedThisSession, this::setBountyCollectedThisSession, Long.class);
         persistence.registerField("rankAndProgressDto", this::getRankAndProgressDto, this::setRankAndProgressDto, RankAndProgressDto.class);
@@ -574,5 +575,14 @@ public class PlayerSession {
         state.remove(BOUNTIES);
         state.remove(TOTAL_BOUNTY_PROFIT);
         state.remove(TOTAL_BOUNTY_CLAIMED);
+    }
+
+    public LocationDto getCurrentLocation() {
+        return currentLocation;
+    }
+
+    public void setCurrentLocation(LocationDto currentLocation) {
+        this.currentLocation = currentLocation;
+        saveSession();
     }
 }

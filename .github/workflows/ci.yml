@@ -3,6 +3,7 @@ name: CI
 on:
   push:
     branches: [ "main" ]
+    tags: [ "v*" ]
   pull_request:
     branches: [ "main" ]
 
@@ -54,3 +55,25 @@ jobs:
           name: windows-zip
           path: elite-companion-*.zip
           if-no-files-found: error
+
+  publish-release:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: build-windows
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download packaged ZIP
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-zip
+
+      - name: Create GitHub Release and upload asset
+        uses: softprops/action-gh-release@v2
+        with:
+          files: elite-companion-*.zip
+          name: Release ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

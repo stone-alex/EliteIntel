@@ -23,41 +23,36 @@ jobs:
           java-version: 17
           cache: gradle
 
-      - name: Build (force shadowJar)
+      - name: Build (force shadowJar into distribution)
         shell: cmd
         run: |
           gradlew.bat --version
           gradlew.bat --stacktrace --info clean :app:shadowJar --no-daemon
 
-      - name: Verify outputs
-        shell: pwsh
-        run: |
-          $ErrorActionPreference = 'Stop'
-          Write-Host "Listing app/build/libs:"
-          if (Test-Path "app\build\libs") { Get-ChildItem -Recurse "app\build\libs" | Format-List Name,FullName,LastWriteTime }
-          else { Write-Host "app\build\libs does not exist" }
-
-          Write-Host "Listing distribution:"
-          if (Test-Path "distribution") { Get-ChildItem -Recurse "distribution" | Format-List Name,FullName,LastWriteTime }
-          else { Write-Host "distribution does not exist" }
-
-      - name: Package ZIP from distribution
+      - name: Verify distribution contents
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
 
           if (-not (Test-Path "distribution")) {
-            throw "distribution folder not found at repo root. Ensure the build writes outputs to ROOT/distribution."
-          }
-          if (-not (Test-Path "distribution\elite_companion.jar")) {
-            throw "elite_companion.jar not found in distribution. Verify your build output configuration."
+            Write-Host "distribution does not exist"
+            throw "distribution folder not found at repo root. Ensure the shadowJar destinationDirectory points to ROOT/distribution."
           }
 
+          Write-Host "Listing 'distribution':"
+          Get-ChildItem -Recurse "distribution" | Format-Table LastWriteTime, Length, Name, FullName
+
+          if (-not (Test-Path "distribution\elite_companion.jar")) {
+            throw "elite_companion.jar not found in distribution. Verify shadowJar destinationDirectory and archiveFileName."
+          }
+
+      - name: Package ZIP from distribution
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
           $zipName = "elite-companion-${{ github.run_number }}.zip"
           if (Test-Path $zipName) { Remove-Item $zipName -Force }
-
           Compress-Archive -Path "distribution\*" -DestinationPath $zipName
-
           Write-Host "Packaged $zipName"
 
       - name: Upload artifact

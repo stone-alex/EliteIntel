@@ -9,6 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings("unused") //registered in SubscriberRegistration
 public class RoutePlottedSubscriber {
 
     @Subscribe
@@ -25,6 +26,9 @@ public class RoutePlottedSubscriber {
                 dto.setRemainingJumps(totalJumps - leg - 1);
                 dto.setStarClass(entry.getStarClass());
                 dto.setName(entry.getStarSystem());
+                dto.setX(entry.getStarPos()[0]);
+                dto.setY(entry.getStarPos()[1]);
+                dto.setZ(entry.getStarPos()[2]);
                 dto.setScoopable("KGBFOAM".contains(entry.getStarClass().toUpperCase()));
                 routeMap.put(dto.getName(), dto);
             }

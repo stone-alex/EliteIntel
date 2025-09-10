@@ -3,9 +3,15 @@ package elite.companion.gameapi.journal.subscribers;
 import com.google.common.eventbus.Subscribe;
 import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.SensorDataEvent;
+import elite.companion.gameapi.gamestate.events.NavRouteDto;
 import elite.companion.gameapi.journal.events.StartJumpEvent;
 import elite.companion.session.PlayerSession;
 import elite.companion.ui.event.AppLogEvent;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("unused")
 public class StartJumpSubscriber {
@@ -38,6 +44,8 @@ public class StartJumpSubscriber {
         playerSession.clearFssSignals();
         playerSession.clearStellarObjects();
         playerSession.clearShipScans();
+
+        playerSession.removeNavPoint(String.valueOf(playerSession.get(PlayerSession.CURRENT_SYSTEM_NAME)));
     }
 
     private String isFuelStarClause(String starClass) {

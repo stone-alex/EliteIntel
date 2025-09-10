@@ -23,8 +23,6 @@ public class FSDJumpSubscriber {
 
         String currentStarSystem = event.getStarSystem();
 
-        boolean roueSet = !playerSession.getRoute().isEmpty();
-        playerSession.removeNavPoint(currentStarSystem);
         String finalDestination = String.valueOf(playerSession.get(PlayerSession.FINAL_DESTINATION));
         String arrivedAt = String.valueOf(playerSession.get(PlayerSession.JUMPING_TO));
         playerSession.put(PlayerSession.CURRENT_SYSTEM_NAME, arrivedAt);
@@ -33,13 +31,18 @@ public class FSDJumpSubscriber {
         sb.append(" Hyperspace Jump Successful: ");
         sb.append(" We are in: ").append(currentStarSystem).append(" system, ");
         StarSystemDto systemDto = EdsmApiClient.searchStarSystem(currentStarSystem, 1);
+
         if (systemDto.getData() != null) {
-            if (systemDto.getData().getInformation().getAllegiance() != null)
+            if (systemDto.getData().getInformation().getAllegiance() != null) {
                 sb.append(" Allegiance: ").append(systemDto.getData().getInformation().getAllegiance());
-            if (systemDto.getData().getInformation().getSecurity() != null)
+            }
+            if (systemDto.getData().getInformation().getSecurity() != null) {
                 sb.append(" Security: ").append(systemDto.getData().getInformation().getSecurity());
+            }
             sb.append(". ");
         }
+
+        boolean roueSet = !playerSession.getRoute().isEmpty();
 
         if (finalDestination != null && finalDestination.equalsIgnoreCase(currentStarSystem)) {
             sb.append(" Arrived at final destination: ").append(finalDestination);

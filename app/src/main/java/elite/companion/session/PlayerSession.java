@@ -221,6 +221,7 @@ public class PlayerSession {
     public static final String CARRIER_STATS = "carrier_stats";
 
     private static final PlayerSession INSTANCE = new PlayerSession();
+    public static final String ROUTE_MAP = "routeMap";
     private final Map<String, Object> state = new HashMap<>();
     private final Map<String, String> shipScans = new HashMap<>();
     private final Map<Long, MissionDto> missions = new LinkedHashMap<>();
@@ -247,7 +248,7 @@ public class PlayerSession {
             missions.putAll((Map<Long, MissionDto>) v);
         }, new TypeToken<Map<Long, MissionDto>>() {
         }.getType());
-        persistence.registerField("routeMap", this::getRoute, v -> {
+        persistence.registerField(ROUTE_MAP, this::getRoute, v -> {
             routeMap.clear();
             routeMap.putAll((Map<String, NavRouteDto>) v);
         }, new TypeToken<Map<String, NavRouteDto>>() {

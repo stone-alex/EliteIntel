@@ -55,7 +55,7 @@ public class AnalyzeDataHandler extends BaseQueryAnalyzer implements QueryHandle
                 Object cargo = playerSession.get(PlayerSession.SHIP_CARGO);
                 yield cargo != null ? GSON.toJson(cargo) : null;
             }
-            case CHECK_LEGAL_STATUS -> {
+            case ANALYZE_CURRENT_STATUS -> {
                 Object status = playerSession.get(PlayerSession.CURRENT_STATUS);
                 yield status != null ? GSON.toJson(status) : null;
             }

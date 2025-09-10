@@ -4,6 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import elite.companion.gameapi.gamestate.events.GameEvents;
 import elite.companion.session.PlayerSession;
 
+@SuppressWarnings("unused")//registered in SubscriberRegistration
 public class CargoChangedEventSubscriber {
 
     @Subscribe

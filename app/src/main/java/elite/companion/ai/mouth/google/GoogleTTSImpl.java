@@ -322,62 +322,6 @@ public class GoogleTTSImpl implements MouthInterface {
         }
     }
 
-    /*
-    private void processVoiceRequest(String text, String voiceName, double speechRate) {
-        if (text == null || text.isEmpty()) {
-            return;
-        }
-        log.info("About to speak with voice {}: {}", voiceName, text);
-        try {
-            VoiceSelectionParams voice = googleVoiceProvider.getVoiceParams(voiceName);
-            if (voice == null) {
-                log.warn("No voice found for name: {}, using default", voiceName);
-                voice = googleVoiceProvider.getVoiceParams(AiVoices.JENNIFER.getName());
-            }
-
-            SynthesisInput input = SynthesisInput.newBuilder().setText(text).build();
-            AudioConfig config = AudioConfig.newBuilder()
-                    .setAudioEncoding(AudioEncoding.LINEAR16)
-                    .setSpeakingRate(speechRate)
-                    .setSampleRateHertz(24000)
-                    .build();
-            SynthesizeSpeechResponse response = textToSpeechClient.synthesizeSpeech(input, voice, config);
-            byte[] audioData = response.getAudioContent().toByteArray();
-
-            // Ensure 16-bit alignment (avoid partial sample pop)
-            if ((audioData.length & 1) != 0) {
-                byte[] even = new byte[audioData.length - 1];
-                System.arraycopy(audioData, 0, even, 0, even.length);
-                audioData = even;
-            }
-
-            // Apply a short linear fade-in and fade out (~20 ms) to avoid initial discontinuity
-            applyFade(audioData, 20, true);
-            applyFade(audioData, 20, false);
-
-            // Play audio directly using Java Sound
-            AudioFormat format = new AudioFormat(24000, 16, 1, true, false);
-            DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
-            try (SourceDataLine line = (SourceDataLine) AudioSystem.getLine(info)) {
-                int bufferBytes = (int) (format.getFrameSize() * format.getSampleRate() / 10); // ~100ms
-                line.open(format, bufferBytes);
-                int silenceFrames = (int) (format.getSampleRate() / 50); // 20 ms
-                byte[] silenceBuffer = new byte[silenceFrames * format.getFrameSize()];
-                line.write(silenceBuffer, 0, silenceBuffer.length); // Prime the line
-                line.start();
-                line.write(audioData, 0, audioData.length);
-                line.drain();
-                line.stop();
-            }
-            log.info("Spoke with voice {}: {}", voiceName, text);
-        } catch (Exception e) {
-            log.error("Text-to-speech error: {}", e.getMessage(), e);
-        }
-    }
-    */
-
-
-
     /**
      * Applies a fade-in or fade-out effect to the given audio data.
      * This method modifies the raw audio data in place to gradually change the volume

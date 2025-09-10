@@ -7,6 +7,8 @@
 Discord server: [discord.gg/3qAqBENsBm](https://discord.gg/3qAqBENsBm).
 Your feedback is crucial to making this better.**
 
+![app](img-4-readme/ec.png "")
+
 ## Installation & Setup
 
 1. **Requirements**: Minimum Java 17 or newer (developed and tested on 21). Grab Oracle Java

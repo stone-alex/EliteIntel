@@ -13,10 +13,10 @@ public class MissionAcceptedHandler {
     @Subscribe
     public void onMissionAcceptedEvent(MissionAcceptedEvent event) {
 
-        MissionDto mission = new MissionDto(event);
         PlayerSession playerSession = PlayerSession.getInstance();
-        playerSession.addMission(mission);
-        EventBusManager.publish(new SensorDataEvent("Mission Accepted: " + mission.toJson()));
+        playerSession.addTargetFaction(event.getFaction());
+        playerSession.addMission(new MissionDto(event));
+        //EventBusManager.publish(new SensorDataEvent("Mission Accepted: " + mission.toJson()));
     }
 }
 

@@ -17,7 +17,7 @@ public enum QueryActions {
     QUERY_ANALYZE_ON_BOARD_CARGO("query_analyze_on_board_cargo", "Analyzes cargo hold contents. ", AnalyzeDataHandler.class, false),
     QUERY_ANALYZE_ROUTE("query_analyze_route", "Analyze our plotted route. ", AnalyzeRouterHandler.class, false),
     QUERY_CARRIER_STATS("query_carrier_stats", "Summarize carrier information. ", AnalyzeDataHandler.class, false),
-    QUERY_PIRATE_MISSION_KILLS_REMAINING("query_pirate_mission_kills_remaining", "Summarize the state of the missions. ", PirateMissionAnalyzer.class, true),
+    QUERY_PIRATE_MISSION_KILLS_REMAINING("query_pirate_mission_kills_remaining", "Summarize the state of the missions. Mission kills stack across factions ", PirateMissionAnalyzer.class, true),
     QUERY_PIRATE_MISSION_PROFIT("query_pirate_mission_profit", "Summarize the potential profit from currently active missions. ", PirateMissionAnalyzer.class, true),
     QUERY_PIRATE_MISSION_STATUS("query_pirate_mission_status", "Handles summarize current progression of missions. ", PirateMissionAnalyzer.class, true),
     QUERY_NEXT_STAR_SCOOPABLE("query_next_star_scoopable", "Check if we can get fuel at the next star. ", AnalyzeDataHandler.class, false),

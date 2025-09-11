@@ -54,6 +54,6 @@ public class BountyEventSubscriber {
         playerSession.addBountyReward(event.getTotalReward());
 
         sb.append("Total bounties collected: ").append(playerSession.getBountyCollectedThisSession()).append(" credits. ");
-        //EventBusManager.publish(new SensorDataEvent(sb.toString()));
+        EventBusManager.publish(new SensorDataEvent(sb.toString()));
     }
 }

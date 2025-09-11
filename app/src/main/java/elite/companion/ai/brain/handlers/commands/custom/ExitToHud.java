@@ -30,6 +30,7 @@ public class ExitToHud extends CustomCommandOperator implements CommandHandler {
             String headLookReset = GameCommands.GameCommand.HEAD_LOOK_RESET.getGameBinding();
             String quitFFS = GameCommands.GameCommand.EXPLORATION_FSSQUIT.getGameBinding();
             //back out of nested menus and sub windows
+            Thread.sleep(DELAY);
             operateKeyboard(quitFFS, 0);
             Thread.sleep(DELAY);
             operateKeyboard(exit, 0);

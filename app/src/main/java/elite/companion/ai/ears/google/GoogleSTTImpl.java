@@ -21,8 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.sound.sampled.*;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -400,8 +399,10 @@ public class GoogleSTTImpl implements EarsInterface {
     }
 
     private StreamingRecognitionConfig getStreamingRecognitionConfig() {
+        Map<String, String> corrections = DaftSecretarySanitizer.getInstance().loadCorrections();
+        Set<String> correctionSet = new HashSet<>(corrections.values());
         SpeechContext commandContext = SpeechContext.newBuilder()
-                .addAllPhrases(AiRequestHints.COMMON_PHRASES)
+                .addAllPhrases(correctionSet)
                 .setBoost(35.0f)
                 .build();
 
@@ -412,7 +413,7 @@ public class GoogleSTTImpl implements EarsInterface {
                 .setLanguageCode("en-US")
                 .setEnableAutomaticPunctuation(true)
                 .addSpeechContexts(commandContext)
-                .setModel("phone_call")
+                .setModel("latest_long")
                 .setEnableWordTimeOffsets(true)
                 .build();
 

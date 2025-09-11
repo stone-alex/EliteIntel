@@ -27,7 +27,6 @@ public class MissionCompletedSubscriber {
         if (countRemainingMissionsAgainstFaction == 0) {
             playerSession.getTargetFactions().remove(targetFaction);
             playerSession.removeMission(event.getMissionID());
-            playerSession.saveSession();
         }
     }
 }

@@ -89,7 +89,7 @@ public class DaftSecretarySanitizer {
     }
 
 
-    private Map<String, String> loadCorrections() {
+    public Map<String, String> loadCorrections() {
         Map<String, String> map = new HashMap<>();
         File file = ensureCorrectionsFileExists();
         if (file != null && file.exists()) {

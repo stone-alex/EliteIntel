@@ -24,8 +24,8 @@ public class PirateMissionAnalyzer extends BaseQueryAnalyzer implements QueryHan
         Set<BountyDto> bounties = session.getBounties();
 
         Map<QueryActions, Supplier<String>> queryHandlers = new HashMap<>();
-        queryHandlers.put(QueryActions.QUERY_MISSION_KILLS_REMAINING, () -> computeKillsRemaining(missions, bounties));
-        queryHandlers.put(QueryActions.QUERY_MISSION_PROFIT, () -> computeMissionProfit(missions, bounties));
+        queryHandlers.put(QueryActions.QUERY_PIRATE_MISSION_KILLS_REMAINING, () -> computeKillsRemaining(missions, bounties));
+        queryHandlers.put(QueryActions.QUERY_PIRATE_MISSION_PROFIT, () -> computeMissionProfit(missions, bounties));
 
         return queryHandlers.getOrDefault(query, () -> "no data available").get();
     }

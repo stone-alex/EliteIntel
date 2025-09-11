@@ -10,6 +10,9 @@ public class LocationDto implements ToJsonConvertible {
     private double Z;
 
     private String starName;
+    private String allegiance;
+    private String security;
+    private String government;
 
     public double getX() {
         return X;
@@ -45,5 +48,29 @@ public class LocationDto implements ToJsonConvertible {
 
     @Override public String toJson() {
         return GsonFactory.getGson().toJson(this);
+    }
+
+    public void setAllegiance(String allegiance) {
+        this.allegiance = allegiance;
+    }
+
+    public String getAllegiance() {
+        return allegiance;
+    }
+
+    public void setSecurity(String security) {
+        this.security = security;
+    }
+
+    public String getSecurity() {
+        return security;
+    }
+
+    public void setGovernment(String government) {
+        this.government = government;
+    }
+
+    public String getGovernment() {
+        return government;
     }
 }

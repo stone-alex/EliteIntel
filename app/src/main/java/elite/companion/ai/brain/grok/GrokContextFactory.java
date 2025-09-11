@@ -165,8 +165,12 @@ public class GrokContextFactory implements AiContextFactory {
         String playerHonorific = Ranks.getPlayerHonorific();
         String currentShip = String.valueOf(playerSession.get(PlayerSession.CURRENT_SHIP));
         String missionStatement = String.valueOf(playerSession.get(PlayerSession.PLAYER_MISSION_STATEMENT));
-        String carrierName = String.valueOf(playerSession.get(PlayerSession.CARRIER_NAME));
-        String carrierCallSign = String.valueOf(playerSession.get(PlayerSession.CARRIER_CALLSIGN));
+        String carrierName = null;
+        String carrierCallSign = null;
+        if(playerSession.getCarrierData() != null) {
+            carrierName = String.valueOf(playerSession.getCarrierData().getCarrierName());
+            carrierCallSign = String.valueOf(playerSession.getCarrierData().getCallSign());
+        }
 
         appendContext(sb,
                 Objects.equals(currentShip, "null") ? "ship" : currentShip,
@@ -175,8 +179,8 @@ public class GrokContextFactory implements AiContextFactory {
                 Objects.equals(playerHonorific, "null") ? "Commander" : playerHonorific,
                 Objects.equals(playerTitle, "null") ? "Commander" : playerTitle,
                 Objects.equals(missionStatement, "null") ? "" : missionStatement,
-                Objects.equals(carrierName, "null") ? "" : carrierName,
-                Objects.equals(carrierCallSign, "null") ? "" : carrierCallSign
+                Objects.equals(carrierName, null) ? "" : carrierName,
+                Objects.equals(carrierCallSign, null) ? "" : carrierCallSign
         );
     }
 
@@ -239,7 +243,7 @@ public class GrokContextFactory implements AiContextFactory {
                 "    - Set 'expect_followup' to true if the response poses a question or invites further conversation; otherwise, false.\n");
         sb.append("Map colloquial terms to commands: 'feds', 'yanks', or 'federation space' to 'FEDERATION', 'imperials', 'imps', or 'empire' to 'IMPERIAL', 'alliance space' or 'allies' to 'ALLIANCE' for set_cadence. ");
         sb.append("Infer command intent from context: phrases like 'act like', 'talk like', 'blend in with', or 'sound like' followed by a faction should trigger '" + SET_PERSONALITY.getAction() + "' with the corresponding cadence value, using current system allegiance if ambiguous. ");
-        sb.append("For navigation commands (e.g., 'jump', 'enter hyperspace', 'go to next system'), map to '" + ENTER_SUPERCRUISE.getUserCommand() + "'. 'Stop', 'cut engines' map to speed commands " + SET_SPEED_ZERO.getUserCommand() + ". 'Activate', 'toggle', 'left', 'right', 'up', 'down' to UI commands like" + UI_ACTIVATE.getUserCommand() + ", " + UI_TOGGLE.getUserCommand() + ". ");
+        sb.append("For navigation commands (e.g., 'jump', 'enter hyperspace', 'go to next system'), map to '" + JUMP_TO_HYPERSPACE.getUserCommand() + "'. 'Stop', 'cut engines' map to speed commands " + SET_SPEED_ZERO.getUserCommand() + ". 'Activate', 'toggle', 'left', 'right', 'up', 'down', 'close' to UI commands like" + UI_ACTIVATE.getUserCommand() + ", " + UI_TOGGLE.getUserCommand() + ". ");
         sb.append("Map phrases like 'what is your name', 'who are you', 'what’s your designation', 'what is your voice', or 'tell me your name' to 'query' type with action '" + WHAT_IS_YOUR_DESIGNATION.getAction() + "'. ");
         sb.append("If the input starts with 'query ', classify as 'query' and use the rest of the input as the action (e.g., 'query what is your designation' -> action '" + WHAT_IS_YOUR_DESIGNATION.getAction() + "'). ");
         sb.append("Examples:\n" +

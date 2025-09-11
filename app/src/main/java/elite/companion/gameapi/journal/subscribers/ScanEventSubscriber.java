@@ -55,7 +55,7 @@ public class ScanEventSubscriber {
 
         } else if ("AutoScan".equalsIgnoreCase(event.getScanType())) {
 
-            boolean isStar = event.getDistanceFromArrivalLS() == 0;
+            boolean isStar = event.getDistanceFromArrivalLS() == 0 && event.getSurfaceTemperature() > 2000;
             if (!wasDiscovered) {
                 EventBusManager.publish(new SensorDataEvent("New Discovery: " + event.getBodyName()));
             }

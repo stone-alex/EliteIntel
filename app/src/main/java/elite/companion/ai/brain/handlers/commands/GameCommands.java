@@ -112,7 +112,7 @@ public class GameCommands {
 
         //excluded, but needed for bindings. used in custom handler
         //these are special cases for excluded commands not sent to Grok, handled via a custom action,
-        EXIT_KEY("ui_exit", "UI_Back", GenericGameController.class),
+        EXIT_KEY("ui_close", "UI_Back", GenericGameController.class),
         INCREASE_ENGINES_POWER("_", "IncreaseEnginesPower", GenericGameController.class),
         INCREASE_SYSTEMS_POWER("_", "IncreaseSystemsPower", GenericGameController.class),
         INCREASE_SHIELDS_POWER("_", "IncreaseSystemsPower", GenericGameController.class),

@@ -153,11 +153,10 @@ public class PlayerSession {
     public static final String MISSIONS = "player_missions";
     public static final String BOUNTIES = "bounties";
     public static final String REPUTATION = "reputation";
-    public static final String CARRIER_LOCATION = "carrier_location";
     public static final String PROFILE = "profile";
     public static final String PERSONALITY = "personality";
     public static final String JUMPING_TO = "jumping_to_starsystem";
-    public static final String MATERIALS = "materials";
+    public static final String MATERIAL = "materials";
     public static final String ENGINEER_PROGRESS = "engineer_progress";
     public static final String STATION_DATA = "station_data";
     public static final String LOCAL_MARKET_JSON = "local_market_json";
@@ -187,8 +186,6 @@ public class PlayerSession {
     public static final String PLAYER_TITLE = "player_title";
     public static final String PLAYER_HIGHEST_MILITARY_RANK = "player_highest_military_rank";
     public static final String LAST_SCAN = "last_scan";
-    public static final String CARRIER_BALANCE = "carrier_balance";
-    public static final String CARRIER_RESERVE = "carrier_reserve";
     public static final String PLAYER_NAME = "player_name";
     public static final String PLAYER_MISSION_STATEMENT = "player_mission_statement";
     public static final String CURRENT_SHIP = "current_ship";
@@ -196,27 +193,8 @@ public class PlayerSession {
     public static final String CARRIER_FUEL_LEVEL = "carrier_fuel_level";
     public static final String CARGO_SPACE_USED = "cargo_space_used";
     public static final String PERSONAL_CREDITS_AVAILABLE = "personal_credits_available";
-    public static final String CARRIER_CALLSIGN = "carrier_callsign";
-    public static final String CARRIER_NAME = "carrier_name";
-    public static final String CARRIER_TYPE = "carrier_type";
-    public static final String CARRIER_DOCKING_ACCESS = "carrier_docking_access";
-    public static final String CARRIER_CURRENT_JUMP_RANGE = "carrier_current_jump_range";
-    public static final String CARRIER_MAX_JUMP_RANGE = "carrier_max_jump_range";
-    public static final String CARRIER_ALLOWS_NOTORIOUS_ACCESS = "carrier_allows_notorious_access";
-    public static final String CARRIER_PENDING_DECOMMISSION = "carrier_pending_decommission";
-    public static final String CARRIER_TOTAL_CARGO_SPACE_USED = "carrier_total_cargo_space_used";
-    public static final String CARRIER_CARGO_SPACE_RESERVED = "carrier_cargo_space_reserved";
-    public static final String CARRIER_SHIP_PACKS = "carrier_ship_packs";
-    public static final String CARRIER_MODULE_PACKS = "carrier_module_packs";
-    public static final String CARRIER_FREE_SPACE = "carrier_free_space";
-    public static final String CARRIER_TOTAL_CAPACITY = "carrier_total_capacity";
-    public static final String CARRIER_ALLOCATED_MARKET_BALANCE = "carrier_allocated_market_balance";
-    public static final String CARRIER_PIONEER_SUPPLY_TAX = "carrier_pioneer_supply_tax";
-    public static final String CARRIER_SHIPYARD_SUPPLY_TAX = "carrier_shipyard_supply_tax";
-    public static final String CARRIER_REARM_SUPPLY_TAX = "carrier_rearm_supply_tax";
-    public static final String CARRIER_REFUEL_SUPPLY_TAX = "carrier_refuel_supply_tax";
-    public static final String CARRIER_REPAIR_SUPPLY_TAX = "carrier_repair_supply_tax";
-    public static final String CARRIER_STATS = "carrier_stats";
+
+    private static final String CARRIER_STATS = "carrier_stats";
 
     private static final PlayerSession INSTANCE = new PlayerSession();
     public static final String ROUTE_MAP = "routeMap";
@@ -231,6 +209,7 @@ public class PlayerSession {
     private long bountyCollectedThisSession = 0;
     private RankAndProgressDto rankAndProgressDto = new RankAndProgressDto();
     private LocationDto currentLocation = new LocationDto();
+    private CarrierDataDto carrierData = new CarrierDataDto();
 
 
     SessionPersistence persistence = new SessionPersistence();
@@ -277,6 +256,7 @@ public class PlayerSession {
 
         persistence.registerField("bountyCollectedThisSession", this::getBountyCollectedThisSession, this::setBountyCollectedThisSession, Long.class);
         persistence.registerField("rankAndProgressDto", this::getRankAndProgressDto, this::setRankAndProgressDto, RankAndProgressDto.class);
+        persistence.registerField(CARRIER_STATS, this::getCarrierData, this::setCarrierData, CarrierDataDto.class);
         EventBusManager.register(this);
         addShutdownHook();
     }
@@ -457,46 +437,40 @@ public class PlayerSession {
         return detectedSignals;
     }
 
-    @Subscribe
     public void onCarrierStats(CarrierStatsEvent event) {
         CarrierStatsEvent.Finance finance = event.getFinance();
         state.put(CARRIER_FUEL_LEVEL, event.getFuelLevel());
         state.put(CARGO_SPACE_USED, event.getSpaceUsage());
-        state.put(CARRIER_CALLSIGN, event.getCallsign());
-        state.put(CARRIER_NAME, event.getName());
-        state.put(CARRIER_TYPE, event.getCarrierType());
-        state.put(CARRIER_DOCKING_ACCESS, event.getDockingAccess());
-        state.put(CARRIER_CURRENT_JUMP_RANGE, event.getJumpRangeCurr());
-        state.put(CARRIER_MAX_JUMP_RANGE, event.getJumpRangeMax());
-        state.put(CARRIER_ALLOWS_NOTORIOUS_ACCESS, event.isAllowNotorious());
-        state.put(CARRIER_PENDING_DECOMMISSION, event.isPendingDecommission());
+        CarrierDataDto carrierData = new CarrierDataDto();
+        carrierData.setCallSign(event.getCallsign());
+        carrierData.setCarrierName(event.getName());
+        carrierData.setCarrierType(event.getCarrierType());
+        carrierData.setDockingAccess(event.getDockingAccess());
+        carrierData.setCurrentJumpRange(event.getJumpRangeCurr());
+        carrierData.setMaxJumpRange(event.getJumpRangeMax());
+        carrierData.setAllowNotorious(event.isAllowNotorious());
+        carrierData.setPendingDecommission(event.isPendingDecommission());
+
         if (event.getSpaceUsage() != null) {
             CarrierStatsEvent.SpaceUsage spaceUsage = event.getSpaceUsage();
-            state.put(CARRIER_TOTAL_CARGO_SPACE_USED, spaceUsage.getCargo());
-            state.put(CARRIER_CARGO_SPACE_RESERVED, spaceUsage.getCargoSpaceReserved());
-            state.put(CARRIER_SHIP_PACKS, spaceUsage.getShipPacks());
-            state.put(CARRIER_MODULE_PACKS, spaceUsage.getModulePacks());
-            state.put(CARRIER_FREE_SPACE, spaceUsage.getFreeSpace());
-            state.put(CARRIER_TOTAL_CAPACITY, spaceUsage.getTotalCapacity());
+            carrierData.setCargoSpaceUsed(spaceUsage.getCargo());
+            carrierData.setCargoSpaceReserved(spaceUsage.getCargoSpaceReserved());
+            carrierData.setShipRacks(spaceUsage.getShipPacks());
+            carrierData.setModulePacks(spaceUsage.getModulePacks());
+            carrierData.setFreeSpaceInCargo(spaceUsage.getFreeSpace());
+            carrierData.setCargoCapacity(spaceUsage.getTotalCapacity());
         }
 
         if (finance != null) {
-            state.put(CARRIER_BALANCE, finance.getCarrierBalance());
-            state.put(CARRIER_RESERVE, finance.getReserveBalance());
-            state.put(CARRIER_ALLOCATED_MARKET_BALANCE, finance.getAvailableBalance());
-            state.put(CARRIER_PIONEER_SUPPLY_TAX, finance.getTaxRate_pioneersupplies());
-            state.put(CARRIER_SHIPYARD_SUPPLY_TAX, finance.getTaxRate_shipyard());
-            state.put(CARRIER_REARM_SUPPLY_TAX, finance.getTaxRate_rearm());
-            state.put(CARRIER_REFUEL_SUPPLY_TAX, finance.getTaxRate_refuel());
-            state.put(CARRIER_REPAIR_SUPPLY_TAX, finance.getTaxRate_repair());
-
-            long carrierBalance = finance.getCarrierBalance();
-            long reserveBalance = finance.getReserveBalance();
-            put(CARRIER_BALANCE, String.valueOf(carrierBalance));
-            put(CARRIER_RESERVE, String.valueOf(reserveBalance));
-
-            int jumps = event.getFuelLevel() / 90;
-            put(CARRIER_STATS, "Credit balance: " + carrierBalance + " reserved balance: " + reserveBalance + " fuel level: " + event.getFuelLevel() + " enough for " + event.getFuelLevel() / 90 + " jumps or " + (jumps * 500) + " light years");
+            carrierData.setTotalBalance(finance.getCarrierBalance());
+            carrierData.setReserveBalance(finance.getReserveBalance());
+            carrierData.setMarketBalance(finance.getAvailableBalance());
+            carrierData.setPioneerSupplyTax(finance.getTaxRate_pioneersupplies());
+            carrierData.setShipYardSupplyTax(finance.getTaxRate_shipyard());
+            carrierData.setRearmSupplyTax(finance.getTaxRate_rearm());
+            carrierData.setRepairSupplyTax(finance.getTaxRate_repair());
+            carrierData.setRefuelSupplyTax(finance.getTaxRate_refuel());
+            setCarrierData(carrierData);
         }
         saveSession();
     }
@@ -539,6 +513,11 @@ public class PlayerSession {
         return missionKills;
     }
 
+    public void clearMissionKills() {
+        missionKills.clear();
+        saveSession();
+    }
+
     public void addTargetFaction(String faction) {
         targetFactions.add(faction);
         saveSession();
@@ -575,6 +554,7 @@ public class PlayerSession {
         state.remove(BOUNTIES);
         state.remove(TOTAL_BOUNTY_PROFIT);
         state.remove(TOTAL_BOUNTY_CLAIMED);
+        saveSession();
     }
 
     public LocationDto getCurrentLocation() {
@@ -584,5 +564,13 @@ public class PlayerSession {
     public void setCurrentLocation(LocationDto currentLocation) {
         this.currentLocation = currentLocation;
         saveSession();
+    }
+
+    public CarrierDataDto getCarrierData() {
+        return carrierData;
+    }
+
+    public void setCarrierData(CarrierDataDto carrierData) {
+        this.carrierData = carrierData;
     }
 }

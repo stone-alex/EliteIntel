@@ -2,6 +2,7 @@ package elite.companion.ai.brain.handlers.query;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import elite.companion.gameapi.journal.events.dto.CarrierDataDto;
 import elite.companion.session.PlayerSession;
 import elite.companion.util.json.GsonFactory;
 import elite.companion.util.json.JsonDataFactory;
@@ -60,7 +61,8 @@ public class AnalyzeDataHandler extends BaseQueryAnalyzer implements QueryHandle
                 yield status != null ? GSON.toJson(status) : null;
             }
             case QUERY_CARRIER_STATS -> {
-                Object stats = playerSession.get(PlayerSession.CARRIER_STATS);
+                //refactor to own handler, check for carrier total balance == 0, if true, data is not available.
+                CarrierDataDto stats = playerSession.getCarrierData();
                 yield stats != null ? GSON.toJson(stats) : null;
             }
             case ANALYZE_SCAN -> {

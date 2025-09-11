@@ -30,6 +30,7 @@ public class EventRegistry {
     private static final long THRESHOLD_LONG = 60000; // 60 seconds
 
     static {
+        registerEvent("MaterialCollected", MaterialCollectedEvent.class);
         registerEvent("ScanBaryCentre", ScanBaryCentreEvent.class);
         registerEvent("Docked", DockedEvent.class);
         registerEvent("DockSRV", DockSRVEvent.class);

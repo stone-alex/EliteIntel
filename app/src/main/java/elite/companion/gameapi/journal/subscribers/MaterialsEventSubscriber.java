@@ -9,6 +9,8 @@ public class MaterialsEventSubscriber {
 
     @Subscribe
     public void onMaterialsEvent(MaterialsEvent event) {
-        PlayerSession.getInstance().put(PlayerSession.MATERIALS, event.toJson());
+        //this is a single material collection event.
+        //we need a list of all collected materials to do something useful with it.
+        PlayerSession.getInstance().put(PlayerSession.MATERIAL, event.toJson());
     }
 }

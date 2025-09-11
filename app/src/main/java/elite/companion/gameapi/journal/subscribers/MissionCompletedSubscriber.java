@@ -16,6 +16,7 @@ public class MissionCompletedSubscriber {
     public void onMissionCompletedEvent(MissionCompletedEvent event) {
         PlayerSession playerSession = PlayerSession.getInstance();
         playerSession.removeMission(event.getMissionID());
+        playerSession.clearMissionKills();
         String targetFaction = event.getTargetFaction();
         EventBusManager.publish(new SensorDataEvent("Mission against Faction:\"" + targetFaction + "\" Completed: " + event.toJson()));
 

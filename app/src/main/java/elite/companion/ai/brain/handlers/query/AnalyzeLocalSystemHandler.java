@@ -6,6 +6,7 @@ import elite.companion.ai.search.api.EdsmApiClient;
 import elite.companion.ai.search.api.dto.StarSystemDto;
 import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.VoiceProcessEvent;
+import elite.companion.gameapi.journal.events.dto.LocationDto;
 import elite.companion.session.PlayerSession;
 import elite.companion.util.json.GsonFactory;
 import org.slf4j.Logger;
@@ -22,16 +23,14 @@ public class AnalyzeLocalSystemHandler extends BaseQueryAnalyzer implements Quer
         //QueryActions query = findQuery(action);
         PlayerSession playerSession = PlayerSession.getInstance();
 
-        Object system = playerSession.get(PlayerSession.CURRENT_SYSTEM_NAME);
-        String limitedData = system != null ? GSON.toJson(system) : null;
+        LocationDto currentLocation = playerSession.getCurrentLocation();
 
-        String systemName = String.valueOf(playerSession.get(PlayerSession.CARRIER_LOCATION));
-        StarSystemDto localSystemDto = EdsmApiClient.searchStarSystem(systemName, 1);
+        StarSystemDto localSystemDto = EdsmApiClient.searchStarSystem(currentLocation.getStarName(), 1);
         String completeData = localSystemDto.toJson();
 
         if (localSystemDto.getData() == null) {
             EventBusManager.publish(new VoiceProcessEvent("Limited data available..."));
-            return analyzeData(limitedData, originalUserInput);
+            return analyzeData(currentLocation.toJson(), originalUserInput);
         } else {
             return analyzeData(completeData, originalUserInput);
         }

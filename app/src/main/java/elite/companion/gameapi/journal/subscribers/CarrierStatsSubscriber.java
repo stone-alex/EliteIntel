@@ -10,7 +10,5 @@ public class CarrierStatsSubscriber {
     public void onCarrierStatsEvent(CarrierStatsEvent event) {
         PlayerSession playerSession = PlayerSession.getInstance();
         playerSession.onCarrierStats(event);
-        playerSession.put(PlayerSession.CARRIER_NAME, event.getName());
-        playerSession.put(PlayerSession.CARRIER_CALLSIGN, event.getCallsign());
     }
 }

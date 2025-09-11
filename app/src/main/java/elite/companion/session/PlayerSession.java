@@ -151,7 +151,6 @@ public class PlayerSession {
     public static final String SHIP_CARGO = "ship_cargo";
     public static final String CURRENT_SYSTEM_DATA = "current_system_data";
     public static final String MISSIONS = "player_missions";
-    public static final String BOUNTIES = "bounties";
     public static final String REPUTATION = "reputation";
     public static final String PROFILE = "profile";
     public static final String PERSONALITY = "personality";
@@ -198,14 +197,19 @@ public class PlayerSession {
 
     private static final PlayerSession INSTANCE = new PlayerSession();
     public static final String ROUTE_MAP = "routeMap";
+    public static final String SHIP_SCANS = "shipScans";
+    public static final String DETECTED_SIGNALS = "detectedSignals";
+    public static final String TARGET_FACTIONS = "targetFactions";
+    public static final String STELLAR_OBJECTS = "stellarObjects";
+    private static final String BOUNTIES = "bounties";
     private final Map<String, Object> state = new HashMap<>();
     private final Map<String, String> shipScans = new HashMap<>();
     private final Map<Long, MissionDto> missions = new LinkedHashMap<>();
-    private final Set<MissionKillDto> missionKills = new LinkedHashSet<>();
     private final Map<String, StellarObjectDto> stellarObjects = new HashMap<>();
     private final Map<String, NavRouteDto> routeMap = new LinkedHashMap<>();
     private final Set<String> detectedSignals = new LinkedHashSet<>();
     private final Set<String> targetFactions = new LinkedHashSet<>();
+    private final Set<BountyDto> bounties = new LinkedHashSet<>();
     private long bountyCollectedThisSession = 0;
     private RankAndProgressDto rankAndProgressDto = new RankAndProgressDto();
     private LocationDto currentLocation = new LocationDto();
@@ -217,7 +221,7 @@ public class PlayerSession {
     private PlayerSession() {
         persistence.ensureFileAndDirectoryExist("player_session.json");
         state.put(FRIENDS_STATUS, new HashMap<String, String>());
-        persistence.registerField("shipScans", this::getShipScans, v -> {
+        persistence.registerField(SHIP_SCANS, this::getShipScans, v -> {
             shipScans.clear();
             shipScans.putAll((Map<String, String>) v);
         }, new TypeToken<Map<String, String>>() {
@@ -232,22 +236,25 @@ public class PlayerSession {
             routeMap.putAll((Map<String, NavRouteDto>) v);
         }, new TypeToken<Map<String, NavRouteDto>>() {
         }.getType());
-        persistence.registerField("detectedSignals", this::getDetectedSignals, v -> {
+        persistence.registerField(DETECTED_SIGNALS, this::getDetectedSignals, v -> {
             detectedSignals.clear();
             detectedSignals.addAll((Set<String>) v);
         }, new TypeToken<Set<String>>() {
         }.getType());
-        persistence.registerField("targetFactions", this::getTargetFactions, v -> {
+
+        persistence.registerField(TARGET_FACTIONS, this::getTargetFactions, v -> {
             targetFactions.clear();
             targetFactions.addAll((Set<String>) v);
         }, new TypeToken<Set<String>>() {
         }.getType());
-        persistence.registerField("missionKills", this::getMissionKills, v -> {
-            missionKills.clear();
-            missionKills.addAll((Set<MissionKillDto>) v);
-        }, new TypeToken<Set<MissionDto>>() {
+
+        persistence.registerField(BOUNTIES, this::getBounties, v -> {
+            bounties.clear();
+            bounties.addAll((Set<BountyDto>) v);
+        }, new TypeToken<Set<BountyDto>>() {
         }.getType());
-        persistence.registerField("stellarObjects", this::getStellarObjects, v -> {
+
+        persistence.registerField(STELLAR_OBJECTS, this::getStellarObjects, v -> {
             stellarObjects.clear();
             stellarObjects.putAll((Map<String, StellarObjectDto>) v);
         }, new TypeToken<Map<String, StellarObjectDto>>() {
@@ -304,8 +311,12 @@ public class PlayerSession {
         saveSession();
     }
 
-    public void addBounty(long totalReward) {
+    public void addBountyReward(long totalReward) {
         bountyCollectedThisSession += totalReward;
+        saveSession();
+    }
+    public void addBounty(BountyDto bounty) {
+        bounties.add(bounty);
         saveSession();
     }
 
@@ -340,26 +351,6 @@ public class PlayerSession {
         saveSession();
     }
 
-
-    public void addBounty(BountyEvent bounty) {
-        List<BountyEvent> bounties = (List<BountyEvent>) state.computeIfAbsent(BOUNTIES, k -> new ArrayList<BountyEvent>());
-        bounties.add(bounty);
-        saveSession();
-    }
-
-
-    public String getMissionsJson() {
-        return missions.isEmpty() ? "{}" : GsonFactory.getGson().toJson(missions);
-    }
-
-    public String getBountiesJson() {
-        List<BountyEvent> bounties = (List<BountyEvent>) state.get(BOUNTIES);
-        return bounties == null || bounties.isEmpty() ? "[]" : GsonFactory.getGson().toJson(bounties);
-    }
-
-    public String getMissionKillsJson() {
-        return missionKills.isEmpty() ? "{}" : GsonFactory.getGson().toJson(missionKills);
-    }
 
     public void setNavRoute(Map<String, NavRouteDto> routeMap) {
         this.routeMap.clear();
@@ -403,7 +394,6 @@ public class PlayerSession {
         state.clear();
         shipScans.clear();
         missions.clear();
-        missionKills.clear();
         routeMap.clear();
         targetFactions.clear();
         detectedSignals.clear();
@@ -485,11 +475,13 @@ public class PlayerSession {
         loadSavedStateFromDisk();
     }
 
-    @Subscribe
-    public void onBounty(BountyEvent event) {
-        addBounty(event);
-        addBounty(event.getTotalReward());
+    public void onBounty(BountyDto data) {
+        bounties.add(data);
         saveSession();
+    }
+
+    public Set<BountyDto> getBounties() {
+        return bounties;
     }
 
     @Subscribe
@@ -505,18 +497,6 @@ public class PlayerSession {
         saveSession();
     }
 
-    public void addMissionKill(MissionKillDto missionKillDto) {
-        missionKills.add(missionKillDto);
-    }
-
-    public Set<MissionKillDto> getMissionKills() {
-        return missionKills;
-    }
-
-    public void clearMissionKills() {
-        missionKills.clear();
-        saveSession();
-    }
 
     public void addTargetFaction(String faction) {
         targetFactions.add(faction);

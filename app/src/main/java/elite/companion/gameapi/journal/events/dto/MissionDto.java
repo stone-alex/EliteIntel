@@ -11,7 +11,7 @@ public class MissionDto extends BaseJsonDto {
     private String missionDescription;
     private String missionTarget;
     private String missionTargetFaction;
-    private int killCount;
+    private int killCount; // number of kills required to complete the mission
     private long reward;
     private String destinationSystem;
     private boolean isReputationIncrease;

@@ -71,3 +71,4 @@
 "Petty"="Betty"
 "SLO"="set low"
 "And their hyperspace"="enter hyperspace"
+"our emissions"="our missions"

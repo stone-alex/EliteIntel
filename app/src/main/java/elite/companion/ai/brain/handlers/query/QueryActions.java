@@ -17,9 +17,9 @@ public enum QueryActions {
     QUERY_ANALYZE_ON_BOARD_CARGO("query_analyze_on_board_cargo", "Analyzes cargo hold contents. ", AnalyzeDataHandler.class, false),
     QUERY_ANALYZE_ROUTE("query_analyze_route", "Analyze our plotted route. ", AnalyzeRouterHandler.class, false),
     QUERY_CARRIER_STATS("query_carrier_stats", "Summarize carrier information. ", AnalyzeDataHandler.class, false),
-    QUERY_MISSION_KILLS_REMAINING("query_mission_kills_remaining", "Summarize the state of the missions. ", MissionAnalyzer.class, true),
-    QUERY_MISSION_PROFIT("query_mission_profit", "Summarize the potential profit from currently active missions. ", MissionAnalyzer.class, true),
-    QUERY_MISSION_STATUS("query_mission_status", "Handles summarize current progression of missions. ", MissionAnalyzer.class, true),
+    QUERY_MISSION_KILLS_REMAINING("query_mission_kills_remaining", "Summarize the state of the missions. ", PirateMissionAnalyzer.class, true),
+    QUERY_MISSION_PROFIT("query_mission_profit", "Summarize the potential profit from currently active missions. ", PirateMissionAnalyzer.class, true),
+    QUERY_MISSION_STATUS("query_mission_status", "Handles summarize current progression of missions. ", PirateMissionAnalyzer.class, true),
     QUERY_NEXT_STAR_SCOOPABLE("query_next_star_scoopable", "Check if we can get fuel at the next star. ", AnalyzeDataHandler.class, false),
     QUERY_PLAYER_STATS_ANALYSIS("query_player_stats_analysis", "Analyze current player statistics. ", PlayerStatsAnalyzer.class, true),
     QUERY_SEARCH_SIGNAL_DATA("query_search_signal_data", "Requests current system and signal data (e.g., 'what signals are here'). ", AnalyzeDataHandler.class, false),
@@ -28,7 +28,8 @@ public enum QueryActions {
     TRIVIA("trivia", "General conversion question, use your own knowledge to respond. ", TriviaQueryHandler.class, true),
     WHAT_ARE_YOUR_CAPABILITIES("what_are_your_capabilities", "Summarizes app capabilities. ", WhatAreYourCapabilitiesHandler.class, false),
     WHAT_IS_YOUR_DESIGNATION("what_is_your_designation", "Responds with AI name (e.g., 'what is your name', 'who are you'). ", WhatIsYourNameHandler.class, false),
-    WHERE_IS_OUR_CARRIER("what_is_our_fleet_carrier_location", "Check on our carrier current location. ", WhatIsOurCarrierLocationHandler.class, false);
+    WHERE_IS_OUR_CARRIER("what_is_our_fleet_carrier_location", "Check on our carrier current location. ", WhatIsOurCarrierLocationHandler.class, false),
+    TOTAL_BOUNTIES_COLLECTED("query_total_bounties_collected", "Summ total of the bounties collected this sessiosn", AnalyzeBountiesCollectedHandler.class, false);
 
     private final String action;
     private final String description;

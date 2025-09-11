@@ -21,8 +21,6 @@ public class MissionSubscriber {
                 session.addTargetFaction(mission.getMissionTargetFaction());
                 session.addMission(mission);
             }
-        } else if (event instanceof BountyEvent) {
-            session.addBounty((BountyEvent) event);
         } else if (event instanceof MissionCompletedEvent ||
                 event instanceof MissionAbandonedEvent ||
                 event instanceof MissionFailedEvent

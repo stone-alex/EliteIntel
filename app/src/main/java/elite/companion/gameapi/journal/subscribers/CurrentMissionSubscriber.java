@@ -20,6 +20,7 @@ public class CurrentMissionSubscriber {
 
     @Subscribe
     public void onCurrentMission(MissionsEvent event) {
+/*
         PlayerSession session = PlayerSession.getInstance();
         List<MissionsEvent.Mission> activeMissions = event.getActive();
         for (MissionsEvent.Mission mission : activeMissions) {
@@ -29,6 +30,7 @@ public class CurrentMissionSubscriber {
                 EventBusManager.publish(new VoiceProcessEvent(" Mission: " + storedMission.getMissionDescription() + " expired."));
             }
         }
+*/
 
     }
 }

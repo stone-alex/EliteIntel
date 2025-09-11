@@ -72,7 +72,8 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          $zipName = "elite-companion-${{ github.run_number }}.zip"
+          $version = if ($env:GITHUB_REF.StartsWith('refs/tags/')) { $env:GITHUB_REF_NAME } else { "${{ github.run_number }}" }
+          $zipName = "elite-companion-$version.zip"
           if (Test-Path $zipName) { Remove-Item $zipName -Force }
           Compress-Archive -Path "distribution\*" -DestinationPath $zipName
           Write-Host "Packaged $zipName"

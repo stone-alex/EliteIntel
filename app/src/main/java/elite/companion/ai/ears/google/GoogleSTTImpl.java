@@ -1,7 +1,7 @@
 package elite.companion.ai.ears.google;
 
 import com.google.api.gax.rpc.ApiStreamObserver;
-import com.google.cloud.speech.v1p1beta1.*;
+import com.google.cloud.speech.v1.*;
 import com.google.protobuf.ByteString;
 import elite.companion.ai.ApiFactory;
 import elite.companion.ai.ConfigManager;
@@ -60,7 +60,7 @@ public class GoogleSTTImpl implements EarsInterface {
 
     private static final int CHANNELS = 1; // Mono
     private static final int RESTART_DELAY_MS = 50; // 50ms sleep after stream close
-    private static final int STREAM_DURATION_MS = 300000; // 5 min; matches Google V1 limit
+    private static final int STREAM_DURATION_MS = 290000; // ~4 min 50 sec; below Google V1 limit for safety
     private static final int KEEP_ALIVE_INTERVAL_MS = 3000; // Keep-alive interval
     private static final int ENTER_VOICE_FRAMES = 1; // Quick enter to avoid clipping
     private static final int EXIT_SILENCE_FRAMES = 20; // ~2s silence to exit
@@ -137,16 +137,7 @@ public class GoogleSTTImpl implements EarsInterface {
 
         // Initialize SpeechClient
         try {
-            String apiKey = ConfigManager.getInstance().getSystemKey(ConfigManager.STT_API_KEY);
-            if (apiKey == null || apiKey.trim().isEmpty()) {
-                log.error("STT API key not found in system.conf");
-                return;
-            }
-
-            SpeechSettings settings = SpeechSettings.newBuilder()
-                    .setApiKey(apiKey)
-                    .build();
-            this.speechClient = SpeechClient.create(settings);
+            this.speechClient = createSpeechClient();
             log.info("SpeechClient initialized successfully with API key");
         } catch (Exception e) {
             log.error("Failed to initialize SpeechClient: {}", e.getMessage());
@@ -212,6 +203,8 @@ public class GoogleSTTImpl implements EarsInterface {
      * - Recovers from interruptions by retrying the connection after a specified delay.
      */
     private void startStreaming() {
+        int retryCount = 0;
+        int maxRetries = 5; // Cap to prevent infinite loops
         while (isListening.get()) {
             log.info("Starting new streaming session...");
             long streamStartTime = System.currentTimeMillis();
@@ -331,16 +324,50 @@ public class GoogleSTTImpl implements EarsInterface {
                         Thread.currentThread().interrupt();
                     }
                 }
+                retryCount = 0; // Reset on successful session
             } catch (Exception e) {
                 log.error("Streaming recognition failed: {}", e.getMessage());
-                try {
-                    Thread.sleep(RESTART_DELAY_MS);
-                } catch (InterruptedException ie) {
-                    log.error("Restart delay interrupted", ie);
-                    Thread.currentThread().interrupt();
+                if (retryCount < maxRetries) {
+                    retryCount++;
+                    long backoffMs = (long) Math.pow(2, retryCount) * 1000; // Exponential: 2s, 4s, 8s, etc.
+                    log.info("Retrying after backoff: {} ms (attempt {}/{})", backoffMs, retryCount, maxRetries);
+                    try {
+                        Thread.sleep(backoffMs);
+                    } catch (InterruptedException ie) {
+                        log.error("Backoff interrupted", ie);
+                        Thread.currentThread().interrupt();
+                        break;
+                    }
+                    // Recreate client to reset connection
+                    if (speechClient != null) {
+                        speechClient.close();
+                    }
+                    try {
+                        speechClient = createSpeechClient();
+                    } catch (Exception ce) {
+                        log.error("Failed to recreate SpeechClient during retry: {}", ce.getMessage());
+                        break;
+                    }
+                } else {
+                    log.error("Max retries reached; stopping streaming.");
+                    EventBusManager.publish(new AppLogEvent("STT max retries hit; pausing listener."));
+                    stop();
+                    break;
                 }
             }
         }
+    }
+
+    private SpeechClient createSpeechClient() throws Exception {
+        String apiKey = ConfigManager.getInstance().getSystemKey(ConfigManager.STT_API_KEY);
+        if (apiKey == null || apiKey.trim().isEmpty()) {
+            log.error("STT API key not found in system.conf");
+            throw new IllegalStateException("STT API key missing");
+        }
+        SpeechSettings settings = SpeechSettings.newBuilder()
+                .setApiKey(apiKey)
+                .build();
+        return SpeechClient.create(settings);
     }
 
     private double calculateRMS(byte[] buffer, int length) {

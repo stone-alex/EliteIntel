@@ -47,6 +47,8 @@ public interface MouthInterface {
 
     void stop();
 
+    void interruptAndClear(); // implement vocalization interrupt and clear the queue
+    
     @Subscribe
     void onVoiceProcessEvent(VoiceProcessEvent event);
 }

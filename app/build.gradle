@@ -65,6 +65,8 @@ sourceSets {
             include '**/*.conf'
             include '**/*.css'
             include '**/*.png'
+            include '**/*.wav'
+            include 'beep.wav'
             include 'logback.xml'
             include 'META-INF/MANIFEST.MF'
         }

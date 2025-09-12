@@ -6,7 +6,6 @@ import com.google.protobuf.ByteString;
 import elite.companion.ai.ApiFactory;
 import elite.companion.ai.ConfigManager;
 import elite.companion.ai.brain.AiCommandInterface;
-import elite.companion.ai.brain.AiRequestHints;
 import elite.companion.ai.ears.AudioCalibrator;
 import elite.companion.ai.ears.AudioFormatDetector;
 import elite.companion.ai.ears.AudioSettingsTuple;
@@ -16,6 +15,7 @@ import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.UserInputEvent;
 import elite.companion.session.SystemSession;
 import elite.companion.ui.event.AppLogEvent;
+import elite.companion.util.AudioPlayer;
 import elite.companion.util.DaftSecretarySanitizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -377,7 +377,7 @@ public class GoogleSTTImpl implements EarsInterface {
                     String sanitizedTranscript = DaftSecretarySanitizer.getInstance().correctMistakes(transcript);
 
                     EventBusManager.publish(new AppLogEvent("STT Sanitized: [" + sanitizedTranscript + "]."));
-                    EventBusManager.publish(new TTSInterruptEvent());
+                    //EventBusManager.publish(new TTSInterruptEvent());
                     boolean isStreamingModeOn = SystemSession.getInstance().isStreamingModeOn();
                     if (isStreamingModeOn) {
                         String voiceName = SystemSession.getInstance().getAIVoice().getName();
@@ -395,6 +395,8 @@ public class GoogleSTTImpl implements EarsInterface {
     }
 
     private void sendToAi(String sanitizedTranscript, float confidence) {
+        EventBusManager.publish(new TTSInterruptEvent());
+        AudioPlayer.getInstance().playBeep(); //user notification, we are processing the input now.
         log.info("Processing sanitizedTranscript: {}", sanitizedTranscript);
         EventBusManager.publish(new UserInputEvent(sanitizedTranscript, confidence));
     }

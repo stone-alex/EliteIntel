@@ -49,7 +49,28 @@ public class GoogleTTSImpl implements MouthInterface {
         return INSTANCE;
     }
 
-    private record VoiceRequest(String text, String voiceName, double speechRate) {
+    private static class VoiceRequest {
+        private final String text;
+        private final String voiceName;
+        private final double speechRate;
+
+        VoiceRequest(String text, String voiceName, double speechRate) {
+            this.text = text;
+            this.voiceName = voiceName;
+            this.speechRate = speechRate;
+        }
+
+        public String getText() {
+            return text;
+        }
+
+        public String getVoiceName() {
+            return voiceName;
+        }
+
+        public double getSpeechRate() {
+            return speechRate;
+        }
     }
 
     private GoogleTTSImpl() {
@@ -123,7 +144,9 @@ public class GoogleTTSImpl implements MouthInterface {
             line.close();
             currentLine.set(null);
         }
-        log.info("TTS interrupted and queue cleared, thread alive={}", processingThread != null && processingThread.isAlive());
+        interruptRequested.set(false); // Reset flag to allow new vocalizations
+        log.info("TTS interrupted and queue cleared, thread alive={}, interruptRequested={}",
+                processingThread != null && processingThread.isAlive(), interruptRequested.get());
         if (processingThread == null || !processingThread.isAlive()) {
             log.warn("Processing thread stopped unexpectedly, restarting");
             start();
@@ -162,7 +185,8 @@ public class GoogleTTSImpl implements MouthInterface {
     private void processVoiceQueue() {
         while (running) {
             try {
-                log.trace("Polling voice queue, size={}", voiceQueue.size());
+                log.trace("Polling voice queue, size={}, interruptRequested={}",
+                        voiceQueue.size(), interruptRequested.get());
                 VoiceRequest request = voiceQueue.poll(1, TimeUnit.SECONDS);
                 if (request == null) {
                     if (Thread.currentThread().isInterrupted() || !running) {
@@ -171,7 +195,7 @@ public class GoogleTTSImpl implements MouthInterface {
                     }
                     continue;
                 }
-                processVoiceRequest(request.text(), request.voiceName(), request.speechRate());
+                processVoiceRequest(request.getText(), request.getVoiceName(), request.getSpeechRate());
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 log.info("VoiceGenerator interrupted, shutting down");
@@ -220,7 +244,8 @@ public class GoogleTTSImpl implements MouthInterface {
             AudioConfig config = AudioConfig.newBuilder()
                     .setAudioEncoding(AudioEncoding.LINEAR16)
                     .setSpeakingRate(speechRate)
-                    .setSampleRateHertz(24000)
+                    .setVolumeGainDb(-6) // set volume to -6 dbFS to prevent excessive loudness and clipping. (could be a UI setting)
+                    //.setSampleRateHertz(24000) // optional wrong value may reduce quality.
                     .build();
             SynthesizeSpeechResponse response = textToSpeechClient.synthesizeSpeech(input, voice, config);
             long apiEndTime = System.currentTimeMillis();
@@ -259,6 +284,7 @@ public class GoogleTTSImpl implements MouthInterface {
                 long writeStartTime = System.currentTimeMillis();
                 for (int i = 0; i < audioData.length; i += chunkSize) {
                     if (interruptRequested.get()) {
+                        log.debug("Playback interrupted mid-stream: {}", text);
                         break;
                     }
                     int len = Math.min(chunkSize, audioData.length - i);
@@ -282,6 +308,7 @@ public class GoogleTTSImpl implements MouthInterface {
                     retryLine.start();
                     for (int i = 0; i < audioData.length; i += chunkSize) {
                         if (interruptRequested.get()) {
+                            log.debug("Playback interrupted mid-stream on retry: {}", text);
                             break;
                         }
                         int len = Math.min(chunkSize, audioData.length - i);

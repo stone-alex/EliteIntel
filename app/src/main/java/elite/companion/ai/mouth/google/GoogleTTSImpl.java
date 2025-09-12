@@ -244,7 +244,7 @@ public class GoogleTTSImpl implements MouthInterface {
             AudioConfig config = AudioConfig.newBuilder()
                     .setAudioEncoding(AudioEncoding.LINEAR16)
                     .setSpeakingRate(speechRate)
-                    .setVolumeGainDb(-6) // set volume to -6 dbFS to prevent excessive loudness and clipping. (could be a UI setting)
+                    .setVolumeGainDb(-3) // set volume to -3 dbFS to prevent excessive loudness and clipping. (could be a UI setting)
                     //.setSampleRateHertz(24000) // optional wrong value may reduce quality.
                     .build();
             SynthesizeSpeechResponse response = textToSpeechClient.synthesizeSpeech(input, voice, config);

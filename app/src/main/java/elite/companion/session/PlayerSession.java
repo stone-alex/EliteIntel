@@ -531,9 +531,9 @@ public class PlayerSession {
 
     public void clearBounties() {
         bountyCollectedThisSession = 0;
-        state.remove(BOUNTIES);
         state.remove(TOTAL_BOUNTY_PROFIT);
         state.remove(TOTAL_BOUNTY_CLAIMED);
+        bounties.clear();
         saveSession();
     }
 

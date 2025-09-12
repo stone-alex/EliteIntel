@@ -6,6 +6,7 @@ import elite.companion.ai.ConfigManager;
 import elite.companion.ai.ears.TTSPlaybackStartEvent;
 import elite.companion.ai.mouth.AiVoices;
 import elite.companion.ai.mouth.MouthInterface;
+import elite.companion.ai.mouth.TTSInterruptEvent;
 import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.VoiceProcessEvent;
 import org.slf4j.Logger;
@@ -15,6 +16,8 @@ import javax.sound.sampled.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Implementation of the MouthInterface that utilizes Google Cloud Text-to-Speech API
@@ -37,6 +40,8 @@ public class GoogleTTSImpl implements MouthInterface {
     private Thread processingThread;
     private volatile boolean running;
     private final GoogleVoiceProvider googleVoiceProvider;
+    private final AtomicBoolean interruptRequested = new AtomicBoolean(false);
+    private final AtomicReference<SourceDataLine> currentLine = new AtomicReference<>();
 
     private static final GoogleTTSImpl INSTANCE = new GoogleTTSImpl();
 
@@ -44,16 +49,7 @@ public class GoogleTTSImpl implements MouthInterface {
         return INSTANCE;
     }
 
-    private static class VoiceRequest {
-        final String text;
-        final String voiceName;
-        final double speechRate;
-
-        VoiceRequest(String text, String voiceName, double speechRate) {
-            this.text = text;
-            this.voiceName = voiceName;
-            this.speechRate = speechRate;
-        }
+    private record VoiceRequest(String text, String voiceName, double speechRate) {
     }
 
     private GoogleTTSImpl() {
@@ -62,21 +58,6 @@ public class GoogleTTSImpl implements MouthInterface {
         googleVoiceProvider = GoogleVoiceProvider.getInstance();
     }
 
-    /**
-     * Starts the VoiceGenerator service. This method initializes the TextToSpeechClient
-     * using the API key from the system configuration, sets up the required resources,
-     * and starts a separate processing thread to handle the voice generation tasks.
-     * If the service is already running, the start operation is skipped with
-     * a warning log.
-     * <p>
-     * Throws:
-     * - RuntimeException if the TextToSpeechClient initialization fails.
-     * <p>
-     * Ensures:
-     * - The TextToSpeechClient is successfully created and ready for use.
-     * - A dedicated thread (VoiceGeneratorThread) is launched to process the
-     * voice requests from the queue.
-     */
     @Override
     public synchronized void start() {
         if (processingThread != null && processingThread.isAlive()) {
@@ -84,7 +65,6 @@ public class GoogleTTSImpl implements MouthInterface {
             return;
         }
 
-        TextToSpeechClient client;
         try {
             String apiKey = ConfigManager.getInstance().getSystemKey(ConfigManager.TTS_API_KEY);
             if (apiKey == null || apiKey.trim().isEmpty()) {
@@ -92,13 +72,12 @@ public class GoogleTTSImpl implements MouthInterface {
                 return;
             }
             TextToSpeechSettings settings = TextToSpeechSettings.newBuilder().setApiKey(apiKey).build();
-            client = TextToSpeechClient.create(settings);
+            textToSpeechClient = TextToSpeechClient.create(settings);
             log.info("TextToSpeechClient initialized successfully with API key");
         } catch (Exception e) {
             log.error("Failed to initialize TextToSpeechClient: {}", e.getMessage(), e);
             throw new RuntimeException("Failed to initialize TextToSpeechClient", e);
         }
-        this.textToSpeechClient = client;
 
         running = true;
         processingThread = new Thread(this::processVoiceQueue, "VoiceGeneratorThread");
@@ -106,30 +85,6 @@ public class GoogleTTSImpl implements MouthInterface {
         log.info("VoiceGenerator started");
     }
 
-    /**
-     * Stops the VoiceGenerator service if it is currently running. This method ensures that the
-     * service is cleanly terminated by interrupting the processing thread, waiting for it to
-     * finish, and releasing resources like the TextToSpeechClient.
-     * <p>
-     * Behavior:
-     * - If the service is not running, logs a warning and exits without performing any actions.
-     * - If the service is running:
-     * - Sets the running flag to false to signal termination.
-     * - Interrupts the processing thread and waits for it to stop, with a timeout of 5 seconds.
-     * - Logs an error if interrupted while waiting for the thread to stop and restores the
-     * interrupted status.
-     * - Attempts to close the TextToSpeechClient and logs an error if this operation fails.
-     * <p>
-     * Postconditions:
-     * - The processing thread is stopped and set to null.
-     * - The TextToSpeechClient is closed, releasing its resources.
-     * <p>
-     * Thread Safety:
-     * - This method is synchronized to prevent concurrent modifications while stopping the service.
-     * <p>
-     * Logging:
-     * - Logs warnings, informational messages, and errors as appropriate during the stop process.
-     */
     @Override
     public synchronized void stop() {
         if (processingThread == null || !processingThread.isAlive()) {
@@ -137,33 +92,53 @@ public class GoogleTTSImpl implements MouthInterface {
             return;
         }
         running = false;
+        interruptAndClear();
         processingThread.interrupt();
         try {
-            processingThread.join(5000); // Wait up to 5 seconds for clean shutdown
+            processingThread.join(5000);
             log.info("VoiceGenerator stopped");
         } catch (InterruptedException e) {
             log.error("Interrupted while waiting for VoiceGenerator to stop", e);
-            Thread.currentThread().interrupt(); // Restore interrupted status
+            Thread.currentThread().interrupt();
         }
         try {
-            textToSpeechClient.close();
-            log.info("TextToSpeechClient closed");
+            if (textToSpeechClient != null) {
+                textToSpeechClient.close();
+                log.info("TextToSpeechClient closed");
+            }
         } catch (Exception e) {
             log.error("Failed to close TextToSpeechClient", e);
         }
         processingThread = null;
+        textToSpeechClient = null;
     }
 
-    /**
-     * Handles the VoiceProcessEvent to generate speech based on the event's configuration.
-     * If the event specifies random voice usage, a random voice is selected for speech synthesis.
-     * Otherwise, the user-selected voice is used.
-     *
-     * @param event the VoiceProcessEvent containing the text to synthesize and the voice configuration.
-     */
+    @Override
+    public synchronized void interruptAndClear() {
+        voiceQueue.clear();
+        interruptRequested.set(true);
+        SourceDataLine line = currentLine.get();
+        if (line != null) {
+            line.stop();
+            line.close();
+            currentLine.set(null);
+        }
+        log.info("TTS interrupted and queue cleared, thread alive={}", processingThread != null && processingThread.isAlive());
+        if (processingThread == null || !processingThread.isAlive()) {
+            log.warn("Processing thread stopped unexpectedly, restarting");
+            start();
+        }
+    }
+
+    @Subscribe
+    public void onInterruptEvent(TTSInterruptEvent event) {
+        interruptAndClear();
+    }
+
     @Subscribe
     @Override
     public void onVoiceProcessEvent(VoiceProcessEvent event) {
+        log.debug("Received VoiceProcessEvent: text='{}', useRandom={}", event.getText(), event.isUseRandom());
         if (event.isUseRandom()) {
             speak(event.getText(), googleVoiceProvider.getRandomVoice());
         } else {
@@ -171,57 +146,23 @@ public class GoogleTTSImpl implements MouthInterface {
         }
     }
 
-    /**
-     * Adds a voice synthesis request to the processing queue if the provided text is not null or empty.
-     * The request includes the text to be spoken, the selected voice, and its speech rate.
-     *
-     * @param text the text to be synthesized into speech, must not be null or empty
-     * @param aiVoice the voice configuration used for speech synthesis including name and speech rate
-     */
     private void speak(String text, AiVoices aiVoice) {
         if (text == null || text.isEmpty()) {
             return;
         }
         try {
             voiceQueue.put(new VoiceRequest(text, aiVoice.getName(), aiVoice.getSpeechRate()));
+            log.debug("Added VoiceRequest to queue: text='{}', voice='{}'", text, aiVoice.getName());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             log.error("Interrupted while adding voice request to queue", e);
         }
     }
 
-    /**
-     * Continuously processes requests from the voice generation queue while the service is running.
-     * This method retrieves voice synthesis tasks from the queue, processes them, and handles any
-     * interruption or errors that occur during execution.
-     *
-     * Behavior:
-     * - Polls the `voiceQueue` for voice synthesis requests with a timeout of 1 second.
-     * - If a request is retrieved, it invokes the `processVoiceRequest` method to handle the synthesis.
-     * - If the queue is empty after the timeout, it checks if the thread is interrupted or the service
-     *   has been stopped, and exits if required.
-     * - Logs shutdown messages when interrupted or stopped.
-     * - Catches and logs unexpected errors during processing without halting the service.
-     *
-     * Threading:
-     * - Designed to run in a dedicated thread to continuously process the voice queue.
-     *
-     * Exception Handling:
-     * - If interrupted, the thread's interrupted status is restored with `Thread.currentThread().interrupt()`
-     *   and the service shuts down gracefully.
-     * - Logs any unexpected exceptions without disrupting queue processing.
-     *
-     * Prerequisites:
-     * - The `voiceQueue` must be properly initialized before invoking this method.
-     * - The `processVoiceRequest` method must be implemented for handling individual synthesis requests.
-     *
-     * Postconditions:
-     * - The method terminates when the `running` flag is set to false or the thread is interrupted.
-     * - Ensures graceful shutdown by logging interruptions and maintaining service integrity.
-     */
     private void processVoiceQueue() {
         while (running) {
             try {
+                log.trace("Polling voice queue, size={}", voiceQueue.size());
                 VoiceRequest request = voiceQueue.poll(1, TimeUnit.SECONDS);
                 if (request == null) {
                     if (Thread.currentThread().isInterrupted() || !running) {
@@ -230,7 +171,7 @@ public class GoogleTTSImpl implements MouthInterface {
                     }
                     continue;
                 }
-                processVoiceRequest(request.text, request.voiceName, request.speechRate);
+                processVoiceRequest(request.text(), request.voiceName(), request.speechRate());
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 log.info("VoiceGenerator interrupted, shutting down");
@@ -240,18 +181,6 @@ public class GoogleTTSImpl implements MouthInterface {
             }
         }
     }
-
-    /**
-     * Processes a voice synthesis request by converting the provided text into speech
-     * using the specified voice and speech rate. The synthesized audio is then played
-     * directly using the Java Sound API. If the voice name is not found, a default voice
-     * is used for synthesis. Ensures audio is prepared and played with minimal distortion
-     * using various audio processing techniques, such as fade-in and fade-out.
-     *
-     * @param text       the text to be synthesized into speech; must not be null or empty
-     * @param voiceName  the name of the voice to use for speech synthesis
-     * @param speechRate the rate at which the speech is synthesized; greater values imply faster speech
-     */
 
     private void processVoiceRequest(String text, String voiceName, double speechRate) {
         if (text == null || text.isEmpty()) {
@@ -263,10 +192,26 @@ public class GoogleTTSImpl implements MouthInterface {
                 text, voiceName, currentThread.getName(), currentThread.getId(), currentThread.getState());
 
         try {
+            if (textToSpeechClient == null) {
+                log.error("TextToSpeechClient is null, restarting service");
+                synchronized (this) {
+                    start();
+                }
+                if (textToSpeechClient == null) {
+                    log.error("Failed to reinitialize TextToSpeechClient, skipping request");
+                    return;
+                }
+            }
+
             VoiceSelectionParams voice = googleVoiceProvider.getVoiceParams(voiceName);
             if (voice == null) {
                 log.warn("No voice found for name: {}, using default", voiceName);
                 voice = googleVoiceProvider.getVoiceParams(AiVoices.JENNIFER.getName());
+            }
+
+            if (interruptRequested.get()) {
+                log.debug("Request interrupted before synthesis, skipping: {}", text);
+                return;
             }
 
             log.debug("Calling Google TTS API");
@@ -294,48 +239,76 @@ public class GoogleTTSImpl implements MouthInterface {
             long lineOpenStartTime = System.currentTimeMillis();
             AudioFormat format = new AudioFormat(24000, 16, 1, true, false);
             DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
+            int bufferBytes = (int) (format.getFrameSize() * format.getSampleRate() / 10);
+            int silenceFrames = (int) (format.getSampleRate() / 50);
+            byte[] silenceBuffer = new byte[silenceFrames * format.getFrameSize()];
+            int chunkSize = bufferBytes;
+
+            currentLine.set(null);
             try (SourceDataLine line = (SourceDataLine) AudioSystem.getLine(info)) {
-                int bufferBytes = (int) (format.getFrameSize() * format.getSampleRate() / 10);
                 line.open(format, bufferBytes);
-                long lineOpenEndTime = System.currentTimeMillis();
-                log.debug("SourceDataLine opened in {}ms", lineOpenEndTime - lineOpenStartTime);
+                currentLine.set(line);
+                log.debug("SourceDataLine opened in {}ms", System.currentTimeMillis() - lineOpenStartTime);
 
                 log.debug("Starting playback");
-                int silenceFrames = (int) (format.getSampleRate() / 50);
-                byte[] silenceBuffer = new byte[silenceFrames * format.getFrameSize()];
                 line.write(silenceBuffer, 0, silenceBuffer.length);
                 line.start();
-                log.info("Spoke with voice {}: {}", voiceName, text); // Moved before event
+                log.info("Spoke with voice {}: {}", voiceName, text);
                 EventBusManager.publish(new TTSPlaybackStartEvent(text));
 
                 long writeStartTime = System.currentTimeMillis();
-                line.write(audioData, 0, audioData.length);
-                line.drain();
-                long writeEndTime = System.currentTimeMillis();
-                log.debug("Audio playback completed in {}ms", writeEndTime - writeStartTime);
+                for (int i = 0; i < audioData.length; i += chunkSize) {
+                    if (interruptRequested.get()) {
+                        break;
+                    }
+                    int len = Math.min(chunkSize, audioData.length - i);
+                    line.write(audioData, i, len);
+                }
+                if (interruptRequested.get()) {
+                    line.flush();
+                    log.debug("Playback interrupted");
+                } else {
+                    line.drain();
+                }
+                log.debug("Audio playback completed in {}ms", System.currentTimeMillis() - writeStartTime);
             } catch (LineUnavailableException e) {
-                log.error("Audio device unavailable, possible contention: {}", e.getMessage());
+                log.error("Audio device unavailable, possible contention: {}", e.getMessage(), e);
+                try {
+                    log.debug("Retrying SourceDataLine open");
+                    SourceDataLine retryLine = (SourceDataLine) AudioSystem.getLine(info);
+                    retryLine.open(format, bufferBytes);
+                    currentLine.set(retryLine);
+                    retryLine.write(silenceBuffer, 0, silenceBuffer.length);
+                    retryLine.start();
+                    for (int i = 0; i < audioData.length; i += chunkSize) {
+                        if (interruptRequested.get()) {
+                            break;
+                        }
+                        int len = Math.min(chunkSize, audioData.length - i);
+                        retryLine.write(audioData, i, len);
+                    }
+                    if (interruptRequested.get()) {
+                        retryLine.flush();
+                    } else {
+                        retryLine.drain();
+                    }
+                    retryLine.close();
+                    log.info("Audio playback retried successfully");
+                } catch (LineUnavailableException retryEx) {
+                    log.error("Retry failed for audio device: {}", retryEx.getMessage(), retryEx);
+                }
             }
-            log.debug("VoiceRequest processing completed in {}ms", System.currentTimeMillis() - startTime);
         } catch (Exception e) {
             log.error("Text-to-speech error: {}", e.getMessage(), e);
+        } finally {
+            currentLine.set(null);
+            interruptRequested.set(false);
         }
+        log.debug("VoiceRequest processing completed in {}ms", System.currentTimeMillis() - startTime);
     }
 
-    /**
-     * Applies a fade-in or fade-out effect to the given audio data.
-     * This method modifies the raw audio data in place to gradually change the volume
-     * over the specified duration, starting from or ending at full volume, depending
-     * on the type of fade effect requested.
-     *
-     * @param audioData the array of raw audio data in 24kHz mono format, where each sample
-     *                  is represented by two consecutive bytes (little-endian format)
-     * @param fadeMs    the duration of the fade effect in milliseconds
-     * @param isFadeIn  a boolean indicating the type of fade effect;
-     *                  true for fade-in (volume increases over time), false for fade-out (volume decreases over time)
-     */
     private static void applyFade(byte[] audioData, int fadeMs, boolean isFadeIn) {
-        int samplesToFade = (24000 * fadeMs) / 1000; // 24kHz mono
+        int samplesToFade = (24000 * fadeMs) / 1000;
         int startIndex = isFadeIn ? 0 : Math.max(0, audioData.length / 2 - samplesToFade);
         for (int i = startIndex; i < startIndex + samplesToFade && (i * 2 + 1) < audioData.length; i++) {
             int lo = audioData[2 * i] & 0xFF;

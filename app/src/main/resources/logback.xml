@@ -1,19 +1,19 @@
 <configuration scan="true">
-    <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener" />
+    <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener"/>
 
     <!-- Register custom converter -->
     <conversionRule conversionWord="loggerColor" converterClass="elite.companion.util.LoggerColorConverter"/>
 
     <!-- Properties for flexibility -->
-    <property name="APP_LOG_LEVEL" value="${APP_LOG_LEVEL:-DEBUG}" />
-    <property name="LOG_FILE_PATH" value="./logs/elite-companion.log" />
+    <property name="APP_LOG_LEVEL" value="${APP_LOG_LEVEL:-DEBUG}"/>
+    <property name="LOG_FILE_PATH" value="./logs/elite-companion.log"/>
 
     <!-- Suppress noisy third-party logs -->
-    <logger name="io.grpc" level="WARN" />
-    <logger name="io.grpc.netty" level="WARN" />
-    <logger name="io.grpc.netty.shaded" level="WARN" />
-    <logger name="io.netty" level="WARN" />
-    <logger name="com.google" level="WARN" />
+    <logger name="io.grpc" level="WARN"/>
+    <logger name="io.grpc.netty" level="WARN"/>
+    <logger name="io.grpc.netty.shaded" level="WARN"/>
+    <logger name="io.netty" level="WARN"/>
+    <logger name="com.google" level="WARN"/>
     <logger name="ch.qos.logback" level="ERROR"/>
 
     <!-- Specific logger levels -->
@@ -24,9 +24,10 @@
     <logger name="elite.companion.session.SessionPersistence" level="ERROR"/>
     <logger name="elite.companion.ai.ConfigManager" level="ERROR"/>
     <logger name="elite.companion.ai.ears.google.GoogleSTTImpl" level="ERROR"/>
+    <logger name="elite.companion.ai.mouth.google.GoogleTTSImpl" level="ERROR"/>
 
     <!-- Set your app to DEBUG explicitly -->
-    <logger name="elite.companion" level="DEBUG" />
+    <logger name="elite.companion" level="DEBUG"/>
 
     <!-- Console appender -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
@@ -53,7 +54,7 @@
 
     <!-- Root logger to include both appenders -->
     <root level="WARN">
-        <appender-ref ref="CONSOLE" />
-        <appender-ref ref="FILE" />
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
     </root>
 </configuration>

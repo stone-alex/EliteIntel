@@ -11,6 +11,7 @@ import elite.companion.ai.ears.AudioCalibrator;
 import elite.companion.ai.ears.AudioFormatDetector;
 import elite.companion.ai.ears.AudioSettingsTuple;
 import elite.companion.ai.ears.EarsInterface;
+import elite.companion.ai.mouth.TTSInterruptEvent;
 import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.UserInputEvent;
 import elite.companion.session.SystemSession;
@@ -376,7 +377,7 @@ public class GoogleSTTImpl implements EarsInterface {
                     String sanitizedTranscript = DaftSecretarySanitizer.getInstance().correctMistakes(transcript);
 
                     EventBusManager.publish(new AppLogEvent("STT Sanitized: [" + sanitizedTranscript + "]."));
-
+                    EventBusManager.publish(new TTSInterruptEvent());
                     boolean isStreamingModeOn = SystemSession.getInstance().isStreamingModeOn();
                     if (isStreamingModeOn) {
                         String voiceName = SystemSession.getInstance().getAIVoice().getName();

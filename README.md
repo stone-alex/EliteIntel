@@ -214,4 +214,10 @@ and adapt, but give credit, don't sell it, and keep the same license.
 - Find me on the Official Elite Dangerous Discord or Canonn Science Discord (search CMDR PRINCE OF KRONDOR).
 ------
 
-Developed by  (CMDR PRINCE OF KRONDOR)
+
+
+# stone-alex/EliteIntel
+Open-Source Project Developed by (CMDR PRINCE OF KRONDOR)
+...
+## Footer
+© 2025 GitHub, Inc. | Open-Source Project

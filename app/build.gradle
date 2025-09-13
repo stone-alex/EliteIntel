@@ -54,7 +54,7 @@ java {
 }
 
 application {
-    mainClass = 'elite.companion.App'
+    mainClass = 'elite.intel.App'
 }
 
 sourceSets {
@@ -74,9 +74,9 @@ sourceSets {
 }
 
 shadowJar {
-    archiveFileName = 'elite_companion.jar'
+    archiveFileName = 'elite_intel.jar'
     manifest {
-        attributes 'Main-Class': 'elite.companion.App'
+        attributes 'Main-Class': 'elite.intel.App'
     }
     mergeServiceFiles()
     destinationDirectory = file("${rootProject.projectDir}/distribution")

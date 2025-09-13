@@ -1,1 +1,1 @@
-java -jar ./elite_companion.jar
+java -jar ./elite_intel.jar

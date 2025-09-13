@@ -1,4 +1,4 @@
-app/src/main/resources/elite-companion-xai-api-key.conf
+app/src/main/resources/elite-intel-xai-api-key.conf
 /app/build
 /logs
 /misc
@@ -15,4 +15,4 @@ app/src/main/resources/elite-companion-xai-api-key.conf
 ./.idea
 ./build
 ./.gradle
-./distribution/elite_companion.jar
+./distribution/elite_intel.jar

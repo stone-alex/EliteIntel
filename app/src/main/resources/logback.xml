@@ -2,11 +2,11 @@
     <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener"/>
 
     <!-- Register custom converter -->
-    <conversionRule conversionWord="loggerColor" converterClass="elite.companion.util.LoggerColorConverter"/>
+    <conversionRule conversionWord="loggerColor" converterClass="elite.intel.util.LoggerColorConverter"/>
 
     <!-- Properties for flexibility -->
     <property name="APP_LOG_LEVEL" value="${APP_LOG_LEVEL:-DEBUG}"/>
-    <property name="LOG_FILE_PATH" value="./logs/elite-companion.log"/>
+    <property name="LOG_FILE_PATH" value="./logs/elite-intel.log"/>
 
     <!-- Suppress noisy third-party logs -->
     <logger name="io.grpc" level="WARN"/>
@@ -17,17 +17,17 @@
     <logger name="ch.qos.logback" level="ERROR"/>
 
     <!-- Specific logger levels -->
-    <logger name="elite.companion.gameapi.JournalParser" level="INFO"/>
-    <logger name="elite.companion.gameapi.AuxiliaryFilesMonitor" level="ERROR"/>
-    <logger name="elite.companion.ai.hands.KeyBindingsParser" level="ERROR"/>
-    <logger name="elite.companion.ai.brain.grok.GrokCommandEndPoint" level="DEBUG"/>
-    <logger name="elite.companion.session.SessionPersistence" level="ERROR"/>
-    <logger name="elite.companion.ai.ConfigManager" level="ERROR"/>
-    <logger name="elite.companion.ai.ears.google.GoogleSTTImpl" level="ERROR"/>
-    <logger name="elite.companion.ai.mouth.google.GoogleTTSImpl" level="ERROR"/>
+    <logger name="elite.intel.gameapi.JournalParser" level="INFO"/>
+    <logger name="elite.intel.gameapi.AuxiliaryFilesMonitor" level="ERROR"/>
+    <logger name="elite.intel.ai.hands.KeyBindingsParser" level="ERROR"/>
+    <logger name="elite.intel.ai.brain.grok.GrokCommandEndPoint" level="DEBUG"/>
+    <logger name="elite.intel.session.SessionPersistence" level="ERROR"/>
+    <logger name="elite.intel.ai.ConfigManager" level="ERROR"/>
+    <logger name="elite.intel.ai.ears.google.GoogleSTTImpl" level="ERROR"/>
+    <logger name="elite.intel.ai.mouth.google.GoogleTTSImpl" level="ERROR"/>
 
     <!-- Set your app to DEBUG explicitly -->
-    <logger name="elite.companion" level="DEBUG"/>
+    <logger name="elite.intel" level="DEBUG"/>
 
     <!-- Console appender -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
@@ -40,8 +40,8 @@
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_FILE_PATH}</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!-- Daily rollover with files like elite-companion.log.2025-09-02 -->
-            <fileNamePattern>elite-companion.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <!-- Daily rollover with files like elite-intel.log.2025-09-02 -->
+            <fileNamePattern>elite-intel.%d{yyyy-MM-dd}.log</fileNamePattern>
             <!-- Keep 30 days of logs -->
             <maxHistory>30</maxHistory>
             <!-- Optional: limit total size to 2MB -->

@@ -35,7 +35,7 @@ jobs:
         run: |
           gradlew.bat --stacktrace --info :app:shadowJar --no-daemon
 
-      - name: Locate elite_companion.jar if not in distribution
+      - name: Locate elite_intel.jar if not in distribution
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
@@ -44,21 +44,21 @@ jobs:
           if (-not (Test-Path "distribution")) { New-Item -ItemType Directory -Path "distribution" | Out-Null }
 
           # If jar is already there, great
-          if (Test-Path "distribution\elite_companion.jar") {
-            Write-Host "Found elite_companion.jar in distribution."
+          if (Test-Path "distribution\elite_intel.jar") {
+            Write-Host "Found elite_intel.jar in distribution."
           } else {
-            Write-Host "elite_companion.jar not in distribution, searching workspace..."
-            $found = Get-ChildItem -Path . -Recurse -Filter "elite_companion.jar" -ErrorAction SilentlyContinue | Select-Object -First 1
+            Write-Host "elite_intel.jar not in distribution, searching workspace..."
+            $found = Get-ChildItem -Path . -Recurse -Filter "elite_intel.jar" -ErrorAction SilentlyContinue | Select-Object -First 1
             if ($found) {
               Write-Host "Found at: $($found.FullName). Copying to distribution..."
-              Copy-Item -Force $found.FullName "distribution\elite_companion.jar"
+              Copy-Item -Force $found.FullName "distribution\elite_intel.jar"
             } else {
-              Write-Host "No elite_companion.jar found anywhere."
+              Write-Host "No elite_intel.jar found anywhere."
             }
           }
 
-          if (-not (Test-Path "distribution\elite_companion.jar")) {
-            throw "elite_companion.jar not found after build. Check that :app exists and shadowJar produced the jar."
+          if (-not (Test-Path "distribution\elite_intel.jar")) {
+            throw "elite_intel.jar not found after build. Check that :app exists and shadowJar produced the jar."
           }
 
       - name: Verify distribution contents
@@ -73,7 +73,7 @@ jobs:
         run: |
           $ErrorActionPreference = 'Stop'
           $version = if ($env:GITHUB_REF.StartsWith('refs/tags/')) { $env:GITHUB_REF_NAME } else { "${{ github.run_number }}" }
-          $zipName = "elite-companion-$version.zip"
+          $zipName = "elite-intel-$version.zip"
           if (Test-Path $zipName) { Remove-Item $zipName -Force }
           Compress-Archive -Path "distribution\*" -DestinationPath $zipName
           Write-Host "Packaged $zipName"
@@ -82,7 +82,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: windows-zip
-          path: elite-companion-*.zip
+          path: elite-intel-*.zip
           if-no-files-found: error
 
   publish-release:
@@ -105,7 +105,7 @@ jobs:
         run: |
           $ErrorActionPreference = 'Stop'
           $tag = "${{ github.ref_name }}"
-          $zip = Get-ChildItem -Filter 'elite-companion-*.zip' | Select-Object -First 1
+          $zip = Get-ChildItem -Filter 'elite-intel-*.zip' | Select-Object -First 1
           if (-not $zip) { throw "ZIP not found in workspace." }
 
           # If release doesn't exist, create; otherwise upload/overwrite asset

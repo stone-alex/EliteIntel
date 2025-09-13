@@ -5,13 +5,13 @@
 
 ## Installation & Setup
 
-# 👉[Download Installation and Configuration](https://github.com/stone-alex/elite-companion/wiki/Installation-and-Configuration)👈
+# 👉[Download Installation and Configuration](https://github.com/stone-alex/eliteintel/wiki/Installation-and-Configuration)👈
 
 
 If you run into issues, hit us up on GitHub issues or 👉[**Discord**](https://discord.gg/3qAqBENsBm).👈
 Feedback and bug reports are super welcome!
 
-### 📖 Full details here: [**WIKI**](https://github.com/stone-alex/elite-companion/wiki)
+### 📖 Full details here: [**WIKI**](https://github.com/stone-alex/eliteintel/wiki)
 
 ## Overview
 

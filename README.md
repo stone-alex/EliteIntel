@@ -209,6 +209,9 @@ Released under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 Interna
 See [creativecommons.org/licenses/by-nc-sa/4.0/](https://creativecommons.org/licenses/by-nc-sa/4.0/) for details. Share
 and adapt, but give credit, don't sell it, and keep the same license.
 
+## Join the Community
+- Discuss EliteIntel on the [Frontier Forums](https://forums.frontier.co.uk/forums/elite-dangerous-third-party-tools/) or [r/EliteDangerous](https://www.reddit.com/r/EliteDangerous/).
+- Find me on the Official Elite Dangerous Discord or Canonn Science Discord (search CMDR PRINCE OF KRONDOR).
 ------
 
 Developed by  (CMDR PRINCE OF KRONDOR)

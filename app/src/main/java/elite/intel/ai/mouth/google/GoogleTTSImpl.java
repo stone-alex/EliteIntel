@@ -20,17 +20,35 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Implementation of the MouthInterface that utilizes Google Cloud Text-to-Speech API
- * to generate human-like speech audio from text. This class contains methods for initializing
- * and managing the Text-to-Speech client, processing voice requests, and handling events
- * related to text-to-speech actions.
+ * Implementation of the {@code MouthInterface} that uses the Google Text-to-Speech API
+ * to convert text into synthesized speech. The class maintains a queue of text-to-speech
+ * requests to be processed sequentially. It is implemented as a singleton to ensure
+ * only one instance is active during execution.
  *
- * <p>The class maintains a queue system for handling multiple voice requests asynchronously.
- * It also supports selecting different voices for speech synthesis and provides functionality
- * for managing the lifecycle of the text-to-speech processing thread.
- * <p>
- * This class implements the Singleton design pattern, allowing one instance to manage
- * all text-to-speech operations within the system.
+ * This class works by managing a background thread (`VoiceGeneratorThread`) to continuously
+ * process the queue of text-to-speech requests. Each request is handled asynchronously
+ * with speech synthesis conducted via the Google Text-to-Speech API.
+ *
+ * Features include:
+ * - Configurable speech synthesis parameters through {@link VoiceRequest}, such as text, voice type, and speech rate.
+ * - Support for interruption and clearing of the voice request queue.
+ * - Integration with a Google Voice provider to fetch voice configurations dynamically.
+ * - Event subscription to handle voice processing and interruption triggers.
+ *
+ * Thread safety:
+ * - Synchronization is applied to methods that start, stop, or interrupt the processing thread.
+ * - Atomic variables are used to manage critical flags for thread-safe operation.
+ *
+ * Usage scenario:
+ * - This class can be used in applications requiring server-side or client-side text-to-speech synthesis
+ *   to provide auditory feedback.
+ *
+ * Dependencies:
+ * - Google Cloud TextToSpeechClient for handling API interactions.
+ * - EventBus for subscribing to event-based requests such as `VoiceProcessEvent` and `TTSInterruptEvent`.
+ * - Java's {@code javax.sound.sampled.SourceDataLine} for audio playback.
+ * - Configuration support for Google API system key.
+ * - Threading utilities including {@code Thread}, {@code BlockingQueue}, and {@code AtomicReference}.
  */
 public class GoogleTTSImpl implements MouthInterface {
     private static final Logger log = LoggerFactory.getLogger(GoogleTTSImpl.class);
@@ -134,6 +152,20 @@ public class GoogleTTSImpl implements MouthInterface {
         textToSpeechClient = null;
     }
 
+    /**
+     * Interrupts any ongoing text-to-speech (TTS) processing, clears the voice queue, and resets the state.
+     *
+     * This method is synchronized to ensure thread safety during operations that may involve concurrent
+     * access or modification of shared resources such as the voice queue and audio processing components.
+     *
+     * The method performs the following actions:
+     * 1. Clears the voice queue to remove any pending TTS requests.
+     * 2. Sets the interrupt flag to indicate that the current process should be stopped.
+     * 3. If an audio line is actively playing, stops and closes it, releasing its resources.
+     * 4. Resets the interrupt flag after completing the interruption process.
+     * 5. Logs the current state of the TTS service and checks if the processing thread is alive.
+     *    If the thread is no longer active, it logs a warning and restarts the TTS service.
+     */
     @Override
     public synchronized void interruptAndClear() {
         voiceQueue.clear();
@@ -182,6 +214,28 @@ public class GoogleTTSImpl implements MouthInterface {
         }
     }
 
+    /**
+     * Processes the voice request queue by continuously polling for new {@link VoiceRequest} objects,
+     * handling interruptions, and calling the appropriate methods to perform text-to-speech synthesis
+     * and audio playback.
+     *
+     * The method runs in a loop as long as the `running` flag is true and performs the following steps:
+     *
+     * - Polls the `voiceQueue` to retrieve the next voice request. If no request is available within
+     *   the defined timeout, it checks for interruption or stop signals before continuing.
+     * - When a valid {@link VoiceRequest} is retrieved, it extracts the text, voice name, and speech
+     *   rate from the request and passes them to {@link #processVoiceRequest(String, String, double)}
+     *   for further processing.
+     * - Handles interruptions by setting the current thread's interrupt status and exiting the loop.
+     * - Logs relevant details, including the queue status, interruptions, and unexpected errors.
+     *
+     * This method provides thread-safe processing of text-to-speech requests and ensures proper
+     * shutdown in cases of interruption or stop signals.
+     *
+     * Throws:
+     * - InterruptedException: If the thread is interrupted during the queue polling.
+     * - Exception: For any unexpected issues during the process.
+     */
     private void processVoiceQueue() {
         while (running) {
             try {
@@ -206,6 +260,18 @@ public class GoogleTTSImpl implements MouthInterface {
         }
     }
 
+    /**
+     * Processes a text-to-speech request by synthesizing speech from the provided text
+     * using the specified voice and speech rate, and plays the resulting audio.
+     *
+     * @param text the text content to synthesize into speech.
+     *             If null or empty, the method will return without any action.
+     * @param voiceName the name of the voice to use during synthesis.
+     *                  If the specified voice cannot be found, a default voice will be used.
+     * @param speechRate the rate of speech during audio playback.
+     *                   Values typically range from 0.25 (slowest) to 4.0 (fastest),
+     *                   with 1.0 being the normal rate.
+     */
     private void processVoiceRequest(String text, String voiceName, double speechRate) {
         if (text == null || text.isEmpty()) {
             return;
@@ -244,8 +310,7 @@ public class GoogleTTSImpl implements MouthInterface {
             AudioConfig config = AudioConfig.newBuilder()
                     .setAudioEncoding(AudioEncoding.LINEAR16)
                     .setSpeakingRate(speechRate)
-                    .setVolumeGainDb(-3) // set volume to -3 dbFS to prevent excessive loudness and clipping. (could be a UI setting)
-                    //.setSampleRateHertz(24000) // optional wrong value may reduce quality.
+                    .setVolumeGainDb(-3)
                     .build();
             SynthesizeSpeechResponse response = textToSpeechClient.synthesizeSpeech(input, voice, config);
             long apiEndTime = System.currentTimeMillis();

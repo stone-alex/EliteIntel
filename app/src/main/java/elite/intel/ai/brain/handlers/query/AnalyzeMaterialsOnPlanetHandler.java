@@ -10,7 +10,7 @@ import elite.intel.util.json.GsonFactory;
 
 import java.util.Optional;
 
-public class ProvideSummaryOfMaterialsOnPlanet extends BaseQueryAnalyzer implements QueryHandler {
+public class AnalyzeMaterialsOnPlanetHandler extends BaseQueryAnalyzer implements QueryHandler {
 
     private static final Gson GSON = GsonFactory.getGson();
 

@@ -9,7 +9,7 @@ import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class PirateMissionAnalyzer extends BaseQueryAnalyzer implements QueryHandler {
+public class AnalyzePirateMissionHandler extends BaseQueryAnalyzer implements QueryHandler {
 
     @Override
     public JsonObject handle(String action, JsonObject params, String originalUserInput) {

@@ -17,6 +17,7 @@ Your feedback is crucial to making this better.**
 If you run into issues, hit us up on GitHub issues or 👉[**Discord**](https://discord.gg/3qAqBENsBm).👈
 Feedback and bug reports are super welcome!
 
+### 📖 Full details here: [**WIKI**](https://github.com/stone-alex/elite-companion/wiki)
 
 ## Overview
 

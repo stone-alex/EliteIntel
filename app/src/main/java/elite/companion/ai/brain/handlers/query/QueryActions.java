@@ -22,7 +22,7 @@ public enum QueryActions {
     QUERY_PIRATE_MISSION_STATUS("query_pirate_mission_status", "Handles summarize current progression of missions. ", PirateMissionAnalyzer.class, true),
     QUERY_NEXT_STAR_SCOOPABLE("query_next_star_scoopable", "Check if we can get fuel at the next star. ", AnalyzeDataHandler.class, false),
     QUERY_PLAYER_STATS_ANALYSIS("query_player_stats_analysis", "Analyze current player statistics. ", PlayerStatsAnalyzer.class, true),
-    QUERY_SEARCH_SIGNAL_DATA("query_search_signal_data", "Requests current system and signal data (e.g., 'what signals are here'). ", AnalyzeDataHandler.class, false),
+    QUERY_SEARCH_SIGNAL_DATA("query_local_info", "Analyze information for our current location ", AnalyzeDataHandler.class, false),
     QUERY_SHIP_LOADOUT("query_ship_loadout", "Requests current ship details (e.g., 'what is my ship loadout'). ", AnalyzeDataHandler.class, false),
     STATION_DATA("query_station_data", "Access station data, provide analysis. ", StationDataHandler.class, false),
     TRIVIA("trivia", "General conversion question, use your own knowledge to respond. ", TriviaQueryHandler.class, true),

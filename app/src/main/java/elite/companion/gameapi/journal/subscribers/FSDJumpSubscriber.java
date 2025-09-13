@@ -20,7 +20,7 @@ public class FSDJumpSubscriber {
     @Subscribe
     public void onFSDJumpEvent(FSDJumpEvent event) {
         PlayerSession playerSession = PlayerSession.getInstance();
-        playerSession.put(PlayerSession.CURRENT_SYSTEM_DATA, event.toJson());
+        playerSession.addSignal(event);
 
         String currentStarSystem = event.getStarSystem();
 
@@ -56,13 +56,13 @@ public class FSDJumpSubscriber {
             TrafficDto trafficDto = EdsmApiClient.searchTraffic(finalDestination);
             if (trafficDto.getData() != null && trafficDto.getData().getTraffic() != null) {
                 TrafficStats trafficStats = trafficDto.getData().getTraffic();
-                if (trafficStats.getTotal() > 0) sb.append("Local traffic: ").append(trafficStats);
             }
             DeathsDto deathsDto = EdsmApiClient.searchDeaths(finalDestination);
             if (deathsDto.getData() != null && deathsDto.getData().getDeaths() != null) {
                 DeathsStats deathsStats = deathsDto.getData().getDeaths();
-                if (deathsStats.getTotal() > 0) sb.append("Local deaths: ").append(deathsStats);
             }
+            playerSession.addSignal(trafficDto);
+            playerSession.addSignal(deathsDto);
 
         } else {
             if (roueSet) {
@@ -76,7 +76,7 @@ public class FSDJumpSubscriber {
             }
         }
 
-        EventBusManager.publish(new AppLogEvent("Processing Event: FSDJumpEvent sending sensor data to AI: " + sb));
+        //EventBusManager.publish(new AppLogEvent("Processing Event: FSDJumpEvent sending sensor data to AI: " + sb));
         EventBusManager.publish(new SensorDataEvent(sb.toString()));
     }
 }

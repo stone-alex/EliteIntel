@@ -3,15 +3,9 @@ package elite.companion.gameapi.journal.subscribers;
 import com.google.common.eventbus.Subscribe;
 import elite.companion.gameapi.EventBusManager;
 import elite.companion.gameapi.SensorDataEvent;
-import elite.companion.gameapi.gamestate.events.NavRouteDto;
 import elite.companion.gameapi.journal.events.StartJumpEvent;
 import elite.companion.session.PlayerSession;
 import elite.companion.ui.event.AppLogEvent;
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
 
 @SuppressWarnings("unused")
 public class StartJumpSubscriber {
@@ -41,7 +35,7 @@ public class StartJumpSubscriber {
             EventBusManager.publish(new SensorDataEvent(sb.toString()));
         }
 
-        playerSession.clearFssSignals();
+        playerSession.clearLocalInfo();
         playerSession.clearStellarObjects();
         playerSession.clearShipScans();
 

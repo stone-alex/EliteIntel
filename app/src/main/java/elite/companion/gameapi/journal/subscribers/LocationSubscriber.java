@@ -18,5 +18,6 @@ public class LocationSubscriber {
         dto.setZ(event.getStarPos()[2]);
         dto.setStarName(event.getStarSystem());
         playerSession.setCurrentLocation(dto);
+        playerSession.addSignal(dto);
     }
 }

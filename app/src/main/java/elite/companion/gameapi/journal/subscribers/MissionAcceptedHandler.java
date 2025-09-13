@@ -16,33 +16,6 @@ public class MissionAcceptedHandler {
         PlayerSession playerSession = PlayerSession.getInstance();
         playerSession.addTargetFaction(event.getTargetFaction());
         playerSession.addMission(new MissionDto(event));
-        //EventBusManager.publish(new SensorDataEvent("Mission Accepted: " + mission.toJson()));
+        EventBusManager.publish(new SensorDataEvent("Mission Accepted: " + event.toJson()));
     }
 }
-
-
-/**
- * Example data
- * <p>
- * {
- * "timestamp": "2025-08-29T02:11:54Z",
- * "event": "MissionAccepted",
- * "Faction": "Baminyi Bridge Group",
- * "Name": "Mission_Massacre",
- * "LocalisedName": "Kill Xue Davokje Blue Cartel faction Pirates",
- * "TargetType": "$MissionUtil_FactionTag_Pirate;",
- * "TargetType_Localised": "Pirates",
- * "TargetFaction": "Xue Davokje Blue Cartel",
- * "KillCount": 25,
- * "DestinationSystem": "Xue Davokje",
- * "DestinationStation": "Ludwig Struve Gateway",
- * "Expiry": "2025-08-29T18:54:18Z",
- * "Wing": false,
- * "Influence": "++",
- * "Reputation": "++",
- * "Reward": 30222222,
- * "MissionID": 1027206784
- * }
- *
- *
- */

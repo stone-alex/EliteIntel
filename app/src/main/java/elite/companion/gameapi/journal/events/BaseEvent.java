@@ -3,11 +3,12 @@ package elite.companion.gameapi.journal.events;
 
 import com.google.gson.JsonObject;
 import elite.companion.util.json.GsonFactory;
+import elite.companion.util.json.ToJsonConvertible;
 
 import java.time.Duration;
 import java.time.Instant;
 
-public abstract class BaseEvent {
+public abstract class BaseEvent implements ToJsonConvertible {
 
     //@SerializedName("timestamp")
     public String timestamp;

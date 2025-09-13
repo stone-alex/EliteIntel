@@ -7,6 +7,7 @@ import elite.companion.gameapi.gamestate.events.NavRouteDto;
 import elite.companion.gameapi.journal.events.*;
 import elite.companion.gameapi.journal.events.dto.*;
 import elite.companion.util.json.GsonFactory;
+import elite.companion.util.json.ToJsonConvertible;
 
 import java.util.*;
 
@@ -149,7 +150,6 @@ public class PlayerSession {
     public static final String CURRENT_STATUS = "current_status";
     public static final String FSD_TARGET = "fsd_target";
     public static final String SHIP_CARGO = "ship_cargo";
-    public static final String CURRENT_SYSTEM_DATA = "current_system_data";
     public static final String MISSIONS = "player_missions";
     public static final String REPUTATION = "reputation";
     public static final String PROFILE = "profile";
@@ -320,6 +320,10 @@ public class PlayerSession {
         saveSession();
     }
 
+    public void removeBounty(BountyDto bounty) {
+        bounties.remove(bounty);
+    }
+
     public long getBountyCollectedThisSession() {
         return bountyCollectedThisSession;
     }
@@ -403,7 +407,7 @@ public class PlayerSession {
     }
 
 
-    public void addSignal(BaseEvent event) {
+    public void addSignal(ToJsonConvertible event) {
         detectedSignals.add(event.toJson());
         saveSession();
     }
@@ -418,7 +422,7 @@ public class PlayerSession {
         return array.length == 0 ? "no data" : sb.toString();
     }
 
-    public void clearFssSignals() {
+    public void clearLocalInfo() {
         detectedSignals.clear();
         saveSession();
     }

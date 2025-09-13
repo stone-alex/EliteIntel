@@ -218,10 +218,7 @@ public class GrokCommandEndPoint implements AiCommandInterface {
         messages.add(userMessage);
 
         // Create API request body
-        JsonObject requestBody = new JsonObject();
-        requestBody.addProperty("model", "grok-3-fast");
-        requestBody.addProperty("temperature", 0.7);
-        requestBody.addProperty("stream", false);
+        JsonObject requestBody = GrokClient.getInstance().createRequestBodyHeader();
         requestBody.add("messages", messages);
 
         // Serialize to JSON string
@@ -244,7 +241,7 @@ public class GrokCommandEndPoint implements AiCommandInterface {
 
     private JsonObject callXaiApi(String jsonString) {
         try {
-            HttpURLConnection conn = getHttpURLConnection();
+            HttpURLConnection conn = GrokClient.getInstance().getHttpURLConnection();
 
             // Log the input string
             log.debug("xAI API call: [{}]", toDebugString(jsonString));
@@ -368,7 +365,7 @@ public class GrokCommandEndPoint implements AiCommandInterface {
         return contextFactory.generateSystemInstructions(systemInput);
     }
 
-    private static HttpURLConnection getHttpURLConnection() throws IOException {
+/*    private static HttpURLConnection getHttpURLConnection() throws IOException {
         URL url = new URL("https://api.x.ai/v1/chat/completions");
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
@@ -376,7 +373,7 @@ public class GrokCommandEndPoint implements AiCommandInterface {
         conn.setRequestProperty("Authorization", "Bearer " + ConfigManager.getInstance().getSystemKey(ConfigManager.AI_API_KEY));
         conn.setDoOutput(true);
         return conn;
-    }
+    }*/
 
     // Debug string to reveal control characters
     private String toDebugString(String input) {

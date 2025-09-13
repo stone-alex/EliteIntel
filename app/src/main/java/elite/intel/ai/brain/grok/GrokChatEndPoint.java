@@ -43,12 +43,10 @@ public class GrokChatEndPoint implements AIChatInterface {
             // Sanitize messages
             JsonArray sanitizedMessages = sanitizeJsonArray(messages);
 
-            HttpURLConnection conn = getHttpURLConnection();
+            GrokClient client = GrokClient.getInstance();
+            HttpURLConnection conn = client.getHttpURLConnection();
 
-            JsonObject body = new JsonObject();
-            body.addProperty("model", "grok-3-fast");
-            body.addProperty("temperature", 0.7);
-            body.addProperty("stream", false);
+            JsonObject body = client.createRequestBodyHeader();
             body.add("messages", sanitizedMessages);
 
             bodyString = body.toString();
@@ -206,15 +204,5 @@ public class GrokChatEndPoint implements AIChatInterface {
             }
         }
         return sb.toString();
-    }
-
-    private static HttpURLConnection getHttpURLConnection() throws IOException {
-        URL url = new URL("https://api.x.ai/v1/chat/completions");
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("POST");
-        conn.setRequestProperty("Content-Type", "application/json");
-        conn.setRequestProperty("Authorization", "Bearer " + ConfigManager.getInstance().getSystemKey(ConfigManager.AI_API_KEY));
-        conn.setDoOutput(true);
-        return conn;
     }
 }

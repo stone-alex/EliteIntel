@@ -38,13 +38,11 @@ public class GrokAnalysisEndpoint implements AiAnalysisInterface {
 
     @Override public JsonObject analyzeData(String userIntent, String dataJson) {
         try {
-            HttpURLConnection conn = getHttpURLConnection();
+            GrokClient client = GrokClient.getInstance();
+            HttpURLConnection conn = client.getHttpURLConnection();
             String systemPrompt = ApiFactory.getInstance().getAiContextFactory().generateAnalysisPrompt(userIntent, dataJson);
 
-            JsonObject request = new JsonObject();
-            request.addProperty("model", "grok-3-fast");
-            request.addProperty("temperature", 0.7);
-            request.addProperty("stream", false);
+            JsonObject request = client.createRequestBodyHeader();
 
             JsonObject messageSystem = new JsonObject();
             messageSystem.addProperty("role", "system");
@@ -86,7 +84,7 @@ public class GrokAnalysisEndpoint implements AiAnalysisInterface {
                 }
                 logger.error("xAI API error: {} - {}", responseCode, conn.getResponseMessage());
                 logger.info("Error response body: {}", errorResponse);
-                return createErrorResponse("Analysis error.");
+                return client.createErrorResponse("Analysis error.");
             }
 
             // Parse response
@@ -95,26 +93,26 @@ public class GrokAnalysisEndpoint implements AiAnalysisInterface {
                 json = JsonParser.parseString(response).getAsJsonObject();
             } catch (JsonSyntaxException e) {
                 logger.error("Failed to parse API response: [{}]", toDebugString(response), e);
-                return createErrorResponse("Analysis error.");
+                return client.createErrorResponse("Analysis error.");
             }
 
             // Extract content safely
             JsonArray choices = json.getAsJsonArray("choices");
             if (choices == null || choices.isEmpty()) {
                 logger.error("No choices in API response: [{}]", toDebugString(response));
-                return createErrorResponse("Analysis error.");
+                return client.createErrorResponse("Analysis error.");
             }
 
             JsonObject message = choices.get(0).getAsJsonObject().getAsJsonObject("message");
             if (message == null) {
                 logger.error("No message in API response choices: [{}]", toDebugString(response));
-                return createErrorResponse("Analysis error.");
+                return client.createErrorResponse("Analysis error.");
             }
 
             String content = message.get("content").getAsString();
             if (content == null) {
                 logger.error("No content in API response message: [{}]", toDebugString(response));
-                return createErrorResponse("Analysis error.");
+                return client.createErrorResponse("Analysis error.");
             }
 
             logger.debug("API response content: [{}]", toDebugString(content));
@@ -128,7 +126,7 @@ public class GrokAnalysisEndpoint implements AiAnalysisInterface {
                 jsonStart = content.indexOf("{");
                 if (jsonStart == -1) {
                     logger.error("No JSON object found in content: [{}]", toDebugString(content));
-                    return createErrorResponse("Analysis error.");
+                    return client.createErrorResponse("Analysis error.");
                 }
                 jsonContent = content.substring(jsonStart);
             }
@@ -140,29 +138,14 @@ public class GrokAnalysisEndpoint implements AiAnalysisInterface {
                 return JsonParser.parseString(jsonContent).getAsJsonObject();
             } catch (JsonSyntaxException e) {
                 logger.error("Failed to parse API response content: [{}]", toDebugString(jsonContent), e);
-                return createErrorResponse("Analysis error.");
+                return client.createErrorResponse("Analysis error.");
             }
         } catch (Exception e) {
             logger.error("AI API call fatal error: {}", e.getMessage(), e);
-            return createErrorResponse("Analysis error. Check logs.");
+            return GrokClient.getInstance().createErrorResponse("Analysis error. Check logs.");
         }
     }
 
-    private JsonObject createErrorResponse(String message) {
-        JsonObject error = new JsonObject();
-        error.addProperty("response_text", message);
-        return error;
-    }
-
-    private HttpURLConnection getHttpURLConnection() throws IOException {
-        URL url = new URL(apiUrl);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("POST");
-        conn.setRequestProperty("Content-Type", "application/json");
-        conn.setRequestProperty("Authorization", "Bearer " + ConfigManager.getInstance().getSystemKey(ConfigManager.AI_API_KEY));
-        conn.setDoOutput(true);
-        return conn;
-    }
 
     private String toDebugString(String input) {
         if (input == null) return "null";

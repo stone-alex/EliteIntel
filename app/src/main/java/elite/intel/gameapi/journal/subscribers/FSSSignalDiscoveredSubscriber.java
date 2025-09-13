@@ -20,16 +20,16 @@ public class FSSSignalDiscoveredSubscriber {
         playerSession.addSignal(event);
         playerSession.put(PlayerSession.LAST_SCAN, event.toString());
 
-        if (event.getUssTypeLocalised().equals("Nonhuman signal source")) {
+        if (event.getUssTypeLocalised() != null && event.getUssTypeLocalised().equals("Nonhuman signal source")) {
             publishVoice("Nonhuman signal source detected! Threat level " + event.getThreatLevel() + "!");
         }
-        if (event.getUssType().contains(USS_TYPE_SALVAGE)) {
+        if (event.getUssType() != null && event.getUssType().contains(USS_TYPE_SALVAGE)) {
             announceSalvage("Low quality salvage", event);
         }
-        if (event.getUssType().contains(USS_TYPE_VALUABLE_SALVAGE)) {
+        if (event.getUssType() != null && event.getUssType().contains(USS_TYPE_VALUABLE_SALVAGE)) {
             announceSalvage("Valuable salvage", event);
         }
-        if (event.getUssType().contains(USS_TYPE_VERY_VALUABLE_SALVAGE)) {
+        if (event.getUssType() != null && event.getUssType().contains(USS_TYPE_VERY_VALUABLE_SALVAGE)) {
             announceSalvage("Very Valuable salvage", event);
         }
     }
@@ -53,7 +53,3 @@ public class FSSSignalDiscoveredSubscriber {
     }
 
 }
-
-
-
-/* { "timestamp":"2025-09-06T21:47:22Z", "event":"FSSSignalDiscovered", "SystemAddress":2965515536771, "SignalName":"$USS_NonHumanSignalSource;", "SignalName_Localised":"Unidentified signal source", "SignalType":"USS", "USSType":"$USS_Type_NonHuman;", "USSType_Localised":"Nonhuman signal source", "SpawningState":"$FactionState_None;", "SpawningState_Localised":"None", "SpawningFaction":"$faction_none;", "SpawningFaction_Localised":"None", "ThreatLevel":7, "TimeRemaining":619.343567 }*/

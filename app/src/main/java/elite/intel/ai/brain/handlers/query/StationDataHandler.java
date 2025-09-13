@@ -18,7 +18,7 @@ public class StationDataHandler extends BaseQueryAnalyzer implements QueryHandle
         QueryActions query = findQuery(action);
         PlayerSession playerSession = PlayerSession.getInstance();
 
-        Object status = playerSession.get(PlayerSession.CURRENT_STATUS);
+        Object status = playerSession.get(PlayerSession.CURRENT_FUEL_STATUS);
         String dataJsonStr = status != null ? GSON.toJson(status) : null;
 
         // Check JSON validity

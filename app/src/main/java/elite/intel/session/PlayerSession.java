@@ -147,7 +147,7 @@ public class PlayerSession {
     public static final String SHIP_LOADOUT_JSON = "ship_loadout_json";
     public static final String SUITE_LOADOUT_JSON = "suite_loadout_json";
     public static final String FINAL_DESTINATION = "final_destination";
-    public static final String CURRENT_STATUS = "current_status";
+    public static final String CURRENT_FUEL_STATUS = "current_status";
     public static final String FSD_TARGET = "fsd_target";
     public static final String SHIP_CARGO = "ship_cargo";
     public static final String MISSIONS = "player_missions";
@@ -182,7 +182,7 @@ public class PlayerSession {
     public static final String MARKET_PROFITS = "market_profits";
     public static final String CREW_WAGS_PAYOUT = "crew_wags_payout";
     public static final String SHIP_CARGO_CAPACITY = "ship_cargo_capacity";
-    public static final String PLAYER_TITLE = "player_title";
+    public static final String PLAYER_CUSTOM_TITLE = "player_title";
     public static final String PLAYER_HIGHEST_MILITARY_RANK = "player_highest_military_rank";
     public static final String LAST_SCAN = "last_scan";
     public static final String PLAYER_NAME = "player_name";

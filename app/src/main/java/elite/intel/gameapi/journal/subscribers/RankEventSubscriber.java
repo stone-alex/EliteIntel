@@ -17,7 +17,8 @@ public class RankEventSubscriber {
         playerSession.setRankAndProgressDto(rp);
 
         playerSession.put(PlayerSession.PLAYER_HIGHEST_MILITARY_RANK, rp.getHighestMilitaryRank());
-        String title = ConfigManager.getInstance().getPlayerKey(ConfigManager.PLAYER_TITLE);
-        playerSession.put(PlayerSession.PLAYER_TITLE, title);
+        String title = ConfigManager.getInstance().getPlayerKey(ConfigManager.PLAYER_CUSTOM_TITLE);
+        playerSession.put(PlayerSession.PLAYER_CUSTOM_TITLE, title);
+        playerSession.saveSession();
     }
 }

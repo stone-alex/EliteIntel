@@ -641,7 +641,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
                 case ConfigManager.PLAYER_ALTERNATIVE_NAME:
                     playerAltNameField.setText(entry.getValue());
                     break;
-                case ConfigManager.PLAYER_TITLE:
+                case ConfigManager.PLAYER_CUSTOM_TITLE:
                     playerTitleField.setText(entry.getValue());
                     break;
                 case ConfigManager.PLAYER_MISSION_STATEMENT:
@@ -698,7 +698,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         if (cfg == null) return;
         if (playerAltNameField != null)
             playerAltNameField.setText(cfg.getOrDefault(ConfigManager.PLAYER_ALTERNATIVE_NAME, ""));
-        if (playerTitleField != null) playerTitleField.setText(cfg.getOrDefault(ConfigManager.PLAYER_TITLE, ""));
+        if (playerTitleField != null) playerTitleField.setText(cfg.getOrDefault(ConfigManager.PLAYER_CUSTOM_TITLE, ""));
         if (playerMissionDescription != null)
             playerMissionDescription.setText(cfg.getOrDefault(ConfigManager.PLAYER_MISSION_STATEMENT, ""));
         if (journalDirField != null) journalDirField.setText(cfg.getOrDefault(ConfigManager.JOURNAL_DIR, ""));
@@ -720,7 +720,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     public Map<String, String> getUserConfigInput() {
         Map<String, String> cfg = new HashMap<>();
         if (playerAltNameField != null) cfg.put(ConfigManager.PLAYER_ALTERNATIVE_NAME, playerAltNameField.getText());
-        if (playerTitleField != null) cfg.put(ConfigManager.PLAYER_TITLE, playerTitleField.getText());
+        if (playerTitleField != null) cfg.put(ConfigManager.PLAYER_CUSTOM_TITLE, playerTitleField.getText());
         if (playerMissionDescription != null)
             cfg.put(ConfigManager.PLAYER_MISSION_STATEMENT, playerMissionDescription.getText());
         if (journalDirField != null) cfg.put(ConfigManager.JOURNAL_DIR, journalDirField.getText());

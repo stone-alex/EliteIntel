@@ -160,7 +160,7 @@ public class GrokContextFactory implements AiContextFactory {
     private void getSessionValues(StringBuilder sb) {
         PlayerSession playerSession = PlayerSession.getInstance();
         String playerName = String.valueOf(playerSession.get(PlayerSession.PLAYER_NAME));
-        String playerTitle = String.valueOf(playerSession.get(PlayerSession.PLAYER_TITLE));
+        String playerTitle = String.valueOf(playerSession.get(PlayerSession.PLAYER_CUSTOM_TITLE));
         String playerMilitaryRank = String.valueOf(playerSession.get(PlayerSession.PLAYER_HIGHEST_MILITARY_RANK));
         String playerHonorific = Ranks.getPlayerHonorific();
         String currentShip = String.valueOf(playerSession.get(PlayerSession.CURRENT_SHIP));

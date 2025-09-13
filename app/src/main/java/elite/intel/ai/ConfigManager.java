@@ -50,7 +50,7 @@ public class ConfigManager {
     public static final String TTS_API_KEY = "tts_api_key"; // New key for Google API
     public static final String STT_API_KEY = "stt_api_key";
     public static final String PLAYER_MISSION_STATEMENT = "mission_statement";
-    public static final String PLAYER_TITLE = "title";
+    public static final String PLAYER_CUSTOM_TITLE = "title";
     public static final String PLAYER_ALTERNATIVE_NAME = "alternative_name";
     public static final String PLAYER_EDSM_KEY = "edsm_key";
     public static final String JOURNAL_DIR = "journal_dir";
@@ -65,7 +65,7 @@ public class ConfigManager {
         DEFAULT_SYSTEM_CONFIG.put(TTS_API_KEY, "");
         DEFAULT_SYSTEM_CONFIG.put(STT_API_KEY, "");
         DEFAULT_USER_CONFIG.put(PLAYER_MISSION_STATEMENT, "");
-        DEFAULT_USER_CONFIG.put(PLAYER_TITLE, "");
+        DEFAULT_USER_CONFIG.put(PLAYER_CUSTOM_TITLE, "");
         DEFAULT_USER_CONFIG.put(PLAYER_ALTERNATIVE_NAME, "");
         DEFAULT_USER_CONFIG.put(JOURNAL_DIR, "");
         DEFAULT_USER_CONFIG.put(BINDINGS_DIR, "");
@@ -273,7 +273,7 @@ public class ConfigManager {
                     if (entry.getKey().equals(PLAYER_MISSION_STATEMENT)) {
                         writer.write("\n# Use your guild title or any other name you want to be addressed by\n");
                         writer.write("# AI will randomly choose to address you by your name, highest military rank, corresponding honorific or title\n");
-                    } else if (entry.getKey().equals(PLAYER_TITLE)) {
+                    } else if (entry.getKey().equals(PLAYER_CUSTOM_TITLE)) {
                         writer.write("\n# Use this to provide an alternative name. This is in case your in-game name is unpronounceable by the AI\n");
                         writer.write("# such as \"CMDR-PAPABARE123\"\n");
                     } else if (entry.getKey().equals(JOURNAL_DIR)) {

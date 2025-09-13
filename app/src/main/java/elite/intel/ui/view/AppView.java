@@ -102,7 +102,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
      * styling UI elements.
      */
     public AppView() {
-        super("Elite Companion (version 9-8-2025)");
+        super("Elite Intel");
         // Apply a readable, Windows-friendly font to the entire UI BEFORE creating components
         installUIFont(getPlatformDefaultFont(18f)); // Adjust base size here (e.g., 14f, 15f, 16f)
         installDarkDefaults(); // set dark defaults before components are created
@@ -118,7 +118,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         root.setBorder(new EmptyBorder(10, 10, 10, 10));
         setContentPane(root);
 
-        titleLabel = new JLabel("Elite Companion", SwingConstants.CENTER);
+        titleLabel = new JLabel("Elite Intel", SwingConstants.CENTER);
         // Make the title a bit larger than the base
         titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, titleLabel.getFont().getSize2D() + 3f));
         root.add(titleLabel, BorderLayout.NORTH);

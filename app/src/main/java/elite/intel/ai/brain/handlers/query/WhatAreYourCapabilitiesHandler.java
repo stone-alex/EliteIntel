@@ -1,18 +1,18 @@
 package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
-import elite.intel.about.EliteCompanionFactory;
+import elite.intel.about.EliteIntelFactory;
 import elite.intel.util.json.JsonDataFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Handles queries related to the capabilities of the Elite AI Companion.
+ * Handles queries related to the capabilities of the Elite AI.
  * This class extends {@code BaseQueryAnalyzer} to leverage pre-built query analysis methods
  * and implements the {@code QueryHandler} interface for structured query handling.
  * <p>
  * Core functionality:
- * - Retrieves the capabilities of the Elite AI Companion using {@code EliteCompanionFactory}.
+ * - Retrieves the capabilities of the Elite AI  using {@code EliteIntelFactory}.
  * - Converts the capabilities data into a JSON string using {@code JsonDataFactory}.
  * - Validates the generated JSON string to ensure data integrity.
  * - Returns an analyzed response using {@code BaseQueryAnalyzer}'s analysis methods.
@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
  * Dependencies:
  * - {@code BaseQueryAnalyzer} for query analysis.
  * - {@code JsonDataFactory} for JSON serialization and validation.
- * - {@code EliteCompanionFactory} for accessing AI capabilities.
+ * - {@code EliteIntelFactory} for accessing AI capabilities.
  * - {@code GenericResponse} for returning appropriate responses in error scenarios.
  * <p>
  * Logging:
@@ -35,7 +35,7 @@ public class WhatAreYourCapabilitiesHandler extends BaseQueryAnalyzer implements
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
 
-        String dataJsonStr = JsonDataFactory.getInstance().toJsonString(EliteCompanionFactory.getInstance().getCapabilities());
+        String dataJsonStr = JsonDataFactory.getInstance().toJsonString(EliteIntelFactory.getInstance().getCapabilities());
         QueryActions query = findQuery(action);
 
         // Check JSON validity

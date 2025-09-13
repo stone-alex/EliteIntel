@@ -1,4 +1,4 @@
-# Elite Companion - Public Beta
+# Elite Intel - Public Beta
 
 ### NOTE: This is an early public beta release—expect bugs and ongoing improvements! ###
 
@@ -15,7 +15,7 @@ Feedback and bug reports are super welcome!
 
 ## Overview
 
-Elite Companion is your AI-powered, TOS-compliant sidekick for *Elite Dangerous*.
+Elite Intel is your AI-powered, TOS-compliant sidekick for *Elite Dangerous*.
 It's a Quality of Life (QoL) app that enhances gameplay with voice-activated commands **uttered in natural language**,
 real-time journal parsing, and smart AI assistance—all while staying fully compliant
 with Frontier Developments' Terms of Service. No AFK play, no botting, and no

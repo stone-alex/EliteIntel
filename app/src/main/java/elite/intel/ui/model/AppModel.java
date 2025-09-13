@@ -56,14 +56,14 @@ public class AppModel implements AppModelInterface {
         //noinspection TextBlockMigration
         return "<html>\n" +
                 "<body>\n" +
-                "<h1>Elite Companion Help</h1>\n" +
-                "<p>Welcome to the Elite Companion App, a quality-of-life tool for Elite Dangerous players. This guide covers the setup steps to get started, including installing Java, obtaining API keys, and configuring the app.</p>\n" +
+                "<h1>Elite Intel Help</h1>\n" +
+                "<p>Welcome to the Elite Intel App, a quality-of-life tool for Elite Dangerous players. This guide covers the setup steps to get started, including installing Java, obtaining API keys, and configuring the app.</p>\n" +
                 "\n" +
                 "<h2>2. Obtaining Google Speech-to-Text (STT) and Text-to-Speech (TTS) Keys</h2>\n" +
                 "<p>The app uses Google Cloud for voice interaction. You need API keys for STT and TTS services:</p>\n" +
                 "<ul>\n" +
                 "    <li><b>Create a Google Cloud Account</b>: Sign up at https://cloud.google.com or log in with an existing Google account.</li>\n" +
-                "    <li><b>Set Up a Project</b>: In the Google Cloud Console, create a new project (e.g., \"EliteCompanion\").</li>\n" +
+                "    <li><b>Set Up a Project</b>: In the Google Cloud Console, create a new project (e.g., \"EliteIntel\").</li>\n" +
                 "    <li><b>Enable APIs</b>: Go to \"APIs & Services\" > \"Library,\" search for \"Cloud Speech-to-Text API\" and \"Cloud Text-to-Speech API,\" and enable both.</li>\n" +
                 "    <li><b>Create API Key</b>:\n" +
                 "        <ul>\n" +

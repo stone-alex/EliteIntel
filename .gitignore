@@ -16,3 +16,6 @@ app/src/main/resources/elite-intel-xai-api-key.conf
 ./build
 ./.gradle
 ./distribution/elite_intel.jar
+.gradle/*
+./.gradle/file-system.probe
+./.gradle/buildOutputCleanup/

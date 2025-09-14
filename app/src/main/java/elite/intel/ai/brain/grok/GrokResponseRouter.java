@@ -20,6 +20,8 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nullable;
 import java.util.Map;
 
+import static elite.intel.ai.brain.handlers.query.QueryActions.GENERAL_CONVERSATION;
+
 /**
  * GrokResponseRouter acts as a central router for handling AI responses, commands, and queries.
  * It processes input from AI services and delegates the execution to specific handlers based on
@@ -114,8 +116,8 @@ public class GrokResponseRouter implements AIRouterInterface {
     private void handleQuery(String action, JsonObject params, String userInput) {
         QueryHandler handler = queryHandlers.get(action);
         if (handler == null || action == null || action.isEmpty()) {
-            handler = queryHandlers.get("general_conversation");
-            action = "general_conversation";
+            handler = queryHandlers.get(GENERAL_CONVERSATION.getAction());
+            action = GENERAL_CONVERSATION.getAction();
             log.info("No specific query handler found, routing to general_conversation");
         }
 

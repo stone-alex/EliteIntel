@@ -1,10 +1,10 @@
 package elite.intel.about;
 
 import elite.intel.about.dto.AICapabilitiesDto;
-import elite.intel.about.dto.AINameDto;
-import elite.intel.session.SystemSession;
+import elite.intel.gameapi.gamestate.events.BaseJsonDto;
+import elite.intel.util.json.ToJsonConvertible;
 
-public class EliteIntelFactory {
+public class EliteIntelFactory extends BaseJsonDto implements ToJsonConvertible {
 
     private static final EliteIntelFactory instance = new EliteIntelFactory();
 
@@ -14,12 +14,6 @@ public class EliteIntelFactory {
 
     public static EliteIntelFactory getInstance() {
         return instance;
-    }
-
-
-    public AINameDto getInfo() {
-        String name = SystemSession.getInstance().getAIVoice().getName();
-        return new AINameDto(name, "Elite Dangerous AI");
     }
 
     public AICapabilitiesDto getCapabilities() {

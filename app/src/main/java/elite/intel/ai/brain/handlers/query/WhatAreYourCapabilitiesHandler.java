@@ -35,7 +35,7 @@ public class WhatAreYourCapabilitiesHandler extends BaseQueryAnalyzer implements
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
 
-        String dataJsonStr = JsonDataFactory.getInstance().toJsonString(EliteIntelFactory.getInstance().getCapabilities());
+        String dataJsonStr = EliteIntelFactory.getInstance().getCapabilities().toJson();
         QueryActions query = findQuery(action);
 
         // Check JSON validity

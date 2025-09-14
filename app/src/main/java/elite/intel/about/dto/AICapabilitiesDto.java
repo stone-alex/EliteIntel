@@ -26,7 +26,7 @@ public class AICapabilitiesDto implements ToJsonConvertible {
     public AICapabilitiesDto() {
         capabilities = "## What the App Does\n" +
                 "\n" +
-                "- **Voice-Activated Commands for VR Users:** Enables hands-free control in VR setups. Users can issue voice triggers (e.g., \"deploy landing gear\" or \"plot route to Sol\") to execute in-game actions via keyboard events. This reduces the need to remove VR headsets for common tasks.\n" +
+                "- **Voice-Activated Commands for VR Users:** Enables hands-free control in VR setups. Users can issue voice triggers (e.g., \"deploy landing gear\" or \"analyze cargo hold contents\") to execute in-game actions via keyboard events. This reduces the need to remove VR headsets for common tasks.\n" +
                 "  \n" +
                 "- **Real-Time Journal Parsing:** Reads and processes *Elite Dangerous* journal files (JSON format) using a `JournalReader` to post events to an internal event bus. Modules subscribe to these events for handling, allowing the app to track session data and respond dynamically.\n" +
                 "\n" +

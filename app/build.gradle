@@ -21,13 +21,6 @@ dependencies {
     implementation 'com.google.api.grpc:proto-google-cloud-speech-v1p1beta1:0.135.0'
     implementation 'com.google.api.grpc:grpc-google-cloud-speech-v1p1beta1:0.135.0'
 
-    // Authentication
-    implementation 'com.google.auth:google-auth-library-oauth2-http:1.37.0'
-
-    // CMU Sphinx for STT (fallback or hybrid)
-    implementation 'edu.cmu.sphinx:sphinx4-core:5prealpha-SNAPSHOT'
-    implementation 'edu.cmu.sphinx:sphinx4-data:5prealpha-SNAPSHOT'
-
     // Gson for JSON parsing
     implementation 'com.google.code.gson:gson:2.13.1'
 

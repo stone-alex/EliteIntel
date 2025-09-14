@@ -275,7 +275,7 @@ public class ConfigManager {
                         writer.write("# AI will randomly choose to address you by your name, highest military rank, corresponding honorific or title\n");
                     } else if (entry.getKey().equals(PLAYER_CUSTOM_TITLE)) {
                         writer.write("\n# Use this to provide an alternative name. This is in case your in-game name is unpronounceable by the AI\n");
-                        writer.write("# such as \"CMDR-PAPABARE123\"\n");
+                        writer.write("# such as \"CMDR-xXEdgeLOrDXx123\"\n");
                     } else if (entry.getKey().equals(JOURNAL_DIR)) {
                         writer.write("\n# Custom directory path for Elite Dangerous journal files (leave blank for default)\n");
                     } else if (entry.getKey().equals(BINDINGS_DIR)) {

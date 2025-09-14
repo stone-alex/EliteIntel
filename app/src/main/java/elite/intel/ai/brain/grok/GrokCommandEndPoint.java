@@ -78,16 +78,6 @@ public class GrokCommandEndPoint implements AiCommandInterface {
     }
 
 
-    @Override public void start() throws Exception {
-        router.start();
-        log.info("Started GrokInteractionHandler");
-    }
-
-    @Override public void stop() {
-        router.stop();
-        log.info("Stopped GrokInteractionHandler");
-    }
-
     @Subscribe @Override public void onUserInput(UserInputEvent event) {
         processVoiceCommand(event.getUserInput(), event.getConfidence());
     }

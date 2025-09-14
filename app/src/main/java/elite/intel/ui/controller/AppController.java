@@ -5,6 +5,7 @@ import elite.intel.ai.ApiFactory;
 import elite.intel.ai.ConfigManager;
 import elite.intel.ai.brain.AICadence;
 import elite.intel.ai.brain.AIPersonality;
+import elite.intel.ai.brain.AiCommandInterface;
 import elite.intel.ai.ears.EarsInterface;
 import elite.intel.ai.mouth.AiVoices;
 import elite.intel.ai.mouth.MouthInterface;
@@ -60,6 +61,7 @@ public class AppController implements AppControllerInterface, ActionListener {
     //EarsInterface ears = new GoogleSTTImpl();
     EarsInterface ears;
     MouthInterface mouth;
+    AiCommandInterface brain;
     JournalParser journalParser = new JournalParser();
 
     public AppController(AppModelInterface model, AppViewInterface view) {
@@ -143,8 +145,11 @@ public class AppController implements AppControllerInterface, ActionListener {
             journalParser.start();
             fileMonitor.start();
 
+            brain = ApiFactory.getInstance().getCommandEndpoint();
+
             mouth = ApiFactory.getInstance().getMouthImpl();
             mouth.start();
+
 
             ears = ApiFactory.getInstance().getEarsImpl();
             ears.start();

@@ -59,13 +59,6 @@ public class GrokResponseRouter implements AIRouterInterface {
         }
     }
 
-    @Override public void start() throws Exception {
-        log.info("Started GrokResponseRouter");
-    }
-
-    @Override public void stop() {
-        log.info("Stopped GrokResponseRouter");
-    }
 
     @Override public void processAiResponse(JsonObject jsonResponse, @Nullable String userInput) {
         if (jsonResponse == null) {

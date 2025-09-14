@@ -30,7 +30,5 @@ import javax.annotation.Nullable;
  * provides additional context for processing.
  */
 public interface AIRouterInterface {
-    void start() throws Exception;
-    void stop();
     void processAiResponse(JsonObject jsonResponse, @Nullable String userInput);
 }

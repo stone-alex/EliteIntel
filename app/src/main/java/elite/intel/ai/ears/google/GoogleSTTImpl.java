@@ -3,9 +3,7 @@ package elite.intel.ai.ears.google;
 import com.google.api.gax.rpc.ApiStreamObserver;
 import com.google.cloud.speech.v1.*;
 import com.google.protobuf.ByteString;
-import elite.intel.ai.ApiFactory;
 import elite.intel.ai.ConfigManager;
-import elite.intel.ai.brain.AiCommandInterface;
 import elite.intel.ai.ears.AudioCalibrator;
 import elite.intel.ai.ears.AudioFormatDetector;
 import elite.intel.ai.ears.AudioSettingsTuple;
@@ -23,8 +21,6 @@ import org.slf4j.LoggerFactory;
 import javax.sound.sampled.*;
 import java.io.File;
 import java.util.*;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -66,9 +62,7 @@ public class GoogleSTTImpl implements EarsInterface {
     private static final int EXIT_SILENCE_FRAMES = 20; // ~2s silence to exit
 
     private File wavFile = null; // Output WAV for debugging
-    private final BlockingQueue<String> transcriptionQueue = new LinkedBlockingQueue<>();
     private SpeechClient speechClient;
-    private final AiCommandInterface aiCommandInterface;
     private final AtomicBoolean isListening = new AtomicBoolean(true);
     private long lastAudioSentTime = System.currentTimeMillis();
     private byte[] lastBuffer = null;
@@ -80,7 +74,6 @@ public class GoogleSTTImpl implements EarsInterface {
     private Thread processingThread;
 
     public GoogleSTTImpl() {
-        this.aiCommandInterface = ApiFactory.getInstance().getCommandEndpoint();
     }
 
     /**
@@ -123,7 +116,7 @@ public class GoogleSTTImpl implements EarsInterface {
         Double rms_threshold_high = (Double) systemSession.get(SystemSession.RMS_THRESHOLD_HIGH);
         Double rms_threshold_low = (Double) systemSession.get(SystemSession.RMS_THRESHOLD_LOW);
 
-        if (rms_threshold_high == null && rms_threshold_low == null) {
+        if (rms_threshold_high == null || rms_threshold_low == null) {
             // Calibrate RMS thresholds
             EventBusManager.publish(new AppLogEvent("Calibrating audio..."));
             AudioSettingsTuple<Double, Double> rmsThresholds = AudioCalibrator.calibrateRMS(sampleRateHertz, bufferSize);
@@ -147,18 +140,15 @@ public class GoogleSTTImpl implements EarsInterface {
         // Start processing thread
         this.processingThread = new Thread(this::startStreaming);
         this.processingThread.start();
-        try {
-            this.aiCommandInterface.start();
-            log.info("SpeechRecognizer started in background thread");
-        } catch (Exception e) {
-            log.error("Failed to initialize Grok", e);
-            throw new RuntimeException(e);
-        }
     }
 
     @Override
     public void stop() {
-        shutdown();
+        isListening.set(false);
+        if (speechClient != null) {
+            speechClient.close();
+            log.info("SpeechClient closed");
+        }
         if (processingThread != null) {
             this.processingThread.interrupt();
         }
@@ -399,12 +389,10 @@ public class GoogleSTTImpl implements EarsInterface {
             if (result.getIsFinal()) {
                 EventBusManager.publish(new AppLogEvent("STT Heard: [" + transcript + "]. Confidence: " + confidence + "."));
                 if (!transcript.isBlank() && transcript.length() >= 3 && confidence > 0.3) {
-                    transcriptionQueue.offer(transcript);
                     log.info("Final transcript: {} (confidence: {})", transcript, confidence);
                     String sanitizedTranscript = DaftSecretarySanitizer.getInstance().correctMistakes(transcript);
 
                     EventBusManager.publish(new AppLogEvent("STT Sanitized: [" + sanitizedTranscript + "]."));
-                    //EventBusManager.publish(new TTSInterruptEvent());
                     boolean isStreamingModeOn = SystemSession.getInstance().isStreamingModeOn();
                     if (isStreamingModeOn) {
                         String voiceName = SystemSession.getInstance().getAIVoice().getName();
@@ -452,21 +440,6 @@ public class GoogleSTTImpl implements EarsInterface {
                 .setInterimResults(true)
                 .setSingleUtterance(false)
                 .build();
-    }
-
-    private void stopListening() {
-        isListening.set(false);
-    }
-
-    public void shutdown() {
-        stopListening();
-        aiCommandInterface.stop();
-        if (speechClient != null) {
-            speechClient.close();
-            log.info("SpeechClient closed");
-        }
-        //for debugging
-        //stopWavRecording();
     }
 
 

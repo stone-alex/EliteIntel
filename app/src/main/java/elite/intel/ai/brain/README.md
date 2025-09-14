@@ -35,7 +35,6 @@ Duplicate the Grok impl's structure, adapting API calls to your LLM. All are sin
 
 - **Role**: Lifecycle management and event handling for user inputs and sensor data.
 - **Methods**:
-    - `start()`/`stop()`: Initialize/cleanup (e.g., start router, register with `EventBusManager`).
     - `@Subscribe onUserInput(UserInputEvent event)`: Sanitize input, build prompt via `AiContextFactory.generatePlayerInstructions()`, send to LLM, parse into `{ "type": "...", "action": "...", "params": {...}, "response_text": "..." }`.
     - `@Subscribe onSensorDataEvent(SensorDataEvent event)`: Process sensor data, build prompt, send, format response.
 - **Tips**: Use `ThreadLocal<JsonArray>` for chat history. Publish `VoiceProcessEvent` for TTS. Fallback to chat on errors. Example: "Weapons Hot!" → `{ "type": "command", "action": "weapons_hot", "params": {}, "response_text": "Hardpoints deployed." }`.
@@ -45,7 +44,6 @@ Duplicate the Grok impl's structure, adapting API calls to your LLM. All are sin
 
 - **Role**: Dispatches responses to handlers.
 - **Methods**:
-    - `start()`/`stop()`: Log lifecycle.
     - `processAiResponse(JsonObject jsonResponse, @Nullable String userInput)`: Extract `type`, `action`, `params`, `response_text`. Switch on `type`:
         - `"command"`: Call `handleCommand(action, params, responseText, jsonResponse)` using `action` matched to `GameCommand.getUserCommand()` values.
         - `"query"`: Call `handleQuery(action, params, userInput)` (handles follow-ups if `expect_followup` is true).

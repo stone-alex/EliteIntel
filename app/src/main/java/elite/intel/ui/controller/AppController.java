@@ -146,6 +146,7 @@ public class AppController implements AppControllerInterface, ActionListener {
             fileMonitor.start();
 
             brain = ApiFactory.getInstance().getCommandEndpoint();
+            brain.start();
 
             mouth = ApiFactory.getInstance().getMouthImpl();
             mouth.start();
@@ -176,6 +177,7 @@ public class AppController implements AppControllerInterface, ActionListener {
             mouth.stop();
             mouth = null;
             ears.stop();
+            brain.stop();
             fileMonitor.stop();
             isServiceRunning = false;
         }

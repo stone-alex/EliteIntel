@@ -21,6 +21,8 @@ import elite.intel.gameapi.UserInputEvent;
  * - onSensorDataEvent(SensorDataEvent event): Processes sensor data events. This provides opportunities to update the system with environmental or contextual data.
  */
 public interface AiCommandInterface {
+    void start();
+    void stop();
     /**
      * Use elite.intel.gameapi.SubscriberRegistration to subscribe to these events
      * or add EventBusManager.register(this); in the constructor if your class is singleton

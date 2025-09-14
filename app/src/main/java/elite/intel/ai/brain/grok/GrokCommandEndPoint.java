@@ -3,7 +3,6 @@ package elite.intel.ai.brain.grok;
 import com.google.common.eventbus.Subscribe;
 import com.google.gson.*;
 import elite.intel.ai.ApiFactory;
-import elite.intel.ai.ConfigManager;
 import elite.intel.ai.brain.AIChatInterface;
 import elite.intel.ai.brain.AIRouterInterface;
 import elite.intel.ai.brain.AiCommandInterface;
@@ -18,9 +17,7 @@ import elite.intel.util.json.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
@@ -55,6 +52,8 @@ import java.util.Scanner;
  */
 public class GrokCommandEndPoint implements AiCommandInterface {
     private static final Logger log = LoggerFactory.getLogger(GrokCommandEndPoint.class);
+    private java.util.concurrent.ExecutorService executor;
+    private final java.util.concurrent.atomic.AtomicBoolean running = new java.util.concurrent.atomic.AtomicBoolean(false);
 
     private static final ThreadLocal<JsonArray> currentHistory = new ThreadLocal<>();
     private final AIRouterInterface router;
@@ -78,8 +77,60 @@ public class GrokCommandEndPoint implements AiCommandInterface {
     }
 
 
+    @Override public void start() {
+        if (running.compareAndSet(false, true)) {
+            this.executor = java.util.concurrent.Executors.newSingleThreadExecutor(r -> {
+                Thread t = new Thread(r, "GrokCommandEndPoint-Worker");
+                t.setDaemon(true);
+                return t;
+            });
+            elite.intel.gameapi.EventBusManager.register(this);
+            log.info("GrokCommandEndPoint started");
+        } else {
+            log.debug("GrokCommandEndPoint already started");
+        }
+    }
+
+    @Override public void stop() {
+        if (running.compareAndSet(true, false)) {
+            elite.intel.gameapi.EventBusManager.unregister(this);
+            if (executor != null) {
+                executor.shutdown();
+                try {
+                    if (!executor.awaitTermination(2, java.util.concurrent.TimeUnit.SECONDS)) {
+                        executor.shutdownNow();
+                    }
+                } catch (InterruptedException ie) {
+                    executor.shutdownNow();
+                    Thread.currentThread().interrupt();
+                } finally {
+                    executor = null;
+                }
+            }
+            log.info("GrokCommandEndPoint stopped");
+        } else {
+            log.debug("GrokCommandEndPoint already stopped");
+        }
+    }
+
+
     @Subscribe @Override public void onUserInput(UserInputEvent event) {
-        processVoiceCommand(event.getUserInput(), event.getConfidence());
+        if (!running.get()) {
+            log.debug("Ignoring onUserInput: endpoint not running");
+            return;
+        }
+        if (executor == null) {
+            log.warn("Executor is null; running onUserInput on caller thread");
+            processVoiceCommand(event.getUserInput(), event.getConfidence());
+            return;
+        }
+        executor.submit(() -> {
+            try {
+                processVoiceCommand(event.getUserInput(), event.getConfidence());
+            } catch (Exception e) {
+                log.error("Error processing user input", e);
+            }
+        });
     }
 
     private void processVoiceCommand(String userInput, float confidence) {
@@ -192,6 +243,12 @@ public class GrokCommandEndPoint implements AiCommandInterface {
     }
 
     @Subscribe @Override public void onSensorDataEvent(SensorDataEvent event) {
+        if (!running.get()) {
+            log.debug("Ignoring onSensorDataEvent: endpoint not running");
+            return;
+        }
+
+
         String input = event.getSensorData();
 
 
@@ -215,18 +272,23 @@ public class GrokCommandEndPoint implements AiCommandInterface {
         Gson gson = GsonFactory.getGson();
         String jsonString = gson.toJson(requestBody);
         log.debug("JSON prepared for callXaiApi: [{}]", toDebugString(jsonString));
-
-        try {
-            JsonObject apiResponse = callXaiApi(jsonString);
-            if (apiResponse == null) {
-                EventBusManager.publish(new VoiceProcessEvent("Failure processing system request. Check programming"));
-                return;
+        executor.submit(() -> {
+            try {
+                JsonObject apiResponse = callXaiApi(jsonString);
+                if (apiResponse == null) {
+                    EventBusManager.publish(new VoiceProcessEvent("Failure processing system request. Check programming"));
+                    return;
+                }
+                router.processAiResponse(apiResponse, null);
+            } catch (JsonSyntaxException e) {
+                log.error("JSON parsing failed for input: [{}]", toDebugString(jsonString), e);
+                throw e;
             }
-            router.processAiResponse(apiResponse, null);
-        } catch (JsonSyntaxException e) {
-            log.error("JSON parsing failed for input: [{}]", toDebugString(jsonString), e);
-            throw e;
-        }
+        });
+
+
+
+
     }
 
     private JsonObject callXaiApi(String jsonString) {

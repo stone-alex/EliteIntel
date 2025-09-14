@@ -35,6 +35,9 @@ Duplicate the Grok impl's structure, adapting API calls to your LLM. All are sin
 
 - **Role**: Lifecycle management and event handling for user inputs and sensor data.
 - **Methods**:
+    - `start()` starts the local thread
+    - `stop()` stops the local thread
+    - `@Subscribe onVoiceProcessEvent(VoiceProcessEvent event)`: Sanitize input, build prompt via `AiContextFactory.generatePlayerInstructions()`, send to LLM, parse into `{ "type": "...", "action": "...", "params": {...}, "response_text": "..." }`.`
     - `@Subscribe onUserInput(UserInputEvent event)`: Sanitize input, build prompt via `AiContextFactory.generatePlayerInstructions()`, send to LLM, parse into `{ "type": "...", "action": "...", "params": {...}, "response_text": "..." }`.
     - `@Subscribe onSensorDataEvent(SensorDataEvent event)`: Process sensor data, build prompt, send, format response.
 - **Tips**: Use `ThreadLocal<JsonArray>` for chat history. Publish `VoiceProcessEvent` for TTS. Fallback to chat on errors. Example: "Weapons Hot!" → `{ "type": "command", "action": "weapons_hot", "params": {}, "response_text": "Hardpoints deployed." }`.

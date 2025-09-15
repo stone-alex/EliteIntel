@@ -3,7 +3,6 @@ package elite.intel.ai.mouth.google;
 import com.google.cloud.texttospeech.v1.*;
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.ConfigManager;
-import elite.intel.ai.ears.TTSPlaybackStartEvent;
 import elite.intel.ai.mouth.AiVoices;
 import elite.intel.ai.mouth.MouthInterface;
 import elite.intel.ai.mouth.TTSInterruptEvent;
@@ -67,28 +66,7 @@ public class GoogleTTSImpl implements MouthInterface {
         return INSTANCE;
     }
 
-    private static class VoiceRequest {
-        private final String text;
-        private final String voiceName;
-        private final double speechRate;
-
-        VoiceRequest(String text, String voiceName, double speechRate) {
-            this.text = text;
-            this.voiceName = voiceName;
-            this.speechRate = speechRate;
-        }
-
-        public String getText() {
-            return text;
-        }
-
-        public String getVoiceName() {
-            return voiceName;
-        }
-
-        public double getSpeechRate() {
-            return speechRate;
-        }
+    private record VoiceRequest(String text, String voiceName, double speechRate) {
     }
 
     private GoogleTTSImpl() {
@@ -249,7 +227,7 @@ public class GoogleTTSImpl implements MouthInterface {
                     }
                     continue;
                 }
-                processVoiceRequest(request.getText(), request.getVoiceName(), request.getSpeechRate());
+                processVoiceRequest(request.text(), request.voiceName(), request.speechRate());
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 log.info("VoiceGenerator interrupted, shutting down");
@@ -262,7 +240,7 @@ public class GoogleTTSImpl implements MouthInterface {
 
     /**
      * Processes a text-to-speech request by synthesizing speech from the provided text
-     * using the specified voice and speech rate, and plays the resulting audio.
+     * using the specified voice and speech rate and plays the resulting audio.
      *
      * @param text the text content to synthesize into speech.
      *             If null or empty, the method will return without any action.
@@ -332,7 +310,6 @@ public class GoogleTTSImpl implements MouthInterface {
             int bufferBytes = (int) (format.getFrameSize() * format.getSampleRate() / 10);
             int silenceFrames = (int) (format.getSampleRate() / 50);
             byte[] silenceBuffer = new byte[silenceFrames * format.getFrameSize()];
-            int chunkSize = bufferBytes;
 
             currentLine.set(null);
             try (SourceDataLine line = (SourceDataLine) AudioSystem.getLine(info)) {
@@ -344,15 +321,14 @@ public class GoogleTTSImpl implements MouthInterface {
                 line.write(silenceBuffer, 0, silenceBuffer.length);
                 line.start();
                 log.info("Spoke with voice {}: {}", voiceName, text);
-                EventBusManager.publish(new TTSPlaybackStartEvent(text));
 
                 long writeStartTime = System.currentTimeMillis();
-                for (int i = 0; i < audioData.length; i += chunkSize) {
+                for (int i = 0; i < audioData.length; i += bufferBytes) {
                     if (interruptRequested.get()) {
                         log.debug("Playback interrupted mid-stream: {}", text);
                         break;
                     }
-                    int len = Math.min(chunkSize, audioData.length - i);
+                    int len = Math.min(bufferBytes, audioData.length - i);
                     line.write(audioData, i, len);
                 }
                 if (interruptRequested.get()) {
@@ -371,12 +347,12 @@ public class GoogleTTSImpl implements MouthInterface {
                     currentLine.set(retryLine);
                     retryLine.write(silenceBuffer, 0, silenceBuffer.length);
                     retryLine.start();
-                    for (int i = 0; i < audioData.length; i += chunkSize) {
+                    for (int i = 0; i < audioData.length; i += bufferBytes) {
                         if (interruptRequested.get()) {
                             log.debug("Playback interrupted mid-stream on retry: {}", text);
                             break;
                         }
-                        int len = Math.min(chunkSize, audioData.length - i);
+                        int len = Math.min(bufferBytes, audioData.length - i);
                         retryLine.write(audioData, i, len);
                     }
                     if (interruptRequested.get()) {
@@ -399,7 +375,7 @@ public class GoogleTTSImpl implements MouthInterface {
         log.debug("VoiceRequest processing completed in {}ms", System.currentTimeMillis() - startTime);
     }
 
-    private static void applyFade(byte[] audioData, int fadeMs, boolean isFadeIn) {
+    private void applyFade(byte[] audioData, int fadeMs, boolean isFadeIn) {
         int samplesToFade = (24000 * fadeMs) / 1000;
         int startIndex = isFadeIn ? 0 : Math.max(0, audioData.length / 2 - samplesToFade);
         for (int i = startIndex; i < startIndex + samplesToFade && (i * 2 + 1) < audioData.length; i++) {

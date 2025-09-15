@@ -2,6 +2,7 @@ package elite.intel.ai.mouth.google;
 
 import com.google.cloud.texttospeech.v1.VoiceSelectionParams;
 import elite.intel.ai.mouth.AiVoices;
+import elite.intel.ai.mouth.VoiceProvider;
 import elite.intel.session.SystemSession;
 
 import java.util.Arrays;
@@ -14,7 +15,7 @@ import java.util.Random;
  * Maps AiVoices enum names (e.g., "Jennifer") to Google VoiceSelectionParams and provides
  * methods to retrieve user-selected and random voices dynamically as AiVoices enums.
  */
-public class GoogleVoiceProvider {
+public class GoogleVoiceProvider implements VoiceProvider<VoiceSelectionParams> {
     private static final GoogleVoiceProvider INSTANCE = new GoogleVoiceProvider();
     private final Map<String, VoiceSelectionParams> voiceMap;
 
@@ -46,6 +47,7 @@ public class GoogleVoiceProvider {
      *
      * @return AiVoices for the current AI voice, or default (Jennifer) if none selected.
      */
+    @Override
     public AiVoices getUserSelectedVoice() {
         AiVoices aiVoice = SystemSession.getInstance().getAIVoice();
         return aiVoice != null ? aiVoice : AiVoices.JENNIFER; // Default to Jennifer
@@ -56,6 +58,7 @@ public class GoogleVoiceProvider {
      *
      * @return AiVoices for a random voice, or default (Jennifer) if none available.
      */
+    @Override
     public AiVoices getRandomVoice() {
         AiVoices currentAiVoice = SystemSession.getInstance().getAIVoice();
         AiVoices[] availableVoices = Arrays.stream(AiVoices.values())
@@ -73,6 +76,7 @@ public class GoogleVoiceProvider {
      * @param voiceName The AiVoices enum name (e.g., "Jennifer").
      * @return The speech rate for the voice, or default (1.2) if not found.
      */
+    @Override
     public double getSpeechRate(String voiceName) {
         for (AiVoices voice : AiVoices.values()) {
             if (voice.getName().equals(voiceName)) {
@@ -88,6 +92,7 @@ public class GoogleVoiceProvider {
      * @param voiceName The AiVoices enum name (e.g., "Jennifer").
      * @return VoiceSelectionParams for the voice, or default (Jennifer) if not found.
      */
+    @Override
     public VoiceSelectionParams getVoiceParams(String voiceName) {
         VoiceSelectionParams params = voiceMap.get(voiceName);
         if (params == null) {

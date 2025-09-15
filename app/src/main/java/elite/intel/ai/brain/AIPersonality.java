@@ -15,15 +15,21 @@ package elite.intel.ai.brain;
  * of interaction need to match specific contextual or user preferences.
  */
 public enum AIPersonality {
-    PROFESSIONAL("Respond extremely briefly and concisely as a military professional."),
-    FRIENDLY("Respond extremely briefly and concisely in a friendly, casual tone like a close friend. Use slang matching cadence."),
-    UNHINGED("Respond extremely briefly  and concisely with playful, cheeky energy, emphasizing humor and light sarcasm. Use jargon and slang that matches cadence."),
-    ROGUE("Respond extremely briefly and concisely with bold, in-your-face energy, using heavy jargon but staying sharp and witty within the selected cadence.");
+    PROFESSIONAL("Respond extremely briefly and concisely as a military professional.", 0.1f),
+    FRIENDLY("Respond extremely briefly and concisely in a friendly, casual tone like a close friend. Use slang matching cadence.", 0.5f),
+    UNHINGED("Respond extremely briefly  and concisely with playful, cheeky energy, emphasizing humor and light sarcasm. Use jargon and slang that matches cadence.", 0.8f),
+    ROGUE("Respond extremely briefly and concisely with bold, in-your-face energy, using heavy jargon but staying sharp and witty within the selected cadence.", 1.0f);
 
     private final String behaviorClause;
+    private float temperature = 0.5f;
 
-    AIPersonality(String behaviorClause) {
+    AIPersonality(String behaviorClause, float temperature) {
         this.behaviorClause = behaviorClause;
+        this.temperature = temperature;
+    }
+
+    public float getTemperature() {
+        return temperature;
     }
 
     public String getBehaviorClause() {

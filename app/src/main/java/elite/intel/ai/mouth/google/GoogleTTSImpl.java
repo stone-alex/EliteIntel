@@ -4,6 +4,7 @@ import com.google.cloud.texttospeech.v1.*;
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.ConfigManager;
 import elite.intel.ai.mouth.AiVoices;
+import elite.intel.ai.mouth.AudioDeClicker;
 import elite.intel.ai.mouth.MouthInterface;
 import elite.intel.ai.mouth.TTSInterruptEvent;
 import elite.intel.gameapi.EventBusManager;
@@ -23,25 +24,25 @@ import java.util.concurrent.atomic.AtomicReference;
  * to convert text into synthesized speech. The class maintains a queue of text-to-speech
  * requests to be processed sequentially. It is implemented as a singleton to ensure
  * only one instance is active during execution.
- *
+ * <p>
  * This class works by managing a background thread (`VoiceGeneratorThread`) to continuously
  * process the queue of text-to-speech requests. Each request is handled asynchronously
  * with speech synthesis conducted via the Google Text-to-Speech API.
- *
+ * <p>
  * Features include:
  * - Configurable speech synthesis parameters through {@link VoiceRequest}, such as text, voice type, and speech rate.
  * - Support for interruption and clearing of the voice request queue.
  * - Integration with a Google Voice provider to fetch voice configurations dynamically.
  * - Event subscription to handle voice processing and interruption triggers.
- *
+ * <p>
  * Thread safety:
  * - Synchronization is applied to methods that start, stop, or interrupt the processing thread.
  * - Atomic variables are used to manage critical flags for thread-safe operation.
- *
+ * <p>
  * Usage scenario:
  * - This class can be used in applications requiring server-side or client-side text-to-speech synthesis
  *   to provide auditory feedback.
- *
+ * <p>
  * Dependencies:
  * - Google Cloud TextToSpeechClient for handling API interactions.
  * - EventBus for subscribing to event-based requests such as `VoiceProcessEvent` and `TTSInterruptEvent`.
@@ -132,10 +133,10 @@ public class GoogleTTSImpl implements MouthInterface {
 
     /**
      * Interrupts any ongoing text-to-speech (TTS) processing, clears the voice queue, and resets the state.
-     *
+     * <p>
      * This method is synchronized to ensure thread safety during operations that may involve concurrent
      * access or modification of shared resources such as the voice queue and audio processing components.
-     *
+     * <p>
      * The method performs the following actions:
      * 1. Clears the voice queue to remove any pending TTS requests.
      * 2. Sets the interrupt flag to indicate that the current process should be stopped.
@@ -196,9 +197,9 @@ public class GoogleTTSImpl implements MouthInterface {
      * Processes the voice request queue by continuously polling for new {@link VoiceRequest} objects,
      * handling interruptions, and calling the appropriate methods to perform text-to-speech synthesis
      * and audio playback.
-     *
+     * <p>
      * The method runs in a loop as long as the `running` flag is true and performs the following steps:
-     *
+     * <p>
      * - Polls the `voiceQueue` to retrieve the next voice request. If no request is available within
      *   the defined timeout, it checks for interruption or stop signals before continuing.
      * - When a valid {@link VoiceRequest} is retrieved, it extracts the text, voice name, and speech
@@ -206,10 +207,10 @@ public class GoogleTTSImpl implements MouthInterface {
      *   for further processing.
      * - Handles interruptions by setting the current thread's interrupt status and exiting the loop.
      * - Logs relevant details, including the queue status, interruptions, and unexpected errors.
-     *
+     * <p>
      * This method provides thread-safe processing of text-to-speech requests and ensures proper
      * shutdown in cases of interruption or stop signals.
-     *
+     * <p>
      * Throws:
      * - InterruptedException: If the thread is interrupted during the queue polling.
      * - Exception: For any unexpected issues during the process.
@@ -295,13 +296,8 @@ public class GoogleTTSImpl implements MouthInterface {
             log.debug("Google TTS API call completed in {}ms", apiEndTime - apiStartTime);
 
             byte[] audioData = response.getAudioContent().toByteArray();
-            if ((audioData.length & 1) != 0) {
-                byte[] even = new byte[audioData.length - 1];
-                System.arraycopy(audioData, 0, even, 0, even.length);
-                audioData = even;
-            }
-            applyFade(audioData, 20, true);
-            applyFade(audioData, 20, false);
+
+            AudioDeClicker.sanitize(audioData, 40); // removes clicks and applies fade in and fade out
 
             log.debug("Opening SourceDataLine");
             long lineOpenStartTime = System.currentTimeMillis();
@@ -373,19 +369,5 @@ public class GoogleTTSImpl implements MouthInterface {
             interruptRequested.set(false);
         }
         log.debug("VoiceRequest processing completed in {}ms", System.currentTimeMillis() - startTime);
-    }
-
-    private void applyFade(byte[] audioData, int fadeMs, boolean isFadeIn) {
-        int samplesToFade = (24000 * fadeMs) / 1000;
-        int startIndex = isFadeIn ? 0 : Math.max(0, audioData.length / 2 - samplesToFade);
-        for (int i = startIndex; i < startIndex + samplesToFade && (i * 2 + 1) < audioData.length; i++) {
-            int lo = audioData[2 * i] & 0xFF;
-            int hi = audioData[2 * i + 1] & 0xFF;
-            short sample = (short) ((hi << 8) | lo);
-            float gain = isFadeIn ? (float) i / samplesToFade : (float) (startIndex + samplesToFade - i) / samplesToFade;
-            int scaled = Math.round(sample * gain);
-            audioData[2 * i] = (byte) (scaled & 0xFF);
-            audioData[2 * i + 1] = (byte) ((scaled >>> 8) & 0xFF);
-        }
     }
 }

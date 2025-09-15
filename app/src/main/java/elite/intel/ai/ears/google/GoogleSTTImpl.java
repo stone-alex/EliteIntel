@@ -192,7 +192,7 @@ public class GoogleSTTImpl implements EarsInterface {
      *   or other failures.
      * - Recovers from interruptions by retrying the connection after a specified delay.
      */
-    private void startStreaming() {
+    @SuppressWarnings("deprecation") private void startStreaming() { // v2 is not an option as it is for SAAS v1 uses bidiStreamingCall and there is no upgrade
         int retryCount = 0;
         int maxRetries = 5; // Cap to prevent infinite loops
         while (isListening.get()) {
@@ -210,6 +210,7 @@ public class GoogleSTTImpl implements EarsInterface {
                 if (lastBuffer != null) {
                     requests.add(StreamingRecognizeRequest.newBuilder().setAudioContent(ByteString.copyFrom(lastBuffer)).build());
                 }
+
 
                 requestObserver = speechClient.streamingRecognizeCallable().bidiStreamingCall(
                         new ApiStreamObserver<>() {

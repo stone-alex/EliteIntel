@@ -3,6 +3,7 @@ package elite.intel.util.json;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.google.gson.LongSerializationPolicy;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
@@ -13,7 +14,6 @@ import java.time.ZonedDateTime;
  */
 public final class GsonFactory {
     private static final Gson GSON = new GsonBuilder()
-            .setLenient() // Keep lenient parsing for journal JSON
             .setPrettyPrinting()
             .registerTypeAdapter(Instant.class, new InstantTypeAdapter())
             .registerTypeAdapter(ZonedDateTime.class, new ZonedDateTimeTypeAdapter())

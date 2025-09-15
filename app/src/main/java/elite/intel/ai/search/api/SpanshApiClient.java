@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -25,7 +26,9 @@ public class SpanshApiClient {
             if (module != null) query.append("module=").append(module).append("&");
             query.append("radius=100"); // Default 100ly radius
 
-            HttpURLConnection conn = (HttpURLConnection) new URL(query.toString()).openConnection();
+            URI uri = URI.create(query.toString());
+            URL url = uri.toURL();
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");
 

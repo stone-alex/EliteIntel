@@ -257,8 +257,8 @@ public class GoogleTTSImpl implements MouthInterface {
         }
         long startTime = System.currentTimeMillis();
         Thread currentThread = Thread.currentThread();
-        log.debug("Processing VoiceRequest: text='{}', voice='{}', threadName='{}', threadId={}, threadState={}",
-                text, voiceName, currentThread.getName(), currentThread.getId(), currentThread.getState());
+        log.debug("Processing VoiceRequest: text='{}', voice='{}', threadName='{}', threadState={}",
+                text, voiceName, currentThread.getName(),  currentThread.getState());
 
         try {
             if (textToSpeechClient == null) {

@@ -8,6 +8,7 @@ import elite.intel.session.SystemSession;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 
 public class GrokClient {
@@ -51,7 +52,8 @@ public class GrokClient {
     }
 
     HttpURLConnection getHttpURLConnection() throws IOException {
-        URL url = new URL(API_URL);
+        URI uri = URI.create(API_URL);
+        URL url = uri.toURL();
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
         conn.setRequestProperty("Content-Type", "application/json");

@@ -21,7 +21,7 @@ import elite.intel.session.SystemSession;
  */
 public enum CustomCommands {
     SET_MINING_TARGET("set_mining_target", "<material>", "mining_target", SetMiningTargetHandler.class),
-    PLOT_ROUTE("plot_route", "<destination>", "destination", SetRouteHandler.class),
+    //PLOT_ROUTE("plot_route", "<destination>", "destination", SetRouteHandler.class),
     SET_STREAMING_MODE("set_streaming_mode", "<streaming_mode_on_off>", "streaming_mode", SetStreamingModeHandler.class),
     SET_RADIO_TRANSMISSION_MODDE("turn_radio_transmission_on_off", "<radio_transmission_on_off>", SystemSession.RADION_TRANSMISSION_ON_OFF, SetRadioTransmissionOnOff.class),
     CLEAR_SESSION("clear_session", "<session_clear>", "session_clear", ClearSessionHandler.class),

@@ -32,11 +32,11 @@ public class AICapabilitiesDto implements ToJsonConvertible {
                 "\n" +
                 "- **Intelligent AI Integration:** Uses Grok-3-fast to interpret voice commands, provide helpful responses (e.g., route suggestions, mining targets), and route actions. Grok is aware of all game commands, including user-friendly mappings (e.g., `deploy_landing_gear` to `LandingGearToggle`).\n" +
                 "\n" +
-                "- **Dynamic Key Mapping:** Automatically generates mappings from the game's `.binds` file using `GenerateGameCommandMapping`. This ensures compatibility with game updates—simply rerun the generator if bindings change. Supports custom hold times for keys (e.g., pressing and holding for route plotting).\n" +
+                "- **Dynamic Key Mapping:** Automatically generates mappings from the game's `.binds` file using `GenerateGameCommandMapping`. This ensures compatibility with game updates—simply rerun the generator if bindings change. Supports custom hold times for keys.\n" +
                 "\n" +
                 "- **Event Bus and Session Tracking:** Manages in-memory storage of session data via an event bus. Modules like `SpeechRecognizer`, `GrokInteractionHandler`, `GrokResponseRouter`, `VoiceCommandHandler`, and `KeyBindingExecutor` handle STT/TTS, AI responses, and keyboard interactions.\n" +
                 "\n" +
-                "- **Custom Commands:** Beyond standard bindings, supports app-specific actions like `set_mining_target` or `plot_route`, executed as sequences of key presses with configurable delays.\n";
+                "- **Custom Commands:** Beyond standard bindings, supports app-specific actions like `set_mining_target` or `query_carrier_stats`, executed as sequences of key presses with configurable delays.\n";
 
 
         limitations = "## What the App Does NOT Do\n" +

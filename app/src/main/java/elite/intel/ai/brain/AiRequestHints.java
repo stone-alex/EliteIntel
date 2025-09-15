@@ -31,7 +31,7 @@ public class AiRequestHints {
     public static final List<String> COMMANDS;
     public static final List<String> QUERIES;
     public static final List<String> COMMON_PHRASES = Arrays.asList(
-            "tritium", "mining", "material trader", "plot route", "supercruise", "landing gear", "cargo scoop",
+            "tritium", "mining", "material trader", "supercruise", "landing gear", "cargo scoop",
             "request docking"
     );
 

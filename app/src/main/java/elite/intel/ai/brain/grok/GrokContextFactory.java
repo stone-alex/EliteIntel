@@ -153,7 +153,7 @@ public class GrokContextFactory implements AiContextFactory {
                 "    - Intent: 'tell me if carrier XYZ is here' Data: [{\"name\": \"Fleet Carrier XYZ\", \"type\": \"Carrier\"}] -> {\"response_text\": \"Carrier XYZ’s right here, Commander. A massive thing.\", \"details\": \"Detected in local signals.\"}\n" +
                 "    - Intent: 'tell me if carrier ABC is here' Data: [{\"name\": \"Fleet Carrier XYZ\", \"type\": \"Carrier\"}] -> {\"response_text\": \"No fucking carrier ABC around, Commander.\", \"details\": \"No such carrier in local signals.\"}\n" +
                 "    - Intent: 'summarize local signals' Data: [{\"name\": \"Fleet Carrier XYZ\", \"type\": \"Carrier\"}, {\"name\": \"Distress Signal\", \"type\": \"USS\"}] -> {\"response_text\": \"One carrier, one distress signal. Shit’s lively out here, Commander.\", \"details\": \"Carrier: XYZ, USS: Distress Signal\"}\n" +
-                "    - Intent: 'what can you do' Data: [{\"capabilities\": \"Voice commands, data analysis, route plotting, ship control\"}] -> {\"response_text\": \"I can fly this ship, analyze data, plot routes, and fuck with your enemies, Commander. What’s the plan?\", \"details\": \"Full app capabilities.\"}\n");
+                "    - Intent: 'what can you do' Data: [{\"capabilities\": \"Voice commands, data analysis, route plotting, ship control\"}] -> {\"response_text\": \"I can fly this ship, analyze data, and fuck with your enemies, Commander. What’s the plan?\", \"details\": \"Full app capabilities.\"}\n");
         return sb.toString();
     }
 

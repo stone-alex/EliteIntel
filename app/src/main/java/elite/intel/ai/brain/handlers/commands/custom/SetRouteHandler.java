@@ -18,12 +18,15 @@ public class SetRouteHandler extends CustomCommandOperator implements CommandHan
 
     @Override
     public void handle(JsonObject params, String responseText) {
+        EventBusManager.publish(new VoiceProcessEvent("Not implemented yet."));
+/*
         String paramKey = CustomCommands.PLOT_ROUTE.getParamKey();
         String destination = params.has(paramKey) ? params.get(paramKey).getAsString() : null;
 
         if (destination == null || destination.isEmpty()) {
             EventBusManager.publish(new VoiceProcessEvent("No destination set. Please try again."));
         }
+*/
 
 
     }

@@ -9,6 +9,7 @@ public enum QueryActions {
     ANALYZE_STELLAR_OBJECTS("query_analyze_local_stellar_objects", "Analyze current star system and nearby stellar objects. Gravity unit G, Temperature unit C ", AnalyzeStellarObjectsHandler.class, true),
     ANALYZE_BODY_MATERIALS("query_planet_materials_for_harvest", "Analyze materials available. ", AnalyzeMaterialsOnPlanetHandler.class, true),
     ANALYZE_CURRENT_FUEL_STATUS("query_fuel_status", "Analyze fuel tank capacity in shipLoadout and fuelData available reserve, provide result as percent fuel available", AnalyzeFuelStatusHandler.class, true),
+    ANALYZE_LOCAL_STATIONS("query_local_stations", "Provide summary a service the local stations if any", AnalyzeLocalStations.class, true),
     HOW_FAR_TO_FINAL_DESTINATION("how_far_to_final_destination", "Run distance to final destination analysis", AnalyzeDistanceToFinalDestination.class, false),
     LIST_AVAILABLE_VOICES("list_available_voices", "Lists available AI voices. ", ListAvailableVoices.class, false),
     LOCAL_SYSTEM_INFO("local_system_info", "Provide information about local star system. ", AnalyzeLocalSystemHandler.class, true),

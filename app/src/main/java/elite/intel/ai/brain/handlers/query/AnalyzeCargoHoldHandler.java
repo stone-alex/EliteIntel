@@ -1,18 +1,16 @@
 package elite.intel.ai.brain.handlers.query;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 
 public class AnalyzeCargoHoldHandler extends BaseQueryAnalyzer implements QueryHandler {
-    private static final Gson GSON = GsonFactory.getGson();
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         PlayerSession playerSession = PlayerSession.getInstance();
         Object cargo = playerSession.get(PlayerSession.SHIP_CARGO);
-        String cargoAsString = cargo != null ? GSON.toJson(cargo) : "No cargo data available.";
+        String cargoAsString = cargo != null ? toJson(cargo) : "No cargo data available.";
 
 
         Object loadout = playerSession.get(PlayerSession.SHIP_LOADOUT_JSON);

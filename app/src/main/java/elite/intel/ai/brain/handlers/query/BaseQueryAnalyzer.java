@@ -1,8 +1,10 @@
 package elite.intel.ai.brain.handlers.query;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import elite.intel.ai.ApiFactory;
 import elite.intel.ai.brain.AiAnalysisInterface;
+import elite.intel.util.json.GsonFactory;
 
 /**
  * The BaseQueryAnalyzer class provides core functionality for analyzing queries and processing data.
@@ -47,4 +49,11 @@ public class BaseQueryAnalyzer {
         return analysis;
     }
 
+    protected Gson getGson() {
+        return GsonFactory.getGson();
+    }
+
+    protected String toJson(Object obj) {
+        return getGson().toJson(obj);
+    }
 }

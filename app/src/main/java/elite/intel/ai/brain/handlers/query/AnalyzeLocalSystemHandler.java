@@ -14,10 +14,6 @@ import org.apache.logging.log4j.LogManager;
 
 public class AnalyzeLocalSystemHandler extends BaseQueryAnalyzer implements QueryHandler {
 
-    private static final Logger log = LogManager.getLogger(AnalyzeLocalSystemHandler.class);
-    private static final Gson GSON = GsonFactory.getGson();
-
-
     @Override
     public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         //QueryActions query = findQuery(action);

@@ -1,12 +1,10 @@
 package elite.intel.ai.brain.handlers.query;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import elite.intel.gameapi.gamestate.events.NavRouteDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.DistanceCalculator;
-import elite.intel.util.json.GsonFactory;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -15,8 +13,6 @@ import java.util.Map;
 
 public class AnalyzeDistanceToFinalDestination extends BaseQueryAnalyzer implements QueryHandler {
 
-    private static final Gson GSON = GsonFactory.getGson();
-
     @Override
     public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         PlayerSession playerSession = PlayerSession.getInstance();
@@ -24,10 +20,10 @@ public class AnalyzeDistanceToFinalDestination extends BaseQueryAnalyzer impleme
         Map<String, NavRouteDto> route = playerSession.getRoute();
 
         if (here == null) {
-            return analyzeData(GSON.toJson("Current location data unavailable."), originalUserInput);
+            return analyzeData(toJson("Current location data unavailable."), originalUserInput);
         }
         if (route == null || route.isEmpty()) {
-            return analyzeData(GSON.toJson("No route data available."), originalUserInput);
+            return analyzeData(toJson("No route data available."), originalUserInput);
         }
 
         // Create NavRouteDto for current location
@@ -44,7 +40,7 @@ public class AnalyzeDistanceToFinalDestination extends BaseQueryAnalyzer impleme
 
         String distanceData = getDistanceDataForAnnouncement(currentLocation, orderedRoute);
         // AI cadence or error response
-        return analyzeData(GSON.toJson(distanceData), originalUserInput);
+        return analyzeData(toJson(distanceData), originalUserInput);
     }
 
     private static String getDistanceDataForAnnouncement(NavRouteDto currentSystem, List<NavRouteDto> route) {

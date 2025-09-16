@@ -1,6 +1,5 @@
 package elite.intel.ai.brain.handlers.query;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import elite.intel.ai.search.api.EdsmApiClient;
 import elite.intel.ai.search.api.dto.DeathsDto;
@@ -9,11 +8,10 @@ import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.VoiceProcessEvent;
 import elite.intel.gameapi.gamestate.events.NavRouteDto;
 import elite.intel.session.PlayerSession;
-import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.JsonDataFactory;
 import elite.intel.util.json.ToJsonConvertible;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager; 
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -21,7 +19,6 @@ import java.util.Map;
 
 public class AnalyzeRouterHandler extends BaseQueryAnalyzer implements QueryHandler {
     private static final Logger log = LogManager.getLogger(AnalyzeRouterHandler.class);
-    private static final Gson GSON = GsonFactory.getGson();
 
 
     @Override

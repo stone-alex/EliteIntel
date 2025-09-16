@@ -1,12 +1,10 @@
 package elite.intel.ai.brain.handlers.query;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import elite.intel.session.PlayerSession;
-import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.JsonDataFactory;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager; 
 
 import static elite.intel.ai.brain.handlers.query.QueryActions.ANALYZE_SCAN;
 
@@ -29,7 +27,6 @@ import static elite.intel.ai.brain.handlers.query.QueryActions.ANALYZE_SCAN;
 public class AnalyzerStellarObjectHandler extends BaseQueryAnalyzer implements QueryHandler {
 
     private static final Logger log = LogManager.getLogger(AnalyzerStellarObjectHandler.class);
-    private static final Gson GSON = GsonFactory.getGson();
 
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
@@ -51,6 +48,6 @@ public class AnalyzerStellarObjectHandler extends BaseQueryAnalyzer implements Q
 
     private String getData() {
         Object scan = PlayerSession.getInstance().get(PlayerSession.LAST_SCAN);
-        return scan != null ? GSON.toJson(scan) : null;
+        return scan != null ? toJson(scan) : null;
     }
 }

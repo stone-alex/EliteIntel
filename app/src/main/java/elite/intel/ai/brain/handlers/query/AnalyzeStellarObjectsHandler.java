@@ -1,6 +1,5 @@
 package elite.intel.ai.brain.handlers.query;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import elite.intel.ai.search.api.EdsmApiClient;
 import elite.intel.ai.search.api.dto.SystemBodiesDto;
@@ -8,13 +7,10 @@ import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.VoiceProcessEvent;
 import elite.intel.gameapi.journal.events.dto.StellarObjectDto;
 import elite.intel.session.PlayerSession;
-import elite.intel.util.json.GsonFactory;
 
 import java.util.Map;
 
 public class AnalyzeStellarObjectsHandler extends BaseQueryAnalyzer implements QueryHandler {
-
-    private static final Gson GSON = GsonFactory.getGson();
 
     @Override
     public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
@@ -38,7 +34,7 @@ public class AnalyzeStellarObjectsHandler extends BaseQueryAnalyzer implements Q
 
     private String getData() {
         Map<String, StellarObjectDto> data = PlayerSession.getInstance().getStellarObjects();
-        return data != null ? GSON.toJson(data) : null;
+        return data != null ? toJson(data) : null;
     }
 
 }

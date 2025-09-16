@@ -12,8 +12,6 @@ import java.util.Optional;
 
 public class AnalyzeMaterialsOnPlanetHandler extends BaseQueryAnalyzer implements QueryHandler {
 
-    private static final Gson GSON = GsonFactory.getGson();
-
     @Override
     public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         PlayerSession playerSession = PlayerSession.getInstance();
@@ -33,8 +31,8 @@ public class AnalyzeMaterialsOnPlanetHandler extends BaseQueryAnalyzer implement
                 });
             }
         });
-        String data = GSON.toJson(sb.toString());
+        String data = toJson(sb.toString());
         if (!data.isEmpty()) return analyzeData(data, originalUserInput);
-        else return analyzeData(GSON.toJson(" no market data available..."), originalUserInput);
+        else return analyzeData(toJson(" no market data available..."), originalUserInput);
     }
 }

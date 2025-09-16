@@ -27,13 +27,8 @@ import java.util.stream.Collectors;
  * - Provide formatted strings presenting the list of commands or queries.
  */
 public class AiRequestHints {
-    private static final Logger log = LogManager.getLogger(AiRequestHints.class);
     public static final List<String> COMMANDS;
     public static final List<String> QUERIES;
-    public static final List<String> COMMON_PHRASES = Arrays.asList(
-            "tritium", "mining", "material trader", "supercruise", "landing gear", "cargo scoop",
-            "request docking"
-    );
 
     static {
         List<String> commands = Arrays.stream(CustomCommands.values())
@@ -49,12 +44,9 @@ public class AiRequestHints {
     }
 
     static {
-        List<String> queries = Arrays.stream(QueryActions.values())
+        QUERIES = Arrays.stream(QueryActions.values())
                 .map(QueryActions::getAction)
                 .collect(Collectors.toList());
-
-
-        QUERIES = queries;
     }
 
     private static String formatCommands() {

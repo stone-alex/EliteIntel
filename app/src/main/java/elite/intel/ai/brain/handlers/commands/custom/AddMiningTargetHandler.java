@@ -30,7 +30,6 @@ public class AddMiningTargetHandler implements CommandHandler {
         } else {
             String miningTarget = jsonElement.getAsJsonPrimitive().getAsString().replace("\"", "");
             session.addMiningTarget(miningTarget);
-            EventBusManager.publish(new VoiceProcessEvent("Added mining target: " + miningTarget));
         }
     }
 }

@@ -422,7 +422,7 @@ public class GoogleSTTImpl implements EarsInterface {
         Set<String> correctionSet = new HashSet<>(corrections.values());
         SpeechContext commandContext = SpeechContext.newBuilder()
                 .addAllPhrases(correctionSet)
-                .setBoost(35.0f)
+                .setBoost(20.0f)
                 .build();
 
         RecognitionConfig config = RecognitionConfig.newBuilder()

@@ -6,8 +6,8 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import elite.intel.ai.ConfigManager;
 import elite.intel.ai.brain.AIChatInterface;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager; 
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -21,7 +21,7 @@ import java.util.Scanner;
  * and receiving AI-generated responses.
  */
 public class GrokChatEndPoint implements AIChatInterface {
-    private static final Logger log = LoggerFactory.getLogger(GrokChatEndPoint.class);
+    private static final Logger log = LogManager.getLogger(GrokChatEndPoint.class);
     private static final GrokChatEndPoint INSTANCE = new GrokChatEndPoint();
 
     private GrokChatEndPoint() {

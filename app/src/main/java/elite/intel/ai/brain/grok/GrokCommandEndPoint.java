@@ -14,8 +14,8 @@ import elite.intel.gameapi.VoiceProcessEvent;
 import elite.intel.session.SystemSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.JsonUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager; 
 
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
@@ -51,7 +51,7 @@ import java.util.Scanner;
  * - Logging framework for detailed debugging and error reporting.
  */
 public class GrokCommandEndPoint implements AiCommandInterface {
-    private static final Logger log = LoggerFactory.getLogger(GrokCommandEndPoint.class);
+    private static final Logger log = LogManager.getLogger(GrokCommandEndPoint.class);
     private java.util.concurrent.ExecutorService executor;
     private final java.util.concurrent.atomic.AtomicBoolean running = new java.util.concurrent.atomic.AtomicBoolean(false);
 

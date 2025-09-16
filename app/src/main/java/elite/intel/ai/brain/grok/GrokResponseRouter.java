@@ -14,8 +14,8 @@ import elite.intel.ai.brain.handlers.query.QueryHandler;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.VoiceProcessEvent;
 import elite.intel.ui.event.AppLogEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager; 
 
 import javax.annotation.Nullable;
 import java.util.Map;
@@ -35,7 +35,7 @@ import static elite.intel.ai.brain.handlers.query.QueryActions.GENERAL_CONVERSAT
  * for managing the router's operation and response processing.
  */
 public class GrokResponseRouter implements AIRouterInterface {
-    private static final Logger log = LoggerFactory.getLogger(GrokResponseRouter.class);
+    private static final Logger log = LogManager.getLogger(GrokResponseRouter.class);
     private static final GrokResponseRouter INSTANCE = new GrokResponseRouter();
     private final Map<String, CommandHandler> commandHandlers;
     private final Map<String, QueryHandler> queryHandlers;

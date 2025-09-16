@@ -2,8 +2,8 @@ package elite.intel.tools;
 
 import elite.intel.ai.hands.BindingsLoader;
 import elite.intel.ai.hands.KeyBindingsParser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager; 
 
 import java.io.File;
 import java.io.FileWriter;
@@ -12,7 +12,7 @@ import java.util.*;
 import java.util.TreeMap;
 
 public class HelpGenerateBindings {
-    private static final Logger log = LoggerFactory.getLogger(HelpGenerateBindings.class);
+    private static final Logger log = LogManager.getLogger(HelpGenerateBindings.class);
     private static final Set<String> BLACKLISTED_ACTIONS = new HashSet<>(Arrays.asList(
             "PrimaryFire", "SecondaryFire", "TriggerFieldNeutraliser",
             "BuggyPrimaryFireButton", "BuggySecondaryFireButton"

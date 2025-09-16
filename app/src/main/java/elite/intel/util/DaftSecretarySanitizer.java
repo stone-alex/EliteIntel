@@ -1,8 +1,8 @@
 package elite.intel.util;
 
 import elite.intel.ai.ears.google.GoogleSTTImpl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager; 
 
 import java.io.*;
 import java.net.URI;
@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 public class DaftSecretarySanitizer {
 
     private static final DaftSecretarySanitizer INSTANCE = new DaftSecretarySanitizer();
-    private final Logger log = LoggerFactory.getLogger(DaftSecretarySanitizer.class);
+    private final Logger log = LogManager.getLogger(DaftSecretarySanitizer.class);
     private final Map<String, String> GOOGLE_CORRECTIONS = loadCorrections();
 
     private DaftSecretarySanitizer() {
@@ -46,8 +46,6 @@ public class DaftSecretarySanitizer {
                 } else {
                     log.warn("JAR parent directory is null, using default APP_DIR: {}", appDir);
                 }
-            } else {
-                log.debug("Not running from JAR, using default APP_DIR for classpath resources: {}", appDir);
             }
         } catch (Exception e) {
             log.warn("Could not determine JAR location, using default APP_DIR: {}. Error: {}", appDir, e.getMessage());

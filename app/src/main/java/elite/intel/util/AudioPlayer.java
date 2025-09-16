@@ -1,14 +1,14 @@
 package elite.intel.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager; 
 
 import javax.sound.sampled.*;
 import java.io.*;
 
 public final class AudioPlayer {
 
-    private static final Logger log = LoggerFactory.getLogger(AudioPlayer.class);
+    private static final Logger log = LogManager.getLogger(AudioPlayer.class);
     private static AudioPlayer instance;
 
     private AudioPlayer() {

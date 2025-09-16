@@ -7,8 +7,8 @@ import elite.intel.ai.ConfigManager;
 import elite.intel.gameapi.journal.EventRegistry;
 import elite.intel.gameapi.journal.events.BaseEvent;
 import elite.intel.ui.event.AppLogEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager; 
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -43,7 +43,7 @@ import java.util.concurrent.TimeUnit;
  * - Publishes error-related events (e.g., AppLogEvent) to notify other components.
  */
 public class JournalParser implements Runnable {
-    private static final Logger log = LoggerFactory.getLogger(JournalParser.class);
+    private static final Logger log = LogManager.getLogger(JournalParser.class);
     private final Path journalDir;
 
     public JournalParser() {

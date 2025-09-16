@@ -4,19 +4,16 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
-import elite.intel.ai.ConfigManager;
 import elite.intel.ai.brain.AiQueryInterface;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager; 
 
-import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
 public class GrokQueryEndPoint implements AiQueryInterface {
-    private static final Logger log = LoggerFactory.getLogger(GrokQueryEndPoint.class);
+    private static final Logger log = LogManager.getLogger(GrokQueryEndPoint.class);
     private static final GrokQueryEndPoint INSTANCE = new GrokQueryEndPoint();
 
     private GrokQueryEndPoint() {
@@ -34,7 +31,7 @@ public class GrokQueryEndPoint implements AiQueryInterface {
      * @param messages a JsonArray containing the messages to be sent to the AI service. Each message is expected
      *                 to have a "role" and "content" property. The array is sanitized before being included in the request payload.
      * @return a JsonObject representing the processed response content from the AI service. If any error occurs
-     *         during the request, response parsing, or if the response does not contain the expected data, returns null.
+     * during the request, response parsing, or if the response does not contain the expected data, returns null.
      */
     @Override public JsonObject sendToAi(JsonArray messages) {
         String bodyString = null;

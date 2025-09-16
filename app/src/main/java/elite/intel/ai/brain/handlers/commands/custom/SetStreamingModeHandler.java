@@ -6,8 +6,8 @@ import elite.intel.ai.brain.handlers.commands.CommandHandler;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.VoiceProcessEvent;
 import elite.intel.session.SystemSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager; 
 
 import static elite.intel.util.json.JsonParameterExtractor.extractParameter;
 
@@ -34,7 +34,7 @@ import static elite.intel.util.json.JsonParameterExtractor.extractParameter;
  */
 public class SetStreamingModeHandler implements CommandHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(SetRouteHandler.class);
+    private static final Logger log = LogManager.getLogger(SetRouteHandler.class);
 
     @Override public void handle(JsonObject params, String responseText) {
         JsonElement jsonElement = extractParameter(CustomCommands.SET_STREAMING_MODE.getPlaceholder(), params);

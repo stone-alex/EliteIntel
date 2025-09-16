@@ -5,8 +5,8 @@ import elite.intel.ai.brain.handlers.commands.GameCommands;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.VoiceProcessEvent;
 import elite.intel.session.SystemSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager; 
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -24,7 +24,7 @@ import java.util.Set;
  * and clean up resources when necessary.
  */
 public class GameHandler {
-    private static final Logger log = LoggerFactory.getLogger(GameHandler.class);
+    private static final Logger log = LogManager.getLogger(GameHandler.class);
     private final KeyBindingExecutor executor;
     private final BindingsMonitor monitor;
     private Thread processingThread;

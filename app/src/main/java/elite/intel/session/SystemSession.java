@@ -9,8 +9,8 @@ import elite.intel.ai.brain.AIPersonality;
 import elite.intel.ai.mouth.AiVoices;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.LoadGameEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager; 
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +28,7 @@ import java.util.Map;
  * - Supporting streaming mode and resetting session data on shutdown or specific events.
  */
 public class SystemSession {
-    private static final Logger LOG = LoggerFactory.getLogger(SystemSession.class);
+    private static final Logger LOG = LogManager.getLogger(SystemSession.class);
 
     public static final String RADION_TRANSMISSION_ON_OFF = "radio_transmission_on_off";
     private static final String SESSION_FILE = "system_session.json";

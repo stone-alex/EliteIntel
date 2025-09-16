@@ -4,8 +4,8 @@ import com.google.gson.JsonObject;
 import elite.intel.gameapi.journal.events.dto.RankAndProgressDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.JsonDataFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager; 
 
 /**
  * The PlayerStatsAnalyzer class is responsible for handling and analyzing player statistics queries.
@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  */
 public class PlayerStatsAnalyzer extends BaseQueryAnalyzer implements QueryHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(PlayerStatsAnalyzer.class);
+    private static final Logger log = LogManager.getLogger(PlayerStatsAnalyzer.class);
 
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {

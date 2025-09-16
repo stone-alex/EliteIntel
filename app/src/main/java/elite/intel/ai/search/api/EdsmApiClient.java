@@ -3,8 +3,8 @@ package elite.intel.ai.search.api;
 import elite.intel.ai.search.api.dto.*;
 import elite.intel.ai.search.api.dto.data.*;
 import elite.intel.util.json.GsonFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager; 
 
 import java.net.HttpURLConnection;
 import java.net.URI;
@@ -14,7 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
 public class EdsmApiClient {
-    private static final Logger log = LoggerFactory.getLogger(EdsmApiClient.class);
+    private static final Logger log = LogManager.getLogger(EdsmApiClient.class);
     private static final String BASE_URL = "https://www.edsm.net";
 
     private static StringBuilder authenticatedUrl(String endpoint) {

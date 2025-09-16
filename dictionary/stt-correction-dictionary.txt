@@ -80,3 +80,4 @@
 "how many olympics"="how many limpets"
 "switch choice"="switch voice to"
 "blending gear"="landing gear"
+"how do i check, please"="audio check, please"

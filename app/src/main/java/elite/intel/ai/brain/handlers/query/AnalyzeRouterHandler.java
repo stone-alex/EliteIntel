@@ -12,15 +12,15 @@ import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.JsonDataFactory;
 import elite.intel.util.json.ToJsonConvertible;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager; 
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
 public class AnalyzeRouterHandler extends BaseQueryAnalyzer implements QueryHandler {
-    private static final Logger log = LoggerFactory.getLogger(AnalyzeRouterHandler.class);
+    private static final Logger log = LogManager.getLogger(AnalyzeRouterHandler.class);
     private static final Gson GSON = GsonFactory.getGson();
 
 

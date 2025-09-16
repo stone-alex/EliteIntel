@@ -7,8 +7,8 @@ import elite.intel.gameapi.journal.events.ShipTargetedEvent;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.RomanNumeralConverter;
 import elite.intel.util.TTSFriendlyNumberConverter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager; 
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -17,7 +17,7 @@ import java.util.Set;
 
 public class ShipTargetedEventSubscriber {
 
-    private final Logger log = LoggerFactory.getLogger(ShipTargetedEventSubscriber.class);
+    private final Logger log = LogManager.getLogger(ShipTargetedEventSubscriber.class);
 
     @Subscribe
     public void onShipTargetedEvent(ShipTargetedEvent event) {

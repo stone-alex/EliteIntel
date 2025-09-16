@@ -2,8 +2,8 @@ package elite.intel.ai.search.api;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager; 
 
 import java.net.HttpURLConnection;
 import java.net.URI;
@@ -13,7 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
 public class SpanshApiClient {
-    private static final Logger log = LoggerFactory.getLogger(SpanshApiClient.class);
+    private static final Logger log = LogManager.getLogger(SpanshApiClient.class);
     private static final String BASE_URL = "https://spansh.co.uk/api";
 
     public static JsonArray searchStations(String system, String service, String commodity, String module) {

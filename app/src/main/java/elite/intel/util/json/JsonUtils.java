@@ -1,8 +1,8 @@
 package elite.intel.util.json;
 
 import com.google.gson.JsonObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager; 
 
 /**
  * A utility class for handling JSON operations with safety and default values.
@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
  * This class is designed to be used statically and cannot be instantiated.
  */
 public final class JsonUtils {
-    private static final Logger log = LoggerFactory.getLogger(JsonUtils.class);
+    private static final Logger log = LogManager.getLogger(JsonUtils.class);
 
     private JsonUtils() {
         // Prevent instantiation

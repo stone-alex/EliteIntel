@@ -6,8 +6,8 @@ import elite.intel.ai.brain.handlers.commands.CommandHandler;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.VoiceProcessEvent;
 import elite.intel.session.PlayerSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager; 
 
 /**
  * The SetMiningTargetHandler class processes the command to set a mining target for the player session.
@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
  * If the provided parameter is missing or empty, it logs an informational message indicating no target was set.
  */
 public class SetMiningTargetHandler implements CommandHandler {
-    private static final Logger log = LoggerFactory.getLogger(SetMiningTargetHandler.class);
+    private static final Logger log = LogManager.getLogger(SetMiningTargetHandler.class);
 
     @Override
     public void handle(JsonObject params, String responseText) {

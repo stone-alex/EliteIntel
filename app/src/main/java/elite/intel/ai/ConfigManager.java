@@ -1,8 +1,8 @@
 package elite.intel.ai;
 
 import elite.intel.session.SystemSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager; 
 
 import java.io.*;
 import java.net.URI;
@@ -38,7 +38,7 @@ import java.util.Map;
  * writing configuration files.
  */
 public class ConfigManager {
-    private static final Logger log = LoggerFactory.getLogger(ConfigManager.class);
+    private static final Logger log = LogManager.getLogger(ConfigManager.class);
     private static final ConfigManager INSTANCE = new ConfigManager();
     private final String APP_DIR;
     public static final String USER_CONFIG_FILENAME = "player.conf";
@@ -55,6 +55,7 @@ public class ConfigManager {
     public static final String PLAYER_EDSM_KEY = "edsm_key";
     public static final String JOURNAL_DIR = "journal_dir";
     public static final String BINDINGS_DIR = "bindings_dir";
+    public static final String DEBUG_SWITCH = "logging_enabled";
 
     private final Map<String, String> DEFAULT_SYSTEM_CONFIG = new LinkedHashMap<>();
     private final Map<String, String> DEFAULT_USER_CONFIG = new LinkedHashMap<>();
@@ -64,6 +65,7 @@ public class ConfigManager {
         DEFAULT_SYSTEM_CONFIG.put(AI_API_KEY, "");
         DEFAULT_SYSTEM_CONFIG.put(TTS_API_KEY, "");
         DEFAULT_SYSTEM_CONFIG.put(STT_API_KEY, "");
+        DEFAULT_SYSTEM_CONFIG.put(DEBUG_SWITCH, "false");
         DEFAULT_USER_CONFIG.put(PLAYER_MISSION_STATEMENT, "");
         DEFAULT_USER_CONFIG.put(PLAYER_CUSTOM_TITLE, "");
         DEFAULT_USER_CONFIG.put(PLAYER_ALTERNATIVE_NAME, "");

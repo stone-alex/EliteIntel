@@ -2,6 +2,7 @@ package elite.intel;
 
 //import elite.intel.ui.controller.MainController;
 
+import elite.intel.ai.ConfigManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SubscriberRegistration;
 import elite.intel.session.LoadSessionEvent;
@@ -11,11 +12,17 @@ import elite.intel.ui.controller.AppController;
 import elite.intel.ui.model.AppModel;
 import elite.intel.ui.model.AppModelInterface;
 import elite.intel.ui.view.AppView;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 
 import javax.swing.*;
+import java.io.OutputStream;
+import java.io.PrintStream;
 
 public class App {
-
+    private static final Logger LOGGER = LogManager.getLogger(App.class);
     /**
      * The entry point of the application.
      * This method initializes critical components, sets up the user interface,
@@ -35,6 +42,22 @@ public class App {
      * @param args Command-line arguments passed to the application. These arguments are not used.
      */
     public static void main(String[] args) {
+
+        // Suppress console output
+//        System.setOut(new PrintStream(new OutputStream() {
+//            @Override public void write(int b) {}
+//        }));
+//        System.setErr(new PrintStream(new OutputStream() {
+//            @Override public void write(int b) {}
+//        }));
+
+        // Toggle logging via system.conf
+        boolean isLoggingEnabled = "TRUE".equalsIgnoreCase(ConfigManager.getInstance().getSystemKey(ConfigManager.DEBUG_SWITCH));
+        Configurator.setRootLevel(isLoggingEnabled ? Level.ALL : Level.OFF);
+
+
+
+
         SubscriberRegistration.registerSubscribers();
         //noinspection ResultOfMethodCallIgnored
         PlayerSession.getInstance(); //Initialize player session

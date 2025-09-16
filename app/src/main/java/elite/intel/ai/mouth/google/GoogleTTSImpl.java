@@ -9,8 +9,8 @@ import elite.intel.ai.mouth.MouthInterface;
 import elite.intel.ai.mouth.TTSInterruptEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.VoiceProcessEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager; 
 
 import javax.sound.sampled.*;
 import java.util.concurrent.BlockingQueue;
@@ -51,7 +51,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * - Threading utilities including {@code Thread}, {@code BlockingQueue}, and {@code AtomicReference}.
  */
 public class GoogleTTSImpl implements MouthInterface {
-    private static final Logger log = LoggerFactory.getLogger(GoogleTTSImpl.class);
+    private static final Logger log = LogManager.getLogger(GoogleTTSImpl.class);
 
     private TextToSpeechClient textToSpeechClient;
     private final BlockingQueue<VoiceRequest> voiceQueue;

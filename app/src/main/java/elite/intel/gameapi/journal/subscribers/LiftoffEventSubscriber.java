@@ -7,13 +7,13 @@ import elite.intel.ai.hands.KeyBindingExecutor;
 import elite.intel.ai.hands.KeyBindingsParser;
 import elite.intel.gameapi.journal.events.LiftoffEvent;
 import elite.intel.session.PlayerSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager; 
 
 @SuppressWarnings("unused")
 public class LiftoffEventSubscriber {
 
-    private static final Logger log = LoggerFactory.getLogger(LiftoffEventSubscriber.class);
+    private static final Logger log = LogManager.getLogger(LiftoffEventSubscriber.class);
 
     private final KeyBindingsParser parser;
     private final KeyBindingExecutor executor;

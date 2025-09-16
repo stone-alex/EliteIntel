@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="DEBUG">
+    <Properties>
+        <Property name="logPattern">%d{HH:mm:ss} %-6p-> %c{4}.%M(%F:%L) - %m%n</Property>
+        <Property name="logPath">logs/</Property>
+        <Property name="rollingFileName">elite-intel</Property>
+    </Properties>
+
+    <Appenders>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${logPattern}"/>
+        </Console>
+        <RollingFile name="rollingFile" fileName="${logPath}/${rollingFileName}.log" filePattern="${logPath}/${rollingFileName}_%d{yyyy-MM-dd}.log" immediateFlush="true">
+        <PatternLayout pattern="${logPattern}"/>
+            <Policies>
+                <OnStartupTriggeringPolicy/>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="1MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="7"/>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <!-- Suppress third-party logs -->
+        <Logger name="io.grpc" level="off"/>
+        <Logger name="io.grpc.netty" level="off"/>
+        <Logger name="io.grpc.netty.shaded" level="off"/>
+        <Logger name="io.netty" level="off"/>
+        <Logger name="org.apache" level="off"/>
+
+        <!-- Specific logger levels -->
+        <Logger name="elite.intel" level="debug"/>
+        <Logger name="elite.intel.gameapi.JournalParser" level="info"/>
+        <Logger name="elite.intel.gameapi.AuxiliaryFilesMonitor" level="error"/>
+        <Logger name="elite.intel.ai.hands.KeyBindingsParser" level="error"/>
+        <Logger name="elite.intel.ai.brain.grok.GrokCommandEndPoint" level="debug"/>
+        <Logger name="elite.intel.session.SessionPersistence" level="error"/>
+        <Logger name="elite.intel.ai.ConfigManager" level="error"/>
+        <Logger name="elite.intel.ai.ears" level="error"/>
+        <Logger name="elite.intel.ai.mouth" level="error"/>
+        <Logger name="elite.intel.ai.brain" level="info"/>
+
+        <!-- Root logger -->
+        <Root level="debug">
+            <AppenderRef ref="rollingFile"/>
+            <AppenderRef ref="console"/>
+        </Root>
+    </Loggers>
+</Configuration>

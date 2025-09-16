@@ -1,8 +1,8 @@
 package elite.intel.ai.hands;
 
 import elite.intel.ai.ConfigManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager; 
 
 import java.io.File;
 import java.nio.file.Files;
@@ -17,7 +17,7 @@ import java.util.Comparator;
  * the Elite Dangerous game by Frontier Developments.
  */
 public class BindingsLoader {
-    private static final Logger log = LoggerFactory.getLogger(BindingsLoader.class);
+    private static final Logger log = LogManager.getLogger(BindingsLoader.class);
 
     public File getLatestBindsFile() throws Exception {
         Path bindingsDir = ConfigManager.getInstance().getBindingsPath();

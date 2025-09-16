@@ -1,8 +1,8 @@
 package elite.intel.ai.ears;
 
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
@@ -13,7 +13,7 @@ import javax.sound.sampled.TargetDataLine;
  * Utility class for detecting supported audio formats for mono 16-bit input.
  */
 public class AudioFormatDetector {
-    private static final Logger log = LoggerFactory.getLogger(AudioFormatDetector.class);
+    private static final Logger log = LogManager.getLogger(AudioFormatDetector.class);
     private static final int CHANNELS = 1; // Mono
     private static final int[] POSSIBLE_RATES = {48000, 44100, 16000}; // Preferred rates in order
 

@@ -15,8 +15,8 @@ import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.AudioPlayer;
 import elite.intel.util.DaftSecretarySanitizer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager; 
 
 import javax.sound.sampled.*;
 import java.io.File;
@@ -47,7 +47,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * 4. Handle transcription results or stop the process when needed.
  */
 public class GoogleSTTImpl implements EarsInterface {
-    private static final Logger log = LoggerFactory.getLogger(GoogleSTTImpl.class);
+    private static final Logger log = LogManager.getLogger(GoogleSTTImpl.class);
 
     private int sampleRateHertz;  // Dynamically detected
     private int bufferSize; // Dynamically calculated based on sample rate

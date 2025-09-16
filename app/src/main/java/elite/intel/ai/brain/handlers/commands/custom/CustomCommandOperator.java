@@ -6,8 +6,8 @@ import elite.intel.ai.hands.KeyBindingExecutor;
 import elite.intel.ai.hands.KeyBindingsParser;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.VoiceProcessEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager; 
 
 /**
  * CustomCommandOperator serves as a base class for handling custom keyboard operations
@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
  * hold duration and logs the results of the execution.
  */
 public class CustomCommandOperator {
-    private static final Logger log = LoggerFactory.getLogger(CustomCommandOperator.class);
+    private static final Logger log = LogManager.getLogger(CustomCommandOperator.class);
     private final BindingsMonitor monitor;
     private final KeyBindingExecutor executor;
 

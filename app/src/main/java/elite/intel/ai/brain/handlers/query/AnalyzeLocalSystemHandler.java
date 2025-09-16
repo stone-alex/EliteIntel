@@ -9,12 +9,12 @@ import elite.intel.gameapi.VoiceProcessEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager; 
 
 public class AnalyzeLocalSystemHandler extends BaseQueryAnalyzer implements QueryHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(AnalyzeLocalSystemHandler.class);
+    private static final Logger log = LogManager.getLogger(AnalyzeLocalSystemHandler.class);
     private static final Gson GSON = GsonFactory.getGson();
 
 

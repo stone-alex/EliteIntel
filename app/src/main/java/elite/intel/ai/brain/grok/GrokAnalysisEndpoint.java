@@ -5,8 +5,8 @@ import elite.intel.ai.ApiFactory;
 import elite.intel.ai.ConfigManager;
 import elite.intel.ai.brain.AiAnalysisInterface;
 import elite.intel.util.json.GsonFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager; 
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -24,7 +24,7 @@ import java.util.Scanner;
  * processes the response, and extracts relevant content as a JSON object.
  */
 public class GrokAnalysisEndpoint implements AiAnalysisInterface {
-    private static final Logger logger = LoggerFactory.getLogger(GrokAnalysisEndpoint.class);
+    private static final Logger logger = LogManager.getLogger(GrokAnalysisEndpoint.class);
     private final String apiUrl = "https://api.x.ai/v1/chat/completions";
     private final Gson gson = GsonFactory.getGson();
     private static final GrokAnalysisEndpoint instance = new GrokAnalysisEndpoint();

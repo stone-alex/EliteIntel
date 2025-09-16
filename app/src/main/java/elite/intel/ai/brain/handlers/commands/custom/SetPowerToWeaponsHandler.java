@@ -3,8 +3,8 @@ package elite.intel.ai.brain.handlers.commands.custom;
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.commands.CommandHandler;
 import elite.intel.ai.hands.GameHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager; 
 
 import static elite.intel.ai.brain.handlers.commands.GameCommands.GameCommand.*;
 
@@ -21,7 +21,7 @@ import static elite.intel.ai.brain.handlers.commands.GameCommands.GameCommand.*;
  */
 public class SetPowerToWeaponsHandler extends CustomCommandOperator implements CommandHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(SetPowerToWeaponsHandler.class);
+    private static final Logger log = LogManager.getLogger(SetPowerToWeaponsHandler.class);
     public static final int DELAY = 5;
 
     public SetPowerToWeaponsHandler(GameHandler commandHandler) throws Exception {

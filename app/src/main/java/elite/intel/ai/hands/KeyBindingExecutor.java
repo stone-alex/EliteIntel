@@ -1,7 +1,7 @@
 package elite.intel.ai.hands;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager; 
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -14,7 +14,7 @@ import java.util.Map;
  * including press and hold actions.
  */
 public class KeyBindingExecutor {
-    private static final Logger log = LoggerFactory.getLogger(KeyBindingExecutor.class);
+    private static final Logger log = LogManager.getLogger(KeyBindingExecutor.class);
     private final KeyProcessor keyProcessor;
     private static final Map<String, Integer> ELITE_TO_KEYPROCESSOR_MAP = new HashMap<>();
 

@@ -227,7 +227,7 @@ implementation supports this by checking `event.isUseRandom()` in `onVoiceProces
 - **Configuration**: The user-selected voice is stored in `SystemSession.getInstance().getAIVoice()`. Use this for
   non-random voice requests.
 - **Logging**: Use `org.slf4j.Logger` for logging errors, warnings, and info (e.g.,
-  `LoggerFactory.getLogger(MyTTSImpl.class)`).
+  `LogManager.getLogger(MyTTSImpl.class)`).
 - **Error Handling**: Handle API errors gracefully, logging issues and avoiding crashes. Post `AppLogEvent` or
   `VoiceProcessEvent` to notify the user if needed (e.g., invalid API key).
 

@@ -5,11 +5,11 @@ import elite.intel.ai.brain.handlers.commands.CommandHandler;
 import elite.intel.ai.hands.GameHandler;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.VoiceProcessEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager; 
 
 public class SetRouteHandler extends CustomCommandOperator implements CommandHandler {
-    private static final Logger log = LoggerFactory.getLogger(SetRouteHandler.class);
+    private static final Logger log = LogManager.getLogger(SetRouteHandler.class);
 
 
     public SetRouteHandler(GameHandler gameHandler) {

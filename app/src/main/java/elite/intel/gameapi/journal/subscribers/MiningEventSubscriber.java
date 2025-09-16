@@ -7,13 +7,13 @@ import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.journal.events.MiningRefinedEvent;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager; 
 
 @SuppressWarnings("unused")
 public class MiningEventSubscriber {
 
-    private static final Logger log = LoggerFactory.getLogger(MiningEventSubscriber.class);
+    private static final Logger log = LogManager.getLogger(MiningEventSubscriber.class);
 
     @Subscribe
     public void onMiningRefined(MiningRefinedEvent dto) {

@@ -5,8 +5,8 @@ import elite.intel.ai.brain.handlers.commands.GameCommands;
 import elite.intel.ai.brain.handlers.commands.GenericGameController;
 import elite.intel.ai.brain.handlers.commands.custom.CustomCommands;
 import elite.intel.ai.hands.GameHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager; 
 
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
@@ -14,7 +14,7 @@ import java.util.Map;
 
 public class CommandHandlerFactory {
 
-    private static final Logger log = LoggerFactory.getLogger(CommandHandlerFactory.class);
+    private static final Logger log = LogManager.getLogger(CommandHandlerFactory.class);
     private final Map<String, CommandHandler> commandHandlers = new HashMap<>();
     private static CommandHandlerFactory instance;
     private final GameHandler _gameHandler;

@@ -4,8 +4,8 @@ import com.google.common.eventbus.Subscribe;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.VoiceProcessEvent;
 import elite.intel.session.SystemSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager; 
 
 import javax.sound.sampled.*;
 import java.util.concurrent.CompletableFuture;
@@ -18,7 +18,7 @@ import java.util.concurrent.TimeoutException;
  * to dynamically adjust audio sensitivity for improved performance.
  */
 public class AudioCalibrator {
-    private static final Logger log = LoggerFactory.getLogger(AudioCalibrator.class);
+    private static final Logger log = LogManager.getLogger(AudioCalibrator.class);
     private static final int CALIBRATION_DURATION_MS = 10000; // 10 seconds for calibration
     private static final int TTS_TIMEOUT_MS = 3000; // 3 seconds max wait for TTS
     private static final double DEFAULT_RMS_THRESHOLD_HIGH = 150.0; // Fallback

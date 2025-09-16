@@ -3,8 +3,8 @@ package elite.intel.ai.brain;
 import elite.intel.ai.brain.handlers.commands.GameCommands;
 import elite.intel.ai.brain.handlers.commands.custom.CustomCommands;
 import elite.intel.ai.brain.handlers.query.QueryActions;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager; 
 
 import java.util.Arrays;
 import java.util.List;
@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
  * - Provide formatted strings presenting the list of commands or queries.
  */
 public class AiRequestHints {
-    private static final Logger log = LoggerFactory.getLogger(AiRequestHints.class);
+    private static final Logger log = LogManager.getLogger(AiRequestHints.class);
     public static final List<String> COMMANDS;
     public static final List<String> QUERIES;
     public static final List<String> COMMON_PHRASES = Arrays.asList(

@@ -1,6 +1,5 @@
 package elite.intel.ai.brain.handlers.query;
 
-import ch.qos.logback.core.util.StringUtil;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -29,7 +28,7 @@ public class GenericResponse {
 
     public JsonObject genericResponse(String text) {
         PlayerSession session = PlayerSession.getInstance();
-        String playerName = StringUtil.nullStringToEmpty(String.valueOf(session.get(PlayerSession.PLAYER_NAME)));
+        String playerName = String.valueOf(session.get(PlayerSession.PLAYER_NAME));
 
         JsonObject response = new JsonObject();
         response.addProperty("response_text", text + " " + ("null".equalsIgnoreCase(playerName) ? "Commander" : playerName));

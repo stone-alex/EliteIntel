@@ -1,7 +1,7 @@
 package elite.intel.ai.hands;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager; 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -18,7 +18,7 @@ import java.util.*;
  * keys, modifiers, and hold states.
  */
 public class KeyBindingsParser {
-    private static final Logger log = LoggerFactory.getLogger(KeyBindingsParser.class);
+    private static final Logger log = LogManager.getLogger(KeyBindingsParser.class);
     private static KeyBindingsParser instance;
 
     private KeyBindingsParser() {

@@ -2,8 +2,8 @@ package elite.intel.session;
 
 import com.google.gson.*;
 import elite.intel.util.json.GsonFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager; 
 
 import java.io.*;
 import java.lang.reflect.Type;
@@ -23,7 +23,7 @@ import java.util.function.Supplier;
  * and deserialization of field data.
  */
 class SessionPersistence {
-    private static final Logger log = LoggerFactory.getLogger(SessionPersistence.class);
+    private static final Logger log = LogManager.getLogger(SessionPersistence.class);
     private String APP_DIR;
     private String sessionFile = "system_session.json";
     private final Map<String, FieldHandler<?>> fields = new HashMap<>();

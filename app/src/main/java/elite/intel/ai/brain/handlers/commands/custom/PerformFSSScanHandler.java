@@ -3,8 +3,8 @@ package elite.intel.ai.brain.handlers.commands.custom;
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.commands.CommandHandler;
 import elite.intel.ai.hands.GameHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager; 
 
 import static elite.intel.ai.brain.handlers.commands.GameCommands.GameCommand.EXPLORATION_FSSDISCOVERY_SCAN;
 import static elite.intel.ai.brain.handlers.commands.GameCommands.GameCommand.SET_SPEED_ZERO;
@@ -25,7 +25,7 @@ import static elite.intel.ai.brain.handlers.commands.GameCommands.GameCommand.SE
  */
 public class PerformFSSScanHandler extends CustomCommandOperator implements CommandHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(PerformFSSScanHandler.class);
+    private static final Logger log = LogManager.getLogger(PerformFSSScanHandler.class);
 
     public PerformFSSScanHandler(GameHandler commandHandler) throws Exception {
         super(commandHandler.getMonitor(), commandHandler.getExecutor());

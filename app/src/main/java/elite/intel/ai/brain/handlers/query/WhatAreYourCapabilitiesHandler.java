@@ -3,8 +3,8 @@ package elite.intel.ai.brain.handlers.query;
 import com.google.gson.JsonObject;
 import elite.intel.about.EliteIntelFactory;
 import elite.intel.util.json.JsonDataFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager; 
 
 /**
  * Handles queries related to the capabilities of the Elite AI.
@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  */
 public class WhatAreYourCapabilitiesHandler extends BaseQueryAnalyzer implements QueryHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(WhatAreYourCapabilitiesHandler.class);
+    private static final Logger log = LogManager.getLogger(WhatAreYourCapabilitiesHandler.class);
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
 

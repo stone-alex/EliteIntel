@@ -7,8 +7,8 @@ import elite.intel.gameapi.VoiceProcessEvent;
 import elite.intel.gameapi.journal.events.*;
 import elite.intel.session.ClearSessionCacheEvent;
 import elite.intel.session.LoadSessionEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager; 
 
 import java.lang.reflect.Constructor;
 import java.time.Instant;
@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class EventRegistry {
-    private static final Logger log = LoggerFactory.getLogger(EventRegistry.class);
+    private static final Logger log = LogManager.getLogger(EventRegistry.class);
     private static final Map<String, Class<? extends BaseEvent>> eventMap = new HashMap<>();
     private static final Set<String> NON_TIMED_EVENTS = Set.of(
             "LoadGame", "Commander", "Statistics", "Loadout", "Rank", "Materials", "EngineerProgress", "CarrierStats"

@@ -100,7 +100,7 @@ public class SystemSession {
     }
 
     public AiVoices getAIVoice() {
-        return this.aiVoice == null ? AiVoices.JENNIFER : this.aiVoice;
+        return this.aiVoice == null ? AiVoices.CHARLES : this.aiVoice;
     }
 
     public void setAIPersonality(AIPersonality personality) {
@@ -118,7 +118,7 @@ public class SystemSession {
     }
 
     public AICadence getAICadence() {
-        return this.aiCadence == null ? AICadence.FEDERATION : this.aiCadence;
+        return this.aiCadence == null ? AICadence.IMPERIAL : this.aiCadence;
     }
 
     public JsonArray getChatHistory() {

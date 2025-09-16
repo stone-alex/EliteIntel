@@ -23,7 +23,7 @@ public class DaftSecretarySanitizer {
 
     private static final DaftSecretarySanitizer INSTANCE = new DaftSecretarySanitizer();
     private final Logger log = LogManager.getLogger(DaftSecretarySanitizer.class);
-    private final Map<String, String> GOOGLE_CORRECTIONS = loadCorrections();
+    private final Map<String, String> STT_CORRECTIONS = loadCorrections();
 
     private DaftSecretarySanitizer() {
         // Private constructor for singleton
@@ -86,8 +86,11 @@ public class DaftSecretarySanitizer {
         return file;
     }
 
+    public Map<String, String> getCorrections() {
+        return STT_CORRECTIONS;
+    }
 
-    public Map<String, String> loadCorrections() {
+    private Map<String, String> loadCorrections() {
         Map<String, String> map = new HashMap<>();
         File file = ensureCorrectionsFileExists();
         if (file != null && file.exists()) {
@@ -111,9 +114,8 @@ public class DaftSecretarySanitizer {
     }
 
     public String correctMistakes(String transcript) {
-        loadCorrections();
         String sanitized = transcript.toLowerCase();
-        for (Map.Entry<String, String> entry : GOOGLE_CORRECTIONS.entrySet()) {
+        for (Map.Entry<String, String> entry : STT_CORRECTIONS.entrySet()) {
             sanitized = sanitized.replaceAll("\\b" + Pattern.quote(entry.getKey()) + "\\b", entry.getValue());
         }
         return sanitized.trim();
@@ -126,7 +128,7 @@ public class DaftSecretarySanitizer {
      * @param input String to process
      * @return Processed string with capitalized words or null if input is null or empty
      */
-    public String capitalizeWords(String input) {
+    public static String capitalizeWords(String input) {
         if (input == null || input.isEmpty()) return null;
 
         String[] words = input.toLowerCase().split("\\s+");

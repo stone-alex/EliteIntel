@@ -54,7 +54,6 @@ public class AppController implements AppControllerInterface, ActionListener {
     private final AppModelInterface model;
     private final AppViewInterface view;
     private final ConfigManager configManager = ConfigManager.getInstance();
-    private final DaftSecretarySanitizer _daftSecretarySanitizer = DaftSecretarySanitizer.getInstance();
     private boolean isServiceRunning = false;
 
     AuxiliaryFilesMonitor fileMonitor = new AuxiliaryFilesMonitor();
@@ -163,8 +162,8 @@ public class AppController implements AppControllerInterface, ActionListener {
             model.appendLog(
                     systemSession.getAIVoice().getName() +
                             " is listening to you... AI is set to "
-                            + _daftSecretarySanitizer.capitalizeWords(systemSession.getAICadence().name()) + " "
-                            + _daftSecretarySanitizer.capitalizeWords(systemSession.getAIPersonality().name())
+                            + DaftSecretarySanitizer.capitalizeWords(systemSession.getAICadence().name()) + " "
+                            + DaftSecretarySanitizer.capitalizeWords(systemSession.getAIPersonality().name())
             );
             model.appendLog("Available voices: " + listVoices());
             model.appendLog("Available personalities: " + listPersonalities());
@@ -190,7 +189,7 @@ public class AppController implements AppControllerInterface, ActionListener {
         AiVoices[] voices = AiVoices.values();
         sb.append("[");
         for (AiVoices voice : voices) {
-            sb.append(_daftSecretarySanitizer.capitalizeWords(voice.name())).append(", ");
+            sb.append(DaftSecretarySanitizer.capitalizeWords(voice.name())).append(", ");
         }
         sb.append("]");
         return sb.toString().replace(", ]", "]");
@@ -201,7 +200,7 @@ public class AppController implements AppControllerInterface, ActionListener {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
         for (AIPersonality personality : personalities) {
-            sb.append(_daftSecretarySanitizer.capitalizeWords(personality.name())).append(", ");
+            sb.append(DaftSecretarySanitizer.capitalizeWords(personality.name())).append(", ");
         }
         sb.append("]");
         return sb.toString().replace(", ]", "]");
@@ -212,7 +211,7 @@ public class AppController implements AppControllerInterface, ActionListener {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
         for (AICadence cadence : cadences) {
-            sb.append(_daftSecretarySanitizer.capitalizeWords(cadence.name())).append(", ");
+            sb.append(DaftSecretarySanitizer.capitalizeWords(cadence.name())).append(", ");
         }
         sb.append("]");
         return sb.toString().replace(", ]", "]");

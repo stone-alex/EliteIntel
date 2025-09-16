@@ -72,7 +72,7 @@ public class GoogleSTTImpl implements EarsInterface {
     private int consecutiveVoice = 0;
     private int consecutiveSilence = 0;
     private Thread processingThread;
-
+    Map<String, String> corrections;
     public GoogleSTTImpl() {
     }
 
@@ -103,7 +103,7 @@ public class GoogleSTTImpl implements EarsInterface {
             log.warn("Speech recognition is already running");
             return;
         }
-
+        corrections = DaftSecretarySanitizer.getInstance().getCorrections();
         // Reset isListening to true before starting a new thread
         isListening.set(true);
 
@@ -418,7 +418,7 @@ public class GoogleSTTImpl implements EarsInterface {
     }
 
     private StreamingRecognitionConfig getStreamingRecognitionConfig() {
-        Map<String, String> corrections = DaftSecretarySanitizer.getInstance().loadCorrections();
+
         Set<String> correctionSet = new HashSet<>(corrections.values());
         SpeechContext commandContext = SpeechContext.newBuilder()
                 .addAllPhrases(correctionSet)

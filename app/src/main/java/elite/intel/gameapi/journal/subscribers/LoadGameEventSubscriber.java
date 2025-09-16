@@ -18,7 +18,7 @@ public class LoadGameEventSubscriber {
 
         String inGameName = event.getCommander();
         String alternativeName = ConfigManager.getInstance().getPlayerKey(ConfigManager.PLAYER_ALTERNATIVE_NAME);
-        String usePlayerName = DaftSecretarySanitizer.getInstance().capitalizeWords(alternativeName != null || !alternativeName.isEmpty() ? alternativeName : inGameName);
+        String usePlayerName = DaftSecretarySanitizer.capitalizeWords(alternativeName != null || !alternativeName.isEmpty() ? alternativeName : inGameName);
         playerSession.put(PLAYER_NAME, usePlayerName);
 
         playerSession.put(CURRENT_SHIP, event.getShip());

@@ -18,7 +18,7 @@ public class FSSSignalDiscoveredSubscriber {
     public void onFSSSignalDiscovered(FSSSignalDiscoveredEvent event) {
         PlayerSession playerSession = PlayerSession.getInstance();
         playerSession.addSignal(event);
-        playerSession.put(PlayerSession.LAST_SCAN, event.toString());
+        playerSession.put(PlayerSession.LAST_SCAN, event.toJson());
 
         if (event.getUssTypeLocalised() != null && event.getUssTypeLocalised().equals("Nonhuman signal source")) {
             publishVoice("Nonhuman signal source detected! Threat level " + event.getThreatLevel() + "!");

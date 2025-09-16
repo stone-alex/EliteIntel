@@ -19,7 +19,7 @@ public class ScanEventSubscriber {
         PlayerSession playerSession = PlayerSession.getInstance();
 
         // data for questions on last scan
-        playerSession.put(PlayerSession.LAST_SCAN, event.toString());
+        playerSession.put(PlayerSession.LAST_SCAN, event.toJson());
 
 
 

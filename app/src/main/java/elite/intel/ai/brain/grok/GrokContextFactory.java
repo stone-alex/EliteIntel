@@ -150,10 +150,9 @@ public class GrokContextFactory implements AiContextFactory {
         sb.append("Output JSON: {\"response_text\": \"TTS output in the configured personality and cadence\", \"details\": \"optional extra info\"}\n");
         sb.append("Data format: JSON array or object, e.g., for signals: [{\"name\": \"Fleet Carrier XYZ\", \"type\": \"Carrier\"}, {\"name\": \"Distress Signal\", \"type\": \"USS\"}]\n");
         sb.append("Examples for ROGUE personality (brief, bold, witty, with profanity):\n" +
-                "    - Intent: 'tell me if carrier XYZ is here' Data: [{\"name\": \"Fleet Carrier XYZ\", \"type\": \"Carrier\"}] -> {\"response_text\": \"Carrier XYZ’s right here, Commander. A massive thing.\", \"details\": \"Detected in local signals.\"}\n" +
-                "    - Intent: 'tell me if carrier ABC is here' Data: [{\"name\": \"Fleet Carrier XYZ\", \"type\": \"Carrier\"}] -> {\"response_text\": \"No fucking carrier ABC around, Commander.\", \"details\": \"No such carrier in local signals.\"}\n" +
-                "    - Intent: 'summarize local signals' Data: [{\"name\": \"Fleet Carrier XYZ\", \"type\": \"Carrier\"}, {\"name\": \"Distress Signal\", \"type\": \"USS\"}] -> {\"response_text\": \"One carrier, one distress signal. Shit’s lively out here, Commander.\", \"details\": \"Carrier: XYZ, USS: Distress Signal\"}\n" +
-                "    - Intent: 'what can you do' Data: [{\"capabilities\": \"Voice commands, data analysis, route plotting, ship control\"}] -> {\"response_text\": \"I can fly this ship, analyze data, and fuck with your enemies, Commander. What’s the plan?\", \"details\": \"Full app capabilities.\"}\n");
+                "    - Intent: 'tell me if carrier XYZ is here' Data: [{\"name\": \"Fleet Carrier XYZ\", \"type\": \"Carrier\"}] -> {\"response_text\": \"Carrier XYZ’s right here. A massive thing.\", \"details\": \"Detected in local signals.\"}\n" +
+                "    - Intent: 'summarize local signals' Data: [{\"name\": \"Fleet Carrier XYZ\", \"type\": \"Carrier\"}, {\"name\": \"Distress Signal\", \"type\": \"USS\"}] -> {\"response_text\": \"One carrier, one distress signal. Shit’s lively out here.\", \"details\": \"Carrier: XYZ, USS: Distress Signal\"}\n"
+        );
         return sb.toString();
     }
 
@@ -200,8 +199,11 @@ public class GrokContextFactory implements AiContextFactory {
         sb.append("Round billions to nearest million. ");
         sb.append("Round millions to nearest 250000. ");
         sb.append("Start responses directly with the requested information, avoiding conversational fillers like 'noted,' 'well,' 'right,' 'understood,' or similar phrases. ");
-        if (personality.equals(AIPersonality.UNHINGED) || personality.equals(AIPersonality.ROGUE)) {
-            sb.append("For UNHINGED personality, use playful slang matching cadence. For ROGUE personality, use bold profanity (e.g., " + getProfanityExamples() + "), but keep it sharp and witty, not excessive.");
+        if (personality.equals(AIPersonality.UNHINGED) || personality.equals(AIPersonality.FRIENDLY)) {
+            sb.append("For UNHINGED personality, use playful slang matching cadence.");
+        }
+        if (personality.equals(AIPersonality.ROGUE)) {
+            sb.append("For ROGUE personality, use bold exessive profanity (e.g., " + getProfanityExamples() + "), but keep it sharp and witty.");
         }
 
     }
@@ -215,7 +217,6 @@ public class GrokContextFactory implements AiContextFactory {
         sb.append("Address me as ").append(playerName).append(", ").append(playerMilitaryRank).append(", ").append(playerTitle).append(", or ").append(playerHonorific).append(". ");
         if (missionStatement != null && !missionStatement.isEmpty()) {
             sb.append(" Session theme: ").append(missionStatement).append(": ");
-            sb.append(missionStatement);
             sb.append("\n\n");
         }
         sb.append("\n\n");
@@ -230,30 +231,34 @@ public class GrokContextFactory implements AiContextFactory {
         appendBehavior(sb);
         sb.append("Interpret this input: ").append(playerVoiceInput).append("\n\n ");
         sb.append("Always output JSON: {\"type\": \"command|query|chat\", \"response_text\": \"TTS output\", \"action\": \"action_name|query_name|null\", \"params\": {\"key\": \"value\"}, \"expect_followup\": boolean} \n");
+
+        inputClassificationClause(sb);
+        colloquialTerms(sb);
+        return sb.toString();
+    }
+
+    private void inputClassificationClause(StringBuilder sb) {
         sb.append("For type='command': Provide empty response_text for single word commands (e.g., 'deploy landing gear').\n");
+        sb.append("For navigation commands (e.g., 'jump', 'enter hyperspace', 'go to next system'), map to '" + JUMP_TO_HYPERSPACE.getUserCommand() + "'. 'Stop', 'cut engines' map to speed commands " + SET_SPEED_ZERO.getUserCommand() + ". 'Activate', 'toggle', 'left', 'right', 'up', 'down', 'close' to UI commands like" + UI_ACTIVATE.getUserCommand() + ", " + UI_TOGGLE.getUserCommand() + ". ");
         sb.append("For type='query': \n" +
                 "    - If action is a quick query (e.g., '" + WHAT_IS_YOUR_DESIGNATION.getAction() + "', '" + GENERAL_CONVERSATION.getAction() + "'), set 'response_text' to '' (empty string, no initial TTS).\n" +
                 "    - If action is a data query (listed in data queries section), set 'response_text' to 'Moment...' for user feedback during delay.\n" +
                 "    - For 'general_conversation', use general knowledge outside Elite Dangerous unless the input explicitly mentions the game.\n" +
                 "    - Do not generate or infer answers here; the app will handle final response via handlers.\n");
+
         sb.append("For type='chat': \n" +
                 "    - Classify as 'chat' for general conversation, lore questions, opinions, or casual talk (e.g., 'How’s it going?', 'there is nothing interesting in this system', 'time to hunt some pirates').\n" +
                 "    - Generate a relevant conversational response in 'response_text' strictly adhering to the configured personality and cadence\n" +
                 "    - If input is ambiguous, unrecognized, or gibberish (e.g., 'voice to an', 'asdf'), set 'response_text' to 'Say again?', 'action' to null, and 'expect_followup' to true. Do not generate custom clarification messages.\n" +
                 "    - Set 'expect_followup' to true if the response poses a question or invites further conversation; otherwise, false.\n");
+    }
+
+    private void colloquialTerms(StringBuilder sb) {
         sb.append("Map colloquial terms to commands: 'feds', 'yanks', or 'federation space' to 'FEDERATION', 'imperials', 'imps', or 'empire' to 'IMPERIAL', 'alliance space' or 'allies' to 'ALLIANCE' for set_cadence. ");
         sb.append("Infer command intent from context: phrases like 'act like', 'talk like', 'blend in with', or 'sound like' followed by a faction should trigger '" + SET_PERSONALITY.getAction() + "' with the corresponding cadence value, using current system allegiance if ambiguous. ");
-        sb.append("For navigation commands (e.g., 'jump', 'enter hyperspace', 'go to next system'), map to '" + JUMP_TO_HYPERSPACE.getUserCommand() + "'. 'Stop', 'cut engines' map to speed commands " + SET_SPEED_ZERO.getUserCommand() + ". 'Activate', 'toggle', 'left', 'right', 'up', 'down', 'close' to UI commands like" + UI_ACTIVATE.getUserCommand() + ", " + UI_TOGGLE.getUserCommand() + ". ");
-        sb.append("Map phrases like 'what is your name', 'who are you', 'what’s your designation', 'what is your voice', or 'tell me your name' to 'query' type with action '" + WHAT_IS_YOUR_DESIGNATION.getAction() + "'. ");
-        sb.append("If the input starts with 'query ', classify as 'query' and use the rest of the input as the action (e.g., 'query what is your designation' -> action '" + WHAT_IS_YOUR_DESIGNATION.getAction() + "'). ");
         sb.append("Examples:\n" +
-                "    - Input 'How’s it going?' -> {\"type\": \"chat\", \"response_text\": \"Ship’s running like a dream! You holding up?\", \"action\": null, \"params\": {}, \"expect_followup\": true}\n" +
-                "    - Input 'Tell me about the Thargoids' -> {\"type\": \"chat\", \"response_text\": \"Thargoids? Bug-like bastards with tech that’ll fuck your ship in seconds. Want tips to survive 'em?\", \"action\": null, \"params\": {}, \"expect_followup\": true}\n" +
                 "    - Input 'What’s the weather in Los Angeles?' -> {\"type\": \"query\", \"response_text\": \"\", \"action\": \"general_conversation\", \"params\": {}, \"expect_followup\": true}\n" +
-                "    - Input 'voice to an' -> {\"type\": \"chat\", \"response_text\": \"Say again?\", \"action\": null, \"params\": {}, \"expect_followup\": true}\n" +
-                "    - Input 'Find a material trader' -> {\"type\": \"query\", \"response_text\": \"Moment...\", \"action\": \"find_material_trader\", \"params\": {}, \"expect_followup\": false}\n" +
-                "    - Input 'Where can I buy Painite?' -> {\"type\": \"query\", \"response_text\": \"Moment...\", \"action\": \"find_commodity\", \"params\": {\"commodity\": \"painite\"}, \"expect_followup\": false}\n");
-        return sb.toString();
+                "    - Input 'Is the next star scoopable?' -> {\"type\": \"query\", \"response_text\": \"Moment...\", \"action\": \"query_analyze_route\", \"params\": {}, \"expect_followup\": false}\n");
     }
 
     private String generateSupportedQueriesClause() {

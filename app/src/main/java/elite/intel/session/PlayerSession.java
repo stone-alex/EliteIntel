@@ -454,6 +454,7 @@ public class PlayerSession {
         carrierData.setMaxJumpRange(event.getJumpRangeMax());
         carrierData.setAllowNotorious(event.isAllowNotorious());
         carrierData.setPendingDecommission(event.isPendingDecommission());
+        carrierData.setFuelLevel(event.getFuelLevel());
 
         if (event.getSpaceUsage() != null) {
             CarrierStatsEvent.SpaceUsage spaceUsage = event.getSpaceUsage();

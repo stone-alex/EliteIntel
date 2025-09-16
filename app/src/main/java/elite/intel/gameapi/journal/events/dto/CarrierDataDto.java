@@ -32,7 +32,7 @@ public class CarrierDataDto implements ToJsonConvertible {
     private int rearmSupplyTax;
     private int refuelSupplyTax;
     private int repairSupplyTax;
-    private String fuelSupply="data not available";
+    private int fuelSupply=0;
 
     public long getTotalBalance() {
         return totalBalance;
@@ -243,8 +243,11 @@ public class CarrierDataDto implements ToJsonConvertible {
     }
 
 
-    // legal data not available
-    public String getFuelSupply() {
+    public void setFuelLevel(int fuelLevel) {
+        this.fuelSupply = fuelLevel;
+    }
+
+    public int getFuelSupply() {
         return fuelSupply;
     }
 

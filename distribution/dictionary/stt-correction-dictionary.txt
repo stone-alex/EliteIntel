@@ -1,15 +1,3 @@
-###########################################################################
-# STT is a deff and dumb secretary. We have to correct it's mistakes.
-# List of words or phrases to be corrected
-# Add your own, if the Speech To Text can't understand you well.
-# Surround the key and value with quotes
-
-###########################################################################
-## set voice to corrections
-#-
-"32"="tritium"
-"3 tube"="tritium"
-"3tube"="tritium"
 "And their hyperspace"="enter hyperspace"
 "and their super cruise"="enter supercruise"
 "are the engines"="power to engines"
@@ -19,8 +7,6 @@
 "bunch of cl"="punch ftl"
 "bunch of tail"="punch ftl"
 "bunch of tl"="punch ftl"
-"carrier fuel"="tritium"
-"carrier juice"="tritium"
 "despite galaxy map"="display galaxy map"
 "display enough panel"="display navigation panel"
 "display hard"="display hud"
@@ -29,10 +15,6 @@
 "exit to hard"="exit to hud"
 "exit to head"="exit to hud"
 "hannah"="Anna"
-"hydrogen 3"="tritium"
-"hydrogen three"="tritium"
-"hydrogen3"="tritium"
-"hydrogenthree"="tritium"
 "just make galaxy map="display galaxy map"
 "like the super cruise"="exit supercruise"
 "marry"="mary"
@@ -65,19 +47,30 @@
 "that wish to"="set voice to"
 "the voice of"="set voice to"
 "the voice to"="set voice to"
+"carrier fuel"="tritium"
+"carrier juice"="tritium"
+"hydrogen 3"="tritium"
+"hydrogen three"="tritium"
+"hydrogen3"="tritium"
+"hydrogenthree"="tritium"
+"32"="tritium"
+"3 tube"="tritium"
+"3tube"="tritium"
 "treat you"="tritium"
 "treatyou"="tritium"
 "trees you"="tritium"
 "treesyou"="tritium"
+"3gm"="tritium"
+"pretium"="tritium"
 "which was to"="switch voice to"
 "with voice to"="set voice to"
 "wo, the voice to"="set voice to"
 "and their supercruise"="enter supercruise"
 "set mine in target"="set mining target"
-"3gm"="tritium"
 "lipids"="limpets"
 "olympics"="limpets"
 "how many olympics"="how many limpets"
 "switch choice"="switch voice to"
 "blending gear"="landing gear"
 "how do i check, please"="audio check, please"
+"money and targets"="clear mining targets"

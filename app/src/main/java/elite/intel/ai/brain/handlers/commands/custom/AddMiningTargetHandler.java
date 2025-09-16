@@ -17,8 +17,8 @@ import org.apache.logging.log4j.LogManager;
  * If the target is valid, it updates the player's session with the new mining target value.
  * If the provided parameter is missing or empty, it logs an informational message indicating no target was set.
  */
-public class SetMiningTargetHandler implements CommandHandler {
-    private static final Logger log = LogManager.getLogger(SetMiningTargetHandler.class);
+public class AddMiningTargetHandler implements CommandHandler {
+    private static final Logger log = LogManager.getLogger(AddMiningTargetHandler.class);
 
     @Override
     public void handle(JsonObject params, String responseText) {
@@ -29,9 +29,8 @@ public class SetMiningTargetHandler implements CommandHandler {
             log.info("no mining target set");
         } else {
             String miningTarget = jsonElement.getAsJsonPrimitive().getAsString().replace("\"", "");
-            session.put(CustomCommands.SET_MINING_TARGET.getParamKey(), miningTarget);
-            session.saveSession();
-            EventBusManager.publish(new VoiceProcessEvent("Mining target set to: " + miningTarget));
+            session.addMiningTarget(miningTarget);
+            EventBusManager.publish(new VoiceProcessEvent("Added mining target: " + miningTarget));
         }
     }
 }

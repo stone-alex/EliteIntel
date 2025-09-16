@@ -1,11 +1,12 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.intel.ai.brain.handlers.commands.custom.CustomCommands;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.VoiceProcessEvent;
 import elite.intel.gameapi.journal.events.ProspectedAsteroidEvent;
 import elite.intel.session.PlayerSession;
+
+import java.util.Set;
 
 @SuppressWarnings("unused")
 public class ProspectorSubscriber {
@@ -14,26 +15,27 @@ public class ProspectorSubscriber {
     public void onProspectedAsteroidEvent(ProspectedAsteroidEvent event) {
 
         boolean foundTargetMaterial = false;
-        StringBuilder anouncement = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
+        PlayerSession playerSession = PlayerSession.getInstance();
 
         for (ProspectedAsteroidEvent.Material material : event.getMaterials()) {
-            String prospectedMaterial = material == null ? "" : material.getName();
-            String targetMaterial = String.valueOf(PlayerSession.getInstance().get(CustomCommands.SET_MINING_TARGET.getParamKey())).replaceAll("\"", "");
-            if (prospectedMaterial != null && !prospectedMaterial.isEmpty() && prospectedMaterial.toLowerCase().equals(targetMaterial.toLowerCase())) {
-                foundTargetMaterial = true;
+            if (material == null) continue;
+            if (material.getName() == null || material.getName().isEmpty()) continue;
 
+            String prospectedMaterial = material.getName().toLowerCase();
+            Set<String> miningTargets = playerSession.getMiningTargets();
+
+            if (miningTargets.contains(prospectedMaterial)) {
+                foundTargetMaterial = true;
                 double proportion = material.getProportion();
                 String message = "Prospector detected " + String.format("%.2f", proportion) + " percent " + material.getName();
-                anouncement.append(message);
-
+                sb.append(message);
                 break;
             }
         }
 
         if (foundTargetMaterial) {
-            EventBusManager.publish(new VoiceProcessEvent(anouncement.toString()));
+            EventBusManager.publish(new VoiceProcessEvent(sb.toString()));
         }
-
     }
-
 }

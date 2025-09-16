@@ -202,6 +202,7 @@ public class PlayerSession {
     public static final String TARGET_FACTIONS = "targetFactions";
     public static final String STELLAR_OBJECTS = "stellarObjects";
     private static final String BOUNTIES = "bounties";
+    private static final String MINING_TARGETS = "miningTargets";
     private final Map<String, Object> state = new HashMap<>();
     private final Map<String, String> shipScans = new HashMap<>();
     private final Map<Long, MissionDto> missions = new LinkedHashMap<>();
@@ -210,6 +211,7 @@ public class PlayerSession {
     private final Set<String> detectedSignals = new LinkedHashSet<>();
     private final Set<String> targetFactions = new LinkedHashSet<>();
     private final Set<BountyDto> bounties = new LinkedHashSet<>();
+    private final Set<String> miningTargets = new HashSet<>();
     private long bountyCollectedThisSession = 0;
     private RankAndProgressDto rankAndProgressDto = new RankAndProgressDto();
     private LocationDto currentLocation = new LocationDto();
@@ -217,6 +219,7 @@ public class PlayerSession {
 
 
     SessionPersistence persistence = new SessionPersistence();
+
 
     private PlayerSession() {
         persistence.ensureFileAndDirectoryExist("player_session.json");
@@ -259,6 +262,13 @@ public class PlayerSession {
             stellarObjects.putAll((Map<String, StellarObjectDto>) v);
         }, new TypeToken<Map<String, StellarObjectDto>>() {
         }.getType());
+
+        persistence.registerField(MINING_TARGETS, this::getMiningTargets, v -> {
+            miningTargets.clear();
+            miningTargets.addAll((Set<String>) v);
+        }, new TypeToken<Set<String>>() {}.getType());
+
+
         persistence.registerField(CURRENT_LOCATION, this::getCurrentLocation, this::setCurrentLocation, LocationDto.class);
 
         persistence.registerField("bountyCollectedThisSession", this::getBountyCollectedThisSession, this::setBountyCollectedThisSession, Long.class);
@@ -556,5 +566,20 @@ public class PlayerSession {
 
     public void setCarrierData(CarrierDataDto carrierData) {
         this.carrierData = carrierData;
+    }
+
+    public Set<String> getMiningTargets() {
+        return miningTargets;
+    }
+
+    public void addMiningTarget(String miningTarget) {
+        if( miningTarget == null || miningTarget.isEmpty()) return;
+        miningTargets.add(miningTarget.toLowerCase());
+        saveSession();
+    }
+
+    public void clearMiningTargets() {
+        miningTargets.clear();
+        saveSession();
     }
 }

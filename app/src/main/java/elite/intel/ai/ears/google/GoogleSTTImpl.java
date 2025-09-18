@@ -16,7 +16,7 @@ import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.AudioPlayer;
 import elite.intel.util.DaftSecretarySanitizer;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager; 
+import org.apache.logging.log4j.LogManager;
 
 import javax.sound.sampled.*;
 import java.io.File;
@@ -59,7 +59,7 @@ public class GoogleSTTImpl implements EarsInterface {
     private static final int STREAM_DURATION_MS = 290000; // ~4 min 50 sec; below Google V1 limit for safety
     private static final int KEEP_ALIVE_INTERVAL_MS = 3000; // Keep-alive interval
     private static final int ENTER_VOICE_FRAMES = 1; // Quick enter to avoid clipping
-    private static final int EXIT_SILENCE_FRAMES = 20; // ~2s silence to exit
+    private static final int EXIT_SILENCE_FRAMES = 10; // ~1s silence to exit
 
     private File wavFile = null; // Output WAV for debugging
     private SpeechClient speechClient;
@@ -195,6 +195,8 @@ public class GoogleSTTImpl implements EarsInterface {
     @SuppressWarnings("deprecation") private void startStreaming() { // v2 is not an option as it is for SAAS v1 uses bidiStreamingCall and there is no upgrade
         int retryCount = 0;
         int maxRetries = 5; // Cap to prevent infinite loops
+        StringBuffer currentTranscript = new StringBuffer();
+        List<Float> confidences = Collections.synchronizedList(new ArrayList<>());
         while (isListening.get()) {
             log.info("Starting new streaming session...");
             long streamStartTime = System.currentTimeMillis();
@@ -217,7 +219,7 @@ public class GoogleSTTImpl implements EarsInterface {
                             @Override
                             public void onNext(StreamingRecognizeResponse response) {
                                 for (StreamingRecognitionResult result : response.getResultsList()) {
-                                    processStreamingRecognitionResult(result);
+                                    processStreamingRecognitionResult(result, currentTranscript, confidences);
                                 }
                             }
 
@@ -276,6 +278,7 @@ public class GoogleSTTImpl implements EarsInterface {
                                 isActive = true;
                                 log.debug("VAD: Entered active state (voice detected)");
                             }
+                            boolean wasActive = isActive;
                             if (isActive && consecutiveSilence >= EXIT_SILENCE_FRAMES) {
                                 isActive = false;
                                 log.debug("VAD: Exited active state (silence detected)");
@@ -298,6 +301,39 @@ public class GoogleSTTImpl implements EarsInterface {
                                 log.debug("Skipping send (silence, RMS: {})", rms);
                             }
 
+                            // Check for VAD exit and send accumulated transcript if any
+                            if (wasActive && !isActive && currentTranscript.length() > 0) {
+                                String fullTranscript = currentTranscript.toString().trim();
+                                EventBusManager.publish(new AppLogEvent("STT Heard: [" + fullTranscript + "]."));
+                                if (!fullTranscript.isBlank() && fullTranscript.length() >= 3) {
+                                    log.info("Final accumulated transcript: {}", fullTranscript);
+                                    String sanitizedTranscript = DaftSecretarySanitizer.getInstance().correctMistakes(fullTranscript);
+
+                                    EventBusManager.publish(new AppLogEvent("STT Sanitized: [" + sanitizedTranscript + "]."));
+                                    boolean isStreamingModeOn = SystemSession.getInstance().isStreamingModeOn();
+                                    float avgConfidence;
+                                    synchronized (confidences) {
+                                        avgConfidence = (float) confidences.stream().mapToDouble(Float::doubleValue).average().orElse(0.0);
+                                    }
+                                    if (avgConfidence > 0.3) {
+                                        if (isStreamingModeOn) {
+                                            String voiceName = SystemSession.getInstance().getAIVoice().getName();
+                                            if (sanitizedTranscript.toLowerCase().startsWith("computer") || sanitizedTranscript.toLowerCase().startsWith(voiceName.toLowerCase())) {
+                                                sendToAi(sanitizedTranscript.replace("computer,", "").replace(voiceName.toLowerCase() + ",", ""), avgConfidence);
+                                            }
+                                        } else {
+                                            sendToAi(sanitizedTranscript, avgConfidence);
+                                        }
+                                    } else {
+                                        log.info("Discarded transcript: {} (avg confidence: {})", fullTranscript, avgConfidence);
+                                    }
+                                }
+                                currentTranscript.setLength(0);
+                                synchronized (confidences) {
+                                    confidences.clear();
+                                }
+                            }
+
                             // Update lastBuffer for continuity on restart
                             lastBuffer = trimmedBuffer;
                         }
@@ -307,6 +343,38 @@ public class GoogleSTTImpl implements EarsInterface {
                 } finally {
                     if (requestObserver != null) {
                         requestObserver.onCompleted();
+                    }
+                    // Send any pending transcript on stream close
+                    if (!isActive && currentTranscript.length() > 0) {
+                        String fullTranscript = currentTranscript.toString().trim();
+                        EventBusManager.publish(new AppLogEvent("STT Heard: [" + fullTranscript + "]."));
+                        if (!fullTranscript.isBlank() && fullTranscript.length() >= 3) {
+                            log.info("Final accumulated transcript: {}", fullTranscript);
+                            String sanitizedTranscript = DaftSecretarySanitizer.getInstance().correctMistakes(fullTranscript);
+
+                            EventBusManager.publish(new AppLogEvent("STT Sanitized: [" + sanitizedTranscript + "]."));
+                            boolean isStreamingModeOn = SystemSession.getInstance().isStreamingModeOn();
+                            float avgConfidence;
+                            synchronized (confidences) {
+                                avgConfidence = (float) confidences.stream().mapToDouble(Float::doubleValue).average().orElse(0.0);
+                            }
+                            if (avgConfidence > 0.3) {
+                                if (isStreamingModeOn) {
+                                    String voiceName = SystemSession.getInstance().getAIVoice().getName();
+                                    if (sanitizedTranscript.toLowerCase().startsWith("computer") || sanitizedTranscript.toLowerCase().startsWith(voiceName.toLowerCase())) {
+                                        sendToAi(sanitizedTranscript.replace("computer,", "").replace(voiceName.toLowerCase() + ",", ""), avgConfidence);
+                                    }
+                                } else {
+                                    sendToAi(sanitizedTranscript, avgConfidence);
+                                }
+                            } else {
+                                log.info("Discarded transcript: {} (avg confidence: {})", fullTranscript, avgConfidence);
+                            }
+                        }
+                        currentTranscript.setLength(0);
+                        synchronized (confidences) {
+                            confidences.clear();
+                        }
                     }
                     try {
                         Thread.sleep(RESTART_DELAY_MS);
@@ -382,29 +450,15 @@ public class GoogleSTTImpl implements EarsInterface {
      *               alternatives, confidence scores, and transcript data. It also indicates
      *               whether the result is final.
      */
-    private void processStreamingRecognitionResult(StreamingRecognitionResult result) {
+    private void processStreamingRecognitionResult(StreamingRecognitionResult result, StringBuffer currentTranscript, List<Float> confidences) {
         if (result.getAlternativesCount() > 0) {
             SpeechRecognitionAlternative alt = result.getAlternatives(0);
             String transcript = alt.getTranscript().trim();
             float confidence = alt.getConfidence();
             if (result.getIsFinal()) {
-                EventBusManager.publish(new AppLogEvent("STT Heard: [" + transcript + "]. Confidence: " + confidence + "."));
-                if (!transcript.isBlank() && transcript.length() >= 3 && confidence > 0.3) {
-                    log.info("Final transcript: {} (confidence: {})", transcript, confidence);
-                    String sanitizedTranscript = DaftSecretarySanitizer.getInstance().correctMistakes(transcript);
-
-                    EventBusManager.publish(new AppLogEvent("STT Sanitized: [" + sanitizedTranscript + "]."));
-                    boolean isStreamingModeOn = SystemSession.getInstance().isStreamingModeOn();
-                    if (isStreamingModeOn) {
-                        String voiceName = SystemSession.getInstance().getAIVoice().getName();
-                        if (sanitizedTranscript.toLowerCase().startsWith("computer") || sanitizedTranscript.toLowerCase().startsWith(voiceName.toLowerCase())) {
-                            sendToAi(sanitizedTranscript.replace("computer,", "").replace(voiceName.toLowerCase() + ",", ""), confidence);
-                        }
-                    } else {
-                        sendToAi(sanitizedTranscript, confidence);
-                    }
-                } else {
-                    log.info("Discarded transcript: {} (confidence: {})", transcript, confidence);
+                currentTranscript.append(transcript).append(" ");
+                synchronized (confidences) {
+                    confidences.add(confidence);
                 }
             }
         }
@@ -430,7 +484,7 @@ public class GoogleSTTImpl implements EarsInterface {
                 .setSampleRateHertz(sampleRateHertz)
                 .setAudioChannelCount(CHANNELS)
                 .setLanguageCode("en-US")
-                .setEnableAutomaticPunctuation(true)
+                .setEnableAutomaticPunctuation(false)
                 .addSpeechContexts(commandContext)
                 .setModel("latest_long")
                 .setEnableWordTimeOffsets(true)

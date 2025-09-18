@@ -1,16 +1,13 @@
-package elite.intel.ai.brain.grok;
+package elite.intel.ai.brain.xai;
 
 import com.google.gson.*;
 import elite.intel.ai.ApiFactory;
-import elite.intel.ai.ConfigManager;
 import elite.intel.ai.brain.AiAnalysisInterface;
 import elite.intel.util.json.GsonFactory;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager; 
+import org.apache.logging.log4j.LogManager;
 
-import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
@@ -42,7 +39,7 @@ public class GrokAnalysisEndpoint implements AiAnalysisInterface {
             HttpURLConnection conn = client.getHttpURLConnection();
             String systemPrompt = ApiFactory.getInstance().getAiContextFactory().generateAnalysisPrompt(userIntent, dataJson);
 
-            JsonObject request = client.createRequestBodyHeader();
+            JsonObject request = client.createRequestBodyHeader(GrokClient.MODEL_GROK_3_FAST);
 
             JsonObject messageSystem = new JsonObject();
             messageSystem.addProperty("role", "system");

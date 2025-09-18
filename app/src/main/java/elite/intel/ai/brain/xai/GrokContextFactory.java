@@ -1,4 +1,4 @@
-package elite.intel.ai.brain.grok;
+package elite.intel.ai.brain.xai;
 
 import elite.intel.ai.brain.AICadence;
 import elite.intel.ai.brain.AIPersonality;

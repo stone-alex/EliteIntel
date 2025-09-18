@@ -1,9 +1,8 @@
-package elite.intel.ai.brain.grok;
+package elite.intel.ai.brain.xai;
 
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.ConfigManager;
-import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 
 import java.io.IOException;
@@ -28,18 +27,20 @@ public class GrokClient {
     // See this package for inspiration on how to implement your own LLM client.
     private static final String API_URL = "https://api.x.ai/v1/chat/completions";
 
-    private static final String MODEL = "grok-3-fast"; // <-- deprecated, but grok-3-mini-fast is more expensive and 4 seconds slower
+    public static final String MODEL_GROK_3_FAST = "grok-3-fast";   // <-- deprecated but very fast
+    //public static final String MODEL_GROK_3_FAST = "grok-code-fast";   // <-- deprecated but very fast
+    //public static final String MODEL_GROK_4 = "grok-4";           // <-- latest, but very slow
 
     public static final boolean IS_STREAM = false;
 
     private static final GrokClient instance = new GrokClient();
 
-    JsonObject createRequestBodyHeader() {
+    JsonObject createRequestBodyHeader(String model) {
         float temp =  SystemSession.getInstance()
                 .getAIPersonality()
                 .getTemperature();
         JsonObject header = new JsonObject();
-        header.addProperty("model", MODEL);
+        header.addProperty("model", model);
         header.addProperty("temperature", temp);
         header.addProperty("stream", IS_STREAM);
         return header;

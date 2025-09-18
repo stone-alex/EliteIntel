@@ -1,4 +1,4 @@
-package elite.intel.ai.brain.grok;
+package elite.intel.ai.brain.xai;
 
 import com.google.common.eventbus.Subscribe;
 import com.google.gson.*;
@@ -265,7 +265,8 @@ public class GrokCommandEndPoint implements AiCommandInterface {
         messages.add(userMessage);
 
         // Create API request body
-        JsonObject requestBody = GrokClient.getInstance().createRequestBodyHeader();
+        GrokClient client = GrokClient.getInstance();
+        JsonObject requestBody = client.createRequestBodyHeader(GrokClient.MODEL_GROK_3_FAST);
         requestBody.add("messages", messages);
 
         // Serialize to JSON string

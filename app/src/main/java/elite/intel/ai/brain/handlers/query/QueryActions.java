@@ -15,7 +15,7 @@ public enum QueryActions {
     LOCAL_SYSTEM_INFO("local_system_info", "Provide information about local star system. ", AnalyzeLocalSystemHandler.class, true),
     QUERY_ANALYZE_ON_BOARD_CARGO("query_analyze_on_board_cargo", "Analyzes cargo hold contents. ", AnalyzeCargoHoldHandler.class, true),
     QUERY_ANALYZE_ROUTE("query_analyze_route", "Analyze our plotted route. ", AnalyzeRouterHandler.class, true),
-    QUERY_CARRIER_STATS("query_carrier_stats", "Summarize carrier information. ", AnalyzeCarrierDataHandler.class, true),
+    QUERY_CARRIER_STATS("query_carrier_stats", "provide extremely short and concise answer for specific datapoint only, if not specified provide summary", AnalyzeCarrierDataHandler.class, true),
     QUERY_PIRATE_MISSION_KILLS_REMAINING("query_pirate_mission_kills_remaining", "Summarize the state of the missions. Mission kills stack across factions ", AnalyzePirateMissionHandler.class, true),
     QUERY_PIRATE_MISSION_PROFIT("query_pirate_mission_profit", "Summarize the potential profit from currently active missions. ", AnalyzePirateMissionHandler.class, true),
     QUERY_PIRATE_MISSION_STATUS("query_pirate_mission_status", "Handles summarize current progression of missions. ", AnalyzePirateMissionHandler.class, true),

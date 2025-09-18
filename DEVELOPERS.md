@@ -71,7 +71,7 @@ Welcome to developing for Elite Intel, a Java-based QoL app for *Elite Dangerous
     - `AiQueryInterface`: `JsonObject sendToAi(JsonArray messages)` for queries.
     - `AiAnalysisInterface`: `JsonObject analyzeData(String userIntent, String dataJson)` for data analysis.
     - `AIChatInterface`: `JsonObject sendToAi(JsonArray messages)` for chats.
-- **Example**: See `elite.intel.ai.brain.grok` for xAI Grok integration.
+- **Example**: See `elite.intel.ai.brain.xai` for xAI Grok integration.
 
 ## New Journal Events
 

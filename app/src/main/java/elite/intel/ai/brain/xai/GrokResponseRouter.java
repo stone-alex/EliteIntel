@@ -1,4 +1,4 @@
-package elite.intel.ai.brain.grok;
+package elite.intel.ai.brain.xai;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;

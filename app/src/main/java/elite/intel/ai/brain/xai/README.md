@@ -1,4 +1,4 @@
-# Grok Implementation (`elite.intel.ai.brain.grok`)
+# Grok Implementation (`elite.intel.ai.brain.xai`)
 
 This package provides the Grok-specific implementation for EliteIntel,
 a TOS-compliant Quality-of-Life (QoL) companion app for *Elite Dangerous*.

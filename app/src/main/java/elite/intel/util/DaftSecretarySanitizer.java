@@ -118,7 +118,7 @@ public class DaftSecretarySanitizer {
         for (Map.Entry<String, String> entry : STT_CORRECTIONS.entrySet()) {
             sanitized = sanitized.replaceAll("\\b" + Pattern.quote(entry.getKey()) + "\\b", entry.getValue());
         }
-        return sanitized.trim();
+        return sanitized.replace("?","").replace(".","").replace(",","").trim();
     }
 
 

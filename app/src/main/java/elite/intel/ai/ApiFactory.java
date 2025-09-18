@@ -1,7 +1,7 @@
 package elite.intel.ai;
 
 import elite.intel.ai.brain.*;
-import elite.intel.ai.brain.grok.*;
+import elite.intel.ai.brain.xai.*;
 import elite.intel.ai.ears.EarsInterface;
 import elite.intel.ai.ears.google.GoogleSTTImpl;
 import elite.intel.ai.mouth.MouthInterface;

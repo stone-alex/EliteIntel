@@ -189,8 +189,6 @@ public class PlayerSession {
     public static final String PLAYER_MISSION_STATEMENT = "player_mission_statement";
     public static final String CURRENT_SHIP = "current_ship";
     public static final String CURRENT_SHIP_NAME = "current_ship_name";
-    public static final String CARRIER_FUEL_LEVEL = "carrier_fuel_level";
-    public static final String CARGO_SPACE_USED = "cargo_space_used";
     public static final String PERSONAL_CREDITS_AVAILABLE = "personal_credits_available";
 
     private static final String CARRIER_STATS = "carrier_stats";
@@ -443,8 +441,6 @@ public class PlayerSession {
 
     public void onCarrierStats(CarrierStatsEvent event) {
         CarrierStatsEvent.Finance finance = event.getFinance();
-        state.put(CARRIER_FUEL_LEVEL, event.getFuelLevel());
-        state.put(CARGO_SPACE_USED, event.getSpaceUsage());
         CarrierDataDto carrierData = new CarrierDataDto();
         carrierData.setCallSign(event.getCallsign());
         carrierData.setCarrierName(event.getName());

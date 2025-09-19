@@ -110,3 +110,6 @@
 "target granted right?"="target grandidierite"
 "target grind did, right?"="target grandidierite"
 "mining target currently, right?"="target grandidierite"
+"successfully carry"="access carrier"
+"half hour"="how far"
+"next system and route"="next system in route"

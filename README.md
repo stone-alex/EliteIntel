@@ -20,7 +20,7 @@ with Frontier Developments' Terms of Service. No AFK play, no botting, and no
 automation that gives unfair advantages; everything requires your input.
 
 The app uses Google Speech-to-Text (STT) and Text-to-Speech (TTS) for **natural voice interactions**,
-and xAI's Grok for handling commands, queries, and chats. It processes game data from journal and auxiliary
+and either xAI's Grok or OpenAI's GPT for handling commands, queries, and chats. It processes game data from journal and auxiliary
 files, pulls in info from EDSM when needed, and keeps things responsive.
 
 The project is open-source under

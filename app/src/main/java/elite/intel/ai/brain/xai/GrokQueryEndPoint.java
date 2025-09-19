@@ -1,4 +1,4 @@
-package elite.intel.ai.brain.openai;
+package elite.intel.ai.brain.xai;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -6,7 +6,6 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import elite.intel.ai.brain.AiQueryInterface;
 import elite.intel.ai.brain.commons.AiEndPoint;
-import elite.intel.util.json.GsonFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -14,35 +13,41 @@ import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
-public class OpenAiAiEndPoint extends AiEndPoint implements AiQueryInterface {
-    private static final Logger log = LogManager.getLogger(OpenAiAiEndPoint.class);
-    private static OpenAiAiEndPoint instance;
+public class GrokQueryEndPoint extends AiEndPoint implements AiQueryInterface {
+    private static final Logger log = LogManager.getLogger(GrokQueryEndPoint.class);
+    private static final GrokQueryEndPoint INSTANCE = new GrokQueryEndPoint();
 
-    private OpenAiAiEndPoint() {
+    private GrokQueryEndPoint() {
+        // Private constructor for singleton
     }
 
-    public static synchronized OpenAiAiEndPoint getInstance() {
-        if (instance == null) {
-            instance = new OpenAiAiEndPoint();
-        }
-        return instance;
+    public static GrokQueryEndPoint getInstance() {
+        return INSTANCE;
     }
 
-    @Override
-    public JsonObject sendToAi(JsonArray messages) {
+    /**
+     * Sends a list of messages to the AI service, processes the response, and returns a parsed JSON object.
+     * This method handles request preparation, sanitization of messages, response parsing, and error handling.
+     *
+     * @param messages a JsonArray containing the messages to be sent to the AI service. Each message is expected
+     *                 to have a "role" and "content" property. The array is sanitized before being included in the request payload.
+     * @return a JsonObject representing the processed response content from the AI service. If any error occurs
+     * during the request, response parsing, or if the response does not contain the expected data, returns null.
+     */
+    @Override public JsonObject sendToAi(JsonArray messages) {
         String bodyString = null;
         try {
             // Sanitize messages
             JsonArray sanitizedMessages = sanitizeJsonArray(messages);
 
-            OpenAiClient client = OpenAiClient.getInstance();
+            GrokClient client = GrokClient.getInstance();
             HttpURLConnection conn = client.getHttpURLConnection();
 
-            JsonObject body = client.createRequestBodyHeader(OpenAiClient.MODEL);
+            JsonObject body = client.createRequestBodyHeader(GrokClient.MODEL_GROK_3_FAST);
             body.add("messages", sanitizedMessages);
 
-            bodyString = GsonFactory.getGson().toJson(body);
-            log.info("Open AI API query call: [{}]", toDebugString(bodyString));
+            bodyString = body.toString();
+            log.info("xAI API query call: [{}]", toDebugString(bodyString));
 
             try (var os = conn.getOutputStream()) {
                 os.write(bodyString.getBytes(StandardCharsets.UTF_8));
@@ -61,7 +66,7 @@ public class OpenAiAiEndPoint extends AiEndPoint implements AiQueryInterface {
             }
 
             // Log raw response
-            log.info("Open AI API response: [{}]", toDebugString(response));
+            log.info("xAI API response: [{}]", toDebugString(response));
 
             if (responseCode != 200) {
                 String errorResponse = "";
@@ -70,7 +75,7 @@ public class OpenAiAiEndPoint extends AiEndPoint implements AiQueryInterface {
                 } catch (Exception e) {
                     log.warn("Failed to read error stream: {}", e.getMessage());
                 }
-                log.error("Open AI API error: {} - {}", responseCode, conn.getResponseMessage());
+                log.error("xAI API error: {} - {}", responseCode, conn.getResponseMessage());
                 log.info("Error response body: {}", errorResponse);
                 return null;
             }
@@ -81,7 +86,7 @@ public class OpenAiAiEndPoint extends AiEndPoint implements AiQueryInterface {
                 json = JsonParser.parseString(response).getAsJsonObject();
             } catch (JsonSyntaxException e) {
                 log.error("Failed to parse API response: [{}]", toDebugString(response), e);
-                return null;
+                throw e;
             }
 
             // Extract content safely
@@ -136,10 +141,10 @@ public class OpenAiAiEndPoint extends AiEndPoint implements AiQueryInterface {
                 return JsonParser.parseString(jsonContent).getAsJsonObject();
             } catch (JsonSyntaxException e) {
                 log.error("Failed to parse API response content: [{}]", toDebugString(jsonContent), e);
-                return null;
+                throw e;
             }
         } catch (Exception e) {
-            log.error("Open AI API query call fatal error: {}", e.getMessage(), e);
+            log.error("AI API query call fatal error: {}", e.getMessage(), e);
             log.error("Input data: [{}]", toDebugString(bodyString != null ? bodyString : "null"));
             return null;
         }

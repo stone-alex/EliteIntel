@@ -76,8 +76,8 @@ public class ApiFactory {
         String apiKey = ConfigManager.getInstance().getSystemKey(ConfigManager.AI_API_KEY);
         ProviderEnum provider = KeyDetector.detectProvider(apiKey, "LLM");
         return switch (provider) {
-            case GROK -> GrokAiEndPoint.getInstance();
-            case OPENAI -> OpenAiAiEndPoint.getInstance();
+            case GROK -> GrokQueryEndPoint.getInstance();
+            case OPENAI -> OpenAiQueryEndPoint.getInstance();
             default -> throw new IllegalStateException("Unknown AI key format");
         };
     }

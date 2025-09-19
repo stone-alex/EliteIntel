@@ -98,8 +98,8 @@ The correction dictionary format is:
 - Speaks only when prompted, except for specific mission-critical events.
 - A few commands do multiple keystrokes for convenience (e.g., "Display HUD" to exit nested menus quickly), but only to
   avoid VR frustration—not for advantages.
-- Current setup needs API keys for Google STT/TTS and xAI Grok—it's not plug-and-play without them.
-- Google and Grok API are not free. You must make an account and get your own keys. See Help tab in the app for
+- Current setup needs API keys for Google STT/TTS and Open AI or xAI and is not plug-and-play without them.
+- Google and Open AI or xAI are not free. You must make an account and get your own keys. See Help tab in the app for
   instructions.
 - English only - No support for other languages.
 

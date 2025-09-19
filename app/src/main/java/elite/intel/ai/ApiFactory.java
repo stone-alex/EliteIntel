@@ -1,6 +1,7 @@
 package elite.intel.ai;
 
 import elite.intel.ai.brain.*;
+import elite.intel.ai.brain.openai.*;
 import elite.intel.ai.brain.xai.*;
 import elite.intel.ai.ears.EarsInterface;
 import elite.intel.ai.ears.google.GoogleSTTImpl;
@@ -32,30 +33,68 @@ public class ApiFactory {
         if (instance == null) instance = new ApiFactory();
         return instance;
     }
-
     public AiAnalysisInterface getAnalysisEndpoint() {
-        return getAiImpl(ConfigManager.AI_API_KEY, "LLM", GrokAnalysisEndpoint::getInstance);
+        String apiKey = ConfigManager.getInstance().getSystemKey(ConfigManager.AI_API_KEY);
+        ProviderEnum provider = KeyDetector.detectProvider(apiKey, "LLM");
+        return switch (provider) {
+            case GROK -> GrokAnalysisEndpoint.getInstance();
+            case OPENAI -> OpenAiAnalysisEndPoint.getInstance();
+            default -> throw new IllegalStateException("Unknown AI key format");
+        };
+
     }
 
     public AIChatInterface getChatEndpoint() {
-        return getAiImpl(ConfigManager.AI_API_KEY, "LLM", GrokChatEndPoint::getInstance);
+        String apiKey = ConfigManager.getInstance().getSystemKey(ConfigManager.AI_API_KEY);
+        ProviderEnum provider = KeyDetector.detectProvider(apiKey, "LLM");
+        return switch (provider) {
+            case GROK -> GrokChatEndPoint.getInstance();
+            case OPENAI -> OpenAiChatEndPoint.getInstance();
+            default -> throw new IllegalStateException("Unknown AI key format");
+        };
     }
 
     public AiContextFactory getAiContextFactory() {
-        return getAiImpl(ConfigManager.AI_API_KEY, "LLM", GrokContextFactory::getInstance);
+        String apiKey = ConfigManager.getInstance().getSystemKey(ConfigManager.AI_API_KEY);
+        ProviderEnum provider = KeyDetector.detectProvider(apiKey, "LLM");
+        return switch (provider) {
+            case GROK -> GrokContextFactory.getInstance();
+            case OPENAI -> OpenAiContextFactory.getInstance();
+            default -> throw new IllegalStateException("Unknown AI key format");
+        };
     }
 
     public AiCommandInterface getCommandEndpoint() {
-        return getAiImpl(ConfigManager.AI_API_KEY, "LLM", GrokCommandEndPoint::getInstance);
+        String apiKey = ConfigManager.getInstance().getSystemKey(ConfigManager.AI_API_KEY);
+        ProviderEnum provider = KeyDetector.detectProvider(apiKey, "LLM");
+        return switch (provider) {
+            case GROK -> GrokCommandEndPoint.getInstance();
+            case OPENAI -> OpenAiCommandEndPoint.getInstance();
+            default -> throw new IllegalStateException("Unknown AI key format");
+        };
     }
 
     public AiQueryInterface getQueryEndpoint() {
-        return getAiImpl(ConfigManager.AI_API_KEY, "LLM", GrokQueryEndPoint::getInstance);
+        String apiKey = ConfigManager.getInstance().getSystemKey(ConfigManager.AI_API_KEY);
+        ProviderEnum provider = KeyDetector.detectProvider(apiKey, "LLM");
+        return switch (provider) {
+            case GROK -> GrokQueryEndPoint.getInstance();
+            case OPENAI -> OpenAiQueryEndPoint.getInstance();
+            default -> throw new IllegalStateException("Unknown AI key format");
+        };
     }
 
     public AIRouterInterface getAiRouter() {
-        return getAiImpl(ConfigManager.AI_API_KEY, "LLM", GrokResponseRouter::getInstance);
+        String apiKey = ConfigManager.getInstance().getSystemKey(ConfigManager.AI_API_KEY);
+        ProviderEnum provider = KeyDetector.detectProvider(apiKey, "LLM");
+        return switch (provider) {
+            case GROK -> GrokResponseRouter.getInstance();
+            case OPENAI -> OpenAiResponseRouter.getInstance();
+            default -> throw new IllegalStateException("Unknown AI key format");
+        };
     }
+
+    ///
 
     public MouthInterface getMouthImpl() {
         String apiKey = ConfigManager.getInstance().getSystemKey(ConfigManager.TTS_API_KEY);
@@ -71,6 +110,8 @@ public class ApiFactory {
         }
     }
 
+    ///
+
     public EarsInterface getEarsImpl() {
         String apiKey = ConfigManager.getInstance().getSystemKey(ConfigManager.STT_API_KEY);
         ProviderEnum provider = KeyDetector.detectProvider(apiKey, "STT"); // Fixed category
@@ -82,20 +123,6 @@ public class ApiFactory {
                 EventBusManager.publish(new AppLogEvent("Unknown STT key format"));
                 EventBusManager.publish(new VoiceProcessEvent("Using default Google STT—confirm?"));
                 return new GoogleSTTImpl();
-        }
-    }
-
-    private <T> T getAiImpl(String keyType, String category, Supplier<T> defaultSupplier) {
-        String apiKey = ConfigManager.getInstance().getSystemKey(keyType);
-        ProviderEnum provider = KeyDetector.detectProvider(apiKey, category);
-        switch (provider) {
-            case GROK:
-                return defaultSupplier.get();
-            // TODO: Add OpenAI, Anthropic, etc.
-            default:
-                EventBusManager.publish(new AppLogEvent("Unknown AI key format"));
-                EventBusManager.publish(new VoiceProcessEvent("Using default Grok AI—select provider?"));
-                return defaultSupplier.get();
         }
     }
 }

@@ -134,9 +134,10 @@ public class OpenAiContextFactory implements AiContextFactory {
 
     @Override public String generateSystemPrompt() {
         StringBuilder sb = new StringBuilder();
+        getSessionValues(sb);
+        appendBehavior(sb);
         sb.append("Classify as: 'input' (data to analyze) or 'command' (trigger app action or keyboard event). ");
         sb.append("Use NATO phonetic alphabet for star system codes or ship plates (e.g., RH-F = Romeo Hotel dash Foxtrot). ");
-        appendBehavior(sb);
         sb.append(generateSupportedQueriesClause());
         sb.append("Round billions to nearest million. ");
         sb.append("Round millions to nearest 250000. ");
@@ -150,9 +151,9 @@ public class OpenAiContextFactory implements AiContextFactory {
     @Override public String generateQueryPrompt() {
         StringBuilder sb = new StringBuilder();
         getSessionValues(sb);
+        appendBehavior(sb);
         sb.append("Classify as: 'input' (data to analyze) or 'command' (trigger app action or keyboard event). ");
         sb.append("When processing a 'tool' role message, use the provided data's 'response_text' as the primary response if available, ensuring it matches the context of the query. ");
-        appendBehavior(sb);
         sb.append(generateSupportedQueriesClause());
 
         sb.append("For 'general_conversation', generate a response using general knowledge outside Elite Dangerous unless the input explicitly mentions the game, lean into UNHINGED slang matching cadence for a playful vibe.");
@@ -168,6 +169,7 @@ public class OpenAiContextFactory implements AiContextFactory {
         AIPersonality personality = SystemSession.getInstance().getAIPersonality();
         AIPersonality aiPersonality = systemSession.getAIPersonality();
 
+        sb.append("You are an AI assistant for Elite Dangerous.");
         sb.append("Behavior: ");
         sb.append(aiCadence.getCadenceClause()).append(" ");
         sb.append("Apply personality: ").append(aiPersonality.name().toUpperCase()).append(" - ").append(aiPersonality.getBehaviorClause()).append(" ");

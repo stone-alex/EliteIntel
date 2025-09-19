@@ -1,11 +1,11 @@
-package elite.intel.ai.brain.xai;
+package elite.intel.ai.brain.openai;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
-import elite.intel.ai.brain.AIChatInterface;
-import elite.intel.ai.brain.AIConstants;
+import elite.intel.ai.brain.AiQueryInterface;
+import elite.intel.util.json.GsonFactory;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -13,42 +13,35 @@ import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
-/**
- * Singleton class representing an AI chat communication endpoint with Grok.
- * Implements the AIChatInterface to provide functionality for sending message history
- * and receiving AI-generated responses.
- */
-public class GrokChatEndPoint implements AIChatInterface {
-    private static final Logger log = LogManager.getLogger(GrokChatEndPoint.class);
-    private static final GrokChatEndPoint INSTANCE = new GrokChatEndPoint();
+public class OpenAiQueryEndPoint implements AiQueryInterface {
+    private static final Logger log = LogManager.getLogger(OpenAiQueryEndPoint.class);
+    private static OpenAiQueryEndPoint instance;
 
-    private GrokChatEndPoint() {
-        // Private constructor for singleton
+    private OpenAiQueryEndPoint() {
     }
 
-    public static GrokChatEndPoint getInstance() {
-        return INSTANCE;
+    public static synchronized OpenAiQueryEndPoint getInstance() {
+        if (instance == null) {
+            instance = new OpenAiQueryEndPoint();
+        }
+        return instance;
     }
 
-    /**
-     * Sends a full message history to Grok for chat continuation.
-     * The first message should be the system prompt (role: system).
-     * Returns the parsed JSON response content or null on error.
-     */
-    @Override public JsonObject sendToAi(JsonArray messages) {
+    @Override
+    public JsonObject sendToAi(JsonArray messages) {
         String bodyString = null;
         try {
             // Sanitize messages
             JsonArray sanitizedMessages = sanitizeJsonArray(messages);
 
-            GrokClient client = GrokClient.getInstance();
+            OpenAiClient client = OpenAiClient.getInstance();
             HttpURLConnection conn = client.getHttpURLConnection();
 
-            JsonObject body = client.createRequestBodyHeader(GrokClient.MODEL_GROK_3_FAST);
+            JsonObject body = client.createRequestBodyHeader(OpenAiClient.MODEL);
             body.add("messages", sanitizedMessages);
 
-            bodyString = body.toString();
-            log.info("xAI API chat call: [{}]", toDebugString(bodyString));
+            bodyString = GsonFactory.getGson().toJson(body);
+            log.info("Open AI API query call: [{}]", toDebugString(bodyString));
 
             try (var os = conn.getOutputStream()) {
                 os.write(bodyString.getBytes(StandardCharsets.UTF_8));
@@ -67,7 +60,7 @@ public class GrokChatEndPoint implements AIChatInterface {
             }
 
             // Log raw response
-            log.info("xAI API response: [{}]", toDebugString(response));
+            log.info("Open AI API response: [{}]", toDebugString(response));
 
             if (responseCode != 200) {
                 String errorResponse = "";
@@ -76,7 +69,7 @@ public class GrokChatEndPoint implements AIChatInterface {
                 } catch (Exception e) {
                     log.warn("Failed to read error stream: {}", e.getMessage());
                 }
-                log.error("xAI API error: {} - {}", responseCode, conn.getResponseMessage());
+                log.error("Open AI API error: {} - {}", responseCode, conn.getResponseMessage());
                 log.info("Error response body: {}", errorResponse);
                 return null;
             }
@@ -87,7 +80,7 @@ public class GrokChatEndPoint implements AIChatInterface {
                 json = JsonParser.parseString(response).getAsJsonObject();
             } catch (JsonSyntaxException e) {
                 log.error("Failed to parse API response: [{}]", toDebugString(response), e);
-                throw e;
+                return null;
             }
 
             // Extract content safely
@@ -118,13 +111,11 @@ public class GrokChatEndPoint implements AIChatInterface {
             if (jsonStart != -1) {
                 jsonContent = content.substring(jsonStart + 2); // Skip \n\n
             } else {
-                // Fallback: This always have a chat response. So we route it to chat.
+                // Fallback: Find first { that starts a valid JSON object
                 jsonStart = content.indexOf("{");
                 if (jsonStart == -1) {
-                    JsonObject result = new JsonObject();
-                    result.addProperty("type", AIConstants.TYPE_CHAT);
-                    result.addProperty(AIConstants.PROPERTY_RESPONSE_TEXT, content);
-                    return result;
+                    log.error("No JSON object found in content: [{}]", toDebugString(content));
+                    return null;
                 }
                 jsonContent = content.substring(jsonStart);
                 // Validate JSON
@@ -144,10 +135,10 @@ public class GrokChatEndPoint implements AIChatInterface {
                 return JsonParser.parseString(jsonContent).getAsJsonObject();
             } catch (JsonSyntaxException e) {
                 log.error("Failed to parse API response content: [{}]", toDebugString(jsonContent), e);
-                throw e;
+                return null;
             }
         } catch (Exception e) {
-            log.error("AI API chat call fatal error: {}", e.getMessage(), e);
+            log.error("Open AI API query call fatal error: {}", e.getMessage(), e);
             log.error("Input data: [{}]", toDebugString(bodyString != null ? bodyString : "null"));
             return null;
         }

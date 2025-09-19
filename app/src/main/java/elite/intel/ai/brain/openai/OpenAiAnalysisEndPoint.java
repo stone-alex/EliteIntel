@@ -1,6 +1,9 @@
-package elite.intel.ai.brain.xai;
+package elite.intel.ai.brain.openai;
 
-import com.google.gson.*;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 import elite.intel.ai.ApiFactory;
 import elite.intel.ai.brain.AIConstants;
 import elite.intel.ai.brain.AiAnalysisInterface;
@@ -8,38 +11,33 @@ import elite.intel.util.json.GsonFactory;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
-/**
- * The GrokAnalysisEndpoint class provides functionality for analyzing user-provided data using
- * an AI-based service. It implements the AiAnalysisInterface and communicates with an external
- * API to process user intents and data for generating analysis results.
- * <p>
- * This class is designed as a singleton, ensuring only one instance is created and utilized
- * throughout the application. It makes HTTP requests to an AI endpoint to analyze the input,
- * processes the response, and extracts relevant content as a JSON object.
- */
-public class GrokAnalysisEndpoint implements AiAnalysisInterface {
-    private static final Logger logger = LogManager.getLogger(GrokAnalysisEndpoint.class);
-    private final Gson gson = GsonFactory.getGson();
-    private static final GrokAnalysisEndpoint instance = new GrokAnalysisEndpoint();
+public class OpenAiAnalysisEndPoint implements AiAnalysisInterface {
+    private static final Logger logger = LogManager.getLogger(OpenAiAnalysisEndPoint.class);
+    private static OpenAiAnalysisEndPoint instance;
 
-    private GrokAnalysisEndpoint() {
+    private OpenAiAnalysisEndPoint() {
     }
 
-    public static GrokAnalysisEndpoint getInstance() {
+    public static synchronized OpenAiAnalysisEndPoint getInstance() {
+        if (instance == null) {
+            instance = new OpenAiAnalysisEndPoint();
+        }
         return instance;
     }
 
-    @Override public JsonObject analyzeData(String userIntent, String dataJson) {
+    @Override
+    public JsonObject analyzeData(String userIntent, String dataJson) {
         try {
-            GrokClient client = GrokClient.getInstance();
+            OpenAiClient client = OpenAiClient.getInstance();
             HttpURLConnection conn = client.getHttpURLConnection();
             String systemPrompt = ApiFactory.getInstance().getAiContextFactory().generateAnalysisPrompt(userIntent, dataJson);
 
-            JsonObject request = client.createRequestBodyHeader(GrokClient.MODEL_GROK_3_FAST);
+            JsonObject request = client.createRequestBodyHeader(OpenAiClient.MODEL);
 
             JsonObject messageSystem = new JsonObject();
             messageSystem.addProperty("role", AIConstants.ROLE_SYSTEM);
@@ -49,10 +47,13 @@ public class GrokAnalysisEndpoint implements AiAnalysisInterface {
             messageUser.addProperty("role", AIConstants.ROLE_USER);
             messageUser.addProperty("content", "User intent: " + userIntent + "\nData: " + dataJson);
 
-            request.add("messages", gson.toJsonTree(new Object[]{messageSystem, messageUser}));
+            JsonArray messages = new JsonArray();
+            messages.add(messageSystem);
+            messages.add(messageUser);
+            request.add("messages", messages);
 
-            String jsonString = gson.toJson(request);
-            logger.debug("xAI API call: [{}]", toDebugString(jsonString));
+            String jsonString = GsonFactory.getGson().toJson(request);
+            logger.debug("Open AI API call: [{}]", toDebugString(jsonString));
 
             try (var os = conn.getOutputStream()) {
                 os.write(jsonString.getBytes(StandardCharsets.UTF_8));
@@ -70,7 +71,7 @@ public class GrokAnalysisEndpoint implements AiAnalysisInterface {
                 logger.info("Stripped BOM from response");
             }
 
-            logger.debug("xAI API response: [{}]", toDebugString(response));
+            logger.debug("Open AI API response: [{}]", toDebugString(response));
 
             if (responseCode != 200) {
                 String errorResponse = "";
@@ -79,7 +80,7 @@ public class GrokAnalysisEndpoint implements AiAnalysisInterface {
                 } catch (Exception e) {
                     logger.warn("Failed to read error stream: {}", e.getMessage());
                 }
-                logger.error("xAI API error: {} - {}", responseCode, conn.getResponseMessage());
+                logger.error("Open AI API error: {} - {}", responseCode, conn.getResponseMessage());
                 logger.info("Error response body: {}", errorResponse);
                 return client.createErrorResponse("Analysis error.");
             }
@@ -137,12 +138,14 @@ public class GrokAnalysisEndpoint implements AiAnalysisInterface {
                 logger.error("Failed to parse API response content: [{}]", toDebugString(jsonContent), e);
                 return client.createErrorResponse("Analysis error.");
             }
+        } catch (IOException e) {
+            logger.error("Open AI API call failed: {}", e.getMessage(), e);
+            return OpenAiClient.getInstance().createErrorResponse("Analysis error. Check logs.");
         } catch (Exception e) {
             logger.error("AI API call fatal error: {}", e.getMessage(), e);
-            return GrokClient.getInstance().createErrorResponse("Analysis error. Check logs.");
+            return OpenAiClient.getInstance().createErrorResponse("Analysis error. Check logs.");
         }
     }
-
 
     private String toDebugString(String input) {
         if (input == null) return "null";

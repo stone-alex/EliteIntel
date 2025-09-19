@@ -199,14 +199,4 @@ public class GrokQueryEndPoint implements AiQueryInterface {
         }
         return sb.toString();
     }
-/*
-    private static HttpURLConnection getHttpURLConnection() throws IOException {
-        URL url = new URL("https://api.x.ai/v1/chat/completions");
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("POST");
-        conn.setRequestProperty("Content-Type", "application/json");
-        conn.setRequestProperty("Authorization", "Bearer " + ConfigManager.getInstance().getSystemKey(ConfigManager.AI_API_KEY));
-        conn.setDoOutput(true);
-        return conn;
-    }*/
 }

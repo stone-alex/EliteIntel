@@ -1,9 +1,15 @@
-package elite.intel.ai.brain.xai;
+package elite.intel.ai.brain.openai;
 
 import com.google.common.eventbus.Subscribe;
-import com.google.gson.*;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 import elite.intel.ai.ApiFactory;
-import elite.intel.ai.brain.*;
+import elite.intel.ai.brain.AIConstants;
+import elite.intel.ai.brain.AiCommandInterface;
+import elite.intel.ai.brain.AIRouterInterface;
+import elite.intel.ai.brain.AiContextFactory;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.UserInputEvent;
@@ -12,87 +18,57 @@ import elite.intel.session.SystemSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.JsonUtils;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager; 
+import org.apache.logging.log4j.LogManager;
 
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * The GrokCommandEndPoint class implements the AiCommandInterface to handle
- * AI conversational interactions and sensor data events. It processes user-inputted
- * commands, sensor data, and communicates with AI services to generate responses.
- * This class interacts with various components, including a router, chat interface,
- * and context factory.
- * <p>
- * It provides mechanisms to:
- * - Start and stop the endpoint.
- * - Process user voice commands with error-handling, confidence-checking, and sanitization.
- * - Process sensor data events with system context and generate AI responses.
- * - Manage chat history for continued conversations.
- * - Communicate with external AI APIs via JSON serialization and HTTP calls.
- * <p>
- * The class utilizes the thread-safe ThreadLocal storage for maintaining the context
- * of current conversations and ensures robust error handling and logging during its operation.
- * <p>
- * Events handled:
- * - UserInputEvent: Captures user voice commands and processes them.
- * - SensorDataEvent: Handles system-generated sensor data for AI interaction.
- * <p>
- * Dependencies:
- * - Router for handling AI response routing.
- * - AI Chat Interface for communicating with the AI engine.
- * - AI Context Factory for generating system prompts.
- * - Gson for JSON processing.
- * - EventBus for subscribing and publishing events.
- * - Logging framework for detailed debugging and error reporting.
- */
-public class GrokCommandEndPoint implements AiCommandInterface {
-    private static final Logger log = LogManager.getLogger(GrokCommandEndPoint.class);
+public class OpenAiCommandEndPoint implements AiCommandInterface {
+    private static final Logger log = LogManager.getLogger(OpenAiCommandEndPoint.class);
     private ExecutorService executor;
     private final AtomicBoolean running = new AtomicBoolean(false);
 
     private static final ThreadLocal<JsonArray> currentHistory = new ThreadLocal<>();
     private final AIRouterInterface router;
-    private final AIChatInterface chatInterface;
     private final AiContextFactory contextFactory;
+    private static OpenAiCommandEndPoint instance;
 
-    private static GrokCommandEndPoint instance;
-
-    public static GrokCommandEndPoint getInstance() {
+    public static OpenAiCommandEndPoint getInstance() {
         if (instance == null) {
-            instance = new GrokCommandEndPoint();
+            instance = new OpenAiCommandEndPoint();
         }
         return instance;
     }
 
-    private GrokCommandEndPoint() {
+    private OpenAiCommandEndPoint() {
         this.router = ApiFactory.getInstance().getAiRouter();
-        this.chatInterface = ApiFactory.getInstance().getChatEndpoint();
         this.contextFactory = ApiFactory.getInstance().getAiContextFactory();
         EventBusManager.register(this);
     }
 
-
-    @Override public void start() {
+    @Override
+    public void start() {
         if (running.compareAndSet(false, true)) {
             this.executor = java.util.concurrent.Executors.newSingleThreadExecutor(r -> {
-                Thread t = new Thread(r, "GrokCommandEndPoint-Worker");
+                Thread t = new Thread(r, "OpenAiCommandEndPoint-Worker");
                 t.setDaemon(true);
                 return t;
             });
-            elite.intel.gameapi.EventBusManager.register(this);
-            log.info("GrokCommandEndPoint started");
+            EventBusManager.register(this);
+            log.info("OpenAiCommandEndPoint started");
         } else {
-            log.debug("GrokCommandEndPoint already started");
+            log.debug("OpenAiCommandEndPoint already started");
         }
     }
 
-    @Override public void stop() {
+    @Override
+    public void stop() {
         if (running.compareAndSet(true, false)) {
-            elite.intel.gameapi.EventBusManager.unregister(this);
+            EventBusManager.unregister(this);
             if (executor != null) {
                 executor.shutdown();
                 try {
@@ -106,14 +82,15 @@ public class GrokCommandEndPoint implements AiCommandInterface {
                     executor = null;
                 }
             }
-            log.info("GrokCommandEndPoint stopped");
+            log.info("OpenAiCommandEndPoint stopped");
         } else {
-            log.debug("GrokCommandEndPoint already stopped");
+            log.debug("OpenAiCommandEndPoint already stopped");
         }
     }
 
-
-    @Subscribe @Override public void onUserInput(UserInputEvent event) {
+    @Subscribe
+    @Override
+    public void onUserInput(UserInputEvent event) {
         if (!running.get()) {
             log.debug("Ignoring onUserInput: endpoint not running");
             return;
@@ -133,7 +110,6 @@ public class GrokCommandEndPoint implements AiCommandInterface {
     }
 
     private void processVoiceCommand(String userInput, float confidence) {
-
         // Sanitize input
         userInput = escapeJson(userInput);
         if (userInput == null || userInput.isEmpty()) {
@@ -205,8 +181,8 @@ public class GrokCommandEndPoint implements AiCommandInterface {
         userMessage.addProperty("content", userContent);
         messages.add(userMessage);
 
-        // Send via GrokChatEndPoint
-        JsonObject apiResponse = chatInterface.sendToAi(messages);
+        // Send to Open AI
+        JsonObject apiResponse = callOpenAiApi(messages);
         if (apiResponse == null) {
             JsonObject errorResponse = new JsonObject();
             errorResponse.addProperty("type", AIConstants.TYPE_CHAT);
@@ -219,7 +195,7 @@ public class GrokCommandEndPoint implements AiCommandInterface {
             return;
         }
 
-        // Route the response without speaking here
+        // Route the response
         router.processAiResponse(apiResponse, userInput);
 
         // Handle history updates for chat continuations
@@ -241,15 +217,15 @@ public class GrokCommandEndPoint implements AiCommandInterface {
         }
     }
 
-    @Subscribe @Override public void onSensorDataEvent(SensorDataEvent event) {
+    @Subscribe
+    @Override
+    public void onSensorDataEvent(SensorDataEvent event) {
         if (!running.get()) {
             log.debug("Ignoring onSensorDataEvent: endpoint not running");
             return;
         }
 
-
         String input = event.getSensorData();
-
 
         JsonArray messages = new JsonArray();
         JsonObject systemMessage = new JsonObject();
@@ -264,17 +240,16 @@ public class GrokCommandEndPoint implements AiCommandInterface {
         messages.add(userMessage);
 
         // Create API request body
-        GrokClient client = GrokClient.getInstance();
-        JsonObject requestBody = client.createRequestBodyHeader(GrokClient.MODEL_GROK_3_FAST);
+        OpenAiClient client = OpenAiClient.getInstance();
+        JsonObject requestBody = client.createRequestBodyHeader(OpenAiClient.MODEL);
         requestBody.add("messages", messages);
 
         // Serialize to JSON string
-        Gson gson = GsonFactory.getGson();
-        String jsonString = gson.toJson(requestBody);
-        log.debug("JSON prepared for callXaiApi: [{}]", toDebugString(jsonString));
+        String jsonString = GsonFactory.getGson().toJson(requestBody);
+        log.debug("JSON prepared for callOpenAiApi: [{}]", toDebugString(jsonString));
         executor.submit(() -> {
             try {
-                JsonObject apiResponse = callXaiApi(jsonString);
+                JsonObject apiResponse = callOpenAiApi(messages);
                 if (apiResponse == null) {
                     EventBusManager.publish(new VoiceProcessEvent("Failure processing system request. Check programming"));
                     return;
@@ -285,23 +260,20 @@ public class GrokCommandEndPoint implements AiCommandInterface {
                 throw e;
             }
         });
-
-
-
-
     }
 
-    private JsonObject callXaiApi(String jsonString) {
+    private JsonObject callOpenAiApi(JsonArray messages) {
         try {
-            HttpURLConnection conn = GrokClient.getInstance().getHttpURLConnection();
+            OpenAiClient client = OpenAiClient.getInstance();
+            JsonObject requestBody = client.createRequestBodyHeader(OpenAiClient.MODEL);
+            requestBody.add("messages", messages);
+            String jsonString = GsonFactory.getGson().toJson(requestBody);
+            log.debug("Open AI API call: [{}]", toDebugString(jsonString));
 
-            // Log the input string
-            log.debug("xAI API call: [{}]", toDebugString(jsonString));
-            // Store the messages array from the request body
-            JsonObject requestBody = GsonFactory.getGson().fromJson(jsonString, JsonObject.class);
-            JsonArray messages = requestBody.getAsJsonArray("messages");
-            currentHistory.set(messages); // Store messages array
+            // Store messages for history
+            currentHistory.set(messages);
 
+            HttpURLConnection conn = client.getHttpURLConnection();
             try (var os = conn.getOutputStream()) {
                 os.write(jsonString.getBytes(StandardCharsets.UTF_8));
             }
@@ -319,7 +291,7 @@ public class GrokCommandEndPoint implements AiCommandInterface {
             }
 
             // Log raw response
-            log.debug("xAI API response: [{}]", toDebugString(response));
+            log.debug("Open AI API response: [{}]", toDebugString(response));
 
             if (responseCode != 200) {
                 String errorResponse = "";
@@ -328,9 +300,9 @@ public class GrokCommandEndPoint implements AiCommandInterface {
                 } catch (Exception e) {
                     log.warn("Failed to read error stream: {}", e.getMessage());
                 }
-                log.error("xAI API error: {} - {}", responseCode, conn.getResponseMessage());
+                log.error("Open AI API error: {} - {}", responseCode, conn.getResponseMessage());
                 log.info("Error response body: {}", errorResponse);
-                return null;
+                return client.createErrorResponse("API error: " + responseCode);
             }
 
             // Parse response
@@ -339,50 +311,48 @@ public class GrokCommandEndPoint implements AiCommandInterface {
                 json = JsonParser.parseString(response).getAsJsonObject();
             } catch (JsonSyntaxException e) {
                 log.error("Failed to parse API response: [{}]", toDebugString(response), e);
-                throw e;
+                return client.createErrorResponse("Failed to parse API response");
             }
 
-            // Extract content safely
+            // Extract content
             JsonArray choices = json.getAsJsonArray("choices");
             if (choices == null || choices.isEmpty()) {
                 log.error("No choices in API response: [{}]", toDebugString(response));
-                return null;
+                return client.createErrorResponse("No choices in API response");
             }
 
             JsonObject message = choices.get(0).getAsJsonObject().getAsJsonObject("message");
             if (message == null) {
                 log.error("No message in API response choices: [{}]", toDebugString(response));
-                return null;
+                return client.createErrorResponse("No message in API response");
             }
 
             String content = message.get("content").getAsString();
             if (content == null) {
                 log.error("No content in API response message: [{}]", toDebugString(response));
-                return null;
+                return client.createErrorResponse("No content in API response");
             }
 
             // Log content before parsing
             log.debug("API response content: [{}]", toDebugString(content));
 
-            // Extract JSON from content (after double newline or first valid JSON object)
+            // Parse JSON content
             String jsonContent;
             int jsonStart = content.indexOf("\n\n{");
             if (jsonStart != -1) {
                 jsonContent = content.substring(jsonStart + 2); // Skip \n\n
             } else {
-                // Fallback: Find first { that starts a valid JSON object
                 jsonStart = content.indexOf("{");
                 if (jsonStart == -1) {
                     log.error("No JSON object found in content: [{}]", toDebugString(content));
-                    return null;
+                    return client.createErrorResponse("No JSON object in content");
                 }
                 jsonContent = content.substring(jsonStart);
-                // Validate JSON
                 try {
                     JsonParser.parseString(jsonContent);
                 } catch (JsonSyntaxException e) {
                     log.error("Invalid JSON object in content: [{}]", toDebugString(jsonContent), e);
-                    return null;
+                    return client.createErrorResponse("Invalid JSON in content");
                 }
             }
 
@@ -394,14 +364,13 @@ public class GrokCommandEndPoint implements AiCommandInterface {
                 return JsonParser.parseString(jsonContent).getAsJsonObject();
             } catch (JsonSyntaxException e) {
                 log.error("Failed to parse API response content: [{}]", toDebugString(jsonContent), e);
-                throw e;
+                return client.createErrorResponse("Failed to parse API content");
             }
-        } catch (Exception e) {
-            log.error("AI API call fatal error: {}", e.getMessage(), e);
-            log.error("Input data: [{}]", toDebugString(jsonString));
-            return null;
+        } catch (IOException e) {
+            log.error("Open AI API call failed: {}", e.getMessage(), e);
+            return OpenAiClient.getInstance().createErrorResponse("API call failed: " + e.getMessage());
         } finally {
-            currentHistory.remove(); // Always clear
+            currentHistory.remove();
         }
     }
 
@@ -417,7 +386,6 @@ public class GrokCommandEndPoint implements AiCommandInterface {
         return contextFactory.generateSystemInstructions(systemInput);
     }
 
-    // Debug string to reveal control characters
     private String toDebugString(String input) {
         if (input == null) return "null";
         StringBuilder sb = new StringBuilder();
@@ -431,13 +399,12 @@ public class GrokCommandEndPoint implements AiCommandInterface {
         return sb.toString();
     }
 
-    // Enhanced JSON escaping for plain strings
     private String escapeJson(String input) {
         if (input == null || input.isEmpty()) return "";
         StringBuilder sb = new StringBuilder();
         for (char c : input.toCharArray()) {
             if (c < 32 || c == 127 || c == 0xFEFF) {
-                sb.append(' '); // Replace control characters
+                sb.append(' ');
             } else if (c == '"') {
                 sb.append("\\\"");
             } else if (c == '\\') {

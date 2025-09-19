@@ -1,4 +1,4 @@
-package elite.intel.ai.brain.xai;
+package elite.intel.ai.brain.openai;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -16,38 +16,27 @@ import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.VoiceProcessEvent;
 import elite.intel.ui.event.AppLogEvent;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager; 
+import org.apache.logging.log4j.LogManager;
 
 import javax.annotation.Nullable;
 import java.util.Map;
 
-import static elite.intel.ai.brain.handlers.query.QueryActions.GENERAL_CONVERSATION;
-
-/**
- * GrokResponseRouter acts as a central router for handling AI responses, commands, and queries.
- * It processes input from AI services and delegates the execution to specific handlers based on
- * the type of response received.
- * <p>
- * This class ensures modularity in handling a variety of commands and queries by dynamically
- * registering and invoking command and query handlers. It also integrates with external systems
- * and supports features like follow-up actions and context management as part of its operation.
- * <p>
- * GrokResponseRouter implements the AIRouterInterface, thereby defining the lifecycle methods
- * for managing the router's operation and response processing.
- */
-public class GrokResponseRouter implements AIRouterInterface {
-    private static final Logger log = LogManager.getLogger(GrokResponseRouter.class);
-    private static final GrokResponseRouter INSTANCE = new GrokResponseRouter();
+public class OpenAiResponseRouter implements AIRouterInterface {
+    private static final Logger log = LogManager.getLogger(OpenAiResponseRouter.class);
+    private static OpenAiResponseRouter instance;
     private final Map<String, CommandHandler> commandHandlers;
     private final Map<String, QueryHandler> queryHandlers;
     private final AiQueryInterface queryInterface;
     private final AiContextFactory contextFactory;
 
-    public static GrokResponseRouter getInstance() {
-        return INSTANCE;
+    public static synchronized OpenAiResponseRouter getInstance() {
+        if (instance == null) {
+            instance = new OpenAiResponseRouter();
+        }
+        return instance;
     }
 
-    private GrokResponseRouter() {
+    private OpenAiResponseRouter() {
         try {
             CommandHandlerFactory commandHandlerFactory = CommandHandlerFactory.getInstance();
             this.commandHandlers = commandHandlerFactory.registerCommandHandlers();
@@ -55,15 +44,15 @@ public class GrokResponseRouter implements AIRouterInterface {
             this.queryInterface = ApiFactory.getInstance().getQueryEndpoint();
             this.contextFactory = ApiFactory.getInstance().getAiContextFactory();
         } catch (Exception e) {
-            log.error("Failed to initialize GrokResponseRouter", e);
-            throw new RuntimeException("GrokResponseRouter initialization failed", e);
+            log.error("Failed to initialize OpenAiResponseRouter", e);
+            throw new RuntimeException("OpenAiResponseRouter initialization failed", e);
         }
     }
 
-
-    @Override public void processAiResponse(JsonObject jsonResponse, @Nullable String userInput) {
+    @Override
+    public void processAiResponse(JsonObject jsonResponse, @Nullable String userInput) {
         if (jsonResponse == null) {
-            log.error("Null Grok response received");
+            log.error("Null Open AI response received");
             return;
         }
         try {
@@ -92,26 +81,16 @@ public class GrokResponseRouter implements AIRouterInterface {
                     handleChat("I'm not sure what you meant. Please try again.");
             }
         } catch (Exception e) {
-            log.error("Failed to process Grok response: {}", e.getMessage(), e);
+            log.error("Failed to process Open AI response: {}", e.getMessage(), e);
             handleChat("Error processing response.");
         }
     }
 
-    /**
-     * Handles the processing of a given query based on the specified action, parameters,
-     * and user input. Routes the query to the appropriate query handler and manages
-     * the response, including follow-up actions if required.
-     *
-     * @param action    The action identifier for the query, used to determine which query handler to invoke.
-     *                  If null or empty, it defaults to "general_conversation".
-     * @param params    The parameters associated with the query to provide additional context or data for processing.
-     * @param userInput The original user input prompting the query, used as a fallback in certain processing paths.
-     */
     private void handleQuery(String action, JsonObject params, String userInput) {
         QueryHandler handler = queryHandlers.get(action);
         if (handler == null || action == null || action.isEmpty()) {
-            handler = queryHandlers.get(GENERAL_CONVERSATION.getAction());
-            action = GENERAL_CONVERSATION.getAction();
+            handler = queryHandlers.get(QueryActions.GENERAL_CONVERSATION.getAction());
+            action = QueryActions.GENERAL_CONVERSATION.getAction();
             log.info("No specific query handler found, routing to general_conversation");
         }
 
@@ -157,7 +136,7 @@ public class GrokResponseRouter implements AIRouterInterface {
                         "\nInstructions: Set 'type' to 'chat', generate a response using general knowledge for 'general_conversation', set 'action' to null, 'params' to {}, and 'expect_followup' to false.");
                 messages.add(toolResult);
 
-                log.debug("Sending follow-up to GrokQueryEndPoint for action: {}", action);
+                log.debug("Sending follow-up to OpenAiQueryEndPoint for action: {}", action);
                 JsonObject followUpResponse = queryInterface.sendToAi(messages);
 
                 if (followUpResponse == null) {

@@ -6,8 +6,9 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import elite.intel.ai.brain.AIChatInterface;
 import elite.intel.ai.brain.AIConstants;
-import org.apache.logging.log4j.Logger;
+import elite.intel.ai.brain.commons.AiEndPoint;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
@@ -18,7 +19,7 @@ import java.util.Scanner;
  * Implements the AIChatInterface to provide functionality for sending message history
  * and receiving AI-generated responses.
  */
-public class GrokChatEndPoint implements AIChatInterface {
+public class GrokChatEndPoint extends AiEndPoint implements AIChatInterface {
     private static final Logger log = LogManager.getLogger(GrokChatEndPoint.class);
     private static final GrokChatEndPoint INSTANCE = new GrokChatEndPoint();
 
@@ -151,56 +152,5 @@ public class GrokChatEndPoint implements AIChatInterface {
             log.error("Input data: [{}]", toDebugString(bodyString != null ? bodyString : "null"));
             return null;
         }
-    }
-
-    private JsonArray sanitizeJsonArray(JsonArray messages) {
-        if (messages == null) {
-            return new JsonArray();
-        }
-        JsonArray sanitized = new JsonArray();
-        for (int i = 0; i < messages.size(); i++) {
-            JsonObject original = messages.get(i).getAsJsonObject();
-            JsonObject sanitizedObj = new JsonObject();
-            sanitizedObj.addProperty("role", original.get("role").getAsString());
-            sanitizedObj.addProperty("content", escapeJson(original.get("content").getAsString()));
-            sanitized.add(sanitizedObj);
-        }
-        return sanitized;
-    }
-
-    private String escapeJson(String input) {
-        if (input == null || input.isEmpty()) return "";
-        StringBuilder sb = new StringBuilder();
-        for (char c : input.toCharArray()) {
-            if (c < 32 || c == 127 || c == 0xFEFF) {
-                sb.append(' '); // Replace control characters
-            } else if (c == '"') {
-                sb.append("\\\"");
-            } else if (c == '\\') {
-                sb.append("\\\\");
-            } else if (c == '\n') {
-                sb.append("\\n");
-            } else if (c == '\r') {
-                sb.append("\\r");
-            } else if (c == '\t') {
-                sb.append("\\t");
-            } else {
-                sb.append(c);
-            }
-        }
-        return sb.toString();
-    }
-
-    private String toDebugString(String input) {
-        if (input == null) return "null";
-        StringBuilder sb = new StringBuilder();
-        for (char c : input.toCharArray()) {
-            if (c < 32 || c == 127 || c == 0xFEFF) {
-                sb.append(String.format("\\u%04x", (int) c));
-            } else {
-                sb.append(c);
-            }
-        }
-        return sb.toString();
     }
 }

@@ -7,19 +7,15 @@ import elite.intel.ai.brain.AIConstants;
 import elite.intel.ai.brain.AIRouterInterface;
 import elite.intel.ai.brain.AiContextFactory;
 import elite.intel.ai.brain.AiQueryInterface;
-import elite.intel.ai.brain.handlers.CommandHandlerFactory;
-import elite.intel.ai.brain.handlers.QueryHandlerFactory;
-import elite.intel.ai.brain.handlers.commands.CommandHandler;
+import elite.intel.ai.brain.commons.ResponseRouter;
 import elite.intel.ai.brain.handlers.query.QueryActions;
 import elite.intel.ai.brain.handlers.query.QueryHandler;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.VoiceProcessEvent;
-import elite.intel.ui.event.AppLogEvent;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager; 
 
 import javax.annotation.Nullable;
-import java.util.Map;
 
 import static elite.intel.ai.brain.handlers.query.QueryActions.GENERAL_CONVERSATION;
 
@@ -35,11 +31,9 @@ import static elite.intel.ai.brain.handlers.query.QueryActions.GENERAL_CONVERSAT
  * GrokResponseRouter implements the AIRouterInterface, thereby defining the lifecycle methods
  * for managing the router's operation and response processing.
  */
-public class GrokResponseRouter implements AIRouterInterface {
+public class GrokResponseRouter extends ResponseRouter implements AIRouterInterface {
     private static final Logger log = LogManager.getLogger(GrokResponseRouter.class);
     private static final GrokResponseRouter INSTANCE = new GrokResponseRouter();
-    private final Map<String, CommandHandler> commandHandlers;
-    private final Map<String, QueryHandler> queryHandlers;
     private final AiQueryInterface queryInterface;
     private final AiContextFactory contextFactory;
 
@@ -49,9 +43,6 @@ public class GrokResponseRouter implements AIRouterInterface {
 
     private GrokResponseRouter() {
         try {
-            CommandHandlerFactory commandHandlerFactory = CommandHandlerFactory.getInstance();
-            this.commandHandlers = commandHandlerFactory.registerCommandHandlers();
-            this.queryHandlers = QueryHandlerFactory.getInstance().registerQueryHandlers();
             this.queryInterface = ApiFactory.getInstance().getQueryEndpoint();
             this.contextFactory = ApiFactory.getInstance().getAiContextFactory();
         } catch (Exception e) {
@@ -108,9 +99,9 @@ public class GrokResponseRouter implements AIRouterInterface {
      * @param userInput The original user input prompting the query, used as a fallback in certain processing paths.
      */
     private void handleQuery(String action, JsonObject params, String userInput) {
-        QueryHandler handler = queryHandlers.get(action);
+        QueryHandler handler = getQueryHandlers().get(action);
         if (handler == null || action == null || action.isEmpty()) {
-            handler = queryHandlers.get(GENERAL_CONVERSATION.getAction());
+            handler = getQueryHandlers().get(GENERAL_CONVERSATION.getAction());
             action = GENERAL_CONVERSATION.getAction();
             log.info("No specific query handler found, routing to general_conversation");
         }
@@ -182,48 +173,5 @@ public class GrokResponseRouter implements AIRouterInterface {
             log.error("Query handling failed for action {}: {}", action, e.getMessage(), e);
             handleChat("Error accessing data banks: " + e.getMessage());
         }
-    }
-
-    private void handleCommand(String action, JsonObject params, String responseText, JsonObject jsonResponse) {
-        EventBusManager.publish(new AppLogEvent("DEBUG: Processing action: " + action + " with params: " + params.toString()));
-        CommandHandler handler = commandHandlers.get(action);
-        if (handler != null) {
-            EventBusManager.publish(new AppLogEvent("DEBUG: Command handler: " + handler.getClass().getSimpleName()));
-            handler.handle(params, responseText);
-            log.debug("Handled command action: {}", action);
-        }
-    }
-
-    private void handleChat(String responseText) {
-        if (!responseText.isEmpty()) {
-            EventBusManager.publish(new VoiceProcessEvent(responseText));
-            log.info("Sent to VoiceGenerator: {}", responseText);
-        }
-    }
-
-    private static String getAsStringOrEmpty(JsonObject obj, String key) {
-        if (obj == null || key == null) return "";
-        if (!obj.has(key)) return "";
-        var el = obj.get(key);
-        if (el == null || el.isJsonNull()) return "";
-        if (el.isJsonPrimitive()) {
-            try {
-                return el.getAsString();
-            } catch (UnsupportedOperationException ignored) {
-                // fallthrough
-            }
-        }
-        log.debug("Expected string for key '{}' but got {}", key, el);
-        return "";
-    }
-
-    private static JsonObject getAsObjectOrEmpty(JsonObject obj, String key) {
-        if (obj == null || key == null) return new JsonObject();
-        if (!obj.has(key)) return new JsonObject();
-        var el = obj.get(key);
-        if (el == null || el.isJsonNull()) return new JsonObject();
-        if (el.isJsonObject()) return el.getAsJsonObject();
-        log.debug("Expected object for key '{}' but got {}", key, el);
-        return new JsonObject();
     }
 }

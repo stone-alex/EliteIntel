@@ -11,8 +11,6 @@ import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.VoiceProcessEvent;
 import elite.intel.ui.event.AppLogEvent;
 
-import java.util.function.Supplier;
-
 /**
  * A singleton factory class responsible for providing various AI-related endpoint instances.
  * The instances provided include LLM, STT, TTS, and other AI services based on API keys
@@ -78,8 +76,8 @@ public class ApiFactory {
         String apiKey = ConfigManager.getInstance().getSystemKey(ConfigManager.AI_API_KEY);
         ProviderEnum provider = KeyDetector.detectProvider(apiKey, "LLM");
         return switch (provider) {
-            case GROK -> GrokQueryEndPoint.getInstance();
-            case OPENAI -> OpenAiQueryEndPoint.getInstance();
+            case GROK -> GrokAiEndPoint.getInstance();
+            case OPENAI -> OpenAiAiEndPoint.getInstance();
             default -> throw new IllegalStateException("Unknown AI key format");
         };
     }

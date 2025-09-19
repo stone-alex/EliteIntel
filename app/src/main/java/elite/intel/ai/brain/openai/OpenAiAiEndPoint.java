@@ -5,24 +5,25 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import elite.intel.ai.brain.AiQueryInterface;
+import elite.intel.ai.brain.commons.AiEndPoint;
 import elite.intel.util.json.GsonFactory;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
-public class OpenAiQueryEndPoint implements AiQueryInterface {
-    private static final Logger log = LogManager.getLogger(OpenAiQueryEndPoint.class);
-    private static OpenAiQueryEndPoint instance;
+public class OpenAiAiEndPoint extends AiEndPoint implements AiQueryInterface {
+    private static final Logger log = LogManager.getLogger(OpenAiAiEndPoint.class);
+    private static OpenAiAiEndPoint instance;
 
-    private OpenAiQueryEndPoint() {
+    private OpenAiAiEndPoint() {
     }
 
-    public static synchronized OpenAiQueryEndPoint getInstance() {
+    public static synchronized OpenAiAiEndPoint getInstance() {
         if (instance == null) {
-            instance = new OpenAiQueryEndPoint();
+            instance = new OpenAiAiEndPoint();
         }
         return instance;
     }
@@ -142,56 +143,5 @@ public class OpenAiQueryEndPoint implements AiQueryInterface {
             log.error("Input data: [{}]", toDebugString(bodyString != null ? bodyString : "null"));
             return null;
         }
-    }
-
-    private JsonArray sanitizeJsonArray(JsonArray messages) {
-        if (messages == null) {
-            return new JsonArray();
-        }
-        JsonArray sanitized = new JsonArray();
-        for (int i = 0; i < messages.size(); i++) {
-            JsonObject original = messages.get(i).getAsJsonObject();
-            JsonObject sanitizedObj = new JsonObject();
-            sanitizedObj.addProperty("role", original.get("role").getAsString());
-            sanitizedObj.addProperty("content", escapeJson(original.get("content").getAsString()));
-            sanitized.add(sanitizedObj);
-        }
-        return sanitized;
-    }
-
-    private String escapeJson(String input) {
-        if (input == null || input.isEmpty()) return "";
-        StringBuilder sb = new StringBuilder();
-        for (char c : input.toCharArray()) {
-            if (c < 32 || c == 127 || c == 0xFEFF) {
-                sb.append(' '); // Replace control characters
-            } else if (c == '"') {
-                sb.append("\\\"");
-            } else if (c == '\\') {
-                sb.append("\\\\");
-            } else if (c == '\n') {
-                sb.append("\\n");
-            } else if (c == '\r') {
-                sb.append("\\r");
-            } else if (c == '\t') {
-                sb.append("\\t");
-            } else {
-                sb.append(c);
-            }
-        }
-        return sb.toString();
-    }
-
-    private String toDebugString(String input) {
-        if (input == null) return "null";
-        StringBuilder sb = new StringBuilder();
-        for (char c : input.toCharArray()) {
-            if (c < 32 || c == 127 || c == 0xFEFF) {
-                sb.append(String.format("\\u%04x", (int) c));
-            } else {
-                sb.append(c);
-            }
-        }
-        return sb.toString();
     }
 }

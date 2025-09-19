@@ -7,25 +7,19 @@ import elite.intel.ai.brain.AIConstants;
 import elite.intel.ai.brain.AIRouterInterface;
 import elite.intel.ai.brain.AiContextFactory;
 import elite.intel.ai.brain.AiQueryInterface;
-import elite.intel.ai.brain.handlers.CommandHandlerFactory;
-import elite.intel.ai.brain.handlers.QueryHandlerFactory;
-import elite.intel.ai.brain.handlers.commands.CommandHandler;
+import elite.intel.ai.brain.commons.ResponseRouter;
 import elite.intel.ai.brain.handlers.query.QueryActions;
 import elite.intel.ai.brain.handlers.query.QueryHandler;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.VoiceProcessEvent;
-import elite.intel.ui.event.AppLogEvent;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
-import java.util.Map;
 
-public class OpenAiResponseRouter implements AIRouterInterface {
+public class OpenAiResponseRouter extends ResponseRouter implements AIRouterInterface {
     private static final Logger log = LogManager.getLogger(OpenAiResponseRouter.class);
     private static OpenAiResponseRouter instance;
-    private final Map<String, CommandHandler> commandHandlers;
-    private final Map<String, QueryHandler> queryHandlers;
     private final AiQueryInterface queryInterface;
     private final AiContextFactory contextFactory;
 
@@ -38,9 +32,6 @@ public class OpenAiResponseRouter implements AIRouterInterface {
 
     private OpenAiResponseRouter() {
         try {
-            CommandHandlerFactory commandHandlerFactory = CommandHandlerFactory.getInstance();
-            this.commandHandlers = commandHandlerFactory.registerCommandHandlers();
-            this.queryHandlers = QueryHandlerFactory.getInstance().registerQueryHandlers();
             this.queryInterface = ApiFactory.getInstance().getQueryEndpoint();
             this.contextFactory = ApiFactory.getInstance().getAiContextFactory();
         } catch (Exception e) {
@@ -87,9 +78,9 @@ public class OpenAiResponseRouter implements AIRouterInterface {
     }
 
     private void handleQuery(String action, JsonObject params, String userInput) {
-        QueryHandler handler = queryHandlers.get(action);
+        QueryHandler handler = getQueryHandlers().get(action);
         if (handler == null || action == null || action.isEmpty()) {
-            handler = queryHandlers.get(QueryActions.GENERAL_CONVERSATION.getAction());
+            handler = getQueryHandlers().get(QueryActions.GENERAL_CONVERSATION.getAction());
             action = QueryActions.GENERAL_CONVERSATION.getAction();
             log.info("No specific query handler found, routing to general_conversation");
         }
@@ -161,48 +152,5 @@ public class OpenAiResponseRouter implements AIRouterInterface {
             log.error("Query handling failed for action {}: {}", action, e.getMessage(), e);
             handleChat("Error accessing data banks: " + e.getMessage());
         }
-    }
-
-    private void handleCommand(String action, JsonObject params, String responseText, JsonObject jsonResponse) {
-        EventBusManager.publish(new AppLogEvent("DEBUG: Processing action: " + action + " with params: " + params.toString()));
-        CommandHandler handler = commandHandlers.get(action);
-        if (handler != null) {
-            EventBusManager.publish(new AppLogEvent("DEBUG: Command handler: " + handler.getClass().getSimpleName()));
-            handler.handle(params, responseText);
-            log.debug("Handled command action: {}", action);
-        }
-    }
-
-    private void handleChat(String responseText) {
-        if (!responseText.isEmpty()) {
-            EventBusManager.publish(new VoiceProcessEvent(responseText));
-            log.info("Sent to VoiceGenerator: {}", responseText);
-        }
-    }
-
-    private static String getAsStringOrEmpty(JsonObject obj, String key) {
-        if (obj == null || key == null) return "";
-        if (!obj.has(key)) return "";
-        var el = obj.get(key);
-        if (el == null || el.isJsonNull()) return "";
-        if (el.isJsonPrimitive()) {
-            try {
-                return el.getAsString();
-            } catch (UnsupportedOperationException ignored) {
-                // fallthrough
-            }
-        }
-        log.debug("Expected string for key '{}' but got {}", key, el);
-        return "";
-    }
-
-    private static JsonObject getAsObjectOrEmpty(JsonObject obj, String key) {
-        if (obj == null || key == null) return new JsonObject();
-        if (!obj.has(key)) return new JsonObject();
-        var el = obj.get(key);
-        if (el == null || el.isJsonNull()) return new JsonObject();
-        if (el.isJsonObject()) return el.getAsJsonObject();
-        log.debug("Expected object for key '{}' but got {}", key, el);
-        return new JsonObject();
     }
 }

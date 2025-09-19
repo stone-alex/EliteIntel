@@ -2,8 +2,9 @@ package elite.intel.ai.brain.xai;
 
 import com.google.common.eventbus.Subscribe;
 import com.google.gson.*;
-import elite.intel.ai.ApiFactory;
-import elite.intel.ai.brain.*;
+import elite.intel.ai.brain.AIConstants;
+import elite.intel.ai.brain.AiCommandInterface;
+import elite.intel.ai.brain.commons.CommandEndPoint;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.UserInputEvent;
@@ -11,8 +12,8 @@ import elite.intel.gameapi.VoiceProcessEvent;
 import elite.intel.session.SystemSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.JsonUtils;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager; 
 
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
@@ -49,18 +50,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * - EventBus for subscribing and publishing events.
  * - Logging framework for detailed debugging and error reporting.
  */
-public class GrokCommandEndPoint implements AiCommandInterface {
+public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInterface {
     private static final Logger log = LogManager.getLogger(GrokCommandEndPoint.class);
     private ExecutorService executor;
     private final AtomicBoolean running = new AtomicBoolean(false);
-
-    private static final ThreadLocal<JsonArray> currentHistory = new ThreadLocal<>();
-    private final AIRouterInterface router;
-    private final AIChatInterface chatInterface;
-    private final AiContextFactory contextFactory;
-
     private static GrokCommandEndPoint instance;
-
     public static GrokCommandEndPoint getInstance() {
         if (instance == null) {
             instance = new GrokCommandEndPoint();
@@ -69,9 +63,6 @@ public class GrokCommandEndPoint implements AiCommandInterface {
     }
 
     private GrokCommandEndPoint() {
-        this.router = ApiFactory.getInstance().getAiRouter();
-        this.chatInterface = ApiFactory.getInstance().getChatEndpoint();
-        this.contextFactory = ApiFactory.getInstance().getAiContextFactory();
         EventBusManager.register(this);
     }
 
@@ -143,7 +134,7 @@ public class GrokCommandEndPoint implements AiCommandInterface {
             errorResponse.addProperty(AIConstants.TYPE_ACTION, (String) null);
             errorResponse.add("params", new JsonObject());
             errorResponse.addProperty(AIConstants.PROPERTY_EXPECT_FOLLOWUP, true);
-            router.processAiResponse(errorResponse, userInput);
+            getRouter().processAiResponse(errorResponse, userInput);
             SystemSession.getInstance().clearChatHistory();
             return;
         }
@@ -153,7 +144,7 @@ public class GrokCommandEndPoint implements AiCommandInterface {
             JsonArray messages = new JsonArray();
             JsonObject systemMessage = new JsonObject();
             systemMessage.addProperty("role", AIConstants.ROLE_SYSTEM);
-            String systemPrompt = contextFactory.generateSystemPrompt();
+            String systemPrompt = getContextFactory().generateSystemPrompt();
             systemMessage.addProperty("content", systemPrompt);
             messages.add(systemMessage);
 
@@ -172,7 +163,7 @@ public class GrokCommandEndPoint implements AiCommandInterface {
             clarification.addProperty(AIConstants.PROPERTY_EXPECT_FOLLOWUP, true);
 
             // Route clarification without direct TTS
-            router.processAiResponse(clarification, userInput);
+            getRouter().processAiResponse(clarification, userInput);
 
             // Store user message in history for follow-up
             JsonObject assistantMessage = new JsonObject();
@@ -188,7 +179,7 @@ public class GrokCommandEndPoint implements AiCommandInterface {
         JsonArray messages = new JsonArray();
         JsonObject systemMessage = new JsonObject();
         systemMessage.addProperty("role", AIConstants.ROLE_SYSTEM);
-        String systemPrompt = contextFactory.generateSystemPrompt();
+        String systemPrompt = getContextFactory().generateSystemPrompt();
         systemMessage.addProperty("content", systemPrompt);
         messages.add(systemMessage);
 
@@ -206,7 +197,7 @@ public class GrokCommandEndPoint implements AiCommandInterface {
         messages.add(userMessage);
 
         // Send via GrokChatEndPoint
-        JsonObject apiResponse = chatInterface.sendToAi(messages);
+        JsonObject apiResponse = getChatInterface().sendToAi(messages);
         if (apiResponse == null) {
             JsonObject errorResponse = new JsonObject();
             errorResponse.addProperty("type", AIConstants.TYPE_CHAT);
@@ -214,13 +205,13 @@ public class GrokCommandEndPoint implements AiCommandInterface {
             errorResponse.addProperty(AIConstants.TYPE_ACTION, (String) null);
             errorResponse.add("params", new JsonObject());
             errorResponse.addProperty(AIConstants.PROPERTY_EXPECT_FOLLOWUP, true);
-            router.processAiResponse(errorResponse, userInput);
+            getRouter().processAiResponse(errorResponse, userInput);
             SystemSession.getInstance().clearChatHistory();
             return;
         }
 
         // Route the response without speaking here
-        router.processAiResponse(apiResponse, userInput);
+        getRouter().processAiResponse(apiResponse, userInput);
 
         // Handle history updates for chat continuations
         String type = JsonUtils.getAsStringOrEmpty(apiResponse, "type").toLowerCase();
@@ -254,7 +245,7 @@ public class GrokCommandEndPoint implements AiCommandInterface {
         JsonArray messages = new JsonArray();
         JsonObject systemMessage = new JsonObject();
         systemMessage.addProperty("role", AIConstants.ROLE_SYSTEM);
-        String systemPrompt = contextFactory.generateSystemPrompt();
+        String systemPrompt = getContextFactory().generateSystemPrompt();
         systemMessage.addProperty("content", systemPrompt);
         messages.add(systemMessage);
 
@@ -279,16 +270,12 @@ public class GrokCommandEndPoint implements AiCommandInterface {
                     EventBusManager.publish(new VoiceProcessEvent("Failure processing system request. Check programming"));
                     return;
                 }
-                router.processAiResponse(apiResponse, null);
+                getRouter().processAiResponse(apiResponse, null);
             } catch (JsonSyntaxException e) {
                 log.error("JSON parsing failed for input: [{}]", toDebugString(jsonString), e);
                 throw e;
             }
         });
-
-
-
-
     }
 
     private JsonObject callXaiApi(String jsonString) {
@@ -300,7 +287,7 @@ public class GrokCommandEndPoint implements AiCommandInterface {
             // Store the messages array from the request body
             JsonObject requestBody = GsonFactory.getGson().fromJson(jsonString, JsonObject.class);
             JsonArray messages = requestBody.getAsJsonArray("messages");
-            currentHistory.set(messages); // Store messages array
+            getCurrentHistory().set(messages); // Store messages array
 
             try (var os = conn.getOutputStream()) {
                 os.write(jsonString.getBytes(StandardCharsets.UTF_8));
@@ -401,57 +388,7 @@ public class GrokCommandEndPoint implements AiCommandInterface {
             log.error("Input data: [{}]", toDebugString(jsonString));
             return null;
         } finally {
-            currentHistory.remove(); // Always clear
+            getCurrentHistory().remove(); // Always clear
         }
-    }
-
-    public static JsonArray getCurrentHistory() {
-        return currentHistory.get() != null ? currentHistory.get() : new JsonArray();
-    }
-
-    private String buildVoiceRequest(String transcribedText) {
-        return contextFactory.generatePlayerInstructions(String.valueOf(transcribedText));
-    }
-
-    private String buildSystemRequest(String systemInput) {
-        return contextFactory.generateSystemInstructions(systemInput);
-    }
-
-    // Debug string to reveal control characters
-    private String toDebugString(String input) {
-        if (input == null) return "null";
-        StringBuilder sb = new StringBuilder();
-        for (char c : input.toCharArray()) {
-            if (c < 32 || c == 127 || c == 0xFEFF) {
-                sb.append(String.format("\\u%04x", (int) c));
-            } else {
-                sb.append(c);
-            }
-        }
-        return sb.toString();
-    }
-
-    // Enhanced JSON escaping for plain strings
-    private String escapeJson(String input) {
-        if (input == null || input.isEmpty()) return "";
-        StringBuilder sb = new StringBuilder();
-        for (char c : input.toCharArray()) {
-            if (c < 32 || c == 127 || c == 0xFEFF) {
-                sb.append(' '); // Replace control characters
-            } else if (c == '"') {
-                sb.append("\\\"");
-            } else if (c == '\\') {
-                sb.append("\\\\");
-            } else if (c == '\n') {
-                sb.append("\\n");
-            } else if (c == '\r') {
-                sb.append("\\r");
-            } else if (c == '\t') {
-                sb.append("\\t");
-            } else {
-                sb.append(c);
-            }
-        }
-        return sb.toString();
     }
 }

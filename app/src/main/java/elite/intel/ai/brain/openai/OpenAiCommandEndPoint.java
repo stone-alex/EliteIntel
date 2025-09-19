@@ -5,11 +5,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
-import elite.intel.ai.ApiFactory;
 import elite.intel.ai.brain.AIConstants;
 import elite.intel.ai.brain.AiCommandInterface;
-import elite.intel.ai.brain.AIRouterInterface;
-import elite.intel.ai.brain.AiContextFactory;
+import elite.intel.ai.brain.commons.CommandEndPoint;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.UserInputEvent;
@@ -17,8 +15,8 @@ import elite.intel.gameapi.VoiceProcessEvent;
 import elite.intel.session.SystemSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.JsonUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -27,14 +25,11 @@ import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class OpenAiCommandEndPoint implements AiCommandInterface {
+public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandInterface {
     private static final Logger log = LogManager.getLogger(OpenAiCommandEndPoint.class);
     private ExecutorService executor;
     private final AtomicBoolean running = new AtomicBoolean(false);
 
-    private static final ThreadLocal<JsonArray> currentHistory = new ThreadLocal<>();
-    private final AIRouterInterface router;
-    private final AiContextFactory contextFactory;
     private static OpenAiCommandEndPoint instance;
 
     public static OpenAiCommandEndPoint getInstance() {
@@ -45,8 +40,6 @@ public class OpenAiCommandEndPoint implements AiCommandInterface {
     }
 
     private OpenAiCommandEndPoint() {
-        this.router = ApiFactory.getInstance().getAiRouter();
-        this.contextFactory = ApiFactory.getInstance().getAiContextFactory();
         EventBusManager.register(this);
     }
 
@@ -119,7 +112,7 @@ public class OpenAiCommandEndPoint implements AiCommandInterface {
             errorResponse.addProperty(AIConstants.TYPE_ACTION, (String) null);
             errorResponse.add("params", new JsonObject());
             errorResponse.addProperty(AIConstants.PROPERTY_EXPECT_FOLLOWUP, true);
-            router.processAiResponse(errorResponse, userInput);
+            getRouter().processAiResponse(errorResponse, userInput);
             SystemSession.getInstance().clearChatHistory();
             return;
         }
@@ -129,7 +122,7 @@ public class OpenAiCommandEndPoint implements AiCommandInterface {
             JsonArray messages = new JsonArray();
             JsonObject systemMessage = new JsonObject();
             systemMessage.addProperty("role", AIConstants.ROLE_SYSTEM);
-            String systemPrompt = contextFactory.generateSystemPrompt();
+            String systemPrompt = getContextFactory().generateSystemPrompt();
             systemMessage.addProperty("content", systemPrompt);
             messages.add(systemMessage);
 
@@ -148,7 +141,7 @@ public class OpenAiCommandEndPoint implements AiCommandInterface {
             clarification.addProperty(AIConstants.PROPERTY_EXPECT_FOLLOWUP, true);
 
             // Route clarification without direct TTS
-            router.processAiResponse(clarification, userInput);
+            getRouter().processAiResponse(clarification, userInput);
 
             // Store user message in history for follow-up
             JsonObject assistantMessage = new JsonObject();
@@ -164,7 +157,7 @@ public class OpenAiCommandEndPoint implements AiCommandInterface {
         JsonArray messages = new JsonArray();
         JsonObject systemMessage = new JsonObject();
         systemMessage.addProperty("role", AIConstants.ROLE_SYSTEM);
-        String systemPrompt = contextFactory.generateSystemPrompt();
+        String systemPrompt = getContextFactory().generateSystemPrompt();
         systemMessage.addProperty("content", systemPrompt);
         messages.add(systemMessage);
 
@@ -190,13 +183,13 @@ public class OpenAiCommandEndPoint implements AiCommandInterface {
             errorResponse.addProperty(AIConstants.TYPE_ACTION, (String) null);
             errorResponse.add("params", new JsonObject());
             errorResponse.addProperty(AIConstants.PROPERTY_EXPECT_FOLLOWUP, true);
-            router.processAiResponse(errorResponse, userInput);
+            getRouter().processAiResponse(errorResponse, userInput);
             SystemSession.getInstance().clearChatHistory();
             return;
         }
 
         // Route the response
-        router.processAiResponse(apiResponse, userInput);
+        getRouter().processAiResponse(apiResponse, userInput);
 
         // Handle history updates for chat continuations
         String type = JsonUtils.getAsStringOrEmpty(apiResponse, "type").toLowerCase();
@@ -230,7 +223,7 @@ public class OpenAiCommandEndPoint implements AiCommandInterface {
         JsonArray messages = new JsonArray();
         JsonObject systemMessage = new JsonObject();
         systemMessage.addProperty("role", AIConstants.ROLE_SYSTEM);
-        String systemPrompt = contextFactory.generateSystemPrompt();
+        String systemPrompt = getContextFactory().generateSystemPrompt();
         systemMessage.addProperty("content", systemPrompt);
         messages.add(systemMessage);
 
@@ -254,7 +247,7 @@ public class OpenAiCommandEndPoint implements AiCommandInterface {
                     EventBusManager.publish(new VoiceProcessEvent("Failure processing system request. Check programming"));
                     return;
                 }
-                router.processAiResponse(apiResponse, null);
+                getRouter().processAiResponse(apiResponse, null);
             } catch (JsonSyntaxException e) {
                 log.error("JSON parsing failed for input: [{}]", toDebugString(jsonString), e);
                 throw e;
@@ -271,7 +264,7 @@ public class OpenAiCommandEndPoint implements AiCommandInterface {
             log.debug("Open AI API call: [{}]", toDebugString(jsonString));
 
             // Store messages for history
-            currentHistory.set(messages);
+            getCurrentHistory().set(messages);
 
             HttpURLConnection conn = client.getHttpURLConnection();
             try (var os = conn.getOutputStream()) {
@@ -370,55 +363,7 @@ public class OpenAiCommandEndPoint implements AiCommandInterface {
             log.error("Open AI API call failed: {}", e.getMessage(), e);
             return OpenAiClient.getInstance().createErrorResponse("API call failed: " + e.getMessage());
         } finally {
-            currentHistory.remove();
+            getCurrentHistory().remove();
         }
-    }
-
-    public static JsonArray getCurrentHistory() {
-        return currentHistory.get() != null ? currentHistory.get() : new JsonArray();
-    }
-
-    private String buildVoiceRequest(String transcribedText) {
-        return contextFactory.generatePlayerInstructions(String.valueOf(transcribedText));
-    }
-
-    private String buildSystemRequest(String systemInput) {
-        return contextFactory.generateSystemInstructions(systemInput);
-    }
-
-    private String toDebugString(String input) {
-        if (input == null) return "null";
-        StringBuilder sb = new StringBuilder();
-        for (char c : input.toCharArray()) {
-            if (c < 32 || c == 127 || c == 0xFEFF) {
-                sb.append(String.format("\\u%04x", (int) c));
-            } else {
-                sb.append(c);
-            }
-        }
-        return sb.toString();
-    }
-
-    private String escapeJson(String input) {
-        if (input == null || input.isEmpty()) return "";
-        StringBuilder sb = new StringBuilder();
-        for (char c : input.toCharArray()) {
-            if (c < 32 || c == 127 || c == 0xFEFF) {
-                sb.append(' ');
-            } else if (c == '"') {
-                sb.append("\\\"");
-            } else if (c == '\\') {
-                sb.append("\\\\");
-            } else if (c == '\n') {
-                sb.append("\\n");
-            } else if (c == '\r') {
-                sb.append("\\r");
-            } else if (c == '\t') {
-                sb.append("\\t");
-            } else {
-                sb.append(c);
-            }
-        }
-        return sb.toString();
     }
 }

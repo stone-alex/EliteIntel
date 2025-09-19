@@ -4,6 +4,7 @@ import com.google.gson.*;
 import elite.intel.ai.ApiFactory;
 import elite.intel.ai.brain.AIConstants;
 import elite.intel.ai.brain.AiAnalysisInterface;
+import elite.intel.ai.brain.commons.AiEndPoint;
 import elite.intel.util.json.GsonFactory;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -21,7 +22,7 @@ import java.util.Scanner;
  * throughout the application. It makes HTTP requests to an AI endpoint to analyze the input,
  * processes the response, and extracts relevant content as a JSON object.
  */
-public class GrokAnalysisEndpoint implements AiAnalysisInterface {
+public class GrokAnalysisEndpoint extends AiEndPoint implements AiAnalysisInterface {
     private static final Logger logger = LogManager.getLogger(GrokAnalysisEndpoint.class);
     private final Gson gson = GsonFactory.getGson();
     private static final GrokAnalysisEndpoint instance = new GrokAnalysisEndpoint();
@@ -141,19 +142,5 @@ public class GrokAnalysisEndpoint implements AiAnalysisInterface {
             logger.error("AI API call fatal error: {}", e.getMessage(), e);
             return GrokClient.getInstance().createErrorResponse("Analysis error. Check logs.");
         }
-    }
-
-
-    private String toDebugString(String input) {
-        if (input == null) return "null";
-        StringBuilder sb = new StringBuilder();
-        for (char c : input.toCharArray()) {
-            if (c < 32 || c == 127 || c == 0xFEFF) {
-                sb.append(String.format("\\u%04x", (int) c));
-            } else {
-                sb.append(c);
-            }
-        }
-        return sb.toString();
     }
 }

@@ -173,7 +173,6 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
             assistantMessage.addProperty("role", AIConstants.ROLE_ASSISTANT);
             assistantMessage.addProperty("content", "Say again?");
             systemSession.appendToChatHistory( userMessage, assistantMessage);
-            //SystemSession.getInstance().appendToChatHistory(userMessage, assistantMessage);
             return;
         }
 
@@ -211,7 +210,6 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
             errorResponse.addProperty(AIConstants.PROPERTY_EXPECT_FOLLOWUP, true);
             getRouter().processAiResponse(errorResponse, userInput);
             systemSession.clearChatHistory();
-            //SystemSession.getInstance().clearChatHistory();
             return;
         }
 
@@ -232,8 +230,6 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
             } else {
                 systemSession.clearChatHistory();
             }
-        } else {
-            systemSession.clearChatHistory();
         }
     }
 

@@ -12,6 +12,7 @@ import elite.intel.ai.brain.handlers.query.QueryActions;
 import elite.intel.ai.brain.handlers.query.QueryHandler;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.VoiceProcessEvent;
+import elite.intel.session.SystemSession;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -123,8 +124,9 @@ public class GrokResponseRouter extends ResponseRouter implements AIRouterInterf
                 }
             }
 
-            if (responseTextToUse != null && !responseTextToUse.isEmpty()) {
+            if (!requiresFollowUp && responseTextToUse != null && !responseTextToUse.isEmpty()) {
                 EventBusManager.publish(new VoiceProcessEvent(responseTextToUse));
+                SystemSession.getInstance().clearChatHistory();
                 log.info("Spoke final query response (action: {}): {}", action, responseTextToUse);
             } else if (requiresFollowUp) {
                 JsonArray messages = new JsonArray();
@@ -149,6 +151,7 @@ public class GrokResponseRouter extends ResponseRouter implements AIRouterInterf
                 messages.add(toolResult);
 
                 log.debug("Sending follow-up to GrokQueryEndPoint for action: {}", action);
+                SystemSession.getInstance().appendToChatHistory(userMessage, systemMessage);
                 JsonObject followUpResponse = queryInterface.sendToAi(messages);
 
                 if (followUpResponse == null) {

@@ -207,8 +207,6 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
             } else {
                 systemSession.clearChatHistory();
             }
-        } else {
-            systemSession.clearChatHistory();
         }
     }
 

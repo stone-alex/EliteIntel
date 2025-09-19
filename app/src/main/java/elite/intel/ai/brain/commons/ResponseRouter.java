@@ -8,6 +8,7 @@ import elite.intel.ai.brain.handlers.commands.CommandHandler;
 import elite.intel.ai.brain.handlers.query.QueryHandler;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.VoiceProcessEvent;
+import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -51,6 +52,7 @@ public abstract class ResponseRouter  {
             EventBusManager.publish(new AppLogEvent("DEBUG: Command handler: " + handler.getClass().getSimpleName()));
             handler.handle(params, responseText);
             log.debug("Handled command action: {}", action);
+            SystemSession.getInstance().clearChatHistory();
         }
     }
 

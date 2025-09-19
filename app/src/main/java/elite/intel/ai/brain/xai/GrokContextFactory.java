@@ -147,6 +147,7 @@ public class GrokContextFactory implements AiContextFactory {
         getSessionValues(sb);
         appendBehavior(sb);
         sb.append("Task: Analyze the provided JSON data against the user's intent: ").append(userIntent).append(". Return precise answers (e.g., yes/no for specific searches) or summaries as requested, using the configured personality and cadence in 'response_text'.\n");
+        sb.append("Do not include carrier call-sign in response_text.");
         sb.append("Output JSON: {\"response_text\": \"TTS output in the configured personality and cadence\", \"details\": \"optional extra info\"}\n");
         sb.append("Data format: JSON array or object, e.g., for signals: [{\"name\": \"Fleet Carrier XYZ\", \"type\": \"Carrier\"}, {\"name\": \"Distress Signal\", \"type\": \"USS\"}]\n");
         sb.append("Examples for ROGUE personality (brief, bold, witty, with profanity):\n" +

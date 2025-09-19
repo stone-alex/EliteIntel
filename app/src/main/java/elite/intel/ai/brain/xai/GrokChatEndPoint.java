@@ -42,13 +42,12 @@ public class GrokChatEndPoint extends AiEndPoint implements AIChatInterface {
     @Override public JsonObject sendToAi(JsonArray messages) {
         String bodyString = null;
         try {
-            // Sanitize messages
-            JsonArray sanitizedMessages = sanitizeJsonArray(messages);
-
             GrokClient client = GrokClient.getInstance();
             HttpURLConnection conn = client.getHttpURLConnection();
-
             JsonObject body = client.createRequestBodyHeader(GrokClient.MODEL_GROK_3_FAST);
+
+            // Sanitize messages
+            JsonArray sanitizedMessages = sanitizeJsonArray(messages);
             body.add("messages", sanitizedMessages);
 
             bodyString = body.toString();

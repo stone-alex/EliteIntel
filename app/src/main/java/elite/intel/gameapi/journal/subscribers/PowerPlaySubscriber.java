@@ -43,9 +43,9 @@ public class PowerPlaySubscriber {
                     "Power [" + event.getPower() + "] is not included in programming. Please notify developer with exact power name as shown in this line"
             );
             //default to Empire, British cadence in honor of the country that made this game.
-            systemSession.setAICadence(AICadence.IMPERIAL);
-            systemSession.setAIPersonality(AIPersonality.FRIENDLY);
-            systemSession.setAIVoice(AiVoices.JAMES);
+            //systemSession.setAICadence(AICadence.IMPERIAL);
+            //systemSession.setAIPersonality(AIPersonality.FRIENDLY);
+            //systemSession.setAIVoice(AiVoices.JAMES);
         }
 
         rp.setPledgedToPower(event.getPower());

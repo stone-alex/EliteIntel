@@ -56,6 +56,7 @@ public class SystemSession {
         persistence.registerField("chatHistory", this::getChatHistory, this::setChatHistory, JsonArray.class);
         persistence.registerField("isPrivacyModeOn", this::isStreamingModeOn, this::setStreamingMode, Boolean.class);
         EventBusManager.register(this);
+        loadSavedStateFromDisk();
         addShutdownHook();
     }
 

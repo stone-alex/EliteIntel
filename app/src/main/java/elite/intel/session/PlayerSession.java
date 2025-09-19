@@ -221,6 +221,7 @@ public class PlayerSession {
 
     private PlayerSession() {
         persistence.ensureFileAndDirectoryExist("player_session.json");
+        loadSavedStateFromDisk();
         state.put(FRIENDS_STATUS, new HashMap<String, String>());
         persistence.registerField(SHIP_SCANS, this::getShipScans, v -> {
             shipScans.clear();

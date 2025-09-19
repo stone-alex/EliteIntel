@@ -12,7 +12,7 @@ import java.net.URL;
 public class OpenAiClient {
 
     private static final String API_URL = "https://api.openai.com/v1/chat/completions";
-    public static final String MODEL = "gpt-4o-mini"; // Fast, cost-effective model
+    public static final String MODEL = "gpt-4.1-mini"; // Fast, cost-effective model
     public static final int MAX_TOKENS_DEFAULT = 4096;
     private static OpenAiClient instance;
 

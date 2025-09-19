@@ -39,10 +39,10 @@ public class OpenAiContextFactory implements AiContextFactory {
     @Override public String generatePlayerInstructions(String playerVoiceInput) {
         StringBuilder sb = new StringBuilder();
         sb.append("Instructions:\n\n");
+        appendBehavior(sb);
         sb.append(generateClassifyClause());
         sb.append(generateSupportedCommandsCause());
         sb.append(generateSupportedQueriesClause());
-        appendBehavior(sb);
         sb.append("Interpret this input: ").append(playerVoiceInput).append("\n\n ");
         sb.append("Always output JSON: {\"type\": \"command|query|chat\", \"response_text\": \"TTS output\", \"action\": \"action_name|query_name|null\", \"params\": {\"key\": \"value\"}, \"expect_followup\": boolean} \n");
 

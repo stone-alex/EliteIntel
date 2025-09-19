@@ -9,6 +9,7 @@ import elite.intel.ai.search.api.dto.data.DeathsStats;
 import elite.intel.ai.search.api.dto.data.TrafficStats;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
+import elite.intel.gameapi.gamestate.events.NavRouteDto;
 import elite.intel.gameapi.journal.events.FSDJumpEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
@@ -22,6 +23,14 @@ public class FSDJumpSubscriber {
         playerSession.addSignal(event);
 
         String currentStarSystem = event.getStarSystem();
+        playerSession.removeNavPoint(currentStarSystem);
+
+        LocationDto currentLocation = playerSession.getCurrentLocation();
+        currentLocation.setStarName(currentStarSystem);
+        currentLocation.setX(event.getStarPos()[0]);
+        currentLocation.setY(event.getStarPos()[1]);
+        currentLocation.setZ(event.getStarPos()[2]);
+
 
         String finalDestination = String.valueOf(playerSession.get(PlayerSession.FINAL_DESTINATION));
         String arrivedAt = String.valueOf(playerSession.get(PlayerSession.JUMPING_TO));
@@ -31,7 +40,7 @@ public class FSDJumpSubscriber {
         sb.append(" Hyperspace Jump Successful: ");
         sb.append(" We are in: ").append(currentStarSystem).append(" system, ");
         StarSystemDto systemDto = EdsmApiClient.searchStarSystem(currentStarSystem, 1);
-        LocationDto currentLocation = playerSession.getCurrentLocation();
+
 
         if (systemDto.getData() != null) {
             if (systemDto.getData().getInformation().getAllegiance() != null) {
@@ -46,6 +55,8 @@ public class FSDJumpSubscriber {
             }
             sb.append(". ");
         }
+
+        playerSession.setCurrentLocation(currentLocation);
 
         boolean roueSet = !playerSession.getRoute().isEmpty();
 
@@ -68,7 +79,10 @@ public class FSDJumpSubscriber {
                 int remainingJump = playerSession.getRoute().size();
 
                 if (remainingJump > 0) {
-                    sb.append(" Next stop: ").append(playerSession.get(PlayerSession.FSD_TARGET)).append(", ");
+                    NavRouteDto nextStop = playerSession.getRoute().values().stream().findFirst().orElse(null);
+                    if(nextStop != null) {
+                        sb.append(" Next stop: ").append(nextStop.toJson()).append(", ");
+                    }
                 }
 
                 sb.append(remainingJump).append(" jumps remaining: ").append(" to ").append(finalDestination).append(".");

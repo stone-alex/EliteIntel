@@ -6,6 +6,7 @@ import elite.intel.ai.ConfigManager;
 import elite.intel.ai.brain.AICadence;
 import elite.intel.ai.brain.AIPersonality;
 import elite.intel.ai.brain.AiCommandInterface;
+import elite.intel.ai.brain.xai.GrokCommandEndPoint;
 import elite.intel.ai.ears.EarsInterface;
 import elite.intel.ai.mouth.AiVoices;
 import elite.intel.ai.mouth.MouthInterface;
@@ -156,7 +157,16 @@ public class AppController implements AppControllerInterface, ActionListener {
             String mission_statement = configManager.getPlayerKey(ConfigManager.PLAYER_MISSION_STATEMENT);
             PlayerSession.getInstance().put(PLAYER_MISSION_STATEMENT, mission_statement);
 
-            EventBusManager.publish(new VoiceProcessEvent("Systems online..."));
+
+            String llm = "";
+            if (brain instanceof GrokCommandEndPoint) {
+                llm = "x AI";
+            } else {
+                llm = "Open AI";
+            }
+
+            EventBusManager.publish(new VoiceProcessEvent("Systems online... Using " + llm + "."));
+
             model.appendLog(
                     systemSession.getAIVoice().getName() +
                             " is listening to you... AI is set to "

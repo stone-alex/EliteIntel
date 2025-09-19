@@ -367,6 +367,7 @@ public class PlayerSession {
 
     public void setNavRoute(Map<String, NavRouteDto> routeMap) {
         this.routeMap.clear();
+        saveSession();
         this.routeMap.putAll(routeMap);
         saveSession();
     }
@@ -383,10 +384,6 @@ public class PlayerSession {
     public void clearRoute() {
         routeMap.clear();
         saveSession();
-    }
-
-    public String getRouteMapJson() {
-        return routeMap.isEmpty() ? "{}" : GsonFactory.getGson().toJson(routeMap);
     }
 
     public RankAndProgressDto getRankAndProgressDto() {

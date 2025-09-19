@@ -12,8 +12,11 @@ public class AnalyzeCarrierDataHandler extends BaseQueryAnalyzer implements Quer
         PlayerSession playerSession = PlayerSession.getInstance();
 
         CarrierDataDto stats = playerSession.getCarrierData();
-        String data = stats != null ? toJson(stats) : null;
-
-        return analyzeData(data, originalUserInput);
+        if (stats == null || (stats.getTotalBalance() == 0 && stats.getFuelSupply() == 0)) {
+            return analyzeData(toJson("No data available. Please open carrier management panel."), originalUserInput);
+        } else {
+            String data = toJson(stats);
+            return analyzeData(data, originalUserInput);
+        }
     }
 }

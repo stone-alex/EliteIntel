@@ -45,6 +45,9 @@ public class RoutePlottedSubscriber {
                     playerSession.put(PlayerSession.FINAL_DESTINATION, finalDestination.getName());
                 }
                 playerSession.setNavRoute(routeMap);
+                if(playerSession.getCurrentLocation() != null) {
+                    playerSession.removeNavPoint(playerSession.getCurrentLocation().getStarName());
+                }
             } else {
                 playerSession.clearRoute();
             }

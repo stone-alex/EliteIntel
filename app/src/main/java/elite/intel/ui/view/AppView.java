@@ -128,7 +128,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         styleTabbedPane(tabs);
         tabs.addTab("System", buildSystemTab());
         tabs.addTab("Player", buildPlayerTab());
-        tabs.addTab("Help", buildHelpTab());
+        //tabs.addTab("Help", buildHelpTab()); // <- Help tab disabled for now
         root.add(tabs, BorderLayout.CENTER);
         applyDarkPalette(getContentPane());
 
@@ -158,7 +158,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
 
         // Row 0: Grok API Key
         nextRow(gbc);
-        addLabel(panel, "LLM API Key:", gbc, 0);
+        addLabel(panel, "xAI or Open AI Key:", gbc, 0);
         llmApiKeyField = new JPasswordField();
         addField(panel, llmApiKeyField, gbc, 1, 0.8);
         llmLockedCheck = new JCheckBox("Locked", true);
@@ -166,7 +166,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
 
         // Row 1: STT Key
         nextRow(gbc);
-        addLabel(panel, "Speech to Text API Key:", gbc, 0);
+        addLabel(panel, "Google STT Key:", gbc, 0);
         sttApiKeyField = new JPasswordField();
         addField(panel, sttApiKeyField, gbc, 1, 0.8);
         sttLockedCheck = new JCheckBox("Locked", true);
@@ -174,7 +174,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
 
         // Row 2: TTS Key
         nextRow(gbc);
-        addLabel(panel, "Text to Speech API Key:", gbc, 0);
+        addLabel(panel, "Google TTS Key:", gbc, 0);
         ttsApiKeyField = new JPasswordField();
         addField(panel, ttsApiKeyField, gbc, 1, 0.8);
         ttsLockedCheck = new JCheckBox("Locked", true);
@@ -249,7 +249,6 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         buttons.add(showDetailedLog);
         buttons.add(toggleStreamingModeCheckBox);
         buttons.add(togglePrivacyModeCheckBox);
-
 
         panel.add(buttons, gbc);
 

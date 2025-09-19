@@ -1,6 +1,5 @@
 package elite.intel.ai.brain.openai;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import elite.intel.ai.ConfigManager;
 import elite.intel.session.SystemSession;

@@ -57,7 +57,6 @@ public class AppController implements AppControllerInterface, ActionListener {
     private boolean isServiceRunning = false;
 
     AuxiliaryFilesMonitor fileMonitor = new AuxiliaryFilesMonitor();
-    //EarsInterface ears = new GoogleSTTImpl();
     EarsInterface ears;
     MouthInterface mouth;
     AiCommandInterface brain;
@@ -150,7 +149,6 @@ public class AppController implements AppControllerInterface, ActionListener {
             mouth = ApiFactory.getInstance().getMouthImpl();
             mouth.start();
 
-
             ears = ApiFactory.getInstance().getEarsImpl();
             ears.start();
 
@@ -238,7 +236,6 @@ public class AppController implements AppControllerInterface, ActionListener {
             ears.start();
         }
         model.setPrivacyModeOn(isPrivacyModeEnabled);
-        //model.appendLog(isPrivacyModeEnabled ? "one way comms, I can't hear you" : "I am listening...");
     }
 
     private String streamingModeIsOffMessage() {

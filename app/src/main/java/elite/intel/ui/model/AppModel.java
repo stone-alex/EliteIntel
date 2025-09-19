@@ -5,6 +5,11 @@ import elite.intel.ui.view.AppView;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -69,8 +74,8 @@ public class AppModel implements AppModelInterface {
                 "        <ul>\n" +
                 "            <li>Navigate to \"APIs & Services\" > \"Credentials.\"</li>\n" +
                 "            <li>Click \"Create Credentials\" > \"API Key.\"</li>\n" +
-                "            <li>Copy the generated key (e.g., \"AIza...\").</li>\n" +
-                "            <li>Restrict the key to STT and TTS APIs for security (optional but recommended).</li>\n" +
+                "            <li>Copy the generated key.</li>\n" +
+                "            <li>Restrict the key to STT and TTS APIs for security.</li>\n" +
                 "        </ul>\n" +
                 "    </li>\n" +
                 "    <li><b>Add to App</b>: In the app’s \"System\" tab, enter the API key in the \"Google API Key\" field and save the configuration.</li>\n" +

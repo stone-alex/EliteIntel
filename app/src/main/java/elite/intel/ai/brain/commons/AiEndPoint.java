@@ -5,6 +5,8 @@ import com.google.gson.JsonObject;
 
 public abstract class AiEndPoint {
 
+    //private static final ThreadLocal<JsonArray> messageHistory = new ThreadLocal<>();
+
     protected JsonArray sanitizeJsonArray(JsonArray messages) {
         if (messages == null) {
             return new JsonArray();
@@ -55,4 +57,12 @@ public abstract class AiEndPoint {
         }
         return sb.toString();
     }
+
+/*    protected ThreadLocal<JsonArray> getMessageHistory() {
+        return messageHistory;
+    }
+
+    protected void clearMessageHistory() {
+        messageHistory.remove();
+    }*/
 }

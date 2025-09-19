@@ -1,6 +1,5 @@
 package elite.intel.ai.brain.commons;
 
-import com.google.gson.JsonArray;
 import elite.intel.ai.ApiFactory;
 import elite.intel.ai.brain.AIChatInterface;
 import elite.intel.ai.brain.AIRouterInterface;
@@ -11,7 +10,7 @@ public abstract class CommandEndPoint extends AiEndPoint {
     private final AiContextFactory contextFactory;
     private final AIRouterInterface router;
     private final AIChatInterface chatInterface;
-    private static final ThreadLocal<JsonArray> currentHistory = new ThreadLocal<>();
+
 
     protected CommandEndPoint() {
         this.router = ApiFactory.getInstance().getAiRouter();
@@ -37,9 +36,5 @@ public abstract class CommandEndPoint extends AiEndPoint {
 
     protected String buildSystemRequest(String systemInput) {
         return contextFactory.generateSystemInstructions(systemInput);
-    }
-
-    protected ThreadLocal<JsonArray> getCurrentHistory() {
-        return currentHistory;
     }
 }

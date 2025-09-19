@@ -137,7 +137,7 @@ public class AppController implements AppControllerInterface, ActionListener {
 
 
             boolean streamingModeOn = systemSession.isStreamingModeOn();
-
+            systemSession.clearChatHistory();
             model.setStreamingModeOn(streamingModeOn);
 
             journalParser.start();

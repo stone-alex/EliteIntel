@@ -158,7 +158,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
 
         // Row 0: Grok API Key
         nextRow(gbc);
-        addLabel(panel, "xAI or Open AI Key:", gbc, 0);
+        addLabel(panel, "xAI Key:", gbc, 0);
         llmApiKeyField = new JPasswordField();
         addField(panel, llmApiKeyField, gbc, 1, 0.8);
         llmLockedCheck = new JCheckBox("Locked", true);

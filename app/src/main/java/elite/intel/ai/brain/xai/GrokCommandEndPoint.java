@@ -55,6 +55,8 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
     private ExecutorService executor;
     private final AtomicBoolean running = new AtomicBoolean(false);
     private static GrokCommandEndPoint instance;
+    private SystemSession systemSession;
+
     public static GrokCommandEndPoint getInstance() {
         if (instance == null) {
             instance = new GrokCommandEndPoint();
@@ -63,6 +65,7 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
     }
 
     private GrokCommandEndPoint() {
+        systemSession = SystemSession.getInstance();
         EventBusManager.register(this);
     }
 
@@ -135,7 +138,7 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
             errorResponse.add("params", new JsonObject());
             errorResponse.addProperty(AIConstants.PROPERTY_EXPECT_FOLLOWUP, true);
             getRouter().processAiResponse(errorResponse, userInput);
-            SystemSession.getInstance().clearChatHistory();
+            systemSession.clearChatHistory();
             return;
         }
 
@@ -169,7 +172,8 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
             JsonObject assistantMessage = new JsonObject();
             assistantMessage.addProperty("role", AIConstants.ROLE_ASSISTANT);
             assistantMessage.addProperty("content", "Say again?");
-            SystemSession.getInstance().appendToChatHistory(userMessage, assistantMessage);
+            systemSession.appendToChatHistory( userMessage, assistantMessage);
+            //SystemSession.getInstance().appendToChatHistory(userMessage, assistantMessage);
             return;
         }
 
@@ -206,7 +210,8 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
             errorResponse.add("params", new JsonObject());
             errorResponse.addProperty(AIConstants.PROPERTY_EXPECT_FOLLOWUP, true);
             getRouter().processAiResponse(errorResponse, userInput);
-            SystemSession.getInstance().clearChatHistory();
+            systemSession.clearChatHistory();
+            //SystemSession.getInstance().clearChatHistory();
             return;
         }
 
@@ -223,12 +228,12 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
             assistantMessage.addProperty("content", responseText);
 
             if (expectFollowup) {
-                SystemSession.getInstance().appendToChatHistory(userMessage, assistantMessage);
+                systemSession.appendToChatHistory(userMessage, assistantMessage);
             } else {
-                SystemSession.getInstance().clearChatHistory();
+                systemSession.clearChatHistory();
             }
         } else {
-            SystemSession.getInstance().clearChatHistory();
+            systemSession.clearChatHistory();
         }
     }
 
@@ -287,7 +292,7 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
             // Store the messages array from the request body
             JsonObject requestBody = GsonFactory.getGson().fromJson(jsonString, JsonObject.class);
             JsonArray messages = requestBody.getAsJsonArray("messages");
-            getCurrentHistory().set(messages); // Store messages array
+            systemSession.setChatHistory(messages);
 
             try (var os = conn.getOutputStream()) {
                 os.write(jsonString.getBytes(StandardCharsets.UTF_8));
@@ -388,7 +393,7 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
             log.error("Input data: [{}]", toDebugString(jsonString));
             return null;
         } finally {
-            getCurrentHistory().remove(); // Always clear
+            systemSession.clearChatHistory();
         }
     }
 }

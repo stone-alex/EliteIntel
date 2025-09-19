@@ -7,6 +7,7 @@ import com.google.gson.JsonSyntaxException;
 import elite.intel.ai.brain.AIChatInterface;
 import elite.intel.ai.brain.AIConstants;
 import elite.intel.ai.brain.commons.AiEndPoint;
+import elite.intel.session.SystemSession;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,9 +23,11 @@ import java.util.Scanner;
 public class GrokChatEndPoint extends AiEndPoint implements AIChatInterface {
     private static final Logger log = LogManager.getLogger(GrokChatEndPoint.class);
     private static final GrokChatEndPoint INSTANCE = new GrokChatEndPoint();
+    private final SystemSession systemSession;
 
     private GrokChatEndPoint() {
         // Private constructor for singleton
+        systemSession = SystemSession.getInstance();
     }
 
     public static GrokChatEndPoint getInstance() {

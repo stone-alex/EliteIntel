@@ -29,6 +29,7 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
     private static final Logger log = LogManager.getLogger(OpenAiCommandEndPoint.class);
     private ExecutorService executor;
     private final AtomicBoolean running = new AtomicBoolean(false);
+    private final SystemSession systemSession;
 
     private static OpenAiCommandEndPoint instance;
 
@@ -40,6 +41,7 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
     }
 
     private OpenAiCommandEndPoint() {
+        systemSession = SystemSession.getInstance();
         EventBusManager.register(this);
     }
 
@@ -113,7 +115,7 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
             errorResponse.add("params", new JsonObject());
             errorResponse.addProperty(AIConstants.PROPERTY_EXPECT_FOLLOWUP, true);
             getRouter().processAiResponse(errorResponse, userInput);
-            SystemSession.getInstance().clearChatHistory();
+            systemSession.clearChatHistory();
             return;
         }
 
@@ -147,7 +149,7 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
             JsonObject assistantMessage = new JsonObject();
             assistantMessage.addProperty("role", AIConstants.ROLE_ASSISTANT);
             assistantMessage.addProperty("content", "Say again?");
-            SystemSession.getInstance().appendToChatHistory(userMessage, assistantMessage);
+            systemSession.appendToChatHistory( userMessage, assistantMessage);
             return;
         }
 
@@ -184,7 +186,7 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
             errorResponse.add("params", new JsonObject());
             errorResponse.addProperty(AIConstants.PROPERTY_EXPECT_FOLLOWUP, true);
             getRouter().processAiResponse(errorResponse, userInput);
-            SystemSession.getInstance().clearChatHistory();
+            systemSession.clearChatHistory();
             return;
         }
 
@@ -201,12 +203,12 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
             assistantMessage.addProperty("content", responseText);
 
             if (expectFollowup) {
-                SystemSession.getInstance().appendToChatHistory(userMessage, assistantMessage);
+                systemSession.appendToChatHistory( userMessage, assistantMessage);
             } else {
-                SystemSession.getInstance().clearChatHistory();
+                systemSession.clearChatHistory();
             }
         } else {
-            SystemSession.getInstance().clearChatHistory();
+            systemSession.clearChatHistory();
         }
     }
 
@@ -264,7 +266,7 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
             log.debug("Open AI API call: [{}]", toDebugString(jsonString));
 
             // Store messages for history
-            getCurrentHistory().set(messages);
+            systemSession.setChatHistory(messages);
 
             HttpURLConnection conn = client.getHttpURLConnection();
             try (var os = conn.getOutputStream()) {
@@ -363,7 +365,7 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
             log.error("Open AI API call failed: {}", e.getMessage(), e);
             return OpenAiClient.getInstance().createErrorResponse("API call failed: " + e.getMessage());
         } finally {
-            getCurrentHistory().remove();
+            systemSession.clearChatHistory();
         }
     }
 }

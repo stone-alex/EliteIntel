@@ -7,6 +7,8 @@ import com.google.gson.JsonSyntaxException;
 import elite.intel.ai.brain.AIChatInterface;
 import elite.intel.ai.brain.AIConstants;
 import elite.intel.ai.brain.commons.AiEndPoint;
+import elite.intel.gameapi.EventBusManager;
+import elite.intel.session.SystemSession;
 import elite.intel.util.json.GsonFactory;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -18,8 +20,10 @@ import java.util.Scanner;
 public class OpenAiChatEndPoint extends AiEndPoint implements AIChatInterface {
     private static final Logger log = LogManager.getLogger(OpenAiChatEndPoint.class);
     private static OpenAiChatEndPoint instance;
+    private final SystemSession systemSession;
 
     private OpenAiChatEndPoint() {
+        systemSession = SystemSession.getInstance();
     }
 
     public static synchronized OpenAiChatEndPoint getInstance() {
@@ -35,6 +39,7 @@ public class OpenAiChatEndPoint extends AiEndPoint implements AIChatInterface {
         try {
             // Sanitize messages
             JsonArray sanitizedMessages = sanitizeJsonArray(messages);
+
 
             OpenAiClient client = OpenAiClient.getInstance();
             HttpURLConnection conn = client.getHttpURLConnection();

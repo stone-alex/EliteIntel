@@ -401,15 +401,9 @@ public class PlayerSession {
     }
 
     public void clearOnShutDown() {
-        state.clear();
         shipScans.clear();
-        missions.clear();
-        routeMap.clear();
-        targetFactions.clear();
         detectedSignals.clear();
-        bountyCollectedThisSession = 0;
-        rankAndProgressDto = new RankAndProgressDto();
-        persistence.deleteSessionFile();
+        saveSession();
     }
 
 

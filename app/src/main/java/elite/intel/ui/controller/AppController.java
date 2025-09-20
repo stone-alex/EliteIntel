@@ -14,6 +14,7 @@ import elite.intel.gameapi.*;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
+import elite.intel.ui.event.SystemShutDownEvent;
 import elite.intel.ui.model.AppModelInterface;
 import elite.intel.ui.view.AppViewInterface;
 import elite.intel.util.DaftSecretarySanitizer;
@@ -56,7 +57,8 @@ public class AppController implements AppControllerInterface, ActionListener {
     private final AppViewInterface view;
     private final ConfigManager configManager = ConfigManager.getInstance();
     private boolean isServiceRunning = false;
-
+    private final PlayerSession playerSession = PlayerSession.getInstance();
+    private final SystemSession systemSession = SystemSession.getInstance();
     AuxiliaryFilesMonitor fileMonitor = new AuxiliaryFilesMonitor();
     EarsInterface ears;
     MouthInterface mouth;
@@ -91,7 +93,7 @@ public class AppController implements AppControllerInterface, ActionListener {
 
     @Override
     public void handleSaveSystemConfig() {
-        SystemSession.getInstance().clearSystemConfigValues();
+        systemSession.clearSystemConfigValues();
         Map<String, String> systemConfig = view.getSystemConfigInput();
         configManager.writeConfigFile(ConfigManager.SYSTEM_CONFIG_FILENAME, systemConfig, true);
         model.setSystemConfig(systemConfig);
@@ -108,6 +110,7 @@ public class AppController implements AppControllerInterface, ActionListener {
     @Override
     public boolean startStopServices() {
         isServiceRunning = !isServiceRunning;
+
         if (isServiceRunning) {
 
             boolean haveKeys = true;
@@ -155,7 +158,7 @@ public class AppController implements AppControllerInterface, ActionListener {
 
             ConfigManager configManager = ConfigManager.getInstance();
             String mission_statement = configManager.getPlayerKey(ConfigManager.PLAYER_MISSION_STATEMENT);
-            PlayerSession.getInstance().put(PLAYER_MISSION_STATEMENT, mission_statement);
+            playerSession.put(PLAYER_MISSION_STATEMENT, mission_statement);
 
 
             String llm = "";
@@ -181,11 +184,13 @@ public class AppController implements AppControllerInterface, ActionListener {
             EventBusManager.publish(new VoiceProcessEvent("Systems offline..."));
             // Stop services
             journalParser.stop();
-            mouth.stop();
-            mouth = null;
-            ears.stop();
-            brain.stop();
             fileMonitor.stop();
+            brain.stop();
+            ears.stop();
+            mouth.stop();
+            systemSession.clearChatHistory();
+            systemSession.clearSystemConfigValues();
+            playerSession.clearOnShutDown();
             isServiceRunning = false;
         }
         model.setServicesRunning(isServiceRunning);
@@ -225,7 +230,7 @@ public class AppController implements AppControllerInterface, ActionListener {
         return sb.toString().replace(", ]", "]");
     }
 
-    private final SystemSession systemSession = SystemSession.getInstance();
+
 
     @Override
     public void toggleStreamingMode(boolean streamingModeOnOff) {
@@ -314,5 +319,11 @@ public class AppController implements AppControllerInterface, ActionListener {
                 handleSelectBindingsDir();
             }
         }
+    }
+
+
+    @Subscribe
+    public void onSystemShutdownEvent(SystemShutDownEvent event){
+        startStopServices();
     }
 }

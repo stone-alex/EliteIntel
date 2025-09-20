@@ -37,10 +37,8 @@ public class GameCommands {
 
         EXPLORATION_FSSENTER("show_fss", "ExplorationFSSEnter", GenericGameController.class),
         EXPLORATION_FSSQUIT("exit_fss", "ExplorationFSSQuit", GenericGameController.class),
-        EXPLORATION_SAACHANGE_SCANNED_AREA_VIEW_TOGGLE("exploration_saachange_scanned_area_view_toggle", "ExplorationSAAChangeScannedAreaViewToggle", GenericGameController.class),
-        //EXPLORATION_SAANEXT_GENUS("next_lifeform", "ExplorationSAANextGenus", GenericGameController.class),
-        //EXPLORATION_SAAPREVIOUS_GENUS("previous_lifeform", "ExplorationSAAPreviousGenus", GenericGameController.class),
-        //FLIGHT_ASSIST("flight_assist", "ToggleFlightAssist", GenericGameController.class),
+
+        //EXPLORATION_SAACHANGE_SCANNED_AREA_VIEW_TOGGLE("exploration_saachange_scanned_area_view_toggle", "ExplorationSAAChangeScannedAreaViewToggle", GenericGameController.class),
 
         FOCUS_COMMS_PANEL("focus_comms_panel", "FocusCommsPanel", GenericGameController.class),
         FOCUS_COMMS_PANEL_BUGGY("focus_comms_panel_buggy", "FocusCommsPanel_Buggy", GenericGameController.class),
@@ -52,15 +50,6 @@ public class GameCommands {
         FOCUS_RADAR_PANEL("focus_radar_panel", "FocusRadarPanel", GenericGameController.class),
         FOCUS_LOADOUT_PANEL("focus_loadout_panel", "FocusRadarPanel", GenericGameController.class),
 
-        //FORWARD_KEY("forward_key", "ForwardKey", GenericGameController.class),
-        //FOCUS_RIGHT_PANEL_BUGGY("focus_right_panel_buggy", "FocusRightPanel_Buggy", GenericGameController.class),
-        //FOCUS_RADAR_PANEL_BUGGY("focus_radar_panel_buggy", "FocusRadarPanel_Buggy", GenericGameController.class),
-        //FOCUS_LEFT_PANEL_BUGGY("focus_navigation_panel_buggy", "FocusLeftPanel_Buggy", GenericGameController.class),
-
-        //FREE_CAM("free_cam", "ToggleFreeCam", GenericGameController.class),
-        //FSTOP_DEC("fstop_dec", "FStopDec", GenericGameController.class),
-        //FSTOP_INC("fstop_inc", "FStopInc", GenericGameController.class),
-
         GALNET_AUDIO_CLEAR_QUEUE("galnet_audio_clear_queue", "GalnetAudio_ClearQueue", GenericGameController.class),
         GALNET_AUDIO_PLAY_PAUSE("galnet_audio_play_pause", "GalnetAudio_Play_Pause", GenericGameController.class),
         GALNET_AUDIO_SKIP_BACKWARD("galnet_audio_skip_backward", "GalnetAudio_SkipBackward", GenericGameController.class),
@@ -69,9 +58,7 @@ public class GameCommands {
 
         ENTER_SUPERCRUISE("enter_supercruise", "Supercruise", GenericGameController.class),
         EXIT_SUPERCRUISE("exit_supercruise", "Supercruise", GenericGameController.class),
-        //TOGGLE_FTL("toggle_ftl", "Supercruise", GenericGameController.class),
         JUMP_TO_HYPERSPACE("jump_to_hyperspace", "Hyperspace", GenericGameController.class),
-
 
         HEAD_LOOK_RESET("head_look_reset", "HeadLookReset", GenericGameController.class),
         LANDING_GEAR_TOGGLE("landing_gear_toggle", "LandingGearToggle", GenericGameController.class),
@@ -80,18 +67,17 @@ public class GameCommands {
         OPEN_CODEX_GO_TO_DISCOVERY_BUGGY("open_codex_go_to_discovery_buggy", "OpenCodexGoToDiscovery_Buggy", GenericGameController.class),
         PAUSE("pause", "Pause", GenericGameController.class),
         PLAYER_HUDMODE_TOGGLE("combat_or_analysis_mode", "PlayerHUDModeToggle", GenericGameController.class),
-        QUICK_COMMS_PANEL_BUGGY("quick_comms_panel_buggy", "QuickCommsPanel_Buggy", GenericGameController.class),
-        QUICK_COMMS_PANEL_HUMANOID("quick_comms_panel_humanoid", "QuickCommsPanel_Humanoid", GenericGameController.class),
         RADAR_DECREASE_RANGE("radar_decrease_range", "RadarDecreaseRange", GenericGameController.class),
         RADAR_INCREASE_RANGE("radar_increase_range", "RadarIncreaseRange", GenericGameController.class),
         RECALL_DISMISS_SHIP("recall_dismiss_ship", "RecallDismissShip", GenericGameController.class),
-        REQUEST_DEFENSIVE_BEHAVIOUR("fighter_defensive_behaviour", "OrderDefensiveBehaviour", GenericGameController.class),
-        REQUEST_FOCUS_TARGET("fighter_attack_focus_target", "OrderFocusTarget", GenericGameController.class),
+
+        REQUEST_FOCUS_TARGET("fighter_attack_my_target", "OrderFocusTarget", GenericGameController.class),
         REQUEST_HOLD_FIRE("fighter_hold_your_fire", "OrderHoldFire", GenericGameController.class),
-        REQUEST_REQUEST_DOCK("fighter_return_to_base", "OrderRequestDock", GenericGameController.class),
-        RESET_POWER_DISTRIBUTION("equalize_power", "ResetPowerDistribution", GenericGameController.class),
-        //RESET_POWER_DISTRIBUTION_BUGGY("equalize_power_buggy", "ResetPowerDistribution_Buggy", GenericGameController.class),
+        REQUEST_REQUEST_DOCK("fighter_recall", "OrderRequestDock", GenericGameController.class),
+
         SELECT_TARGETS_TARGET("select_wingman_target", "SelectTargetsTarget", GenericGameController.class),
+        REQUEST_DEFENSIVE_BEHAVIOUR("fighter_defend_ship", "OrderDefensiveBehaviour", GenericGameController.class),
+        RESET_POWER_DISTRIBUTION("equalize_power", "ResetPowerDistribution", GenericGameController.class),
         PLANETARY_APPROACH_SPEED75("planetary_approach", "SetSpeed25", GenericGameController.class),
         SET_SPEED25("set_speed_to_low_throttle_25", "SetSpeed25", GenericGameController.class),
         SET_SPEED50("set_speed_to_medium_throttle_50", "SetSpeed50", GenericGameController.class),
@@ -169,7 +155,7 @@ public class GameCommands {
     public static String[] getUserCommands() {
         String[] commands = new String[GameCommand.values().length];
         for (int i = 0; i < GameCommand.values().length; i++) {
-            // special cases for excluded commands
+            // These commands used in custom handlers. exclude from generic command handler
             if (GameCommand.values()[i] == GameCommand.INCREASE_ENGINES_POWER) continue;
             if (GameCommand.values()[i] == GameCommand.INCREASE_SHIELDS_POWER) continue;
             if (GameCommand.values()[i] == GameCommand.INCREASE_SYSTEMS_POWER) continue;

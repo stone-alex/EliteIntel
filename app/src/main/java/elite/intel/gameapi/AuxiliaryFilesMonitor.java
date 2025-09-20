@@ -123,6 +123,7 @@ public class AuxiliaryFilesMonitor implements Runnable {
             log.info("Auxiliary files monitor started, watching directory: {}", directory);
 
             while (isRunning) {
+                Thread.sleep(120);
                 WatchKey key = watchService.poll(1, TimeUnit.SECONDS);
                 if (key == null) {
                     if (Thread.currentThread().isInterrupted() || !isRunning) {

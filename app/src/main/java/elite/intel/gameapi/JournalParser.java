@@ -109,6 +109,7 @@ public class JournalParser implements Runnable {
             log.info("Monitoring {}", currentFile.getFileName());
 
             while (isRunning) {
+                Thread.sleep(120);
                 // Wait for file events with a timeout to check isRunning and interruptions
                 WatchKey key = watchService.poll(1, TimeUnit.SECONDS);
                 if (key == null) {

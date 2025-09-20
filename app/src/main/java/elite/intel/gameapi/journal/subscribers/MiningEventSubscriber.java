@@ -16,8 +16,10 @@ public class MiningEventSubscriber {
     @Subscribe
     public void onMiningRefined(MiningRefinedEvent dto) {
         PlayerSession playerSession = PlayerSession.getInstance();
-        String material = dto.getTypeLocalised().replace("\"", "");
-        playerSession.addMiningTarget(material);
-        EventBusManager.publish(new VoiceProcessEvent(material + " is added to mining targets"));
+        String material = dto.getTypeLocalised().replace("\"", "").toLowerCase();
+        if(!playerSession.getMiningTargets().contains(material)) {
+            playerSession.addMiningTarget(material);
+            EventBusManager.publish(new VoiceProcessEvent(material + " is added to mining targets"));
+        }
     }
 }

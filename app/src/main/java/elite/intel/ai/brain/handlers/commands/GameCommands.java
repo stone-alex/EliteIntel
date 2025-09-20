@@ -35,7 +35,6 @@ public class GameCommands {
         EJECT_ALL_CARGO_BUGGY("eject_all_cargo_buggy", "EjectAllCargo_Buggy", GenericGameController.class),
         EXIT_SETTLEMENT_PLACEMENT_CAMERA("exit_settlement_placement_camera", "ExitSettlementPlacementCamera", GenericGameController.class),
 
-        EXPLORATION_FSSENTER("show_fss", "ExplorationFSSEnter", GenericGameController.class),
         EXPLORATION_FSSQUIT("exit_fss", "ExplorationFSSQuit", GenericGameController.class),
 
         //EXPLORATION_SAACHANGE_SCANNED_AREA_VIEW_TOGGLE("exploration_saachange_scanned_area_view_toggle", "ExplorationSAAChangeScannedAreaViewToggle", GenericGameController.class),
@@ -98,6 +97,7 @@ public class GameCommands {
 
         //excluded, but needed for bindings. used in custom handler
         //these are special cases for excluded commands not sent to Grok, handled via a custom action,
+        EXPLORATION_FSSENTER("show_fss", "ExplorationFSSEnter", GenericGameController.class),
         EXIT_KEY("ui_close", "UI_Back", GenericGameController.class),
         INCREASE_ENGINES_POWER("_", "IncreaseEnginesPower", GenericGameController.class),
         INCREASE_SYSTEMS_POWER("_", "IncreaseSystemsPower", GenericGameController.class),
@@ -173,6 +173,7 @@ public class GameCommands {
             if (GameCommand.values()[i] == GameCommand.SYSTEM_MAP) continue;
             if (GameCommand.values()[i] == GameCommand.SYSTEM_MAP_HUMANOID) continue;
             if (GameCommand.values()[i] == GameCommand.EXIT_KEY) continue;
+            if (GameCommand.values()[i] == GameCommand.EXPLORATION_FSSENTER) continue;
 
             commands[i] = GameCommand.values()[i].getUserCommand();
         }

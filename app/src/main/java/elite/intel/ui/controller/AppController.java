@@ -325,5 +325,6 @@ public class AppController implements AppControllerInterface, ActionListener {
     @Subscribe
     public void onSystemShutdownEvent(SystemShutDownEvent event){
         startStopServices();
+        model.setServicesRunning(false);
     }
 }

@@ -40,6 +40,9 @@ public enum CustomCommands {
     OPEN_GALAXY_MAP("open_galaxy_map", null, null, OpenGalaxyMapHandler.class),
     OPEN_SYSTEM_MAP("open_local_starsystem_map", null, null, OpenSystemMapHandler.class),
 
+    OPEN_FSS_AND_SCAN("open_fss_and_scan", null, null, DisplayFssAndScanHandler.class),
+    OPEN_FSS("open_fss", null, null, OpenFssHandler.class),
+
     EXIT_TO_HUD("display_hud", null, null, ExitToHud.class),
     CLOSE_SYSTEM_MAP("close_local_starsystem_map", null, null, ExitToHud.class),
     ;

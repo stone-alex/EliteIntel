@@ -113,3 +113,5 @@
 "successfully carry"="access carrier"
 "half hour"="how far"
 "next system and route"="next system in route"
+"and they're"="enter"
+"and the supercruise"="enter supercruise"

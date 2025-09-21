@@ -33,6 +33,7 @@ public class CarrierDataDto implements ToJsonConvertible {
     private int refuelSupplyTax;
     private int repairSupplyTax;
     private int fuelSupply=0;
+    private double x,y,z;
 
     public long getTotalBalance() {
         return totalBalance;
@@ -249,6 +250,30 @@ public class CarrierDataDto implements ToJsonConvertible {
 
     public int getFuelSupply() {
         return fuelSupply;
+    }
+
+    public double getZ() {
+        return z;
+    }
+
+    public void setZ(double z) {
+        this.z = z;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public void setY(double y) {
+        this.y = y;
+    }
+
+    public double getX() {
+        return x;
+    }
+
+    public void setX(double x) {
+        this.x = x;
     }
 
     @Override public String toJson() {

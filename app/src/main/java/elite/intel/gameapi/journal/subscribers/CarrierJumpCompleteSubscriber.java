@@ -13,9 +13,14 @@ public class CarrierJumpCompleteSubscriber {
     @Subscribe
     public void onCarrierJumpCompleteEvent(CarrierJumpEvent event) {
         String starSystem = event.getStarSystem();
+        double[] starPos = event.getStarPos();
         PlayerSession playerSession = PlayerSession.getInstance();
         CarrierDataDto carrierData = playerSession.getCarrierData();
+
         if(carrierData != null) {
+            carrierData.setX(starPos[0]);
+            carrierData.setY(starPos[1]);
+            carrierData.setZ(starPos[2]);
             carrierData.setLocation(starSystem);
             playerSession.setCarrierData(carrierData);
         }

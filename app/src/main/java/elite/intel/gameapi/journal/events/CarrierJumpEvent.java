@@ -24,7 +24,7 @@ public class CarrierJumpEvent extends BaseEvent {
     private long systemAddress;
 
     @SerializedName("StarPos")
-    private float[] starPos;
+    private double[] starPos;
 
     @SerializedName("SystemAllegiance")
     private String systemAllegiance;
@@ -147,11 +147,11 @@ public class CarrierJumpEvent extends BaseEvent {
         return starSystem;
     }
 
-    public long getSystemAddress() {
+    public double getSystemAddress() {
         return systemAddress;
     }
 
-    public float[] getStarPos() {
+    public double[] getStarPos() {
         return starPos;
     }
 

@@ -12,10 +12,10 @@ public class KeyProcessor {
     public static final int KEY_BACKSPACE = KeyEvent.VK_BACK_SPACE;
     public static final int KEY_TAB = KeyEvent.VK_TAB;
     public static final int KEY_ESCAPE = KeyEvent.VK_ESCAPE;
-    public static final int KEY_UP = KeyEvent.VK_UP;
-    public static final int KEY_DOWN = KeyEvent.VK_DOWN;
-    public static final int KEY_LEFT = KeyEvent.VK_LEFT;
-    public static final int KEY_RIGHT = KeyEvent.VK_RIGHT;
+    public static final int KEY_UPARROW = KeyEvent.VK_UP;
+    public static final int KEY_DOWNARROW = KeyEvent.VK_DOWN;
+    public static final int KEY_LEFTARROW = KeyEvent.VK_LEFT;
+    public static final int KEY_RIGHTARROW = KeyEvent.VK_RIGHT;
     public static final int KEY_DELETE = KeyEvent.VK_DELETE;
     public static final int KEY_F1 = KeyEvent.VK_F1;
     public static final int KEY_F2 = KeyEvent.VK_F2;
@@ -203,6 +203,13 @@ public class KeyProcessor {
                 robot.keyRelease(keyCodes[i]);
             }
             Thread.currentThread().interrupt();
+        }
+    }
+
+    public void enterText(String text) {
+        for (char c : text.toCharArray()) {
+            robot.keyPress(KeyEvent.getExtendedKeyCodeForChar(c));
+            robot.keyRelease(KeyEvent.getExtendedKeyCodeForChar(c));
         }
     }
 }

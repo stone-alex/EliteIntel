@@ -40,6 +40,7 @@
         <Logger name="elite.intel.ai.ears" level="error"/>
         <Logger name="elite.intel.ai.mouth" level="error"/>
         <Logger name="elite.intel.ai.brain" level="info"/>
+        <Logger name="elite.intel.ai.search.spansh" level="error"/>
 
         <!-- Root logger -->
         <Root level="debug">

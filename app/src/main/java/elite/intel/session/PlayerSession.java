@@ -201,6 +201,7 @@ public class PlayerSession {
     public static final String STELLAR_OBJECTS = "stellarObjects";
     private static final String BOUNTIES = "bounties";
     private static final String MINING_TARGETS = "miningTargets";
+    private static final String HOME_SYSTEM = "home_system";
     private final Map<String, Object> state = new HashMap<>();
     private final Map<String, String> shipScans = new HashMap<>();
     private final Map<Long, MissionDto> missions = new LinkedHashMap<>();
@@ -213,6 +214,7 @@ public class PlayerSession {
     private long bountyCollectedThisSession = 0;
     private RankAndProgressDto rankAndProgressDto = new RankAndProgressDto();
     private LocationDto currentLocation = new LocationDto();
+    private LocationDto homeSystem = new LocationDto();
     private CarrierDataDto carrierData = new CarrierDataDto();
 
 
@@ -269,6 +271,8 @@ public class PlayerSession {
 
 
         persistence.registerField(CURRENT_LOCATION, this::getCurrentLocation, this::setCurrentLocation, LocationDto.class);
+        persistence.registerField(HOME_SYSTEM, this::getHomeSystem, this::setHomeSystem, LocationDto.class);
+
 
         persistence.registerField("bountyCollectedThisSession", this::getBountyCollectedThisSession, this::setBountyCollectedThisSession, Long.class);
         persistence.registerField("rankAndProgressDto", this::getRankAndProgressDto, this::setRankAndProgressDto, RankAndProgressDto.class);
@@ -570,5 +574,14 @@ public class PlayerSession {
     public void clearMiningTargets() {
         miningTargets.clear();
         saveSession();
+    }
+
+    public void setHomeSystem(LocationDto currentLocation) {
+        homeSystem = currentLocation;
+        saveSession();
+    }
+
+    public LocationDto getHomeSystem() {
+        return homeSystem;
     }
 }

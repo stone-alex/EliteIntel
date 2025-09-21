@@ -116,6 +116,8 @@ public class GameCommands {
         GALAXY_MAP_HUMANOID("gm_humanoid", "GalaxyMapOpen_Humanoid", GenericGameController.class),
         SYSTEM_MAP("system_map", "SystemMapOpen", GenericGameController.class),
         SYSTEM_MAP_HUMANOID("system_map_humanoid", "SystemMapOpen_Humanoid", GenericGameController.class),
+        CAM_ZOOM_IN("cam_zoom_in", "CamZoomIn", GenericGameController.class),
+        CAM_ZOOM_OUT("cam_zoom_out", "CamZoomOut",GenericGameController.class),
 
 
         EXPLORATION_FSSDISCOVERY_SCAN("_", "ExplorationFSSEnter", PerformFSSScanHandler.class);
@@ -174,6 +176,8 @@ public class GameCommands {
             if (GameCommand.values()[i] == GameCommand.SYSTEM_MAP_HUMANOID) continue;
             if (GameCommand.values()[i] == GameCommand.EXIT_KEY) continue;
             if (GameCommand.values()[i] == GameCommand.EXPLORATION_FSSENTER) continue;
+            if (GameCommand.values()[i] == GameCommand.CAM_ZOOM_IN) continue;
+            if (GameCommand.values()[i] == GameCommand.CAM_ZOOM_OUT) continue;
 
             commands[i] = GameCommand.values()[i].getUserCommand();
         }

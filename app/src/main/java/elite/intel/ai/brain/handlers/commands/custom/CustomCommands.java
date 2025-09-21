@@ -46,7 +46,8 @@ public enum CustomCommands {
     EXIT_TO_HUD("display_hud", null, null, ExitToHud.class),
     CLOSE_SYSTEM_MAP("close_local_starsystem_map", null, null, ExitToHud.class),
     SET_HOME_SYSTEM("set_location_as_home_star_system", null, null, SetCurrentStarAsHomeSystem.class),
-    TAKE_ME_HOME("take_us_home", null, null, PlotRouteToHomeHandler.class)
+    TAKE_ME_HOME("take_us_home", null, null, PlotRouteToHomeHandler.class),
+    PLOT_ROUTE_TO_CARRIER("plot_route_to_fleet_carrier", null, null, PlotRouteToMyFleetCarrier.class)
     ;
 
 

@@ -1,10 +1,10 @@
 package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.search.api.EdsmApiClient;
-import elite.intel.ai.search.api.dto.OutfittingDto;
-import elite.intel.ai.search.api.dto.ShipyardDto;
-import elite.intel.ai.search.api.dto.StationsDto;
+import elite.intel.ai.search.edsm.EdsmApiClient;
+import elite.intel.ai.search.edsm.dto.OutfittingDto;
+import elite.intel.ai.search.edsm.dto.ShipyardDto;
+import elite.intel.ai.search.edsm.dto.StationsDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;

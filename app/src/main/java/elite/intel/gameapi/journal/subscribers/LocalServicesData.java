@@ -1,9 +1,9 @@
 package elite.intel.gameapi.journal.subscribers;
 
-import elite.intel.ai.search.api.EdsmApiClient;
-import elite.intel.ai.search.api.dto.MarketDto;
-import elite.intel.ai.search.api.dto.OutfittingDto;
-import elite.intel.ai.search.api.dto.ShipyardDto;
+import elite.intel.ai.search.edsm.EdsmApiClient;
+import elite.intel.ai.search.edsm.dto.MarketDto;
+import elite.intel.ai.search.edsm.dto.OutfittingDto;
+import elite.intel.ai.search.edsm.dto.ShipyardDto;
 import elite.intel.session.PlayerSession;
 
 public class LocalServicesData {

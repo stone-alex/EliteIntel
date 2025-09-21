@@ -1,8 +1,8 @@
 package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.search.api.EdsmApiClient;
-import elite.intel.ai.search.api.dto.SystemBodiesDto;
+import elite.intel.ai.search.edsm.EdsmApiClient;
+import elite.intel.ai.search.edsm.dto.SystemBodiesDto;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.VoiceProcessEvent;
 import elite.intel.gameapi.journal.events.dto.StellarObjectDto;

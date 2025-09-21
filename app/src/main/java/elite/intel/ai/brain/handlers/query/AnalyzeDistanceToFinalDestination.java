@@ -78,7 +78,7 @@ public class AnalyzeDistanceToFinalDestination extends BaseQueryAnalyzer impleme
         sb.append(last.getName());
         sb.append(" is ");
         sb.append(String.format("%.2f", totalDistance));
-        sb.append(" light years, accounting for the actual jumps.");
+        sb.append(" light years, accounting for "+route.size()+" actual jumps.");
 
         return sb.toString();
     }

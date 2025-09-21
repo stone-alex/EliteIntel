@@ -189,7 +189,7 @@ public class ScanEvent extends BaseEvent {
     }
 
     public ScanEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 1, Duration.ZERO, "Scan");
+        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(15), "Scan");
         ScanEvent event = GsonFactory.getGson().fromJson(json, ScanEvent.class);
         this.scanType = event.scanType;
         this.bodyName = event.bodyName;

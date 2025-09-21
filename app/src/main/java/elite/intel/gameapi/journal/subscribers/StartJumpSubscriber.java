@@ -17,9 +17,9 @@ public class StartJumpSubscriber {
         boolean scoopable = event.isScoopable();
 
         StringBuilder sb = new StringBuilder();
-        sb.append("Jumping to: ");
+        sb.append("Entered hyperspace: ");
         sb.append(" ");
-        sb.append("Star System: ");
+        sb.append("Target Star System: ");
         sb.append(jumpingTo);
         sb.append(", ");
         sb.append("Star Class: ");

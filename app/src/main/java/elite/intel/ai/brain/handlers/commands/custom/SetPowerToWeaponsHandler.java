@@ -3,8 +3,8 @@ package elite.intel.ai.brain.handlers.commands.custom;
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.commands.CommandHandler;
 import elite.intel.ai.hands.GameHandler;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager; 
 
 import static elite.intel.ai.brain.handlers.commands.GameCommands.GameCommand.*;
 
@@ -22,34 +22,24 @@ import static elite.intel.ai.brain.handlers.commands.GameCommands.GameCommand.*;
 public class SetPowerToWeaponsHandler extends CustomCommandOperator implements CommandHandler {
 
     private static final Logger log = LogManager.getLogger(SetPowerToWeaponsHandler.class);
-    public static final int DELAY = 5;
 
     public SetPowerToWeaponsHandler(GameHandler commandHandler) throws Exception {
         super(commandHandler.getMonitor(), commandHandler.getExecutor());
     }
 
     @Override public void handle(JsonObject params, String responseText) {
-        try {
 
             String resetPowerDistribution = RESET_POWER_DISTRIBUTION.getGameBinding();
             String increaseWeaponsPower = INCREASE_WEAPONS_POWER.getGameBinding();
             String increaseEnginesPower = INCREASE_ENGINES_POWER.getGameBinding();
 
             operateKeyboard(resetPowerDistribution, 0);
-            Thread.sleep(DELAY);
             operateKeyboard(increaseWeaponsPower, 0);
-            Thread.sleep(DELAY);
             operateKeyboard(increaseEnginesPower, 0);
-            Thread.sleep(DELAY);
             operateKeyboard(increaseWeaponsPower, 0);
-            Thread.sleep(DELAY);
             operateKeyboard(increaseEnginesPower, 0);
-            Thread.sleep(DELAY);
             operateKeyboard(increaseWeaponsPower, 0);
 
             log.info("Diverting power to weapons");
-        } catch (InterruptedException e) {
-            //ok
-        }
     }
 }

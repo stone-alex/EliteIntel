@@ -410,6 +410,7 @@ public class PlayerSession {
     public void clearOnShutDown() {
         shipScans.clear();
         detectedSignals.clear();
+        markets.clear();
         saveSession();
     }
 

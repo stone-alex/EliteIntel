@@ -3,8 +3,8 @@ package elite.intel.ai.brain.handlers.commands.custom;
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.commands.CommandHandler;
 import elite.intel.ai.hands.GameHandler;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager; 
 
 import static elite.intel.ai.brain.handlers.commands.GameCommands.GameCommand.*;
 
@@ -20,7 +20,6 @@ import static elite.intel.ai.brain.handlers.commands.GameCommands.GameCommand.*;
 public class SetPowerToSystemsHandler extends CustomCommandOperator implements CommandHandler {
 
     private static final Logger log = LogManager.getLogger(SetPowerToSystemsHandler.class);
-    public static final int DELAY = 5;
 
 
     public SetPowerToSystemsHandler(GameHandler commandHandler) throws Exception {
@@ -28,27 +27,19 @@ public class SetPowerToSystemsHandler extends CustomCommandOperator implements C
     }
 
     @Override public void handle(JsonObject params, String responseText) {
-        try {
 
-            String resetPowerDistribution = RESET_POWER_DISTRIBUTION.getGameBinding();
+        String resetPowerDistribution = RESET_POWER_DISTRIBUTION.getGameBinding();
             String increaseSystemsPower = INCREASE_SYSTEMS_POWER.getGameBinding();
             String increaseEnginesPower = INCREASE_ENGINES_POWER.getGameBinding();
 
             operateKeyboard(resetPowerDistribution, 0);
-            Thread.sleep(DELAY);
             operateKeyboard(increaseSystemsPower, 0);
-            Thread.sleep(DELAY);
             operateKeyboard(increaseEnginesPower, 0);
-            Thread.sleep(DELAY);
             operateKeyboard(increaseSystemsPower, 0);
-            Thread.sleep(DELAY);
             operateKeyboard(increaseEnginesPower, 0);
-            Thread.sleep(DELAY);
             operateKeyboard(increaseSystemsPower, 0);
 
             log.info("Power distribution complete");
-        } catch (InterruptedException e) {
-            //ok
-        }
+
     }
 }

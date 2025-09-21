@@ -152,16 +152,6 @@ public class SystemSession {
     }
 
     @Subscribe
-    public void clearOnShutDown(ClearSessionCacheEvent event) {
-        state.clear();
-        aiVoice = null;
-        aiPersonality = null;
-        aiCadence = null;
-        chatHistory = new JsonArray();
-        persistence.deleteSessionFile();
-    }
-
-    @Subscribe
     public void onLoadGame(LoadGameEvent event) {
         loadSavedStateFromDisk();
     }

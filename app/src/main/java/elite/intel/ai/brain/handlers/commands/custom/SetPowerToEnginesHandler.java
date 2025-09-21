@@ -42,7 +42,6 @@ import static elite.intel.ai.brain.handlers.commands.GameCommands.GameCommand.*;
 public class SetPowerToEnginesHandler extends CustomCommandOperator implements CommandHandler {
 
     private static final Logger log = LogManager.getLogger(SetPowerToEnginesHandler.class);
-    public static final int DELAY = 5;
 
     public SetPowerToEnginesHandler(GameHandler commandHandler) throws Exception {
         super(commandHandler.getMonitor(), commandHandler.getExecutor());
@@ -50,25 +49,17 @@ public class SetPowerToEnginesHandler extends CustomCommandOperator implements C
 
     @Override public void handle(JsonObject params, String responseText) {
 
-        try {
             String resetPowerDistribution = RESET_POWER_DISTRIBUTION.getGameBinding();
             String increaseEnginePower = INCREASE_ENGINES_POWER.getGameBinding();
             String increaseSystemPower = INCREASE_SYSTEMS_POWER.getGameBinding();
 
             operateKeyboard(resetPowerDistribution, 0);
-            Thread.sleep(DELAY);
             operateKeyboard(increaseEnginePower, 0);
-            Thread.sleep(DELAY);
             operateKeyboard(increaseSystemPower, 0);
-            Thread.sleep(DELAY);
             operateKeyboard(increaseEnginePower, 0);
-            Thread.sleep(DELAY);
             operateKeyboard(increaseSystemPower, 0);
-            Thread.sleep(DELAY);
             operateKeyboard(increaseEnginePower, 0);
             log.info("Diverting power to engines");
-        } catch (InterruptedException e) {
-            //ok
-        }
+
     }
 }

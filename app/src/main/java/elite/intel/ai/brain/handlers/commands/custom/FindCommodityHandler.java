@@ -1,0 +1,58 @@
+package elite.intel.ai.brain.handlers.commands.custom;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import elite.intel.ai.brain.handlers.commands.CommandHandler;
+import elite.intel.ai.search.spansh.market.MarketSearchCriteria;
+import elite.intel.ai.search.spansh.market.SpanshMarketClient;
+import elite.intel.ai.search.spansh.market.StationMarket;
+import elite.intel.gameapi.EventBusManager;
+import elite.intel.gameapi.SensorDataEvent;
+import elite.intel.gameapi.VoiceProcessEvent;
+import elite.intel.gameapi.journal.events.dto.LocationDto;
+import elite.intel.session.PlayerSession;
+import elite.intel.util.DaftSecretarySanitizer;
+
+import java.io.IOException;
+import java.util.List;
+
+public class FindCommodityHandler implements CommandHandler {
+
+    @Override public void handle(JsonObject params, String responseText) {
+        JsonElement jsonElement = params.get("commodity");
+        String commodity = DaftSecretarySanitizer.capitalizeWords(jsonElement.getAsJsonPrimitive().getAsString().replace("\"", ""));
+        PlayerSession playerSession = PlayerSession.getInstance();
+        LocationDto currentLocation = playerSession.getCurrentLocation();
+
+        SpanshMarketClient client = new SpanshMarketClient();
+        try {
+            List<StationMarket> markets = client.searchMarkets(new MarketSearchCriteria(
+                    currentLocation.getStarName(),
+                    1,
+                    240,
+                    commodity,
+                    true,
+                    false,
+                    true,
+                    1,
+                    true,
+                    false
+            ));
+
+            int numMarkets = markets.size();
+            if (numMarkets > 0) {
+                playerSession.setMarkets(markets);
+            }
+            EventBusManager.publish(
+                    new SensorDataEvent(
+                            "Found " + numMarkets + " market"
+                                    + (numMarkets == 1 ? "" : "s") + " for " + commodity
+                                    + (numMarkets > 0 ? ". Prompt user to ask you to plot a route to the market with best price." : "")
+                    )
+            );
+
+        } catch (IOException | InterruptedException e) {
+            EventBusManager.publish(new VoiceProcessEvent("Unable to find commodity: " + commodity + "."));
+        }
+    }
+}

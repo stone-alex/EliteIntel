@@ -297,9 +297,9 @@ public class GrokContextFactory implements AiContextFactory {
     private String generateClassifyClause() {
         StringBuilder sb = new StringBuilder();
         sb.append("Classify input as one of:\n" +
-                "    - 'command': Triggers an app action or keyboard event. Use for explicit action requests (e.g., deploying landing gear, plotting a route, or setting a target). Only match supported commands listed below. Provide empty response_text for single word commands.\n" +
-                "    - 'query': Requests information from game state (e.g., system data, ship status). Use for inputs starting with 'query', asking 'what', 'where', or requesting summaries. Search data received for best answer. Match supported queries listed below.\n" +
-                "    - 'chat': General conversation, questions unrelated to game actions or state, or when input doesn’t match a command or query (e.g., lore, opinions, or casual talk).\n");
+                "    - 'command': Triggers an app action or keyboard event. Use for explicit action requests like 'find', 'locate', 'where' (e.g., 'Find where we can buy carrier fuel'—searches APIs for targets), or control commands like 'set', 'activate' (e.g., deploying landing gear, plotting a route, or setting a target). Treat location/action imperatives (FIND/LOCATE/WHERE) as commands even if question-phrased. Only match supported commands listed below. Provide empty response_text for single word commands.\n" +
+                "    - 'query': Requests information from game state (e.g., system data, ship status). Use for interrogative inputs starting with 'what', 'analyze', 'how', 'do we have', or requesting summaries (e.g., 'Do we have blah in our cargo hold'—AI analyzes onboard data). Search data received for best answer. Match supported queries listed below.\n" +
+                "    - 'chat': General conversation, questions unrelated to game actions or state, or when input doesn’t match a command or query (e.g., lore, opinions, or casual talk). If ambiguous (e.g., pure 'where' without context), default to chat.\n");
         return sb.toString();
     }
 }

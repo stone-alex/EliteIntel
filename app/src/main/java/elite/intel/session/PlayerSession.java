@@ -2,6 +2,7 @@ package elite.intel.session;
 
 import com.google.common.eventbus.Subscribe;
 import com.google.gson.reflect.TypeToken;
+import elite.intel.ai.search.spansh.market.StationMarket;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.gamestate.events.NavRouteDto;
 import elite.intel.gameapi.journal.events.*;
@@ -211,6 +212,7 @@ public class PlayerSession {
     private final Set<String> targetFactions = new LinkedHashSet<>();
     private final Set<BountyDto> bounties = new LinkedHashSet<>();
     private final Set<String> miningTargets = new HashSet<>();
+    private List<StationMarket> markets = new ArrayList<>();
     private long bountyCollectedThisSession = 0;
     private RankAndProgressDto rankAndProgressDto = new RankAndProgressDto();
     private LocationDto currentLocation = new LocationDto();
@@ -269,6 +271,7 @@ public class PlayerSession {
             miningTargets.addAll((Set<String>) v);
         }, new TypeToken<Set<String>>() {}.getType());
 
+        persistence.registerField("markets", this::getMarkets, this::setMarkets, new TypeToken<List<StationMarket>>(){}.getType());
 
         persistence.registerField(CURRENT_LOCATION, this::getCurrentLocation, this::setCurrentLocation, LocationDto.class);
         persistence.registerField(HOME_SYSTEM, this::getHomeSystem, this::setHomeSystem, LocationDto.class);
@@ -583,5 +586,17 @@ public class PlayerSession {
 
     public LocationDto getHomeSystem() {
         return homeSystem;
+    }
+
+    public List<StationMarket> getMarkets() {
+        return markets;
+    }
+
+    public void setMarkets(List<StationMarket> markets) {
+        this.markets = markets;
+    }
+
+    public void clearMarkets() {
+        markets.clear();
     }
 }

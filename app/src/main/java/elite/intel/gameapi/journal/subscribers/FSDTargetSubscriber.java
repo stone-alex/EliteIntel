@@ -24,7 +24,6 @@ public class FSDTargetSubscriber {
         TrafficDto trafficDto = EdsmApiClient.searchTraffic(event.getName());
         StringBuilder sb = new StringBuilder();
 
-
         if (systemDto.getData() != null) {
             sb.append(systemDto.getData().toString()).append(", ");
             sb.append(deathsDto.getData().toString()).append(", ");

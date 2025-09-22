@@ -10,6 +10,6 @@ public class EngineerProgressSubscriber {
     @Subscribe
     public void onEngineerProgressEvent(EngineerProgressEvent event) {
         //Need an augmented JSON that contains data about which engineer is doing what.
-        PlayerSession.getInstance().put(PlayerSession.ENGINEER_PROGRESS, event.toJson());
+        //PlayerSession.getInstance().put(PlayerSession.ENGINEER_PROGRESS, event.toJson());
     }
 }

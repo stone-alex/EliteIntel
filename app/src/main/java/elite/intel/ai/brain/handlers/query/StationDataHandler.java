@@ -8,8 +8,6 @@ public class StationDataHandler extends BaseQueryAnalyzer implements QueryHandle
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         PlayerSession playerSession = PlayerSession.getInstance();
-
-        String data = toJson(playerSession.get(PlayerSession.STATION_DATA));
-        return analyzeData(data, originalUserInput);
+        return analyzeData(playerSession.getCurrentLocation().toJson(), originalUserInput);
     }
 }

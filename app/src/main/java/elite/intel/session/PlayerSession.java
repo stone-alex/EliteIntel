@@ -37,7 +37,6 @@ public class PlayerSession {
     public static final String PERSONALITY = "personality";
     public static final String JUMPING_TO = "jumping_to_starsystem";
     public static final String MATERIAL = "materials";
-    public static final String STATION_DATA = "station_data";
     public static final String LOCAL_MARKET_JSON = "local_market_json";
     public static final String LOCAL_OUTFITING_JSON = "local_outfiting_json";
     public static final String LOCAL_SHIP_YARD_JSON = "local_shipyard_json";

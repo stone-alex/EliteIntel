@@ -35,6 +35,13 @@ public class FSDJumpSubscriber {
         currentLocation.setY(event.getStarPos()[1]);
         currentLocation.setZ(event.getStarPos()[2]);
 
+
+        currentLocation.setPopulation(event.getPopulation());
+        currentLocation.setPowerplayState(event.getPowerplayState());
+        currentLocation.setPowerplayStateControlProgress(event.getPowerplayStateControlProgress());
+        currentLocation.setPowerplayStateReinforcement(event.getPowerplayStateReinforcement());
+        currentLocation.setPowerplayStateUndermining(event.getPowerplayStateUndermining());
+
         String finalDestination = String.valueOf(playerSession.get(PlayerSession.FINAL_DESTINATION));
         String arrivedAt = String.valueOf(playerSession.get(PlayerSession.JUMPING_TO));
         playerSession.put(PlayerSession.CURRENT_SYSTEM_NAME, arrivedAt);

@@ -4,6 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.VoiceProcessEvent;
 import elite.intel.gameapi.journal.events.DockedEvent;
+import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 
 import java.util.List;
@@ -12,6 +13,16 @@ public class DockedSubscriber {
 
     @Subscribe
     public void onDockedEvent(DockedEvent event) {
+        PlayerSession playerSession = PlayerSession.getInstance();
+        LocationDto currentLocation = playerSession.getCurrentLocation();
+        currentLocation.setMarketID(event.getMarketID());
+        currentLocation.setStationName(event.getStationName());
+        currentLocation.setStationEconomy(event.getStationEconomyLocalised());
+        currentLocation.setStationServices(event.getStationServices());
+        currentLocation.setStationType(event.getStationType());
+        currentLocation.setStationGovernment(event.getStationGovernmentLocalised());
+        if(event.getStationFaction()  != null) currentLocation.setStationFaction(event.getStationFaction().getName());
+
         StringBuilder sb = new StringBuilder();
         List<String> stationServices = event.getStationServices();
         if (stationServices != null && !stationServices.isEmpty()) {
@@ -36,6 +47,6 @@ public class DockedSubscriber {
             EventBusManager.publish(new VoiceProcessEvent("Data available for: " + availableData + "."));
         }
 
-        PlayerSession.getInstance().put(PlayerSession.STATION_DATA, sb.toString());
+        playerSession.setCurrentLocation(currentLocation);
     }
 }

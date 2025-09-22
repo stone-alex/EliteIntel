@@ -1,12 +1,15 @@
 package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
+import elite.intel.gameapi.journal.events.dto.StellarObjectDto;
 import elite.intel.session.PlayerSession;
-import elite.intel.util.json.JsonDataFactory;
+import elite.intel.util.json.GsonFactory;
+import elite.intel.util.json.ToJsonConvertible;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import static elite.intel.ai.brain.handlers.query.QueryActions.ANALYZE_SCAN;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * The `AnalyzerStellarObjectHandler` class is responsible for processing and
@@ -30,20 +33,7 @@ public class AnalyzerStellarObjectHandler extends BaseQueryAnalyzer implements Q
 
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        String dataJsonStr = getData();
-
-        if (dataJsonStr == null || dataJsonStr.isEmpty()) {
-            return GenericResponse.getInstance().genericResponse("No data available");
-        }
-
-        // Check JSON validity
-        if (!JsonDataFactory.getInstance().isValidJson(dataJsonStr)) {
-            log.error("Invalid data JSON for query {}: {}", ANALYZE_SCAN.getAction(), dataJsonStr);
-            return GenericResponse.getInstance().genericResponse("Data error");
-        }
-
-        return analyzeData(dataJsonStr, originalUserInput);
-
+        return analyzeData(getData(), originalUserInput);
     }
 
     private String getData() {

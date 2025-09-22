@@ -209,7 +209,7 @@ public class PlayerSession {
     private final Map<Long, MissionDto> missions = new LinkedHashMap<>();
     private final Map<String, StellarObjectDto> stellarObjects = new HashMap<>();
     private final Map<String, NavRouteDto> routeMap = new LinkedHashMap<>();
-    private final Set<String> detectedSignals = new LinkedHashSet<>();
+    //private final Set<String> detectedSignals = new LinkedHashSet<>();
     private final Set<String> targetFactions = new LinkedHashSet<>();
     private final Set<BountyDto> bounties = new LinkedHashSet<>();
     private final Set<String> miningTargets = new HashSet<>();
@@ -244,11 +244,6 @@ public class PlayerSession {
             routeMap.clear();
             routeMap.putAll((Map<String, NavRouteDto>) v);
         }, new TypeToken<Map<String, NavRouteDto>>() {
-        }.getType());
-        persistence.registerField(DETECTED_SIGNALS, this::getDetectedSignals, v -> {
-            detectedSignals.clear();
-            detectedSignals.addAll((Set<String>) v);
-        }, new TypeToken<Set<String>>() {
         }.getType());
 
         persistence.registerField(TARGET_FACTIONS, this::getTargetFactions, v -> {
@@ -414,35 +409,10 @@ public class PlayerSession {
 
     public void clearOnShutDown() {
         shipScans.clear();
-        detectedSignals.clear();
         markets.clear();
         saveSession();
     }
 
-
-    public void addSignal(ToJsonConvertible event) {
-        detectedSignals.add(event.toJson());
-        saveSession();
-    }
-
-    public String getSignals() {
-        Object[] array = detectedSignals.stream().toArray();
-        StringBuilder sb = new StringBuilder("[");
-        for (Object o : array) {
-            sb.append(o).append(", ");
-        }
-        sb.append("]");
-        return array.length == 0 ? "no data" : sb.toString();
-    }
-
-    public void clearLocalInfo() {
-        detectedSignals.clear();
-        saveSession();
-    }
-
-    private Set<String> getDetectedSignals() {
-        return detectedSignals;
-    }
 
     public void onCarrierStats(CarrierStatsEvent event) {
         CarrierStatsEvent.Finance finance = event.getFinance();

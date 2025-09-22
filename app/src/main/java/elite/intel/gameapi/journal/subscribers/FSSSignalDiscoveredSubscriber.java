@@ -4,6 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.VoiceProcessEvent;
 import elite.intel.gameapi.journal.events.FSSSignalDiscoveredEvent;
+import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.TimeUtils;
 
@@ -17,8 +18,10 @@ public class FSSSignalDiscoveredSubscriber {
     @Subscribe
     public void onFSSSignalDiscovered(FSSSignalDiscoveredEvent event) {
         PlayerSession playerSession = PlayerSession.getInstance();
-        playerSession.addSignal(event);
+        LocationDto currentLocation = playerSession.getCurrentLocation();
+        currentLocation.addDetectedSignal(event.toJson());
         playerSession.put(PlayerSession.LAST_SCAN, event.toJson());
+        playerSession.setCurrentLocation(currentLocation);
 
         if (event.getUssTypeLocalised() != null && event.getUssTypeLocalised().equals("Nonhuman signal source")) {
             publishVoice("Nonhuman signal source detected! Threat level " + event.getThreatLevel() + "!");

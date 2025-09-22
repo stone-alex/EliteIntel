@@ -34,14 +34,9 @@ public class StartJumpSubscriber {
 
         //clear last location data
         if ("Hyperspace".equalsIgnoreCase(event.getJumpType())) {
-            LocationDto currentLocation = playerSession.getCurrentLocation();
-            currentLocation.setPlanetData(null);
-            currentLocation.setPlanetName(null);
-            playerSession.setCurrentLocation(currentLocation);
+            playerSession.setCurrentLocation(new LocationDto());
             playerSession.clearBioSamples();
-            playerSession.clearLocalInfo();
-            playerSession.clearStellarObjects();
-            playerSession.clearShipScans();
+            playerSession.clearMiningTargets();
             EventBusManager.publish(new SensorDataEvent(sb.toString()));
         }
 

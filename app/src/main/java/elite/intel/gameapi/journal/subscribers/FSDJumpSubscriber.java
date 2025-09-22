@@ -20,17 +20,20 @@ public class FSDJumpSubscriber {
     @Subscribe
     public void onFSDJumpEvent(FSDJumpEvent event) {
         PlayerSession playerSession = PlayerSession.getInstance();
-        playerSession.addSignal(event);
+        LocationDto currentLocation = playerSession.getCurrentLocation();
+        currentLocation.setGovernment(event.getSystemGovernmentLocalised());
+        currentLocation.setAllegiance(event.getSystemAllegiance());
+        currentLocation.setSecurity(event.getSystemSecurityLocalised());
+        currentLocation.setSecurity(event.getSystemSecurityLocalised());
+        currentLocation.setStarName(event.getStarSystem());
 
         String currentStarSystem = event.getStarSystem();
         playerSession.removeNavPoint(currentStarSystem);
 
-        LocationDto currentLocation = playerSession.getCurrentLocation();
         currentLocation.setStarName(currentStarSystem);
         currentLocation.setX(event.getStarPos()[0]);
         currentLocation.setY(event.getStarPos()[1]);
         currentLocation.setZ(event.getStarPos()[2]);
-
 
         String finalDestination = String.valueOf(playerSession.get(PlayerSession.FINAL_DESTINATION));
         String arrivedAt = String.valueOf(playerSession.get(PlayerSession.JUMPING_TO));
@@ -40,23 +43,6 @@ public class FSDJumpSubscriber {
         sb.append(" Hyperspace Jump Successful: ");
         sb.append(" We are in: ").append(currentStarSystem).append(" system, ");
         StarSystemDto systemDto = EdsmApiClient.searchStarSystem(currentStarSystem, 1);
-
-
-        if (systemDto.getData() != null) {
-            if (systemDto.getData().getInformation().getAllegiance() != null) {
-                currentLocation.setAllegiance(systemDto.getData().getInformation().getAllegiance());
-                sb.append(" Allegiance: ").append(systemDto.getData().getInformation().getAllegiance());
-            }
-            if (systemDto.getData().getInformation().getSecurity() != null) {
-                sb.append(" Security: ").append(systemDto.getData().getInformation().getSecurity());
-                currentLocation.setSecurity(systemDto.getData().getInformation().getSecurity());
-            } if ( systemDto.getData().getInformation().getGovernment() != null) {
-                currentLocation.setGovernment(systemDto.getData().getInformation().getGovernment());
-            }
-            sb.append(". ");
-        }
-
-        playerSession.setCurrentLocation(currentLocation);
 
         boolean roueSet = !playerSession.getRoute().isEmpty();
 
@@ -71,8 +57,8 @@ public class FSDJumpSubscriber {
             if (deathsDto.getData() != null && deathsDto.getData().getDeaths() != null) {
                 DeathsStats deathsStats = deathsDto.getData().getDeaths();
             }
-            playerSession.addSignal(trafficDto);
-            playerSession.addSignal(deathsDto);
+            currentLocation.setTrafficDto(trafficDto);
+            currentLocation.setDeathsDto(deathsDto);
 
         } else {
             if (roueSet) {
@@ -89,7 +75,7 @@ public class FSDJumpSubscriber {
             }
         }
 
-        //EventBusManager.publish(new AppLogEvent("Processing Event: FSDJumpEvent sending sensor data to AI: " + sb));
+        playerSession.setCurrentLocation(currentLocation);
         EventBusManager.publish(new SensorDataEvent(sb.toString()));
     }
 }

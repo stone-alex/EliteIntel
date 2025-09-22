@@ -215,7 +215,7 @@ public class GrokContextFactory implements AiContextFactory {
         if (carrierName != null && !carrierName.isEmpty()) {
             sb.append("Our home base is FleetCarrier " + carrierName + ", callsign " + carrierCallSign + ". ");
         }
-        sb.append("Address me as ").append(playerName).append(", ").append(playerMilitaryRank).append(", ").append(playerTitle).append(", or ").append(playerHonorific).append(". ");
+        sb.append("When addressing me, choose one at random each time from: ").append(playerName).append(", ").append(playerMilitaryRank).append(", ").append(playerTitle).append(", ").append(playerHonorific).append(". ");
         if (missionStatement != null && !missionStatement.isEmpty()) {
             sb.append(" Session theme: ").append(missionStatement).append(": ");
             sb.append("\n\n");

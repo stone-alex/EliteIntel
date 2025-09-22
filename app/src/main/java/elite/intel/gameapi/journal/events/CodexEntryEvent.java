@@ -57,7 +57,7 @@ public class CodexEntryEvent extends BaseEvent {
     private long voucherAmount;
 
     public CodexEntryEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "CodexEntry");
+        super(json.get("timestamp").getAsString(), Duration.ofSeconds(30), "CodexEntry");
         CodexEntryEvent event = GsonFactory.getGson().fromJson(json, CodexEntryEvent.class);
         this.entryID = event.entryID;
         this.name = event.name;

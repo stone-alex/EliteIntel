@@ -48,7 +48,7 @@ public class TouchdownEvent extends BaseEvent {
     private String nearestDestinationLocalised;
 
     public TouchdownEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "Touchdown");
+        super(json.get("timestamp").getAsString(), Duration.ofSeconds(30), "Touchdown");
         TouchdownEvent event = GsonFactory.getGson().fromJson(json, TouchdownEvent.class);
         this.playerControlled = event.playerControlled;
         this.taxi = event.taxi;

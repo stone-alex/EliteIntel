@@ -19,7 +19,7 @@ public class MaterialsEvent extends BaseEvent {
     private List<Material> encoded;
 
     public MaterialsEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 1, Duration.ofDays(30), "Materials");
+        super(json.get("timestamp").getAsString(), Duration.ofDays(30), "Materials");
         MaterialsEvent event = GsonFactory.getGson().fromJson(json, MaterialsEvent.class);
         this.raw = event.raw;
         this.manufactured = event.manufactured;

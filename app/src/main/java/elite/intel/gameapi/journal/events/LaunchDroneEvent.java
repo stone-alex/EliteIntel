@@ -16,7 +16,7 @@ public class LaunchDroneEvent extends BaseEvent {
     private String droneId;
 
     public LaunchDroneEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 3, Duration.ofMinutes(5), "LaunchDrone");
+        super(json.get("timestamp").getAsString(), Duration.ofMinutes(5), "LaunchDrone");
         LaunchDroneEvent event = GsonFactory.getGson().fromJson(json, LaunchDroneEvent.class);
         this.Type = event.Type;
         this.droneId = String.valueOf(json.get("timestamp").getAsString());
@@ -71,7 +71,6 @@ public class LaunchDroneEvent extends BaseEvent {
     public String toString() {
         return new StringJoiner(", ", LaunchDroneEvent.class.getSimpleName() + "[", "]")
                 .add("timestamp='" + timestamp + "'")
-                .add("priority=" + priority)
                 .add("endOfLife=" + endOfLife)
                 .add("isProcessed=" + isProcessed)
                 .toString();

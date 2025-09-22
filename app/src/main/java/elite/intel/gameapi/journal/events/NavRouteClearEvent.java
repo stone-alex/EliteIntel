@@ -7,7 +7,7 @@ import java.time.Duration;
 
 public class NavRouteClearEvent extends BaseEvent {
     public NavRouteClearEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "NavRouteClear");
+        super(json.get("timestamp").getAsString(), Duration.ofSeconds(30), "NavRouteClear");
     }
 
     @Override

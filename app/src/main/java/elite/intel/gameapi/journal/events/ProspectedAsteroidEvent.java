@@ -20,7 +20,7 @@ public class ProspectedAsteroidEvent extends BaseEvent {
     public double remaining;
 
     public ProspectedAsteroidEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 2, Duration.ofMinutes(10), "ProspectedAsteroid");
+        super(json.get("timestamp").getAsString(), Duration.ofMinutes(10), "ProspectedAsteroid");
         ProspectedAsteroidEvent event = GsonFactory.getGson().fromJson(json, ProspectedAsteroidEvent.class);
         this.materials = event.materials;
         this.content = event.content;

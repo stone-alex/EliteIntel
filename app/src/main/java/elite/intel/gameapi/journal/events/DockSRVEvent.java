@@ -18,7 +18,7 @@ public class DockSRVEvent extends BaseEvent {
     private int id;
 
     public DockSRVEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "DockSRV");
+        super(json.get("timestamp").getAsString(), Duration.ofSeconds(30), "DockSRV");
         DockSRVEvent event = GsonFactory.getGson().fromJson(json, DockSRVEvent.class);
         this.srvType = event.srvType;
         this.srvTypeLocalised = event.srvTypeLocalised;

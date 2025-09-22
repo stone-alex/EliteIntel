@@ -21,8 +21,6 @@ public class ScanEventSubscriber {
         // data for questions on last scan
         playerSession.put(PlayerSession.LAST_SCAN, event.toJson());
 
-
-
         boolean wasDiscovered = event.isWasDiscovered();
         boolean wasMapped = event.isWasMapped();
 

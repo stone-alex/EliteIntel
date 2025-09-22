@@ -36,7 +36,7 @@ public class ScanOrganicEvent extends BaseEvent {
     private int body;
 
     public ScanOrganicEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "ScanOrganic");
+        super(json.get("timestamp").getAsString(), Duration.ofSeconds(30), "ScanOrganic");
         ScanOrganicEvent event = GsonFactory.getGson().fromJson(json, ScanOrganicEvent.class);
         this.scanType = event.scanType;
         this.genus = event.genus;

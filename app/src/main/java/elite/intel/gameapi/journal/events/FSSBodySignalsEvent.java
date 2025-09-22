@@ -45,7 +45,7 @@ public class FSSBodySignalsEvent extends BaseEvent {
     private List<Signal> signals;
 
     public FSSBodySignalsEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "FSSBodySignals");
+        super(json.get("timestamp").getAsString(), Duration.ofSeconds(30), "FSSBodySignals");
         FSSBodySignalsEvent event = GsonFactory.getGson().fromJson(json, FSSBodySignalsEvent.class);
         this.bodyName = event.bodyName;
         this.bodyID = event.bodyID;

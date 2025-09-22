@@ -17,7 +17,7 @@ public class MaterialCollectedEvent extends BaseEvent {
     private int count;
 
     public MaterialCollectedEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "MaterialCollected");
+        super(json.get("timestamp").getAsString(), Duration.ofSeconds(30), "MaterialCollected");
         MaterialCollectedEvent event = GsonFactory.getGson().fromJson(json, MaterialCollectedEvent.class);
         this.category = event.category;
         this.name = event.name;

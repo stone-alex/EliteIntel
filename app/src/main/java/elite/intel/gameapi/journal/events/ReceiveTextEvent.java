@@ -23,7 +23,7 @@ public class ReceiveTextEvent extends BaseEvent {
     public String channel;
 
     public ReceiveTextEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 2, Duration.ofMinutes(1), "ReceiveText");
+        super(json.get("timestamp").getAsString(), Duration.ofMinutes(1), "ReceiveText");
         ReceiveTextEvent event = GsonFactory.getGson().fromJson(json, ReceiveTextEvent.class);
         this.from = event.from;
         this.fromLocalised = event.fromLocalised;

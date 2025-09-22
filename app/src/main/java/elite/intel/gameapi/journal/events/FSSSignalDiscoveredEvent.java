@@ -45,7 +45,7 @@ public class FSSSignalDiscoveredEvent extends BaseEvent {
     private double timeRemaining;
 
     public FSSSignalDiscoveredEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "FSSSignalDiscovered");
+        super(json.get("timestamp").getAsString(), Duration.ofSeconds(30), "FSSSignalDiscovered");
         FSSSignalDiscoveredEvent event = GsonFactory.getGson().fromJson(json, FSSSignalDiscoveredEvent.class);
         this.systemAddress = event.systemAddress;
         this.signalName = event.signalName;

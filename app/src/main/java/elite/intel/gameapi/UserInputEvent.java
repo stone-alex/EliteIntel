@@ -10,7 +10,7 @@ import java.time.Instant;
 public class UserInputEvent extends BaseEvent {
 
     public UserInputEvent(String sanitizedTranscript, float confidence) {
-        super(Instant.now().toString(), 1, Duration.ofSeconds(10), "UserInput");
+        super(Instant.now().toString(), Duration.ofSeconds(10), "UserInput");
         this.userInput = sanitizedTranscript;
         this.confidence = confidence;
     }

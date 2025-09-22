@@ -20,7 +20,7 @@ public class FSDTargetEvent extends BaseEvent {
     private int remainingJumpsInRoute;
 
     public FSDTargetEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "FSDTarget");
+        super(json.get("timestamp").getAsString(), Duration.ofSeconds(30), "FSDTarget");
         FSDTargetEvent event = GsonFactory.getGson().fromJson(json, FSDTargetEvent.class);
         this.name = event.name;
         this.systemAddress = event.systemAddress;

@@ -98,7 +98,7 @@ public class FSDJumpEvent extends BaseEvent {
     private SystemFaction systemFaction;
 
     public FSDJumpEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "FSDJump");
+        super(json.get("timestamp").getAsString(), Duration.ofSeconds(30), "FSDJump");
         FSDJumpEvent event = GsonFactory.getGson().fromJson(json, FSDJumpEvent.class);
         this.taxi = event.taxi;
         this.multicrew = event.multicrew;

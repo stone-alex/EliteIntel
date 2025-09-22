@@ -113,7 +113,7 @@ public class DockedEvent extends BaseEvent {
     private LandingPads landingPads;
 
     public DockedEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "Docked");
+        super(json.get("timestamp").getAsString(), Duration.ofSeconds(30), "Docked");
         DockedEvent event = GsonFactory.getGson().fromJson(json, DockedEvent.class);
         this.stationName = event.stationName;
         this.stationType = event.stationType;

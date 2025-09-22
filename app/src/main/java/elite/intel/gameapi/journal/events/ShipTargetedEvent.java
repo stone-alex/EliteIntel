@@ -48,7 +48,7 @@ public class ShipTargetedEvent extends BaseEvent {
     private int bounty;
 
     public ShipTargetedEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "ShipTargeted");
+        super(json.get("timestamp").getAsString(), Duration.ofSeconds(30), "ShipTargeted");
         ShipTargetedEvent event = GsonFactory.getGson().fromJson(json, ShipTargetedEvent.class);
         this.targetLocked = event.targetLocked;
         this.ship = event.ship;

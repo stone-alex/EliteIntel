@@ -14,7 +14,7 @@ public class CargoTransferEvent extends BaseEvent {
     private List<Transfer> transfers;
 
     public CargoTransferEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "CargoTransfer");
+        super(json.get("timestamp").getAsString(), Duration.ofSeconds(30), "CargoTransfer");
         CargoTransferEvent event = GsonFactory.getGson().fromJson(json, CargoTransferEvent.class);
         this.transfers = event.transfers;
     }

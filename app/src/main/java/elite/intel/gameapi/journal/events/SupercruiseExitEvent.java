@@ -31,7 +31,7 @@ public class SupercruiseExitEvent extends BaseEvent {
     private String bodyType;
 
     public SupercruiseExitEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "SupercruiseExit");
+        super(json.get("timestamp").getAsString(), Duration.ofSeconds(30), "SupercruiseExit");
         SupercruiseExitEvent event = GsonFactory.getGson().fromJson(json, SupercruiseExitEvent.class);
         this.taxi = event.taxi;
         this.multicrew = event.multicrew;

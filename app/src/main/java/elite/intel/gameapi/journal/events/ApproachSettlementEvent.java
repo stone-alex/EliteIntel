@@ -87,7 +87,7 @@ public class ApproachSettlementEvent extends BaseEvent {
     private double longitude;
 
     public ApproachSettlementEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "ApproachSettlement");
+        super(json.get("timestamp").getAsString(), Duration.ofSeconds(30), "ApproachSettlement");
         ApproachSettlementEvent event = GsonFactory.getGson().fromJson(json, ApproachSettlementEvent.class);
         this.name = event.name;
         this.marketID = event.marketID;

@@ -29,7 +29,7 @@ public class StartJumpEvent extends BaseEvent {
     private static final Set<String> SCOOPABLE_STARS = new HashSet<>(Set.of("K", "G", "B", "F", "O", "A", "M"));
 
     public StartJumpEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "StartJump");
+        super(json.get("timestamp").getAsString(), Duration.ofSeconds(30), "StartJump");
         StartJumpEvent event = GsonFactory.getGson().fromJson(json, StartJumpEvent.class);
         this.jumpType = event.jumpType;
         this.taxi = event.taxi;

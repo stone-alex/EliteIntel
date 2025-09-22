@@ -11,7 +11,7 @@ public class SensorDataEvent extends BaseEvent {
 
 
     public SensorDataEvent(String sensorData) {
-        super(Instant.now().toString(), 1, Duration.ofSeconds(10), "SensorData");
+        super(Instant.now().toString(), Duration.ofSeconds(10), "SensorData");
         this.sensorData = "Notify user: " + sensorData;
         this.confidence = 100;
     }

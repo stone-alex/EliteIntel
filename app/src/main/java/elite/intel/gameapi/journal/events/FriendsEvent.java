@@ -15,7 +15,7 @@ public class FriendsEvent extends BaseEvent {
     private String name;
 
     public FriendsEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "Friends");
+        super(json.get("timestamp").getAsString(), Duration.ofSeconds(30), "Friends");
         FriendsEvent event = GsonFactory.getGson().fromJson(json, FriendsEvent.class);
         this.status = event.status;
         this.name = event.name;

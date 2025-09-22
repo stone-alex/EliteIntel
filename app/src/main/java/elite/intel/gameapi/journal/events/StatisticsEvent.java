@@ -56,7 +56,7 @@ public class StatisticsEvent extends BaseEvent {
     public Exobiology exobiology;
 
     public StatisticsEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 1, Duration.ofHours(1), "Statistics");
+        super(json.get("timestamp").getAsString(), Duration.ofHours(1), "Statistics");
         StatisticsEvent event = GsonFactory.getGson().fromJson(json, StatisticsEvent.class);
         this.bankAccount = event.bankAccount;
         this.combat = event.combat;

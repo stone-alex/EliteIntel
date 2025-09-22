@@ -19,7 +19,7 @@ public class SupercruiseDestinationDropEvent extends BaseEvent {
     private long marketID;
 
     public SupercruiseDestinationDropEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "SupercruiseDestinationDrop");
+        super(json.get("timestamp").getAsString(), Duration.ofSeconds(30), "SupercruiseDestinationDrop");
         SupercruiseDestinationDropEvent event = GsonFactory.getGson().fromJson(json, SupercruiseDestinationDropEvent.class);
         this.type = event.type;
         this.threat = event.threat;

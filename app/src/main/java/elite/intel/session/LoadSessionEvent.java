@@ -10,7 +10,7 @@ import java.time.Instant;
 public class LoadSessionEvent extends BaseEvent {
 
     public LoadSessionEvent() {
-        super(Instant.now().toString(), 1, Duration.ofDays(1), "LoadSession");
+        super(Instant.now().toString(), Duration.ofDays(1), "LoadSession");
     }
 
     @Override public String getEventType() {

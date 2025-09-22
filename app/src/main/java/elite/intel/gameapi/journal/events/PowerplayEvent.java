@@ -22,7 +22,7 @@ public class PowerplayEvent extends BaseEvent {
     private long timePledged;
 
     public PowerplayEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 1, Duration.ofDays(30), "Powerplay");
+        super(json.get("timestamp").getAsString(), Duration.ofDays(30), "Powerplay");
         PowerplayEvent event = GsonFactory.getGson().fromJson(json, PowerplayEvent.class);
         this.power = event.power;
         this.rank = event.rank;
@@ -102,7 +102,6 @@ public class PowerplayEvent extends BaseEvent {
                 .add("timePledged=" + timePledged)
                 .add("timestamp='" + timestamp + "'")
                 .add("eventName='" + eventName + "'")
-                .add("priority=" + priority)
                 .add("endOfLife=" + endOfLife)
                 .add("isProcessed=" + isProcessed)
                 .toString();

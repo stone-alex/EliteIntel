@@ -9,7 +9,7 @@ import java.util.StringJoiner;
 
 public class ShutdownEvent extends BaseEvent {
     public ShutdownEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "Shutdown");
+        super(json.get("timestamp").getAsString(), Duration.ofSeconds(30), "Shutdown");
     }
 
     @Override

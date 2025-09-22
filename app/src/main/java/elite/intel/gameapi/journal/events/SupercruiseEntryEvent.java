@@ -21,7 +21,7 @@ public class SupercruiseEntryEvent extends BaseEvent {
     private long systemAddress;
 
     public SupercruiseEntryEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "SupercruiseEntry");
+        super(json.get("timestamp").getAsString(), Duration.ofSeconds(30), "SupercruiseEntry");
         SupercruiseEntryEvent event = GsonFactory.getGson().fromJson(json, SupercruiseEntryEvent.class);
         this.taxi = event.taxi;
         this.multicrew = event.multicrew;

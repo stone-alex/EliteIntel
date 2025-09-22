@@ -24,7 +24,7 @@ public class LaunchSRVEvent extends BaseEvent {
     private boolean playerControlled;
 
     public LaunchSRVEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "LaunchSRV");
+        super(json.get("timestamp").getAsString(), Duration.ofSeconds(30), "LaunchSRV");
         LaunchSRVEvent event = GsonFactory.getGson().fromJson(json, LaunchSRVEvent.class);
         this.srvType = event.srvType;
         this.srvTypeLocalised = event.srvTypeLocalised;

@@ -48,7 +48,7 @@ public class LiftoffEvent extends BaseEvent {
     private String nearestDestinationLocalised;
 
     public LiftoffEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "Liftoff");
+        super(json.get("timestamp").getAsString(), Duration.ofSeconds(30), "Liftoff");
         LiftoffEvent event = GsonFactory.getGson().fromJson(json, LiftoffEvent.class);
         this.playerControlled = event.playerControlled;
         this.taxi = event.taxi;

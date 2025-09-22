@@ -24,7 +24,7 @@ public class SAAScanCompleteEvent extends BaseEvent {
     private int efficiencyTarget;
 
     public SAAScanCompleteEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "SAAScanComplete");
+        super(json.get("timestamp").getAsString(), Duration.ofSeconds(30), "SAAScanComplete");
         SAAScanCompleteEvent event = GsonFactory.getGson().fromJson(json, SAAScanCompleteEvent.class);
         this.bodyName = event.bodyName;
         this.systemAddress = event.systemAddress;

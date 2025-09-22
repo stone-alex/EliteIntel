@@ -19,7 +19,7 @@ public class NpcCrewPaidWageEvent extends BaseEvent {
     private long amount;
 
     public NpcCrewPaidWageEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "NpcCrewPaidWage");
+        super(json.get("timestamp").getAsString(), Duration.ofSeconds(30), "NpcCrewPaidWage");
         NpcCrewPaidWageEvent event = GsonFactory.getGson().fromJson(json, NpcCrewPaidWageEvent.class);
         this.npcCrewName = event.npcCrewName;
         this.npcCrewId = event.npcCrewId;

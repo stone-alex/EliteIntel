@@ -20,7 +20,7 @@ public class RedeemVoucherEvent extends BaseEvent {
     private List<Faction> factions;
 
     public RedeemVoucherEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "RedeemVoucher");
+        super(json.get("timestamp").getAsString(), Duration.ofSeconds(30), "RedeemVoucher");
         RedeemVoucherEvent event = GsonFactory.getGson().fromJson(json, RedeemVoucherEvent.class);
         this.type = event.type;
         this.amount = event.amount;

@@ -29,7 +29,7 @@ public class CarrierJumpRequestEvent extends BaseEvent {
     private String departureTime;
 
     public CarrierJumpRequestEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "CarrierJumpRequest");
+        super(json.get("timestamp").getAsString(), Duration.ofSeconds(30), "CarrierJumpRequest");
         CarrierJumpRequestEvent event = GsonFactory.getGson().fromJson(json, CarrierJumpRequestEvent.class);
         this.carrierType = event.carrierType;
         this.carrierId = event.carrierId;

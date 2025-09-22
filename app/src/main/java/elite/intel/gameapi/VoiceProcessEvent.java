@@ -10,13 +10,13 @@ import java.time.Instant;
 public class VoiceProcessEvent extends BaseEvent {
 
     public VoiceProcessEvent(String textToVoice) {
-        super(Instant.now().toString(), 1, Duration.ofSeconds(10), "VoiceProcess");
+        super(Instant.now().toString(), Duration.ofSeconds(10), "VoiceProcess");
         this.textToVoice = textToVoice;
         this.useRandom = false;
     }
 
     public VoiceProcessEvent(String textToVoice, boolean useRandom) {
-        super(Instant.now().toString(), 1, Duration.ofSeconds(10), "VoiceProcess");
+        super(Instant.now().toString(), Duration.ofSeconds(10), "VoiceProcess");
         this.textToVoice = textToVoice;
         this.useRandom = useRandom;
     }

@@ -16,7 +16,7 @@ public class CargoEvent extends BaseEvent {
     private int count;
 
     public CargoEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "Cargo");
+        super(json.get("timestamp").getAsString(), Duration.ofSeconds(30), "Cargo");
         CargoEvent event = GsonFactory.getGson().fromJson(json, CargoEvent.class);
         this.vessel = event.vessel;
         this.count = event.count;

@@ -30,7 +30,7 @@ public class SwitchSuitLoadoutEvent extends BaseEvent {
     private List<Module> modules;
 
     public SwitchSuitLoadoutEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "SwitchSuitLoadout");
+        super(json.get("timestamp").getAsString(), Duration.ofSeconds(30), "SwitchSuitLoadout");
         SwitchSuitLoadoutEvent event = GsonFactory.getGson().fromJson(json, SwitchSuitLoadoutEvent.class);
         this.suitID = event.suitID;
         this.suitName = event.suitName;

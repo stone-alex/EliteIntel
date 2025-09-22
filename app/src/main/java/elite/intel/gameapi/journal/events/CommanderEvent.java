@@ -16,7 +16,7 @@ public class CommanderEvent extends BaseEvent {
     private String Name;
 
     public CommanderEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 1, Duration.ofDays(30), "Commander");
+        super(json.get("timestamp").getAsString(), Duration.ofDays(30), "Commander");
         CommanderEvent event = GsonFactory.getGson().fromJson(json, CommanderEvent.class);
         this.FID = event.FID;
         this.Name = event.Name;

@@ -64,7 +64,7 @@ public class SAASignalsFoundEvent extends BaseEvent {
     private List<Genus> genuses;
 
     public SAASignalsFoundEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "SAASignalsFound");
+        super(json.get("timestamp").getAsString(), Duration.ofSeconds(30), "SAASignalsFound");
         SAASignalsFoundEvent event = GsonFactory.getGson().fromJson(json, SAASignalsFoundEvent.class);
         this.bodyName = event.bodyName;
         this.systemAddress = event.systemAddress;

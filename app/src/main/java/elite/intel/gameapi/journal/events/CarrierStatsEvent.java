@@ -56,7 +56,7 @@ public class CarrierStatsEvent extends BaseEvent {
     private List<Object> ModulePacks;
 
     public CarrierStatsEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(10), "CarrierStats");
+        super(json.get("timestamp").getAsString(), Duration.ofSeconds(10), "CarrierStats");
         CarrierStatsEvent event = GsonFactory.getGson().fromJson(json, CarrierStatsEvent.class);
         this.CarrierID = event.CarrierID;
         this.CarrierType = event.CarrierType;

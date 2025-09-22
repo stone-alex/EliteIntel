@@ -39,7 +39,7 @@ public class ScanBaryCentreEvent extends BaseEvent {
     private double meanAnomaly;
 
     public ScanBaryCentreEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "ScanBaryCentre");
+        super(json.get("timestamp").getAsString(), Duration.ofSeconds(30), "ScanBaryCentre");
         ScanBaryCentreEvent event = GsonFactory.getGson().fromJson(json, ScanBaryCentreEvent.class);
         this.starSystem = event.starSystem;
         this.systemAddress = event.systemAddress;

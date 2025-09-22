@@ -27,7 +27,7 @@ public class BountyEvent extends BaseEvent {
     private String victimFaction;
 
     public BountyEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "Bounty");
+        super(json.get("timestamp").getAsString(), Duration.ofSeconds(30), "Bounty");
         BountyEvent event = GsonFactory.getGson().fromJson(json, BountyEvent.class);
         this.rewards = event.rewards;
         this.pilotName = event.pilotName;

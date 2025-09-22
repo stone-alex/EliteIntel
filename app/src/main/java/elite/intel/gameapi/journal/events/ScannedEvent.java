@@ -11,7 +11,7 @@ public class ScannedEvent extends BaseEvent {
     private String scanType;
 
     public ScannedEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "Scanned");
+        super(json.get("timestamp").getAsString(), Duration.ofSeconds(30), "Scanned");
         ScannedEvent event = GsonFactory.getGson().fromJson(json, ScannedEvent.class);
         this.scanType = event.scanType;
     }

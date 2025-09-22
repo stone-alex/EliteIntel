@@ -13,14 +13,12 @@ public abstract class BaseEvent implements ToJsonConvertible {
     //@SerializedName("timestamp")
     public String timestamp;
     public String eventName;
-    public int priority;
     public Instant endOfLife;
     public boolean isProcessed;
 
-    public BaseEvent(String timestamp, int priority, Duration ttl, String eventName) {
+    public BaseEvent(String timestamp,  Duration ttl, String eventName) {
         this.eventName = eventName;
         this.timestamp = timestamp;
-        this.priority = priority;
         this.endOfLife = Instant.parse(timestamp).plus(ttl);
         this.isProcessed = false;
     }
@@ -37,9 +35,6 @@ public abstract class BaseEvent implements ToJsonConvertible {
         return timestamp;
     }
 
-    public int getPriority() {
-        return priority;
-    }
 
     public Instant getEndOfLife() {
         return endOfLife;

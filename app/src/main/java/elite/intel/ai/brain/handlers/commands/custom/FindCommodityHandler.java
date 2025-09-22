@@ -6,6 +6,7 @@ import elite.intel.ai.brain.handlers.commands.CommandHandler;
 import elite.intel.ai.search.spansh.market.MarketSearchCriteria;
 import elite.intel.ai.search.spansh.market.SpanshMarketClient;
 import elite.intel.ai.search.spansh.market.StationMarket;
+import elite.intel.ai.search.spansh.nearest.NearestKnownLocationSearch;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.VoiceProcessEvent;
@@ -21,15 +22,22 @@ public class FindCommodityHandler implements CommandHandler {
     @Override public void handle(JsonObject params, String responseText) {
         JsonElement jsonElement = params.get("commodity");
         String commodity = DaftSecretarySanitizer.capitalizeWords(jsonElement.getAsJsonPrimitive().getAsString().replace("\"", ""));
+
         PlayerSession playerSession = PlayerSession.getInstance();
+
         LocationDto currentLocation = playerSession.getCurrentLocation();
+        LocationDto nearestKnownLocation = NearestKnownLocationSearch.findNearest(
+                currentLocation.getX(), currentLocation.getY(), currentLocation.getZ()
+        );
+
+        String starName = nearestKnownLocation == null ? currentLocation.getStarName() : nearestKnownLocation.getStarName();
 
         SpanshMarketClient client = new SpanshMarketClient();
         try {
             List<StationMarket> markets = client.searchMarkets(new MarketSearchCriteria(
-                    currentLocation.getStarName(),
+                    starName,
                     1,
-                    240,
+                    250,
                     commodity,
                     true,
                     false,

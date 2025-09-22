@@ -9,10 +9,7 @@ import elite.intel.gameapi.journal.events.SAASignalsFoundEvent;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class LocationDto implements ToJsonConvertible {
 
@@ -55,8 +52,9 @@ public class LocationDto implements ToJsonConvertible {
     private double powerplayStateControlProgress;
     private int powerplayStateReinforcement;
     private int powerplayStateUndermining;
-
-
+    private double gravity;
+    private double surfaceTemperature;
+    Map<String, Double> materials = new HashMap<>();
 
 
 
@@ -377,6 +375,31 @@ public class LocationDto implements ToJsonConvertible {
 
     public void setPowerplayStateUndermining(int powerplayStateUndermining) {
         this.powerplayStateUndermining = powerplayStateUndermining;
+    }
+
+
+    public double getGravity() {
+        return gravity;
+    }
+
+    public void setGravity(double gravity) {
+        this.gravity = gravity;
+    }
+
+    public double getSurfaceTemperature() {
+        return surfaceTemperature;
+    }
+
+    public void setSurfaceTemperature(double surfaceTemperature) {
+        this.surfaceTemperature = surfaceTemperature;
+    }
+
+    public void addMaterial(String materialName, double materialPercentage) {
+        this.materials.put(materialName, materialPercentage);
+    }
+
+    public Map<String, Double> getMaterials() {
+        return materials;
     }
 
     @Override

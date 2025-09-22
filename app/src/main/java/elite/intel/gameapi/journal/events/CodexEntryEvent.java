@@ -44,9 +44,6 @@ public class CodexEntryEvent extends BaseEvent {
     @SerializedName("BodyID")
     private int bodyID;
 
-    @SerializedName("NearestDestination")
-    private String nearestDestination;
-
     @SerializedName("Latitude")
     private double latitude;
 
@@ -55,6 +52,9 @@ public class CodexEntryEvent extends BaseEvent {
 
     @SerializedName("IsNewEntry")
     private boolean isNewEntry;
+
+    @SerializedName("VoucherAmount")
+    private long voucherAmount;
 
     public CodexEntryEvent(JsonObject json) {
         super(json.get("timestamp").getAsString(), 1, Duration.ofSeconds(30), "CodexEntry");
@@ -71,10 +71,10 @@ public class CodexEntryEvent extends BaseEvent {
         this.system = event.system;
         this.systemAddress = event.systemAddress;
         this.bodyID = event.bodyID;
-        this.nearestDestination = event.nearestDestination;
         this.latitude = event.latitude;
         this.longitude = event.longitude;
         this.isNewEntry = event.isNewEntry;
+        this.voucherAmount = event.voucherAmount;
     }
 
     @Override
@@ -140,10 +140,6 @@ public class CodexEntryEvent extends BaseEvent {
         return bodyID;
     }
 
-    public String getNearestDestination() {
-        return nearestDestination;
-    }
-
     public double getLatitude() {
         return latitude;
     }
@@ -154,6 +150,10 @@ public class CodexEntryEvent extends BaseEvent {
 
     public boolean isNewEntry() {
         return isNewEntry;
+    }
+
+    public long getVoucherAmount() {
+        return voucherAmount;
     }
 
     public String getFormattedTimestamp(boolean useLocalTime) {

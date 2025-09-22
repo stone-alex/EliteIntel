@@ -104,7 +104,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     public AppView() {
         super("Elite Intel");
         // Apply a readable, Windows-friendly font to the entire UI BEFORE creating components
-        installUIFont(getPlatformDefaultFont(16f)); // Adjust base size here (e.g., 14f, 15f, 16f)
+        installUIFont(getPlatformDefaultFont(18f)); // Adjust base size here (e.g., 14f, 15f, 16f)
         installDarkDefaults(); // set dark defaults before components are created
 
 
@@ -147,7 +147,9 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         togglePrivacyModeCheckBox.setForeground(Color.GREEN);
 
         journalDirField.setEditable(false);
+        journalDirField.setPreferredSize(new Dimension(200, 42));
         bindingsDirField.setEditable(false);
+        bindingsDirField.setPreferredSize(new Dimension(200, 42));
     }
 
     private JPanel buildSystemTab() {
@@ -160,6 +162,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         nextRow(gbc);
         addLabel(panel, "xAI or Open AI Key:", gbc, 0);
         llmApiKeyField = new JPasswordField();
+        llmApiKeyField.setPreferredSize(new Dimension(200, 42));
         addField(panel, llmApiKeyField, gbc, 1, 0.8);
         llmLockedCheck = new JCheckBox("Locked", true);
         addCheck(panel, llmLockedCheck, gbc, 2, 0.2);
@@ -168,6 +171,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         nextRow(gbc);
         addLabel(panel, "Google STT Key:", gbc, 0);
         sttApiKeyField = new JPasswordField();
+        sttApiKeyField.setPreferredSize(new Dimension(200, 42));
         addField(panel, sttApiKeyField, gbc, 1, 0.8);
         sttLockedCheck = new JCheckBox("Locked", true);
         addCheck(panel, sttLockedCheck, gbc, 2, 0.2);
@@ -176,6 +180,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         nextRow(gbc);
         addLabel(panel, "Google TTS Key:", gbc, 0);
         ttsApiKeyField = new JPasswordField();
+        ttsApiKeyField.setPreferredSize(new Dimension(200, 42));
         addField(panel, ttsApiKeyField, gbc, 1, 0.8);
         ttsLockedCheck = new JCheckBox("Locked", true);
         addCheck(panel, ttsLockedCheck, gbc, 2, 0.2);
@@ -279,6 +284,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         addLabel(panel, "Alternative Name:", gbc, 0);
         playerAltNameField = new JTextField();
         playerAltNameField.setToolTipText("If your name can't be pronounced properly by TTS, provide an alternative name here. (optional) ");
+        playerAltNameField.setPreferredSize(new Dimension(200, 42));
         addField(panel, playerAltNameField, gbc, 1, 1.0); // full width in Player tab (no checkbox)
 
         // Row 1: Title
@@ -286,12 +292,14 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         addLabel(panel, "Title:", gbc, 0);
         playerTitleField = new JTextField();
         playerTitleField.setToolTipText("Optional title. AI will occasionally refer to you by your title. If not provided, title will be based on your highest military rank");
+        playerTitleField.setPreferredSize(new Dimension(200, 42));
         addField(panel, playerTitleField, gbc, 1, 1.0);
 
         // Row 2: Mission Statement (multi-line)
         nextRow(gbc);
         addLabel(panel, "Session Theme:", gbc, 0);
         playerMissionDescription = new JTextField();
+        playerMissionDescription.setPreferredSize(new Dimension(200, 42));
         playerMissionDescription.setToolTipText("Session theme description (optional). 'We are bounty hunters' or 'We are deep-space explorers' or 'We are pirates' ");
         installTextLimit(playerMissionDescription, 120);
         addField(panel, playerMissionDescription, gbc, 1, 1.0);

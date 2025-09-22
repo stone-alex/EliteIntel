@@ -30,8 +30,7 @@ public class CarrierJumpCompleteSubscriber {
         }
 
 
-
-        if(event.isOnFoot()){
+        if(event.isOnFoot() || event.isDocked()){
             // we are on the carrier during the jump.
             LocationDto currentLocation = playerSession.getCurrentLocation();
             currentLocation.setStarName(starSystem);
@@ -65,8 +64,6 @@ public class CarrierJumpCompleteSubscriber {
             playerSession.setCurrentLocation(currentLocation);
         }
 
-        EventBusManager.publish(new SensorDataEvent("Carrier Location: " + event.toJson()));
+        EventBusManager.publish(new SensorDataEvent("Carrier Location: " + event.getStarSystem()));
     }
 }
-
-

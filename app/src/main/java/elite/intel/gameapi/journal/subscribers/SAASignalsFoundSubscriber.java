@@ -4,6 +4,8 @@ import com.google.common.eventbus.Subscribe;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.journal.events.SAASignalsFoundEvent;
+import elite.intel.gameapi.journal.events.dto.LocationDto;
+import elite.intel.session.PlayerSession;
 
 import java.util.List;
 
@@ -12,6 +14,10 @@ public class SAASignalsFoundSubscriber {
     @Subscribe
     public void onSAASignalsFound(SAASignalsFoundEvent event) {
         StringBuilder sb = new StringBuilder();
+        PlayerSession playerSession = PlayerSession.getInstance();
+        playerSession.addSignal(event);
+        LocationDto currentLocation = playerSession.getCurrentLocation();
+        currentLocation.addSignals(event.getSignals());
 
         List<SAASignalsFoundEvent.Signal> signals = event.getSignals();
         int signalsFound = signals != null ? signals.size() : 0;
@@ -29,6 +35,7 @@ public class SAASignalsFoundSubscriber {
 
 
             if (liveSignals > 0) {
+                currentLocation.setGenus(event.getGenuses());
                 for (SAASignalsFoundEvent.Genus genus : event.getGenuses()) {
                     sb.append(" ");
                     sb.append(genus.getGenusLocalised());
@@ -40,5 +47,6 @@ public class SAASignalsFoundSubscriber {
         } else {
             EventBusManager.publish(new SensorDataEvent("No Signal(s) detected."));
         }
+        playerSession.setCurrentLocation(currentLocation);
     }
 }

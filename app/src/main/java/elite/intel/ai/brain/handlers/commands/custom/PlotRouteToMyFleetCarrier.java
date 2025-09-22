@@ -27,7 +27,11 @@ public class PlotRouteToMyFleetCarrier extends CustomCommandOperator implements 
         }
 
         String carrierLocation = carrierData.getLocation();
-        RoutePlotter plotter = new RoutePlotter(this.commandHandler);
-        plotter.plotRoute(carrierLocation);
+        if(carrierLocation != null && !carrierLocation.isEmpty()) {
+            RoutePlotter plotter = new RoutePlotter(this.commandHandler);
+            plotter.plotRoute(carrierLocation);
+        } else {
+            EventBusManager.publish(new VoiceProcessEvent("Carrier location not available."));
+        }
     }
 }

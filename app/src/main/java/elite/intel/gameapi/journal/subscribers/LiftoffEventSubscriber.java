@@ -6,6 +6,7 @@ import elite.intel.ai.hands.BindingsMonitor;
 import elite.intel.ai.hands.KeyBindingExecutor;
 import elite.intel.ai.hands.KeyBindingsParser;
 import elite.intel.gameapi.journal.events.LiftoffEvent;
+import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager; 
@@ -30,9 +31,6 @@ public class LiftoffEventSubscriber {
         boolean isPlayerControlled = event.isPlayerControlled();
         boolean isOnPlanet = event.isOnPlanet();
         PlayerSession playerSession = PlayerSession.getInstance();
-        playerSession.remove(PlayerSession.STATION_DATA);
-        playerSession.remove(PlayerSession.LANDED_ON_BODY);
-        LocalServicesData.clearLocalServicesData();
 
         if (isPlayerControlled) {
             String landingGearToggle = GameCommands.GameCommand.LANDING_GEAR_TOGGLE.getGameBinding();
@@ -40,7 +38,7 @@ public class LiftoffEventSubscriber {
                 Thread.sleep(1500);
                 operateKeyboard(landingGearToggle, 0);
             } catch (InterruptedException e) {
-                //oh well WE GOT INTERRUPTED! So what...
+                //
             }
         }
     }

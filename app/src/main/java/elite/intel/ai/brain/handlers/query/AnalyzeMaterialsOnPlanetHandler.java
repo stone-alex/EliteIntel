@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import elite.intel.ai.search.edsm.EdsmApiClient;
 import elite.intel.ai.search.edsm.dto.SystemBodiesDto;
 import elite.intel.ai.search.edsm.dto.data.BodyData;
+import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 
 import java.util.Optional;
@@ -14,7 +15,11 @@ public class AnalyzeMaterialsOnPlanetHandler extends BaseQueryAnalyzer implement
     public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         PlayerSession playerSession = PlayerSession.getInstance();
         String starSystemName = String.valueOf(playerSession.get(PlayerSession.CURRENT_SYSTEM_NAME));
-        String bodyName = String.valueOf(playerSession.get(PlayerSession.LANDED_ON_BODY));
+        LocationDto currentLocation = playerSession.getCurrentLocation();
+
+        if(currentLocation == null) return analyzeData(toJson("No data available"), originalUserInput);
+
+        String bodyName = currentLocation.getPlanetName();
 
         SystemBodiesDto systemBodiesDto = EdsmApiClient.searchSystemBodies(starSystemName);
         Optional<BodyData> bodyData = systemBodiesDto.getData().getBodies().stream().filter(

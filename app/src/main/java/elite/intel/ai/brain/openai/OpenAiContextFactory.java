@@ -61,7 +61,7 @@ public class OpenAiContextFactory implements AiContextFactory {
 
     private void inputClassificationClause(StringBuilder sb) {
         sb.append("For type='command': Provide empty response_text for single word commands (e.g., 'deploy landing gear').\n");
-        sb.append("For navigation commands (e.g., 'jump', 'enter hyperspace', 'go to next system'), map to '" + JUMP_TO_HYPERSPACE.getUserCommand() + "'. 'Stop', 'cut engines' map to speed commands " + SET_SPEED_ZERO.getUserCommand() + ". 'Activate', 'toggle', 'left', 'right', 'up', 'down', 'close' to UI commands like" + UI_ACTIVATE.getUserCommand() + ", " + UI_TOGGLE.getUserCommand() + ". ");
+        sb.append("For navigation commands (e.g., 'jump', 'hyperspace', 'go to next system'), map to '" + JUMP_TO_HYPERSPACE.getUserCommand() + "' 'enter supercruise' to '"+ENTER_SUPERCRUISE.getUserCommand()+"'. 'Stop', 'cut engines' map to speed commands " + SET_SPEED_ZERO.getUserCommand() + ". 'Activate', 'toggle', 'left', 'right', 'up', 'down', 'close' to UI commands like" + UI_ACTIVATE.getUserCommand() + ", " + UI_TOGGLE.getUserCommand() + ". ");
         sb.append("For type='query': \n" +
                 "    - If action is a quick query (e.g., '" + WHAT_IS_YOUR_DESIGNATION.getAction() + "', '" + GENERAL_CONVERSATION.getAction() + "'), set 'response_text' to '' (empty string, no initial TTS).\n" +
                 "    - If action is a data query (listed in data queries section), set 'response_text' to 'Moment...' for user feedback during delay.\n" +
@@ -181,6 +181,7 @@ public class OpenAiContextFactory implements AiContextFactory {
         sb.append("Round billions to nearest million. ");
         sb.append("Round millions to nearest 250000. ");
         sb.append("Start responses directly with the requested information, avoiding conversational fillers like 'noted,' 'well,' 'right,' 'understood,' or similar phrases. ");
+        sb.append("Do not end your response with a question.");
         if (personality.equals(AIPersonality.UNHINGED) || personality.equals(AIPersonality.FRIENDLY)) {
             sb.append("For UNHINGED personality, use playful slang matching cadence.");
         }
@@ -220,9 +221,9 @@ public class OpenAiContextFactory implements AiContextFactory {
         String aiName = SystemSession.getInstance().getAIVoice().getName();
         sb.append("Context: You are ").append(aiName).append(", onboard AI for a ").append(currentShip).append(" ship in Elite Dangerous. ");
         if (carrierName != null && !carrierName.isEmpty()) {
-            sb.append("Our home base is FleetCarrier " + carrierName + ", callsign " + carrierCallSign + ". ");
+            sb.append("Our home base is FleetCarrier " + carrierName + ". ");
         }
-        sb.append("Address me as ").append(playerName).append(", ").append(playerMilitaryRank).append(", ").append(playerTitle).append(", or ").append(playerHonorific).append(". ");
+        sb.append("When addressing me, choose one at random each time from: ").append(playerName).append(", ").append(playerMilitaryRank).append(", ").append(playerTitle).append(", ").append(playerHonorific).append(". ");
         if (missionStatement != null && !missionStatement.isEmpty()) {
             sb.append(" Session theme: ").append(missionStatement).append(": ");
             sb.append("\n\n");

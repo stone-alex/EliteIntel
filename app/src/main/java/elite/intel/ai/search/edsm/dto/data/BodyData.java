@@ -1,11 +1,13 @@
 package elite.intel.ai.search.edsm.dto.data;
 
 import com.google.gson.annotations.SerializedName;
+import elite.intel.gameapi.gamestate.events.BaseJsonDto;
+import elite.intel.util.json.ToJsonConvertible;
 
 import java.util.List;
 import java.util.Map;
 
-public class BodyData {
+public class BodyData extends BaseJsonDto implements ToJsonConvertible {
     @SerializedName("id")
     public int id;
     @SerializedName("id64")

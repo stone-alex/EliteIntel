@@ -7,6 +7,7 @@ import elite.intel.ai.search.edsm.dto.data.BodyData;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.VoiceProcessEvent;
 import elite.intel.gameapi.journal.events.ApproachBodyEvent;
+import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.gameapi.journal.events.dto.MaterialDto;
 import elite.intel.gameapi.journal.events.dto.StellarObjectDto;
 import elite.intel.session.PlayerSession;
@@ -25,7 +26,11 @@ public class ApproachBodySubscriber {
         StringBuilder sb = new StringBuilder();
         sb.append("Entering orbit for ").append(event.getBody()).append(". ");
         String currentSystem = event.getStarSystem();
-        playerSession.put(PlayerSession.LANDED_ON_BODY, event.getBody());
+        LocationDto currentLocation = playerSession.getCurrentLocation();
+        currentLocation.setStarName(event.getStarSystem());
+        currentLocation.setPlanetName(event.getBody());
+
+
         SystemBodiesDto systemBodiesDto = EdsmApiClient.searchSystemBodies(currentSystem);
 
         boolean hasBodiesData = systemBodiesDto.getData() != null
@@ -43,7 +48,7 @@ public class ApproachBodySubscriber {
                     }
                     int surfaceTemperatureKelvin = bodyData.getSurfaceTemperature();
                     int surfaceTemperatureCelsius = (int) (surfaceTemperatureKelvin - 273.15);
-                    sb.append(" Surface Temperature: ").append(surfaceTemperatureKelvin).append(" Kelvin,").append(" or ").append(surfaceTemperatureCelsius).append(" Celsius");
+                    sb.append(" Surface Temperature: ").append(surfaceTemperatureKelvin).append(" Kelvin,").append(" or ").append(surfaceTemperatureCelsius).append(" Celsius. ");
                     if (bodyData.getAtmosphereType() != null && !bodyData.getAtmosphereType().isEmpty()) {
                         sb.append(" Atmosphere: ").append(bodyData.getAtmosphereType());
                         sb.append(". ");
@@ -52,8 +57,7 @@ public class ApproachBodySubscriber {
                     if (!materials.isEmpty()) {
                         sb.append(" ").append(materials.size()).append(" materials detected. Details available on request. ");
                     }
-
-
+                    currentLocation.setPlanetData(bodyData);
                 }
             }
         } else {
@@ -84,6 +88,7 @@ public class ApproachBodySubscriber {
                 sb.append(" Check gravity and temperature data before landing");
             }
         }
+        playerSession.setCurrentLocation(currentLocation);
         EventBusManager.publish(new VoiceProcessEvent(sb.toString()));
     }
 

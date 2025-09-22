@@ -4,6 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.journal.events.StartJumpEvent;
+import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.ui.event.AppLogEvent;
 
@@ -19,25 +20,30 @@ public class StartJumpSubscriber {
         StringBuilder sb = new StringBuilder();
         sb.append("Entered hyperspace: ");
         sb.append(" ");
-        sb.append("Target Star System: ");
+        sb.append("in route to: ");
         sb.append(jumpingTo);
         sb.append(", ");
         sb.append("Star Class: ");
         sb.append(starClass);
         sb.append(", ");
         sb.append(isFuelStarClause(starClass));
+        sb.append(". ");
 
         PlayerSession playerSession = PlayerSession.getInstance();
         playerSession.put(PlayerSession.JUMPING_TO, jumpingTo);
 
-        if (!"Supercruise".equalsIgnoreCase(event.getJumpType())) {
-            EventBusManager.publish(new AppLogEvent("Processing Event: StartJumpEvent sending sensor data to AI: " + sb));
+        //clear last location data
+        if ("Hyperspace".equalsIgnoreCase(event.getJumpType())) {
+            LocationDto currentLocation = playerSession.getCurrentLocation();
+            currentLocation.setPlanetData(null);
+            currentLocation.setPlanetName(null);
+            playerSession.setCurrentLocation(currentLocation);
+            playerSession.clearBioSamples();
+            playerSession.clearLocalInfo();
+            playerSession.clearStellarObjects();
+            playerSession.clearShipScans();
             EventBusManager.publish(new SensorDataEvent(sb.toString()));
         }
-
-        playerSession.clearLocalInfo();
-        playerSession.clearStellarObjects();
-        playerSession.clearShipScans();
 
         playerSession.removeNavPoint(String.valueOf(playerSession.get(PlayerSession.CURRENT_SYSTEM_NAME)));
     }

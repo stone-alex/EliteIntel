@@ -166,10 +166,21 @@ public class GameEvents {
         private double cargo;
         @SerializedName("LegalState")
         private String legalState;
+        @SerializedName("Latitude")
+        private double latitude;
+        @SerializedName("Longitude")
+        private double longitude;
+        @SerializedName("Heading")
+        private int heading;
+        @SerializedName("Altitude")
+        private double altitude;
         @SerializedName("Balance")
         private long balance;
         @SerializedName("Destination")
         private Destination destination;
+        @SerializedName("PlanetRadius")
+        private double planetRadius;
+
 
         // Getters
         public String getTimestamp() {
@@ -223,6 +234,26 @@ public class GameEvents {
         public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }
+
+        public double getLatitude() {
+            return latitude;
+        }
+
+        public double getLongitude() {
+            return longitude;
+        }
+
+        public int getHeading() {
+            return heading;
+        }
+
+        public double getAltitude() {
+            return altitude;
+        }
+
+        public double getPlanetRadius() {
+            return planetRadius;
+        }
     }
 
     public static class BackpackEvent {
@@ -267,6 +298,8 @@ public class GameEvents {
         public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }
+
+
     }
 
     public static class NavRouteEvent {

@@ -162,7 +162,6 @@ public class PlayerSession {
     public static final String LOCAL_MARKET_JSON = "local_market_json";
     public static final String LOCAL_OUTFITING_JSON = "local_outfiting_json";
     public static final String LOCAL_SHIP_YARD_JSON = "local_shipyard_json";
-    public static final String LANDED_ON_BODY = "landed_on_body";
 
     private static final String CURRENT_LOCATION = "current_location";
     private static final String FRIENDS_STATUS = "friends_status";
@@ -203,6 +202,8 @@ public class PlayerSession {
     private static final String BOUNTIES = "bounties";
     private static final String MINING_TARGETS = "miningTargets";
     private static final String HOME_SYSTEM = "home_system";
+    public static final String PLAYER_STATUS = "player_status";
+    public static final String BIO_SAMPLES = "bio_samples";
     private final Map<String, Object> state = new HashMap<>();
     private final Map<String, String> shipScans = new HashMap<>();
     private final Map<Long, MissionDto> missions = new LinkedHashMap<>();
@@ -213,11 +214,13 @@ public class PlayerSession {
     private final Set<BountyDto> bounties = new LinkedHashSet<>();
     private final Set<String> miningTargets = new HashSet<>();
     private List<StationMarket> markets = new ArrayList<>();
+    private StatusDto status = new StatusDto();
     private long bountyCollectedThisSession = 0;
     private RankAndProgressDto rankAndProgressDto = new RankAndProgressDto();
     private LocationDto currentLocation = new LocationDto();
     private LocationDto homeSystem = new LocationDto();
     private CarrierDataDto carrierData = new CarrierDataDto();
+    private List<BioSampleDto> bioSamples = new ArrayList<>();
 
 
     SessionPersistence persistence = new SessionPersistence();
@@ -272,9 +275,11 @@ public class PlayerSession {
         }, new TypeToken<Set<String>>() {}.getType());
 
         persistence.registerField("markets", this::getMarkets, this::setMarkets, new TypeToken<List<StationMarket>>(){}.getType());
+        persistence.registerField(BIO_SAMPLES, this::getBioSamples, this::setBioSamples, new TypeToken<List<BioSampleDto>>(){}.getType() );
 
         persistence.registerField(CURRENT_LOCATION, this::getCurrentLocation, this::setCurrentLocation, LocationDto.class);
         persistence.registerField(HOME_SYSTEM, this::getHomeSystem, this::setHomeSystem, LocationDto.class);
+        persistence.registerField(PLAYER_STATUS, this::getStatus, this::setStatus, StatusDto.class);
 
 
         persistence.registerField("bountyCollectedThisSession", this::getBountyCollectedThisSession, this::setBountyCollectedThisSession, Long.class);
@@ -599,5 +604,33 @@ public class PlayerSession {
 
     public void clearMarkets() {
         markets.clear();
+    }
+
+    public StatusDto getStatus() {
+        return status;
+    }
+
+    public void setStatus(StatusDto status) {
+        this.status = status;
+        saveSession();
+    }
+
+    public List<BioSampleDto> getBioSamples() {
+        return bioSamples;
+    }
+
+    public void setBioSamples(List<BioSampleDto> bioSamples) {
+        this.bioSamples = bioSamples;
+        saveSession();
+    }
+
+    public void addBioSample(BioSampleDto bioSampleDto) {
+        this.bioSamples.add(bioSampleDto);
+        saveSession();
+    }
+
+    public void clearBioSamples() {
+        this.bioSamples.clear();
+        saveSession();
     }
 }

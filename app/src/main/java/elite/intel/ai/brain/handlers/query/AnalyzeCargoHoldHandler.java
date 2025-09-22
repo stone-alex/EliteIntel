@@ -21,24 +21,7 @@ public class AnalyzeCargoHoldHandler extends BaseQueryAnalyzer implements QueryH
     }
 
 
-    static class DataDto implements ToJsonConvertible {
-
-        private String loadout;
-        private String cargo;
-
-        public DataDto(String loadout, String cargo) {
-            this.loadout = loadout;
-            this.cargo = cargo;
-        }
-
-        public String getLoadout() {
-            return loadout;
-        }
-
-        public String getCargo() {
-            return cargo;
-        }
-
+    record DataDto(String loadout, String cargo) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }

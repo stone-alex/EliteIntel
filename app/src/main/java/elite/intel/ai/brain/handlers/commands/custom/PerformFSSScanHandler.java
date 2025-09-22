@@ -3,8 +3,8 @@ package elite.intel.ai.brain.handlers.commands.custom;
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.commands.CommandHandler;
 import elite.intel.ai.hands.GameHandler;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager; 
 
 import static elite.intel.ai.brain.handlers.commands.GameCommands.GameCommand.EXPLORATION_FSSDISCOVERY_SCAN;
 import static elite.intel.ai.brain.handlers.commands.GameCommands.GameCommand.SET_SPEED_ZERO;
@@ -32,18 +32,11 @@ public class PerformFSSScanHandler extends CustomCommandOperator implements Comm
     }
 
     @Override public void handle(JsonObject params, String responseText) {
-        try {
             String actionSetThrottleToZero = SET_SPEED_ZERO.getGameBinding();
             String actionPressFSS = EXPLORATION_FSSDISCOVERY_SCAN.getGameBinding();
 
             operateKeyboard(actionSetThrottleToZero, 0);
-            Thread.sleep(120);
             operateKeyboard(actionPressFSS, 0);
-            Thread.sleep(120);
             operateKeyboard(actionPressFSS, 4500);
-        } catch (InterruptedException e) {
-            log.error("Failed to perform FSS scan: {}", e.getMessage());
-            throw new RuntimeException(e);
-        }
     }
 }

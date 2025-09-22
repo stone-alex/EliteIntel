@@ -34,7 +34,7 @@ import static elite.intel.util.json.JsonParameterExtractor.extractParameter;
  */
 public class SetStreamingModeHandler implements CommandHandler {
 
-    private static final Logger log = LogManager.getLogger(SetRouteHandler.class);
+    private static final Logger log = LogManager.getLogger(SetStreamingModeHandler.class);
 
     @Override public void handle(JsonObject params, String responseText) {
         JsonElement jsonElement = extractParameter(CustomCommands.SET_STREAMING_MODE.getPlaceholder(), params);

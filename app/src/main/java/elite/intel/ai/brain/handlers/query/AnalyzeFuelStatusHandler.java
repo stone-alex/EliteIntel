@@ -16,32 +16,15 @@ public class AnalyzeFuelStatusHandler extends BaseQueryAnalyzer implements Query
 
         Object loadout = playerSession.get(PlayerSession.SHIP_LOADOUT_JSON);
         String loadoutAsString = loadout != null ? String.valueOf(loadout) : "Ship Loadout data is unavailable.";
-        String data = new AnalyzeCargoHoldHandler.DataDto(loadoutAsString, fuelStatusData).toJson();
+        String data = new DataDto(loadoutAsString, fuelStatusData).toJson();
 
         return analyzeData(data, originalUserInput);
     }
 
 
-    static class DataDto implements ToJsonConvertible {
-        private String shipLoadout;
-        private String fuelData;
-
-        public DataDto(String loadout, String fuelStatus) {
-            this.shipLoadout = loadout;
-            this.fuelData = fuelStatus;
-        }
-
-        public String getShipLoadout() {
-            return shipLoadout;
-        }
-
-        public String getFuelData() {
-            return fuelData;
-        }
-
+    record DataDto(String loadout, String fuelData)  implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }
-
     }
 }

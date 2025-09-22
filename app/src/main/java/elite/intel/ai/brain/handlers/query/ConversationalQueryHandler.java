@@ -1,6 +1,7 @@
 package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
+import elite.intel.ai.brain.AIConstants;
 
 public class ConversationalQueryHandler implements QueryHandler {
     /**
@@ -23,11 +24,11 @@ public class ConversationalQueryHandler implements QueryHandler {
     public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         JsonObject response = new JsonObject();
         String query = "Answer using your general knowledge, outside Elite Dangerous unless explicitly mentioned: " + originalUserInput;
-        response.addProperty("response_text", ""); // Empty to avoid premature TTS
-        response.addProperty("action", "general_conversation");
+        response.addProperty(AIConstants.PROPERTY_RESPONSE_TEXT, ""); // Empty to avoid premature TTS
+        response.addProperty(AIConstants.TYPE_ACTION, "general_conversation");
         response.add("params", new JsonObject());
-        response.addProperty("expect_followup", true);
-        response.addProperty("original_query", query);
+        response.addProperty(AIConstants.PROPERTY_EXPECT_FOLLOWUP, true);
+        response.addProperty(AIConstants.PROPERTY_ORIGINAL_QUERY, query);
         return response;
     }
 }

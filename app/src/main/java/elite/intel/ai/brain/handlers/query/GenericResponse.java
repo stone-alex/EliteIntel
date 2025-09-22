@@ -3,6 +3,7 @@ package elite.intel.ai.brain.handlers.query;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import elite.intel.ai.brain.AIConstants;
 import elite.intel.session.PlayerSession;
 
 import java.util.List;
@@ -31,7 +32,7 @@ public class GenericResponse {
         String playerName = String.valueOf(session.get(PlayerSession.PLAYER_NAME));
 
         JsonObject response = new JsonObject();
-        response.addProperty("response_text", text + " " + ("null".equalsIgnoreCase(playerName) ? "Commander" : playerName));
+        response.addProperty(AIConstants.PROPERTY_RESPONSE_TEXT, text + " " + ("null".equalsIgnoreCase(playerName) ? "Commander" : playerName));
         return response;
     }
 

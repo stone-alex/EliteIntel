@@ -26,11 +26,9 @@ public class PlotRouteToBestMarketHandler extends CustomCommandOperator implemen
                     .min((m1, m2) -> Double.compare(m1.getSellPrice(), m2.getSellPrice()))
                     .orElse(null);
 
-            if(bestMarket != null) {
-                RoutePlotter plotter = new RoutePlotter(this.commandHandler);
-                plotter.plotRoute(bestMarket.systemName());
-                playerSession.clearMarkets();
-            }
+            RoutePlotter plotter = new RoutePlotter(this.commandHandler);
+            plotter.plotRoute(bestMarket.systemName());
+            playerSession.clearMarkets();
         }
     }
 }

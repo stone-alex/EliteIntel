@@ -18,40 +18,25 @@ import elite.intel.ai.hands.GameHandler;
 public class ExitToHud extends CustomCommandOperator implements CommandHandler {
 
 
-    public static final int DELAY = 120;
-
     public ExitToHud(GameHandler commandHandler) {
         super(commandHandler.getMonitor(), commandHandler.getExecutor());
     }
 
     @Override public void handle(JsonObject params, String responseText) {
-        try {
             String exit = GameCommands.GameCommand.EXIT_KEY.getGameBinding();
             String headLookReset = GameCommands.GameCommand.HEAD_LOOK_RESET.getGameBinding();
             String quitFFS = GameCommands.GameCommand.EXPLORATION_FSSQUIT.getGameBinding();
             //back out of nested menus and sub windows
-            Thread.sleep(DELAY);
+            
             operateKeyboard(quitFFS, 0);
-            Thread.sleep(DELAY);
             operateKeyboard(exit, 0);
-            Thread.sleep(DELAY);
             operateKeyboard(exit, 0);
-            Thread.sleep(DELAY);
             operateKeyboard(exit, 0);
-            Thread.sleep(DELAY);
             operateKeyboard(exit, 0);
-            Thread.sleep(DELAY);
             operateKeyboard(exit, 0);
-            Thread.sleep(DELAY);
             operateKeyboard(exit, 0);
-            Thread.sleep(DELAY);
             operateKeyboard(exit, 0);
-            Thread.sleep(DELAY);
             operateKeyboard(exit, 0); // exit from all sub windows back to HUD
-            Thread.sleep(DELAY);
             operateKeyboard(headLookReset, 0);
-        } catch (InterruptedException oops) {
-            //ok
-        }
     }
 }

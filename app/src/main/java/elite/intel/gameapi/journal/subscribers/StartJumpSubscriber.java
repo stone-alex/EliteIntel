@@ -38,12 +38,10 @@ public class StartJumpSubscriber {
             playerSession.clearBioSamples();
             playerSession.clearMiningTargets();
             playerSession.clearStellarObjects();
-            playerSession.getRoute().remove(jumpingTo);
-            playerSession.saveSession();
+            playerSession.removeNavPoint(jumpingTo);
             EventBusManager.publish(new SensorDataEvent(sb.toString()));
         }
 
-        playerSession.removeNavPoint(String.valueOf(playerSession.get(PlayerSession.CURRENT_SYSTEM_NAME)));
     }
 
     private String isFuelStarClause(String starClass) {

@@ -50,21 +50,24 @@ public class ScanEventSubscriber {
 
             if (!wasDiscovered) {
                 //new discovery NOTE: this might be a bit too much. check in game
-                EventBusManager.publish(new SensorDataEvent("New Discovery Catalogued: " + event.getBodyName() + " Details: " + event.toJson()));
+                if (!event.getTerraformState().isEmpty()) {
+                    EventBusManager.publish(new SensorDataEvent("New Terraformable planet: " + event.getBodyName() + " Details: " + event.toJson()));
+                }
             }
+
 
         } else if ("AutoScan".equalsIgnoreCase(event.getScanType())) {
 
             boolean isStar = event.getDistanceFromArrivalLS() == 0 && event.getSurfaceTemperature() > 2000;
-            if (!wasDiscovered) {
-                EventBusManager.publish(new SensorDataEvent("New Discovery: " + event.getBodyName()));
-            }
             if (!isStar) {
-                if (wasDiscovered && !wasMapped) {
-                    if (!event.getBodyName().contains("Belt Cluster")) {
-                        EventBusManager.publish(new SensorDataEvent(event.getBodyName() + " was previously discovered, but not mapped."));
-                    }
+                boolean isBeltCluster = event.getBodyName().contains("Belt Cluster");
+                if (wasDiscovered && !wasMapped && !isBeltCluster) {
+                    EventBusManager.publish(new SensorDataEvent(event.getBodyName() + " was previously discovered, but not mapped. "));
+                } else if (!wasDiscovered && !isBeltCluster) {
+                    EventBusManager.publish(new SensorDataEvent("New discovery: " + event.getBodyName() + ". "));
                 }
+            } else if (!wasDiscovered) {
+                EventBusManager.publish(new SensorDataEvent("New star system discovered!"));
             }
         }
     }

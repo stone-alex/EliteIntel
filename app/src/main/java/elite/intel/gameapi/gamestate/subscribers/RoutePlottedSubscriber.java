@@ -15,14 +15,15 @@ public class RoutePlottedSubscriber {
     @Subscribe
     public void onGameEvent(GameEvents.NavRouteEvent event) {
         int totalJumps = event.getRoute().size();
+        PlayerSession playerSession = PlayerSession.getInstance();
 
         List<GameEvents.NavRouteEvent.RouteEntry> route = event.getRoute();
-        Map<String, NavRouteDto> routeMap = new LinkedHashMap<>();
+        Map<Integer, NavRouteDto> routeMap = new LinkedHashMap<>();
         int leg = 0;
         if (!route.isEmpty()) {
             for (GameEvents.NavRouteEvent.RouteEntry entry : route.subList(1, route.size())) {
                 NavRouteDto dto = new NavRouteDto();
-                dto.setLeg(leg++);
+                dto.setLeg(++leg);
                 dto.setRemainingJumps(totalJumps - leg - 1);
                 dto.setStarClass(entry.getStarClass());
                 dto.setName(entry.getStarSystem());
@@ -30,10 +31,8 @@ public class RoutePlottedSubscriber {
                 dto.setY(entry.getStarPos()[1]);
                 dto.setZ(entry.getStarPos()[2]);
                 dto.setScoopable("KGBFOAM".contains(entry.getStarClass().toUpperCase()));
-                routeMap.put(dto.getName(), dto);
+                routeMap.put(leg, dto);
             }
-
-            PlayerSession playerSession = PlayerSession.getInstance();
 
             NavRouteDto finalDestination;
             if (!routeMap.isEmpty()) {
@@ -44,10 +43,14 @@ public class RoutePlottedSubscriber {
                 if (finalDestination != null) {
                     playerSession.put(PlayerSession.FINAL_DESTINATION, finalDestination.getName());
                 }
-                playerSession.setNavRoute(routeMap);
                 if(playerSession.getCurrentLocation() != null) {
-                    playerSession.removeNavPoint(playerSession.getCurrentLocation().getStarName());
+                    for (NavRouteDto navRouteDto : routeMap.values()) {
+                        if (navRouteDto.getName().equalsIgnoreCase(playerSession.getCurrentLocation().getStarName())) {
+                            routeMap.remove(navRouteDto.getLeg());
+                        }
+                    }
                 }
+                playerSession.setNavRoute(routeMap);
             } else {
                 playerSession.clearRoute();
             }

@@ -24,7 +24,7 @@ public class LocationDto implements ToJsonConvertible {
     List<SAASignalsFoundEvent.Signal> signals;
     List<SAASignalsFoundEvent.Genus> genus;
     List<BioSampleDto> completedBioScans = new ArrayList<>();
-    Set<String> detectedSignals = new HashSet<>();
+    Set<FssSignal> detectedSignals = new HashSet<>();
     TrafficDto trafficDto;
     DeathsDto deathsDto;
 
@@ -161,12 +161,12 @@ public class LocationDto implements ToJsonConvertible {
         return completedBioScans;
     }
 
-    public void addDetectedSignal(String signal) {
+    public void addDetectedSignal(FssSignal signal) {
         this.detectedSignals.add(signal);
     }
 
 
-    public Set<String> getDetectedSignals() {
+    public Set<FssSignal> getDetectedSignals() {
         return detectedSignals;
     }
 

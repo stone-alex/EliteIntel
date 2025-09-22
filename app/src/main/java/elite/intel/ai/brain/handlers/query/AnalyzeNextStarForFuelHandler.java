@@ -11,7 +11,7 @@ public class AnalyzeNextStarForFuelHandler extends BaseQueryAnalyzer implements 
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         PlayerSession playerSession = PlayerSession.getInstance();
-        Collection<? extends ToJsonConvertible> route = playerSession.getRoute().values();
+        Collection<? extends ToJsonConvertible> route = playerSession.getOrderedRoute();
         String data = JsonDataFactory.getInstance().toJsonArrayString(route);
         return analyzeData(data, originalUserInput);
     }

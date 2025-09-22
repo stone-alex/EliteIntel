@@ -4,6 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.VoiceProcessEvent;
 import elite.intel.gameapi.journal.events.FSSSignalDiscoveredEvent;
+import elite.intel.gameapi.journal.events.dto.FssSignal;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.TimeUtils;
@@ -19,7 +20,22 @@ public class FSSSignalDiscoveredSubscriber {
     public void onFSSSignalDiscovered(FSSSignalDiscoveredEvent event) {
         PlayerSession playerSession = PlayerSession.getInstance();
         LocationDto currentLocation = playerSession.getCurrentLocation();
-        currentLocation.addDetectedSignal(event.toJson());
+
+
+        FssSignal signal = new FssSignal();
+        signal.setSignalName(event.getSignalName());
+        signal.setSignalNameLocalised(event.getSignalNameLocalised());
+        signal.setSignalType(event.getSignalType());
+        signal.setSpawningFaction(event.getSpawningFactionLocalised());
+        signal.setSpawningState(event.getSpawningStateLocalised());
+        signal.setThreatLevel(event.getThreatLevel());
+        signal.setTimeRemaining(event.getTimeRemaining());
+        signal.setUssType(event.getUssType());
+        signal.setUssTypeLocalised(event.getUssTypeLocalised());
+        signal.setSystemAddress(event.getSystemAddress());
+        currentLocation.addDetectedSignal(signal);
+
+
         playerSession.put(PlayerSession.LAST_SCAN, event.toJson());
         playerSession.setCurrentLocation(currentLocation);
 

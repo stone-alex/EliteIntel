@@ -17,12 +17,12 @@ public class AnalyzeDistanceToFinalDestination extends BaseQueryAnalyzer impleme
     public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         PlayerSession playerSession = PlayerSession.getInstance();
         LocationDto here = playerSession.getCurrentLocation();
-        Map<String, NavRouteDto> route = playerSession.getRoute();
+        List<NavRouteDto> orderedRoute = playerSession.getOrderedRoute();
 
         if (here == null) {
             return analyzeData(toJson("Current location data unavailable."), originalUserInput);
         }
-        if (route == null || route.isEmpty()) {
+        if (orderedRoute == null || orderedRoute.isEmpty()) {
             return analyzeData(toJson("No route data available."), originalUserInput);
         }
 
@@ -33,10 +33,6 @@ public class AnalyzeDistanceToFinalDestination extends BaseQueryAnalyzer impleme
         currentLocation.setX(here.getX());
         currentLocation.setY(here.getY());
         currentLocation.setZ(here.getZ());
-
-        // Sort route by leg
-        List<NavRouteDto> orderedRoute = new ArrayList<>(route.values());
-        orderedRoute.sort(Comparator.comparingInt(NavRouteDto::getLeg));
 
         String distanceData = getDistanceDataForAnnouncement(currentLocation, orderedRoute);
         // AI cadence or error response

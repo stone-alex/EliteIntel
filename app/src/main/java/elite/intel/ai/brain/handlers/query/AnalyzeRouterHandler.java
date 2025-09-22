@@ -29,8 +29,8 @@ public class AnalyzeRouterHandler extends BaseQueryAnalyzer implements QueryHand
         PlayerSession playerSession = PlayerSession.getInstance();
 
         Collection<ToJsonConvertible> route = new LinkedHashSet<>();
-        Map<String, NavRouteDto> plottedRoute = playerSession.getRoute();
-        for (NavRouteDto dto : plottedRoute.values()) {
+        Collection<NavRouteDto> orderedRoute = playerSession.getOrderedRoute();
+        for (NavRouteDto dto : orderedRoute) {
             DeathsDto deathsDto = EdsmApiClient.searchDeaths(dto.getName());
             Thread.sleep(500);
             TrafficDto trafficDto = EdsmApiClient.searchTraffic(dto.getName());

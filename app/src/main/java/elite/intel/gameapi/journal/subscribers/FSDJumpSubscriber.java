@@ -35,7 +35,6 @@ public class FSDJumpSubscriber {
         currentLocation.setY(event.getStarPos()[1]);
         currentLocation.setZ(event.getStarPos()[2]);
 
-
         currentLocation.setPopulation(event.getPopulation());
         currentLocation.setPowerplayState(event.getPowerplayState());
         currentLocation.setPowerplayStateControlProgress(event.getPowerplayStateControlProgress());
@@ -46,12 +45,13 @@ public class FSDJumpSubscriber {
         String arrivedAt = String.valueOf(playerSession.get(PlayerSession.JUMPING_TO));
         playerSession.put(PlayerSession.CURRENT_SYSTEM_NAME, arrivedAt);
 
+
         StringBuilder sb = new StringBuilder();
         sb.append(" Hyperspace Jump Successful: ");
         sb.append(" We are in: ").append(currentStarSystem).append(" system, ");
         StarSystemDto systemDto = EdsmApiClient.searchStarSystem(currentStarSystem, 1);
 
-        boolean roueSet = !playerSession.getRoute().isEmpty();
+        boolean roueSet = !playerSession.getOrderedRoute().isEmpty();
 
         if (finalDestination != null && finalDestination.equalsIgnoreCase(currentStarSystem)) {
             playerSession.clearRoute();
@@ -69,13 +69,12 @@ public class FSDJumpSubscriber {
 
         } else {
             if (roueSet) {
-                int remainingJump = playerSession.getRoute().size();
+                int remainingJump = playerSession.getOrderedRoute().size();
 
                 if (remainingJump > 0) {
-                    NavRouteDto nextStop = playerSession.getRoute().values().stream().findFirst().orElse(null);
-                    if(nextStop != null) {
-                        sb.append(" Next stop: ").append(nextStop.toJson()).append(", ");
-                    }
+                    playerSession.getOrderedRoute().stream().findFirst().ifPresent(
+                            nextStop -> sb.append(" Next stop: ").append(nextStop.toJson()).append(", ")
+                    );
                 }
 
                 sb.append(remainingJump).append(" jumps remaining: ").append(" to ").append(finalDestination).append(".");

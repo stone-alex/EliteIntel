@@ -84,7 +84,7 @@ public class PlayerSession {
     private final Map<String, String> shipScans = new HashMap<>();
     private final Map<Long, MissionDto> missions = new LinkedHashMap<>();
     private final Map<String, StellarObjectDto> stellarObjects = new HashMap<>();
-    private final Map<String, NavRouteDto> routeMap = new LinkedHashMap<>();
+    private final Map<Integer, NavRouteDto> routeMap = new LinkedHashMap<>();
     private final Set<String> targetFactions = new LinkedHashSet<>();
     private final Set<BountyDto> bounties = new LinkedHashSet<>();
     private final Set<String> miningTargets = new HashSet<>();
@@ -114,7 +114,7 @@ public class PlayerSession {
         }.getType());
         persistence.registerField(ROUTE_MAP, this::getRoute, v -> {
             routeMap.clear();
-            routeMap.putAll((Map<String, NavRouteDto>) v);
+            routeMap.putAll((Map<Integer, NavRouteDto>) v);
         }, new TypeToken<Map<String, NavRouteDto>>() {
         }.getType());
 
@@ -244,7 +244,7 @@ public class PlayerSession {
     }
 
 
-    public void setNavRoute(Map<String, NavRouteDto> routeMap) {
+    public void setNavRoute(Map<Integer, NavRouteDto> routeMap) {
         this.routeMap.clear();
         saveSession();
         this.routeMap.putAll(routeMap);
@@ -252,12 +252,25 @@ public class PlayerSession {
     }
 
     public void removeNavPoint(String systemName) {
-        routeMap.remove(systemName);
+        Collection<NavRouteDto> values = routeMap.values();
+        for (NavRouteDto navRouteDto : values) {
+            if(navRouteDto.getName().equalsIgnoreCase(systemName)) {
+                routeMap.remove(navRouteDto.getLeg());
+            }
+        }
         saveSession();
     }
 
-    public Map<String, NavRouteDto> getRoute() {
+    //for persistence
+    private Map<Integer, NavRouteDto> getRoute() {
         return routeMap;
+    }
+
+    public List<NavRouteDto> getOrderedRoute() {
+        if(routeMap.isEmpty()) {return new ArrayList<>();}
+        List<NavRouteDto> orderedRoute = new ArrayList<>(routeMap.values());
+        orderedRoute.sort(Comparator.comparingInt(NavRouteDto::getLeg));
+        return orderedRoute;
     }
 
     public void clearRoute() {

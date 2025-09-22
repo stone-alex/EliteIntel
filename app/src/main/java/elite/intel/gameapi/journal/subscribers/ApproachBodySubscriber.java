@@ -5,6 +5,7 @@ import elite.intel.ai.search.edsm.EdsmApiClient;
 import elite.intel.ai.search.edsm.dto.SystemBodiesDto;
 import elite.intel.ai.search.edsm.dto.data.BodyData;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.VoiceProcessEvent;
 import elite.intel.gameapi.journal.events.ApproachBodyEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
@@ -37,7 +38,7 @@ public class ApproachBodySubscriber {
         currentLocation.setStarName(event.getStarSystem());
         currentLocation.setPlanetName(event.getBody());
 
-        StellarObjectDto stellarObjectDto = playerSession.getStellarObjects().get(event.getBody());
+        StellarObjectDto stellarObjectDto = playerSession.getStellarObject(event.getBody());
         SystemBodiesDto systemBodiesDto = EdsmApiClient.searchSystemBodies(currentSystem);
 
         boolean hasBodiesData = systemBodiesDto.getData() != null
@@ -59,7 +60,6 @@ public class ApproachBodySubscriber {
             sb.append(" No data available for ").append(event.getBody()).append(".");
             sb.append(" Check gravity and temperature data before landing");
         }
-
         playerSession.setCurrentLocation(currentLocation);
         EventBusManager.publish(new VoiceProcessEvent(sb.toString()));
     }
@@ -69,13 +69,13 @@ public class ApproachBodySubscriber {
         double surfaceGravity = formatDouble(stellarObjectDto.getSurfaceGravity());
         currentLocation.setGravity(surfaceGravity);
 
-        sb.append(" Surface Gravity: ").append(surfaceGravity).append("G ");
+        sb.append(" Surface Gravity: ").append(surfaceGravity).append("G. ");
         if (surfaceGravity > 1) {
             sb.append(" Gravity Warning!!! ");
         }
         if (!"None".equalsIgnoreCase(stellarObjectDto.getAtmosphere())) {
             sb.append(" Atmosphere: ").append(stellarObjectDto.getAtmosphere());
-            sb.append(".");
+            sb.append(". ");
         }
         List<MaterialDto> materials = stellarObjectDto.getMaterials();
         if (materials != null && !materials.isEmpty()) {
@@ -87,7 +87,7 @@ public class ApproachBodySubscriber {
         sb.append(".");
         double surfaceTemperature = stellarObjectDto.getSurfaceTemperature();
         currentLocation.setSurfaceTemperature(surfaceTemperature);
-        sb.append(" Surface Temperature: ").append(surfaceTemperature).append(" K");
+        sb.append(" Surface Temperature: ").append(surfaceTemperature).append(" K. ");
         if (stellarObjectDto.isTidalLocked()) sb.append(" The planet is tidally locked. ");
     }
 
@@ -95,14 +95,13 @@ public class ApproachBodySubscriber {
     private void extractDataFromEdsm(BodyData bodyData, LocationDto currentLocation, StringBuilder sb) {
         double gravity = formatDouble(bodyData.getGravity());
         currentLocation.setGravity(gravity);
-        sb.append(" Surface Gravity: ").append(gravity).append("G, ");
+        sb.append(" Surface Gravity: ").append(gravity).append("G. ");
         if (gravity > 1) {
             sb.append(" Gravity Warning!!! ");
         }
         int surfaceTemperatureKelvin = bodyData.getSurfaceTemperature();
         currentLocation.setSurfaceTemperature(surfaceTemperatureKelvin);
-        int surfaceTemperatureCelsius = (int) (surfaceTemperatureKelvin - 273.15);
-        sb.append(" Surface Temperature: ").append(surfaceTemperatureKelvin).append(" Kelvin,").append(" or ").append(surfaceTemperatureCelsius).append(" Celsius. ");
+        sb.append(" Surface Temperature: ").append(surfaceTemperatureKelvin).append(" K.");
         if (bodyData.getAtmosphereType() != null && !bodyData.getAtmosphereType().isEmpty()) {
             sb.append(" Atmosphere: ").append(bodyData.getAtmosphereType());
             sb.append(". ");

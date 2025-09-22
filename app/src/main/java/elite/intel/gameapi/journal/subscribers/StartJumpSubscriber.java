@@ -37,6 +37,9 @@ public class StartJumpSubscriber {
             playerSession.setCurrentLocation(new LocationDto());
             playerSession.clearBioSamples();
             playerSession.clearMiningTargets();
+            playerSession.clearStellarObjects();
+            playerSession.getRoute().remove(jumpingTo);
+            playerSession.saveSession();
             EventBusManager.publish(new SensorDataEvent(sb.toString()));
         }
 

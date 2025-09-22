@@ -11,7 +11,7 @@ public class AnalyzeLastScanHandler  extends BaseQueryAnalyzer implements QueryH
 
         PlayerSession playerSession = PlayerSession.getInstance();
         Object scan = playerSession.get(PlayerSession.LAST_SCAN);
-        Object signals = playerSession.getCurrentLocation().getSignals();
+        Object signals = playerSession.getCurrentLocation().getSaaSignals();
         DataDto dataDto = new DataDto(String.valueOf(scan), String.valueOf(signals));
 
         String data = scan != null ? dataDto.toJson() : null;

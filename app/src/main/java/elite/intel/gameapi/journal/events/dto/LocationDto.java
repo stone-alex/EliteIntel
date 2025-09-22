@@ -1,10 +1,8 @@
 package elite.intel.gameapi.journal.events.dto;
 
-import com.google.gson.annotations.SerializedName;
 import elite.intel.ai.search.edsm.dto.DeathsDto;
 import elite.intel.ai.search.edsm.dto.TrafficDto;
 import elite.intel.ai.search.edsm.dto.data.BodyData;
-import elite.intel.gameapi.journal.events.LocationEvent;
 import elite.intel.gameapi.journal.events.SAASignalsFoundEvent;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
@@ -139,16 +137,20 @@ public class LocationDto implements ToJsonConvertible {
         this.planetData = planetData;
     }
 
-    public List<SAASignalsFoundEvent.Signal> getSignals() {
+    public List<SAASignalsFoundEvent.Signal> getSaaSignals() {
         return signals;
     }
 
-    public void addSignals(List<SAASignalsFoundEvent.Signal> signals) {
+    public void addSaaSignals(List<SAASignalsFoundEvent.Signal> signals) {
         this.signals.addAll(signals);
     }
 
     public List<SAASignalsFoundEvent.Genus> getGenus() {
         return genus;
+    }
+
+    public void clearGenus() {
+        this.genus.clear();
     }
 
     public void setGenus(List<SAASignalsFoundEvent.Genus> genus) {
@@ -189,16 +191,16 @@ public class LocationDto implements ToJsonConvertible {
     }
 
 
-    public void setSignals(List<SAASignalsFoundEvent.Signal> signals) {
-        this.signals = signals;
+    public void clearSaaSignals() {
+        this.signals.clear();
     }
 
     public void setCompletedBioScans(List<BioSampleDto> completedBioScans) {
         this.completedBioScans = completedBioScans;
     }
 
-    public void setDetectedSignals(Set<String> detectedSignals) {
-        this.detectedSignals = detectedSignals;
+    public void clearDetectedSignals() {
+        this.detectedSignals.clear();
     }
 
     public String getStationName() {

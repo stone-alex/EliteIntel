@@ -17,7 +17,7 @@ public class SAASignalsFoundSubscriber {
         PlayerSession playerSession = PlayerSession.getInstance();
 
         LocationDto currentLocation = playerSession.getCurrentLocation();
-        currentLocation.addSignals(event.getSignals());
+        currentLocation.addSaaSignals(event.getSignals());
 
         List<SAASignalsFoundEvent.Signal> signals = event.getSignals();
         int signalsFound = signals != null ? signals.size() : 0;

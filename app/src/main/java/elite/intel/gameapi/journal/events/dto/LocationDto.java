@@ -20,6 +20,7 @@ public class LocationDto implements ToJsonConvertible {
     private String security;
     private String government;
     private String planetName="";
+    private String planetShortName="";
     BodyData planetData;
     List<SAASignalsFoundEvent.Signal> signals = new ArrayList<>();
     List<SAASignalsFoundEvent.Genus> genus = new ArrayList<>();
@@ -403,6 +404,15 @@ public class LocationDto implements ToJsonConvertible {
 
     public Map<String, Double> getMaterials() {
         return materials;
+    }
+
+
+    public String getPlanetShortName() {
+        return planetShortName;
+    }
+
+    public void setPlanetShortName(String planetShortName) {
+        this.planetShortName = planetShortName;
     }
 
     @Override

@@ -17,11 +17,13 @@ import elite.intel.util.DaftSecretarySanitizer;
 import java.io.IOException;
 import java.util.List;
 
+import static elite.intel.util.StringUtls.capitalizeWords;
+
 public class FindCommodityHandler implements CommandHandler {
 
     @Override public void handle(JsonObject params, String responseText) {
         JsonElement jsonElement = params.get("commodity");
-        String commodity = DaftSecretarySanitizer.capitalizeWords(jsonElement.getAsJsonPrimitive().getAsString().replace("\"", ""));
+        String commodity = capitalizeWords(jsonElement.getAsJsonPrimitive().getAsString().replace("\"", ""));
 
         PlayerSession playerSession = PlayerSession.getInstance();
 

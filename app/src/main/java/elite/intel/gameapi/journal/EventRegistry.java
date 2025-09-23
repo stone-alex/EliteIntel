@@ -30,6 +30,7 @@ public class EventRegistry {
     private static final long THRESHOLD_LONG = 60000; // 60 seconds
 
     static {
+        registerEvent("SellOrganicData", SellOrganicDataEvent.class);
         registerEvent("MultiSellExplorationData", MultiSellExplorationDataEvent.class);
         registerEvent("CodexEntry", CodexEntryEvent.class);
         registerEvent("SupercruiseEntry", SupercruiseEntryEvent.class);

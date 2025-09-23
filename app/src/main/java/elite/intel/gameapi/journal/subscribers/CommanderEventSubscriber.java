@@ -7,6 +7,7 @@ import elite.intel.session.PlayerSession;
 import elite.intel.util.DaftSecretarySanitizer;
 
 import static elite.intel.session.PlayerSession.PLAYER_NAME;
+import static elite.intel.util.StringUtls.capitalizeWords;
 
 @SuppressWarnings("unused")
 public class CommanderEventSubscriber {
@@ -19,6 +20,6 @@ public class CommanderEventSubscriber {
         String inGameName = event.getName();
         String alternativeName = configManager.getPlayerKey(ConfigManager.PLAYER_ALTERNATIVE_NAME);
 
-        session.put(PLAYER_NAME, DaftSecretarySanitizer.capitalizeWords(alternativeName != null || !alternativeName.isEmpty() ? alternativeName : inGameName));
+        session.put(PLAYER_NAME, capitalizeWords(alternativeName != null || !alternativeName.isEmpty() ? alternativeName : inGameName));
     }
 }

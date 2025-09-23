@@ -18,8 +18,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import static elite.intel.util.StringUtls.subtractString;
+
 @SuppressWarnings("unused")
 public class ScanEventSubscriber {
+
 
     private static final Logger log = LogManager.getLogger(ScanEventSubscriber.class);
     private static final Set<String> valuablePlanetClasses = Set.of(
@@ -31,7 +34,7 @@ public class ScanEventSubscriber {
             "helium gas giant",
             "class v gas giant",
             "class iv gas giant",
-            "class ii gas giant",
+            "sudarsky class ii gas giant",
             "gas giant with water-based life"
     );
 
@@ -45,12 +48,16 @@ public class ScanEventSubscriber {
         boolean wasDiscovered = event.isWasDiscovered();
         boolean wasMapped = event.isWasMapped();
 
+        String shortName = subtractString(event.getBodyName(), event.getStarSystem());
+
+
         if ("Detailed".equalsIgnoreCase(event.getScanType())) {
 
             Double gravity = GravityCalculator.calculateSurfaceGravity(event.getMassEM(), event.getRadius());
             //data for discovery missions - detailed scans
             StellarObjectDto stellarObject = new StellarObjectDto();
             stellarObject.setName(event.getBodyName());
+            stellarObject.setShortName(shortName);
             if(gravity != null) stellarObject.setGravity(gravity); //DO NOT use event.getSurfaceGravity() as it is not accurate
             stellarObject.setMassEM(event.getMassEM());
             stellarObject.setRadius(event.getRadius());
@@ -74,7 +81,7 @@ public class ScanEventSubscriber {
             if (!wasDiscovered) {
                 //new discovery NOTE: this might be a bit too much. check in game
                 if (event.getTerraformState()!= null && !event.getTerraformState().isEmpty()) {
-                    EventBusManager.publish(new SensorDataEvent("New Terraformable planet: " + event.getBodyName() + " Details: " + event.toJson()));
+                    EventBusManager.publish(new SensorDataEvent("New Terraformable planet: " + shortName + " Details: " + event.toJson()));
                 } else if(valuablePlanetClasses.contains(event.getPlanetClass().toLowerCase())){
                     EventBusManager.publish(new SensorDataEvent("New discovery logged: " + event.getPlanetClass()));
                 } else {
@@ -87,14 +94,14 @@ public class ScanEventSubscriber {
 
             boolean isStar = event.getDistanceFromArrivalLS() == 0 && event.getSurfaceTemperature() > 2000;
             if (!isStar) {
-                boolean isBeltCluster = event.getBodyName().contains("Belt Cluster");
+                boolean isBeltCluster = shortName.contains("Belt Cluster");
                 if (wasDiscovered && !wasMapped && !isBeltCluster) {
-                    EventBusManager.publish(new SensorDataEvent(event.getBodyName() + " was previously discovered, but not mapped. "));
+                    EventBusManager.publish(new SensorDataEvent(shortName + " was previously discovered, but not mapped. "));
                 } else if (!wasDiscovered && !isBeltCluster) {
                     boolean hasMats = event.getMaterials() != null && !event.getMaterials().isEmpty();
                     boolean isTerraformable = event.getTerraformState()!= null && !event.getTerraformState().isEmpty();
                     boolean isLandable = event.isLandable();
-                    String sensorData = "New discovery: " + event.getBodyName() + ". "
+                    String sensorData = "New discovery: " + shortName + ". "
                             + (hasMats ? " materials detected: " : "")
                             + (isTerraformable ? " terraformable: " : event.getTerraformState())
                             + (isLandable ? " landable " : ". ");
@@ -103,7 +110,11 @@ public class ScanEventSubscriber {
                 }
             } else if (!wasDiscovered) {
                 EventBusManager.publish(new SensorDataEvent("New star system discovered!"));
+            } else {
+                EventBusManager.publish(new SensorDataEvent("Previously discovered!"));
             }
         }
     }
+    
+    
 }

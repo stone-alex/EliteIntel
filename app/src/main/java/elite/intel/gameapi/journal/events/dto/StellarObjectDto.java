@@ -9,6 +9,7 @@ import java.util.List;
 public class StellarObjectDto implements ToJsonConvertible {
 
     private String name;
+    private String shortName;
     private double surfaceGravity;
     private double surfaceTemperature;
     private boolean isLandable;
@@ -111,6 +112,14 @@ public class StellarObjectDto implements ToJsonConvertible {
 
     public void setMassEM(double massEM) {
         this.massEM = massEM;
+    }
+
+    public String getShortName() {
+        return shortName;
+    }
+
+    public void setShortName(String shortName) {
+        this.shortName = shortName;
     }
 }
 

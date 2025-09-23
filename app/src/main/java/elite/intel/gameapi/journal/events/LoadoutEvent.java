@@ -131,16 +131,16 @@ public class LoadoutEvent extends BaseEvent {
 
     public static class FuelCapacity {
         @SerializedName("Main")
-        private float main;
+        private double main;
 
         @SerializedName("Reserve")
-        private float reserve;
+        private double reserve;
 
-        public float getMain() {
+        public double getMain() {
             return main;
         }
 
-        public float getReserve() {
+        public double getReserve() {
             return reserve;
         }
     }

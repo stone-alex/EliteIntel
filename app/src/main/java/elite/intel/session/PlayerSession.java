@@ -295,7 +295,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     }
 
 
-    public void onCarrierStats(CarrierStatsEvent event) {
+    public void setCarrierStats(CarrierStatsEvent event) {
         CarrierStatsEvent.Finance finance = event.getFinance();
         CarrierDataDto carrierData = new CarrierDataDto();
         carrierData.setCallSign(event.getCallsign());
@@ -419,6 +419,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
 
     public void setCarrierData(CarrierDataDto carrierData) {
         this.carrierData = carrierData;
+        saveSession();
     }
 
     public Set<String> getMiningTargets() {

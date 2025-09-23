@@ -9,6 +9,6 @@ public class CarrierStatsSubscriber {
     @Subscribe
     public void onCarrierStatsEvent(CarrierStatsEvent event) {
         PlayerSession playerSession = PlayerSession.getInstance();
-        playerSession.onCarrierStats(event);
+        playerSession.setCarrierStats(event);
     }
 }

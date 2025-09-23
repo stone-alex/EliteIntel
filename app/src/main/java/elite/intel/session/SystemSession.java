@@ -9,8 +9,6 @@ import elite.intel.ai.brain.AIPersonality;
 import elite.intel.ai.mouth.AiVoices;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.LoadGameEvent;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager; 
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +25,7 @@ import java.util.Map;
  * - Maintaining and modifying the chat history.
  * - Supporting streaming mode and resetting session data on shutdown or specific events.
  */
-public class SystemSession extends SessionPersistence implements java.io.Serializable{
+public class SystemSession extends SessionPersistence implements java.io.Serializable {
     private static final SystemSession INSTANCE = new SystemSession();
     private static final String SESSION_FILE = "system_session.json";
 
@@ -42,7 +40,6 @@ public class SystemSession extends SessionPersistence implements java.io.Seriali
 
     public final static String RMS_THRESHOLD_HIGH = "RMS_THRESHOLD_HIGH";
     public final static String RMS_THRESHOLD_LOW = "RMS_THRESHOLD_LOW";
-
 
 
     private SystemSession() {

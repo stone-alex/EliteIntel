@@ -175,7 +175,7 @@ class SessionPersistence {
             jsonConsumer.accept(json);
             log.debug("Loaded session from: {}", file.getPath());
         } catch (IOException | JsonSyntaxException e) {
-            log.error("Failed to load session from {}: {}", file.getPath(), e.getMessage(), e);
+            // retry
         }
     }
 

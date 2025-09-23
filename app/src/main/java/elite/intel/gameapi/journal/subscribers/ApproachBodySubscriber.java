@@ -12,10 +12,13 @@ import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.gameapi.journal.events.dto.MaterialDto;
 import elite.intel.gameapi.journal.events.dto.StellarObjectDto;
 import elite.intel.session.PlayerSession;
+import elite.intel.util.StringUtls;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import static elite.intel.util.StringUtls.subtractString;
 
 public class ApproachBodySubscriber {
     private static double formatDouble(double value) {
@@ -37,6 +40,7 @@ public class ApproachBodySubscriber {
 
         currentLocation.setStarName(event.getStarSystem());
         currentLocation.setPlanetName(event.getBody());
+        currentLocation.setPlanetShortName(subtractString(event.getBody(), event.getStarSystem()));
 
         StellarObjectDto stellarObjectDto = playerSession.getStellarObject(event.getBody());
         SystemBodiesDto systemBodiesDto = EdsmApiClient.searchSystemBodies(currentSystem);

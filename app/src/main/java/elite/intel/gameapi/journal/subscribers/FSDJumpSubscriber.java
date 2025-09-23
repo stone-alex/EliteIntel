@@ -50,7 +50,7 @@ public class FSDJumpSubscriber {
 
         StringBuilder sb = new StringBuilder();
         sb.append(" Hyperspace Jump Successful: ");
-        sb.append(" We are in: ").append(currentStarSystem).append(" system, ");
+        //sb.append(" We are in: ").append(currentStarSystem).append(" system, ");
 
         List<NavRouteDto> orderedRoute = playerSession.getOrderedRoute();
         boolean roueSet = !orderedRoute.isEmpty();

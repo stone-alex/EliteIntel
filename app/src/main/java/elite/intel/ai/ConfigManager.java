@@ -52,7 +52,6 @@ public class ConfigManager {
     public static final String PLAYER_MISSION_STATEMENT = "mission_statement";
     public static final String PLAYER_CUSTOM_TITLE = "title";
     public static final String PLAYER_ALTERNATIVE_NAME = "alternative_name";
-    public static final String PLAYER_EDSM_KEY = "edsm_key";
     public static final String JOURNAL_DIR = "journal_dir";
     public static final String BINDINGS_DIR = "bindings_dir";
     public static final String DEBUG_SWITCH = "logging_enabled";

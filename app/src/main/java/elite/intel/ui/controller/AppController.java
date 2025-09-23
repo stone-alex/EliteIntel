@@ -27,6 +27,7 @@ import java.util.Map;
 
 import static elite.intel.session.PlayerSession.PLAYER_MISSION_STATEMENT;
 import static elite.intel.ui.view.AppView.*;
+import static elite.intel.util.StringUtls.capitalizeWords;
 
 /**
  * The AppController class acts as the primary controller in the Model-View-Controller (MVC)
@@ -173,8 +174,8 @@ public class AppController implements AppControllerInterface, ActionListener {
             model.appendLog(
                     systemSession.getAIVoice().getName() +
                             " is listening to you... AI is set to "
-                            + DaftSecretarySanitizer.capitalizeWords(systemSession.getAICadence().name()) + " "
-                            + DaftSecretarySanitizer.capitalizeWords(systemSession.getAIPersonality().name())
+                            + capitalizeWords(systemSession.getAICadence().name()) + " "
+                            + capitalizeWords(systemSession.getAIPersonality().name())
             );
             model.appendLog("Available voices: " + listVoices());
             model.appendLog("Available personalities: " + listPersonalities());
@@ -202,7 +203,7 @@ public class AppController implements AppControllerInterface, ActionListener {
         AiVoices[] voices = AiVoices.values();
         sb.append("[");
         for (AiVoices voice : voices) {
-            sb.append(DaftSecretarySanitizer.capitalizeWords(voice.name())).append(", ");
+            sb.append(capitalizeWords(voice.name())).append(", ");
         }
         sb.append("]");
         return sb.toString().replace(", ]", "]");
@@ -213,7 +214,7 @@ public class AppController implements AppControllerInterface, ActionListener {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
         for (AIPersonality personality : personalities) {
-            sb.append(DaftSecretarySanitizer.capitalizeWords(personality.name())).append(", ");
+            sb.append(capitalizeWords(personality.name())).append(", ");
         }
         sb.append("]");
         return sb.toString().replace(", ]", "]");
@@ -224,7 +225,7 @@ public class AppController implements AppControllerInterface, ActionListener {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
         for (AICadence cadence : cadences) {
-            sb.append(DaftSecretarySanitizer.capitalizeWords(cadence.name())).append(", ");
+            sb.append(capitalizeWords(cadence.name())).append(", ");
         }
         sb.append("]");
         return sb.toString().replace(", ]", "]");

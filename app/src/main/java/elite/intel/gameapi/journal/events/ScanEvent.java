@@ -407,7 +407,6 @@ public class ScanEvent extends BaseEvent {
                 .add("timestamp='" + timestamp + "'")
                 .add("eventName='" + eventName + "'")
                 .add("endOfLife=" + endOfLife)
-                .add("isProcessed=" + isProcessed)
                 .toString();
     }
 }

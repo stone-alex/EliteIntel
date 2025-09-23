@@ -72,7 +72,6 @@ public class LaunchDroneEvent extends BaseEvent {
         return new StringJoiner(", ", LaunchDroneEvent.class.getSimpleName() + "[", "]")
                 .add("timestamp='" + timestamp + "'")
                 .add("endOfLife=" + endOfLife)
-                .add("isProcessed=" + isProcessed)
                 .toString();
     }
 }

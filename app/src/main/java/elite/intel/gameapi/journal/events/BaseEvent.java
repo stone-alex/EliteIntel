@@ -14,13 +14,11 @@ public abstract class BaseEvent implements ToJsonConvertible {
     public String timestamp;
     public String eventName;
     public Instant endOfLife;
-    public boolean isProcessed;
 
     public BaseEvent(String timestamp,  Duration ttl, String eventName) {
         this.eventName = eventName;
         this.timestamp = timestamp;
         this.endOfLife = Instant.parse(timestamp).plus(ttl);
-        this.isProcessed = false;
     }
 
     public boolean isExpired() {
@@ -38,14 +36,6 @@ public abstract class BaseEvent implements ToJsonConvertible {
 
     public Instant getEndOfLife() {
         return endOfLife;
-    }
-
-    public boolean isProcessed() {
-        return isProcessed;
-    }
-
-    public void setProcessed(boolean processed) {
-        isProcessed = processed;
     }
 
     public String getEventName() {

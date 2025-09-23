@@ -27,13 +27,11 @@ import java.util.Map;
  * - Maintaining and modifying the chat history.
  * - Supporting streaming mode and resetting session data on shutdown or specific events.
  */
-public class SystemSession {
-    private static final Logger LOG = LogManager.getLogger(SystemSession.class);
-
-    public static final String RADION_TRANSMISSION_ON_OFF = "radio_transmission_on_off";
+public class SystemSession extends SessionPersistence implements java.io.Serializable{
+    private static final SystemSession INSTANCE = new SystemSession();
     private static final String SESSION_FILE = "system_session.json";
 
-    private static final SystemSession INSTANCE = new SystemSession();
+    public static final String RADION_TRANSMISSION_ON_OFF = "radio_transmission_on_off";
     private final Map<String, Object> state = new HashMap<>();
 
     private AiVoices aiVoice;
@@ -41,7 +39,6 @@ public class SystemSession {
     private AICadence aiCadence;
     private JsonArray chatHistory = new JsonArray();
     private boolean isStreamingModeOn = false;
-    private final SessionPersistence persistence = new SessionPersistence();
 
     public final static String RMS_THRESHOLD_HIGH = "RMS_THRESHOLD_HIGH";
     public final static String RMS_THRESHOLD_LOW = "RMS_THRESHOLD_LOW";
@@ -49,12 +46,12 @@ public class SystemSession {
 
 
     private SystemSession() {
-        persistence.ensureFileAndDirectoryExist(SESSION_FILE);
-        persistence.registerField("aiVoice", this::getAIVoice, this::setAIVoice, AiVoices.class);
-        persistence.registerField("aiPersonality", this::getAIPersonality, this::setAIPersonality, AIPersonality.class);
-        persistence.registerField("aiCadence", this::getAICadence, this::setAICadence, AICadence.class);
-        persistence.registerField("chatHistory", this::getChatHistory, this::setChatHistory, JsonArray.class);
-        persistence.registerField("isPrivacyModeOn", this::isStreamingModeOn, this::setStreamingMode, Boolean.class);
+        ensureFileAndDirectoryExist(SESSION_FILE);
+        registerField("aiVoice", this::getAIVoice, this::setAIVoice, AiVoices.class);
+        registerField("aiPersonality", this::getAIPersonality, this::setAIPersonality, AIPersonality.class);
+        registerField("aiCadence", this::getAICadence, this::setAICadence, AICadence.class);
+        registerField("chatHistory", this::getChatHistory, this::setChatHistory, JsonArray.class);
+        registerField("isPrivacyModeOn", this::isStreamingModeOn, this::setStreamingMode, Boolean.class);
         EventBusManager.register(this);
         loadSavedStateFromDisk();
         addShutdownHook();
@@ -69,13 +66,13 @@ public class SystemSession {
     }
 
     public void saveSession() {
-        persistence.saveSession(state);
+        saveSession(state);
     }
 
     private void loadSavedStateFromDisk() {
-        persistence.loadSession(json -> {
+        loadSession(json -> {
             if (json != null) {
-                persistence.loadFields(json, state);
+                loadFields(json, state);
             }
         });
     }

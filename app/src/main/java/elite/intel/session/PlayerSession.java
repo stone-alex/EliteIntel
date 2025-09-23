@@ -18,9 +18,8 @@ import java.util.*;
  * The class handles persistence of session data, including player's progress,
  * gameplay metrics, and interactions within the game world.
  */
-public class PlayerSession {
+public class PlayerSession extends SessionPersistence implements java.io.Serializable {
     private static final PlayerSession INSTANCE = new PlayerSession();
-    private final SessionPersistence persistence = new SessionPersistence();
 
     ///
     public static final String CARRIER_DEPARTURE_TIME="carrier_departure_time";
@@ -100,62 +99,62 @@ public class PlayerSession {
 
 
     private PlayerSession() {
-        persistence.ensureFileAndDirectoryExist("player_session.json");
+        ensureFileAndDirectoryExist("player_session.json");
         loadSavedStateFromDisk();
         state.put(FRIENDS_STATUS, new HashMap<String, String>());
-        persistence.registerField(SHIP_SCANS, this::getShipScans, v -> {
+        registerField(SHIP_SCANS, this::getShipScans, v -> {
             shipScans.clear();
             shipScans.putAll((Map<String, String>) v);
         }, new TypeToken<Map<String, String>>() {
         }.getType());
-        persistence.registerField(MISSIONS, this::getMissions, v -> {
+        registerField(MISSIONS, this::getMissions, v -> {
             missions.clear();
             missions.putAll((Map<Long, MissionDto>) v);
         }, new TypeToken<Map<Long, MissionDto>>() {
         }.getType());
-        persistence.registerField(ROUTE_MAP, this::getRoute, v -> {
+        registerField(ROUTE_MAP, this::getRoute, v -> {
             routeMap.clear();
             routeMap.putAll((Map<Integer, NavRouteDto>) v);
         }, new TypeToken<Map<String, NavRouteDto>>() {
         }.getType());
 
-        persistence.registerField(TARGET_FACTIONS, this::getTargetFactions, v -> {
+        registerField(TARGET_FACTIONS, this::getTargetFactions, v -> {
             targetFactions.clear();
             targetFactions.addAll((Set<String>) v);
         }, new TypeToken<Set<String>>() {
         }.getType());
 
-        persistence.registerField(BOUNTIES, this::getBounties, v -> {
+        registerField(BOUNTIES, this::getBounties, v -> {
             bounties.clear();
             bounties.addAll((Set<BountyDto>) v);
         }, new TypeToken<Set<BountyDto>>() {
         }.getType());
 
-        persistence.registerField(STELLAR_OBJECTS, this::getStellarObjects, v -> {
+        registerField(STELLAR_OBJECTS, this::getStellarObjects, v -> {
             stellarObjects.clear();
             stellarObjects.putAll((Map<String, StellarObjectDto>) v);
         }, new TypeToken<Map<String, StellarObjectDto>>() {
         }.getType());
 
-        persistence.registerField(MINING_TARGETS, this::getMiningTargets, v -> {
+        registerField(MINING_TARGETS, this::getMiningTargets, v -> {
             miningTargets.clear();
             miningTargets.addAll((Set<String>) v);
         }, new TypeToken<Set<String>>() {}.getType());
 
-        persistence.registerField("markets", this::getMarkets, this::setMarkets, new TypeToken<List<StationMarket>>(){}.getType());
-        persistence.registerField(BIO_SAMPLES, this::getBioSamples, this::setBioSamples, new TypeToken<List<BioSampleDto>>(){}.getType() );
+        registerField("markets", this::getMarkets, this::setMarkets, new TypeToken<List<StationMarket>>(){}.getType());
+        registerField(BIO_SAMPLES, this::getBioSamples, this::setBioSamples, new TypeToken<List<BioSampleDto>>(){}.getType() );
 
-        persistence.registerField(CURRENT_LOCATION, this::getCurrentLocation, this::setCurrentLocation, LocationDto.class);
-        persistence.registerField(HOME_SYSTEM, this::getHomeSystem, this::setHomeSystem, LocationDto.class);
-        persistence.registerField(SHIP_LOADOUT, this::getShipLoadout, this::setShipLoadout, new TypeToken<LoadoutEvent>(){}.getType() );
-        persistence.registerField(STATUS, this::getStatus, this::setStatus, GameEvents.StatusEvent.class);
-        persistence.registerField(SHIP_CARGO, this::getShipCargo, this::setShipCargo, GameEvents.CargoEvent.class);
-        persistence.registerField(REPUTATION, this::getReputation, this::setReputation, ReputationEvent.class);
+        registerField(CURRENT_LOCATION, this::getCurrentLocation, this::setCurrentLocation, LocationDto.class);
+        registerField(HOME_SYSTEM, this::getHomeSystem, this::setHomeSystem, LocationDto.class);
+        registerField(SHIP_LOADOUT, this::getShipLoadout, this::setShipLoadout, new TypeToken<LoadoutEvent>(){}.getType() );
+        registerField(STATUS, this::getStatus, this::setStatus, GameEvents.StatusEvent.class);
+        registerField(SHIP_CARGO, this::getShipCargo, this::setShipCargo, GameEvents.CargoEvent.class);
+        registerField(REPUTATION, this::getReputation, this::setReputation, ReputationEvent.class);
 
 
-        persistence.registerField("bountyCollectedThisSession", this::getBountyCollectedThisSession, this::setBountyCollectedThisSession, Long.class);
-        persistence.registerField("rankAndProgressDto", this::getRankAndProgressDto, this::setRankAndProgressDto, RankAndProgressDto.class);
-        persistence.registerField(CARRIER_STATS, this::getCarrierData, this::setCarrierData, CarrierDataDto.class);
+        registerField("bountyCollectedThisSession", this::getBountyCollectedThisSession, this::setBountyCollectedThisSession, Long.class);
+        registerField("rankAndProgressDto", this::getRankAndProgressDto, this::setRankAndProgressDto, RankAndProgressDto.class);
+        registerField(CARRIER_STATS, this::getCarrierData, this::setCarrierData, CarrierDataDto.class);
         EventBusManager.register(this);
         addShutdownHook();
     }
@@ -169,11 +168,11 @@ public class PlayerSession {
     }
 
     public void saveSession() {
-        persistence.saveSession(state);
+        saveSession(state);
     }
 
     private void loadSavedStateFromDisk() {
-        persistence.loadSession(json -> persistence.loadFields(json, state));
+        loadSession(json -> loadFields(json, state));
     }
 
     public void putShipScan(String shipName, String scan) {

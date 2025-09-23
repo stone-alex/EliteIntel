@@ -17,6 +17,8 @@ public class StellarObjectDto implements ToJsonConvertible {
     List<MaterialDto> materials = new ArrayList<>();
     private boolean isTidalLocked;
     private String atmosphere;
+    private double radius;
+    private double massEM;
 
     @Override public String toJson() {
         return GsonFactory.getGson().toJson(this);
@@ -93,6 +95,22 @@ public class StellarObjectDto implements ToJsonConvertible {
 
     public String getAtmosphere() {
         return atmosphere;
+    }
+
+    public double getRadius() {
+        return radius;
+    }
+
+    public void setRadius(double radius) {
+        this.radius = radius;
+    }
+
+    public double getMassEM() {
+        return massEM;
+    }
+
+    public void setMassEM(double massEM) {
+        this.massEM = massEM;
     }
 }
 

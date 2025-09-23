@@ -18,6 +18,7 @@ public class SAASignalsFoundSubscriber {
 
         LocationDto currentLocation = playerSession.getCurrentLocation();
         currentLocation.addSaaSignals(event.getSignals());
+        playerSession.setCurrentLocation(currentLocation);
 
         List<SAASignalsFoundEvent.Signal> signals = event.getSignals();
         int signalsFound = signals != null ? signals.size() : 0;
@@ -36,6 +37,7 @@ public class SAASignalsFoundSubscriber {
 
             if (liveSignals > 0) {
                 currentLocation.setGenus(event.getGenuses());
+                playerSession.setCurrentLocation(currentLocation);
                 for (SAASignalsFoundEvent.Genus genus : event.getGenuses()) {
                     sb.append(" ");
                     sb.append(genus.getGenusLocalised());
@@ -47,6 +49,5 @@ public class SAASignalsFoundSubscriber {
         } else {
             EventBusManager.publish(new SensorDataEvent("No Signal(s) detected."));
         }
-        playerSession.setCurrentLocation(currentLocation);
     }
 }

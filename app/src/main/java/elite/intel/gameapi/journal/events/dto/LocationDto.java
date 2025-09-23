@@ -19,7 +19,7 @@ public class LocationDto implements ToJsonConvertible {
     private String allegiance;
     private String security;
     private String government;
-    private String planetName;
+    private String planetName="";
     BodyData planetData;
     List<SAASignalsFoundEvent.Signal> signals;
     List<SAASignalsFoundEvent.Genus> genus;

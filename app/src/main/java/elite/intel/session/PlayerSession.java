@@ -4,11 +4,10 @@ import com.google.common.eventbus.Subscribe;
 import com.google.gson.reflect.TypeToken;
 import elite.intel.ai.search.spansh.market.StationMarket;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.gameapi.gamestate.events.GameEvents;
 import elite.intel.gameapi.gamestate.events.NavRouteDto;
 import elite.intel.gameapi.journal.events.*;
 import elite.intel.gameapi.journal.events.dto.*;
-import elite.intel.util.json.GsonFactory;
-import elite.intel.util.json.ToJsonConvertible;
 
 import java.util.*;
 
@@ -25,10 +24,10 @@ public class PlayerSession {
 
     ///
     public static final String CURRENT_SYSTEM_NAME = "current_system";
-    public static final String SHIP_LOADOUT_JSON = "ship_loadout_json";
+    public static final String SHIP_LOADOUT = "ship_loadout_json";
     public static final String SUITE_LOADOUT_JSON = "suite_loadout_json";
     public static final String FINAL_DESTINATION = "final_destination";
-    public static final String CURRENT_FUEL_STATUS = "current_status";
+    public static final String FUEL_STATUS = "current_status";
     public static final String FSD_TARGET = "fsd_target";
     public static final String SHIP_CARGO = "ship_cargo";
     public static final String MISSIONS = "player_missions";
@@ -36,7 +35,6 @@ public class PlayerSession {
     public static final String PROFILE = "profile";
     public static final String PERSONALITY = "personality";
     public static final String JUMPING_TO = "jumping_to_starsystem";
-    public static final String MATERIAL = "materials";
     public static final String LOCAL_MARKET_JSON = "local_market_json";
     public static final String LOCAL_OUTFITING_JSON = "local_outfiting_json";
     public static final String LOCAL_SHIP_YARD_JSON = "local_shipyard_json";
@@ -96,6 +94,8 @@ public class PlayerSession {
     private LocationDto homeSystem = new LocationDto();
     private CarrierDataDto carrierData = new CarrierDataDto();
     private List<BioSampleDto> bioSamples = new ArrayList<>();
+    private LoadoutEvent loadout;
+    private GameEvents.StatusEvent fuelStatus;
 
 
     private PlayerSession() {
@@ -147,6 +147,8 @@ public class PlayerSession {
         persistence.registerField(CURRENT_LOCATION, this::getCurrentLocation, this::setCurrentLocation, LocationDto.class);
         persistence.registerField(HOME_SYSTEM, this::getHomeSystem, this::setHomeSystem, LocationDto.class);
         persistence.registerField(PLAYER_STATUS, this::getStatus, this::setStatus, StatusDto.class);
+        persistence.registerField(SHIP_LOADOUT, this::getShipLoadout, this::setShipLoadout, new TypeToken<LoadoutEvent>(){}.getType() );
+        persistence.registerField(FUEL_STATUS, this::getFuelStatus, this::setFuelStatus, GameEvents.StatusEvent.class);
 
 
         persistence.registerField("bountyCollectedThisSession", this::getBountyCollectedThisSession, this::setBountyCollectedThisSession, Long.class);
@@ -486,6 +488,43 @@ public class PlayerSession {
 
     public void clearBioSamples() {
         this.bioSamples.clear();
+        saveSession();
+    }
+
+    public void setShipLoadout(LoadoutEvent event) {
+        this.loadout=event;
+        saveSession();
+    }
+
+    public LoadoutEvent getShipLoadout() {
+        return loadout;
+    }
+
+    public GameEvents.StatusEvent getFuelStatus(){
+        return this.fuelStatus;
+    }
+
+    public void setFuelStatus(GameEvents.StatusEvent event){
+        this.fuelStatus=event;
+        saveSession();
+    }
+
+    public void clearCash() {
+        this.stellarObjects.clear();
+        this.markets.clear();
+        this.bioSamples.clear();
+        this.shipScans.clear();
+        this.bounties.clear();
+        this.currentLocation = new LocationDto();
+        this.status = new StatusDto();
+        this.loadout = null;
+        this.bountyCollectedThisSession = 0;
+        this.rankAndProgressDto = new RankAndProgressDto();
+        this.carrierData = new CarrierDataDto();
+        this.targetFactions.clear();
+        this.missions.clear();
+        this.setShipLoadout(null);
+        this.
         saveSession();
     }
 }

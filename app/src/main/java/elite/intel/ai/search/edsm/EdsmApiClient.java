@@ -1,5 +1,6 @@
 package elite.intel.ai.search.edsm;
 
+import com.google.gson.JsonSyntaxException;
 import elite.intel.ai.search.edsm.dto.*;
 import elite.intel.ai.search.edsm.dto.data.*;
 import elite.intel.util.json.GsonFactory;
@@ -38,7 +39,11 @@ public class EdsmApiClient {
         if (response.isEmpty()) {
             data = new StarSystemData();
         } else {
-            data = GsonFactory.getGson().fromJson(response, StarSystemData.class);
+            try {
+                data = GsonFactory.getGson().fromJson(response, StarSystemData.class);
+            } catch (JsonSyntaxException e){
+                return new StarSystemDto();
+            }
         }
         StarSystemDto dto = new StarSystemDto();
         dto.data = data;

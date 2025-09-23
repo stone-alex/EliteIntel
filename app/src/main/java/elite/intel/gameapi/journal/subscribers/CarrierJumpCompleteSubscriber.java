@@ -62,6 +62,11 @@ public class CarrierJumpCompleteSubscriber {
             }
 
             playerSession.setCurrentLocation(currentLocation);
+            playerSession.clearBioSamples();
+            playerSession.clearStellarObjects();
+            playerSession.clearMarkets();
+            playerSession.clearMiningTargets();
+            playerSession.clearRoute();
         }
 
         EventBusManager.publish(new SensorDataEvent("Carrier Location: " + event.getStarSystem()));

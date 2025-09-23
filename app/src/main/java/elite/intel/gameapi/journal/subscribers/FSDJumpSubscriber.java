@@ -14,6 +14,10 @@ import elite.intel.gameapi.journal.events.FSDJumpEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 @SuppressWarnings("unused")
 public class FSDJumpSubscriber {
 
@@ -49,9 +53,9 @@ public class FSDJumpSubscriber {
         StringBuilder sb = new StringBuilder();
         sb.append(" Hyperspace Jump Successful: ");
         sb.append(" We are in: ").append(currentStarSystem).append(" system, ");
-        StarSystemDto systemDto = EdsmApiClient.searchStarSystem(currentStarSystem, 1);
 
-        boolean roueSet = !playerSession.getOrderedRoute().isEmpty();
+        List<NavRouteDto> orderedRoute = playerSession.getOrderedRoute();
+        boolean roueSet = !orderedRoute.isEmpty();
 
         if (finalDestination != null && finalDestination.equalsIgnoreCase(currentStarSystem)) {
             playerSession.clearRoute();
@@ -69,10 +73,23 @@ public class FSDJumpSubscriber {
 
         } else {
             if (roueSet) {
-                int remainingJump = playerSession.getOrderedRoute().size();
 
+                NavRouteDto currentSystemRoute = orderedRoute.stream()
+                        .filter(dto -> dto.getName().equalsIgnoreCase(playerSession.getCurrentLocation().getStarName()))
+                        .findFirst()
+                        .orElse(null);
+
+                Map<Integer, NavRouteDto> adjustedMap = new LinkedHashMap<>();
+                for( NavRouteDto dto : orderedRoute ) {
+                    if (dto.getLeg() > currentSystemRoute.getLeg() && !dto.getName().equalsIgnoreCase(currentSystemRoute.getName())) {
+                        adjustedMap.put(dto.getLeg(), dto);
+                    }
+                }
+
+                playerSession.setNavRoute(adjustedMap);
+                int remainingJump = adjustedMap.size();
                 if (remainingJump > 0) {
-                    playerSession.getOrderedRoute().stream().findFirst().ifPresent(
+                    orderedRoute.stream().findFirst().ifPresent(
                             nextStop -> sb.append(" Next stop: ").append(nextStop.toJson()).append(", ")
                     );
                 }

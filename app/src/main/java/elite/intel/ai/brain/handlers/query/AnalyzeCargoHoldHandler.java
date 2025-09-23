@@ -13,7 +13,7 @@ public class AnalyzeCargoHoldHandler extends BaseQueryAnalyzer implements QueryH
         String cargoAsString = cargo != null ? toJson(cargo) : "No cargo data available.";
 
 
-        Object loadout = playerSession.get(PlayerSession.SHIP_LOADOUT_JSON);
+        Object loadout = playerSession.get(PlayerSession.SHIP_LOADOUT);
         String loadoutAsString = loadout != null ? String.valueOf(loadout) : "Ship Loadout data is unavailable.";
         String data = new DataDto(loadoutAsString, cargoAsString).toJson();
 

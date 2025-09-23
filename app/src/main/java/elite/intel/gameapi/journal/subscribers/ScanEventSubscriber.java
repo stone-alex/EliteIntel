@@ -7,7 +7,10 @@ import elite.intel.gameapi.journal.events.ScanEvent;
 import elite.intel.gameapi.journal.events.dto.MaterialDto;
 import elite.intel.gameapi.journal.events.dto.StellarObjectDto;
 import elite.intel.session.PlayerSession;
+import elite.intel.util.GravityCalculator;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,10 +29,13 @@ public class ScanEventSubscriber {
 
         if ("Detailed".equalsIgnoreCase(event.getScanType())) {
 
+            Double gravity = GravityCalculator.calculateSurfaceGravity(event.getMassEM(), event.getRadius());
             //data for discovery missions - detailed scans
             StellarObjectDto stellarObject = new StellarObjectDto();
             stellarObject.setName(event.getBodyName());
-            stellarObject.setGravity(event.getSurfaceGravity());
+            if(gravity != null) stellarObject.setGravity(gravity); //DO NOT use event.getSurfaceGravity() as it is not accurate
+            stellarObject.setMassEM(event.getMassEM());
+            stellarObject.setRadius(event.getRadius());
             stellarObject.setSurfaceTemperature(event.getSurfaceTemperature());
             stellarObject.setLandable(event.isLandable());
             stellarObject.setPlanetClass(event.getPlanetClass());
@@ -50,6 +56,8 @@ public class ScanEventSubscriber {
                 //new discovery NOTE: this might be a bit too much. check in game
                 if (!event.getTerraformState().isEmpty()) {
                     EventBusManager.publish(new SensorDataEvent("New Terraformable planet: " + event.getBodyName() + " Details: " + event.toJson()));
+                } else {
+                    EventBusManager.publish(new SensorDataEvent("New discovery logged: " + event.getBodyName()));
                 }
             }
 

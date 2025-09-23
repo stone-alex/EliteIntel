@@ -24,7 +24,7 @@ public class RoutePlottedSubscriber {
             for (GameEvents.NavRouteEvent.RouteEntry entry : route.subList(1, route.size())) {
                 NavRouteDto dto = new NavRouteDto();
                 dto.setLeg(++leg);
-                dto.setRemainingJumps(totalJumps - leg - 1);
+                dto.setRemainingJumps(totalJumps - leg);
                 dto.setStarClass(entry.getStarClass());
                 dto.setName(entry.getStarSystem());
                 dto.setX(entry.getStarPos()[0]);
@@ -44,13 +44,20 @@ public class RoutePlottedSubscriber {
                     playerSession.put(PlayerSession.FINAL_DESTINATION, finalDestination.getName());
                 }
                 if(playerSession.getCurrentLocation() != null) {
-                    for (NavRouteDto navRouteDto : routeMap.values()) {
-                        if (navRouteDto.getName().equalsIgnoreCase(playerSession.getCurrentLocation().getStarName())) {
-                            routeMap.remove(navRouteDto.getLeg());
+                    NavRouteDto currentSystemRoute = routeMap.values().stream()
+                            .filter(dto -> dto.getName().equalsIgnoreCase(playerSession.getCurrentLocation().getStarName()))
+                            .findFirst()
+                            .orElse(null);
+
+                    Map<Integer, NavRouteDto> adjustedMap = new LinkedHashMap<>();
+                    for( NavRouteDto dto : routeMap.values() ) {
+                        if (dto.getLeg() > currentSystemRoute.getLeg() && !dto.getName().equalsIgnoreCase(currentSystemRoute.getName())) {
+                            adjustedMap.put(dto.getLeg(), dto);
                         }
                     }
+
+                    playerSession.setNavRoute(adjustedMap);
                 }
-                playerSession.setNavRoute(routeMap);
             } else {
                 playerSession.clearRoute();
             }

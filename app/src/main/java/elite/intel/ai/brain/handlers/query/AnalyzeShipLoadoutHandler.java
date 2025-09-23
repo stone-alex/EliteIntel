@@ -7,7 +7,7 @@ public class AnalyzeShipLoadoutHandler extends BaseQueryAnalyzer implements Quer
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         PlayerSession playerSession = PlayerSession.getInstance();
-        Object loadout = playerSession.get(PlayerSession.SHIP_LOADOUT_JSON);
+        Object loadout = playerSession.get(PlayerSession.SHIP_LOADOUT);
         String data = loadout != null ? toJson(loadout) : "Carrier data is unavailable";
 
         return analyzeData(data, originalUserInput);

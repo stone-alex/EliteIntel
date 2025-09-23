@@ -22,7 +22,7 @@ import elite.intel.session.SystemSession;
 public enum CustomCommands {
     ADD_MINING_TARGET("add_mining_target", "<material>", "mining_target", AddMiningTargetHandler.class),
     CLEAR_MINING_TARGETS("clear_mining_targets", null, null, ClearMiningTargetsHandler.class),
-    CLEAR_SESSION("clear_session", "<session_clear>", "session_clear", ClearSessionHandler.class),
+    CLEAR_CACHE("clear_cache", "<session_clear>", "session_clear", ClearCacheHandler.class),
     CLOSE_SYSTEM_MAP("close_local_starsystem_map", null, null, ExitToHud.class),
     EXIT_TO_HUD("display_hud", null, null, ExitToHud.class),
     FSSDISCOVERY_SCAN("exploration_fssdiscovery_scan", "ExplorationFSSDiscoveryScan", "<custom>", PerformFSSScanHandler.class),

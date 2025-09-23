@@ -8,7 +8,7 @@ import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 
-public class ClearSessionHandler implements CommandHandler {
+public class ClearCacheHandler implements CommandHandler {
 
     @Override
     public void handle(JsonObject params, String responseText) {
@@ -16,6 +16,8 @@ public class ClearSessionHandler implements CommandHandler {
         PlayerSession playerSession = PlayerSession.getInstance();
         playerSession.clearOnShutDown();
         playerSession.setCurrentLocation(new LocationDto());
+        playerSession.clearCash();
+
 
         SystemSession systemSession = SystemSession.getInstance();
         systemSession.clearSystemConfigValues();

@@ -44,5 +44,6 @@ public class GravityCalculator {
         BigDecimal relativeGravity = gravity.divide(EARTH_GRAVITY, 4, RoundingMode.HALF_UP);
 
         return relativeGravity.setScale(2, RoundingMode.HALF_UP).doubleValue();
+        //return relativeGravity.doubleValue();
     }
 }

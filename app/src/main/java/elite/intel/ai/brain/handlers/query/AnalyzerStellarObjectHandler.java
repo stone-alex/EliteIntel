@@ -33,11 +33,9 @@ public class AnalyzerStellarObjectHandler extends BaseQueryAnalyzer implements Q
 
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        return analyzeData(getData(), originalUserInput);
+        PlayerSession playerSession = PlayerSession.getInstance();
+        StellarObjectDto lastScan = playerSession.getLastScan();
+        return analyzeData(lastScan.toJson(), originalUserInput);
     }
 
-    private String getData() {
-        Object scan = PlayerSession.getInstance().get(PlayerSession.LAST_SCAN);
-        return scan != null ? toJson(scan) : null;
-    }
 }

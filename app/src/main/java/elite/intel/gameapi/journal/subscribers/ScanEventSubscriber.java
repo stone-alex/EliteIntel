@@ -40,7 +40,7 @@ public class ScanEventSubscriber {
         PlayerSession playerSession = PlayerSession.getInstance();
 
         // data for questions on last scan
-        playerSession.put(PlayerSession.LAST_SCAN, event.toJson());
+        //playerSession.put(PlayerSession.LAST_SCAN, event.toJson());
 
         boolean wasDiscovered = event.isWasDiscovered();
         boolean wasMapped = event.isWasMapped();
@@ -69,6 +69,7 @@ public class ScanEventSubscriber {
                 stellarObject.setMaterials(materials);
             }
             playerSession.addStellarObject(stellarObject);
+            playerSession.setLastScan(stellarObject);
 
             if (!wasDiscovered) {
                 //new discovery NOTE: this might be a bit too much. check in game

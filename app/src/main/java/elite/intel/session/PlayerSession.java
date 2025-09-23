@@ -52,7 +52,6 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     public static final String SHIP_CARGO_CAPACITY = "ship_cargo_capacity";
     public static final String PLAYER_CUSTOM_TITLE = "player_title";
     public static final String PLAYER_HIGHEST_MILITARY_RANK = "player_highest_military_rank";
-    public static final String LAST_SCAN = "last_scan";
     public static final String PLAYER_NAME = "player_name";
     public static final String PLAYER_MISSION_STATEMENT = "player_mission_statement";
     public static final String CURRENT_SHIP = "current_ship";
@@ -63,6 +62,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
 
     ///
     private static final String CURRENT_LOCATION = "current_location";
+    private static final String LAST_SCAN = "last_scan";
     private static final String REPUTATION = "reputation";
     private static final String STATUS = "status";
     private static final String ROUTE_MAP = "routeMap";
@@ -90,6 +90,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     private RankAndProgressDto rankAndProgressDto = new RankAndProgressDto();
     private LocationDto currentLocation = new LocationDto();
     private LocationDto homeSystem = new LocationDto();
+    private StellarObjectDto lastScan = new StellarObjectDto();
     private CarrierDataDto carrierData = new CarrierDataDto();
     private List<BioSampleDto> bioSamples = new ArrayList<>();
     private LoadoutEvent loadout;
@@ -150,6 +151,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         registerField(STATUS, this::getStatus, this::setStatus, GameEvents.StatusEvent.class);
         registerField(SHIP_CARGO, this::getShipCargo, this::setShipCargo, GameEvents.CargoEvent.class);
         registerField(REPUTATION, this::getReputation, this::setReputation, ReputationEvent.class);
+        registerField(LAST_SCAN, this::getLastScan, this::setLastScan, StellarObjectDto.class);
 
 
         registerField("bountyCollectedThisSession", this::getBountyCollectedThisSession, this::setBountyCollectedThisSession, Long.class);
@@ -527,6 +529,15 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
 
     public ReputationEvent getReputation(){
         return this.reputation;
+    }
+
+    public void setLastScan(StellarObjectDto lastScan) {
+        this.lastScan = lastScan;
+        saveSession();
+    }
+
+    public StellarObjectDto getLastScan() {
+        return lastScan;
     }
 
 }

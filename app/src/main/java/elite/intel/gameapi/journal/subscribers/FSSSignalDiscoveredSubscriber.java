@@ -35,8 +35,6 @@ public class FSSSignalDiscoveredSubscriber {
         signal.setSystemAddress(event.getSystemAddress());
         currentLocation.addDetectedSignal(signal);
 
-
-        playerSession.put(PlayerSession.LAST_SCAN, event.toJson());
         playerSession.setCurrentLocation(currentLocation);
 
         if (event.getUssTypeLocalised() != null && event.getUssTypeLocalised().equals("Nonhuman signal source")) {

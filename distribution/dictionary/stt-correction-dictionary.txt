@@ -139,3 +139,4 @@
 "receptor"="Recepta"
 "sinus tuber"="Sinuous Tuber"
 "Sargodha"="thargoid"
+"because it's supercruise"="exit supercruise"

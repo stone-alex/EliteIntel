@@ -38,7 +38,6 @@ public class StartJumpSubscriber {
             playerSession.clearBioSamples();
             playerSession.clearMiningTargets();
             playerSession.clearStellarObjects();
-            playerSession.removeNavPoint(jumpingTo);
             EventBusManager.publish(new SensorDataEvent(sb.toString()));
         }
 

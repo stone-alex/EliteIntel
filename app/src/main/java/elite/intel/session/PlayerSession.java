@@ -254,15 +254,6 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         saveSession();
     }
 
-    public void removeNavPoint(String systemName) {
-        Collection<NavRouteDto> values = routeMap.values();
-        for (NavRouteDto navRouteDto : values) {
-            if(navRouteDto.getName().equalsIgnoreCase(systemName)) {
-                routeMap.remove(navRouteDto.getLeg());
-            }
-        }
-        saveSession();
-    }
 
     //for persistence
     private Map<Integer, NavRouteDto> getRoute() {

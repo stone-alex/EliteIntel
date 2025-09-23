@@ -32,8 +32,6 @@ public class FSDJumpSubscriber {
         currentLocation.setStarName(event.getStarSystem());
 
         String currentStarSystem = event.getStarSystem();
-        playerSession.removeNavPoint(currentStarSystem);
-
         currentLocation.setStarName(currentStarSystem);
         currentLocation.setX(event.getStarPos()[0]);
         currentLocation.setY(event.getStarPos()[1]);

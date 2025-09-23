@@ -4,7 +4,10 @@ import com.google.common.eventbus.Subscribe;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.journal.events.CarrierJumpRequestEvent;
+import elite.intel.session.PlayerSession;
 import elite.intel.util.TimestampFormatter;
+
+import static elite.intel.session.PlayerSession.CARRIER_DEPARTURE_TIME;
 
 @SuppressWarnings("unused")
 public class CarrierJumpRequestSubscriber {
@@ -24,6 +27,8 @@ public class CarrierJumpRequestSubscriber {
         sb.append(" departure time: ");
         sb.append(departureTime);
         sb.append(".");
+
+        PlayerSession.getInstance().put(CARRIER_DEPARTURE_TIME, departureTime);
 
         EventBusManager.publish(new SensorDataEvent(sb.toString()));
     }

@@ -13,7 +13,7 @@ public class AnalyzeFuelStatusHandler extends BaseQueryAnalyzer implements Query
 
         //TODO: Convert info in to dtos, and write logic to figure out how much fuel is used per maximum range jump.
         PlayerSession playerSession = PlayerSession.getInstance();
-        GameEvents.StatusEvent fuelStatus = playerSession.getFuelStatus();
+        GameEvents.StatusEvent fuelStatus = playerSession.getStatus();
         LoadoutEvent loadout = playerSession.getShipLoadout();
         if(loadout != null && fuelStatus != null) {
             return analyzeData(new DataDto(loadout, fuelStatus).toJson(), originalUserInput);

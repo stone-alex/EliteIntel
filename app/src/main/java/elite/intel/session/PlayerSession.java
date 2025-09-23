@@ -23,15 +23,12 @@ public class PlayerSession {
     private final SessionPersistence persistence = new SessionPersistence();
 
     ///
+    public static final String CARRIER_DEPARTURE_TIME="carrier_departure_time";
     public static final String CURRENT_SYSTEM_NAME = "current_system";
-    public static final String SHIP_LOADOUT = "ship_loadout_json";
     public static final String SUITE_LOADOUT_JSON = "suite_loadout_json";
     public static final String FINAL_DESTINATION = "final_destination";
-    public static final String FUEL_STATUS = "current_status";
     public static final String FSD_TARGET = "fsd_target";
-    public static final String SHIP_CARGO = "ship_cargo";
     public static final String MISSIONS = "player_missions";
-    public static final String REPUTATION = "reputation";
     public static final String PROFILE = "profile";
     public static final String PERSONALITY = "personality";
     public static final String JUMPING_TO = "jumping_to_starsystem";
@@ -62,15 +59,18 @@ public class PlayerSession {
     public static final String CURRENT_SHIP = "current_ship";
     public static final String CURRENT_SHIP_NAME = "current_ship_name";
     public static final String PERSONAL_CREDITS_AVAILABLE = "personal_credits_available";
-    public static final String ROUTE_MAP = "routeMap";
     public static final String SHIP_SCANS = "shipScans";
     public static final String TARGET_FACTIONS = "targetFactions";
-    public static final String STELLAR_OBJECTS = "stellarObjects";
-    public static final String PLAYER_STATUS = "player_status";
-    public static final String BIO_SAMPLES = "bio_samples";
 
     ///
     private static final String CURRENT_LOCATION = "current_location";
+    private static final String REPUTATION = "reputation";
+    private static final String STATUS = "status";
+    private static final String ROUTE_MAP = "routeMap";
+    private static final String STELLAR_OBJECTS = "stellarObjects";
+    private static final String BIO_SAMPLES = "bio_samples";
+    private static final String SHIP_LOADOUT = "ship_loadout";
+    private static final String SHIP_CARGO = "ship_cargo";
     private static final String FRIENDS_STATUS = "friends_status";
     private static final String CARRIER_STATS = "carrier_stats";
     private static final String BOUNTIES = "bounties";
@@ -87,7 +87,6 @@ public class PlayerSession {
     private final Set<BountyDto> bounties = new LinkedHashSet<>();
     private final Set<String> miningTargets = new HashSet<>();
     private List<StationMarket> markets = new ArrayList<>();
-    private StatusDto status = new StatusDto();
     private long bountyCollectedThisSession = 0;
     private RankAndProgressDto rankAndProgressDto = new RankAndProgressDto();
     private LocationDto currentLocation = new LocationDto();
@@ -95,7 +94,9 @@ public class PlayerSession {
     private CarrierDataDto carrierData = new CarrierDataDto();
     private List<BioSampleDto> bioSamples = new ArrayList<>();
     private LoadoutEvent loadout;
-    private GameEvents.StatusEvent fuelStatus;
+    private GameEvents.StatusEvent gameStatus;
+    private GameEvents.CargoEvent shipCargo;
+    private ReputationEvent reputation;
 
 
     private PlayerSession() {
@@ -146,9 +147,10 @@ public class PlayerSession {
 
         persistence.registerField(CURRENT_LOCATION, this::getCurrentLocation, this::setCurrentLocation, LocationDto.class);
         persistence.registerField(HOME_SYSTEM, this::getHomeSystem, this::setHomeSystem, LocationDto.class);
-        persistence.registerField(PLAYER_STATUS, this::getStatus, this::setStatus, StatusDto.class);
         persistence.registerField(SHIP_LOADOUT, this::getShipLoadout, this::setShipLoadout, new TypeToken<LoadoutEvent>(){}.getType() );
-        persistence.registerField(FUEL_STATUS, this::getFuelStatus, this::setFuelStatus, GameEvents.StatusEvent.class);
+        persistence.registerField(STATUS, this::getStatus, this::setStatus, GameEvents.StatusEvent.class);
+        persistence.registerField(SHIP_CARGO, this::getShipCargo, this::setShipCargo, GameEvents.CargoEvent.class);
+        persistence.registerField(REPUTATION, this::getReputation, this::setReputation, ReputationEvent.class);
 
 
         persistence.registerField("bountyCollectedThisSession", this::getBountyCollectedThisSession, this::setBountyCollectedThisSession, Long.class);
@@ -463,15 +465,6 @@ public class PlayerSession {
         markets.clear();
     }
 
-    public StatusDto getStatus() {
-        return status;
-    }
-
-    public void setStatus(StatusDto status) {
-        this.status = status;
-        saveSession();
-    }
-
     public List<BioSampleDto> getBioSamples() {
         return bioSamples;
     }
@@ -500,12 +493,12 @@ public class PlayerSession {
         return loadout;
     }
 
-    public GameEvents.StatusEvent getFuelStatus(){
-        return this.fuelStatus;
+    public GameEvents.StatusEvent getStatus(){
+        return this.gameStatus;
     }
 
-    public void setFuelStatus(GameEvents.StatusEvent event){
-        this.fuelStatus=event;
+    public void setStatus(GameEvents.StatusEvent event){
+        this.gameStatus =event;
         saveSession();
     }
 
@@ -516,7 +509,7 @@ public class PlayerSession {
         this.shipScans.clear();
         this.bounties.clear();
         this.currentLocation = new LocationDto();
-        this.status = new StatusDto();
+        this.gameStatus = null;
         this.loadout = null;
         this.bountyCollectedThisSession = 0;
         this.rankAndProgressDto = new RankAndProgressDto();
@@ -527,4 +520,23 @@ public class PlayerSession {
         this.
         saveSession();
     }
+
+    public void setShipCargo(GameEvents.CargoEvent event) {
+        this.shipCargo = event;
+        saveSession();
+    }
+
+    public GameEvents.CargoEvent getShipCargo(){
+        return this.shipCargo;
+    }
+
+    public void setReputation(ReputationEvent event) {
+        this.reputation = event;
+        saveSession();
+    }
+
+    public ReputationEvent getReputation(){
+        return this.reputation;
+    }
+
 }

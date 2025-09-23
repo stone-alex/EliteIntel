@@ -24,11 +24,11 @@ public class SAASignalsFoundSubscriber {
         int signalsFound = signals != null ? signals.size() : 0;
 
         if (signalsFound > 0) {
-            sb.append(" Signal(s) found: ").append(signalsFound).append(".");
+            sb.append(" Signal(s) found: ").append(signalsFound).append(". ");
             for (SAASignalsFoundEvent.Signal signal : signals) {
                 sb.append(" Type: ").append(signal.getType()).append(". ");
                 if ("Tritium".equals(signal.getType())) {
-                    sb.append("Carrier fuel source is detected. ");
+                    sb.append(" Carrier fuel source is detected. ");
                 }
             }
 

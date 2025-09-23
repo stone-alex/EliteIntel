@@ -30,7 +30,8 @@ public enum QueryActions {
     WHAT_IS_YOUR_DESIGNATION("what_is_your_designation", "Responds with AI name (e.g., 'what is your name', 'who are you'). ", WhatIsYourNameHandler.class, false),
     WHERE_IS_OUR_CARRIER("what_is_our_fleet_carrier_location", "Check on our carrier current location. ", WhatIsOurCarrierLocationHandler.class, false),
     TOTAL_BOUNTIES_COLLECTED("query_total_bounties_collected", "Summ total of the bounties collected this session", AnalyzeBountiesCollectedHandler.class, false),
-    GENERAL_CONVERSATION("general_conversation", "General conversation, use your own knowledge to respond", ConversationalQueryHandler.class, true);
+    GENERAL_CONVERSATION("general_conversation", "General conversation, use your own knowledge to respond", ConversationalQueryHandler.class, true),
+    CARRIER_ETA("query_fleet_carrier_eta", "Use arrival time and current time to determine ETA", CarrierETAHandler.class, false);
 
     // NOT implemented yet
     //FIND_MATERIAL_TRADER("find_material_trader", "Find us a material trader. ", MaterialTraderQueryHandler.class, true);

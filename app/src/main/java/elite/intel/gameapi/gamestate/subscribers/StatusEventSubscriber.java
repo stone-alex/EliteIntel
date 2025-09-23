@@ -5,7 +5,6 @@ import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.VoiceProcessEvent;
 import elite.intel.gameapi.gamestate.events.GameEvents;
 import elite.intel.gameapi.gamestate.events.PlayerMovedEvent;
-import elite.intel.gameapi.journal.events.dto.StatusDto;
 import elite.intel.session.PlayerSession;
 
 public class StatusEventSubscriber {
@@ -13,24 +12,14 @@ public class StatusEventSubscriber {
     @Subscribe
     public void onStatusChangedEvent(GameEvents.StatusEvent event) {
         PlayerSession playerSession = PlayerSession.getInstance();
-        StatusDto status = playerSession.getStatus() == null ? new StatusDto() : playerSession.getStatus();
-        String legalStatusBeforeChange = status.getLegalState();
+        GameEvents.StatusEvent oldStatus = playerSession.getStatus();
+        String legalStatusBeforeChange = oldStatus.getLegalState();
+
         if (legalStatusBeforeChange != null && !legalStatusBeforeChange.equalsIgnoreCase(event.getLegalState())) {
             EventBusManager.publish(new VoiceProcessEvent("Legal status changed to: " + event.getLegalState() + ". "));
         }
 
-
-        status.setAltitude(event.getAltitude());
-        status.setBalance(event.getBalance());
-        status.setCargo(event.getCargo());
-        status.setGuiFocus(event.getGuiFocus());
-        status.setHeading(event.getHeading());
-        status.setLatitude(event.getLatitude());
-        status.setLongitude(event.getLongitude());
-        status.setLegalState(event.getLegalState());
-        status.setPips(event.getPips());
-        status.setPlanetRadius(event.getPlanetRadius());
-        playerSession.setStatus(status);
+        playerSession.setStatus(event);
 
 
         if (!playerSession.getBioSamples().isEmpty()) {

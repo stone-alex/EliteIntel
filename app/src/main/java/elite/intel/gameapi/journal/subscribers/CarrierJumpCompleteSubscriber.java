@@ -20,6 +20,7 @@ public class CarrierJumpCompleteSubscriber {
         double[] starPos = event.getStarPos();
         PlayerSession playerSession = PlayerSession.getInstance();
         CarrierDataDto carrierData = playerSession.getCarrierData();
+        playerSession.remove(PlayerSession.CARRIER_DEPARTURE_TIME);
 
         if(carrierData != null) {
             carrierData.setX(starPos[0]);
@@ -27,46 +28,6 @@ public class CarrierJumpCompleteSubscriber {
             carrierData.setZ(starPos[2]);
             carrierData.setLocation(starSystem);
             playerSession.setCarrierData(carrierData);
-        }
-
-
-        if(event.isOnFoot() || event.isDocked()){
-            // we are on the carrier during the jump.
-            LocationDto currentLocation = playerSession.getCurrentLocation();
-            currentLocation.setStarName(starSystem);
-            currentLocation.setX(starPos[0]);
-            currentLocation.setY(starPos[1]);
-            currentLocation.setZ(starPos[2]);
-
-            currentLocation.setPopulation(event.getPopulation());
-            currentLocation.setPlanetName(event.getBody());
-            currentLocation.setAllegiance(event.getSystemAllegiance());
-            currentLocation.setSecurity(event.getSystemSecurityLocalised());
-            currentLocation.setPowerplayState(event.getPowerplayState());
-            currentLocation.setPowerplayStateControlProgress(event.getPowerplayStateControlProgress());
-            currentLocation.setPowerplayStateReinforcement(event.getPowerplayStateReinforcement());
-            currentLocation.setPowerplayStateUndermining(event.getPowerplayStateUndermining());
-
-            currentLocation.clearSaaSignals();
-            currentLocation.clearDetectedSignals();
-            currentLocation.clearGenus();
-            currentLocation.setPlanetData(null);
-
-            DeathsDto deathsDto = EdsmApiClient.searchDeaths(starSystem);
-            if (deathsDto.getData() != null && deathsDto.getData().getDeaths() != null) {
-                currentLocation.setDeathsDto(deathsDto);
-            }
-            TrafficDto trafficDto = EdsmApiClient.searchTraffic(starSystem);
-            if (trafficDto.getData() != null && trafficDto.getData().getTraffic() != null) {
-                currentLocation.setTrafficDto(trafficDto);
-            }
-
-            playerSession.setCurrentLocation(currentLocation);
-            playerSession.clearBioSamples();
-            playerSession.clearStellarObjects();
-            playerSession.clearMarkets();
-            playerSession.clearMiningTargets();
-            playerSession.clearRoute();
         }
 
         EventBusManager.publish(new SensorDataEvent("Carrier Location: " + event.getStarSystem()));

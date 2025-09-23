@@ -57,7 +57,7 @@ public class ScanEventSubscriber {
                 if (!event.getTerraformState().isEmpty()) {
                     EventBusManager.publish(new SensorDataEvent("New Terraformable planet: " + event.getBodyName() + " Details: " + event.toJson()));
                 } else {
-                    EventBusManager.publish(new SensorDataEvent("New discovery logged: " + event.getBodyName()));
+                    EventBusManager.publish(new SensorDataEvent("New discovery logged: " + event.getPlanetClass()));
                 }
             }
 
@@ -70,7 +70,15 @@ public class ScanEventSubscriber {
                 if (wasDiscovered && !wasMapped && !isBeltCluster) {
                     EventBusManager.publish(new SensorDataEvent(event.getBodyName() + " was previously discovered, but not mapped. "));
                 } else if (!wasDiscovered && !isBeltCluster) {
-                    EventBusManager.publish(new SensorDataEvent("New discovery: " + event.getBodyName() + ". "));
+                    boolean hasMats = event.getMaterials() != null && !event.getMaterials().isEmpty();
+                    boolean isTerraformable = event.getTerraformState()!= null && !event.getTerraformState().isEmpty();
+                    boolean isLandable = event.isLandable();
+                    String sensorData = "New discovery: " + event.getBodyName() + ". "
+                            + (hasMats ? " materials detected: " : "")
+                            + (isTerraformable ? " terraformable: " : event.getTerraformState())
+                            + (isLandable ? " landable " : ". ");
+
+                    EventBusManager.publish(new SensorDataEvent(sensorData));
                 }
             } else if (!wasDiscovered) {
                 EventBusManager.publish(new SensorDataEvent("New star system discovered!"));

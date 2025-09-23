@@ -44,15 +44,20 @@ public class RoutePlottedSubscriber {
                     playerSession.put(PlayerSession.FINAL_DESTINATION, finalDestination.getName());
                 }
                 if(playerSession.getCurrentLocation() != null) {
-                    NavRouteDto currentSystemRoute = routeMap.values().stream()
-                            .filter(dto -> dto.getName().equalsIgnoreCase(playerSession.getCurrentLocation().getStarName()))
-                            .findFirst()
-                            .orElse(null);
+                    NavRouteDto currentSystemRoute = null;
+                    for (NavRouteDto navRouteDto : routeMap.values()) {
+                        if (navRouteDto.getName().equalsIgnoreCase(playerSession.getCurrentLocation().getStarName())) {
+                            currentSystemRoute = navRouteDto;
+                            break;
+                        }
+                    }
 
                     Map<Integer, NavRouteDto> adjustedMap = new LinkedHashMap<>();
                     for( NavRouteDto dto : routeMap.values() ) {
-                        if (dto.getLeg() > currentSystemRoute.getLeg() && !dto.getName().equalsIgnoreCase(currentSystemRoute.getName())) {
-                            adjustedMap.put(dto.getLeg(), dto);
+                        if(currentSystemRoute == null){
+                            adjustedMap.put(dto.getLeg(), dto); // current location unknown. just set the route
+                        } else if (dto.getLeg() > currentSystemRoute.getLeg() && !dto.getName().equalsIgnoreCase(currentSystemRoute.getName())) {
+                            adjustedMap.put(dto.getLeg(), dto); // filter out current location
                         }
                     }
 

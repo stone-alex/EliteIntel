@@ -9,7 +9,6 @@ public class ReputationSubscriber {
 
     @Subscribe
     public void onReputationEvent(ReputationEvent event) {
-        PlayerSession playerSession = PlayerSession.getInstance();
-        playerSession.put(PlayerSession.REPUTATION, event.toJson());
+        PlayerSession.getInstance().setReputation(event);
     }
 }

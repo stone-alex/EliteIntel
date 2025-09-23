@@ -21,8 +21,8 @@ public class LocationDto implements ToJsonConvertible {
     private String government;
     private String planetName="";
     BodyData planetData;
-    List<SAASignalsFoundEvent.Signal> signals;
-    List<SAASignalsFoundEvent.Genus> genus;
+    List<SAASignalsFoundEvent.Signal> signals = new ArrayList<>();
+    List<SAASignalsFoundEvent.Genus> genus = new ArrayList<>();
     List<BioSampleDto> completedBioScans = new ArrayList<>();
     Set<FssSignal> detectedSignals = new HashSet<>();
     TrafficDto trafficDto;
@@ -142,6 +142,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void addSaaSignals(List<SAASignalsFoundEvent.Signal> signals) {
+        if (this.signals == null) {signals = new ArrayList<>();}
         this.signals.addAll(signals);
     }
 

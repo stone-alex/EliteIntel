@@ -32,7 +32,8 @@ public enum QueryActions {
     TOTAL_BOUNTIES_COLLECTED("query_total_bounties_collected", "Summ total of the bounties collected this session", AnalyzeBountiesCollectedHandler.class, false),
     GENERAL_CONVERSATION("general_conversation", "General conversation, use your own knowledge to respond", ConversationalQueryHandler.class, true),
     CARRIER_ETA("query_fleet_carrier_eta", "Use arrival time and current time to determine ETA", CarrierETAHandler.class, false),
-    HOW_FAR_ARE_WE_FROM_BUBBLE("how_far_are_we_from_earth_bubble", "calculate distance in light years using 3D coordinates", DistanceFromTheBubble.class, false);
+    HOW_FAR_ARE_WE_FROM_BUBBLE("how_far_are_we_from_earth_bubble", "calculate distance in light years using 3D coordinates", DistanceFromTheBubble.class, false),
+    HOW_FAR_IS_OUR_CARRIER("how_far_is_our_fleet_carrier", "calculate distance in light years using 3D coordinates", HowFarIsOurCarrierHandler.class, false);
 
     // NOT implemented yet
     //FIND_MATERIAL_TRADER("find_material_trader", "Find us a material trader. ", MaterialTraderQueryHandler.class, true);

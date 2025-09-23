@@ -245,10 +245,10 @@ public class AppController implements AppControllerInterface, ActionListener {
     @Override
     public void togglePrivacyMode(boolean isPrivacyModeEnabled) {
         if (isPrivacyModeEnabled) {
-            EventBusManager.publish(new VoiceProcessEvent("one way comms, I can't hear you anymore"));
+            EventBusManager.publish(new VoiceProcessEvent("one way comms, voice input disabled."));
             ears.stop();
         } else {
-            EventBusManager.publish(new VoiceProcessEvent("I am listening..."));
+            EventBusManager.publish(new VoiceProcessEvent("Voice input enabled."));
             ears.start();
         }
         model.setPrivacyModeOn(isPrivacyModeEnabled);

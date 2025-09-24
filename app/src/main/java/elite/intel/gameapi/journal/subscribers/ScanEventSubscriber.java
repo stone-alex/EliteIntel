@@ -28,7 +28,7 @@ public class ScanEventSubscriber {
     private static final Set<String> valuablePlanetClasses = Set.of(
             "ammonia world",
             "water world",
-            "earth-like world",
+            "earthlike body",
             "water giant",
             "gas giant with ammonia-based life",
             "helium gas giant",
@@ -41,15 +41,11 @@ public class ScanEventSubscriber {
     @Subscribe
     public void onScanEvent(ScanEvent event) {
         PlayerSession playerSession = PlayerSession.getInstance();
-
-        // data for questions on last scan
-        //playerSession.put(PlayerSession.LAST_SCAN, event.toJson());
-
         boolean wasDiscovered = event.isWasDiscovered();
         boolean wasMapped = event.isWasMapped();
 
         String shortName = subtractString(event.getBodyName(), event.getStarSystem());
-
+        String bodyName = event.getBodyName();
 
         if ("Detailed".equalsIgnoreCase(event.getScanType())) {
 
@@ -81,8 +77,8 @@ public class ScanEventSubscriber {
             if (!wasDiscovered) {
                 //new discovery NOTE: this might be a bit too much. check in game
                 if (event.getTerraformState()!= null && !event.getTerraformState().isEmpty()) {
-                    EventBusManager.publish(new SensorDataEvent("New Terraformable planet: " + shortName + " Details: " + event.toJson()));
-                } else if(valuablePlanetClasses.contains(event.getPlanetClass().toLowerCase())){
+                    EventBusManager.publish(new SensorDataEvent("New Terraformable planet: " + shortName + " Details: " + stellarObject.toJson()));
+                } else if(event.getPlanetClass() != null && valuablePlanetClasses.contains(event.getPlanetClass().toLowerCase())){
                     EventBusManager.publish(new SensorDataEvent("New discovery logged: " + event.getPlanetClass()));
                 } else {
                     log.info("Skipping Discovery Announcement: " + event.getPlanetClass());
@@ -94,7 +90,7 @@ public class ScanEventSubscriber {
 
             boolean isStar = event.getDistanceFromArrivalLS() == 0 && event.getSurfaceTemperature() > 2000;
             if (!isStar) {
-                boolean isBeltCluster = shortName.contains("Belt Cluster");
+                boolean isBeltCluster = bodyName.contains("Belt Cluster");
                 if (wasDiscovered && !wasMapped && !isBeltCluster) {
                     EventBusManager.publish(new SensorDataEvent(shortName + " was previously discovered, but not mapped. "));
                 } else if (!wasDiscovered && !isBeltCluster) {
@@ -102,10 +98,10 @@ public class ScanEventSubscriber {
                     boolean isTerraformable = event.getTerraformState()!= null && !event.getTerraformState().isEmpty();
                     boolean isLandable = event.isLandable();
                     String sensorData = "New discovery: " + shortName + ". "
-                            + (hasMats ? " materials detected: " : "")
-                            + (isTerraformable ? " terraformable: " : event.getTerraformState())
-                            + (isLandable ? " landable " : ". ");
-
+                            + (hasMats ? " Materials detected. data available on request, " : " ")
+                            + (isTerraformable ? " Terraformable, " : " ")
+                            + (isLandable ? " landable. " : ". ");
+                    log.info(sensorData);
                     EventBusManager.publish(new SensorDataEvent(sensorData));
                 }
             } else if (!wasDiscovered) {
@@ -115,6 +111,4 @@ public class ScanEventSubscriber {
             }
         }
     }
-    
-    
 }

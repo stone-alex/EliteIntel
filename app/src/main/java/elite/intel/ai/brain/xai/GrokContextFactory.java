@@ -108,7 +108,7 @@ public class GrokContextFactory implements AiContextFactory {
         StringBuilder sb = new StringBuilder();
         getSessionValues(sb);
         appendBehavior(sb);
-        sb.append("Instructions: Analyze this input: ").append(sensorInput).append(" ");
+        sb.append("Instructions: Analyze this input: ").append(sensorInput).append(". prefer shortName for stellar objects ");
         return sb.toString();
     }
 

@@ -6,7 +6,9 @@ import elite.intel.gameapi.gamestate.events.NavRouteDto;
 import elite.intel.gameapi.journal.events.LoadGameEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
+import elite.intel.util.AdjustRoute;
 import elite.intel.util.DaftSecretarySanitizer;
+import org.apache.logging.log4j.core.util.NameUtil;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -42,19 +44,8 @@ public class LoadGameEventSubscriber {
         if (!roueSet) {return;}
         if (currentLocation == null) {return;}
 
-        NavRouteDto currentSystemRoute = orderedRoute.stream()
-                .filter(dto -> dto.getName().equalsIgnoreCase(currentLocation.getStarName()))
-                .findFirst()
-                .orElse(null);
-
-        Map<Integer, NavRouteDto> adjustedMap = new LinkedHashMap<>();
-        for( NavRouteDto dto : orderedRoute ) {
-            if (dto.getLeg() > currentSystemRoute.getLeg() && !dto.getName().equalsIgnoreCase(currentSystemRoute.getName())) {
-                adjustedMap.put(dto.getLeg(), dto);
-            }
-        }
-
-        playerSession.setNavRoute(adjustedMap);
+        Map<Integer, NavRouteDto> adjustedRoute = AdjustRoute.adjustRoute(orderedRoute);
+        playerSession.setNavRoute(adjustedRoute);
     }
 
     private static void initValuesFromConfig(PlayerSession playerSession) {

@@ -4,10 +4,9 @@ import com.google.common.eventbus.Subscribe;
 import elite.intel.gameapi.gamestate.events.GameEvents;
 import elite.intel.gameapi.gamestate.events.NavRouteDto;
 import elite.intel.session.PlayerSession;
+import elite.intel.util.AdjustRoute;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @SuppressWarnings("unused") //registered in SubscriberRegistration
 public class RoutePlottedSubscriber {
@@ -44,24 +43,10 @@ public class RoutePlottedSubscriber {
                     playerSession.put(PlayerSession.FINAL_DESTINATION, finalDestination.getName());
                 }
                 if(playerSession.getCurrentLocation() != null) {
-                    NavRouteDto currentSystemRoute = null;
-                    for (NavRouteDto navRouteDto : routeMap.values()) {
-                        if (navRouteDto.getName().equalsIgnoreCase(playerSession.getCurrentLocation().getStarName())) {
-                            currentSystemRoute = navRouteDto;
-                            break;
-                        }
-                    }
-
-                    Map<Integer, NavRouteDto> adjustedMap = new LinkedHashMap<>();
-                    for( NavRouteDto dto : routeMap.values() ) {
-                        if(currentSystemRoute == null){
-                            adjustedMap.put(dto.getLeg(), dto); // current location unknown. just set the route
-                        } else if (dto.getLeg() > currentSystemRoute.getLeg() && !dto.getName().equalsIgnoreCase(currentSystemRoute.getName())) {
-                            adjustedMap.put(dto.getLeg(), dto); // filter out current location
-                        }
-                    }
-
-                    playerSession.setNavRoute(adjustedMap);
+                    List<NavRouteDto> orderedRoute = new ArrayList<>(routeMap.values());
+                    orderedRoute.sort(Comparator.comparingInt(NavRouteDto::getLeg));
+                    Map<Integer, NavRouteDto> adjustedRoute = AdjustRoute.adjustRoute(orderedRoute);
+                    playerSession.setNavRoute(adjustedRoute);
                 }
             } else {
                 playerSession.clearRoute();

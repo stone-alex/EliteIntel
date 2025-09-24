@@ -13,6 +13,7 @@ import elite.intel.gameapi.gamestate.events.NavRouteDto;
 import elite.intel.gameapi.journal.events.FSDJumpEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
+import elite.intel.util.AdjustRoute;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -50,7 +51,6 @@ public class FSDJumpSubscriber {
 
         StringBuilder sb = new StringBuilder();
         sb.append(" Hyperspace Jump Successful: ");
-        //sb.append(" We are in: ").append(currentStarSystem).append(" system, ");
 
         List<NavRouteDto> orderedRoute = playerSession.getOrderedRoute();
         boolean roueSet = !orderedRoute.isEmpty();
@@ -71,21 +71,9 @@ public class FSDJumpSubscriber {
 
         } else {
             if (roueSet) {
-
-                NavRouteDto currentSystemRoute = orderedRoute.stream()
-                        .filter(dto -> dto.getName().equalsIgnoreCase(playerSession.getCurrentLocation().getStarName()))
-                        .findFirst()
-                        .orElse(null);
-
-                Map<Integer, NavRouteDto> adjustedMap = new LinkedHashMap<>();
-                for( NavRouteDto dto : orderedRoute ) {
-                    if (dto.getLeg() > currentSystemRoute.getLeg() && !dto.getName().equalsIgnoreCase(currentSystemRoute.getName())) {
-                        adjustedMap.put(dto.getLeg(), dto);
-                    }
-                }
-
-                playerSession.setNavRoute(adjustedMap);
-                int remainingJump = adjustedMap.size();
+                Map<Integer, NavRouteDto> adjustedRoute = AdjustRoute.adjustRoute(orderedRoute);
+                playerSession.setNavRoute(adjustedRoute);
+                int remainingJump = adjustedRoute.size();
                 if (remainingJump > 0) {
                     orderedRoute.stream().findFirst().ifPresent(
                             nextStop -> sb.append(" Next stop: ").append(nextStop.toJson()).append(", ")

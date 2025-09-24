@@ -40,6 +40,7 @@
         <Logger name="elite.intel.ai.ears" level="error"/>
         <Logger name="elite.intel.ai.mouth" level="error"/>
         <Logger name="elite.intel.ai.brain" level="info"/>
+        <Logger name="elite.intel.gameapi.journal.subscribers" level="debug"/>
         <Logger name="elite.intel.ai.search.spansh" level="error"/>
         <Logger name="elite.intel.gameapi.journal.EventRegistry" level="error"/>
 

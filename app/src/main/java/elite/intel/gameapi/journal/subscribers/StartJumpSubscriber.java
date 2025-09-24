@@ -3,6 +3,7 @@ package elite.intel.gameapi.journal.subscribers;
 import com.google.common.eventbus.Subscribe;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
+import elite.intel.gameapi.VoiceProcessEvent;
 import elite.intel.gameapi.journal.events.StartJumpEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
@@ -20,9 +21,7 @@ public class StartJumpSubscriber {
         boolean scoopable = event.isScoopable();
 
         StringBuilder sb = new StringBuilder();
-        sb.append("Entered hyperspace: ");
-        sb.append(" ");
-        sb.append("in route to: ");
+        sb.append("Traveling through hyperspace on route to ");
         sb.append(jumpingTo);
         sb.append(", ");
         sb.append("Star Class: ");
@@ -37,10 +36,9 @@ public class StartJumpSubscriber {
         //clear last location data
         if ("Hyperspace".equalsIgnoreCase(event.getJumpType())) {
             playerSession.setCurrentLocation(new LocationDto());
-            playerSession.clearBioSamples();
             playerSession.clearMiningTargets();
             playerSession.clearStellarObjects();
-            EventBusManager.publish(new SensorDataEvent(sb.toString()));
+            EventBusManager.publish(new VoiceProcessEvent(sb.toString()));
         }
 
     }

@@ -1,9 +1,10 @@
 package elite.intel.gameapi.journal.events.dto;
 
+import elite.intel.gameapi.journal.events.ScanEvent;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 
-public class MaterialDto implements ToJsonConvertible {
+public class MaterialDto extends ScanEvent.Material implements ToJsonConvertible {
 
     private String materialName;
     private double materialPercentage;

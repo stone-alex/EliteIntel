@@ -11,6 +11,11 @@ public class BioSampleDto extends BaseJsonDto implements ToJsonConvertible {
     private double distanceToNextSample;
     private boolean playerFarEnough;
     private boolean bioSampleCompleted;
+    private String species;
+    int planetNumber;
+    long starSystemNumber;
+    long payout;
+
 
     public String getGenus() {
         return genus;
@@ -58,5 +63,37 @@ public class BioSampleDto extends BaseJsonDto implements ToJsonConvertible {
 
     public void setBioSampleCompleted(boolean bioSampleCompleted) {
         this.bioSampleCompleted = bioSampleCompleted;
+    }
+
+    public void setSpecies(String variant) {
+        this.species = variant;
+    }
+
+    public String getSpecies() {
+        return species;
+    }
+
+    public int getPlanetNumber() {
+        return planetNumber;
+    }
+
+    public void setPlanetNumber(int planetNumber) {
+        this.planetNumber = planetNumber;
+    }
+
+    public long getStarSystemNumber() {
+        return starSystemNumber;
+    }
+
+    public void setStarSystemNumber(long starSystemNumber) {
+        this.starSystemNumber = starSystemNumber;
+    }
+
+    public long getPayout() {
+        return payout;
+    }
+
+    public void setPayout(long payout) {
+        this.payout = payout;
     }
 }

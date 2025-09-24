@@ -38,7 +38,7 @@ public class StringUtls {
             return "";
         }
         boolean isFuelStar = "KGBFOAM".contains(starClass);
-        return isFuelStar ? " Fuel Star" : " Warning! - Not a Fuel Star!";
+        return isFuelStar ? " a Fuel Star. " : " Warning! - Not a Fuel Star! ";
     }
 
 }

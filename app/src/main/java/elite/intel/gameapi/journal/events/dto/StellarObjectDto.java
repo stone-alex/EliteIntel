@@ -1,5 +1,6 @@
 package elite.intel.gameapi.journal.events.dto;
 
+import elite.intel.gameapi.journal.events.SAASignalsFoundEvent;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 
@@ -20,6 +21,10 @@ public class StellarObjectDto implements ToJsonConvertible {
     private String atmosphere;
     private double radius;
     private double massEM;
+    private int numBioForms;
+    private int geoSignals;
+
+    List<SAASignalsFoundEvent.Genus> genus = new ArrayList<>();
 
     @Override public String toJson() {
         return GsonFactory.getGson().toJson(this);
@@ -120,6 +125,28 @@ public class StellarObjectDto implements ToJsonConvertible {
 
     public void setShortName(String shortName) {
         this.shortName = shortName;
+    }
+
+    public int getNumBioForms() {
+        return numBioForms;
+    }
+    public void setNumBioForms(int numBioForms) {
+        this.numBioForms = numBioForms;
+    }
+
+    public List<SAASignalsFoundEvent.Genus> getGenus() {
+        return genus;
+    }
+    public void setGenus(List<SAASignalsFoundEvent.Genus> genus) {
+        this.genus.addAll(genus);
+    }
+
+    public int getGeoSignals() {
+        return geoSignals;
+    }
+
+    public void setGeoSignals(int geoSignals) {
+        this.geoSignals = geoSignals;
     }
 }
 

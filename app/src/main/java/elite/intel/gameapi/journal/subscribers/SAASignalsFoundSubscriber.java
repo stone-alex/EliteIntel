@@ -5,6 +5,7 @@ import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.journal.events.SAASignalsFoundEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
+import elite.intel.gameapi.journal.events.dto.StellarObjectDto;
 import elite.intel.session.PlayerSession;
 
 import java.util.List;
@@ -24,7 +25,8 @@ public class SAASignalsFoundSubscriber {
         int signalsFound = signals != null ? signals.size() : 0;
 
         if (signalsFound > 0) {
-            sb.append(" Signal(s) found: ").append(signalsFound).append(". ");
+            int liveSignals = event.getGenuses() != null ? event.getGenuses().size() : 0;
+            sb.append(" Signal(s) found: ");
             for (SAASignalsFoundEvent.Signal signal : signals) {
                 sb.append(" Type: ").append(signal.getType()).append(". ");
                 if ("Tritium".equals(signal.getType())) {
@@ -32,18 +34,23 @@ public class SAASignalsFoundSubscriber {
                 }
             }
 
-            int liveSignals = event.getGenuses() != null ? event.getGenuses().size() : 0;
 
 
             if (liveSignals > 0) {
+                StellarObjectDto stellarObjectDto = playerSession.getStellarObjects().get(event.getBodyName());
+                stellarObjectDto.setNumBioForms(liveSignals);
+                stellarObjectDto.setGenus(event.getGenuses());
+                playerSession.addStellarObject(stellarObjectDto);
+
                 currentLocation.setGenus(event.getGenuses());
                 playerSession.setCurrentLocation(currentLocation);
+
+                sb.append(" Exobiology signal(s) found ").append(liveSignals).append(": ");
                 for (SAASignalsFoundEvent.Genus genus : event.getGenuses()) {
                     sb.append(" ");
                     sb.append(genus.getGenusLocalised());
                     sb.append(", ");
                 }
-                sb.append(" Exobiology signal(s) found: ").append(liveSignals).append(".");
             }
             EventBusManager.publish(new SensorDataEvent(sb.toString()));
         } else {

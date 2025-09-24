@@ -5,14 +5,12 @@ import elite.intel.ai.search.edsm.EdsmApiClient;
 import elite.intel.ai.search.edsm.dto.SystemBodiesDto;
 import elite.intel.ai.search.edsm.dto.data.BodyData;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.VoiceProcessEvent;
 import elite.intel.gameapi.journal.events.ApproachBodyEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.gameapi.journal.events.dto.MaterialDto;
 import elite.intel.gameapi.journal.events.dto.StellarObjectDto;
 import elite.intel.session.PlayerSession;
-import elite.intel.util.StringUtls;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +33,7 @@ public class ApproachBodySubscriber {
 
         //clear bio scans if we are landing on a different planet within the same system
         if (!currentLocation.getPlanetName().equalsIgnoreCase(event.getBody())){
-            currentLocation.setCompletedBioScans(new ArrayList<>());
+            currentLocation.setBioScans(new ArrayList<>());
         }
 
         currentLocation.setStarName(event.getStarSystem());

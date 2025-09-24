@@ -76,7 +76,7 @@ public class JournalParser implements Runnable {
             processingThread.join(5000); // Wait up to 5 seconds for clean shutdown
             log.info("JournalParser stopped");
         } catch (InterruptedException e) {
-            log.error("Interrupted while waiting for JournalParser to stop", e);
+            log.warn("Interrupted while waiting for JournalParser to stop");
             Thread.currentThread().interrupt(); // Restore interrupted status
         }
         processingThread = null;

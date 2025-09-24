@@ -189,7 +189,7 @@ public class GoogleTTSImpl implements MouthInterface {
             log.debug("Added VoiceRequest to queue: text='{}', voice='{}'", text, aiVoice.getName());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            log.error("Interrupted while adding voice request to queue", e);
+            log.warn("Interrupted while adding voice request to queue");
         }
     }
 
@@ -289,7 +289,6 @@ public class GoogleTTSImpl implements MouthInterface {
             AudioConfig config = AudioConfig.newBuilder()
                     .setAudioEncoding(AudioEncoding.LINEAR16)
                     .setSpeakingRate(speechRate)
-                    .setVolumeGainDb(-3)
                     .build();
             SynthesizeSpeechResponse response = textToSpeechClient.synthesizeSpeech(input, voice, config);
             long apiEndTime = System.currentTimeMillis();

@@ -24,7 +24,7 @@ public class LocationDto implements ToJsonConvertible {
     BodyData planetData;
     List<SAASignalsFoundEvent.Signal> signals = new ArrayList<>();
     List<SAASignalsFoundEvent.Genus> genus = new ArrayList<>();
-    List<BioSampleDto> completedBioScans = new ArrayList<>();
+    List<BioSampleDto> bioScans = new ArrayList<>();
     Set<FssSignal> detectedSignals = new HashSet<>();
     TrafficDto trafficDto;
     DeathsDto deathsDto;
@@ -159,8 +159,8 @@ public class LocationDto implements ToJsonConvertible {
         this.genus = genus;
     }
 
-    public List<BioSampleDto> getCompletedBioScans() {
-        return completedBioScans;
+    public List<BioSampleDto> getBioScans() {
+        return bioScans;
     }
 
     public void addDetectedSignal(FssSignal signal) {
@@ -173,7 +173,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void addBioScan(BioSampleDto bioSampleDto) {
-        this.completedBioScans.add(bioSampleDto);
+        this.bioScans.add(bioSampleDto);
     }
 
     public DeathsDto getDeathsDto() {
@@ -197,8 +197,8 @@ public class LocationDto implements ToJsonConvertible {
         this.signals.clear();
     }
 
-    public void setCompletedBioScans(List<BioSampleDto> completedBioScans) {
-        this.completedBioScans = completedBioScans;
+    public void setBioScans(List<BioSampleDto> bioScans) {
+        this.bioScans = bioScans;
     }
 
     public void clearDetectedSignals() {
@@ -418,5 +418,9 @@ public class LocationDto implements ToJsonConvertible {
     @Override
     public String toJson() {
         return GsonFactory.getGson().toJson(this);
+    }
+
+    public void clearBioSamples() {
+        this.bioScans.clear();
     }
 }

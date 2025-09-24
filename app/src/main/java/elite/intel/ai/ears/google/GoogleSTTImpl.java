@@ -194,7 +194,7 @@ public class GoogleSTTImpl implements EarsInterface {
      */
     @SuppressWarnings("deprecation") private void startStreaming() { // v2 is not an option as it is for SAAS v1 uses bidiStreamingCall and there is no upgrade
         int retryCount = 0;
-        int maxRetries = 5; // Cap to prevent infinite loops
+        int maxRetries = 15; // Cap to prevent infinite loops
         StringBuffer currentTranscript = new StringBuffer();
         List<Float> confidences = Collections.synchronizedList(new ArrayList<>());
         while (isListening.get()) {
@@ -225,7 +225,8 @@ public class GoogleSTTImpl implements EarsInterface {
 
                             @Override
                             public void onError(Throwable t) {
-                                log.error("STT error: {}", t.getMessage(), t);
+                                log.warn("STT error: {}", t.getMessage());
+                                throw new RuntimeException("retry");
                             }
 
                             @Override
@@ -319,7 +320,7 @@ public class GoogleSTTImpl implements EarsInterface {
                                         if (isStreamingModeOn) {
                                             String voiceName = SystemSession.getInstance().getAIVoice().getName();
                                             if (sanitizedTranscript.toLowerCase().startsWith("computer") || sanitizedTranscript.toLowerCase().startsWith(voiceName.toLowerCase())) {
-                                                sendToAi(sanitizedTranscript.replace("computer,", "").replace(voiceName.toLowerCase() + ",", ""), avgConfidence);
+                                                sendToAi(sanitizedTranscript.replace("computer,", "").replace(voiceName.toLowerCase() + ",", ""), 100);
                                             }
                                         } else {
                                             sendToAi(sanitizedTranscript, avgConfidence);

@@ -16,7 +16,7 @@ public class BioSampleTrackingSubscriber {
     @Subscribe
     public void onPlayerMovedEvent(PlayerMovedEvent event) {
         PlayerSession playerSession = PlayerSession.getInstance();
-        List<BioSampleDto> bioSamples = playerSession.getBioSamples();
+        List<BioSampleDto> bioSamples = playerSession.getCurrentLocation().getBioScans();
 
         // If no samples are being tracked, don't announce.
         if (bioSamples == null || bioSamples.isEmpty()) {
@@ -32,6 +32,7 @@ public class BioSampleTrackingSubscriber {
         for (BioSampleDto bioSample : bioSamples) {
             boolean canTakeSample = BioSampleDistanceCalculator.isFarEnoughFromSample(
                     bioSample.getGenus(),
+                    bioSample.getSpecies(),
                     bioSample.getScanLatitude(),
                     bioSample.getScanLongitude(),
                     playerSession.getStatus().getLatitude(),
@@ -52,9 +53,9 @@ public class BioSampleTrackingSubscriber {
         // Announce only on state transition
         if (wasFarEnough != isFarEnough) {
             if (isFarEnough) {
-                EventBusManager.publish(new SensorDataEvent("Far enough to take the next sample."));
+                EventBusManager.publish(new SensorDataEvent("Far enough to take the next bio sample."));
             } else {
-                EventBusManager.publish(new SensorDataEvent("Too close to the previous sample."));
+                EventBusManager.publish(new SensorDataEvent("Too close to the previous bio sample."));
             }
         }
     }

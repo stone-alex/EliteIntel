@@ -77,6 +77,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     private static final String HOME_SYSTEM = "home_system";
 
     ///
+    private final Map<Integer, FSSBodySignalsEvent> fssBodySignals = new HashMap<>();
     private final Map<String, Object> state = new HashMap<>();
     private final Map<String, String> shipScans = new HashMap<>();
     private final Map<Long, MissionDto> missions = new LinkedHashMap<>();
@@ -141,6 +142,11 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
             miningTargets.clear();
             miningTargets.addAll((Set<String>) v);
         }, new TypeToken<Set<String>>() {}.getType());
+
+        registerField("fss_body_signals", this::getFssBodySignals, v ->{
+            fssBodySignals.clear();
+            fssBodySignals.putAll((Map<Integer, FSSBodySignalsEvent>) v);
+        }, new TypeToken<Map<Integer, FSSBodySignalsEvent>>(){}.getType());
 
         registerField("markets", this::getMarkets, this::setMarkets, new TypeToken<List<StationMarket>>(){}.getType());
         registerField(BIO_SAMPLES, this::getBioSamples, this::setBioSamples, new TypeToken<List<BioSampleDto>>(){}.getType() );
@@ -541,4 +547,12 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         return lastScan;
     }
 
+    public Map<Integer, FSSBodySignalsEvent> getFssBodySignals() {
+        return fssBodySignals;
+    }
+
+    public void putFssBodySignal(int bodyId, FSSBodySignalsEvent event) {
+        fssBodySignals.put(bodyId, event);
+        saveSession();
+    }
 }

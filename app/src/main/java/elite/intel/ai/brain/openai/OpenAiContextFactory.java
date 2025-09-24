@@ -32,7 +32,7 @@ public class OpenAiContextFactory implements AiContextFactory {
         StringBuilder sb = new StringBuilder();
         getSessionValues(sb);
         appendBehavior(sb);
-        sb.append("Instructions: Analyze this input: ").append(sensorInput).append(". prefer shortName for stellar objects ");
+        sb.append("Instructions: Analyze this input: ").append(sensorInput).append(". Use shortName for stellar objects. ");
         return sb.toString();
     }
 
@@ -176,12 +176,13 @@ public class OpenAiContextFactory implements AiContextFactory {
         sb.append("Apply personality: ").append(aiPersonality.name().toUpperCase()).append(" - ").append(aiPersonality.getBehaviorClause()).append(" ");
         sb.append("For star system codes or ship plates (e.g., RH-F), use NATO phonetic alphabet (e.g., Romeo Hotel dash Foxtrot). ");
         sb.append("Spell out numerals in full words (e.g., 285 = two hundred and eighty-five, 27 = twenty-seven). ");
-        sb.append("Gravity units in G, Temperature units Kelvin provide conversion to Celsius. Mass units metric");
+        sb.append("Gravity units in G, Temperature units Kelvin provide conversion to Celsius. Mass units metric. NEVER USE GRAMS!!!!!!!!!!!!!!");
         sb.append("Distances between stars in light years. Distance between planets in light seconds.");
+        sb.append("Bio samples are taken from organisms not stellar objects.");
         sb.append("Round billions to nearest million. ");
         sb.append("Round millions to nearest 250000. ");
         sb.append("Start responses directly with the requested information, avoiding conversational fillers like 'noted,' 'well,' 'right,' 'understood,' or similar phrases. ");
-        sb.append("Do not end your response with a question.");
+        sb.append("Do not end responses with any fillers, conversational closers, or unnecessary phrases like 'Ready for exploration', 'Ready for orders', 'All set', 'Ready to explore', or similar open-ended questions or remarks.");
         if (personality.equals(AIPersonality.UNHINGED) || personality.equals(AIPersonality.FRIENDLY)) {
             sb.append("For UNHINGED personality, use playful slang matching cadence.");
         }

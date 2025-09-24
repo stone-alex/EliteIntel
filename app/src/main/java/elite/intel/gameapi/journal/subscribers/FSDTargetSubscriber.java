@@ -16,22 +16,22 @@ public class FSDTargetSubscriber {
     @Subscribe
     public void onFSDTargetEvent(FSDTargetEvent event) {
         PlayerSession playerSession = PlayerSession.getInstance();
-        String fsdTarget = event.getName() + isFuelStarClause(event.getStarClass());
-        EventBusManager.publish(new AppLogEvent("Processing FSDTargetEvent. Storing in session only: " + fsdTarget));
+        StringBuilder sb = new StringBuilder();
+        sb.append(event.getName()).append(" ").append(isFuelStarClause(event.getStarClass()));
+        EventBusManager.publish(new AppLogEvent("Processing FSDTargetEvent. Storing in session only: " + sb));
 
         StarSystemDto systemDto = EdsmApiClient.searchStarSystem(event.getName(), 1);
         DeathsDto deathsDto = EdsmApiClient.searchDeaths(event.getName());
         TrafficDto trafficDto = EdsmApiClient.searchTraffic(event.getName());
-        StringBuilder sb = new StringBuilder();
 
         if (systemDto.getData() != null) {
+            sb = new StringBuilder();
             sb.append(systemDto.getData().toString()).append(", ");
             sb.append(deathsDto.getData().toString()).append(", ");
             sb.append(trafficDto.getData().toString());
-            playerSession.put(PlayerSession.FSD_TARGET, sb.toString());
-        } else {
-            playerSession.put(PlayerSession.FSD_TARGET, fsdTarget);
         }
+
+        playerSession.put(PlayerSession.FSD_TARGET, sb.toString());
 
     }
 

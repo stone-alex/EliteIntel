@@ -24,6 +24,9 @@ public class ScanEvent extends BaseEvent {
     @SerializedName("StarSystem")
     private String starSystem;
 
+    @SerializedName("StarType")
+    private String starType;
+
     @SerializedName("SystemAddress")
     private long systemAddress;
 
@@ -367,6 +370,11 @@ public class ScanEvent extends BaseEvent {
 
     public boolean isWasMapped() {
         return wasMapped;
+    }
+
+
+    public String getStarType() {
+        return starType;
     }
 
     @Override

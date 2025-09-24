@@ -22,7 +22,7 @@ public class CarrierJumpCompleteSubscriber {
         CarrierDataDto carrierData = playerSession.getCarrierData();
         playerSession.remove(PlayerSession.CARRIER_DEPARTURE_TIME);
 
-        if(carrierData != null) {
+        if(carrierData != null && starPos[0] > 0) {
             carrierData.setX(starPos[0]);
             carrierData.setY(starPos[1]);
             carrierData.setZ(starPos[2]);

@@ -96,7 +96,7 @@ class SessionPersistence {
             saveQueue.put(new SaveOperation(stateMap));
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            log.error("Interrupted while queueing save operation", e);
+            log.warn("Interrupted while queueing save operation");
         }
     }
 

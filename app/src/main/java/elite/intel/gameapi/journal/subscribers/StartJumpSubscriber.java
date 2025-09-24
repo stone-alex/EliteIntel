@@ -8,6 +8,8 @@ import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.ui.event.AppLogEvent;
 
+import static elite.intel.util.StringUtls.isFuelStarClause;
+
 @SuppressWarnings("unused")
 public class StartJumpSubscriber {
 
@@ -43,11 +45,4 @@ public class StartJumpSubscriber {
 
     }
 
-    private String isFuelStarClause(String starClass) {
-        if (starClass == null) {
-            return "";
-        }
-        boolean isFuelStar = "KGBFOAM".contains(starClass);
-        return isFuelStar ? " Fuel Star" : " Warning! - Not a Fuel Star!";
-    }
 }

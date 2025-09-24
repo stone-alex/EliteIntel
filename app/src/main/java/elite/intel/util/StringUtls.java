@@ -31,4 +31,14 @@ public class StringUtls {
 
         return result.toString();
     }
+
+
+    public static String isFuelStarClause(String starClass) {
+        if (starClass == null) {
+            return "";
+        }
+        boolean isFuelStar = "KGBFOAM".contains(starClass);
+        return isFuelStar ? " Fuel Star" : " Warning! - Not a Fuel Star!";
+    }
+
 }

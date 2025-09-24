@@ -3,7 +3,6 @@ package elite.intel.gameapi.journal.subscribers;
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.search.edsm.EdsmApiClient;
 import elite.intel.ai.search.edsm.dto.DeathsDto;
-import elite.intel.ai.search.edsm.dto.StarSystemDto;
 import elite.intel.ai.search.edsm.dto.TrafficDto;
 import elite.intel.ai.search.edsm.dto.data.DeathsStats;
 import elite.intel.ai.search.edsm.dto.data.TrafficStats;
@@ -15,9 +14,10 @@ import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.AdjustRoute;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import static elite.intel.util.StringUtls.isFuelStarClause;
 
 @SuppressWarnings("unused")
 public class FSDJumpSubscriber {
@@ -43,6 +43,7 @@ public class FSDJumpSubscriber {
         currentLocation.setPowerplayStateControlProgress(event.getPowerplayStateControlProgress());
         currentLocation.setPowerplayStateReinforcement(event.getPowerplayStateReinforcement());
         currentLocation.setPowerplayStateUndermining(event.getPowerplayStateUndermining());
+        playerSession.setCurrentLocation(currentLocation);
 
         String finalDestination = String.valueOf(playerSession.get(PlayerSession.FINAL_DESTINATION));
         String arrivedAt = String.valueOf(playerSession.get(PlayerSession.JUMPING_TO));
@@ -68,23 +69,27 @@ public class FSDJumpSubscriber {
             }
             currentLocation.setTrafficDto(trafficDto);
             currentLocation.setDeathsDto(deathsDto);
-
-        } else {
-            if (roueSet) {
-                Map<Integer, NavRouteDto> adjustedRoute = AdjustRoute.adjustRoute(orderedRoute);
-                playerSession.setNavRoute(adjustedRoute);
-                int remainingJump = adjustedRoute.size();
-                if (remainingJump > 0) {
-                    orderedRoute.stream().findFirst().ifPresent(
-                            nextStop -> sb.append(" Next stop: ").append(nextStop.toJson()).append(", ")
-                    );
-                }
-
-                sb.append(remainingJump).append(" jumps remaining: ").append(" to ").append(finalDestination).append(".");
+            playerSession.setCurrentLocation(currentLocation);
+        } else if (roueSet) {
+            Map<Integer, NavRouteDto> adjustedRoute = AdjustRoute.adjustRoute(orderedRoute);
+            playerSession.setNavRoute(adjustedRoute);
+            int remainingJump = adjustedRoute.size();
+            if (remainingJump > 0) {
+                orderedRoute.stream().findFirst().ifPresent(
+                        nextStop -> sb
+                                .append(" Next stop: ")
+                                .append(nextStop.getName())
+                                .append(". ")
+                                .append("Star Class: ")
+                                .append(nextStop.getStarClass())
+                                .append(", ")
+                                .append(isFuelStarClause(nextStop.getStarClass()))
+                );
             }
+
+            sb.append(remainingJump).append(" jumps remaining: ").append(" to ").append(finalDestination).append(".");
         }
 
-        playerSession.setCurrentLocation(currentLocation);
         EventBusManager.publish(new SensorDataEvent(sb.toString()));
     }
 }

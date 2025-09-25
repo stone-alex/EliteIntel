@@ -143,3 +143,4 @@
 "terraformed"="terraformable"
 "break all the ship"="recall the ship"
 "eyes bodies"="ice bodies"
+"how are you far enough"="are we far enough"

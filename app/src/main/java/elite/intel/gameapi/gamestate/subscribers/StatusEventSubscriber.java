@@ -41,9 +41,6 @@ public class StatusEventSubscriber {
         }
 
         playerSession.setStatus(event);
-
-        if (event.getLatitude() > 0 && event.getLongitude() > 0 && event.getPlanetRadius() > 0) {
-            EventBusManager.publish(new PlayerMovedEvent(event.getLatitude(), event.getLongitude(), event.getPlanetRadius()));
-        }
+        EventBusManager.publish(new PlayerMovedEvent(event.getLatitude(), event.getLongitude(), event.getPlanetRadius()));
     }
 }

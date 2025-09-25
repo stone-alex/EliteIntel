@@ -69,7 +69,6 @@ public class ScanOrganicSubscriber {
             BioSampleDto bioSampleDto = createBioSampleDto(genus, variant, planetNumber, starSystemNumber, valueInCredits);
             bioSampleDto.setScanXof3("Three of Three");
             bioSampleDto.setBioSampleCompleted(true);
-            currentLocation.addBioScan(bioSampleDto);
             playerSession.addBioSample(bioSampleDto);
             playerSession.saveCurrentLocation(currentLocation);
             currentLocation.clearBioSamples();

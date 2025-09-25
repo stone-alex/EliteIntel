@@ -507,22 +507,23 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     }
 
     public void clearCash() {
-        this.stellarObjects.clear();
-        this.markets.clear();
         this.bioSamples.clear();
-        this.shipScans.clear();
         this.bounties.clear();
+        this.bountyCollectedThisSession = 0;
+        this.carrierData = new CarrierDataDto();
+        this.codexEntries.clear();
         this.currentLocation = new LocationDto();
         this.gameStatus = null;
         this.loadout = null;
-        this.bountyCollectedThisSession = 0;
-        this.rankAndProgressDto = new RankAndProgressDto();
-        this.carrierData = new CarrierDataDto();
-        this.targetFactions.clear();
+        this.markets.clear();
         this.missions.clear();
+        this.rankAndProgressDto = new RankAndProgressDto();
         this.setShipLoadout(null);
-        this.
-        saveSession();
+        this.shipScans.clear();
+        this.stellarObjects.clear();
+        this.targetFactions.clear();
+        
+        this.saveSession();
     }
 
     public void setShipCargo(GameEvents.CargoEvent event) {

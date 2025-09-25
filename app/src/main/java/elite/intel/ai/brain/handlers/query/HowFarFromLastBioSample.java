@@ -1,0 +1,46 @@
+package elite.intel.ai.brain.handlers.query;
+
+import com.google.gson.JsonObject;
+import elite.intel.gameapi.journal.events.dto.BioSampleDto;
+import elite.intel.gameapi.journal.events.dto.LocationDto;
+import elite.intel.session.PlayerSession;
+import elite.intel.util.json.GsonFactory;
+import elite.intel.util.json.ToJsonConvertible;
+
+import java.util.List;
+
+public class HowFarFromLastBioSample extends BaseQueryAnalyzer implements QueryHandler {
+
+
+    @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
+        PlayerSession playerSession = PlayerSession.getInstance();
+        LocationDto currentLocation = playerSession.getCurrentLocation();
+        if(currentLocation == null) {
+            return analyzeData(toJson("Current location is not available."), originalUserInput);
+        }
+        if (playerSession.getStatus() == null) {
+            return analyzeData(toJson("No data available"), originalUserInput);
+        }
+
+        double latitude = playerSession.getStatus().getLatitude();
+        double longitude = playerSession.getStatus().getLongitude();
+        double planetRadius = playerSession.getStatus().getPlanetRadius();
+
+        if (latitude == 0 || longitude == 0 || planetRadius == 0) {
+            return analyzeData(toJson("Your current position is not available."), originalUserInput);
+        }
+
+        if(currentLocation.getBioScans().isEmpty()){
+            return analyzeData(toJson("No bio samples available."), originalUserInput);
+        }
+
+        BioSampleDto bioSample = currentLocation.getBioScans().getLast();
+        return analyzeData(new DataDto(latitude, longitude, planetRadius, bioSample).toJson(), originalUserInput);
+    }
+
+    record DataDto(double userLatitude, double userLongitude, double planetRadius, BioSampleDto bioSample) implements ToJsonConvertible {
+        @Override public String toJson() {
+            return GsonFactory.getGson().toJson(this);
+        }
+    }
+}

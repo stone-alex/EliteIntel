@@ -20,6 +20,11 @@ public class DistanceFromShipTracker {
     @Subscribe
     public void onPlayerMovedEvent(PlayerMovedEvent event) {
         PlayerSession playerSession = PlayerSession.getInstance();
+        if(playerSession.getStatus()==null){ return;}
+        if(playerSession.getStatus().getFuel() != null && playerSession.getStatus().getFuel().getFuelMain() > 0){
+            // we are in the ship
+            return;
+        }
         LocationDto currentLocation = playerSession.getCurrentLocation();
         if (currentLocation == null) {
             log.debug("Current location is null, skipping distance check.");

@@ -49,7 +49,7 @@ public class BioSampleTrackingSubscriber {
         }
 
         BioSampleDto bioSampleDto = bioSamples.getFirst();
-        playerSession.setBioSamples(temp);
+        playerSession.getCurrentLocation().setBioScans(temp);
 
         // Announce only on state transition
         if (wasFarEnough != isFarEnough) {

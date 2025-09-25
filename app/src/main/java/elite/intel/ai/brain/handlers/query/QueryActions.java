@@ -34,7 +34,7 @@ public enum QueryActions {
     CARRIER_ETA("query_fleet_carrier_eta", "Use arrival time and current time to determine ETA", CarrierETAHandler.class, false),
     HOW_FAR_ARE_WE_FROM_BUBBLE("how_far_are_we_from_earth_bubble", "calculate distance in light years using 3D coordinates", DistanceFromTheBubble.class, false),
     HOW_FAR_IS_OUR_CARRIER("how_far_is_our_fleet_carrier", "calculate distance in light years using 3D coordinates", HowFarIsOurCarrierHandler.class, false),
-    HOW_MANY_SAMPLES_COLLECTED("how_many_bio_samples_collected", "Look at the bio samples data to answer the question", AnalyzeBioSamplesHandler.class, true),
+    HOW_MANY_SAMPLES_COLLECTED("how_many_bio_samples_collected", "Summarize the bio-sample collection progress, including completed samples, partial scans, and remaining species to scan.", AnalyzeBioSamplesHandler.class, true),
     HOW_FAR_ARE_WE_FROM_LAST_BIO_SAMPLE("how_far_from_last_bio_sample", "use userLatitude, userLongitude, planetRadius and lat/lon of the sample to calculate distance", HowFarFromLastBioSample.class, true);
 
     // NOT implemented yet

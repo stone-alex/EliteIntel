@@ -54,9 +54,10 @@ public class ScanOrganicSubscriber {
 
             BioSampleDto bioSampleDto = createBioSampleDto(genus, variant, planetNumber, starSystemNumber, valueInCredits);
             bioSampleDto.setScanXof3("First of Three");
+            currentLocation.clearBioSamples();
             currentLocation.addBioScan(bioSampleDto);
             EventBusManager.publish(new SensorDataEvent(sb.toString()));
-            removeCodexEntry(event.getVariantLocalised(), playerSession);
+
 
         } else if (scan2.equalsIgnoreCase(scanType)) {
             BioSampleDto bioSampleDto = createBioSampleDto(genus, variant, planetNumber, starSystemNumber, valueInCredits);
@@ -71,6 +72,7 @@ public class ScanOrganicSubscriber {
             bioSampleDto.setBioSampleCompleted(true);
             playerSession.addBioSample(bioSampleDto);
             playerSession.saveCurrentLocation(currentLocation);
+            removeCodexEntry(event.getVariantLocalised(), playerSession);
             currentLocation.clearBioSamples();
         }
 

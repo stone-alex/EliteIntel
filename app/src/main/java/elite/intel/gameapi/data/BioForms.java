@@ -452,4 +452,14 @@ public class BioForms {
     public static String getBiomeDescription(String genus) {
         return GENUS_TO_BIOME.get(capitalizeWords(genus));
     }
+
+    public static long getAverageProjectedPayment(String genus){
+        Map<String, BioDetails> speciesMap = GENUS_TO_SPECIES.get(capitalizeWords(genus));
+        if(speciesMap.isEmpty()) return 0;
+        long creditValue=0;
+        for(BioDetails details : speciesMap.values()){
+            creditValue = creditValue + details.creditValue();
+        }
+        return creditValue / speciesMap.size();
+    }
 }

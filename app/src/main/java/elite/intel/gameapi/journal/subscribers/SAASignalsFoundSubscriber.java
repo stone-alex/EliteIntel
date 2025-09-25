@@ -3,6 +3,7 @@ package elite.intel.gameapi.journal.subscribers;
 import com.google.common.eventbus.Subscribe;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
+import elite.intel.gameapi.data.BioForms;
 import elite.intel.gameapi.journal.events.SAASignalsFoundEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.gameapi.journal.events.dto.StellarObjectDto;
@@ -48,11 +49,15 @@ public class SAASignalsFoundSubscriber {
                 playerSession.saveCurrentLocation(currentLocation);
 
                 sb.append(" Exobiology signal(s) found ").append(liveSignals).append(": ");
+                long averageProjectedPayment = 0;
                 for (SAASignalsFoundEvent.Genus genus : event.getGenuses()) {
+                    averageProjectedPayment = averageProjectedPayment + BioForms.getAverageProjectedPayment(genus.getGenus());
                     sb.append(" ");
                     sb.append(genus.getGenusLocalised());
                     sb.append(", ");
                 }
+                sb.append("Average projected payment: ").append(averageProjectedPayment).append(" credits. Plus bonus if first discovered.");
+
             }else if(bodyName.contains("Ring")){
                 //Rings are bodies
                 StellarObjectDto ring = new StellarObjectDto();

@@ -522,7 +522,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         this.shipScans.clear();
         this.stellarObjects.clear();
         this.targetFactions.clear();
-        
+        this.fssBodySignals.clear();
         this.saveSession();
     }
 

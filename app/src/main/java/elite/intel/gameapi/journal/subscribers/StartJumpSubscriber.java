@@ -33,13 +33,13 @@ public class StartJumpSubscriber {
 
 
         //clear last location data
-        //if ("Hyperspace".equalsIgnoreCase(event.getJumpType())) {
+        if ("Hyperspace".equalsIgnoreCase(event.getJumpType())) {
             playerSession.saveCurrentLocation(new LocationDto());
             playerSession.clearMiningTargets();
             playerSession.clearStellarObjectsAndSignals();
             playerSession.setLastScan(null);
             EventBusManager.publish(new SensorDataEvent(sb.toString()));
-        //}
+        }
 
     }
 

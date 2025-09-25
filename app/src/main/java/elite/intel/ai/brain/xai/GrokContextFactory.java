@@ -130,7 +130,7 @@ public class GrokContextFactory implements AiContextFactory {
     @Override public String generateSystemPrompt() {
         StringBuilder sb = new StringBuilder();
         sb.append("Classify as: 'input' (data to analyze) or 'command' (trigger app action or keyboard event). ");
-        sb.append("Use NATO phonetic alphabet for star system codes or ship plates (e.g., RH-F = Romeo Hotel dash Foxtrot). ");
+        sb.append("Use NATO phonetic alphabet for star system names, ship plates etc, (e.g., RH-F = Romeo Hotel dash Foxtrot, HN-Y = Hotel November dash Yankee). ");
         appendBehavior(sb);
         sb.append(generateSupportedQueriesClause());
         sb.append("Round billions to nearest million. ");

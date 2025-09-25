@@ -26,6 +26,7 @@ public class SAASignalsFoundSubscriber {
 
         String bodyName = event.getBodyName();
         StellarObjectDto stellarObjectDto = playerSession.getStellarObjects().get(bodyName);
+        if(stellarObjectDto == null) {return;}
 
         if (signalsFound > 0) {
             int liveSignals = event.getGenuses() != null ? event.getGenuses().size() : 0;

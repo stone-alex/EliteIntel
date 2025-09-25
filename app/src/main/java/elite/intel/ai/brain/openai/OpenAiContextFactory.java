@@ -102,15 +102,6 @@ public class OpenAiContextFactory implements AiContextFactory {
     }
 
 
-    private String generateClassifyClause() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Classify input as one of:\n" +
-                "    - 'command': Triggers an app action or keyboard event. Use for explicit action requests like 'find', 'locate', 'where' (e.g., 'Find where we can buy carrier fuel'—searches APIs for targets), or control commands like 'set', 'activate' (e.g., deploying landing gear, plotting a route, or setting a target). Treat location/action imperatives (FIND/LOCATE/WHERE) as commands even if question-phrased. Only match supported commands listed below. Provide empty response_text for single word commands.\n" +
-                "    - 'query': Requests information from game state (e.g., system data, ship status). Use for interrogative inputs starting with 'what', 'analyze', 'how', 'do we have', or requesting summaries (e.g., 'Do we have blah in our cargo hold'—AI analyzes onboard data). Search data received for best answer. Match supported queries listed below.\n" +
-                "    - 'chat': General conversation, questions unrelated to game actions or state, or when input doesn’t match a command or query (e.g., lore, opinions, or casual talk). If ambiguous (e.g., pure 'where' without context), default to chat.\n");
-        return sb.toString();
-    }
-
 
     private String generateSupportedCommandsCause() {
         StringBuilder sb = new StringBuilder();
@@ -238,5 +229,14 @@ public class OpenAiContextFactory implements AiContextFactory {
         AICadence aiCadence = systemSession.getAICadence() != null ? systemSession.getAICadence() : AICadence.IMPERIAL;
         String third = aiCadence == AICadence.IMPERIAL ? "'arse', 'bloke', 'bollocks'" : "'ass', 'dude', 'rad'";
         return "'shit', 'piss', 'cunt', 'cock', 'cocksucker', 'motherfucker', 'tits', 'fuck', " + third;
+    }
+
+    private String generateClassifyClause() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Classify input as one of:\n" +
+                "    - 'command': Triggers an app action or keyboard event (DO SOMETHING). Use for inputs starting with verbs like 'set', 'get', 'drop', 'retract', 'deploy', 'find', 'locate', 'activate' (e.g., 'deploy landing gear', 'set mining target', 'find carrier fuel'). Treat imperative verbs as commands even if question-phrased (e.g., 'get distance' is a command). Only match supported commands listed in GameCommands or CustomCommands. Provide empty response_text for single-word commands;. Match commands before queries or chat.\n" +
+                "    - 'query': Requests information from game state (LOOK UP or COMPUTE SOMETHING). Use for inputs starting with interrogative words like 'what', 'where', 'when', 'how', 'how far', 'how many', 'how much', 'what is', 'where is' (e.g., 'how far are we from last bio sample', 'what is in our cargo hold'). Explicitly match queries about distance to the last bio sample with phrases containing 'how far' or 'distance' followed by 'bio sample', 'biosample', 'last sample', 'last bio sample', 'previous bio sample', or 'previous biosample', with or without prefixes like 'query', 'query about game state', or 'query question' (e.g., 'how far are we from last bio sample', 'how far away from the last bio sample', 'query how far are we from the last biosample', 'query about game state query question how far are we from the last bio sample', 'distance to last sample'). Normalize input by stripping prefixes ('query', 'query about game state', 'query question') and replacing 'bio sample' with 'biosample' for matching. These must trigger the query handler (HOW_FAR_ARE_WE_FROM_LAST_SAMPLE) with action 'query_how_far_we_moved_from_last_bio_sample' to send raw game state data (e.g., planet radius, last bio sample coordinates, current coordinates) for AI analysis, returning 'Distance from last sample is: <distance> meters.' in the configured personality and cadence. Set response_text to 'Moment...' for user feedback during analysis. Match supported queries listed in QueryActions. Queries take priority over chat but not commands.\n" +
+                "    - 'chat': General conversation, questions unrelated to game actions or state, or unmatched inputs (general chat). Use for lore, opinions, or casual talk (e.g., 'How’s it going?', 'What’s the vibe in this system?'). Only classify as chat if the input does not start with interrogative words ('what', 'where', 'when', 'how', 'how far', 'how many', 'how much', 'what is', 'where is') or command verbs ('set', 'get', 'drop', 'retract', 'deploy', 'find', 'locate', 'activate') and does not match any specific query or command pattern in QueryActions or GameCommands/CustomCommands. If ambiguous (e.g., pure 'where'), set response_text to 'Say again?', action to null, and expect_followup to true.\n");
+        return sb.toString();
     }
 }

@@ -23,13 +23,13 @@ public class StatusEventSubscriber {
             if(fuelCapacityMain > 0) { // we are on the ship
                 double fuelAmount = oldStatus.getFuel().getFuelMain();
                 double remainingFuelInPercent = Math.round((fuelAmount / fuelCapacityMain * 100) * 100.0) / 100.0;
-                if (remainingFuelInPercent < QUARTER_TANK_REMAINING && event.getFuel().getFuelMain() > fuelAmount) {
+                if (remainingFuelInPercent != 0 && remainingFuelInPercent < QUARTER_TANK_REMAINING && event.getFuel().getFuelMain() > fuelAmount) {
                     EventBusManager.publish(new VoiceProcessEvent("Fuel warning: " + remainingFuelInPercent + "% remaining."));
                 }
             } else { // we are in the buggy. use reservable instead
                 double fuelAmount = oldStatus.getFuel().getFuelReservoir();
                 double remainingFuelInPercent = Math.round((fuelAmount / BUGGY_STANDARD_FUEL_TANK * 100) * 100.0) / 100.0;
-                if (remainingFuelInPercent < QUARTER_TANK_REMAINING && event.getFuel().getFuelReservoir() > fuelAmount) {
+                if (remainingFuelInPercent != 0&& remainingFuelInPercent < QUARTER_TANK_REMAINING && event.getFuel().getFuelReservoir() > fuelAmount) {
                     EventBusManager.publish(new VoiceProcessEvent("Fuel warning: " + remainingFuelInPercent + "% remaining."));
                 }
 
@@ -42,8 +42,7 @@ public class StatusEventSubscriber {
 
         playerSession.setStatus(event);
 
-
-        if (!playerSession.getBioSamples().isEmpty()) {
+        if (event.getLatitude() > 0 && event.getLongitude() > 0 && event.getPlanetRadius() > 0) {
             EventBusManager.publish(new PlayerMovedEvent(event.getLatitude(), event.getLongitude(), event.getPlanetRadius()));
         }
     }

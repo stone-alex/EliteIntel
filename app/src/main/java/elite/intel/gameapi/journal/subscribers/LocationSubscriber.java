@@ -2,7 +2,6 @@ package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.search.edsm.EdsmApiClient;
-import elite.intel.ai.search.edsm.dto.TrafficDto;
 import elite.intel.gameapi.journal.events.LocationEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
@@ -36,6 +35,6 @@ public class LocationSubscriber {
         dto.setTrafficDto(EdsmApiClient.searchTraffic(event.getStarSystem()));
         dto.setDeathsDto(EdsmApiClient.searchDeaths(event.getStarSystem()));
 
-        playerSession.setCurrentLocation(dto);
+        playerSession.saveCurrentLocation(dto);
     }
 }

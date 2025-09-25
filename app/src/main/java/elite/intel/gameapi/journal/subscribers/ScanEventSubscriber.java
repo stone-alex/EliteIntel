@@ -1,7 +1,6 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.intel.gameapi.AuxiliaryFilesMonitor;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.journal.events.FSSBodySignalsEvent;
@@ -13,8 +12,6 @@ import elite.intel.util.GravityCalculator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -49,13 +46,15 @@ public class ScanEventSubscriber {
         String shortName = subtractString(event.getBodyName(), event.getStarSystem());
         String bodyName = event.getBodyName();
 
+
         if ("Detailed".equalsIgnoreCase(event.getScanType())) {
             Double gravity = GravityCalculator.calculateSurfaceGravity(event.getMassEM(), event.getRadius());
             //data for discovery missions - detailed scans
             StellarObjectDto stellarObject = new StellarObjectDto();
             stellarObject.setName(event.getBodyName());
+            stellarObject.setBodyId(event.getBodyID());
             stellarObject.setShortName(shortName);
-            if(gravity != null) stellarObject.setGravity(gravity); //DO NOT use event.getSurfaceGravity() as it is not accurate
+            if (gravity != null) stellarObject.setGravity(gravity); //DO NOT use event.getSurfaceGravity() as it is not accurate
             stellarObject.setMassEM(event.getMassEM());
             stellarObject.setRadius(event.getRadius());
             stellarObject.setSurfaceTemperature(event.getSurfaceTemperature());
@@ -66,20 +65,21 @@ public class ScanEventSubscriber {
             stellarObject.setAtmosphere(event.getAtmosphereType());
             stellarObject.setMaterials(toListOfMaterials(event.getMaterials()));
             FSSBodySignalsEvent fssBodySignalsEvent = playerSession.getFssBodySignals().get(event.getBodyID());
-            if(fssBodySignalsEvent != null) {
+            if (fssBodySignalsEvent != null) {
                 List<FSSBodySignalsEvent.Signal> signals = fssBodySignalsEvent.getSignals();
-                if(signals != null && !signals.isEmpty()) {
+                if (signals != null && !signals.isEmpty()) {
                     int countBioSignals = 0;
                     int countGeological = 0;
-                    for(FSSBodySignalsEvent.Signal signal : signals){
-                        if("Biological".equalsIgnoreCase(signal.getTypeLocalised())) {
+                    for (FSSBodySignalsEvent.Signal signal : signals) {
+                        if ("Biological".equalsIgnoreCase(signal.getTypeLocalised())) {
                             countBioSignals++;
                         }
-                        if("Geological".equalsIgnoreCase(signal.getTypeLocalised())) {
+                        if ("Geological".equalsIgnoreCase(signal.getTypeLocalised())) {
                             countGeological++;
                         }
                     }
-                    stellarObject.setNumBioForms(countBioSignals);
+                    stellarObject.setFssSignals(fssBodySignalsEvent.getSignals());
+                    stellarObject.setNumberOfBioFormsPresent(countBioSignals);
                     stellarObject.setGeoSignals(countGeological);
                 }
             }
@@ -96,9 +96,9 @@ public class ScanEventSubscriber {
 
             if (!wasDiscovered) {
                 //new discovery NOTE: this might be a bit too much. check in game
-                if (event.getTerraformState()!= null && !event.getTerraformState().isEmpty()) {
+                if (event.getTerraformState() != null && !event.getTerraformState().isEmpty()) {
                     EventBusManager.publish(new SensorDataEvent("New Terraformable planet: " + shortName + " Details available on request. "));
-                } else if(!isStar && event.getPlanetClass() != null && valuablePlanetClasses.contains(event.getPlanetClass().toLowerCase())){
+                } else if (!isStar && event.getPlanetClass() != null && valuablePlanetClasses.contains(event.getPlanetClass().toLowerCase())) {
                     EventBusManager.publish(new SensorDataEvent("New discovery logged: " + event.getPlanetClass()));
                 } else {
                     log.info("Skipping Discovery Announcement: " + event.getPlanetClass());
@@ -119,17 +119,17 @@ public class ScanEventSubscriber {
                 }
             } else if (isPrimaryStar && !wasDiscovered) {
                 EventBusManager.publish(new SensorDataEvent("New star system discovered!"));
-            } else if(isPrimaryStar){
+            } else if (isPrimaryStar) {
                 EventBusManager.publish(new SensorDataEvent("Previously discovered!"));
-            } else if(!wasDiscovered){
-                EventBusManager.publish(new SensorDataEvent("New Discovery!"));
+            } else if (!wasDiscovered) {
+                //EventBusManager.publish(new SensorDataEvent("New Discovery!"));
             }
         }
     }
 
     private static String getDetails(ScanEvent event, String shortName) {
         boolean hasMats = event.getMaterials() != null && !event.getMaterials().isEmpty();
-        boolean isTerraformable = event.getTerraformState()!= null && !event.getTerraformState().isEmpty();
+        boolean isTerraformable = event.getTerraformState() != null && !event.getTerraformState().isEmpty();
         boolean isLandable = event.isLandable();
         String sensorData = "New discovery: " + shortName + ". "
                 + (hasMats ? " Materials detected. data available on request, " : " ")
@@ -139,9 +139,9 @@ public class ScanEventSubscriber {
     }
 
     private List<MaterialDto> toListOfMaterials(List<ScanEvent.Material> materials) {
-        if(materials == null) return new ArrayList<>();
+        if (materials == null) return new ArrayList<>();
         ArrayList<MaterialDto> result = new ArrayList<>();
-        for(ScanEvent.Material material : materials) {
+        for (ScanEvent.Material material : materials) {
             result.add(new MaterialDto(material.getName(), material.getPercent()));
         }
         return result;

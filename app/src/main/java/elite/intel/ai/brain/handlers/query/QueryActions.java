@@ -6,7 +6,7 @@ public enum QueryActions {
     ANALYZE_LOCAL_OUTFITTING("query_analyze_outfitting", "Analyze outfitting options. ", AnalyzeLocalOutfittingHandler.class, true),
     ANALYZE_LOCAL_SHIPYARD("query_shipyard_data", "Analyse shipyard contents. ", AnalyzeShipyardHandler.class, true),
     ANALYZE_SCAN("query_analyze_last_scan", "Provide analysis of this scan data of the stellar object. ", AnalyzeLastScanHandler.class, true),
-    ANALYZE_STELLAR_OBJECTS("query_analyze_local_stellar_objects", "Analyze current star system and nearby stellar objects. Gravity unit G, Temperature unit C ", AnalyzeStellarObjectsHandler.class, true),
+    ANALYZE_STELLAR_OBJECTS("query_analyze_local_planets_and_moons", "Analyze current star system and nearby planets. Gravity unit G, Temperature unit C ", AnalyzeStellarObjectsHandler.class, true),
     ANALYZE_STELLAR_OBJECT("query_analyze_this_planet", "Provide analysis of stellar body", AnalyzerStellarObjectHandler.class, true),
     ANALYZE_BODY_MATERIALS("query_planet_materials_for_harvest", "Analyze materials available. ", AnalyzeMaterialsOnPlanetHandler.class, true),
     ANALYZE_CURRENT_PLANET("query_planet_data_analysis", "Answer questions based on data for the current planet", AnalyzeCurrentPlanetHandler.class, true),
@@ -33,7 +33,8 @@ public enum QueryActions {
     GENERAL_CONVERSATION("general_conversation", "General conversation, use your own knowledge to respond", ConversationalQueryHandler.class, true),
     CARRIER_ETA("query_fleet_carrier_eta", "Use arrival time and current time to determine ETA", CarrierETAHandler.class, false),
     HOW_FAR_ARE_WE_FROM_BUBBLE("how_far_are_we_from_earth_bubble", "calculate distance in light years using 3D coordinates", DistanceFromTheBubble.class, false),
-    HOW_FAR_IS_OUR_CARRIER("how_far_is_our_fleet_carrier", "calculate distance in light years using 3D coordinates", HowFarIsOurCarrierHandler.class, false);
+    HOW_FAR_IS_OUR_CARRIER("how_far_is_our_fleet_carrier", "calculate distance in light years using 3D coordinates", HowFarIsOurCarrierHandler.class, false),
+    HOW_MANY_SAMPLES_COLLECTED("how_many_bio_samples_collected", "Look at the bio samples data to answer the question", AnalyzeBioSamplesHandler.class, true);
 
     // NOT implemented yet
     //FIND_MATERIAL_TRADER("find_material_trader", "Find us a material trader. ", MaterialTraderQueryHandler.class, true);

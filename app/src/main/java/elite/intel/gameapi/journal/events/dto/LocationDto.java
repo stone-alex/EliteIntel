@@ -54,6 +54,7 @@ public class LocationDto implements ToJsonConvertible {
     private double gravity;
     private double surfaceTemperature;
     Map<String, Double> materials = new HashMap<>();
+    private double[] landingCoordinates;
 
 
 
@@ -422,5 +423,13 @@ public class LocationDto implements ToJsonConvertible {
 
     public void clearBioSamples() {
         this.bioScans.clear();
+    }
+
+    public double[] getLandingCoordinates() {
+        return landingCoordinates;
+    }
+
+    public void setLandingCoordinates(double[] landingCoordinates) {
+        this.landingCoordinates = landingCoordinates;
     }
 }

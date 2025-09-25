@@ -4,11 +4,15 @@ import com.google.common.eventbus.Subscribe;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.data.BioForms;
+import elite.intel.gameapi.journal.events.CodexEntryEvent;
 import elite.intel.gameapi.journal.events.ScanOrganicEvent;
 import elite.intel.gameapi.journal.events.dto.BioSampleDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.BioScanDistances;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ScanOrganicSubscriber {
 
@@ -41,29 +45,48 @@ public class ScanOrganicSubscriber {
             sb.append(" Required Distance between samples: ");
             sb.append(BioScanDistances.GENUS_TO_CCR.get(genus));
             sb.append(" meters. ");
-            sb.append("Approximate Vista Genomix payment: ");
-            sb.append(valueInCredits);
-            sb.append(" credits.");
+
+            if(valueInCredits > 0) {
+                sb.append("Approximate Vista Genomix payment: ");
+                sb.append(valueInCredits);
+                sb.append(" credits.");
+            }
 
             BioSampleDto bioSampleDto = createBioSampleDto(genus, variant, planetNumber, starSystemNumber, valueInCredits);
+            bioSampleDto.setScanXof3("First of Three");
             currentLocation.addBioScan(bioSampleDto);
             EventBusManager.publish(new SensorDataEvent(sb.toString()));
+            removeCodexEntry(event.getVariantLocalised(), playerSession);
 
         } else if (scan2.equalsIgnoreCase(scanType)) {
             BioSampleDto bioSampleDto = createBioSampleDto(genus, variant, planetNumber, starSystemNumber, valueInCredits);
             currentLocation.addBioScan(bioSampleDto);
+            bioSampleDto.setScanXof3("Second of Three");
             EventBusManager.publish(new SensorDataEvent("Sample collected for: " + genus + "."));
 
         } else if (scan3.equalsIgnoreCase(scanType)) {
             EventBusManager.publish(new SensorDataEvent("Organic scans for" + genus + " are complete. "+(valueInCredits > 0 ? " approximate Vista Genomix payment: " + valueInCredits : "")));
             BioSampleDto bioSampleDto = createBioSampleDto(genus, variant, planetNumber, starSystemNumber, valueInCredits);
+            bioSampleDto.setScanXof3("Three of Three");
             bioSampleDto.setBioSampleCompleted(true);
             currentLocation.addBioScan(bioSampleDto);
             playerSession.addBioSample(bioSampleDto);
-            playerSession.setCurrentLocation(currentLocation);
+            playerSession.saveCurrentLocation(currentLocation);
             currentLocation.clearBioSamples();
         }
 
+    }
+
+    private void removeCodexEntry(String variantLocalised, PlayerSession playerSession) {
+        List<CodexEntryEvent> codexEntries = playerSession.getCodexEntries();
+        if(codexEntries == null || codexEntries.isEmpty()) return;
+        List<CodexEntryEvent> adjusted = new ArrayList<>();
+        for(CodexEntryEvent entry : codexEntries){
+            if(!entry.getNameLocalised().equalsIgnoreCase(variantLocalised)){
+                adjusted.add(entry);
+            }
+        }
+        playerSession.setCodexEntries(adjusted);
     }
 
     private BioSampleDto createBioSampleDto(String genus, String variant, int planetNumber, long starSystemNumber, long valueInCredits) {

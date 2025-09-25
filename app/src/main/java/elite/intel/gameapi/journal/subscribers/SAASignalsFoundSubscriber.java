@@ -19,10 +19,13 @@ public class SAASignalsFoundSubscriber {
 
         LocationDto currentLocation = playerSession.getCurrentLocation();
         currentLocation.addSaaSignals(event.getSignals());
-        playerSession.setCurrentLocation(currentLocation);
+        playerSession.saveCurrentLocation(currentLocation);
 
         List<SAASignalsFoundEvent.Signal> signals = event.getSignals();
         int signalsFound = signals != null ? signals.size() : 0;
+
+        String bodyName = event.getBodyName();
+        StellarObjectDto stellarObjectDto = playerSession.getStellarObjects().get(bodyName);
 
         if (signalsFound > 0) {
             int liveSignals = event.getGenuses() != null ? event.getGenuses().size() : 0;
@@ -37,13 +40,11 @@ public class SAASignalsFoundSubscriber {
 
 
             if (liveSignals > 0) {
-                StellarObjectDto stellarObjectDto = playerSession.getStellarObjects().get(event.getBodyName());
-                stellarObjectDto.setNumBioForms(liveSignals);
+                stellarObjectDto.setNumberOfBioFormsPresent(liveSignals);
                 stellarObjectDto.setGenus(event.getGenuses());
                 playerSession.addStellarObject(stellarObjectDto);
-
                 currentLocation.setGenus(event.getGenuses());
-                playerSession.setCurrentLocation(currentLocation);
+                playerSession.saveCurrentLocation(currentLocation);
 
                 sb.append(" Exobiology signal(s) found ").append(liveSignals).append(": ");
                 for (SAASignalsFoundEvent.Genus genus : event.getGenuses()) {
@@ -51,7 +52,23 @@ public class SAASignalsFoundSubscriber {
                     sb.append(genus.getGenusLocalised());
                     sb.append(", ");
                 }
+            }else if(bodyName.contains("Ring")){
+                //Rings are bodies
+                StellarObjectDto ring = new StellarObjectDto();
+                ring.setBodyId(event.getBodyID());
+                ring.setName(bodyName);
+                String parentBodyName = bodyName.substring(0, bodyName.length() - " X Ring".length());
+                StellarObjectDto parent = playerSession.getStellarObject(parentBodyName);
+                parent.setHasRings(true);
+                if(event.getSignals() != null) {
+                    ring.setSaasSignals(event.getSignals());
+                    ring.setGeoSignals(event.getSignals().size());
+                    parent.setSaasSignals(event.getSignals());
+                }
+                playerSession.addStellarObject(ring);
+                playerSession.addStellarObject(parent);
             }
+
             EventBusManager.publish(new SensorDataEvent(sb.toString()));
         } else {
             EventBusManager.publish(new SensorDataEvent("No Signal(s) detected."));

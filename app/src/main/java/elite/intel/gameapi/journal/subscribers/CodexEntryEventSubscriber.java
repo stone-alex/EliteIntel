@@ -4,6 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.journal.events.CodexEntryEvent;
+import elite.intel.session.PlayerSession;
 
 public class CodexEntryEventSubscriber {
 
@@ -23,6 +24,8 @@ public class CodexEntryEventSubscriber {
             sb.append(" credits.");
             EventBusManager.publish(new SensorDataEvent(sb.toString()));
         }
+
+        PlayerSession.getInstance().addCodexEntry(event);
     }
 
 

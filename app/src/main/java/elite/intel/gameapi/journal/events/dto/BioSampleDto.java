@@ -15,6 +15,7 @@ public class BioSampleDto extends BaseJsonDto implements ToJsonConvertible {
     int planetNumber;
     long starSystemNumber;
     long payout;
+    private String scanXof3;
 
 
     public String getGenus() {
@@ -95,5 +96,13 @@ public class BioSampleDto extends BaseJsonDto implements ToJsonConvertible {
 
     public void setPayout(long payout) {
         this.payout = payout;
+    }
+
+    public String getScanXof3() {
+        return scanXof3;
+    }
+
+    public void setScanXof3(String scanXof3) {
+        this.scanXof3 = scanXof3;
     }
 }

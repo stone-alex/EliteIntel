@@ -5,6 +5,8 @@ import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.VoiceProcessEvent;
 import elite.intel.gameapi.journal.events.TouchdownEvent;
+import elite.intel.gameapi.journal.events.dto.LocationDto;
+import elite.intel.session.PlayerSession;
 
 @SuppressWarnings("unused")
 public class TouchdownEventSubscriber {
@@ -41,6 +43,14 @@ public class TouchdownEventSubscriber {
         sb.append(" ");
         sb.append("Point of Interest: ");
         sb.append(pointOfInterest);
+
+        PlayerSession playerSession = PlayerSession.getInstance();
+        LocationDto currentLocation = playerSession.getCurrentLocation();
+        if(currentLocation != null) {
+            // only set LZ coordinates on touchdown. Event if ship departs, we can go back to where it can land again.
+            currentLocation.setLandingCoordinates(new double[]{ latitude, longitude});
+            playerSession.saveCurrentLocation(currentLocation);
+        }
 
         if (pointOfInterest != null && !pointOfInterest.isEmpty()) {
             EventBusManager.publish(new SensorDataEvent(sb.toString()));

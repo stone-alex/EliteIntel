@@ -35,7 +35,7 @@ public class FSSSignalDiscoveredSubscriber {
         signal.setSystemAddress(event.getSystemAddress());
         currentLocation.addDetectedSignal(signal);
 
-        playerSession.setCurrentLocation(currentLocation);
+        playerSession.saveCurrentLocation(currentLocation);
 
         if (event.getUssTypeLocalised() != null && event.getUssTypeLocalised().equals("Nonhuman signal source")) {
             publishVoice("Nonhuman signal source detected! Threat level " + event.getThreatLevel() + "!");

@@ -62,7 +62,7 @@ public class ApproachBodySubscriber {
             sb.append(" No data available for ").append(event.getBody()).append(".");
             sb.append(" Check gravity and temperature data before landing");
         }
-        playerSession.setCurrentLocation(currentLocation);
+        playerSession.saveCurrentLocation(currentLocation);
         EventBusManager.publish(new VoiceProcessEvent(sb.toString()));
     }
 

@@ -66,7 +66,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     private static final String REPUTATION = "reputation";
     private static final String STATUS = "status";
     private static final String ROUTE_MAP = "routeMap";
-    private static final String STELLAR_OBJECTS = "stellarObjects";
+    private static final String STELLAR_OBJECTS = "planetAndMoons";
     private static final String BIO_SAMPLES = "bio_samples";
     private static final String SHIP_LOADOUT = "ship_loadout";
     private static final String SHIP_CARGO = "ship_cargo";
@@ -98,6 +98,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     private GameEvents.StatusEvent gameStatus;
     private GameEvents.CargoEvent shipCargo;
     private ReputationEvent reputation;
+    private List<CodexEntryEvent> codexEntries = new ArrayList<>();
 
 
     private PlayerSession() {
@@ -148,16 +149,18 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
             fssBodySignals.putAll((Map<Integer, FSSBodySignalsEvent>) v);
         }, new TypeToken<Map<Integer, FSSBodySignalsEvent>>(){}.getType());
 
+        registerField("codex_entries", this::getCodexEntries, this::setCodexEntries, new TypeToken<List<CodexEntryEvent>>(){}.getType());
         registerField("markets", this::getMarkets, this::setMarkets, new TypeToken<List<StationMarket>>(){}.getType());
         registerField(BIO_SAMPLES, this::getBioSamples, this::setBioSamples, new TypeToken<List<BioSampleDto>>(){}.getType() );
 
-        registerField(CURRENT_LOCATION, this::getCurrentLocation, this::setCurrentLocation, LocationDto.class);
+        registerField(CURRENT_LOCATION, this::getCurrentLocation, this::saveCurrentLocation, LocationDto.class);
         registerField(HOME_SYSTEM, this::getHomeSystem, this::setHomeSystem, LocationDto.class);
         registerField(SHIP_LOADOUT, this::getShipLoadout, this::setShipLoadout, new TypeToken<LoadoutEvent>(){}.getType() );
         registerField(STATUS, this::getStatus, this::setStatus, GameEvents.StatusEvent.class);
         registerField(SHIP_CARGO, this::getShipCargo, this::setShipCargo, GameEvents.CargoEvent.class);
         registerField(REPUTATION, this::getReputation, this::setReputation, ReputationEvent.class);
         registerField(LAST_SCAN, this::getLastScan, this::setLastScan, StellarObjectDto.class);
+
 
 
         registerField("bountyCollectedThisSession", this::getBountyCollectedThisSession, this::setBountyCollectedThisSession, Long.class);
@@ -396,8 +399,10 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         return stellarObjects.get(name);
     }
 
-    public void clearStellarObjects() {
+    public void clearStellarObjectsAndSignals() {
         stellarObjects.clear();
+        fssBodySignals.clear();
+        codexEntries.clear();
         saveSession();
     }
 
@@ -414,7 +419,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         return currentLocation;
     }
 
-    public void setCurrentLocation(LocationDto currentLocation) {
+    public void saveCurrentLocation(LocationDto currentLocation) {
         this.currentLocation = currentLocation;
         saveSession();
     }
@@ -553,6 +558,20 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
 
     public void putFssBodySignal(int bodyId, FSSBodySignalsEvent event) {
         fssBodySignals.put(bodyId, event);
+        saveSession();
+    }
+
+    public List<CodexEntryEvent> getCodexEntries() {
+        return codexEntries;
+    }
+
+    public void setCodexEntries(List<CodexEntryEvent> codexEntries) {
+        this.codexEntries = codexEntries;
+        saveSession();
+    }
+
+    public void addCodexEntry(CodexEntryEvent entry) {
+        this.codexEntries.add(entry);
         saveSession();
     }
 }

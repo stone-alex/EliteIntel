@@ -142,3 +142,4 @@
 "because it's supercruise"="exit supercruise"
 "terraformed"="terraformable"
 "break all the ship"="recall the ship"
+"eyes bodies"="ice bodies"

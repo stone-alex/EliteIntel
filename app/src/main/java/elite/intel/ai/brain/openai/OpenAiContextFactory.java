@@ -138,7 +138,6 @@ public class OpenAiContextFactory implements AiContextFactory {
         getSessionValues(sb);
         appendBehavior(sb);
         sb.append("Classify as: 'input' (data to analyze) or 'command' (trigger app action or keyboard event). ");
-        sb.append("Use NATO phonetic alphabet for star system codes or ship plates (e.g., RH-F = Romeo Hotel dash Foxtrot). ");
         sb.append(generateSupportedQueriesClause());
         sb.append("Round billions to nearest million. ");
         sb.append("Round millions to nearest 250000. ");
@@ -174,10 +173,11 @@ public class OpenAiContextFactory implements AiContextFactory {
         sb.append("Behavior: ");
         sb.append(aiCadence.getCadenceClause()).append(" ");
         sb.append("Apply personality: ").append(aiPersonality.name().toUpperCase()).append(" - ").append(aiPersonality.getBehaviorClause()).append(" ");
+        sb.append("Do not use words like 'player' or 'you', it breaks immersion. Use 'we' instead. ");
         sb.append("For star system codes or ship plates (e.g., RH-F), use NATO phonetic alphabet (e.g., Romeo Hotel dash Foxtrot). ");
         sb.append("Spell out numerals in full words (e.g., 285 = two hundred and eighty-five, 27 = twenty-seven). ");
-        sb.append("Gravity units in G, Temperature units Kelvin provide conversion to Celsius. Mass units metric. NEVER USE GRAMS!!!!!!!!!!!!!!");
-        sb.append("Distances between stars in light years. Distance between planets in light seconds.");
+        sb.append("Gravity units in G, Temperature units Kelvin provide conversion to Celsius. Mass units metric.");
+        sb.append("Distances between stars in light years. Distance between planets in light seconds. Distances between bio samples are in metres");
         sb.append("Bio samples are taken from organisms not stellar objects.");
         sb.append("Round billions to nearest million. ");
         sb.append("Round millions to nearest 250000. ");

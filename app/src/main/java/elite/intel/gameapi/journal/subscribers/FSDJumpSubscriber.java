@@ -43,7 +43,7 @@ public class FSDJumpSubscriber {
         currentLocation.setPowerplayStateControlProgress(event.getPowerplayStateControlProgress());
         currentLocation.setPowerplayStateReinforcement(event.getPowerplayStateReinforcement());
         currentLocation.setPowerplayStateUndermining(event.getPowerplayStateUndermining());
-        playerSession.setCurrentLocation(currentLocation);
+        playerSession.saveCurrentLocation(currentLocation);
 
         String finalDestination = String.valueOf(playerSession.get(PlayerSession.FINAL_DESTINATION));
         String arrivedAt = String.valueOf(playerSession.get(PlayerSession.JUMPING_TO));
@@ -69,7 +69,7 @@ public class FSDJumpSubscriber {
             }
             currentLocation.setTrafficDto(trafficDto);
             currentLocation.setDeathsDto(deathsDto);
-            playerSession.setCurrentLocation(currentLocation);
+            playerSession.saveCurrentLocation(currentLocation);
         } else if (roueSet) {
             Map<Integer, NavRouteDto> adjustedRoute = AdjustRoute.adjustRoute(orderedRoute);
             playerSession.setNavRoute(adjustedRoute);

@@ -47,6 +47,6 @@ public class DockedSubscriber {
             EventBusManager.publish(new VoiceProcessEvent("Data available for: " + availableData + "."));
         }
 
-        playerSession.setCurrentLocation(currentLocation);
+        playerSession.saveCurrentLocation(currentLocation);
     }
 }

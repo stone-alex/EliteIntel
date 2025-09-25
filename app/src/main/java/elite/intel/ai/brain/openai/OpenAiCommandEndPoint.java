@@ -119,40 +119,6 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
             return;
         }
 
-        // Check STT confidence
-        if (confidence < 0.5f) {
-            JsonArray messages = new JsonArray();
-            JsonObject systemMessage = new JsonObject();
-            systemMessage.addProperty("role", AIConstants.ROLE_SYSTEM);
-            String systemPrompt = getContextFactory().generateSystemPrompt();
-            systemMessage.addProperty("content", systemPrompt);
-            messages.add(systemMessage);
-
-            JsonObject userMessage = new JsonObject();
-            userMessage.addProperty("role", AIConstants.ROLE_USER);
-            String userContent = buildVoiceRequest(userInput);
-            userMessage.addProperty("content", userContent);
-            messages.add(userMessage);
-
-            // Create clarification response
-            JsonObject clarification = new JsonObject();
-            clarification.addProperty("type", AIConstants.TYPE_CHAT);
-            clarification.addProperty(AIConstants.PROPERTY_RESPONSE_TEXT, "Say again?");
-            clarification.addProperty(AIConstants.TYPE_ACTION, (String) null);
-            clarification.add("params", new JsonObject());
-            clarification.addProperty(AIConstants.PROPERTY_EXPECT_FOLLOWUP, true);
-
-            // Route clarification without direct TTS
-            getRouter().processAiResponse(clarification, userInput);
-
-            // Store user message in history for follow-up
-            JsonObject assistantMessage = new JsonObject();
-            assistantMessage.addProperty("role", AIConstants.ROLE_ASSISTANT);
-            assistantMessage.addProperty("content", "Say again?");
-            systemSession.appendToChatHistory( userMessage, assistantMessage);
-            return;
-        }
-
         // Log sanitized input
         log.info("Sanitized voice userInput: [{}] (confidence: {})", toDebugString(userInput), confidence);
 

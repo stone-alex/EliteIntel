@@ -3,11 +3,9 @@ package elite.intel.gameapi.journal.subscribers;
 import com.google.common.eventbus.Subscribe;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
-import elite.intel.gameapi.VoiceProcessEvent;
 import elite.intel.gameapi.journal.events.StartJumpEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
-import elite.intel.ui.event.AppLogEvent;
 
 import static elite.intel.util.StringUtls.isFuelStarClause;
 
@@ -33,13 +31,15 @@ public class StartJumpSubscriber {
         PlayerSession playerSession = PlayerSession.getInstance();
         playerSession.put(PlayerSession.JUMPING_TO, jumpingTo);
 
+
         //clear last location data
-        if ("Hyperspace".equalsIgnoreCase(event.getJumpType())) {
-            playerSession.setCurrentLocation(new LocationDto());
+        //if ("Hyperspace".equalsIgnoreCase(event.getJumpType())) {
+            playerSession.saveCurrentLocation(new LocationDto());
             playerSession.clearMiningTargets();
-            playerSession.clearStellarObjects();
-            EventBusManager.publish(new VoiceProcessEvent(sb.toString()));
-        }
+            playerSession.clearStellarObjectsAndSignals();
+            playerSession.setLastScan(null);
+            EventBusManager.publish(new SensorDataEvent(sb.toString()));
+        //}
 
     }
 

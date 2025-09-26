@@ -32,9 +32,11 @@ public class ScanOrganicSubscriber {
         long starSystemNumber = event.getSystemAddress();
 
         long valueInCredits = BioForms.getAverageProjectedPayment(genus);
+        BioForms.BioDetails bioDetails = BioForms.getDetails(genus, variant);
+        int range = bioDetails == null ? BioScanDistances.GENUS_TO_CCR.get(genus) : bioDetails.colonyRange();
         LocationDto currentLocation = playerSession.getCurrentLocation();
 
-        removeCodexEntryIfMatches(event.getVariantLocalised(), playerSession);
+        removeCodexEntryIfMatches(event.getVariantLocalised(), range, true);
 
         if (scan1.equals(scanType)) {
             sb.append(" Organic sample detected: Genus: ");
@@ -74,24 +76,33 @@ public class ScanOrganicSubscriber {
             playerSession.addBioSample(bioSampleDto);
             playerSession.saveCurrentLocation(currentLocation);
             currentLocation.clearBioSamples();
+            removeCodexEntryIfMatches(event.getVariantLocalised(), -1, false);
         }
     }
 
-    private void removeCodexEntryIfMatches(String variantLocalised, PlayerSession playerSession) {
+
+    private void removeCodexEntryIfMatches(String variantLocalised, int range, boolean useDistance) {
         double latitude = playerSession.getStatus().getLatitude();
         double longitude = playerSession.getStatus().getLongitude();
         double planetRadius = playerSession.getStatus().getPlanetRadius();
 
         List<CodexEntryEvent> codexEntries = playerSession.getCodexEntries();
         if(codexEntries == null || codexEntries.isEmpty()) return;
+
         List<CodexEntryEvent> adjusted = new ArrayList<>();
         for(CodexEntryEvent entry : codexEntries){
-            if(!entry.getNameLocalised().equalsIgnoreCase(variantLocalised)){
+            boolean notMatchingBioForm = entry.getNameLocalised() == null || !entry.getNameLocalised().equalsIgnoreCase(variantLocalised);
+            if (useDistance) {
                 double codexLatitude = entry.getLatitude();
                 double codexLongitude = entry.getLongitude();
                 double distanceFromSample = DistanceCalculator.calculateSurfaceDistance(latitude, longitude, codexLatitude, codexLongitude, planetRadius);
-                if(distanceFromSample > 200) {
-                    adjusted.add(entry); // keep if distance more than 200 meters
+                boolean farFromMe = distanceFromSample > (range == 0 ? 200 : range);
+                if (notMatchingBioForm || farFromMe) {
+                    adjusted.add(entry); //KEEP!
+                }
+            } else {
+                if (notMatchingBioForm) {
+                    adjusted.add(entry); //KEEP!
                 }
             }
         }

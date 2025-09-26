@@ -306,7 +306,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
 
     public void setCarrierStats(CarrierStatsEvent event) {
         CarrierStatsEvent.Finance finance = event.getFinance();
-        CarrierDataDto carrierData = new CarrierDataDto();
+        CarrierDataDto carrierData = getCarrierData();
         carrierData.setCallSign(event.getCallsign());
         carrierData.setCarrierName(event.getName());
         carrierData.setCarrierType(event.getCarrierType());
@@ -425,7 +425,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     }
 
     public CarrierDataDto getCarrierData() {
-        return carrierData;
+        return carrierData == null ? new CarrierDataDto(): carrierData;
     }
 
     public void setCarrierData(CarrierDataDto carrierData) {

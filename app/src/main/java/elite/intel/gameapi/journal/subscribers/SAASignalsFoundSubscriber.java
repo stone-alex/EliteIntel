@@ -70,7 +70,7 @@ public class SAASignalsFoundSubscriber {
                     // we have some hotspots
                     ArrayList<MaterialDto> materials = new ArrayList<>();
                     for (SAASignalsFoundEvent.Signal signal : signals) {
-                        materials.add(new MaterialDto(signal.getTypeLocalised(), 100, true));
+                        materials.add(new MaterialDto(signal.getType(), 100, true));
                     }
                     ring.setMaterials(materials);
                 }

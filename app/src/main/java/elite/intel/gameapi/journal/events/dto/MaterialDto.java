@@ -8,10 +8,17 @@ public class MaterialDto extends ScanEvent.Material implements ToJsonConvertible
 
     private String materialName;
     private double materialPercentage;
+    private boolean isHotSpot;
 
     public MaterialDto(String name, double percent) {
         this.materialName = name;
         this.materialPercentage = percent;
+    }
+
+    public MaterialDto(String name, double percent, boolean isHotSpot) {
+        this.materialName = name;
+        this.materialPercentage = percent;
+        this.isHotSpot = isHotSpot;
     }
 
 
@@ -29,6 +36,14 @@ public class MaterialDto extends ScanEvent.Material implements ToJsonConvertible
 
     public void setMaterialPercentage(double materialPercentage) {
         this.materialPercentage = materialPercentage;
+    }
+
+    public boolean isHotSpot() {
+        return isHotSpot;
+    }
+
+    public void setHotSpot(boolean hotSpot) {
+        isHotSpot = hotSpot;
     }
 
     @Override public String toJson() {

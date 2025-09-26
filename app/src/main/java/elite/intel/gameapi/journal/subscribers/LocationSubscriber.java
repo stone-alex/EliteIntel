@@ -11,7 +11,6 @@ public class LocationSubscriber {
     @Subscribe
     public void onLocationEvent(LocationEvent event) {
         PlayerSession playerSession = PlayerSession.getInstance();
-        playerSession.put(PlayerSession.CURRENT_SYSTEM_NAME, event.getStarSystem());
 
         LocationDto dto = playerSession.getCurrentLocation();
         dto.setX(event.getStarPos()[0]);

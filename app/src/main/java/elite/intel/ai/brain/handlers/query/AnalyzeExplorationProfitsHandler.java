@@ -15,11 +15,9 @@ public class AnalyzeExplorationProfitsHandler extends BaseQueryAnalyzer implemen
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         PlayerSession playerSession = PlayerSession.getInstance();
-
         List<BioSampleDto> allCompletedBioSamples = playerSession.getBioSamples();
         Map<String, StellarObjectDto> planetsAndMoons = playerSession.getStellarObjects();
         Map<Integer, FSSBodySignalsEvent> fullSpectrumScanSignals = playerSession.getFssBodySignals();
-
         return analyzeData(new DataDto(allCompletedBioSamples, planetsAndMoons, fullSpectrumScanSignals).toJson(), originalUserInput);
     }
 

@@ -46,9 +46,6 @@ public class FSDJumpSubscriber {
         playerSession.saveCurrentLocation(currentLocation);
 
         String finalDestination = String.valueOf(playerSession.get(PlayerSession.FINAL_DESTINATION));
-        String arrivedAt = String.valueOf(playerSession.get(PlayerSession.JUMPING_TO));
-        playerSession.put(PlayerSession.CURRENT_SYSTEM_NAME, arrivedAt);
-
 
         StringBuilder sb = new StringBuilder();
         sb.append(" Hyperspace Jump Successful: ");

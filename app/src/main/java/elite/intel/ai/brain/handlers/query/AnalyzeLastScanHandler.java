@@ -14,12 +14,10 @@ public class AnalyzeLastScanHandler  extends BaseQueryAnalyzer implements QueryH
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         PlayerSession playerSession = PlayerSession.getInstance();
         StellarObjectDto lastScan = playerSession.getLastScan();
-        List<SAASignalsFoundEvent.Signal> saaSignals = playerSession.getCurrentLocation().getSaaSignals();
-
-        return analyzeData(new DataDto(lastScan, saaSignals).toJson(), originalUserInput);
+        return analyzeData(new DataDto(lastScan).toJson(), originalUserInput);
     }
 
-    record DataDto(StellarObjectDto lastScan, List<SAASignalsFoundEvent.Signal> saaSignals) implements ToJsonConvertible {
+    record DataDto(StellarObjectDto lastScan) implements ToJsonConvertible {
 
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);

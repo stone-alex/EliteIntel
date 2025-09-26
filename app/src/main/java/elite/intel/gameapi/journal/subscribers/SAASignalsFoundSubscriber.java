@@ -6,9 +6,11 @@ import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.data.BioForms;
 import elite.intel.gameapi.journal.events.SAASignalsFoundEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
+import elite.intel.gameapi.journal.events.dto.MaterialDto;
 import elite.intel.gameapi.journal.events.dto.StellarObjectDto;
 import elite.intel.session.PlayerSession;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SAASignalsFoundSubscriber {
@@ -58,11 +60,21 @@ public class SAASignalsFoundSubscriber {
                 }
                 sb.append("Average projected payment: ").append(averageProjectedPayment).append(" credits. Plus bonus if first discovered.");
 
-            }else if(bodyName.contains("Ring")){
+            } else if (bodyName.contains("Ring")) {
                 //Rings are bodies
                 StellarObjectDto ring = new StellarObjectDto();
                 ring.setBodyId(event.getBodyID());
                 ring.setName(bodyName);
+
+                if (!signals.isEmpty()) {
+                    // we have some hotspots
+                    ArrayList<MaterialDto> materials = new ArrayList<>();
+                    for (SAASignalsFoundEvent.Signal signal : signals) {
+                        materials.add(new MaterialDto(signal.getTypeLocalised(), 100, true));
+                    }
+                    ring.setMaterials(materials);
+                }
+
                 String parentBodyName = bodyName.substring(0, bodyName.length() - " X Ring".length());
                 StellarObjectDto parent = playerSession.getStellarObject(parentBodyName);
                 parent.setHasRings(true);

@@ -23,7 +23,6 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
 
     ///
     public static final String CARRIER_DEPARTURE_TIME="carrier_departure_time";
-    public static final String CURRENT_SYSTEM_NAME = "current_system";
     public static final String SUITE_LOADOUT_JSON = "suite_loadout_json";
     public static final String FINAL_DESTINATION = "final_destination";
     public static final String FSD_TARGET = "fsd_target";
@@ -416,7 +415,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     }
 
     public LocationDto getCurrentLocation() {
-        return currentLocation;
+        return currentLocation == null ? new LocationDto() : currentLocation;
     }
 
     public void saveCurrentLocation(LocationDto currentLocation) {

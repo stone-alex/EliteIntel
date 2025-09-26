@@ -14,7 +14,7 @@ public class AnalyzeCurrentLocationHandler extends BaseQueryAnalyzer implements 
         if (currentLocation == null) {
             return analyzeData(GsonFactory.getGson().toJson("Current location data is not available"), originalUserInput);
         } else {
-            return analyzeData(new DataDto(playerSession.getCurrentLocation()).toJson(), originalUserInput);
+            return analyzeData(new DataDto(currentLocation).toJson(), originalUserInput);
         }
     }
 

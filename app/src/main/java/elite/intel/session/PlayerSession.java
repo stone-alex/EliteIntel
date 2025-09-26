@@ -395,7 +395,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     }
 
     public StellarObjectDto getStellarObject(String name) {
-        return stellarObjects.get(name);
+        return stellarObjects.get(name) == null ? new StellarObjectDto() : stellarObjects.get(name);
     }
 
     public void clearStellarObjectsAndSignals() {

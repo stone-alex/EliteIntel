@@ -26,11 +26,18 @@ public class StellarObjectDto implements ToJsonConvertible {
     private int numberOfBioFormsPresent;
     private int geoSignals;
     private boolean hasRings;
-
-    List<SAASignalsFoundEvent.Genus> genus = new ArrayList<>();
+    private boolean bioFormsPresent;
+    private BioStatus bioStatus = BioStatus.SCAN_REQUIRED;
+    List<GenusDto> genus = new ArrayList<>();
     List<SAASignalsFoundEvent.Signal> saasSignals = new ArrayList<>();
     private List<FSSBodySignalsEvent.Signal> fssSignals;
 
+    public enum BioStatus {
+        BIO_FORMS_PRESENT,
+        NO_BIO_FORMS,
+        SCAN_REQUIRED;
+    }
+    
     @Override public String toJson() {
         return GsonFactory.getGson().toJson(this);
     }
@@ -148,10 +155,10 @@ public class StellarObjectDto implements ToJsonConvertible {
         this.numberOfBioFormsPresent = numberOfBioFormsPresent;
     }
 
-    public List<SAASignalsFoundEvent.Genus> getGenus() {
+    public List<GenusDto> getGenus() {
         return genus;
     }
-    public void setGenus(List<SAASignalsFoundEvent.Genus> genus) {
+    public void setGenus(List<GenusDto> genus) {
         this.genus.addAll(genus);
     }
 
@@ -193,6 +200,15 @@ public class StellarObjectDto implements ToJsonConvertible {
 
     public List<FSSBodySignalsEvent.Signal> getFssSignals() {
         return fssSignals;
+    }
+
+    public void setBioStatus(BioStatus bioStatus) {
+        this.bioStatus = bioStatus;
+    }
+
+    public void setBioFormsPresent(boolean bioFormsPresent) {
+        if(bioFormsPresent) bioStatus= BioStatus.BIO_FORMS_PRESENT;
+        if(!bioFormsPresent) bioStatus= BioStatus.NO_BIO_FORMS;
     }
 }
 

@@ -3,7 +3,9 @@ package elite.intel.gameapi.journal.subscribers;
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.search.edsm.EdsmApiClient;
 import elite.intel.ai.search.edsm.dto.DeathsDto;
+import elite.intel.ai.search.edsm.dto.SystemBodiesDto;
 import elite.intel.ai.search.edsm.dto.TrafficDto;
+import elite.intel.ai.search.edsm.dto.data.BodyData;
 import elite.intel.ai.search.edsm.dto.data.DeathsStats;
 import elite.intel.ai.search.edsm.dto.data.TrafficStats;
 import elite.intel.gameapi.EventBusManager;
@@ -11,21 +13,30 @@ import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.gamestate.events.NavRouteDto;
 import elite.intel.gameapi.journal.events.FSDJumpEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
+import elite.intel.gameapi.journal.events.dto.MaterialDto;
+import elite.intel.gameapi.journal.events.dto.StellarObjectDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.AdjustRoute;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static elite.intel.util.GravityCalculator.calculateSurfaceGravity;
 import static elite.intel.util.StringUtls.isFuelStarClause;
+import static elite.intel.util.StringUtls.subtractString;
 
 @SuppressWarnings("unused")
 public class FSDJumpSubscriber {
 
+    PlayerSession playerSession = PlayerSession.getInstance();
+
+
     @Subscribe
     public void onFSDJumpEvent(FSDJumpEvent event) {
-        PlayerSession playerSession = PlayerSession.getInstance();
         LocationDto currentLocation = playerSession.getCurrentLocation();
+        SystemBodiesDto systemBodiesDto = EdsmApiClient.searchSystemBodies(event.getStarSystem());
+        processEdsmData(systemBodiesDto);
         currentLocation.setGovernment(event.getSystemGovernmentLocalised());
         currentLocation.setAllegiance(event.getSystemAllegiance());
         currentLocation.setSecurity(event.getSystemSecurityLocalised());
@@ -88,5 +99,38 @@ public class FSDJumpSubscriber {
         }
 
         EventBusManager.publish(new SensorDataEvent(sb.toString()));
+    }
+
+    private void processEdsmData(SystemBodiesDto systemBodiesDto) {
+        if(systemBodiesDto == null) return;
+        if(systemBodiesDto.getData() == null) return;
+
+        List<BodyData> bodies = systemBodiesDto.getData().bodies;
+        for(BodyData  data : bodies) {
+            StellarObjectDto stellarObject = playerSession.getStellarObject(data.getName());
+            stellarObject.setAtmosphere(data.getAtmosphereType());
+            stellarObject.setBodyId(data.getBodyId());
+            stellarObject.setHasRings(data.getRings() != null && !data.getRings().isEmpty());
+            stellarObject.setIsTerraformable("Terraformable".equalsIgnoreCase(data.getTerraformingState()));
+            stellarObject.setLandable(data.isLandable());
+            stellarObject.setMaterials(toMaterials(data.getMaterials()));
+            stellarObject.setName(data.getName());
+            stellarObject.setMassEM(data.getEarthMasses());
+            stellarObject.setRadius(data.getRadius());
+            Double surfaceGravity = calculateSurfaceGravity(data.getEarthMasses(), data.getRadius());
+            stellarObject.setGravity(surfaceGravity == null ? 0 : surfaceGravity);
+            stellarObject.setSurfaceTemperature(data.getSurfaceTemperature());
+            stellarObject.setTidalLocked(data.isRotationalPeriodTidallyLocked());
+            playerSession.addStellarObject(stellarObject);
+        }
+    }
+
+    private List<MaterialDto> toMaterials(Map<String, Double> materials) {
+        if(materials == null) return new ArrayList<>();
+        ArrayList<MaterialDto> materialDtos = new ArrayList<>();
+        for(Map.Entry<String, Double> entry : materials.entrySet()) {
+            materialDtos.add(new MaterialDto(entry.getKey(), entry.getValue()));
+        }
+        return materialDtos;
     }
 }

@@ -225,8 +225,7 @@ public class GoogleSTTImpl implements EarsInterface {
 
                             @Override
                             public void onError(Throwable t) {
-                                log.warn("STT error: {}", t.getMessage());
-                                throw new RuntimeException("retry");
+                                log.error("STT error: {}", t.getMessage());
                             }
 
                             @Override

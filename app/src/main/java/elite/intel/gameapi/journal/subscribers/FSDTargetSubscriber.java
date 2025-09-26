@@ -9,6 +9,8 @@ import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.FSDTargetEvent;
 import elite.intel.session.PlayerSession;
 import elite.intel.ui.event.AppLogEvent;
+import elite.intel.util.json.GsonFactory;
+import elite.intel.util.json.ToJsonConvertible;
 
 @SuppressWarnings("unused")
 public class FSDTargetSubscriber {
@@ -16,27 +18,32 @@ public class FSDTargetSubscriber {
     @Subscribe
     public void onFSDTargetEvent(FSDTargetEvent event) {
         PlayerSession playerSession = PlayerSession.getInstance();
-        StringBuilder sb = new StringBuilder();
-        sb.append(event.getName()).append(" ").append(isFuelStarClause(event.getStarClass()));
-        EventBusManager.publish(new AppLogEvent("Processing FSDTargetEvent. Storing in session only: " + sb));
 
         StarSystemDto systemDto = EdsmApiClient.searchStarSystem(event.getName(), 1);
         DeathsDto deathsDto = EdsmApiClient.searchDeaths(event.getName());
         TrafficDto trafficDto = EdsmApiClient.searchTraffic(event.getName());
 
-        if (systemDto.getData() != null) {
-            sb = new StringBuilder();
-            sb.append(systemDto.getData().toString()).append(", ");
-            sb.append(deathsDto.getData().toString()).append(", ");
-            sb.append(trafficDto.getData().toString());
-        }
-
-        playerSession.put(PlayerSession.FSD_TARGET, sb.toString());
+        playerSession.put(
+                PlayerSession.FSD_TARGET,
+                new DataDto(
+                        systemDto,
+                        deathsDto,
+                        trafficDto,
+                        isFuelStarClause(event.getStarClass())
+                ).toJson()
+        );
 
     }
 
     private String isFuelStarClause(String starClass) {
         boolean isFuelStar = "KGBFOAM".toUpperCase().contains(starClass.toUpperCase());
         return isFuelStar ? " (Fuel Star)" : "";
+    }
+
+    record DataDto(StarSystemDto systemDto, DeathsDto deathsDto, TrafficDto trafficDto, String fuelStarStatus) implements ToJsonConvertible {
+
+        @Override public String toJson() {
+            return GsonFactory.getGson().toJson(this);
+        }
     }
 }

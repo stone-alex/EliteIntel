@@ -23,12 +23,11 @@ public class LocationDto implements ToJsonConvertible {
     private String planetShortName="";
     BodyData planetData;
     List<SAASignalsFoundEvent.Signal> signals = new ArrayList<>();
-    List<SAASignalsFoundEvent.Genus> genus = new ArrayList<>();
+    List<GenusDto> genus = new ArrayList<>();
     List<BioSampleDto> bioScans = new ArrayList<>();
     Set<FssSignal> detectedSignals = new HashSet<>();
     TrafficDto trafficDto;
     DeathsDto deathsDto;
-
     private String stationName;
     private String stationType;
     private long marketID;
@@ -55,6 +54,12 @@ public class LocationDto implements ToJsonConvertible {
     private double surfaceTemperature;
     Map<String, Double> materials = new HashMap<>();
     private double[] landingCoordinates;
+    private BioStatus bioStatus = BioStatus.SCAN_REQUIRED;
+    public enum BioStatus {
+        BIO_FORMS_PRESENT,
+        NO_BIO_FORMS,
+        SCAN_REQUIRED;
+    }
 
 
 
@@ -148,7 +153,7 @@ public class LocationDto implements ToJsonConvertible {
         this.signals.addAll(signals);
     }
 
-    public List<SAASignalsFoundEvent.Genus> getGenus() {
+    public List<GenusDto> getGenus() {
         return genus;
     }
 
@@ -156,7 +161,7 @@ public class LocationDto implements ToJsonConvertible {
         this.genus.clear();
     }
 
-    public void setGenus(List<SAASignalsFoundEvent.Genus> genus) {
+    public void setGenus(List<GenusDto> genus) {
         this.genus = genus;
     }
 
@@ -431,5 +436,10 @@ public class LocationDto implements ToJsonConvertible {
 
     public void setLandingCoordinates(double[] landingCoordinates) {
         this.landingCoordinates = landingCoordinates;
+    }
+
+    public void setBioFormsPresent(boolean bioFormsPresent) {
+        if(bioFormsPresent) bioStatus = BioStatus.BIO_FORMS_PRESENT;
+        if(!bioFormsPresent) bioStatus = BioStatus.NO_BIO_FORMS;
     }
 }

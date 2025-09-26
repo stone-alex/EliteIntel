@@ -3,6 +3,7 @@ package elite.intel.ai.brain.handlers.query;
 import com.google.gson.JsonObject;
 import elite.intel.gameapi.journal.events.SAASignalsFoundEvent;
 import elite.intel.gameapi.journal.events.dto.BioSampleDto;
+import elite.intel.gameapi.journal.events.dto.GenusDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
@@ -22,14 +23,14 @@ public class AnalyzeBioSamplesHandler extends BaseQueryAnalyzer implements Query
         if(currentLocation == null) {return analyzeData("Current location data is not available", originalUserInput);}
 
         List<BioSampleDto> partialScans = currentLocation.getBioScans();
-        List<SAASignalsFoundEvent.Genus> genus = currentLocation.getGenus();
+        List<GenusDto> genus = currentLocation.getGenus();
         List<BioSampleDto> completedForThisPlanet = completedScansForPlanet(playerSession);
 
         return analyzeData(new DataDto(partialScans, genus, completedForThisPlanet).toJson(), originalUserInput);
     }
 
 
-    record DataDto(List<BioSampleDto> partialScans, List<SAASignalsFoundEvent.Genus> allGenusOnPlanet, List<BioSampleDto> completedSamples) implements ToJsonConvertible {
+    record DataDto(List<BioSampleDto> partialScans, List<GenusDto> allGenusOnPlanet, List<BioSampleDto> completedSamples) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }

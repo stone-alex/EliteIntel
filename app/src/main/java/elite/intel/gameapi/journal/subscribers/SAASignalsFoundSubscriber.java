@@ -5,6 +5,7 @@ import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.data.BioForms;
 import elite.intel.gameapi.journal.events.SAASignalsFoundEvent;
+import elite.intel.gameapi.journal.events.dto.GenusDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.gameapi.journal.events.dto.MaterialDto;
 import elite.intel.gameapi.journal.events.dto.StellarObjectDto;
@@ -45,15 +46,17 @@ public class SAASignalsFoundSubscriber {
 
             if (liveSignals > 0) {
                 stellarObjectDto.setNumberOfBioFormsPresent(liveSignals);
-                stellarObjectDto.setGenus(event.getGenuses());
+                stellarObjectDto.setGenus(toGenusDto(event.getGenuses()));
+                stellarObjectDto.setBioFormsPresent(true);
                 playerSession.addStellarObject(stellarObjectDto);
-                currentLocation.setGenus(event.getGenuses());
+                currentLocation.setGenus(toGenusDto(event.getGenuses()));
                 playerSession.saveCurrentLocation(currentLocation);
+                currentLocation.setBioFormsPresent(true);
 
                 sb.append(" Exobiology signal(s) found ").append(liveSignals).append(": ");
                 long averageProjectedPayment = 0;
                 for (SAASignalsFoundEvent.Genus genus : event.getGenuses()) {
-                    averageProjectedPayment = averageProjectedPayment + BioForms.getAverageProjectedPayment(genus.getGenus());
+                    averageProjectedPayment = averageProjectedPayment + BioForms.getAverageProjectedPayment(genus.getGenusLocalised());
                     sb.append(" ");
                     sb.append(genus.getGenusLocalised());
                     sb.append(", ");
@@ -91,5 +94,16 @@ public class SAASignalsFoundSubscriber {
         } else {
             EventBusManager.publish(new SensorDataEvent("No Signal(s) detected."));
         }
+    }
+
+    private List<GenusDto> toGenusDto(List<SAASignalsFoundEvent.Genus> genuses) {
+        ArrayList<GenusDto> result = new ArrayList<>();
+        for(SAASignalsFoundEvent.Genus genus: genuses) {
+            GenusDto dto = new GenusDto();
+            dto.setSpecies(genus.getGenusLocalised());
+            dto.setRewardInCredits(BioForms.getAverageProjectedPayment(genus.getGenusLocalised()));
+            result.add(dto);
+        }
+        return result;
     }
 }

@@ -58,6 +58,6 @@ public class NavigationUtils {
         }
 
         // Return vocalization-friendly string
-        return "Set heading to " + roundedBearing + " degrees, distance to target is " + distanceStr;
+        return "Heading " + roundedBearing + " degrees, distance to target is " + distanceStr;
     }
 }

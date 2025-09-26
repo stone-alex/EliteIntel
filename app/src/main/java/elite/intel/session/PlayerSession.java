@@ -98,6 +98,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     private GameEvents.CargoEvent shipCargo;
     private ReputationEvent reputation;
     private List<CodexEntryEvent> codexEntries = new ArrayList<>();
+    private TargetLocation tracking  = new TargetLocation();
 
 
     private PlayerSession() {
@@ -159,6 +160,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         registerField(SHIP_CARGO, this::getShipCargo, this::setShipCargo, GameEvents.CargoEvent.class);
         registerField(REPUTATION, this::getReputation, this::setReputation, ReputationEvent.class);
         registerField(LAST_SCAN, this::getLastScan, this::setLastScan, StellarObjectDto.class);
+        registerField("tracking", this::getTracking, this::setTracking, TargetLocation.class);
 
 
 
@@ -577,6 +579,15 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
 
     public void clearCodexEntries() {
         this.codexEntries.clear();
+        saveSession();
+    }
+
+    public TargetLocation getTracking() {
+        return tracking;
+    }
+
+    public void setTracking(TargetLocation tracking) {
+        this.tracking = tracking;
         saveSession();
     }
 }

@@ -7,8 +7,11 @@ import elite.intel.gameapi.VoiceProcessEvent;
 import elite.intel.gameapi.journal.events.CodexEntryEvent;
 import elite.intel.gameapi.journal.events.dto.BioSampleDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
+import elite.intel.gameapi.journal.events.dto.TargetLocation;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.DistanceCalculator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,6 +19,8 @@ import java.util.Optional;
 import static elite.intel.util.NavigationUtils.getHeading;
 
 public class GetHeadingToCodexEntry implements CommandHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(GetHeadingToCodexEntry.class);
 
     @Override
     public void handle(JsonObject params, String responseText) {
@@ -54,6 +59,11 @@ public class GetHeadingToCodexEntry implements CommandHandler {
 
         double entryLatitude = entry.getLatitude();
         double entryLongitude = entry.getLongitude();
+
+        TargetLocation targetLocation = new TargetLocation();
+        targetLocation.setLatitude(entryLatitude);
+        targetLocation.setLongitude(entryLongitude);
+        playerSession.setTracking(targetLocation);
 
         EventBusManager.publish(new VoiceProcessEvent(
                 String.format("Directions to: %s %s", entry.getNameLocalised(), getHeading(entryLatitude, entryLongitude, userLatitude, userLongitude, planetRadius))

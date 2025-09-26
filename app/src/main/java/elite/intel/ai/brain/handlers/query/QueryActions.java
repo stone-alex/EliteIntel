@@ -2,43 +2,41 @@ package elite.intel.ai.brain.handlers.query;
 
 public enum QueryActions {
 
-    ANALYZE_SCAN("query_analyze_last_scan", "Provide analysis specifically for last scan. ", AnalyzeLastScanHandler.class, true),
-    QUERY_SEARCH_SIGNAL_DATA("query_signals_planets_and_moons", "Use this data to provide answer for detected signals. Gravity unit G, Temperature unit K.", AnalyzeSignalDataHandler.class, true),
-    ANALYZE_CURRENT_PLANET("query_current_location", "Answer questions based on data for the current location (this planet, this station etc)", AnalyzeCurrentLocationHandler.class, true),
-    ANALYZE_STAR_SYSTEM_EXPLORATION("query_star_system_exploration_analysis", "Provide answers for discovery exploration and exploration profits for this star system", AnalyzeExplorationProfitsHandler.class, true),
-    ANALYZE_BODY_MATERIALS("query_planet_materials", "Analyze materials on planet.", AnalyzeMaterialsOnPlanetHandler.class, true),
-    ANALYZE_EXO_BIOLOGY("query_analyze_exo_biology_data", "Summarize the bio-sample collection progress, including completed samples, partial scans, and remaining species to scan.", AnalyzeBioSamplesHandler.class, true),
-    ANALYZE_CURRENT_FUEL_STATUS("query_fuel_status", "Analyze fuel tank capacity in shipLoadout and fuelData available reserve, provide result as percent fuel available", AnalyzeFuelStatusHandler.class, true),
-    ANALYZE_FSD_TARGET("query_analyze_fsd_target", "Analyze FSD target data and provide summary for allegiance, traffic and security. FSD target is the destination.", AnalyzeFsdTargetHandler.class, true),
-    ANALYZE_LOCAL_MARKETS("query_analyze_market", "Analyze  local market contents.", AnalyzeLocalMarketsHandler.class, true),
-    ANALYZE_LOCAL_OUTFITTING("query_analyze_outfitting", "Analyze outfitting options. ", AnalyzeLocalOutfittingHandler.class, true),
-    ANALYZE_LOCAL_SHIPYARD("query_shipyard_data", "Analyse shipyard contents. ", AnalyzeShipyardHandler.class, true),
-    ANALYZE_LOCAL_STATIONS("query_local_stations", "Provide summary a service the local stations if any", AnalyzeLocalStations.class, true),
-    HOW_FAR_TO_FINAL_DESTINATION("how_far_to_final_destination", "Run distance to final destination analysis", AnalyzeDistanceToFinalDestination.class, false),
-    LIST_AVAILABLE_VOICES("list_available_voices", "Lists available AI voices. ", ListAvailableVoices.class, false),
-    LOCAL_SYSTEM_INFO("local_system_info", "Provide information about local star system. ", AnalyzeLocalSystemHandler.class, true),
-    QUERY_ANALYZE_ON_BOARD_CARGO("query_analyze_on_board_cargo", "Analyzes cargo hold contents. ", AnalyzeCargoHoldHandler.class, true),
-    QUERY_ANALYZE_ROUTE("query_analyze_route", "Analyze our plotted route. ", AnalyzeRouterHandler.class, true),
-    QUERY_CARRIER_STATS("query_our_fleet_carrier_stats", "Analyse our fleet carrier data, provide extremely short and concise answer for specific datapoint only, if not specified provide summary", AnalyzeCarrierDataHandler.class, true),
-    QUERY_PIRATE_MISSION_KILLS_REMAINING("query_pirate_mission_kills_remaining", "Summarize the state of the missions. Mission kills stack across factions ", AnalyzePirateMissionHandler.class, true),
-    QUERY_PIRATE_MISSION_PROFIT("query_pirate_mission_profit", "Summarize the potential profit from currently active missions. ", AnalyzePirateMissionHandler.class, true),
-    QUERY_PIRATE_MISSION_STATUS("query_pirate_mission_status", "Handles summarize current progression of missions. ", AnalyzePirateMissionHandler.class, true),
-    QUERY_NEXT_STAR_SCOOPABLE("query_next_star_scoopable", "Check if we can get fuel at the next star. ", AnalyzeNextStarForFuelHandler.class, false),
-    QUERY_PLAYER_STATS_ANALYSIS("query_player_stats_analysis", "Analyze current player statistics. ", PlayerStatsAnalyzer.class, true),
-    QUERY_SHIP_LOADOUT("query_ship_loadout", "Provide requested information about ship loadout", AnalyzeShipLoadoutHandler.class, true),
-    STATION_DATA("query_station_data", "Access station data, provide analysis. ", StationDataHandler.class, true),
-    WHAT_ARE_YOUR_CAPABILITIES("what_are_your_capabilities", "Summarizes app capabilities. ", WhatAreYourCapabilitiesHandler.class, false),
-    WHAT_IS_YOUR_DESIGNATION("what_is_your_designation", "Responds with AI name (e.g., 'what is your name', 'who are you'). ", WhatIsYourNameHandler.class, false),
-    WHERE_IS_OUR_CARRIER("what_is_our_fleet_carrier_location", "Check on our carrier current location. ", WhatIsOurCarrierLocationHandler.class, false),
-    TOTAL_BOUNTIES_COLLECTED("query_total_bounties_collected", "Summ total of the bounties collected this session", AnalyzeBountiesCollectedHandler.class, false),
-    CARRIER_ETA("query_fleet_carrier_eta", "Use arrival time and current time to determine ETA", CarrierETAHandler.class, false),
-    HOW_FAR_ARE_WE_FROM_BUBBLE("query_distance_from_earth_bubble", "calculate distance in light years using 3D coordinates", AnalyzeDistanceFromTheBubble.class, false),
-    HOW_FAR_IS_OUR_CARRIER("query_how_distance_to_our_fleet_carrier", "calculate distance in light years using 3D coordinates", AnalyzeDistanceFromFleetCarrierHandler.class, false),
-    HOW_FAR_ARE_WE_FROM_LAST_BIO_SAMPLE("query_distance_from_last_bio_sample", "use userLatitude, userLongitude, planetRadius and lat/lon of the sample to calculate distance", AnalyzeDistanceFromLastBioSample.class, true),
-    GENERAL_CONVERSATION("general_conversation", "Only IF no other query matches use this", ConversationalQueryHandler.class, true);
+    ANALYZE_SCAN("query_analyze_last_scan", "Analyze the most recent scan data.", AnalyzeLastScanHandler.class, true),
+    QUERY_SEARCH_SIGNAL_DATA("query_planetary_moon_signals", "Analyze signal data from planets or moons, using gravity (G) and temperature (K) units.", AnalyzeSignalDataHandler.class, true),  // Clarify planetary/moon scope, avoid vehicle overlap
+    ANALYZE_CURRENT_PLANET("query_current_planetary_location", "Analyze data for the current planetary or station location.", AnalyzeCurrentLocationHandler.class, true),  // Emphasize planetary/station context
+    ANALYZE_STAR_SYSTEM_EXPLORATION("query_star_system_exploration", "Analyze exploration data and profits for the current star system.", AnalyzeExplorationProfitsHandler.class, true),
+    ANALYZE_BODY_MATERIALS("query_planetary_materials", "Analyze material composition on planetary bodies.", AnalyzeMaterialsOnPlanetHandler.class, true),  // Specify planetary to avoid ship/cargo confusion
+    ANALYZE_EXO_BIOLOGY("query_exobiology_samples", "Analyze bio-sample collection progress, including completed, partial, and remaining species.", AnalyzeBioSamplesHandler.class, true),  // "exobiology" to distinguish from commodities
+    ANALYZE_CURRENT_FUEL_STATUS("query_ship_fuel_status", "Analyze ship fuel tank capacity and reserve, return percent available.", AnalyzeFuelStatusHandler.class, true),
+    ANALYZE_FSD_TARGET("query_fsd_target_analysis", "Analyze FSD destination for allegiance, traffic, and security.", AnalyzeFsdTargetHandler.class, true),
+    ANALYZE_LOCAL_MARKETS("query_local_commodity_markets", "Analyze commodity market contents at the current location.", AnalyzeLocalMarketsHandler.class, true),  // "commodity" to avoid bio or material overlap
+    ANALYZE_LOCAL_OUTFITTING("query_local_outfitting", "Analyze available outfitting options.", AnalyzeLocalOutfittingHandler.class, true),
+    ANALYZE_LOCAL_SHIPYARD("query_local_shipyard", "Analyze shipyard contents.", AnalyzeShipyardHandler.class, true),
+    ANALYZE_LOCAL_STATIONS("query_local_stations_services", "Summarize services at local stations.", AnalyzeLocalStations.class, true),
+    HOW_FAR_TO_FINAL_DESTINATION("query_distance_to_final_destination", "Calculate distance to the final destination.", AnalyzeDistanceToFinalDestination.class, false),
+    LIST_AVAILABLE_VOICES("list_available_voices", "List available AI voices.", ListAvailableVoices.class, false),
+    LOCAL_SYSTEM_INFO("query_local_star_system", "Provide details about the current star system.", AnalyzeLocalSystemHandler.class, true),
+    QUERY_ANALYZE_ON_BOARD_CARGO("query_ship_cargo_contents", "Analyze contents of the ship’s cargo hold.", AnalyzeCargoHoldHandler.class, true),  // "ship" to avoid carrier/planet mix-up
+    QUERY_ANALYZE_ROUTE("query_plotted_route_analysis", "Analyze the current plotted route.", AnalyzeRouterHandler.class, true),
+    QUERY_CARRIER_STATS("query_fleet_carrier_vehicle_stats", "Analyze fleet carrier vehicle data (e.g., fuel, market, location), provide concise answer for specific datapoints or a summary if unspecified.", AnalyzeCarrierDataHandler.class, true),  // "vehicle" to distinguish from planets
+    QUERY_PIRATE_MISSION_KILLS_REMAINING("query_pirate_mission_kills", "Summarize remaining kills for active pirate missions.", AnalyzePirateMissionHandler.class, true),
+    QUERY_PIRATE_MISSION_PROFIT("query_pirate_mission_profit", "Summarize potential profit from active pirate missions.", AnalyzePirateMissionHandler.class, true),
+    QUERY_PIRATE_MISSION_STATUS("query_pirate_mission_progress", "Summarize progress of active pirate missions.", AnalyzePirateMissionHandler.class, true),
+    QUERY_NEXT_STAR_SCOOPABLE("query_next_star_fuel", "Check if the next star is scoopable for fuel.", AnalyzeNextStarForFuelHandler.class, false),
+    QUERY_PLAYER_STATS_ANALYSIS("query_player_statistics", "Analyze current player statistics.", PlayerStatsAnalyzer.class, true),
+    QUERY_SHIP_LOADOUT("query_ship_loadout_details", "Provide details about the ship’s loadout.", AnalyzeShipLoadoutHandler.class, true),
+    STATION_DATA("query_station_details", "Analyze data for the current station.", StationDataHandler.class, true),
+    WHAT_ARE_YOUR_CAPABILITIES("query_app_capabilities", "Summarize application capabilities.", WhatAreYourCapabilitiesHandler.class, false),
+    WHAT_IS_YOUR_DESIGNATION("query_ai_designation", "Respond with the AI’s name or designation.", WhatIsYourNameHandler.class, false),
+    WHERE_IS_OUR_CARRIER("query_fleet_carrier_location", "Provide the current location of our fleet carrier.", WhatIsOurCarrierLocationHandler.class, false),
+    TOTAL_BOUNTIES_COLLECTED("query_bounties_collected", "Summarize total bounties collected this session.", AnalyzeBountiesCollectedHandler.class, false),
+    CARRIER_ETA("query_fleet_carrier_arrival_eta", "Calculate fleet carrier ETA using arrival and current time.", CarrierETAHandler.class, false),
+    HOW_FAR_ARE_WE_FROM_BUBBLE("query_distance_to_bubble", "Calculate distance to the Bubble in light years using 3D coordinates.", AnalyzeDistanceFromTheBubble.class, false),
+    HOW_FAR_IS_OUR_CARRIER("query_distance_to_fleet_carrier", "Calculate distance to our fleet carrier in light years using 3D coordinates.", AnalyzeDistanceFromFleetCarrierHandler.class, false),
+    HOW_FAR_ARE_WE_FROM_LAST_BIO_SAMPLE("query_distance_to_last_exobiology_sample", "Calculate distance to the last bio-sample using user latitude, longitude, planet radius, and sample coordinates.", AnalyzeDistanceFromLastBioSample.class, true),  // "exobiology" for clarity
+    GENERAL_CONVERSATION("general_conversation", "Handle general conversation when no other query matches.", ConversationalQueryHandler.class, true);
 
-    // NOT implemented yet
-    //FIND_MATERIAL_TRADER("find_material_trader", "Find us a material trader. ", MaterialTraderQueryHandler.class, true);
 
     private final String action;
     private final String description;

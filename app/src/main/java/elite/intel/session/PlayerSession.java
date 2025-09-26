@@ -575,4 +575,9 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         this.codexEntries.add(entry);
         saveSession();
     }
+
+    public void clearCodexEntries() {
+        this.codexEntries.clear();
+        saveSession();
+    }
 }

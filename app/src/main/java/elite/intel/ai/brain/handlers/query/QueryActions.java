@@ -8,8 +8,10 @@ public enum QueryActions {
     ANALYZE_SCAN("query_analyze_last_scan", "Provide analysis of this scan data of the stellar object. ", AnalyzeLastScanHandler.class, true),
     ANALYZE_STELLAR_OBJECTS("query_analyze_local_planets_and_moons", "Analyze current star system and nearby planets. Gravity unit G, Temperature unit C ", AnalyzeStellarObjectsHandler.class, true),
     ANALYZE_STELLAR_OBJECT("query_analyze_this_planet", "Provide analysis of stellar body", AnalyzerStellarObjectHandler.class, true),
-    ANALYZE_BODY_MATERIALS("query_planet_materials_for_harvest", "Analyze materials available. ", AnalyzeMaterialsOnPlanetHandler.class, true),
-    ANALYZE_CURRENT_PLANET("query_planet_data_analysis", "Answer questions based on data for the current planet", AnalyzeCurrentPlanetHandler.class, true),
+    ANALYZE_EXO_BIOLOGY("query_analyze_exo_biology_data", "Summarize the bio-sample collection progress, including completed samples, partial scans, and remaining species to scan.", AnalyzeBioSamplesHandler.class, true),
+    ANALYZE_CURRENT_PLANET("query_current_location", "Answer questions based on data for the current location", AnalyzeCurrentLocationHandler.class, true),
+    ANALYZE_BODY_MATERIALS("query_planet_materials", "Analyze materials available. ", AnalyzeMaterialsOnPlanetHandler.class, true),
+    ANALYZE_STAR_SYSTEM_EXPLORATION("query_star_system_exploration_analysis", "Provide answers for discovery exploration and exploration profits", AnalyzeExplorationProfitsHandler.class, true),
     ANALYZE_CURRENT_FUEL_STATUS("query_fuel_status", "Analyze fuel tank capacity in shipLoadout and fuelData available reserve, provide result as percent fuel available", AnalyzeFuelStatusHandler.class, true),
     ANALYZE_LOCAL_STATIONS("query_local_stations", "Provide summary a service the local stations if any", AnalyzeLocalStations.class, true),
     HOW_FAR_TO_FINAL_DESTINATION("how_far_to_final_destination", "Run distance to final destination analysis", AnalyzeDistanceToFinalDestination.class, false),
@@ -30,12 +32,11 @@ public enum QueryActions {
     WHAT_IS_YOUR_DESIGNATION("what_is_your_designation", "Responds with AI name (e.g., 'what is your name', 'who are you'). ", WhatIsYourNameHandler.class, false),
     WHERE_IS_OUR_CARRIER("what_is_our_fleet_carrier_location", "Check on our carrier current location. ", WhatIsOurCarrierLocationHandler.class, false),
     TOTAL_BOUNTIES_COLLECTED("query_total_bounties_collected", "Summ total of the bounties collected this session", AnalyzeBountiesCollectedHandler.class, false),
-    GENERAL_CONVERSATION("general_conversation", "General conversation, use your own knowledge to respond", ConversationalQueryHandler.class, true),
     CARRIER_ETA("query_fleet_carrier_eta", "Use arrival time and current time to determine ETA", CarrierETAHandler.class, false),
-    HOW_FAR_ARE_WE_FROM_BUBBLE("how_far_are_we_from_earth_bubble", "calculate distance in light years using 3D coordinates", DistanceFromTheBubble.class, false),
-    HOW_FAR_IS_OUR_CARRIER("how_far_is_our_fleet_carrier", "calculate distance in light years using 3D coordinates", HowFarIsOurCarrierHandler.class, false),
-    HOW_MANY_SAMPLES_COLLECTED("how_many_bio_samples_collected", "Summarize the bio-sample collection progress, including completed samples, partial scans, and remaining species to scan.", AnalyzeBioSamplesHandler.class, true),
-    HOW_FAR_ARE_WE_FROM_LAST_BIO_SAMPLE("how_far_from_last_bio_sample", "use userLatitude, userLongitude, planetRadius and lat/lon of the sample to calculate distance", HowFarFromLastBioSample.class, true);
+    HOW_FAR_ARE_WE_FROM_BUBBLE("query_distance_from_earth_bubble", "calculate distance in light years using 3D coordinates", AnalyzeDistanceFromTheBubble.class, false),
+    HOW_FAR_IS_OUR_CARRIER("query_how_distance_to_our_fleet_carrier", "calculate distance in light years using 3D coordinates", AnalyzeDistanceFromFleetCarrierHandler.class, false),
+    HOW_FAR_ARE_WE_FROM_LAST_BIO_SAMPLE("query_distance_from_last_bio_sample", "use userLatitude, userLongitude, planetRadius and lat/lon of the sample to calculate distance", AnalyzeDistanceFromLastBioSample.class, true),
+    GENERAL_CONVERSATION("general_conversation", "Only IF no other query matches use this", ConversationalQueryHandler.class, true);
 
     // NOT implemented yet
     //FIND_MATERIAL_TRADER("find_material_trader", "Find us a material trader. ", MaterialTraderQueryHandler.class, true);

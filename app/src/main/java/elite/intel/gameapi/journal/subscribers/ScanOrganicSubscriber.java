@@ -10,6 +10,7 @@ import elite.intel.gameapi.journal.events.dto.BioSampleDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.BioScanDistances;
+import elite.intel.util.DistanceCalculator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,10 +31,10 @@ public class ScanOrganicSubscriber {
         int planetNumber = event.getBody();
         long starSystemNumber = event.getSystemAddress();
 
-        BioForms.BioDetails bioDetails = BioForms.getDetails(genus, variant);
-
-        long valueInCredits = bioDetails == null ? 0 : bioDetails.creditValue();
+        long valueInCredits = BioForms.getAverageProjectedPayment(genus);
         LocationDto currentLocation = playerSession.getCurrentLocation();
+
+        removeCodexEntryIfMatches(event.getVariantLocalised(), playerSession);
 
         if (scan1.equals(scanType)) {
             sb.append(" Organic sample detected: Genus: ");
@@ -72,26 +73,35 @@ public class ScanOrganicSubscriber {
             bioSampleDto.setBioSampleCompleted(true);
             playerSession.addBioSample(bioSampleDto);
             playerSession.saveCurrentLocation(currentLocation);
-            removeCodexEntry(event.getVariantLocalised(), playerSession);
             currentLocation.clearBioSamples();
         }
-
     }
 
-    private void removeCodexEntry(String variantLocalised, PlayerSession playerSession) {
+    private void removeCodexEntryIfMatches(String variantLocalised, PlayerSession playerSession) {
+        double latitude = playerSession.getStatus().getLatitude();
+        double longitude = playerSession.getStatus().getLongitude();
+        double planetRadius = playerSession.getStatus().getPlanetRadius();
+
         List<CodexEntryEvent> codexEntries = playerSession.getCodexEntries();
         if(codexEntries == null || codexEntries.isEmpty()) return;
         List<CodexEntryEvent> adjusted = new ArrayList<>();
         for(CodexEntryEvent entry : codexEntries){
             if(!entry.getNameLocalised().equalsIgnoreCase(variantLocalised)){
-                adjusted.add(entry);
+                double codexLatitude = entry.getLatitude();
+                double codexLongitude = entry.getLongitude();
+                double distanceFromSample = DistanceCalculator.calculateSurfaceDistance(latitude, longitude, codexLatitude, codexLongitude, planetRadius);
+                if(distanceFromSample > 200) {
+                    adjusted.add(entry); // keep if distance more than 200 meters
+                }
             }
         }
         playerSession.setCodexEntries(adjusted);
     }
 
+
     private BioSampleDto createBioSampleDto(String genus, String variant, int planetNumber, long starSystemNumber, long valueInCredits) {
         BioSampleDto bioSampleDto = new BioSampleDto();
+        bioSampleDto.setPlanetName(playerSession.getCurrentLocation().getPlanetName());
         bioSampleDto.setScanLatitude(playerSession.getStatus().getLatitude());
         bioSampleDto.setScanLongitude(playerSession.getStatus().getLongitude());
         bioSampleDto.setGenus(genus);

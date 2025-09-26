@@ -144,3 +144,5 @@
 "break all the ship"="recall the ship"
 "eyes bodies"="ice bodies"
 "how are you far enough"="are we far enough"
+"lord of the landing gear"="drop the landing gear"
+"unless"="analize"

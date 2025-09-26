@@ -8,7 +8,10 @@ import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import static elite.intel.util.ExoBio.completedScansForPlanet;
 
 public class AnalyzeBioSamplesHandler extends BaseQueryAnalyzer implements QueryHandler {
 
@@ -20,10 +23,11 @@ public class AnalyzeBioSamplesHandler extends BaseQueryAnalyzer implements Query
 
         List<BioSampleDto> partialScans = currentLocation.getBioScans();
         List<SAASignalsFoundEvent.Genus> genus = currentLocation.getGenus();
-        List<BioSampleDto> completedBioSamples = playerSession.getBioSamples();
+        List<BioSampleDto> completedForThisPlanet = completedScansForPlanet(playerSession);
 
-        return analyzeData(new DataDto(partialScans, genus, completedBioSamples).toJson(), originalUserInput);
+        return analyzeData(new DataDto(partialScans, genus, completedForThisPlanet).toJson(), originalUserInput);
     }
+
 
     record DataDto(List<BioSampleDto> partialScans, List<SAASignalsFoundEvent.Genus> allGenusOnPlanet, List<BioSampleDto> completedSamples) implements ToJsonConvertible {
         @Override public String toJson() {

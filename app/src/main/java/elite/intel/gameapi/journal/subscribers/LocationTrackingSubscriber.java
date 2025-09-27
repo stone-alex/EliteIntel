@@ -19,12 +19,9 @@ public class LocationTrackingSubscriber {
     private double lastDistance = -1;
     private double lastHeading = -1;
     private long lastAnnounceTime = 0;
-//    private double lastLatitude = 0;
-//    private double lastLongitude = 0;
-//    private long lastMoveTime = 0;
 
     private static final long MIN_INTERVAL_MS = 20000; // 20 sec base throttle, adjust as needed for TTS delay
-    private static final double[] DISTANCE_THRESHOLDS = {500000, 200000, 100000, 80000, 50000, 30000, 20000, 10000, 5000, 2000, 1500, 1000, 500, 400, 300, 200, 150, 100, 75}; // meters, descending
+    private static final double[] DISTANCE_THRESHOLDS = {1000000, 750000, 500000, 200000, 100000, 80000, 50000, 30000, 20000, 10000, 5000, 2000, 1500, 1000, 500, 400, 300, 200, 150, 100, 75}; // meters, descending
     private static final double HYSTERESIS = 10; // degrees
     private static final double APPROACH_RADIUS = 1000; // meters
     private static final double ARRIVAL_RADIUS = 75; // meters
@@ -62,7 +59,7 @@ public class LocationTrackingSubscriber {
             effectiveInterval = 10000; // 10 sec
         }
 
-        log.info("Effective Interval: " + effectiveInterval);
+        //log.info("Effective Interval: " + effectiveInterval);
 
         // Initial announcement for new tracking or first move
         if (lastDistance == -1) {
@@ -79,7 +76,7 @@ public class LocationTrackingSubscriber {
         if (now - lastAnnounceTime < effectiveInterval && directions.distanceToTarget() > APPROACH_RADIUS) {
             lastDistance = directions.distanceToTarget(); // Still update for next checks
             lastHeading = directions.userHeading();
-            log.info("throttle announcement");
+            //log.info("throttle announcement");
             return;
         }
 
@@ -104,9 +101,9 @@ public class LocationTrackingSubscriber {
         } else if (directions.distanceToTarget() < lastDistance) { // Approaching
             // Check threshold crossings (highest first)
             for (double th : DISTANCE_THRESHOLDS) {
-                log.info("threshold crossing check lastDistance: " + lastDistance + " threshold: " + th + " distance: " + directions.distanceToTarget());
+                //log.info("threshold crossing check lastDistance: " + lastDistance + " threshold: " + th + " distance: " + directions.distanceToTarget());
                 if (lastDistance > th && directions.distanceToTarget() <= th) {
-                    log.info("threshold crossed");
+                    //log.info("threshold crossed");
                     EventBusManager.publish(new VoiceProcessEvent(formatDistance(th) + " from target. "));
                     lastAnnounceTime = now;
                     announced = true;
@@ -114,16 +111,8 @@ public class LocationTrackingSubscriber {
                 }
             }
 
-            // Approach and arrival (override throttle if needed)
-            if (!announced && lastDistance > APPROACH_RADIUS && directions.distanceToTarget() <= APPROACH_RADIUS) {
-                log.info("approach check");
-                EventBusManager.publish(new VoiceProcessEvent("Approaching target, " + formatDistance(directions.distanceToTarget()) + " remaining."));
-                lastAnnounceTime = now;
-                announced = true;
-            }
-
             if (directions.distanceToTarget() <= ARRIVAL_RADIUS) {
-                log.info("arrival check");
+                //log.info("arrival check");
                 EventBusManager.publish(new VoiceProcessEvent("Arrived."));
                 lastAnnounceTime = now;
                 TargetLocation t = playerSession.getTracking();
@@ -144,8 +133,7 @@ public class LocationTrackingSubscriber {
     }
 
     private boolean sameTarget(TargetLocation a, TargetLocation b) {
-        // Assuming TargetLocation doesn't have equals(), compare coords (add equals() if possible)
-        return a.getLatitude() == b.getLatitude() && a.getLongitude() == b.getLongitude() && a.getRequestedTime() == b.getRequestedTime();
+        return a.equals(b);
     }
 
     private String formatDistance(double d) {

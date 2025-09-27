@@ -29,7 +29,7 @@ public class NavigationUtils {
         return new Direction(
                 resultForDirections.roundedBearing(), // heading to target
                 Math.round(resultForCurrentPosition.roundedBearing()), // your heading
-                Math.round(resultForDirections.distanceInMeters()), // distance to target
+                resultForDirections.distanceInMeters(), // distance to target
                 Math.round(speed),
                 "Heading " + resultForDirections.roundedBearing() + " degrees, distance to target is " + formatDistance(resultForDirections.distanceInMeters())
         );

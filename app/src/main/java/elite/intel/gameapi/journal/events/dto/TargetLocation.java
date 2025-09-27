@@ -38,4 +38,19 @@ public class TargetLocation {
     public void setRequestedTime(long requestedTime) {
         this.requestedTime = requestedTime;
     }
+
+    @Override public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+
+        TargetLocation that = (TargetLocation) o;
+        return Double.compare(getLatitude(), that.getLatitude()) == 0 && Double.compare(getLongitude(), that.getLongitude()) == 0 && isEnabled() == that.isEnabled() && getRequestedTime() == that.getRequestedTime();
+    }
+
+    @Override public int hashCode() {
+        int result = Double.hashCode(getLatitude());
+        result = 31 * result + Double.hashCode(getLongitude());
+        result = 31 * result + Boolean.hashCode(isEnabled());
+        result = 31 * result + Long.hashCode(getRequestedTime());
+        return result;
+    }
 }

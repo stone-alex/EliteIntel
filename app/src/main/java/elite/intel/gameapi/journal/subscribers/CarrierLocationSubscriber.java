@@ -14,12 +14,8 @@ public class CarrierLocationSubscriber {
 
         if ("FleetCarrier".equalsIgnoreCase(event.getCarrierType())) {
             PlayerSession playerSession = PlayerSession.getInstance();
-            CarrierDataDto carrierData = playerSession.getCarrierData();
-            if(carrierData != null) {
-                carrierData.setLocation(event.getStarSystem());
-                playerSession.setCarrierData(carrierData);
-            }
-            EventBusManager.publish(new SensorDataEvent("FleetCarrier location: " + event.getStarSystem()));
+            playerSession.put(PlayerSession.CARRIER_LOCATION, event.getStarSystem());
+            playerSession.saveSession();
         }
     }
 }

@@ -24,7 +24,7 @@ public class CarrierLocationEvent extends BaseEvent {
     private int bodyID;
 
     public CarrierLocationEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), Duration.ofSeconds(15), "CarrierLocation");
+        super(json.get("timestamp").getAsString(), Duration.ofDays(7), "CarrierLocation");
         CarrierLocationEvent event = GsonFactory.getGson().fromJson(json, CarrierLocationEvent.class);
         this.carrierType = event.carrierType;
         this.carrierID = event.carrierID;

@@ -29,8 +29,8 @@ public class SAASignalsFoundSubscriber {
         int signalsFound = signals != null ? signals.size() : 0;
 
         String bodyName = event.getBodyName();
-        StellarObjectDto stellarObjectDto = playerSession.getStellarObjects().get(bodyName);
-        if(stellarObjectDto == null) {return;}
+        StellarObjectDto stellarObjectDto = playerSession.getStellarObject(bodyName);
+
 
         if (signalsFound > 0) {
             int liveSignals = event.getGenuses() != null ? event.getGenuses().size() : 0;
@@ -68,15 +68,7 @@ public class SAASignalsFoundSubscriber {
                 StellarObjectDto ring = new StellarObjectDto();
                 ring.setBodyId(event.getBodyID());
                 ring.setName(bodyName);
-
-                if (!signals.isEmpty()) {
-                    // we have some hotspots
-                    ArrayList<MaterialDto> materials = new ArrayList<>();
-                    for (SAASignalsFoundEvent.Signal signal : signals) {
-                        materials.add(new MaterialDto(signal.getType(), 100, true));
-                    }
-                    ring.setMaterials(materials);
-                }
+                ring.setMaterials(toMaterials(event.getSignals()));
 
                 String parentBodyName = bodyName.substring(0, bodyName.length() - " X Ring".length());
                 StellarObjectDto parent = playerSession.getStellarObject(parentBodyName);
@@ -94,6 +86,14 @@ public class SAASignalsFoundSubscriber {
         } else {
             EventBusManager.publish(new SensorDataEvent("No Signal(s) detected."));
         }
+    }
+
+    private List<MaterialDto> toMaterials(List<SAASignalsFoundEvent.Signal> signals) {
+        ArrayList<MaterialDto> materialDtos = new ArrayList<>();
+        for (SAASignalsFoundEvent.Signal signal : signals) {
+            materialDtos.add(new MaterialDto(signal.getType(), 100, true));
+        }
+        return materialDtos;
     }
 
     private List<GenusDto> toGenusDto(List<SAASignalsFoundEvent.Genus> genuses) {

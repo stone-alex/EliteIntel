@@ -126,7 +126,7 @@ public class LocationEvent extends BaseEvent {
     private Faction systemFaction;
 
     public LocationEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), Duration.ofDays(30), "Location");
+        super(json.get("timestamp").getAsString(), Duration.ofSeconds(15), "Location");
         LocationEvent event = GsonFactory.getGson().fromJson(json, LocationEvent.class);
         this.distFromStarLS = event.distFromStarLS;
         this.docked = event.docked;

@@ -45,9 +45,9 @@ public enum CustomCommands {
     SET_RADIO_TRANSMISSION_MODDE("turn_radio_transmission_on_off", "<radio_transmission_on_off>", SystemSession.RADION_TRANSMISSION_ON_OFF, SetRadioTransmissionOnOff.class),
     SET_STREAMING_MODE("set_streaming_mode", "<streaming_mode_on_off>", "streaming_mode", SetStreamingModeHandler.class),
     TAKE_ME_HOME("take_us_home", null, null, PlotRouteToHomeHandler.class),
-    GET_HEADING_TO_LZ("navigate_to_landing_zone", null, null, NavigateToLandingZone.class),
-    NAVIGATE_TO_NEXT_BIO_SAMPLE("navigate_to_bio_sample", null, null, NavigateToNextBioSample.class),
-    NAVIGATION_ON_OFF("navigation_on_off", "<navigation_on_off>", "navigation_on_off", NavigationOnOffHandler.class),
+    GET_HEADING_TO_LZ("navigate_heading_direction_to_landing_zone", null, null, NavigateToLandingZone.class),
+    NAVIGATE_TO_NEXT_BIO_SAMPLE("navigate_heading_direction_to_bio_sample", null, null, NavigateToNextBioSample.class),
+    NAVIGATION_ON_OFF("navigation_tracking_on_off", "<navigation_on_off>", "navigation_on_off", NavigationOnOffHandler.class),
     CLEAR_CODEX_ENTRIES("clear_codex_entries", null, null, ClearCodexEntriesHandler.class);
 
 

@@ -2,12 +2,13 @@ package elite.intel.gameapi.gamestate.events;
 
 public class PlayerMovedEvent {
 
-    private double latitude, longitude, planetRadius;
+    private double latitude, longitude, planetRadius, altitude;
 
-    public PlayerMovedEvent(double latitude, double longitude, double planetRadius) {
+    public PlayerMovedEvent(double latitude, double longitude, double planetRadius, double altitude) {
         this.latitude = latitude;
         this.longitude = longitude;
         this.planetRadius = planetRadius;
+        this.altitude = altitude;
     }
 
     public double getLatitude() {
@@ -20,5 +21,9 @@ public class PlayerMovedEvent {
 
     public double getPlanetRadius() {
         return planetRadius;
+    }
+
+    public double getAltitude() {
+        return altitude;
     }
 }

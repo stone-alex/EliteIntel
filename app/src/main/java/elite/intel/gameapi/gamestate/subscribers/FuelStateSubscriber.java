@@ -23,12 +23,12 @@ public class FuelStateSubscriber {
 
 
         if (event.getAltitude() == 0 && event.getLatitude() > 0) {
-            //We are not flying
+            //TODO Need a way to know we are in SRV
             if (fuelReservoir <= 0.06 && !hasAnnounced) {
-                EventBusManager.publish(new VoiceProcessEvent("SRV Fuel Critical!"));
-                hasAnnounced = true;
+                //EventBusManager.publish(new VoiceProcessEvent("SRV Fuel Critical!"));
+                //hasAnnounced = true;
             } else {
-                hasAnnounced = false;
+                ///hasAnnounced = false;
             }
         } else {
             //We are on the ship.

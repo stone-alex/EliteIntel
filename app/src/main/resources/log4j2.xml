@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="DEBUG">
     <Properties>
-        <Property name="logPattern">%d{HH:mm:ss} %-6p-> %c{4}.%M(%F:%L) - %m%n</Property>
+        <Property name="logPattern">%d{HH:mm:ss} %-6p-> %c{1}.%M(%F:%L) - %m%n</Property>
         <Property name="logPath">logs/</Property>
         <Property name="rollingFileName">elite-intel</Property>
     </Properties>

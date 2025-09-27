@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Optional;
 
-import static elite.intel.util.NavigationUtils.getHeading;
+import static elite.intel.util.NavigationUtils.getDirections;
 
 public class NavigateToNextBioSample implements CommandHandler {
 
@@ -68,7 +68,7 @@ public class NavigateToNextBioSample implements CommandHandler {
         playerSession.setTracking(targetLocation);
 
         EventBusManager.publish(new VoiceProcessEvent(
-                String.format("Directions to: %s %s", entry.getNameLocalised(), getHeading(entryLatitude, entryLongitude, userLatitude, userLongitude, planetRadius))
+                String.format("Directions to: %s %s", entry.getNameLocalised(), getDirections(entryLatitude, entryLongitude, userLatitude, userLongitude, planetRadius))
         ));
     }
 

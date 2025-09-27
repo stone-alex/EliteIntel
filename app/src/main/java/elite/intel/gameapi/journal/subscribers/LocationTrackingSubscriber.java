@@ -6,7 +6,6 @@ import elite.intel.gameapi.VoiceProcessEvent;
 import elite.intel.gameapi.gamestate.events.PlayerMovedEvent;
 import elite.intel.gameapi.journal.events.dto.TargetLocation;
 import elite.intel.session.PlayerSession;
-import elite.intel.util.DistanceCalculator;
 import elite.intel.util.NavigationUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,14 +17,15 @@ public class LocationTrackingSubscriber {
 
     private TargetLocation lastTracking = null;
     private double lastDistance = -1;
+    private double lastHeading = -1;
     private long lastAnnounceTime = 0;
-    private double lastLatitude = 0;
-    private double lastLongitude = 0;
-    private long lastMoveTime = 0;
+//    private double lastLatitude = 0;
+//    private double lastLongitude = 0;
+//    private long lastMoveTime = 0;
 
     private static final long MIN_INTERVAL_MS = 20000; // 20 sec base throttle, adjust as needed for TTS delay
     private static final double[] DISTANCE_THRESHOLDS = {500000, 200000, 100000, 80000, 50000, 30000, 20000, 10000, 5000, 2000, 1500, 1000, 500, 400, 300, 200, 150, 100, 75}; // meters, descending
-    private static final double HYSTERESIS = 2; // meters, to avoid jitter
+    private static final double HYSTERESIS = 10; // degrees
     private static final double APPROACH_RADIUS = 1000; // meters
     private static final double ARRIVAL_RADIUS = 75; // meters
 
@@ -41,53 +41,24 @@ public class LocationTrackingSubscriber {
         if (lastTracking == null || !sameTarget(lastTracking, tracking)) {
             lastTracking = tracking;
             lastDistance = -1;
+            lastHeading = -1;
         }
 
-        // Calculate distance to target
-        double distance = DistanceCalculator.calculateSurfaceDistance(
+        // Calculate directions (includes heading distance and current speed)
+        NavigationUtils.Direction directions = NavigationUtils.getDirections(
                 tracking.getLatitude(),
                 tracking.getLongitude(),
                 event.getLatitude(),
                 event.getLongitude(),
                 event.getPlanetRadius()
         );
-        log.info("Distance to target: " + distance);
-
-        // Calculate directions (includes heading and distance)
-        String directions = NavigationUtils.getHeading(
-                tracking.getLatitude(),
-                tracking.getLongitude(),
-                event.getLatitude(),
-                event.getLongitude(),
-                event.getPlanetRadius()
-        );
-        log.info("Directions: " + directions);
+        log.info("Directions: " + directions.toString());
 
 
-        // Optional: Calculate speed (m/s) for potential dynamic adjustments
         long now = System.currentTimeMillis();
-        double speed = 0;
-        if (lastMoveTime > 0) {
-            double deltaTimeSec = (now - lastMoveTime) / 1000.0;
-            double deltaDist = DistanceCalculator.calculateSurfaceDistance(
-                    lastLatitude,
-                    lastLongitude,
-                    event.getLatitude(),
-                    event.getLongitude(),
-                    event.getPlanetRadius()
-            );
-            if (deltaTimeSec > 0) {
-                speed = deltaDist / deltaTimeSec;
-            }
-        }
-        lastLatitude = event.getLatitude();
-        lastLongitude = event.getLongitude();
-        lastMoveTime = now;
-        log.info("Speed: " + speed);
-
-        // Optional: Dynamic throttle based on speed (e.g., slower movement = shorter interval for more frequent guidance)
+        //TODO: change this. We need to skip DISTANCE_THRESHOLDS announcements if the speed is too fast to vocalize them all.
         long effectiveInterval = MIN_INTERVAL_MS;
-        if (speed >= 15 && speed < 150) {
+        if (directions.userSpeed() >= 15 && directions.userSpeed() < 150) {
             effectiveInterval = 10000; // 10 sec
         }
 
@@ -95,31 +66,46 @@ public class LocationTrackingSubscriber {
 
         // Initial announcement for new tracking or first move
         if (lastDistance == -1) {
-            EventBusManager.publish(new VoiceProcessEvent("Starting navigation to target. " + directions));
+            EventBusManager.publish(new VoiceProcessEvent("Starting navigation to target. " + directions.vocalization()));
             lastAnnounceTime = now;
-            lastDistance = distance;
+            lastDistance = directions.distanceToTarget();
+            lastHeading = directions.userHeading();
             return;
         }
 
+
+
         // Throttle unless close to target
-        if (now - lastAnnounceTime < effectiveInterval && distance > APPROACH_RADIUS) {
-            lastDistance = distance; // Still update for next checks
+        if (now - lastAnnounceTime < effectiveInterval && directions.distanceToTarget() > APPROACH_RADIUS) {
+            lastDistance = directions.distanceToTarget(); // Still update for next checks
+            lastHeading = directions.userHeading();
             log.info("throttle announcement");
             return;
         }
 
         boolean announced = false;
 
-        // Check moving away
-        if (distance > lastDistance && now - lastAnnounceTime >= effectiveInterval) {
-            EventBusManager.publish(new VoiceProcessEvent("Adjust: " + directions));
+
+        ///  HEADING
+        if (directions.userHeading() != lastHeading && (directions.headingToTarget() > lastHeading + HYSTERESIS || directions.headingToTarget() < lastHeading - HYSTERESIS)
+                && now - lastAnnounceTime >= effectiveInterval
+        ) {
+            EventBusManager.publish(new VoiceProcessEvent("Adjust heading: " + directions.headingToTarget()+" degrees."));
             lastAnnounceTime = now;
             announced = true;
-        } else if (distance < lastDistance - HYSTERESIS) { // Approaching
+        }
+
+        /// DISTANCE
+        // Check moving away
+        if (directions.distanceToTarget() > lastDistance && now - lastAnnounceTime >= effectiveInterval) {
+            EventBusManager.publish(new VoiceProcessEvent("Adjust: " + directions.vocalization()));
+            lastAnnounceTime = now;
+            announced = true;
+        } else if (directions.distanceToTarget() < lastDistance) { // Approaching
             // Check threshold crossings (highest first)
             for (double th : DISTANCE_THRESHOLDS) {
-                log.info("threshold crossing check lastDistance: " + lastDistance + " threshold: " + th + " distance: " + distance);
-                if (lastDistance > th && distance <= th) {
+                log.info("threshold crossing check lastDistance: " + lastDistance + " threshold: " + th + " distance: " + directions.distanceToTarget());
+                if (lastDistance > th && directions.distanceToTarget() <= th) {
                     log.info("threshold crossed");
                     EventBusManager.publish(new VoiceProcessEvent(formatDistance(th) + " from target. "));
                     lastAnnounceTime = now;
@@ -129,14 +115,14 @@ public class LocationTrackingSubscriber {
             }
 
             // Approach and arrival (override throttle if needed)
-            if (!announced && lastDistance > APPROACH_RADIUS && distance <= APPROACH_RADIUS) {
+            if (!announced && lastDistance > APPROACH_RADIUS && directions.distanceToTarget() <= APPROACH_RADIUS) {
                 log.info("approach check");
-                EventBusManager.publish(new VoiceProcessEvent("Approaching target, " + formatDistance(distance) + " remaining."));
+                EventBusManager.publish(new VoiceProcessEvent("Approaching target, " + formatDistance(directions.distanceToTarget()) + " remaining."));
                 lastAnnounceTime = now;
                 announced = true;
             }
 
-            if (/*!announced && lastDistance > ARRIVAL_RADIUS &&*/ distance <= ARRIVAL_RADIUS) {
+            if (directions.distanceToTarget() <= ARRIVAL_RADIUS) {
                 log.info("arrival check");
                 EventBusManager.publish(new VoiceProcessEvent("Arrived."));
                 lastAnnounceTime = now;
@@ -146,14 +132,15 @@ public class LocationTrackingSubscriber {
             }
         }
 
-        lastDistance = distance;
+        lastDistance = directions.distanceToTarget();
+        lastHeading = directions.userHeading();
     }
 
     private void resetTrackingState() {
         lastTracking = null;
         lastDistance = -1;
+        lastHeading = -1;
         lastAnnounceTime = 0;
-        lastMoveTime = 0;
     }
 
     private boolean sameTarget(TargetLocation a, TargetLocation b) {

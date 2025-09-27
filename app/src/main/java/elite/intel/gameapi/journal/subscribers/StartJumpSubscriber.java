@@ -31,7 +31,7 @@ public class StartJumpSubscriber {
 
         PlayerSession playerSession = PlayerSession.getInstance();
         playerSession.put(PlayerSession.JUMPING_TO, jumpingTo);
-        playerSession.setTracking(new TargetLocation());
+
 
 
         //clear last location data
@@ -40,6 +40,7 @@ public class StartJumpSubscriber {
             playerSession.clearMiningTargets();
             playerSession.clearStellarObjectsAndSignals();
             playerSession.setLastScan(null);
+            playerSession.setTracking(new TargetLocation());
             EventBusManager.publish(new SensorDataEvent(sb.toString()));
         }
 

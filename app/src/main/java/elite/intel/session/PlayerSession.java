@@ -583,7 +583,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     }
 
     public TargetLocation getTracking() {
-        return tracking;
+        return tracking == null ? new TargetLocation() : tracking;
     }
 
     public void setTracking(TargetLocation tracking) {

@@ -4,6 +4,8 @@ public class TargetLocation {
 
     double latitude;
     double longitude;
+    boolean isEnabled;
+    long requestedTime;
 
     public double getLatitude() {
         return latitude;
@@ -19,5 +21,21 @@ public class TargetLocation {
 
     public void setLongitude(double longitude) {
         this.longitude = longitude;
+    }
+
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        isEnabled = enabled;
+    }
+
+    public long getRequestedTime() {
+        return requestedTime;
+    }
+
+    public void setRequestedTime(long requestedTime) {
+        this.requestedTime = requestedTime;
     }
 }

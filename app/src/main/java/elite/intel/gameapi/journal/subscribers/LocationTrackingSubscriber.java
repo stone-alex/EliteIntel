@@ -1,7 +1,6 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.intel.ai.brain.openai.OpenAiChatEndPoint;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.VoiceProcessEvent;
 import elite.intel.gameapi.gamestate.events.PlayerMovedEvent;
@@ -24,18 +23,17 @@ public class LocationTrackingSubscriber {
     private double lastLongitude = 0;
     private long lastMoveTime = 0;
 
-    private static final long MIN_INTERVAL_MS = 15000; // 15 sec base throttle, adjust as needed for TTS delay
-    private static final double[] DISTANCE_THRESHOLDS = {50000, 30000, 20000, 10000, 5000, 2000, 1000, 500, 400, 300, 200, 150, 100, 75, 50, 25}; // meters, descending
-    private static final double HYSTERESIS = 25; // meters, to avoid jitter
+    private static final long MIN_INTERVAL_MS = 20000; // 20 sec base throttle, adjust as needed for TTS delay
+    private static final double[] DISTANCE_THRESHOLDS = {500000, 200000, 100000, 80000, 50000, 30000, 20000, 10000, 5000, 2000, 1500, 1000, 500, 400, 300, 200, 150, 100, 75}; // meters, descending
+    private static final double HYSTERESIS = 2; // meters, to avoid jitter
     private static final double APPROACH_RADIUS = 1000; // meters
-    private static final double ARRIVAL_RADIUS = 250; // meters
+    private static final double ARRIVAL_RADIUS = 75; // meters
 
     @Subscribe
     public void onPlayerMoved(PlayerMovedEvent event) {
         TargetLocation tracking = playerSession.getTracking();
-        if (tracking == null || tracking.getLatitude() == 0 && tracking.getLongitude() == 0) {
+        if (!tracking.isEnabled()) {
             resetTrackingState();
-            log.info("Nothing to track");
             return;
         }
 
@@ -89,13 +87,7 @@ public class LocationTrackingSubscriber {
 
         // Optional: Dynamic throttle based on speed (e.g., slower movement = shorter interval for more frequent guidance)
         long effectiveInterval = MIN_INTERVAL_MS;
-        if (speed > 0 && speed < 5) { // Very slow SRV crawling
-            effectiveInterval = 1000; // 1 sec
-        } else if (speed >= 5 && speed < 15) { // Typical SRV cruising
-            effectiveInterval = 3000; // 3 sec
-        } else if (speed >= 15 && speed < 150) { // Slow flying
-            effectiveInterval = 7000; // 7 sec
-        } else if(speed >= 150) {
+        if (speed >= 15 && speed < 150) {
             effectiveInterval = 10000; // 10 sec
         }
 
@@ -119,15 +111,14 @@ public class LocationTrackingSubscriber {
         boolean announced = false;
 
         // Check moving away
-        if (distance > lastDistance + HYSTERESIS && now - lastAnnounceTime >= effectiveInterval) {
+        if (distance > lastDistance && now - lastAnnounceTime >= effectiveInterval) {
             EventBusManager.publish(new VoiceProcessEvent("Adjust: " + directions));
             lastAnnounceTime = now;
             announced = true;
-            log.info("Adjust Announcement");
         } else if (distance < lastDistance - HYSTERESIS) { // Approaching
             // Check threshold crossings (highest first)
             for (double th : DISTANCE_THRESHOLDS) {
-                log.info("threshold crossing check lastDistance: "+lastDistance+" threshold: "+th+" distance: "+distance);
+                log.info("threshold crossing check lastDistance: " + lastDistance + " threshold: " + th + " distance: " + distance);
                 if (lastDistance > th && distance <= th) {
                     log.info("threshold crossed");
                     EventBusManager.publish(new VoiceProcessEvent(formatDistance(th) + " from target. "));
@@ -145,11 +136,13 @@ public class LocationTrackingSubscriber {
                 announced = true;
             }
 
-            if (!announced && lastDistance > ARRIVAL_RADIUS && distance <= ARRIVAL_RADIUS) {
+            if (/*!announced && lastDistance > ARRIVAL_RADIUS &&*/ distance <= ARRIVAL_RADIUS) {
                 log.info("arrival check");
                 EventBusManager.publish(new VoiceProcessEvent("Arrived."));
                 lastAnnounceTime = now;
-                playerSession.setTracking(new TargetLocation());
+                TargetLocation t = playerSession.getTracking();
+                t.setEnabled(false);
+                playerSession.setTracking(t);
             }
         }
 
@@ -165,7 +158,7 @@ public class LocationTrackingSubscriber {
 
     private boolean sameTarget(TargetLocation a, TargetLocation b) {
         // Assuming TargetLocation doesn't have equals(), compare coords (add equals() if possible)
-        return a.getLatitude() == b.getLatitude() && a.getLongitude() == b.getLongitude();
+        return a.getLatitude() == b.getLatitude() && a.getLongitude() == b.getLongitude() && a.getRequestedTime() == b.getRequestedTime();
     }
 
     private String formatDistance(double d) {

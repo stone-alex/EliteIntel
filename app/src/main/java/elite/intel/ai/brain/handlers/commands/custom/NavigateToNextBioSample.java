@@ -18,9 +18,9 @@ import java.util.Optional;
 
 import static elite.intel.util.NavigationUtils.getHeading;
 
-public class GetHeadingToCodexEntry implements CommandHandler {
+public class NavigateToNextBioSample implements CommandHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(GetHeadingToCodexEntry.class);
+    private static final Logger log = LoggerFactory.getLogger(NavigateToNextBioSample.class);
 
     @Override
     public void handle(JsonObject params, String responseText) {
@@ -63,6 +63,8 @@ public class GetHeadingToCodexEntry implements CommandHandler {
         TargetLocation targetLocation = new TargetLocation();
         targetLocation.setLatitude(entryLatitude);
         targetLocation.setLongitude(entryLongitude);
+        targetLocation.setEnabled(true);
+        targetLocation.setRequestedTime(System.currentTimeMillis());
         playerSession.setTracking(targetLocation);
 
         EventBusManager.publish(new VoiceProcessEvent(

@@ -45,9 +45,7 @@ public class LocationTrackingSubscriber {
         NavigationUtils.Direction directions = NavigationUtils.getDirections(
                 tracking.getLatitude(),
                 tracking.getLongitude(),
-                event.getLatitude(),
-                event.getLongitude(),
-                event.getPlanetRadius()
+                event
         );
         log.info("Directions: " + directions.toString());
 

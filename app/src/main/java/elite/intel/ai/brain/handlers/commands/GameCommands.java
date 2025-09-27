@@ -37,8 +37,6 @@ public class GameCommands {
 
         EXPLORATION_FSSQUIT("exit_fss", "ExplorationFSSQuit", GenericGameController.class),
 
-        //EXPLORATION_SAACHANGE_SCANNED_AREA_VIEW_TOGGLE("exploration_saachange_scanned_area_view_toggle", "ExplorationSAAChangeScannedAreaViewToggle", GenericGameController.class),
-
         FOCUS_COMMS_PANEL("focus_comms_panel", "FocusCommsPanel", GenericGameController.class),
         FOCUS_COMMS_PANEL_BUGGY("focus_comms_panel_buggy", "FocusCommsPanel_Buggy", GenericGameController.class),
         FOCUS_COMMS_PANEL_HUMANOID("focus_comms_panel_humanoid", "FocusCommsPanel_Humanoid", GenericGameController.class),
@@ -85,7 +83,7 @@ public class GameCommands {
         SET_SPEED_ZERO("set_speed_to_zero_0", "SetSpeedZero", GenericGameController.class),
         AUTO_DOC1("engage_auto_cocking", "SetSpeedZero", GenericGameController.class),
         AUTO_DOC2("take_us_in", "SetSpeedZero", GenericGameController.class),
-        AUTO_DOC3("automatic_docking", "SetSpeedZero", GenericGameController.class),
+        AUTO_DOC3("engage_automatic_docking", "SetSpeedZero", GenericGameController.class),
         TARGET_NEXT_ROUTE_SYSTEM("target_next_system_in_route", "TargetNextRouteSystem", GenericGameController.class),
         TARGET_WINGMAN0("target_wingman0", "TargetWingman0", GenericGameController.class),
         TARGET_WINGMAN1("target_wingman1", "TargetWingman1", GenericGameController.class),

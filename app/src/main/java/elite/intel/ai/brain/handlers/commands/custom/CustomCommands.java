@@ -23,16 +23,15 @@ public enum CustomCommands {
     ADD_MINING_TARGET("add_mining_target", "<material>", "mining_target", AddMiningTargetHandler.class),
     CLEAR_MINING_TARGETS("clear_mining_targets", null, null, ClearMiningTargetsHandler.class),
     CLEAR_CACHE("clear_cache", "<session_clear>", "session_clear", ClearCacheHandler.class),
-    CLOSE_SYSTEM_MAP("close_local_starsystem_map", null, null, ExitToHud.class),
+    CLOSE_SYSTEM_MAP("close_star_system_map", null, null, ExitToHud.class),
     EXIT_TO_HUD("display_hud", null, null, ExitToHud.class),
-    FSSDISCOVERY_SCAN("exploration_fssdiscovery_scan", "ExplorationFSSDiscoveryScan", "<custom>", PerformFSSScanHandler.class),
     FIND_COMMODITY("find_where_to_buy", "<commodity>", "commodity_target", FindCommodityHandler.class),
-    INCREASE_ENGINES_POWER("power_to_engines", "<power>", "power_to_engines", SetPowerToEnginesHandler.class),
-    INCREASE_SHIELDS_POWER("power_to_shields", "<power>", "power_to_shields", SetPowerToSystemsHandler.class),
-    INCREASE_SYSTEMS_POWER("power_to_systems", "<power>", "power_to_systems", SetPowerToSystemsHandler.class),
-    INCREASE_WEAPONS_POWER("power_to_weapons", "<power>", "power_to_weapons", SetPowerToWeaponsHandler.class),
-    OPEN_FSS("open_fss", null, null, OpenFssHandler.class),
-    OPEN_FSS_AND_SCAN("open_fss_and_scan", null, null, DisplayFssAndScanHandler.class),
+
+    INCREASE_ENGINES_POWER("all_power_to_engines", null, null, SetPowerToEnginesHandler.class),
+    INCREASE_SHIELDS_POWER("all_power_to_shields", null, null, SetPowerToSystemsHandler.class),
+    INCREASE_SYSTEMS_POWER("all_power_to_systems", null, null, SetPowerToSystemsHandler.class),
+    INCREASE_WEAPONS_POWER("all_power_to_weapons", null, null, SetPowerToWeaponsHandler.class),
+
     OPEN_GALAXY_MAP("open_galaxy_map", null, null, OpenGalaxyMapHandler.class),
     OPEN_SYSTEM_MAP("open_local_starsystem_map", null, null, OpenSystemMapHandler.class),
     PLOT_ROUTE_TO_CARRIER("plot_route_to_fleet_carrier", null, null, PlotRouteToMyFleetCarrier.class),
@@ -45,9 +44,14 @@ public enum CustomCommands {
     SET_RADIO_TRANSMISSION_MODDE("turn_radio_transmission_on_off", "<radio_transmission_on_off>", SystemSession.RADION_TRANSMISSION_ON_OFF, SetRadioTransmissionOnOff.class),
     SET_STREAMING_MODE("set_streaming_mode", "<streaming_mode_on_off>", "streaming_mode", SetStreamingModeHandler.class),
     TAKE_ME_HOME("take_us_home", null, null, PlotRouteToHomeHandler.class),
-    GET_HEADING_TO_LZ("navigate_heading_direction_to_landing_zone", null, null, NavigateToLandingZone.class),
+
+    OPEN_FSS("open_fss", null, null, OpenFssHandler.class),
+    OPEN_FSS_AND_SCAN("open_fss_and_scan", null, null, DisplayFssAndScanHandler.class),
+
     NAVIGATE_TO_NEXT_BIO_SAMPLE("navigate_heading_direction_to_bio_sample", null, null, NavigateToNextBioSample.class),
+    GET_HEADING_TO_LZ("navigate_heading_direction_to_landing_zone", null, null, NavigateToLandingZone.class),
     NAVIGATION_ON_OFF("toggle_navigation", "<navigation_on_off>", "navigation_on_off", NavigationOnOffHandler.class),
+
     CLEAR_CODEX_ENTRIES("clear_codex_entries", null, null, ClearCodexEntriesHandler.class);
 
 

@@ -1,5 +1,9 @@
 package elite.intel.util;
 
+import elite.intel.gameapi.gamestate.events.PlayerMovedEvent;
+
+import static elite.intel.util.DistanceCalculator.calculateSurfaceDistance;
+
 public class NavigationUtils {
 
     private static long lastMoveTime = 0;
@@ -7,24 +11,11 @@ public class NavigationUtils {
     private static double lastLongitude = -1;
 
 
-    /**
-     * Calculates the compass heading and distance from the player's position to a target location
-     * and returns a vocalization-friendly string (e.g., "Set heading to 354 degrees, distance to target is 624 meters").
-     *
-     * @param entryLatitude  Latitude of the target location in degrees
-     * @param entryLongitude Longitude of the target location in degrees
-     * @param userLatitude   Latitude of the player's current position in degrees
-     * @param userLongitude  Longitude of the player's current position in degrees
-     * @param planetRadius   Radius of the planet in meters
-     * @return A string representing the heading and distance for vocalization
-     */
-    public static Direction getDirections(double entryLatitude, double entryLongitude, double userLatitude, double userLongitude, double planetRadius) {
+    public static Direction getDirections(double targetLatitude, double targetLongitude, PlayerMovedEvent event) {
 
-        Result resultForDirections = calculateHeading(entryLatitude, entryLongitude, userLatitude, userLongitude, planetRadius);
-
-        Result resultForCurrentPosition = calculateHeading(userLatitude, userLongitude, lastLatitude, lastLongitude, planetRadius);
-
-        double speed = calculateSpeed(userLatitude, userLongitude, planetRadius);
+        Result resultForDirections = calculateHeading(targetLatitude, targetLongitude, event.getLatitude(), event.getLongitude(), event.getPlanetRadius());
+        Result resultForCurrentPosition = calculateHeading(event.getLatitude(), event.getLongitude(), lastLatitude, lastLongitude, event.getPlanetRadius());
+        double speed = calculateSpeed(event.getLatitude(), event.getLongitude(), event.getPlanetRadius());
 
         return new Direction(
                 resultForDirections.roundedBearing(), // heading to target
@@ -40,7 +31,7 @@ public class NavigationUtils {
         double speed = 0;
         if (lastMoveTime > 0) {
             double deltaTimeSec = (now - lastMoveTime) / 1000.0; // seconds
-            double deltaDist = DistanceCalculator.calculateSurfaceDistance(
+            double deltaDist = calculateSurfaceDistance(
                     lastLatitude,
                     lastLongitude,
                     userLatitude,
@@ -57,12 +48,12 @@ public class NavigationUtils {
         return speed;
     }
 
-    private static Result calculateHeading(double entryLatitude, double entryLongitude, double userLatitude, double userLongitude, double planetRadius) {
+    private static Result calculateHeading(double targetLatitude, double targetLongitude, double userLatitude, double userLongitude, double planetRadius) {
         // Convert degrees to radians for trigonometric calculations
         double lat1 = Math.toRadians(userLatitude);
         double lon1 = Math.toRadians(userLongitude);
-        double lat2 = Math.toRadians(entryLatitude);
-        double lon2 = Math.toRadians(entryLongitude);
+        double lat2 = Math.toRadians(targetLatitude);
+        double lon2 = Math.toRadians(targetLongitude);
 
         // Calculate the difference in longitude
         double deltaLon = lon2 - lon1;
@@ -77,14 +68,7 @@ public class NavigationUtils {
         bearingDegrees = (bearingDegrees + 360) % 360;
         int roundedBearing = (int) Math.round(bearingDegrees);
 
-        // Calculate great-circle distance using the haversine formula
-        double planetRadiusInMeters = planetRadius;
-        double deltaLat = lat2 - lat1;
-        double a = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) + Math.cos(lat1) * Math.cos(lat2) * Math.sin(deltaLon / 2) * Math.sin(deltaLon / 2);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        double distanceMeters = planetRadiusInMeters * c; // Distance in kilometers
-
-        return new Result(roundedBearing, distanceMeters);
+        return new Result(roundedBearing, calculateSurfaceDistance(targetLatitude, targetLongitude, userLatitude, userLongitude, planetRadius));
     }
 
     private record Result(int roundedBearing, double distanceInMeters) {

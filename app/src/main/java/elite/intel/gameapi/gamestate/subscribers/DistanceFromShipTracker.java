@@ -10,7 +10,8 @@ import elite.intel.session.PlayerSession;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import static elite.intel.util.DistanceCalculator.calculateSurfaceDistance;
+import static elite.intel.util.NavigationUtils.calculateSurfaceDistance;
+
 
 public class DistanceFromShipTracker {
 

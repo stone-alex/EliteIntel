@@ -10,10 +10,11 @@ import elite.intel.gameapi.journal.events.dto.BioSampleDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.BioScanDistances;
-import elite.intel.util.DistanceCalculator;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static elite.intel.util.NavigationUtils.calculateSurfaceDistance;
 
 public class ScanOrganicSubscriber {
 
@@ -95,7 +96,7 @@ public class ScanOrganicSubscriber {
             if (useDistance) {
                 double codexLatitude = entry.getLatitude();
                 double codexLongitude = entry.getLongitude();
-                double distanceFromSample = DistanceCalculator.calculateSurfaceDistance(latitude, longitude, codexLatitude, codexLongitude, planetRadius);
+                double distanceFromSample = calculateSurfaceDistance(latitude, longitude, codexLatitude, codexLongitude, planetRadius);
                 boolean farFromMe = distanceFromSample > (range == 0 ? 200 : range);
                 if (notMatchingBioForm || farFromMe) {
                     adjusted.add(entry); //KEEP!

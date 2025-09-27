@@ -4,12 +4,10 @@ import com.google.gson.JsonObject;
 import elite.intel.gameapi.gamestate.events.NavRouteDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
-import elite.intel.util.DistanceCalculator;
 
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
+
+import static elite.intel.util.NavigationUtils.calculateDistance;
 
 public class AnalyzeDistanceToFinalDestination extends BaseQueryAnalyzer implements QueryHandler {
 
@@ -49,7 +47,7 @@ public class AnalyzeDistanceToFinalDestination extends BaseQueryAnalyzer impleme
 
         // Sum distances for all legs, starting from current system
         for (NavRouteDto next : route) {
-            double legDistance = DistanceCalculator.calculateDistance(
+            double legDistance = calculateDistance(
                     previous.getX(), previous.getY(), previous.getZ(),
                     next.getX(), next.getY(), next.getZ()
             );
@@ -59,7 +57,7 @@ public class AnalyzeDistanceToFinalDestination extends BaseQueryAnalyzer impleme
 
         // Straight-line distance from current to final system
         NavRouteDto last = route.get(route.size() - 1);
-        double straightLineDistance = DistanceCalculator.calculateDistance(
+        double straightLineDistance = calculateDistance(
                 currentSystem.getX(), currentSystem.getY(), currentSystem.getZ(),
                 last.getX(), last.getY(), last.getZ()
         );

@@ -41,39 +41,37 @@ public class LocationTrackingSubscriber {
             lastHeading = -1;
         }
 
-        // Calculate directions (includes heading distance and current speed)
-        NavigationUtils.Direction directions = NavigationUtils.getDirections(
+
+        long now = System.currentTimeMillis();
+
+        // Calculate navigator (includes required heading and distance to target, as well as user's current speed and current heading)
+        NavigationUtils.Direction navigator = NavigationUtils.getDirections(
                 tracking.getLatitude(),
                 tracking.getLongitude(),
                 event
         );
-        log.info("Directions: " + directions.toString());
+        log.info("Directions: " + navigator.vocalization());
 
 
-        long now = System.currentTimeMillis();
-        //TODO: change this. We need to skip DISTANCE_THRESHOLDS announcements if the speed is too fast to vocalize them all.
         long effectiveInterval = MIN_INTERVAL_MS;
-        if (directions.userSpeed() >= 15 && directions.userSpeed() < 150) {
+        if (navigator.userSpeed() >= 15 && navigator.userSpeed() < 150) {
             effectiveInterval = 10000; // 10 sec
         }
 
-        //log.info("Effective Interval: " + effectiveInterval);
 
         // Initial announcement for new tracking or first move
         if (lastDistance == -1) {
-            EventBusManager.publish(new VoiceProcessEvent("Starting navigation to target. " + directions.vocalization()));
+            EventBusManager.publish(new VoiceProcessEvent("Starting navigation to target. " + navigator.vocalization()));
             lastAnnounceTime = now;
-            lastDistance = directions.distanceToTarget();
-            lastHeading = directions.userHeading();
+            lastDistance = navigator.distanceToTarget();
+            lastHeading = navigator.userHeading();
             return;
         }
 
-
-
         // Throttle unless close to target
-        if (now - lastAnnounceTime < effectiveInterval && directions.distanceToTarget() > APPROACH_RADIUS) {
-            lastDistance = directions.distanceToTarget(); // Still update for next checks
-            lastHeading = directions.userHeading();
+        if (now - lastAnnounceTime < effectiveInterval && navigator.distanceToTarget() > APPROACH_RADIUS) {
+            lastDistance = navigator.distanceToTarget(); // Still update for next checks
+            lastHeading = navigator.userHeading();
             //log.info("throttle announcement");
             return;
         }
@@ -81,26 +79,29 @@ public class LocationTrackingSubscriber {
         boolean announced = false;
 
 
-        ///  HEADING
-        if (directions.userHeading() != lastHeading && (directions.headingToTarget() > lastHeading + HYSTERESIS || directions.headingToTarget() < lastHeading - HYSTERESIS)
+        ///  HEADING Announcement
+        if (navigator.userHeading() != lastHeading && (navigator.headingToTarget() > lastHeading + HYSTERESIS || navigator.headingToTarget() < lastHeading - HYSTERESIS)
                 && now - lastAnnounceTime >= effectiveInterval
         ) {
-            EventBusManager.publish(new VoiceProcessEvent("Adjust heading: " + directions.headingToTarget()+" degrees."));
+            EventBusManager.publish(new VoiceProcessEvent("Adjust heading: " + navigator.headingToTarget()+" degrees."));
             lastAnnounceTime = now;
             announced = true;
         }
 
-        /// DISTANCE
+
+        /// DISTANCE Announcement.
         // Check moving away
-        if (directions.distanceToTarget() > lastDistance && now - lastAnnounceTime >= effectiveInterval) {
-            EventBusManager.publish(new VoiceProcessEvent("Adjust: " + directions.vocalization()));
+        if (navigator.distanceToTarget() > lastDistance && now - lastAnnounceTime >= effectiveInterval) {
+            EventBusManager.publish(new VoiceProcessEvent("Adjust: " + navigator.vocalization()));
             lastAnnounceTime = now;
             announced = true;
-        } else if (directions.distanceToTarget() < lastDistance) { // Approaching
+        } else if (navigator.distanceToTarget() < lastDistance) { // Approaching
+
+            //TODO: change this. We need to skip DISTANCE_THRESHOLDS announcements if the speed is too fast to vocalize them all.
+
             // Check threshold crossings (highest first)
             for (double th : DISTANCE_THRESHOLDS) {
-                //log.info("threshold crossing check lastDistance: " + lastDistance + " threshold: " + th + " distance: " + directions.distanceToTarget());
-                if (lastDistance > th && directions.distanceToTarget() <= th) {
+                if (lastDistance > th && navigator.distanceToTarget() <= th) {
                     //log.info("threshold crossed");
                     EventBusManager.publish(new VoiceProcessEvent(formatDistance(th) + " from target. "));
                     lastAnnounceTime = now;
@@ -109,8 +110,7 @@ public class LocationTrackingSubscriber {
                 }
             }
 
-            if (directions.distanceToTarget() <= ARRIVAL_RADIUS) {
-                //log.info("arrival check");
+            if (navigator.distanceToTarget() <= ARRIVAL_RADIUS) {
                 EventBusManager.publish(new VoiceProcessEvent("Arrived."));
                 lastAnnounceTime = now;
                 TargetLocation t = playerSession.getTracking();
@@ -119,8 +119,8 @@ public class LocationTrackingSubscriber {
             }
         }
 
-        lastDistance = directions.distanceToTarget();
-        lastHeading = directions.userHeading();
+        lastDistance = navigator.distanceToTarget();
+        lastHeading = navigator.userHeading();
     }
 
     private void resetTrackingState() {

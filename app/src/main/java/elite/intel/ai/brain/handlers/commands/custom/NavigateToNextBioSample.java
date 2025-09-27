@@ -9,12 +9,13 @@ import elite.intel.gameapi.journal.events.dto.BioSampleDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.gameapi.journal.events.dto.TargetLocation;
 import elite.intel.session.PlayerSession;
-import elite.intel.util.DistanceCalculator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Optional;
+
+import static elite.intel.util.NavigationUtils.calculateSurfaceDistance;
 
 public class NavigateToNextBioSample implements CommandHandler {
 
@@ -75,7 +76,7 @@ public class NavigateToNextBioSample implements CommandHandler {
             if ("$Codex_Category_Biology;".equalsIgnoreCase(e.getCategory()) && (genusFilter == null || e.getNameLocalised().startsWith(genusFilter))) {
                 double entryLat = e.getLatitude();
                 double entryLon = e.getLongitude();
-                double distance = DistanceCalculator.calculateSurfaceDistance(userLatitude, userLongitude, entryLat, entryLon, planetRadius);
+                double distance = calculateSurfaceDistance(userLatitude, userLongitude, entryLat, entryLon, planetRadius);
                 if (distance < minDistance) {
                     minDistance = distance;
                     closestEntry = e;

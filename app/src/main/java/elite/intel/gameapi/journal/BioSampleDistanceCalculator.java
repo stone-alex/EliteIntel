@@ -2,9 +2,10 @@ package elite.intel.gameapi.journal;
 
 import elite.intel.gameapi.data.BioForms;
 import elite.intel.util.BioScanDistances;
-import elite.intel.util.DistanceCalculator;
 
 import java.util.Map;
+
+import static elite.intel.util.NavigationUtils.calculateSurfaceDistance;
 
 public class BioSampleDistanceCalculator {
 
@@ -13,7 +14,7 @@ public class BioSampleDistanceCalculator {
         BioForms.BioDetails details = BioForms.getDetails(genus, species);      // primary data
         Map<String, Integer> genusDistanceMap = BioScanDistances.GENUS_TO_CCR;   //fall back
         double requiredDistance = details == null ? genusDistanceMap.get(genus) : details.colonyRange();
-        double distanceFromSample = DistanceCalculator.calculateSurfaceDistance(scanLat, scanLong, positionLat, positionLong, planetRadius);
+        double distanceFromSample = calculateSurfaceDistance(scanLat, scanLong, positionLat, positionLong, planetRadius);
         return distanceFromSample > requiredDistance;
     }
 }

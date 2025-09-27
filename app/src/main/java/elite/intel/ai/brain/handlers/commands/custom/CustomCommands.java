@@ -47,6 +47,7 @@ public enum CustomCommands {
     TAKE_ME_HOME("take_us_home", null, null, PlotRouteToHomeHandler.class),
     GET_HEADING_TO_LZ("calculate_heading_and_distance_to_landing_zone", null, null, GetHeadingToLandingZone.class),
     GET_HEADING_TO_CODEX_ENTRY("calculate_heading_and_distance_to_bio_sample", null, null, GetHeadingToCodexEntry.class),
+    STOP_TRACKING("stop_tracking_cancel_navigation", null, null, StopOrCancelTrackingHandler.class),
     CLEAR_CODEX_ENTRIES("clear_codex_entries", null, null, ClearCodexEntriesHandler.class);
 
 

@@ -5,6 +5,7 @@ import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.journal.events.StartJumpEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
+import elite.intel.gameapi.journal.events.dto.TargetLocation;
 import elite.intel.session.PlayerSession;
 
 import static elite.intel.util.StringUtls.isFuelStarClause;
@@ -30,6 +31,7 @@ public class StartJumpSubscriber {
 
         PlayerSession playerSession = PlayerSession.getInstance();
         playerSession.put(PlayerSession.JUMPING_TO, jumpingTo);
+        playerSession.setTracking(new TargetLocation());
 
 
         //clear last location data

@@ -15,8 +15,11 @@ public class StatusEventSubscriber {
         GameEvents.StatusEvent oldStatus = playerSession.getStatus();
         String legalStatusBeforeChange = oldStatus.getLegalState();
 
-        if (legalStatusBeforeChange != null && !legalStatusBeforeChange.equalsIgnoreCase(event.getLegalState())) {
-            EventBusManager.publish(new VoiceProcessEvent("Legal status changed to: " + event.getLegalState() + ". "));
+        if (legalStatusBeforeChange != null) {
+            String legalState = event.getLegalState();
+            if (legalState != null && !legalStatusBeforeChange.equalsIgnoreCase(legalState)) {
+                EventBusManager.publish(new VoiceProcessEvent("Legal status changed to: " + legalState + ". "));
+            }
         }
 
         playerSession.setStatus(event);

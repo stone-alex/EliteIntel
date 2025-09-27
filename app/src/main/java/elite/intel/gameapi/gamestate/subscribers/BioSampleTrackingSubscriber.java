@@ -56,7 +56,7 @@ public class BioSampleTrackingSubscriber {
             if (isFarEnough) {
                 EventBusManager.publish(new SensorDataEvent("Far enough to take the next bio sample."));
             } else {
-                EventBusManager.publish(new SensorDataEvent("Too close to the previous bio sample. (Minimum distance for "+bioSampleDto.getGenus()+" is: " + bioSampleDto.getDistanceToNextSample() + " meters)"));
+                EventBusManager.publish(new SensorDataEvent("Too close to the previous bio sample."));
             }
         }
     }

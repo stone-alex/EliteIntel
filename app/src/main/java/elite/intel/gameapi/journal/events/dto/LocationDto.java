@@ -54,6 +54,7 @@ public class LocationDto implements ToJsonConvertible {
     private double surfaceTemperature;
     Map<String, Double> materials = new HashMap<>();
     private double[] landingCoordinates;
+    private double orbitalCruiseEntryAltitude;
     private BioStatus bioStatus = BioStatus.SCAN_REQUIRED;
     public enum BioStatus {
         BIO_FORMS_PRESENT,
@@ -441,5 +442,13 @@ public class LocationDto implements ToJsonConvertible {
     public void setBioFormsPresent(boolean bioFormsPresent) {
         if(bioFormsPresent) bioStatus = BioStatus.BIO_FORMS_PRESENT;
         if(!bioFormsPresent) bioStatus = BioStatus.NO_BIO_FORMS;
+    }
+
+    public double getOrbitalCruiseEntryAltitude() {
+        return orbitalCruiseEntryAltitude;
+    }
+
+    public void setOrbitalCruiseEntryAltitude(double orbitalCruiseEntryAltitude) {
+        this.orbitalCruiseEntryAltitude = orbitalCruiseEntryAltitude;
     }
 }

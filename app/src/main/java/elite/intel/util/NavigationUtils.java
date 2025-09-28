@@ -174,9 +174,9 @@ public class NavigationUtils {
     }
 
 
-    public record Direction(int headingToTarget, double distanceToTarget, int userHeading,  double userSpeed, double altitude, String vocalization) {
+    public record Direction(int bearingToTarget, double distanceToTarget, int userHeading, double userSpeed, double altitude, String vocalization) {
         public String toString() {
-            return "Heading to target: " + headingToTarget + " Your Heading " + userHeading + " Distance: " + distanceToTarget + " Speed: " + userSpeed + " Altitude: " + altitude;
+            return "Heading to target: " + bearingToTarget + " Your Heading " + userHeading + " Distance: " + distanceToTarget + " Speed: " + userSpeed + " Altitude: " + altitude;
         }
     }
 }

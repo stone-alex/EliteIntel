@@ -26,11 +26,13 @@ public class ApproachBodySubscriber {
     @Subscribe
     public void onApproachBodyEvent(ApproachBodyEvent event) {
         PlayerSession playerSession = PlayerSession.getInstance();
+        double orbitalCruiseEntryAltitude = playerSession.getStatus().getAltitude();
+
         StringBuilder sb = new StringBuilder();
         sb.append("Entering orbit for ").append(event.getBody()).append(". ");
         String currentSystem = event.getStarSystem();
         LocationDto currentLocation = playerSession.getCurrentLocation();
-
+        currentLocation.setOrbitalCruiseEntryAltitude(orbitalCruiseEntryAltitude);
         //clear bio scans if we are landing on a different planet within the same system
         if (!currentLocation.getPlanetName().equalsIgnoreCase(event.getBody())){
             currentLocation.setBioScans(new ArrayList<>());

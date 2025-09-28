@@ -13,12 +13,14 @@ import org.apache.logging.log4j.Logger;
 public class LocationTrackingSubscriber {
 
     private static final Logger log = LogManager.getLogger(LocationTrackingSubscriber.class);
-    private PlayerSession playerSession = PlayerSession.getInstance();
+    private final PlayerSession playerSession = PlayerSession.getInstance();
 
     private TargetLocation lastTracking = null;
     private double lastDistance = -1;
     private double lastHeading = -1;
     private long lastAnnounceTime = 0;
+    boolean announced = false;
+    double enteringOrbitalCruiseAltitude = -1;
 
     private static final long MIN_INTERVAL_MS = 20000; // 20 sec base throttle, adjust as needed for TTS delay
     private static final double[] DISTANCE_THRESHOLDS = {1000000, 750000, 500000, 200000, 100000, 80000, 50000, 30000, 20000, 10000, 5000, 2000, 1500, 1000, 500, 400, 300, 200, 150, 100, 75}; // meters, descending
@@ -40,11 +42,15 @@ public class LocationTrackingSubscriber {
             lastDistance = -1;
             lastHeading = -1;
         }
-
-
         long now = System.currentTimeMillis();
 
-        // Calculate navigator (includes required heading and distance to target, as well as user's current speed and current heading)
+
+        //NOTE: playerSession.getCurrentLocation() is never null. (but could be blank dropFromOrbital will be 0)
+        //NOTE: Orbital cruise altitude is known based on ApproachBodyEvent. We take altitude measure when that event fires and store it.
+        enteringOrbitalCruiseAltitude = playerSession.getCurrentLocation().getOrbitalCruiseEntryAltitude();
+
+
+        // Navigator (includes required bearing and distance to target, as well as user's current speed and current Heading)
         NavigationUtils.Direction navigator = NavigationUtils.getDirections(
                 tracking.getLatitude(),
                 tracking.getLongitude(),
@@ -76,14 +82,14 @@ public class LocationTrackingSubscriber {
             return;
         }
 
-        boolean announced = false;
+
 
 
         ///  HEADING Announcement
-        if (navigator.userHeading() != lastHeading && (navigator.headingToTarget() > lastHeading + HYSTERESIS || navigator.headingToTarget() < lastHeading - HYSTERESIS)
+        if (navigator.userHeading() != lastHeading && (navigator.bearingToTarget() > lastHeading + HYSTERESIS || navigator.bearingToTarget() < lastHeading - HYSTERESIS)
                 && now - lastAnnounceTime >= effectiveInterval
         ) {
-            EventBusManager.publish(new VoiceProcessEvent("Adjust heading: " + navigator.headingToTarget()+" degrees."));
+            EventBusManager.publish(new VoiceProcessEvent("Adjust heading: " + navigator.bearingToTarget()+" degrees."));
             lastAnnounceTime = now;
             announced = true;
         }

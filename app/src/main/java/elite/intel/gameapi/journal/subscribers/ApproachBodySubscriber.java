@@ -33,6 +33,10 @@ public class ApproachBodySubscriber {
         String currentSystem = event.getStarSystem();
         LocationDto currentLocation = playerSession.getCurrentLocation();
         currentLocation.setOrbitalCruiseEntryAltitude(orbitalCruiseEntryAltitude);
+
+        if(playerSession.getTracking().isEnabled()) return;
+
+
         //clear bio scans if we are landing on a different planet within the same system
         if (!currentLocation.getPlanetName().equalsIgnoreCase(event.getBody())){
             currentLocation.setBioScans(new ArrayList<>());

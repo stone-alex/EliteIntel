@@ -45,7 +45,7 @@ public class DistanceFromShipTracker {
         double lzLon = landingCoordinates[1];
 
         // Calculate great-circle distance (in meters)
-        double distance = calculateSurfaceDistance(latitude, longitude, lzLat, lzLon, planetRadius);
+        double distance = calculateSurfaceDistance(latitude, longitude, lzLat, lzLon, planetRadius, 0);
 
         // Define donut boundaries: 1.75km to 2km
         double innerDonut = 1750.0; // 1.75km in meters

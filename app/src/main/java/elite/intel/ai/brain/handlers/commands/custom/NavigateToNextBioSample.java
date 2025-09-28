@@ -76,7 +76,7 @@ public class NavigateToNextBioSample implements CommandHandler {
             if ("$Codex_Category_Biology;".equalsIgnoreCase(e.getCategory()) && (genusFilter == null || e.getNameLocalised().startsWith(genusFilter))) {
                 double entryLat = e.getLatitude();
                 double entryLon = e.getLongitude();
-                double distance = calculateSurfaceDistance(userLatitude, userLongitude, entryLat, entryLon, planetRadius);
+                double distance = calculateSurfaceDistance(userLatitude, userLongitude, entryLat, entryLon, planetRadius, 0);
                 if (distance < minDistance) {
                     minDistance = distance;
                     closestEntry = e;

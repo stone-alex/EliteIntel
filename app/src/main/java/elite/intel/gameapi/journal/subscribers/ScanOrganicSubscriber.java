@@ -96,7 +96,7 @@ public class ScanOrganicSubscriber {
             if (useDistance) {
                 double codexLatitude = entry.getLatitude();
                 double codexLongitude = entry.getLongitude();
-                double distanceFromSample = calculateSurfaceDistance(latitude, longitude, codexLatitude, codexLongitude, planetRadius);
+                double distanceFromSample = calculateSurfaceDistance(latitude, longitude, codexLatitude, codexLongitude, planetRadius, 0);
                 boolean farFromMe = distanceFromSample > (range == 0 ? 200 : range);
                 if (notMatchingBioForm || farFromMe) {
                     adjusted.add(entry); //KEEP!

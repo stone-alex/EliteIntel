@@ -14,7 +14,7 @@ public class BioSampleDistanceCalculator {
         BioForms.BioDetails details = BioForms.getDetails(genus, species);      // primary data
         Map<String, Integer> genusDistanceMap = BioScanDistances.GENUS_TO_CCR;   //fall back
         double requiredDistance = details == null ? genusDistanceMap.get(genus) : details.colonyRange();
-        double distanceFromSample = calculateSurfaceDistance(scanLat, scanLong, positionLat, positionLong, planetRadius);
+        double distanceFromSample = calculateSurfaceDistance(scanLat, scanLong, positionLat, positionLong, planetRadius, 0);
         return distanceFromSample > requiredDistance;
     }
 }

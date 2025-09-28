@@ -7,7 +7,7 @@ import elite.intel.session.PlayerSession;
 
 import java.util.List;
 
-import static elite.intel.util.NavigationUtils.calculateDistance;
+import static elite.intel.util.NavigationUtils.calculateGalacticDistance;
 
 public class AnalyzeDistanceToFinalDestination extends BaseQueryAnalyzer implements QueryHandler {
 
@@ -47,7 +47,7 @@ public class AnalyzeDistanceToFinalDestination extends BaseQueryAnalyzer impleme
 
         // Sum distances for all legs, starting from current system
         for (NavRouteDto next : route) {
-            double legDistance = calculateDistance(
+            double legDistance = calculateGalacticDistance(
                     previous.getX(), previous.getY(), previous.getZ(),
                     next.getX(), next.getY(), next.getZ()
             );
@@ -57,7 +57,7 @@ public class AnalyzeDistanceToFinalDestination extends BaseQueryAnalyzer impleme
 
         // Straight-line distance from current to final system
         NavRouteDto last = route.get(route.size() - 1);
-        double straightLineDistance = calculateDistance(
+        double straightLineDistance = calculateGalacticDistance(
                 currentSystem.getX(), currentSystem.getY(), currentSystem.getZ(),
                 last.getX(), last.getY(), last.getZ()
         );

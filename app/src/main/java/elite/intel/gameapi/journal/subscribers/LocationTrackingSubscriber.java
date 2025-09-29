@@ -33,7 +33,7 @@ public class LocationTrackingSubscriber {
 
     public static final int NORMAL_SPACE_HIGHEST_SPEED = 600;
     private static final long MIN_INTERVAL_MS = 10_000;
-    private static final double[] DISTANCE_THRESHOLDS = generateDescendingSequence(3_000_000);
+    private static final double[] DISTANCE_THRESHOLDS = generateDescendingSequence(10_000_000);
     private static final double HYSTERESIS = 7;
     private static final double ARRIVAL_RADIUS = 75;
     private static final double GLIDE_ENTRY_RADIUS = 400_000;
@@ -87,7 +87,7 @@ public class LocationTrackingSubscriber {
         if (isOnSurface(event, navigator)) {
             surfaceNavigation(navigator, NOW, announcementMinInterval, event.getAltitude());
         } else if (isInOrbit(event, navigator)) {
-            orbitalNavigation(NOW, event, targetLocation);
+            orbitalNavigation(navigator, NOW, event);
         }
 
         lastDistance = navigator.distanceToTarget();
@@ -102,29 +102,27 @@ public class LocationTrackingSubscriber {
         return event.getAltitude() == 0 || (navigator.userSpeed() > 0 && navigator.userSpeed() < NORMAL_SPACE_HIGHEST_SPEED);
     }
 
-    private void orbitalNavigation(long now, PlayerMovedEvent event, TargetLocation targetLocation) {
+    private void orbitalNavigation(NavigationUtils.Direction navigator, long now, PlayerMovedEvent event) {
         if (glideInitiated) return;
 
-        double targetLat = targetLocation.getLatitude();
-        double targetLon = targetLocation.getLongitude();
-
-        NavigationUtils.Direction navigator = NavigationUtils.getDirections(targetLat, targetLon, event);
-
         int bearingToTarget = navigator.bearingToTarget();
-        double distanceToTarget = navigator.distanceToTarget();
         int shipHeading = navigator.userHeading();
         int glideAngle = calculateGlideAngle(event.getAltitude(), navigator.distanceToTarget());
+
+        double distanceToEdgeOfRadius = navigator.distanceToTarget() + GLIDE_ENTRY_RADIUS;
+        double distanceToTarget = navigator.distanceToTarget();
+
         boolean movingAway = navigator.distanceToTarget() > lastDistance;
-        boolean offCourse = Math.abs(bearingToTarget - shipHeading) > HYSTERESIS;
+        boolean trajectoryDeviation = Math.abs(bearingToTarget - shipHeading) > HYSTERESIS;
         boolean notSuitableForGlideAngleAnnouncement = distanceToTarget > TOO_FAR_FOR_GLIDE || glideAngle > 35;
 
         if (lastDistance == -1) {
             vocalize("Starting Orbital Navigation", navigator.distanceToTarget(), navigator.bearingToTarget(), now);
         }
 
-        if (offCourse && distanceToTarget > GLIDE_ENTRY_RADIUS) {
-            vocalize("", navigator.distanceToTarget() + GLIDE_ENTRY_RADIUS, navigator.bearingToTarget(), now);
-        } else if (!offCourse && distanceToTarget > GLIDE_ENTRY_RADIUS) {
+        if (trajectoryDeviation && distanceToTarget > GLIDE_ENTRY_RADIUS) {
+            vocalize("", distanceToEdgeOfRadius, navigator.bearingToTarget(), now);
+        } else if (!trajectoryDeviation && distanceToTarget > GLIDE_ENTRY_RADIUS) {
             if (notSuitableForGlideAngleAnnouncement) {
                 announceDistances(navigator, movingAway ? "Moving Away." : "Getting Closer. ", now);
             } else {
@@ -208,7 +206,7 @@ public class LocationTrackingSubscriber {
         lastTracking = null;
         lastDistance = -1;
         lastHeading = -1;
-        lastAnnounceTime = 0;
+        lastAnnounceTime = -1;
         glideInitiated = false;
         lastDistanceThreshold = -1;
     }
@@ -234,8 +232,10 @@ public class LocationTrackingSubscriber {
         sequence.add(current);
         while (current > 0) {
             // Determine the current magnitude and corresponding step
-            if (current >= 1_000_000) {
-                current -= 250_000; // Quarter of 1,000,000
+            if (current >= 10_000_000) {
+                current -= 500_000; // Half of 1,000,000
+            } else if (current >= 1_000_000) {
+                current -= 250_000; // Quarter of 100,000
             } else if (current >= 100_000) {
                 current -= 25_000; // Quarter of 100,000
             } else if (current >= 10_000) {

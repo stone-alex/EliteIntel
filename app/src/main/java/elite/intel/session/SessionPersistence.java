@@ -113,14 +113,14 @@ class SessionPersistence {
     private void processQueue() {
         while (!isShutdown) {
             try {
-                while (!saveQueue.isEmpty()) {
-                    SaveOperation saveOp = saveQueue.take();
-                    processSaveOperation(saveOp);
-                }
-
                 ReadOperation readOp = readQueue.poll();
                 if (readOp != null) {
                     processReadOperation(readOp);
+                }
+
+                while (!saveQueue.isEmpty()) {
+                    SaveOperation saveOp = saveQueue.take();
+                    processSaveOperation(saveOp);
                 }
 
                 Thread.sleep(100); // Prevent busy waiting
@@ -239,18 +239,6 @@ class SessionPersistence {
                 } catch (JsonSyntaxException e) {
                     log.error("Failed to deserialize field {}: {}", name, e.getMessage(), e);
                 }
-            }
-        }
-    }
-
-    protected void deleteSessionFile() {
-        File file = new File(APP_DIR, sessionFile);
-        if (file.exists()) {
-            try {
-                Files.delete(Paths.get(file.getPath()));
-                log.debug("Deleted session file: {}", file.getPath());
-            } catch (IOException e) {
-                log.error("Failed to delete session file {}: {}", file.getPath(), e.getMessage(), e);
             }
         }
     }

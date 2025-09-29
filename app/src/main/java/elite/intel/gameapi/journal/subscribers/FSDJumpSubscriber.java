@@ -105,7 +105,7 @@ public class FSDJumpSubscriber {
         if(systemBodiesDto == null) return;
         if(systemBodiesDto.getData() == null) return;
 
-        List<BodyData> bodies = systemBodiesDto.getData().bodies;
+        List<BodyData> bodies = systemBodiesDto.getData().getBodies();
         for(BodyData  data : bodies) {
             StellarObjectDto stellarObject = playerSession.getStellarObject(data.getName());
             stellarObject.setAtmosphere(data.getAtmosphereType());

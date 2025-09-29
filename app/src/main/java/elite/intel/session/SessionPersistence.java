@@ -28,6 +28,7 @@ class SessionPersistence {
     private String sessionFile = "system_session.json";
     private final Map<String, FieldHandler<?>> fields = new HashMap<>();
     private final BlockingQueue<SaveOperation> saveQueue = new LinkedBlockingQueue<>();
+    private final BlockingQueue<ReadOperation> readQueue = new LinkedBlockingQueue<>();
     private final Thread workerThread;
     private volatile boolean isShutdown = false;
 
@@ -91,6 +92,15 @@ class SessionPersistence {
         }
     }
 
+    private static class ReadOperation {
+        private final Consumer<JsonObject> jsonConsumer;
+
+        public ReadOperation(Consumer<JsonObject> jsonConsumer) {
+            this.jsonConsumer = jsonConsumer;
+        }
+    }
+
+
     protected void saveSession(Map<String, Object> stateMap) {
         try {
             saveQueue.put(new SaveOperation(stateMap));
@@ -103,14 +113,23 @@ class SessionPersistence {
     private void processQueue() {
         while (!isShutdown) {
             try {
-                SaveOperation operation = saveQueue.take();
-                processSaveOperation(operation);
+                while (!saveQueue.isEmpty()) {
+                    SaveOperation saveOp = saveQueue.take();
+                    processSaveOperation(saveOp);
+                }
+
+                ReadOperation readOp = readQueue.poll();
+                if (readOp != null) {
+                    processReadOperation(readOp);
+                }
+
+                Thread.sleep(100); // Prevent busy waiting
             } catch (InterruptedException e) {
                 if (isShutdown) {
                     break;
                 }
                 Thread.currentThread().interrupt();
-                log.error("Save worker thread interrupted", e);
+                log.error("Worker thread interrupted", e);
             }
         }
     }
@@ -150,6 +169,15 @@ class SessionPersistence {
     }
 
     protected void loadSession(Consumer<JsonObject> jsonConsumer) {
+        try {
+            readQueue.put(new ReadOperation(jsonConsumer));
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.warn("Interrupted while queueing read operation");
+        }
+    }
+
+    private void processReadOperation(ReadOperation operation) {
         File file = ensureSessionDirectory();
         if (file == null) {
             return;
@@ -161,7 +189,7 @@ class SessionPersistence {
                 emptyJson.add("state", new JsonObject());
                 Files.write(file.toPath(), GsonFactory.getGson().toJson(emptyJson).getBytes());
                 log.info("Created empty session file: {}", file.getPath());
-                jsonConsumer.accept(emptyJson);
+                operation.jsonConsumer.accept(emptyJson);
             } catch (IOException e) {
                 log.error("Failed to create empty session file {}: {}", file.getPath(), e.getMessage(), e);
             }
@@ -172,7 +200,7 @@ class SessionPersistence {
             JsonElement jsonElement = JsonParser.parseReader(reader);
             if (jsonElement == null || !jsonElement.isJsonObject()) return;
             JsonObject json = jsonElement.getAsJsonObject();
-            jsonConsumer.accept(json);
+            operation.jsonConsumer.accept(json);
             log.debug("Loaded session from: {}", file.getPath());
         } catch (IOException | JsonSyntaxException e) {
             // retry

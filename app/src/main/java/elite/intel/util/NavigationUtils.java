@@ -4,6 +4,35 @@ import elite.intel.gameapi.gamestate.events.PlayerMovedEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * The NavigationUtils class provides a set of utility methods for calculating navigation-related data.
+ * These include determining directions, distances, speeds, angles, and bearings between geographical
+ * locations or points in a three-dimensional space. The class is designed to handle computations
+ * with respect to planetary and galactic contexts, using various mathematical and geospatial formulas.
+ *
+ * The class leverages both public methods for external use and private methods for internal calculations.
+ * It is primarily focused on providing precise and formatted navigation information based on
+ * input parameters such as coordinates, altitude, and context-specific attributes.
+ *
+ * Fields:
+ * - log: Used for logging purposes within the class.
+ * - lastMoveTime: Tracks the timestamp of the last recorded movement.
+ * - lastLatitude: Stores the latitude of the user's last location.
+ * - lastLongitude: Stores the longitude of the user's last location.
+ * - lastValidHeading: Retains the last valid heading value for reference.
+ *
+ * Methods:
+ * - getDirections: Computes navigation directions to a target location.
+ * - calculateRhumbBearing: Calculates the rhumb bearing to a target location.
+ * - calculateSpeed: Determines speed based on position changes over time.
+ * - calculateHeading: Computes heading and distance using geospatial formulas.
+ * - calculateGalacticDistance: Calculates the distance between two points in 3D space.
+ * - calculateSurfaceDistance: Calculates surface distance on a sphere or spheroid.
+ * - calculateGlideAngle: Computes the glide angle required to reach a target.
+ * - formatDistance: Formats a given distance for display purposes.
+ *
+ * This class operates within the constraints of assumed coordinate systems and unit consistency.
+ */
 public class NavigationUtils {
 
     private static final Logger log = LogManager.getLogger(NavigationUtils.class);
@@ -13,6 +42,17 @@ public class NavigationUtils {
     private static double lastLongitude = -1;
     private static int lastValidHeading = 0; // Persist last valid heading
 
+    /**
+     * Computes and returns navigation directions to a target location based on the player's current position,
+     * movement attributes, and the planetary context. It calculates the heading, distance, speed, and altitude,
+     * and formats a detailed direction description.
+     *
+     * @param targetLatitude the latitude of the target location in decimal degrees
+     * @param targetLongitude the longitude of the target location in decimal degrees
+     * @param event an instance of PlayerMovedEvent, which contains the player's current position, altitude, and other movement data
+     * @return a Direction object containing the bearing to the target, distance to the target, user heading,
+     *         speed, altitude, and a descriptive direction message
+     */
     public static Direction getDirections(double targetLatitude, double targetLongitude, PlayerMovedEvent event) {
 
         Result resultForDirections = calculateHeading(targetLatitude, targetLongitude, event.getLatitude(), event.getLongitude(), event.getPlanetRadius(), event.getAltitude());
@@ -44,6 +84,17 @@ public class NavigationUtils {
         );
     }
 
+    /**
+     * Calculates the rhumb bearing from the user's current location to a target location.
+     * The rhumb bearing is the constant compass direction between two points on the earth's surface.
+     * If a mathematical error occurs during the calculation, the method calculates the regular heading as a fallback.
+     *
+     * @param userLatitude the latitude of the user's location in decimal degrees
+     * @param userLongitude the longitude of the user's location in decimal degrees
+     * @param targetLatitude the latitude of the target location in decimal degrees
+     * @param targetLongitude the longitude of the target location in decimal degrees
+     * @return the rhumb bearing in degrees, rounded to the nearest integer
+     */
     private static int calculateRhumbBearing(double userLatitude, double userLongitude, double targetLatitude, double targetLongitude) {
         double lat1 = Math.toRadians(userLatitude);
         double lon1 = Math.toRadians(userLongitude);
@@ -62,6 +113,18 @@ public class NavigationUtils {
         return (int) Math.round(bearingDegrees);
     }
 
+    /**
+     * Calculates the speed of movement based on the change in position and time elapsed
+     * since the last recorded movement. It uses the user's current latitude, longitude,
+     * and altitude along with the radius of the planet to compute the distance traveled
+     * and calculates the speed accordingly.
+     *
+     * @param userLatitude the current latitude of the user in decimal degrees
+     * @param userLongitude the current longitude of the user in decimal degrees
+     * @param planetRadius the radius of the planet in units (e.g., meters, kilometers, etc.)
+     * @param altitude the current altitude above the planet's surface in the same units as the radius
+     * @return the calculated speed in the same units as the radius per second
+     */
     private static double calculateSpeed(double userLatitude, double userLongitude, double planetRadius, double altitude) {
         long now = System.currentTimeMillis();
         double speed = 0;
@@ -85,6 +148,19 @@ public class NavigationUtils {
         return speed;
     }
 
+    /**
+     * Calculates the heading and surface distance to a target location from a user's current location.
+     * The method computes the heading using the initial bearing formula and surface distance
+     * using the Haversine formula, taking into account the planet's radius and altitude.
+     *
+     * @param targetLatitude the latitude of the target location in decimal degrees
+     * @param targetLongitude the longitude of the target location in decimal degrees
+     * @param userLatitude the latitude of the user's location in decimal degrees
+     * @param userLongitude the longitude of the user's location in decimal degrees
+     * @param planetRadius the radius of the planet or sphere in units (e.g., meters, kilometers, etc.)
+     * @param altitude the altitude above the planet's surface in the same units as the radius
+     * @return a Result object containing the rounded heading in degrees and the surface distance to the target in the same units as the radius
+     */
     private static Result calculateHeading(double targetLatitude, double targetLongitude, double userLatitude, double userLongitude, double planetRadius, double altitude) {
         double lat1 = Math.toRadians(userLatitude);
         double lon1 = Math.toRadians(userLongitude);
@@ -100,6 +176,18 @@ public class NavigationUtils {
         return new Result(roundedBearing, calculateSurfaceDistance(targetLatitude, targetLongitude, userLatitude, userLongitude, planetRadius, altitude));
     }
 
+    /**
+     * Calculates the galactic distance between two points in a three-dimensional galactic coordinate system.
+     * The calculation is based on the Euclidean distance formula.
+     *
+     * @param x1 the x-coordinate of the first point
+     * @param y1 the y-coordinate of the first point
+     * @param z1 the z-coordinate of the first point
+     * @param x2 the x-coordinate of the second point
+     * @param y2 the y-coordinate of the second point
+     * @param z2 the z-coordinate of the second point
+     * @return the calculated galactic distance between the two points
+     */
     public static double calculateGalacticDistance(double x1, double y1, double z1, double x2, double y2, double z2) {
         double deltaX = x2 - x1;
         double deltaY = y2 - y1;
@@ -107,6 +195,19 @@ public class NavigationUtils {
         return Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
     }
 
+    /**
+     * Calculates the surface distance between two points on a sphere or spheroid, given their latitudes, longitudes,
+     * and an optional altitude above the specified sphere's radius. The calculation uses the Haversine formula
+     * to account for the curvature of the sphere.
+     *
+     * @param lat1 the latitude of the first point in decimal degrees
+     * @param lon1 the longitude of the first point in decimal degrees
+     * @param lat2 the latitude of the second point in decimal degrees
+     * @param lon2 the longitude of the second point in decimal degrees
+     * @param radius the radius of the sphere in units (e.g., meters, kilometers, etc.)
+     * @param altitude the altitude above the surface of the sphere in the same units as the radius
+     * @return the calculated surface distance between the two points, accounting for the altitude, in the same units as the radius
+     */
     public static double calculateSurfaceDistance(double lat1, double lon1, double lat2, double lon2, double radius, double altitude) {
         double lat1Rad = Math.toRadians(lat1);
         double lon1Rad = Math.toRadians(lon1);
@@ -119,6 +220,15 @@ public class NavigationUtils {
         return (radius + altitude) * c;
     }
 
+    /**
+     * Calculates the glide angle required to reach a target based on the given altitude and distance to the target.
+     * The glide angle is computed as the arctangent of the ratio between altitude and distance, and the result is
+     * converted to degrees.
+     *
+     * @param altitude the current altitude above the target in units, must be a positive value
+     * @param distanceToTarget the horizontal distance to the target in the same units, must be a positive value
+     * @return the glide angle in degrees, rounded to the nearest integer; returns 0 if the input values are invalid
+     */
     public static int calculateGlideAngle(double altitude, double distanceToTarget) {
         // Check for invalid inputs (non-positive altitude or distance)
         if (altitude <= 0 || distanceToTarget <= 0) {

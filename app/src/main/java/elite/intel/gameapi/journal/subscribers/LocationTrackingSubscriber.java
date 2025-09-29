@@ -6,6 +6,7 @@ import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.VoiceProcessEvent;
 import elite.intel.gameapi.gamestate.events.PlayerMovedEvent;
 import elite.intel.gameapi.journal.events.SupercruiseExitEvent;
+import elite.intel.gameapi.journal.events.TouchdownEvent;
 import elite.intel.gameapi.journal.events.dto.TargetLocation;
 import elite.intel.session.PlayerSession;
 import elite.intel.ui.event.AppLogEvent;
@@ -29,6 +30,7 @@ public class LocationTrackingSubscriber {
     private double lastHeading = -1;
     private long lastAnnounceTime = 0;
     private boolean glideInitiated = false;
+    private boolean onTheSurface = false;
     private double lastDistanceThreshold = 0;
 
     public static final int NORMAL_SPACE_HIGHEST_SPEED = 600;
@@ -39,6 +41,16 @@ public class LocationTrackingSubscriber {
     private static final double GLIDE_ENTRY_RADIUS = 400_000;
     private static final double TOO_FAR_FOR_GLIDE = 1_000_000;
 
+    /**
+     * Handles the event triggered when a player moves within the game environment.
+     * This method processes the player's movement and navigational state
+     * based on their proximity, heading, altitude, and speed relative to a target location.
+     * It manages surface and orbital navigation, throttles announcements to avoid excessive updates,
+     * and ensures proper state transitions for tracking logic.
+     *
+     * @param event An instance of {@code PlayerMovedEvent} containing the player's current
+     *              latitude, longitude, altitude, and planetary radius data.
+     */
     @Subscribe
     public void onPlayerMoved(PlayerMovedEvent event) {
 
@@ -61,7 +73,7 @@ public class LocationTrackingSubscriber {
                 event
         );
 
-        if(navigator.distanceToTarget() == 0 && navigator.altitude() == 0){
+        if (navigator.distanceToTarget() == 0 && navigator.altitude() == 0) {
             // we are not on the planet and not in orbit
             EventBusManager.publish(new AppLogEvent("Not on planet and not in orbit."));
             log.info("Navigation ON, but not on planet and not in orbit. Skipping navigation.");
@@ -71,9 +83,16 @@ public class LocationTrackingSubscriber {
             log.info(navigator.toString());
         }
 
+        if (navigator.userSpeed() > 0 && event.getAltitude() < 10) {
+            onTheSurface = true;
+        } else if (navigator.userSpeed() > 0 && event.getAltitude() > 10) {
+            onTheSurface = false;
+        }
+
+
         long announcementMinInterval = MIN_INTERVAL_MS;
         if (navigator.userSpeed() >= 15 && navigator.userSpeed() < 150) {
-            announcementMinInterval = 30_000;
+            announcementMinInterval = 15_000;
         }
 
         // announcement time throttle
@@ -102,7 +121,17 @@ public class LocationTrackingSubscriber {
         return event.getAltitude() == 0 || (navigator.userSpeed() > 0 && navigator.userSpeed() < NORMAL_SPACE_HIGHEST_SPEED);
     }
 
+    /**
+     * Handles the orbital navigation logic to track the position and heading of a user
+     * based on their proximity and trajectory relative to a target.
+     *
+     * @param navigator Provides utility functions for determining distance, bearings,
+     *                  and heading of the user relative to a target.
+     * @param now The current timestamp used for logging and timing-related calculations.
+     * @param event The event containing updated player movement and altitude data.
+     */
     private void orbitalNavigation(NavigationUtils.Direction navigator, long now, PlayerMovedEvent event) {
+        // Orbital flight navigation.
         if (glideInitiated) return;
 
         int bearingToTarget = navigator.bearingToTarget();
@@ -114,7 +143,7 @@ public class LocationTrackingSubscriber {
 
         boolean movingAway = navigator.distanceToTarget() > lastDistance;
         boolean trajectoryDeviation = Math.abs(bearingToTarget - shipHeading) > HYSTERESIS;
-        boolean notSuitableForGlideAngleAnnouncement = distanceToTarget > TOO_FAR_FOR_GLIDE || glideAngle > 35;
+        boolean glideAngleOk = distanceToTarget < TOO_FAR_FOR_GLIDE || glideAngle < 36;
 
         if (lastDistance == -1) {
             vocalize("Starting Orbital Navigation", navigator.distanceToTarget(), navigator.bearingToTarget(), now);
@@ -123,16 +152,16 @@ public class LocationTrackingSubscriber {
         if (trajectoryDeviation && distanceToTarget > GLIDE_ENTRY_RADIUS) {
             vocalize("", distanceToEdgeOfRadius, navigator.bearingToTarget(), now);
         } else if (!trajectoryDeviation && distanceToTarget > GLIDE_ENTRY_RADIUS) {
-            if (notSuitableForGlideAngleAnnouncement) {
-                announceDistances(navigator, movingAway ? "Moving Away." : "Getting Closer. ", now);
-            } else {
+            if (glideAngleOk) {
                 announceDistances(navigator, movingAway ? "Moving Away." : "Getting Closer. Glide Angle:" + glideAngle + " degrees.", now);
+            } else {
+                announceDistances(navigator, movingAway ? "Moving Away." : "Getting Closer. ", now);
             }
         } else if (distanceToTarget <= GLIDE_ENTRY_RADIUS && !glideInitiated) {
-            if (!notSuitableForGlideAngleAnnouncement) {
+            if (glideAngleOk) {
                 vocalize("Initiate Glide! Glide angle: " + glideAngle + ". ", navigator.distanceToTarget(), navigator.bearingToTarget(), now);
             } else {
-                vocalize("Too fast for glide. Reposition.",  0, 0, now);
+                vocalize("Too steep for safe glide. Reposition.", 0, 0, now);
             }
 
         } else {
@@ -142,8 +171,21 @@ public class LocationTrackingSubscriber {
         lastDistance = distanceToTarget;
     }
 
-    private void surfaceNavigation(NavigationUtils.Direction navigator, long now, long effectiveInterval, double altitude) {
 
+    /**
+     * Handles the surface navigation logic for low altitude flights or surface vehicles.
+     * This method calculates the necessary bearings, glide angles, and distances
+     * to assist in navigating towards a target while dealing with various thresholds,
+     * such as altitude changes, speed, and proximity.
+     *
+     * @param navigator Provides utility functions for calculating distance, bearings,
+     *                  speed, heading, and altitude of the user relative to the target.
+     * @param now The current timestamp used for logging, announcements, and time-sensitive calculations.
+     * @param effectiveInterval The minimum required interval for making repeated announcements, in milliseconds.
+     * @param altitude Represents the current altitude of the user which determines specific response behaviors.
+     */
+    private void surfaceNavigation(NavigationUtils.Direction navigator, long now, long effectiveInterval, double altitude) {
+        //Low altitude flights or Surface Recon Vehicle.
         if (lastDistance == -1) {
             vocalize("Starting Surface Navigation", navigator.distanceToTarget(), navigator.bearingToTarget(), now);
         }
@@ -171,17 +213,17 @@ public class LocationTrackingSubscriber {
                 vocalize("Within 1000 meters from target. Look for landing spot", 0, 0, now);
             } else {
                 if (altitude > 3_000 && glideAngle < 45) {
-                    announceDistances(navigator, movingAway ? "Moving Away." : "Getting Closer. "+reduceSpeed+" Glide Angle:" + glideAngle + " degrees.", now);
+                    announceDistances(navigator, movingAway ? "Moving Away." : "Getting Closer. " + reduceSpeed + " Glide Angle:" + glideAngle + " degrees.", now);
                 } else {
-                    announceDistances(navigator, movingAway ? "Moving Away." : "Getting Closer. "+reduceSpeed, now);
+                    announceDistances(navigator, movingAway ? "Moving Away." : "Getting Closer. " + reduceSpeed, now);
                 }
             }
-        } else {
-            announceDistances(navigator, movingAway ? "Moving Away." : "Getting Closer. "+reduceSpeed, now);
+        } else if (onTheSurface) {
+            announceDistances(navigator, movingAway ? "Moving Away." : "Getting Closer. " + reduceSpeed, now);
         }
 
 
-        if (navigator.distanceToTarget() <= ARRIVAL_RADIUS && navigator.altitude() == 0 && navigator.userSpeed() < 700) {
+        if (onTheSurface && navigator.distanceToTarget() <= ARRIVAL_RADIUS && navigator.altitude() == 0 && navigator.userSpeed() < 700) {
             vocalize("Arrived!", 0, 0, now);
             TargetLocation t = playerSession.getTracking();
             t.setEnabled(false);
@@ -266,6 +308,11 @@ public class LocationTrackingSubscriber {
     @Subscribe
     public void onSuperCruiseExit(SupercruiseExitEvent event) {
         glideInitiated = true;
+    }
+
+    @Subscribe
+    public void onTouchdownEvent(TouchdownEvent event) {
+        onTheSurface = true;
     }
 
 }

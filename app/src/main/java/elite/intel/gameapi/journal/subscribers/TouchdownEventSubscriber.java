@@ -57,7 +57,6 @@ public class TouchdownEventSubscriber {
             EventBusManager.publish(new SensorDataEvent(sb.toString()));
         } else {
             EventBusManager.publish(new VoiceProcessEvent("Touchdown!"));
-            playerSession.setTracking(new TargetLocation());
         }
     }
 }

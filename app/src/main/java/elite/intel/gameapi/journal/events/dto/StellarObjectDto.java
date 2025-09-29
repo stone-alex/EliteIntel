@@ -26,6 +26,7 @@ public class StellarObjectDto implements ToJsonConvertible {
     private int numberOfBioFormsPresent;
     private int geoSignals;
     private boolean hasRings;
+    private boolean isOurDiscovery;
     private boolean bioFormsPresent;
     private BioStatus bioStatus = BioStatus.SCAN_REQUIRED;
     List<GenusDto> genus = new ArrayList<>();
@@ -209,6 +210,14 @@ public class StellarObjectDto implements ToJsonConvertible {
     public void setBioFormsPresent(boolean bioFormsPresent) {
         if(bioFormsPresent) bioStatus= BioStatus.BIO_FORMS_PRESENT;
         if(!bioFormsPresent) bioStatus= BioStatus.NO_BIO_FORMS;
+    }
+
+    public boolean isOurDiscovery() {
+        return isOurDiscovery;
+    }
+
+    public void setOurDiscovery(boolean ourDiscovery) {
+        isOurDiscovery = ourDiscovery;
     }
 }
 

@@ -8,6 +8,7 @@ import elite.intel.gameapi.journal.events.CodexEntryEvent;
 import elite.intel.gameapi.journal.events.ScanOrganicEvent;
 import elite.intel.gameapi.journal.events.dto.BioSampleDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
+import elite.intel.gameapi.journal.events.dto.TargetLocation;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.BioScanDistances;
 
@@ -36,6 +37,7 @@ public class ScanOrganicSubscriber {
         BioForms.BioDetails bioDetails = BioForms.getDetails(genus, variant);
         int range = bioDetails == null ? BioScanDistances.GENUS_TO_CCR.get(genus) : bioDetails.colonyRange();
         LocationDto currentLocation = playerSession.getCurrentLocation();
+        boolean isOurDiscovery = currentLocation.isOurDiscovery();
 
         removeCodexEntryIfMatches(event.getVariantLocalised(), range, true);
 
@@ -51,8 +53,12 @@ public class ScanOrganicSubscriber {
             sb.append(" meters. ");
 
             if(valueInCredits > 0) {
-                sb.append("Approximate Vista Genomix payment: ");
+                sb.append("Approximate Vista Genomics payment: ");
                 sb.append(valueInCredits);
+                if (isOurDiscovery) {
+                    sb.append(" credits,");
+                    sb.append(" Plus bonus for first discovery.");
+                }
                 sb.append(" credits.");
             }
 
@@ -70,7 +76,21 @@ public class ScanOrganicSubscriber {
             EventBusManager.publish(new SensorDataEvent("Sample collected for: " + genus + "."));
 
         } else if (scan3.equalsIgnoreCase(scanType)) {
-            EventBusManager.publish(new SensorDataEvent("Organic scans for" + genus + " are complete. "+(valueInCredits > 0 ? " approximate Vista Genomix payment: " + valueInCredits : "")));
+            sb = new StringBuilder();
+            sb.append("Organic scans for: ");
+            sb.append(genus);
+            sb.append(" are complete. ");
+            if (valueInCredits > 0) {
+                sb.append(" approximate Vista Genomics payment: ");
+                sb.append(valueInCredits);
+                if (isOurDiscovery) sb.append("credits, plus bonus for first discovery.");
+            } else {
+                sb.append(" credits.");
+            }
+
+
+            EventBusManager.publish(new SensorDataEvent(sb.toString()));
+            
             BioSampleDto bioSampleDto = createBioSampleDto(genus, variant, planetNumber, starSystemNumber, valueInCredits);
             bioSampleDto.setScanXof3("Three of Three");
             bioSampleDto.setBioSampleCompleted(true);
@@ -78,6 +98,7 @@ public class ScanOrganicSubscriber {
             playerSession.saveCurrentLocation(currentLocation);
             currentLocation.clearBioSamples();
             removeCodexEntryIfMatches(event.getVariantLocalised(), -1, false);
+            playerSession.setTracking(new TargetLocation()); // turn off tracking
         }
     }
 

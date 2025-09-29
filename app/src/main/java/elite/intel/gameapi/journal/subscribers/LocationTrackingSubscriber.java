@@ -37,7 +37,7 @@ public class LocationTrackingSubscriber {
     private static final long MIN_INTERVAL_MS = 10_000;
     private static final double[] DISTANCE_THRESHOLDS = generateDescendingSequence(10_000_000);
     private static final double HYSTERESIS = 7;
-    private static final double ARRIVAL_RADIUS = 75;
+    private static final double ARRIVAL_RADIUS = 25;
     private static final double GLIDE_ENTRY_RADIUS = 400_000;
     private static final double TOO_FAR_FOR_GLIDE = 1_000_000;
 
@@ -187,7 +187,11 @@ public class LocationTrackingSubscriber {
     private void surfaceNavigation(NavigationUtils.Direction navigator, long now, long effectiveInterval, double altitude) {
         //Low altitude flights or Surface Recon Vehicle.
         if (lastDistance == -1) {
-            vocalize("Starting Surface Navigation", navigator.distanceToTarget(), navigator.bearingToTarget(), now);
+            if(navigator.userSpeed() > 0) {
+                vocalize("Starting Surface Navigation", 0, 0, now);
+            } else {
+                vocalize("Starting Surface Navigation", navigator.distanceToTarget(), navigator.bearingToTarget(), now);
+            }
         }
 
         boolean headingDeviation = lastHeading > 0 && navigator.bearingToTarget() > lastHeading + HYSTERESIS || navigator.bearingToTarget() < lastHeading - HYSTERESIS;

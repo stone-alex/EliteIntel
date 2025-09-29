@@ -5,6 +5,7 @@ import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.journal.events.FSSBodySignalsEvent;
 import elite.intel.gameapi.journal.events.ScanEvent;
+import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.gameapi.journal.events.dto.MaterialDto;
 import elite.intel.gameapi.journal.events.dto.StellarObjectDto;
 import elite.intel.session.PlayerSession;
@@ -105,6 +106,9 @@ public class ScanEventSubscriber {
             if (event.getTerraformState() != null && !event.getTerraformState().isEmpty()) {
                 EventBusManager.publish(new SensorDataEvent("New Terraformable planet: " + shortName + " Details available on request. "));
             } else if (event.getPlanetClass() != null && valuablePlanetClasses.contains(event.getPlanetClass().toLowerCase())) {
+                LocationDto currentLocation = playerSession.getCurrentLocation();
+                currentLocation.setOurDiscovery(true);
+                playerSession.saveCurrentLocation(currentLocation);
                 EventBusManager.publish(new SensorDataEvent("New discovery logged: " + event.getPlanetClass()));
             }
         }

@@ -30,6 +30,7 @@ public class SAASignalsFoundSubscriber {
 
         String bodyName = event.getBodyName();
         StellarObjectDto stellarObjectDto = playerSession.getStellarObject(bodyName);
+        stellarObjectDto.setOurDiscovery(playerSession.getCurrentLocation().isOurDiscovery());
 
 
         if (signalsFound > 0) {

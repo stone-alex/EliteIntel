@@ -35,7 +35,7 @@ public class SetPersonalityHandler implements CommandHandler {
     @Override public void handle(JsonObject params, String responseText) {
         try {
             JsonElement jsonElement = extractParameter(CustomCommands.SET_PERSONALITY.getPlaceholder(), params);
-            AIPersonality aiPersonality = AIPersonality.valueOf(jsonElement.getAsString().toUpperCase());
+            AIPersonality aiPersonality = AIPersonality.valueOf(jsonElement.getAsString().toUpperCase().replace("\"",""));
             SystemSession.getInstance().setAIPersonality(aiPersonality);
             if (AIPersonality.PROFESSIONAL.equals(aiPersonality)) {
                 EventBusManager.publish(new SensorDataEvent("In professional personality the general chat is disabled"));

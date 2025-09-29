@@ -50,7 +50,7 @@ public enum CustomCommands {
 
     NAVIGATE_TO_NEXT_BIO_SAMPLE("navigate_heading_direction_to_bio_sample", null, null, NavigateToNextBioSample.class),
     GET_HEADING_TO_LZ("navigate_heading_direction_to_landing_zone", null, null, NavigateToLandingZone.class),
-    NAVIGATION_ON_OFF("toggle_navigation", "<navigation_on_off>", "navigation_on_off", NavigationOnOffHandler.class),
+    NAVIGATION_ON_OFF("toggle_navigator_guidance", "<navigation_on_off>", "navigation_on_off", NavigationOnOffHandler.class),
 
     CLEAR_CODEX_ENTRIES("clear_codex_entries", null, null, ClearCodexEntriesHandler.class);
 

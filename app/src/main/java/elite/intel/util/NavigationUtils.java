@@ -14,6 +14,7 @@ public class NavigationUtils {
     private static int lastValidHeading = 0; // Persist last valid heading
 
     public static Direction getDirections(double targetLatitude, double targetLongitude, PlayerMovedEvent event) {
+
         Result resultForDirections = calculateHeading(targetLatitude, targetLongitude, event.getLatitude(), event.getLongitude(), event.getPlanetRadius(), event.getAltitude());
         int bearingToTarget = calculateRhumbBearing(event.getLatitude(), event.getLongitude(), targetLatitude, targetLongitude);
         Result resultForCurrentPosition = calculateHeading(event.getLatitude(), event.getLongitude(), lastLatitude, lastLongitude, event.getPlanetRadius(), event.getAltitude());
@@ -118,29 +119,21 @@ public class NavigationUtils {
         return (radius + altitude) * c;
     }
 
-    public static double calculateGlideAngle(double altitude, double distanceToTarget) {
-        double minDistance = 200_000;
-        double maxDistance = 300_000;
-        if (distanceToTarget <= minDistance) return -15.0;
-        if (distanceToTarget >= maxDistance) return -30.0;
-        double ratio = (distanceToTarget - minDistance) / (maxDistance - minDistance);
-        return -15.0 - (15.0 * ratio);
+    public static int calculateGlideAngle(double altitude, double distanceToTarget) {
+        // Check for invalid inputs (non-positive altitude or distance)
+        if (altitude <= 0 || distanceToTarget <= 0) {
+            return 0;
+        }
+
+        // Calculate the angle using arctangent (atan) and convert radians to degrees
+        double angleInRadians = Math.atan(altitude / distanceToTarget);
+        double angleInDegrees = Math.toDegrees(angleInRadians);
+
+        // Round to nearest integer and return
+        return (int) Math.round(angleInDegrees);
     }
 
-    // not used.
-    public static boolean isInTep(double distanceToTep, double altitude, double orbitalEntryAltitude) {
-        log.info("isInTep: distanceToTep=" + formatDistance(distanceToTep) + ", altitude=" + formatDistance(altitude) + ", orbitalEntryAltitude=" + formatDistance(orbitalEntryAltitude));
-        return distanceToTep <= 1_500_000;
-    }
 
-    public static double calculateTepLongitude(double targetLat, double targetLon, double planetRadius, double altitude) {
-        double minDistance = 300_000; // 300km to reduce flight time
-        double angularDistance = (minDistance / (planetRadius + altitude)) * (180.0 / Math.PI);
-        double tepLon = targetLon + angularDistance;
-        if (tepLon > 180.0) tepLon -= 360.0;
-        if (tepLon < -180.0) tepLon += 360.0;
-        return tepLon;
-    }
 
     public static String formatDistance(double d) {
         if (d >= 1000) {

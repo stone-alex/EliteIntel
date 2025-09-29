@@ -31,12 +31,12 @@ public class LocationTrackingSubscriber {
     private boolean glideInitiated = false;
     private double lastDistanceThreshold = 0;
 
-    public static final int NORMAL_SPACE_HIGHEST_SPEED = 600; // Speeds above this are considered supercruise or orbital
-    private static final long MIN_INTERVAL_MS = 10_000; // 20 sec base throttle
+    public static final int NORMAL_SPACE_HIGHEST_SPEED = 600;
+    private static final long MIN_INTERVAL_MS = 10_000;
     private static final double[] DISTANCE_THRESHOLDS = generateDescendingSequence(3_000_000);
-    private static final double HYSTERESIS = 10; // degrees
-    private static final double ARRIVAL_RADIUS = 75; // meters
-    private static final double GLIDE_ENTRY_RADIUS = 300_000; // 300km for glide entry area
+    private static final double HYSTERESIS = 7;
+    private static final double ARRIVAL_RADIUS = 75;
+    private static final double GLIDE_ENTRY_RADIUS = 400_000;
     private static final double TOO_FAR_FOR_GLIDE = 1_000_000;
 
     @Subscribe
@@ -61,7 +61,15 @@ public class LocationTrackingSubscriber {
                 event
         );
 
-        EventBusManager.publish(new AppLogEvent(navigator.toString()));
+        if(navigator.distanceToTarget() == 0 && navigator.altitude() == 0){
+            // we are not on the planet and not in orbit
+            EventBusManager.publish(new AppLogEvent("Not on planet and not in orbit."));
+            log.info("Navigation ON, but not on planet and not in orbit. Skipping navigation.");
+            return;
+        } else {
+            EventBusManager.publish(new AppLogEvent(navigator.toString()));
+            log.info(navigator.toString());
+        }
 
         long announcementMinInterval = MIN_INTERVAL_MS;
         if (navigator.userSpeed() >= 15 && navigator.userSpeed() < 150) {
@@ -73,13 +81,6 @@ public class LocationTrackingSubscriber {
             lastDistance = navigator.distanceToTarget();
             lastHeading = navigator.userHeading();
             log.info("Skipping announcement. Reason: Timed throttle.");
-            return;
-        }
-
-        log.info(navigator.toString());
-
-        if(navigator.distanceToTarget() == 0 && navigator.altitude() == 0){
-            // we are not on the planet
             return;
         }
 
@@ -133,7 +134,7 @@ public class LocationTrackingSubscriber {
             if (!notSuitableForGlideAngleAnnouncement) {
                 vocalize("Initiate Glide! Glide angle: " + glideAngle + ". ", navigator.distanceToTarget(), navigator.bearingToTarget(), now);
             } else {
-                vocalize("Too fast for glide.",  0, 0, now);
+                vocalize("Too fast for glide. Reposition.",  0, 0, now);
             }
 
         } else {
@@ -182,7 +183,7 @@ public class LocationTrackingSubscriber {
         }
 
 
-        if (navigator.distanceToTarget() != 0 && navigator.distanceToTarget() <= ARRIVAL_RADIUS && navigator.altitude() == 0 && navigator.userSpeed() < 700) {
+        if (navigator.distanceToTarget() <= ARRIVAL_RADIUS && navigator.altitude() == 0 && navigator.userSpeed() < 700) {
             vocalize("Arrived!", 0, 0, now);
             TargetLocation t = playerSession.getTracking();
             t.setEnabled(false);

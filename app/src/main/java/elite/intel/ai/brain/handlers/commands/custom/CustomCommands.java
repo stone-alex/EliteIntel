@@ -21,6 +21,7 @@ import elite.intel.session.SystemSession;
  */
 public enum CustomCommands {
     ADD_MINING_TARGET("add_mining_target", "<material>", "mining_target", AddMiningTargetHandler.class),
+
     CLEAR_MINING_TARGETS("clear_mining_targets", null, null, ClearMiningTargetsHandler.class),
     CLEAR_CACHE("clear_cache", "<session_clear>", "session_clear", ClearCacheHandler.class),
     CLOSE_SYSTEM_MAP("close_star_system_map", null, null, ExitToHud.class),
@@ -48,8 +49,9 @@ public enum CustomCommands {
     OPEN_FSS("open_fss", null, null, OpenFssHandler.class),
     OPEN_FSS_AND_SCAN("open_fss_and_scan", null, null, DisplayFssAndScanHandler.class),
 
-    NAVIGATE_TO_NEXT_BIO_SAMPLE("navigate_heading_direction_to_bio_sample", null, null, NavigateToNextBioSample.class),
-    GET_HEADING_TO_LZ("navigate_heading_direction_to_landing_zone", null, null, NavigateToLandingZone.class),
+    NAVIGATE_TO_TARGET("navigate_to_coordinates", "<coordinates>", "lat_lon", NavigateToCoordinatesHandler.class),
+    NAVIGATE_TO_NEXT_BIO_SAMPLE("navigate_bearing_direction_to_bio_sample", null, null, NavigateToNextBioSample.class),
+    GET_HEADING_TO_LZ("navigate_bearing_direction_to_landing_zone", null, null, NavigateToLandingZone.class),
     NAVIGATION_ON_OFF("toggle_navigator_guidance", "<navigation_on_off>", "navigation_on_off", NavigationOnOffHandler.class),
 
     CLEAR_CODEX_ENTRIES("clear_codex_entries", null, null, ClearCodexEntriesHandler.class);

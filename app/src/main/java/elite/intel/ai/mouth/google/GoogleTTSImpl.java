@@ -228,7 +228,11 @@ public class GoogleTTSImpl implements MouthInterface {
                     }
                     continue;
                 }
-                processVoiceRequest(request.text(), request.voiceName(), request.speechRate());
+                processVoiceRequest(
+                        request.text().replace("present","detected"),
+                        request.voiceName(),
+                        request.speechRate()
+                );
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 log.info("VoiceGenerator interrupted, shutting down");

@@ -245,12 +245,13 @@ public class NavigationUtils {
 
 
 
-    public static String formatDistance(double d) {
-        int n = (int) d;
-        if (n >= 1000) {
-            return  n / 1_000 + " kilometers.";
+    public static String formatDistance(double meters) {
+        double km = meters / 1000;
+        if (meters >= 1000) {
+            return String.format("%.1f kilometers", km);
         } else {
-            return n + " meters.";
+            int n = (int) meters;
+            return n +" meters.";
         }
     }
 

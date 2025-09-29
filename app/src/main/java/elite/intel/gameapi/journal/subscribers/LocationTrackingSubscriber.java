@@ -32,11 +32,12 @@ public class LocationTrackingSubscriber {
     private double lastDistanceThreshold = 0;
 
     public static final int NORMAL_SPACE_HIGHEST_SPEED = 600; // Speeds above this are considered supercruise or orbital
-    private static final long MIN_INTERVAL_MS = 20_000; // 20 sec base throttle
+    private static final long MIN_INTERVAL_MS = 10_000; // 20 sec base throttle
     private static final double[] DISTANCE_THRESHOLDS = generateDescendingSequence(3_000_000);
     private static final double HYSTERESIS = 10; // degrees
     private static final double ARRIVAL_RADIUS = 75; // meters
     private static final double GLIDE_ENTRY_RADIUS = 300_000; // 300km for glide entry area
+    private static final double TOO_FAR_FOR_GLIDE = 1_000_000;
 
     @Subscribe
     public void onPlayerMoved(PlayerMovedEvent event) {
@@ -54,8 +55,6 @@ public class LocationTrackingSubscriber {
             lastTracking = targetLocation;
         }
 
-
-
         NavigationUtils.Direction navigator = NavigationUtils.getDirections(
                 targetLocation.getLatitude(),
                 targetLocation.getLongitude(),
@@ -69,22 +68,25 @@ public class LocationTrackingSubscriber {
             announcementMinInterval = 30_000;
         }
 
-
         // announcement time throttle
         if (NOW - lastAnnounceTime < announcementMinInterval) {
             lastDistance = navigator.distanceToTarget();
             lastHeading = navigator.userHeading();
-            log.info("Time throttled announcement.");
+            log.info("Skipping announcement. Reason: Timed throttle.");
             return;
         }
 
+        log.info(navigator.toString());
+
+        if(navigator.distanceToTarget() == 0 && navigator.altitude() == 0){
+            // we are not on the planet
+            return;
+        }
 
         if (isOnSurface(event, navigator)) {
-            onSurfaceNavigation(navigator, NOW, announcementMinInterval, event.getAltitude());
+            surfaceNavigation(navigator, NOW, announcementMinInterval, event.getAltitude());
         } else if (isInOrbit(event, navigator)) {
-            inOrbitNavigation(NOW, event, targetLocation);
-        } else if (NOW - lastAnnounceTime < announcementMinInterval) {
-            vocalize("Navigation will start once in orbit.", 0, 0, NOW);
+            orbitalNavigation(NOW, event, targetLocation);
         }
 
         lastDistance = navigator.distanceToTarget();
@@ -99,46 +101,49 @@ public class LocationTrackingSubscriber {
         return event.getAltitude() == 0 || (navigator.userSpeed() > 0 && navigator.userSpeed() < NORMAL_SPACE_HIGHEST_SPEED);
     }
 
-    private void inOrbitNavigation(long now, PlayerMovedEvent event, TargetLocation targetLocation) {
+    private void orbitalNavigation(long now, PlayerMovedEvent event, TargetLocation targetLocation) {
         if (glideInitiated) return;
 
         double targetLat = targetLocation.getLatitude();
         double targetLon = targetLocation.getLongitude();
 
         NavigationUtils.Direction navigator = NavigationUtils.getDirections(targetLat, targetLon, event);
+
         int bearingToTarget = navigator.bearingToTarget();
         double distanceToTarget = navigator.distanceToTarget();
         int shipHeading = navigator.userHeading();
         int glideAngle = calculateGlideAngle(event.getAltitude(), navigator.distanceToTarget());
+        boolean movingAway = navigator.distanceToTarget() > lastDistance;
+        boolean offCourse = Math.abs(bearingToTarget - shipHeading) > HYSTERESIS;
+        boolean notSuitableForGlideAngleAnnouncement = distanceToTarget > TOO_FAR_FOR_GLIDE || glideAngle > 35;
 
         if (lastDistance == -1) {
             vocalize("Starting Orbital Navigation", navigator.distanceToTarget(), navigator.bearingToTarget(), now);
         }
 
-        if (now - lastAnnounceTime > MIN_INTERVAL_MS) {
-            announceDistances(navigator, event.getAltitude() > 50 ? "Destination: Glide point: Angle: " + glideAngle + " degrees." : "Target: ", now);
-        }
+        if (offCourse && distanceToTarget > GLIDE_ENTRY_RADIUS) {
+            vocalize("", navigator.distanceToTarget() + GLIDE_ENTRY_RADIUS, navigator.bearingToTarget(), now);
+        } else if (!offCourse && distanceToTarget > GLIDE_ENTRY_RADIUS) {
+            if (notSuitableForGlideAngleAnnouncement) {
+                announceDistances(navigator, movingAway ? "Moving Away." : "Getting Closer. ", now);
+            } else {
+                announceDistances(navigator, movingAway ? "Moving Away." : "Getting Closer. Glide Angle:" + glideAngle + " degrees.", now);
+            }
+        } else if (distanceToTarget <= GLIDE_ENTRY_RADIUS && !glideInitiated) {
+            if (!notSuitableForGlideAngleAnnouncement) {
+                vocalize("Initiate Glide! Glide angle: " + glideAngle + ". ", navigator.distanceToTarget(), navigator.bearingToTarget(), now);
+            } else {
+                vocalize("Too fast for glide.",  0, 0, now);
+            }
 
-        if ((Math.abs(bearingToTarget - shipHeading) > HYSTERESIS || distanceToTarget < GLIDE_ENTRY_RADIUS)) {
-            vocalize("Destination: Glide Point", navigator.distanceToTarget(), navigator.bearingToTarget(), now);
-        }
-
-
-        boolean movingAway = navigator.distanceToTarget() > lastDistance;
-        if (distanceToTarget <= GLIDE_ENTRY_RADIUS && !glideInitiated) {
-            glideInitiated = true;
-            vocalize("Initiate Glide! Glide angle: " + glideAngle + ". ", navigator.distanceToTarget(), navigator.bearingToTarget(), now);
-            lastDistance = -1;
-            return; // Surface nav will take over after glide.
         } else {
-            announceDistances(navigator, movingAway ? "Moving Away." : "Getting Closer. Glide Angle:" + glideAngle + " degrees.", now);
+            announceDistances(navigator, movingAway ? "Moving Away." : "Getting Closer", now);
         }
-
 
         lastDistance = distanceToTarget;
     }
 
-    private void onSurfaceNavigation(NavigationUtils.Direction navigator, long now, long effectiveInterval, double altitude) {
+    private void surfaceNavigation(NavigationUtils.Direction navigator, long now, long effectiveInterval, double altitude) {
 
         if (lastDistance == -1) {
             vocalize("Starting Surface Navigation", navigator.distanceToTarget(), navigator.bearingToTarget(), now);
@@ -152,6 +157,13 @@ public class LocationTrackingSubscriber {
             vocalize("", navigator.distanceToTarget(), navigator.bearingToTarget(), now);
         }
 
+        boolean withinThreeKm = navigator.distanceToTarget() < 12_000;
+        boolean tooFast = navigator.userSpeed() > 150;
+        String reduceSpeed = "";
+        if (withinThreeKm && tooFast) {
+            reduceSpeed = " Reduce speed below 150 km. ";
+        }
+
         int glideAngle = calculateGlideAngle(altitude, navigator.distanceToTarget());
         boolean movingAway = navigator.distanceToTarget() > lastDistance;
 
@@ -159,18 +171,18 @@ public class LocationTrackingSubscriber {
             if (navigator.distanceToTarget() < 1000) {
                 vocalize("Within 1000 meters from target. Look for landing spot", 0, 0, now);
             } else {
-                if(altitude > 1000) {
-                    announceDistances(navigator, movingAway ? "Moving Away." : "Getting Closer. Glide Angle:" + glideAngle + " degrees.", now);
+                if (altitude > 3_000 && glideAngle < 45) {
+                    announceDistances(navigator, movingAway ? "Moving Away." : "Getting Closer. "+reduceSpeed+" Glide Angle:" + glideAngle + " degrees.", now);
                 } else {
-                    announceDistances(navigator, movingAway ? "Moving Away." : "Getting Closer", now);
+                    announceDistances(navigator, movingAway ? "Moving Away." : "Getting Closer. "+reduceSpeed, now);
                 }
             }
         } else {
-            announceDistances(navigator, movingAway ? "Moving Away." : "Getting Closer. ", now);
+            announceDistances(navigator, movingAway ? "Moving Away." : "Getting Closer. "+reduceSpeed, now);
         }
 
 
-        if (navigator.distanceToTarget() <= ARRIVAL_RADIUS && navigator.altitude() == 0 && navigator.userSpeed() < 700) {
+        if (navigator.distanceToTarget() != 0 && navigator.distanceToTarget() <= ARRIVAL_RADIUS && navigator.altitude() == 0 && navigator.userSpeed() < 700) {
             vocalize("Arrived!", 0, 0, now);
             TargetLocation t = playerSession.getTracking();
             t.setEnabled(false);
@@ -180,9 +192,11 @@ public class LocationTrackingSubscriber {
     }
 
     private void announceDistances(NavigationUtils.Direction navigator, String prefix, long now) {
+
         for (double th : DISTANCE_THRESHOLDS) {
             if (lastDistance > th && navigator.distanceToTarget() <= th && lastDistanceThreshold != th) {
                 lastDistanceThreshold = th;
+
                 vocalize(prefix, navigator.distanceToTarget(), navigator.bearingToTarget(), now);
                 break;
             }

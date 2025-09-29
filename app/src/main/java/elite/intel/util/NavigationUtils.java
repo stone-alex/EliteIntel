@@ -136,10 +136,11 @@ public class NavigationUtils {
 
 
     public static String formatDistance(double d) {
-        if (d >= 1000) {
-            return String.format("%.1f kilometers", d / 1000);
+        int n = (int) d;
+        if (n >= 1000) {
+            return  n / 1_000 + " kilometers.";
         } else {
-            return String.format("%.0f meters", d);
+            return n + " meters.";
         }
     }
 
@@ -148,8 +149,8 @@ public class NavigationUtils {
 
     public record Direction(int bearingToTarget, double distanceToTarget, int userHeading, double userSpeed, double altitude, String vocalization) {
         public String toString() {
-            return "Heading to target: " + bearingToTarget +
-                    " Your Heading " + userHeading +
+            return "Bearing: " + bearingToTarget +
+                    " Heading: " + userHeading +
                     " Distance: " + formatDistance(distanceToTarget) +
                     " Speed: " + userSpeed +
                     " Altitude: " + formatDistance(altitude);

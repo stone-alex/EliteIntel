@@ -27,7 +27,7 @@ import java.util.function.Consumer;
  * - Supporting streaming mode and resetting session data on shutdown or specific events.
  */
 public class SystemSession extends SessionPersistence implements java.io.Serializable {
-    private static final SystemSession INSTANCE = new SystemSession();
+    private static volatile SystemSession instance;
     private static final String SESSION_FILE = "system_session.json";
 
     public static final String RADION_TRANSMISSION_ON_OFF = "radio_transmission_on_off";
@@ -103,7 +103,14 @@ public class SystemSession extends SessionPersistence implements java.io.Seriali
     }
 
     public static SystemSession getInstance() {
-        return INSTANCE;
+        if (instance == null) {
+            synchronized (Status.class) {
+                if (instance == null) {
+                    instance = new SystemSession();
+                }
+            }
+        }
+        return instance;
     }
 
     private void loadSavedStateFromDisk() {

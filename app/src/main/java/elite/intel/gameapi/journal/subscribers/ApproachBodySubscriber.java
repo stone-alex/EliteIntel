@@ -10,6 +10,7 @@ import elite.intel.gameapi.journal.events.ApproachBodyEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.gameapi.journal.events.dto.MaterialDto;
 import elite.intel.session.PlayerSession;
+import elite.intel.session.Status;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,8 +24,9 @@ public class ApproachBodySubscriber {
     @Subscribe
     public void onApproachBodyEvent(ApproachBodyEvent event) {
         PlayerSession playerSession = PlayerSession.getInstance();
+        Status status = Status.getInstance();
 
-        double orbitalCruiseEntryAltitude = playerSession.getStatus().getAltitude();
+        double orbitalCruiseEntryAltitude = status.getStatus().getAltitude();
 
         StringBuilder sb = new StringBuilder();
         sb.append("Entering orbit for ").append(event.getBody()).append(". ");

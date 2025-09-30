@@ -9,6 +9,7 @@ import elite.intel.gameapi.journal.events.dto.BioSampleDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.gameapi.journal.events.dto.TargetLocation;
 import elite.intel.session.PlayerSession;
+import elite.intel.session.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,9 +25,10 @@ public class NavigateToNextBioSample implements CommandHandler {
     @Override
     public void handle(JsonObject params, String responseText) {
         PlayerSession playerSession = PlayerSession.getInstance();
+        Status status = Status.getInstance();
         LocationDto currentLocation = playerSession.getCurrentLocation();
 
-        if (currentLocation == null || playerSession.getStatus() == null) {
+        if (currentLocation == null || status.getStatus() == null) {
             EventBusManager.publish(new VoiceProcessEvent("Current location is not recorded"));
             return;
         }
@@ -37,9 +39,9 @@ public class NavigateToNextBioSample implements CommandHandler {
             return;
         }
 
-        double userLongitude = playerSession.getStatus().getLongitude();
-        double userLatitude = playerSession.getStatus().getLatitude();
-        double planetRadius = playerSession.getStatus().getPlanetRadius();
+        double userLongitude = status.getStatus().getLongitude();
+        double userLatitude = status.getStatus().getLatitude();
+        double planetRadius = status.getStatus().getPlanetRadius();
 
         List<BioSampleDto> bioScans = currentLocation.getPartialBioSamples();
         boolean hasPartialBioScans = bioScans != null && !bioScans.isEmpty();

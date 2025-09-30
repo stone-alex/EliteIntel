@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import elite.intel.gameapi.journal.events.dto.BioSampleDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
+import elite.intel.session.Status;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 
@@ -12,17 +13,18 @@ public class AnalyzeDistanceFromLastBioSample extends BaseQueryAnalyzer implemen
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         PlayerSession playerSession = PlayerSession.getInstance();
+        Status status = Status.getInstance();
         LocationDto currentLocation = playerSession.getCurrentLocation();
         if(currentLocation == null) {
             return analyzeData(toJson("Current location is not available."), originalUserInput);
         }
-        if (playerSession.getStatus() == null) {
+        if (status.getStatus() == null) {
             return analyzeData(toJson("No data available"), originalUserInput);
         }
 
-        double latitude = playerSession.getStatus().getLatitude();
-        double longitude = playerSession.getStatus().getLongitude();
-        double planetRadius = playerSession.getStatus().getPlanetRadius();
+        double latitude = status.getStatus().getLatitude();
+        double longitude = status.getStatus().getLongitude();
+        double planetRadius = status.getStatus().getPlanetRadius();
 
         if (latitude == 0 || longitude == 0 || planetRadius == 0) {
             return analyzeData(toJson("Your current position is not available."), originalUserInput);

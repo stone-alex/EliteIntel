@@ -10,6 +10,7 @@ import elite.intel.gameapi.journal.events.dto.BioSampleDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.gameapi.journal.events.dto.TargetLocation;
 import elite.intel.session.PlayerSession;
+import elite.intel.session.Status;
 import elite.intel.util.BioScanDistances;
 
 import java.util.ArrayList;
@@ -22,7 +23,8 @@ public class ScanOrganicSubscriber {
     private final String scan1 = "Log";
     private final String scan2 = "Sample";
     private final String scan3 = "Analyse";
-    PlayerSession playerSession = PlayerSession.getInstance();
+    private final PlayerSession playerSession = PlayerSession.getInstance();
+    private final Status status = Status.getInstance();
 
     @Subscribe
     public void onScanOrganicEvent(ScanOrganicEvent event) {
@@ -101,9 +103,10 @@ public class ScanOrganicSubscriber {
 
 
     private void removeCodexEntryIfMatches(String variantLocalised, int range, boolean useDistance) {
-        double latitude = playerSession.getStatus().getLatitude();
-        double longitude = playerSession.getStatus().getLongitude();
-        double planetRadius = playerSession.getStatus().getPlanetRadius();
+
+        double latitude = status.getStatus().getLatitude();
+        double longitude = status.getStatus().getLongitude();
+        double planetRadius = status.getStatus().getPlanetRadius();
 
         LocationDto currentLocation = playerSession.getCurrentLocation();
         List<CodexEntryEvent> codexEntries = currentLocation.getCodexEntries();
@@ -135,8 +138,8 @@ public class ScanOrganicSubscriber {
 
         BioSampleDto bioSampleDto = new BioSampleDto();
         bioSampleDto.setPlanetName(playerSession.getCurrentLocation().getPlanetName());
-        bioSampleDto.setScanLatitude(playerSession.getStatus().getLatitude());
-        bioSampleDto.setScanLongitude(playerSession.getStatus().getLongitude());
+        bioSampleDto.setScanLatitude(status.getStatus().getLatitude());
+        bioSampleDto.setScanLongitude(status.getStatus().getLongitude());
         bioSampleDto.setGenus(genus);
         bioSampleDto.setSpecies(variant);
         bioSampleDto.setBodyId(playerSession.getCurrentLocation().getBodyId());

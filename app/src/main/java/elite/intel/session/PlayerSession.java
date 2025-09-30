@@ -18,12 +18,11 @@ import java.util.*;
  * gameplay metrics, and interactions within the game world.
  */
 public class PlayerSession extends SessionPersistence implements java.io.Serializable {
-    private static final PlayerSession INSTANCE = new PlayerSession();
+    private static volatile PlayerSession instance;
     private static final String SESSION_FILE = "player_session.json";
 
     // Existing constants
     public static final String CARRIER_DEPARTURE_TIME = "carrier_departure_time";
-    public static final String SUITE_LOADOUT_JSON = "suite_loadout_json";
     public static final String FINAL_DESTINATION = "final_destination";
     public static final String MISSIONS = "player_missions";
     public static final String PROFILE = "profile";
@@ -93,7 +92,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     private CarrierDataDto carrierData = new CarrierDataDto();
     private List<BioSampleDto> bioSamples = new ArrayList<>();
     private LoadoutEvent loadout;
-    private GameEvents.StatusEvent gameStatus;
+
     private GameEvents.CargoEvent shipCargo;
     private ReputationEvent reputation;
     private TargetLocation tracking = new TargetLocation();
@@ -174,7 +173,6 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         registerField(BIO_SAMPLES, this::getBioCompletedSamples, this::setBioSamples, new TypeToken<List<BioSampleDto>>() {}.getType());
         registerField(HOME_SYSTEM, this::getHomeSystem, this::setHomeSystem, LocationDto.class);
         registerField(SHIP_LOADOUT, this::getShipLoadout, this::setShipLoadout, new TypeToken<LoadoutEvent>() {}.getType());
-        registerField(STATUS, this::getStatus, this::setStatus, GameEvents.StatusEvent.class);
         registerField(SHIP_CARGO, this::getShipCargo, this::setShipCargo, GameEvents.CargoEvent.class);
         registerField(REPUTATION, this::getReputation, this::setReputation, ReputationEvent.class);
         registerField(TRACKING, this::getTracking, this::setTracking, TargetLocation.class);
@@ -229,7 +227,14 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     }
 
     public static PlayerSession getInstance() {
-        return INSTANCE;
+        if (instance == null) {
+            synchronized (PlayerSession.class) {
+                if (instance == null) {
+                    instance = new PlayerSession();
+                }
+            }
+        }
+        return instance;
     }
 
     private void loadSavedStateFromDisk() {
@@ -547,21 +552,12 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         return loadout;
     }
 
-    public GameEvents.StatusEvent getStatus() {
-        return this.gameStatus;
-    }
-
-    public void setStatus(GameEvents.StatusEvent event) {
-        this.gameStatus = event;
-        save();
-    }
 
     public void clearCash() {
         this.bioSamples.clear();
         this.bounties.clear();
         this.bountyCollectedThisSession = 0;
         this.carrierData = new CarrierDataDto();
-        this.gameStatus = null;
         this.loadout = null;
         this.markets.clear();
         this.missions.clear();

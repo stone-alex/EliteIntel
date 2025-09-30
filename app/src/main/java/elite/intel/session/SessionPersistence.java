@@ -27,7 +27,7 @@ class SessionPersistence {
     private static final Logger log = LogManager.getLogger(SessionPersistence.class);
     public static  String SESSION_DIR;
     protected String APP_DIR;
-    protected String sessionFile = "system_session.json";
+    protected String sessionFile = "x.json";
     private final Map<String, FieldHandler<?>> fields = new HashMap<>();
     private final BlockingQueue<SaveOperation> saveQueue = new LinkedBlockingQueue<>();
     private final BlockingQueue<ReadOperation> readQueue = new LinkedBlockingQueue<>();
@@ -87,11 +87,7 @@ class SessionPersistence {
 
 
     private static class SaveOperation {
-        private final Map<String, Object> stateMap;
-
-        public SaveOperation(Map<String, Object> stateMap) {
-            this.stateMap = new HashMap<>(stateMap);
-        }
+        //
     }
 
     private static class ReadOperation {
@@ -105,7 +101,7 @@ class SessionPersistence {
 
     public void save() {
         try {
-            saveQueue.put(new SaveOperation(new HashMap<>()));
+            saveQueue.put(new SaveOperation());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             log.warn("Interrupted while queueing save operation");
@@ -122,8 +118,8 @@ class SessionPersistence {
                 }
 
                 while (!saveQueue.isEmpty()) {
-                    SaveOperation saveOp = saveQueue.take();
-                    processSaveOperation(saveOp);
+                    saveQueue.take();
+                    processSaveOperation();
                 }
 
                 Thread.sleep(100); // Prevent busy waiting
@@ -137,7 +133,7 @@ class SessionPersistence {
         }
     }
 
-    private void processSaveOperation(SaveOperation operation) {
+    private void processSaveOperation() {
         File file = ensureSessionDirectory();
         if (file == null) {
             return;
@@ -145,28 +141,31 @@ class SessionPersistence {
 
         JsonObject existingJson = loadJsonForMerge();
         JsonObject json = new JsonObject();
-        JsonObject stateJson = existingJson.has("state") ? existingJson.getAsJsonObject("state") : null;
-
-        if(stateJson != null) {
-            for (Map.Entry<String, Object> entry : operation.stateMap.entrySet()) {
-                stateJson.add(entry.getKey(), GsonFactory.getGson().toJsonTree(entry.getValue()));
-            }
-            json.add("state", stateJson);
-        }
 
         for (Map.Entry<String, FieldHandler<?>> entry : fields.entrySet()) {
             String name = entry.getKey();
             Object value = entry.getValue().getter.get();
-            json.add(name, value != null ? GsonFactory.getGson().toJsonTree(value) : existingJson.has(name) ? existingJson.get(name) : JsonNull.INSTANCE);
+        
+        // Clearer logic: if value is null, check for fallback in existing JSON
+        JsonElement element;
+        if (value != null) {
+            element = GsonFactory.getGson().toJsonTree(value);
+        } else if (existingJson.has(name)) {
+            element = existingJson.get(name);
+        } else {
+            element = JsonNull.INSTANCE;
         }
-
-        try (Writer writer = new FileWriter(file)) {
-            GsonFactory.getGson().toJson(json, writer);
-            log.debug("Saved session to: {}", file.getPath());
-        } catch (IOException e) {
-            log.error("Failed to save session to {}: {}", file.getPath(), e.getMessage(), e);
-        }
+        json.add(name, element);
     }
+    
+    try (Writer writer = new FileWriter(file)) {
+        GsonFactory.getGson().toJson(json, writer);
+        log.debug("Saved session to: {}", file.getPath());
+    } catch (IOException e) {
+        log.error("Failed to save session to {}: {}", file.getPath(), e.getMessage(), e);
+        // Consider: throw new RuntimeException("Failed to save session", e);
+    }
+}
 
     public void shutdown() {
         isShutdown = true;
@@ -191,7 +190,6 @@ class SessionPersistence {
         if (!file.exists()) {
             try {
                 JsonObject emptyJson = new JsonObject();
-                emptyJson.add("state", new JsonObject());
                 Files.write(file.toPath(), GsonFactory.getGson().toJson(emptyJson).getBytes());
                 log.info("Created empty session file: {}", file.getPath());
                 operation.jsonConsumer.accept(emptyJson);
@@ -219,7 +217,12 @@ class SessionPersistence {
         }
 
         try (Reader reader = new FileReader(file)) {
-            return JsonParser.parseReader(reader).getAsJsonObject();
+            JsonElement jsonElement = JsonParser.parseReader(reader);
+            if (jsonElement == null || jsonElement.isJsonNull() || !jsonElement.isJsonObject()) {
+                log.warn("Invalid or empty JSON in file {}, returning empty JsonObject", file.getPath());
+                return new JsonObject();
+            }
+            return jsonElement.getAsJsonObject();
         } catch (Exception e) {
             log.error("Failed to load session for merge from {}: {}", file.getPath(), e.getMessage(), e);
             return new JsonObject();
@@ -227,17 +230,6 @@ class SessionPersistence {
     }
 
     protected void loadFields(JsonObject json) {
-/*
-        if (json.has("state")) {
-            JsonObject stateJson = json.getAsJsonObject("state");
-            for (Map.Entry<String, JsonElement> entry : stateJson.entrySet()) {
-                JsonElement element = entry.getValue();
-                Object value = convertJsonElementToObject(element);
-                stateMap.put(entry.getKey(), value);
-            }
-        }
-*/
-
         for (Map.Entry<String, FieldHandler<?>> entry : fields.entrySet()) {
             String name = entry.getKey();
             FieldHandler<?> handler = entry.getValue();

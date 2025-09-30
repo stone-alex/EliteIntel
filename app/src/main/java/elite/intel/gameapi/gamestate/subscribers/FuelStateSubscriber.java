@@ -5,6 +5,7 @@ import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.VoiceProcessEvent;
 import elite.intel.gameapi.gamestate.events.GameEvents;
 import elite.intel.session.PlayerSession;
+import elite.intel.session.Status;
 
 @SuppressWarnings("unused") //registered in SubscriberRegistration
 public class FuelStateSubscriber {
@@ -16,8 +17,9 @@ public class FuelStateSubscriber {
     public void onStatusChange(GameEvents.StatusEvent event) {
         if (event.getFuel() == null) return;
         PlayerSession playerSession = PlayerSession.getInstance();
-        GameEvents.StatusEvent oldStatus = playerSession.getStatus();
-        playerSession.setStatus(event);
+        Status status = Status.getInstance();
+        GameEvents.StatusEvent oldStatus = status.getStatus();
+        status.setStatus(event);
         double fuelMain = event.getFuel().getFuelMain();
         double fuelReservoir = event.getFuel().getFuelReservoir();
 
@@ -32,7 +34,7 @@ public class FuelStateSubscriber {
             }
         } else {
             //We are on the ship.
-            if (!hasAnnounced && oldStatus.getFuel() != null && playerSession.getShipLoadout() != null && playerSession.getShipLoadout().getFuelCapacity() != null) {
+            if (!hasAnnounced && oldStatus !=null && oldStatus.getFuel() != null && playerSession.getShipLoadout() != null && playerSession.getShipLoadout().getFuelCapacity() != null) {
                 double fuelCapacityMain = playerSession.getShipLoadout().getFuelCapacity().getMain();
                 double fuelAmount = oldStatus.getFuel().getFuelMain();
                 double remainingFuelInPercent = Math.round((fuelAmount / fuelCapacityMain * 100) * 100.0) / 100.0;

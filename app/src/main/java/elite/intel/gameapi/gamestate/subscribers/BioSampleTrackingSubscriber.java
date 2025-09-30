@@ -7,6 +7,7 @@ import elite.intel.gameapi.gamestate.events.PlayerMovedEvent;
 import elite.intel.gameapi.journal.BioSampleDistanceCalculator;
 import elite.intel.gameapi.journal.events.dto.BioSampleDto;
 import elite.intel.session.PlayerSession;
+import elite.intel.session.Status;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,7 @@ public class BioSampleTrackingSubscriber {
     @Subscribe
     public void onPlayerMovedEvent(PlayerMovedEvent event) {
         PlayerSession playerSession = PlayerSession.getInstance();
+        Status status = Status.getInstance();
         List<BioSampleDto> bioSamples = playerSession.getCurrentLocation().getPartialBioSamples();
 
         // If no samples are being tracked, don't announce.
@@ -35,9 +37,9 @@ public class BioSampleTrackingSubscriber {
                     bioSample.getSpecies(),
                     bioSample.getScanLatitude(),
                     bioSample.getScanLongitude(),
-                    playerSession.getStatus().getLatitude(),
-                    playerSession.getStatus().getLongitude(),
-                    playerSession.getStatus().getPlanetRadius()
+                    status.getStatus().getLatitude(),
+                    status.getStatus().getLongitude(),
+                    status.getStatus().getPlanetRadius()
             );
 
             bioSample.setPlayerFarEnough(canTakeSample);

@@ -6,14 +6,15 @@ import elite.intel.gameapi.VoiceProcessEvent;
 import elite.intel.gameapi.gamestate.events.GameEvents;
 import elite.intel.gameapi.gamestate.events.PlayerMovedEvent;
 import elite.intel.session.PlayerSession;
+import elite.intel.session.Status;
 
 public class StatusEventSubscriber {
 
     @Subscribe
     public void onStatusChangedEvent(GameEvents.StatusEvent event) {
-        PlayerSession playerSession = PlayerSession.getInstance();
-        GameEvents.StatusEvent oldStatus = playerSession.getStatus();
-        String legalStatusBeforeChange = oldStatus.getLegalState();
+        Status status = Status.getInstance();
+        GameEvents.StatusEvent oldStatus = status.getStatus();
+        String legalStatusBeforeChange = oldStatus == null ? null : oldStatus.getLegalState();
 
         if (legalStatusBeforeChange != null) {
             String legalState = event.getLegalState();
@@ -22,7 +23,8 @@ public class StatusEventSubscriber {
             }
         }
 
-        playerSession.setStatus(event);
+        status.setStatus(event);
+        status.setLastStatusChange(System.currentTimeMillis());
         EventBusManager.publish(new PlayerMovedEvent(event.getLatitude(), event.getLongitude(), event.getPlanetRadius(), event.getAltitude()));
     }
 }

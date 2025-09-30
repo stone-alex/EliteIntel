@@ -7,6 +7,7 @@ import elite.intel.gameapi.gamestate.events.PlayerMovedEvent;
 import elite.intel.gameapi.journal.events.TouchdownEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
+import elite.intel.session.Status;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -21,8 +22,9 @@ public class DistanceFromShipTracker {
     @Subscribe
     public void onPlayerMovedEvent(PlayerMovedEvent event) {
         PlayerSession playerSession = PlayerSession.getInstance();
-        if(playerSession.getStatus()==null){ return;}
-        if(playerSession.getStatus().getFuel() != null && playerSession.getStatus().getFuel().getFuelMain() > 0){
+        Status status = Status.getInstance();
+        if(status.getStatus()==null){ return;}
+        if(status.getStatus().getFuel() != null && status.getStatus().getFuel().getFuelMain() > 0){
             // we are in the ship
             return;
         }

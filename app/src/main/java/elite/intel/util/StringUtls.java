@@ -4,7 +4,7 @@ public class StringUtls {
 
     public static String subtractString(String a, String b) {
         if (a == null || b == null) return "";
-        return a.replace(b, "").replace("null", "");
+        return a.replace(b, "").replace("null", "").trim();
     }
 
     /**

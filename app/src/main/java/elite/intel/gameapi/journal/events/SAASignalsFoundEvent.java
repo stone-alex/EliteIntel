@@ -55,7 +55,7 @@ public class SAASignalsFoundEvent extends BaseEvent {
     private long systemAddress;
 
     @SerializedName("BodyID")
-    private int bodyID;
+    private long bodyID;
 
     @SerializedName("Signals")
     private List<Signal> signals;
@@ -96,7 +96,7 @@ public class SAASignalsFoundEvent extends BaseEvent {
         return systemAddress;
     }
 
-    public int getBodyID() {
+    public long getBodyID() {
         return bodyID;
     }
 

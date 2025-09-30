@@ -28,11 +28,11 @@ public class AnalyzeDistanceFromLastBioSample extends BaseQueryAnalyzer implemen
             return analyzeData(toJson("Your current position is not available."), originalUserInput);
         }
 
-        if(currentLocation.getBioScans().isEmpty()){
+        if(currentLocation.getPartialBioSamples().isEmpty()){
             return analyzeData(toJson("No bio samples available."), originalUserInput);
         }
 
-        BioSampleDto bioSample = currentLocation.getBioScans().getLast();
+        BioSampleDto bioSample = currentLocation.getPartialBioSamples().getLast();
         return analyzeData(new DataDto(latitude, longitude, planetRadius, bioSample).toJson(), originalUserInput);
     }
 

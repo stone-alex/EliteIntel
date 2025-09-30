@@ -7,7 +7,6 @@ import elite.intel.gameapi.journal.events.FSSBodySignalsEvent;
 import elite.intel.gameapi.journal.events.ScanEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.gameapi.journal.events.dto.MaterialDto;
-import elite.intel.gameapi.journal.events.dto.StellarObjectDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.GravityCalculator;
 import org.apache.logging.log4j.LogManager;
@@ -17,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import static elite.intel.gameapi.journal.events.dto.LocationDto.LocationType.*;
 import static elite.intel.util.StringUtls.subtractString;
 
 @SuppressWarnings("unused")
@@ -43,13 +43,14 @@ public class ScanEventSubscriber {
         String shortName = subtractString(event.getBodyName(), event.getStarSystem());
         String bodyName = event.getBodyName();
 
-        StellarObjectDto stellarObject = getOrMakeStellarObject(event.getBodyName());
+        LocationDto stellarObject = getOrMakeStellarObject(event.getBodyID());
+        stellarObject.setLocationType(determineLocationType(event));
 
         if (stellarObject.getBodyId() == 0) {
-            announceIfNewDiscovery(event);
-            stellarObject.setName(event.getBodyName());
+            announceIfNewDiscovery(event, stellarObject);
+            stellarObject.setPlanetName(event.getBodyName());
             stellarObject.setBodyId(event.getBodyID());
-            stellarObject.setShortName(shortName);
+            stellarObject.setPlanetShortName(shortName);
         }
 
         Double gravity = GravityCalculator.calculateSurfaceGravity(event.getMassEM(), event.getRadius());
@@ -59,7 +60,7 @@ public class ScanEventSubscriber {
         stellarObject.setSurfaceTemperature(event.getSurfaceTemperature());
         stellarObject.setLandable(event.isLandable());
         stellarObject.setPlanetClass(event.getPlanetClass());
-        stellarObject.setIsTerraformable("Terraformable".equalsIgnoreCase(event.getTerraformState()));
+        stellarObject.setTerraformable("Terraformable".equalsIgnoreCase(event.getTerraformState()));
         stellarObject.setTidalLocked(event.isTidalLock());
         stellarObject.setAtmosphere(event.getAtmosphereType());
         stellarObject.setMaterials(toListOfMaterials(event.getMaterials()));
@@ -94,43 +95,62 @@ public class ScanEventSubscriber {
         playerSession.setLastScan(stellarObject);
     }
 
-    private void announceIfNewDiscovery(ScanEvent event) {
-        boolean wasDiscovered = event.isWasDiscovered();
-        boolean wasMapped = event.isWasMapped();
+    private LocationDto.LocationType determineLocationType(ScanEvent event) {
         boolean isStar = event.getStarType() != null && !event.getStarType().isEmpty() || event.getSurfaceTemperature() > 1000;
         boolean isPrimaryStar = event.getDistanceFromArrivalLS() == 0;
-        String shortName = subtractString(event.getBodyName(), event.getStarSystem());
         boolean isBeltCluster = event.getBodyName().contains("Belt Cluster");
 
-        if (!wasDiscovered && !isStar &&  !isBeltCluster) {
+        if (isPrimaryStar) {
+            return PRIMARY_STAR;
+        } else if (isStar) {
+            return STAR;
+        } else if (isBeltCluster) {
+            return BELT_CLUSTER;
+        } else {
+            return PLANET_OR_MOON;
+        }
+    }
+
+
+    private void announceIfNewDiscovery(ScanEvent event, LocationDto stellarObject) {
+        boolean wasDiscovered = event.isWasDiscovered();
+        boolean wasMapped = event.isWasMapped();
+        String shortName = subtractString(event.getBodyName(), event.getStarSystem());
+
+        boolean isStar = event.getStarType() != null && !event.getStarType().isEmpty() || event.getSurfaceTemperature() > 1000;
+        boolean isPrimaryStar = event.getDistanceFromArrivalLS() == 0;
+        boolean isBeltCluster = event.getBodyName().contains("Belt Cluster");
+
+        if (!wasDiscovered && PLANET_OR_MOON.equals(stellarObject.getLocationType())) {
             if (event.getTerraformState() != null && !event.getTerraformState().isEmpty()) {
                 EventBusManager.publish(new SensorDataEvent("New Terraformable planet: " + shortName + " Details available on request. "));
             } else if (event.getPlanetClass() != null && valuablePlanetClasses.contains(event.getPlanetClass().toLowerCase())) {
                 LocationDto currentLocation = playerSession.getCurrentLocation();
                 currentLocation.setOurDiscovery(true);
+                stellarObject.setOurDiscovery(true);
                 playerSession.saveCurrentLocation(currentLocation);
                 EventBusManager.publish(new SensorDataEvent("New discovery logged: " + event.getPlanetClass()));
             }
         }
 
-        if (wasDiscovered && !isStar) {
-            if (!wasMapped && !isBeltCluster) {
+        if (wasDiscovered && !STAR.equals(stellarObject.getLocationType())) {
+            if (!wasMapped && !BELT_CLUSTER.equals(stellarObject.getLocationType())) {
                 EventBusManager.publish(new SensorDataEvent(shortName + " was previously discovered, but not mapped. "));
-            } else if (!isBeltCluster) {
+            } else if (!BELT_CLUSTER.equals(stellarObject.getLocationType())) {
                 String sensorData = getDetails(event, shortName);
                 EventBusManager.publish(new SensorDataEvent(sensorData));
                 log.info(sensorData);
             }
-        } else if (isPrimaryStar && !wasDiscovered) {
+        } else if (!wasDiscovered && PRIMARY_STAR.equals(stellarObject.getLocationType())) {
             EventBusManager.publish(new SensorDataEvent("New star system discovered!"));
-        } else if (isPrimaryStar) {
+        } else if (PRIMARY_STAR.equals(stellarObject.getLocationType())) {
             EventBusManager.publish(new SensorDataEvent("Previously discovered!"));
         }
     }
 
-    private StellarObjectDto getOrMakeStellarObject(String name) {
-        StellarObjectDto stellarObjectDto = playerSession.getStellarObjects().get(name);
-        return stellarObjectDto == null ? new StellarObjectDto() : stellarObjectDto;
+    private LocationDto getOrMakeStellarObject(long id) {
+        LocationDto stellarObjectDto = playerSession.getStellarObjects().get(id);
+        return stellarObjectDto == null ? new LocationDto(LocationDto.LocationType.UNKNOWN) : stellarObjectDto;
     }
 
     private static String getDetails(ScanEvent event, String shortName) {

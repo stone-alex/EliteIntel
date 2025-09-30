@@ -20,7 +20,7 @@ public class AnalyzeBioSamplesHandler extends BaseQueryAnalyzer implements Query
         LocationDto currentLocation = playerSession.getCurrentLocation();
         if(currentLocation == null) {return analyzeData("Current location data is not available", originalUserInput);}
 
-        List<BioSampleDto> partialScans = currentLocation.getBioScans();
+        List<BioSampleDto> partialScans = currentLocation.getPartialBioSamples();
         List<GenusDto> genus = currentLocation.getGenus();
         List<BioSampleDto> samplesCompletedForThisPlanet = completedScansForPlanet(playerSession);
         List<BioSampleDto> allBioSamplesForThisStarSystem = playerSession.getBioCompletedSamples();

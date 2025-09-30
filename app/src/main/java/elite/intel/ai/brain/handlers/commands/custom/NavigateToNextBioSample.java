@@ -41,7 +41,7 @@ public class NavigateToNextBioSample implements CommandHandler {
         double userLatitude = playerSession.getStatus().getLatitude();
         double planetRadius = playerSession.getStatus().getPlanetRadius();
 
-        List<BioSampleDto> bioScans = currentLocation.getBioScans();
+        List<BioSampleDto> bioScans = currentLocation.getPartialBioSamples();
         boolean hasPartialBioScans = bioScans != null && !bioScans.isEmpty();
         CodexEntryEvent entry;
 

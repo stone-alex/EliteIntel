@@ -30,7 +30,6 @@ public class ScanOrganicSubscriber {
         String scanType = event.getScanType();
         String genus = event.getGenusLocalised();
         String variant = event.getVariantLocalised();
-        int planetNumber = event.getBody();
         long starSystemNumber = event.getSystemAddress();
 
         long valueInCredits = BioForms.getAverageProjectedPayment(genus);
@@ -62,7 +61,7 @@ public class ScanOrganicSubscriber {
                 sb.append(" credits.");
             }
 
-            BioSampleDto bioSampleDto = createBioSampleDto(genus, variant, planetNumber, starSystemNumber, valueInCredits);
+            BioSampleDto bioSampleDto = createBioSampleDto(genus, variant, starSystemNumber, valueInCredits);
             bioSampleDto.setScanXof3("First of Three");
             currentLocation.clearBioSamples();
             currentLocation.addBioScan(bioSampleDto);
@@ -70,7 +69,7 @@ public class ScanOrganicSubscriber {
 
 
         } else if (scan2.equalsIgnoreCase(scanType)) {
-            BioSampleDto bioSampleDto = createBioSampleDto(genus, variant, planetNumber, starSystemNumber, valueInCredits);
+            BioSampleDto bioSampleDto = createBioSampleDto(genus, variant,  starSystemNumber, valueInCredits);
             currentLocation.addBioScan(bioSampleDto);
             bioSampleDto.setScanXof3("Second of Three");
             EventBusManager.publish(new SensorDataEvent("Sample collected for: " + genus + "."));
@@ -91,12 +90,12 @@ public class ScanOrganicSubscriber {
 
             EventBusManager.publish(new SensorDataEvent(sb.toString()));
             
-            BioSampleDto bioSampleDto = createBioSampleDto(genus, variant, planetNumber, starSystemNumber, valueInCredits);
+            BioSampleDto bioSampleDto = createBioSampleDto(genus, variant,  starSystemNumber, valueInCredits);
             bioSampleDto.setScanXof3("Three of Three");
             bioSampleDto.setBioSampleCompleted(true);
             playerSession.addBioSample(bioSampleDto);
-            playerSession.saveCurrentLocation(currentLocation);
             currentLocation.clearBioSamples();
+            playerSession.saveCurrentLocation(currentLocation);
             removeCodexEntryIfMatches(event.getVariantLocalised(), -1, false);
             playerSession.setTracking(new TargetLocation()); // turn off tracking
         }
@@ -132,7 +131,7 @@ public class ScanOrganicSubscriber {
     }
 
 
-    private BioSampleDto createBioSampleDto(String genus, String variant, int planetNumber, long starSystemNumber, long valueInCredits) {
+    private BioSampleDto createBioSampleDto(String genus, String variant, long starSystemNumber, long valueInCredits) {
 
         BioSampleDto bioSampleDto = new BioSampleDto();
         bioSampleDto.setPlanetName(playerSession.getCurrentLocation().getPlanetName());
@@ -140,7 +139,7 @@ public class ScanOrganicSubscriber {
         bioSampleDto.setScanLongitude(playerSession.getStatus().getLongitude());
         bioSampleDto.setGenus(genus);
         bioSampleDto.setSpecies(variant);
-        bioSampleDto.setPlanetNumber(planetNumber);
+        bioSampleDto.setBodyId(playerSession.getCurrentLocation().getBodyId());
         bioSampleDto.setStarSystemNumber(starSystemNumber);
         bioSampleDto.setDistanceToNextSample(distanceToNextSample(genus, variant));
         bioSampleDto.setPayout(valueInCredits);

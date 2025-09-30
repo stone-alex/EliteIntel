@@ -28,7 +28,6 @@ public class LocationSubscriber {
         dto.setStationEconomy(event.getStationEconomyLocalised());
         dto.setStationGovernment(event.getStationGovernmentLocalised());
         dto.setStationServices(event.getStationServices());
-        dto.setSecurity(event.getSystemSecurityLocalised());
         if(event.getStationFaction() != null) dto.setStationFaction(event.getStationFaction().getName());
 
         dto.setTrafficDto(EdsmApiClient.searchTraffic(event.getStarSystem()));

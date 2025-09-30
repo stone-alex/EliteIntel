@@ -9,7 +9,6 @@ import elite.intel.gameapi.VoiceProcessEvent;
 import elite.intel.gameapi.journal.events.ApproachBodyEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.gameapi.journal.events.dto.MaterialDto;
-import elite.intel.gameapi.journal.events.dto.StellarObjectDto;
 import elite.intel.session.PlayerSession;
 
 import java.util.ArrayList;
@@ -39,14 +38,14 @@ public class ApproachBodySubscriber {
 
         //clear bio scans if we are landing on a different planet within the same system
         if (!currentLocation.getPlanetName().equalsIgnoreCase(event.getBody())){
-            currentLocation.setBioScans(new ArrayList<>());
+            currentLocation.setPartialBioSamples(new ArrayList<>());
         }
 
         currentLocation.setStarName(event.getStarSystem());
         currentLocation.setPlanetName(event.getBody());
         currentLocation.setPlanetShortName(subtractString(event.getBody(), event.getStarSystem()));
 
-        StellarObjectDto stellarObjectDto = playerSession.getStellarObject(event.getBody());
+        LocationDto stellarObjectDto = playerSession.getStellarObject(event.getBodyID());
         SystemBodiesDto systemBodiesDto = EdsmApiClient.searchSystemBodies(currentSystem);
 
         boolean hasBodiesData = systemBodiesDto.getData() != null
@@ -73,8 +72,8 @@ public class ApproachBodySubscriber {
     }
 
 
-    private void extractDataFromStellarObjectScan(StellarObjectDto stellarObjectDto, LocationDto currentLocation, StringBuilder sb) {
-        double surfaceGravity = formatDouble(stellarObjectDto.getSurfaceGravity());
+    private void extractDataFromStellarObjectScan(LocationDto stellarObjectDto, LocationDto currentLocation, StringBuilder sb) {
+        double surfaceGravity = formatDouble(stellarObjectDto.getGravity());
         currentLocation.setGravity(surfaceGravity);
 
         sb.append(" Surface Gravity: ").append(surfaceGravity).append("G. ");
@@ -89,7 +88,7 @@ public class ApproachBodySubscriber {
         if (materials != null && !materials.isEmpty()) {
             sb.append(" ").append(materials.size()).append(" materials detected. Details available on request. ");
             for (MaterialDto material : materials) {
-                currentLocation.addMaterial(material.getMaterialName(), material.getMaterialPercentage());
+                currentLocation.addMaterial(new MaterialDto(material.getName(), material.getPercent()));
             }
         }
         sb.append(".");
@@ -118,7 +117,7 @@ public class ApproachBodySubscriber {
         if (!materials.isEmpty()) {
             sb.append(" ").append(materials.size()).append(" materials detected. Details available on request. ");
             for( Map.Entry<String, Double> material : materials.entrySet()) {
-                currentLocation.addMaterial(material.getKey(), material.getValue());
+                currentLocation.addMaterial(new MaterialDto(material.getKey(), material.getValue()));
             }
         }
         currentLocation.setPlanetData(bodyData);

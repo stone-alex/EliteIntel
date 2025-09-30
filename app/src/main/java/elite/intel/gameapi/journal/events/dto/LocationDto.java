@@ -3,6 +3,7 @@ package elite.intel.gameapi.journal.events.dto;
 import elite.intel.ai.search.edsm.dto.DeathsDto;
 import elite.intel.ai.search.edsm.dto.TrafficDto;
 import elite.intel.ai.search.edsm.dto.data.BodyData;
+import elite.intel.gameapi.journal.events.FSSBodySignalsEvent;
 import elite.intel.gameapi.journal.events.SAASignalsFoundEvent;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
@@ -11,59 +12,98 @@ import java.util.*;
 
 public class LocationDto implements ToJsonConvertible {
 
+    private List<MaterialDto> materials = new ArrayList<>();
+    private List<SAASignalsFoundEvent.Signal> saaSignals = new ArrayList<>();
+    private List<FSSBodySignalsEvent.Signal> fssSignals;
+    private List<GenusDto> genus = new ArrayList<>();
+    private List<BioSampleDto> partialBioSamples = new ArrayList<>();
+    private List<String> stationServices;
+    private List<String> powers;
+    private Set<FssSignal> detectedSignals = new HashSet<>();
     private double X;
     private double Y;
     private double Z;
     private double distance;
     private String starName;
-    private String allegiance;
-    private String security;
-    private String government;
     private String planetName="";
     private String planetShortName="";
-    BodyData planetData;
-    List<SAASignalsFoundEvent.Signal> signals = new ArrayList<>();
-    List<GenusDto> genus = new ArrayList<>();
-    List<BioSampleDto> bioScans = new ArrayList<>();
-    Set<FssSignal> detectedSignals = new HashSet<>();
-    TrafficDto trafficDto;
-    DeathsDto deathsDto;
+    private BodyData planetData;
+    private TrafficDto trafficDto;
+    private DeathsDto deathsDto;
     private String stationName;
     private String stationType;
     private long marketID;
     private String stationFaction;
     private String stationGovernment;
     private String stationAllegiance;
-    private List<String> stationServices;
     private String stationEconomy;
-    private double[] starPos;
-    private String systemAllegiance;
-    private String systemEconomy;
-    private String systemSecondEconomy;
-    private String systemGovernment;
-    private String systemSecurity;
+    private String allegiance;
+    private String economy;
+    private String secondEconomy;
+    private String government;
+    private String security;
     private long population;
     private String bodyType;
     private String controllingPower;
-    private List<String> powers;
     private String powerplayState;
     private double powerplayStateControlProgress;
     private int powerplayStateReinforcement;
     private int powerplayStateUndermining;
     private double gravity;
     private double surfaceTemperature;
-    Map<String, Double> materials = new HashMap<>();
     private double[] landingCoordinates;
     private double orbitalCruiseEntryAltitude;
     private boolean ourDiscovery = false;
+
     private BioStatus bioStatus = BioStatus.SCAN_REQUIRED;
+
+    public LocationDto(long id) {
+        setBodyId(id);
+    }
+
     public enum BioStatus {
         BIO_FORMS_PRESENT,
         NO_BIO_FORMS,
         SCAN_REQUIRED;
     }
 
+    private LocationType locationType = LocationType.UNKNOWN;
+    public enum LocationType {
+        STAR,
+        PRIMARY_STAR,
+        PLANET_OR_MOON,
+        PLANETARY_RING,
+        BLACK_HOLE,
+        NEBULA,
+        STATION,
+        FLEET_CARRIER,
+        FACILITY,
+        MARKET,
+        BELT_CLUSTER,
+        UNKNOWN
+    }
 
+    private long bodyId;
+    private boolean isLandable;
+    private String planetClass;
+    private boolean isTerraformable;
+    private boolean isTidalLocked;
+    private String atmosphere;
+    private double radius;
+    private double massEM;
+    private int numberOfBioFormsPresent;
+    private int geoSignals;
+    private boolean hasRings;
+
+
+    public LocationDto() {
+        setLocationType(LocationType.UNKNOWN);
+    }
+
+
+    public LocationDto(LocationType locationType) {
+        setLocationType(locationType);
+    }
 
 
     public double getX() {
@@ -106,30 +146,6 @@ public class LocationDto implements ToJsonConvertible {
         this.starName = starName;
     }
 
-    public String getAllegiance() {
-        return allegiance;
-    }
-
-    public void setAllegiance(String allegiance) {
-        this.allegiance = allegiance;
-    }
-
-    public String getSecurity() {
-        return security;
-    }
-
-    public void setSecurity(String security) {
-        this.security = security;
-    }
-
-    public String getGovernment() {
-        return government;
-    }
-
-    public void setGovernment(String government) {
-        this.government = government;
-    }
-
     public String getPlanetName() {
         return planetName;
     }
@@ -146,13 +162,9 @@ public class LocationDto implements ToJsonConvertible {
         this.planetData = planetData;
     }
 
-    public List<SAASignalsFoundEvent.Signal> getSaaSignals() {
-        return signals;
-    }
-
     public void addSaaSignals(List<SAASignalsFoundEvent.Signal> signals) {
-        if (this.signals == null) {signals = new ArrayList<>();}
-        this.signals.addAll(signals);
+        if (this.saaSignals == null) {signals = new ArrayList<>();}
+        this.saaSignals.addAll(signals);
     }
 
     public List<GenusDto> getGenus() {
@@ -167,8 +179,8 @@ public class LocationDto implements ToJsonConvertible {
         this.genus = genus;
     }
 
-    public List<BioSampleDto> getBioScans() {
-        return bioScans;
+    public List<BioSampleDto> getPartialBioSamples() {
+        return partialBioSamples;
     }
 
     public void addDetectedSignal(FssSignal signal) {
@@ -181,7 +193,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void addBioScan(BioSampleDto bioSampleDto) {
-        this.bioScans.add(bioSampleDto);
+        this.partialBioSamples.add(bioSampleDto);
     }
 
     public DeathsDto getDeathsDto() {
@@ -202,11 +214,11 @@ public class LocationDto implements ToJsonConvertible {
 
 
     public void clearSaaSignals() {
-        this.signals.clear();
+        this.saaSignals.clear();
     }
 
-    public void setBioScans(List<BioSampleDto> bioScans) {
-        this.bioScans = bioScans;
+    public void setPartialBioSamples(List<BioSampleDto> partialBioSamples) {
+        this.partialBioSamples = partialBioSamples;
     }
 
     public void clearDetectedSignals() {
@@ -277,52 +289,45 @@ public class LocationDto implements ToJsonConvertible {
         this.stationEconomy = stationEconomy;
     }
 
-    public double[] getStarPos() {
-        return starPos;
+
+    public String getAllegiance() {
+        return allegiance;
     }
 
-    public void setStarPos(double[] starPos) {
-        this.starPos = starPos;
+    public void setAllegiance(String allegiance) {
+        this.allegiance = allegiance;
     }
 
-    public String getSystemAllegiance() {
-        return systemAllegiance;
+    public String getEconomy() {
+        return economy;
     }
 
-    public void setSystemAllegiance(String systemAllegiance) {
-        this.systemAllegiance = systemAllegiance;
+    public void setEconomy(String economy) {
+        this.economy = economy;
     }
 
-    public String getSystemEconomy() {
-        return systemEconomy;
+    public String getSecondEconomy() {
+        return secondEconomy;
     }
 
-    public void setSystemEconomy(String systemEconomy) {
-        this.systemEconomy = systemEconomy;
+    public void setSecondEconomy(String secondEconomy) {
+        this.secondEconomy = secondEconomy;
     }
 
-    public String getSystemSecondEconomy() {
-        return systemSecondEconomy;
+    public String getGovernment() {
+        return government;
     }
 
-    public void setSystemSecondEconomy(String systemSecondEconomy) {
-        this.systemSecondEconomy = systemSecondEconomy;
+    public void setGovernment(String government) {
+        this.government = government;
     }
 
-    public String getSystemGovernment() {
-        return systemGovernment;
+    public String getSecurity() {
+        return security;
     }
 
-    public void setSystemGovernment(String systemGovernment) {
-        this.systemGovernment = systemGovernment;
-    }
-
-    public String getSystemSecurity() {
-        return systemSecurity;
-    }
-
-    public void setSystemSecurity(String systemSecurity) {
-        this.systemSecurity = systemSecurity;
+    public void setSecurity(String security) {
+        this.security = security;
     }
 
     public long getPopulation() {
@@ -406,11 +411,11 @@ public class LocationDto implements ToJsonConvertible {
         this.surfaceTemperature = surfaceTemperature;
     }
 
-    public void addMaterial(String materialName, double materialPercentage) {
-        this.materials.put(materialName, materialPercentage);
+    public void addMaterial(MaterialDto materialDto) {
+        this.materials.add(materialDto);
     }
 
-    public Map<String, Double> getMaterials() {
+    public List<MaterialDto> getMaterials() {
         return materials;
     }
 
@@ -429,7 +434,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void clearBioSamples() {
-        this.bioScans.clear();
+        this.partialBioSamples.clear();
     }
 
     public double[] getLandingCoordinates() {
@@ -459,5 +464,201 @@ public class LocationDto implements ToJsonConvertible {
 
     public void setOurDiscovery(boolean ourDiscovery) {
         this.ourDiscovery = ourDiscovery;
+    }
+
+
+    public void setMaterials(List<MaterialDto> materials) {
+        this.materials = materials;
+    }
+
+    public List<SAASignalsFoundEvent.Signal> getSaaSignals() {
+        return saaSignals;
+    }
+
+    public void setSaaSignals(List<SAASignalsFoundEvent.Signal> saaSignals) {
+        this.saaSignals = saaSignals;
+    }
+
+    public List<FSSBodySignalsEvent.Signal> getFssSignals() {
+        return fssSignals;
+    }
+
+    public void setFssSignals(List<FSSBodySignalsEvent.Signal> fssSignals) {
+        this.fssSignals = fssSignals;
+    }
+
+    public void setDetectedSignals(Set<FssSignal> detectedSignals) {
+        this.detectedSignals = detectedSignals;
+    }
+
+    public BioStatus getBioStatus() {
+        return bioStatus;
+    }
+
+    public void setBioStatus(BioStatus bioStatus) {
+        this.bioStatus = bioStatus;
+    }
+
+    public long getBodyId() {
+        return bodyId;
+    }
+
+    public void setBodyId(long bodyId) {
+        this.bodyId = bodyId;
+    }
+
+    public boolean isLandable() {
+        return isLandable;
+    }
+
+    public void setLandable(boolean landable) {
+        isLandable = landable;
+    }
+
+    public String getPlanetClass() {
+        return planetClass;
+    }
+
+    public void setPlanetClass(String planetClass) {
+        this.planetClass = planetClass;
+    }
+
+    public boolean isTerraformable() {
+        return isTerraformable;
+    }
+
+    public void setTerraformable(boolean terraformable) {
+        isTerraformable = terraformable;
+    }
+
+    public boolean isTidalLocked() {
+        return isTidalLocked;
+    }
+
+    public void setTidalLocked(boolean tidalLocked) {
+        isTidalLocked = tidalLocked;
+    }
+
+    public String getAtmosphere() {
+        return atmosphere;
+    }
+
+    public void setAtmosphere(String atmosphere) {
+        this.atmosphere = atmosphere;
+    }
+
+    public double getRadius() {
+        return radius;
+    }
+
+    public void setRadius(double radius) {
+        this.radius = radius;
+    }
+
+    public double getMassEM() {
+        return massEM;
+    }
+
+    public void setMassEM(double massEM) {
+        this.massEM = massEM;
+    }
+
+    public int getNumberOfBioFormsPresent() {
+        return numberOfBioFormsPresent;
+    }
+
+    public void setNumberOfBioFormsPresent(int numberOfBioFormsPresent) {
+        this.numberOfBioFormsPresent = numberOfBioFormsPresent;
+    }
+
+    public int getGeoSignals() {
+        return geoSignals;
+    }
+
+    public void setGeoSignals(int geoSignals) {
+        this.geoSignals = geoSignals;
+    }
+
+    public boolean isHasRings() {
+        return hasRings;
+    }
+
+    public void setHasRings(boolean hasRings) {
+        this.hasRings = hasRings;
+    }
+
+    public LocationType getLocationType() {
+        return locationType;
+    }
+
+    public void setLocationType(LocationType locationType) {
+        this.locationType = locationType;
+    }
+
+
+    @Override public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+
+        LocationDto that = (LocationDto) o;
+        return Double.compare(getX(), that.getX()) == 0 && Double.compare(getY(), that.getY()) == 0 && Double.compare(getZ(), that.getZ()) == 0 && Double.compare(getDistance(), that.getDistance()) == 0 && getMarketID() == that.getMarketID() && getPopulation() == that.getPopulation() && Double.compare(getPowerplayStateControlProgress(), that.getPowerplayStateControlProgress()) == 0 && getPowerplayStateReinforcement() == that.getPowerplayStateReinforcement() && getPowerplayStateUndermining() == that.getPowerplayStateUndermining() && Double.compare(getGravity(), that.getGravity()) == 0 && Double.compare(getSurfaceTemperature(), that.getSurfaceTemperature()) == 0 && Double.compare(getOrbitalCruiseEntryAltitude(), that.getOrbitalCruiseEntryAltitude()) == 0 && isOurDiscovery() == that.isOurDiscovery() && getBodyId() == that.getBodyId() && isLandable() == that.isLandable() && isTerraformable() == that.isTerraformable() && isTidalLocked() == that.isTidalLocked() && Double.compare(getRadius(), that.getRadius()) == 0 && Double.compare(getMassEM(), that.getMassEM()) == 0 && getNumberOfBioFormsPresent() == that.getNumberOfBioFormsPresent() && getGeoSignals() == that.getGeoSignals() && isHasRings() == that.isHasRings() && Objects.equals(getMaterials(), that.getMaterials()) && Objects.equals(getSaaSignals(), that.getSaaSignals()) && Objects.equals(getFssSignals(), that.getFssSignals()) && Objects.equals(getGenus(), that.getGenus()) && Objects.equals(getPartialBioSamples(), that.getPartialBioSamples()) && Objects.equals(getStationServices(), that.getStationServices()) && Objects.equals(getPowers(), that.getPowers()) && Objects.equals(getDetectedSignals(), that.getDetectedSignals()) && Objects.equals(getStarName(), that.getStarName()) && Objects.equals(getPlanetName(), that.getPlanetName()) && Objects.equals(getPlanetShortName(), that.getPlanetShortName()) && Objects.equals(getPlanetData(), that.getPlanetData()) && Objects.equals(getTrafficDto(), that.getTrafficDto()) && Objects.equals(getDeathsDto(), that.getDeathsDto()) && Objects.equals(getStationName(), that.getStationName()) && Objects.equals(getStationType(), that.getStationType()) && Objects.equals(getStationFaction(), that.getStationFaction()) && Objects.equals(getStationGovernment(), that.getStationGovernment()) && Objects.equals(getStationAllegiance(), that.getStationAllegiance()) && Objects.equals(getStationEconomy(), that.getStationEconomy()) && Objects.equals(getAllegiance(), that.getAllegiance()) && Objects.equals(getEconomy(), that.getEconomy()) && Objects.equals(getSecondEconomy(), that.getSecondEconomy()) && Objects.equals(getGovernment(), that.getGovernment()) && Objects.equals(getSecurity(), that.getSecurity()) && Objects.equals(getBodyType(), that.getBodyType()) && Objects.equals(getControllingPower(), that.getControllingPower()) && Objects.equals(getPowerplayState(), that.getPowerplayState()) && Arrays.equals(getLandingCoordinates(), that.getLandingCoordinates()) && getBioStatus() == that.getBioStatus() && getLocationType() == that.getLocationType() && Objects.equals(getPlanetClass(), that.getPlanetClass()) && Objects.equals(getAtmosphere(), that.getAtmosphere());
+    }
+
+    @Override public int hashCode() {
+        int result = Objects.hashCode(getMaterials());
+        result = 31 * result + Objects.hashCode(getSaaSignals());
+        result = 31 * result + Objects.hashCode(getFssSignals());
+        result = 31 * result + Objects.hashCode(getGenus());
+        result = 31 * result + Objects.hashCode(getPartialBioSamples());
+        result = 31 * result + Objects.hashCode(getStationServices());
+        result = 31 * result + Objects.hashCode(getPowers());
+        result = 31 * result + Objects.hashCode(getDetectedSignals());
+        result = 31 * result + Double.hashCode(getX());
+        result = 31 * result + Double.hashCode(getY());
+        result = 31 * result + Double.hashCode(getZ());
+        result = 31 * result + Double.hashCode(getDistance());
+        result = 31 * result + Objects.hashCode(getStarName());
+        result = 31 * result + Objects.hashCode(getPlanetName());
+        result = 31 * result + Objects.hashCode(getPlanetShortName());
+        result = 31 * result + Objects.hashCode(getPlanetData());
+        result = 31 * result + Objects.hashCode(getTrafficDto());
+        result = 31 * result + Objects.hashCode(getDeathsDto());
+        result = 31 * result + Objects.hashCode(getStationName());
+        result = 31 * result + Objects.hashCode(getStationType());
+        result = 31 * result + Long.hashCode(getMarketID());
+        result = 31 * result + Objects.hashCode(getStationFaction());
+        result = 31 * result + Objects.hashCode(getStationGovernment());
+        result = 31 * result + Objects.hashCode(getStationAllegiance());
+        result = 31 * result + Objects.hashCode(getStationEconomy());
+        result = 31 * result + Objects.hashCode(getAllegiance());
+        result = 31 * result + Objects.hashCode(getEconomy());
+        result = 31 * result + Objects.hashCode(getSecondEconomy());
+        result = 31 * result + Objects.hashCode(getGovernment());
+        result = 31 * result + Objects.hashCode(getSecurity());
+        result = 31 * result + Long.hashCode(getPopulation());
+        result = 31 * result + Objects.hashCode(getBodyType());
+        result = 31 * result + Objects.hashCode(getControllingPower());
+        result = 31 * result + Objects.hashCode(getPowerplayState());
+        result = 31 * result + Double.hashCode(getPowerplayStateControlProgress());
+        result = 31 * result + getPowerplayStateReinforcement();
+        result = 31 * result + getPowerplayStateUndermining();
+        result = 31 * result + Double.hashCode(getGravity());
+        result = 31 * result + Double.hashCode(getSurfaceTemperature());
+        result = 31 * result + Arrays.hashCode(getLandingCoordinates());
+        result = 31 * result + Double.hashCode(getOrbitalCruiseEntryAltitude());
+        result = 31 * result + Boolean.hashCode(isOurDiscovery());
+        result = 31 * result + Objects.hashCode(getBioStatus());
+        result = 31 * result + Objects.hashCode(getLocationType());
+        result = 31 * result + Long.hashCode(getBodyId());
+        result = 31 * result + Boolean.hashCode(isLandable());
+        result = 31 * result + Objects.hashCode(getPlanetClass());
+        result = 31 * result + Boolean.hashCode(isTerraformable());
+        result = 31 * result + Boolean.hashCode(isTidalLocked());
+        result = 31 * result + Objects.hashCode(getAtmosphere());
+        result = 31 * result + Double.hashCode(getRadius());
+        result = 31 * result + Double.hashCode(getMassEM());
+        result = 31 * result + getNumberOfBioFormsPresent();
+        result = 31 * result + getGeoSignals();
+        result = 31 * result + Boolean.hashCode(isHasRings());
+        return result;
     }
 }

@@ -6,7 +6,6 @@ import elite.intel.ai.search.edsm.dto.SystemBodiesDto;
 import elite.intel.gameapi.journal.events.FSSBodySignalsEvent;
 import elite.intel.gameapi.journal.events.dto.BioSampleDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
-import elite.intel.gameapi.journal.events.dto.StellarObjectDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
@@ -21,7 +20,7 @@ public class AnalyzeSignalDataHandler  extends BaseQueryAnalyzer implements Quer
         PlayerSession playerSession = PlayerSession.getInstance();
         LocationDto currentLocation = playerSession.getCurrentLocation();
         Map<Integer, FSSBodySignalsEvent> fssBodySignals = playerSession.getFssBodySignals();
-        Map<String, StellarObjectDto> stellarObjects = playerSession.getStellarObjects();
+        Map<Long, LocationDto> stellarObjects = playerSession.getStellarObjects();
         List<BioSampleDto> completedBioSamples = playerSession.getBioCompletedSamples();
         SystemBodiesDto edsmData = EdsmApiClient.searchSystemBodies(currentLocation.getStarName());
 
@@ -31,7 +30,7 @@ public class AnalyzeSignalDataHandler  extends BaseQueryAnalyzer implements Quer
     record DataDto(
             LocationDto currentLocation,
             Map<Integer, FSSBodySignalsEvent> fullSpectrumSignals,
-            Map<String, StellarObjectDto> allStellarObjectsInStarSystem,
+            Map<Long, LocationDto> allStellarObjectsInStarSystem,
             List<BioSampleDto> completedBioScans,
             SystemBodiesDto edsmData
     ) implements ToJsonConvertible {

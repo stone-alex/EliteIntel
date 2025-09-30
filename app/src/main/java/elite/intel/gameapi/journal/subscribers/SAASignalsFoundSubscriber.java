@@ -5,32 +5,32 @@ import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.data.BioForms;
 import elite.intel.gameapi.journal.events.SAASignalsFoundEvent;
-import elite.intel.gameapi.journal.events.dto.*;
+import elite.intel.gameapi.journal.events.dto.BioSampleDto;
+import elite.intel.gameapi.journal.events.dto.GenusDto;
+import elite.intel.gameapi.journal.events.dto.LocationDto;
+import elite.intel.gameapi.journal.events.dto.MaterialDto;
 import elite.intel.session.PlayerSession;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
+import static elite.intel.gameapi.journal.events.dto.LocationDto.LocationType.PLANETARY_RING;
 import static elite.intel.util.StringUtls.subtractString;
 
 public class SAASignalsFoundSubscriber {
 
+    PlayerSession playerSession = PlayerSession.getInstance();
+
     @Subscribe
     public void onSAASignalsFound(SAASignalsFoundEvent event) {
         StringBuilder sb = new StringBuilder();
-        PlayerSession playerSession = PlayerSession.getInstance();
+        if(event.getBodyID() == 0) return;
 
         LocationDto currentLocation = playerSession.getCurrentLocation();
 
-        if (!currentLocation.getPlanetName().equalsIgnoreCase(event.getBodyName())) {
-            StellarObjectDto dto = playerSession.getStellarObject(event.getBodyName());
-            if (dto.getName().equalsIgnoreCase(event.getBodyName())) {
-                currentLocation.setPlanetName(dto.getName());
-                currentLocation.setGravity(dto.getSurfaceGravity());
-                currentLocation.setOurDiscovery(dto.isOurDiscovery());
-                currentLocation.setSurfaceTemperature(dto.getSurfaceTemperature());
-                currentLocation.setPlanetShortName(subtractString(dto.getName(), currentLocation.getStarName()));
-            }
+        if (currentLocation.getBodyId() != event.getBodyID()) {
+            currentLocation = playerSession.getStellarObject(event.getBodyID());
         }
 
         currentLocation.addSaaSignals(event.getSignals());
@@ -38,11 +38,6 @@ public class SAASignalsFoundSubscriber {
 
         List<SAASignalsFoundEvent.Signal> signals = event.getSignals();
         int signalsFound = signals != null ? signals.size() : 0;
-
-        String bodyName = event.getBodyName();
-        StellarObjectDto stellarObjectDto = playerSession.getStellarObject(bodyName);
-        stellarObjectDto.setOurDiscovery(playerSession.getCurrentLocation().isOurDiscovery());
-
 
         if (signalsFound > 0) {
             int liveSignals = event.getGenuses() != null ? event.getGenuses().size() : 0;
@@ -56,14 +51,11 @@ public class SAASignalsFoundSubscriber {
 
 
             if (liveSignals > 0) {
-                stellarObjectDto.setNumberOfBioFormsPresent(liveSignals);
-                stellarObjectDto.setGenus(toGenusDto(event.getGenuses()));
-                stellarObjectDto.setBioFormsPresent(true);
-                playerSession.addStellarObject(stellarObjectDto);
+                currentLocation.setNumberOfBioFormsPresent(liveSignals);
                 currentLocation.setGenus(toGenusDto(event.getGenuses()));
-                playerSession.saveCurrentLocation(currentLocation);
                 currentLocation.setBioFormsPresent(true);
-
+                currentLocation.setGenus(toGenusDto(event.getGenuses()));
+                currentLocation.setBioFormsPresent(true);
                 boolean hasBeenScanned = scanBioCompleted(event, playerSession);
 
                 if (!hasBeenScanned) sb.append(" Exobiology signal(s) found ").append(liveSignals).append(": ");
@@ -76,29 +68,44 @@ public class SAASignalsFoundSubscriber {
                 }
                 if (!hasBeenScanned) sb.append("Average projected payment: ").append(averageProjectedPayment).append(" credits. Plus bonus if first discovered.");
 
-            } else if (bodyName.contains("Ring")) {
+            } else if (event.getBodyName().contains("Ring")) {
                 //Rings are bodies
-                StellarObjectDto ring = new StellarObjectDto();
+                LocationDto ring = new LocationDto();
+                ring.setLocationType(PLANETARY_RING);
                 ring.setBodyId(event.getBodyID());
-                ring.setName(bodyName);
+                ring.setPlanetName(event.getBodyName());
                 ring.setMaterials(toMaterials(event.getSignals()));
+                ring.setLocationType(PLANETARY_RING);
 
-                String parentBodyName = bodyName.substring(0, bodyName.length() - " X Ring".length());
-                StellarObjectDto parent = playerSession.getStellarObject(parentBodyName);
-                parent.setHasRings(true);
+                String parentBodyName = event.getBodyName().substring(0, event.getBodyName().length() - " X Ring".length());
+                LocationDto parent = playerSession.getStellarObject(findParentId(parentBodyName));
+                if(parent != null) parent.setHasRings(true);
                 if(event.getSignals() != null) {
-                    ring.setSaasSignals(event.getSignals());
+                    ring.setSaaSignals(event.getSignals());
                     ring.setGeoSignals(event.getSignals().size());
-                    parent.setSaasSignals(event.getSignals());
+                    if(parent != null) parent.setSaaSignals(event.getSignals());
                 }
                 playerSession.addStellarObject(ring);
-                playerSession.addStellarObject(parent);
+                if(parent != null) playerSession.addStellarObject(parent);
             }
 
             EventBusManager.publish(new SensorDataEvent(sb.toString()));
         } else {
             EventBusManager.publish(new SensorDataEvent("No Signal(s) detected."));
         }
+
+        playerSession.saveCurrentLocation(currentLocation);
+        playerSession.addStellarObject(currentLocation);
+    }
+
+    private long findParentId(String parentBodyName) {
+        Collection<LocationDto> values = playerSession.getStellarObjects().values();
+        for (LocationDto dto : values) {
+            if (dto.getPlanetName().equalsIgnoreCase(parentBodyName)) {
+                return dto.getBodyId();
+            }
+        }
+        return 0;
     }
 
     private boolean scanBioCompleted(SAASignalsFoundEvent event, PlayerSession playerSession) {

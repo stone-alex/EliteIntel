@@ -16,7 +16,7 @@ public class BioSampleTrackingSubscriber {
     @Subscribe
     public void onPlayerMovedEvent(PlayerMovedEvent event) {
         PlayerSession playerSession = PlayerSession.getInstance();
-        List<BioSampleDto> bioSamples = playerSession.getCurrentLocation().getBioScans();
+        List<BioSampleDto> bioSamples = playerSession.getCurrentLocation().getPartialBioSamples();
 
         // If no samples are being tracked, don't announce.
         if (bioSamples == null || bioSamples.isEmpty()) {
@@ -49,7 +49,7 @@ public class BioSampleTrackingSubscriber {
         }
 
         BioSampleDto bioSampleDto = bioSamples.getFirst();
-        playerSession.getCurrentLocation().setBioScans(temp);
+        playerSession.getCurrentLocation().setPartialBioSamples(temp);
 
         // Announce only on state transition
         if (wasFarEnough != isFarEnough) {

@@ -6,6 +6,7 @@ import elite.intel.util.json.ToJsonConvertible;
 public class BioSampleDto extends BaseJsonDto implements ToJsonConvertible {
 
     private String planetName;
+    private long  bodyId;
     private String genus;
     private double scanLatitude;
     private double scanLongitude;
@@ -18,6 +19,13 @@ public class BioSampleDto extends BaseJsonDto implements ToJsonConvertible {
     long payout;
     private String scanXof3;
 
+    public long getBodyId() {
+        return bodyId;
+    }
+
+    public void setBodyId(long bodyId) {
+        this.bodyId = bodyId;
+    }
 
     public String getGenus() {
         return genus;

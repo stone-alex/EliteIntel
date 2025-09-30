@@ -37,7 +37,7 @@ public class StartJumpSubscriber {
 
         //clear last location data
         if ("Hyperspace".equalsIgnoreCase(event.getJumpType())) {
-            playerSession.saveCurrentLocation(new LocationDto());
+            playerSession.saveCurrentLocation(new LocationDto(LocationDto.LocationType.STAR));
             playerSession.clearMiningTargets();
             playerSession.clearStellarObjectsAndSignals();
             playerSession.setLastScan(null);

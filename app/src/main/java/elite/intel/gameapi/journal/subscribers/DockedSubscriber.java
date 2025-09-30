@@ -9,6 +9,9 @@ import elite.intel.session.PlayerSession;
 
 import java.util.List;
 
+import static elite.intel.gameapi.journal.events.dto.LocationDto.LocationType.FLEET_CARRIER;
+import static elite.intel.gameapi.journal.events.dto.LocationDto.LocationType.STATION;
+
 public class DockedSubscriber {
 
     @Subscribe
@@ -21,6 +24,12 @@ public class DockedSubscriber {
         currentLocation.setStationServices(event.getStationServices());
         currentLocation.setStationType(event.getStationType());
         currentLocation.setStationGovernment(event.getStationGovernmentLocalised());
+        if("FleetCarrier".equalsIgnoreCase(event.getStationType())) {
+            currentLocation.setLocationType(FLEET_CARRIER);
+        } else {
+            currentLocation.setLocationType(STATION);
+        }
+
         if(event.getStationFaction()  != null) currentLocation.setStationFaction(event.getStationFaction().getName());
 
         StringBuilder sb = new StringBuilder();

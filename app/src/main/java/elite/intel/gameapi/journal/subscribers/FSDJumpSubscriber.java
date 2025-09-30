@@ -14,7 +14,6 @@ import elite.intel.gameapi.gamestate.events.NavRouteDto;
 import elite.intel.gameapi.journal.events.FSDJumpEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.gameapi.journal.events.dto.MaterialDto;
-import elite.intel.gameapi.journal.events.dto.StellarObjectDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.AdjustRoute;
 
@@ -24,7 +23,6 @@ import java.util.Map;
 
 import static elite.intel.util.GravityCalculator.calculateSurfaceGravity;
 import static elite.intel.util.StringUtls.isFuelStarClause;
-import static elite.intel.util.StringUtls.subtractString;
 
 @SuppressWarnings("unused")
 public class FSDJumpSubscriber {
@@ -37,9 +35,8 @@ public class FSDJumpSubscriber {
         LocationDto currentLocation = playerSession.getCurrentLocation();
         SystemBodiesDto systemBodiesDto = EdsmApiClient.searchSystemBodies(event.getStarSystem());
         processEdsmData(systemBodiesDto);
-        currentLocation.setGovernment(event.getSystemGovernmentLocalised());
+        currentLocation.setStationGovernment(event.getSystemGovernmentLocalised());
         currentLocation.setAllegiance(event.getSystemAllegiance());
-        currentLocation.setSecurity(event.getSystemSecurityLocalised());
         currentLocation.setSecurity(event.getSystemSecurityLocalised());
         currentLocation.setStarName(event.getStarSystem());
 
@@ -107,22 +104,37 @@ public class FSDJumpSubscriber {
 
         List<BodyData> bodies = systemBodiesDto.getData().getBodies();
         for(BodyData  data : bodies) {
-            StellarObjectDto stellarObject = playerSession.getStellarObject(data.getName());
+            LocationDto stellarObject = playerSession.getStellarObject(data.getId());
             stellarObject.setAtmosphere(data.getAtmosphereType());
             stellarObject.setBodyId(data.getBodyId());
             stellarObject.setHasRings(data.getRings() != null && !data.getRings().isEmpty());
-            stellarObject.setIsTerraformable("Terraformable".equalsIgnoreCase(data.getTerraformingState()));
+            stellarObject.setTerraformable("Terraformable".equalsIgnoreCase(data.getTerraformingState()));
             stellarObject.setLandable(data.isLandable());
             stellarObject.setMaterials(toMaterials(data.getMaterials()));
-            stellarObject.setName(data.getName());
+            stellarObject.setPlanetName(data.getName());
             stellarObject.setMassEM(data.getEarthMasses());
             stellarObject.setRadius(data.getRadius());
             Double surfaceGravity = calculateSurfaceGravity(data.getEarthMasses(), data.getRadius());
             stellarObject.setGravity(surfaceGravity == null ? 0 : surfaceGravity);
             stellarObject.setSurfaceTemperature(data.getSurfaceTemperature());
             stellarObject.setTidalLocked(data.isRotationalPeriodTidallyLocked());
+            stellarObject.setLocationType(determineType(data));
             playerSession.addStellarObject(stellarObject);
         }
+    }
+
+    private LocationDto.LocationType determineType(BodyData data) {
+        String type = data.getType().toLowerCase();
+        boolean primaryStar = data.getDistanceToArrival() == 0;
+        if(type.contains("star") && primaryStar) return LocationDto.LocationType.PRIMARY_STAR;
+        if(type.contains("star") && !primaryStar) return LocationDto.LocationType.STAR;
+        if (type.contains("body")) return LocationDto.LocationType.PLANET_OR_MOON;
+        if (type.contains("giant")) return LocationDto.LocationType.PLANET_OR_MOON;
+        if (type.contains("world")) return LocationDto.LocationType.PLANET_OR_MOON;
+        if (type.contains("rogueplanet")) return LocationDto.LocationType.PLANET_OR_MOON;
+        if (type.contains("black hole")) return LocationDto.LocationType.BLACK_HOLE;
+        if (type.contains("nebula")) return LocationDto.LocationType.NEBULA;
+        return null;
     }
 
     private List<MaterialDto> toMaterials(Map<String, Double> materials) {

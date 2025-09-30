@@ -49,8 +49,6 @@ public enum CustomCommands {
     OPEN_FSS("open_fss", null, null, OpenFssHandler.class),
     OPEN_FSS_AND_SCAN("open_fss_and_scan", null, null, DisplayFssAndScanHandler.class),
 
-    TOGGLE_LOW_FLIGHT("toggle_low_altitude_flight", "<laf_true_false", "laf", LowFlightOnOffHandler.class),
-
     NAVIGATE_TO_TARGET("navigate_to_coordinates", "<coordinates>", "lat_lon", NavigateToCoordinatesHandler.class),
     NAVIGATE_TO_NEXT_BIO_SAMPLE("navigate_bearing_direction_to_bio_sample", null, null, NavigateToNextBioSample.class),
     GET_HEADING_TO_LZ("navigate_bearing_direction_to_landing_zone", null, null, NavigateToLandingZone.class),

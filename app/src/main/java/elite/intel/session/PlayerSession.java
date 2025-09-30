@@ -59,7 +59,6 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     public static final String SHIP_SCANS = "shipScans";
     public static final String TARGET_FACTIONS = "targetFactions";
     public static final String CARRIER_LOCATION = "last_known_carrier_location";
-    public static final String LOW_ALTITUDE_FLIGHT = "low_altitude_flight";
     ///
     private static final String CURRENT_LOCATION = "current_location";
     private static final String LAST_SCAN = "last_scan";

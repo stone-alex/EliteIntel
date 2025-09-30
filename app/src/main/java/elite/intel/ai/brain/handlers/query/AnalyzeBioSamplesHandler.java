@@ -23,16 +23,16 @@ public class AnalyzeBioSamplesHandler extends BaseQueryAnalyzer implements Query
         List<BioSampleDto> partialScans = currentLocation.getBioScans();
         List<GenusDto> genus = currentLocation.getGenus();
         List<BioSampleDto> samplesCompletedForThisPlanet = completedScansForPlanet(playerSession);
-        List<BioSampleDto> allSamplesForThisStarSystem = playerSession.getBioSamples();
+        List<BioSampleDto> allBioSamplesForThisStarSystem = playerSession.getBioCompletedSamples();
 
-        return analyzeData(new DataDto(partialScans, genus, samplesCompletedForThisPlanet, allSamplesForThisStarSystem).toJson(), originalUserInput);
+        return analyzeData(new DataDto(partialScans, genus, samplesCompletedForThisPlanet, allBioSamplesForThisStarSystem).toJson(), originalUserInput);
     }
 
 
     record DataDto(List<BioSampleDto> partialScans,
                    List<GenusDto> allGenusOnPlanet,
                    List<BioSampleDto> samplesCompletedForThisPlanet,
-                   List<BioSampleDto> allSamplesForThisStarSystem
+                   List<BioSampleDto> allBioSamplesForThisStarSystem
     ) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);

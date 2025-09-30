@@ -5,14 +5,13 @@ import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.data.BioForms;
 import elite.intel.gameapi.journal.events.SAASignalsFoundEvent;
-import elite.intel.gameapi.journal.events.dto.GenusDto;
-import elite.intel.gameapi.journal.events.dto.LocationDto;
-import elite.intel.gameapi.journal.events.dto.MaterialDto;
-import elite.intel.gameapi.journal.events.dto.StellarObjectDto;
+import elite.intel.gameapi.journal.events.dto.*;
 import elite.intel.session.PlayerSession;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static elite.intel.util.StringUtls.subtractString;
 
 public class SAASignalsFoundSubscriber {
 
@@ -22,6 +21,18 @@ public class SAASignalsFoundSubscriber {
         PlayerSession playerSession = PlayerSession.getInstance();
 
         LocationDto currentLocation = playerSession.getCurrentLocation();
+
+        if (!currentLocation.getPlanetName().equalsIgnoreCase(event.getBodyName())) {
+            StellarObjectDto dto = playerSession.getStellarObject(event.getBodyName());
+            if (dto.getName().equalsIgnoreCase(event.getBodyName())) {
+                currentLocation.setPlanetName(dto.getName());
+                currentLocation.setGravity(dto.getSurfaceGravity());
+                currentLocation.setOurDiscovery(dto.isOurDiscovery());
+                currentLocation.setSurfaceTemperature(dto.getSurfaceTemperature());
+                currentLocation.setPlanetShortName(subtractString(dto.getName(), currentLocation.getStarName()));
+            }
+        }
+
         currentLocation.addSaaSignals(event.getSignals());
         playerSession.saveCurrentLocation(currentLocation);
 
@@ -44,7 +55,6 @@ public class SAASignalsFoundSubscriber {
             }
 
 
-
             if (liveSignals > 0) {
                 stellarObjectDto.setNumberOfBioFormsPresent(liveSignals);
                 stellarObjectDto.setGenus(toGenusDto(event.getGenuses()));
@@ -54,7 +64,9 @@ public class SAASignalsFoundSubscriber {
                 playerSession.saveCurrentLocation(currentLocation);
                 currentLocation.setBioFormsPresent(true);
 
-                sb.append(" Exobiology signal(s) found ").append(liveSignals).append(": ");
+                boolean hasBeenScanned = scanBioCompleted(event, playerSession);
+
+                if (!hasBeenScanned) sb.append(" Exobiology signal(s) found ").append(liveSignals).append(": ");
                 long averageProjectedPayment = 0;
                 for (SAASignalsFoundEvent.Genus genus : event.getGenuses()) {
                     averageProjectedPayment = averageProjectedPayment + BioForms.getAverageProjectedPayment(genus.getGenusLocalised());
@@ -62,7 +74,7 @@ public class SAASignalsFoundSubscriber {
                     sb.append(genus.getGenusLocalised());
                     sb.append(", ");
                 }
-                sb.append("Average projected payment: ").append(averageProjectedPayment).append(" credits. Plus bonus if first discovered.");
+                if (!hasBeenScanned) sb.append("Average projected payment: ").append(averageProjectedPayment).append(" credits. Plus bonus if first discovered.");
 
             } else if (bodyName.contains("Ring")) {
                 //Rings are bodies
@@ -87,6 +99,20 @@ public class SAASignalsFoundSubscriber {
         } else {
             EventBusManager.publish(new SensorDataEvent("No Signal(s) detected."));
         }
+    }
+
+    private boolean scanBioCompleted(SAASignalsFoundEvent event, PlayerSession playerSession) {
+        List<BioSampleDto> bioSamples = playerSession.getBioCompletedSamples();
+        for (SAASignalsFoundEvent.Genus genus : event.getGenuses()) {
+            for (BioSampleDto bioSampleDto : bioSamples) {
+                boolean matchingGenus = bioSampleDto.getGenus().equalsIgnoreCase(genus.getGenusLocalised());
+                boolean samePlanet = bioSampleDto.getPlanetName().equalsIgnoreCase(event.getBodyName());
+                if (matchingGenus && samePlanet) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private List<MaterialDto> toMaterials(List<SAASignalsFoundEvent.Signal> signals) {

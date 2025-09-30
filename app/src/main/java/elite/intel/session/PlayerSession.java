@@ -152,7 +152,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
 
         registerField("codex_entries", this::getCodexEntries, this::setCodexEntries, new TypeToken<List<CodexEntryEvent>>(){}.getType());
         registerField("markets", this::getMarkets, this::setMarkets, new TypeToken<List<StationMarket>>(){}.getType());
-        registerField(BIO_SAMPLES, this::getBioSamples, this::setBioSamples, new TypeToken<List<BioSampleDto>>(){}.getType() );
+        registerField(BIO_SAMPLES, this::getBioCompletedSamples, this::setBioSamples, new TypeToken<List<BioSampleDto>>(){}.getType() );
 
         registerField(CURRENT_LOCATION, this::getCurrentLocation, this::saveCurrentLocation, LocationDto.class);
         registerField(HOME_SYSTEM, this::getHomeSystem, this::setHomeSystem, LocationDto.class);
@@ -471,7 +471,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         markets.clear();
     }
 
-    public List<BioSampleDto> getBioSamples() {
+    public List<BioSampleDto> getBioCompletedSamples() {
         return bioSamples;
     }
 

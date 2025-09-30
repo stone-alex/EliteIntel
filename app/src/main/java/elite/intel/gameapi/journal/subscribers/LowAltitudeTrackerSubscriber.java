@@ -2,6 +2,8 @@ package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.brain.handlers.commands.custom.CustomCommandOperator;
+import elite.intel.gameapi.EventBusManager;
+import elite.intel.gameapi.VoiceProcessEvent;
 import elite.intel.gameapi.gamestate.events.PlayerMovedEvent;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.NavigationUtils;
@@ -11,6 +13,7 @@ import static elite.intel.ai.brain.handlers.commands.GameCommands.GameCommand.*;
 
 public class LowAltitudeTrackerSubscriber extends CustomCommandOperator {
 
+    private long lastAnnounceTime = 0;
 
     public LowAltitudeTrackerSubscriber() {
         super(getInstance().getGameCommandHandler().getMonitor(), getInstance().getGameCommandHandler().getExecutor());
@@ -20,18 +23,22 @@ public class LowAltitudeTrackerSubscriber extends CustomCommandOperator {
     public void onPlayerMoved(PlayerMovedEvent event) {
 
         boolean isOn = Boolean.valueOf(String.valueOf(PlayerSession.getInstance().get(PlayerSession.LOW_ALTITUDE_FLIGHT)));
-        if (!isOn) return;
 
-        if (event.getAltitude() < 20_000 && event.getAltitude() > 20) {
+        if (isOn && event.getAltitude() > 5 && event.getAltitude() < 250) {
             // low-altitude flight
-            lowAltitudeFlight(event);
+            lowAltitudeFlight(event, NavigationUtils.getDirections(0, 0, event));
+        } else if(event.getAltitude() > 5 && event.getAltitude() < 200 && NavigationUtils.getDirections(0, 0, event).getSpeed() > 150) {
+            long NOW = System.currentTimeMillis();
+            if(NOW - lastAnnounceTime > 5_000) {
+                EventBusManager.publish(new VoiceProcessEvent("Altitude!. Pull Up!"));
+                lastAnnounceTime = NOW;
+            }
         }
     }
 
-    private void lowAltitudeFlight(PlayerMovedEvent event) {
-        NavigationUtils.Direction navigator = NavigationUtils.getDirections(0, 0, event);
+    private void lowAltitudeFlight(PlayerMovedEvent event, NavigationUtils.Direction navigator) {
         double speed = navigator.getSpeed();
-        if (speed > 50 && event.getAltitude() > 5 && event.getAltitude() < 250) {
+        if (speed > 50) {
             String upThrust = UP_THRUST_BUTTON.getGameBinding();
             operateKeyboard(upThrust, 250);
 

@@ -133,6 +133,7 @@ public class ScanOrganicSubscriber {
 
 
     private BioSampleDto createBioSampleDto(String genus, String variant, int planetNumber, long starSystemNumber, long valueInCredits) {
+
         BioSampleDto bioSampleDto = new BioSampleDto();
         bioSampleDto.setPlanetName(playerSession.getCurrentLocation().getPlanetName());
         bioSampleDto.setScanLatitude(playerSession.getStatus().getLatitude());

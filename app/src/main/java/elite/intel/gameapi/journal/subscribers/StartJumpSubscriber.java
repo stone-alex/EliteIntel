@@ -31,7 +31,8 @@ public class StartJumpSubscriber {
 
         PlayerSession playerSession = PlayerSession.getInstance();
         playerSession.put(PlayerSession.JUMPING_TO, jumpingTo);
-
+        playerSession.put(PlayerSession.LOW_ALTITUDE_FLIGHT, false);
+        playerSession.saveSession();
 
 
         //clear last location data
@@ -43,6 +44,7 @@ public class StartJumpSubscriber {
             playerSession.setTracking(new TargetLocation());
             EventBusManager.publish(new SensorDataEvent(sb.toString()));
         }
+
 
     }
 

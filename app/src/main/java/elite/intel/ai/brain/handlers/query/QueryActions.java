@@ -3,7 +3,7 @@ package elite.intel.ai.brain.handlers.query;
 public enum QueryActions {
 
     ANALYZE_SCAN("query_analyze_last_scan", "Analyze the most recent scan data.", AnalyzeLastScanHandler.class, true),
-    QUERY_SEARCH_SIGNAL_DATA("query_planetary_moon_signals", "Analyze data from planets or moons in the star system, including materials and bio forms using gravity (G) and temperature (K) units.", AnalyzeSignalDataHandler.class, true),  // Clarify planetary/moon scope, avoid vehicle overlap
+    QUERY_SEARCH_SIGNAL_DATA("query_planetary_moon_signals", "Analyze data from planets or moons in the star system, including materials and bio signals using gravity (G) and temperature (K) units.", AnalyzeSignalDataHandler.class, true),  // Clarify planetary/moon scope, avoid vehicle overlap
     ANALYZE_CURRENT_PLANET("query_current_planetary_location", "Analyze data for the current planetary or station location.", AnalyzeCurrentLocationHandler.class, true),  // Emphasize planetary/station context
     ANALYZE_STAR_SYSTEM_EXPLORATION("query_star_system_exploration", "Analyze exploration data and profits for the current star system.", AnalyzeExplorationProfitsHandler.class, true),
     ANALYZE_BODY_MATERIALS("query_planetary_materials", "Analyze material composition on this planet.", AnalyzeMaterialsOnPlanetHandler.class, true),  // Specify planetary to avoid ship/cargo confusion

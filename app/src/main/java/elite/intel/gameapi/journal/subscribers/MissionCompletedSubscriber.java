@@ -51,7 +51,7 @@ public class MissionCompletedSubscriber {
         if (countRemainingMissionsAgainstFaction == 0) {
             playerSession.getTargetFactions().remove(targetFaction);
         }
-        playerSession.saveSession();
+        playerSession.save();
 
         EventBusManager.publish(new SensorDataEvent("Mission against Faction:\"" + targetFaction + "\" Completed: " + event.toString()));
     }

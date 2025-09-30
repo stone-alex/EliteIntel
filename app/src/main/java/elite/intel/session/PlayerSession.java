@@ -11,7 +11,6 @@ import elite.intel.gameapi.journal.events.dto.*;
 
 import java.util.*;
 
-
 /**
  * The PlayerSession class manages the game session data for a player.
  * It is implemented as a singleton to ensure consistent access across the application.
@@ -22,18 +21,13 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     private static final PlayerSession INSTANCE = new PlayerSession();
     private static final String SESSION_FILE = "player_session.json";
 
-    ///
-    public static final String CARRIER_DEPARTURE_TIME="carrier_departure_time";
+    // Existing constants
+    public static final String CARRIER_DEPARTURE_TIME = "carrier_departure_time";
     public static final String SUITE_LOADOUT_JSON = "suite_loadout_json";
     public static final String FINAL_DESTINATION = "final_destination";
-    public static final String FSD_TARGET = "fsd_target";
     public static final String MISSIONS = "player_missions";
     public static final String PROFILE = "profile";
     public static final String PERSONALITY = "personality";
-    public static final String JUMPING_TO = "jumping_to_starsystem";
-    public static final String LOCAL_MARKET_JSON = "local_market_json";
-    public static final String LOCAL_OUTFITING_JSON = "local_outfiting_json";
-    public static final String LOCAL_SHIP_YARD_JSON = "local_shipyard_json";
     public static final String SHIP_FUEL_LEVEL = "ship_fuel_level";
     public static final String INSURANCE_CLAIMS = "insurance_claims";
     public static final String SHIPS_OWNED = "ships_owned";
@@ -60,7 +54,6 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     public static final String SHIP_SCANS = "shipScans";
     public static final String TARGET_FACTIONS = "targetFactions";
     public static final String CARRIER_LOCATION = "last_known_carrier_location";
-    ///
     private static final String CURRENT_LOCATION = "current_location";
     private static final String LAST_SCAN = "last_scan";
     private static final String REPUTATION = "reputation";
@@ -80,9 +73,11 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     public static final String BOUNTY_COLLECTED_THIS_SESSION = "bountyCollectedThisSession";
     public static final String RANK_AND_PROGRESS_DTO = "rankAndProgressDto";
     public static final String MARKETS = "markets";
+    public static final String FSD_TARGET = "fsd_target";
+    public static final String LOW_ALTITUDE_FLIGHT = "low_altitude_flight";
+    public static final String JUMPING_TO_STARSYSTEM = "jumping_to_starsystem";
 
-    ///
-    private final Map<String, Object> state = new HashMap<>();
+    // Existing fields
     private final Map<String, String> shipScans = new HashMap<>();
     private final Map<Long, MissionDto> missions = new LinkedHashMap<>();
     private final Map<Long, LocationDto> locations = new HashMap<>();
@@ -94,22 +89,53 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     private long bountyCollectedThisSession = 0;
     private RankAndProgressDto rankAndProgressDto = new RankAndProgressDto();
     private LocationDto homeSystem = new LocationDto();
-    private long lastScan = -1;
+    private long lastScanId = -1;
     private CarrierDataDto carrierData = new CarrierDataDto();
     private List<BioSampleDto> bioSamples = new ArrayList<>();
     private LoadoutEvent loadout;
     private GameEvents.StatusEvent gameStatus;
     private GameEvents.CargoEvent shipCargo;
     private ReputationEvent reputation;
-    private TargetLocation tracking  = new TargetLocation();
+    private TargetLocation tracking = new TargetLocation();
     private Long currentLocationId = -1L;
 
+    // New fields for state replacement
+    private long totalHyperspaceDistance = 0;
+    private int insuranceClaims = 0;
+    private long totalProfitsFromExploration = 0;
+    private long exobiologyProfits = 0;
+    private long highestSingleTransaction = 0;
+    private String finalDestination = "";
+    private long marketProfits = 0;
+    private boolean lowAltitudeFlight = false;
+    private String currentShip = "";
+    private long totalBountyProfit = 0;
+    private String playerMissionStatement = "";
+    private long crewWagsPayout = 0;
+    private String playerTitle = "";
+    private String currentShipName = "";
+    private long personalCreditsAvailable = 0;
+    private int shipsOwned = 0;
+    private String playerName = "";
+    private String lastKnownCarrierLocation = "";
+    private double shipFuelLevel = 0;
+    private Map<String, String> friendsStatus = new HashMap<>();
+    private String carrierDepartureTime = "";
+    private String jumpingToStarSystem = "";
+    private String playerHighestMilitaryRank = "";
+    private int speciesFirstLogged = 0;
+    private int shipCargoCapacity = 0;
+    private int totalSystemsVisited = 0;
+    private int totalBountyClaimed = 0;
+    private int goodsSoldThisSession = 0;
+    private double totalDistanceTraveled = 0.0;
+    private String fsdTarget;
+    private Boolean isRadioTransmissionOn;
 
     private PlayerSession() {
         super(SESSION_DIR);
         ensureFileAndDirectoryExist(SESSION_FILE);
         loadSavedStateFromDisk();
-        state.put(FRIENDS_STATUS, new HashMap<String, String>());
         registerField(SHIP_SCANS, this::getShipScans, v -> {
             shipScans.clear();
             shipScans.putAll((Map<String, String>) v);
@@ -123,69 +149,96 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         registerField(ROUTE_MAP, this::getRoute, v -> {
             routeMap.clear();
             routeMap.putAll((Map<Integer, NavRouteDto>) v);
-        }, new TypeToken<Map<String, NavRouteDto>>() {
+        }, new TypeToken<Map<Integer, NavRouteDto>>() {
         }.getType());
-
         registerField(TARGET_FACTIONS, this::getTargetFactions, v -> {
             targetFactions.clear();
             targetFactions.addAll((Set<String>) v);
         }, new TypeToken<Set<String>>() {
         }.getType());
-
         registerField(BOUNTIES, this::getBounties, v -> {
             bounties.clear();
             bounties.addAll((Set<BountyDto>) v);
         }, new TypeToken<Set<BountyDto>>() {
         }.getType());
-
         registerField(STELLAR_OBJECTS, this::getLocations, v -> {
             locations.clear();
             locations.putAll((Map<Long, LocationDto>) v);
-        }, new TypeToken<Map<String, LocationDto>>() {
+        }, new TypeToken<Map<Long, LocationDto>>() {
         }.getType());
-
         registerField(MINING_TARGETS, this::getMiningTargets, v -> {
             miningTargets.clear();
             miningTargets.addAll((Set<String>) v);
         }, new TypeToken<Set<String>>() {}.getType());
-
-        registerField(MARKETS, this::getMarkets, this::setMarkets, new TypeToken<List<StationMarket>>(){}.getType());
-        registerField(BIO_SAMPLES, this::getBioCompletedSamples, this::setBioSamples, new TypeToken<List<BioSampleDto>>(){}.getType() );
-
+        registerField(MARKETS, this::getMarkets, this::setMarkets, new TypeToken<List<StationMarket>>() {}.getType());
+        registerField(BIO_SAMPLES, this::getBioCompletedSamples, this::setBioSamples, new TypeToken<List<BioSampleDto>>() {}.getType());
         registerField(HOME_SYSTEM, this::getHomeSystem, this::setHomeSystem, LocationDto.class);
-        registerField(SHIP_LOADOUT, this::getShipLoadout, this::setShipLoadout, new TypeToken<LoadoutEvent>(){}.getType() );
+        registerField(SHIP_LOADOUT, this::getShipLoadout, this::setShipLoadout, new TypeToken<LoadoutEvent>() {}.getType());
         registerField(STATUS, this::getStatus, this::setStatus, GameEvents.StatusEvent.class);
         registerField(SHIP_CARGO, this::getShipCargo, this::setShipCargo, GameEvents.CargoEvent.class);
         registerField(REPUTATION, this::getReputation, this::setReputation, ReputationEvent.class);
         registerField(TRACKING, this::getTracking, this::setTracking, TargetLocation.class);
         registerField(CURRENT_LOCATION, this::getCurrentLocationId, this::setCurrentLocationId, Long.class);
-
         registerField(BOUNTY_COLLECTED_THIS_SESSION, this::getBountyCollectedThisSession, this::setBountyCollectedThisSession, Long.class);
         registerField(RANK_AND_PROGRESS_DTO, this::getRankAndProgressDto, this::setRankAndProgressDto, RankAndProgressDto.class);
         registerField(CARRIER_STATS, this::getCarrierData, this::setCarrierData, CarrierDataDto.class);
+
+        // New field registrations
+        registerField(TOTAL_HYPERSPACE_DISTANCE, this::getTotalHyperspaceDistance, this::setTotalHyperspaceDistance, Long.class);
+        registerField(INSURANCE_CLAIMS, this::getInsuranceClaims, this::setInsuranceClaims, Integer.class);
+        registerField(TOTAL_PROFITS_FROM_EXPLORATION, this::getTotalProfitsFromExploration, this::setTotalProfitsFromExploration, Long.class);
+        registerField(EXOBIOLOGY_PROFITS, this::getExobiologyProfits, this::setExobiologyProfits, Long.class);
+        registerField(HIGHEST_SINGLE_TRANSACTION, this::getHighestSingleTransaction, this::setHighestSingleTransaction, Long.class);
+        registerField(FINAL_DESTINATION, this::getFinalDestination, this::setFinalDestination, String.class);
+        registerField(MARKET_PROFITS, this::getMarketProfits, this::setMarketProfits, Long.class);
+        registerField(LOW_ALTITUDE_FLIGHT, this::isLowAltitudeFlight, this::setLowAltitudeFlight, Boolean.class);
+        registerField(CURRENT_SHIP, this::getCurrentShip, this::setCurrentShip, String.class);
+        registerField(TOTAL_BOUNTY_PROFIT, this::getTotalBountyProfit, this::setTotalBountyProfit, Long.class);
+        registerField(PLAYER_MISSION_STATEMENT, this::getPlayerMissionStatement, this::setPlayerMissionStatement, String.class);
+        registerField(CREW_WAGS_PAYOUT, this::getCrewWagsPayout, this::setCrewWagsPayout, Long.class);
+        registerField(PLAYER_CUSTOM_TITLE, this::getPlayerTitle, this::setPlayerTitle, String.class);
+        registerField(CURRENT_SHIP_NAME, this::getCurrentShipName, this::setCurrentShipName, String.class);
+        registerField(PERSONAL_CREDITS_AVAILABLE, this::getPersonalCreditsAvailable, this::setPersonalCreditsAvailable, Long.class);
+        registerField(SHIPS_OWNED, this::getShipsOwned, this::setShipsOwned, Integer.class);
+        registerField(PLAYER_NAME, this::getPlayerName, this::setPlayerName, String.class);
+        registerField(CARRIER_LOCATION, this::getLastKnownCarrierLocation, this::setLastKnownCarrierLocation, String.class);
+        registerField(SHIP_FUEL_LEVEL, this::getShipFuelLevel, this::setShipFuelLevel, Double.class);
+        registerField(FRIENDS_STATUS, this::getFriendsStatus, v -> {
+            friendsStatus.clear();
+            friendsStatus.putAll((Map<String, String>) v);
+        }, new TypeToken<Map<String, String>>() {}.getType());
+        registerField(CARRIER_DEPARTURE_TIME, this::getCarrierDepartureTime, this::setCarrierDepartureTime, String.class);
+        registerField(JUMPING_TO_STARSYSTEM, this::getJumpingToStarSystem, this::setJumpingToStarSystem, String.class);
+        registerField(PLAYER_HIGHEST_MILITARY_RANK, this::getPlayerHighestMilitaryRank, this::setPlayerHighestMilitaryRank, String.class);
+        registerField(SPECIES_FIRST_LOGGED, this::getSpeciesFirstLogged, this::setSpeciesFirstLogged, Integer.class);
+        registerField(SHIP_CARGO_CAPACITY, this::getShipCargoCapacity, this::setShipCargoCapacity, Integer.class);
+        registerField(TOTAL_SYSTEMS_VISITED, this::getTotalSystemsVisited, this::setTotalSystemsVisited, Integer.class);
+        registerField(TOTAL_BOUNTY_CLAIMED, this::getTotalBountyClaimed, this::setTotalBountyClaimed, Integer.class);
+        registerField(GOODS_SOLD_THIS_SESSION, this::getGoodsSoldThisSession, this::setGoodsSoldThisSession, Integer.class);
+        registerField(TOTAL_DISTANCE_TRAVELED, this::getTotalDistanceTraveled, this::setTotalDistanceTraveled, Double.class);
+        registerField(FSD_TARGET, this::getFsdTarget, this::setFsdTarget, String.class);
+        registerField("radio_on_off", this::isRadioTransmissionOn, this::setRadioTransmissionOn, Boolean.class);
+
+
         EventBusManager.register(this);
         addShutdownHook();
     }
 
     private void addShutdownHook() {
-        Runtime.getRuntime().addShutdownHook(new Thread(this::saveSession));
+        Runtime.getRuntime().addShutdownHook(new Thread(this::save));
     }
 
     public static PlayerSession getInstance() {
         return INSTANCE;
     }
 
-    public void saveSession() {
-        saveSession(state);
-    }
-
     private void loadSavedStateFromDisk() {
-        loadSession(json -> loadFields(json, state));
+        loadSession(PlayerSession.this::loadFields);
     }
 
     public void putShipScan(String shipName, String scan) {
         shipScans.put(shipName, scan);
-        saveSession();
+        save();
     }
 
     public String getShipScan(String shipName) {
@@ -196,27 +249,14 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         return shipScans;
     }
 
-    public void put(String key, Object data) {
-        state.put(key, data);
-        saveSession();
-    }
-
-    public Object get(String key) {
-        return state.get(key);
-    }
-
-    public void remove(String key) {
-        state.remove(key);
-        saveSession();
-    }
-
     public void addBountyReward(long totalReward) {
         bountyCollectedThisSession += totalReward;
-        saveSession();
+        save();
     }
+
     public void addBounty(BountyDto bounty) {
         bounties.add(bounty);
-        saveSession();
+        save();
     }
 
     public void removeBounty(BountyDto bounty) {
@@ -233,7 +273,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
 
     public void addMission(MissionDto mission) {
         missions.put(mission.getMissionId(), mission);
-        saveSession();
+        save();
     }
 
     public Map<Long, MissionDto> getMissions() {
@@ -242,7 +282,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
 
     public void removeMission(Long missionId) {
         missions.remove(missionId);
-        saveSession();
+        save();
     }
 
     public MissionDto getMission(Long missionId) {
@@ -251,25 +291,24 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
 
     public void clearMissions() {
         missions.clear();
-        saveSession();
+        save();
     }
-
 
     public void setNavRoute(Map<Integer, NavRouteDto> routeMap) {
         this.routeMap.clear();
-        saveSession();
+        save();
         this.routeMap.putAll(routeMap);
-        saveSession();
+        save();
     }
 
-
-    //for persistence
     private Map<Integer, NavRouteDto> getRoute() {
         return routeMap;
     }
 
     public List<NavRouteDto> getOrderedRoute() {
-        if(routeMap.isEmpty()) {return new ArrayList<>();}
+        if (routeMap.isEmpty()) {
+            return new ArrayList<>();
+        }
         List<NavRouteDto> orderedRoute = new ArrayList<>(routeMap.values());
         orderedRoute.sort(Comparator.comparingInt(NavRouteDto::getLeg));
         return orderedRoute;
@@ -277,7 +316,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
 
     public void clearRoute() {
         routeMap.clear();
-        saveSession();
+        save();
     }
 
     public RankAndProgressDto getRankAndProgressDto() {
@@ -286,20 +325,19 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
 
     public void setRankAndProgressDto(RankAndProgressDto rankAndProgressDto) {
         this.rankAndProgressDto = rankAndProgressDto;
-        saveSession();
+        save();
     }
 
     public void clearShipScans() {
         shipScans.clear();
-        saveSession();
+        save();
     }
 
     public void clearOnShutDown() {
         shipScans.clear();
         markets.clear();
-        saveSession();
+        save();
     }
-
 
     public void setCarrierStats(CarrierStatsEvent event) {
         CarrierStatsEvent.Finance finance = event.getFinance();
@@ -335,7 +373,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
             carrierData.setRefuelSupplyTax(finance.getTaxRate_refuel());
             setCarrierData(carrierData);
         }
-        saveSession();
+        save();
     }
 
     @Subscribe
@@ -350,7 +388,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
 
     public void onBounty(BountyDto data) {
         bounties.add(data);
-        saveSession();
+        save();
     }
 
     public Set<BountyDto> getBounties() {
@@ -360,20 +398,19 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     @Subscribe
     public void onMissionAccepted(MissionAcceptedEvent event) {
         addMission(new MissionDto(event));
-        saveSession();
+        save();
     }
 
     @Subscribe
     public void onMissionCompleted(MissionCompletedEvent event) {
         removeMission(event.getMissionID());
         if (missions.isEmpty()) targetFactions.clear();
-        saveSession();
+        save();
     }
-
 
     public void addTargetFaction(String faction) {
         targetFactions.add(faction);
-        saveSession();
+        save();
     }
 
     public Set<String> getTargetFactions() {
@@ -385,12 +422,12 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
 
     public void addLocation(LocationDto object) {
         locations.put(object.getBodyId(), object);
-        saveSession();
+        save();
     }
 
     public void setLocations(Map<Long, LocationDto> locations) {
         this.locations.putAll(locations);
-        saveSession();
+        save();
     }
 
     public Map<Long, LocationDto> getLocations() {
@@ -401,24 +438,22 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         return locations.get(id) == null ? new LocationDto(id) : locations.get(id);
     }
 
-
     @Subscribe
     public void onStartJumpEvent(StartJumpEvent event) {
         if ("Hyperspace".equalsIgnoreCase(event.getJumpType())) {
             LocationHistory.getInstance(getCurrentLocation().getStarName()).addLocations(getLocations());
             saveCurrentLocation(new LocationDto(LocationDto.LocationType.PRIMARY_STAR));
             locations.clear();
-            saveSession();
+            save();
         }
     }
 
-
     public void clearBounties() {
         bountyCollectedThisSession = 0;
-        state.remove(TOTAL_BOUNTY_PROFIT);
-        state.remove(TOTAL_BOUNTY_CLAIMED);
+        setTotalBountyProfit(0);
+        setTotalBountyClaimed(0);
         bounties.clear();
-        saveSession();
+        save();
     }
 
     public LocationDto getCurrentLocation() {
@@ -428,7 +463,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     public void saveCurrentLocation(LocationDto location) {
         addLocation(location);
         setCurrentLocationId(location.getBodyId());
-        saveSession();
+        save();
     }
 
     private void setCurrentLocationId(long id) {
@@ -440,12 +475,12 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     }
 
     public CarrierDataDto getCarrierData() {
-        return carrierData == null ? new CarrierDataDto(): carrierData;
+        return carrierData == null ? new CarrierDataDto() : carrierData;
     }
 
     public void setCarrierData(CarrierDataDto carrierData) {
         this.carrierData = carrierData;
-        saveSession();
+        save();
     }
 
     public Set<String> getMiningTargets() {
@@ -453,19 +488,19 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     }
 
     public void addMiningTarget(String miningTarget) {
-        if( miningTarget == null || miningTarget.isEmpty()) return;
+        if (miningTarget == null || miningTarget.isEmpty()) return;
         miningTargets.add(miningTarget.toLowerCase());
-        saveSession();
+        save();
     }
 
     public void clearMiningTargets() {
         miningTargets.clear();
-        saveSession();
+        save();
     }
 
     public void setHomeSystem(LocationDto currentLocation) {
         homeSystem = currentLocation;
-        saveSession();
+        save();
     }
 
     public LocationDto getHomeSystem() {
@@ -490,35 +525,35 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
 
     public void setBioSamples(List<BioSampleDto> bioSamples) {
         this.bioSamples = bioSamples;
-        saveSession();
+        save();
     }
 
     public void addBioSample(BioSampleDto bioSampleDto) {
         this.bioSamples.add(bioSampleDto);
-        saveSession();
+        save();
     }
 
     public void clearBioSamples() {
         this.bioSamples.clear();
-        saveSession();
+        save();
     }
 
     public void setShipLoadout(LoadoutEvent event) {
-        this.loadout=event;
-        saveSession();
+        this.loadout = event;
+        save();
     }
 
     public LoadoutEvent getShipLoadout() {
         return loadout;
     }
 
-    public GameEvents.StatusEvent getStatus(){
+    public GameEvents.StatusEvent getStatus() {
         return this.gameStatus;
     }
 
-    public void setStatus(GameEvents.StatusEvent event){
-        this.gameStatus =event;
-        saveSession();
+    public void setStatus(GameEvents.StatusEvent event) {
+        this.gameStatus = event;
+        save();
     }
 
     public void clearCash() {
@@ -535,34 +570,34 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         this.shipScans.clear();
         this.locations.clear();
         this.targetFactions.clear();
-        this.saveSession();
+        this.save();
     }
 
     public void setShipCargo(GameEvents.CargoEvent event) {
         this.shipCargo = event;
-        saveSession();
+        save();
     }
 
-    public GameEvents.CargoEvent getShipCargo(){
+    public GameEvents.CargoEvent getShipCargo() {
         return this.shipCargo;
     }
 
     public void setReputation(ReputationEvent event) {
         this.reputation = event;
-        saveSession();
+        save();
     }
 
-    public ReputationEvent getReputation(){
+    public ReputationEvent getReputation() {
         return this.reputation;
     }
 
     public void setLastScan(LocationDto lastScan) {
-        put(LAST_SCAN, lastScan.getBodyId());
-        saveSession();
+        this.lastScanId= lastScan.getBodyId();
+        save();
     }
 
     public LocationDto getLastScan() {
-        return getLocation( (Long) get(LAST_SCAN));
+        return getLocation(lastScanId);
     }
 
     public TargetLocation getTracking() {
@@ -571,6 +606,286 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
 
     public void setTracking(TargetLocation tracking) {
         this.tracking = tracking;
-        saveSession();
+        save();
+    }
+
+    // New getters and setters
+    public long getTotalHyperspaceDistance() {
+        return totalHyperspaceDistance;
+    }
+
+    public void setTotalHyperspaceDistance(long totalHyperspaceDistance) {
+        this.totalHyperspaceDistance = totalHyperspaceDistance;
+        save();
+    }
+
+    public int getInsuranceClaims() {
+        return insuranceClaims;
+    }
+
+    public void setInsuranceClaims(int insuranceClaims) {
+        this.insuranceClaims = insuranceClaims;
+        save();
+    }
+
+    public long getTotalProfitsFromExploration() {
+        return totalProfitsFromExploration;
+    }
+
+    public void setTotalProfitsFromExploration(long totalProfitsFromExploration) {
+        this.totalProfitsFromExploration = totalProfitsFromExploration;
+        save();
+    }
+
+    public long getExobiologyProfits() {
+        return exobiologyProfits;
+    }
+
+    public void setExobiologyProfits(long exobiologyProfits) {
+        this.exobiologyProfits = exobiologyProfits;
+        save();
+    }
+
+    public long getHighestSingleTransaction() {
+        return highestSingleTransaction;
+    }
+
+    public void setHighestSingleTransaction(long highestSingleTransaction) {
+        this.highestSingleTransaction = highestSingleTransaction;
+        save();
+    }
+
+    public String getFinalDestination() {
+        return finalDestination;
+    }
+
+    public void setFinalDestination(String finalDestination) {
+        this.finalDestination = finalDestination;
+        save();
+    }
+
+    public long getMarketProfits() {
+        return marketProfits;
+    }
+
+    public void setMarketProfits(long marketProfits) {
+        this.marketProfits = marketProfits;
+        save();
+    }
+
+    public boolean isLowAltitudeFlight() {
+        return lowAltitudeFlight;
+    }
+
+    public void setLowAltitudeFlight(boolean lowAltitudeFlight) {
+        this.lowAltitudeFlight = lowAltitudeFlight;
+        save();
+    }
+
+    public String getCurrentShip() {
+        return currentShip;
+    }
+
+    public void setCurrentShip(String currentShip) {
+        this.currentShip = currentShip;
+        save();
+    }
+
+    public long getTotalBountyProfit() {
+        return totalBountyProfit;
+    }
+
+    public void setTotalBountyProfit(long totalBountyProfit) {
+        this.totalBountyProfit = totalBountyProfit;
+        save();
+    }
+
+    public String getPlayerMissionStatement() {
+        return playerMissionStatement;
+    }
+
+    public void setPlayerMissionStatement(String playerMissionStatement) {
+        this.playerMissionStatement = playerMissionStatement;
+        save();
+    }
+
+    public long getCrewWagsPayout() {
+        return crewWagsPayout;
+    }
+
+    public void setCrewWagsPayout(long crewWagsPayout) {
+        this.crewWagsPayout = crewWagsPayout;
+        save();
+    }
+
+    public String getPlayerTitle() {
+        return playerTitle;
+    }
+
+    public void setPlayerTitle(String playerTitle) {
+        this.playerTitle = playerTitle;
+        save();
+    }
+
+    public String getCurrentShipName() {
+        return currentShipName;
+    }
+
+    public void setCurrentShipName(String currentShipName) {
+        this.currentShipName = currentShipName;
+        save();
+    }
+
+    public long getPersonalCreditsAvailable() {
+        return personalCreditsAvailable;
+    }
+
+    public void setPersonalCreditsAvailable(long personalCreditsAvailable) {
+        this.personalCreditsAvailable = personalCreditsAvailable;
+        save();
+    }
+
+    public int getShipsOwned() {
+        return shipsOwned;
+    }
+
+    public void setShipsOwned(int shipsOwned) {
+        this.shipsOwned = shipsOwned;
+        save();
+    }
+
+    public String getPlayerName() {
+        return playerName;
+    }
+
+    public void setPlayerName(String playerName) {
+        this.playerName = playerName;
+        save();
+    }
+
+    public String getLastKnownCarrierLocation() {
+        return lastKnownCarrierLocation;
+    }
+
+    public void setLastKnownCarrierLocation(String lastKnownCarrierLocation) {
+        this.lastKnownCarrierLocation = lastKnownCarrierLocation;
+        save();
+    }
+
+    public double getShipFuelLevel() {
+        return shipFuelLevel;
+    }
+
+    public void setShipFuelLevel(double shipFuelLevel) {
+        this.shipFuelLevel = shipFuelLevel;
+        save();
+    }
+
+    public Map<String, String> getFriendsStatus() {
+        return friendsStatus;
+    }
+
+    public void setFriendsStatus(Map<String, String> friendsStatus) {
+        this.friendsStatus.clear();
+        this.friendsStatus.putAll(friendsStatus);
+        save();
+    }
+
+    public String getCarrierDepartureTime() {
+        return carrierDepartureTime;
+    }
+
+    public void setCarrierDepartureTime(String carrierDepartureTime) {
+        this.carrierDepartureTime = carrierDepartureTime;
+        save();
+    }
+
+    public String getJumpingToStarSystem() {
+        return jumpingToStarSystem;
+    }
+
+    public void setJumpingToStarSystem(String jumpingToStarSystem) {
+        this.jumpingToStarSystem = jumpingToStarSystem;
+        save();
+    }
+
+    public String getPlayerHighestMilitaryRank() {
+        return playerHighestMilitaryRank;
+    }
+
+    public void setPlayerHighestMilitaryRank(String playerHighestMilitaryRank) {
+        this.playerHighestMilitaryRank = playerHighestMilitaryRank;
+        save();
+    }
+
+    public int getSpeciesFirstLogged() {
+        return speciesFirstLogged;
+    }
+
+    public void setSpeciesFirstLogged(int speciesFirstLogged) {
+        this.speciesFirstLogged = speciesFirstLogged;
+        save();
+    }
+
+    public int getShipCargoCapacity() {
+        return shipCargoCapacity;
+    }
+
+    public void setShipCargoCapacity(int shipCargoCapacity) {
+        this.shipCargoCapacity = shipCargoCapacity;
+        save();
+    }
+
+    public int getTotalSystemsVisited() {
+        return totalSystemsVisited;
+    }
+
+    public void setTotalSystemsVisited(int totalSystemsVisited) {
+        this.totalSystemsVisited = totalSystemsVisited;
+        save();
+    }
+
+    public int getTotalBountyClaimed() {
+        return totalBountyClaimed;
+    }
+
+    public void setTotalBountyClaimed(int totalBountyClaimed) {
+        this.totalBountyClaimed = totalBountyClaimed;
+        save();
+    }
+
+    public int getGoodsSoldThisSession() {
+        return goodsSoldThisSession;
+    }
+
+    public void setGoodsSoldThisSession(int goodsSoldThisSession) {
+        this.goodsSoldThisSession = goodsSoldThisSession;
+        save();
+    }
+
+    public double getTotalDistanceTraveled() {
+        return totalDistanceTraveled;
+    }
+
+    public void setTotalDistanceTraveled(double totalDistanceTraveled) {
+        this.totalDistanceTraveled = totalDistanceTraveled;
+        save();
+    }
+
+    public void setFsdTarget(String json) {
+        this.fsdTarget = json;
+        save();
+    }
+
+    public String getFsdTarget() {
+        return fsdTarget;
+    }
+
+    public Boolean isRadioTransmissionOn() {
+        return this.isRadioTransmissionOn;
+    }
+    public void setRadioTransmissionOn(Boolean radioTransmissionOn) {
+        this.isRadioTransmissionOn = radioTransmissionOn;
+        save();
     }
 }

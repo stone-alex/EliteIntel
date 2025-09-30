@@ -29,7 +29,7 @@ public class GenericResponse {
 
     public JsonObject genericResponse(String text) {
         PlayerSession session = PlayerSession.getInstance();
-        String playerName = String.valueOf(session.get(PlayerSession.PLAYER_NAME));
+        String playerName = session.getPlayerName();
 
         JsonObject response = new JsonObject();
         response.addProperty(AIConstants.PROPERTY_RESPONSE_TEXT, text + " " + ("null".equalsIgnoreCase(playerName) ? "Commander" : playerName));

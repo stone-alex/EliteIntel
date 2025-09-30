@@ -1,7 +1,6 @@
 package elite.intel.gameapi.journal.events.dto;
 
-import elite.intel.ai.search.edsm.dto.DeathsDto;
-import elite.intel.ai.search.edsm.dto.TrafficDto;
+import elite.intel.ai.search.edsm.dto.*;
 import elite.intel.ai.search.edsm.dto.data.BodyData;
 import elite.intel.gameapi.journal.events.CodexEntryEvent;
 import elite.intel.gameapi.journal.events.FSSBodySignalsEvent;
@@ -58,9 +57,36 @@ public class LocationDto implements ToJsonConvertible {
     private boolean ourDiscovery = false;
 
     private BioStatus bioStatus = BioStatus.SCAN_REQUIRED;
+    private MarketDto market;
+    private OutfittingDto outfitting;
+    private ShipyardDto shipyard;
 
     public LocationDto(long id) {
         setBodyId(id);
+    }
+
+    public void setMarket(MarketDto marketDto) {
+        this.market = marketDto;
+    }
+
+    public MarketDto getMarket() {
+        return market;
+    }
+
+    public void setOutfitting(OutfittingDto outfittingDto) {
+        this.outfitting = outfittingDto;
+    }
+
+    public OutfittingDto getOutfitting() {
+        return outfitting;
+    }
+
+    public void setShipyard(ShipyardDto shipyardDto) {
+        this.shipyard= shipyardDto;
+    }
+
+    public ShipyardDto getShipyard() {
+        return shipyard;
     }
 
     public enum BioStatus {

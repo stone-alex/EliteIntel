@@ -103,16 +103,7 @@ class SessionPersistence {
     }
 
 
-    protected void saveSession(Map<String, Object> stateMap) {
-        try {
-            saveQueue.put(new SaveOperation(stateMap));
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            log.warn("Interrupted while queueing save operation");
-        }
-    }
-
-    protected void save() {
+    public void save() {
         try {
             saveQueue.put(new SaveOperation(new HashMap<>()));
         } catch (InterruptedException e) {
@@ -235,7 +226,8 @@ class SessionPersistence {
         }
     }
 
-    protected void loadFields(JsonObject json, Map<String, Object> stateMap) {
+    protected void loadFields(JsonObject json) {
+/*
         if (json.has("state")) {
             JsonObject stateJson = json.getAsJsonObject("state");
             for (Map.Entry<String, JsonElement> entry : stateJson.entrySet()) {
@@ -244,6 +236,7 @@ class SessionPersistence {
                 stateMap.put(entry.getKey(), value);
             }
         }
+*/
 
         for (Map.Entry<String, FieldHandler<?>> entry : fields.entrySet()) {
             String name = entry.getKey();

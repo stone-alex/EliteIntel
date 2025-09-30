@@ -5,6 +5,7 @@ import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.VoiceProcessEvent;
 import elite.intel.gameapi.journal.events.ReceiveTextEvent;
+import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 
 import java.util.HashSet;
@@ -15,8 +16,10 @@ public class TransmissionReceivedSubscriber {
 
     @Subscribe
     public void onReceiveTextEvent(ReceiveTextEvent event) {
-        Object radioOnOffObject = SystemSession.getInstance().get(SystemSession.RADION_TRANSMISSION_ON_OFF);
-        boolean isRadioOn = radioOnOffObject != null && (boolean) radioOnOffObject;
+        PlayerSession playerSession = PlayerSession.getInstance();
+        Boolean isRadioOn = playerSession.isRadioTransmissionOn();
+
+
         if (!isRadioOn) return;
 
         if (isPirateMessage(event.getMessageLocalised())) {
@@ -29,8 +32,6 @@ public class TransmissionReceivedSubscriber {
 
             if (event.getFrom().toLowerCase().contains("cruise")) return;
             if (event.getFrom().toLowerCase().contains("military")) return;
-
-            SystemSession systemSession = SystemSession.getInstance();
 
             if (isStation) {
                 if (!event.getMessageLocalised().toLowerCase().contains("fire zone")) {

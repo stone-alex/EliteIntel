@@ -20,7 +20,7 @@ public class PlotRouteToMyFleetCarrier extends CustomCommandOperator implements 
         PlayerSession playerSession = PlayerSession.getInstance();
 
 
-        String carrierLocation = String.valueOf(playerSession.get(PlayerSession.CARRIER_LOCATION));
+        String carrierLocation = playerSession.getLastKnownCarrierLocation();
         if(carrierLocation != null && !carrierLocation.isEmpty()) {
             RoutePlotter plotter = new RoutePlotter(this.commandHandler);
             plotter.plotRoute(carrierLocation);

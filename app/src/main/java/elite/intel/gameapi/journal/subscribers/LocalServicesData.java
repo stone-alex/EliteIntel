@@ -4,6 +4,7 @@ import elite.intel.ai.search.edsm.EdsmApiClient;
 import elite.intel.ai.search.edsm.dto.MarketDto;
 import elite.intel.ai.search.edsm.dto.OutfittingDto;
 import elite.intel.ai.search.edsm.dto.ShipyardDto;
+import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 
 public class LocalServicesData {
@@ -18,25 +19,28 @@ public class LocalServicesData {
 
         if (marketDto.getData() != null && marketDto.getData().getCommodities() != null) {
             sb.append(" Market, ");
-            playerSession.put(PlayerSession.LOCAL_MARKET_JSON, marketDto.toJson());
+            playerSession.getCurrentLocation().setMarket(marketDto);
         }
 
         if (outfittingDto.getData() != null && outfittingDto.getData().getOutfitting() != null) {
             sb.append(" Outfitting, ");
-            playerSession.put(PlayerSession.LOCAL_OUTFITING_JSON, outfittingDto.toJson());
+            playerSession.getCurrentLocation().setOutfitting(outfittingDto);
         }
 
         if (shipyardDto.getData() != null && shipyardDto.getData().getShips() != null) {
             sb.append(" Shipyard, ");
-            playerSession.put(PlayerSession.LOCAL_SHIP_YARD_JSON, shipyardDto.toJson());
+            playerSession.getCurrentLocation().setShipyard(shipyardDto);
         }
+        playerSession.save();
         return sb.toString().trim();
     }
 
     public static void clearLocalServicesData() {
         PlayerSession playerSession = PlayerSession.getInstance();
-        playerSession.remove(PlayerSession.LOCAL_MARKET_JSON);
-        playerSession.remove(PlayerSession.LOCAL_OUTFITING_JSON);
-        playerSession.remove(PlayerSession.LOCAL_SHIP_YARD_JSON);
+        LocationDto currentLocation = playerSession.getCurrentLocation();
+        currentLocation.setMarket(null);
+        currentLocation.setOutfitting(null);
+        currentLocation.setShipyard(null);
+        playerSession.saveCurrentLocation(currentLocation);
     }
 }

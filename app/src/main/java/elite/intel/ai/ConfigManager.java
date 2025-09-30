@@ -209,11 +209,13 @@ public class ConfigManager {
 
     public String getSystemKey(String keyType) {
         SystemSession systemSession = SystemSession.getInstance();
-        String key = String.valueOf(systemSession.get(keyType));
+        String key = getSystemKeyByType(systemSession, keyType);
+
+
         if (key == null || key.isEmpty() || key.equals("null")) {
             String value = readConfig(SYSTEM_CONFIG_FILENAME).get(keyType);
             if (value != null || !value.isEmpty()) {
-                systemSession.put(keyType, value);
+                saveSystemKey(  systemSession, keyType, value);
                 return value;
             } else {
                 throw new IllegalStateException(String.format("No value found for system key %s", keyType));
@@ -223,14 +225,42 @@ public class ConfigManager {
         }
     }
 
+    private void saveSystemKey(SystemSession session, String keyType, String value) {
+        if(AI_API_KEY.equalsIgnoreCase(keyType)) {session.setAiApiKey(value);}
+        if(TTS_API_KEY.equalsIgnoreCase(keyType)) {session.setSttApiKey(value);}
+        if(STT_API_KEY.equalsIgnoreCase(keyType)) {session.setTtsApiKey(value);}
+    }
+
+    private void savePlayerKey(SystemSession session, String keyType, String value) {
+
+    }
+
+    private String getSystemKeyByType(SystemSession systemSession, String keyType) {
+        if (AI_API_KEY.equals(keyType)) {return systemSession.getAiApiKey();}
+        if (TTS_API_KEY.equals(keyType)) {return systemSession.getSttApiKey();}
+        if (STT_API_KEY.equals(keyType)) {return systemSession.getTtsApiKey();}
+        return null;
+    }
+
+    private String getPlayerKeyByType(SystemSession systemSession, String keyType) {
+        if( PLAYER_MISSION_STATEMENT.equals(keyType)) {return systemSession.getMissionStatement();}
+        if(PLAYER_ALTERNATIVE_NAME.equals(keyType)) {return systemSession.getAlternativeName();}
+        if(PLAYER_CUSTOM_TITLE.equals(keyType)) {return systemSession.getTitle();}
+        if(JOURNAL_DIR.equals(keyType)) {return systemSession.getJournalDir();}
+        if(BINDINGS_DIR.equals(keyType)) {return systemSession.getBindingsDir();}
+        return null;
+    }
+
 
     public String getPlayerKey(String keyType) {
         SystemSession systemSession = SystemSession.getInstance();
-        String key = String.valueOf(systemSession.get(keyType));
+        String key = getPlayerKeyByType(systemSession, keyType);
+
+
         if (key == null || key.isEmpty() || key.equals("null")) {
             String value = readConfig(USER_CONFIG_FILENAME).get(keyType);
             if (value != null || !value.isEmpty()) {
-                systemSession.put(keyType, value);
+                savePlayerKey(systemSession, keyType, value);
                 return value;
             } else {
                 throw new IllegalStateException(String.format("No value found for user key %s", keyType));

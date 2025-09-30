@@ -23,8 +23,7 @@ public class FSDTargetSubscriber {
         DeathsDto deathsDto = EdsmApiClient.searchDeaths(event.getName());
         TrafficDto trafficDto = EdsmApiClient.searchTraffic(event.getName());
 
-        playerSession.put(
-                PlayerSession.FSD_TARGET,
+        playerSession.setFsdTarget(
                 new DataDto(
                         systemDto,
                         deathsDto,

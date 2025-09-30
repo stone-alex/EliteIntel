@@ -40,7 +40,7 @@ public class RoutePlottedSubscriber {
                         .map(Map.Entry::getValue)
                         .orElse(null);
                 if (finalDestination != null) {
-                    playerSession.put(PlayerSession.FINAL_DESTINATION, finalDestination.getName());
+                    playerSession.setFinalDestination(finalDestination.getName());
                 }
                 if(playerSession.getCurrentLocation() != null) {
                     List<NavRouteDto> orderedRoute = new ArrayList<>(routeMap.values());

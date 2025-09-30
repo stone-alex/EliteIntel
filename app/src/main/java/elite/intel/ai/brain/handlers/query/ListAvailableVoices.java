@@ -21,7 +21,7 @@ public class ListAvailableVoices implements QueryHandler {
             }
         }
         return GenericResponse.getInstance().genericResponseWithList(
-                "Available voices: " + String.join(", ", voiceNames) + ", " + playerSession.get(PlayerSession.PLAYER_NAME),
+                "Available voices: " + String.join(", ", voiceNames) + ", " + playerSession.getPlayerName(),
                 voiceNames
         );
     }

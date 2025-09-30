@@ -13,7 +13,7 @@ public class ShutDownEventSubscriber {
     @Subscribe
     public void onShutDownEvent(ShutdownEvent event) {
         PlayerSession playerSession = PlayerSession.getInstance();
-        playerSession.saveSession();
+        playerSession.save();
         LocationHistory history = LocationHistory.getInstance(playerSession.getCurrentLocation().getStarName());
         history.addLocations(playerSession.getLocations());
 

@@ -45,12 +45,9 @@ public class LocationHistory extends SessionPersistence implements java.io.Seria
 
     /// ---------------------------------------------------------------------------------
     private void loadFromDisk() {
-        loadSession(json -> {
-            if (json != null) {
-                loadFields(json, new HashMap<>());
-            }
-        });
+        loadSession(LocationHistory.this::loadFields);
     }
+
 
 
     public List<String> listStarSystems() {

@@ -13,14 +13,9 @@ public class CarrierETAHandler extends BaseQueryAnalyzer implements QueryHandler
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         PlayerSession playerSession = PlayerSession.getInstance();
-        Object obj = playerSession.get(PlayerSession.CARRIER_DEPARTURE_TIME);
-        if(obj == null) {
-            return analyzeData(toJson("No ETA available. Fleet carrier is located in "+playerSession.getCarrierData().getLocation()), originalUserInput);
-        }
-
-        String departureTime = String.valueOf(obj);
+        String carrierDepartureTime = playerSession.getCarrierDepartureTime();
         String now = TimestampFormatter.formatTimestamp(ZonedDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME), true);
-        return analyzeData(new DataDto(departureTime, now).toJson(), originalUserInput);
+        return analyzeData(new DataDto(carrierDepartureTime, now).toJson(), originalUserInput);
     }
 
 

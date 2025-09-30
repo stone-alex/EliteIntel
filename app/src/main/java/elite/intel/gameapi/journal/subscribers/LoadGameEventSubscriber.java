@@ -23,16 +23,16 @@ public class LoadGameEventSubscriber {
     public void onEvent(LoadGameEvent event) {
         PlayerSession playerSession = PlayerSession.getInstance();
 
-        playerSession.put(SHIP_FUEL_LEVEL, event.getFuelLevel());
+        playerSession.setShipFuelLevel(event.getFuelLevel());
 
         String inGameName = event.getCommander();
         String alternativeName = ConfigManager.getInstance().getPlayerKey(ConfigManager.PLAYER_ALTERNATIVE_NAME);
         String usePlayerName = capitalizeWords(alternativeName != null || !alternativeName.isEmpty() ? alternativeName : inGameName);
-        playerSession.put(PLAYER_NAME, usePlayerName);
+        playerSession.setPlayerName(usePlayerName);
 
-        playerSession.put(CURRENT_SHIP, event.getShip());
-        playerSession.put(CURRENT_SHIP_NAME, event.getShipName());
-        playerSession.put(PERSONAL_CREDITS_AVAILABLE, event.getCredits());
+        playerSession.setCurrentShip(event.getShip());
+        playerSession.setCurrentShipName(event.getShipName());
+        playerSession.setPersonalCreditsAvailable(event.getCredits());
         initValuesFromConfig(playerSession);
         cleanUpRoute(playerSession);
     }
@@ -51,6 +51,6 @@ public class LoadGameEventSubscriber {
     private static void initValuesFromConfig(PlayerSession playerSession) {
         ConfigManager configManager = ConfigManager.getInstance();
         String mission_statement = configManager.getPlayerKey(ConfigManager.PLAYER_MISSION_STATEMENT);
-        playerSession.put(PLAYER_MISSION_STATEMENT, mission_statement);
+        playerSession.setPlayerMissionStatement(mission_statement);
     }
 }

@@ -20,6 +20,6 @@ public class CommanderEventSubscriber {
         String inGameName = event.getName();
         String alternativeName = configManager.getPlayerKey(ConfigManager.PLAYER_ALTERNATIVE_NAME);
 
-        session.put(PLAYER_NAME, capitalizeWords(alternativeName != null || !alternativeName.isEmpty() ? alternativeName : inGameName));
+        session.setPlayerName(capitalizeWords(alternativeName != null || !alternativeName.isEmpty() ? alternativeName : inGameName));
     }
 }

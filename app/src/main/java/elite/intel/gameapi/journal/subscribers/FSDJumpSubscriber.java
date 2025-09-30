@@ -58,7 +58,7 @@ public class FSDJumpSubscriber {
         primaryStar.setPowerplayStateUndermining(event.getPowerplayStateUndermining());
 
 
-        String finalDestination = String.valueOf(playerSession.get(PlayerSession.FINAL_DESTINATION));
+        String finalDestination = playerSession.getFinalDestination();
 
         StringBuilder sb = new StringBuilder();
         sb.append(" Hyperspace Jump Successful: ");

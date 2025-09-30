@@ -9,8 +9,7 @@ public class AnalyzeFsdTargetHandler extends BaseQueryAnalyzer implements QueryH
     public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
 
         PlayerSession playerSession = PlayerSession.getInstance();
-        Object fsdTarget = playerSession.get(PlayerSession.FSD_TARGET);
-
+        String fsdTarget = playerSession.getFsdTarget();
         String data = fsdTarget != null ? toJson(fsdTarget) : toJson(" no infomation available...");
         return analyzeData(data, originalUserInput);
     }

@@ -13,7 +13,9 @@ public class SwitchSuitLoadoutSubscriber {
 
     @Subscribe
     public void onSwitchSuitLoadoutEvent(SwitchSuitLoadoutEvent event) {
-        SystemSession.getInstance().put(PlayerSession.SUITE_LOADOUT_JSON, event.toJson());
-        EventBusManager.publish(new SensorDataEvent("Suit Loadout: " + event.toJson()));
+
+        //TODO: FIX ME
+        //SystemSession.getInstance().put(PlayerSession.SUITE_LOADOUT_JSON, event.toJson());
+        //EventBusManager.publish(new SensorDataEvent("Suit Loadout: " + event.toJson()));
     }
 }

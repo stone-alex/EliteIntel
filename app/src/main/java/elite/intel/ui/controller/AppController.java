@@ -159,7 +159,7 @@ public class AppController implements AppControllerInterface, ActionListener {
 
             ConfigManager configManager = ConfigManager.getInstance();
             String mission_statement = configManager.getPlayerKey(ConfigManager.PLAYER_MISSION_STATEMENT);
-            playerSession.put(PLAYER_MISSION_STATEMENT, mission_statement);
+            playerSession.setPlayerMissionStatement(mission_statement);
 
 
             String llm = "";

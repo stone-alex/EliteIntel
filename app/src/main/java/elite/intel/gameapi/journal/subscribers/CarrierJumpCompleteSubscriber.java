@@ -20,7 +20,7 @@ public class CarrierJumpCompleteSubscriber {
         double[] starPos = event.getStarPos();
         PlayerSession playerSession = PlayerSession.getInstance();
         CarrierDataDto carrierData = playerSession.getCarrierData();
-        playerSession.remove(PlayerSession.CARRIER_DEPARTURE_TIME);
+        playerSession.setCarrierDepartureTime(null);
 
         if(carrierData != null && starPos[0] > 0) {
             carrierData.setX(starPos[0]);

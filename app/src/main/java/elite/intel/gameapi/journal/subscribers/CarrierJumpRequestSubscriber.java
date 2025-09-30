@@ -28,7 +28,8 @@ public class CarrierJumpRequestSubscriber {
         sb.append(departureTime);
         sb.append(".");
 
-        PlayerSession.getInstance().put(CARRIER_DEPARTURE_TIME, departureTime);
+        PlayerSession playerSession = PlayerSession.getInstance();
+        playerSession.setCarrierDepartureTime(departureTime);
 
         EventBusManager.publish(new SensorDataEvent(sb.toString()));
     }

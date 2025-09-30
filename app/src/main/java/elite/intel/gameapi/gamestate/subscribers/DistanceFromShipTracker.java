@@ -4,6 +4,8 @@ import com.google.common.eventbus.Subscribe;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.VoiceProcessEvent;
 import elite.intel.gameapi.gamestate.events.PlayerMovedEvent;
+import elite.intel.gameapi.journal.events.DockSRVEvent;
+import elite.intel.gameapi.journal.events.LaunchSRVEvent;
 import elite.intel.gameapi.journal.events.TouchdownEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
@@ -17,7 +19,8 @@ import static elite.intel.util.NavigationUtils.calculateSurfaceDistance;
 public class DistanceFromShipTracker {
 
     private static final Logger log = LogManager.getLogger(DistanceFromShipTracker.class);
-    private boolean isInDonutArea = false;
+    private boolean shouldAnnounce = true;
+    private long lastAnnounceTime = 0;
 
     @Subscribe
     public void onPlayerMovedEvent(PlayerMovedEvent event) {
@@ -49,14 +52,14 @@ public class DistanceFromShipTracker {
         // Calculate great-circle distance (in meters)
         double distance = calculateSurfaceDistance(latitude, longitude, lzLat, lzLon, planetRadius, 0);
 
-        // Define donut boundaries: 1.75km to 2km
-        double innerDonut = 1750.0; // 1.75km in meters
+        // Define donut boundaries: 1.8km to 2km
+        double innerDonut = 1800.0; // 1.8km in meters
         double outerDonut = 2000.0; // 2km in meters
 
         // Check if player is in the donut
         boolean isInDonut = distance >= innerDonut && distance <= outerDonut;
-
-        if (isInDonut && !isInDonutArea) {
+        long NOW = System.currentTimeMillis();
+        if (isInDonut && shouldAnnounce && status.getStatus().getAltitude() == 0 && NOW - lastAnnounceTime < 15_000) {
             EventBusManager.publish(
                     new VoiceProcessEvent(
                             String.format("Warning: You are %d meters from your ship, approaching auto-departure zone!",
@@ -65,13 +68,28 @@ public class DistanceFromShipTracker {
             );
             log.info("Alert triggered: Player entered donut area at {} meters.", distance);
         }
-
-        isInDonutArea = isInDonut;
+        // when outside, and ship departed, no reason to announce again
+        shouldAnnounce = distance > outerDonut;
     }
 
     @Subscribe
     public void onTouchdownEvent(TouchdownEvent event) {
-        isInDonutArea = false;
+        shouldAnnounce = false;
+        lastAnnounceTime = 0;
         log.debug("State reset on touchdown.");
+    }
+
+    @Subscribe
+    public void onDockSRV(DockSRVEvent event) {
+        shouldAnnounce = false;
+        lastAnnounceTime = 0;
+        log.debug("State reset on dock.");
+    }
+
+    @Subscribe
+    public void onSrvLaunch(LaunchSRVEvent event) {
+        shouldAnnounce = true;
+        lastAnnounceTime = 0;
+        log.debug("State reset on srv launch.");
     }
 }

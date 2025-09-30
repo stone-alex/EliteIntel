@@ -4,7 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.VoiceProcessEvent;
 import elite.intel.gameapi.journal.events.FSSSignalDiscoveredEvent;
-import elite.intel.gameapi.journal.events.dto.FssSignal;
+import elite.intel.gameapi.journal.events.dto.FssSignalDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.TimeUtils;
@@ -53,7 +53,7 @@ public class FSSSignalDiscoveredSubscriber {
             currentLocation = playerSession.getCurrentLocation();
         }
 
-        FssSignal signal = new FssSignal();
+        FssSignalDto signal = new FssSignalDto();
         signal.setSignalName(event.getSignalName());
         signal.setSignalNameLocalised(event.getSignalNameLocalised());
         signal.setSignalType(event.getSignalType());

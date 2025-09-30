@@ -39,8 +39,10 @@ public class SystemSession extends SessionPersistence implements java.io.Seriali
     private JsonArray chatHistory = new JsonArray();
     private boolean isStreamingModeOn = false;
 
-    public final static String RMS_THRESHOLD_HIGH = "RMS_THRESHOLD_HIGH";
-    public final static String RMS_THRESHOLD_LOW = "RMS_THRESHOLD_LOW";
+    private final static String RMS_THRESHOLD_HIGH = "RMS_THRESHOLD_HIGH";
+    private final static String RMS_THRESHOLD_LOW = "RMS_THRESHOLD_LOW";
+    private Double rms_threshold_high = null;
+    private Double rms_threshold_low = null;
 
 
     private SystemSession() {
@@ -51,10 +53,29 @@ public class SystemSession extends SessionPersistence implements java.io.Seriali
         registerField("aiCadence", this::getAICadence, this::setAICadence, AICadence.class);
         registerField("chatHistory", this::getChatHistory, this::setChatHistory, JsonArray.class);
         registerField("isPrivacyModeOn", this::isStreamingModeOn, this::setStreamingMode, Boolean.class);
+        registerField(RMS_THRESHOLD_HIGH, this::getRmsThresholdHigh, this::setRmsThresholdHigh, Double.class);
+        registerField(RMS_THRESHOLD_LOW, this::getRmsThresholdLow, this::setRmsThresholdLow, Double.class);
         EventBusManager.register(this);
         loadSavedStateFromDisk();
         addShutdownHook();
     }
+
+
+    public Double getRmsThresholdHigh() {
+        return rms_threshold_high;
+    }
+    public void setRmsThresholdHigh(Double rms_threshold_high) {
+        this.rms_threshold_high = rms_threshold_high;
+        saveSession();
+    }
+    public Double getRmsThresholdLow() {
+        return rms_threshold_low;
+    }
+    public void setRmsThresholdLow(Double rms_threshold_low) {
+        this.rms_threshold_low = rms_threshold_low;
+        saveSession();
+    }
+
 
     private void addShutdownHook() {
         Runtime.getRuntime().addShutdownHook(new Thread(this::saveSession));

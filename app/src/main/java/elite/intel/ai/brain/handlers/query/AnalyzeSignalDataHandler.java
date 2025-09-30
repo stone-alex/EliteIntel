@@ -19,7 +19,7 @@ public class AnalyzeSignalDataHandler  extends BaseQueryAnalyzer implements Quer
 
         PlayerSession playerSession = PlayerSession.getInstance();
         LocationDto currentLocation = playerSession.getCurrentLocation();
-        Map<Integer, FSSBodySignalsEvent> fssBodySignals = playerSession.getFssBodySignals();
+        List<FSSBodySignalsEvent.Signal> fssBodySignals = playerSession.getCurrentLocation().getFssSignals();
         Map<Long, LocationDto> stellarObjects = playerSession.getLocations();
         List<BioSampleDto> completedBioSamples = playerSession.getBioCompletedSamples();
         SystemBodiesDto edsmData = EdsmApiClient.searchSystemBodies(currentLocation.getStarName());
@@ -29,7 +29,7 @@ public class AnalyzeSignalDataHandler  extends BaseQueryAnalyzer implements Quer
 
     record DataDto(
             LocationDto currentLocation,
-            Map<Integer, FSSBodySignalsEvent> fullSpectrumSignals,
+            List<FSSBodySignalsEvent.Signal> fssBodySignals,
             Map<Long, LocationDto> allStellarObjectsInStarSystem,
             List<BioSampleDto> completedBioScans,
             SystemBodiesDto edsmData

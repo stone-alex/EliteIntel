@@ -3,7 +3,7 @@ package elite.intel.gameapi.journal.events.dto;
 import elite.intel.gameapi.gamestate.events.BaseJsonDto;
 import elite.intel.util.json.ToJsonConvertible;
 
-public class FssSignal extends BaseJsonDto implements ToJsonConvertible {
+public class FssSignalDto extends BaseJsonDto implements ToJsonConvertible {
 
     private long systemAddress;
     private String signalName;

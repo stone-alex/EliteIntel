@@ -21,7 +21,7 @@ public class LocationDto implements ToJsonConvertible {
     private List<BioSampleDto> partialBioSamples = new ArrayList<>();
     private List<String> stationServices;
     private List<String> powers;
-    private Set<FssSignal> detectedSignals = new HashSet<>();
+    private Set<FssSignalDto> detectedSignals = new HashSet<>();
     private double X;
     private double Y;
     private double Z;
@@ -182,12 +182,16 @@ public class LocationDto implements ToJsonConvertible {
         return partialBioSamples;
     }
 
-    public void addDetectedSignal(FssSignal signal) {
+    public void addDetectedSignal(FssSignalDto signal) {
         this.detectedSignals.add(signal);
     }
 
+    public void addDetectedSignals(List<FssSignalDto> signals) {
+        this.detectedSignals.addAll(signals);
+    }
 
-    public Set<FssSignal> getDetectedSignals() {
+
+    public Set<FssSignalDto> getDetectedSignals() {
         return detectedSignals;
     }
 
@@ -477,7 +481,7 @@ public class LocationDto implements ToJsonConvertible {
         this.fssSignals = fssSignals;
     }
 
-    public void setDetectedSignals(Set<FssSignal> detectedSignals) {
+    public void setDetectedSignals(Set<FssSignalDto> detectedSignals) {
         this.detectedSignals = detectedSignals;
     }
 

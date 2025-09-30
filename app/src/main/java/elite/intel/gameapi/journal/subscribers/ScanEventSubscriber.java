@@ -12,9 +12,7 @@ import elite.intel.util.GravityCalculator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static elite.intel.gameapi.journal.events.dto.LocationDto.LocationType.*;
 import static elite.intel.util.StringUtls.subtractString;
@@ -43,41 +41,41 @@ public class ScanEventSubscriber {
         String shortName = subtractString(event.getBodyName(), event.getStarSystem());
         String bodyName = event.getBodyName();
 
-        LocationDto stellarObject = getOrMakeStellarObject(event.getBodyID());
+        LocationDto lcoation = getOrMakeLocation(event.getBodyID());
         LocationDto.LocationType locationType = determineLocationType(event);
-        stellarObject.setLocationType(locationType);
+        lcoation.setLocationType(locationType);
 
         if(!PRIMARY_STAR.equals(locationType)) {
-            stellarObject.setX(playerSession.getCurrentLocation().getX());
-            stellarObject.setY(playerSession.getCurrentLocation().getY());
-            stellarObject.setZ(playerSession.getCurrentLocation().getZ());
+            lcoation.setX(playerSession.getCurrentLocation().getX());
+            lcoation.setY(playerSession.getCurrentLocation().getY());
+            lcoation.setZ(playerSession.getCurrentLocation().getZ());
         }
 
-        if (stellarObject.getBodyId() == 0) {
-            announceIfNewDiscovery(event, stellarObject);
-            stellarObject.setPlanetName(event.getBodyName());
-            stellarObject.setBodyId(event.getBodyID());
-            stellarObject.setPlanetShortName(shortName);
+        if (lcoation.getBodyId() == 0) {
+            announceIfNewDiscovery(event, lcoation);
+            lcoation.setPlanetName(event.getBodyName());
+            lcoation.setBodyId(event.getBodyID());
+            lcoation.setPlanetShortName(shortName);
         }
 
         Double gravity = GravityCalculator.calculateSurfaceGravity(event.getMassEM(), event.getRadius());
-        if (gravity != null) stellarObject.setGravity(gravity); //DO NOT use event.getSurfaceGravity() as it is not accurate
-        stellarObject.setMassEM(event.getMassEM());
-        stellarObject.setRadius(event.getRadius());
-        stellarObject.setSurfaceTemperature(event.getSurfaceTemperature());
-        stellarObject.setLandable(event.isLandable());
-        stellarObject.setPlanetClass(event.getPlanetClass());
-        stellarObject.setTerraformable("Terraformable".equalsIgnoreCase(event.getTerraformState()));
-        stellarObject.setTidalLocked(event.isTidalLock());
-        stellarObject.setAtmosphere(event.getAtmosphereType());
-        stellarObject.setMaterials(toListOfMaterials(event.getMaterials()));
-        FSSBodySignalsEvent fssBodySignalsEvent = playerSession.getFssBodySignals().get(event.getBodyID());
-        if (fssBodySignalsEvent != null) {
-            List<FSSBodySignalsEvent.Signal> signals = fssBodySignalsEvent.getSignals();
-            if (signals != null && !signals.isEmpty()) {
+        if (gravity != null) lcoation.setGravity(gravity); //DO NOT use event.getSurfaceGravity() as it is not accurate
+        lcoation.setMassEM(event.getMassEM());
+        lcoation.setRadius(event.getRadius());
+        lcoation.setSurfaceTemperature(event.getSurfaceTemperature());
+        lcoation.setLandable(event.isLandable());
+        lcoation.setPlanetClass(event.getPlanetClass());
+        lcoation.setTerraformable("Terraformable".equalsIgnoreCase(event.getTerraformState()));
+        lcoation.setTidalLocked(event.isTidalLock());
+        lcoation.setAtmosphere(event.getAtmosphereType());
+        lcoation.setMaterials(toListOfMaterials(event.getMaterials()));
+
+        List<FSSBodySignalsEvent.Signal> fssSignals = playerSession.getCurrentLocation().getFssSignals();
+
+        if (fssSignals != null && !fssSignals.isEmpty()) {
                 int countBioSignals = 0;
                 int countGeological = 0;
-                for (FSSBodySignalsEvent.Signal signal : signals) {
+            for (FSSBodySignalsEvent.Signal signal : fssSignals) {
                     if ("Biological".equalsIgnoreCase(signal.getTypeLocalised())) {
                         countBioSignals++;
                     }
@@ -85,22 +83,22 @@ public class ScanEventSubscriber {
                         countGeological++;
                     }
                 }
-                stellarObject.setFssSignals(fssBodySignalsEvent.getSignals());
-                stellarObject.setBioSignals(countBioSignals);
-                stellarObject.setGeoSignals(countGeological);
+                lcoation.setBioSignals(countBioSignals);
+                lcoation.setGeoSignals(countGeological);
             }
-        }
+
 
         List<MaterialDto> materials = new ArrayList<>();
         if (event.getMaterials() != null) {
             for (ScanEvent.Material material : event.getMaterials()) {
                 materials.add(new MaterialDto(material.getName(), material.getPercent()));
             }
-            stellarObject.setMaterials(materials);
+            lcoation.setMaterials(materials);
         }
-        playerSession.addLocation(stellarObject);
-        playerSession.setLastScan(stellarObject);
+        playerSession.addLocation(lcoation);
+        playerSession.setLastScan(lcoation);
     }
+
 
     private LocationDto.LocationType determineLocationType(ScanEvent event) {
         boolean isStar = event.getStarType() != null && !event.getStarType().isEmpty() || event.getSurfaceTemperature() > 1000;
@@ -155,9 +153,9 @@ public class ScanEventSubscriber {
         }
     }
 
-    private LocationDto getOrMakeStellarObject(long id) {
-        LocationDto stellarObjectDto = playerSession.getLocations().get(id);
-        return stellarObjectDto == null ? new LocationDto(LocationDto.LocationType.UNKNOWN) : stellarObjectDto;
+    private LocationDto getOrMakeLocation(long id) {
+        LocationDto location = playerSession.getLocations().get(id);
+        return location == null ? new LocationDto(LocationDto.LocationType.UNKNOWN) : location;
     }
 
     private static String getDetails(ScanEvent event, String shortName) {

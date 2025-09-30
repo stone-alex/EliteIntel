@@ -17,11 +17,15 @@ public class AnalyzeExplorationProfitsHandler extends BaseQueryAnalyzer implemen
         PlayerSession playerSession = PlayerSession.getInstance();
         List<BioSampleDto> allCompletedBioSamples = playerSession.getBioCompletedSamples();
         Map<Long, LocationDto> planetsAndMoons = playerSession.getLocations();
-        Map<Integer, FSSBodySignalsEvent> fullSpectrumScanSignals = playerSession.getFssBodySignals();
-        return analyzeData(new DataDto(allCompletedBioSamples, planetsAndMoons, fullSpectrumScanSignals).toJson(), originalUserInput);
+        List<FSSBodySignalsEvent.Signal> fullSpectrumScanBodySignals = playerSession.getCurrentLocation().getFssSignals();
+        return analyzeData(new DataDto(allCompletedBioSamples, planetsAndMoons, fullSpectrumScanBodySignals).toJson(), originalUserInput);
     }
 
-    record DataDto(List<BioSampleDto> allCompletedBioSamples, Map<Long, LocationDto> planetsAndMoons, Map<Integer, FSSBodySignalsEvent> fullSpectrumScanSignals) implements ToJsonConvertible {
+    record DataDto(
+            List<BioSampleDto> allCompletedBioSamples,
+            Map<Long, LocationDto> planetsAndMoons,
+            List<FSSBodySignalsEvent.Signal> fullSpectrumScanBodySignals
+    ) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }

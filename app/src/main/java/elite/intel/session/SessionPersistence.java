@@ -239,7 +239,9 @@ class SessionPersistence {
         if (json.has("state")) {
             JsonObject stateJson = json.getAsJsonObject("state");
             for (Map.Entry<String, JsonElement> entry : stateJson.entrySet()) {
-                stateMap.put(entry.getKey(), GsonFactory.getGson().fromJson(entry.getValue(), Object.class));
+                JsonElement element = entry.getValue();
+                Object value = convertJsonElementToObject(element);
+                stateMap.put(entry.getKey(), value);
             }
         }
 
@@ -255,6 +257,32 @@ class SessionPersistence {
                 }
             }
         }
+    }
+
+
+    private Object convertJsonElementToObject(JsonElement element) {
+        if (element.isJsonNull()) {
+            return null;
+        } else if (element.isJsonPrimitive()) {
+            JsonPrimitive primitive = element.getAsJsonPrimitive();
+            if (primitive.isBoolean()) {
+                return primitive.getAsBoolean();
+            } else if (primitive.isNumber()) {
+                // Try to return the most appropriate number type
+                Number number = primitive.getAsNumber();
+                if (number.doubleValue() == number.longValue()) {
+                    return number.longValue();
+                }
+                return number.doubleValue();
+            } else if (primitive.isString()) {
+                return primitive.getAsString();
+            }
+        } else if (element.isJsonArray()) {
+            return element.getAsJsonArray();
+        } else if (element.isJsonObject()) {
+            return element.getAsJsonObject();
+        }
+        return element;
     }
 
     private File ensureSessionDirectory() {

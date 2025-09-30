@@ -4,7 +4,6 @@ import com.google.common.eventbus.Subscribe;
 import com.google.gson.reflect.TypeToken;
 import elite.intel.ai.search.spansh.market.StationMarket;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.gamestate.events.GameEvents;
 import elite.intel.gameapi.gamestate.events.NavRouteDto;
 import elite.intel.gameapi.journal.events.*;
@@ -77,9 +76,12 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     private static final String MINING_TARGETS = "miningTargets";
     private static final String HOME_SYSTEM = "home_system";
     public static final String SESSION_DIR = "session/";
+    public static final String TRACKING = "tracking";
+    public static final String BOUNTY_COLLECTED_THIS_SESSION = "bountyCollectedThisSession";
+    public static final String RANK_AND_PROGRESS_DTO = "rankAndProgressDto";
+    public static final String MARKETS = "markets";
 
     ///
-    private final Map<Integer, FSSBodySignalsEvent> fssBodySignals = new HashMap<>();
     private final Map<String, Object> state = new HashMap<>();
     private final Map<String, String> shipScans = new HashMap<>();
     private final Map<Long, MissionDto> missions = new LinkedHashMap<>();
@@ -92,7 +94,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     private long bountyCollectedThisSession = 0;
     private RankAndProgressDto rankAndProgressDto = new RankAndProgressDto();
     private LocationDto homeSystem = new LocationDto();
-    private LocationDto lastScan = new LocationDto();
+    private long lastScan = -1;
     private CarrierDataDto carrierData = new CarrierDataDto();
     private List<BioSampleDto> bioSamples = new ArrayList<>();
     private LoadoutEvent loadout;
@@ -100,6 +102,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     private GameEvents.CargoEvent shipCargo;
     private ReputationEvent reputation;
     private TargetLocation tracking  = new TargetLocation();
+    private Long currentLocationId = -1L;
 
 
     private PlayerSession() {
@@ -146,12 +149,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
             miningTargets.addAll((Set<String>) v);
         }, new TypeToken<Set<String>>() {}.getType());
 
-        registerField("fss_body_signals", this::getFssBodySignals, v ->{
-            fssBodySignals.clear();
-            fssBodySignals.putAll((Map<Integer, FSSBodySignalsEvent>) v);
-        }, new TypeToken<Map<Integer, FSSBodySignalsEvent>>(){}.getType());
-
-        registerField("markets", this::getMarkets, this::setMarkets, new TypeToken<List<StationMarket>>(){}.getType());
+        registerField(MARKETS, this::getMarkets, this::setMarkets, new TypeToken<List<StationMarket>>(){}.getType());
         registerField(BIO_SAMPLES, this::getBioCompletedSamples, this::setBioSamples, new TypeToken<List<BioSampleDto>>(){}.getType() );
 
         registerField(HOME_SYSTEM, this::getHomeSystem, this::setHomeSystem, LocationDto.class);
@@ -159,11 +157,11 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         registerField(STATUS, this::getStatus, this::setStatus, GameEvents.StatusEvent.class);
         registerField(SHIP_CARGO, this::getShipCargo, this::setShipCargo, GameEvents.CargoEvent.class);
         registerField(REPUTATION, this::getReputation, this::setReputation, ReputationEvent.class);
-        registerField(LAST_SCAN, this::getLastScan, this::setLastScan, LocationDto.class);
-        registerField("tracking", this::getTracking, this::setTracking, TargetLocation.class);
+        registerField(TRACKING, this::getTracking, this::setTracking, TargetLocation.class);
+        registerField(CURRENT_LOCATION, this::getCurrentLocationId, this::setCurrentLocationId, Long.class);
 
-        registerField("bountyCollectedThisSession", this::getBountyCollectedThisSession, this::setBountyCollectedThisSession, Long.class);
-        registerField("rankAndProgressDto", this::getRankAndProgressDto, this::setRankAndProgressDto, RankAndProgressDto.class);
+        registerField(BOUNTY_COLLECTED_THIS_SESSION, this::getBountyCollectedThisSession, this::setBountyCollectedThisSession, Long.class);
+        registerField(RANK_AND_PROGRESS_DTO, this::getRankAndProgressDto, this::setRankAndProgressDto, RankAndProgressDto.class);
         registerField(CARRIER_STATS, this::getCarrierData, this::setCarrierData, CarrierDataDto.class);
         EventBusManager.register(this);
         addShutdownHook();
@@ -410,7 +408,6 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
             LocationHistory.getInstance(getCurrentLocation().getStarName()).addLocations(getLocations());
             saveCurrentLocation(new LocationDto(LocationDto.LocationType.PRIMARY_STAR));
             locations.clear();
-            fssBodySignals.clear();
             saveSession();
         }
     }
@@ -425,14 +422,21 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     }
 
     public LocationDto getCurrentLocation() {
-        Long id = (Long) get(CURRENT_LOCATION);
-        return getLocation(id == null ? 0 : id);
+        return getLocation(currentLocationId == null ? 0 : currentLocationId);
     }
 
     public void saveCurrentLocation(LocationDto location) {
         addLocation(location);
-        put(CURRENT_LOCATION, location.getBodyId());
+        setCurrentLocationId(location.getBodyId());
         saveSession();
+    }
+
+    private void setCurrentLocationId(long id) {
+        currentLocationId = id;
+    }
+
+    private Long getCurrentLocationId() {
+        return currentLocationId;
     }
 
     public CarrierDataDto getCarrierData() {
@@ -531,7 +535,6 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         this.shipScans.clear();
         this.locations.clear();
         this.targetFactions.clear();
-        this.fssBodySignals.clear();
         this.saveSession();
     }
 
@@ -554,23 +557,13 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     }
 
     public void setLastScan(LocationDto lastScan) {
-        this.lastScan = lastScan;
+        put(LAST_SCAN, lastScan.getBodyId());
         saveSession();
     }
 
     public LocationDto getLastScan() {
-        return lastScan;
+        return getLocation( (Long) get(LAST_SCAN));
     }
-
-    public Map<Integer, FSSBodySignalsEvent> getFssBodySignals() {
-        return fssBodySignals;
-    }
-
-    public void putFssBodySignal(int bodyId, FSSBodySignalsEvent event) {
-        fssBodySignals.put(bodyId, event);
-        saveSession();
-    }
-
 
     public TargetLocation getTracking() {
         return tracking == null ? new TargetLocation() : tracking;

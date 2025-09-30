@@ -31,7 +31,6 @@ public class StartJumpSubscriber {
 
         PlayerSession playerSession = PlayerSession.getInstance();
         playerSession.put(PlayerSession.JUMPING_TO, jumpingTo);
-        playerSession.put(PlayerSession.LOW_ALTITUDE_FLIGHT, false);
         playerSession.saveSession();
 
 

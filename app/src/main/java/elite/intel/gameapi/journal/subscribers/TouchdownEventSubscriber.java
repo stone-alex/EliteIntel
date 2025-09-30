@@ -57,7 +57,6 @@ public class TouchdownEventSubscriber {
             EventBusManager.publish(new SensorDataEvent(sb.toString()));
         } else {
             EventBusManager.publish(new VoiceProcessEvent("Touchdown!"));
-            playerSession.put(PlayerSession.LOW_ALTITUDE_FLIGHT, false);
         }
     }
 }

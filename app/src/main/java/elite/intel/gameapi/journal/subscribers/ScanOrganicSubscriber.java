@@ -63,7 +63,6 @@ public class ScanOrganicSubscriber {
 
             BioSampleDto bioSampleDto = createBioSampleDto(genus, variant, starSystemNumber, valueInCredits);
             bioSampleDto.setScanXof3("First of Three");
-            currentLocation.clearBioSamples();
             currentLocation.addBioScan(bioSampleDto);
             EventBusManager.publish(new SensorDataEvent(sb.toString()));
 
@@ -94,7 +93,6 @@ public class ScanOrganicSubscriber {
             bioSampleDto.setScanXof3("Three of Three");
             bioSampleDto.setBioSampleCompleted(true);
             playerSession.addBioSample(bioSampleDto);
-            currentLocation.clearBioSamples();
             playerSession.saveCurrentLocation(currentLocation);
             removeCodexEntryIfMatches(event.getVariantLocalised(), -1, false);
             playerSession.setTracking(new TargetLocation()); // turn off tracking
@@ -107,7 +105,8 @@ public class ScanOrganicSubscriber {
         double longitude = playerSession.getStatus().getLongitude();
         double planetRadius = playerSession.getStatus().getPlanetRadius();
 
-        List<CodexEntryEvent> codexEntries = playerSession.getCodexEntries();
+        LocationDto currentLocation = playerSession.getCurrentLocation();
+        List<CodexEntryEvent> codexEntries = currentLocation.getCodexEntries();
         if(codexEntries == null || codexEntries.isEmpty()) return;
 
         List<CodexEntryEvent> adjusted = new ArrayList<>();
@@ -127,7 +126,8 @@ public class ScanOrganicSubscriber {
                 }
             }
         }
-        playerSession.setCodexEntries(adjusted);
+        currentLocation.setCodexEntries(adjusted);
+        playerSession.saveCurrentLocation(currentLocation);
     }
 
 

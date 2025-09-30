@@ -15,8 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static elite.intel.util.StringUtls.subtractString;
-
 public class ApproachBodySubscriber {
     private static double formatDouble(double value) {
         return Math.round(value * 100.0) / 100.0;
@@ -25,54 +23,56 @@ public class ApproachBodySubscriber {
     @Subscribe
     public void onApproachBodyEvent(ApproachBodyEvent event) {
         PlayerSession playerSession = PlayerSession.getInstance();
+
         double orbitalCruiseEntryAltitude = playerSession.getStatus().getAltitude();
 
         StringBuilder sb = new StringBuilder();
         sb.append("Entering orbit for ").append(event.getBody()).append(". ");
         String currentSystem = event.getStarSystem();
-        LocationDto currentLocation = playerSession.getCurrentLocation();
-        currentLocation.setOrbitalCruiseEntryAltitude(orbitalCruiseEntryAltitude);
+
+        LocationDto location = playerSession.getLocation(event.getBodyID());
+        location.setOrbitalCruiseEntryAltitude(orbitalCruiseEntryAltitude);
 
         if(playerSession.getTracking().isEnabled()) return;
 
 
         //clear bio scans if we are landing on a different planet within the same system
-        if (!currentLocation.getPlanetName().equalsIgnoreCase(event.getBody())){
-            currentLocation.setPartialBioSamples(new ArrayList<>());
+        if (playerSession.getCurrentLocation().getBodyId() != event.getBodyID()) {
+            location.setPartialBioSamples(new ArrayList<>());
         }
 
-        currentLocation.setStarName(event.getStarSystem());
-        currentLocation.setPlanetName(event.getBody());
-        currentLocation.setPlanetShortName(subtractString(event.getBody(), event.getStarSystem()));
 
-        LocationDto stellarObjectDto = playerSession.getStellarObject(event.getBodyID());
         SystemBodiesDto systemBodiesDto = EdsmApiClient.searchSystemBodies(currentSystem);
+        if (location.getGravity() > 0) {
+            useOurData(location, location, sb);
+        } else {
+            //try EDSM data
+            boolean hasBodiesData = systemBodiesDto.getData() != null
+                    && systemBodiesDto.getData().getBodies() != null
+                    && !systemBodiesDto.getData().getBodies().isEmpty();
 
-        boolean hasBodiesData = systemBodiesDto.getData() != null
-                && systemBodiesDto.getData().getBodies() != null
-                && !systemBodiesDto.getData().getBodies().isEmpty();
-
-        //try our own scans first
-        if (stellarObjectDto != null) {
-            extractDataFromStellarObjectScan(stellarObjectDto, currentLocation, sb);
-        } else if (hasBodiesData) {
-            List<BodyData> bodies = systemBodiesDto.getData().getBodies();
-            for (BodyData bodyData : bodies) {
-                if (currentLocation.getPlanetName().equalsIgnoreCase(bodyData.getName())) {
-                    extractDataFromEdsm(bodyData, currentLocation, sb);
-                    break; //we found the planet in EDSM
+            if (hasBodiesData) {
+                List<BodyData> bodies = systemBodiesDto.getData().getBodies();
+                for (BodyData bodyData : bodies) {
+                    if (location.getPlanetName().equalsIgnoreCase(bodyData.getName())) {
+                        extractDataFromEdsm(bodyData, location, sb);
+                        break; //we found the planet in EDSM
+                    }
                 }
+            } else { // no data available
+                sb.append(" No data available for ").append(event.getBody()).append(".");
+                sb.append(" Check gravity and temperature data before landing");
             }
-        } else { // no data available
-            sb.append(" No data available for ").append(event.getBody()).append(".");
-            sb.append(" Check gravity and temperature data before landing");
         }
-        playerSession.saveCurrentLocation(currentLocation);
-        EventBusManager.publish(new VoiceProcessEvent(sb.toString()));
+        playerSession.saveCurrentLocation(location);
+
+        if (!playerSession.getTracking().isEnabled()) {
+            EventBusManager.publish(new VoiceProcessEvent(sb.toString()));
+        }
     }
 
 
-    private void extractDataFromStellarObjectScan(LocationDto stellarObjectDto, LocationDto currentLocation, StringBuilder sb) {
+    private void useOurData(LocationDto stellarObjectDto, LocationDto currentLocation, StringBuilder sb) {
         double surfaceGravity = formatDouble(stellarObjectDto.getGravity());
         currentLocation.setGravity(surfaceGravity);
 

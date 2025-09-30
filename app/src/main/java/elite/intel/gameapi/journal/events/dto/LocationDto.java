@@ -3,6 +3,7 @@ package elite.intel.gameapi.journal.events.dto;
 import elite.intel.ai.search.edsm.dto.DeathsDto;
 import elite.intel.ai.search.edsm.dto.TrafficDto;
 import elite.intel.ai.search.edsm.dto.data.BodyData;
+import elite.intel.gameapi.journal.events.CodexEntryEvent;
 import elite.intel.gameapi.journal.events.FSSBodySignalsEvent;
 import elite.intel.gameapi.journal.events.SAASignalsFoundEvent;
 import elite.intel.util.json.GsonFactory;
@@ -12,6 +13,7 @@ import java.util.*;
 
 public class LocationDto implements ToJsonConvertible {
 
+    private List<CodexEntryEvent> codexEntries = new ArrayList<>();
     private List<MaterialDto> materials = new ArrayList<>();
     private List<SAASignalsFoundEvent.Signal> saaSignals = new ArrayList<>();
     private List<FSSBodySignalsEvent.Signal> fssSignals;
@@ -171,9 +173,6 @@ public class LocationDto implements ToJsonConvertible {
         return genus;
     }
 
-    public void clearGenus() {
-        this.genus.clear();
-    }
 
     public void setGenus(List<GenusDto> genus) {
         this.genus = genus;
@@ -213,17 +212,11 @@ public class LocationDto implements ToJsonConvertible {
     }
 
 
-    public void clearSaaSignals() {
-        this.saaSignals.clear();
-    }
 
     public void setPartialBioSamples(List<BioSampleDto> partialBioSamples) {
         this.partialBioSamples = partialBioSamples;
     }
 
-    public void clearDetectedSignals() {
-        this.detectedSignals.clear();
-    }
 
     public String getStationName() {
         return stationName;
@@ -433,9 +426,6 @@ public class LocationDto implements ToJsonConvertible {
         return GsonFactory.getGson().toJson(this);
     }
 
-    public void clearBioSamples() {
-        this.partialBioSamples.clear();
-    }
 
     public double[] getLandingCoordinates() {
         return landingCoordinates;
@@ -594,6 +584,23 @@ public class LocationDto implements ToJsonConvertible {
     public void setLocationType(LocationType locationType) {
         this.locationType = locationType;
     }
+
+    public List<CodexEntryEvent> getCodexEntries() {
+        return codexEntries;
+    }
+
+    public void setCodexEntries(List<CodexEntryEvent> codexEntries) {
+        this.codexEntries = codexEntries;
+    }
+
+    public void addCodexEntry(CodexEntryEvent entry) {
+        this.codexEntries.add(entry);
+    }
+
+    public void clearCodexEntries() {
+        this.codexEntries.clear();
+    }
+
 
 
     @Override public boolean equals(Object o) {

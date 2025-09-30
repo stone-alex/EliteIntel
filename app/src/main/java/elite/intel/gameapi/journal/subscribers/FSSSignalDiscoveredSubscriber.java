@@ -9,6 +9,8 @@ import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.TimeUtils;
 
+import java.util.Map;
+
 @SuppressWarnings("unused")
 public class FSSSignalDiscoveredSubscriber {
 
@@ -19,23 +21,9 @@ public class FSSSignalDiscoveredSubscriber {
     @Subscribe
     public void onFSSSignalDiscovered(FSSSignalDiscoveredEvent event) {
         PlayerSession playerSession = PlayerSession.getInstance();
-        LocationDto currentLocation = playerSession.getCurrentLocation();
 
 
-        FssSignal signal = new FssSignal();
-        signal.setSignalName(event.getSignalName());
-        signal.setSignalNameLocalised(event.getSignalNameLocalised());
-        signal.setSignalType(event.getSignalType());
-        signal.setSpawningFaction(event.getSpawningFactionLocalised());
-        signal.setSpawningState(event.getSpawningStateLocalised());
-        signal.setThreatLevel(event.getThreatLevel());
-        signal.setTimeRemaining(event.getTimeRemaining());
-        signal.setUssType(event.getUssType());
-        signal.setUssTypeLocalised(event.getUssTypeLocalised());
-        signal.setSystemAddress(event.getSystemAddress());
-        currentLocation.addDetectedSignal(signal);
-
-        playerSession.saveCurrentLocation(currentLocation);
+        playerSession.saveCurrentLocation(updateLocation(event, playerSession));
 
         if (event.getUssTypeLocalised() != null && event.getUssTypeLocalised().equals("Nonhuman signal source")) {
             publishVoice("Nonhuman signal source detected! Threat level " + event.getThreatLevel() + "!");
@@ -49,6 +37,35 @@ public class FSSSignalDiscoveredSubscriber {
         if (event.getUssType() != null && event.getUssType().contains(USS_TYPE_VERY_VALUABLE_SALVAGE)) {
             announceSalvage("Very Valuable salvage", event);
         }
+    }
+
+    private static LocationDto updateLocation(FSSSignalDiscoveredEvent event, PlayerSession playerSession) {
+        LocationDto currentLocation = null;
+        Map<Long, LocationDto> stellarObjects = playerSession.getLocations();
+        for(LocationDto dto : stellarObjects.values()) {
+            if(dto.getLocationType().equals(LocationDto.LocationType.PRIMARY_STAR)){
+                currentLocation = dto;
+                break;
+            }
+        }
+
+        if(currentLocation == null) {
+            currentLocation = playerSession.getCurrentLocation();
+        }
+
+        FssSignal signal = new FssSignal();
+        signal.setSignalName(event.getSignalName());
+        signal.setSignalNameLocalised(event.getSignalNameLocalised());
+        signal.setSignalType(event.getSignalType());
+        signal.setSpawningFaction(event.getSpawningFactionLocalised());
+        signal.setSpawningState(event.getSpawningStateLocalised());
+        signal.setThreatLevel(event.getThreatLevel());
+        signal.setTimeRemaining(event.getTimeRemaining());
+        signal.setUssType(event.getUssType());
+        signal.setUssTypeLocalised(event.getUssTypeLocalised());
+        signal.setSystemAddress(event.getSystemAddress());
+        currentLocation.addDetectedSignal(signal);
+        return currentLocation;
     }
 
     private void publishVoice(String message) {

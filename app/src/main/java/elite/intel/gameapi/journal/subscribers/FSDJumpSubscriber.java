@@ -14,6 +14,7 @@ import elite.intel.gameapi.gamestate.events.NavRouteDto;
 import elite.intel.gameapi.journal.events.FSDJumpEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.gameapi.journal.events.dto.MaterialDto;
+import elite.intel.session.LocationHistory;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.AdjustRoute;
 
@@ -32,26 +33,30 @@ public class FSDJumpSubscriber {
 
     @Subscribe
     public void onFSDJumpEvent(FSDJumpEvent event) {
-        LocationDto currentLocation = playerSession.getCurrentLocation();
         SystemBodiesDto systemBodiesDto = EdsmApiClient.searchSystemBodies(event.getStarSystem());
         processEdsmData(systemBodiesDto);
-        currentLocation.setStationGovernment(event.getSystemGovernmentLocalised());
-        currentLocation.setAllegiance(event.getSystemAllegiance());
-        currentLocation.setSecurity(event.getSystemSecurityLocalised());
-        currentLocation.setStarName(event.getStarSystem());
 
-        String currentStarSystem = event.getStarSystem();
-        currentLocation.setStarName(currentStarSystem);
-        currentLocation.setX(event.getStarPos()[0]);
-        currentLocation.setY(event.getStarPos()[1]);
-        currentLocation.setZ(event.getStarPos()[2]);
+        LocationHistory locationHistory = LocationHistory.getInstance(event.getStarSystem());
+        if(locationHistory.getLocations() != null && !locationHistory.getLocations().isEmpty()) {
+            playerSession.setLocations(locationHistory.getLocations());
+        }
 
-        currentLocation.setPopulation(event.getPopulation());
-        currentLocation.setPowerplayState(event.getPowerplayState());
-        currentLocation.setPowerplayStateControlProgress(event.getPowerplayStateControlProgress());
-        currentLocation.setPowerplayStateReinforcement(event.getPowerplayStateReinforcement());
-        currentLocation.setPowerplayStateUndermining(event.getPowerplayStateUndermining());
-        playerSession.saveCurrentLocation(currentLocation);
+        LocationDto primaryStar = new LocationDto();
+        primaryStar.setBodyId(event.getBodyId());
+        primaryStar.setStationGovernment(event.getSystemGovernmentLocalised());
+        primaryStar.setAllegiance(event.getSystemAllegiance());
+        primaryStar.setSecurity(event.getSystemSecurityLocalised());
+        primaryStar.setStarName(event.getStarSystem());
+        primaryStar.setLocationType(LocationDto.LocationType.PRIMARY_STAR);
+        primaryStar.setX(event.getStarPos()[0]);
+        primaryStar.setY(event.getStarPos()[1]);
+        primaryStar.setZ(event.getStarPos()[2]);
+        primaryStar.setPopulation(event.getPopulation());
+        primaryStar.setPowerplayState(event.getPowerplayState());
+        primaryStar.setPowerplayStateControlProgress(event.getPowerplayStateControlProgress());
+        primaryStar.setPowerplayStateReinforcement(event.getPowerplayStateReinforcement());
+        primaryStar.setPowerplayStateUndermining(event.getPowerplayStateUndermining());
+
 
         String finalDestination = String.valueOf(playerSession.get(PlayerSession.FINAL_DESTINATION));
 
@@ -61,7 +66,7 @@ public class FSDJumpSubscriber {
         List<NavRouteDto> orderedRoute = playerSession.getOrderedRoute();
         boolean roueSet = !orderedRoute.isEmpty();
 
-        if (finalDestination != null && finalDestination.equalsIgnoreCase(currentStarSystem)) {
+        if (finalDestination != null && finalDestination.equalsIgnoreCase(event.getStarSystem())) {
             playerSession.clearRoute();
             sb.append(" Arrived at final destination: ").append(finalDestination);
             TrafficDto trafficDto = EdsmApiClient.searchTraffic(finalDestination);
@@ -72,9 +77,8 @@ public class FSDJumpSubscriber {
             if (deathsDto.getData() != null && deathsDto.getData().getDeaths() != null) {
                 DeathsStats deathsStats = deathsDto.getData().getDeaths();
             }
-            currentLocation.setTrafficDto(trafficDto);
-            currentLocation.setDeathsDto(deathsDto);
-            playerSession.saveCurrentLocation(currentLocation);
+            primaryStar.setTrafficDto(trafficDto);
+            primaryStar.setDeathsDto(deathsDto);
         } else if (roueSet) {
             Map<Integer, NavRouteDto> adjustedRoute = AdjustRoute.adjustRoute(orderedRoute);
             playerSession.setNavRoute(adjustedRoute);
@@ -95,16 +99,19 @@ public class FSDJumpSubscriber {
             sb.append(remainingJump).append(" jumps remaining: ").append(" to ").append(finalDestination).append(".");
         }
 
+        playerSession.addLocation(primaryStar);
+        playerSession.saveCurrentLocation(primaryStar);
         EventBusManager.publish(new SensorDataEvent(sb.toString()));
     }
 
     private void processEdsmData(SystemBodiesDto systemBodiesDto) {
         if(systemBodiesDto == null) return;
         if(systemBodiesDto.getData() == null) return;
-
         List<BodyData> bodies = systemBodiesDto.getData().getBodies();
+        if(bodies == null || bodies.isEmpty()) return;
+
         for(BodyData  data : bodies) {
-            LocationDto stellarObject = playerSession.getStellarObject(data.getId());
+            LocationDto stellarObject = playerSession.getLocation(data.getId());
             stellarObject.setAtmosphere(data.getAtmosphereType());
             stellarObject.setBodyId(data.getBodyId());
             stellarObject.setHasRings(data.getRings() != null && !data.getRings().isEmpty());
@@ -119,7 +126,7 @@ public class FSDJumpSubscriber {
             stellarObject.setSurfaceTemperature(data.getSurfaceTemperature());
             stellarObject.setTidalLocked(data.isRotationalPeriodTidallyLocked());
             stellarObject.setLocationType(determineType(data));
-            playerSession.addStellarObject(stellarObject);
+            playerSession.addLocation(stellarObject);
         }
     }
 

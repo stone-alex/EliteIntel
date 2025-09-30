@@ -9,8 +9,9 @@ import java.io.*;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -24,8 +25,9 @@ import java.util.function.Supplier;
  */
 class SessionPersistence {
     private static final Logger log = LogManager.getLogger(SessionPersistence.class);
-    private String APP_DIR;
-    private String sessionFile = "system_session.json";
+    public static  String SESSION_DIR;
+    protected String APP_DIR;
+    protected String sessionFile = "system_session.json";
     private final Map<String, FieldHandler<?>> fields = new HashMap<>();
     private final BlockingQueue<SaveOperation> saveQueue = new LinkedBlockingQueue<>();
     private final BlockingQueue<ReadOperation> readQueue = new LinkedBlockingQueue<>();
@@ -33,8 +35,8 @@ class SessionPersistence {
     private volatile boolean isShutdown = false;
 
 
-    public SessionPersistence() {
-        // Private constructor for singleton
+    protected SessionPersistence(String directory) {
+        SESSION_DIR = directory;
         workerThread = new Thread(this::processQueue);
         workerThread.setDaemon(true);
         workerThread.start();
@@ -43,14 +45,14 @@ class SessionPersistence {
 
 
     public void ensureFileAndDirectoryExist(String sessionFile) {
-        String appDir = "session/";
+        String appDir = SESSION_DIR;
         try {
             URI jarUri = SessionPersistence.class.getProtectionDomain().getCodeSource().getLocation().toURI();
             File jarFile = new File(jarUri);
             if (jarFile.getPath().endsWith(".jar")) {
                 String parentDir = jarFile.getParent();
                 if (parentDir != null) {
-                    appDir = parentDir + File.separator + "session/";
+                    appDir = parentDir + File.separator + SESSION_DIR;
                     log.debug("Running from JAR, set APP_DIR to: {}", appDir);
                 } else {
                     log.warn("JAR parent directory is null, using empty APP_DIR: {}", appDir);
@@ -110,6 +112,16 @@ class SessionPersistence {
         }
     }
 
+    protected void save() {
+        try {
+            saveQueue.put(new SaveOperation(new HashMap<>()));
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.warn("Interrupted while queueing save operation");
+        }
+    }
+
+
     private void processQueue() {
         while (!isShutdown) {
             try {
@@ -142,12 +154,14 @@ class SessionPersistence {
 
         JsonObject existingJson = loadJsonForMerge();
         JsonObject json = new JsonObject();
-        JsonObject stateJson = existingJson.has("state") ? existingJson.getAsJsonObject("state") : new JsonObject();
+        JsonObject stateJson = existingJson.has("state") ? existingJson.getAsJsonObject("state") : null;
 
-        for (Map.Entry<String, Object> entry : operation.stateMap.entrySet()) {
-            stateJson.add(entry.getKey(), GsonFactory.getGson().toJsonTree(entry.getValue()));
+        if(stateJson != null) {
+            for (Map.Entry<String, Object> entry : operation.stateMap.entrySet()) {
+                stateJson.add(entry.getKey(), GsonFactory.getGson().toJsonTree(entry.getValue()));
+            }
+            json.add("state", stateJson);
         }
-        json.add("state", stateJson);
 
         for (Map.Entry<String, FieldHandler<?>> entry : fields.entrySet()) {
             String name = entry.getKey();

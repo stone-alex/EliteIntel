@@ -44,7 +44,14 @@ public class ScanEventSubscriber {
         String bodyName = event.getBodyName();
 
         LocationDto stellarObject = getOrMakeStellarObject(event.getBodyID());
-        stellarObject.setLocationType(determineLocationType(event));
+        LocationDto.LocationType locationType = determineLocationType(event);
+        stellarObject.setLocationType(locationType);
+
+        if(!PRIMARY_STAR.equals(locationType)) {
+            stellarObject.setX(playerSession.getCurrentLocation().getX());
+            stellarObject.setY(playerSession.getCurrentLocation().getY());
+            stellarObject.setZ(playerSession.getCurrentLocation().getZ());
+        }
 
         if (stellarObject.getBodyId() == 0) {
             announceIfNewDiscovery(event, stellarObject);
@@ -91,7 +98,7 @@ public class ScanEventSubscriber {
             }
             stellarObject.setMaterials(materials);
         }
-        playerSession.addStellarObject(stellarObject);
+        playerSession.addLocation(stellarObject);
         playerSession.setLastScan(stellarObject);
     }
 
@@ -149,7 +156,7 @@ public class ScanEventSubscriber {
     }
 
     private LocationDto getOrMakeStellarObject(long id) {
-        LocationDto stellarObjectDto = playerSession.getStellarObjects().get(id);
+        LocationDto stellarObjectDto = playerSession.getLocations().get(id);
         return stellarObjectDto == null ? new LocationDto(LocationDto.LocationType.UNKNOWN) : stellarObjectDto;
     }
 

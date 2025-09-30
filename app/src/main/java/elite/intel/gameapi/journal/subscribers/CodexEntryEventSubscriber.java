@@ -4,6 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.journal.events.CodexEntryEvent;
+import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 
 public class CodexEntryEventSubscriber {
@@ -25,31 +26,9 @@ public class CodexEntryEventSubscriber {
             EventBusManager.publish(new SensorDataEvent(sb.toString()));
         }
 
-        PlayerSession.getInstance().addCodexEntry(event);
+        PlayerSession playerSession = PlayerSession.getInstance();
+        LocationDto currentLocation = playerSession.getCurrentLocation();
+        currentLocation.addCodexEntry(event);
+        playerSession.saveCurrentLocation(currentLocation);
     }
-
-
-/*
-{
-  "timestamp": "2025-09-22T07:08:43Z",
-  "event": "CodexEntry",
-  "EntryID": 1400159,
-  "Name": "$Codex_Ent_IceFumarole_CarbonDioxideGeysers_Name;",
-  "Name_Localised": "Carbon Dioxide Ice Fumarole",
-  "SubCategory": "$Codex_SubCategory_Geology_and_Anomalies;",
-  "SubCategory_Localised": "Geology and anomalies",
-  "Category": "$Codex_Category_Biology;",
-  "Category_Localised": "Biological and Geological",
-  "Region": "$Codex_RegionName_18;",
-  "Region_Localised": "Inner Orion Spur",
-  "System": "Synuefe LB-W b47-2",
-  "SystemAddress": 5073831339417,
-  "BodyID": 18,
-  "Latitude": -23.575468,
-  "Longitude": 2.986898,
-  "IsNewEntry": true,
-  "VoucherAmount": 50000
-}
-
-*/
 }

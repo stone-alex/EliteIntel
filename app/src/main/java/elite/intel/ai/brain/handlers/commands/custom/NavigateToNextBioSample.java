@@ -31,7 +31,7 @@ public class NavigateToNextBioSample implements CommandHandler {
             return;
         }
 
-        List<CodexEntryEvent> codexEntries = playerSession.getCodexEntries();
+        List<CodexEntryEvent> codexEntries = playerSession.getCurrentLocation().getCodexEntries();
         if (codexEntries == null || codexEntries.isEmpty()) {
             EventBusManager.publish(new VoiceProcessEvent("No codex entries found."));
             return;

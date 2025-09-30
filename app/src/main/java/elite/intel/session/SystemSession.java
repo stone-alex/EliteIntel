@@ -30,6 +30,7 @@ public class SystemSession extends SessionPersistence implements java.io.Seriali
     private static final String SESSION_FILE = "system_session.json";
 
     public static final String RADION_TRANSMISSION_ON_OFF = "radio_transmission_on_off";
+    public static final String SESSION_DIR = "session/";
     private final Map<String, Object> state = new HashMap<>();
 
     private AiVoices aiVoice;
@@ -43,6 +44,7 @@ public class SystemSession extends SessionPersistence implements java.io.Seriali
 
 
     private SystemSession() {
+        super(SESSION_DIR);
         ensureFileAndDirectoryExist(SESSION_FILE);
         registerField("aiVoice", this::getAIVoice, this::setAIVoice, AiVoices.class);
         registerField("aiPersonality", this::getAIPersonality, this::setAIPersonality, AIPersonality.class);

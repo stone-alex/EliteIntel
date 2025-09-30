@@ -29,7 +29,7 @@ public class SAASignalsFoundSubscriber {
         LocationDto currentLocation = playerSession.getCurrentLocation();
 
         if (currentLocation.getBodyId() != event.getBodyID()) {
-            currentLocation = playerSession.getStellarObject(event.getBodyID());
+            currentLocation = playerSession.getLocation(event.getBodyID());
         }
 
         currentLocation.addSaaSignals(event.getSignals());
@@ -77,15 +77,15 @@ public class SAASignalsFoundSubscriber {
                 ring.setLocationType(PLANETARY_RING);
 
                 String parentBodyName = event.getBodyName().substring(0, event.getBodyName().length() - " X Ring".length());
-                LocationDto parent = playerSession.getStellarObject(findParentId(parentBodyName));
+                LocationDto parent = playerSession.getLocation(findParentId(parentBodyName));
                 if(parent != null) parent.setHasRings(true);
                 if(event.getSignals() != null) {
                     ring.setSaaSignals(event.getSignals());
                     ring.setGeoSignals(event.getSignals().size());
                     if(parent != null) parent.setSaaSignals(event.getSignals());
                 }
-                playerSession.addStellarObject(ring);
-                if(parent != null) playerSession.addStellarObject(parent);
+                playerSession.addLocation(ring);
+                if(parent != null) playerSession.addLocation(parent);
             }
 
             EventBusManager.publish(new SensorDataEvent(sb.toString()));
@@ -94,11 +94,11 @@ public class SAASignalsFoundSubscriber {
         }
 
         playerSession.saveCurrentLocation(currentLocation);
-        playerSession.addStellarObject(currentLocation);
+        playerSession.addLocation(currentLocation);
     }
 
     private long findParentId(String parentBodyName) {
-        Collection<LocationDto> values = playerSession.getStellarObjects().values();
+        Collection<LocationDto> values = playerSession.getLocations().values();
         for (LocationDto dto : values) {
             if (dto.getPlanetName().equalsIgnoreCase(parentBodyName)) {
                 return dto.getBodyId();

@@ -95,7 +95,7 @@ public class SystemSession extends SessionPersistence implements java.io.Seriali
     }
 
     public AiVoices getAIVoice() {
-        return this.aiVoice == null ? AiVoices.CHARLES : this.aiVoice;
+        return this.aiVoice == null ? AiVoices.EMMA : this.aiVoice;
     }
 
     public void setAIPersonality(AIPersonality personality) {
@@ -104,7 +104,7 @@ public class SystemSession extends SessionPersistence implements java.io.Seriali
     }
 
     public AIPersonality getAIPersonality() {
-        return this.aiPersonality == null ? AIPersonality.PROFESSIONAL : this.aiPersonality;
+        return this.aiPersonality == null ? AIPersonality.CASUAL : this.aiPersonality;
     }
 
     public void setAICadence(AICadence cadence) {

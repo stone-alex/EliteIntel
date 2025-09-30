@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.UserInputEvent;
 import elite.intel.gameapi.VoiceProcessEvent;
+import elite.intel.gameapi.gamestate.events.LowAltitudeFlightEvent;
 import elite.intel.gameapi.journal.events.*;
 import elite.intel.session.ClearSessionCacheEvent;
 import elite.intel.session.LoadSessionEvent;

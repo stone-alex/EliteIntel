@@ -79,7 +79,7 @@ public class ScanEventSubscriber {
                     }
                 }
                 stellarObject.setFssSignals(fssBodySignalsEvent.getSignals());
-                stellarObject.setNumberOfBioFormsPresent(countBioSignals);
+                stellarObject.setBioSignals(countBioSignals);
                 stellarObject.setGeoSignals(countGeological);
             }
         }

@@ -16,7 +16,6 @@ import java.util.Collection;
 import java.util.List;
 
 import static elite.intel.gameapi.journal.events.dto.LocationDto.LocationType.PLANETARY_RING;
-import static elite.intel.util.StringUtls.subtractString;
 
 public class SAASignalsFoundSubscriber {
 
@@ -51,7 +50,7 @@ public class SAASignalsFoundSubscriber {
 
 
             if (liveSignals > 0) {
-                currentLocation.setNumberOfBioFormsPresent(liveSignals);
+                currentLocation.setBioSignals(liveSignals);
                 currentLocation.setGenus(toGenusDto(event.getGenuses()));
                 currentLocation.setBioFormsPresent(true);
                 currentLocation.setGenus(toGenusDto(event.getGenuses()));

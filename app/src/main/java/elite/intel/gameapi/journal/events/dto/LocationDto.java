@@ -91,7 +91,7 @@ public class LocationDto implements ToJsonConvertible {
     private String atmosphere;
     private double radius;
     private double massEM;
-    private int numberOfBioFormsPresent;
+    private int bioSignals;
     private int geoSignals;
     private boolean hasRings;
 
@@ -563,12 +563,12 @@ public class LocationDto implements ToJsonConvertible {
         this.massEM = massEM;
     }
 
-    public int getNumberOfBioFormsPresent() {
-        return numberOfBioFormsPresent;
+    public int getBioSignals() {
+        return bioSignals;
     }
 
-    public void setNumberOfBioFormsPresent(int numberOfBioFormsPresent) {
-        this.numberOfBioFormsPresent = numberOfBioFormsPresent;
+    public void setBioSignals(int bioSignals) {
+        this.bioSignals = bioSignals;
     }
 
     public int getGeoSignals() {
@@ -600,7 +600,7 @@ public class LocationDto implements ToJsonConvertible {
         if (o == null || getClass() != o.getClass()) return false;
 
         LocationDto that = (LocationDto) o;
-        return Double.compare(getX(), that.getX()) == 0 && Double.compare(getY(), that.getY()) == 0 && Double.compare(getZ(), that.getZ()) == 0 && Double.compare(getDistance(), that.getDistance()) == 0 && getMarketID() == that.getMarketID() && getPopulation() == that.getPopulation() && Double.compare(getPowerplayStateControlProgress(), that.getPowerplayStateControlProgress()) == 0 && getPowerplayStateReinforcement() == that.getPowerplayStateReinforcement() && getPowerplayStateUndermining() == that.getPowerplayStateUndermining() && Double.compare(getGravity(), that.getGravity()) == 0 && Double.compare(getSurfaceTemperature(), that.getSurfaceTemperature()) == 0 && Double.compare(getOrbitalCruiseEntryAltitude(), that.getOrbitalCruiseEntryAltitude()) == 0 && isOurDiscovery() == that.isOurDiscovery() && getBodyId() == that.getBodyId() && isLandable() == that.isLandable() && isTerraformable() == that.isTerraformable() && isTidalLocked() == that.isTidalLocked() && Double.compare(getRadius(), that.getRadius()) == 0 && Double.compare(getMassEM(), that.getMassEM()) == 0 && getNumberOfBioFormsPresent() == that.getNumberOfBioFormsPresent() && getGeoSignals() == that.getGeoSignals() && isHasRings() == that.isHasRings() && Objects.equals(getMaterials(), that.getMaterials()) && Objects.equals(getSaaSignals(), that.getSaaSignals()) && Objects.equals(getFssSignals(), that.getFssSignals()) && Objects.equals(getGenus(), that.getGenus()) && Objects.equals(getPartialBioSamples(), that.getPartialBioSamples()) && Objects.equals(getStationServices(), that.getStationServices()) && Objects.equals(getPowers(), that.getPowers()) && Objects.equals(getDetectedSignals(), that.getDetectedSignals()) && Objects.equals(getStarName(), that.getStarName()) && Objects.equals(getPlanetName(), that.getPlanetName()) && Objects.equals(getPlanetShortName(), that.getPlanetShortName()) && Objects.equals(getPlanetData(), that.getPlanetData()) && Objects.equals(getTrafficDto(), that.getTrafficDto()) && Objects.equals(getDeathsDto(), that.getDeathsDto()) && Objects.equals(getStationName(), that.getStationName()) && Objects.equals(getStationType(), that.getStationType()) && Objects.equals(getStationFaction(), that.getStationFaction()) && Objects.equals(getStationGovernment(), that.getStationGovernment()) && Objects.equals(getStationAllegiance(), that.getStationAllegiance()) && Objects.equals(getStationEconomy(), that.getStationEconomy()) && Objects.equals(getAllegiance(), that.getAllegiance()) && Objects.equals(getEconomy(), that.getEconomy()) && Objects.equals(getSecondEconomy(), that.getSecondEconomy()) && Objects.equals(getGovernment(), that.getGovernment()) && Objects.equals(getSecurity(), that.getSecurity()) && Objects.equals(getBodyType(), that.getBodyType()) && Objects.equals(getControllingPower(), that.getControllingPower()) && Objects.equals(getPowerplayState(), that.getPowerplayState()) && Arrays.equals(getLandingCoordinates(), that.getLandingCoordinates()) && getBioStatus() == that.getBioStatus() && getLocationType() == that.getLocationType() && Objects.equals(getPlanetClass(), that.getPlanetClass()) && Objects.equals(getAtmosphere(), that.getAtmosphere());
+        return Double.compare(getX(), that.getX()) == 0 && Double.compare(getY(), that.getY()) == 0 && Double.compare(getZ(), that.getZ()) == 0 && Double.compare(getDistance(), that.getDistance()) == 0 && getMarketID() == that.getMarketID() && getPopulation() == that.getPopulation() && Double.compare(getPowerplayStateControlProgress(), that.getPowerplayStateControlProgress()) == 0 && getPowerplayStateReinforcement() == that.getPowerplayStateReinforcement() && getPowerplayStateUndermining() == that.getPowerplayStateUndermining() && Double.compare(getGravity(), that.getGravity()) == 0 && Double.compare(getSurfaceTemperature(), that.getSurfaceTemperature()) == 0 && Double.compare(getOrbitalCruiseEntryAltitude(), that.getOrbitalCruiseEntryAltitude()) == 0 && isOurDiscovery() == that.isOurDiscovery() && getBodyId() == that.getBodyId() && isLandable() == that.isLandable() && isTerraformable() == that.isTerraformable() && isTidalLocked() == that.isTidalLocked() && Double.compare(getRadius(), that.getRadius()) == 0 && Double.compare(getMassEM(), that.getMassEM()) == 0 && getBioSignals() == that.getBioSignals() && getGeoSignals() == that.getGeoSignals() && isHasRings() == that.isHasRings() && Objects.equals(getMaterials(), that.getMaterials()) && Objects.equals(getSaaSignals(), that.getSaaSignals()) && Objects.equals(getFssSignals(), that.getFssSignals()) && Objects.equals(getGenus(), that.getGenus()) && Objects.equals(getPartialBioSamples(), that.getPartialBioSamples()) && Objects.equals(getStationServices(), that.getStationServices()) && Objects.equals(getPowers(), that.getPowers()) && Objects.equals(getDetectedSignals(), that.getDetectedSignals()) && Objects.equals(getStarName(), that.getStarName()) && Objects.equals(getPlanetName(), that.getPlanetName()) && Objects.equals(getPlanetShortName(), that.getPlanetShortName()) && Objects.equals(getPlanetData(), that.getPlanetData()) && Objects.equals(getTrafficDto(), that.getTrafficDto()) && Objects.equals(getDeathsDto(), that.getDeathsDto()) && Objects.equals(getStationName(), that.getStationName()) && Objects.equals(getStationType(), that.getStationType()) && Objects.equals(getStationFaction(), that.getStationFaction()) && Objects.equals(getStationGovernment(), that.getStationGovernment()) && Objects.equals(getStationAllegiance(), that.getStationAllegiance()) && Objects.equals(getStationEconomy(), that.getStationEconomy()) && Objects.equals(getAllegiance(), that.getAllegiance()) && Objects.equals(getEconomy(), that.getEconomy()) && Objects.equals(getSecondEconomy(), that.getSecondEconomy()) && Objects.equals(getGovernment(), that.getGovernment()) && Objects.equals(getSecurity(), that.getSecurity()) && Objects.equals(getBodyType(), that.getBodyType()) && Objects.equals(getControllingPower(), that.getControllingPower()) && Objects.equals(getPowerplayState(), that.getPowerplayState()) && Arrays.equals(getLandingCoordinates(), that.getLandingCoordinates()) && getBioStatus() == that.getBioStatus() && getLocationType() == that.getLocationType() && Objects.equals(getPlanetClass(), that.getPlanetClass()) && Objects.equals(getAtmosphere(), that.getAtmosphere());
     }
 
     @Override public int hashCode() {
@@ -656,7 +656,7 @@ public class LocationDto implements ToJsonConvertible {
         result = 31 * result + Objects.hashCode(getAtmosphere());
         result = 31 * result + Double.hashCode(getRadius());
         result = 31 * result + Double.hashCode(getMassEM());
-        result = 31 * result + getNumberOfBioFormsPresent();
+        result = 31 * result + getBioSignals();
         result = 31 * result + getGeoSignals();
         result = 31 * result + Boolean.hashCode(isHasRings());
         return result;

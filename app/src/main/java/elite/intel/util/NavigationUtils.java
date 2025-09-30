@@ -258,12 +258,12 @@ public class NavigationUtils {
     private record Result(int roundedBearing, double distanceInMeters) {
     }
 
-    public record Direction(int bearingToTarget, double distanceToTarget, int userHeading, double userSpeed, double altitude, String vocalization) {
+    public record Direction(int bearingToTarget, double distanceToTarget, int userHeading, double getSpeed, double altitude, String vocalization) {
         public String toString() {
             return "Bearing: " + bearingToTarget +
                     " Heading: " + userHeading +
                     " Distance: " + formatDistance(distanceToTarget) +
-                    " Speed: " + userSpeed +
+                    " Speed: " + getSpeed +
                     " Altitude: " + formatDistance(altitude);
         }
     }

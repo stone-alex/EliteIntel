@@ -1,7 +1,6 @@
 package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
-import elite.intel.gameapi.journal.events.SAASignalsFoundEvent;
 import elite.intel.gameapi.journal.events.dto.BioSampleDto;
 import elite.intel.gameapi.journal.events.dto.GenusDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
@@ -9,7 +8,6 @@ import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static elite.intel.util.ExoBio.completedScansForPlanet;
@@ -24,13 +22,18 @@ public class AnalyzeBioSamplesHandler extends BaseQueryAnalyzer implements Query
 
         List<BioSampleDto> partialScans = currentLocation.getBioScans();
         List<GenusDto> genus = currentLocation.getGenus();
-        List<BioSampleDto> completedForThisPlanet = completedScansForPlanet(playerSession);
+        List<BioSampleDto> samplesCompletedForThisPlanet = completedScansForPlanet(playerSession);
+        List<BioSampleDto> allSamplesForThisStarSystem = playerSession.getBioSamples();
 
-        return analyzeData(new DataDto(partialScans, genus, completedForThisPlanet).toJson(), originalUserInput);
+        return analyzeData(new DataDto(partialScans, genus, samplesCompletedForThisPlanet, allSamplesForThisStarSystem).toJson(), originalUserInput);
     }
 
 
-    record DataDto(List<BioSampleDto> partialScans, List<GenusDto> allGenusOnPlanet, List<BioSampleDto> completedSamples) implements ToJsonConvertible {
+    record DataDto(List<BioSampleDto> partialScans,
+                   List<GenusDto> allGenusOnPlanet,
+                   List<BioSampleDto> samplesCompletedForThisPlanet,
+                   List<BioSampleDto> allSamplesForThisStarSystem
+    ) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }

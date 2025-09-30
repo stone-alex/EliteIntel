@@ -117,6 +117,8 @@ public class GameCommands {
         CAM_ZOOM_IN("cam_zoom_in", "CamZoomIn", GenericGameController.class),
         CAM_ZOOM_OUT("cam_zoom_out", "CamZoomOut",GenericGameController.class),
 
+        UP_THRUST_BUTTON("up_thrust_button", "UpThrustButton",GenericGameController.class),
+        DOWN_THRUST_BUTTON("down_thrust_button", "DownThrustButton",GenericGameController.class),
 
         EXPLORATION_FSSDISCOVERY_SCAN("_", "ExplorationFSSEnter", PerformFSSScanHandler.class);
 
@@ -176,6 +178,9 @@ public class GameCommands {
             if (GameCommand.values()[i] == GameCommand.EXPLORATION_FSSENTER) continue;
             if (GameCommand.values()[i] == GameCommand.CAM_ZOOM_IN) continue;
             if (GameCommand.values()[i] == GameCommand.CAM_ZOOM_OUT) continue;
+            if (GameCommand.values()[i] == GameCommand.UP_THRUST_BUTTON) continue;
+            if (GameCommand.values()[i] == GameCommand.DOWN_THRUST_BUTTON) continue;
+
 
             commands[i] = GameCommand.values()[i].getUserCommand();
         }

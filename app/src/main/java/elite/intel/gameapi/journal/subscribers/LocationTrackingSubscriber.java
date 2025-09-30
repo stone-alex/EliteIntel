@@ -83,15 +83,15 @@ public class LocationTrackingSubscriber {
             log.info(navigator.toString());
         }
 
-        if (navigator.userSpeed() > 0 && event.getAltitude() < 10) {
+        if (navigator.getSpeed() > 0 && event.getAltitude() < 10) {
             onTheSurface = true;
-        } else if (navigator.userSpeed() > 0 && event.getAltitude() > 10) {
+        } else if (navigator.getSpeed() > 0 && event.getAltitude() > 10) {
             onTheSurface = false;
         }
 
 
         long announcementMinInterval = MIN_INTERVAL_MS;
-        if (navigator.userSpeed() >= 15 && navigator.userSpeed() < 150) {
+        if (navigator.getSpeed() >= 15 && navigator.getSpeed() < 150) {
             announcementMinInterval = 15_000;
         }
 
@@ -114,11 +114,11 @@ public class LocationTrackingSubscriber {
     }
 
     private static boolean isInOrbit(PlayerMovedEvent event, NavigationUtils.Direction navigator) {
-        return event.getAltitude() > 20_000 && navigator.userSpeed() > NORMAL_SPACE_HIGHEST_SPEED;
+        return event.getAltitude() > 20_000 && navigator.getSpeed() > NORMAL_SPACE_HIGHEST_SPEED;
     }
 
     private static boolean isOnSurface(PlayerMovedEvent event, NavigationUtils.Direction navigator) {
-        return event.getAltitude() == 0 || (navigator.userSpeed() > 0 && navigator.userSpeed() < NORMAL_SPACE_HIGHEST_SPEED);
+        return event.getAltitude() == 0 || (navigator.getSpeed() > 0 && navigator.getSpeed() < NORMAL_SPACE_HIGHEST_SPEED);
     }
 
     /**
@@ -187,7 +187,7 @@ public class LocationTrackingSubscriber {
     private void surfaceNavigation(NavigationUtils.Direction navigator, long now, long effectiveInterval, double altitude) {
         //Low altitude flights or Surface Recon Vehicle.
         if (lastDistance == -1) {
-            if(navigator.userSpeed() > 0) {
+            if(navigator.getSpeed() > 0) {
                 vocalize("Starting Surface Navigation", 0, 0, now);
             } else {
                 vocalize("Starting Surface Navigation", navigator.distanceToTarget(), navigator.bearingToTarget(), now);
@@ -203,7 +203,7 @@ public class LocationTrackingSubscriber {
         }
 
         boolean withinThreeKm = navigator.distanceToTarget() < 12_000;
-        boolean tooFast = navigator.userSpeed() > 150;
+        boolean tooFast = navigator.getSpeed() > 150;
         String reduceSpeed = "";
         if (withinThreeKm && tooFast) {
             reduceSpeed = " Reduce speed below 150 km. ";
@@ -227,7 +227,7 @@ public class LocationTrackingSubscriber {
         }
 
 
-        if (onTheSurface && navigator.distanceToTarget() <= ARRIVAL_RADIUS && navigator.altitude() == 0 && navigator.userSpeed() < 700) {
+        if (onTheSurface && navigator.distanceToTarget() <= ARRIVAL_RADIUS && navigator.altitude() == 0 && navigator.getSpeed() < 700) {
             vocalize("Arrived!", 0, 0, now);
             TargetLocation t = playerSession.getTracking();
             t.setEnabled(false);

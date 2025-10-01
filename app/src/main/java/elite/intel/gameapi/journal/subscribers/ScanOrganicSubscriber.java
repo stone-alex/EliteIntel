@@ -28,6 +28,7 @@ public class ScanOrganicSubscriber {
 
     @Subscribe
     public void onScanOrganicEvent(ScanOrganicEvent event) {
+        playerSession.setTracking(new TargetLocation()); // turn off tracking
         StringBuilder sb = new StringBuilder();
         String scanType = event.getScanType();
         String genus = event.getGenusLocalised();
@@ -39,7 +40,6 @@ public class ScanOrganicSubscriber {
         int range = bioDetails == null ? BioScanDistances.GENUS_TO_CCR.get(genus) : bioDetails.colonyRange();
         LocationDto currentLocation = playerSession.getCurrentLocation();
         boolean isOurDiscovery = currentLocation.isOurDiscovery();
-
         removeCodexEntryIfMatches(event.getVariantLocalised(), range, true);
 
         if (scan1.equals(scanType)) {
@@ -90,14 +90,14 @@ public class ScanOrganicSubscriber {
 
 
             EventBusManager.publish(new SensorDataEvent(sb.toString()));
-            
             BioSampleDto bioSampleDto = createBioSampleDto(genus, variant,  starSystemNumber, valueInCredits);
             bioSampleDto.setScanXof3("Three of Three");
             bioSampleDto.setBioSampleCompleted(true);
             playerSession.addBioSample(bioSampleDto);
             playerSession.saveCurrentLocation(currentLocation);
+            playerSession.getCurrentLocation().deletePartialBioSamples();
+            playerSession.save();
             removeCodexEntryIfMatches(event.getVariantLocalised(), -1, false);
-            playerSession.setTracking(new TargetLocation()); // turn off tracking
         }
     }
 

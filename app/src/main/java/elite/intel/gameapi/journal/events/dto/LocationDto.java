@@ -89,6 +89,10 @@ public class LocationDto implements ToJsonConvertible {
         return shipyard;
     }
 
+    public void deletePartialBioSamples() {
+        partialBioSamples.clear();
+    }
+
     public enum BioStatus {
         BIO_FORMS_PRESENT,
         NO_BIO_FORMS,

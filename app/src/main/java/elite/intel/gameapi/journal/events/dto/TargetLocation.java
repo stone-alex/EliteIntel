@@ -7,6 +7,10 @@ public class TargetLocation {
     boolean isEnabled;
     long requestedTime;
 
+    public TargetLocation() {
+        requestedTime = System.currentTimeMillis();
+    }
+
     public double getLatitude() {
         return latitude;
     }

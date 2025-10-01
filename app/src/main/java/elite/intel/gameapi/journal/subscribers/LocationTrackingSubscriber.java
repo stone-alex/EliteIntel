@@ -5,6 +5,7 @@ import elite.intel.ai.mouth.TTSInterruptEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.VoiceProcessEvent;
 import elite.intel.gameapi.gamestate.events.PlayerMovedEvent;
+import elite.intel.gameapi.journal.events.DisembarkEvent;
 import elite.intel.gameapi.journal.events.SupercruiseExitEvent;
 import elite.intel.gameapi.journal.events.TouchdownEvent;
 import elite.intel.gameapi.journal.events.dto.TargetLocation;
@@ -249,6 +250,7 @@ public class LocationTrackingSubscriber {
     }
 
     private void resetTrackingState() {
+        playerSession.setTracking(new TargetLocation());
         lastTracking = null;
         lastDistance = -1;
         lastHeading = -1;
@@ -259,7 +261,7 @@ public class LocationTrackingSubscriber {
 
 
     private void vocalize(String text, double distance, double bearing, long now) {
-        EventBusManager.publish(new TTSInterruptEvent());
+        //EventBusManager.publish(new TTSInterruptEvent());
 
         StringBuilder sb = new StringBuilder();
         if (text != null) sb.append(text).append(". ");
@@ -317,6 +319,11 @@ public class LocationTrackingSubscriber {
     @Subscribe
     public void onTouchdownEvent(TouchdownEvent event) {
         onTheSurface = true;
+    }
+
+    @Subscribe
+    public void onDisembarkEvent(DisembarkEvent event) {
+        resetTrackingState();
     }
 
 }

@@ -1,7 +1,6 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.intel.ai.mouth.TTSInterruptEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.VoiceProcessEvent;
 import elite.intel.gameapi.gamestate.events.PlayerMovedEvent;
@@ -35,10 +34,10 @@ public class LocationTrackingSubscriber {
     private double lastDistanceThreshold = 0;
 
     public static final int NORMAL_SPACE_HIGHEST_SPEED = 600;
-    private static final long MIN_INTERVAL_MS = 10_000;
+    private static final long MIN_INTERVAL_MS = 12_000;
     private static final double[] DISTANCE_THRESHOLDS = generateDescendingSequence(10_000_000);
     private static final double HYSTERESIS = 7;
-    private static final double ARRIVAL_RADIUS = 25;
+    private static final double ARRIVAL_RADIUS = 50;
     private static final double GLIDE_ENTRY_RADIUS = 400_000;
     private static final double TOO_FAR_FOR_GLIDE = 1_000_000;
 
@@ -63,7 +62,7 @@ public class LocationTrackingSubscriber {
 
         long NOW = System.currentTimeMillis();
 
-        if (!targetLocation.equals(lastTracking)) {
+        if (!targetLocation.equals(lastTracking) && lastTracking != null) {
             resetTrackingState();
             lastTracking = targetLocation;
         }
@@ -84,16 +83,16 @@ public class LocationTrackingSubscriber {
             log.info(navigator.toString());
         }
 
-        if (navigator.getSpeed() > 0 && event.getAltitude() < 10) {
+        if (event.getAltitude() < 10) {
             onTheSurface = true;
-        } else if (navigator.getSpeed() > 0 && event.getAltitude() > 10) {
+        } else {
             onTheSurface = false;
         }
 
 
         long announcementMinInterval = MIN_INTERVAL_MS;
         if (navigator.getSpeed() >= 15 && navigator.getSpeed() < 150) {
-            announcementMinInterval = 15_000;
+            announcementMinInterval = 17_000;
         }
 
         // announcement time throttle
@@ -189,7 +188,7 @@ public class LocationTrackingSubscriber {
         //Low altitude flights or Surface Recon Vehicle.
         if (lastDistance == -1) {
             if(navigator.getSpeed() > 0) {
-                vocalize("Starting Surface Navigation", 0, 0, now);
+                vocalize("Starting Surface Navigation", navigator.distanceToTarget(), navigator.bearingToTarget(), now);
             } else {
                 vocalize("Starting Surface Navigation", navigator.distanceToTarget(), navigator.bearingToTarget(), now);
             }
@@ -197,11 +196,6 @@ public class LocationTrackingSubscriber {
 
         boolean headingDeviation = lastHeading > 0 && navigator.bearingToTarget() > lastHeading + HYSTERESIS || navigator.bearingToTarget() < lastHeading - HYSTERESIS;
         boolean aboveAnnouncementThreshold = now - lastAnnounceTime > effectiveInterval;
-        boolean headingDoesMatchBearing = navigator.userHeading() != lastHeading;
-
-        if (aboveAnnouncementThreshold && headingDoesMatchBearing && headingDeviation) {
-            vocalize("", navigator.distanceToTarget(), navigator.bearingToTarget(), now);
-        }
 
         boolean withinThreeKm = navigator.distanceToTarget() < 12_000;
         boolean tooFast = navigator.getSpeed() > 150;
@@ -213,7 +207,19 @@ public class LocationTrackingSubscriber {
         int glideAngle = calculateGlideAngle(altitude, navigator.distanceToTarget());
         boolean movingAway = navigator.distanceToTarget() > lastDistance;
 
-        if (altitude > 10) {
+        if (onTheSurface) {
+            if (navigator.distanceToTarget() <= ARRIVAL_RADIUS && navigator.altitude() == 0 && navigator.getSpeed() < 700) {
+                vocalize("Arrived!", 0, 0, now);
+                TargetLocation t = playerSession.getTracking();
+                t.setEnabled(false);
+                playerSession.setTracking(t);
+                resetTrackingState();
+            } else if (aboveAnnouncementThreshold &&  headingDeviation) {
+                vocalize(movingAway ? "Moving Away." : "Getting Closer. ",navigator.distanceToTarget(), navigator.bearingToTarget(), now);
+            } else {
+                announceDistances(navigator, movingAway ? "Moving Away." : "Getting Closer", now);
+            }
+        } else {
             if (navigator.distanceToTarget() < 1000) {
                 vocalize("Within 1000 meters from target. Look for landing spot", 0, 0, now);
             } else {
@@ -223,17 +229,6 @@ public class LocationTrackingSubscriber {
                     announceDistances(navigator, movingAway ? "Moving Away." : "Getting Closer. " + reduceSpeed, now);
                 }
             }
-        } else if (onTheSurface) {
-            announceDistances(navigator, movingAway ? "Moving Away." : "Getting Closer. " + reduceSpeed, now);
-        }
-
-
-        if (onTheSurface && navigator.distanceToTarget() <= ARRIVAL_RADIUS && navigator.altitude() == 0 && navigator.getSpeed() < 700) {
-            vocalize("Arrived!", 0, 0, now);
-            TargetLocation t = playerSession.getTracking();
-            t.setEnabled(false);
-            playerSession.setTracking(t);
-            resetTrackingState();
         }
     }
 

@@ -6,6 +6,7 @@ import elite.intel.util.TimestampFormatter;
 import elite.intel.util.json.GsonFactory;
 
 import java.time.Duration;
+import java.util.Objects;
 
 public class CodexEntryEvent extends BaseEvent {
     @SerializedName("EntryID")
@@ -158,5 +159,29 @@ public class CodexEntryEvent extends BaseEvent {
 
     public String getFormattedTimestamp(boolean useLocalTime) {
         return TimestampFormatter.formatTimestamp(getTimestamp().toString(), useLocalTime);
+    }
+
+
+    @Override public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+
+        CodexEntryEvent that = (CodexEntryEvent) o;
+        return getEntryID() == that.getEntryID() && getSystemAddress() == that.getSystemAddress() && getBodyID() == that.getBodyID() && Double.compare(getLatitude(), that.getLatitude()) == 0 && Double.compare(getLongitude(), that.getLongitude()) == 0 && isNewEntry() == that.isNewEntry() && getVoucherAmount() == that.getVoucherAmount() && Objects.equals(getName(), that.getName()) && Objects.equals(getNameLocalised(), that.getNameLocalised()) && Objects.equals(getSubCategory(), that.getSubCategory()) && Objects.equals(getSubCategoryLocalised(), that.getSubCategoryLocalised()) && Objects.equals(getCategory(), that.getCategory()) && Objects.equals(getCategoryLocalised(), that.getCategoryLocalised()) && Objects.equals(getRegion(), that.getRegion()) && Objects.equals(getRegionLocalised(), that.getRegionLocalised()) && Objects.equals(getSystem(), that.getSystem());
+    }
+
+    @Override public int hashCode() {
+        int result = Long.hashCode(getEntryID());
+        result = 31 * result + Objects.hashCode(getName());
+        result = 31 * result + Objects.hashCode(getNameLocalised());
+        result = 31 * result + Objects.hashCode(getSubCategory());
+        result = 31 * result + Objects.hashCode(getSubCategoryLocalised());
+        result = 31 * result + Objects.hashCode(getCategory());
+        result = 31 * result + Objects.hashCode(getCategoryLocalised());
+        result = 31 * result + Objects.hashCode(getRegion());
+        result = 31 * result + Objects.hashCode(getRegionLocalised());
+        result = 31 * result + Objects.hashCode(getSystem());
+        result = 31 * result + Long.hashCode(getSystemAddress());
+        result = 31 * result + getBodyID();
+        return result;
     }
 }

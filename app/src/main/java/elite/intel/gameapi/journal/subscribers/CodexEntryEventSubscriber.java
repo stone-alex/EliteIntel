@@ -14,6 +14,8 @@ public class CodexEntryEventSubscriber {
 
     @Subscribe
     public void onCodexEntryEvent(CodexEntryEvent event) {
+        PlayerSession playerSession = PlayerSession.getInstance();
+        LocationDto currentLocation = playerSession.getCurrentLocation();
         StringBuilder sb = new StringBuilder();
 
         String firstWordOfEntryName = event.getNameLocalised().split(" ")[0];
@@ -28,15 +30,22 @@ public class CodexEntryEventSubscriber {
         sb.append(", ");
         sb.append("Name: ");
         sb.append(event.getNameLocalised());
-        sb.append(", ");
-        sb.append("Voucher Amount: ");
-        sb.append(event.getVoucherAmount());
-        sb.append(" credits.");
-        if(projectedPayment > 0) sb.append(" Projected Vista Genomics Payment: ").append(projectedPayment).append(" credits. For a complete set of three samples");
+
+
+        boolean alreadyHaveThisEntry = currentLocation.getCodexEntries().stream().anyMatch(entry -> entry.getNameLocalised().equals(event.getNameLocalised()));
+
+        if (!alreadyHaveThisEntry) {
+            sb.append(", ");
+            sb.append("Voucher Amount: ");
+            sb.append(event.getVoucherAmount());
+            sb.append(" credits.");
+            if(projectedPayment > 0) {
+                sb.append(" Projected Vista Genomics Payment: ").append(projectedPayment).append(" credits. For a complete set of three samples");
+            }
+        }
+
         EventBusManager.publish(new SensorDataEvent(sb.toString()));
 
-        PlayerSession playerSession = PlayerSession.getInstance();
-        LocationDto currentLocation = playerSession.getCurrentLocation();
         currentLocation.addCodexEntry(event);
         playerSession.saveCurrentLocation(currentLocation);
     }

@@ -56,12 +56,15 @@ public class SAASignalsFoundSubscriber {
                 boolean hasBeenScanned = scanBioCompleted(event, playerSession);
 
                 if (!hasBeenScanned) sb.append(" Exobiology signal(s) found ").append(liveSignals).append(": ");
+
                 long averageProjectedPayment = 0;
                 for (SAASignalsFoundEvent.Genus genus : event.getGenuses()) {
                     averageProjectedPayment = averageProjectedPayment + BioForms.getAverageProjectedPayment(genus.getGenusLocalised());
-                    sb.append(" ");
-                    sb.append(genus.getGenusLocalised());
-                    sb.append(", ");
+                    if (!hasBeenScanned) {
+                        sb.append(" ");
+                        sb.append(genus.getGenusLocalised());
+                        sb.append(", ");
+                    }
                 }
                 if (!hasBeenScanned) sb.append("Average projected payment: ").append(averageProjectedPayment).append(" credits. Plus bonus if first discovered.");
 

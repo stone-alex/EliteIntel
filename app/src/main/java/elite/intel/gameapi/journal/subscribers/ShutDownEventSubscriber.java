@@ -15,7 +15,7 @@ public class ShutDownEventSubscriber {
         PlayerSession playerSession = PlayerSession.getInstance();
         playerSession.save();
         LocationHistory history = LocationHistory.getInstance(playerSession.getCurrentLocation().getStarName());
-        history.addLocations(playerSession.getLocations());
+        history.saveLocations(playerSession.getLocations());
 
         EventBusManager.publish(new VoiceProcessEvent("Session off line..."));
         EventBusManager.publish(new SystemShutDownEvent());

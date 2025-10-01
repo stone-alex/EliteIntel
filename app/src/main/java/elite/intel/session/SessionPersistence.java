@@ -3,15 +3,13 @@ package elite.intel.session;
 import com.google.gson.*;
 import elite.intel.util.json.GsonFactory;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager; 
+import org.apache.logging.log4j.LogManager;
 
 import java.io.*;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -30,7 +28,6 @@ class SessionPersistence {
     protected String sessionFile = "x.json";
     private final Map<String, FieldHandler<?>> fields = new HashMap<>();
     private final BlockingQueue<SaveOperation> saveQueue = new LinkedBlockingQueue<>();
-    private final BlockingQueue<ReadOperation> readQueue = new LinkedBlockingQueue<>();
     private final Thread workerThread;
     private volatile boolean isShutdown = false;
 
@@ -90,14 +87,6 @@ class SessionPersistence {
         //
     }
 
-    private static class ReadOperation {
-        private final Consumer<JsonObject> jsonConsumer;
-
-        public ReadOperation(Consumer<JsonObject> jsonConsumer) {
-            this.jsonConsumer = jsonConsumer;
-        }
-    }
-
 
     public void save() {
         try {
@@ -112,11 +101,6 @@ class SessionPersistence {
     private void processQueue() {
         while (!isShutdown) {
             try {
-                ReadOperation readOp = readQueue.poll();
-                if (readOp != null) {
-                    processReadOperation(readOp);
-                }
-
                 while (!saveQueue.isEmpty()) {
                     saveQueue.take();
                     processSaveOperation();
@@ -145,27 +129,27 @@ class SessionPersistence {
         for (Map.Entry<String, FieldHandler<?>> entry : fields.entrySet()) {
             String name = entry.getKey();
             Object value = entry.getValue().getter.get();
-        
-        // Clearer logic: if value is null, check for fallback in existing JSON
-        JsonElement element;
-        if (value != null) {
-            element = GsonFactory.getGson().toJsonTree(value);
-        } else if (existingJson.has(name)) {
-            element = existingJson.get(name);
-        } else {
-            element = JsonNull.INSTANCE;
+
+            // Clearer logic: if value is null, check for fallback in existing JSON
+            JsonElement element;
+            if (value != null) {
+                element = GsonFactory.getGson().toJsonTree(value);
+            } else if (existingJson.has(name)) {
+                element = existingJson.get(name);
+            } else {
+                element = JsonNull.INSTANCE;
+            }
+            json.add(name, element);
         }
-        json.add(name, element);
+
+        try (Writer writer = new FileWriter(file)) {
+            GsonFactory.getGson().toJson(json, writer);
+            log.debug("Saved session to: {}", file.getPath());
+        } catch (IOException e) {
+            log.error("Failed to save session to {}: {}", file.getPath(), e.getMessage(), e);
+            // Consider: throw new RuntimeException("Failed to save session", e);
+        }
     }
-    
-    try (Writer writer = new FileWriter(file)) {
-        GsonFactory.getGson().toJson(json, writer);
-        log.debug("Saved session to: {}", file.getPath());
-    } catch (IOException e) {
-        log.error("Failed to save session to {}: {}", file.getPath(), e.getMessage(), e);
-        // Consider: throw new RuntimeException("Failed to save session", e);
-    }
-}
 
     public void shutdown() {
         isShutdown = true;
@@ -173,15 +157,6 @@ class SessionPersistence {
     }
 
     protected void loadSession(Consumer<JsonObject> jsonConsumer) {
-        try {
-            readQueue.put(new ReadOperation(jsonConsumer));
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            log.warn("Interrupted while queueing read operation");
-        }
-    }
-
-    private void processReadOperation(ReadOperation operation) {
         File file = ensureSessionDirectory();
         if (file == null) {
             return;
@@ -192,7 +167,7 @@ class SessionPersistence {
                 JsonObject emptyJson = new JsonObject();
                 Files.write(file.toPath(), GsonFactory.getGson().toJson(emptyJson).getBytes());
                 log.info("Created empty session file: {}", file.getPath());
-                operation.jsonConsumer.accept(emptyJson);
+                jsonConsumer.accept(emptyJson);
             } catch (IOException e) {
                 log.error("Failed to create empty session file {}: {}", file.getPath(), e.getMessage(), e);
             }
@@ -203,10 +178,10 @@ class SessionPersistence {
             JsonElement jsonElement = JsonParser.parseReader(reader);
             if (jsonElement == null || !jsonElement.isJsonObject()) return;
             JsonObject json = jsonElement.getAsJsonObject();
-            operation.jsonConsumer.accept(json);
+            jsonConsumer.accept(json);
             log.debug("Loaded session from: {}", file.getPath());
-        } catch (IOException | JsonSyntaxException e) {
-            // retry
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -244,33 +219,8 @@ class SessionPersistence {
         }
     }
 
-
-    private Object convertJsonElementToObject(JsonElement element) {
-        if (element.isJsonNull()) {
-            return null;
-        } else if (element.isJsonPrimitive()) {
-            JsonPrimitive primitive = element.getAsJsonPrimitive();
-            if (primitive.isBoolean()) {
-                return primitive.getAsBoolean();
-            } else if (primitive.isNumber()) {
-                // Try to return the most appropriate number type
-                Number number = primitive.getAsNumber();
-                if (number.doubleValue() == number.longValue()) {
-                    return number.longValue();
-                }
-                return number.doubleValue();
-            } else if (primitive.isString()) {
-                return primitive.getAsString();
-            }
-        } else if (element.isJsonArray()) {
-            return element.getAsJsonArray();
-        } else if (element.isJsonObject()) {
-            return element.getAsJsonObject();
-        }
-        return element;
-    }
-
     private File ensureSessionDirectory() {
+        if(sessionFile == null || sessionFile.isEmpty() || sessionFile.equalsIgnoreCase("null")){return null;}
         File file = new File(APP_DIR, sessionFile);
         File parentDir = file.getParentFile();
         if (!parentDir.exists()) {

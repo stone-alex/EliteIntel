@@ -425,7 +425,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         return targetFactions;
     }
 
-    public void addLocation(LocationDto object) {
+    public void saveLocation(LocationDto object) {
         locations.put(object.getBodyId(), object);
         save();
     }
@@ -443,16 +443,6 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         return locations.get(id) == null ? new LocationDto(id) : locations.get(id);
     }
 
-    @Subscribe
-    public void onStartJumpEvent(StartJumpEvent event) {
-        if ("Hyperspace".equalsIgnoreCase(event.getJumpType())) {
-            LocationHistory.getInstance(getCurrentLocation().getStarName()).addLocations(getLocations());
-            saveCurrentLocation(new LocationDto(LocationDto.LocationType.PRIMARY_STAR));
-            locations.clear();
-            save();
-        }
-    }
-
     public void clearBounties() {
         bountyCollectedThisSession = 0;
         setTotalBountyProfit(0);
@@ -466,7 +456,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     }
 
     public void saveCurrentLocation(LocationDto location) {
-        addLocation(location);
+        saveLocation(location);
         setCurrentLocationId(location.getBodyId());
         save();
     }
@@ -882,6 +872,11 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     }
     public void setRadioTransmissionOn(Boolean radioTransmissionOn) {
         this.isRadioTransmissionOn = radioTransmissionOn;
+        save();
+    }
+
+    public void clearLocations() {
+        locations.clear();
         save();
     }
 }

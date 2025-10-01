@@ -82,8 +82,8 @@ public class SAASignalsFoundSubscriber {
                     ring.setGeoSignals(event.getSignals().size());
                     if(parent != null) parent.setSaaSignals(event.getSignals());
                 }
-                playerSession.addLocation(ring);
-                if(parent != null) playerSession.addLocation(parent);
+                playerSession.saveLocation(ring);
+                if(parent != null) playerSession.saveLocation(parent);
             }
 
             EventBusManager.publish(new SensorDataEvent(sb.toString()));
@@ -92,7 +92,7 @@ public class SAASignalsFoundSubscriber {
         }
 
         playerSession.saveCurrentLocation(currentLocation);
-        playerSession.addLocation(currentLocation);
+        playerSession.saveLocation(currentLocation);
     }
 
     private long findParentId(String parentBodyName) {

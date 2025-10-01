@@ -18,12 +18,16 @@ public class LocationHistory extends SessionPersistence implements java.io.Seria
 
     private LocationHistory(String fileName) {
         super(HISTORY_DIR);
-        ensureFileAndDirectoryExist(fileName);
+        if(fileName == null || fileName.isEmpty() || fileName.equalsIgnoreCase("null")){
+            ensureFileAndDirectoryExist("temp");
+        } else {
+            ensureFileAndDirectoryExist(fileName);
+        }
 
         registerField("locations", this::getLocations, v -> {
             locations.clear();
             locations.putAll((Map<Long, LocationDto>) v);
-        }, new TypeToken<Map<String, LocationDto>>() {
+        }, new TypeToken<Map<Long, LocationDto>>() {
         }.getType());
 
         loadFromDisk();
@@ -33,7 +37,7 @@ public class LocationHistory extends SessionPersistence implements java.io.Seria
 
     Map<Long, LocationDto> locations = new HashMap<>();
 
-    public void addLocations(Map<Long, LocationDto> locations) {
+    public void saveLocations(Map<Long, LocationDto> locations) {
         this.locations.putAll(locations);
         save();
     }

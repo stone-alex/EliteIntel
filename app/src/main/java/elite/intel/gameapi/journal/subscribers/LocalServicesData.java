@@ -34,13 +34,4 @@ public class LocalServicesData {
         playerSession.save();
         return sb.toString().trim();
     }
-
-    public static void clearLocalServicesData() {
-        PlayerSession playerSession = PlayerSession.getInstance();
-        LocationDto currentLocation = playerSession.getCurrentLocation();
-        currentLocation.setMarket(null);
-        currentLocation.setOutfitting(null);
-        currentLocation.setShipyard(null);
-        playerSession.saveCurrentLocation(currentLocation);
-    }
 }

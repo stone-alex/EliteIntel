@@ -26,7 +26,7 @@ import static elite.intel.util.GravityCalculator.calculateSurfaceGravity;
 import static elite.intel.util.StringUtls.isFuelStarClause;
 
 @SuppressWarnings("unused")
-public class FSDJumpSubscriber {
+public class JumpCompletedSubscriber {
 
     PlayerSession playerSession = PlayerSession.getInstance();
 
@@ -99,7 +99,7 @@ public class FSDJumpSubscriber {
             sb.append(remainingJump).append(" jumps remaining: ").append(" to ").append(finalDestination).append(".");
         }
 
-        playerSession.addLocation(primaryStar);
+        playerSession.saveLocation(primaryStar);
         playerSession.saveCurrentLocation(primaryStar);
         EventBusManager.publish(new SensorDataEvent(sb.toString()));
     }
@@ -126,7 +126,7 @@ public class FSDJumpSubscriber {
             stellarObject.setSurfaceTemperature(data.getSurfaceTemperature());
             stellarObject.setTidalLocked(data.isRotationalPeriodTidallyLocked());
             stellarObject.setLocationType(determineType(data));
-            playerSession.addLocation(stellarObject);
+            playerSession.saveLocation(stellarObject);
         }
     }
 

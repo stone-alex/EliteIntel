@@ -12,7 +12,9 @@ import elite.intel.util.GravityCalculator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 import static elite.intel.gameapi.journal.events.dto.LocationDto.LocationType.*;
 import static elite.intel.util.StringUtls.subtractString;
@@ -51,12 +53,11 @@ public class ScanEventSubscriber {
             lcoation.setZ(playerSession.getCurrentLocation().getZ());
         }
 
-        if (lcoation.getBodyId() == 0) {
-            announceIfNewDiscovery(event, lcoation);
-            lcoation.setPlanetName(event.getBodyName());
-            lcoation.setBodyId(event.getBodyID());
-            lcoation.setPlanetShortName(shortName);
-        }
+
+        lcoation.setPlanetName(event.getBodyName());
+        lcoation.setBodyId(event.getBodyID());
+        lcoation.setPlanetShortName(shortName);
+
 
         Double gravity = GravityCalculator.calculateSurfaceGravity(event.getMassEM(), event.getRadius());
         if (gravity != null) lcoation.setGravity(gravity); //DO NOT use event.getSurfaceGravity() as it is not accurate
@@ -73,19 +74,19 @@ public class ScanEventSubscriber {
         List<FSSBodySignalsEvent.Signal> fssSignals = playerSession.getCurrentLocation().getFssSignals();
 
         if (fssSignals != null && !fssSignals.isEmpty()) {
-                int countBioSignals = 0;
-                int countGeological = 0;
+            int countBioSignals = 0;
+            int countGeological = 0;
             for (FSSBodySignalsEvent.Signal signal : fssSignals) {
-                    if ("Biological".equalsIgnoreCase(signal.getTypeLocalised())) {
-                        countBioSignals++;
-                    }
-                    if ("Geological".equalsIgnoreCase(signal.getTypeLocalised())) {
-                        countGeological++;
-                    }
+                if ("Biological".equalsIgnoreCase(signal.getTypeLocalised())) {
+                    countBioSignals++;
                 }
-                lcoation.setBioSignals(countBioSignals);
-                lcoation.setGeoSignals(countGeological);
+                if ("Geological".equalsIgnoreCase(signal.getTypeLocalised())) {
+                    countGeological++;
+                }
             }
+            lcoation.setBioSignals(countBioSignals);
+            lcoation.setGeoSignals(countGeological);
+        }
 
 
         List<MaterialDto> materials = new ArrayList<>();
@@ -95,7 +96,9 @@ public class ScanEventSubscriber {
             }
             lcoation.setMaterials(materials);
         }
-        playerSession.addLocation(lcoation);
+
+        announceIfNewDiscovery(event, lcoation);
+        playerSession.saveLocation(lcoation);
         playerSession.setLastScan(lcoation);
     }
 
@@ -117,38 +120,39 @@ public class ScanEventSubscriber {
     }
 
 
-    private void announceIfNewDiscovery(ScanEvent event, LocationDto stellarObject) {
+    private void announceIfNewDiscovery(ScanEvent event, LocationDto location) {
         boolean wasDiscovered = event.isWasDiscovered();
         boolean wasMapped = event.isWasMapped();
         String shortName = subtractString(event.getBodyName(), event.getStarSystem());
+
+        location.setOurDiscovery(!wasDiscovered);
+        location.setWeMappedIt(!wasMapped);
+        location.setPlanetShortName(shortName);
 
         boolean isStar = event.getStarType() != null && !event.getStarType().isEmpty() || event.getSurfaceTemperature() > 1000;
         boolean isPrimaryStar = event.getDistanceFromArrivalLS() == 0;
         boolean isBeltCluster = event.getBodyName().contains("Belt Cluster");
 
-        if (!wasDiscovered && PLANET_OR_MOON.equals(stellarObject.getLocationType())) {
+        if (!wasDiscovered && PLANET_OR_MOON.equals(location.getLocationType())) {
             if (event.getTerraformState() != null && !event.getTerraformState().isEmpty()) {
                 EventBusManager.publish(new SensorDataEvent("New Terraformable planet: " + shortName + " Details available on request. "));
             } else if (event.getPlanetClass() != null && valuablePlanetClasses.contains(event.getPlanetClass().toLowerCase())) {
-                LocationDto currentLocation = playerSession.getCurrentLocation();
-                currentLocation.setOurDiscovery(true);
-                stellarObject.setOurDiscovery(true);
-                playerSession.saveCurrentLocation(currentLocation);
                 EventBusManager.publish(new SensorDataEvent("New discovery logged: " + event.getPlanetClass()));
             }
         }
 
-        if (wasDiscovered && !STAR.equals(stellarObject.getLocationType())) {
-            if (!wasMapped && !BELT_CLUSTER.equals(stellarObject.getLocationType())) {
+        if (wasDiscovered && !STAR.equals(location.getLocationType())) {
+            if (!wasMapped && !BELT_CLUSTER.equals(location.getLocationType())) {
                 EventBusManager.publish(new SensorDataEvent(shortName + " was previously discovered, but not mapped. "));
-            } else if (!BELT_CLUSTER.equals(stellarObject.getLocationType())) {
+            } else if (!BELT_CLUSTER.equals(location.getLocationType())) {
                 String sensorData = getDetails(event, shortName);
                 EventBusManager.publish(new SensorDataEvent(sensorData));
                 log.info(sensorData);
             }
-        } else if (!wasDiscovered && PRIMARY_STAR.equals(stellarObject.getLocationType())) {
+        } else if (!wasDiscovered && PRIMARY_STAR.equals(location.getLocationType())) {
+
             EventBusManager.publish(new SensorDataEvent("New star system discovered!"));
-        } else if (PRIMARY_STAR.equals(stellarObject.getLocationType())) {
+        } else if (PRIMARY_STAR.equals(location.getLocationType())) {
             EventBusManager.publish(new SensorDataEvent("Previously discovered!"));
         }
     }

@@ -50,9 +50,7 @@ public class SAASignalsFoundSubscriber {
 
 
             if (liveSignals > 0) {
-                currentLocation.setBioSignals(liveSignals);
-                currentLocation.setGenus(toGenusDto(event.getGenuses()));
-                currentLocation.setBioFormsPresent(true);
+                currentLocation.setBioSignals(event.getGenuses().size());
                 currentLocation.setGenus(toGenusDto(event.getGenuses()));
                 currentLocation.setBioFormsPresent(true);
                 boolean hasBeenScanned = scanBioCompleted(event, playerSession);

@@ -4,6 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.VoiceProcessEvent;
 import elite.intel.gameapi.journal.events.DockedEvent;
+import elite.intel.gameapi.journal.events.dto.CarrierDataDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 
@@ -26,6 +27,15 @@ public class DockedSubscriber {
         currentLocation.setStationGovernment(event.getStationGovernmentLocalised());
         if("FleetCarrier".equalsIgnoreCase(event.getStationType())) {
             currentLocation.setLocationType(FLEET_CARRIER);
+            PlayerSession.GalacticCoordinates coordinates = playerSession.getGalacticCoordinates();
+            if(coordinates != null) {
+                CarrierDataDto carrierData = playerSession.getCarrierData();
+                carrierData.setX(coordinates.x());
+                carrierData.setY(coordinates.y());
+                carrierData.setZ(coordinates.z());
+                carrierData.setLocation(event.getStarSystem());
+                playerSession.setCarrierData(carrierData);
+            }
         } else {
             currentLocation.setLocationType(STATION);
         }

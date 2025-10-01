@@ -879,4 +879,19 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         locations.clear();
         save();
     }
+
+
+    public GalacticCoordinates getGalacticCoordinates() {
+        GalacticCoordinates result;
+        Map<Long, LocationDto> locations = getLocations();
+        for(LocationDto location : locations.values()){
+            if(location.getLocationType().equals(LocationDto.LocationType.PRIMARY_STAR)){
+                return new GalacticCoordinates(location.getX(), location.getY(), location.getZ());
+            }
+        }
+        return null;
+    }
+
+    public record GalacticCoordinates(double x, double y, double z){}
+
 }

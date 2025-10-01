@@ -20,7 +20,7 @@ public class TransmissionReceivedSubscriber {
         Boolean isRadioOn = playerSession.isRadioTransmissionOn();
 
 
-        if (!isRadioOn) return;
+        if (isRadioOn == null || !isRadioOn) return;
 
         if (isPirateMessage(event.getMessageLocalised())) {
             EventBusManager.publish(new VoiceProcessEvent("Pirate Alert!!!"));

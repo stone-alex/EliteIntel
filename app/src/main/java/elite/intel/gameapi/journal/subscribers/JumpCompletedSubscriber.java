@@ -41,7 +41,9 @@ public class JumpCompletedSubscriber {
             playerSession.setLocations(locationHistory.getLocations());
         }
 
-        LocationDto primaryStar = new LocationDto();
+        LocationDto locationDto = locationHistory.getLocations().get((long)event.getBodyId());
+
+        LocationDto primaryStar =  locationDto == null ? new LocationDto() : locationDto;
         primaryStar.setBodyId(event.getBodyId());
         primaryStar.setStationGovernment(event.getSystemGovernmentLocalised());
         primaryStar.setAllegiance(event.getSystemAllegiance());

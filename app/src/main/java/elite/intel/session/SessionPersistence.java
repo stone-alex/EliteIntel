@@ -177,7 +177,7 @@ class SessionPersistence {
                 jsonConsumer.accept(json);
                 log.debug("Loaded session from: {}", file.getPath());
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("Failed to load session from {}: {}", file.getPath(), e.getMessage(), e);
             }
         } finally {
             lock.readLock().unlock();
@@ -224,7 +224,7 @@ class SessionPersistence {
     }
 
     private File ensureSessionDirectory() {
-        if (sessionFile == null || sessionFile.isEmpty() || sessionFile.equalsIgnoreCase("null")) {
+        if (sessionFile == null || sessionFile.isEmpty() || sessionFile.contains("null")) {
             return null;
         }
         File file = new File(APP_DIR, sessionFile);

@@ -27,9 +27,13 @@ public class StartJumpSubscriber {
             EventBusManager.publish(new SensorDataEvent(sb.toString()));
             PlayerSession playerSession = PlayerSession.getInstance();
             LocationHistory locationHistory = LocationHistory.getInstance(playerSession.getCurrentLocation().getStarName());
-            locationHistory.saveLocations(playerSession.getLocations());
-            playerSession.clearLocations();
 
+            //TODO: need a better way to handle this.
+            if (locationHistory.getLocations().size() < playerSession.getLocations().size()) {
+                locationHistory.saveLocations(playerSession.getLocations());
+            }
+
+            playerSession.clearLocations();
         }
     }
 }

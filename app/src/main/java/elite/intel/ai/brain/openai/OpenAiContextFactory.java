@@ -168,7 +168,7 @@ public class OpenAiContextFactory implements AiContextFactory {
         sb.append(aiCadence.getCadenceClause()).append(" ");
         sb.append("Apply personality: ").append(aiPersonality.name().toUpperCase()).append(" - ").append(aiPersonality.getBehaviorClause()).append(" ");
         sb.append("Do not use words like 'player' or 'you', it breaks immersion. Use 'we' instead. ");
-        sb.append("For star system codes or ship plates (e.g., RH-F), use NATO phonetic alphabet (e.g., Romeo Hotel dash Foxtrot). ");
+        sb.append("For alpha numeric numbers or names, star system codes or ship plates (e.g., Syralaei RH-F, KI-U), use NATO phonetic alphabet (e.g., Syralaei Romeo Hotel dash Foxtrot, Kilo India dash Uniform). ");
         sb.append("Spell out numerals in full words (e.g., 285 = two hundred and eighty-five, 27 = twenty-seven). ");
         sb.append("Gravity units in G, Temperature units Kelvin provide conversion to Celsius. Mass units metric.");
         sb.append("Distances between stars in light years. Distance between planets in light seconds. Distances between bio samples are in metres");

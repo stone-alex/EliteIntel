@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ApproachBodySubscriber {
+
     private static double formatDouble(double value) {
         return Math.round(value * 100.0) / 100.0;
     }
@@ -38,22 +39,24 @@ public class ApproachBodySubscriber {
         if(playerSession.getTracking().isEnabled()) return;
 
 
-        //clear bio scans if we are landing on a different planet within the same system
+        //TODO: once converted to map, remove this code
         if (playerSession.getCurrentLocation().getBodyId() != event.getBodyID()) {
             location.setPartialBioSamples(new ArrayList<>());
         }
-
-
         SystemBodiesDto systemBodiesDto = EdsmApiClient.searchSystemBodies(currentSystem);
-        if (location.getGravity() > 0) {
-            useOurData(location, location, sb);
+
+
+        boolean weHaveOurOwnData = location.getGravity() > 0;
+
+        if (weHaveOurOwnData) {
+            useOurData(location, sb);
         } else {
             //try EDSM data
-            boolean hasBodiesData = systemBodiesDto.getData() != null
+            boolean edsmHasData = systemBodiesDto.getData() != null
                     && systemBodiesDto.getData().getBodies() != null
                     && !systemBodiesDto.getData().getBodies().isEmpty();
 
-            if (hasBodiesData) {
+            if (edsmHasData) {
                 List<BodyData> bodies = systemBodiesDto.getData().getBodies();
                 for (BodyData bodyData : bodies) {
                     if (location.getPlanetName().equalsIgnoreCase(bodyData.getName())) {
@@ -66,38 +69,35 @@ public class ApproachBodySubscriber {
                 sb.append(" Check gravity and temperature data before landing");
             }
         }
-        playerSession.saveCurrentLocation(location);
 
-        if (!playerSession.getTracking().isEnabled()) {
-            EventBusManager.publish(new VoiceProcessEvent(sb.toString()));
-        }
+        playerSession.saveCurrentLocation(location);
+        EventBusManager.publish(new VoiceProcessEvent(sb.toString()));
     }
 
 
-    private void useOurData(LocationDto stellarObjectDto, LocationDto currentLocation, StringBuilder sb) {
-        double surfaceGravity = formatDouble(stellarObjectDto.getGravity());
-        currentLocation.setGravity(surfaceGravity);
+    private void useOurData(LocationDto location, StringBuilder sb) {
+        double surfaceGravity = formatDouble(location.getGravity());
 
         sb.append(" Surface Gravity: ").append(surfaceGravity).append("G. ");
         if (surfaceGravity > 1) {
             sb.append(" Gravity Warning!!! ");
         }
-        if (!"None".equalsIgnoreCase(stellarObjectDto.getAtmosphere())) {
-            sb.append(" Atmosphere: ").append(stellarObjectDto.getAtmosphere());
+        if (!"None".equalsIgnoreCase(location.getAtmosphere())) {
+            sb.append(" Atmosphere: ").append(location.getAtmosphere());
             sb.append(". ");
         }
-        List<MaterialDto> materials = stellarObjectDto.getMaterials();
+        List<MaterialDto> materials = location.getMaterials();
         if (materials != null && !materials.isEmpty()) {
             sb.append(" ").append(materials.size()).append(" materials detected. Details available on request. ");
             for (MaterialDto material : materials) {
-                currentLocation.addMaterial(new MaterialDto(material.getName(), material.getPercent()));
+                location.addMaterial(new MaterialDto(material.getName(), material.getPercent()));
             }
         }
         sb.append(".");
-        double surfaceTemperature = stellarObjectDto.getSurfaceTemperature();
-        currentLocation.setSurfaceTemperature(surfaceTemperature);
+        double surfaceTemperature = location.getSurfaceTemperature();
+        location.setSurfaceTemperature(surfaceTemperature);
         sb.append(" Surface Temperature: ").append(surfaceTemperature).append(" K. ");
-        if (stellarObjectDto.isTidalLocked()) sb.append(" The planet is tidally locked. ");
+        if (location.isTidalLocked()) sb.append(" The planet is tidally locked. ");
     }
 
 

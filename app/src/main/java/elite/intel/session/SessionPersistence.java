@@ -13,24 +13,25 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
  * The SessionPersistence class provides methods to manage the persistence of session data.
  * It handles saving, loading, and deleting session files and manages the serialization
- * and deserialization of field data.
+ * and deserialization of field data with synchronized read/write access.
  */
 class SessionPersistence {
     private static final Logger log = LogManager.getLogger(SessionPersistence.class);
-    public static  String SESSION_DIR;
+    public static String SESSION_DIR;
     protected String APP_DIR;
     protected String sessionFile = "x.json";
     private final Map<String, FieldHandler<?>> fields = new HashMap<>();
     private final BlockingQueue<SaveOperation> saveQueue = new LinkedBlockingQueue<>();
     private final Thread workerThread;
     private volatile boolean isShutdown = false;
-
+    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
     protected SessionPersistence(String directory) {
         SESSION_DIR = directory;
@@ -38,8 +39,6 @@ class SessionPersistence {
         workerThread.setDaemon(true);
         workerThread.start();
     }
-
-
 
     public void ensureFileAndDirectoryExist(String sessionFile) {
         String appDir = SESSION_DIR;
@@ -64,29 +63,24 @@ class SessionPersistence {
         this.sessionFile = sessionFile;
     }
 
-
     public static class FieldHandler<T> {
         private final Supplier<T> getter;
         private final Consumer<T> setter;
-
         private final Type type;
         public FieldHandler(Supplier<T> getter, Consumer<T> setter, Type type) {
             this.getter = getter;
             this.setter = setter;
             this.type = type;
         }
-
     }
 
     protected <T> void registerField(String name, Supplier<T> getter, Consumer<T> setter, Type type) {
         fields.put(name, new FieldHandler<>(getter, setter, type));
     }
 
-
     private static class SaveOperation {
-        //
+        // Placeholder for save operation
     }
-
 
     public void save() {
         try {
@@ -97,7 +91,6 @@ class SessionPersistence {
         }
     }
 
-
     private void processQueue() {
         while (!isShutdown) {
             try {
@@ -105,7 +98,6 @@ class SessionPersistence {
                     saveQueue.take();
                     processSaveOperation();
                 }
-
                 Thread.sleep(100); // Prevent busy waiting
             } catch (InterruptedException e) {
                 if (isShutdown) {
@@ -118,36 +110,38 @@ class SessionPersistence {
     }
 
     private void processSaveOperation() {
-        File file = ensureSessionDirectory();
-        if (file == null) {
-            return;
-        }
-
-        JsonObject existingJson = loadJsonForMerge();
-        JsonObject json = new JsonObject();
-
-        for (Map.Entry<String, FieldHandler<?>> entry : fields.entrySet()) {
-            String name = entry.getKey();
-            Object value = entry.getValue().getter.get();
-
-            // Clearer logic: if value is null, check for fallback in existing JSON
-            JsonElement element;
-            if (value != null) {
-                element = GsonFactory.getGson().toJsonTree(value);
-            } else if (existingJson.has(name)) {
-                element = existingJson.get(name);
-            } else {
-                element = JsonNull.INSTANCE;
+        lock.writeLock().lock();
+        try {
+            File file = ensureSessionDirectory();
+            if (file == null) {
+                return;
             }
-            json.add(name, element);
-        }
 
-        try (Writer writer = new FileWriter(file)) {
-            GsonFactory.getGson().toJson(json, writer);
-            log.debug("Saved session to: {}", file.getPath());
-        } catch (IOException e) {
-            log.error("Failed to save session to {}: {}", file.getPath(), e.getMessage(), e);
-            // Consider: throw new RuntimeException("Failed to save session", e);
+            JsonObject existingJson = loadJsonForMerge();
+            JsonObject json = new JsonObject();
+
+            for (Map.Entry<String, FieldHandler<?>> entry : fields.entrySet()) {
+                String name = entry.getKey();
+                Object value = entry.getValue().getter.get();
+                JsonElement element;
+                if (value != null) {
+                    element = GsonFactory.getGson().toJsonTree(value);
+                } else if (existingJson.has(name)) {
+                    element = existingJson.get(name);
+                } else {
+                    element = JsonNull.INSTANCE;
+                }
+                json.add(name, element);
+            }
+
+            try (Writer writer = new FileWriter(file)) {
+                GsonFactory.getGson().toJson(json, writer);
+                log.debug("Saved session to: {}", file.getPath());
+            } catch (IOException e) {
+                log.error("Failed to save session to {}: {}", file.getPath(), e.getMessage(), e);
+            }
+        } finally {
+            lock.writeLock().unlock();
         }
     }
 
@@ -157,50 +151,60 @@ class SessionPersistence {
     }
 
     protected void loadSession(Consumer<JsonObject> jsonConsumer) {
-        File file = ensureSessionDirectory();
-        if (file == null) {
-            return;
-        }
-
-        if (!file.exists()) {
-            try {
-                JsonObject emptyJson = new JsonObject();
-                Files.write(file.toPath(), GsonFactory.getGson().toJson(emptyJson).getBytes());
-                log.info("Created empty session file: {}", file.getPath());
-                jsonConsumer.accept(emptyJson);
-            } catch (IOException e) {
-                log.error("Failed to create empty session file {}: {}", file.getPath(), e.getMessage(), e);
+        lock.readLock().lock();
+        try {
+            File file = ensureSessionDirectory();
+            if (file == null) {
+                return;
             }
-            return;
-        }
 
-        try (Reader reader = new FileReader(file)) {
-            JsonElement jsonElement = JsonParser.parseReader(reader);
-            if (jsonElement == null || !jsonElement.isJsonObject()) return;
-            JsonObject json = jsonElement.getAsJsonObject();
-            jsonConsumer.accept(json);
-            log.debug("Loaded session from: {}", file.getPath());
-        } catch (Exception e) {
-            e.printStackTrace();
+            if (!file.exists()) {
+                try {
+                    JsonObject emptyJson = new JsonObject();
+                    Files.write(file.toPath(), GsonFactory.getGson().toJson(emptyJson).getBytes());
+                    log.info("Created empty session file: {}", file.getPath());
+                    jsonConsumer.accept(emptyJson);
+                } catch (IOException e) {
+                    log.error("Failed to create empty session file {}: {}", file.getPath(), e.getMessage(), e);
+                }
+                return;
+            }
+
+            try (Reader reader = new FileReader(file)) {
+                JsonElement jsonElement = JsonParser.parseReader(reader);
+                if (jsonElement == null || !jsonElement.isJsonObject()) return;
+                JsonObject json = jsonElement.getAsJsonObject();
+                jsonConsumer.accept(json);
+                log.debug("Loaded session from: {}", file.getPath());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } finally {
+            lock.readLock().unlock();
         }
     }
 
     private JsonObject loadJsonForMerge() {
-        File file = ensureSessionDirectory();
-        if (file == null || !file.exists()) {
-            return new JsonObject();
-        }
-
-        try (Reader reader = new FileReader(file)) {
-            JsonElement jsonElement = JsonParser.parseReader(reader);
-            if (jsonElement == null || jsonElement.isJsonNull() || !jsonElement.isJsonObject()) {
-                log.warn("Invalid or empty JSON in file {}, returning empty JsonObject", file.getPath());
+        lock.readLock().lock();
+        try {
+            File file = ensureSessionDirectory();
+            if (file == null || !file.exists()) {
                 return new JsonObject();
             }
-            return jsonElement.getAsJsonObject();
-        } catch (Exception e) {
-            log.error("Failed to load session for merge from {}: {}", file.getPath(), e.getMessage(), e);
-            return new JsonObject();
+
+            try (Reader reader = new FileReader(file)) {
+                JsonElement jsonElement = JsonParser.parseReader(reader);
+                if (jsonElement == null || jsonElement.isJsonNull() || !jsonElement.isJsonObject()) {
+                    log.warn("Invalid or empty JSON in file {}, returning empty JsonObject", file.getPath());
+                    return new JsonObject();
+                }
+                return jsonElement.getAsJsonObject();
+            } catch (Exception e) {
+                log.error("Failed to load session for merge from {}: {}", file.getPath(), e.getMessage(), e);
+                return new JsonObject();
+            }
+        } finally {
+            lock.readLock().unlock();
         }
     }
 
@@ -220,7 +224,9 @@ class SessionPersistence {
     }
 
     private File ensureSessionDirectory() {
-        if(sessionFile == null || sessionFile.isEmpty() || sessionFile.equalsIgnoreCase("null")){return null;}
+        if (sessionFile == null || sessionFile.isEmpty() || sessionFile.equalsIgnoreCase("null")) {
+            return null;
+        }
         File file = new File(APP_DIR, sessionFile);
         File parentDir = file.getParentFile();
         if (!parentDir.exists()) {

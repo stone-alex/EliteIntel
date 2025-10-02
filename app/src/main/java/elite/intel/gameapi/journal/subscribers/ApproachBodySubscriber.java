@@ -6,7 +6,6 @@ import elite.intel.ai.search.edsm.EdsmApiClient;
 import elite.intel.ai.search.edsm.dto.SystemBodiesDto;
 import elite.intel.ai.search.edsm.dto.data.BodyData;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
 import elite.intel.gameapi.journal.events.ApproachBodyEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.gameapi.journal.events.dto.MaterialDto;
@@ -84,9 +83,6 @@ public class ApproachBodySubscriber {
         List<MaterialDto> materials = location.getMaterials();
         if (materials != null && !materials.isEmpty()) {
             sb.append(" ").append(materials.size()).append(" materials detected. Details available on request. ");
-            for (MaterialDto material : materials) {
-                location.addMaterial(new MaterialDto(material.getName(), material.getPercent()));
-            }
         }
         sb.append(".");
         double surfaceTemperature = location.getSurfaceTemperature();

@@ -283,4 +283,14 @@ public class BioForms {
         }
         return creditValue / speciesMap.size();
     }
+
+    public static int getDistance(String genus){
+        String capitalizedGenus = capitalizeWords(genus);
+        Map<String, BioDetails> speciesMap = GENUS_TO_SPECIES.get(capitalizedGenus);
+        if (speciesMap == null || speciesMap.isEmpty()) {
+            return -1;
+        }
+
+        return speciesMap.get(capitalizedGenus).colonyRange();
+    }
 }

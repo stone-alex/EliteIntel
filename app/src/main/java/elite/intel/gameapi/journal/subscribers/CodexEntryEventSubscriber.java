@@ -20,6 +20,7 @@ public class CodexEntryEventSubscriber {
 
         String firstWordOfEntryName = event.getNameLocalised().split(" ")[0];
         long projectedPayment = BioForms.getAverageProjectedPayment(capitalizeWords(firstWordOfEntryName));
+        int distance = BioForms.getDistance(capitalizeWords(firstWordOfEntryName));
         if(event.isNewEntry()) {
             sb.append("New Codex Entry: ");
         } else {
@@ -30,6 +31,10 @@ public class CodexEntryEventSubscriber {
         sb.append(", ");
         sb.append("Name: ");
         sb.append(event.getNameLocalised());
+
+        if(distance > 0) {
+            sb.append(" Distance between samples: ").append(distance).append(" meters. ");
+        }
 
 
         boolean alreadyHaveThisEntry = currentLocation.getCodexEntries().stream().anyMatch(entry -> entry.getNameLocalised().equals(event.getNameLocalised()));

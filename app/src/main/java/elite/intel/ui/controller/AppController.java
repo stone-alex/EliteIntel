@@ -169,7 +169,7 @@ public class AppController implements AppControllerInterface, ActionListener {
                 llm = "Open AI";
             }
 
-            EventBusManager.publish(new VoiceProcessEvent("Systems online... Using " + llm + "."));
+            //EventBusManager.publish(new VoiceProcessEvent("Systems online... Using " + llm + "."));
 
             model.appendLog(
                     systemSession.getAIVoice().getName() +

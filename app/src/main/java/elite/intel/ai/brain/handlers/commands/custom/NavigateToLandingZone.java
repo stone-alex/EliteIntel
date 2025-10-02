@@ -7,6 +7,7 @@ import elite.intel.gameapi.VoiceProcessEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.gameapi.journal.events.dto.TargetLocation;
 import elite.intel.session.PlayerSession;
+import elite.intel.util.NavigationUtils;
 
 public class NavigateToLandingZone implements CommandHandler {
 
@@ -24,6 +25,8 @@ public class NavigateToLandingZone implements CommandHandler {
         targetLocation.setEnabled(true);
         targetLocation.setRequestedTime(System.currentTimeMillis());
         playerSession.setTracking(targetLocation);
+
+        EventBusManager.publish(new VoiceProcessEvent("Starting navigation to landing zone."));
     }
 
 }

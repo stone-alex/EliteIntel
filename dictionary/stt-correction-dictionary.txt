@@ -149,3 +149,4 @@
 "carrier field"="tritium"
 "top right here"="stop right here"
 "the blue engine gear"="deploy landing gear"
+"pencil"="cancel"

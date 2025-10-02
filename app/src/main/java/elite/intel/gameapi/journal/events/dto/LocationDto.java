@@ -17,10 +17,7 @@ public class LocationDto implements ToJsonConvertible {
     private List<SAASignalsFoundEvent.Signal> saaSignals = new ArrayList<>();
     private List<FSSBodySignalsEvent.Signal> fssSignals;
     private List<GenusDto> genus = new ArrayList<>();
-
-    //TODO: change this to map <String, BioSampleDto> planet name to bio sample
     private List<BioSampleDto> partialBioSamples = new ArrayList<>();
-
     private List<String> stationServices;
     private List<String> powers;
     private Set<FssSignalDto> detectedSignals = new HashSet<>();

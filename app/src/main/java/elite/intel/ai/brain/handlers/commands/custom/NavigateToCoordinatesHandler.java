@@ -16,6 +16,11 @@ public class NavigateToCoordinatesHandler implements CommandHandler {
     @Override public void handle(JsonObject params, String responseText) {
         PlayerSession playerSession = PlayerSession.getInstance();
 
+        if(params.get("latitude") == null || params.get("longitude") == null) {
+            EventBusManager.publish(new VoiceProcessEvent("Say Again?"));
+            return;
+        }
+
         double latitude = params.get("latitude").getAsDouble();
         double longitude = params.get("longitude").getAsDouble();
 

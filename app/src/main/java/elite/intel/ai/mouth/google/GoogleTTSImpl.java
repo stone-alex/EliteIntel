@@ -3,10 +3,7 @@ package elite.intel.ai.mouth.google;
 import com.google.cloud.texttospeech.v1.*;
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.ConfigManager;
-import elite.intel.ai.mouth.AiVoices;
-import elite.intel.ai.mouth.AudioDeClicker;
-import elite.intel.ai.mouth.MouthInterface;
-import elite.intel.ai.mouth.TTSInterruptEvent;
+import elite.intel.ai.mouth.*;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.VoiceProcessEvent;
 import org.apache.logging.log4j.Logger;
@@ -320,6 +317,7 @@ public class GoogleTTSImpl implements MouthInterface {
                 line.write(silenceBuffer, 0, silenceBuffer.length);
                 line.start();
                 log.info("Spoke with voice {}: {}", voiceName, text);
+                EventBusManager.publish(new VocalisationSuccessfulEvent());
 
                 long writeStartTime = System.currentTimeMillis();
                 for (int i = 0; i < audioData.length; i += bufferBytes) {

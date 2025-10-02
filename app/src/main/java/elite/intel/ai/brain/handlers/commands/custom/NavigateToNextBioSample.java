@@ -70,7 +70,7 @@ public class NavigateToNextBioSample implements CommandHandler {
         targetLocation.setRequestedTime(System.currentTimeMillis());
         playerSession.setTracking(targetLocation);
 
-        EventBusManager.publish(new VoiceProcessEvent("Directions to: " + entry.getNameLocalised()));
+        EventBusManager.publish(new VoiceProcessEvent("Navigating to: " + entry.getNameLocalised()));
     }
 
     private  CodexEntryEvent findClosestBiologyEntry(List<CodexEntryEvent> codexEntries, double userLatitude, double userLongitude, double planetRadius, String matchGenus, List<String> filterGenus) {

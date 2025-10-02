@@ -39,12 +39,7 @@ public class ApproachBodySubscriber {
         if(playerSession.getTracking().isEnabled()) return;
 
 
-        //TODO: once converted to map, remove this code
-        if (playerSession.getCurrentLocation().getBodyId() != event.getBodyID()) {
-            location.setPartialBioSamples(new ArrayList<>());
-        }
         SystemBodiesDto systemBodiesDto = EdsmApiClient.searchSystemBodies(currentSystem);
-
 
         boolean weHaveOurOwnData = location.getGravity() > 0;
 

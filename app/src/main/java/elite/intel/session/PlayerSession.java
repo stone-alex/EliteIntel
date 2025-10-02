@@ -50,6 +50,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     public static final String CURRENT_SHIP = "current_ship";
     public static final String CURRENT_SHIP_NAME = "current_ship_name";
     public static final String PERSONAL_CREDITS_AVAILABLE = "personal_credits_available";
+    public static final String CURRENT_WEALTH = "current_wealth";
     public static final String SHIP_SCANS = "shipScans";
     public static final String TARGET_FACTIONS = "targetFactions";
     public static final String CARRIER_LOCATION = "last_known_carrier_location";
@@ -110,6 +111,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     private String playerTitle = "";
     private String currentShipName = "";
     private long personalCreditsAvailable = 0;
+    private long currentWealth = 0;
     private int shipsOwned = 0;
     private String playerName = "";
     private String lastKnownCarrierLocation = "";
@@ -198,6 +200,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         registerField(PLAYER_CUSTOM_TITLE, this::getPlayerTitle, this::setPlayerTitle, String.class);
         registerField(CURRENT_SHIP_NAME, this::getCurrentShipName, this::setCurrentShipName, String.class);
         registerField(PERSONAL_CREDITS_AVAILABLE, this::getPersonalCreditsAvailable, this::setPersonalCreditsAvailable, Long.class);
+        registerField(CURRENT_WEALTH, this::getCurrentWealth, this::setCurrentWealth, Long.class);
         registerField(SHIPS_OWNED, this::getShipsOwned, this::setShipsOwned, Integer.class);
         registerField(PLAYER_NAME, this::getPlayerName, this::setPlayerName, String.class);
         registerField(CARRIER_LOCATION, this::getLastKnownCarrierLocation, this::setLastKnownCarrierLocation, String.class);
@@ -923,6 +926,14 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
             }
         }
         return null;
+    }
+
+    public long getCurrentWealth() {
+        return currentWealth;
+    }
+
+    public void setCurrentWealth(long currentWealth) {
+        this.currentWealth = currentWealth;
     }
 
     public record GalacticCoordinates(double x, double y, double z){}

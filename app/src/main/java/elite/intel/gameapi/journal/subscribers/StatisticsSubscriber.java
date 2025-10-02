@@ -13,7 +13,7 @@ public class StatisticsSubscriber {
     public void onStatisticsEvent(StatisticsEvent event) {
         PlayerSession playerSession = PlayerSession.getInstance();
         if (event.getBankAccount() != null) {
-            playerSession.setPersonalCreditsAvailable(event.getBankAccount().getCurrentWealth());
+            playerSession.setCurrentWealth(event.getBankAccount().getCurrentWealth());
             playerSession.setInsuranceClaims(event.getBankAccount().getInsuranceClaims());
             playerSession.setShipsOwned(event.getBankAccount().getOwnedShipCount());
         }

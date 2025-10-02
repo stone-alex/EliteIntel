@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.commands.CommandHandler;
 import elite.intel.ai.hands.GameHandler;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.VoiceProcessEvent;
+import elite.intel.gameapi.VocalisationRequestEvent;
 import elite.intel.session.PlayerSession;
 
 public class PlotRouteToMyFleetCarrier extends CustomCommandOperator implements CommandHandler {
@@ -25,7 +25,7 @@ public class PlotRouteToMyFleetCarrier extends CustomCommandOperator implements 
             RoutePlotter plotter = new RoutePlotter(this.commandHandler);
             plotter.plotRoute(carrierLocation);
         } else {
-            EventBusManager.publish(new VoiceProcessEvent("Carrier location not available."));
+            EventBusManager.publish(new VocalisationRequestEvent("Carrier location not available."));
         }
     }
 }

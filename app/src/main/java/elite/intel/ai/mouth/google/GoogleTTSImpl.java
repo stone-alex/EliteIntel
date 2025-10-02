@@ -5,7 +5,7 @@ import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.ConfigManager;
 import elite.intel.ai.mouth.*;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.VoiceProcessEvent;
+import elite.intel.gameapi.VocalisationRequestEvent;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager; 
 
@@ -168,7 +168,7 @@ public class GoogleTTSImpl implements MouthInterface {
 
     @Subscribe
     @Override
-    public void onVoiceProcessEvent(VoiceProcessEvent event) {
+    public void onVoiceProcessEvent(VocalisationRequestEvent event) {
         log.debug("Received VoiceProcessEvent: text='{}', useRandom={}", event.getText(), event.isUseRandom());
         if (event.isUseRandom()) {
             speak(event.getText(), googleVoiceProvider.getRandomVoice());

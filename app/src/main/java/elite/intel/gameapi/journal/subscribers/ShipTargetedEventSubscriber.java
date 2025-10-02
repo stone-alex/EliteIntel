@@ -2,7 +2,7 @@ package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.VoiceProcessEvent;
+import elite.intel.gameapi.VocalisationRequestEvent;
 import elite.intel.gameapi.journal.events.ShipTargetedEvent;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.RomanNumeralConverter;
@@ -25,7 +25,7 @@ public class ShipTargetedEventSubscriber {
         log.debug(event.toJson());
 
         if (!event.isTargetLocked()) {
-            EventBusManager.publish(new VoiceProcessEvent("Contact Lost"));
+            EventBusManager.publish(new VocalisationRequestEvent("Contact Lost"));
         }
 
         String localizedShipName = event.getShipLocalised();
@@ -91,7 +91,7 @@ public class ShipTargetedEventSubscriber {
                 if (playerSession.getShipScan(key) == null || playerSession.getShipScan(key).isEmpty()) {
                     //new scan
                     playerSession.putShipScan(key, data);
-                    EventBusManager.publish(new VoiceProcessEvent(info.toString()));
+                    EventBusManager.publish(new VocalisationRequestEvent(info.toString()));
                 }
             } catch (NoSuchAlgorithmException e) {
                 throw new RuntimeException(e);

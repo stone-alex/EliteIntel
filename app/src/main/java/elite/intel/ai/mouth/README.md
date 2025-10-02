@@ -40,7 +40,7 @@ following methods:
 package elite.intel.ai.mouth;
 
 import com.google.common.eventbus.Subscribe;
-import elite.intel.gameapi.VoiceProcessEvent;
+import elite.intel.gameapi.VocalisationRequestEvent;
 
 public interface MouthInterface {
     void start();
@@ -50,7 +50,7 @@ public interface MouthInterface {
     void interruptAndClear(); // implement vocalization interrupt and clear the queue
 
     @Subscribe
-    void onVoiceProcessEvent(VoiceProcessEvent event);
+    void onVoiceProcessEvent(VocalisationRequestEvent event);
 }
 ```
 

@@ -8,7 +8,7 @@ import elite.intel.ai.brain.commons.CommandEndPoint;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.UserInputEvent;
-import elite.intel.gameapi.VoiceProcessEvent;
+import elite.intel.gameapi.VocalisationRequestEvent;
 import elite.intel.session.SystemSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.JsonUtils;
@@ -234,7 +234,7 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
             try {
                 JsonObject apiResponse = callXaiApi(jsonString);
                 if (apiResponse == null) {
-                    EventBusManager.publish(new VoiceProcessEvent("Failure processing system request. Check programming"));
+                    EventBusManager.publish(new VocalisationRequestEvent("Failure processing system request. Check programming"));
                     return;
                 }
                 getRouter().processAiResponse(apiResponse, null);

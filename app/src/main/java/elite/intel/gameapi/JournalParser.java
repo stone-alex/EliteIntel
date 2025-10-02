@@ -172,7 +172,7 @@ public class JournalParser implements Runnable {
                         lastPosition += line.getBytes(StandardCharsets.UTF_8).length + System.lineSeparator().getBytes(StandardCharsets.UTF_8).length;
                     }
                 } catch (IOException e) {
-                    EventBusManager.publish(new VoiceProcessEvent("Error reading journal: " + e.getMessage()));
+                    EventBusManager.publish(new VocalisationRequestEvent("Error reading journal: " + e.getMessage()));
                     log.error("Error reading journal: {}", e.getMessage(), e);
                 }
 

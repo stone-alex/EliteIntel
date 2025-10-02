@@ -2,7 +2,7 @@ package elite.intel.gameapi.gamestate.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.VoiceProcessEvent;
+import elite.intel.gameapi.VocalisationRequestEvent;
 import elite.intel.gameapi.gamestate.events.PlayerMovedEvent;
 import elite.intel.gameapi.journal.events.DockSRVEvent;
 import elite.intel.gameapi.journal.events.LaunchSRVEvent;
@@ -61,7 +61,7 @@ public class DistanceFromShipTracker {
         long NOW = System.currentTimeMillis();
         if (isInDonut && shouldAnnounce && status.getStatus().getAltitude() == 0 && NOW - lastAnnounceTime < 15_000) {
             EventBusManager.publish(
-                    new VoiceProcessEvent(
+                    new VocalisationRequestEvent(
                             String.format("Warning: You are %d meters from your ship, approaching auto-departure zone!",
                                     Math.round(distance))
                     )

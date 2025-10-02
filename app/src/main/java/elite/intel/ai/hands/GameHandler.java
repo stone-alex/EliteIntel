@@ -3,7 +3,7 @@ package elite.intel.ai.hands;
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.commands.GameCommands;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.VoiceProcessEvent;
+import elite.intel.gameapi.VocalisationRequestEvent;
 import elite.intel.session.SystemSession;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager; 
@@ -79,7 +79,7 @@ public class GameHandler {
             Thread.currentThread().interrupt(); // Restore interrupted status
         } catch (Exception e) {
             log.error("Error in GameCommandHandler: {}", e.getMessage(), e);
-            EventBusManager.publish(new VoiceProcessEvent("Error in command handler: " + e.getMessage()));
+            EventBusManager.publish(new VocalisationRequestEvent("Error in command handler: " + e.getMessage()));
         }
     }
 
@@ -142,7 +142,7 @@ public class GameHandler {
     }
 
     private void handleChat(String responseText) {
-        EventBusManager.publish(new VoiceProcessEvent(responseText));
+        EventBusManager.publish(new VocalisationRequestEvent(responseText));
         log.info("Sent to VoiceGenerator: {}", responseText);
     }
 

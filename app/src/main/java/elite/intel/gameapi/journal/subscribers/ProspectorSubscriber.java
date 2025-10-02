@@ -2,7 +2,7 @@ package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.VoiceProcessEvent;
+import elite.intel.gameapi.VocalisationRequestEvent;
 import elite.intel.gameapi.journal.events.ProspectedAsteroidEvent;
 import elite.intel.session.PlayerSession;
 
@@ -35,7 +35,7 @@ public class ProspectorSubscriber {
         }
 
         if (foundTargetMaterial) {
-            EventBusManager.publish(new VoiceProcessEvent(sb.toString()));
+            EventBusManager.publish(new VocalisationRequestEvent(sb.toString()));
         }
     }
 }

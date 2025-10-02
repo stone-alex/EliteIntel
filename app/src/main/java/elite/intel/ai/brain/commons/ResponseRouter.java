@@ -1,19 +1,17 @@
 package elite.intel.ai.brain.commons;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.brain.AIRouterInterface;
 import elite.intel.ai.brain.handlers.CommandHandlerFactory;
 import elite.intel.ai.brain.handlers.QueryHandlerFactory;
 import elite.intel.ai.brain.handlers.commands.CommandHandler;
 import elite.intel.ai.brain.handlers.query.QueryHandler;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.VoiceProcessEvent;
+import elite.intel.gameapi.VocalisationRequestEvent;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.annotation.Nullable;
 import java.util.Map;
 
 public abstract class ResponseRouter  {
@@ -40,7 +38,7 @@ public abstract class ResponseRouter  {
 
     protected void handleChat(String responseText) {
         if (!responseText.isEmpty()) {
-            EventBusManager.publish(new VoiceProcessEvent(responseText));
+            EventBusManager.publish(new VocalisationRequestEvent(responseText));
             log.info("Sent to VoiceGenerator: {}", responseText);
         }
     }

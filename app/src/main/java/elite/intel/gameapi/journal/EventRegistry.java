@@ -3,7 +3,6 @@ package elite.intel.gameapi.journal;
 import com.google.gson.JsonObject;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.UserInputEvent;
-import elite.intel.gameapi.VoiceProcessEvent;
 import elite.intel.gameapi.journal.events.*;
 import elite.intel.session.ClearSessionCacheEvent;
 import elite.intel.session.LoadSessionEvent;
@@ -50,7 +49,6 @@ public class EventRegistry {
         registerEvent("ApproachBody", ApproachBodyEvent.class);
         registerEvent("SaveSession", LoadSessionEvent.class);
         registerEvent("ClearSessionCache", ClearSessionCacheEvent.class);
-        registerEvent("VoiceProcess", VoiceProcessEvent.class);
         registerEvent("UserInput", UserInputEvent.class);
         registerEvent("SensorData", SensorDataEvent.class);
         registerEvent("Bounty", BountyEvent.class);

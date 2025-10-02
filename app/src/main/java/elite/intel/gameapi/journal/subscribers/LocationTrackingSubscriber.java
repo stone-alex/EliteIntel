@@ -4,7 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.mouth.TTSInterruptEvent;
 import elite.intel.ai.mouth.VocalisationSuccessfulEvent;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.VoiceProcessEvent;
+import elite.intel.gameapi.VocalisationRequestEvent;
 import elite.intel.gameapi.gamestate.events.PlayerMovedEvent;
 import elite.intel.gameapi.journal.events.DisembarkEvent;
 import elite.intel.gameapi.journal.events.dto.TargetLocation;
@@ -300,7 +300,7 @@ public class LocationTrackingSubscriber {
         if (distance > 0) sb.append("Distance: ").append(formatDistance(distance)).append(". ");
         if (bearing > 0) sb.append("Bearing: ").append((int) bearing).append(" degrees").append(". ");
         log.info(sb.toString());
-        EventBusManager.publish(new VoiceProcessEvent(sb.toString()));
+        EventBusManager.publish(new VocalisationRequestEvent(sb.toString()));
     }
 
 

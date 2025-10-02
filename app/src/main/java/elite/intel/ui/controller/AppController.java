@@ -17,7 +17,6 @@ import elite.intel.ui.event.AppLogEvent;
 import elite.intel.ui.event.SystemShutDownEvent;
 import elite.intel.ui.model.AppModelInterface;
 import elite.intel.ui.view.AppViewInterface;
-import elite.intel.util.DaftSecretarySanitizer;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -25,7 +24,6 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.Map;
 
-import static elite.intel.session.PlayerSession.PLAYER_MISSION_STATEMENT;
 import static elite.intel.ui.view.AppView.*;
 import static elite.intel.util.StringUtls.capitalizeWords;
 
@@ -83,7 +81,7 @@ public class AppController implements AppControllerInterface, ActionListener {
     }
 
     @Subscribe
-    public void onVoiceProcessEvent(VoiceProcessEvent event) {
+    public void onVoiceProcessEvent(VocalisationRequestEvent event) {
         model.appendLog("AI: " + event.getText());
     }
 
@@ -182,7 +180,7 @@ public class AppController implements AppControllerInterface, ActionListener {
             model.appendLog("Available profiles: " + listCadences());
             isServiceRunning = true;
         } else {
-            EventBusManager.publish(new VoiceProcessEvent("Systems offline..."));
+            EventBusManager.publish(new VocalisationRequestEvent("Systems offline..."));
             // Stop services
             journalParser.stop();
             fileMonitor.stop();
@@ -238,17 +236,17 @@ public class AppController implements AppControllerInterface, ActionListener {
         model.appendLog("Toggle streaming mode");
         systemSession.setStreamingMode(streamingModeOnOff);
         model.setStreamingModeOn(streamingModeOnOff);
-        EventBusManager.publish(new VoiceProcessEvent(streamingModeOnOff ? streamingModeIsOnMessage() : streamingModeIsOffMessage()));
+        EventBusManager.publish(new VocalisationRequestEvent(streamingModeOnOff ? streamingModeIsOnMessage() : streamingModeIsOffMessage()));
         model.appendLog(streamingModeOnOff ? streamingModeIsOnMessage() : streamingModeIsOffMessage());
     }
 
     @Override
     public void togglePrivacyMode(boolean isPrivacyModeEnabled) {
         if (isPrivacyModeEnabled) {
-            EventBusManager.publish(new VoiceProcessEvent("one way comms, voice input disabled."));
+            EventBusManager.publish(new VocalisationRequestEvent("one way comms, voice input disabled."));
             ears.stop();
         } else {
-            EventBusManager.publish(new VoiceProcessEvent("Voice input enabled."));
+            EventBusManager.publish(new VocalisationRequestEvent("Voice input enabled."));
             ears.start();
         }
         model.setPrivacyModeOn(isPrivacyModeEnabled);

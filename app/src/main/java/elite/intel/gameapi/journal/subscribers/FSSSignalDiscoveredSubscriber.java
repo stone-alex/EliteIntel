@@ -2,7 +2,7 @@ package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.VoiceProcessEvent;
+import elite.intel.gameapi.VocalisationRequestEvent;
 import elite.intel.gameapi.journal.events.FSSSignalDiscoveredEvent;
 import elite.intel.gameapi.journal.events.dto.FssSignalDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
@@ -69,7 +69,7 @@ public class FSSSignalDiscoveredSubscriber {
     }
 
     private void publishVoice(String message) {
-        EventBusManager.publish(new VoiceProcessEvent(message));
+        EventBusManager.publish(new VocalisationRequestEvent(message));
     }
 
 

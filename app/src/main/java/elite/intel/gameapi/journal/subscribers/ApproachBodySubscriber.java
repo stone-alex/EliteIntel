@@ -5,14 +5,13 @@ import elite.intel.ai.search.edsm.EdsmApiClient;
 import elite.intel.ai.search.edsm.dto.SystemBodiesDto;
 import elite.intel.ai.search.edsm.dto.data.BodyData;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.VoiceProcessEvent;
+import elite.intel.gameapi.VocalisationRequestEvent;
 import elite.intel.gameapi.journal.events.ApproachBodyEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.gameapi.journal.events.dto.MaterialDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.Status;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -66,7 +65,7 @@ public class ApproachBodySubscriber {
         }
 
         playerSession.saveCurrentLocation(location);
-        EventBusManager.publish(new VoiceProcessEvent(sb.toString()));
+        EventBusManager.publish(new VocalisationRequestEvent(sb.toString()));
     }
 
 

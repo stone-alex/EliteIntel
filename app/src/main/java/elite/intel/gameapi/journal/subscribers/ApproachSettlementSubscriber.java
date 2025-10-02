@@ -2,7 +2,7 @@ package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.VoiceProcessEvent;
+import elite.intel.gameapi.VocalisationRequestEvent;
 import elite.intel.gameapi.journal.events.ApproachSettlementEvent;
 
 import java.util.List;
@@ -34,6 +34,6 @@ public class ApproachSettlementSubscriber {
         String availableData = LocalServicesData.setLocalServicesData(event.getMarketID());
         if (!availableData.isEmpty()) sb.append(". More data may be available on request.");
 
-        EventBusManager.publish(new VoiceProcessEvent(sb.toString()));
+        EventBusManager.publish(new VocalisationRequestEvent(sb.toString()));
     }
 }

@@ -2,7 +2,7 @@ package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.VoiceProcessEvent;
+import elite.intel.gameapi.VocalisationRequestEvent;
 import elite.intel.gameapi.journal.events.DockedEvent;
 import elite.intel.gameapi.journal.events.dto.CarrierDataDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
@@ -63,7 +63,7 @@ public class DockedSubscriber {
 
         String availableData = LocalServicesData.setLocalServicesData(event.getMarketID());
         if (!availableData.isEmpty()) {
-            EventBusManager.publish(new VoiceProcessEvent("Data available for: " + availableData + "."));
+            EventBusManager.publish(new VocalisationRequestEvent("Data available for: " + availableData + "."));
         }
 
         playerSession.saveCurrentLocation(currentLocation);

@@ -9,10 +9,9 @@ import elite.intel.ai.search.spansh.market.StationMarket;
 import elite.intel.ai.search.spansh.nearest.NearestKnownLocationSearch;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
-import elite.intel.gameapi.VoiceProcessEvent;
+import elite.intel.gameapi.VocalisationRequestEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
-import elite.intel.util.DaftSecretarySanitizer;
 
 import java.io.IOException;
 import java.util.List;
@@ -62,7 +61,7 @@ public class FindCommodityHandler implements CommandHandler {
             );
 
         } catch (IOException | InterruptedException e) {
-            EventBusManager.publish(new VoiceProcessEvent("Unable to find commodity: " + commodity + "."));
+            EventBusManager.publish(new VocalisationRequestEvent("Unable to find commodity: " + commodity + "."));
         }
     }
 }

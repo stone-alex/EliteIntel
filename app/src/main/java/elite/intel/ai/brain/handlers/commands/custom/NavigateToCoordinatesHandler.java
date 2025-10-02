@@ -3,7 +3,7 @@ package elite.intel.ai.brain.handlers.commands.custom;
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.commands.CommandHandler;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.VoiceProcessEvent;
+import elite.intel.gameapi.VocalisationRequestEvent;
 import elite.intel.gameapi.journal.events.dto.TargetLocation;
 import elite.intel.session.PlayerSession;
 import org.apache.logging.log4j.LogManager;
@@ -17,7 +17,7 @@ public class NavigateToCoordinatesHandler implements CommandHandler {
         PlayerSession playerSession = PlayerSession.getInstance();
 
         if(params.get("latitude") == null || params.get("longitude") == null) {
-            EventBusManager.publish(new VoiceProcessEvent("Say Again?"));
+            EventBusManager.publish(new VocalisationRequestEvent("Say Again?"));
             return;
         }
 
@@ -26,7 +26,7 @@ public class NavigateToCoordinatesHandler implements CommandHandler {
 
         if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
             log.error("Invalid coordinates: " + latitude + ", " + longitude);
-            EventBusManager.publish(new VoiceProcessEvent("Coordinates must be between -90 and 90 and -180 and 180"));
+            EventBusManager.publish(new VocalisationRequestEvent("Coordinates must be between -90 and 90 and -180 and 180"));
         } else {
             TargetLocation tracking = playerSession.getTracking();
             tracking.setEnabled(true);
@@ -35,7 +35,7 @@ public class NavigateToCoordinatesHandler implements CommandHandler {
             tracking.setRequestedTime(System.currentTimeMillis());
             playerSession.setTracking(tracking);
             log.info("Starting navigation to coordinates: " + latitude + ", " + longitude);
-            EventBusManager.publish(new VoiceProcessEvent("Starting navigation to latitude: " + latitude + ", longitude: " + longitude + "."));
+            EventBusManager.publish(new VocalisationRequestEvent("Starting navigation to latitude: " + latitude + ", longitude: " + longitude + "."));
         }
     }
 }

@@ -1,7 +1,7 @@
 package elite.intel.ai;
 
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.VoiceProcessEvent;
+import elite.intel.gameapi.VocalisationRequestEvent;
 import elite.intel.ui.event.AppLogEvent;
 
 import java.util.ArrayList;
@@ -71,7 +71,7 @@ public class KeyDetector {
         if (matches.size() == 1) return matches.get(0);
         if (matches.size() > 1) {
             EventBusManager.publish(new AppLogEvent("Ambiguous key matches: " + matches));
-            EventBusManager.publish(new VoiceProcessEvent("Multiple providers detected—say provider name"));
+            EventBusManager.publish(new VocalisationRequestEvent("Multiple providers detected—say provider name"));
         }
         return ProviderEnum.UNKNOWN;
     }

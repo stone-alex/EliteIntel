@@ -3,11 +3,10 @@ package elite.intel.ai.brain.handlers.commands.custom;
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.commands.CommandHandler;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.VoiceProcessEvent;
+import elite.intel.gameapi.VocalisationRequestEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.gameapi.journal.events.dto.TargetLocation;
 import elite.intel.session.PlayerSession;
-import elite.intel.util.NavigationUtils;
 
 public class NavigateToLandingZone implements CommandHandler {
 
@@ -16,7 +15,7 @@ public class NavigateToLandingZone implements CommandHandler {
         LocationDto currentLocation = playerSession.getCurrentLocation();
         TargetLocation targetLocation = new TargetLocation();
         if(currentLocation.getLandingCoordinates() == null){
-            EventBusManager.publish(new VoiceProcessEvent("Landing Zone Coordinates are not available"));
+            EventBusManager.publish(new VocalisationRequestEvent("Landing Zone Coordinates are not available"));
             return;
         }
 
@@ -26,7 +25,7 @@ public class NavigateToLandingZone implements CommandHandler {
         targetLocation.setRequestedTime(System.currentTimeMillis());
         playerSession.setTracking(targetLocation);
 
-        EventBusManager.publish(new VoiceProcessEvent("Starting navigation to landing zone."));
+        EventBusManager.publish(new VocalisationRequestEvent("Starting navigation to landing zone."));
     }
 
 }

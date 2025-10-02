@@ -2,7 +2,7 @@ package elite.intel.ai.ears;
 
 import com.google.common.eventbus.Subscribe;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.VoiceProcessEvent;
+import elite.intel.gameapi.VocalisationRequestEvent;
 import elite.intel.session.SystemSession;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager; 
@@ -48,7 +48,7 @@ public class AudioCalibrator {
         };
         EventBusManager.register(ttsSubscriber);
 
-        EventBusManager.publish(new elite.intel.gameapi.VoiceProcessEvent("Please speak for a few seconds to calibrate audio..."));
+        EventBusManager.publish(new VocalisationRequestEvent("Please speak for a few seconds to calibrate audio..."));
 
         try {
             ttsPlaybackStarted.get(TTS_TIMEOUT_MS, TimeUnit.MILLISECONDS);
@@ -86,12 +86,12 @@ public class AudioCalibrator {
             }
         } catch (LineUnavailableException | IllegalArgumentException e) {
             log.error("Calibration failed: {}", e.getMessage());
-            EventBusManager.publish(new VoiceProcessEvent("Audio calibration failed. Using default settings."));
+            EventBusManager.publish(new VocalisationRequestEvent("Audio calibration failed. Using default settings."));
             return new AudioSettingsTuple<>(DEFAULT_RMS_THRESHOLD_HIGH, DEFAULT_RMS_THRESHOLD_LOW);
         } finally {
             log.info("Calibration completed. Samples: {}, Speech samples: {}, Average RMS: {}, Peak RMS: {}",
                     sampleCount, speechSamples, sampleCount > 0 ? sumRMS / sampleCount : 0.0, peakRMS);
-            EventBusManager.publish(new VoiceProcessEvent("Audio calibration complete."));
+            EventBusManager.publish(new VocalisationRequestEvent("Audio calibration complete."));
         }
 
         if (sampleCount == 0 || speechSamples < sampleCount / 4) {

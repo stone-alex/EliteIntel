@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.commands.CommandHandler;
 import elite.intel.ai.mouth.AiVoices;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.VoiceProcessEvent;
+import elite.intel.gameapi.VocalisationRequestEvent;
 import elite.intel.session.SystemSession;
 
 import static elite.intel.util.json.JsonParameterExtractor.extractParameter;
@@ -23,7 +23,7 @@ public class SetAiVoice implements CommandHandler {
     @Override public void handle(JsonObject params, String responseText) {
         JsonElement jsonElement = extractParameter(CustomCommands.SET_AI_VOICE.getPlaceholder(), params);
         if (jsonElement == null || jsonElement.getAsString().isEmpty()) {
-            EventBusManager.publish(new VoiceProcessEvent("Sorry, the value returned was null or empty. I am unable to process your request."));
+            EventBusManager.publish(new VocalisationRequestEvent("Sorry, the value returned was null or empty. I am unable to process your request."));
             return;
         }
         setVoice(jsonElement);
@@ -34,7 +34,7 @@ public class SetAiVoice implements CommandHandler {
         try {
             systemSession.setAIVoice(AiVoices.valueOf(jsonElement.getAsString().toUpperCase()));
         } catch (IllegalArgumentException e) {
-            EventBusManager.publish(new VoiceProcessEvent("Sorry, I don't understand voice name: " + jsonElement.getAsString().toUpperCase() + ". Error: " + e.getMessage()));
+            EventBusManager.publish(new VocalisationRequestEvent("Sorry, I don't understand voice name: " + jsonElement.getAsString().toUpperCase() + ". Error: " + e.getMessage()));
         }
     }
 }

@@ -3,7 +3,7 @@ package elite.intel.gameapi.journal.subscribers;
 import com.google.common.eventbus.Subscribe;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
-import elite.intel.gameapi.VoiceProcessEvent;
+import elite.intel.gameapi.VocalisationRequestEvent;
 import elite.intel.gameapi.journal.events.TouchdownEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
@@ -55,7 +55,7 @@ public class TouchdownEventSubscriber {
         if (pointOfInterest != null && !pointOfInterest.isEmpty()) {
             EventBusManager.publish(new SensorDataEvent(sb.toString()));
         } else {
-            EventBusManager.publish(new VoiceProcessEvent("Touchdown!"));
+            EventBusManager.publish(new VocalisationRequestEvent("Touchdown!"));
         }
     }
 }

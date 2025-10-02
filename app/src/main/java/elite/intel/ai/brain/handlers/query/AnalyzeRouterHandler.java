@@ -5,7 +5,7 @@ import elite.intel.ai.search.edsm.EdsmApiClient;
 import elite.intel.ai.search.edsm.dto.DeathsDto;
 import elite.intel.ai.search.edsm.dto.TrafficDto;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.VoiceProcessEvent;
+import elite.intel.gameapi.VocalisationRequestEvent;
 import elite.intel.gameapi.gamestate.events.NavRouteDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.JsonDataFactory;
@@ -15,7 +15,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
-import java.util.Map;
 
 public class AnalyzeRouterHandler extends BaseQueryAnalyzer implements QueryHandler {
     private static final Logger log = LogManager.getLogger(AnalyzeRouterHandler.class);
@@ -23,7 +22,7 @@ public class AnalyzeRouterHandler extends BaseQueryAnalyzer implements QueryHand
 
     @Override
     public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new VoiceProcessEvent("Analyzing route..."));
+        EventBusManager.publish(new VocalisationRequestEvent("Analyzing route..."));
 
         QueryActions query = findQuery(action);
         PlayerSession playerSession = PlayerSession.getInstance();

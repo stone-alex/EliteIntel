@@ -10,6 +10,8 @@ import elite.intel.ai.brain.xai.GrokCommandEndPoint;
 import elite.intel.ai.ears.EarsInterface;
 import elite.intel.ai.mouth.AiVoices;
 import elite.intel.ai.mouth.MouthInterface;
+import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
 import elite.intel.gameapi.*;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
@@ -167,7 +169,7 @@ public class AppController implements AppControllerInterface, ActionListener {
                 llm = "Open AI";
             }
 
-            //EventBusManager.publish(new VoiceProcessEvent("Systems online... Using " + llm + "."));
+            EventBusManager.publish(new AiVoxResponseEvent("Systems online... Using " + llm + "."));
 
             model.appendLog(
                     systemSession.getAIVoice().getName() +
@@ -180,7 +182,7 @@ public class AppController implements AppControllerInterface, ActionListener {
             model.appendLog("Available profiles: " + listCadences());
             isServiceRunning = true;
         } else {
-            EventBusManager.publish(new VocalisationRequestEvent("Systems offline..."));
+            EventBusManager.publish(new AiVoxResponseEvent("Systems offline..."));
             // Stop services
             journalParser.stop();
             fileMonitor.stop();
@@ -236,17 +238,17 @@ public class AppController implements AppControllerInterface, ActionListener {
         model.appendLog("Toggle streaming mode");
         systemSession.setStreamingMode(streamingModeOnOff);
         model.setStreamingModeOn(streamingModeOnOff);
-        EventBusManager.publish(new VocalisationRequestEvent(streamingModeOnOff ? streamingModeIsOnMessage() : streamingModeIsOffMessage()));
+        EventBusManager.publish(new AiVoxResponseEvent(streamingModeOnOff ? streamingModeIsOnMessage() : streamingModeIsOffMessage()));
         model.appendLog(streamingModeOnOff ? streamingModeIsOnMessage() : streamingModeIsOffMessage());
     }
 
     @Override
     public void togglePrivacyMode(boolean isPrivacyModeEnabled) {
         if (isPrivacyModeEnabled) {
-            EventBusManager.publish(new VocalisationRequestEvent("one way comms, voice input disabled."));
+            EventBusManager.publish(new AiVoxResponseEvent("one way comms, voice input disabled."));
             ears.stop();
         } else {
-            EventBusManager.publish(new VocalisationRequestEvent("Voice input enabled."));
+            EventBusManager.publish(new AiVoxResponseEvent("Voice input enabled."));
             ears.start();
         }
         model.setPrivacyModeOn(isPrivacyModeEnabled);

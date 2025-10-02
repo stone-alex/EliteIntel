@@ -1,8 +1,9 @@
 package elite.intel.gameapi.gamestate.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.VocalisationRequestEvent;
+import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
 import elite.intel.gameapi.gamestate.events.GameEvents;
 import elite.intel.gameapi.gamestate.events.PlayerMovedEvent;
 import elite.intel.session.Status;
@@ -18,7 +19,7 @@ public class StatusEventSubscriber {
         if (legalStatusBeforeChange != null) {
             String legalState = event.getLegalState();
             if (legalState != null && !legalStatusBeforeChange.equalsIgnoreCase(legalState)) {
-                EventBusManager.publish(new VocalisationRequestEvent("Legal status changed to: " + legalState + ". "));
+                EventBusManager.publish(new MissionCriticalAnnouncementEvent("Legal status changed to: " + legalState + ". "));
             }
         }
 

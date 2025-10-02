@@ -10,8 +10,9 @@ import elite.intel.ai.brain.AiQueryInterface;
 import elite.intel.ai.brain.commons.ResponseRouter;
 import elite.intel.ai.brain.handlers.query.QueryActions;
 import elite.intel.ai.brain.handlers.query.QueryHandler;
+import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.VocalisationRequestEvent;
+import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
 import elite.intel.session.SystemSession;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -65,7 +66,7 @@ public class GrokResponseRouter extends ResponseRouter implements AIRouterInterf
             JsonObject params = getAsObjectOrEmpty(jsonResponse, "params");
 
             if (!responseText.isEmpty() && !type.equals(AIConstants.TYPE_CHAT)) {
-                EventBusManager.publish(new VocalisationRequestEvent(responseText));
+                EventBusManager.publish(new AiVoxResponseEvent(responseText));
                 log.info("Spoke initial response: {}", responseText);
             }
 
@@ -125,7 +126,7 @@ public class GrokResponseRouter extends ResponseRouter implements AIRouterInterf
             }
 
             if (!requiresFollowUp && responseTextToUse != null && !responseTextToUse.isEmpty()) {
-                EventBusManager.publish(new VocalisationRequestEvent(responseTextToUse));
+                EventBusManager.publish(new AiVoxResponseEvent(responseTextToUse));
                 SystemSession.getInstance().clearChatHistory();
                 log.info("Spoke final query response (action: {}): {}", action, responseTextToUse);
             } else if (requiresFollowUp) {
@@ -162,7 +163,7 @@ public class GrokResponseRouter extends ResponseRouter implements AIRouterInterf
 
                 String finalResponseText = getAsStringOrEmpty(followUpResponse, "response_text");
                 if (!finalResponseText.isEmpty()) {
-                    EventBusManager.publish(new VocalisationRequestEvent(finalResponseText));
+                    EventBusManager.publish(new AiVoxResponseEvent(finalResponseText));
                     log.info("Spoke follow-up query response (action: {}): {}", action, finalResponseText);
                 } else {
                     log.warn("No response_text in follow-up for action: {}", action);

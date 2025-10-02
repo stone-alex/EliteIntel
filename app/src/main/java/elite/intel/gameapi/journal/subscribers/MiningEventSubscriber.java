@@ -1,8 +1,9 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.intel.ai.mouth.subscribers.events.MiningAnnouncementEvent;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.VocalisationRequestEvent;
+import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
 import elite.intel.gameapi.journal.events.MiningRefinedEvent;
 import elite.intel.session.PlayerSession;
 import org.apache.logging.log4j.LogManager;
@@ -19,7 +20,7 @@ public class MiningEventSubscriber {
         String material = dto.getTypeLocalised().replace("\"", "").toLowerCase();
         if(!playerSession.getMiningTargets().contains(material)) {
             playerSession.addMiningTarget(material);
-            EventBusManager.publish(new VocalisationRequestEvent(material + " is added to mining targets"));
+            EventBusManager.publish(new MiningAnnouncementEvent(material + " is added to mining targets"));
         }
     }
 }

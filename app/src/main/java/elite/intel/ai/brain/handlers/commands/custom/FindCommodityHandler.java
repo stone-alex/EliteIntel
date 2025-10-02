@@ -3,13 +3,14 @@ package elite.intel.ai.brain.handlers.commands.custom;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.commands.CommandHandler;
+import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.search.spansh.market.MarketSearchCriteria;
 import elite.intel.ai.search.spansh.market.SpanshMarketClient;
 import elite.intel.ai.search.spansh.market.StationMarket;
 import elite.intel.ai.search.spansh.nearest.NearestKnownLocationSearch;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
-import elite.intel.gameapi.VocalisationRequestEvent;
+import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 
@@ -61,7 +62,7 @@ public class FindCommodityHandler implements CommandHandler {
             );
 
         } catch (IOException | InterruptedException e) {
-            EventBusManager.publish(new VocalisationRequestEvent("Unable to find commodity: " + commodity + "."));
+            EventBusManager.publish(new AiVoxResponseEvent("Unable to find commodity: " + commodity + "."));
         }
     }
 }

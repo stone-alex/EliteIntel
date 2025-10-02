@@ -2,8 +2,8 @@ package elite.intel.ai.brain.handlers.commands.custom;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.commands.CommandHandler;
+import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.VocalisationRequestEvent;
 import elite.intel.gameapi.journal.events.CodexEntryEvent;
 import elite.intel.gameapi.journal.events.dto.BioSampleDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
@@ -31,13 +31,13 @@ public class NavigateToNextBioSample implements CommandHandler {
         LocationDto currentLocation = playerSession.getCurrentLocation();
 
         if (currentLocation == null || status.getStatus() == null) {
-            EventBusManager.publish(new VocalisationRequestEvent("Current location is not recorded"));
+            EventBusManager.publish(new AiVoxResponseEvent("Current location is not recorded"));
             return;
         }
 
         List<CodexEntryEvent> codexEntries = playerSession.getCurrentLocation().getCodexEntries();
         if (codexEntries == null || codexEntries.isEmpty()) {
-            EventBusManager.publish(new VocalisationRequestEvent("No codex entries found."));
+            EventBusManager.publish(new AiVoxResponseEvent("No codex entries found."));
             return;
         }
 
@@ -56,7 +56,7 @@ public class NavigateToNextBioSample implements CommandHandler {
         }
 
         if (entry == null) {
-            EventBusManager.publish(new VocalisationRequestEvent("No codex entries found."));
+            EventBusManager.publish(new AiVoxResponseEvent("No codex entries found."));
             return;
         }
 
@@ -70,7 +70,7 @@ public class NavigateToNextBioSample implements CommandHandler {
         targetLocation.setRequestedTime(System.currentTimeMillis());
         playerSession.setTracking(targetLocation);
 
-        EventBusManager.publish(new VocalisationRequestEvent("Navigating to: " + entry.getNameLocalised()));
+        EventBusManager.publish(new AiVoxResponseEvent("Navigating to: " + entry.getNameLocalised()));
     }
 
     private  CodexEntryEvent findClosestBiologyEntry(List<CodexEntryEvent> codexEntries, double userLatitude, double userLongitude, double planetRadius, String matchGenus, List<String> filterGenus) {

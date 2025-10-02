@@ -2,8 +2,9 @@ package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameHandler;
+import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.VocalisationRequestEvent;
+import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager; 
 
@@ -36,7 +37,7 @@ public class GenericGameController implements CommandHandler {
     @Override public void handle(JsonObject params, String responseText) {
         if (gameBinding == null) {
             log.error("No game binding found for command: {}", params.get("action").getAsString());
-            EventBusManager.publish(new VocalisationRequestEvent("Generic Game controller No key binding found for " + gameBinding));
+            EventBusManager.publish(new AiVoxResponseEvent("Generic Game controller No key binding found for " + gameBinding));
             return;
         }
 

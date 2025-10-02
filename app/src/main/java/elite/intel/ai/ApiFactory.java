@@ -7,8 +7,9 @@ import elite.intel.ai.ears.EarsInterface;
 import elite.intel.ai.ears.google.GoogleSTTImpl;
 import elite.intel.ai.mouth.MouthInterface;
 import elite.intel.ai.mouth.google.GoogleTTSImpl;
+import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.VocalisationRequestEvent;
+import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
 import elite.intel.ui.event.AppLogEvent;
 
 /**
@@ -103,7 +104,7 @@ public class ApiFactory {
             // TODO: Add ElevenLabs, AWS Polly, etc.
             default:
                 EventBusManager.publish(new AppLogEvent("Unknown TTS key format"));
-                EventBusManager.publish(new VocalisationRequestEvent("Using default Google TTS—confirm?"));
+                EventBusManager.publish(new AiVoxResponseEvent("Using default Google TTS—confirm?"));
                 return GoogleTTSImpl.getInstance();
         }
     }
@@ -119,7 +120,7 @@ public class ApiFactory {
             // TODO: Add Deepgram, Azure STT, etc.
             default:
                 EventBusManager.publish(new AppLogEvent("Unknown STT key format"));
-                EventBusManager.publish(new VocalisationRequestEvent("Using default Google STT—confirm?"));
+                EventBusManager.publish(new AiVoxResponseEvent("Using default Google STT—confirm?"));
                 return new GoogleSTTImpl();
         }
     }

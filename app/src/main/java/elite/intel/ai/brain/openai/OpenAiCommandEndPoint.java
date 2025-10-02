@@ -8,10 +8,11 @@ import com.google.gson.JsonSyntaxException;
 import elite.intel.ai.brain.AIConstants;
 import elite.intel.ai.brain.AiCommandInterface;
 import elite.intel.ai.brain.commons.CommandEndPoint;
+import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.UserInputEvent;
-import elite.intel.gameapi.VocalisationRequestEvent;
+import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
 import elite.intel.session.SystemSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.JsonUtils;
@@ -210,7 +211,7 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
             try {
                 JsonObject apiResponse = callOpenAiApi(messages);
                 if (apiResponse == null) {
-                    EventBusManager.publish(new VocalisationRequestEvent("Failure processing system request. Check programming"));
+                    EventBusManager.publish(new AiVoxResponseEvent("Failure processing system request. Check programming"));
                     return;
                 }
                 getRouter().processAiResponse(apiResponse, null);

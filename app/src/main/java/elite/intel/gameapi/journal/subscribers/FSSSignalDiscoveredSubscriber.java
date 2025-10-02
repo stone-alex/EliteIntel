@@ -1,8 +1,9 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.intel.ai.mouth.subscribers.events.DiscoveryAnnouncementEvent;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.VocalisationRequestEvent;
+import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
 import elite.intel.gameapi.journal.events.FSSSignalDiscoveredEvent;
 import elite.intel.gameapi.journal.events.dto.FssSignalDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
@@ -69,7 +70,7 @@ public class FSSSignalDiscoveredSubscriber {
     }
 
     private void publishVoice(String message) {
-        EventBusManager.publish(new VocalisationRequestEvent(message));
+        EventBusManager.publish(new DiscoveryAnnouncementEvent(message));
     }
 
 

@@ -1,8 +1,9 @@
 package elite.intel.ai.hands;
 
 import elite.intel.ai.ConfigManager;
+import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.VocalisationRequestEvent;
+import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
 import elite.intel.ui.event.AppLogEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -129,19 +130,19 @@ public class BindingsMonitor {
                 boolean valid = key.reset();
                 if (!valid) {
                     log.error("Watch key no longer valid; directory may be inaccessible");
-                    EventBusManager.publish(new VocalisationRequestEvent("Error: Key bindings directory inaccessible"));
+                    EventBusManager.publish(new AiVoxResponseEvent("Error: Key bindings directory inaccessible"));
                     break;
                 }
             }
         } catch (IOException e) {
             log.error("IOException in BindingsMonitor", e);
-            EventBusManager.publish(new VocalisationRequestEvent("Error in BindingsMonitor: " + e.getMessage()));
+            EventBusManager.publish(new AiVoxResponseEvent("Error in BindingsMonitor: " + e.getMessage()));
         } catch (InterruptedException e) {
             log.info("BindingsMonitor interrupted, shutting down");
             Thread.currentThread().interrupt(); // Restore interrupted status
         } catch (Exception e) {
             log.error("Unexpected error in BindingsMonitor", e);
-            EventBusManager.publish(new VocalisationRequestEvent("Unexpected error in BindingsMonitor: " + e.getMessage()));
+            EventBusManager.publish(new AiVoxResponseEvent("Unexpected error in BindingsMonitor: " + e.getMessage()));
         }
     }
 
@@ -149,12 +150,12 @@ public class BindingsMonitor {
         try {
             currentBindsFile = new BindingsLoader().getLatestBindsFile();
             bindings = parser.parseBindings(currentBindsFile);
-            EventBusManager.publish(new VocalisationRequestEvent("Key bindings updated."));
+            EventBusManager.publish(new AiVoxResponseEvent("Key bindings updated."));
             EventBusManager.publish(new AppLogEvent("SYSTEM: Key bindings updated from file " + currentBindsFile.getAbsolutePath()));
             log.info("Key bindings updated from: {}", currentBindsFile.getName());
         } catch (Exception e) {
             log.error("Failed to parse key bindings from: {}", currentBindsFile != null ? currentBindsFile.getName() : "null", e);
-            EventBusManager.publish(new VocalisationRequestEvent("Failed to update key bindings: " + e.getMessage()));
+            EventBusManager.publish(new AiVoxResponseEvent("Failed to update key bindings: " + e.getMessage()));
         }
     }
 

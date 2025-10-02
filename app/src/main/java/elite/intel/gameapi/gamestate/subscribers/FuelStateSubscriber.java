@@ -1,9 +1,11 @@
 package elite.intel.gameapi.gamestate.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.VocalisationRequestEvent;
+import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
 import elite.intel.gameapi.gamestate.events.GameEvents;
+import elite.intel.gameapi.journal.events.MissionCompletedEvent;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.Status;
 
@@ -39,7 +41,7 @@ public class FuelStateSubscriber {
                 double fuelAmount = oldStatus.getFuel().getFuelMain();
                 double remainingFuelInPercent = Math.round((fuelAmount / fuelCapacityMain * 100) * 100.0) / 100.0;
                 if (remainingFuelInPercent != 0 && remainingFuelInPercent < QUARTER_TANK_REMAINING && event.getFuel().getFuelMain() > fuelAmount) {
-                    EventBusManager.publish(new VocalisationRequestEvent("Fuel warning: " + remainingFuelInPercent + "% remaining."));
+                    EventBusManager.publish(new MissionCriticalAnnouncementEvent("Fuel warning: " + remainingFuelInPercent + "% remaining."));
                     hasAnnounced = true;
                 } else {
                     hasAnnounced = false;

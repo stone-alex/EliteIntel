@@ -1,11 +1,12 @@
 package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
+import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.search.edsm.EdsmApiClient;
 import elite.intel.ai.search.edsm.dto.DeathsDto;
 import elite.intel.ai.search.edsm.dto.TrafficDto;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.VocalisationRequestEvent;
+import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
 import elite.intel.gameapi.gamestate.events.NavRouteDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.JsonDataFactory;
@@ -22,7 +23,7 @@ public class AnalyzeRouterHandler extends BaseQueryAnalyzer implements QueryHand
 
     @Override
     public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new VocalisationRequestEvent("Analyzing route..."));
+        EventBusManager.publish(new AiVoxResponseEvent("Analyzing route..."));
 
         QueryActions query = findQuery(action);
         PlayerSession playerSession = PlayerSession.getInstance();

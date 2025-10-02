@@ -5,8 +5,9 @@ import elite.intel.ai.brain.handlers.CommandHandlerFactory;
 import elite.intel.ai.brain.handlers.QueryHandlerFactory;
 import elite.intel.ai.brain.handlers.commands.CommandHandler;
 import elite.intel.ai.brain.handlers.query.QueryHandler;
+import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.VocalisationRequestEvent;
+import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
 import org.apache.logging.log4j.LogManager;
@@ -38,7 +39,7 @@ public abstract class ResponseRouter  {
 
     protected void handleChat(String responseText) {
         if (!responseText.isEmpty()) {
-            EventBusManager.publish(new VocalisationRequestEvent(responseText));
+            EventBusManager.publish(new AiVoxResponseEvent(responseText));
             log.info("Sent to VoiceGenerator: {}", responseText);
         }
     }

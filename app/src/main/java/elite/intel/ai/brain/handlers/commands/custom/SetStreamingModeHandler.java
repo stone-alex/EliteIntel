@@ -3,8 +3,9 @@ package elite.intel.ai.brain.handlers.commands.custom;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.commands.CommandHandler;
+import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.VocalisationRequestEvent;
+import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
 import elite.intel.session.SystemSession;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager; 
@@ -43,9 +44,9 @@ public class SetStreamingModeHandler implements CommandHandler {
         systemSession.setStreamingMode(isOn);
 
         if (isOn) {
-            EventBusManager.publish(new VocalisationRequestEvent("streaming mode is on. Please prefix your commands to me with Computer or " + systemSession.getAIVoice().getName()));
+            EventBusManager.publish(new AiVoxResponseEvent("streaming mode is on. Please prefix your commands to me with Computer or " + systemSession.getAIVoice().getName()));
         } else {
-            EventBusManager.publish(new VocalisationRequestEvent("streaming mode is off... I am listening."));
+            EventBusManager.publish(new AiVoxResponseEvent("streaming mode is off... I am listening."));
         }
     }
 }

@@ -1,7 +1,7 @@
 package elite.intel.ai.mouth;
 
 import com.google.common.eventbus.Subscribe;
-import elite.intel.gameapi.VocalisationRequestEvent;
+import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
 
 public interface MouthInterface {
     void start();

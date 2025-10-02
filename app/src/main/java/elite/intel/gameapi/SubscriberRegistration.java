@@ -38,6 +38,7 @@ public class SubscriberRegistration {
         Reflections reflections = new Reflections(
                 "elite.intel.gameapi.journal.subscribers",
                 "elite.intel.gameapi.gamestate.subscribers",
+                "elite.intel.ai.mouth.subscribers",
                 new MethodAnnotationsScanner()
         );
         // Find methods annotated with @Subscribe

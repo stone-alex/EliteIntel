@@ -71,7 +71,6 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     public static final String RANK_AND_PROGRESS_DTO = "rankAndProgressDto";
     public static final String MARKETS = "markets";
     public static final String FSD_TARGET = "fsd_target";
-    public static final String LOW_ALTITUDE_FLIGHT = "low_altitude_flight";
     public static final String JUMPING_TO_STARSYSTEM = "jumping_to_starsystem";
 
     // Existing fields
@@ -104,7 +103,6 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     private long highestSingleTransaction = 0;
     private String finalDestination = "";
     private long marketProfits = 0;
-    private boolean lowAltitudeFlight = false;
     private String currentShip = "";
     private long totalBountyProfit = 0;
     private String playerMissionStatement = "";
@@ -128,6 +126,12 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     private double totalDistanceTraveled = 0.0;
     private String fsdTarget;
     private Boolean isRadioTransmissionOn;
+    private Boolean isMiningAnnouncementOn = true;
+    private Boolean isNavigationAnnouncementOn = true;
+    private Boolean isDiscoveryAnnouncementOn = true;
+    private Boolean isRouteAnnouncementOn = true;
+
+
 
     private PlayerSession() {
         super(SESSION_DIR);
@@ -187,7 +191,6 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         registerField(HIGHEST_SINGLE_TRANSACTION, this::getHighestSingleTransaction, this::setHighestSingleTransaction, Long.class);
         registerField(FINAL_DESTINATION, this::getFinalDestination, this::setFinalDestination, String.class);
         registerField(MARKET_PROFITS, this::getMarketProfits, this::setMarketProfits, Long.class);
-        registerField(LOW_ALTITUDE_FLIGHT, this::isLowAltitudeFlight, this::setLowAltitudeFlight, Boolean.class);
         registerField(CURRENT_SHIP, this::getCurrentShip, this::setCurrentShip, String.class);
         registerField(TOTAL_BOUNTY_PROFIT, this::getTotalBountyProfit, this::setTotalBountyProfit, Long.class);
         registerField(PLAYER_MISSION_STATEMENT, this::getPlayerMissionStatement, this::setPlayerMissionStatement, String.class);
@@ -201,7 +204,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         registerField(SHIP_FUEL_LEVEL, this::getShipFuelLevel, this::setShipFuelLevel, Double.class);
         registerField(FRIENDS_STATUS, this::getFriendsStatus, v -> {
             friendsStatus.clear();
-            friendsStatus.putAll((Map<String, String>) v);
+            friendsStatus.putAll(v);
         }, new TypeToken<Map<String, String>>() {}.getType());
         registerField(CARRIER_DEPARTURE_TIME, this::getCarrierDepartureTime, this::setCarrierDepartureTime, String.class);
         registerField(JUMPING_TO_STARSYSTEM, this::getJumpingToStarSystem, this::setJumpingToStarSystem, String.class);
@@ -214,6 +217,10 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         registerField(TOTAL_DISTANCE_TRAVELED, this::getTotalDistanceTraveled, this::setTotalDistanceTraveled, Double.class);
         registerField(FSD_TARGET, this::getFsdTarget, this::setFsdTarget, String.class);
         registerField("radio_on_off", this::isRadioTransmissionOn, this::setRadioTransmissionOn, Boolean.class);
+        registerField("navigation_vox_on_off", this::isNavigationAnnouncementOn, this::setNavigationAnnouncementOn, Boolean.class);
+        registerField("mining_vox_on_off", this::isMiningAnnouncementOn, this::setMiningAnnouncementOn, Boolean.class);
+        registerField("discovery_vox_on_off", this::isDiscoveryAnnouncementOn, this::setDiscoveryAnnouncementOn, Boolean.class);
+        registerField("route_vox_on_off", this::isRouteAnnouncementOn, this::setRouteAnnouncementOn, Boolean.class);
 
 
         EventBusManager.register(this);
@@ -657,15 +664,6 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         save();
     }
 
-    public boolean isLowAltitudeFlight() {
-        return lowAltitudeFlight;
-    }
-
-    public void setLowAltitudeFlight(boolean lowAltitudeFlight) {
-        this.lowAltitudeFlight = lowAltitudeFlight;
-        save();
-    }
-
     public String getCurrentShip() {
         return currentShip;
     }
@@ -878,6 +876,39 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         save();
     }
 
+
+    public Boolean isMiningAnnouncementOn() {
+        return isMiningAnnouncementOn == null || isMiningAnnouncementOn;
+    }
+
+    public void setMiningAnnouncementOn(Boolean miningAnnouncementOn) {
+        isMiningAnnouncementOn = miningAnnouncementOn;
+    }
+
+    public Boolean isNavigationAnnouncementOn() {
+        return isNavigationAnnouncementOn == null || isNavigationAnnouncementOn;
+    }
+
+    public void setNavigationAnnouncementOn(Boolean navigationAnnouncementOn) {
+        isNavigationAnnouncementOn = navigationAnnouncementOn;
+    }
+
+    public Boolean isDiscoveryAnnouncementOn() {
+        return isDiscoveryAnnouncementOn == null || isDiscoveryAnnouncementOn;
+    }
+
+    public void setDiscoveryAnnouncementOn(Boolean discoveryAnnouncementOn) {
+        isDiscoveryAnnouncementOn = discoveryAnnouncementOn;
+    }
+
+
+    public Boolean isRouteAnnouncementOn() {
+        return isRouteAnnouncementOn == null || isRouteAnnouncementOn;
+    }
+
+    public void setRouteAnnouncementOn(Boolean routeAnnouncementOn) {
+        isRouteAnnouncementOn = routeAnnouncementOn;
+    }
 
     public GalacticCoordinates getGalacticCoordinates() {
         GalacticCoordinates result;

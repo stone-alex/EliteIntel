@@ -1,10 +1,11 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.intel.ai.mouth.TTSInterruptEvent;
-import elite.intel.ai.mouth.VocalisationSuccessfulEvent;
+import elite.intel.ai.mouth.subscribers.events.NavigationVocalisationEvent;
+import elite.intel.ai.mouth.subscribers.events.TTSInterruptEvent;
+import elite.intel.ai.mouth.subscribers.events.VocalisationSuccessfulEvent;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.VocalisationRequestEvent;
+import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
 import elite.intel.gameapi.gamestate.events.PlayerMovedEvent;
 import elite.intel.gameapi.journal.events.DisembarkEvent;
 import elite.intel.gameapi.journal.events.dto.TargetLocation;
@@ -300,7 +301,7 @@ public class LocationTrackingSubscriber {
         if (distance > 0) sb.append("Distance: ").append(formatDistance(distance)).append(". ");
         if (bearing > 0) sb.append("Bearing: ").append((int) bearing).append(" degrees").append(". ");
         log.info(sb.toString());
-        EventBusManager.publish(new VocalisationRequestEvent(sb.toString()));
+        EventBusManager.publish(new NavigationVocalisationEvent(sb.toString()));
     }
 
 
@@ -348,7 +349,6 @@ public class LocationTrackingSubscriber {
     }
 
     @Subscribe
-    public void onVocalisationEvent(VocalisationSuccessfulEvent event) {
+    public void onVocalisationSuccess(VocalisationSuccessfulEvent<NavigationVocalisationEvent> event) {
         lastAnnounceTime = System.currentTimeMillis();
-    }
-}
+    }}

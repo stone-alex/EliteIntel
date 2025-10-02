@@ -8,7 +8,7 @@ import elite.intel.ai.ears.AudioCalibrator;
 import elite.intel.ai.ears.AudioFormatDetector;
 import elite.intel.ai.ears.AudioSettingsTuple;
 import elite.intel.ai.ears.EarsInterface;
-import elite.intel.ai.mouth.TTSInterruptEvent;
+import elite.intel.ai.mouth.subscribers.events.TTSInterruptEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.UserInputEvent;
 import elite.intel.session.SystemSession;

@@ -1,9 +1,11 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
+import elite.intel.ai.mouth.subscribers.events.RadioTransmissionEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
-import elite.intel.gameapi.VocalisationRequestEvent;
+import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
 import elite.intel.gameapi.journal.events.ReceiveTextEvent;
 import elite.intel.session.PlayerSession;
 
@@ -22,7 +24,7 @@ public class TransmissionReceivedSubscriber {
         if (isRadioOn == null || !isRadioOn) return;
 
         if (isPirateMessage(event.getMessageLocalised())) {
-            EventBusManager.publish(new VocalisationRequestEvent("Pirate Alert!!!"));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Pirate Alert!!!"));
             return;
         }
 
@@ -37,7 +39,7 @@ public class TransmissionReceivedSubscriber {
                     EventBusManager.publish(new SensorDataEvent("radio_transmission:[from:" + event.getFrom() + ", message:" + event.getMessageLocalised() + "]"));
                 }
             } else {
-                EventBusManager.publish(new VocalisationRequestEvent(event.getMessageLocalised(), true));
+                EventBusManager.publish(new RadioTransmissionEvent(event.getMessageLocalised()));
             }
         }
     }

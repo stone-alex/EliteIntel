@@ -4,6 +4,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import elite.intel.ai.ConfigManager;
+import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
 import elite.intel.gameapi.journal.EventRegistry;
 import elite.intel.gameapi.journal.events.BaseEvent;
 import elite.intel.ui.event.AppLogEvent;
@@ -172,7 +174,7 @@ public class JournalParser implements Runnable {
                         lastPosition += line.getBytes(StandardCharsets.UTF_8).length + System.lineSeparator().getBytes(StandardCharsets.UTF_8).length;
                     }
                 } catch (IOException e) {
-                    EventBusManager.publish(new VocalisationRequestEvent("Error reading journal: " + e.getMessage()));
+                    EventBusManager.publish(new AiVoxResponseEvent("Error reading journal: " + e.getMessage()));
                     log.error("Error reading journal: {}", e.getMessage(), e);
                 }
 

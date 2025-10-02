@@ -248,7 +248,7 @@ public class NavigationUtils {
     public static String formatDistance(double meters) {
         double km = meters / 1000;
         if (meters >= 1000) {
-            return String.format("%.1f kilometers", km);
+            return (int) km +" kilometers.";
         } else {
             int n = (int) meters;
             return n +" meters.";

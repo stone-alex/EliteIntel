@@ -151,3 +151,5 @@
 "the blue engine gear"="deploy landing gear"
 "pencil"="cancel"
 "turn around"="turn route"
+"formable"="terraformable"
+"that optimal speed"="set optimal speed"

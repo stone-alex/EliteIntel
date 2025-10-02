@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static elite.intel.util.NavigationUtils.calculateSurfaceDistance;
 
@@ -52,7 +51,7 @@ public class NavigateToNextBioSample implements CommandHandler {
         if (hasPartialBioScans) {
             entry = findPartialScanMatch(bioScans, codexEntries, userLatitude, userLongitude, planetRadius);
         } else {
-            entry = findNearestBioForm(codexEntries, userLatitude, userLongitude, planetRadius);
+            entry = findNearestBioForm(codexEntries, userLatitude, userLongitude, planetRadius, currentLocation.getPlanetName());
         }
 
         if (entry == null) {
@@ -94,9 +93,17 @@ public class NavigateToNextBioSample implements CommandHandler {
         return closestEntry;
     }
     
-    private  CodexEntryEvent findNearestBioForm(List<CodexEntryEvent> codexEntries, double userLatitude, double userLongitude, double planetRadius) {
+    private  CodexEntryEvent findNearestBioForm(List<CodexEntryEvent> codexEntries, double userLatitude, double userLongitude, double planetRadius, String planetName) {
         List<BioSampleDto> samples = playerSession.getBioCompletedSamples();
-        ArrayList<String> filterGenus = samples.stream().map(BioSampleDto::getGenus).collect(Collectors.toCollection(ArrayList::new));
+        ArrayList<String> filterGenus = new ArrayList<>();
+        for (BioSampleDto sample : samples) {
+            if(planetName.equalsIgnoreCase(sample.getPlanetName())) {
+                String genus = sample.getGenus();
+                filterGenus.add(genus);
+            }
+        }
+
+
         return findClosestBiologyEntry(codexEntries, userLatitude, userLongitude, planetRadius, null, filterGenus);
     }
 

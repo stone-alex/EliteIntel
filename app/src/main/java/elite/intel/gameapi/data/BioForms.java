@@ -291,6 +291,7 @@ public class BioForms {
             return -1;
         }
 
-        return speciesMap.get(capitalizedGenus).colonyRange();
+        // Get the first species entry - all species in a genus share the same colony range
+        return speciesMap.values().iterator().next().colonyRange();
     }
 }

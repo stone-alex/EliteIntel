@@ -52,7 +52,11 @@ public enum CustomCommands {
     NAVIGATE_TO_TARGET("navigate_to_coordinates", "<coordinates>", "lat_lon", NavigateToCoordinatesHandler.class),
     NAVIGATE_TO_NEXT_BIO_SAMPLE("navigate_bearing_direction_to_bio_sample", null, null, NavigateToNextBioSample.class),
     GET_HEADING_TO_LZ("navigate_bearing_direction_to_landing_zone", null, null, NavigateToLandingZone.class),
+
     NAVIGATION_ON_OFF("toggle_navigator_guidance", "<navigation_on_off>", "navigation_on_off", NavigationOnOffHandler.class),
+    DISCOVERY_ON_OFF("toggle_discovery_announcements", "<discovery_on_off>", "discovery_on_off", DiscoveryOnOffHandler.class),
+    MINING_ON_OFF("toggle_mining_announcements", "<mining_on_off>", "mining_on_off", MiningOnOffHandler.class),
+    ROUTE_ON_OFF("toggle_route_announcements", "<route_on_off>", "route_on_off", RouteAnnouncementsOnOffHandler.class),
 
     CLEAR_CODEX_ENTRIES("clear_codex_entries", null, null, ClearCodexEntriesHandler.class);
 

@@ -3,6 +3,8 @@ package elite.intel.ai.brain.handlers.commands.custom;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.commands.CommandHandler;
+import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.PlayerSession;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager; 
@@ -21,6 +23,7 @@ public class AddMiningTargetHandler implements CommandHandler {
     @Override
     public void handle(JsonObject params, String responseText) {
         PlayerSession session = PlayerSession.getInstance();
+        session.setMiningAnnouncementOn(true);
         JsonElement jsonElement = params.get("material");
 
         if (jsonElement == null || jsonElement.getAsString().isEmpty()) {
@@ -29,5 +32,6 @@ public class AddMiningTargetHandler implements CommandHandler {
             String miningTarget = jsonElement.getAsJsonPrimitive().getAsString().replace("\"", "");
             session.addMiningTarget(miningTarget);
         }
+        EventBusManager.publish(new AiVoxResponseEvent("Mining target set. Mining announcement enabled."));
     }
 }

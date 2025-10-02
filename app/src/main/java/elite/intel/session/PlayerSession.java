@@ -883,6 +883,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
 
     public void setMiningAnnouncementOn(Boolean miningAnnouncementOn) {
         isMiningAnnouncementOn = miningAnnouncementOn;
+        save();
     }
 
     public Boolean isNavigationAnnouncementOn() {
@@ -891,6 +892,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
 
     public void setNavigationAnnouncementOn(Boolean navigationAnnouncementOn) {
         isNavigationAnnouncementOn = navigationAnnouncementOn;
+        save();
     }
 
     public Boolean isDiscoveryAnnouncementOn() {
@@ -899,6 +901,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
 
     public void setDiscoveryAnnouncementOn(Boolean discoveryAnnouncementOn) {
         isDiscoveryAnnouncementOn = discoveryAnnouncementOn;
+        save();
     }
 
 
@@ -908,6 +911,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
 
     public void setRouteAnnouncementOn(Boolean routeAnnouncementOn) {
         isRouteAnnouncementOn = routeAnnouncementOn;
+        save();
     }
 
     public GalacticCoordinates getGalacticCoordinates() {

@@ -66,14 +66,14 @@ public class ScanOrganicSubscriber {
             BioSampleDto bioSampleDto = createBioSampleDto(genus, variant, starSystemNumber, valueInCredits);
             bioSampleDto.setScanXof3("First of Three");
             currentLocation.addBioScan(bioSampleDto);
-            EventBusManager.publish(new SensorDataEvent(sb.toString()));
+            announce(sb.toString());
 
 
         } else if (scan2.equalsIgnoreCase(scanType)) {
             BioSampleDto bioSampleDto = createBioSampleDto(genus, variant,  starSystemNumber, valueInCredits);
             currentLocation.addBioScan(bioSampleDto);
             bioSampleDto.setScanXof3("Second of Three");
-            EventBusManager.publish(new SensorDataEvent("Sample collected for: " + genus + "."));
+            announce("Sample collected for: " + genus + ".");
 
         } else if (scan3.equalsIgnoreCase(scanType)) {
             sb = new StringBuilder();
@@ -89,7 +89,7 @@ public class ScanOrganicSubscriber {
             }
 
 
-            EventBusManager.publish(new SensorDataEvent(sb.toString()));
+            announce(sb.toString());
             BioSampleDto bioSampleDto = createBioSampleDto(genus, variant,  starSystemNumber, valueInCredits);
             bioSampleDto.setScanXof3("Three of Three");
             bioSampleDto.setBioSampleCompleted(true);
@@ -98,6 +98,12 @@ public class ScanOrganicSubscriber {
             playerSession.getCurrentLocation().deletePartialBioSamples();
             playerSession.save();
             removeCodexEntryIfMatches(event.getVariantLocalised(), -1, false);
+        }
+    }
+
+    private static void announce(String sb) {
+        if(PlayerSession.getInstance().isDiscoveryAnnouncementOn()) {
+            EventBusManager.publish(new SensorDataEvent(sb));
         }
     }
 

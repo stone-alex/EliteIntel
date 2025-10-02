@@ -6,17 +6,16 @@ import elite.intel.ai.brain.handlers.commands.CommandHandler;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.PlayerSession;
-import elite.intel.session.SystemSession;
 
 import static elite.intel.util.json.JsonParameterExtractor.extractParameter;
 
-public class SetRadioTransmissionOnOff implements CommandHandler {
+public class MiningOnOffHandler implements CommandHandler {
 
     @Override public void handle(JsonObject params, String responseText) {
-        JsonElement jsonElement = extractParameter(CustomCommands.SET_RADIO_TRANSMISSION_MODDE.getPlaceholder(), params);
+        JsonElement jsonElement = extractParameter(CustomCommands.MINING_ON_OFF.getPlaceholder(), params);
         boolean isOn = "on".equalsIgnoreCase(jsonElement.getAsString()) || "true".equalsIgnoreCase(jsonElement.getAsString());
         PlayerSession playerSession = PlayerSession.getInstance();
-        playerSession.setRadioTransmissionOn(isOn);
-        EventBusManager.publish(new AiVoxResponseEvent("Radio is: " + (isOn ? "On" : "Off")));
+        playerSession.setMiningAnnouncementOn(isOn);
+        EventBusManager.publish(new AiVoxResponseEvent("Mining Announcements: " + (isOn ? "On" : "Off")));
     }
 }

@@ -4,18 +4,19 @@ import com.google.common.eventbus.Subscribe;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.journal.events.SAAScanCompleteEvent;
+import elite.intel.session.PlayerSession;
 
 public class SAAScanCompleteSubscriber {
 
     @Subscribe
     public void onSAAScanComplete(SAAScanCompleteEvent event) {
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("Surface scan complete ");
-        sb.append(efficiency(event));
-
-        EventBusManager.publish(new SensorDataEvent(sb.toString()));
-
+        if (PlayerSession.getInstance().isDiscoveryAnnouncementOn()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("Surface scan complete ");
+            sb.append(efficiency(event));
+            EventBusManager.publish(new SensorDataEvent(sb.toString()));
+        }
     }
 
     private String efficiency(SAAScanCompleteEvent event) {
@@ -26,7 +27,5 @@ public class SAAScanCompleteSubscriber {
         } else {
             return " Efficiency Poor: " + event.getProbesUsed() + " exceeding efficiency target of " + event.getEfficiencyTarget() + " probes. ";
         }
-
-
     }
 }

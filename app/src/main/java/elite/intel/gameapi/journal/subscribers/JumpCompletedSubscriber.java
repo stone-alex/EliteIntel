@@ -103,7 +103,9 @@ public class JumpCompletedSubscriber {
 
         playerSession.saveLocation(primaryStar);
         playerSession.saveCurrentLocation(primaryStar);
-        EventBusManager.publish(new SensorDataEvent(sb.toString()));
+        if(playerSession.isRouteAnnouncementOn()) {
+            EventBusManager.publish(new SensorDataEvent(sb.toString()));
+        }
     }
 
     private void processEdsmData(SystemBodiesDto systemBodiesDto) {

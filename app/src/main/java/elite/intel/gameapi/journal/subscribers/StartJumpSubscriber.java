@@ -24,8 +24,11 @@ public class StartJumpSubscriber {
             sb.append(", ");
             sb.append(isFuelStarClause(event.getStarClass()));
             sb.append(". ");
-            EventBusManager.publish(new SensorDataEvent(sb.toString()));
             PlayerSession playerSession = PlayerSession.getInstance();
+            if(playerSession.isRouteAnnouncementOn()) {
+                EventBusManager.publish(new SensorDataEvent(sb.toString()));
+            }
+
             LocationHistory locationHistory = LocationHistory.getInstance(playerSession.getCurrentLocation().getStarName());
 
             //TODO: need a better way to handle this.

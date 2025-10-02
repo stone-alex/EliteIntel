@@ -7,11 +7,14 @@ import elite.intel.ai.mouth.subscribers.events.RouteAnnouncementEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
 import elite.intel.gameapi.journal.events.NavRouteEvent;
+import elite.intel.session.PlayerSession;
 
 public class NavRouteSetSubscriber {
 
     @Subscribe
     public void onNavRouteSetEvent(NavRouteEvent event) {
-        EventBusManager.publish(new RouteAnnouncementEvent("Route set"));
+        if(PlayerSession.getInstance().isRouteAnnouncementOn()) {
+            EventBusManager.publish(new RouteAnnouncementEvent("Route set"));
+        }
     }
 }

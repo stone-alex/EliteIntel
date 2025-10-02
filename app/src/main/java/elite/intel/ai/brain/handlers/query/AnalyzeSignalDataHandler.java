@@ -16,7 +16,6 @@ import java.util.Map;
 public class AnalyzeSignalDataHandler  extends BaseQueryAnalyzer implements QueryHandler {
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-
         PlayerSession playerSession = PlayerSession.getInstance();
         LocationDto currentLocation = playerSession.getCurrentLocation();
         List<FSSBodySignalsEvent.Signal> fssBodySignals = playerSession.getCurrentLocation().getFssSignals();
@@ -24,7 +23,8 @@ public class AnalyzeSignalDataHandler  extends BaseQueryAnalyzer implements Quer
         List<BioSampleDto> completedBioSamples = playerSession.getBioCompletedSamples();
         SystemBodiesDto edsmData = EdsmApiClient.searchSystemBodies(currentLocation.getStarName());
 
-        return analyzeData(new DataDto(currentLocation, fssBodySignals, stellarObjects, completedBioSamples, edsmData).toJson(), originalUserInput);
+        String instructions= "If asked about biology or life forms look at stellarObjects for detectedSignals of signalType 'Biological', also check fssBodySignals and bio samples in completedBioSamples. Return short planet name(s)";
+        return analyzeData(new DataDto(currentLocation, fssBodySignals, stellarObjects, completedBioSamples, edsmData, instructions).toJson(), originalUserInput);
     }
 
     record DataDto(
@@ -32,7 +32,8 @@ public class AnalyzeSignalDataHandler  extends BaseQueryAnalyzer implements Quer
             List<FSSBodySignalsEvent.Signal> fssBodySignals,
             Map<Long, LocationDto> allStellarObjectsInStarSystem,
             List<BioSampleDto> completedBioScans,
-            SystemBodiesDto edsmData
+            SystemBodiesDto edsmData,
+            String instructions
     ) implements ToJsonConvertible {
 
         @Override public String toJson() {

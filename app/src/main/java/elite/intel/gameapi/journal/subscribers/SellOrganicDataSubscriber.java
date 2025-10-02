@@ -13,6 +13,8 @@ public class SellOrganicDataSubscriber {
         // not sure what to do with this yet.
         PlayerSession playerSession = PlayerSession.getInstance();
         playerSession.clearBioSamples();
-        EventBusManager.publish(new SensorDataEvent("Bio Data Sold: " +event.toJson()));
+        if (playerSession.isDiscoveryAnnouncementOn()) {
+            EventBusManager.publish(new SensorDataEvent("Bio Data Sold: " + event.toJson()));
+        }
     }
 }

@@ -89,9 +89,13 @@ public class SAASignalsFoundSubscriber {
                 if(parent != null) playerSession.saveLocation(parent);
             }
 
-            EventBusManager.publish(new SensorDataEvent(sb.toString()));
+            if(playerSession.isDiscoveryAnnouncementOn()) {
+                EventBusManager.publish(new SensorDataEvent(sb.toString()));
+            }
         } else {
-            EventBusManager.publish(new SensorDataEvent("No Signal(s) detected."));
+            if(playerSession.isDiscoveryAnnouncementOn()) {
+                EventBusManager.publish(new SensorDataEvent("No Signal(s) detected."));
+            }
         }
 
         playerSession.saveCurrentLocation(currentLocation);

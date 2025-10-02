@@ -1,8 +1,8 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.intel.ai.mouth.subscribers.events.DiscoveryAnnouncementEvent;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.journal.events.FSSBodySignalsEvent;
 import elite.intel.gameapi.journal.events.ScanEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
@@ -135,25 +135,25 @@ public class ScanEventSubscriber {
 
         if (!wasDiscovered && PLANET_OR_MOON.equals(location.getLocationType())) {
             if (event.getTerraformState() != null && !event.getTerraformState().isEmpty()) {
-                EventBusManager.publish(new SensorDataEvent("New Terraformable planet: " + shortName + " Details available on request. "));
+                EventBusManager.publish(new DiscoveryAnnouncementEvent("New Terraformable planet: " + shortName + " Details available on request. "));
             } else if (event.getPlanetClass() != null && valuablePlanetClasses.contains(event.getPlanetClass().toLowerCase())) {
-                EventBusManager.publish(new SensorDataEvent("New discovery logged: " + event.getPlanetClass()));
+                EventBusManager.publish(new DiscoveryAnnouncementEvent("New discovery logged: " + event.getPlanetClass()));
             }
         }
 
         if (wasDiscovered && !STAR.equals(location.getLocationType())) {
             if (!wasMapped && !BELT_CLUSTER.equals(location.getLocationType())) {
-                EventBusManager.publish(new SensorDataEvent(shortName + " was previously discovered, but not mapped. "));
+                EventBusManager.publish(new DiscoveryAnnouncementEvent(shortName + " was previously discovered, but not mapped. "));
             } else if (!BELT_CLUSTER.equals(location.getLocationType())) {
                 String sensorData = getDetails(event, shortName);
-                EventBusManager.publish(new SensorDataEvent(sensorData));
+                EventBusManager.publish(new DiscoveryAnnouncementEvent(sensorData));
                 log.info(sensorData);
             }
         } else if (!wasDiscovered && PRIMARY_STAR.equals(location.getLocationType())) {
 
-            EventBusManager.publish(new SensorDataEvent("New star system discovered!"));
+            EventBusManager.publish(new DiscoveryAnnouncementEvent("New star system discovered!"));
         } else if (PRIMARY_STAR.equals(location.getLocationType())) {
-            EventBusManager.publish(new SensorDataEvent("Previously discovered!"));
+            EventBusManager.publish(new DiscoveryAnnouncementEvent("Previously discovered!"));
         }
     }
 

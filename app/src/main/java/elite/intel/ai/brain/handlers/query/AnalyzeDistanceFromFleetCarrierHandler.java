@@ -8,15 +8,30 @@ import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 
+import java.util.Map;
+
 public class AnalyzeDistanceFromFleetCarrierHandler extends BaseQueryAnalyzer implements QueryHandler {
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         PlayerSession playerSession = PlayerSession.getInstance();
         CarrierDataDto carrierData = playerSession.getCarrierData();
-        LocationDto currentLocation = playerSession.getCurrentLocation();
+
+        double x = 0, y = 0, z = 0;
+
+        Map<Long, LocationDto> locations = playerSession.getLocations();
+        for (LocationDto location : locations.values()) {
+            if (location.getLocationType().equals(LocationDto.LocationType.PRIMARY_STAR)) {
+                x = location.getX();
+                y = location.getY();
+                z = location.getZ();
+                break;
+            }
+        }
+
+
         LoadoutEvent shipLoadout = playerSession.getShipLoadout();
         if(carrierData == null) return analyzeData(toJson("No data available"), originalUserInput);
-        if(currentLocation == null) return analyzeData(toJson("No data available"), originalUserInput);
+        boolean currentLocationCoordinatesAreNotAvailable = x == 0 && y == 0 && z == 0;
 
         float jumpRange = shipLoadout == null ? -1 : shipLoadout.getMaxJumpRange();
 
@@ -24,27 +39,23 @@ public class AnalyzeDistanceFromFleetCarrierHandler extends BaseQueryAnalyzer im
         double carrier_location_y = carrierData.getY();
         double carrier_location_z = carrierData.getZ();
 
-        double current_location_x = currentLocation.getX();
-        double current_location_y = currentLocation.getY();
-        double current_location_z = currentLocation.getZ();
-
         if(carrier_location_x == 0 && carrier_location_y == 0 && carrier_location_z == 0){
             return analyzeData(toJson("Carrier coordinates are not available."), originalUserInput);
         }
 
-        if(current_location_x == 0 && current_location_y == 0 && current_location_z == 0){
+        if (currentLocationCoordinatesAreNotAvailable) {
             return analyzeData(toJson("Current location coordinates are not available."), originalUserInput);
         }
 
-        String instruction = " Use galactic coordinates to calculate distance from our location to the carrier. If jump range is > 0 also calculate number of jumps required to reach the carrier. ";
+        String instruction = " Use galactic coordinates to calculate distance from our location to the carrier. Distance is in Light Years. If jump range is > 0 also calculate number of jumps required to reach the carrier. ";
         return analyzeData(
                 new DataDto(
                         carrier_location_x,
                         carrier_location_y,
                         carrier_location_z,
-                        current_location_x,
-                        current_location_y,
-                        current_location_z,
+                        x,
+                        y,
+                        z,
                         jumpRange,
                         instruction
                 ).toJson(),

@@ -143,6 +143,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setX(double x) {
+        if(x == 0) return;
         X = x;
     }
 
@@ -151,6 +152,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setY(double y) {
+        if(y == 0) return;
         Y = y;
     }
 
@@ -159,6 +161,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setZ(double z) {
+        if(z == 0) return;
         Z = z;
     }
 

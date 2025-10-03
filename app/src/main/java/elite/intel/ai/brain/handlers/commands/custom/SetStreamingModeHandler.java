@@ -39,7 +39,7 @@ public class SetStreamingModeHandler implements CommandHandler {
 
     @Override public void handle(JsonObject params, String responseText) {
         JsonElement jsonElement = extractParameter(CustomCommands.SET_STREAMING_MODE.getPlaceholder(), params);
-        boolean isOn = "on".equalsIgnoreCase(jsonElement.getAsString());
+        boolean isOn = "on".equalsIgnoreCase(jsonElement.getAsString()) || "true".equalsIgnoreCase(jsonElement.getAsString());
         SystemSession systemSession = SystemSession.getInstance();
         systemSession.setStreamingMode(isOn);
 

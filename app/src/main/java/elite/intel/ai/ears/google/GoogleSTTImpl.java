@@ -226,6 +226,7 @@ public class GoogleSTTImpl implements EarsInterface {
                             @Override
                             public void onError(Throwable t) {
                                 log.error("STT error: {}", t.getMessage());
+                                EventBusManager.publish(new GoogleSTTConnectionFailed());
                             }
 
                             @Override
@@ -318,7 +319,7 @@ public class GoogleSTTImpl implements EarsInterface {
                                     if (avgConfidence > 0.3) {
                                         if (isStreamingModeOn) {
                                             String voiceName = SystemSession.getInstance().getAIVoice().getName();
-                                            if (sanitizedTranscript.toLowerCase().startsWith("computer") || sanitizedTranscript.toLowerCase().startsWith(voiceName.toLowerCase())) {
+                                            if (sanitizedTranscript.toLowerCase().startsWith("computer") || sanitizedTranscript.toLowerCase().contains(voiceName.toLowerCase())) {
                                                 sendToAi(sanitizedTranscript.replace("computer,", "").replace(voiceName.toLowerCase() + ",", ""), 100);
                                             }
                                         } else {
@@ -465,7 +466,11 @@ public class GoogleSTTImpl implements EarsInterface {
     }
 
     private void sendToAi(String sanitizedTranscript, float confidence) {
-        EventBusManager.publish(new TTSInterruptEvent());
+        boolean hasAiReference = !sanitizedTranscript.isBlank()
+                && (sanitizedTranscript.toLowerCase().contains("computer"))
+                || (sanitizedTranscript.toLowerCase().contains(SystemSession.getInstance().getAIVoice().getName().toLowerCase())) ;
+
+        EventBusManager.publish(new TTSInterruptEvent(hasAiReference));
         AudioPlayer.getInstance().playBeep(); //user notification, we are processing the input now.
         log.info("Processing sanitizedTranscript: {}", sanitizedTranscript);
         EventBusManager.publish(new UserInputEvent(sanitizedTranscript, confidence));

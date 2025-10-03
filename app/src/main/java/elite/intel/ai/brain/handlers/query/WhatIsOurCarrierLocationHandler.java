@@ -28,7 +28,7 @@ public class WhatIsOurCarrierLocationHandler extends BaseQueryAnalyzer implement
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         PlayerSession playerSession = PlayerSession.getInstance();
-        String carrierLocation = playerSession.getCarrierData() == null ? " unknown " : playerSession.getCarrierData().getLocation();
+        String carrierLocation = playerSession.getLastKnownCarrierLocation();
         GenericResponse genericResponse = GenericResponse.getInstance();
         return genericResponse.genericResponse("Carrier is located in " + carrierLocation);
     }

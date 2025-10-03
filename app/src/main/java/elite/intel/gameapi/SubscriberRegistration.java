@@ -39,6 +39,7 @@ public class SubscriberRegistration {
                 "elite.intel.gameapi.journal.subscribers",
                 "elite.intel.gameapi.gamestate.subscribers",
                 "elite.intel.ai.mouth.subscribers",
+                "elite.intel.ai.ears.google.subscriber",
                 new MethodAnnotationsScanner()
         );
         // Find methods annotated with @Subscribe

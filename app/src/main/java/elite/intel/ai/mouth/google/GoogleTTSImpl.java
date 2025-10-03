@@ -6,6 +6,8 @@ import elite.intel.ai.ConfigManager;
 import elite.intel.ai.mouth.*;
 import elite.intel.ai.mouth.subscribers.events.*;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.session.PlayerSession;
+import elite.intel.session.SystemSession;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -139,7 +141,13 @@ public class GoogleTTSImpl implements MouthInterface {
 
     @Subscribe
     public void onInterruptEvent(TTSInterruptEvent event) {
-        interruptAndClear();
+        if(SystemSession.getInstance().isStreamingModeOn()) {
+            if (event.hasAiReference()) {
+                interruptAndClear();
+            }
+        } else {
+            interruptAndClear();
+        }
     }
 
     @Subscribe

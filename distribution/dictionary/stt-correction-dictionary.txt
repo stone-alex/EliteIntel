@@ -153,3 +153,6 @@
 "turn around"="turn route"
 "formable"="terraformable"
 "that optimal speed"="set optimal speed"
+"field carrier"="fleet carrier"
+"Hema"="emma"
+"come from away"="how far away"

@@ -29,7 +29,7 @@ public enum QueryActions {
     STATION_DATA("query_station_details", "Analyze data for the current station.", StationDataHandler.class, true),
     WHAT_ARE_YOUR_CAPABILITIES("query_app_capabilities", "Summarize application capabilities.", WhatAreYourCapabilitiesHandler.class, false),
     WHAT_IS_YOUR_DESIGNATION("query_ai_designation", "Respond with the AI’s name or designation.", WhatIsYourNameHandler.class, false),
-    WHERE_IS_OUR_CARRIER("query_fleet_carrier_location", "Provide the current location of our fleet carrier.", WhatIsOurCarrierLocationHandler.class, false),
+    WHERE_IS_OUR_CARRIER("query_fleet_carrier_location", "Provide the current location of our fleet carrier. Do not confuse with question about distance to the carrier.", WhatIsOurCarrierLocationHandler.class, false),
     TOTAL_BOUNTIES_COLLECTED("query_bounties_collected", "Summarize total bounties collected this session.", AnalyzeBountiesCollectedHandler.class, false),
     CARRIER_ETA("query_fleet_carrier_arrival_eta", "Calculate fleet carrier ETA using arrival and current time.", CarrierETAHandler.class, false),
     HOW_FAR_ARE_WE_FROM_BUBBLE("query_distance_to_bubble", "Calculate distance to the Bubble in light years using 3D coordinates.", AnalyzeDistanceFromTheBubble.class, false),

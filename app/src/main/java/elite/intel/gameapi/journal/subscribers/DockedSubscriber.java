@@ -67,6 +67,6 @@ public class DockedSubscriber {
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("Data available for: " + availableData + "."));
         }
 
-        playerSession.saveCurrentLocation(currentLocation);
+        playerSession.saveLocation(currentLocation);
     }
 }

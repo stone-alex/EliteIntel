@@ -16,7 +16,6 @@ public class ClearCacheHandler implements CommandHandler {
 
         PlayerSession playerSession = PlayerSession.getInstance();
         playerSession.clearOnShutDown();
-        playerSession.saveCurrentLocation(new LocationDto());
         playerSession.clearCash();
 
 

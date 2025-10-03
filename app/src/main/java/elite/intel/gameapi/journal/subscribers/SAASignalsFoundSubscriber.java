@@ -26,14 +26,14 @@ public class SAASignalsFoundSubscriber {
         StringBuilder sb = new StringBuilder();
         if(event.getBodyID() == 0) return;
 
-        LocationDto currentLocation = playerSession.getCurrentLocation();
+        LocationDto location = playerSession.getLocation(event.getBodyID());
 
-        if (currentLocation.getBodyId() != event.getBodyID()) {
-            currentLocation = playerSession.getLocation(event.getBodyID());
+        if (location.getBodyId() != event.getBodyID()) {
+            location = playerSession.getLocation(event.getBodyID());
         }
 
-        currentLocation.addSaaSignals(event.getSignals());
-        playerSession.saveCurrentLocation(currentLocation);
+        location.addSaaSignals(event.getSignals());
+        playerSession.saveLocation(location);
 
         List<SAASignalsFoundEvent.Signal> signals = event.getSignals();
         int signalsFound = signals != null ? signals.size() : 0;
@@ -50,9 +50,9 @@ public class SAASignalsFoundSubscriber {
 
 
             if (liveSignals > 0) {
-                currentLocation.setBioSignals(event.getGenuses().size());
-                currentLocation.setGenus(toGenusDto(event.getGenuses()));
-                currentLocation.setBioFormsPresent(true);
+                location.setBioSignals(event.getGenuses().size());
+                location.setGenus(toGenusDto(event.getGenuses()));
+                location.setBioFormsPresent(true);
                 boolean hasBeenScanned = scanBioCompleted(event, playerSession);
 
                 if (!hasBeenScanned) sb.append(" Exobiology signal(s) found ").append(liveSignals).append(": ");
@@ -70,7 +70,7 @@ public class SAASignalsFoundSubscriber {
 
             } else if (event.getBodyName().contains("Ring")) {
                 //Rings are bodies
-                LocationDto ring = new LocationDto();
+                LocationDto ring = new LocationDto(event.getBodyID());
                 ring.setLocationType(PLANETARY_RING);
                 ring.setBodyId(event.getBodyID());
                 ring.setPlanetName(event.getBodyName());
@@ -98,8 +98,7 @@ public class SAASignalsFoundSubscriber {
             }
         }
 
-        playerSession.saveCurrentLocation(currentLocation);
-        playerSession.saveLocation(currentLocation);
+        playerSession.saveLocation(location);
     }
 
     private long findParentId(String parentBodyName) {

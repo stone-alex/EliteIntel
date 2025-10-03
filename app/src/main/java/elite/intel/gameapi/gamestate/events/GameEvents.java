@@ -124,7 +124,7 @@ public class GameEvents {
             @SerializedName("System")
             private long system;
             @SerializedName("Body")
-            private int body;
+            private long body;
             @SerializedName("Name")
             private String name;
 
@@ -133,7 +133,7 @@ public class GameEvents {
                 return system;
             }
 
-            public int getBody() {
+            public long getBody() {
                 return body;
             }
 

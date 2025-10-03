@@ -12,8 +12,6 @@ public class ShutDownEventSubscriber {
 
     @Subscribe
     public void onShutDownEvent(ShutdownEvent event) {
-        PlayerSession playerSession = PlayerSession.getInstance();
-        playerSession.save();
         EventBusManager.publish(new AiVoxResponseEvent("Session off line..."));
         EventBusManager.publish(new SystemShutDownEvent());
     }

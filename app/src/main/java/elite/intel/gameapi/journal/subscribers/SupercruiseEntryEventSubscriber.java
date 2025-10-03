@@ -24,6 +24,6 @@ public class SupercruiseEntryEventSubscriber {
         currentLocation.setStationEconomy(null);
         currentLocation.setStationGovernment(null);
         currentLocation.setStationType(null);
-        playerSession.saveCurrentLocation(currentLocation);
+        playerSession.saveLocation(currentLocation);
     }
 }

@@ -82,7 +82,7 @@ class SessionPersistence {
         // Placeholder for save operation
     }
 
-    public void save() {
+    protected void save() {
         try {
             saveQueue.put(new SaveOperation());
         } catch (InterruptedException e) {

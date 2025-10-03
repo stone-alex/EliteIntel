@@ -8,6 +8,7 @@ import elite.intel.gameapi.journal.events.dto.BountyDto;
 import elite.intel.gameapi.journal.events.dto.MissionDto;
 import elite.intel.session.PlayerSession;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -49,9 +50,15 @@ public class MissionCompletedSubscriber {
         }
 
         if (countRemainingMissionsAgainstFaction == 0) {
-            playerSession.getTargetFactions().remove(targetFaction);
+            Set<String> targetFactions = playerSession.getTargetFactions();
+            Set<String> updatedSet = new HashSet<>();
+            for(String faction : targetFactions) {
+                if(faction.equalsIgnoreCase(targetFaction)) continue;
+                updatedSet.add(faction);
+            }
+            playerSession.setTargetFactions(updatedSet);
         }
-        playerSession.save();
+
 
         EventBusManager.publish(new SensorDataEvent("Mission against Faction:\"" + targetFaction + "\" Completed: " + event.toString()));
     }

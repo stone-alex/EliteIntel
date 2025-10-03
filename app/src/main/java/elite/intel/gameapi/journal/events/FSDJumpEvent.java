@@ -59,7 +59,7 @@ public class FSDJumpEvent extends BaseEvent {
     private String body;
 
     @SerializedName("BodyID")
-    private int bodyId;
+    private long bodyId;
 
     @SerializedName("BodyType")
     private String bodyType;
@@ -194,7 +194,7 @@ public class FSDJumpEvent extends BaseEvent {
         return body;
     }
 
-    public int getBodyId() {
+    public long getBodyId() {
         return bodyId;
     }
 

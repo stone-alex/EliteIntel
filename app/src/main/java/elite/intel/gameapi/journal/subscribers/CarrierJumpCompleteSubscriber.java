@@ -32,7 +32,7 @@ public class CarrierJumpCompleteSubscriber {
         playerSession.setCarrierDepartureTime(null);
 
         if(FLEET_CARRIER.equals(playerSession.getCurrentLocation().getLocationType())){
-            playerSession.saveCurrentLocation(toLocationDto(event));
+            playerSession.saveLocation(toLocationDto(event));
             playerSession.clearLocations();
         }
 
@@ -52,11 +52,11 @@ public class CarrierJumpCompleteSubscriber {
         LocationHistory locationHistory = LocationHistory.getInstance(event.getStarSystem());
         Map<Long, LocationDto> locations = locationHistory.getLocations();
         if (locations == null || locations.isEmpty()) {
-            location = new LocationDto();
+            location = new LocationDto(event.getBodyId());
             return fillInWhatWeCan(event, location);
         } else {
             location = locations.get((long) event.getBodyId());
-            return fillInWhatWeCan(event, Objects.requireNonNullElseGet(location, LocationDto::new));
+            return fillInWhatWeCan(event, Objects.requireNonNullElseGet(location, () -> new LocationDto(event.getBodyId())));
         }
     }
 

@@ -16,7 +16,7 @@ public class ClearCodexEntriesHandler implements CommandHandler {
         PlayerSession playerSession = PlayerSession.getInstance();
         LocationDto currentLocation = playerSession.getCurrentLocation();
         currentLocation.clearCodexEntries();
-        playerSession.saveCurrentLocation(currentLocation);
+        playerSession.saveLocation(currentLocation);
         EventBusManager.publish(new AiVoxResponseEvent("Codex entries cleared."));
     }
 }

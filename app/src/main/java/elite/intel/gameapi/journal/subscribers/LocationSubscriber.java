@@ -58,7 +58,7 @@ public class LocationSubscriber {
         dto.setTrafficDto(EdsmApiClient.searchTraffic(event.getStarSystem()));
         dto.setDeathsDto(EdsmApiClient.searchDeaths(event.getStarSystem()));
 
-        playerSession.saveCurrentLocation(dto);
+        playerSession.saveLocation(dto);
     }
 
     private LocationDto findLocation(LocationEvent event) {

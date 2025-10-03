@@ -24,7 +24,7 @@ public class FSSSignalDiscoveredSubscriber {
         PlayerSession playerSession = PlayerSession.getInstance();
 
 
-        playerSession.saveCurrentLocation(updateLocation(event, playerSession));
+        playerSession.saveLocation(updateLocation(event, playerSession));
 
         if (event.getUssTypeLocalised() != null && event.getUssTypeLocalised().equals("Nonhuman signal source")) {
             publishVoice("Nonhuman signal source detected! Threat level " + event.getThreatLevel() + "!");
@@ -42,8 +42,8 @@ public class FSSSignalDiscoveredSubscriber {
 
     private static LocationDto updateLocation(FSSSignalDiscoveredEvent event, PlayerSession playerSession) {
         LocationDto currentLocation = null;
-        Map<Long, LocationDto> stellarObjects = playerSession.getLocations();
-        for(LocationDto dto : stellarObjects.values()) {
+        Map<Long, LocationDto> locations = playerSession.getLocations();
+        for(LocationDto dto : locations.values()) {
             if(dto.getLocationType().equals(LocationDto.LocationType.PRIMARY_STAR)){
                 currentLocation = dto;
                 break;

@@ -64,7 +64,7 @@ public class ApproachBodySubscriber {
             }
         }
 
-        playerSession.saveCurrentLocation(location);
+        playerSession.saveLocation(location);
         EventBusManager.publish(new DiscoveryAnnouncementEvent(sb.toString()));
     }
 

@@ -51,7 +51,7 @@ public class TouchdownEventSubscriber {
         if(currentLocation != null) {
             // only set LZ coordinates on touchdown. Event if ship departs, we can go back to where it can land again.
             currentLocation.setLandingCoordinates(new double[]{ latitude, longitude});
-            playerSession.saveCurrentLocation(currentLocation);
+            playerSession.saveLocation(currentLocation);
         }
 
         if (pointOfInterest != null && !pointOfInterest.isEmpty()) {

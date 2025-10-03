@@ -128,9 +128,8 @@ public class LocationDto implements ToJsonConvertible {
     private int geoSignals;
     private boolean hasRings;
 
+    private LocationDto() {
 
-    public LocationDto() {
-        setLocationType(LocationType.UNKNOWN);
     }
 
 

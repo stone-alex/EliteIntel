@@ -17,21 +17,22 @@ public class LocalServicesData {
 
         PlayerSession playerSession = PlayerSession.getInstance();
 
+        LocationDto currentLocation = playerSession.getCurrentLocation();
         if (marketDto.getData() != null && marketDto.getData().getCommodities() != null) {
             sb.append(" Market, ");
-            playerSession.getCurrentLocation().setMarket(marketDto);
+            currentLocation.setMarket(marketDto);
         }
 
         if (outfittingDto.getData() != null && outfittingDto.getData().getOutfitting() != null) {
             sb.append(" Outfitting, ");
-            playerSession.getCurrentLocation().setOutfitting(outfittingDto);
+            currentLocation.setOutfitting(outfittingDto);
         }
 
         if (shipyardDto.getData() != null && shipyardDto.getData().getShips() != null) {
             sb.append(" Shipyard, ");
-            playerSession.getCurrentLocation().setShipyard(shipyardDto);
+            currentLocation.setShipyard(shipyardDto);
         }
-        playerSession.save();
+        playerSession.saveLocation(currentLocation);
         return sb.toString().trim();
     }
 }

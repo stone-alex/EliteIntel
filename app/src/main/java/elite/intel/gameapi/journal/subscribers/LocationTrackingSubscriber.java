@@ -45,6 +45,7 @@ public class LocationTrackingSubscriber {
     private double lastDistance = -1;
     private long lastAnnounceTime = -1;
     private double lastDistanceThreshold = 0;
+    private boolean lookForLandingSpotAnnounced = false;
 
     private static final long MIN_INTERVAL_MS = 15_000;
     private static final double[] DISTANCE_THRESHOLDS = generateDescendingSequence(10_000_000);
@@ -107,7 +108,7 @@ public class LocationTrackingSubscriber {
     }
 
     private boolean isOnSurface(PlayerMovedEvent event) {
-        return event.getAltitude() < 10;
+        return event.getAltitude() < 2;
     }
 
     private boolean isInOrbit(PlayerMovedEvent event) {
@@ -233,9 +234,17 @@ public class LocationTrackingSubscriber {
             }
         } else {
             //FLYING in normal space above surface
-            if (navigator.distanceToTarget() < 1_000) {
+            if (navigator.distanceToTarget() < 1_000 && !lookForLandingSpotAnnounced) {
+                lookForLandingSpotAnnounced = true;
                 vocalize("Within 1000 meters from target. Look for landing spot", 0, 0, true);
+                if (movingAway) {
+                    vocalize("Moving Away.", 0, 0, false);
+                }
             } else {
+                if(navigator.distanceToTarget() > 1500) {
+                    lookForLandingSpotAnnounced = false;
+                }
+
                 if (headingDeviation) {
                     vocalize(movingAway ? "Moving Away." : "Getting Closer. ", navigator.distanceToTarget(), navigator.bearingToTarget(), movingAway);
                 } else if (event.getAltitude() > 3_000 && glideAngleOk) {
@@ -281,6 +290,7 @@ public class LocationTrackingSubscriber {
     private void resetTrackingState() {
         hasAnnouncedOrbital = false;
         hasAnnouncedSurface = false;
+        lookForLandingSpotAnnounced = false;
         playerSession.setTracking(new TargetLocation());
         lastTracking = null;
         lastDistance = -1;
@@ -291,7 +301,7 @@ public class LocationTrackingSubscriber {
 
     private void vocalize(String text, double distance, double bearing, boolean highPriority) {
         if (highPriority) {
-            EventBusManager.publish(new TTSInterruptEvent());
+            //EventBusManager.publish(new TTSInterruptEvent());
         }
 
         if (isAboveAnnouncementThreshold(highPriority)) {

@@ -41,9 +41,9 @@ public class JumpCompletedSubscriber {
             playerSession.setLocations(locationHistory.getLocations());
         }
 
-        LocationDto locationDto = locationHistory.getLocations().get((long)event.getBodyId());
+        LocationDto locationDto = locationHistory.getLocations().get(event.getBodyId());
 
-        LocationDto primaryStar =  locationDto == null ? new LocationDto() : locationDto;
+        LocationDto primaryStar =  locationDto == null ? new LocationDto(event.getBodyId()) : locationDto;
         primaryStar.setBodyId(event.getBodyId());
         primaryStar.setStationGovernment(event.getSystemGovernmentLocalised());
         primaryStar.setAllegiance(event.getSystemAllegiance());
@@ -102,7 +102,6 @@ public class JumpCompletedSubscriber {
         }
 
         playerSession.saveLocation(primaryStar);
-        playerSession.saveCurrentLocation(primaryStar);
         if(playerSession.isRouteAnnouncementOn()) {
             EventBusManager.publish(new SensorDataEvent(sb.toString()));
         }

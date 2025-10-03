@@ -21,7 +21,9 @@ public class CodexEntryEventSubscriber {
         String firstWordOfEntryName = event.getNameLocalised().split(" ")[0];
         long projectedPayment = BioForms.getAverageProjectedPayment(capitalizeWords(firstWordOfEntryName));
         int distance = BioForms.getDistance(capitalizeWords(firstWordOfEntryName));
-        if(event.isNewEntry()) {
+        boolean alreadyHaveThisEntry = currentLocation.getCodexEntries().stream().anyMatch(entry -> entry.getNameLocalised().equals(event.getNameLocalised()));
+
+        if(!alreadyHaveThisEntry && event.isNewEntry()) {
             sb.append("New Codex Entry: ");
         } else {
             sb.append("Codex Entry: ");
@@ -32,12 +34,11 @@ public class CodexEntryEventSubscriber {
         sb.append("Name: ");
         sb.append(event.getNameLocalised());
 
-        if(distance > 0) {
+        if(distance > 0 && !alreadyHaveThisEntry) {
             sb.append(" Distance between samples: ").append(distance).append(" meters. ");
         }
 
 
-        boolean alreadyHaveThisEntry = currentLocation.getCodexEntries().stream().anyMatch(entry -> entry.getNameLocalised().equals(event.getNameLocalised()));
 
         if (!alreadyHaveThisEntry) {
             sb.append(", ");
@@ -52,6 +53,6 @@ public class CodexEntryEventSubscriber {
         EventBusManager.publish(new SensorDataEvent(sb.toString()));
 
         currentLocation.addCodexEntry(event);
-        playerSession.saveCurrentLocation(currentLocation);
+        playerSession.saveLocation(currentLocation);
     }
 }

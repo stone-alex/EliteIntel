@@ -94,9 +94,8 @@ public class ScanOrganicSubscriber {
             bioSampleDto.setScanXof3("Three of Three");
             bioSampleDto.setBioSampleCompleted(true);
             playerSession.addBioSample(bioSampleDto);
-            playerSession.saveCurrentLocation(currentLocation);
-            playerSession.getCurrentLocation().deletePartialBioSamples();
-            playerSession.save();
+            currentLocation.deletePartialBioSamples();
+            playerSession.saveLocation(currentLocation);
             removeCodexEntryIfMatches(event.getVariantLocalised(), -1, false);
         }
     }
@@ -136,7 +135,7 @@ public class ScanOrganicSubscriber {
             }
         }
         currentLocation.setCodexEntries(adjusted);
-        playerSession.saveCurrentLocation(currentLocation);
+        playerSession.saveLocation(currentLocation);
     }
 
 

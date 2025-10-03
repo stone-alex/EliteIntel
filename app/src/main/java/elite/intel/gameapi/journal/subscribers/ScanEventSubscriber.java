@@ -46,6 +46,7 @@ public class ScanEventSubscriber {
         LocationDto lcoation = getOrMakeLocation(event.getBodyID());
         LocationDto.LocationType locationType = determineLocationType(event);
         lcoation.setLocationType(locationType);
+        lcoation.setStarType(event.getStarType());
 
         if(!PRIMARY_STAR.equals(locationType)) {
             lcoation.setX(playerSession.getCurrentLocation().getX());

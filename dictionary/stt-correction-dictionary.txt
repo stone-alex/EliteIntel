@@ -156,3 +156,6 @@
 "field carrier"="fleet carrier"
 "Hema"="emma"
 "come from away"="how far away"
+"deploy linking gear"="deploy landing gear"
+"police"="list"
+"mentor hyperspace"="enter hyperspace"

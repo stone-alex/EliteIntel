@@ -3,20 +3,20 @@ package elite.intel.ai.brain.handlers.query;
 public enum QueryActions {
 
     ANALYZE_SCAN("query_analyze_last_scan", "Analyze the most recent scan data.", AnalyzeLastScanHandler.class, true),
-    QUERY_SEARCH_SIGNAL_DATA("query_planetary_moon_signals", "Analyze data from planets or moons in the star system, including materials and bio signals using gravity (G) and temperature (K) units.", AnalyzeSignalDataHandler.class, true),  // Clarify planetary/moon scope, avoid vehicle overlap
+    QUERY_SEARCH_SIGNAL_DATA("query_analise_star_system_data", "Contains locations (planets, moons, planetary rings, raw materials, bio forms, bio samples, stations, starports etc) using gravity (G) and temperature (K) units. Use shortName for planets", AnalyzeSignalDataHandler.class, true),  // Clarify planetary/moon scope, avoid vehicle overlap
+    //LOCAL_SYSTEM_INFO("query_local_star_system", "Provide details about the current star system.", AnalyzeLocalSystemHandler.class, true),
     ANALYZE_CURRENT_PLANET("query_current__location", "Where are we? Analyze data for the current planetary or station location.", AnalyzeCurrentLocationHandler.class, true),  // Emphasize planetary/station context
     ANALYZE_STAR_SYSTEM_EXPLORATION("query_star_system_exploration", "Analyze exploration data and profits for the current star system.", AnalyzeExplorationProfitsHandler.class, true),
     ANALYZE_BODY_MATERIALS("query_planetary_materials", "Analyze material composition on this planet.", AnalyzeMaterialsOnPlanetHandler.class, true),  // Specify planetary to avoid ship/cargo confusion
-    ANALYZE_EXO_BIOLOGY("query_exobiology_samples", "Analyze bio-sample collection progress, including completed, partial, and remaining species.", AnalyzeBioSamplesHandler.class, true),  // "exobiology" to distinguish from commodities
+    ANALYZE_EXO_BIOLOGY("query_exobiology_samples", "Analyze bio-sample collection progress, including completed, partial, and remaining species.", AnalyzeBioSamplesHandler.class, true),  // "exobiology" to distinguish from commodities,
     ANALYZE_CURRENT_FUEL_STATUS("query_ship_fuel_status", "Analyze ship fuel tank capacity and reserve, return percent available.", AnalyzeFuelStatusHandler.class, true),
     ANALYZE_FSD_TARGET("query_fsd_target_analysis", "Analyze FSD destination for allegiance, traffic, and security.", AnalyzeFsdTargetHandler.class, true),
-    ANALYZE_LOCAL_MARKETS("query_local_commodity_markets", "Analyze commodity market contents at the current location.", AnalyzeLocalMarketsHandler.class, true),  // "commodity" to avoid bio or material overlap
+    ANALYZE_LOCAL_MARKETS("query_local_commodity_markets", "Analyze commodity market contents at the current location.", AnalyzeLocalMarketsHandler.class, true),  // "commodity" to avoid bio or material overlap,
     ANALYZE_LOCAL_OUTFITTING("query_local_outfitting", "Analyze available outfitting options.", AnalyzeLocalOutfittingHandler.class, true),
     ANALYZE_LOCAL_SHIPYARD("query_local_shipyard", "Analyze shipyard contents.", AnalyzeShipyardHandler.class, true),
     ANALYZE_LOCAL_STATIONS("query_local_stations_services", "Summarize services at local stations.", AnalyzeLocalStations.class, true),
     HOW_FAR_TO_FINAL_DESTINATION("query_distance_to_final_destination", "Calculate distance to the final destination.", AnalyzeDistanceToFinalDestination.class, false),
     LIST_AVAILABLE_VOICES("list_available_voices", "List available AI voices.", ListAvailableVoices.class, false),
-    LOCAL_SYSTEM_INFO("query_local_star_system", "Provide details about the current star system.", AnalyzeLocalSystemHandler.class, true),
     QUERY_ANALYZE_ON_BOARD_CARGO("query_ship_cargo_contents", "Analyze contents of the ship’s cargo hold.", AnalyzeCargoHoldHandler.class, true),  // "ship" to avoid carrier/planet mix-up
     QUERY_ANALYZE_ROUTE("query_plotted_route_analysis", "Analyze the current plotted route.", AnalyzeRouterHandler.class, true),
     QUERY_CARRIER_STATS("query_fleet_carrier_vehicle_stats", "Analyze fleet carrier vehicle data (e.g., fuel, market, location), provide concise answer for specific datapoints or a summary if unspecified.", AnalyzeCarrierDataHandler.class, true),  // "vehicle" to distinguish from planets

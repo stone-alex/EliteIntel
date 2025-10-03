@@ -23,16 +23,24 @@ public class FSSBodySignalsSubscriber {
         List<FSSBodySignalsEvent.Signal> signals = event.getSignals();
         if(signals == null || signals.isEmpty()) return;
 
+        int bioSignals = 0;
+        int geoSignals = 0;
         for(FSSBodySignalsEvent.Signal s : signals) {
             FssSignalDto signal = new FssSignalDto();
             signal.setSignalName(event.getEventName());
             signal.setSignalType(s.getTypeLocalised());
             if("Biological".equalsIgnoreCase(s.getTypeLocalised())){
-                location.setBioFormsPresent(true);
+                bioSignals++;
+            }
+            if("Geological".equalsIgnoreCase(s.getTypeLocalised())){
+                geoSignals++;
             }
             signal.setSystemAddress(event.getSystemAddress());
             location.addDetectedSignal(signal);
             playerSession.saveLocation(location);
         }
+        location.setBioSignals(bioSignals);
+        location.setGeoSignals(geoSignals);
+        playerSession.saveLocation(location);
     }
 }

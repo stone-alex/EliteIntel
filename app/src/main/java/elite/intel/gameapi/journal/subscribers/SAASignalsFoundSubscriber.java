@@ -50,9 +50,8 @@ public class SAASignalsFoundSubscriber {
 
 
             if (liveSignals > 0) {
-                location.setBioSignals(event.getGenuses().size());
+                location.setBioSignals(liveSignals);
                 location.setGenus(toGenusDto(event.getGenuses()));
-                location.setBioFormsPresent(true);
                 boolean hasBeenScanned = scanBioCompleted(event, playerSession);
 
                 if (!hasBeenScanned) sb.append(" Exobiology signal(s) found ").append(liveSignals).append(": ");

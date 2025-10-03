@@ -4,10 +4,7 @@ import com.google.api.gax.rpc.ApiStreamObserver;
 import com.google.cloud.speech.v1.*;
 import com.google.protobuf.ByteString;
 import elite.intel.ai.ConfigManager;
-import elite.intel.ai.ears.AudioCalibrator;
-import elite.intel.ai.ears.AudioFormatDetector;
-import elite.intel.ai.ears.AudioSettingsTuple;
-import elite.intel.ai.ears.EarsInterface;
+import elite.intel.ai.ears.*;
 import elite.intel.ai.mouth.subscribers.events.TTSInterruptEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.UserInputEvent;
@@ -226,7 +223,7 @@ public class GoogleSTTImpl implements EarsInterface {
                             @Override
                             public void onError(Throwable t) {
                                 log.error("STT error: {}", t.getMessage());
-                                EventBusManager.publish(new GoogleSTTConnectionFailed());
+                                EventBusManager.publish(new STTConnectionFailed());
                             }
 
                             @Override

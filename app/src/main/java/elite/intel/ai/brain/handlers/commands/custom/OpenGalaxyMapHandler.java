@@ -37,19 +37,7 @@ public class OpenGalaxyMapHandler extends CustomCommandOperator implements Comma
     }
 
     @Override public void handle(JsonObject params, String responseText) {
-
-        try {
             String openGalaxyMap = GameCommands.GameCommand.GALAXY_MAP.getGameBinding();
             operateKeyboard(openGalaxyMap, 0);
-            Thread.sleep(4000);
-            String uiLeft = GameCommands.GameCommand.UI_LEFT.getGameBinding();
-            operateKeyboard(uiLeft, 0);
-
-            String uiRight = GameCommands.GameCommand.UI_RIGHT.getGameBinding();
-            operateKeyboard(uiRight, 0);
-        } catch (InterruptedException oops) {
-            //ok
-        }
-
     }
 }

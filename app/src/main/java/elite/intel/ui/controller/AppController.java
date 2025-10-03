@@ -8,9 +8,11 @@ import elite.intel.ai.brain.AIPersonality;
 import elite.intel.ai.brain.AiCommandInterface;
 import elite.intel.ai.brain.xai.GrokCommandEndPoint;
 import elite.intel.ai.ears.EarsInterface;
+import elite.intel.ai.ears.STTConnectionFailed;
 import elite.intel.ai.mouth.AiVoices;
 import elite.intel.ai.mouth.MouthInterface;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
 import elite.intel.gameapi.*;
 import elite.intel.session.PlayerSession;
@@ -19,6 +21,7 @@ import elite.intel.ui.event.AppLogEvent;
 import elite.intel.ui.event.SystemShutDownEvent;
 import elite.intel.ui.model.AppModelInterface;
 import elite.intel.ui.view.AppViewInterface;
+import elite.intel.util.SleepNoThrow;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -327,5 +330,15 @@ public class AppController implements AppControllerInterface, ActionListener {
     public void onSystemShutdownEvent(SystemShutDownEvent event){
         startStopServices();
         model.setServicesRunning(false);
+    }
+
+
+    @Subscribe
+    public void onSttConnectionFailed(STTConnectionFailed event) {
+        EventBusManager.publish(new MissionCriticalAnnouncementEvent("Warning! Google STT connection failed. Attempting re-connection..."));
+        ears = ApiFactory.getInstance().getEarsImpl();
+        ears.stop();
+        SleepNoThrow.sleep(10000);
+        ears.start();
     }
 }

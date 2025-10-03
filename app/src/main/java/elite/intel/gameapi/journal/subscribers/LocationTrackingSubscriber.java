@@ -222,7 +222,7 @@ public class LocationTrackingSubscriber {
         if (isOnSurface(event)) {
             //CRAWLING on the surface (SRV or on foot)
             if (navigator.distanceToTarget() <= ARRIVAL_RADIUS && navigator.altitude() == 0) {
-                vocalize("Arrived!", 0, 0, true);
+                vocalize("Arrived!", 0, navigator.bearingToTarget(), true);
                 TargetLocation t = playerSession.getTracking();
                 t.setEnabled(false);
                 playerSession.setTracking(t);

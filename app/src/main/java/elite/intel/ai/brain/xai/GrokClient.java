@@ -27,9 +27,7 @@ public class GrokClient {
     // See this package for inspiration on how to implement your own LLM client.
     private static final String API_URL = "https://api.x.ai/v1/chat/completions";
 
-    public static final String MODEL_GROK_3_FAST = "grok-3-fast";   // <-- deprecated but very fast
-    //public static final String MODEL_GROK_3_FAST = "grok-code-fast";   // <-- deprecated but very fast
-    //public static final String MODEL_GROK_4 = "grok-4";           // <-- latest, but very slow
+    public static final String MODEL_GROK_4_FAST = "grok-4-fast";
 
     public static final boolean IS_STREAM = false;
 

@@ -44,7 +44,7 @@ public class GrokChatEndPoint extends AiEndPoint implements AIChatInterface {
         try {
             GrokClient client = GrokClient.getInstance();
             HttpURLConnection conn = client.getHttpURLConnection();
-            JsonObject body = client.createRequestBodyHeader(GrokClient.MODEL_GROK_3_FAST);
+            JsonObject body = client.createRequestBodyHeader(GrokClient.MODEL_GROK_4_FAST);
 
             // Sanitize messages
             JsonArray sanitizedMessages = sanitizeJsonArray(messages);

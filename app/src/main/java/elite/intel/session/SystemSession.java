@@ -302,9 +302,9 @@ public class SystemSession extends SessionPersistence implements java.io.Seriali
     }
 
     public void clearSystemConfigValues() {
-        setTtsApiKey("");
-        setSttApiKey("");
-        setAiApiKey("");
+        setTtsApiKey(null);
+        setSttApiKey(null);
+        setAiApiKey(null);
         save();
     }
 }

@@ -5,12 +5,10 @@ import com.google.gson.*;
 import elite.intel.ai.brain.AIConstants;
 import elite.intel.ai.brain.AiCommandInterface;
 import elite.intel.ai.brain.commons.CommandEndPoint;
-import elite.intel.ai.brain.openai.OpenAiClient;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.UserInputEvent;
-import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
 import elite.intel.session.SystemSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.JsonUtils;
@@ -225,7 +223,7 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
 
         // Create API request body
         GrokClient client = GrokClient.getInstance();
-        JsonObject requestBody = client.createRequestBodyHeader(GrokClient.MODEL_GROK_3_FAST);
+        JsonObject requestBody = client.createRequestBodyHeader(GrokClient.MODEL_GROK_4_FAST);
         requestBody.add("messages", messages);
 
         // Serialize to JSON string

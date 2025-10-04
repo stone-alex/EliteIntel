@@ -160,3 +160,4 @@
 "police"="list"
 "mentor hyperspace"="enter hyperspace"
 "lead carrier"="fleet carrier"
+"Triple landing gear"="deploy landing gear"

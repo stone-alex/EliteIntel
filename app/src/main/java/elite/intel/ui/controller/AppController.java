@@ -328,8 +328,11 @@ public class AppController implements AppControllerInterface, ActionListener {
 
     @Subscribe
     public void onSystemShutdownEvent(SystemShutDownEvent event){
+        SleepNoThrow.sleep(7000);
         startStopServices();
         model.setServicesRunning(false);
+        SleepNoThrow.sleep(7000);
+        System.exit(0);
     }
 
 

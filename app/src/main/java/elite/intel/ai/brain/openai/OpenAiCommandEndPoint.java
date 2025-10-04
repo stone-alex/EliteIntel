@@ -12,7 +12,6 @@ import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.UserInputEvent;
-import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
 import elite.intel.session.SystemSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.JsonUtils;
@@ -328,9 +327,24 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
             }
         } catch (IOException e) {
             log.error("Open AI API call failed: {}", e.getMessage(), e);
-            return OpenAiClient.getInstance().createErrorResponse("API call failed: " + e.getMessage());
+            String aiServerError = serverErrorMessage(e);
+            return OpenAiClient.getInstance().createErrorResponse("API call failed: " + aiServerError);
         } finally {
             systemSession.clearChatHistory();
         }
+    }
+
+    private static String serverErrorMessage(IOException e) {
+        String aiServerError = "AI Internal server error.";
+        if (e.getMessage().contains("500") || e.getMessage().contains("402") || e.getMessage().contains("401")) {
+            aiServerError = "AI Internal server crash.";
+        }
+        if(e.getMessage().contains("404")){
+            aiServerError = "AI API URL is invalid";
+        }
+        if(e.getMessage().contains("403")){
+            aiServerError = "AI API key is invalid, or not authorized for this endpoint.";
+        }
+        return aiServerError;
     }
 }

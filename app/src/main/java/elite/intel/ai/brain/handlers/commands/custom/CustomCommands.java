@@ -50,7 +50,7 @@ public enum CustomCommands {
     OPEN_FSS_AND_SCAN("open_fss_and_scan", null, null, DisplayFssAndScanHandler.class),
 
     NAVIGATE_TO_TARGET("navigate_to_coordinates", "<coordinates>", "lat_lon", NavigateToCoordinatesHandler.class),
-    NAVIGATE_TO_NEXT_BIO_SAMPLE("navigate_bearing_direction_to_bio_sample", null, null, NavigateToNextBioSample.class),
+    NAVIGATE_TO_NEXT_BIO_SAMPLE("navigate_directions_to_codex_entry_or_bio_sample", null, null, NavigateToNextBioSample.class),
     GET_HEADING_TO_LZ("navigate_bearing_direction_to_landing_zone", null, null, NavigateToLandingZone.class),
 
     NAVIGATION_ON_OFF("toggle_navigator_guidance", "<navigation_on_off>", "navigation_on_off", NavigationOnOffHandler.class),

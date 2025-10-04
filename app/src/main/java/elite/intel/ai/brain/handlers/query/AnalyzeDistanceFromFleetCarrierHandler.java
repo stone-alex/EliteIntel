@@ -15,7 +15,7 @@ public class AnalyzeDistanceFromFleetCarrierHandler extends BaseQueryAnalyzer im
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         PlayerSession playerSession = PlayerSession.getInstance();
         CarrierDataDto carrierData = playerSession.getCarrierData();
-
+        String carrierLocation = playerSession.getLastKnownCarrierLocation();
         double x = 0, y = 0, z = 0;
 
         Map<Long, LocationDto> locations = playerSession.getLocations();
@@ -57,13 +57,14 @@ public class AnalyzeDistanceFromFleetCarrierHandler extends BaseQueryAnalyzer im
                         y,
                         z,
                         jumpRange,
+                        carrierLocation,
                         instruction
                 ).toJson(),
                 originalUserInput
         );
     }
 
-    record DataDto(double carrier_location_x, double carrier_location_y, double carrier_location_z, double our_location_x, double our_location_y, double our_location_z, float jumpRange, String instruction) implements ToJsonConvertible {
+    record DataDto(double carrier_location_x, double carrier_location_y, double carrier_location_z, double our_location_x, double our_location_y, double our_location_z, float jumpRange, String fleetCarrierIsLocatedAt, String instruction) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }

@@ -159,3 +159,4 @@
 "deploy linking gear"="deploy landing gear"
 "police"="list"
 "mentor hyperspace"="enter hyperspace"
+"lead carrier"="fleet carrier"

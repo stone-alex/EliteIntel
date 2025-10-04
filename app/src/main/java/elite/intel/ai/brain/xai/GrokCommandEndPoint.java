@@ -5,6 +5,7 @@ import com.google.gson.*;
 import elite.intel.ai.brain.AIConstants;
 import elite.intel.ai.brain.AiCommandInterface;
 import elite.intel.ai.brain.commons.CommandEndPoint;
+import elite.intel.ai.brain.openai.OpenAiClient;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
@@ -352,11 +353,26 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
                 throw e;
             }
         } catch (Exception e) {
-            log.error("AI API call fatal error: {}", e.getMessage(), e);
+            String aiServerError = serverErrorMessage(e);
+            log.error("AI API call failed: {}", e.getMessage(), e);
             log.error("Input data: [{}]", toDebugString(jsonString));
-            return null;
+            return GrokClient.getInstance().createErrorResponse("API call failed: " + aiServerError);
         } finally {
             systemSession.clearChatHistory();
         }
+    }
+
+    private String serverErrorMessage(Exception e) {
+        String aiServerError = e.getMessage();
+        if (e.getMessage().contains("500") || e.getMessage().contains("402") || e.getMessage().contains("401")) {
+            aiServerError = "AI Internal server crash.";
+        }
+        if(e.getMessage().contains("404")){
+            aiServerError = "AI API URL is invalid";
+        }
+        if(e.getMessage().contains("403")){
+            aiServerError = "AI API key is invalid, or not authorized for this endpoint.";
+        }
+        return aiServerError;
     }
 }

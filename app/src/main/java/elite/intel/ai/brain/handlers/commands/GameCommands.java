@@ -60,8 +60,6 @@ public class GameCommands {
         HEAD_LOOK_RESET("head_look_reset", "HeadLookReset", GenericGameController.class),
         LANDING_GEAR_TOGGLE("landing_gear_toggle", "LandingGearToggle", GenericGameController.class),
         NIGHT_VISION("night_vision", "NightVisionToggle", GenericGameController.class),
-        OPEN_CODEX_GO_TO_DISCOVERY("open_codex_go_to_discovery", "OpenCodexGoToDiscovery", GenericGameController.class),
-        OPEN_CODEX_GO_TO_DISCOVERY_BUGGY("open_codex_go_to_discovery_buggy", "OpenCodexGoToDiscovery_Buggy", GenericGameController.class),
         PAUSE("pause", "Pause", GenericGameController.class),
         PLAYER_HUDMODE_TOGGLE("combat_or_analysis_mode", "PlayerHUDModeToggle", GenericGameController.class),
         RADAR_DECREASE_RANGE("radar_decrease_range", "RadarDecreaseRange", GenericGameController.class),
@@ -76,10 +74,12 @@ public class GameCommands {
         REQUEST_DEFENSIVE_BEHAVIOUR("fighter_defend_ship", "OrderDefensiveBehaviour", GenericGameController.class),
         RESET_POWER_DISTRIBUTION("equalize_power", "ResetPowerDistribution", GenericGameController.class),
         PLANETARY_APPROACH_SPEED75("planetary_approach", "SetSpeed25", GenericGameController.class),
-        SET_SPEED25("set_speed_to_low_throttle_25", "SetSpeed25", GenericGameController.class),
+
+        SET_SPEED25("set_speed_to_slow_throttle_25", "SetSpeed25", GenericGameController.class),
         SET_SPEED50("set_speed_to_medium_throttle_50", "SetSpeed50", GenericGameController.class),
         SET_SPEED75("set_speed_to_optimal_throttle_75", "SetSpeed75", GenericGameController.class),
         SET_SPEED100("set_speed_to_maximum_throttle_100", "SetSpeed100", GenericGameController.class),
+
         SET_SPEED_ZERO("set_speed_to_zero_0", "SetSpeedZero", GenericGameController.class),
         AUTO_DOC1("engage_auto_cocking", "SetSpeedZero", GenericGameController.class),
         AUTO_DOC2("take_us_in", "SetSpeedZero", GenericGameController.class),

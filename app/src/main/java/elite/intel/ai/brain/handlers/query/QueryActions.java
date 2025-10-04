@@ -8,7 +8,7 @@ public enum QueryActions {
     ANALYZE_CURRENT_PLANET("query_current__location", "Where are we? Analyze data for the current planetary or station location.", AnalyzeCurrentLocationHandler.class, true),  // Emphasize planetary/station context
     ANALYZE_STAR_SYSTEM_EXPLORATION("query_star_system_exploration", "Analyze exploration data and profits for the current star system.", AnalyzeExplorationProfitsHandler.class, true),
     ANALYZE_BODY_MATERIALS("query_planetary_materials", "Analyze material composition on this planet.", AnalyzeMaterialsOnPlanetHandler.class, true),  // Specify planetary to avoid ship/cargo confusion
-    ANALYZE_EXO_BIOLOGY("query_exobiology_samples", "Analyze bio-sample collection progress, including completed, partial, and remaining species.", AnalyzeBioSamplesHandler.class, true),  // "exobiology" to distinguish from commodities,
+    ANALYZE_EXO_BIOLOGY("query_exobiology_samples", "Analyze bio-sample collection progress for current planet, including completed, partial, and remaining species.", AnalyzeBioSamplesHandler.class, true),  // "exobiology" to distinguish from commodities,
     ANALYZE_CURRENT_FUEL_STATUS("query_ship_fuel_status", "Analyze ship fuel tank capacity and reserve, return percent available.", AnalyzeFuelStatusHandler.class, true),
     ANALYZE_FSD_TARGET("query_fsd_target_analysis", "Analyze FSD destination for allegiance, traffic, and security.", AnalyzeFsdTargetHandler.class, true),
     ANALYZE_LOCAL_MARKETS("query_local_commodity_markets", "Analyze commodity market contents at the current location.", AnalyzeLocalMarketsHandler.class, true),  // "commodity" to avoid bio or material overlap,
@@ -29,7 +29,6 @@ public enum QueryActions {
     STATION_DATA("query_station_details", "Analyze data for the current station.", StationDataHandler.class, true),
     WHAT_ARE_YOUR_CAPABILITIES("query_app_capabilities", "Summarize application capabilities.", WhatAreYourCapabilitiesHandler.class, false),
     WHAT_IS_YOUR_DESIGNATION("query_ai_designation", "Respond with the AI’s name or designation.", WhatIsYourNameHandler.class, false),
-    WHERE_IS_OUR_CARRIER("query_fleet_carrier_location", "Provide the current location of our fleet carrier. Do not confuse with question about distance to the carrier.", WhatIsOurCarrierLocationHandler.class, false),
     TOTAL_BOUNTIES_COLLECTED("query_bounties_collected", "Summarize total bounties collected this session.", AnalyzeBountiesCollectedHandler.class, false),
     CARRIER_ETA("query_fleet_carrier_arrival_eta", "Calculate fleet carrier ETA using arrival and current time.", CarrierETAHandler.class, false),
     HOW_FAR_ARE_WE_FROM_BUBBLE("query_distance_to_bubble", "Calculate distance to the Bubble in light years using 3D coordinates.", AnalyzeDistanceFromTheBubble.class, false),

@@ -14,7 +14,10 @@ import elite.intel.ai.mouth.MouthInterface;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
-import elite.intel.gameapi.*;
+import elite.intel.gameapi.AuxiliaryFilesMonitor;
+import elite.intel.gameapi.EventBusManager;
+import elite.intel.gameapi.JournalParser;
+import elite.intel.gameapi.UserInputEvent;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
@@ -27,6 +30,9 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 import static elite.intel.ui.view.AppView.*;
@@ -76,23 +82,23 @@ public class AppController implements AppControllerInterface, ActionListener {
         // Initialize configs
         model.setSystemConfig(configManager.readSystemConfig());
         model.setUserConfig(configManager.readUserConfig());
-        model.appendLog("Initialized configs");
+        appendToLog("SYSTEM: Initialized configs");
         EventBusManager.register(this);
     }
 
     @Subscribe
     public void onUserInputEvent(UserInputEvent event) {
-        model.appendLog("PLAYER: " + event.getUserInput());
+        appendToLog("PLAYER: " + event.getUserInput());
     }
 
     @Subscribe
     public void onVoiceProcessEvent(VocalisationRequestEvent event) {
-        model.appendLog("AI: " + event.getText());
+        appendToLog("AI: " + event.getText());
     }
 
     @Subscribe
     public void onAppLogEvent(AppLogEvent event) {
-        if (model.showSystemLog()) model.appendLog("SYSTEM: " + event.getData());
+        if (model.showSystemLog()) appendToLog("SYSTEM: " + event.getData());
     }
 
     @Override
@@ -101,7 +107,14 @@ public class AppController implements AppControllerInterface, ActionListener {
         Map<String, String> systemConfig = view.getSystemConfigInput();
         configManager.writeConfigFile(ConfigManager.SYSTEM_CONFIG_FILENAME, systemConfig, true);
         model.setSystemConfig(systemConfig);
-        model.appendLog("Saved configs");
+        appendToLog("Saved system config");
+    }
+
+    private void appendToLog(String data) {
+        String formattedTime = Instant.now()
+                .atZone(ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+        model.appendLog(formattedTime+": "+data);
     }
 
     @Override
@@ -120,21 +133,21 @@ public class AppController implements AppControllerInterface, ActionListener {
             boolean haveKeys = true;
             String ttsApiKey = String.valueOf(configManager.getSystemKey(ConfigManager.TTS_API_KEY));
             if (ttsApiKey == null || ttsApiKey.trim().isEmpty() || ttsApiKey.equals("null")) {
-                model.appendLog("SYSTEM: TTS API key not found in system.conf. I have no mouth to speak with");
+                appendToLog("SYSTEM: TTS API key not found in system.conf. I have no mouth to speak with");
                 isServiceRunning = false;
                 haveKeys = false;
             }
 
             String sttApiKey = String.valueOf(configManager.getSystemKey(ConfigManager.STT_API_KEY));
             if (sttApiKey == null || sttApiKey.trim().isEmpty() || sttApiKey.equals("null")) {
-                model.appendLog("SYSTEM: STT API key not found in system.conf. I have no ears to hear with");
+                appendToLog("SYSTEM: STT API key not found in system.conf. I have no ears to hear with");
                 isServiceRunning = false;
                 haveKeys = false;
             }
 
             String aiApiKey = String.valueOf(configManager.getSystemKey(ConfigManager.AI_API_KEY));
             if (aiApiKey == null || aiApiKey.trim().isEmpty() || aiApiKey.equals("null")) {
-                model.appendLog("SYSTEM: AI API key not found in system.conf. I have no brain to process with");
+                appendToLog("SYSTEM: AI API key not found in system.conf. I have no brain to process with");
                 isServiceRunning = false;
                 haveKeys = false;
             }
@@ -174,15 +187,15 @@ public class AppController implements AppControllerInterface, ActionListener {
 
             EventBusManager.publish(new AiVoxResponseEvent("Systems online... Using " + llm + "."));
 
-            model.appendLog(
+            appendToLog(
                     systemSession.getAIVoice().getName() +
                             " is listening to you... AI is set to "
                             + capitalizeWords(systemSession.getAICadence().name()) + " "
                             + capitalizeWords(systemSession.getAIPersonality().name())
             );
-            model.appendLog("Available voices: " + listVoices());
-            model.appendLog("Available personalities: " + listPersonalities());
-            model.appendLog("Available profiles: " + listCadences());
+            appendToLog("Available voices: " + listVoices());
+            appendToLog("Available personalities: " + listPersonalities());
+            appendToLog("Available profiles: " + listCadences());
             isServiceRunning = true;
         } else {
             EventBusManager.publish(new AiVoxResponseEvent("Systems offline..."));
@@ -238,11 +251,11 @@ public class AppController implements AppControllerInterface, ActionListener {
 
     @Override
     public void toggleStreamingMode(boolean streamingModeOnOff) {
-        model.appendLog("Toggle streaming mode");
+        appendToLog("Toggle streaming mode");
         systemSession.setStreamingMode(streamingModeOnOff);
         model.setStreamingModeOn(streamingModeOnOff);
         EventBusManager.publish(new AiVoxResponseEvent(streamingModeOnOff ? streamingModeIsOnMessage() : streamingModeIsOffMessage()));
-        model.appendLog(streamingModeOnOff ? streamingModeIsOnMessage() : streamingModeIsOffMessage());
+        appendToLog(streamingModeOnOff ? streamingModeIsOnMessage() : streamingModeIsOffMessage());
     }
 
     @Override
@@ -274,7 +287,7 @@ public class AppController implements AppControllerInterface, ActionListener {
             File selectedDir = chooser.getSelectedFile();
             view.getUserConfigInput().put(ConfigManager.JOURNAL_DIR, selectedDir.getAbsolutePath());
             handleSaveUserConfig();
-            model.appendLog("Selected custom journal directory: " + selectedDir.getAbsolutePath());
+            appendToLog("Selected custom journal directory: " + selectedDir.getAbsolutePath());
         }
     }
 
@@ -287,7 +300,7 @@ public class AppController implements AppControllerInterface, ActionListener {
             File selectedDir = chooser.getSelectedFile();
             view.getUserConfigInput().put(ConfigManager.BINDINGS_DIR, selectedDir.getAbsolutePath());
             handleSaveUserConfig();
-            model.appendLog("Selected custom bindings directory: " + selectedDir.getAbsolutePath());
+            appendToLog("Selected custom bindings directory: " + selectedDir.getAbsolutePath());
         }
     }
 
@@ -299,7 +312,7 @@ public class AppController implements AppControllerInterface, ActionListener {
             if (ACTION_TOGGLE_SYSTEM_LOG.equals(command)) {
                 boolean show = ((JCheckBox) e.getSource()).isSelected();
                 model.showSystemLog(show);
-                model.appendLog("Further System log will be " + (show ? "shown" : "filtered"));
+                appendToLog("Further System log will be " + (show ? "shown" : "filtered"));
             } else if (ACTION_TOGGLE_STREAMING_MODE.equals(command)) {
                 boolean isSelected = ((JCheckBox) e.getSource()).isSelected();
                 toggleStreamingMode(isSelected);
@@ -328,9 +341,17 @@ public class AppController implements AppControllerInterface, ActionListener {
 
     @Subscribe
     public void onSystemShutdownEvent(SystemShutDownEvent event){
-        SleepNoThrow.sleep(7000);
-        startStopServices();
+        EventBusManager.publish(new MissionCriticalAnnouncementEvent("System shutting down..."));
+        appendToLog("SYSTEM: Shutting down...");
+        SleepNoThrow.sleep(14000);
+        fileMonitor.stop();
+        journalParser.stop();
+        brain.stop();
+        ears.stop();
+        mouth.stop();
+        systemSession.clearChatHistory();
         model.setServicesRunning(false);
+        appendToLog("Exiting...");
         SleepNoThrow.sleep(7000);
         System.exit(0);
     }

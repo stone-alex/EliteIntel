@@ -161,3 +161,4 @@
 "mentor hyperspace"="enter hyperspace"
 "lead carrier"="fleet carrier"
 "Triple landing gear"="deploy landing gear"
+"open the physicians can"="open fss and scan"

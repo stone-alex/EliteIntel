@@ -223,6 +223,7 @@ public class GoogleSTTImpl implements EarsInterface {
                             @Override
                             public void onError(Throwable t) {
                                 log.error("STT error: {}", t.getMessage());
+                                stop();
                                 EventBusManager.publish(new STTConnectionFailed());
                             }
 

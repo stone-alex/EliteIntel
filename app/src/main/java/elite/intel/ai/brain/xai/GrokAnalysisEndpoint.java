@@ -40,7 +40,7 @@ public class GrokAnalysisEndpoint extends AiEndPoint implements AiAnalysisInterf
             HttpURLConnection conn = client.getHttpURLConnection();
             String systemPrompt = ApiFactory.getInstance().getAiContextFactory().generateAnalysisPrompt(userIntent, dataJson);
 
-            JsonObject request = client.createRequestBodyHeader(GrokClient.MODEL_GROK_4_FAST);
+            JsonObject request = client.createRequestBodyHeader(GrokClient.MODEL_GROK_4_FAST_REASONING);
 
             JsonObject messageSystem = new JsonObject();
             messageSystem.addProperty("role", AIConstants.ROLE_SYSTEM);

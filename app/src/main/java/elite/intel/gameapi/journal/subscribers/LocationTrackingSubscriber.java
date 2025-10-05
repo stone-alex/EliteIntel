@@ -234,7 +234,7 @@ public class LocationTrackingSubscriber {
             }
         } else {
             //FLYING in normal space above surface
-            if (navigator.distanceToTarget() < 1_000 && !lookForLandingSpotAnnounced) {
+            if (navigator.distanceToTarget() < 1_000 && !lookForLandingSpotAnnounced && event.getAltitude() > 10){
                 lookForLandingSpotAnnounced = true;
                 vocalize("Within 1000 meters from target. Look for landing spot", 0, 0, true);
                 if (movingAway) {

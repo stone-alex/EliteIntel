@@ -47,7 +47,7 @@ public class AnalyzeDistanceFromFleetCarrierHandler extends BaseQueryAnalyzer im
             return analyzeData(toJson("Current location coordinates are not available."), originalUserInput);
         }
 
-        String instruction = " Use galactic coordinates to calculate distance from our location to the carrier. Distance is in Light Years. If jump range is > 0 also calculate number of jumps required to reach the carrier. ";
+        String instruction = " Use galactic coordinates to calculate distance from our location to the carrier. Distance is in Light Years. If jump range is > 0 also calculate number of jumps required to reach the carrier as distance divided by jump range.";
         return analyzeData(
                 new DataDto(
                         carrier_location_x,

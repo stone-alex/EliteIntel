@@ -61,7 +61,7 @@ public class GameCommands {
         LANDING_GEAR_TOGGLE("landing_gear_toggle", "LandingGearToggle", GenericGameController.class),
         NIGHT_VISION("night_vision", "NightVisionToggle", GenericGameController.class),
         PAUSE("pause", "Pause", GenericGameController.class),
-        PLAYER_HUDMODE_TOGGLE("combat_or_analysis_mode", "PlayerHUDModeToggle", GenericGameController.class),
+        PLAYER_HUDMODE_TOGGLE("toggle_combat_or_analysis_mode", "PlayerHUDModeToggle", GenericGameController.class),
         RADAR_DECREASE_RANGE("radar_decrease_range", "RadarDecreaseRange", GenericGameController.class),
         RADAR_INCREASE_RANGE("radar_increase_range", "RadarIncreaseRange", GenericGameController.class),
         RECALL_DISMISS_SHIP("recall_dismiss_ship", "RecallDismissShip", GenericGameController.class),
@@ -79,10 +79,11 @@ public class GameCommands {
         SET_SPEED50("set_speed_to_medium_throttle_50", "SetSpeed50", GenericGameController.class),
         SET_SPEED75("set_speed_to_optimal_throttle_75", "SetSpeed75", GenericGameController.class),
         SET_SPEED100("set_speed_to_maximum_throttle_100", "SetSpeed100", GenericGameController.class),
-
         SET_SPEED_ZERO("set_speed_to_zero_0", "SetSpeedZero", GenericGameController.class),
         AUTO_DOC1("engage_auto_cocking", "SetSpeedZero", GenericGameController.class),
         AUTO_DOC2("take_us_in", "SetSpeedZero", GenericGameController.class),
+
+
         AUTO_DOC3("engage_automatic_docking", "SetSpeedZero", GenericGameController.class),
         TARGET_NEXT_ROUTE_SYSTEM("target_next_system_in_route", "TargetNextRouteSystem", GenericGameController.class),
         TARGET_WINGMAN0("target_wingman0", "TargetWingman0", GenericGameController.class),

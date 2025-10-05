@@ -98,6 +98,7 @@ public class SpanshCarrierRouter {
             int jumpIndex = 1;
 
             for (int i = 1; i < jumpsArray.size(); i++) { // Start from index 1 to skip current position
+                jumpIndex = jumpIndex + 1;
                 JsonObject jumpJson = jumpsArray.get(i).getAsJsonObject();
 
                 int fuelUsed = jumpJson.get("fuel_used").getAsInt();
@@ -113,8 +114,9 @@ public class SpanshCarrierRouter {
                 jump.setX(jumpJson.get("x").getAsDouble());
                 jump.setY(jumpJson.get("y").getAsDouble());
                 jump.setZ(jumpJson.get("z").getAsDouble());
+                jump.setLeg(jumpIndex);
 
-                routeMap.put(jumpIndex++, jump);
+                routeMap.put(jumpIndex, jump);
             }
 
             return routeMap;

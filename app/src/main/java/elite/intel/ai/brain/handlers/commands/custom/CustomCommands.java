@@ -58,7 +58,10 @@ public enum CustomCommands {
     MINING_ON_OFF("toggle_mining_announcements", "<mining_on_off>", "mining_on_off", MiningOnOffHandler.class),
     ROUTE_ON_OFF("toggle_route_announcements", "<route_on_off>", "route_on_off", RouteAnnouncementsOnOffHandler.class),
 
-    CLEAR_CODEX_ENTRIES("clear_codex_entries", null, null, ClearCodexEntriesHandler.class);
+    CLEAR_CODEX_ENTRIES("clear_codex_entries", null, null, ClearCodexEntriesHandler.class),
+
+    CALCULATE_FLEET_CARRIER_ROUTE("calculate_fleet_carrier_route", null, null, CalculateFleetCarrierRouteHandler.class),
+    ENTER_NEXT_FLEET_CARRIER_DESTINATION("enter_next_fleet_carrier_destination", null, null, EnterNextCarrierDestinationHandler.class);
 
 
     private final String action;

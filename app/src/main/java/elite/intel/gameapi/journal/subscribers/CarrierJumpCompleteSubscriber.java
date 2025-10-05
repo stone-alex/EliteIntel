@@ -11,6 +11,7 @@ import elite.intel.gameapi.journal.events.dto.CarrierDataDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.LocationHistory;
 import elite.intel.session.PlayerSession;
+import elite.intel.util.AdjustRoute;
 
 import java.util.Map;
 import java.util.Objects;
@@ -27,6 +28,8 @@ public class CarrierJumpCompleteSubscriber {
         double[] starPos = event.getStarPos();
         PlayerSession playerSession = PlayerSession.getInstance();
         playerSession.setLastKnownCarrierLocation(starSystem);
+
+        AdjustRoute.adjustFleetCarrierRoute(event.getStarSystem());
 
         CarrierDataDto carrierData = playerSession.getCarrierData();
         playerSession.setCarrierDepartureTime(null);

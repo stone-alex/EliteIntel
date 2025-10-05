@@ -1,9 +1,11 @@
 package elite.intel.util;
 
+import elite.intel.ai.search.spansh.carrier.CarrierJump;
 import elite.intel.gameapi.gamestate.events.NavRouteDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,4 +50,19 @@ public class AdjustRoute {
         }
         return map;
     }
+
+
+    public static void adjustFleetCarrierRoute(String starSystem) {
+        PlayerSession playerSession = PlayerSession.getInstance();
+        Map<Integer, CarrierJump> fleetCarrierRoute = playerSession.getFleetCarrierRoute();
+        Map<Integer, CarrierJump> adjustedRoute = new HashMap<>();
+        for(CarrierJump carrierJump : fleetCarrierRoute.values()){
+            if(carrierJump.getSystemName().equalsIgnoreCase(starSystem)){ continue ;}
+            else {
+                adjustedRoute.put(carrierJump.getLeg(), carrierJump);
+            }
+        }
+        playerSession.setFleetCarrierRoute(adjustedRoute);
+    }
+
 }

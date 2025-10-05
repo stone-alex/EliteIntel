@@ -2,6 +2,7 @@ package elite.intel.session;
 
 import com.google.common.eventbus.Subscribe;
 import com.google.gson.reflect.TypeToken;
+import elite.intel.ai.search.spansh.carrier.CarrierJump;
 import elite.intel.ai.search.spansh.market.StationMarket;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.gamestate.events.GameEvents;
@@ -117,6 +118,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     private String lastKnownCarrierLocation = "";
     private double shipFuelLevel = 0;
     private Map<String, String> friendsStatus = new HashMap<>();
+    Map<Integer, CarrierJump> fleetCarrierRoute = new HashMap<>();
     private String carrierDepartureTime = "";
     private String jumpingToStarSystem = "";
     private String playerHighestMilitaryRank = "";
@@ -137,7 +139,6 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     private PlayerSession() {
         super(SESSION_DIR);
         ensureFileAndDirectoryExist(SESSION_FILE);
-        loadSavedStateFromDisk();
         registerField(SHIP_SCANS, this::getShipScans, v -> {
             shipScans.clear();
             shipScans.putAll((Map<String, String>) v);
@@ -208,11 +209,19 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         registerField(PLAYER_NAME, this::getPlayerName, this::setPlayerName, String.class);
         registerField(CARRIER_LOCATION, this::getLastKnownCarrierLocation, this::setLastKnownCarrierLocation, String.class);
         registerField(SHIP_FUEL_LEVEL, this::getShipFuelLevel, this::setShipFuelLevel, Double.class);
+
         registerField(FRIENDS_STATUS, this::getFriendsStatus, v -> {
             friendsStatus.clear();
             friendsStatus.putAll(v);
         }, new TypeToken<Map<String, String>>() {
         }.getType());
+
+        registerField("fleet_carrier_route", this::getFleetCarrierRoute, v -> {
+            fleetCarrierRoute.clear();
+            fleetCarrierRoute.putAll(v);
+        }, new TypeToken<Map<Integer, CarrierJump>>() {
+        }.getType());
+
         registerField(CARRIER_DEPARTURE_TIME, this::getCarrierDepartureTime, this::setCarrierDepartureTime, String.class);
         registerField(JUMPING_TO_STARSYSTEM, this::getJumpingToStarSystem, this::setJumpingToStarSystem, String.class);
         registerField(PLAYER_HIGHEST_MILITARY_RANK, this::getPlayerHighestMilitaryRank, this::setPlayerHighestMilitaryRank, String.class);
@@ -230,6 +239,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         registerField("route_vox_on_off", this::isRouteAnnouncementOn, this::setRouteAnnouncementOn, Boolean.class);
 
 
+        loadSavedStateFromDisk();
         EventBusManager.register(this);
         addShutdownHook();
     }
@@ -919,6 +929,16 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     public void setRouteAnnouncementOn(Boolean routeAnnouncementOn) {
         isRouteAnnouncementOn = routeAnnouncementOn;
         save();
+    }
+
+
+    public void setFleetCarrierRoute(Map<Integer, CarrierJump> fleetCarrierRoute) {
+        this.fleetCarrierRoute = fleetCarrierRoute;
+        save();
+    }
+
+    public Map<Integer, CarrierJump> getFleetCarrierRoute() {
+        return fleetCarrierRoute;
     }
 
     public GalacticCoordinates getGalacticCoordinates() {

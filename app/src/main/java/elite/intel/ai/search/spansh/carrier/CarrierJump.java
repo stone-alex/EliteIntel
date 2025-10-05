@@ -5,6 +5,7 @@ import elite.intel.util.json.ToJsonConvertible; /**
  * DTO for a carrier jump, extending BaseJsonDto for JSON persistence.
  */
 public class CarrierJump extends BaseJsonDto implements ToJsonConvertible {
+    private int leg;
     private String systemName;
     private double distance;
     private int fuelUsed;
@@ -62,6 +63,14 @@ public class CarrierJump extends BaseJsonDto implements ToJsonConvertible {
 
     public void setIsPristine(boolean isPristine) {
         this.isPristine = isPristine;
+    }
+
+    public int getLeg() {
+        return leg;
+    }
+
+    public void setLeg(int leg) {
+        this.leg = leg;
     }
 
     public double getX() {

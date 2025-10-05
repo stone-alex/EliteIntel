@@ -43,7 +43,7 @@ public class SetPowerToEnginesHandler extends CustomCommandOperator implements C
 
     private static final Logger log = LogManager.getLogger(SetPowerToEnginesHandler.class);
 
-    public SetPowerToEnginesHandler(GameHandler commandHandler) throws Exception {
+    public SetPowerToEnginesHandler(GameHandler commandHandler) {
         super(commandHandler.getMonitor(), commandHandler.getExecutor());
     }
 

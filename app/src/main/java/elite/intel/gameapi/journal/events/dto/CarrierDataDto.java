@@ -257,6 +257,7 @@ public class CarrierDataDto implements ToJsonConvertible {
     }
 
     public void setZ(double z) {
+        if(z == 0) return;
         this.z = z;
     }
 
@@ -265,6 +266,7 @@ public class CarrierDataDto implements ToJsonConvertible {
     }
 
     public void setY(double y) {
+        if(y == 0) return;
         this.y = y;
     }
 
@@ -273,6 +275,7 @@ public class CarrierDataDto implements ToJsonConvertible {
     }
 
     public void setX(double x) {
+        if(x == 0) return;
         this.x = x;
     }
 

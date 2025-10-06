@@ -85,7 +85,9 @@ public class ScanEventSubscriber {
                     countGeological++;
                 }
             }
-            lcoation.setBioSignals(countBioSignals);
+            if (lcoation.getBioSignals() < countBioSignals) {
+                lcoation.setBioSignals(countBioSignals);
+            }
             lcoation.setGeoSignals(countGeological);
         }
 

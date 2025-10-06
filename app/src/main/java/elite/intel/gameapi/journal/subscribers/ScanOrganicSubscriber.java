@@ -25,6 +25,7 @@ public class ScanOrganicSubscriber {
     private final String scan3 = "Analyse";
     private final PlayerSession playerSession = PlayerSession.getInstance();
     private final Status status = Status.getInstance();
+    private int scanCount = 0;
 
     @Subscribe
     public void onScanOrganicEvent(ScanOrganicEvent event) {
@@ -50,6 +51,7 @@ public class ScanOrganicSubscriber {
         removeCodexEntryIfMatches(event.getVariantLocalised(), range, true);
 
         if (scan1.equals(scanType)) {
+
             sb.append(" Organic sample detected: Genus: ");
             sb.append(" ");
             sb.append(genus);
@@ -76,19 +78,23 @@ public class ScanOrganicSubscriber {
             bioSampleDto.setScanXof3("First of Three");
             currentLocation.addBioScan(bioSampleDto);
             announce(sb.toString());
-
+            scanCount = 1;
 
         } else if (scan2.equalsIgnoreCase(scanType)) {
             BioSampleDto bioSampleDto = createBioSampleDto(genus, variant,  starSystemNumber, valueInCredits);
             currentLocation.addBioScan(bioSampleDto);
             bioSampleDto.setScanXof3("Second of Three");
-            announce("Sample collected for: " + genus + ".");
+            if(scanCount == 1) {
+                announce("Sample collected for: " + genus + ".");
+            }
+            scanCount = 2;
 
         } else if (scan3.equalsIgnoreCase(scanType)) {
             sb = new StringBuilder();
             sb.append("Organic scans for: ");
             sb.append(genus);
             sb.append(" are complete. ");
+/*
             if (valueInCredits > 0) {
                 sb.append(" approximate Vista Genomics payment: ");
                 sb.append(valueInCredits);
@@ -96,6 +102,7 @@ public class ScanOrganicSubscriber {
             } else {
                 sb.append(" credits.");
             }
+*/
 
 
             announce(sb.toString());
@@ -106,6 +113,7 @@ public class ScanOrganicSubscriber {
             currentLocation.deletePartialBioSamples();
             playerSession.saveLocation(currentLocation);
             removeCodexEntryIfMatches(event.getVariantLocalised(), -1, false);
+            scanCount = 0;
         }
     }
 

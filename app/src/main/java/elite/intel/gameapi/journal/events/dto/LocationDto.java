@@ -515,16 +515,6 @@ public class LocationDto implements ToJsonConvertible {
         this.detectedSignals = detectedSignals;
     }
 
-/*
-    public BioStatus getBioStatus() {
-        return bioStatus;
-    }
-
-    public void setBioStatus(BioStatus bioStatus) {
-        this.bioStatus = bioStatus;
-    }
-*/
-
     public long getBodyId() {
         return bodyId;
     }

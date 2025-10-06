@@ -28,16 +28,14 @@ public class GrokClient {
     private static final String API_URL = "https://api.x.ai/v1/chat/completions";
 
     public static final String MODEL_GROK_4_FAST_REASONING = "grok-4-fast";
-    public static final String MODEL_GROK_4_FAST_NON_REASONING = "grok-4-fast-non-reasoning";
+    public static final String MODEL_GROK_4_FAST_NON_REASONING = "n";
 
     public static final boolean IS_STREAM = false;
 
     private static final GrokClient instance = new GrokClient();
 
-    JsonObject createRequestBodyHeader(String model) {
-        float temp =  SystemSession.getInstance()
-                .getAIPersonality()
-                .getTemperature();
+    JsonObject createRequestBodyHeader(String model, float temp) {
+
         JsonObject header = new JsonObject();
         header.addProperty("model", model);
         header.addProperty("temperature", temp);

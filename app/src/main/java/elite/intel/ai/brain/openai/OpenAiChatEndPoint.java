@@ -44,7 +44,7 @@ public class OpenAiChatEndPoint extends AiEndPoint implements AIChatInterface {
             OpenAiClient client = OpenAiClient.getInstance();
             HttpURLConnection conn = client.getHttpURLConnection();
 
-            JsonObject body = client.createRequestBodyHeader(OpenAiClient.MODEL);
+            JsonObject body = client.createRequestBodyHeader(OpenAiClient.MODEL, 1);
             body.add("messages", sanitizedMessages);
 
             bodyString = GsonFactory.getGson().toJson(body);

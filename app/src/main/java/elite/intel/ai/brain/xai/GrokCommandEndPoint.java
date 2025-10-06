@@ -223,7 +223,7 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
 
         // Create API request body
         GrokClient client = GrokClient.getInstance();
-        JsonObject requestBody = client.createRequestBodyHeader(GrokClient.MODEL_GROK_4_FAST_NON_REASONING);
+        JsonObject requestBody = client.createRequestBodyHeader(GrokClient.MODEL_GROK_4_FAST_NON_REASONING, 0.01f);
         requestBody.add("messages", messages);
 
         // Serialize to JSON string

@@ -200,7 +200,7 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
 
         // Create API request body
         OpenAiClient client = OpenAiClient.getInstance();
-        JsonObject requestBody = client.createRequestBodyHeader(OpenAiClient.MODEL);
+        JsonObject requestBody = client.createRequestBodyHeader(OpenAiClient.MODEL, 0.01f);
         requestBody.add("messages", messages);
 
         // Serialize to JSON string
@@ -224,7 +224,7 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
     private JsonObject callOpenAiApi(JsonArray messages) {
         try {
             OpenAiClient client = OpenAiClient.getInstance();
-            JsonObject requestBody = client.createRequestBodyHeader(OpenAiClient.MODEL);
+            JsonObject requestBody = client.createRequestBodyHeader(OpenAiClient.MODEL, 0.01f);
             requestBody.add("messages", messages);
             String jsonString = GsonFactory.getGson().toJson(requestBody);
             log.debug("Open AI API call: [{}]", toDebugString(jsonString));

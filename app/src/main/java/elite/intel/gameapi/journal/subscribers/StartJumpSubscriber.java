@@ -1,6 +1,8 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.intel.ai.search.edsm.EdsmApiClient;
+import elite.intel.ai.search.edsm.dto.StarSystemDto;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.journal.events.StartJumpEvent;
@@ -8,6 +10,7 @@ import elite.intel.session.LocationHistory;
 import elite.intel.session.PlayerSession;
 
 import static elite.intel.util.StringUtls.isFuelStarClause;
+import static elite.intel.util.StringUtls.subtractString;
 
 @SuppressWarnings("unused")
 public class StartJumpSubscriber {

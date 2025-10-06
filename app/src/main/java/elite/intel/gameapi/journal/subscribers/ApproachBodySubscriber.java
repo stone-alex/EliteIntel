@@ -6,6 +6,7 @@ import elite.intel.ai.search.edsm.EdsmApiClient;
 import elite.intel.ai.search.edsm.dto.SystemBodiesDto;
 import elite.intel.ai.search.edsm.dto.data.BodyData;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.journal.events.ApproachBodyEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.gameapi.journal.events.dto.MaterialDto;
@@ -65,7 +66,7 @@ public class ApproachBodySubscriber {
         }
 
         playerSession.saveLocation(location);
-        EventBusManager.publish(new DiscoveryAnnouncementEvent(sb.toString()));
+        EventBusManager.publish(new SensorDataEvent(sb.toString()));
     }
 
 

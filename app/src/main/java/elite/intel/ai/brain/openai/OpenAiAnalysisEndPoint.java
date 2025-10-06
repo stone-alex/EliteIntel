@@ -38,7 +38,7 @@ public class OpenAiAnalysisEndPoint extends AiEndPoint implements AiAnalysisInte
             HttpURLConnection conn = client.getHttpURLConnection();
             String systemPrompt = ApiFactory.getInstance().getAiContextFactory().generateAnalysisPrompt(userIntent, dataJson);
 
-            JsonObject request = client.createRequestBodyHeader(OpenAiClient.MODEL);
+            JsonObject request = client.createRequestBodyHeader(OpenAiClient.MODEL, 1);
 
             JsonObject messageSystem = new JsonObject();
             messageSystem.addProperty("role", AIConstants.ROLE_SYSTEM);

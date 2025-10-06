@@ -64,6 +64,7 @@ public class JumpCompletedSubscriber {
 
         StringBuilder sb = new StringBuilder();
         sb.append(" Hyperspace Jump Successful: ");
+        sb.append(" Distance traveled: ").append(event.getJumpDist()).append(" ly. ");
 
         List<NavRouteDto> orderedRoute = playerSession.getOrderedRoute();
         boolean roueSet = !orderedRoute.isEmpty();

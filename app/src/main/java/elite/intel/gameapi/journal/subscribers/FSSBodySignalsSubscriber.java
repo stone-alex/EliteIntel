@@ -39,7 +39,9 @@ public class FSSBodySignalsSubscriber {
             location.addDetectedSignal(signal);
             playerSession.saveLocation(location);
         }
-        location.setBioSignals(bioSignals);
+        if(location.getBioSignals() < bioSignals) {
+            location.setBioSignals(bioSignals);
+        }
         location.setGeoSignals(geoSignals);
         playerSession.saveLocation(location);
     }

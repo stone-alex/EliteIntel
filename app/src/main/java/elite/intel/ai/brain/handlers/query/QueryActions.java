@@ -19,7 +19,7 @@ public enum QueryActions {
     LIST_AVAILABLE_VOICES("list_available_voices", "List available AI voices.", ListAvailableVoices.class, false),
     QUERY_ANALYZE_ON_BOARD_CARGO("query_ship_cargo_contents", "Analyze contents of the ship’s cargo hold.", AnalyzeCargoHoldHandler.class, true),  // "ship" to avoid carrier/planet mix-up
     QUERY_ANALYZE_ROUTE("query_plotted_route_analysis", "Analyze the current plotted route.", AnalyzeRouterHandler.class, true),
-    QUERY_CARRIER_STATS("query_fleet_carrier_vehicle_stats", "Analyze fleet carrier vehicle data (e.g., fuel, market, location), provide concise answer for specific datapoints or a summary if unspecified.", AnalyzeCarrierDataHandler.class, true),  // "vehicle" to distinguish from planets
+    QUERY_CARRIER_STATS("query_fleet_carrier_info", "Analyze fleet carrier data (e.g., fuel, market, balance, location)", AnalyzeCarrierDataHandler.class, true),  // "vehicle" to distinguish from planets
     QUERY_PIRATE_MISSION_KILLS_REMAINING("query_pirate_mission_kills", "Summarize remaining kills for active pirate missions.", AnalyzePirateMissionHandler.class, true),
     QUERY_PIRATE_MISSION_PROFIT("query_pirate_mission_profit", "Summarize potential profit from active pirate missions.", AnalyzePirateMissionHandler.class, true),
     QUERY_PIRATE_MISSION_STATUS("query_pirate_mission_progress", "Summarize progress of active pirate missions.", AnalyzePirateMissionHandler.class, true),

@@ -27,10 +27,8 @@ public class OpenAiClient {
         return instance;
     }
 
-    JsonObject createRequestBodyHeader(String model) {
-        float temp = SystemSession.getInstance()
-                .getAIPersonality()
-                .getTemperature();
+    JsonObject createRequestBodyHeader(String model, float temp) {
+
         JsonObject body = new JsonObject();
         body.addProperty("model", model);
         body.addProperty("temperature", temp);

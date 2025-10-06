@@ -43,7 +43,7 @@ public class GrokQueryEndPoint extends AiEndPoint implements AiQueryInterface {
             GrokClient client = GrokClient.getInstance();
             HttpURLConnection conn = client.getHttpURLConnection();
 
-            JsonObject body = client.createRequestBodyHeader(GrokClient.MODEL_GROK_4_FAST_REASONING);
+            JsonObject body = client.createRequestBodyHeader(GrokClient.MODEL_GROK_4_FAST_REASONING, 1);
             body.add("messages", sanitizedMessages);
 
             bodyString = body.toString();

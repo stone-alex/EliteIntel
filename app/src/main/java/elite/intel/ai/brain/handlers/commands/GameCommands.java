@@ -78,6 +78,7 @@ public class GameCommands {
         SET_SPEED25("set_speed_to_slow_throttle_25", "SetSpeed25", GenericGameController.class),
         SET_SPEED50("set_speed_to_medium_throttle_50", "SetSpeed50", GenericGameController.class),
         SET_SPEED75("set_speed_to_optimal_throttle_75", "SetSpeed75", GenericGameController.class),
+        SET_OPTIMAL_SPEED("set_optimal_speed", "SetSpeed75", GenericGameController.class),
         SET_SPEED100("set_speed_to_maximum_throttle_100", "SetSpeed100", GenericGameController.class),
         SET_SPEED_ZERO("set_speed_to_zero_0", "SetSpeedZero", GenericGameController.class),
         AUTO_DOC1("engage_auto_cocking", "SetSpeedZero", GenericGameController.class),

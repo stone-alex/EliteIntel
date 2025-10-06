@@ -108,7 +108,7 @@ public class OpenAiContextFactory implements AiContextFactory {
 
     private String generateSupportedCommandsCause() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Supported commands: ").append(AiRequestHints.supportedCommands);
+        sb.append("Supported commands: ").append(AiRequestHints.supportedCommands).append(", ").append(AiRequestHints.customCommands);
         return sb.toString();
     }
 

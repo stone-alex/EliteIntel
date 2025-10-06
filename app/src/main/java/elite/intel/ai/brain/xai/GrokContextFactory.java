@@ -15,8 +15,7 @@ import java.util.Objects;
 
 import static elite.intel.ai.brain.handlers.commands.GameCommands.GameCommand.*;
 import static elite.intel.ai.brain.handlers.commands.custom.CustomCommands.SET_PERSONALITY;
-import static elite.intel.ai.brain.handlers.query.QueryActions.GENERAL_CONVERSATION;
-import static elite.intel.ai.brain.handlers.query.QueryActions.WHAT_IS_YOUR_DESIGNATION;
+import static elite.intel.ai.brain.handlers.query.QueryActions.*;
 import static elite.intel.util.Abbreviations.generateAbbreviations;
 
 /**
@@ -254,6 +253,7 @@ public class GrokContextFactory implements AiContextFactory {
 
         sb.append("For type='query': \n" +
                 "    - If action is a quick query (e.g., '" + WHAT_IS_YOUR_DESIGNATION.getAction() + "', '" + GENERAL_CONVERSATION.getAction() + "'), set 'response_text' to '' (empty string, no initial TTS).\n" +
+                "    - Map questions about your capabilities to "+WHAT_ARE_YOUR_CAPABILITIES.getAction() +".\n" +
                 "    - If action is a data query (listed in data queries section), set 'response_text' to 'Moment...' for user feedback during delay.\n" +
                 "    - For 'general_conversation', use general knowledge outside Elite Dangerous unless the input explicitly mentions the game.\n" +
                 "    - Do not generate or infer answers here; the app will handle final response via handlers.\n");
@@ -301,7 +301,7 @@ public class GrokContextFactory implements AiContextFactory {
 
     private String generateSupportedCommandsCause() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Supported commands: ").append(AiRequestHints.supportedCommands);
+        sb.append("Supported commands: ").append(AiRequestHints.supportedCommands).append(", ").append(AiRequestHints.customCommands);
         return sb.toString();
     }
 

@@ -3,8 +3,6 @@ package elite.intel.ai.brain;
 import elite.intel.ai.brain.handlers.commands.GameCommands;
 import elite.intel.ai.brain.handlers.commands.custom.CustomCommands;
 import elite.intel.ai.brain.handlers.query.QueryActions;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager; 
 
 import java.util.Arrays;
 import java.util.List;
@@ -35,11 +33,7 @@ public class AiRequestHints {
                 .map(CustomCommands::getCommandWithPlaceholder)
                 .collect(Collectors.toList());
 
-        // Add user-friendly commands and queries
-        commands.addAll(Arrays.asList(GameCommands.getUserCommands()));
-
-        // Load game bindings
-        commands.addAll(Arrays.asList(GameCommands.getUserCommands()));
+        commands.addAll(Arrays.asList(GameCommands.getGameControlCommands()));
         COMMANDS = commands;
     }
 
@@ -50,14 +44,18 @@ public class AiRequestHints {
     }
 
     private static String formatCommands() {
-        return "Supported commands: '" + String.join("', '", COMMANDS) + "'. ";
+        return "Supported commands: '" + String.join("', '", COMMANDS) + "', ";
     }
 
     private static String formatQueries() {
         return "Supported queries: '" + String.join("', '", QUERIES) + "'. ";
     }
 
-    public static final String supportedCommands = formatCommands();
+    private static String formatCustomCommands() {
+        return "Supported custom commands: '" + String.join("', '", CustomCommands.getCustomCommands()) + "'. ";
+    }
 
+    public static final String supportedCommands = formatCommands();
     public static final String supportedQueries = formatQueries();
+    public static final String customCommands = formatCustomCommands();
 }

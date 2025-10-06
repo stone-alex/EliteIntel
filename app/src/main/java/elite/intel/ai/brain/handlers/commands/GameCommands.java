@@ -155,7 +155,7 @@ public class GameCommands {
         return null;
     }
 
-    public static String[] getUserCommands() {
+    public static String[] getGameControlCommands() {
         String[] commands = new String[GameCommand.values().length];
         for (int i = 0; i < GameCommand.values().length; i++) {
             // These commands used in custom handlers. exclude from generic command handler

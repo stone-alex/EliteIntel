@@ -33,7 +33,7 @@ public enum CustomCommands {
 
     OPEN_GALAXY_MAP("open_galaxy_map", null, null, OpenGalaxyMapHandler.class),
     OPEN_SYSTEM_MAP("open_local_map", null, null, OpenSystemMapHandler.class),
-    CLOSE_SYSTEM_MAP("close_map", null, null, ExitToHud.class),
+    CLOSE_ANY_MAP("close_map", null, null, ExitToHud.class),
     EXIT_TO_HUD("display_hud", null, null, ExitToHud.class),
 
 
@@ -76,6 +76,17 @@ public enum CustomCommands {
         this.placeholder = placeholder;
         this.paramKey = paramKey;
         this.handlerClass = handlerClass;
+    }
+
+    public static String[] getCustomCommands() {
+        String[] result = new String[CustomCommands.values().length];
+        for (int i = 0; i < CustomCommands.values().length; i++) {
+            // These commands used in custom handlers. exclude from generic command handler
+
+            result[i] = CustomCommands.values()[i].getAction();
+        }
+        return result;
+
     }
 
     public String getAction() {

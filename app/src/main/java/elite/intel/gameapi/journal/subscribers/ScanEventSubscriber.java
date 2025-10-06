@@ -152,7 +152,7 @@ public class ScanEventSubscriber {
             }
         } else if (!wasDiscovered && PRIMARY_STAR.equals(location.getLocationType())) {
 
-            EventBusManager.publish(new DiscoveryAnnouncementEvent("New star system discovered!"));
+            EventBusManager.publish(new DiscoveryAnnouncementEvent("Congrats, you’re the first here! Let’s make history!"));
         } else if (PRIMARY_STAR.equals(location.getLocationType())) {
             EventBusManager.publish(new DiscoveryAnnouncementEvent("Previously discovered!"));
         }

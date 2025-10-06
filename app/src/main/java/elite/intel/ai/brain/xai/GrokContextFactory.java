@@ -7,14 +7,17 @@ import elite.intel.ai.brain.AiRequestHints;
 import elite.intel.ai.brain.handlers.query.QueryActions;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
+import elite.intel.util.Abbreviations;
 import elite.intel.util.Ranks;
 
+import java.util.Map;
 import java.util.Objects;
 
 import static elite.intel.ai.brain.handlers.commands.GameCommands.GameCommand.*;
 import static elite.intel.ai.brain.handlers.commands.custom.CustomCommands.SET_PERSONALITY;
 import static elite.intel.ai.brain.handlers.query.QueryActions.GENERAL_CONVERSATION;
 import static elite.intel.ai.brain.handlers.query.QueryActions.WHAT_IS_YOUR_DESIGNATION;
+import static elite.intel.util.Abbreviations.generateAbbreviations;
 
 /**
  * The GrokContextFactory class is a singleton implementation that serves as a factory
@@ -227,9 +230,9 @@ public class GrokContextFactory implements AiContextFactory {
     @Override public String generatePlayerInstructions(String playerVoiceInput) {
         StringBuilder sb = new StringBuilder();
         sb.append("Instructions:\n\n");
-
         sb.append(generateSupportedCommandsCause());
         sb.append(generateSupportedQueriesClause());
+        sb.append(generateAbbreviations());
         sb.append("Interpret this input: ").append(playerVoiceInput).append("\n\n ");
         sb.append("Always output JSON: {\"type\": \"command|query|chat\", \"response_text\": \"TTS output\", \"action\": \"action_name|query_name|null\", \"params\": {\"key\": \"value\"}, \"expect_followup\": boolean} \n");
 

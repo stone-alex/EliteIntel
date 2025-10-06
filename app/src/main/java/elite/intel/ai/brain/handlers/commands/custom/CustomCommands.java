@@ -24,8 +24,6 @@ public enum CustomCommands {
 
     CLEAR_MINING_TARGETS("clear_mining_targets", null, null, ClearMiningTargetsHandler.class),
     CLEAR_CACHE("clear_cache", "<session_clear>", "session_clear", ClearCacheHandler.class),
-    CLOSE_SYSTEM_MAP("close_star_system_map", null, null, ExitToHud.class),
-    EXIT_TO_HUD("display_hud", null, null, ExitToHud.class),
     FIND_COMMODITY("find_where_to_buy", "<commodity>", "commodity_target", FindCommodityHandler.class),
 
     INCREASE_ENGINES_POWER("all_power_to_engines", null, null, SetPowerToEnginesHandler.class),
@@ -34,7 +32,11 @@ public enum CustomCommands {
     INCREASE_WEAPONS_POWER("all_power_to_weapons", null, null, SetPowerToWeaponsHandler.class),
 
     OPEN_GALAXY_MAP("open_galaxy_map", null, null, OpenGalaxyMapHandler.class),
-    OPEN_SYSTEM_MAP("open_local_starsystem_map", null, null, OpenSystemMapHandler.class),
+    OPEN_SYSTEM_MAP("open_local_map", null, null, OpenSystemMapHandler.class),
+    CLOSE_SYSTEM_MAP("close_map", null, null, ExitToHud.class),
+    EXIT_TO_HUD("display_hud", null, null, ExitToHud.class),
+
+
     PLOT_ROUTE_TO_CARRIER("plot_route_to_fleet_carrier", null, null, PlotRouteToMyFleetCarrier.class),
     PLOT_ROUTE_TO_BEST_MARKET("plot_route_to_best_market", null, null, PlotRouteToBestMarketHandler.class),
     SET_AI_VOICE("set_or_change_voice_to", "<voice_name>", "voice_name", SetAiVoice.class),
@@ -46,8 +48,8 @@ public enum CustomCommands {
     SET_STREAMING_MODE("set_streaming_mode", "<streaming_mode_on_off>", "streaming_mode", SetStreamingModeHandler.class),
     TAKE_ME_HOME("take_us_home", null, null, PlotRouteToHomeHandler.class),
 
-    OPEN_FSS("open_fss", null, null, OpenFssHandler.class),
-    OPEN_FSS_AND_SCAN("open_fss_and_scan", null, null, DisplayFssAndScanHandler.class),
+    OPEN_FSS_AND_SCAN("open_fss_and_perform_scan", null, null, DisplayFssAndScanHandler.class),
+    HUNK("perform_hunk", null, null, DisplayFssAndScanHandler.class),
 
     NAVIGATE_TO_TARGET("navigate_to_coordinates", "<coordinates>", "lat_lon", NavigateToCoordinatesHandler.class),
     NAVIGATE_TO_NEXT_BIO_SAMPLE("navigate_directions_to_codex_entry_or_bio_sample", null, null, NavigateToNextBioSample.class),

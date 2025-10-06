@@ -16,6 +16,7 @@ import static elite.intel.ai.brain.handlers.commands.custom.CustomCommands.NAVIG
 import static elite.intel.ai.brain.handlers.commands.custom.CustomCommands.SET_PERSONALITY;
 import static elite.intel.ai.brain.handlers.query.QueryActions.GENERAL_CONVERSATION;
 import static elite.intel.ai.brain.handlers.query.QueryActions.WHAT_IS_YOUR_DESIGNATION;
+import static elite.intel.util.Abbreviations.generateAbbreviations;
 
 public class OpenAiContextFactory implements AiContextFactory {
 
@@ -44,6 +45,7 @@ public class OpenAiContextFactory implements AiContextFactory {
         sb.append(generateClassifyClause());
         sb.append(generateSupportedCommandsCause());
         sb.append(generateSupportedQueriesClause());
+        sb.append(generateAbbreviations());
         sb.append("Interpret this input: ").append(playerVoiceInput).append("\n\n ");
         sb.append("Always output JSON: {\"type\": \"command|query|chat\", \"response_text\": \"TTS output\", \"action\": \"action_name|query_name|null\", \"params\": {\"key\": \"value\"}, \"expect_followup\": boolean} \n");
 

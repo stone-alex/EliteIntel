@@ -134,6 +134,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     private Boolean isNavigationAnnouncementOn = true;
     private Boolean isDiscoveryAnnouncementOn = true;
     private Boolean isRouteAnnouncementOn = true;
+    private StationMarket targetMarketStation;
 
 
     private PlayerSession() {
@@ -209,6 +210,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         registerField(PLAYER_NAME, this::getPlayerName, this::setPlayerName, String.class);
         registerField(CARRIER_LOCATION, this::getLastKnownCarrierLocation, this::setLastKnownCarrierLocation, String.class);
         registerField(SHIP_FUEL_LEVEL, this::getShipFuelLevel, this::setShipFuelLevel, Double.class);
+        registerField("target_market_station", this::getTargetMarketStation, this::setTargetMarketStation, StationMarket.class);
 
         registerField(FRIENDS_STATUS, this::getFriendsStatus, v -> {
             friendsStatus.clear();
@@ -931,6 +933,14 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         save();
     }
 
+    public StationMarket getTargetMarketStation() {
+        return targetMarketStation;
+    }
+
+    public void setTargetMarketStation(StationMarket targetMarketStation) {
+        this.targetMarketStation = targetMarketStation;
+        save();
+    }
 
     public void setFleetCarrierRoute(Map<Integer, CarrierJump> fleetCarrierRoute) {
         this.fleetCarrierRoute = fleetCarrierRoute;
@@ -959,8 +969,8 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     public void setCurrentWealth(long currentWealth) {
         this.currentWealth = currentWealth;
     }
-
     public record GalacticCoordinates(double x, double y, double z) {
+
     }
 
     @Subscribe

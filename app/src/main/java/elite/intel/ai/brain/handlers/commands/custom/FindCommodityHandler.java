@@ -26,6 +26,7 @@ public class FindCommodityHandler implements CommandHandler {
         String commodity = capitalizeWords(jsonElement.getAsJsonPrimitive().getAsString().replace("\"", ""));
 
         PlayerSession playerSession = PlayerSession.getInstance();
+        playerSession.clearMarkets();
 
         LocationDto currentLocation = playerSession.getCurrentLocation();
         LocationDto nearestKnownLocation = NearestKnownLocationSearch.findNearest(
@@ -55,7 +56,7 @@ public class FindCommodityHandler implements CommandHandler {
             }
             EventBusManager.publish(
                     new SensorDataEvent(
-                            "Found " + numMarkets + " market"
+                            "Found " + numMarkets + " market(s)"
                                     + (numMarkets == 1 ? "" : "s") + " for " + commodity
                                     + (numMarkets > 0 ? ". Prompt user to ask you to plot a route to the market with best price." : "")
                     )

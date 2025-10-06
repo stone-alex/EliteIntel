@@ -66,8 +66,8 @@ public enum CustomCommands {
     ENTER_NEXT_FLEET_CARRIER_DESTINATION("enter_next_fleet_carrier_destination", null, null, EnterNextCarrierDestinationHandler.class),
 
     LIST_HELP_TOPICS("list_help_topics", null, null, HelpHandler.class),
-    HELP("help_with_topic", "<help_topic>", "help_topic", HelpHandler.class);
-
+    HELP("help_with_topic", "<help_topic>", "help_topic", HelpHandler.class),
+    SHUT_DOWN("system_shut_down", null, null, SystemShutDownRequestHandler.class);
 
     private final String action;
     private final String placeholder;

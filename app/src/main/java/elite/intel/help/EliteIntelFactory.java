@@ -25,7 +25,7 @@ public class EliteIntelFactory extends BaseJsonDto implements ToJsonConvertible 
                 supportedCommands,
                 customCommands,
                 supportedQueries,
-                "Your capabilities include the following ship controls: " + supportedCommands + ", custom commands "+customCommands+" the following queries: " + supportedQueries + ", or chat on any subject."
+                "Your capabilities include the following ship controls: " + supportedCommands + ", custom commands "+customCommands+" the following queries: " + supportedQueries + ", or chat on any subject. help is available via 'help me with' command. There is also a detailed wiki on project GitHub"
         );
     }
 

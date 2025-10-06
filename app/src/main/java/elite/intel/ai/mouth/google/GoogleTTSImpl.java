@@ -183,7 +183,7 @@ public class GoogleTTSImpl implements MouthInterface {
                     continue;
                 }
                 processVoiceRequest(
-                        request.text().replace("present","detected"),
+                        request.text().replace("present","detected").replace("_", " "),
                         request.voiceName(),
                         request.speechRate(),
                         request.originType()

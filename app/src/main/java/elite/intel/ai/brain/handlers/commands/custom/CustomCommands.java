@@ -63,7 +63,10 @@ public enum CustomCommands {
     CLEAR_CODEX_ENTRIES("clear_codex_entries", null, null, ClearCodexEntriesHandler.class),
 
     CALCULATE_FLEET_CARRIER_ROUTE("calculate_fleet_carrier_route", null, null, CalculateFleetCarrierRouteHandler.class),
-    ENTER_NEXT_FLEET_CARRIER_DESTINATION("enter_next_fleet_carrier_destination", null, null, EnterNextCarrierDestinationHandler.class);
+    ENTER_NEXT_FLEET_CARRIER_DESTINATION("enter_next_fleet_carrier_destination", null, null, EnterNextCarrierDestinationHandler.class),
+
+    LIST_HELP_TOPICS("list_help_topics", null, null, HelpHandler.class),
+    HELP("help_with_topic", "<help_topic>", "help_topic", HelpHandler.class);
 
 
     private final String action;

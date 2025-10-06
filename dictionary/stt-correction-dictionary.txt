@@ -162,3 +162,8 @@
 "lead carrier"="fleet carrier"
 "Triple landing gear"="deploy landing gear"
 "open the physicians can"="open fss and scan"
+"helped"="help"
+"copy is"="help with"
+"built with"="help with"
+"health topics"="help topics"
+"carry routing"="carrier routing"

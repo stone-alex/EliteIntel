@@ -1,6 +1,6 @@
-package elite.intel.about;
+package elite.intel.help;
 
-import elite.intel.about.dto.AICapabilitiesDto;
+import elite.intel.help.dto.AICapabilitiesDto;
 import elite.intel.ai.brain.AiRequestHints;
 import elite.intel.gameapi.gamestate.events.BaseJsonDto;
 import elite.intel.util.json.ToJsonConvertible;

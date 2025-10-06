@@ -1,8 +1,8 @@
 package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
-import elite.intel.about.EliteIntelFactory;
-import elite.intel.about.dto.AICapabilitiesDto;
+import elite.intel.help.EliteIntelFactory;
+import elite.intel.help.dto.AICapabilitiesDto;
 
 public class WhatAreYourCapabilitiesHandler extends BaseQueryAnalyzer implements QueryHandler {
 

@@ -1,4 +1,4 @@
-package elite.intel.about.dto;
+package elite.intel.help.dto;
 
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;

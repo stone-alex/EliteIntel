@@ -10,7 +10,7 @@ import static elite.intel.util.StringUtls.capitalizeWords;
  * Provides genus/species details and biome descriptions.
  */
 public class BioForms {
-    public record BioDetails(long creditValue, int colonyRange, String atmosphere, Double minTemp, Double maxTemp, String volcanism) {}
+    public record BioDetails(long creditValue, Integer colonyRange, String atmosphere, Double minTemp, Double maxTemp, String volcanism) {}
 
     private static final Map<String, String> GENUS_TO_BIOME = new HashMap<>();
     private static final Map<String, Map<String, BioDetails>> GENUS_TO_SPECIES = new HashMap<>();
@@ -217,6 +217,12 @@ public class BioForms {
         tubusSpecies.put("Rosarium", new BioDetails(2637500, 800, "Ammonia", 160.0, null, null));
         tubusSpecies.put("Sororibus", new BioDetails(5727600, 800, "Ammonia, CO2, CO2-Rich", 160.0, 190.0, null));
         GENUS_TO_SPECIES.put("Tubus", tubusSpecies);
+
+        GENUS_TO_BIOME.put("Roseum Sinuous Tubers", "Colony Range of 800m. Found on plains (i.e., flat terrain).");
+        Map<String, BioDetails> blatteumSpecies = new HashMap<>();
+        blatteumSpecies.put("Blatteum Sinuous Tubers", new BioDetails(1514500, 800, "None", null, null, "Any"));
+        GENUS_TO_SPECIES.put("Roseum Sinuous Tubers", blatteumSpecies);
+
 
         // Tussock
         GENUS_TO_BIOME.put("Tussock", "Colony Range of 200m. Can be found on Rocky planets on both plains and on mountains.");

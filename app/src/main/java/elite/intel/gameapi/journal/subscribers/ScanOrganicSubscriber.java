@@ -37,7 +37,14 @@ public class ScanOrganicSubscriber {
 
         long valueInCredits = BioForms.getAverageProjectedPayment(genus);
         BioForms.BioDetails bioDetails = BioForms.getDetails(genus, variant);
-        int range = bioDetails == null ? BioScanDistances.GENUS_TO_CCR.get(genus) : bioDetails.colonyRange();
+        Integer distance = BioScanDistances.GENUS_TO_CCR.get(genus);
+        Integer range = null;
+        if (bioDetails == null) {
+            range = distance;
+        }
+        if (distance != null) {
+            range = distance;
+        }
         LocationDto currentLocation = playerSession.getCurrentLocation();
         boolean isOurDiscovery = currentLocation.isOurDiscovery();
         removeCodexEntryIfMatches(event.getVariantLocalised(), range, true);
@@ -49,9 +56,11 @@ public class ScanOrganicSubscriber {
             sb.append(" Species:");
             sb.append(variant);
             sb.append(" First sample out of three required. ");
-            sb.append(" Required Distance between samples: ");
-            sb.append(BioScanDistances.GENUS_TO_CCR.get(genus));
-            sb.append(" meters. ");
+            if (range != null) {
+                sb.append(" Required Distance between samples: ");
+                sb.append(range);
+                sb.append(" meters. ");
+            }
 
             if(valueInCredits > 0) {
                 sb.append("Approximate Vista Genomics payment: ");
@@ -107,7 +116,8 @@ public class ScanOrganicSubscriber {
     }
 
 
-    private void removeCodexEntryIfMatches(String variantLocalised, int range, boolean useDistance) {
+    private void removeCodexEntryIfMatches(String variantLocalised, Integer range, boolean useDistance) {
+        if (range == null) return;
 
         double latitude = status.getStatus().getLatitude();
         double longitude = status.getStatus().getLongitude();

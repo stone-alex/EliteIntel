@@ -14,6 +14,7 @@ public enum QueryActions {
     ANALYZE_LOCAL_OUTFITTING("query_local_outfitting", "Analyze available outfitting options.", AnalyzeLocalOutfittingHandler.class, true),
     ANALYZE_LOCAL_SHIPYARD("query_local_shipyard", "Analyze shipyard contents.", AnalyzeShipyardHandler.class, true),
     ANALYZE_LOCAL_STATIONS("query_local_stations_services", "Summarize services at local stations.", AnalyzeLocalStations.class, true),
+    ANALYZE_CARRIER_ROUTE("query_fleet_carrier_route", "Use this data to analyze the current fleet carrier route.", AnalyzeCarrierRouteHandler.class, true),
     HOW_FAR_TO_FINAL_DESTINATION("query_distance_to_final_destination", "Calculate distance to the final destination.", AnalyzeDistanceToFinalDestination.class, false),
     LIST_AVAILABLE_VOICES("list_available_voices", "List available AI voices.", ListAvailableVoices.class, false),
     QUERY_ANALYZE_ON_BOARD_CARGO("query_ship_cargo_contents", "Analyze contents of the ship’s cargo hold.", AnalyzeCargoHoldHandler.class, true),  // "ship" to avoid carrier/planet mix-up

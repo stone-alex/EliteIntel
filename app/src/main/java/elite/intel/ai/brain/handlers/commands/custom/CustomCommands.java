@@ -49,7 +49,7 @@ public enum CustomCommands {
     TAKE_ME_HOME("take_us_home", null, null, PlotRouteToHomeHandler.class),
 
     OPEN_FSS_AND_SCAN("open_fss_and_perform_scan", null, null, DisplayFssAndScanHandler.class),
-    HUNK("perform_hunk", null, null, DisplayFssAndScanHandler.class),
+    HONK("perform_honk", null, null, DisplayFssAndScanHandler.class),
 
     NAVIGATE_TO_TARGET("navigate_to_coordinates", "<coordinates>", "lat_lon", NavigateToCoordinatesHandler.class),
     NAVIGATE_TO_NEXT_BIO_SAMPLE("navigate_directions_to_codex_entry_or_bio_sample", null, null, NavigateToNextBioSample.class),

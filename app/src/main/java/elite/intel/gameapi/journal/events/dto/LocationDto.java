@@ -58,6 +58,7 @@ public class LocationDto implements ToJsonConvertible {
     private double orbitalCruiseEntryAltitude;
     private boolean ourDiscovery = false;
     private boolean weMappedIt = false;
+    private String volcanism;
 
     //private BioStatus bioStatus = BioStatus.SCAN_REQUIRED;
     private MarketDto market;
@@ -654,6 +655,13 @@ public class LocationDto implements ToJsonConvertible {
         isFuelStar = fuelStar;
     }
 
+    public String getVolcanism() {
+        return volcanism;
+    }
+
+    public void setVolcanism(String volcanism) {
+        this.volcanism = volcanism;
+    }
 
     @Override public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;

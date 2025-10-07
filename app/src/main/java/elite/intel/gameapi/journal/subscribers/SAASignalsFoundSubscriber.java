@@ -24,14 +24,8 @@ public class SAASignalsFoundSubscriber {
     @Subscribe
     public void onSAASignalsFound(SAASignalsFoundEvent event) {
         StringBuilder sb = new StringBuilder();
-        if(event.getBodyID() == 0) return;
 
         LocationDto location = playerSession.getLocation(event.getBodyID());
-
-        if (location.getBodyId() != event.getBodyID()) {
-            location = playerSession.getLocation(event.getBodyID());
-        }
-
         location.addSaaSignals(event.getSignals());
         playerSession.saveLocation(location);
 
@@ -48,7 +42,6 @@ public class SAASignalsFoundSubscriber {
                 }
             }
 
-
             if (liveSignals > 0) {
                 if(location.getBioSignals() < liveSignals) {
                     location.setBioSignals(liveSignals);
@@ -59,15 +52,26 @@ public class SAASignalsFoundSubscriber {
                 if (!hasBeenScanned) sb.append(" Exobiology signal(s) found ").append(liveSignals).append(": ");
 
                 long averageProjectedPayment = 0;
+                long averageFirstDiscoveryBonus = 0;
                 for (SAASignalsFoundEvent.Genus genus : event.getGenuses()) {
-                    averageProjectedPayment = averageProjectedPayment + BioForms.getAverageProjectedPayment(genus.getGenusLocalised());
+                    BioForms.ProjectedPayment averagePayment = BioForms.getAverageProjectedPayment(genus.getGenusLocalised());
+                    if (averagePayment != null) {
+                        averageProjectedPayment = averagePayment.payment();
+                        averageFirstDiscoveryBonus =averagePayment.firstDiscoveryBonus();
+                    }
+
                     if (!hasBeenScanned) {
                         sb.append(" ");
                         sb.append(genus.getGenusLocalised());
                         sb.append(", ");
                     }
                 }
-                if (!hasBeenScanned) sb.append("Average projected payment: ").append(averageProjectedPayment).append(" credits. Plus bonus if first discovered.");
+                if (!hasBeenScanned) {
+                    sb.append("Average projected payment of: ").append(averageProjectedPayment).append(" credits.");
+                    if(location.isOurDiscovery()) {
+                        sb.append(" Plus average bonus of: ").append(averageFirstDiscoveryBonus).append(" credits for first discovery.");
+                    }
+                }
 
             } else if (event.getBodyName().contains("Ring")) {
                 //Rings are bodies
@@ -139,7 +143,10 @@ public class SAASignalsFoundSubscriber {
         for(SAASignalsFoundEvent.Genus genus: genuses) {
             GenusDto dto = new GenusDto();
             dto.setSpecies(genus.getGenusLocalised());
-            dto.setRewardInCredits(BioForms.getAverageProjectedPayment(genus.getGenusLocalised()));
+            BioForms.ProjectedPayment projectedPayment = BioForms.getAverageProjectedPayment(genus.getGenusLocalised());
+            if (projectedPayment != null && projectedPayment.payment() != null) {
+                dto.setRewardInCredits(projectedPayment.payment() + projectedPayment.firstDiscoveryBonus());
+            }
             result.add(dto);
         }
         return result;

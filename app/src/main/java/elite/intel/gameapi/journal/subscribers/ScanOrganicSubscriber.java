@@ -35,10 +35,17 @@ public class ScanOrganicSubscriber {
         String genus = event.getGenusLocalised();
         String variant = event.getVariantLocalised();
         long starSystemNumber = event.getSystemAddress();
+        LocationDto currentLocation = playerSession.getCurrentLocation();
+        boolean isOurDiscovery = currentLocation.isOurDiscovery();
 
-        long valueInCredits = BioForms.getAverageProjectedPayment(genus);
+        BioForms.ProjectedPayment paymentData = BioForms.getProjectedPayment(genus, variant);
+
+        long payment = paymentData == null ? 0 : paymentData.payment();
+        long firstDiscoveryBonus = paymentData == null || !isOurDiscovery ? 0 : paymentData.firstDiscoveryBonus();
+
         BioForms.BioDetails bioDetails = BioForms.getDetails(genus, variant);
         Integer distance = BioScanDistances.GENUS_TO_CCR.get(genus);
+
         Integer range = null;
         if (bioDetails == null) {
             range = distance;
@@ -46,12 +53,10 @@ public class ScanOrganicSubscriber {
         if (distance != null) {
             range = distance;
         }
-        LocationDto currentLocation = playerSession.getCurrentLocation();
-        boolean isOurDiscovery = currentLocation.isOurDiscovery();
+
         removeCodexEntryIfMatches(event.getVariantLocalised(), range, true);
 
         if (scan1.equals(scanType)) {
-
             sb.append(" Organic sample detected: Genus: ");
             sb.append(" ");
             sb.append(genus);
@@ -64,24 +69,25 @@ public class ScanOrganicSubscriber {
                 sb.append(" meters. ");
             }
 
-            if(valueInCredits > 0) {
+            if(payment > 0) {
                 sb.append("Approximate Vista Genomics payment: ");
-                sb.append(valueInCredits);
-                if (isOurDiscovery) {
-                    sb.append(" credits,");
-                    sb.append(" Plus bonus for first discovery.");
+                sb.append(payment);
+                sb.append(" credits,");
+                if (isOurDiscovery && firstDiscoveryBonus > 0) {
+                    sb.append(" Plus bonus ");
+                    sb.append(firstDiscoveryBonus);
+                    sb.append(" credits for first discovery.");
                 }
-                sb.append(" credits.");
             }
 
-            BioSampleDto bioSampleDto = createBioSampleDto(genus, variant, starSystemNumber, valueInCredits);
+            BioSampleDto bioSampleDto = createBioSampleDto(genus, variant, starSystemNumber, payment);
             bioSampleDto.setScanXof3("First of Three");
             currentLocation.addBioScan(bioSampleDto);
             announce(sb.toString());
             scanCount = 1;
 
         } else if (scan2.equalsIgnoreCase(scanType)) {
-            BioSampleDto bioSampleDto = createBioSampleDto(genus, variant,  starSystemNumber, valueInCredits);
+            BioSampleDto bioSampleDto = createBioSampleDto(genus, variant,  starSystemNumber, payment);
             currentLocation.addBioScan(bioSampleDto);
             bioSampleDto.setScanXof3("Second of Three");
             if(scanCount == 1) {
@@ -94,19 +100,9 @@ public class ScanOrganicSubscriber {
             sb.append("Organic scans for: ");
             sb.append(genus);
             sb.append(" are complete. ");
-/*
-            if (valueInCredits > 0) {
-                sb.append(" approximate Vista Genomics payment: ");
-                sb.append(valueInCredits);
-                if (isOurDiscovery) sb.append("credits, plus bonus for first discovery.");
-            } else {
-                sb.append(" credits.");
-            }
-*/
-
 
             announce(sb.toString());
-            BioSampleDto bioSampleDto = createBioSampleDto(genus, variant,  starSystemNumber, valueInCredits);
+            BioSampleDto bioSampleDto = createBioSampleDto(genus, variant,  starSystemNumber, payment);
             bioSampleDto.setScanXof3("Three of Three");
             bioSampleDto.setBioSampleCompleted(true);
             playerSession.addBioSample(bioSampleDto);

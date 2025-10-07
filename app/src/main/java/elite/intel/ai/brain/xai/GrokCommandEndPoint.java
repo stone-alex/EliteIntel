@@ -10,6 +10,7 @@ import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.UserInputEvent;
 import elite.intel.session.SystemSession;
+import elite.intel.util.SleepNoThrow;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.JsonUtils;
 import org.apache.logging.log4j.LogManager;
@@ -79,6 +80,7 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
             });
             elite.intel.gameapi.EventBusManager.register(this);
             log.info("GrokCommandEndPoint started");
+            EventBusManager.publish(new AiVoxResponseEvent("X Ai is ready."));
         } else {
             log.debug("GrokCommandEndPoint already started");
         }

@@ -1,28 +1,26 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.intel.ai.brain.commons.BiomeAnalyzer;
 import elite.intel.gameapi.journal.events.FSSBodySignalsEvent;
 import elite.intel.gameapi.journal.events.dto.FssSignalDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
+import elite.intel.util.SleepNoThrow;
 
 import java.util.List;
 
-import static elite.intel.util.SleepNoThrow.sleep;
-
-public class FSSBodySignalsSubscriber {
+public class FSSBodySignalsSubscriber extends BiomeAnalyzer {
 
     PlayerSession playerSession = PlayerSession.getInstance();
+
     @Subscribe
     public void onFssBodySignal(FSSBodySignalsEvent event) {
-        sleep(2000);
-        addSignals(event, playerSession.getLocation(event.getBodyID()));
-    }
-
-    private void addSignals(FSSBodySignalsEvent event, LocationDto location) {
+        LocationDto location = playerSession.getLocation(event.getBodyID());
         List<FSSBodySignalsEvent.Signal> signals = event.getSignals();
         if(signals == null || signals.isEmpty()) return;
 
+        location.setFssSignals(signals);
         int bioSignals = 0;
         int geoSignals = 0;
         for(FSSBodySignalsEvent.Signal s : signals) {
@@ -41,8 +39,11 @@ public class FSSBodySignalsSubscriber {
         }
         if(location.getBioSignals() < bioSignals) {
             location.setBioSignals(bioSignals);
+
         }
         location.setGeoSignals(geoSignals);
         playerSession.saveLocation(location);
+        SleepNoThrow.sleep(2000); // wait for the data to be saved, next event might be a detailed scan.
     }
+
 }

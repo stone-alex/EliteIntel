@@ -242,24 +242,23 @@ public class GrokContextFactory implements AiContextFactory {
 
     private void inputClassificationClause(StringBuilder sb) {
         sb.append("Classify input as one of:\n" +
-                "    - 'command': Triggers an app action or keyboard event (DO SOMETHING). Use for inputs starting with verbs like 'set', 'get', 'switch', 'switch to', 'calculate', 'drop', 'retract', 'deploy', 'find', 'locate', 'activate' (e.g., 'deploy landing gear', 'add mining target'). Map slow/fast to throttle commands. switch to mode map to toggle_combat_or_analysis_mode\n"+
+                "    - 'command': Triggers an app action or keyboard event (DO SOMETHING). Use for inputs starting with verbs like 'set', 'get', 'switch', 'switch to', 'calculate', 'drop', 'retract', 'deploy', 'find', 'locate', 'activate', 'open', 'close' (e.g., 'deploy landing gear', 'add mining target'). Map slow/fast to throttle commands. analysis or combat modes are game modes, map those to commands.\n"+
                 "    -  Only match supported commands listed. Match commands before queries or chat.\n" +
                 "    - 'query': Requests information from game state (LOOK UP or COMPUTE SOMETHING). Use for inputs starting with interrogative words like 'what', 'where', 'when', 'how', 'how far', 'how many', 'how much', 'what is', 'where is' (e.g., 'how far are we from last bio sample', 'what is in our cargo hold'). Explicitly match queries about distance to the last bio sample with phrases containing 'how far' or 'distance' followed by 'bio sample', 'biosample', 'last sample', 'last bio sample', 'previous bio sample', or 'previous biosample', with or without prefixes like 'query', 'query about game state', or 'query question' (e.g., 'how far are we from last bio sample', 'how far away from the last bio sample', 'query how far are we from the last biosample', 'query about game state query question how far are we from the last bio sample', 'distance to last sample'). Normalize input by stripping prefixes ('query', 'query about game state', 'query question') and replacing 'bio sample' with 'biosample' for matching. These must trigger the query handler (HOW_FAR_ARE_WE_FROM_LAST_SAMPLE) with action 'query_how_far_we_moved_from_last_bio_sample' to send raw game state data (e.g., planet radius, last bio sample coordinates, current coordinates) for AI analysis, returning 'Distance from last sample is: <distance> meters.' in the configured personality and cadence. Set response_text to 'Moment...' for user feedback during analysis. Match supported queries listed in QueryActions. Queries take priority over chat but not commands.\n" +
                 "    - 'chat': General conversation, questions unrelated to game actions or state, or unmatched inputs (general chat). Use for lore, opinions, or casual talk (e.g., 'How’s it going?', 'What’s the vibe in this system?'). Only classify as chat if the input does not start with interrogative words ('what', 'where', 'when', 'how', 'how far', 'how many', 'how much', 'what is', 'where is') or command verbs ('set', 'get', 'drop', 'retract', 'deploy', 'find', 'locate', 'activate') and does not match any specific query or command pattern in QueryActions or GameCommands/CustomCommands. If ambiguous (e.g., pure 'where'), set response_text to 'Say again?', action to null, and expect_followup to true.\n");
 
-        sb.append("For type='command': Provide empty response_text for single word commands (e.g., 'deploy landing gear').\n");
-
+        sb.append("For type='command': Always provide empty response_text.\n");
         sb.append("For navigation commands (e.g., 'jump', 'enter hyperspace', 'go to next system'), map to '" + JUMP_TO_HYPERSPACE.getUserCommand() + "'. 'Stop', 'cut engines' map to speed commands " + SET_SPEED_ZERO.getUserCommand() + ". 'Activate', 'toggle', 'left', 'right', 'up', 'down', 'close' to UI commands like" + UI_ACTIVATE.getUserCommand() + ", " + UI_TOGGLE.getUserCommand() + ". Map abbreviations such as Filtered Spectrum Scan to FSS");
 
         sb.append("For type='query': \n" +
-                "    - If action is a quick query (e.g., '" + WHAT_IS_YOUR_DESIGNATION.getAction() + "', '" + GENERAL_CONVERSATION.getAction() + "'), set 'response_text' to '' (empty string, no initial TTS).\n" +
-                "    - Map questions about your capabilities to "+WHAT_ARE_YOUR_CAPABILITIES.getAction() +".\n" +
+                "    - If action is a quick query (e.g., '" + WHAT_ARE_YOUR_CAPABILITIES.getAction() + "', '" + GENERAL_CONVERSATION.getAction() + "'), set 'response_text' to '' (empty string, no initial TTS).\n" +
+                //"    - Map questions about your capabilities to "+WHAT_ARE_YOUR_CAPABILITIES.getAction() +".\n" +
                 "    - If action is a data query (listed in data queries section), set 'response_text' to 'Moment...' for user feedback during delay.\n" +
                 "    - For 'general_conversation', use general knowledge outside Elite Dangerous unless the input explicitly mentions the game.\n" +
                 "    - Do not generate or infer answers here; the app will handle final response via handlers.\n");
 
         sb.append("For type='chat': \n" +
-                "    - Classify as 'chat' for general conversation, lore questions, opinions, or casual talk (e.g., 'How’s it going?', 'there is nothing interesting in this system', 'time to hunt some pirates').\n" +
+                "    - Classify as 'chat' for general conversation, lore questions, opinions, or casual talk (e.g., 'How’s it going?', 'time to hunt some pirates').\n" +
                 "    - Generate a relevant conversational response in 'response_text' strictly adhering to the configured personality and cadence\n" +
                 "    - If input is ambiguous e.g does not match command or query classify as 'chat'." +
                 "    - Set 'expect_followup' to true if the response poses a question or invites further conversation; otherwise, false.\n");
@@ -267,7 +266,8 @@ public class GrokContextFactory implements AiContextFactory {
 
     private void colloquialTerms(StringBuilder sb) {
         sb.append("Map colloquial terms to commands: 'feds', 'yanks', or 'federation space' to 'FEDERATION', 'imperials', 'imps', or 'empire' to 'IMPERIAL', 'alliance space' or 'allies' to 'ALLIANCE' for set_cadence. ");
-        sb.append("Infer command intent from context: phrases like 'act like', 'talk like', 'blend in with', or 'sound like' followed by a faction should trigger '" + SET_PERSONALITY.getAction() + "' with the corresponding cadence value, using current system allegiance if ambiguous. ");
+        sb.append("Map slang such as 'bounce', 'get out of here' to commands like "+JUMP_TO_HYPERSPACE.getUserCommand()+". ");
+        //sb.append("Infer command intent from context: phrases like 'act like', 'talk like', 'blend in with', or 'sound like' followed by a faction should trigger '" + SET_PERSONALITY.getAction() + "' with the corresponding cadence value. ");
         sb.append("Examples:\n" +
                 "    - Input 'What’s the weather in Los Angeles?' -> {\"type\": \"query\", \"response_text\": \"\", \"action\": \"general_conversation\", \"params\": {}, \"expect_followup\": true}\n" +
                 "    - Input 'Is the next star scoopable?' -> {\"type\": \"query\", \"response_text\": \"Moment...\", \"action\": \"query_analyze_route\", \"params\": {}, \"expect_followup\": false}\n");

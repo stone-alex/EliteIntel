@@ -164,28 +164,18 @@ public class AppController implements AppControllerInterface, ActionListener {
             journalParser.start();
             fileMonitor.start();
 
-            brain = ApiFactory.getInstance().getCommandEndpoint();
-            brain.start();
-
             mouth = ApiFactory.getInstance().getMouthImpl();
             mouth.start();
 
             ears = ApiFactory.getInstance().getEarsImpl();
             ears.start();
 
+            brain = ApiFactory.getInstance().getCommandEndpoint();
+            brain.start();
+
             ConfigManager configManager = ConfigManager.getInstance();
             String mission_statement = configManager.getPlayerKey(ConfigManager.PLAYER_MISSION_STATEMENT);
             playerSession.setPlayerMissionStatement(mission_statement);
-
-
-            String llm = "";
-            if (brain instanceof GrokCommandEndPoint) {
-                llm = "x AI";
-            } else {
-                llm = "Open AI";
-            }
-
-            EventBusManager.publish(new AiVoxResponseEvent("Systems online... Using " + llm + "."));
 
             appendToLog(
                     systemSession.getAIVoice().getName() +

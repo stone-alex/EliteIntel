@@ -1,6 +1,7 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.intel.ai.brain.commons.BiomeAnalyzer;
 import elite.intel.ai.mouth.subscribers.events.DiscoveryAnnouncementEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.FSSBodySignalsEvent;
@@ -20,7 +21,7 @@ import static elite.intel.gameapi.journal.events.dto.LocationDto.LocationType.*;
 import static elite.intel.util.StringUtls.subtractString;
 
 @SuppressWarnings("unused")
-public class ScanEventSubscriber {
+public class ScanEventSubscriber extends BiomeAnalyzer {
 
 
     private static final Logger log = LogManager.getLogger(ScanEventSubscriber.class);
@@ -43,40 +44,42 @@ public class ScanEventSubscriber {
         String shortName = subtractString(event.getBodyName(), event.getStarSystem());
         String bodyName = event.getBodyName();
 
-        LocationDto lcoation = getOrMakeLocation(event.getBodyID());
+        LocationDto location = getOrMakeLocation(event.getBodyID());
         LocationDto.LocationType locationType = determineLocationType(event);
-        lcoation.setLocationType(locationType);
-        lcoation.setStarType(event.getStarType());
+        location.setLocationType(locationType);
+        location.setStarType(event.getStarType());
 
         if(!PRIMARY_STAR.equals(locationType)) {
-            lcoation.setX(playerSession.getCurrentLocation().getX());
-            lcoation.setY(playerSession.getCurrentLocation().getY());
-            lcoation.setZ(playerSession.getCurrentLocation().getZ());
+            location.setX(playerSession.getCurrentLocation().getX());
+            location.setY(playerSession.getCurrentLocation().getY());
+            location.setZ(playerSession.getCurrentLocation().getZ());
         }
 
 
-        lcoation.setPlanetName(event.getBodyName());
-        lcoation.setBodyId(event.getBodyID());
-        lcoation.setPlanetShortName(shortName);
+        location.setPlanetName(event.getBodyName());
+        location.setBodyId(event.getBodyID());
+        location.setPlanetShortName(shortName);
+        location.setVolcanism(event.getVolcanism());
 
 
         Double gravity = GravityCalculator.calculateSurfaceGravity(event.getMassEM(), event.getRadius());
-        if (gravity != null) lcoation.setGravity(gravity); //DO NOT use event.getSurfaceGravity() as it is not accurate
-        lcoation.setMassEM(event.getMassEM());
-        lcoation.setRadius(event.getRadius());
-        lcoation.setSurfaceTemperature(event.getSurfaceTemperature());
-        lcoation.setLandable(event.isLandable());
-        lcoation.setPlanetClass(event.getPlanetClass());
-        lcoation.setTerraformable("Terraformable".equalsIgnoreCase(event.getTerraformState()));
-        lcoation.setTidalLocked(event.isTidalLock());
-        lcoation.setAtmosphere(event.getAtmosphereType());
-        lcoation.setMaterials(toListOfMaterials(event.getMaterials()));
+        if (gravity != null) location.setGravity(gravity); //DO NOT use event.getSurfaceGravity() as it is not accurate
+        location.setMassEM(event.getMassEM());
+        location.setRadius(event.getRadius());
+        location.setSurfaceTemperature(event.getSurfaceTemperature());
+        location.setLandable(event.isLandable());
+        location.setPlanetClass(event.getPlanetClass());
+        location.setTerraformable("Terraformable".equalsIgnoreCase(event.getTerraformState()));
+        location.setTidalLocked(event.isTidalLock());
+        location.setAtmosphere(event.getAtmosphereType());
+        location.setMaterials(toListOfMaterials(event.getMaterials()));
+        location.setDistance(event.getDistanceFromArrivalLS());
 
-        List<FSSBodySignalsEvent.Signal> fssSignals = playerSession.getCurrentLocation().getFssSignals();
+        List<FSSBodySignalsEvent.Signal> fssSignals = playerSession.getLocation(event.getBodyID()).getFssSignals();
 
+        int countBioSignals = 0;
+        int countGeological = 0;
         if (fssSignals != null && !fssSignals.isEmpty()) {
-            int countBioSignals = 0;
-            int countGeological = 0;
             for (FSSBodySignalsEvent.Signal signal : fssSignals) {
                 if ("Biological".equalsIgnoreCase(signal.getTypeLocalised())) {
                     countBioSignals++;
@@ -85,10 +88,12 @@ public class ScanEventSubscriber {
                     countGeological++;
                 }
             }
-            if (lcoation.getBioSignals() < countBioSignals) {
-                lcoation.setBioSignals(countBioSignals);
+            if (location.getBioSignals() < countBioSignals) {
+                location.setBioSignals(countBioSignals);
             }
-            lcoation.setGeoSignals(countGeological);
+            if( location.getGeoSignals() < countGeological) {
+                location.setGeoSignals(countGeological);
+            }
         }
 
 
@@ -97,14 +102,19 @@ public class ScanEventSubscriber {
             for (ScanEvent.Material material : event.getMaterials()) {
                 materials.add(new MaterialDto(material.getName(), material.getPercent()));
             }
-            lcoation.setMaterials(materials);
+            location.setMaterials(materials);
         }
 
-        announceIfNewDiscovery(event, lcoation);
-        playerSession.saveLocation(lcoation);
-        playerSession.setLastScan(lcoation);
-    }
+        if (location.getBioSignals() > 0 && playerSession.isDiscoveryAnnouncementOn()) {
+            analyzeBiome(location);
+        } else {
+            announceIfNewDiscovery(event, location);
+        }
 
+        playerSession.saveLocation(location);
+        playerSession.setLastScan(location);
+
+    }
 
     private LocationDto.LocationType determineLocationType(ScanEvent event) {
         boolean isStar = event.getStarType() != null && !event.getStarType().isEmpty() || event.getSurfaceTemperature() > 1000;

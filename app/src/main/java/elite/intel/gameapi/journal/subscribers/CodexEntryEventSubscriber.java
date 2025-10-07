@@ -19,7 +19,8 @@ public class CodexEntryEventSubscriber {
         StringBuilder sb = new StringBuilder();
 
         String firstWordOfEntryName = event.getNameLocalised().split(" ")[0];
-        long projectedPayment = BioForms.getAverageProjectedPayment(capitalizeWords(firstWordOfEntryName));
+        BioForms.ProjectedPayment projectedPayment = BioForms.getAverageProjectedPayment(capitalizeWords(firstWordOfEntryName));
+
         int distance = BioForms.getDistance(capitalizeWords(firstWordOfEntryName));
         boolean alreadyHaveThisEntry = currentLocation.getCodexEntries().stream().anyMatch(entry -> entry.getNameLocalised().equals(event.getNameLocalised()));
 
@@ -45,8 +46,14 @@ public class CodexEntryEventSubscriber {
             sb.append("Voucher Amount: ");
             sb.append(event.getVoucherAmount());
             sb.append(" credits.");
-            if(projectedPayment > 0) {
+            if (projectedPayment.payment() != null) {
                 sb.append(" Projected Vista Genomics Payment: ").append(projectedPayment).append(" credits. For a complete set of three samples");
+                if (projectedPayment.firstDiscoveryBonus() != null && currentLocation.isOurDiscovery()) {
+                    sb.append(", plus about ");
+                    sb.append(projectedPayment.firstDiscoveryBonus());
+                    sb.append(" bonus for first discovery.");
+                }
+                sb.append(".");
             }
         }
 

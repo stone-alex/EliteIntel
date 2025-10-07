@@ -5,6 +5,7 @@ import com.google.cloud.speech.v1.*;
 import com.google.protobuf.ByteString;
 import elite.intel.ai.ConfigManager;
 import elite.intel.ai.ears.*;
+import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.mouth.subscribers.events.TTSInterruptEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.UserInputEvent;
@@ -137,6 +138,7 @@ public class GoogleSTTImpl implements EarsInterface {
         // Start processing thread
         this.processingThread = new Thread(this::startStreaming);
         this.processingThread.start();
+        EventBusManager.publish(new AiVoxResponseEvent("I can hear."));
     }
 
     @Override

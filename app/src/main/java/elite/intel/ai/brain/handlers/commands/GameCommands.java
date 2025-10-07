@@ -61,7 +61,8 @@ public class GameCommands {
         LANDING_GEAR_TOGGLE("landing_gear_toggle", "LandingGearToggle", GenericGameController.class),
         NIGHT_VISION("night_vision", "NightVisionToggle", GenericGameController.class),
         PAUSE("pause", "Pause", GenericGameController.class),
-        PLAYER_HUDMODE_TOGGLE("toggle_combat_or_analysis_mode", "PlayerHUDModeToggle", GenericGameController.class),
+        ACTICATE_ANALYSIS_MODE("activate_analysis_mode", "PlayerHUDModeToggle", GenericGameController.class),
+        ACTIVATE_COMBAT_MODE("activate_combat_mode", "PlayerHUDModeToggle", GenericGameController.class),
         RADAR_DECREASE_RANGE("radar_decrease_range", "RadarDecreaseRange", GenericGameController.class),
         RADAR_INCREASE_RANGE("radar_increase_range", "RadarIncreaseRange", GenericGameController.class),
         RECALL_DISMISS_SHIP("recall_dismiss_ship", "RecallDismissShip", GenericGameController.class),
@@ -93,6 +94,8 @@ public class GameCommands {
         SELECT_HIGHEST_THREAT("select_highest_threat", "SelectHighestThreat", GenericGameController.class),
         UI_ACTIVATE("ui_activate", "UI_Select", GenericGameController.class),
         WING_NAV_LOCK("lock_on_wingman", "WingNavLock", GenericGameController.class),
+        CAM_ZOOM_IN("cam_zoom_in", "CamZoomIn", GenericGameController.class),
+        CAM_ZOOM_OUT("cam_zoom_out", "CamZoomOut",GenericGameController.class),
 
 
         //excluded, but needed for bindings. used in custom handler
@@ -103,6 +106,7 @@ public class GameCommands {
         INCREASE_SYSTEMS_POWER("_", "IncreaseSystemsPower", GenericGameController.class),
         INCREASE_SHIELDS_POWER("_", "IncreaseSystemsPower", GenericGameController.class),
         INCREASE_WEAPONS_POWER("_", "IncreaseWeaponsPower", GenericGameController.class),
+
         UI_DOWN("ui_down", "UI_Down", GenericGameController.class),
         UI_LEFT("ui_left", "UI_Left", GenericGameController.class),
         UI_RIGHT("ui_right", "UI_Right", GenericGameController.class),
@@ -110,14 +114,9 @@ public class GameCommands {
         UI_SELECT("ui_select", "UI_Select", GenericGameController.class),
         UI_TOGGLE("ui_toggle", "UI_Toggle", GenericGameController.class),
         UI_UP("ui_up", "UI_Up", GenericGameController.class),
-        GALAXY_MAP("gm", "GalaxyMapOpen", OpenGalaxyMapHandler.class),
-        GALAXY_MAP_BUGGY("gm_buggy", "GalaxyMapOpen_Buggy", GenericGameController.class),
-        GALAXY_MAP_HOME("gm_home", "GalaxyMapHome", GenericGameController.class),
-        GALAXY_MAP_HUMANOID("gm_humanoid", "GalaxyMapOpen_Humanoid", GenericGameController.class),
-        SYSTEM_MAP("system_map", "SystemMapOpen", GenericGameController.class),
-        SYSTEM_MAP_HUMANOID("system_map_humanoid", "SystemMapOpen_Humanoid", GenericGameController.class),
-        CAM_ZOOM_IN("cam_zoom_in", "CamZoomIn", GenericGameController.class),
-        CAM_ZOOM_OUT("cam_zoom_out", "CamZoomOut",GenericGameController.class),
+
+        GALAXY_MAP("open_galaxy_map", "GalaxyMapOpen", OpenGalaxyMapHandler.class),
+        SYSTEM_MAP("open_system_map", "SystemMapOpen", GenericGameController.class),
 
         UP_THRUST_BUTTON("up_thrust_button", "UpThrustButton",GenericGameController.class),
         DOWN_THRUST_BUTTON("down_thrust_button", "DownThrustButton",GenericGameController.class),
@@ -171,15 +170,10 @@ public class GameCommands {
             if (GameCommand.values()[i] == GameCommand.UI_UP) continue;
             if (GameCommand.values()[i] == GameCommand.UI_TOGGLE) continue;
             if (GameCommand.values()[i] == GameCommand.GALAXY_MAP) continue;
-            if (GameCommand.values()[i] == GameCommand.GALAXY_MAP_BUGGY) continue;
-            if (GameCommand.values()[i] == GameCommand.GALAXY_MAP_HOME) continue;
-            if (GameCommand.values()[i] == GameCommand.GALAXY_MAP_HUMANOID) continue;
             if (GameCommand.values()[i] == GameCommand.SYSTEM_MAP) continue;
-            if (GameCommand.values()[i] == GameCommand.SYSTEM_MAP_HUMANOID) continue;
             if (GameCommand.values()[i] == GameCommand.EXIT_KEY) continue;
             if (GameCommand.values()[i] == GameCommand.EXPLORATION_FSSENTER) continue;
             if (GameCommand.values()[i] == GameCommand.CAM_ZOOM_IN) continue;
-            if (GameCommand.values()[i] == GameCommand.CAM_ZOOM_OUT) continue;
             if (GameCommand.values()[i] == GameCommand.UP_THRUST_BUTTON) continue;
             if (GameCommand.values()[i] == GameCommand.DOWN_THRUST_BUTTON) continue;
 

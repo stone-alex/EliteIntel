@@ -28,7 +28,7 @@ public class GrokClient {
     private static final String API_URL = "https://api.x.ai/v1/chat/completions";
 
     public static final String MODEL_GROK_4_FAST_REASONING = "grok-4-fast";
-    public static final String MODEL_GROK_4_FAST_NON_REASONING = "n";
+    public static final String MODEL_GROK_4_FAST_NON_REASONING = "grok-4-fast-non-reasoning";
 
     public static final boolean IS_STREAM = false;
 

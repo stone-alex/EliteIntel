@@ -171,3 +171,4 @@
 "the polar cargo scope"="deploy the cargo scoop"
 "by a signals"="bio signals"
 "how beneficence scan"="open fss and scan"
+"scandia"="scanned"

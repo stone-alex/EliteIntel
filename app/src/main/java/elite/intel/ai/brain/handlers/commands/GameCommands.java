@@ -92,7 +92,7 @@ public class GameCommands {
         TARGET_WINGMAN1("target_wingman1", "TargetWingman1", GenericGameController.class),
         TARGET_WINGMAN2("target_wingman2", "TargetWingman2", GenericGameController.class),
         SELECT_HIGHEST_THREAT("select_highest_threat", "SelectHighestThreat", GenericGameController.class),
-        UI_ACTIVATE("ui_activate", "UI_Select", GenericGameController.class),
+        UI_ACTIVATE("activate", "UI_Select", GenericGameController.class),
         WING_NAV_LOCK("lock_on_wingman", "WingNavLock", GenericGameController.class),
         CAM_ZOOM_IN("cam_zoom_in", "CamZoomIn", GenericGameController.class),
         CAM_ZOOM_OUT("cam_zoom_out", "CamZoomOut",GenericGameController.class),

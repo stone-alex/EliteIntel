@@ -36,7 +36,8 @@ public class ScanOrganicSubscriber {
         String genus = event.getGenusLocalised();
         String species = subtractString(event.getSpeciesLocalised(), genus);
         long starSystemNumber = event.getSystemAddress();
-        LocationDto currentLocation = playerSession.getCurrentLocation();
+        LocationDto currentLocation = playerSession.getLocation(event.getBody());
+
         boolean isOurDiscovery = currentLocation.isOurDiscovery();
 
         BioForms.ProjectedPayment paymentData = BioForms.getProjectedPayment(genus, species);
@@ -81,14 +82,14 @@ public class ScanOrganicSubscriber {
                 }
             }
 
-            BioSampleDto bioSampleDto = createBioSampleDto(genus, species, starSystemNumber);
+            BioSampleDto bioSampleDto = createBioSampleDto(genus, species, starSystemNumber, isOurDiscovery);
             bioSampleDto.setScanXof3("First of Three");
             currentLocation.addBioScan(bioSampleDto);
             announce(sb.toString());
             scanCount = 1;
 
         } else if (scan2.equalsIgnoreCase(scanType)) {
-            BioSampleDto bioSampleDto = createBioSampleDto(genus, species, starSystemNumber);
+            BioSampleDto bioSampleDto = createBioSampleDto(genus, species, starSystemNumber, isOurDiscovery);
             currentLocation.addBioScan(bioSampleDto);
             bioSampleDto.setScanXof3("Second of Three");
             if(scanCount == 1) {
@@ -103,7 +104,7 @@ public class ScanOrganicSubscriber {
             sb.append(" are complete. ");
 
             announce(sb.toString());
-            BioSampleDto bioSampleDto = createBioSampleDto(genus, species, starSystemNumber);
+            BioSampleDto bioSampleDto = createBioSampleDto(genus, species, starSystemNumber, isOurDiscovery);
             bioSampleDto.setPayout(payment);
             bioSampleDto.setFistDiscoveryBonus(firstDiscoveryBonus);
             bioSampleDto.setScanXof3("Three of Three");
@@ -157,7 +158,7 @@ public class ScanOrganicSubscriber {
     }
 
 
-    private BioSampleDto createBioSampleDto(String genus, String species, long starSystemNumber) {
+    private BioSampleDto createBioSampleDto(String genus, String species, long starSystemNumber, boolean isOurDiscovery) {
 
         BioSampleDto bioSampleDto = new BioSampleDto();
         bioSampleDto.setPlanetName(playerSession.getCurrentLocation().getPlanetName());
@@ -165,6 +166,7 @@ public class ScanOrganicSubscriber {
         bioSampleDto.setScanLongitude(status.getStatus().getLongitude());
         bioSampleDto.setGenus(genus);
         bioSampleDto.setSpecies(species);
+        bioSampleDto.setOurDiscovery(isOurDiscovery);
         bioSampleDto.setBodyId(playerSession.getCurrentLocation().getBodyId());
         bioSampleDto.setStarSystemNumber(starSystemNumber);
         bioSampleDto.setDistanceToNextSample(distanceToNextSample(genus, species));

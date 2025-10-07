@@ -173,3 +173,5 @@
 "how beneficence scan"="open fss and scan"
 "scandia"="scanned"
 "navigate to an example"="navigate to next codex entry"
+"all right hand"="all right hunk it"
+"deploy a survey"="deploy SRV"

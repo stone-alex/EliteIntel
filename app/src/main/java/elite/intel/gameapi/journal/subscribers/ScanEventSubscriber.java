@@ -74,6 +74,10 @@ public class ScanEventSubscriber extends BiomeAnalyzer {
         location.setAtmosphere(event.getAtmosphereType());
         location.setMaterials(toListOfMaterials(event.getMaterials()));
         location.setDistance(event.getDistanceFromArrivalLS());
+        location.setOurDiscovery(!event.isWasDiscovered());
+        location.setWeMappedIt(!event.isWasMapped());
+        location.setPlanetShortName(subtractString(event.getBodyName(), event.getStarSystem()));
+
 
         List<FSSBodySignalsEvent.Signal> fssSignals = playerSession.getLocation(event.getBodyID()).getFssSignals();
 
@@ -138,9 +142,6 @@ public class ScanEventSubscriber extends BiomeAnalyzer {
         boolean wasMapped = event.isWasMapped();
         String shortName = subtractString(event.getBodyName(), event.getStarSystem());
 
-        location.setOurDiscovery(!wasDiscovered);
-        location.setWeMappedIt(!wasMapped);
-        location.setPlanetShortName(shortName);
 
         boolean isStar = event.getStarType() != null && !event.getStarType().isEmpty() || event.getSurfaceTemperature() > 1000;
         boolean isPrimaryStar = event.getDistanceFromArrivalLS() == 0;

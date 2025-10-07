@@ -35,6 +35,7 @@ public class ApproachBodySubscriber {
 
         LocationDto location = playerSession.getLocation(event.getBodyID());
         location.setOrbitalCruiseEntryAltitude(orbitalCruiseEntryAltitude);
+        playerSession.setCurrentLocationId(event.getBodyID());
 
         if(playerSession.getTracking().isEnabled()) return;
 
@@ -93,15 +94,15 @@ public class ApproachBodySubscriber {
     }
 
 
-    private void extractDataFromEdsm(BodyData bodyData, LocationDto currentLocation, StringBuilder sb) {
+    private void extractDataFromEdsm(BodyData bodyData, LocationDto location, StringBuilder sb) {
         double gravity = formatDouble(bodyData.getGravity());
-        currentLocation.setGravity(gravity);
+        location.setGravity(gravity);
         sb.append(" Surface Gravity: ").append(gravity).append("G. ");
         if (gravity > 1) {
             sb.append(" Gravity Warning!!! ");
         }
         int surfaceTemperatureKelvin = bodyData.getSurfaceTemperature();
-        currentLocation.setSurfaceTemperature(surfaceTemperatureKelvin);
+        location.setSurfaceTemperature(surfaceTemperatureKelvin);
         sb.append(" Surface Temperature: ").append(surfaceTemperatureKelvin).append(" K.");
         if (bodyData.getAtmosphereType() != null && !bodyData.getAtmosphereType().isEmpty()) {
             sb.append(" Atmosphere: ").append(bodyData.getAtmosphereType());
@@ -111,9 +112,9 @@ public class ApproachBodySubscriber {
         if (!materials.isEmpty()) {
             sb.append(" ").append(materials.size()).append(" materials detected. Details available on request. ");
             for( Map.Entry<String, Double> material : materials.entrySet()) {
-                currentLocation.addMaterial(new MaterialDto(material.getKey(), material.getValue()));
+                location.addMaterial(new MaterialDto(material.getKey(), material.getValue()));
             }
         }
-        currentLocation.setPlanetData(bodyData);
+        location.setPlanetData(bodyData);
     }
 }

@@ -1,0 +1,32 @@
+package elite.intel.ai.brain.handlers.query;
+
+import com.google.gson.JsonObject;
+import elite.intel.gameapi.data.BioForms;
+import elite.intel.gameapi.journal.events.dto.LocationDto;
+import elite.intel.session.PlayerSession;
+import elite.intel.util.json.GsonFactory;
+import elite.intel.util.json.ToJsonConvertible;
+
+import java.util.Collection;
+import java.util.Map;
+
+public class PlanetBiomeAnalyzerHandler extends BaseQueryAnalyzer implements QueryHandler {
+
+    @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
+        PlayerSession playerSession = PlayerSession.getInstance();
+
+        String instructions = "Parse the genusToBiome map, where each value is formatted as 'Planet:<types>|Atmosphere:<types>|Gravity:<constraint>|Temperature:<range>|Volcanism:<types>|System:<constraints>'. Parse locations list to find planets with bioSignals present. Using the location's atmosphere, gravity, temperature, volcanism, and system details, identify genera whose biome conditions match. Return a list of matching genera, prioritizing specific matches over broad ones. Do not list planet conditions.";
+
+        Map<Long, LocationDto> locations = playerSession.getLocations();
+
+
+        return analyzeData(new DataDto(BioForms.getGenusToBiome(), locations.values(), instructions).toJson(), originalUserInput);
+    }
+
+    record DataDto(Map<String, String> genusToBiome, Collection<LocationDto> locations, String instructions) implements ToJsonConvertible {
+        @Override public String toJson() {
+            return GsonFactory.getGson().toJson(this);
+        }
+    }
+
+}

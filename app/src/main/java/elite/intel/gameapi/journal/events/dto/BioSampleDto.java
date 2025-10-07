@@ -17,6 +17,9 @@ public class BioSampleDto extends BaseJsonDto implements ToJsonConvertible {
     int planetNumber;
     long starSystemNumber;
     long payout;
+    long fistDiscoveryBonus;
+    boolean ourDiscovery;
+
     private String scanXof3;
 
     public long getBodyId() {
@@ -121,5 +124,21 @@ public class BioSampleDto extends BaseJsonDto implements ToJsonConvertible {
 
     public void setPlanetName(String planetName) {
         this.planetName = planetName;
+    }
+
+    public long getFistDiscoveryBonus() {
+        return fistDiscoveryBonus;
+    }
+
+    public void setFistDiscoveryBonus(long fistDiscoveryBonus) {
+        this.fistDiscoveryBonus = fistDiscoveryBonus;
+    }
+
+    public boolean isOurDiscovery() {
+        return ourDiscovery;
+    }
+
+    public void setOurDiscovery(boolean ourDiscovery) {
+        this.ourDiscovery = ourDiscovery;
     }
 }

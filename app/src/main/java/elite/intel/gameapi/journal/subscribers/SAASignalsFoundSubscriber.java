@@ -42,7 +42,7 @@ public class SAASignalsFoundSubscriber {
                 }
             }
 
-            if (liveSignals > 0) {
+            if (liveSignals > 0 && location.getBioSignals() != liveSignals) {
                 if(location.getBioSignals() < liveSignals) {
                     location.setBioSignals(liveSignals);
                 }

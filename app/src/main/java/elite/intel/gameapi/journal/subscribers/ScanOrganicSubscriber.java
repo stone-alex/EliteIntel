@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static elite.intel.util.NavigationUtils.calculateSurfaceDistance;
+import static elite.intel.util.StringUtls.subtractString;
 
 public class ScanOrganicSubscriber {
 
@@ -33,17 +34,17 @@ public class ScanOrganicSubscriber {
         StringBuilder sb = new StringBuilder();
         String scanType = event.getScanType();
         String genus = event.getGenusLocalised();
-        String variant = event.getVariantLocalised();
+        String species = subtractString(event.getSpeciesLocalised(), genus);
         long starSystemNumber = event.getSystemAddress();
         LocationDto currentLocation = playerSession.getCurrentLocation();
         boolean isOurDiscovery = currentLocation.isOurDiscovery();
 
-        BioForms.ProjectedPayment paymentData = BioForms.getProjectedPayment(genus, variant);
+        BioForms.ProjectedPayment paymentData = BioForms.getProjectedPayment(genus, species);
 
         long payment = paymentData == null ? 0 : paymentData.payment();
         long firstDiscoveryBonus = paymentData == null || !isOurDiscovery ? 0 : paymentData.firstDiscoveryBonus();
 
-        BioForms.BioDetails bioDetails = BioForms.getDetails(genus, variant);
+        BioForms.BioDetails bioDetails = BioForms.getDetails(genus, species);
         Integer distance = BioScanDistances.GENUS_TO_CCR.get(genus);
 
         Integer range = null;
@@ -61,7 +62,7 @@ public class ScanOrganicSubscriber {
             sb.append(" ");
             sb.append(genus);
             sb.append(" Species:");
-            sb.append(variant);
+            sb.append(species);
             sb.append(" First sample out of three required. ");
             if (range != null) {
                 sb.append(" Required Distance between samples: ");
@@ -80,14 +81,14 @@ public class ScanOrganicSubscriber {
                 }
             }
 
-            BioSampleDto bioSampleDto = createBioSampleDto(genus, variant, starSystemNumber, payment);
+            BioSampleDto bioSampleDto = createBioSampleDto(genus, species, starSystemNumber);
             bioSampleDto.setScanXof3("First of Three");
             currentLocation.addBioScan(bioSampleDto);
             announce(sb.toString());
             scanCount = 1;
 
         } else if (scan2.equalsIgnoreCase(scanType)) {
-            BioSampleDto bioSampleDto = createBioSampleDto(genus, variant,  starSystemNumber, payment);
+            BioSampleDto bioSampleDto = createBioSampleDto(genus, species, starSystemNumber);
             currentLocation.addBioScan(bioSampleDto);
             bioSampleDto.setScanXof3("Second of Three");
             if(scanCount == 1) {
@@ -102,9 +103,12 @@ public class ScanOrganicSubscriber {
             sb.append(" are complete. ");
 
             announce(sb.toString());
-            BioSampleDto bioSampleDto = createBioSampleDto(genus, variant,  starSystemNumber, payment);
+            BioSampleDto bioSampleDto = createBioSampleDto(genus, species, starSystemNumber);
+            bioSampleDto.setPayout(payment);
+            bioSampleDto.setFistDiscoveryBonus(firstDiscoveryBonus);
             bioSampleDto.setScanXof3("Three of Three");
             bioSampleDto.setBioSampleCompleted(true);
+            bioSampleDto.setOurDiscovery(currentLocation.isOurDiscovery());
             playerSession.addBioSample(bioSampleDto);
             currentLocation.deletePartialBioSamples();
             playerSession.saveLocation(currentLocation);
@@ -153,23 +157,22 @@ public class ScanOrganicSubscriber {
     }
 
 
-    private BioSampleDto createBioSampleDto(String genus, String variant, long starSystemNumber, long valueInCredits) {
+    private BioSampleDto createBioSampleDto(String genus, String species, long starSystemNumber) {
 
         BioSampleDto bioSampleDto = new BioSampleDto();
         bioSampleDto.setPlanetName(playerSession.getCurrentLocation().getPlanetName());
         bioSampleDto.setScanLatitude(status.getStatus().getLatitude());
         bioSampleDto.setScanLongitude(status.getStatus().getLongitude());
         bioSampleDto.setGenus(genus);
-        bioSampleDto.setSpecies(variant);
+        bioSampleDto.setSpecies(species);
         bioSampleDto.setBodyId(playerSession.getCurrentLocation().getBodyId());
         bioSampleDto.setStarSystemNumber(starSystemNumber);
-        bioSampleDto.setDistanceToNextSample(distanceToNextSample(genus, variant));
-        bioSampleDto.setPayout(valueInCredits);
+        bioSampleDto.setDistanceToNextSample(distanceToNextSample(genus, species));
         return bioSampleDto;
     }
 
     private double distanceToNextSample(String genus, String species){
         BioForms.BioDetails details = BioForms.getDetails(genus, species);
-        return details == null? BioScanDistances.GENUS_TO_CCR.get(genus): details.colonyRange();
+        return details == null ? BioScanDistances.GENUS_TO_CCR.get(genus): details.colonyRange();
     }
 }

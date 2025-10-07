@@ -172,3 +172,4 @@
 "by a signals"="bio signals"
 "how beneficence scan"="open fss and scan"
 "scandia"="scanned"
+"navigate to an example"="navigate to next codex entry"

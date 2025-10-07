@@ -249,23 +249,15 @@ public class BioForms {
     /**
      * Get details for a specific species within a genus.
      * @param genus The genus name (case-sensitive).
-     * @param variant The variant name (e.g., "Concha Renibus - Blue"), which may include the genus prefix and color suffix.
+     * @param species The species name (e.g., "Concha Renibus - Blue"), which may include the genus prefix and color suffix.
      * @return BioDetails or null if not found.
      */
-    public static BioDetails getDetails(String genus, String variant) {
+    public static BioDetails getDetails(String genus, String species) {
         String capitalizedGenus = capitalizeWords(genus);
         Map<String, BioDetails> speciesMap = GENUS_TO_SPECIES.get(capitalizedGenus);
         if (speciesMap == null) {
             return null;
         }
-
-        // Parse variant to extract the core species name (strip genus prefix if present, ignore color after " - ")
-        String fullVariant = variant.trim();
-        if (fullVariant.toLowerCase().startsWith(genus.toLowerCase() + " ")) {
-            fullVariant = fullVariant.substring(genus.length() + 1);
-        }
-        String species = fullVariant.split(" - ")[0].trim();
-
         return speciesMap.get(capitalizeWords(species));
     }
 
@@ -293,14 +285,14 @@ public class BioForms {
         return new ProjectedPayment(creditValue / speciesMap.size(), firstDiscovery / speciesMap.size());
     }
 
-    public static ProjectedPayment getProjectedPayment(String genus, String variant) {
+    public static ProjectedPayment getProjectedPayment(String genus, String species) {
         String capitalizedGenus = capitalizeWords(genus);
         Map<String, BioDetails> speciesMap = GENUS_TO_SPECIES.get(capitalizedGenus);
         if (speciesMap == null || speciesMap.isEmpty()) {
             return null;
         }
 
-        BioDetails bioDetails = speciesMap.get(capitalizeWords(variant));
+        BioDetails bioDetails = speciesMap.get(capitalizeWords(species));
         return bioDetails == null ? null : new ProjectedPayment(bioDetails.creditValue(), bioDetails.firstDiscoveryBonus());
     }
 

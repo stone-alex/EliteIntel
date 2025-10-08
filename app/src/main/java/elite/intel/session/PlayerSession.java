@@ -134,6 +134,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     private Boolean isNavigationAnnouncementOn = true;
     private Boolean isDiscoveryAnnouncementOn = true;
     private Boolean isRouteAnnouncementOn = true;
+    private Map<String, Boolean> genusPaymentAnnounced = new HashMap<>();
     private StationMarket targetMarketStation;
 
 
@@ -150,6 +151,13 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
             missions.putAll((Map<Long, MissionDto>) v);
         }, new TypeToken<Map<Long, MissionDto>>() {
         }.getType());
+
+        registerField("genus_payment_announcements", this::getGenusPaymentAnnounced, v -> {
+            genusPaymentAnnounced.clear();
+            genusPaymentAnnounced.putAll((Map<String, Boolean>) v);
+        }, new TypeToken<Map<String, Boolean>>() {
+        }.getType());
+
         registerField(ROUTE_MAP, this::getRoute, v -> {
             routeMap.clear();
             routeMap.putAll((Map<Integer, NavRouteDto>) v);
@@ -949,6 +957,24 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
 
     public Map<Integer, CarrierJump> getFleetCarrierRoute() {
         return fleetCarrierRoute;
+    }
+
+    public Map<String, Boolean> getGenusPaymentAnnounced() {
+        return genusPaymentAnnounced;
+    }
+
+    public void setGenusPaymentAnnounced(String genus){
+        genusPaymentAnnounced.put(genus, true);
+        save();
+    }
+
+    public void setGenusPaymentAnnounced(Map<String, Boolean> genusPaymentAnnounced) {
+        this.genusPaymentAnnounced = genusPaymentAnnounced;
+    }
+
+    public void clearGenusPaymentAnnounced() {
+        this.genusPaymentAnnounced.clear();
+        save();
     }
 
     public GalacticCoordinates getGalacticCoordinates() {

@@ -13,6 +13,9 @@ public class RouteAnnouncementsOnOffHandler implements CommandHandler {
 
     @Override public void handle(JsonObject params, String responseText) {
         JsonElement jsonElement = extractParameter(CustomCommands.ROUTE_ON_OFF.getPlaceholder(), params);
+
+        if(jsonElement == null) {return;}
+
         boolean isOn = "on".equalsIgnoreCase(jsonElement.getAsString()) || "true".equalsIgnoreCase(jsonElement.getAsString());
         PlayerSession playerSession = PlayerSession.getInstance();
         playerSession.setRouteAnnouncementOn(isOn);

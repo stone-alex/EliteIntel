@@ -175,3 +175,5 @@
 "navigate to an example"="navigate to next codex entry"
 "all right hand"="all right hunk it"
 "deploy a survey"="deploy SRV"
+"plot throughout"="plot the route"
+"the blurs out of it"="deploy SRV"

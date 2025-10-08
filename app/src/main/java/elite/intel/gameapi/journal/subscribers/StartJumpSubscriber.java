@@ -28,6 +28,7 @@ public class StartJumpSubscriber {
             sb.append(isFuelStarClause(event.getStarClass()));
             sb.append(". ");
             PlayerSession playerSession = PlayerSession.getInstance();
+            playerSession.clearGenusPaymentAnnounced();
             if(playerSession.isRouteAnnouncementOn()) {
                 EventBusManager.publish(new SensorDataEvent(sb.toString()));
             }

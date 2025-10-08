@@ -46,7 +46,9 @@ public class CodexEntryEventSubscriber {
             sb.append("Voucher Amount: ");
             sb.append(event.getVoucherAmount());
             sb.append(" credits.");
-            if (projectedPayment.payment() != null) {
+            Boolean isAnnounced = playerSession.getGenusPaymentAnnounced().get(firstWordOfEntryName);
+
+            if (projectedPayment.payment() != null && !isAnnounced) {
                 sb.append(" Projected Vista Genomics Payment: ").append(projectedPayment).append(" credits. For a complete set of three samples");
                 if (projectedPayment.firstDiscoveryBonus() != null && currentLocation.isOurDiscovery()) {
                     sb.append(", plus about ");
@@ -54,6 +56,7 @@ public class CodexEntryEventSubscriber {
                     sb.append(" bonus for first discovery.");
                 }
                 sb.append(".");
+                playerSession.setGenusPaymentAnnounced(firstWordOfEntryName);
             }
         }
 

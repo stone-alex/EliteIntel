@@ -72,6 +72,8 @@ public class ScanOrganicSubscriber {
             }
 
             if(payment > 0) {
+                Boolean isAnnounced = playerSession.getGenusPaymentAnnounced().get(genus);
+                if(isAnnounced) playerSession.setGenusPaymentAnnounced(genus);
                 sb.append("Approximate Vista Genomics payment: ");
                 sb.append(payment);
                 sb.append(" credits,");
@@ -115,6 +117,7 @@ public class ScanOrganicSubscriber {
             playerSession.saveLocation(currentLocation);
             removeCodexEntryIfMatches(event.getVariantLocalised(), -1, false);
             scanCount = 0;
+            playerSession.clearGenusPaymentAnnounced();
         }
     }
 
@@ -162,6 +165,7 @@ public class ScanOrganicSubscriber {
 
         BioSampleDto bioSampleDto = new BioSampleDto();
         bioSampleDto.setPlanetName(playerSession.getCurrentLocation().getPlanetName());
+        bioSampleDto.setPlanetShortName(playerSession.getCurrentLocation().getPlanetShortName());
         bioSampleDto.setScanLatitude(status.getStatus().getLatitude());
         bioSampleDto.setScanLongitude(status.getStatus().getLongitude());
         bioSampleDto.setGenus(genus);

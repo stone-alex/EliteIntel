@@ -37,15 +37,16 @@ public class GameCommands {
 
         EXPLORATION_FSSQUIT("exit_fss", "ExplorationFSSQuit", GenericGameController.class),
 
-        FOCUS_COMMS_PANEL("focus_comms_panel", "FocusCommsPanel", GenericGameController.class),
-        FOCUS_COMMS_PANEL_BUGGY("focus_comms_panel_buggy", "FocusCommsPanel_Buggy", GenericGameController.class),
-        FOCUS_COMMS_PANEL_HUMANOID("focus_comms_panel_humanoid", "FocusCommsPanel_Humanoid", GenericGameController.class),
-        FOCUS_LEFT_PANEL("focus_navigation_panel", "FocusLeftPanel", GenericGameController.class),
-        FOCUS_CONTACTS_PANEL("focus_contacts_panel", "FocusLeftPanel", GenericGameController.class),
-        FOCUS_INTERNAL_PANEL("focus_internal_panel", "FocusRightPanel", GenericGameController.class),
-        FOCUS_STATUS_PANEL("focus_status_panel", "FocusRightPanel", GenericGameController.class),
-        FOCUS_RADAR_PANEL("focus_radar_panel", "FocusRadarPanel", GenericGameController.class),
-        FOCUS_LOADOUT_PANEL("focus_loadout_panel", "FocusRadarPanel", GenericGameController.class),
+        //FOCUS_COMMS_PANEL_HUMANOID("display_comms_panel_humanoid", "FocusCommsPanel_Humanoid", GenericGameController.class),
+        //FOCUS_COMMS_PANEL_BUGGY("display_comms_panel_buggy", "FocusCommsPanel_Buggy", GenericGameController.class),
+
+        FOCUS_COMMS_PANEL("display_comms_panel", "FocusCommsPanel", GenericGameController.class),
+        FOCUS_LEFT_PANEL("display_navigation_panel", "FocusLeftPanel", GenericGameController.class),
+        FOCUS_CONTACTS_PANEL("display_contacts_panel", "FocusLeftPanel", GenericGameController.class),
+        FOCUS_INTERNAL_PANEL("display_internal_panel", "FocusRightPanel", GenericGameController.class),
+        FOCUS_STATUS_PANEL("display_status_panel", "FocusRightPanel", GenericGameController.class),
+        FOCUS_RADAR_PANEL("display_radar_panel", "FocusRadarPanel", GenericGameController.class),
+        FOCUS_LOADOUT_PANEL("display_loadout_panel", "FocusRadarPanel", GenericGameController.class),
 
         GALNET_AUDIO_CLEAR_QUEUE("galnet_audio_clear_queue", "GalnetAudio_ClearQueue", GenericGameController.class),
         GALNET_AUDIO_PLAY_PAUSE("galnet_audio_play_pause", "GalnetAudio_Play_Pause", GenericGameController.class),

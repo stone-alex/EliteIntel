@@ -30,10 +30,14 @@ public class ApproachBodySubscriber {
         double orbitalCruiseEntryAltitude = status.getStatus().getAltitude();
 
         StringBuilder sb = new StringBuilder();
-        sb.append("Entering orbit for ").append(event.getBody()).append(". ");
+        LocationDto location = playerSession.getLocation(event.getBodyID());
+        String planetName = location.getPlanetShortName() == null ? location.getPlanetName() : location.getPlanetShortName();
+        if(planetName.isBlank()) planetName = event.getBody();
+
+        sb.append("Entering orbit for ").append(planetName).append(". ");
+
         String currentSystem = event.getStarSystem();
 
-        LocationDto location = playerSession.getLocation(event.getBodyID());
         location.setOrbitalCruiseEntryAltitude(orbitalCruiseEntryAltitude);
         playerSession.setCurrentLocationId(event.getBodyID());
 

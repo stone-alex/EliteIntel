@@ -34,7 +34,7 @@ public class OpenAiContextFactory implements AiContextFactory {
         StringBuilder sb = new StringBuilder();
         getSessionValues(sb);
         appendBehavior(sb);
-        sb.append("Instructions: Analyze this input: ").append(sensorInput).append(". Use shortName for stellar objects. ");
+        sb.append("Instructions: Analyze this input: ").append(sensorInput).append(". Use planetShortName for stellar objects. ");
         return sb.toString();
     }
 
@@ -56,6 +56,7 @@ public class OpenAiContextFactory implements AiContextFactory {
 
     private void colloquialTerms(StringBuilder sb) {
         sb.append("Map colloquial terms to commands: 'feds', 'yanks', or 'federation space' to 'FEDERATION', 'imperials', 'imps', or 'empire' to 'IMPERIAL', 'alliance space' or 'allies' to 'ALLIANCE' for set_cadence. ");
+        sb.append("Map slang such as 'bounce', 'get out of here' to commands like "+JUMP_TO_HYPERSPACE.getUserCommand()+". ");
         sb.append("Infer command intent from context: phrases like 'act like', 'talk like', 'blend in with', or 'sound like' followed by a faction should trigger '" + SET_PERSONALITY.getAction() + "' with the corresponding cadence value, using current system allegiance if ambiguous. ");
         sb.append("Examples:\n" +
                 "    - Input 'What’s the weather in Los Angeles?' -> {\"type\": \"query\", \"response_text\": \"\", \"action\": \"general_conversation\", \"params\": {}, \"expect_followup\": true}\n" +
@@ -120,6 +121,7 @@ public class OpenAiContextFactory implements AiContextFactory {
         sb.append("Task: Analyze the provided JSON data against the user's intent: ").append(userIntent).append(". Return precise answers (e.g., yes/no for specific searches) or summaries as requested, using the configured personality and cadence in 'response_text'.\n");
         sb.append("Output JSON: {\"response_text\": \"TTS output in the configured personality and cadence\", \"details\": \"optional extra info\"}\n");
         sb.append("Data format: JSON array or object, e.g., for signals: [{\"name\": \"Fleet Carrier XYZ\", \"type\": \"Carrier\"}, {\"name\": \"Distress Signal\", \"type\": \"USS\"}]\n");
+        sb.append("Provide extremely brief and concise answers. Always use planetShortName for locations if available.");
         sb.append("Examples for ROGUE personality (brief, bold, witty, with profanity):\n" +
                 "    - Intent: 'tell me if carrier XYZ is here' Data: [{\"name\": \"Fleet Carrier XYZ\", \"type\": \"Carrier\"}] -> {\"response_text\": \"Carrier XYZ’s right here. A massive thing.\", \"details\": \"Detected in local signals.\"}\n" +
                 "    - Intent: 'summarize local signals' Data: [{\"name\": \"Fleet Carrier XYZ\", \"type\": \"Carrier\"}, {\"name\": \"Distress Signal\", \"type\": \"USS\"}] -> {\"response_text\": \"One carrier, one distress signal. Shit’s lively out here.\", \"details\": \"Carrier: XYZ, USS: Distress Signal\"}\n"
@@ -150,6 +152,7 @@ public class OpenAiContextFactory implements AiContextFactory {
         appendBehavior(sb);
         sb.append("Classify as: 'input' (data to analyze) or 'command' (trigger app action or keyboard event). ");
         sb.append("When processing a 'tool' role message, use the provided data's 'response_text' as the primary response if available, ensuring it matches the context of the query. ");
+        sb.append("Provide extremely brief and concise answers. Use planetShortName for locations when available.");
         sb.append(generateSupportedQueriesClause());
 
         sb.append("For 'general_conversation', generate a response using general knowledge outside Elite Dangerous unless the input explicitly mentions the game, lean into UNHINGED slang matching cadence for a playful vibe.");
@@ -171,11 +174,12 @@ public class OpenAiContextFactory implements AiContextFactory {
         sb.append("Apply personality: ").append(aiPersonality.name().toUpperCase()).append(" - ").append(aiPersonality.getBehaviorClause()).append(" ");
         sb.append("Do not end responses with any fillers, or unnecessary phrases like 'Ready for exploration', 'Ready for orders', 'All set', 'Ready to explore', 'Should we proceed?', or similar open-ended questions or remarks.");
         sb.append("Do not use words like 'player' or 'you', it breaks immersion. Use 'we' instead. ");
-        sb.append("For alpha numeric numbers or names, star system codes or ship plates (e.g., Syralaei RH-F, KI-U), use NATO phonetic alphabet (e.g., Syralaei Romeo Hotel dash Foxtrot, Kilo India dash Uniform). Use shortName for planets when available");
+        sb.append("For alpha numeric numbers or names, star system codes or ship plates (e.g., Syralaei RH-F, KI-U), use NATO phonetic alphabet (e.g., Syralaei Romeo Hotel dash Foxtrot, Kilo India dash Uniform). Use planetShortName for planets when available");
         sb.append("Spell out numerals in full words (e.g., 285 = two hundred and eighty-five, 27 = twenty-seven). ");
         sb.append("Gravity units in G, Temperature units Kelvin provide conversion to Celsius. Mass units metric.");
         sb.append("Distances between stars in light years. Distance between planets in light seconds. Distances between bio samples are in metres");
         sb.append("Bio samples are taken from organisms not stellar objects.");
+        sb.append("Always use planetShortName for locations when available.");
         sb.append("Round billions to nearest million. ");
         sb.append("Round millions to nearest 250000. ");
         sb.append("Start responses directly with the requested information, avoiding conversational fillers like 'noted,' 'well,' 'right,' 'understood,' or similar phrases. ");

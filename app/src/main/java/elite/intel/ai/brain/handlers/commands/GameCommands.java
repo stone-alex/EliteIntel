@@ -17,11 +17,70 @@ public class GameCommands {
      */
     public enum GameCommand {
 
+        /// ------------------------------------------------------------------------------------------------------------
+        /// mappings for custom commands
         TOGGLE_CARGO_SCOOP("", "ToggleCargoScoop", GenericGameController.class),
         TOGGLE_CARGO_SCOOP_BUGGY("", "ToggleCargoScoop_Buggy", GenericGameController.class),
+        HARDPOINTS_TOGGLE("", "DeployHardpointToggle", GenericGameController.class),
+        FOCUS_COMMS_PANEL("", "FocusCommsPanel", GenericGameController.class),
+        FOCUS_COMMS_PANEL_BUGGY("", "FocusCommsPanel_Buggy", GenericGameController.class),
+        FOCUS_CONTACTS_PANEL("", "FocusLeftPanel", GenericGameController.class),
+        FOCUS_CONTACTS_PANEL_BUGGY("", "FocusLeftPanel_Buggy", GenericGameController.class),
+        FOCUS_LEFT_PANEL("", "FocusLeftPanel", GenericGameController.class),
+        FOCUS_LEFT_PANEL_BUGGY("", "FocusLeftPanel_Buggy", GenericGameController.class),
+        FOCUS_INTERNAL_PANEL("", "FocusRightPanel", GenericGameController.class),
+        FOCUS_INTERNAL_PANEL_BUGGY("", "FocusRightPanel_Buggy", GenericGameController.class),
+        FOCUS_STATUS_PANEL("", "FocusRightPanel", GenericGameController.class),
+        FOCUS_STATUS_PANEL_BUGGY("", "FocusRightPanel_Buggy", GenericGameController.class),
+        FOCUS_RADAR_PANEL("", "FocusRadarPanel", GenericGameController.class),
+        FOCUS_RADAR_PANEL_BUGGY("", "FocusRadarPanel_Buggy", GenericGameController.class),
+        FOCUS_LOADOUT_PANEL("", "FocusRadarPanel", GenericGameController.class),
+        FOCUS_LOADOUT_PANEL_BUGGY("", "FocusRadarPanel_Buggy", GenericGameController.class),
+        EJECT_ALL_CARGO("", "EjectAllCargo", GenericGameController.class),
+        EJECT_ALL_CARGO_BUGGY("", "EjectAllCargo_Buggy", GenericGameController.class),
+        LANDING_GEAR_TOGGLE("", "LandingGearToggle", GenericGameController.class),
+        RESET_POWER_DISTRIBUTION("", "ResetPowerDistribution", GenericGameController.class),
+        RESET_POWER_DISTRIBUTION_BUGGY("", "ResetPowerDistribution_Buggy", GenericGameController.class),
 
-        CHANGE_CONSTRUCTION_OPTION("change_construction_option", "ChangeConstructionOption", GenericGameController.class),
+        INCREASE_ENGINES_POWER("", "IncreaseEnginesPower", GenericGameController.class),
+        INCREASE_SYSTEMS_POWER("", "IncreaseSystemsPower", GenericGameController.class),
+        INCREASE_SHIELDS_POWER("", "IncreaseSystemsPower", GenericGameController.class),
+        INCREASE_WEAPONS_POWER("", "IncreaseWeaponsPower", GenericGameController.class),
 
+        INCREASE_ENGINES_POWER_BUGGY("", "IncreaseEnginesPower_Buggy", GenericGameController.class),
+        INCREASE_SYSTEMS_POWER_BUGGY("", "IncreaseSystemsPower_Buggy", GenericGameController.class),
+        INCREASE_SHIELDS_POWER_BUGGY("", "IncreaseSystemsPower_Buggy", GenericGameController.class),
+        INCREASE_WEAPONS_POWER_BUGGY("", "IncreaseWeaponsPower_Buggy", GenericGameController.class),
+
+        GALAXY_MAP("", "GalaxyMapOpen", OpenGalaxyMapHandler.class),
+        GALAXY_MAP_BUGGY("", "GalaxyMapOpen_Buggy", OpenGalaxyMapHandler.class),
+
+        LOCAL_MAP("", "SystemMapOpen", GenericGameController.class),
+        LOCAL_MAP_BUGGY("", "SystemMapOpen_Buggy", GenericGameController.class),
+        EXPLORATION_FSSDISCOVERY_SCAN("", "ExplorationFSSEnter", PerformFSSScanHandler.class),
+
+        CAM_ZOOM_IN("", "CamZoomIn", GenericGameController.class),
+        CAM_ZOOM_OUT("", "CamZoomOut",GenericGameController.class),
+        EXIT_KEY("", "UI_Back", GenericGameController.class),
+        UI_DOWN("", "UI_Down", GenericGameController.class),
+        UI_LEFT("", "UI_Left", GenericGameController.class),
+        UI_RIGHT("", "UI_Right", GenericGameController.class),
+        UI_FOCUS("", "UIFocus", GenericGameController.class),
+        UI_SELECT("", "UI_Select", GenericGameController.class),
+        UI_TOGGLE("", "UI_Toggle", GenericGameController.class),
+        UI_UP("", "UI_Up", GenericGameController.class),
+
+        //TODO: convert to custom
+        ENTER_SUPERCRUISE("enter_supercruise", "Supercruise", GenericGameController.class),
+        EXIT_SUPERCRUISE("exit_supercruise", "Supercruise", GenericGameController.class),
+        JUMP_TO_HYPERSPACE("jump_to_hyperspace", "Hyperspace", GenericGameController.class),
+        NIGHT_VISION("night_vision", "NightVisionToggle", GenericGameController.class),
+        ACTICATE_ANALYSIS_MODE("activate_analysis_mode", "PlayerHUDModeToggle", GenericGameController.class),
+        ACTIVATE_COMBAT_MODE("activate_combat_mode", "PlayerHUDModeToggle", GenericGameController.class),
+
+        /// ------------------------------------------------------------------------------------------------------------
+        /// basic commands
+        UI_ACTIVATE("activate", "UI_Select", GenericGameController.class),
         CYCLE_NEXT_PAGE("cycle_next_page", "CycleNextPage", GenericGameController.class),
         CYCLE_NEXT_PANEL("cycle_next_panel", "CycleNextPanel", GenericGameController.class),
         CYCLE_NEXT_SUBSYSTEM("cycle_next_subsystem", "CycleNextSubsystem", GenericGameController.class),
@@ -29,139 +88,53 @@ public class GameCommands {
         CYCLE_PREVIOUS_PANEL("cycle_previous_panel", "CyclePreviousPanel", GenericGameController.class),
         CYCLE_PREVIOUS_SUBSYSTEM("cycle_previous_subsystem", "CyclePreviousSubsystem", GenericGameController.class),
 
-        HARDPOINTS_TOGGLE("", "DeployHardpointToggle", GenericGameController.class),
-
-
-
-
         DEPLOY_HEAT_SINK("deploy_heat_sink", "DeployHeatSink", GenericGameController.class),
         DRIVE_ASSIST("drive_assist", "ToggleDriveAssist", GenericGameController.class),
         EXIT_SETTLEMENT_PLACEMENT_CAMERA("exit_settlement_placement_camera", "ExitSettlementPlacementCamera", GenericGameController.class),
-
         EXPLORATION_FSSQUIT("exit_fss", "ExplorationFSSQuit", GenericGameController.class),
-
-        FOCUS_COMMS_PANEL("", "FocusCommsPanel", GenericGameController.class),
-        FOCUS_COMMS_PANEL_BUGGY("", "FocusCommsPanel_Buggy", GenericGameController.class),
-
-        FOCUS_CONTACTS_PANEL("", "FocusLeftPanel", GenericGameController.class),
-        FOCUS_CONTACTS_PANEL_BUGGY("", "FocusLeftPanel_Buggy", GenericGameController.class),
-
-        FOCUS_LEFT_PANEL("", "FocusLeftPanel", GenericGameController.class),
-        FOCUS_LEFT_PANEL_BUGGY("", "FocusLeftPanel_Buggy", GenericGameController.class),
-
-
-        FOCUS_INTERNAL_PANEL("", "FocusRightPanel", GenericGameController.class),
-        FOCUS_INTERNAL_PANEL_BUGGY("", "FocusRightPanel_Buggy", GenericGameController.class),
-
-
-        FOCUS_STATUS_PANEL("", "FocusRightPanel", GenericGameController.class),
-        FOCUS_STATUS_PANEL_BUGGY("", "FocusRightPanel_Buggy", GenericGameController.class),
-
-
-        FOCUS_RADAR_PANEL("", "FocusRadarPanel", GenericGameController.class),
-        FOCUS_RADAR_PANEL_BUGGY("", "FocusRadarPanel_Buggy", GenericGameController.class),
-
-        FOCUS_LOADOUT_PANEL("", "FocusRadarPanel", GenericGameController.class),
-        FOCUS_LOADOUT_PANEL_BUGGY("", "FocusRadarPanel_Buggy", GenericGameController.class),
-
-
-        EJECT_ALL_CARGO("", "EjectAllCargo", GenericGameController.class),
-        EJECT_ALL_CARGO_BUGGY("", "EjectAllCargo_Buggy", GenericGameController.class),
-
 
         GALNET_AUDIO_CLEAR_QUEUE("galnet_audio_clear_queue", "GalnetAudio_ClearQueue", GenericGameController.class),
         GALNET_AUDIO_PLAY_PAUSE("galnet_audio_play_pause", "GalnetAudio_Play_Pause", GenericGameController.class),
         GALNET_AUDIO_SKIP_BACKWARD("galnet_audio_skip_backward", "GalnetAudio_SkipBackward", GenericGameController.class),
         GALNET_AUDIO_SKIP_FORWARD("galnet_audio_skip_forward", "GalnetAudio_SkipForward", GenericGameController.class),
-        HYPER_SUPER_COMBINATION("hyper_super_combination", "HyperSuperCombination", GenericGameController.class),
-
-        ENTER_SUPERCRUISE("enter_supercruise", "Supercruise", GenericGameController.class),
-        EXIT_SUPERCRUISE("exit_supercruise", "Supercruise", GenericGameController.class),
-        JUMP_TO_HYPERSPACE("jump_to_hyperspace", "Hyperspace", GenericGameController.class),
 
         HEAD_LOOK_RESET("head_look_reset", "HeadLookReset", GenericGameController.class),
 
-        LANDING_GEAR_TOGGLE("", "LandingGearToggle", GenericGameController.class),
-
-
-        NIGHT_VISION("night_vision", "NightVisionToggle", GenericGameController.class),
-        PAUSE("pause", "Pause", GenericGameController.class),
-        ACTICATE_ANALYSIS_MODE("activate_analysis_mode", "PlayerHUDModeToggle", GenericGameController.class),
-        ACTIVATE_COMBAT_MODE("activate_combat_mode", "PlayerHUDModeToggle", GenericGameController.class),
         RADAR_DECREASE_RANGE("radar_decrease_range", "RadarDecreaseRange", GenericGameController.class),
         RADAR_INCREASE_RANGE("radar_increase_range", "RadarIncreaseRange", GenericGameController.class),
         RECALL_DISMISS_SHIP("recall_dismiss_ship", "RecallDismissShip", GenericGameController.class),
-
         REQUEST_FOCUS_TARGET("fighter_attack_my_target", "OrderFocusTarget", GenericGameController.class),
         REQUEST_HOLD_FIRE("fighter_hold_your_fire", "OrderHoldFire", GenericGameController.class),
         REQUEST_REQUEST_DOCK("fighter_recall", "OrderRequestDock", GenericGameController.class),
-
         SELECT_TARGETS_TARGET("select_wingman_target", "SelectTargetsTarget", GenericGameController.class),
         REQUEST_DEFENSIVE_BEHAVIOUR("fighter_defend_ship", "OrderDefensiveBehaviour", GenericGameController.class),
 
-        RESET_POWER_DISTRIBUTION("_", "ResetPowerDistribution", GenericGameController.class),
-        RESET_POWER_DISTRIBUTION_BUGGY("_", "ResetPowerDistribution_Buggy", GenericGameController.class),
-
         PLANETARY_APPROACH_SPEED75("planetary_approach", "SetSpeed25", GenericGameController.class),
-
         SET_SPEED25("set_speed_to_slow_throttle_25", "SetSpeed25", GenericGameController.class),
         SET_SPEED50("set_speed_to_medium_throttle_50", "SetSpeed50", GenericGameController.class),
         SET_SPEED75("set_speed_to_optimal_throttle_75", "SetSpeed75", GenericGameController.class),
         SET_OPTIMAL_SPEED("set_optimal_speed", "SetSpeed75", GenericGameController.class),
         SET_SPEED100("set_speed_to_maximum_throttle_100", "SetSpeed100", GenericGameController.class),
         SET_SPEED_ZERO("set_speed_to_zero_0", "SetSpeedZero", GenericGameController.class),
+
         AUTO_DOC1("engage_auto_cocking", "SetSpeedZero", GenericGameController.class),
         AUTO_DOC2("take_us_in", "SetSpeedZero", GenericGameController.class),
-
-
         AUTO_DOC3("engage_automatic_docking", "SetSpeedZero", GenericGameController.class),
+
+        SELECT_HIGHEST_THREAT("target_highest_threat", "SelectHighestThreat", GenericGameController.class),
+
         TARGET_NEXT_ROUTE_SYSTEM("target_next_system_in_route", "TargetNextRouteSystem", GenericGameController.class),
+
         TARGET_WINGMAN0("target_wingman0", "TargetWingman0", GenericGameController.class),
         TARGET_WINGMAN1("target_wingman1", "TargetWingman1", GenericGameController.class),
         TARGET_WINGMAN2("target_wingman2", "TargetWingman2", GenericGameController.class),
-        SELECT_HIGHEST_THREAT("select_highest_threat", "SelectHighestThreat", GenericGameController.class),
-        UI_ACTIVATE("activate", "UI_Select", GenericGameController.class),
         WING_NAV_LOCK("lock_on_wingman", "WingNavLock", GenericGameController.class),
-        CAM_ZOOM_IN("cam_zoom_in", "CamZoomIn", GenericGameController.class),
-        CAM_ZOOM_OUT("cam_zoom_out", "CamZoomOut",GenericGameController.class),
-
-
-        //excluded, but needed for bindings. used in custom handler
-        //these are special cases for excluded commands not sent to Grok, handled via a custom action,
-        EXPLORATION_FSSENTER("show_fss", "ExplorationFSSEnter", GenericGameController.class),
-        EXIT_KEY("ui_close", "UI_Back", GenericGameController.class),
-
-        INCREASE_ENGINES_POWER("_", "IncreaseEnginesPower", GenericGameController.class),
-        INCREASE_SYSTEMS_POWER("_", "IncreaseSystemsPower", GenericGameController.class),
-        INCREASE_SHIELDS_POWER("_", "IncreaseSystemsPower", GenericGameController.class),
-        INCREASE_WEAPONS_POWER("_", "IncreaseWeaponsPower", GenericGameController.class),
-
-        INCREASE_ENGINES_POWER_BUGGY("_", "IncreaseEnginesPower_Buggy", GenericGameController.class),
-        INCREASE_SYSTEMS_POWER_BUGGY("_", "IncreaseSystemsPower_Buggy", GenericGameController.class),
-        INCREASE_SHIELDS_POWER_BUGGY("_", "IncreaseSystemsPower_Buggy", GenericGameController.class),
-        INCREASE_WEAPONS_POWER_BUGGY("_", "IncreaseWeaponsPower_Buggy", GenericGameController.class),
-
-
-
-        UI_DOWN("ui_down", "UI_Down", GenericGameController.class),
-        UI_LEFT("ui_left", "UI_Left", GenericGameController.class),
-        UI_RIGHT("ui_right", "UI_Right", GenericGameController.class),
-        UIFOCUS("ui_focus", "UIFocus", GenericGameController.class),
-        UI_SELECT("ui_select", "UI_Select", GenericGameController.class),
-        UI_TOGGLE("ui_toggle", "UI_Toggle", GenericGameController.class),
-        UI_UP("ui_up", "UI_Up", GenericGameController.class),
-
-        GALAXY_MAP("", "GalaxyMapOpen", OpenGalaxyMapHandler.class),
-        GALAXY_MAP_BUGGY("", "GalaxyMapOpen_Buggy", OpenGalaxyMapHandler.class),
-
-        LOCAL_MAP("", "SystemMapOpen", GenericGameController.class),
-        LOCAL_MAP_BUGGY("", "SystemMapOpen_Buggy", GenericGameController.class),
 
         UP_THRUST_BUTTON("up_thrust_button", "UpThrustButton",GenericGameController.class),
-        DOWN_THRUST_BUTTON("down_thrust_button", "DownThrustButton",GenericGameController.class),
+        DOWN_THRUST_BUTTON("down_thrust_button", "DownThrustButton",GenericGameController.class);
 
-        EXPLORATION_FSSDISCOVERY_SCAN("_", "ExplorationFSSEnter", PerformFSSScanHandler.class);
 
+        ///
         private final String userCommand;
         private final String gameBinding;
         private final Class<? extends CommandHandler> handlerClass;
@@ -248,6 +221,8 @@ public class GameCommands {
             if (GameCommand.values()[i] == GameCommand.UI_RIGHT) continue;
             if (GameCommand.values()[i] == GameCommand.UI_UP) continue;
             if (GameCommand.values()[i] == GameCommand.UI_TOGGLE) continue;
+            if (GameCommand.values()[i] == GameCommand.UI_FOCUS) continue;
+            if (GameCommand.values()[i] == GameCommand.UI_SELECT) continue;
 
             if (GameCommand.values()[i] == GameCommand.GALAXY_MAP) continue;
             if (GameCommand.values()[i] == GameCommand.GALAXY_MAP_BUGGY) continue;
@@ -255,8 +230,8 @@ public class GameCommands {
             if (GameCommand.values()[i] == GameCommand.LOCAL_MAP_BUGGY) continue;
 
             if (GameCommand.values()[i] == GameCommand.EXIT_KEY) continue;
-            if (GameCommand.values()[i] == GameCommand.EXPLORATION_FSSENTER) continue;
             if (GameCommand.values()[i] == GameCommand.CAM_ZOOM_IN) continue;
+            if (GameCommand.values()[i] == GameCommand.CAM_ZOOM_OUT) continue;
             if (GameCommand.values()[i] == GameCommand.UP_THRUST_BUTTON) continue;
             if (GameCommand.values()[i] == GameCommand.DOWN_THRUST_BUTTON) continue;
 

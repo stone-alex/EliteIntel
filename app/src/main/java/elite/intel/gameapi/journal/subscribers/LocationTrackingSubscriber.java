@@ -365,5 +365,6 @@ public class LocationTrackingSubscriber {
     @Subscribe
     public void onInGlideEvent(InGlideEvent event){
         this.isGliding = true;
+        log.info("In glide event received.");
     }
 }

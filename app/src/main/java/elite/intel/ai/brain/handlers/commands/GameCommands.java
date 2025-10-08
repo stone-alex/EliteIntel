@@ -105,7 +105,7 @@ public class GameCommands {
         //GALNET_AUDIO_SKIP_BACKWARD("galnet_audio_skip_backward", "GalnetAudio_SkipBackward", GenericGameController.class),
         //GALNET_AUDIO_SKIP_FORWARD("galnet_audio_skip_forward", "GalnetAudio_SkipForward", GenericGameController.class),
 
-        //HEAD_LOOK_RESET("head_look_reset", "HeadLookReset", GenericGameController.class),
+        HEAD_LOOK_RESET("", "HeadLookReset", GenericGameController.class),
 
         RADAR_DECREASE_RANGE("radar_decrease_range", "RadarDecreaseRange", GenericGameController.class),
         RADAR_INCREASE_RANGE("radar_increase_range", "RadarIncreaseRange", GenericGameController.class),
@@ -255,6 +255,8 @@ public class GameCommands {
 
             if (GameCommand.values()[i] == GameCommand.ACTIVATE_COMBAT_MODE) continue;
             if (GameCommand.values()[i] == GameCommand.ACTIVATE_COMBAT_MODE_BUGGY) continue;
+
+            if (GameCommand.values()[i] == GameCommand.HEAD_LOOK_RESET) continue;
 
 
             commands[i] = GameCommand.values()[i].getUserCommand();

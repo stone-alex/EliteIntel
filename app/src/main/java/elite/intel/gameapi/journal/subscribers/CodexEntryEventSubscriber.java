@@ -20,8 +20,9 @@ public class CodexEntryEventSubscriber {
 
         String firstWordOfEntryName = event.getNameLocalised().split(" ")[0];
         BioForms.ProjectedPayment projectedPayment = BioForms.getAverageProjectedPayment(capitalizeWords(firstWordOfEntryName));
+        int bioSampleDistance = BioForms.getDistance(firstWordOfEntryName);
+        String genus = bioSampleDistance > 0 ? firstWordOfEntryName : null;
 
-        int distance = BioForms.getDistance(capitalizeWords(firstWordOfEntryName));
         boolean alreadyHaveThisEntry = currentLocation.getCodexEntries().stream().anyMatch(entry -> entry.getNameLocalised().equals(event.getNameLocalised()));
 
         if(!alreadyHaveThisEntry && event.isNewEntry()) {
@@ -35,8 +36,8 @@ public class CodexEntryEventSubscriber {
         sb.append("Name: ");
         sb.append(event.getNameLocalised());
 
-        if(distance > 0 && !alreadyHaveThisEntry) {
-            sb.append(" Distance between samples: ").append(distance).append(" meters. ");
+        if(bioSampleDistance > 0 && !alreadyHaveThisEntry) {
+            sb.append(" Distance between samples: ").append(bioSampleDistance).append(" meters. ");
         }
 
 
@@ -46,17 +47,17 @@ public class CodexEntryEventSubscriber {
             sb.append("Voucher Amount: ");
             sb.append(event.getVoucherAmount());
             sb.append(" credits.");
-            Boolean isAnnounced = playerSession.paymentHasBeenAnnounced(capitalizeWords(firstWordOfEntryName));
+            Boolean isAnnounced = playerSession.paymentHasBeenAnnounced(capitalizeWords(genus));
 
             if (projectedPayment.payment() != null && !isAnnounced) {
-                sb.append(" Projected Vista Genomics Payment: ").append(projectedPayment).append(" credits. For a complete set of three samples");
+                sb.append("Vista Genomics Payment: ").append(projectedPayment).append(" credits. For a complete set of three samples");
                 if (projectedPayment.firstDiscoveryBonus() != null && currentLocation.isOurDiscovery()) {
                     sb.append(", plus about ");
                     sb.append(projectedPayment.firstDiscoveryBonus());
                     sb.append(" bonus for first discovery.");
                 }
                 sb.append(".");
-                playerSession.setGenusPaymentAnnounced(capitalizeWords(firstWordOfEntryName));
+                playerSession.setGenusPaymentAnnounced(capitalizeWords(genus));
             }
         }
 

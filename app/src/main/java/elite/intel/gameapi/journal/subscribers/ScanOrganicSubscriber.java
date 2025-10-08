@@ -73,7 +73,7 @@ public class ScanOrganicSubscriber {
             }
 
             if (payment > 0 && !isAnnounced) {
-                sb.append("Approximate Vista Genomics payment: ");
+                sb.append("Vista Genomics payment: ");
                 sb.append(payment);
                 sb.append(" credits,");
                 if (isOurDiscovery && firstDiscoveryBonus > 0) {

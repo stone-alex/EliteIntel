@@ -14,8 +14,8 @@ public enum AiVoices {
     JAMES("James", 1.2, true),          // en-AU-Chirp3-HD-Algieba
     JENNIFER("Jennifer", 1.4, false),   // en-US-Chirp3-HD-Sulafat
     JOSEPH("Joseph", 1.2, true),        // en-US-Chirp3-HD-Sadachbia
-    KAREN("Karen", 1.2, false),         // en-GB-Chirp3-HD-Zephyr
-    MARY("Mary", 1.2, false),           // en-GB-Neural2-A
+    KAREN("Karen", 1.2, false),         // en-GB-Neural2-A <-- change me!
+    MARY("Mary", 1.3, false),           // en-US-Chirp3-HD-Zephyr
     MICHAEL("Michael", 1.2, true),      // en-US-Chirp3-HD-Charon
     OLIVIA("Olivia", 1.2, false),       // en-GB-Chirp3-HD-Aoede
     RACHEL("Rachel", 1.2, false),       // en-US-Chirp3-HD-Zephyr

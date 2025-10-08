@@ -118,7 +118,7 @@ public class SystemSession extends SessionPersistence implements java.io.Seriali
     }
 
     public AiVoices getAIVoice() {
-        return this.aiVoice == null ? AiVoices.EMMA : this.aiVoice;
+        return this.aiVoice == null ? AiVoices.MARY : this.aiVoice;
     }
 
     public void setAIVoice(AiVoices voice) {
@@ -141,7 +141,7 @@ public class SystemSession extends SessionPersistence implements java.io.Seriali
     }
 
     public AICadence getAICadence() {
-        return this.aiCadence == null ? AICadence.IMPERIAL : this.aiCadence;
+        return this.aiCadence == null ? AICadence.FEDERATION : this.aiCadence;
     }
 
     public JsonArray getChatHistory() {

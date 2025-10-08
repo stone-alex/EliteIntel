@@ -30,8 +30,8 @@ public class GoogleVoiceProvider implements VoiceProvider<VoiceSelectionParams> 
         voiceMap.put(AiVoices.JAMES.getName(), VoiceSelectionParams.newBuilder().setLanguageCode("en-AU").setName("en-AU-Chirp3-HD-Algieba").build());
         voiceMap.put(AiVoices.JENNIFER.getName(), VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Sulafat").build());
         voiceMap.put(AiVoices.JOSEPH.getName(), VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Sadachbia").build());
-        voiceMap.put(AiVoices.KAREN.getName(), VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Zephyr").build());
-        voiceMap.put(AiVoices.MARY.getName(), VoiceSelectionParams.newBuilder().setLanguageCode("en-GB").setName("en-GB-Neural2-A").build());
+        voiceMap.put(AiVoices.KAREN.getName(), VoiceSelectionParams.newBuilder().setLanguageCode("en-GB").setName("en-GB-Neural2-A").build());
+        voiceMap.put(AiVoices.MARY.getName(), VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Zephyr").build());
         voiceMap.put(AiVoices.MICHAEL.getName(), VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Charon").build());
         voiceMap.put(AiVoices.OLIVIA.getName(), VoiceSelectionParams.newBuilder().setLanguageCode("en-GB").setName("en-GB-Chirp3-HD-Aoede").build());
         voiceMap.put(AiVoices.RACHEL.getName(), VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Zephyr").build());

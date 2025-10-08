@@ -10,6 +10,7 @@ import elite.intel.gameapi.journal.events.dto.GenusDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.gameapi.journal.events.dto.MaterialDto;
 import elite.intel.session.PlayerSession;
+import elite.intel.session.Status;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -95,15 +96,22 @@ public class SAASignalsFoundSubscriber {
             }
 
             if(playerSession.isDiscoveryAnnouncementOn()) {
-                EventBusManager.publish(new SensorDataEvent(sb.toString()));
+                announce(sb.toString());
             }
         } else {
             if(playerSession.isDiscoveryAnnouncementOn()) {
-                EventBusManager.publish(new SensorDataEvent("No Signal(s) detected."));
+                announce("No Signal(s) detected.");
             }
         }
 
         playerSession.saveLocation(location);
+    }
+
+    private static void announce(String sb) {
+        Status status = Status.getInstance();
+        if (status.isInMainShip() && !status.isLanded()) {
+            EventBusManager.publish(new SensorDataEvent(sb));
+        }
     }
 
     private long findParentId(String parentBodyName) {

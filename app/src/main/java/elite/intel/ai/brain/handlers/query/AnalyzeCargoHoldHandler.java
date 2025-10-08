@@ -1,7 +1,7 @@
 package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
-import elite.intel.gameapi.gamestate.events.GameEvents;
+import elite.intel.gameapi.gamestate.dtos.GameEvents;
 import elite.intel.gameapi.journal.events.LoadoutEvent;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;

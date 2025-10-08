@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import elite.intel.ai.brain.handlers.CommandHandlerFactory;
 import elite.intel.ai.hands.GameHandler;
-import elite.intel.gameapi.gamestate.events.GameEvents;
+import elite.intel.gameapi.gamestate.dtos.GameEvents;
 import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.json.GsonFactory;
 import org.apache.logging.log4j.Logger;

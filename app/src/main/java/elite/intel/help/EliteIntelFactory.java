@@ -2,7 +2,7 @@ package elite.intel.help;
 
 import elite.intel.help.dto.AICapabilitiesDto;
 import elite.intel.ai.brain.AiRequestHints;
-import elite.intel.gameapi.gamestate.events.BaseJsonDto;
+import elite.intel.gameapi.gamestate.dtos.BaseJsonDto;
 import elite.intel.util.json.ToJsonConvertible;
 
 public class EliteIntelFactory extends BaseJsonDto implements ToJsonConvertible {

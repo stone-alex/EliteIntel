@@ -3,7 +3,7 @@ package elite.intel.gameapi.gamestate.subscribers;
 import com.google.common.eventbus.Subscribe;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
-import elite.intel.gameapi.gamestate.events.PlayerMovedEvent;
+import elite.intel.gameapi.gamestate.status_events.PlayerMovedEvent;
 import elite.intel.gameapi.journal.BioSampleDistanceCalculator;
 import elite.intel.gameapi.journal.events.dto.BioSampleDto;
 import elite.intel.session.PlayerSession;

@@ -1,7 +1,7 @@
 package elite.intel.gameapi.journal.events.dto;
 
 import com.google.gson.JsonObject;
-import elite.intel.gameapi.gamestate.events.BaseJsonDto;
+import elite.intel.gameapi.gamestate.dtos.BaseJsonDto;
 import elite.intel.gameapi.journal.events.MissionAcceptedEvent;
 import elite.intel.util.json.GsonFactory;
 

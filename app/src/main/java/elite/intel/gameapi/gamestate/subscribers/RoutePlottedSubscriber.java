@@ -1,8 +1,8 @@
 package elite.intel.gameapi.gamestate.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.intel.gameapi.gamestate.events.GameEvents;
-import elite.intel.gameapi.gamestate.events.NavRouteDto;
+import elite.intel.gameapi.gamestate.dtos.GameEvents;
+import elite.intel.gameapi.gamestate.dtos.NavRouteDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.AdjustRoute;
 

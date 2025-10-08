@@ -1,6 +1,6 @@
 package elite.intel.util.json;
 
-import elite.intel.gameapi.gamestate.events.BaseJsonDto;
+import elite.intel.gameapi.gamestate.dtos.BaseJsonDto;
 
 
 public class PrimitiveData extends BaseJsonDto implements ToJsonConvertible {

@@ -3,9 +3,7 @@ package elite.intel.gameapi.gamestate.subscribers;
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
-import elite.intel.gameapi.gamestate.events.GameEvents;
-import elite.intel.gameapi.journal.events.MissionCompletedEvent;
+import elite.intel.gameapi.gamestate.dtos.GameEvents;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.Status;
 

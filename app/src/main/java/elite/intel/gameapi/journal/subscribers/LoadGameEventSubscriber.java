@@ -2,19 +2,15 @@ package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.ConfigManager;
-import elite.intel.gameapi.gamestate.events.NavRouteDto;
+import elite.intel.gameapi.gamestate.dtos.NavRouteDto;
 import elite.intel.gameapi.journal.events.LoadGameEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.AdjustRoute;
-import elite.intel.util.DaftSecretarySanitizer;
-import org.apache.logging.log4j.core.util.NameUtil;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static elite.intel.session.PlayerSession.*;
 import static elite.intel.util.StringUtls.capitalizeWords;
 
 public class LoadGameEventSubscriber {

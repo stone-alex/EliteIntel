@@ -1,6 +1,6 @@
 package elite.intel.ai.search.spansh.market;
 
-import elite.intel.gameapi.gamestate.events.BaseJsonDto;
+import elite.intel.gameapi.gamestate.dtos.BaseJsonDto;
 import elite.intel.util.json.ToJsonConvertible;
 
 public class StationMarket extends BaseJsonDto implements ToJsonConvertible {

@@ -10,7 +10,7 @@ import elite.intel.ai.search.edsm.dto.data.DeathsStats;
 import elite.intel.ai.search.edsm.dto.data.TrafficStats;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
-import elite.intel.gameapi.gamestate.events.NavRouteDto;
+import elite.intel.gameapi.gamestate.dtos.NavRouteDto;
 import elite.intel.gameapi.journal.events.FSDJumpEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.gameapi.journal.events.dto.MaterialDto;

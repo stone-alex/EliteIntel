@@ -1,7 +1,7 @@
 package elite.intel.ai.search.edsm.dto.data;
 
 import com.google.gson.annotations.SerializedName;
-import elite.intel.gameapi.gamestate.events.BaseJsonDto;
+import elite.intel.gameapi.gamestate.dtos.BaseJsonDto;
 import elite.intel.util.json.ToJsonConvertible;
 
 import java.util.List;

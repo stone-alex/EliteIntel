@@ -3,8 +3,10 @@ package elite.intel.gameapi.gamestate.subscribers;
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.gamestate.events.GameEvents;
-import elite.intel.gameapi.gamestate.events.PlayerMovedEvent;
+import elite.intel.gameapi.gamestate.dtos.GameEvents;
+import elite.intel.gameapi.gamestate.status_events.BeingInterdictedEvent;
+import elite.intel.gameapi.gamestate.status_events.InGlideEvent;
+import elite.intel.gameapi.gamestate.status_events.PlayerMovedEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.Status;
@@ -37,5 +39,33 @@ public class StatusEventSubscriber {
         status.setStatus(event);
         status.setLastStatusChange(System.currentTimeMillis());
         EventBusManager.publish(new PlayerMovedEvent(event.getLatitude(), event.getLongitude(), event.getPlanetRadius(), event.getAltitude()));
+
+
+        /// --------------------------------------------------------------------------------------
+        //TODO: Can throw custom events. like BeingInterdictedEvent if(status.isBeingInterdicted()){ publish event...}
+
+        if (status.isGlideMode()) {
+            EventBusManager.publish(new InGlideEvent());
+        }
+
+        if (status.isBeingInterdicted()) {
+            EventBusManager.publish(new BeingInterdictedEvent());
+        }
+
+
+        /// --------------------------------------------------------------------------------------
+        /// Mission-critical alerts.
+        if(status.isLowFuel()) {
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Low fuel warning!"));
+        }
+
+        if(status.isLowOxygen()) {
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Low oxygen warning!"));
+        }
+
+        if(status.isLowHealth()){
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Low health warning!"));
+        }
+
     }
 }

@@ -1,6 +1,6 @@
 package elite.intel.util;
 
-import elite.intel.gameapi.gamestate.events.PlayerMovedEvent;
+import elite.intel.gameapi.gamestate.status_events.PlayerMovedEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

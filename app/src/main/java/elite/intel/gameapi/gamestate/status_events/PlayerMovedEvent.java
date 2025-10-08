@@ -1,4 +1,4 @@
-package elite.intel.gameapi.gamestate.events;
+package elite.intel.gameapi.gamestate.status_events;
 
 public class PlayerMovedEvent {
 

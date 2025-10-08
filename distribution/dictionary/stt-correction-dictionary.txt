@@ -177,3 +177,4 @@
 "deploy a survey"="deploy SRV"
 "plot throughout"="plot the route"
 "plans"="planets"
+"heaven"="have not"

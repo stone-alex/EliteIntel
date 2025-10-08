@@ -5,8 +5,8 @@ import com.google.gson.reflect.TypeToken;
 import elite.intel.ai.search.spansh.carrier.CarrierJump;
 import elite.intel.ai.search.spansh.market.StationMarket;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.gamestate.events.GameEvents;
-import elite.intel.gameapi.gamestate.events.NavRouteDto;
+import elite.intel.gameapi.gamestate.dtos.GameEvents;
+import elite.intel.gameapi.gamestate.dtos.NavRouteDto;
 import elite.intel.gameapi.journal.events.*;
 import elite.intel.gameapi.journal.events.dto.*;
 

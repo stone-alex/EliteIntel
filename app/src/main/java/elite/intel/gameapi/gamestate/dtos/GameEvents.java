@@ -1,4 +1,4 @@
-package elite.intel.gameapi.gamestate.events;
+package elite.intel.gameapi.gamestate.dtos;
 
 import com.google.gson.annotations.SerializedName;
 import elite.intel.util.json.GsonFactory;

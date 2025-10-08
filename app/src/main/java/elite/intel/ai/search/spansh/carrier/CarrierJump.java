@@ -1,6 +1,6 @@
 package elite.intel.ai.search.spansh.carrier;
 
-import elite.intel.gameapi.gamestate.events.BaseJsonDto;
+import elite.intel.gameapi.gamestate.dtos.BaseJsonDto;
 import elite.intel.util.json.ToJsonConvertible; /**
  * DTO for a carrier jump, extending BaseJsonDto for JSON persistence.
  */

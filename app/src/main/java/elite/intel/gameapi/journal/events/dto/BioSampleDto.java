@@ -1,6 +1,6 @@
 package elite.intel.gameapi.journal.events.dto;
 
-import elite.intel.gameapi.gamestate.events.BaseJsonDto;
+import elite.intel.gameapi.gamestate.dtos.BaseJsonDto;
 import elite.intel.util.json.ToJsonConvertible;
 
 public class BioSampleDto extends BaseJsonDto implements ToJsonConvertible {

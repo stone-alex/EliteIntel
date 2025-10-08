@@ -57,6 +57,7 @@ public class ScanOrganicSubscriber {
         }
 
         removeCodexEntryIfMatches(event.getVariantLocalised(), range, true);
+        Boolean isAnnounced = playerSession.getGenusPaymentAnnounced().get(genus);
 
         if (scan1.equals(scanType)) {
             sb.append(" Organic sample detected: Genus: ");
@@ -71,9 +72,7 @@ public class ScanOrganicSubscriber {
                 sb.append(" meters. ");
             }
 
-            if(payment > 0) {
-                Boolean isAnnounced = playerSession.getGenusPaymentAnnounced().get(genus);
-                if(isAnnounced) playerSession.setGenusPaymentAnnounced(genus);
+            if (payment > 0 && !isAnnounced) {
                 sb.append("Approximate Vista Genomics payment: ");
                 sb.append(payment);
                 sb.append(" credits,");

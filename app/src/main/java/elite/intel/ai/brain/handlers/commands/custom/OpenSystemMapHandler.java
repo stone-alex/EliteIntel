@@ -3,7 +3,7 @@ package elite.intel.ai.brain.handlers.commands.custom;
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.commands.CommandHandler;
 import elite.intel.ai.brain.handlers.commands.GameCommands;
-import elite.intel.ai.hands.GameHandler;
+import elite.intel.ai.hands.GameController;
 
 /**
  * OpenSystemMapHandler is responsible for handling the "Open System Map" game command.
@@ -22,12 +22,12 @@ import elite.intel.ai.hands.GameHandler;
  */
 public class OpenSystemMapHandler extends CustomCommandOperator implements CommandHandler {
 
-    public OpenSystemMapHandler(GameHandler commandHandler) throws Exception {
+    public OpenSystemMapHandler(GameController commandHandler) throws Exception {
         super(commandHandler.getMonitor(), commandHandler.getExecutor());
     }
 
     @Override public void handle(JsonObject params, String responseText) {
-        String openMap = GameCommands.GameCommand.SYSTEM_MAP.getGameBinding();
+        String openMap = GameCommands.GameCommand.LOCAL_MAP.getGameBinding();
         operateKeyboard(openMap, 0);
     }
 }

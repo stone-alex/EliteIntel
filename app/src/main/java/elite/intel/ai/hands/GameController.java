@@ -4,7 +4,6 @@ import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.commands.GameCommands;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
 import elite.intel.session.SystemSession;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager; 
@@ -24,8 +23,8 @@ import java.util.Set;
  * to handle gameplay-related operations. It also provides mechanisms to stop the thread
  * and clean up resources when necessary.
  */
-public class GameHandler {
-    private static final Logger log = LogManager.getLogger(GameHandler.class);
+public class GameController {
+    private static final Logger log = LogManager.getLogger(GameController.class);
     private final KeyBindingExecutor executor;
     private final BindingsMonitor monitor;
     private Thread processingThread;
@@ -34,7 +33,7 @@ public class GameHandler {
             "BuggyPrimaryFireButton", "BuggySecondaryFireButton"
     ));
 
-    public GameHandler() throws Exception {
+    public GameController() throws Exception {
         this.executor = KeyBindingExecutor.getInstance();
         this.monitor = BindingsMonitor.getInstance();
         log.info("GameCommandHandler initialized");

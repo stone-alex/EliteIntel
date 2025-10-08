@@ -2,7 +2,7 @@ package elite.intel.ai.brain.handlers.commands.custom;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.commands.CommandHandler;
-import elite.intel.ai.hands.GameHandler;
+import elite.intel.ai.hands.GameController;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 import org.apache.logging.log4j.LogManager;
@@ -12,9 +12,9 @@ public class PlotRouteToHomeHandler extends CustomCommandOperator implements Com
 
 
     private static final Logger log = LogManager.getLogger(PlotRouteToHomeHandler.class);
-    private final GameHandler commandHandler;
+    private final GameController commandHandler;
 
-    public PlotRouteToHomeHandler(GameHandler commandHandler) throws Exception {
+    public PlotRouteToHomeHandler(GameController commandHandler) throws Exception {
         super(commandHandler.getMonitor(), commandHandler.getExecutor());
         this.commandHandler = commandHandler;
     }

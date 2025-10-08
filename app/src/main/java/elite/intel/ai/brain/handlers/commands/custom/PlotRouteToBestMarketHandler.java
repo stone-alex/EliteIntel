@@ -2,7 +2,7 @@ package elite.intel.ai.brain.handlers.commands.custom;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.commands.CommandHandler;
-import elite.intel.ai.hands.GameHandler;
+import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.search.spansh.market.StationMarket;
 import elite.intel.gameapi.EventBusManager;
@@ -14,9 +14,9 @@ import java.util.List;
 public class PlotRouteToBestMarketHandler extends CustomCommandOperator implements CommandHandler {
 
 
-    private final GameHandler commandHandler;
+    private final GameController commandHandler;
 
-    public PlotRouteToBestMarketHandler(GameHandler commandHandler) {
+    public PlotRouteToBestMarketHandler(GameController commandHandler) {
         super(commandHandler.getMonitor(), commandHandler.getExecutor());
         this.commandHandler = commandHandler;
     }

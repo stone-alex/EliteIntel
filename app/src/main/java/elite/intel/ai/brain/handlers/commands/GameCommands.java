@@ -16,8 +16,10 @@ public class GameCommands {
      * This enum is used to map specific in-game actions to identifiers for processing and handling user inputs.
      */
     public enum GameCommand {
-        CARGO_SCOOP("cargo_scoop", "ToggleCargoScoop", GenericGameController.class),
-        CARGO_SCOOP_BUGGY("cargo_scoop_buggy", "ToggleCargoScoop_Buggy", GenericGameController.class),
+
+        TOGGLE_CARGO_SCOOP("", "ToggleCargoScoop", GenericGameController.class),
+        TOGGLE_CARGO_SCOOP_BUGGY("", "ToggleCargoScoop_Buggy", GenericGameController.class),
+
         CHANGE_CONSTRUCTION_OPTION("change_construction_option", "ChangeConstructionOption", GenericGameController.class),
 
         CYCLE_NEXT_PAGE("cycle_next_page", "CycleNextPage", GenericGameController.class),
@@ -27,26 +29,45 @@ public class GameCommands {
         CYCLE_PREVIOUS_PANEL("cycle_previous_panel", "CyclePreviousPanel", GenericGameController.class),
         CYCLE_PREVIOUS_SUBSYSTEM("cycle_previous_subsystem", "CyclePreviousSubsystem", GenericGameController.class),
 
-        DEPLOY_HARDPOINT_TOGGLE("weapons_hot", "DeployHardpointToggle", GenericGameController.class),
-        RETRACT_HARDPOINTS("retract_hardpoints", "DeployHardpointToggle", GenericGameController.class),
+        HARDPOINTS_TOGGLE("", "DeployHardpointToggle", GenericGameController.class),
+
+
+
+
         DEPLOY_HEAT_SINK("deploy_heat_sink", "DeployHeatSink", GenericGameController.class),
         DRIVE_ASSIST("drive_assist", "ToggleDriveAssist", GenericGameController.class),
-        EJECT_ALL_CARGO("eject_all_cargo", "EjectAllCargo", GenericGameController.class),
-        EJECT_ALL_CARGO_BUGGY("eject_all_cargo_buggy", "EjectAllCargo_Buggy", GenericGameController.class),
         EXIT_SETTLEMENT_PLACEMENT_CAMERA("exit_settlement_placement_camera", "ExitSettlementPlacementCamera", GenericGameController.class),
 
         EXPLORATION_FSSQUIT("exit_fss", "ExplorationFSSQuit", GenericGameController.class),
 
-        //FOCUS_COMMS_PANEL_HUMANOID("display_comms_panel_humanoid", "FocusCommsPanel_Humanoid", GenericGameController.class),
-        //FOCUS_COMMS_PANEL_BUGGY("display_comms_panel_buggy", "FocusCommsPanel_Buggy", GenericGameController.class),
+        FOCUS_COMMS_PANEL("", "FocusCommsPanel", GenericGameController.class),
+        FOCUS_COMMS_PANEL_BUGGY("", "FocusCommsPanel_Buggy", GenericGameController.class),
 
-        FOCUS_COMMS_PANEL("display_comms_panel", "FocusCommsPanel", GenericGameController.class),
-        FOCUS_LEFT_PANEL("display_navigation_panel", "FocusLeftPanel", GenericGameController.class),
-        FOCUS_CONTACTS_PANEL("display_contacts_panel", "FocusLeftPanel", GenericGameController.class),
-        FOCUS_INTERNAL_PANEL("display_internal_panel", "FocusRightPanel", GenericGameController.class),
-        FOCUS_STATUS_PANEL("display_status_panel", "FocusRightPanel", GenericGameController.class),
-        FOCUS_RADAR_PANEL("display_radar_panel", "FocusRadarPanel", GenericGameController.class),
-        FOCUS_LOADOUT_PANEL("display_loadout_panel", "FocusRadarPanel", GenericGameController.class),
+        FOCUS_CONTACTS_PANEL("", "FocusLeftPanel", GenericGameController.class),
+        FOCUS_CONTACTS_PANEL_BUGGY("", "FocusLeftPanel_Buggy", GenericGameController.class),
+
+        FOCUS_LEFT_PANEL("", "FocusLeftPanel", GenericGameController.class),
+        FOCUS_LEFT_PANEL_BUGGY("", "FocusLeftPanel_Buggy", GenericGameController.class),
+
+
+        FOCUS_INTERNAL_PANEL("", "FocusRightPanel", GenericGameController.class),
+        FOCUS_INTERNAL_PANEL_BUGGY("", "FocusRightPanel_Buggy", GenericGameController.class),
+
+
+        FOCUS_STATUS_PANEL("", "FocusRightPanel", GenericGameController.class),
+        FOCUS_STATUS_PANEL_BUGGY("", "FocusRightPanel_Buggy", GenericGameController.class),
+
+
+        FOCUS_RADAR_PANEL("", "FocusRadarPanel", GenericGameController.class),
+        FOCUS_RADAR_PANEL_BUGGY("", "FocusRadarPanel_Buggy", GenericGameController.class),
+
+        FOCUS_LOADOUT_PANEL("", "FocusRadarPanel", GenericGameController.class),
+        FOCUS_LOADOUT_PANEL_BUGGY("", "FocusRadarPanel_Buggy", GenericGameController.class),
+
+
+        EJECT_ALL_CARGO("", "EjectAllCargo", GenericGameController.class),
+        EJECT_ALL_CARGO_BUGGY("", "EjectAllCargo_Buggy", GenericGameController.class),
+
 
         GALNET_AUDIO_CLEAR_QUEUE("galnet_audio_clear_queue", "GalnetAudio_ClearQueue", GenericGameController.class),
         GALNET_AUDIO_PLAY_PAUSE("galnet_audio_play_pause", "GalnetAudio_Play_Pause", GenericGameController.class),
@@ -59,7 +80,10 @@ public class GameCommands {
         JUMP_TO_HYPERSPACE("jump_to_hyperspace", "Hyperspace", GenericGameController.class),
 
         HEAD_LOOK_RESET("head_look_reset", "HeadLookReset", GenericGameController.class),
-        LANDING_GEAR_TOGGLE("landing_gear_toggle", "LandingGearToggle", GenericGameController.class),
+
+        LANDING_GEAR_TOGGLE("", "LandingGearToggle", GenericGameController.class),
+
+
         NIGHT_VISION("night_vision", "NightVisionToggle", GenericGameController.class),
         PAUSE("pause", "Pause", GenericGameController.class),
         ACTICATE_ANALYSIS_MODE("activate_analysis_mode", "PlayerHUDModeToggle", GenericGameController.class),
@@ -74,7 +98,10 @@ public class GameCommands {
 
         SELECT_TARGETS_TARGET("select_wingman_target", "SelectTargetsTarget", GenericGameController.class),
         REQUEST_DEFENSIVE_BEHAVIOUR("fighter_defend_ship", "OrderDefensiveBehaviour", GenericGameController.class),
-        RESET_POWER_DISTRIBUTION("equalize_power", "ResetPowerDistribution", GenericGameController.class),
+
+        RESET_POWER_DISTRIBUTION("_", "ResetPowerDistribution", GenericGameController.class),
+        RESET_POWER_DISTRIBUTION_BUGGY("_", "ResetPowerDistribution_Buggy", GenericGameController.class),
+
         PLANETARY_APPROACH_SPEED75("planetary_approach", "SetSpeed25", GenericGameController.class),
 
         SET_SPEED25("set_speed_to_slow_throttle_25", "SetSpeed25", GenericGameController.class),
@@ -103,10 +130,18 @@ public class GameCommands {
         //these are special cases for excluded commands not sent to Grok, handled via a custom action,
         EXPLORATION_FSSENTER("show_fss", "ExplorationFSSEnter", GenericGameController.class),
         EXIT_KEY("ui_close", "UI_Back", GenericGameController.class),
+
         INCREASE_ENGINES_POWER("_", "IncreaseEnginesPower", GenericGameController.class),
         INCREASE_SYSTEMS_POWER("_", "IncreaseSystemsPower", GenericGameController.class),
         INCREASE_SHIELDS_POWER("_", "IncreaseSystemsPower", GenericGameController.class),
         INCREASE_WEAPONS_POWER("_", "IncreaseWeaponsPower", GenericGameController.class),
+
+        INCREASE_ENGINES_POWER_BUGGY("_", "IncreaseEnginesPower_Buggy", GenericGameController.class),
+        INCREASE_SYSTEMS_POWER_BUGGY("_", "IncreaseSystemsPower_Buggy", GenericGameController.class),
+        INCREASE_SHIELDS_POWER_BUGGY("_", "IncreaseSystemsPower_Buggy", GenericGameController.class),
+        INCREASE_WEAPONS_POWER_BUGGY("_", "IncreaseWeaponsPower_Buggy", GenericGameController.class),
+
+
 
         UI_DOWN("ui_down", "UI_Down", GenericGameController.class),
         UI_LEFT("ui_left", "UI_Left", GenericGameController.class),
@@ -116,8 +151,11 @@ public class GameCommands {
         UI_TOGGLE("ui_toggle", "UI_Toggle", GenericGameController.class),
         UI_UP("ui_up", "UI_Up", GenericGameController.class),
 
-        GALAXY_MAP("open_galaxy_map", "GalaxyMapOpen", OpenGalaxyMapHandler.class),
-        SYSTEM_MAP("open_system_map", "SystemMapOpen", GenericGameController.class),
+        GALAXY_MAP("", "GalaxyMapOpen", OpenGalaxyMapHandler.class),
+        GALAXY_MAP_BUGGY("", "GalaxyMapOpen_Buggy", OpenGalaxyMapHandler.class),
+
+        LOCAL_MAP("", "SystemMapOpen", GenericGameController.class),
+        LOCAL_MAP_BUGGY("", "SystemMapOpen_Buggy", GenericGameController.class),
 
         UP_THRUST_BUTTON("up_thrust_button", "UpThrustButton",GenericGameController.class),
         DOWN_THRUST_BUTTON("down_thrust_button", "DownThrustButton",GenericGameController.class),
@@ -164,14 +202,58 @@ public class GameCommands {
             if (GameCommand.values()[i] == GameCommand.INCREASE_SHIELDS_POWER) continue;
             if (GameCommand.values()[i] == GameCommand.INCREASE_SYSTEMS_POWER) continue;
             if (GameCommand.values()[i] == GameCommand.INCREASE_WEAPONS_POWER) continue;
+            if (GameCommand.values()[i] == GameCommand.RESET_POWER_DISTRIBUTION) continue;
+
+            if (GameCommand.values()[i] == GameCommand.INCREASE_ENGINES_POWER_BUGGY) continue;
+            if (GameCommand.values()[i] == GameCommand.INCREASE_SHIELDS_POWER_BUGGY) continue;
+            if (GameCommand.values()[i] == GameCommand.INCREASE_SYSTEMS_POWER_BUGGY) continue;
+            if (GameCommand.values()[i] == GameCommand.INCREASE_WEAPONS_POWER_BUGGY) continue;
+            if (GameCommand.values()[i] == GameCommand.RESET_POWER_DISTRIBUTION_BUGGY) continue;
+
+            if (GameCommand.values()[i] == GameCommand.FOCUS_COMMS_PANEL) continue;
+            if (GameCommand.values()[i] == GameCommand.FOCUS_COMMS_PANEL_BUGGY) continue;
+
+            if (GameCommand.values()[i] == GameCommand.FOCUS_CONTACTS_PANEL) continue;
+            if (GameCommand.values()[i] == GameCommand.FOCUS_CONTACTS_PANEL_BUGGY) continue;
+
+            if (GameCommand.values()[i] == GameCommand.FOCUS_LEFT_PANEL) continue;
+            if (GameCommand.values()[i] == GameCommand.FOCUS_LEFT_PANEL_BUGGY) continue;
+
+            if (GameCommand.values()[i] == GameCommand.FOCUS_INTERNAL_PANEL) continue;
+            if (GameCommand.values()[i] == GameCommand.FOCUS_INTERNAL_PANEL_BUGGY) continue;
+
+            if (GameCommand.values()[i] == GameCommand.FOCUS_STATUS_PANEL) continue;
+            if (GameCommand.values()[i] == GameCommand.FOCUS_STATUS_PANEL_BUGGY) continue;
+
+            if (GameCommand.values()[i] == GameCommand.FOCUS_RADAR_PANEL) continue;
+            if (GameCommand.values()[i] == GameCommand.FOCUS_RADAR_PANEL_BUGGY) continue;
+
+            if (GameCommand.values()[i] == GameCommand.FOCUS_LOADOUT_PANEL) continue;
+            if (GameCommand.values()[i] == GameCommand.FOCUS_LOADOUT_PANEL_BUGGY) continue;
+
+            if (GameCommand.values()[i] == GameCommand.EJECT_ALL_CARGO) continue;
+            if (GameCommand.values()[i] == GameCommand.EJECT_ALL_CARGO_BUGGY) continue;
+
+
+            if (GameCommand.values()[i] == GameCommand.TOGGLE_CARGO_SCOOP) continue;
+            if (GameCommand.values()[i] == GameCommand.TOGGLE_CARGO_SCOOP_BUGGY) continue;
+
+            if (GameCommand.values()[i] == GameCommand.HARDPOINTS_TOGGLE) continue;
+            if (GameCommand.values()[i] == GameCommand.LANDING_GEAR_TOGGLE) continue;
+
+
             if (GameCommand.values()[i] == GameCommand.EXPLORATION_FSSDISCOVERY_SCAN) continue;
             if (GameCommand.values()[i] == GameCommand.UI_DOWN) continue;
             if (GameCommand.values()[i] == GameCommand.UI_LEFT) continue;
             if (GameCommand.values()[i] == GameCommand.UI_RIGHT) continue;
             if (GameCommand.values()[i] == GameCommand.UI_UP) continue;
             if (GameCommand.values()[i] == GameCommand.UI_TOGGLE) continue;
+
             if (GameCommand.values()[i] == GameCommand.GALAXY_MAP) continue;
-            if (GameCommand.values()[i] == GameCommand.SYSTEM_MAP) continue;
+            if (GameCommand.values()[i] == GameCommand.GALAXY_MAP_BUGGY) continue;
+            if (GameCommand.values()[i] == GameCommand.LOCAL_MAP) continue;
+            if (GameCommand.values()[i] == GameCommand.LOCAL_MAP_BUGGY) continue;
+
             if (GameCommand.values()[i] == GameCommand.EXIT_KEY) continue;
             if (GameCommand.values()[i] == GameCommand.EXPLORATION_FSSENTER) continue;
             if (GameCommand.values()[i] == GameCommand.CAM_ZOOM_IN) continue;

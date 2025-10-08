@@ -178,3 +178,4 @@
 "plot throughout"="plot the route"
 "plans"="planets"
 "heaven"="have not"
+"the blue cargo scoop"="deploy the cargo scoop"

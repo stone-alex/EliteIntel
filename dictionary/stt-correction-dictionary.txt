@@ -179,3 +179,4 @@
 "the blurs out of it"="deploy SRV"
 "plans"="planets"
 "heaven"="have not"
+"the blue cargo scoop"="deploy the cargo scoop"

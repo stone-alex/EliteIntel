@@ -2,7 +2,7 @@ package elite.intel.ai.brain.handlers.commands.custom;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.commands.CommandHandler;
-import elite.intel.ai.hands.GameHandler;
+import elite.intel.ai.hands.GameController;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -27,7 +27,7 @@ public class PerformFSSScanHandler extends CustomCommandOperator implements Comm
 
     private static final Logger log = LogManager.getLogger(PerformFSSScanHandler.class);
 
-    public PerformFSSScanHandler(GameHandler commandHandler) throws Exception {
+    public PerformFSSScanHandler(GameController commandHandler) throws Exception {
         super(commandHandler.getMonitor(), commandHandler.getExecutor());
     }
 

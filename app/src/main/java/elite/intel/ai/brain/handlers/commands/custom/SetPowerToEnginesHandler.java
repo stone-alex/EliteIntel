@@ -2,9 +2,10 @@ package elite.intel.ai.brain.handlers.commands.custom;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.commands.CommandHandler;
-import elite.intel.ai.hands.GameHandler;
+import elite.intel.ai.hands.GameController;
+import elite.intel.session.Status;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager; 
 
 import static elite.intel.ai.brain.handlers.commands.GameCommands.GameCommand.*;
 
@@ -43,23 +44,46 @@ public class SetPowerToEnginesHandler extends CustomCommandOperator implements C
 
     private static final Logger log = LogManager.getLogger(SetPowerToEnginesHandler.class);
 
-    public SetPowerToEnginesHandler(GameHandler commandHandler) {
+    public SetPowerToEnginesHandler(GameController commandHandler) {
         super(commandHandler.getMonitor(), commandHandler.getExecutor());
     }
 
     @Override public void handle(JsonObject params, String responseText) {
+        Status status = Status.getInstance();
+        if (status.isInMainShip()) {
+            powerToEnginesShip();
+        }
 
-            String resetPowerDistribution = RESET_POWER_DISTRIBUTION.getGameBinding();
-            String increaseEnginePower = INCREASE_ENGINES_POWER.getGameBinding();
-            String increaseSystemPower = INCREASE_SYSTEMS_POWER.getGameBinding();
+        if (status.isInSrv()) {
+            powerToEnginesSRV();
+        }
 
-            operateKeyboard(resetPowerDistribution, 0);
-            operateKeyboard(increaseEnginePower, 0);
-            operateKeyboard(increaseSystemPower, 0);
-            operateKeyboard(increaseEnginePower, 0);
-            operateKeyboard(increaseSystemPower, 0);
-            operateKeyboard(increaseEnginePower, 0);
-            log.info("Diverting power to engines");
+    }
 
+    private void powerToEnginesSRV() {
+        String resetPowerDistribution = RESET_POWER_DISTRIBUTION_BUGGY.getGameBinding();
+        String increaseEnginePower = INCREASE_ENGINES_POWER_BUGGY.getGameBinding();
+        String increaseSystemPower = INCREASE_SYSTEMS_POWER_BUGGY.getGameBinding();
+
+        performAction(resetPowerDistribution, increaseEnginePower, increaseSystemPower);
+
+    }
+
+    private void powerToEnginesShip() {
+        String resetPowerDistribution = RESET_POWER_DISTRIBUTION.getGameBinding();
+        String increaseEnginePower = INCREASE_ENGINES_POWER.getGameBinding();
+        String increaseSystemPower = INCREASE_SYSTEMS_POWER.getGameBinding();
+
+        performAction(resetPowerDistribution, increaseEnginePower, increaseSystemPower);
+    }
+
+    private void performAction(String resetPowerDistribution, String increaseEnginePower, String increaseSystemPower) {
+        operateKeyboard(resetPowerDistribution, 0);
+        operateKeyboard(increaseEnginePower, 0);
+        operateKeyboard(increaseSystemPower, 0);
+        operateKeyboard(increaseEnginePower, 0);
+        operateKeyboard(increaseSystemPower, 0);
+        operateKeyboard(increaseEnginePower, 0);
+        log.info("Diverting power to engines");
     }
 }

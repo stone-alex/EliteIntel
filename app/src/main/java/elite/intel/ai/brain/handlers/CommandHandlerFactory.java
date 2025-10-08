@@ -4,7 +4,7 @@ import elite.intel.ai.brain.handlers.commands.CommandHandler;
 import elite.intel.ai.brain.handlers.commands.GameCommands;
 import elite.intel.ai.brain.handlers.commands.GenericGameController;
 import elite.intel.ai.brain.handlers.commands.custom.CustomCommands;
-import elite.intel.ai.hands.GameHandler;
+import elite.intel.ai.hands.GameController;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager; 
 
@@ -17,12 +17,12 @@ public class CommandHandlerFactory {
     private static final Logger log = LogManager.getLogger(CommandHandlerFactory.class);
     private final Map<String, CommandHandler> commandHandlers = new HashMap<>();
     private static CommandHandlerFactory instance;
-    private final GameHandler gameHandler;
+    private final GameController gameHandler;
 
     private CommandHandlerFactory() {
         // Private constructor for singleton
         try {
-            this.gameHandler = new GameHandler();
+            this.gameHandler = new GameController();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -35,7 +35,7 @@ public class CommandHandlerFactory {
         return instance;
     }
 
-    public GameHandler getGameCommandHandler() {
+    public GameController getGameCommandHandler() {
         return gameHandler;
     }
 
@@ -68,12 +68,12 @@ public class CommandHandlerFactory {
     private CommandHandler instantiateCommandHandler(Class<? extends CommandHandler> handlerClass, String actionOrBinding) {
         try {
             if (handlerClass == GenericGameController.class) {
-                Constructor<? extends CommandHandler> constructor = handlerClass.getDeclaredConstructor(GameHandler.class, String.class);
+                Constructor<? extends CommandHandler> constructor = handlerClass.getDeclaredConstructor(GameController.class, String.class);
                 constructor.setAccessible(true);
                 return constructor.newInstance(gameHandler, actionOrBinding);
             } else {
                 try {
-                    Constructor<? extends CommandHandler> constructor = handlerClass.getDeclaredConstructor(GameHandler.class);
+                    Constructor<? extends CommandHandler> constructor = handlerClass.getDeclaredConstructor(GameController.class);
                     constructor.setAccessible(true);
                     return constructor.newInstance(gameHandler);
                 } catch (NoSuchMethodException e) {

@@ -41,7 +41,7 @@ public class HelpGenerateBindings {
                 if (!first) {
                     sb.append(",\n");
                 }
-                sb.append(String.format("%s(\"%s\", \"%s\")",toEnumName(userCommand), userCommand, binding));
+                sb.append(String.format("%s(\"%s\", \"%s\", GenericGameController.class)",toEnumName(userCommand), userCommand, binding));
                 first = false;
             }
             

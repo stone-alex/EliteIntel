@@ -30,12 +30,36 @@ public enum CustomCommands {
     INCREASE_SHIELDS_POWER("all_power_to_shields", null, null, SetPowerToSystemsHandler.class),
     INCREASE_SYSTEMS_POWER("all_power_to_systems", null, null, SetPowerToSystemsHandler.class),
     INCREASE_WEAPONS_POWER("all_power_to_weapons", null, null, SetPowerToWeaponsHandler.class),
+    RESET_POWER("reset_power_settings", null, null, ResetPowerSettings.class),
 
     OPEN_GALAXY_MAP("open_galaxy_map", null, null, OpenGalaxyMapHandler.class),
     OPEN_SYSTEM_MAP("open_local_map", null, null, OpenSystemMapHandler.class),
     CLOSE_ANY_MAP("close_map", null, null, ExitToHud.class),
     EXIT_TO_HUD("display_hud", null, null, ExitToHud.class),
 
+    DISPLAY_COMMS_PANEL("display_comms_panel", null, null, DisplayCommsPanelHandler.class),
+    DISPLAY_CONTACTS_PANEL("display_contacts", null, null, DisplayContactsPanelHandler.class),
+    DISPLAY_LEFT_PANEL("display_navigation_panel", null, null, DisplayNavigationPanelHandler.class),
+    DISPLAY_INTERNAL_PANEL("display_internal_panel", null, null, DisplayInternalPanelHandler.class),
+    DISPLAY_STATUS_PANEL("display_status_panel", null, null, DisplayStatusPanelHandler.class),
+    DISPLAY_RADAR_PANEL("display_radar_panel", null, null, DisplayRadarPanelHandler.class),
+    DISPLAY_LOADOUT_PANEL("display_loadout_panel", null, null, DisplayLoadoutPanelHandler.class),
+
+    /// might not be a good idea..!
+    EJECT_ALL_CARGO("eject_all_cargo", null, null, EjectAllCargoHandler.class),
+
+    GALAXY_MAP("open_galaxy_star_map", null, null, OpenGalaxyMapHandler.class),
+    LOCAL_MAP("open_local_map", null, null, OpenLocalMapHandler.class),
+
+    OPEN_CARGO_SCOOP("open_cargo_scoop", null, null, OpenCargoScoopHandler.class),
+    CLOSE_CARGO_SCOOP("close_cargo_scoop", null, null, CloseCargoScoopHandler.class),
+
+    RETRACT_HARDPOINTS("retract_hardpoints", null, null, RetractHardpointsHandler.class),
+    DEPLOY_HARDPOINTS("deploy_hardpoints", null, null, DeployHardpointsHandler.class),
+    WEAPONS_HOT("weapons_hot", null, null, DeployHardpointsHandler.class),
+
+    DEPLOY_LANDING_GEAR("deploy_landing_gear", null, null, DeployLandingGearHandler.class),
+    RETRACT_LANDING_GEAR("retract_landing_gear", null, null, RetractLandingGearHandler.class),
 
     PLOT_ROUTE_TO_CARRIER("plot_route_to_fleet_carrier", null, null, PlotRouteToMyFleetCarrier.class),
     PLOT_ROUTE_TO_BEST_MARKET("plot_route_to_best_market", null, null, PlotRouteToBestMarketHandler.class),

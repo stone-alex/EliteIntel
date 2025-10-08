@@ -3,11 +3,11 @@ package elite.intel.ai.brain.handlers.commands.custom;
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.commands.CommandHandler;
 import elite.intel.ai.brain.handlers.commands.GameCommands;
-import elite.intel.ai.hands.GameHandler;
+import elite.intel.ai.hands.GameController;
 
 public class DeploySrvHandler extends CustomCommandOperator implements CommandHandler {
 
-    public DeploySrvHandler(GameHandler handler) {
+    public DeploySrvHandler(GameController handler) {
         super(handler.getMonitor(), handler.getExecutor());
     }
 

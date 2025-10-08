@@ -1,6 +1,6 @@
 package elite.intel.ai.brain.handlers.commands.custom;
 
-import elite.intel.ai.hands.GameHandler;
+import elite.intel.ai.hands.GameController;
 import elite.intel.ai.hands.KeyProcessor;
 import elite.intel.util.AudioPlayer;
 
@@ -9,7 +9,7 @@ import static elite.intel.ai.brain.handlers.commands.GameCommands.GameCommand.*;
 public class RoutePlotter extends CustomCommandOperator {
 
 
-    public RoutePlotter(GameHandler commandHandler) {
+    public RoutePlotter(GameController commandHandler) {
         super(commandHandler.getMonitor(), commandHandler.getExecutor());
     }
 

@@ -2,8 +2,11 @@ package elite.intel.ai.brain.handlers.commands.custom;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.commands.CommandHandler;
-import elite.intel.ai.brain.handlers.commands.GameCommands;
-import elite.intel.ai.hands.GameHandler;
+import elite.intel.ai.hands.GameController;
+import elite.intel.session.Status;
+
+import static elite.intel.ai.brain.handlers.commands.GameCommands.GameCommand.GALAXY_MAP;
+import static elite.intel.ai.brain.handlers.commands.GameCommands.GameCommand.GALAXY_MAP_BUGGY;
 
 /**
  * The OpenGalaxyMapHandler class is responsible for handling commands related to opening
@@ -32,12 +35,19 @@ import elite.intel.ai.hands.GameHandler;
  */
 public class OpenGalaxyMapHandler extends CustomCommandOperator implements CommandHandler {
 
-    public OpenGalaxyMapHandler(GameHandler commandHandler) throws Exception {
+    public OpenGalaxyMapHandler(GameController commandHandler) throws Exception {
         super(commandHandler.getMonitor(), commandHandler.getExecutor());
     }
 
     @Override public void handle(JsonObject params, String responseText) {
-            String openGalaxyMap = GameCommands.GameCommand.GALAXY_MAP.getGameBinding();
-            operateKeyboard(openGalaxyMap, 0);
+
+        Status status = Status.getInstance();
+        if (status.isInMainShip()) {
+            operateKeyboard(GALAXY_MAP.getGameBinding(), 0);
+        }
+
+        if (status.isInSrv()) {
+            operateKeyboard(GALAXY_MAP_BUGGY.getGameBinding(), 0);
+        }
     }
 }

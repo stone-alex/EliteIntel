@@ -3,12 +3,12 @@ package elite.intel.ai.brain.handlers.commands.custom;
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.commands.CommandHandler;
 import elite.intel.ai.brain.handlers.commands.GameCommands;
-import elite.intel.ai.hands.GameHandler;
+import elite.intel.ai.hands.GameController;
 
 public class DisplayFssAndScanHandler extends CustomCommandOperator implements CommandHandler {
 
 
-    public DisplayFssAndScanHandler(GameHandler commandHandler) {
+    public DisplayFssAndScanHandler(GameController commandHandler) {
         super(commandHandler.getMonitor(), commandHandler.getExecutor());
     }
 

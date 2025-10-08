@@ -2,19 +2,18 @@ package elite.intel.ai.brain.handlers.commands.custom;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.commands.CommandHandler;
-import elite.intel.ai.hands.GameHandler;
+import elite.intel.ai.hands.GameController;
 import elite.intel.ai.hands.KeyProcessor;
 import elite.intel.ai.search.spansh.carrier.CarrierJump;
 import elite.intel.session.PlayerSession;
 
 import java.util.Collections;
 import java.util.Map;
-import java.util.Optional;
 
 public class EnterNextCarrierDestinationHandler extends CustomCommandOperator implements CommandHandler {
 
 
-    public EnterNextCarrierDestinationHandler(GameHandler commandHandler) {
+    public EnterNextCarrierDestinationHandler(GameController commandHandler) {
         super(commandHandler.getMonitor(), commandHandler.getExecutor());
     }
 

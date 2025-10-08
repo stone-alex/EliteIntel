@@ -1,10 +1,9 @@
 package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.hands.GameHandler;
+import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager; 
 
@@ -26,10 +25,10 @@ import org.apache.logging.log4j.LogManager;
  */
 public class GenericGameController implements CommandHandler {
     private static final Logger log = LogManager.getLogger(GenericGameController.class);
-    private final GameHandler gameHandler;
+    private final GameController gameHandler;
     private final String gameBinding;
 
-    public GenericGameController(GameHandler gameHandler, String gameBinding) {
+    public GenericGameController(GameController gameHandler, String gameBinding) {
         this.gameHandler = gameHandler;
         this.gameBinding = gameBinding;
     }

@@ -2,7 +2,8 @@ package elite.intel.ai.brain.handlers.commands.custom;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.commands.CommandHandler;
-import elite.intel.ai.hands.GameHandler;
+import elite.intel.ai.hands.GameController;
+import elite.intel.session.Status;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,24 +23,47 @@ public class SetPowerToSystemsHandler extends CustomCommandOperator implements C
     private static final Logger log = LogManager.getLogger(SetPowerToSystemsHandler.class);
 
 
-    public SetPowerToSystemsHandler(GameHandler commandHandler) throws Exception {
+    public SetPowerToSystemsHandler(GameController commandHandler) throws Exception {
         super(commandHandler.getMonitor(), commandHandler.getExecutor());
     }
 
     @Override public void handle(JsonObject params, String responseText) {
+        Status status = Status.getInstance();
 
+        if (status.isInMainShip()) {
+            powerToSystemsShip();
+        }
+
+        if (status.isInSrv()) {
+            powerToSystemsSRV();
+        }
+
+    }
+
+    private void powerToSystemsSRV() {
+        String resetPowerDistribution = RESET_POWER_DISTRIBUTION_BUGGY.getGameBinding();
+        String increaseSystemsPower = INCREASE_SYSTEMS_POWER_BUGGY.getGameBinding();
+        String increaseEnginesPower = INCREASE_ENGINES_POWER_BUGGY.getGameBinding();
+
+        performOperation(resetPowerDistribution, increaseSystemsPower, increaseEnginesPower);
+    }
+
+    private void powerToSystemsShip() {
         String resetPowerDistribution = RESET_POWER_DISTRIBUTION.getGameBinding();
-            String increaseSystemsPower = INCREASE_SYSTEMS_POWER.getGameBinding();
-            String increaseEnginesPower = INCREASE_ENGINES_POWER.getGameBinding();
+        String increaseSystemsPower = INCREASE_SYSTEMS_POWER.getGameBinding();
+        String increaseEnginesPower = INCREASE_ENGINES_POWER.getGameBinding();
 
-            operateKeyboard(resetPowerDistribution, 0);
-            operateKeyboard(increaseSystemsPower, 0);
-            operateKeyboard(increaseEnginesPower, 0);
-            operateKeyboard(increaseSystemsPower, 0);
-            operateKeyboard(increaseEnginesPower, 0);
-            operateKeyboard(increaseSystemsPower, 0);
+        performOperation(resetPowerDistribution, increaseSystemsPower, increaseEnginesPower);
+    }
 
-            log.info("Power distribution complete");
+    private void performOperation(String resetPowerDistribution, String increaseSystemsPower, String increaseEnginesPower) {
+        operateKeyboard(resetPowerDistribution, 0);
+        operateKeyboard(increaseSystemsPower, 0);
+        operateKeyboard(increaseEnginesPower, 0);
+        operateKeyboard(increaseSystemsPower, 0);
+        operateKeyboard(increaseEnginesPower, 0);
+        operateKeyboard(increaseSystemsPower, 0);
 
+        log.info("Power distribution complete");
     }
 }

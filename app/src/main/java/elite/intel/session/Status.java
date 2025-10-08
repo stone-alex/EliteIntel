@@ -204,15 +204,15 @@ public class Status extends StatusFlags implements java.io.Serializable {
     }
 
     public boolean isDocked() {
-        return isDocked(getStatus().getFlags2());
+        return isDocked(getStatus().getFlags());
     }
 
     public boolean isLanded() {
-        return isLanded(getStatus().getFlags2());
+        return isLanded(getStatus().getFlags());
     }
 
     public boolean isLandingGearDown() {
-        return isLandingGearDown(getStatus().getFlags2());
+        return isLandingGearDown(getStatus().getFlags());
     }
 
     public boolean isShieldsUp() {

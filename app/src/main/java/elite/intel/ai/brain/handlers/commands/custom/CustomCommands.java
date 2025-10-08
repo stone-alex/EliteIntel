@@ -61,9 +61,14 @@ public enum CustomCommands {
     DEPLOY_LANDING_GEAR("deploy_landing_gear", null, null, DeployLandingGearHandler.class),
     RETRACT_LANDING_GEAR("retract_landing_gear", null, null, RetractLandingGearHandler.class),
 
-    JUMP_TO_HYPERSPACE("jump_to_hyperspace", null, null, EnterFtlHandler.class),
+    //Hyperspace - direct. will fail if target is obscured.
+    JUMP_TO_HYPERSPACE("jump_to_hyperspace", null, null, JumpToHyperspaceHandler.class),
+
+    //smarter commands, automatically determine supercruise or ftl.
     GET_OUT_OF_HERE("lets_get_out_of_here", null, null, EnterFtlHandler.class),
+    LETS_GO("lets_go", null, null, EnterFtlHandler.class),
     ENTER_SUPER_CRUISE("enter_super_cruise", null, null, EnterFtlHandler.class),
+    //exit supercruise.
     EXIT_SUPER_CRUISE("exit_super_cruise", null, null, ExitFtlHandler.class),
 
     ACTIVATE_ANALYSIS_MODE("activate_hud_analysis_mode", null, null, ActivateAnalysisModeHandler.class),

@@ -176,7 +176,7 @@ public class Status extends StatusFlags implements java.io.Serializable {
     }
 
     public boolean isGlideMode() {
-        return isGlideModeF2(getStatus().getFlags2());
+        return isGlideModeF2(getStatus().getFlags());
     }
 
     public boolean isVeryHot() {
@@ -220,7 +220,7 @@ public class Status extends StatusFlags implements java.io.Serializable {
     }
 
     public boolean isInSupercruise() {
-        return isInSupercruise(getStatus().getFlags2());
+        return isInSupercruise(getStatus().getFlags());
     }
 
     public boolean isFlightAssistOff() {

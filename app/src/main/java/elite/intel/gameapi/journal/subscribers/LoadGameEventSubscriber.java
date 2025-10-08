@@ -40,7 +40,7 @@ public class LoadGameEventSubscriber {
         if (!roueSet) {return;}
         if (currentLocation == null) {return;}
 
-        Map<Integer, NavRouteDto> adjustedRoute = AdjustRoute.adjustRoute(orderedRoute);
+        Map<Integer, NavRouteDto> adjustedRoute = AdjustRoute.adjustRoute(orderedRoute, currentLocation.getStarName());
         playerSession.setNavRoute(adjustedRoute);
     }
 

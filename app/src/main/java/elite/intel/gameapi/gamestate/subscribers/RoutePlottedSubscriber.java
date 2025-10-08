@@ -45,7 +45,7 @@ public class RoutePlottedSubscriber {
                 if(playerSession.getCurrentLocation() != null) {
                     List<NavRouteDto> orderedRoute = new ArrayList<>(routeMap.values());
                     orderedRoute.sort(Comparator.comparingInt(NavRouteDto::getLeg));
-                    Map<Integer, NavRouteDto> adjustedRoute = AdjustRoute.adjustRoute(orderedRoute);
+                    Map<Integer, NavRouteDto> adjustedRoute = AdjustRoute.adjustRoute(orderedRoute, playerSession.getCurrentLocation().getStarName());
                     playerSession.setNavRoute(adjustedRoute);
                 }
             } else {

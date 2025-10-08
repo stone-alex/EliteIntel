@@ -35,6 +35,6 @@ public class DeathsData {
 */
 
     public DeathsStats getDeaths() {
-        return deaths;
+        return deaths == null ? new DeathsStats() : deaths;
     }
 }

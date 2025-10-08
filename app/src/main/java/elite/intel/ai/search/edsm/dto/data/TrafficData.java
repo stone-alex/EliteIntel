@@ -45,7 +45,7 @@ public class TrafficData {
     }
 
     public TrafficStats getTraffic() {
-        return traffic;
+        return traffic == null ? new TrafficStats() : traffic;
     }
 
     public Map<String, Integer> getBreakdown() {

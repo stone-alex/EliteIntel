@@ -180,3 +180,4 @@
 "plans"="planets"
 "heaven"="have not"
 "the blue cargo scoop"="deploy the cargo scoop"
+"open offices"="open fss"

@@ -334,7 +334,6 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
 
     public void setNavRoute(Map<Integer, NavRouteDto> routeMap) {
         this.routeMap.clear();
-        save();
         this.routeMap.putAll(routeMap);
         save();
     }

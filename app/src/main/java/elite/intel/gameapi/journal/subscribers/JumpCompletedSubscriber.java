@@ -42,7 +42,6 @@ public class JumpCompletedSubscriber {
         }
 
         LocationDto locationDto = locationHistory.getLocations().get(event.getBodyId());
-
         LocationDto primaryStar =  locationDto == null ? new LocationDto(event.getBodyId()) : locationDto;
         primaryStar.setBodyId(event.getBodyId());
         primaryStar.setStationGovernment(event.getSystemGovernmentLocalised());
@@ -58,6 +57,7 @@ public class JumpCompletedSubscriber {
         primaryStar.setPowerplayStateControlProgress(event.getPowerplayStateControlProgress());
         primaryStar.setPowerplayStateReinforcement(event.getPowerplayStateReinforcement());
         primaryStar.setPowerplayStateUndermining(event.getPowerplayStateUndermining());
+        playerSession.setCurrentLocationId(primaryStar.getBodyId());
 
 
         String finalDestination = playerSession.getFinalDestination();
@@ -83,7 +83,7 @@ public class JumpCompletedSubscriber {
             primaryStar.setTrafficDto(trafficDto);
             primaryStar.setDeathsDto(deathsDto);
         } else if (roueSet) {
-            Map<Integer, NavRouteDto> adjustedRoute = AdjustRoute.adjustRoute(orderedRoute);
+            Map<Integer, NavRouteDto> adjustedRoute = AdjustRoute.adjustRoute(orderedRoute, event.getStarSystem());
             playerSession.setNavRoute(adjustedRoute);
             int remainingJump = adjustedRoute.size();
             if (remainingJump > 0) {

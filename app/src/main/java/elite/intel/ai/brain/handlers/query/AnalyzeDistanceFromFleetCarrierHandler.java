@@ -5,6 +5,7 @@ import elite.intel.gameapi.journal.events.LoadoutEvent;
 import elite.intel.gameapi.journal.events.dto.CarrierDataDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
+import elite.intel.util.NavigationUtils;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 
@@ -47,15 +48,12 @@ public class AnalyzeDistanceFromFleetCarrierHandler extends BaseQueryAnalyzer im
             return analyzeData(toJson("Current location coordinates are not available."), originalUserInput);
         }
 
-        String instruction = " Use galactic coordinates to calculate distance from our location to the carrier. Distance is in Light Years. If jump range is > 0 also calculate number of jumps required to reach the carrier as distance divided by jump range.";
+        double distance = NavigationUtils.calculateGalacticDistance(x, y, z, carrier_location_x, carrier_location_y, carrier_location_z);
+
+        String instruction = "Distance is in Light Years. If jump range is > 0 also calculate number of jumps required to reach the carrier as distance divided by jump range. Jump range is in light years.";
         return analyzeData(
                 new DataDto(
-                        carrier_location_x,
-                        carrier_location_y,
-                        carrier_location_z,
-                        x,
-                        y,
-                        z,
+                        distance,
                         jumpRange,
                         carrierLocation,
                         instruction
@@ -64,7 +62,7 @@ public class AnalyzeDistanceFromFleetCarrierHandler extends BaseQueryAnalyzer im
         );
     }
 
-    record DataDto(double carrier_location_x, double carrier_location_y, double carrier_location_z, double our_location_x, double our_location_y, double our_location_z, float jumpRange, String fleetCarrierIsLocatedAt, String instruction) implements ToJsonConvertible {
+    record DataDto(double distance, float jumpRange, String fleetCarrierIsLocatedAt, String instruction) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }

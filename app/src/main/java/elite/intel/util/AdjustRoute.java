@@ -12,17 +12,14 @@ import java.util.Map;
 
 public class AdjustRoute {
 
-    public static Map<Integer, NavRouteDto> adjustRoute(List<NavRouteDto> orderedRoute) {
-        PlayerSession playerSession = PlayerSession.getInstance();
-        LocationDto currentLocation = playerSession.getCurrentLocation();
-
-        if (currentLocation == null) {
+    public static Map<Integer, NavRouteDto> adjustRoute(List<NavRouteDto> orderedRoute, String starSystem) {
+        if (starSystem == null) {
             return convertToMap(orderedRoute);
         }
 
         // check if our current location is in the route
         NavRouteDto currentLocationInRoute = orderedRoute.stream()
-                .filter(dto -> dto.getName().equalsIgnoreCase(currentLocation.getStarName()))
+                .filter(dto -> dto.getName().equalsIgnoreCase(starSystem))
                 .findFirst()
                 .orElse(null);
 

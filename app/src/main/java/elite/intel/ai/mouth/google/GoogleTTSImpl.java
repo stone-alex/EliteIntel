@@ -76,7 +76,7 @@ public class GoogleTTSImpl implements MouthInterface {
         processingThread = new Thread(this::processVoiceQueue, "VoiceGeneratorThread");
         processingThread.start();
         log.info("VoiceGenerator started");
-        EventBusManager.publish(new AiVoxResponseEvent("I can speak."));
+        EventBusManager.publish(new AiVoxResponseEvent("Speech enabled."));
     }
 
     @Override

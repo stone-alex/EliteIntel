@@ -243,7 +243,7 @@ public class Status extends StatusFlags implements java.io.Serializable {
         return isLowFuel(getStatus().getFlags());
     }
 
-    public boolean isisOverheating() {
+    public boolean isOverheating() {
         return isOverheating(getStatus().getFlags());
     }
 

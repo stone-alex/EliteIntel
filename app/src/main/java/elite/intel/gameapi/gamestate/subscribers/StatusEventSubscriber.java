@@ -4,6 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.gamestate.dtos.GameEvents;
+import elite.intel.gameapi.gamestate.status_events.BeingInterdictedEvent;
 import elite.intel.gameapi.gamestate.status_events.InGlideEvent;
 import elite.intel.gameapi.gamestate.status_events.PlayerMovedEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
@@ -40,8 +41,7 @@ public class StatusEventSubscriber {
         }
 
         if (status.isBeingInterdicted()) {
-            //Enable when we want to use it for something.
-            //EventBusManager.publish(new BeingInterdictedEvent());
+            EventBusManager.publish(new BeingInterdictedEvent());
         }
 
 

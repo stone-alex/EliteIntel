@@ -25,7 +25,7 @@ public class RoutePlotter extends CustomCommandOperator {
             String uiRight = UI_RIGHT.getGameBinding();
             operateKeyboard(uiRight, 0);
             Thread.sleep(200);
-            String activate = UI_ACTIVATE.getGameBinding();
+            String activate = ACTIVATE.getGameBinding();
             operateKeyboard(activate, 0);
             Thread.sleep(200);
             KeyProcessor keyProcessor = KeyProcessor.getInstance();

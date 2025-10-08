@@ -19,7 +19,7 @@ public class DeploySrvHandler extends CustomCommandOperator implements CommandHa
         String ui_up = GameCommands.GameCommand.UI_UP.getGameBinding();
         String ui_down = GameCommands.GameCommand.UI_DOWN.getGameBinding();
         String ui_right = GameCommands.GameCommand.UI_RIGHT.getGameBinding();
-        String activate = GameCommands.GameCommand.UI_ACTIVATE.getGameBinding();
+        String activate = GameCommands.GameCommand.ACTIVATE.getGameBinding();
 
         /// ensure the cursor is at the top
         operateKeyboard(openPanel, 0);

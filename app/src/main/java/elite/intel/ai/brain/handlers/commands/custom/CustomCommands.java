@@ -61,6 +61,14 @@ public enum CustomCommands {
     DEPLOY_LANDING_GEAR("deploy_landing_gear", null, null, DeployLandingGearHandler.class),
     RETRACT_LANDING_GEAR("retract_landing_gear", null, null, RetractLandingGearHandler.class),
 
+    JUMP_TO_HYPERSPACE("jump_to_hyperspace", null, null, EnterFtlHandler.class),
+    GET_OUT_OF_HERE("lets_get_out_of_here", null, null, EnterFtlHandler.class),
+    ENTER_SUPER_CRUISE("enter_super_cruise", null, null, EnterFtlHandler.class),
+    EXIT_SUPER_CRUISE("exit_super_cruise", null, null, ExitFtlHandler.class),
+
+    ACTIVATE_ANALYSIS_MODE("activate_hud_analysis_mode", null, null, ActivateAnalysisModeHandler.class),
+    ACTIVATE_COMBAT_MODE("activate_hud_combat_mode", null, null, ActivateCombatModeHandler.class),
+
     PLOT_ROUTE_TO_CARRIER("plot_route_to_fleet_carrier", null, null, PlotRouteToMyFleetCarrier.class),
     PLOT_ROUTE_TO_BEST_MARKET("plot_route_to_best_market", null, null, PlotRouteToBestMarketHandler.class),
     SET_AI_VOICE("set_or_change_voice_to", "<voice_name>", "voice_name", SetAiVoice.class),

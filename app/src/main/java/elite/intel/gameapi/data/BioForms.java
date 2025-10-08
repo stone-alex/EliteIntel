@@ -271,6 +271,11 @@ public class BioForms {
     }
 
     public static ProjectedPayment getAverageProjectedPayment(String genus) {
+        if(genus == null || genus.isEmpty() || !GENUS_TO_SPECIES.containsKey(capitalizeWords(genus))){
+            return null;
+        }
+
+
         String capitalizedGenus = capitalizeWords(genus);
         Map<String, BioDetails> speciesMap = GENUS_TO_SPECIES.get(capitalizedGenus);
         if (speciesMap == null || speciesMap.isEmpty()) {

@@ -5,6 +5,7 @@ public class GenusDto {
     private String species;
     private String varient;
     private long rewardInCredits;
+    private long bonusForFirstDiscovery;
 
 
     public String getSpecies() {
@@ -29,5 +30,13 @@ public class GenusDto {
 
     public void setRewardInCredits(long rewardInCredits) {
         this.rewardInCredits = rewardInCredits;
+    }
+
+    public long getBonusForFirstDiscovery() {
+        return bonusForFirstDiscovery;
+    }
+
+    public void setBonusForFirstDiscovery(long bonusForFirstDiscovery) {
+        this.bonusForFirstDiscovery = bonusForFirstDiscovery;
     }
 }

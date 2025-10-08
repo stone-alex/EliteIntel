@@ -46,7 +46,7 @@ public class CodexEntryEventSubscriber {
             sb.append("Voucher Amount: ");
             sb.append(event.getVoucherAmount());
             sb.append(" credits.");
-            Boolean isAnnounced = playerSession.getGenusPaymentAnnounced().get(capitalizeWords(firstWordOfEntryName));
+            Boolean isAnnounced = playerSession.paymentHasBeenAnnounced(capitalizeWords(firstWordOfEntryName));
 
             if (projectedPayment.payment() != null && !isAnnounced) {
                 sb.append(" Projected Vista Genomics Payment: ").append(projectedPayment).append(" credits. For a complete set of three samples");

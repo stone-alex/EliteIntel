@@ -959,7 +959,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         return fleetCarrierRoute;
     }
 
-    public Map<String, Boolean> getGenusPaymentAnnounced() {
+    private Map<String, Boolean> getGenusPaymentAnnounced() {
         return genusPaymentAnnounced;
     }
 
@@ -995,6 +995,12 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     public void setCurrentWealth(long currentWealth) {
         this.currentWealth = currentWealth;
     }
+
+    public Boolean paymentHasBeenAnnounced(String genus) {
+        Boolean b = genusPaymentAnnounced.get(genus);
+        return b != null && b;
+    }
+
     public record GalacticCoordinates(double x, double y, double z) {
 
     }

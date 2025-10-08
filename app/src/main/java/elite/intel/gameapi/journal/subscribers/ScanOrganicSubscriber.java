@@ -57,7 +57,7 @@ public class ScanOrganicSubscriber {
         }
 
         removeCodexEntryIfMatches(event.getVariantLocalised(), range, true);
-        Boolean isAnnounced = playerSession.getGenusPaymentAnnounced().get(genus);
+        Boolean isAnnounced = playerSession.paymentHasBeenAnnounced(genus);
 
         if (scan1.equals(scanType)) {
             sb.append(" Organic sample detected: Genus: ");
@@ -171,7 +171,6 @@ public class ScanOrganicSubscriber {
         bioSampleDto.setSpecies(species);
         bioSampleDto.setOurDiscovery(isOurDiscovery);
         bioSampleDto.setBodyId(playerSession.getCurrentLocation().getBodyId());
-        bioSampleDto.setStarSystemNumber(starSystemNumber);
         bioSampleDto.setDistanceToNextSample(distanceToNextSample(genus, species));
         return bioSampleDto;
     }

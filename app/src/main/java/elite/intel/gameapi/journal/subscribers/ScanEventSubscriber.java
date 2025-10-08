@@ -46,6 +46,11 @@ public class ScanEventSubscriber extends BiomeAnalyzer {
 
         LocationDto location = getOrMakeLocation(event.getBodyID());
         LocationDto.LocationType locationType = determineLocationType(event);
+
+        if(BELT_CLUSTER.equals(locationType) ){
+            return; // skip belt clusters.
+        }
+
         location.setLocationType(locationType);
         location.setStarType(event.getStarType());
 

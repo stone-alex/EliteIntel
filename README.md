@@ -107,18 +107,13 @@ The correction dictionary format is:
 
 As this is an early beta, here are some known areas we're still refining:
 
-1. **Commands and keybinds are assumed to be the same for ship and SRV settings. For Left, Right and Central panel as
-   well as thrust and pips settings.** This keeps things simple for user interaction and saves on AI tokens (reducing
-   costs per request) by not needing to infer or specify vehicle type. Sending separate SRV commands (which mirror ship
-   commands for things like left/right/center panels and pips) would double the command list per request or require
-   unreliable detection of whether you're in a ship or SRV—since we don't read game memory directly.
-2. All on-foot keybinds are currently disabled, though data analysis features remain available.
-3. Not all mission types have been fully tested—expect potential quirks with less common ones.
-4. While the app has automatic audio detection and calibration, it hasn't been tested on a wide variety of systems. If
+1. All on-foot keybinds are currently disabled, though data analysis features remain available.
+2. Not all mission types have been fully tested—expect potential quirks with less common ones.
+3. While the app has automatic audio detection and calibration, it hasn't been tested on a wide variety of systems. If
    you run into audio issues, please report them on GitHub with logs and a description of your audio setup.
-5. Only Google STT / TTS and Grok AI are supported. But you are welcome to implement your own providers. The apps'
+4. Only Google STT / TTS and Open and X Ai are supported. But you are welcome to implement your own providers. The apps'
    code is structured, modular, event-driven, and documented.
-6. Currently, there is no support for colonization. You are welcome to contribute ideas or implementations.
+5. Currently, there is no support for colonization. You are welcome to contribute ideas or implementations.
    (contact project owner)
 
 ## Usage Examples

@@ -4,6 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.mouth.subscribers.events.NavigationVocalisationEvent;
 import elite.intel.ai.mouth.subscribers.events.VocalisationSuccessfulEvent;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.gameapi.gamestate.status_events.InGlideEvent;
 import elite.intel.gameapi.gamestate.status_events.PlayerMovedEvent;
 import elite.intel.gameapi.journal.events.DisembarkEvent;
 import elite.intel.gameapi.journal.events.dto.TargetLocation;
@@ -52,6 +53,7 @@ public class LocationTrackingSubscriber {
     private static final double ARRIVAL_RADIUS = 50;
     private static final double GLIDE_ENTRY_RADIUS = 500_000;
     private static final double TOO_FAR_FOR_GLIDE = 1_000_000;
+    private boolean isGliding = false;
 
     /**
      * Handles the event triggered when a player moves within the game environment.
@@ -175,9 +177,9 @@ public class LocationTrackingSubscriber {
 
     private boolean isGlideAngleOk(PlayerMovedEvent event, NavigationUtils.Direction navigator) {
 
-        if(event.getAltitude() > 100_000){
-             return calculateGlideAngle(event.getAltitude(), navigator.distanceToTarget()) < 60;
-        } else if(event.getAltitude() < 50_000){
+        if (event.getAltitude() > 100_000) {
+            return calculateGlideAngle(event.getAltitude(), navigator.distanceToTarget()) < 60;
+        } else if (event.getAltitude() < 50_000) {
             return calculateGlideAngle(event.getAltitude(), navigator.distanceToTarget()) < 45;
         } else {
             return calculateGlideAngle(event.getAltitude(), navigator.distanceToTarget()) < 36;
@@ -215,7 +217,7 @@ public class LocationTrackingSubscriber {
         boolean glideAngleOk = isGlideAngleOk(event, navigator);
         speedWarning(navigator);
 
-        int glideAngle = - calculateGlideAngle(event.getAltitude(), navigator.distanceToTarget());
+        int glideAngle = -calculateGlideAngle(event.getAltitude(), navigator.distanceToTarget());
         boolean movingAway = navigator.distanceToTarget() > lastDistance;
 
         if (isOnSurface(event)) {
@@ -233,14 +235,14 @@ public class LocationTrackingSubscriber {
             }
         } else {
             //FLYING in normal space above surface
-            if (navigator.distanceToTarget() < 1_000 && !lookForLandingSpotAnnounced && event.getAltitude() > 10){
+            if (navigator.distanceToTarget() < 1_000 && !lookForLandingSpotAnnounced && event.getAltitude() > 10) {
                 lookForLandingSpotAnnounced = true;
                 vocalize("Within 1000 meters from target. Look for landing spot", 0, 0, true);
                 if (movingAway) {
                     vocalize("Moving Away.", 0, 0, false);
                 }
             } else {
-                if(navigator.distanceToTarget() > 1500) {
+                if (navigator.distanceToTarget() > 1500) {
                     lookForLandingSpotAnnounced = false;
                 }
 
@@ -256,9 +258,9 @@ public class LocationTrackingSubscriber {
     }
 
     private void speedWarning(NavigationUtils.Direction navigator) {
-        if(navigator.distanceToTarget() <= 10_000 && navigator.getSpeed() >= 400){
+        if (navigator.distanceToTarget() <= 10_000 && navigator.getSpeed() >= 400) {
             vocalize("Reduce speed below 350", 0, 0, true);
-        } else if(navigator.distanceToTarget() <= 5_000 && navigator.getSpeed() >= 300){
+        } else if (navigator.distanceToTarget() <= 5_000 && navigator.getSpeed() >= 300) {
             vocalize("Reduce speed below 200", 0, 0, true);
         }
     }
@@ -268,10 +270,9 @@ public class LocationTrackingSubscriber {
     }
 
     private boolean isAboveAnnouncementThreshold(boolean highPriority) {
-        if(highPriority) {
+        if (highPriority) {
             return System.currentTimeMillis() - lastAnnounceTime > 6_000;
-        }
-        else {
+        } else {
             return System.currentTimeMillis() - lastAnnounceTime > 12_000;
         }
     }
@@ -295,6 +296,7 @@ public class LocationTrackingSubscriber {
         lastDistance = -1;
         lastAnnounceTime = -1;
         lastDistanceThreshold = -1;
+        isGliding = false;
     }
 
 
@@ -361,8 +363,7 @@ public class LocationTrackingSubscriber {
     }
 
     @Subscribe
-    public void onVocalisationSuccess(@SuppressWarnings("rawtypes") VocalisationSuccessfulEvent event) {
-        //if(event.getOriginalRequest() instanceof NavigationVocalisationEvent) {
-//            lastAnnounceTime = System.currentTimeMillis();
-        //}
-    }}
+    public void onInGlideEvent(InGlideEvent event){
+        this.isGliding = true;
+    }
+}

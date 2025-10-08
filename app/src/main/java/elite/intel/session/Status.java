@@ -258,7 +258,5 @@ public class Status extends StatusFlags implements java.io.Serializable {
     public boolean isBeingInterdicted() {
         return isBeingInterdicted(getStatus().getFlags());
     }
-
-
 }
 

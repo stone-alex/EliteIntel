@@ -15,7 +15,7 @@ import elite.intel.session.SystemSession;
  * - Returns the AI name in the format: "My name is [AI Name]".
  * <p>
  * Usage Scenario:
- * This handler is invoked whenever the user asks the system about its name. It utilizes
+ * This handler is invoked whenever the user asks the system about its name. It uses
  * application-wide system states and response formatting utilities to generate consistent
  * outputs.
  * <p>
@@ -26,6 +26,6 @@ public class WhatIsYourNameHandler implements QueryHandler {
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         SystemSession systemSession = SystemSession.getInstance();
-        return GenericResponse.getInstance().genericResponse("My name is " + systemSession.getAIVoice().getName());
+        return GenericResponse.getInstance().genericResponse("I am " + systemSession.getAIVoice().getName());
     }
 }

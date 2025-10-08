@@ -176,3 +176,4 @@
 "all right hand"="all right hunk it"
 "deploy a survey"="deploy SRV"
 "plot throughout"="plot the route"
+"plans"="planets"

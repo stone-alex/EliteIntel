@@ -177,12 +177,8 @@ public class AppController implements AppControllerInterface, ActionListener {
             String mission_statement = configManager.getPlayerKey(ConfigManager.PLAYER_MISSION_STATEMENT);
             playerSession.setPlayerMissionStatement(mission_statement);
 
-            appendToLog(
-                    systemSession.getAIVoice().getName() +
-                            " is listening to you... AI is set to "
-                            + capitalizeWords(systemSession.getAICadence().name()) + " "
-                            + capitalizeWords(systemSession.getAIPersonality().name())
-            );
+            //EventBusManager.publish(new AiVoxResponseEvent("I am "+systemSession.getAIVoice().getName()));
+
             appendToLog("Available voices: " + listVoices());
             appendToLog("Available personalities: " + listPersonalities());
             appendToLog("Available profiles: " + listCadences());
@@ -251,10 +247,8 @@ public class AppController implements AppControllerInterface, ActionListener {
     @Override
     public void togglePrivacyMode(boolean isPrivacyModeEnabled) {
         if (isPrivacyModeEnabled) {
-            EventBusManager.publish(new AiVoxResponseEvent("one way comms, voice input disabled."));
             ears.stop();
         } else {
-            EventBusManager.publish(new AiVoxResponseEvent("Voice input enabled."));
             ears.start();
         }
         model.setPrivacyModeOn(isPrivacyModeEnabled);

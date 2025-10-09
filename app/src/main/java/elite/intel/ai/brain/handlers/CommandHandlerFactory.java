@@ -1,12 +1,10 @@
 package elite.intel.ai.brain.handlers;
 
 import elite.intel.ai.brain.handlers.commands.CommandHandler;
-import elite.intel.ai.brain.handlers.commands.GameCommands;
-import elite.intel.ai.brain.handlers.commands.GenericGameController;
-import elite.intel.ai.brain.handlers.commands.custom.CustomCommands;
+import elite.intel.ai.brain.handlers.commands.custom.Commands;
 import elite.intel.ai.hands.GameController;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager; 
 
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
@@ -41,7 +39,7 @@ public class CommandHandlerFactory {
 
 
     public Map<String, CommandHandler> registerCommandHandlers() {
-        for (CustomCommands action : CustomCommands.values()) {
+        for (Commands action : Commands.values()) {
             try {
                 CommandHandler handler = instantiateCommandHandler(action.getHandlerClass(), action.getAction());
                 commandHandlers.put(action.getAction(), handler);
@@ -52,35 +50,19 @@ public class CommandHandlerFactory {
             }
         }
 
-        for (GameCommands.GameCommand command : GameCommands.GameCommand.values()) {
-            try {
-                CommandHandler handler = instantiateCommandHandler(command.getHandlerClass(), command.getUserCommand());
-                commandHandlers.put(command.getUserCommand(), handler);
-                log.debug("Registered game command handler for binding: {}", command.getUserCommand());
-            } catch (Exception e) {
-                log.error("Failed to register game command handler for binding: {}", command.getUserCommand(), e);
-                throw new RuntimeException("Game command handler registration failed for binding: " + command.getUserCommand(), e);
-            }
-        }
         return commandHandlers;
     }
 
     private CommandHandler instantiateCommandHandler(Class<? extends CommandHandler> handlerClass, String actionOrBinding) {
         try {
-            if (handlerClass == GenericGameController.class) {
-                Constructor<? extends CommandHandler> constructor = handlerClass.getDeclaredConstructor(GameController.class, String.class);
+            try {
+                Constructor<? extends CommandHandler> constructor = handlerClass.getDeclaredConstructor(GameController.class);
                 constructor.setAccessible(true);
-                return constructor.newInstance(gameHandler, actionOrBinding);
-            } else {
-                try {
-                    Constructor<? extends CommandHandler> constructor = handlerClass.getDeclaredConstructor(GameController.class);
-                    constructor.setAccessible(true);
-                    return constructor.newInstance(gameHandler);
-                } catch (NoSuchMethodException e) {
-                    Constructor<? extends CommandHandler> constructor = handlerClass.getDeclaredConstructor();
-                    constructor.setAccessible(true);
-                    return constructor.newInstance();
-                }
+                return constructor.newInstance(gameHandler);
+            } catch (NoSuchMethodException e) {
+                Constructor<? extends CommandHandler> constructor = handlerClass.getDeclaredConstructor();
+                constructor.setAccessible(true);
+                return constructor.newInstance();
             }
         } catch (NoSuchMethodException e) {
             log.error("No suitable constructor found for handler: {}, action/binding: {}", handlerClass.getName(), actionOrBinding);

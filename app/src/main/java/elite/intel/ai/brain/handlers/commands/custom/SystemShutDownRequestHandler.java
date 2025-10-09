@@ -8,7 +8,7 @@ import elite.intel.ui.event.SystemShutDownEvent;
 
 public class SystemShutDownRequestHandler implements CommandHandler {
 
-    @Override public void handle(JsonObject params, String responseText) {
+    @Override public void handle(String action, JsonObject params, String responseText) {
         EventBusManager.publish(new AiVoxResponseEvent("Shutting down systems"));
         EventBusManager.publish(new SystemShutDownEvent());
     }

@@ -1,7 +1,7 @@
 package elite.intel.ai.hands;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.brain.handlers.commands.GameCommands;
+import elite.intel.ai.brain.handlers.commands.custom.Commands;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.SystemSession;
@@ -105,7 +105,7 @@ public class GameController {
             if (type.equalsIgnoreCase("command")) {
                 String action = jsonResponse.has("action") ? jsonResponse.get("action").getAsString() : "";
                 JsonObject params = jsonResponse.has("params") ? jsonResponse.get("params").getAsJsonObject() : new JsonObject();
-                handleCommand(action, params, responseText);
+                handleCommand(action, params);
             } else {
                 log.warn("Unknown response type: {}", type);
                 handleChat(responseText + " GameCommandHandler - command handler not found for type: " + type + " check programming");
@@ -116,7 +116,7 @@ public class GameController {
         }
     }
 
-    private void handleCommand(String action, JsonObject params, String responseText) {
+    private void handleCommand(String action, JsonObject params) {
         if (BLACKLISTED_ACTIONS.contains(action) || action.startsWith("Humanoid")) {
             log.warn("Attempted to execute blacklisted or Humanoid action: {}", action);
             handleChat("Sorry, I am not allowed to execute that action.");
@@ -129,7 +129,7 @@ public class GameController {
         log.debug("Updated SessionTracker with action: {}, params: {}", action, params);
         KeyBindingsParser.KeyBinding binding = monitor.getBindings().get(action);
         if (binding == null) {
-            binding = monitor.getBindings().get(GameCommands.getGameBinding(action));
+            binding = monitor.getBindings().get(Commands.getGameBinding(action));
         }
 
         if (binding != null) {

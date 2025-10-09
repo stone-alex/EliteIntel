@@ -17,7 +17,7 @@ import java.util.Map;
 
 public class CalculateFleetCarrierRouteHandler implements CommandHandler {
 
-    @Override public void handle(JsonObject params, String responseText) {
+    @Override public void handle(String action, JsonObject params, String responseText) {
         SpanshCarrierRouter client = new SpanshCarrierRouter();
 
         PlayerSession playerSession = PlayerSession.getInstance();

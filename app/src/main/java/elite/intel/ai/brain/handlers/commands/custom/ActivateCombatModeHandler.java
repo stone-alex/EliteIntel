@@ -7,7 +7,7 @@ import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.Status;
 
-import static elite.intel.ai.brain.handlers.commands.GameCommands.GameCommand.ACTIVATE_COMBAT_MODE;
+import static elite.intel.ai.brain.handlers.commands.ControllerBindings.GameCommand.BINDING_ACTIVATE_COMBAT_MODE;
 
 public class ActivateCombatModeHandler extends CustomCommandOperator implements CommandHandler {
 
@@ -15,16 +15,16 @@ public class ActivateCombatModeHandler extends CustomCommandOperator implements 
         super(controller.getMonitor(), controller.getExecutor());
     }
 
-    @Override public void handle(JsonObject params, String responseText) {
+    @Override public void handle(String action, JsonObject params, String responseText) {
         Status status = Status.getInstance();
 
         if (status.isAnalysisMode()) {
             if (status.isInMainShip()) {
-                operateKeyboard(ACTIVATE_COMBAT_MODE.getGameBinding(), 0);
+                operateKeyboard(BINDING_ACTIVATE_COMBAT_MODE.getGameBinding(), 0);
             }
 
             if (status.isInSrv()) {
-                operateKeyboard(ACTIVATE_COMBAT_MODE.getGameBinding(), 0);
+                operateKeyboard(BINDING_ACTIVATE_COMBAT_MODE.getGameBinding(), 0);
             }
         } else {
             EventBusManager.publish(new AiVoxResponseEvent("Combat mode already active."));

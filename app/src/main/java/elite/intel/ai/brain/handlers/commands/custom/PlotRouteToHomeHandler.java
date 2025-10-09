@@ -19,7 +19,7 @@ public class PlotRouteToHomeHandler extends CustomCommandOperator implements Com
         this.commandHandler = commandHandler;
     }
 
-    @Override public void handle(JsonObject params, String responseText) {
+    @Override public void handle(String action, JsonObject params, String responseText) {
         PlayerSession playerSession = PlayerSession.getInstance();
         RoutePlotter plotter = new RoutePlotter(commandHandler);
         LocationDto homeSystem = playerSession.getHomeSystem();

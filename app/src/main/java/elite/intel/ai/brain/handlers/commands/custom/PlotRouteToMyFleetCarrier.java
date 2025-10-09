@@ -16,7 +16,7 @@ public class PlotRouteToMyFleetCarrier extends CustomCommandOperator implements 
         this.commandHandler = commandHandler;
     }
 
-    @Override public void handle(JsonObject params, String responseText) {
+    @Override public void handle(String action, JsonObject params, String responseText) {
         PlayerSession playerSession = PlayerSession.getInstance();
 
 

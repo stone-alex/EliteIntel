@@ -18,7 +18,7 @@ public class EnterNextCarrierDestinationHandler extends CustomCommandOperator im
     }
 
 
-    @Override public void handle(JsonObject params, String responseText) {
+    @Override public void handle(String action, JsonObject params, String responseText) {
         Map<Integer, CarrierJump> fleetCarrierRoute = PlayerSession.getInstance().getFleetCarrierRoute();
 
         if (!fleetCarrierRoute.isEmpty()) {

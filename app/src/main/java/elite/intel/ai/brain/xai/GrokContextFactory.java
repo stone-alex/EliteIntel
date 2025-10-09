@@ -11,9 +11,7 @@ import elite.intel.util.Ranks;
 
 import java.util.Objects;
 
-import static elite.intel.ai.brain.handlers.commands.GameCommands.GameCommand.ACTIVATE;
-import static elite.intel.ai.brain.handlers.commands.GameCommands.GameCommand.SET_SPEED_ZERO;
-import static elite.intel.ai.brain.handlers.commands.custom.CustomCommands.*;
+import static elite.intel.ai.brain.handlers.commands.custom.Commands.*;
 import static elite.intel.ai.brain.handlers.query.QueryActions.*;
 import static elite.intel.util.Abbreviations.generateAbbreviations;
 
@@ -247,7 +245,7 @@ public class GrokContextFactory implements AiContextFactory {
                 "    - 'chat': General conversation, questions unrelated to game actions or state, or unmatched inputs (general chat). Use for lore, opinions, or casual talk (e.g., 'How’s it going?', 'What’s the vibe in this system?'). Only classify as chat if the input does not start with interrogative words ('what', 'where', 'when', 'how', 'how far', 'how many', 'how much', 'what is', 'where is') or command verbs ('set', 'get', 'drop', 'retract', 'deploy', 'find', 'locate', 'activate') and does not match any specific query or command pattern in QueryActions or GameCommands/CustomCommands. If ambiguous (e.g., pure 'where'), set response_text to 'Say again?', action to null, and expect_followup to true.\n");
 
         sb.append("For type='command': Always provide empty response_text.\n");
-        sb.append("For navigation commands (e.g., 'jump', 'hyperspace', 'go to next system'), map to '" + JUMP_TO_HYPERSPACE.getAction() + "' 'supercruise' to '"+ENTER_SUPER_CRUISE.getAction()+"'.  'cancel_resume_navigation' to "+NAVIGATION_ON_OFF.getAction()+" 'Stop', 'cut engines' map to speed commands " + SET_SPEED_ZERO.getUserCommand() + ". 'Activate', 'toggle', 'left', 'right', 'up', 'down', 'close' to UI commands like" + ACTIVATE.getUserCommand() + ". ");
+        sb.append("For navigation commands (e.g., 'jump', 'hyperspace', 'go to next system'), map to '" + JUMP_TO_HYPERSPACE.getAction() + "' 'supercruise' to '"+ENTER_SUPER_CRUISE.getAction()+"'.  'cancel_resume_navigation' to "+NAVIGATION_ON_OFF.getAction()+" 'Stop', 'cut engines' map to speed commands " + SET_OPTIMAL_SPEED.getAction() + ". 'Activate', 'toggle', 'left', 'right', 'up', 'down', 'close' to UI commands like" + SET_OPTIMAL_SPEED.getAction() + ". ");
 
         sb.append("For type='query': \n" +
                 "    - If action is a quick query (e.g., '" + WHAT_ARE_YOUR_CAPABILITIES.getAction() + "', '" + GENERAL_CONVERSATION.getAction() + "'), set 'response_text' to '' (empty string, no initial TTS).\n" +
@@ -300,7 +298,7 @@ public class GrokContextFactory implements AiContextFactory {
 
     private String generateSupportedCommandsCause() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Supported commands: ").append(AiRequestHints.supportedCommands).append(", ").append(AiRequestHints.customCommands);
+        sb.append("Supported commands: ").append(AiRequestHints.customCommands);
         return sb.toString();
     }
 

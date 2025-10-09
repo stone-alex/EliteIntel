@@ -11,7 +11,7 @@ import elite.intel.session.PlayerSession;
 
 public class ClearCodexEntriesHandler implements CommandHandler {
 
-    @Override public void handle(JsonObject params, String responseText) {
+    @Override public void handle(String action, JsonObject params, String responseText) {
 
         PlayerSession playerSession = PlayerSession.getInstance();
         LocationDto currentLocation = playerSession.getCurrentLocation();

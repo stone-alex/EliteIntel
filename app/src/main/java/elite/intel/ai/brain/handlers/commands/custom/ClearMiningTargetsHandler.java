@@ -9,7 +9,7 @@ import elite.intel.session.PlayerSession;
 
 public class ClearMiningTargetsHandler implements CommandHandler {
 
-    @Override public void handle(JsonObject params, String responseText) {
+    @Override public void handle(String action, JsonObject params, String responseText) {
         PlayerSession.getInstance().clearMiningTargets();
         EventBusManager.publish(new AiVoxResponseEvent("Mining targets cleared."));
     }

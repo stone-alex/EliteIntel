@@ -21,7 +21,7 @@ import static elite.intel.util.StringUtls.capitalizeWords;
 
 public class FindCommodityHandler implements CommandHandler {
 
-    @Override public void handle(JsonObject params, String responseText) {
+    @Override public void handle(String action, JsonObject params, String responseText) {
         JsonElement jsonElement = params.get("commodity");
         String commodity = capitalizeWords(jsonElement.getAsJsonPrimitive().getAsString().replace("\"", ""));
 

@@ -5,7 +5,6 @@ import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.commands.CommandHandler;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
 import elite.intel.session.SystemSession;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager; 
@@ -37,8 +36,8 @@ public class SetStreamingModeHandler implements CommandHandler {
 
     private static final Logger log = LogManager.getLogger(SetStreamingModeHandler.class);
 
-    @Override public void handle(JsonObject params, String responseText) {
-        JsonElement jsonElement = extractParameter(CustomCommands.SET_STREAMING_MODE.getPlaceholder(), params);
+    @Override public void handle(String action, JsonObject params, String responseText) {
+        JsonElement jsonElement = extractParameter(Commands.SET_STREAMING_MODE.getPlaceholder(), params);
         boolean isOn = "on".equalsIgnoreCase(jsonElement.getAsString()) || "true".equalsIgnoreCase(jsonElement.getAsString());
         SystemSession systemSession = SystemSession.getInstance();
         systemSession.setStreamingMode(isOn);

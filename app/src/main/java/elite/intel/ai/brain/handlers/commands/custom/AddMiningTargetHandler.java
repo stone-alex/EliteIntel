@@ -21,7 +21,7 @@ public class AddMiningTargetHandler implements CommandHandler {
     private static final Logger log = LogManager.getLogger(AddMiningTargetHandler.class);
 
     @Override
-    public void handle(JsonObject params, String responseText) {
+    public void handle(String action, JsonObject params, String responseText) {
         PlayerSession session = PlayerSession.getInstance();
         session.setMiningAnnouncementOn(true);
         JsonElement jsonElement = params.get("material");

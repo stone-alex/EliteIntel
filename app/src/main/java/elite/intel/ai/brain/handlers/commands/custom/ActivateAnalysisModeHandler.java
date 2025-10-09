@@ -7,8 +7,8 @@ import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.Status;
 
-import static elite.intel.ai.brain.handlers.commands.GameCommands.GameCommand.ACTIVATE_ANALYSIS_MODE;
-import static elite.intel.ai.brain.handlers.commands.GameCommands.GameCommand.ACTIVATE_ANALYSIS_MODE_BUGGY;
+import static elite.intel.ai.brain.handlers.commands.ControllerBindings.GameCommand.BINDING_ACTIVATE_ANALYSIS_MODE;
+import static elite.intel.ai.brain.handlers.commands.ControllerBindings.GameCommand.BINDING_ACTIVATE_ANALYSIS_MODE_BUGGY;
 
 public class ActivateAnalysisModeHandler extends CustomCommandOperator implements CommandHandler {
 
@@ -16,15 +16,15 @@ public class ActivateAnalysisModeHandler extends CustomCommandOperator implement
         super(controller.getMonitor(), controller.getExecutor());
     }
 
-    @Override public void handle(JsonObject params, String responseText) {
+    @Override public void handle(String action, JsonObject params, String responseText) {
         Status status = Status.getInstance();
         if (!status.isAnalysisMode()) {
             if (status.isInMainShip()) {
-                operateKeyboard(ACTIVATE_ANALYSIS_MODE.getGameBinding(), 0);
+                operateKeyboard(BINDING_ACTIVATE_ANALYSIS_MODE.getGameBinding(), 0);
             }
 
             if (status.isInSrv()) {
-                operateKeyboard(ACTIVATE_ANALYSIS_MODE_BUGGY.getGameBinding(), 0);
+                operateKeyboard(BINDING_ACTIVATE_ANALYSIS_MODE_BUGGY.getGameBinding(), 0);
             }
         } else {
             EventBusManager.publish(new AiVoxResponseEvent("Analysis mode already active."));

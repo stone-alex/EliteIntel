@@ -11,8 +11,8 @@ import static elite.intel.util.json.JsonParameterExtractor.extractParameter;
 
 public class RouteAnnouncementsOnOffHandler implements CommandHandler {
 
-    @Override public void handle(JsonObject params, String responseText) {
-        JsonElement jsonElement = extractParameter(CustomCommands.ROUTE_ON_OFF.getPlaceholder(), params);
+    @Override public void handle(String action, JsonObject params, String responseText) {
+        JsonElement jsonElement = extractParameter(Commands.ROUTE_ON_OFF.getPlaceholder(), params);
 
         if(jsonElement == null) {return;}
 

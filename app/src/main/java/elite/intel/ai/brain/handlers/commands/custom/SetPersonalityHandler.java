@@ -32,9 +32,9 @@ import static elite.intel.util.json.JsonParameterExtractor.extractParameter;
  */
 public class SetPersonalityHandler implements CommandHandler {
 
-    @Override public void handle(JsonObject params, String responseText) {
+    @Override public void handle(String action, JsonObject params, String responseText) {
         try {
-            JsonElement jsonElement = extractParameter(CustomCommands.SET_PERSONALITY.getPlaceholder(), params);
+            JsonElement jsonElement = extractParameter(Commands.SET_PERSONALITY.getPlaceholder(), params);
             AIPersonality aiPersonality = AIPersonality.valueOf(jsonElement.getAsString().toUpperCase().replace("\"",""));
             SystemSession.getInstance().setAIPersonality(aiPersonality);
         } catch (IllegalArgumentException e) {

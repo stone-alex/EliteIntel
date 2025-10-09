@@ -6,8 +6,8 @@ import elite.intel.ai.hands.GameController;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import static elite.intel.ai.brain.handlers.commands.GameCommands.GameCommand.EXPLORATION_FSSDISCOVERY_SCAN;
-import static elite.intel.ai.brain.handlers.commands.GameCommands.GameCommand.SET_SPEED_ZERO;
+import static elite.intel.ai.brain.handlers.commands.ControllerBindings.GameCommand.BINDING_EXPLORATION_FSSDISCOVERY_SCAN;
+import static elite.intel.ai.brain.handlers.commands.ControllerBindings.GameCommand.BINDING_SET_SPEED_ZERO;
 
 /**
  * The PerformFSSScanHandler class is responsible for executing a sequence of key bindings
@@ -31,9 +31,9 @@ public class PerformFSSScanHandler extends CustomCommandOperator implements Comm
         super(commandHandler.getMonitor(), commandHandler.getExecutor());
     }
 
-    @Override public void handle(JsonObject params, String responseText) {
-            String actionSetThrottleToZero = SET_SPEED_ZERO.getGameBinding();
-            String actionPressFSS = EXPLORATION_FSSDISCOVERY_SCAN.getGameBinding();
+    @Override public void handle(String action, JsonObject params, String responseText) {
+            String actionSetThrottleToZero = BINDING_SET_SPEED_ZERO.getGameBinding();
+            String actionPressFSS = BINDING_EXPLORATION_FSSDISCOVERY_SCAN.getGameBinding();
 
             operateKeyboard(actionSetThrottleToZero, 0);
             operateKeyboard(actionPressFSS, 0);

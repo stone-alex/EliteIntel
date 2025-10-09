@@ -13,7 +13,7 @@ public class NavigateToCoordinatesHandler implements CommandHandler {
 
     private static final Logger log = LogManager.getLogger(NavigateToCoordinatesHandler.class);
 
-    @Override public void handle(JsonObject params, String responseText) {
+    @Override public void handle(String action, JsonObject params, String responseText) {
         PlayerSession playerSession = PlayerSession.getInstance();
 
         if(params.get("latitude") == null || params.get("longitude") == null) {

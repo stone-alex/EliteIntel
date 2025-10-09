@@ -5,8 +5,8 @@ import elite.intel.ai.brain.handlers.commands.CommandHandler;
 import elite.intel.ai.hands.GameController;
 import elite.intel.session.Status;
 
-import static elite.intel.ai.brain.handlers.commands.GameCommands.GameCommand.GALAXY_MAP;
-import static elite.intel.ai.brain.handlers.commands.GameCommands.GameCommand.GALAXY_MAP_BUGGY;
+import static elite.intel.ai.brain.handlers.commands.ControllerBindings.GameCommand.BINDING_GALAXY_MAP;
+import static elite.intel.ai.brain.handlers.commands.ControllerBindings.GameCommand.BINDING_GALAXY_MAP_BUGGY;
 
 /**
  * The OpenGalaxyMapHandler class is responsible for handling commands related to opening
@@ -39,15 +39,15 @@ public class OpenGalaxyMapHandler extends CustomCommandOperator implements Comma
         super(commandHandler.getMonitor(), commandHandler.getExecutor());
     }
 
-    @Override public void handle(JsonObject params, String responseText) {
+    @Override public void handle(String action, JsonObject params, String responseText) {
 
         Status status = Status.getInstance();
         if (status.isInMainShip()) {
-            operateKeyboard(GALAXY_MAP.getGameBinding(), 0);
+            operateKeyboard(BINDING_GALAXY_MAP.getGameBinding(), 0);
         }
 
         if (status.isInSrv()) {
-            operateKeyboard(GALAXY_MAP_BUGGY.getGameBinding(), 0);
+            operateKeyboard(BINDING_GALAXY_MAP_BUGGY.getGameBinding(), 0);
         }
     }
 }

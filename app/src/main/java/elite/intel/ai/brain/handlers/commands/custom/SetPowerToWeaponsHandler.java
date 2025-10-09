@@ -7,7 +7,7 @@ import elite.intel.session.Status;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import static elite.intel.ai.brain.handlers.commands.GameCommands.GameCommand.*;
+import static elite.intel.ai.brain.handlers.commands.ControllerBindings.GameCommand.*;
 
 /**
  * The SetPowerToWeaponsHandler class is responsible for executing a series of predefined
@@ -28,7 +28,7 @@ public class SetPowerToWeaponsHandler extends CustomCommandOperator implements C
         super(commandHandler.getMonitor(), commandHandler.getExecutor());
     }
 
-    @Override public void handle(JsonObject params, String responseText) {
+    @Override public void handle(String action, JsonObject params, String responseText) {
         Status status = Status.getInstance();
 
         if (status.isInMainShip()) {
@@ -41,17 +41,17 @@ public class SetPowerToWeaponsHandler extends CustomCommandOperator implements C
     }
 
     private void powerToWeaponsSRV() {
-        String resetPowerDistribution = RESET_POWER_DISTRIBUTION_BUGGY.getGameBinding();
-        String increaseWeaponsPower = INCREASE_WEAPONS_POWER_BUGGY.getGameBinding();
-        String increaseEnginesPower = INCREASE_ENGINES_POWER_BUGGY.getGameBinding();
+        String resetPowerDistribution = BINDING_RESET_POWER_DISTRIBUTION_BUGGY.getGameBinding();
+        String increaseWeaponsPower = BINDING_INCREASE_WEAPONS_POWER_BUGGY.getGameBinding();
+        String increaseEnginesPower = BINDING_INCREASE_ENGINES_POWER_BUGGY.getGameBinding();
 
         performAction(resetPowerDistribution, increaseWeaponsPower, increaseEnginesPower);
     }
 
     private void powerToWeaponsShip() {
-        String resetPowerDistribution = RESET_POWER_DISTRIBUTION.getGameBinding();
-        String increaseWeaponsPower = INCREASE_WEAPONS_POWER.getGameBinding();
-        String increaseEnginesPower = INCREASE_ENGINES_POWER.getGameBinding();
+        String resetPowerDistribution = BINDING_RESET_POWER_DISTRIBUTION.getGameBinding();
+        String increaseWeaponsPower = BINDING_INCREASE_WEAPONS_POWER.getGameBinding();
+        String increaseEnginesPower = BINDING_INCREASE_ENGINES_POWER.getGameBinding();
 
         performAction(resetPowerDistribution, increaseWeaponsPower, increaseEnginesPower);
     }

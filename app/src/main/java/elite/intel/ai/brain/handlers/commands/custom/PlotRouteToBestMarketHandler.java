@@ -21,7 +21,7 @@ public class PlotRouteToBestMarketHandler extends CustomCommandOperator implemen
         this.commandHandler = commandHandler;
     }
 
-    @Override public void handle(JsonObject params, String responseText) {
+    @Override public void handle(String action, JsonObject params, String responseText) {
         PlayerSession playerSession = PlayerSession.getInstance();
         List<StationMarket> markets = playerSession.getMarkets();
         if (markets != null && !markets.isEmpty()) {

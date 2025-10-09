@@ -2,7 +2,7 @@ package elite.intel.ai.brain.handlers.commands.custom;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.commands.CommandHandler;
-import elite.intel.ai.brain.handlers.commands.GameCommands;
+import elite.intel.ai.brain.handlers.commands.ControllerBindings;
 import elite.intel.ai.hands.GameController;
 
 
@@ -22,10 +22,10 @@ public class ExitToHud extends CustomCommandOperator implements CommandHandler {
         super(commandHandler.getMonitor(), commandHandler.getExecutor());
     }
 
-    @Override public void handle(JsonObject params, String responseText) {
-            String exit = GameCommands.GameCommand.EXIT_KEY.getGameBinding();
-            String headLookReset = GameCommands.GameCommand.HEAD_LOOK_RESET.getGameBinding();
-            String quitFFS = GameCommands.GameCommand.EXPLORATION_FSSQUIT.getGameBinding();
+    @Override public void handle(String action, JsonObject params, String responseText) {
+            String exit = ControllerBindings.GameCommand.BINDING_EXIT_KEY.getGameBinding();
+            String headLookReset = ControllerBindings.GameCommand.BINDING_HEAD_LOOK_RESET.getGameBinding();
+            String quitFFS = ControllerBindings.GameCommand.BINDING_EXPLORATION_FSSQUIT.getGameBinding();
             //back out of nested menus and sub windows
             
             operateKeyboard(quitFFS, 0);

@@ -7,7 +7,7 @@ import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.Status;
 
-import static elite.intel.ai.brain.handlers.commands.GameCommands.GameCommand.LANDING_GEAR_TOGGLE;
+import static elite.intel.ai.brain.handlers.commands.ControllerBindings.GameCommand.BINDING_LANDING_GEAR_TOGGLE;
 
 public class DeployLandingGearHandler extends CustomCommandOperator implements CommandHandler {
 
@@ -15,13 +15,13 @@ public class DeployLandingGearHandler extends CustomCommandOperator implements C
         super(controller.getMonitor(), controller.getExecutor());
     }
 
-    @Override public void handle(JsonObject params, String responseText) {
+    @Override public void handle(String action, JsonObject params, String responseText) {
         Status status = Status.getInstance();
 
         if (status.isLandingGearDown()) {
             EventBusManager.publish(new AiVoxResponseEvent("Landing gear already deployed."));
         } else {
-            operateKeyboard(LANDING_GEAR_TOGGLE.getGameBinding(), 0);
+            operateKeyboard(BINDING_LANDING_GEAR_TOGGLE.getGameBinding(), 0);
         }
     }
 }

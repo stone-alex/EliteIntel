@@ -12,7 +12,7 @@ import elite.intel.session.SystemSession;
 public class ClearCacheHandler implements CommandHandler {
 
     @Override
-    public void handle(JsonObject params, String responseText) {
+    public void handle(String action, JsonObject params, String responseText) {
 
         PlayerSession playerSession = PlayerSession.getInstance();
         playerSession.clearOnShutDown();

@@ -25,7 +25,7 @@ public class NavigateToNextBioSample implements CommandHandler {
     PlayerSession playerSession = PlayerSession.getInstance();
 
     @Override
-    public void handle(JsonObject params, String responseText) {
+    public void handle(String action, JsonObject params, String responseText) {
         Status status = Status.getInstance();
         LocationDto currentLocation = playerSession.getCurrentLocation();
 

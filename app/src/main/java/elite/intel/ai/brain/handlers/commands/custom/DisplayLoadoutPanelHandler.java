@@ -5,8 +5,8 @@ import elite.intel.ai.brain.handlers.commands.CommandHandler;
 import elite.intel.ai.hands.GameController;
 import elite.intel.session.Status;
 
-import static elite.intel.ai.brain.handlers.commands.GameCommands.GameCommand.FOCUS_LOADOUT_PANEL;
-import static elite.intel.ai.brain.handlers.commands.GameCommands.GameCommand.FOCUS_RADAR_PANEL_BUGGY;
+import static elite.intel.ai.brain.handlers.commands.ControllerBindings.GameCommand.BINDING_FOCUS_LOADOUT_PANEL;
+import static elite.intel.ai.brain.handlers.commands.ControllerBindings.GameCommand.BINDING_FOCUS_RADAR_PANEL_BUGGY;
 
 public class DisplayLoadoutPanelHandler extends CustomCommandOperator implements CommandHandler {
 
@@ -15,15 +15,15 @@ public class DisplayLoadoutPanelHandler extends CustomCommandOperator implements
         super(controller.getMonitor(), controller.getExecutor());
     }
 
-    @Override public void handle(JsonObject params, String responseText) {
+    @Override public void handle(String action, JsonObject params, String responseText) {
         Status status = Status.getInstance();
 
         if (status.isInMainShip()) {
-            operateKeyboard(FOCUS_LOADOUT_PANEL.getGameBinding(), 0);
+            operateKeyboard(BINDING_FOCUS_LOADOUT_PANEL.getGameBinding(), 0);
         }
 
         if (status.isInSrv()) {
-            operateKeyboard(FOCUS_RADAR_PANEL_BUGGY.getGameBinding(), 0);
+            operateKeyboard(BINDING_FOCUS_RADAR_PANEL_BUGGY.getGameBinding(), 0);
         }
     }
 }

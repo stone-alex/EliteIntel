@@ -12,10 +12,10 @@ import static elite.intel.util.json.JsonParameterExtractor.extractParameter;
 
 public class NavigationOnOffHandler implements CommandHandler {
 
-    @Override public void handle(JsonObject params, String responseText) {
+    @Override public void handle(String action, JsonObject params, String responseText) {
         PlayerSession playerSession = PlayerSession.getInstance();
 
-        JsonElement jsonElement = extractParameter(CustomCommands.NAVIGATION_ON_OFF.getPlaceholder(), params);
+        JsonElement jsonElement = extractParameter(Commands.NAVIGATION_ON_OFF.getPlaceholder(), params);
         boolean isOn = "on".equalsIgnoreCase(jsonElement.getAsString()) || "true".equalsIgnoreCase(jsonElement.getAsString());
 
         TargetLocation tracking = playerSession.getTracking();

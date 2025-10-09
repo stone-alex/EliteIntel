@@ -5,7 +5,7 @@ import elite.intel.ai.brain.handlers.commands.CommandHandler;
 import elite.intel.ai.hands.GameController;
 import elite.intel.session.Status;
 
-import static elite.intel.ai.brain.handlers.commands.GameCommands.GameCommand.EXIT_SUPERCRUISE;
+import static elite.intel.ai.brain.handlers.commands.ControllerBindings.GameCommand.BINDING_EXIT_SUPERCRUISE;
 
 public class ExitFtlHandler extends CustomCommandOperator implements CommandHandler {
 
@@ -13,11 +13,11 @@ public class ExitFtlHandler extends CustomCommandOperator implements CommandHand
         super(controller.getMonitor(), controller.getExecutor());
     }
 
-    @Override public void handle(JsonObject params, String responseText) {
+    @Override public void handle(String action, JsonObject params, String responseText) {
         Status status = Status.getInstance();
 
         if (status.isInSupercruise()) {
-            operateKeyboard(EXIT_SUPERCRUISE.getGameBinding(), 0);
+            operateKeyboard(BINDING_EXIT_SUPERCRUISE.getGameBinding(), 0);
         }
     }
 }

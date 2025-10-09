@@ -7,7 +7,7 @@ import elite.intel.session.Status;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import static elite.intel.ai.brain.handlers.commands.GameCommands.GameCommand.*;
+import static elite.intel.ai.brain.handlers.commands.ControllerBindings.GameCommand.*;
 
 /**
  * The SetPowerToSystemsHandler class extends the CustomCommandOperator and implements
@@ -27,7 +27,7 @@ public class SetPowerToSystemsHandler extends CustomCommandOperator implements C
         super(commandHandler.getMonitor(), commandHandler.getExecutor());
     }
 
-    @Override public void handle(JsonObject params, String responseText) {
+    @Override public void handle(String action, JsonObject params, String responseText) {
         Status status = Status.getInstance();
 
         if (status.isInMainShip()) {
@@ -41,17 +41,17 @@ public class SetPowerToSystemsHandler extends CustomCommandOperator implements C
     }
 
     private void powerToSystemsSRV() {
-        String resetPowerDistribution = RESET_POWER_DISTRIBUTION_BUGGY.getGameBinding();
-        String increaseSystemsPower = INCREASE_SYSTEMS_POWER_BUGGY.getGameBinding();
-        String increaseEnginesPower = INCREASE_ENGINES_POWER_BUGGY.getGameBinding();
+        String resetPowerDistribution = BINDING_RESET_POWER_DISTRIBUTION_BUGGY.getGameBinding();
+        String increaseSystemsPower = BINDING_INCREASE_SYSTEMS_POWER_BUGGY.getGameBinding();
+        String increaseEnginesPower = BINDING_INCREASE_ENGINES_POWER_BUGGY.getGameBinding();
 
         performOperation(resetPowerDistribution, increaseSystemsPower, increaseEnginesPower);
     }
 
     private void powerToSystemsShip() {
-        String resetPowerDistribution = RESET_POWER_DISTRIBUTION.getGameBinding();
-        String increaseSystemsPower = INCREASE_SYSTEMS_POWER.getGameBinding();
-        String increaseEnginesPower = INCREASE_ENGINES_POWER.getGameBinding();
+        String resetPowerDistribution = BINDING_RESET_POWER_DISTRIBUTION.getGameBinding();
+        String increaseSystemsPower = BINDING_INCREASE_SYSTEMS_POWER.getGameBinding();
+        String increaseEnginesPower = BINDING_INCREASE_ENGINES_POWER.getGameBinding();
 
         performOperation(resetPowerDistribution, increaseSystemsPower, increaseEnginesPower);
     }

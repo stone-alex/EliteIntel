@@ -8,8 +8,8 @@ import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.Status;
 import elite.intel.util.SleepNoThrow;
 
-import static elite.intel.ai.brain.handlers.commands.GameCommands.GameCommand.HARDPOINTS_TOGGLE;
-import static elite.intel.ai.brain.handlers.commands.GameCommands.GameCommand.JUMP_TO_HYPERSPACE;
+import static elite.intel.ai.brain.handlers.commands.ControllerBindings.GameCommand.BINDING_HARDPOINTS_TOGGLE;
+import static elite.intel.ai.brain.handlers.commands.ControllerBindings.GameCommand.BINDING_JUMP_TO_HYPERSPACE;
 
 public class JumpToHyperspaceHandler extends CustomCommandOperator implements CommandHandler {
 
@@ -17,7 +17,7 @@ public class JumpToHyperspaceHandler extends CustomCommandOperator implements Co
         super(controller.getMonitor(), controller.getExecutor());
     }
 
-    @Override public void handle(JsonObject params, String responseText) {
+    @Override public void handle(String action, JsonObject params, String responseText) {
 
         Status status = Status.getInstance();
 
@@ -29,10 +29,10 @@ public class JumpToHyperspaceHandler extends CustomCommandOperator implements Co
             EventBusManager.publish(new AiVoxResponseEvent("FSD is on cooldown."));
         } else if (status.isInMainShip()) {
             if (status.isHardpointsDeployed()) {
-                operateKeyboard(HARDPOINTS_TOGGLE.getGameBinding(), 0);
+                operateKeyboard(BINDING_HARDPOINTS_TOGGLE.getGameBinding(), 0);
                 SleepNoThrow.sleep(2000);
             }
-            operateKeyboard(JUMP_TO_HYPERSPACE.getGameBinding(), 0);
+            operateKeyboard(BINDING_JUMP_TO_HYPERSPACE.getGameBinding(), 0);
         } else {
             EventBusManager.publish(new AiVoxResponseEvent("Get in to your ship, so we can blast out of here."));
         }

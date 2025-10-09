@@ -10,11 +10,11 @@ import elite.intel.util.BrowserUtil;
 
 import java.util.List;
 
-import static elite.intel.ai.brain.handlers.commands.custom.CustomCommands.HELP;
+import static elite.intel.ai.brain.handlers.commands.custom.Commands.HELP;
 
 public class HelpHandler implements CommandHandler {
 
-    @Override public void handle(JsonObject params, String responseText) {
+    @Override public void handle(String action, JsonObject params, String responseText) {
 
         JsonElement jsonElement = params.get(HELP.getParamKey());
         String topic = jsonElement == null ? null : jsonElement.getAsString();

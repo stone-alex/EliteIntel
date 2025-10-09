@@ -4,7 +4,7 @@ import elite.intel.ai.hands.GameController;
 import elite.intel.ai.hands.KeyProcessor;
 import elite.intel.util.AudioPlayer;
 
-import static elite.intel.ai.brain.handlers.commands.GameCommands.GameCommand.*;
+import static elite.intel.ai.brain.handlers.commands.ControllerBindings.GameCommand.*;
 
 public class RoutePlotter extends CustomCommandOperator {
 
@@ -15,17 +15,17 @@ public class RoutePlotter extends CustomCommandOperator {
 
     public void plotRoute(String destination) {
         try {
-            String openGalaxyMap = GALAXY_MAP.getGameBinding();
+            String openGalaxyMap = BINDING_GALAXY_MAP.getGameBinding();
             operateKeyboard(openGalaxyMap, 0);
             Thread.sleep(200);
             Thread.sleep(1500);
-            String uiLeft = UI_LEFT.getGameBinding();
+            String uiLeft = BINDING_UI_LEFT.getGameBinding();
             operateKeyboard(uiLeft, 0);
             Thread.sleep(200);
-            String uiRight = UI_RIGHT.getGameBinding();
+            String uiRight = BINDING_UI_RIGHT.getGameBinding();
             operateKeyboard(uiRight, 0);
             Thread.sleep(200);
-            String activate = ACTIVATE.getGameBinding();
+            String activate = BINDING_ACTIVATE.getGameBinding();
             operateKeyboard(activate, 0);
             Thread.sleep(200);
             KeyProcessor keyProcessor = KeyProcessor.getInstance();
@@ -43,9 +43,9 @@ public class RoutePlotter extends CustomCommandOperator {
             AudioPlayer.getInstance().playBeep();
 
             //Game bug work around
-            operateKeyboard(CAM_ZOOM_OUT.getGameBinding(), 120);
+            operateKeyboard(BINDING_CAM_ZOOM_OUT.getGameBinding(), 120);
             Thread.sleep(200);
-            operateKeyboard(CAM_ZOOM_IN.getGameBinding(), 120);
+            operateKeyboard(BINDING_CAM_ZOOM_IN.getGameBinding(), 120);
 
             Thread.sleep(200);
             keyProcessor.pressAndHoldKey(KeyProcessor.KEY_ENTER, 3000);

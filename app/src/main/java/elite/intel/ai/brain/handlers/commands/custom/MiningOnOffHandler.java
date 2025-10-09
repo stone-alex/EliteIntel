@@ -11,8 +11,8 @@ import static elite.intel.util.json.JsonParameterExtractor.extractParameter;
 
 public class MiningOnOffHandler implements CommandHandler {
 
-    @Override public void handle(JsonObject params, String responseText) {
-        JsonElement jsonElement = extractParameter(CustomCommands.MINING_ON_OFF.getPlaceholder(), params);
+    @Override public void handle(String action, JsonObject params, String responseText) {
+        JsonElement jsonElement = extractParameter(Commands.MINING_ON_OFF.getPlaceholder(), params);
         boolean isOn = "on".equalsIgnoreCase(jsonElement.getAsString()) || "true".equalsIgnoreCase(jsonElement.getAsString());
         PlayerSession playerSession = PlayerSession.getInstance();
         playerSession.setMiningAnnouncementOn(isOn);

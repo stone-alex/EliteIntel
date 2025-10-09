@@ -1,7 +1,6 @@
 package elite.intel.ai.brain;
 
-import elite.intel.ai.brain.handlers.commands.GameCommands;
-import elite.intel.ai.brain.handlers.commands.custom.CustomCommands;
+import elite.intel.ai.brain.handlers.commands.custom.Commands;
 import elite.intel.ai.brain.handlers.query.QueryActions;
 
 import java.util.Arrays;
@@ -29,11 +28,9 @@ public class AiRequestHints {
     public static final List<String> QUERIES;
 
     static {
-        List<String> commands = Arrays.stream(CustomCommands.values())
-                .map(CustomCommands::getCommandWithPlaceholder)
+        List<String> commands = Arrays.stream(Commands.values())
+                .map(Commands::getCommandWithPlaceholder)
                 .collect(Collectors.toList());
-
-        commands.addAll(Arrays.asList(GameCommands.getGameControlCommands()));
         COMMANDS = commands;
     }
 
@@ -52,10 +49,9 @@ public class AiRequestHints {
     }
 
     private static String formatCustomCommands() {
-        return "Supported custom commands: '" + String.join("', '", CustomCommands.getCustomCommands()) + "'. ";
+        return "Supported custom commands: '" + String.join("', '", Commands.getCustomCommands()) + "'. ";
     }
 
-    public static final String supportedCommands = formatCommands();
     public static final String supportedQueries = formatQueries();
     public static final String customCommands = formatCustomCommands();
 }

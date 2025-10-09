@@ -15,7 +15,9 @@ public class CodexEntryEventSubscriber {
     @Subscribe
     public void onCodexEntryEvent(CodexEntryEvent event) {
         PlayerSession playerSession = PlayerSession.getInstance();
-        LocationDto currentLocation = playerSession.getCurrentLocation();
+
+        LocationDto currentLocation = playerSession.getLocation(event.getBodyID());
+        playerSession.setCurrentLocationId(event.getBodyID());
         StringBuilder sb = new StringBuilder();
 
         String firstWordOfEntryName = event.getNameLocalised().split(" ")[0];

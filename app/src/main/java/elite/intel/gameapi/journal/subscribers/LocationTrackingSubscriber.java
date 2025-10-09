@@ -301,8 +301,8 @@ public class LocationTrackingSubscriber {
 
 
     private void vocalize(String text, double distance, double bearing, boolean highPriority) {
-        if (highPriority) {
-            //EventBusManager.publish(new TTSInterruptEvent());
+        if (this.isGliding) {
+            return;
         }
 
         if (isAboveAnnouncementThreshold(highPriority)) {
@@ -364,7 +364,6 @@ public class LocationTrackingSubscriber {
 
     @Subscribe
     public void onInGlideEvent(InGlideEvent event){
-        this.isGliding = true;
-        log.info("In glide event received.");
+        this.isGliding = event.isGliding();
     }
 }

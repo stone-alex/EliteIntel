@@ -176,7 +176,7 @@ public class Status extends StatusFlags implements java.io.Serializable {
     }
 
     public boolean isGlideMode() {
-        return isGlideModeF2(getStatus().getFlags());
+        return isGlideModeF2(getStatus().getFlags2());
     }
 
     public boolean isVeryHot() {

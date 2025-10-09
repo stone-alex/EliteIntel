@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static elite.intel.util.NavigationUtils.calculateSurfaceDistance;
 
@@ -108,8 +107,11 @@ public class NavigateToNextBioSample implements CommandHandler {
     }
 
     private  CodexEntryEvent findPartialScanMatch(List<BioSampleDto> bioScans, List<CodexEntryEvent> codexEntries, double userLatitude, double userLongitude, double planetRadius) {
-        Optional<BioSampleDto> bioSampleDto = bioScans.stream().findFirst();
-        String match = bioSampleDto.get().getGenus();
-        return findClosestBiologyEntry(codexEntries, userLatitude, userLongitude, planetRadius, match, null);
+        for (BioSampleDto partial : bioScans) {
+            CodexEntryEvent entry = findClosestBiologyEntry(codexEntries, userLatitude, userLongitude, planetRadius, partial.getGenus(), null);
+            if (entry != null) return entry;
+        }
+
+        return null;
     }
 }

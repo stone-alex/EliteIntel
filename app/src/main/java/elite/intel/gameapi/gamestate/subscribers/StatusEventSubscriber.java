@@ -36,9 +36,9 @@ public class StatusEventSubscriber {
         /// --------------------------------------------------------------------------------------
         //TODO: Can throw custom events. like BeingInterdictedEvent if(status.isBeingInterdicted()){ publish event...}
 
-        if (status.isGlideMode()) {
-            EventBusManager.publish(new InGlideEvent());
-        }
+
+        EventBusManager.publish(new InGlideEvent(status.isGlideMode()));
+
 
         if (status.isBeingInterdicted()) {
             EventBusManager.publish(new BeingInterdictedEvent());

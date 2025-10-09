@@ -50,7 +50,6 @@ public class BioSampleTrackingSubscriber {
             }
         }
 
-        BioSampleDto bioSampleDto = bioSamples.getFirst();
         playerSession.getCurrentLocation().setPartialBioSamples(temp);
 
         // Announce only on state transition

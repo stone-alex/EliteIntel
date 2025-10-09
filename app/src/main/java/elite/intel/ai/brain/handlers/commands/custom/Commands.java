@@ -130,7 +130,8 @@ public enum Commands {
     SET_SPEED50("set_speed_to_medium_throttle_50", BINDING_SET_SPEED50.getGameBinding(), null, null, GenericGameControllHandler.class),
     SET_SPEED75("set_speed_to_optimal_throttle_75", BINDING_SET_SPEED75.getGameBinding(),  null, null, GenericGameControllHandler.class),
     SET_SPEED100("set_speed_to_maximum_throttle_100", BINDING_SET_SPEED100.getGameBinding(), null, null, GenericGameControllHandler.class),
-    SET_SPEED_ZERO("set_speed_to_zero_0", BINDING_SET_SPEED100.getGameBinding(), null, null, GenericGameControllHandler.class),
+    SET_SPEED_ZERO("set_speed_to_zero_0", BINDING_SET_SPEED_ZERO.getGameBinding(), null, null, GenericGameControllHandler.class),
+    TAXI("taxi", BINDING_SET_SPEED_ZERO.getGameBinding(), null, null, GenericGameControllHandler.class),
 
 
     SELECT_HIGHEST_THREAT("target_highest_threat", BINDING_SELECT_HIGHEST_THREAT.getGameBinding(), null, null, GenericGameControllHandler.class),

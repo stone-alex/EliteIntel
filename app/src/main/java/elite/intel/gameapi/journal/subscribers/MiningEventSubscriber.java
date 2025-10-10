@@ -3,7 +3,6 @@ package elite.intel.gameapi.journal.subscribers;
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.mouth.subscribers.events.MiningAnnouncementEvent;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
 import elite.intel.gameapi.journal.events.MiningRefinedEvent;
 import elite.intel.session.PlayerSession;
 import org.apache.logging.log4j.LogManager;

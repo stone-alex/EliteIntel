@@ -34,8 +34,9 @@ public class SetPersonalityHandler implements CommandHandler {
 
     @Override public void handle(String action, JsonObject params, String responseText) {
         try {
-            JsonElement jsonElement = extractParameter(Commands.SET_PERSONALITY.getPlaceholder(), params);
-            AIPersonality aiPersonality = AIPersonality.valueOf(jsonElement.getAsString().toUpperCase().replace("\"",""));
+            String keyValue = params.get("key").getAsString();
+
+            AIPersonality aiPersonality = AIPersonality.valueOf(keyValue.toUpperCase());
             SystemSession.getInstance().setAIPersonality(aiPersonality);
         } catch (IllegalArgumentException e) {
             EventBusManager.publish(new SensorDataEvent("No such personality. try Professional, Casual, Friendly, Unhinged or Rogue"));

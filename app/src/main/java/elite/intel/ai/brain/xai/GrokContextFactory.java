@@ -245,6 +245,8 @@ public class GrokContextFactory implements AiContextFactory {
                 "    - 'chat': General conversation, questions unrelated to game actions or state, or unmatched inputs (general chat). Use for lore, opinions, or casual talk (e.g., 'How’s it going?', 'What’s the vibe in this system?'). Only classify as chat if the input does not start with interrogative words ('what', 'where', 'when', 'how', 'how far', 'how many', 'how much', 'what is', 'where is') or command verbs ('set', 'get', 'drop', 'retract', 'deploy', 'find', 'locate', 'activate') and does not match any specific query or command pattern in QueryActions or GameCommands/CustomCommands. If ambiguous (e.g., pure 'where'), set response_text to 'Say again?', action to null, and expect_followup to true.\n");
 
         sb.append("For type='command': Always provide empty response_text.\n");
+        sb.append("For for set, change, swap, add etc type commands that require value provide params json {\"key\":\"value\"} where key always 'key' and value is what you determine value tobe. ");
+        sb.append("For toggle commands such as turn off, cancel, enable or disable, provide json {\"state\":\"true\"} / {\"state\":\"false\"}. ");
         sb.append("For navigation commands (e.g., 'jump', 'hyperspace', 'go to next system'), map to '" + JUMP_TO_HYPERSPACE.getAction() + "' 'supercruise' to '"+ENTER_SUPER_CRUISE.getAction()+"'.  'cancel_resume_navigation' to "+NAVIGATION_ON_OFF.getAction()+" 'Stop', 'cut engines' map to speed commands " + SET_OPTIMAL_SPEED.getAction() + ". 'Activate', 'toggle', 'left', 'right', 'up', 'down', 'close' to UI commands like" + SET_OPTIMAL_SPEED.getAction() + ". ");
 
         sb.append("For type='query': \n" +

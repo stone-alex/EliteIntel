@@ -8,6 +8,7 @@ import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.SystemSession;
 
+import static elite.intel.ai.brain.handlers.commands.custom.Commands.SET_AI_VOICE;
 import static elite.intel.util.json.JsonParameterExtractor.extractParameter;
 
 /**
@@ -21,20 +22,20 @@ import static elite.intel.util.json.JsonParameterExtractor.extractParameter;
 public class SetAiVoice implements CommandHandler {
 
     @Override public void handle(String action, JsonObject params, String responseText) {
-        JsonElement jsonElement = extractParameter(Commands.SET_AI_VOICE.getPlaceholder(), params);
-        if (jsonElement == null || jsonElement.getAsString().isEmpty()) {
+        String voiceName = params.get("key").getAsString();
+        if (voiceName == null || voiceName.isEmpty()) {
             EventBusManager.publish(new AiVoxResponseEvent("Sorry, the value returned was null or empty. I am unable to process your request."));
             return;
         }
-        setVoice(jsonElement);
+        setVoice(voiceName);
     }
 
-    private void setVoice(JsonElement jsonElement) {
+    private void setVoice(String voiceName) {
         SystemSession systemSession = SystemSession.getInstance();
         try {
-            systemSession.setAIVoice(AiVoices.valueOf(jsonElement.getAsString().toUpperCase()));
+            systemSession.setAIVoice(AiVoices.valueOf(voiceName.toUpperCase()));
         } catch (IllegalArgumentException e) {
-            EventBusManager.publish(new AiVoxResponseEvent("Sorry, I don't understand voice name: " + jsonElement.getAsString().toUpperCase() + ". Error: " + e.getMessage()));
+            EventBusManager.publish(new AiVoxResponseEvent("Sorry, I don't understand voice name: " + voiceName.toUpperCase() + ". Error: " + e.getMessage()));
         }
     }
 }

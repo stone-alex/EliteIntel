@@ -28,10 +28,9 @@ public class AiRequestHints {
     public static final List<String> QUERIES;
 
     static {
-        List<String> commands = Arrays.stream(Commands.values())
-                .map(Commands::getCommandWithPlaceholder)
+        COMMANDS = Arrays.stream(Commands.values())
+                .map(Enum::name)
                 .collect(Collectors.toList());
-        COMMANDS = commands;
     }
 
     static {

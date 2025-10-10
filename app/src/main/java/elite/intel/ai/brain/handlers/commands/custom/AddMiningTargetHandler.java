@@ -24,14 +24,14 @@ public class AddMiningTargetHandler implements CommandHandler {
     public void handle(String action, JsonObject params, String responseText) {
         PlayerSession session = PlayerSession.getInstance();
         session.setMiningAnnouncementOn(true);
-        JsonElement jsonElement = params.get("material");
+        String target = params.get("key").getAsString();
 
-        if (jsonElement == null || jsonElement.getAsString().isEmpty()) {
+        if (target == null && target.isEmpty()) {
             log.info("no mining target set");
         } else {
-            String miningTarget = jsonElement.getAsJsonPrimitive().getAsString().replace("\"", "");
-            session.addMiningTarget(miningTarget);
+
+            session.addMiningTarget(target);
         }
-        EventBusManager.publish(new AiVoxResponseEvent("Mining target set. Mining announcement enabled."));
+        EventBusManager.publish(new AiVoxResponseEvent("Mining target set to "+target+". Mining announcement enabled."));
     }
 }

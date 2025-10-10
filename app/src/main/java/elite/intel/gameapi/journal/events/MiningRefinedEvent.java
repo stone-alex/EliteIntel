@@ -15,7 +15,7 @@ public class MiningRefinedEvent extends BaseEvent {
     private String typeLocalised;
 
     public MiningRefinedEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), Duration.ZERO, "MiningRefined");
+        super(json.get("timestamp").getAsString(), Duration.ofSeconds(2), "MiningRefined");
         MiningRefinedEvent event = GsonFactory.getGson().fromJson(json, MiningRefinedEvent.class);
         this.type = event.type;
         this.typeLocalised = event.typeLocalised;

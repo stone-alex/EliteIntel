@@ -12,8 +12,8 @@ import static elite.intel.util.json.JsonParameterExtractor.extractParameter;
 public class SetRadioTransmissionOnOff implements CommandHandler {
 
     @Override public void handle(String action, JsonObject params, String responseText) {
-        JsonElement jsonElement = extractParameter(Commands.SET_RADIO_TRANSMISSION_MODDE.getPlaceholder(), params);
-        boolean isOn = "on".equalsIgnoreCase(jsonElement.getAsString()) || "true".equalsIgnoreCase(jsonElement.getAsString());
+
+        boolean isOn = params.get("state").getAsBoolean();
         PlayerSession playerSession = PlayerSession.getInstance();
         playerSession.setRadioTransmissionOn(isOn);
         EventBusManager.publish(new AiVoxResponseEvent("Radio is: " + (isOn ? "On" : "Off")));

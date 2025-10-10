@@ -15,8 +15,8 @@ public class NavigationOnOffHandler implements CommandHandler {
     @Override public void handle(String action, JsonObject params, String responseText) {
         PlayerSession playerSession = PlayerSession.getInstance();
 
-        JsonElement jsonElement = extractParameter(Commands.NAVIGATION_ON_OFF.getPlaceholder(), params);
-        boolean isOn = "on".equalsIgnoreCase(jsonElement.getAsString()) || "true".equalsIgnoreCase(jsonElement.getAsString());
+
+        boolean isOn = params.get("state").getAsBoolean();
 
         TargetLocation tracking = playerSession.getTracking();
         tracking.setEnabled(isOn);

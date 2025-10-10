@@ -50,7 +50,7 @@ public class AnalyzeDistanceFromFleetCarrierHandler extends BaseQueryAnalyzer im
 
         double distance = NavigationUtils.calculateGalacticDistance(x, y, z, carrier_location_x, carrier_location_y, carrier_location_z);
 
-        String instruction = "Distance is in Light Years. If jump range is > 0 also calculate number of jumps required to reach the carrier as distance divided by jump range. Jump range is in light years.";
+        String instruction = "Distance is in Light Years. If jump range is > 0 also calculate number of jumps required to reach the carrier. Jump range is in light years. Return whole numbers only, no decimals";
         return analyzeData(
                 new DataDto(
                         distance,

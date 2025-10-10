@@ -150,7 +150,7 @@ public class BindingsMonitor {
         try {
             currentBindsFile = new BindingsLoader().getLatestBindsFile();
             bindings = parser.parseBindings(currentBindsFile);
-            EventBusManager.publish(new AiVoxResponseEvent("Key bindings updated."));
+            //EventBusManager.publish(new AiVoxResponseEvent("Key bindings updated."));
             EventBusManager.publish(new AppLogEvent("SYSTEM: Key bindings updated from file " + currentBindsFile.getAbsolutePath()));
             log.info("Key bindings updated from: {}", currentBindsFile.getName());
         } catch (Exception e) {

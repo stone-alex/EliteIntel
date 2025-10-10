@@ -231,7 +231,7 @@ public class GrokContextFactory implements AiContextFactory {
         sb.append(generateAbbreviations());
         sb.append("Interpret this input: ").append(playerVoiceInput).append("\n\n ");
         sb.append("Always output JSON: {\"type\": \"command|query|chat\", \"response_text\": \"TTS output\", \"action\": \"action_name|query_name|null\", \"params\": {\"key\": \"value\"}, \"expect_followup\": boolean} \n");
-
+        sb.append("For toggle commands such as turn off, cancel, enable or disable, provide json {\"state\":\"true\"} / {\"state\":\"false\"}");
         inputClassificationClause(sb);
         colloquialTerms(sb);
         return sb.toString();

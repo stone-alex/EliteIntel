@@ -44,11 +44,12 @@ public enum Commands {
 
 
     /// Commands that have specific handler impl (which uses N bindings inside)
-    INCREASE_ENGINES_POWER("all_power_to_engines", null, null, null, SetPowerToEnginesHandler.class),
+    /// Commands that have specific hanodler impl (which uses N bindings inside)
+    INCREASE_ENGINES_POWER("transfer_power_to_engines", null, null, null, SetPowerToEnginesHandler.class),
     NAVIGATE_TO_NEXT_BIO_SAMPLE("navigate_directions_to_codex_entry_or_bio_sample", null, null, null, NavigateToNextBioSample.class),
-    INCREASE_SHIELDS_POWER("all_power_to_shields", null, null, null, SetPowerToSystemsHandler.class),
-    INCREASE_SYSTEMS_POWER("all_power_to_systems", null, null, null, SetPowerToSystemsHandler.class),
-    INCREASE_WEAPONS_POWER("all_power_to_weapons", null, null, null, SetPowerToWeaponsHandler.class),
+    INCREASE_SHIELDS_POWER("transfer_power_to_shields", null, null, null, SetPowerToSystemsHandler.class),
+    INCREASE_SYSTEMS_POWER("transfer_power_to_ship_systems", null, null, null, SetPowerToSystemsHandler.class),
+    INCREASE_WEAPONS_POWER("transfer_power_to_weapons", null, null, null, SetPowerToWeaponsHandler.class),
     RESET_POWER("reset_power_settings", null, null, null, ResetPowerSettings.class),
 
     OPEN_GALAXY_MAP("open_galaxy_map", null, null, null, OpenGalaxyMapHandler.class),
@@ -116,15 +117,15 @@ public enum Commands {
     DRIVE_ASSIST("drive_assist", BINDING_DRIVE_ASSIST.getGameBinding(), null, null, GenericGameControllHandler.class),
     EXPLORATION_FSSQUIT("exit_fss", BINDING_EXPLORATION_FSSQUIT.getGameBinding(), null, null, GenericGameControllHandler.class),
 
-    RADAR_DECREASE_RANGE("radar_decrease_range", BINDING_RADAR_DECREASE_RANGE.getGameBinding(), null, null, GenericGameControllHandler.class),
-    RADAR_INCREASE_RANGE("radar_increase_range", BINDING_RADAR_INCREASE_RANGE.getGameBinding(), null, null, GenericGameControllHandler.class),
+    RADAR_DECREASE_RANGE("decrease_radar_range", BINDING_RADAR_DECREASE_RANGE.getGameBinding(), null, null, GenericGameControllHandler.class),
+    RADAR_INCREASE_RANGE("increase_radar_range", BINDING_RADAR_INCREASE_RANGE.getGameBinding(), null, null, GenericGameControllHandler.class),
 
     RECALL_DISMISS_SHIP("recall_or_dismiss_ship", BINDING_RECALL_DISMISS_SHIP.getGameBinding(), null, null, GenericGameControllHandler.class),
 
-    REQUEST_DEFENSIVE_BEHAVIOUR("defend_ship_fighter_order", BINDING_REQUEST_DEFENSIVE_BEHAVIOUR.getGameBinding(), null, null, GenericGameControllHandler.class),
-    REQUEST_FOCUS_TARGET("attack_my_target_fighter_order", BINDING_REQUEST_DEFENSIVE_BEHAVIOUR.getGameBinding(), null, null, GenericGameControllHandler.class),
-    REQUEST_HOLD_FIRE("hold_your_fire_fighter_order", BINDING_REQUEST_HOLD_FIRE.getGameBinding(), null, null, GenericGameControllHandler.class),
-    REQUEST_REQUEST_DOCK("fighter_recall", BINDING_REQUEST_REQUEST_DOCK.getGameBinding(), null, null, GenericGameControllHandler.class),
+    REQUEST_DEFENSIVE_BEHAVIOUR("fighter_orders_defend_fighter_order", BINDING_REQUEST_DEFENSIVE_BEHAVIOUR.getGameBinding(), null, null, GenericGameControllHandler.class),
+    REQUEST_FOCUS_TARGET("fighter_orders_attack_my_target_fighter_order", BINDING_REQUEST_DEFENSIVE_BEHAVIOUR.getGameBinding(), null, null, GenericGameControllHandler.class),
+    REQUEST_HOLD_FIRE("fighter_orders_hold_your_fire_fighter_order", BINDING_REQUEST_HOLD_FIRE.getGameBinding(), null, null, GenericGameControllHandler.class),
+    REQUEST_REQUEST_DOCK("fighter_orders_recall", BINDING_REQUEST_REQUEST_DOCK.getGameBinding(), null, null, GenericGameControllHandler.class),
 
     SET_SPEED25("set_speed_to_slow_throttle_25", BINDING_SET_SPEED25.getGameBinding(), null, null, GenericGameControllHandler.class),
     SET_SPEED50("set_speed_to_medium_throttle_50", BINDING_SET_SPEED50.getGameBinding(), null, null, GenericGameControllHandler.class),

@@ -267,7 +267,7 @@ public class GoogleSTTImpl implements EarsInterface {
                             if (rms > RMS_THRESHOLD_HIGH) {
                                 consecutiveVoice++;
                                 consecutiveSilence = 0;
-                                EventBusManager.publish(new TTSInterruptEvent(false));
+                                //EventBusManager.publish(new TTSInterruptEvent(false));
                             } else {
                                 consecutiveVoice = 0;
                                 if (rms < RMS_THRESHOLD_LOW) {

@@ -181,3 +181,5 @@
 "the blue cargo scoop"="deploy the cargo scoop"
 "open offices"="open fss"
 "biopharms"="bio forms"
+"open the faces"="open fss"
+"but also power to shields"="transfer power to shields"

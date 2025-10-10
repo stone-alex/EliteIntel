@@ -37,8 +37,8 @@ public class SetStreamingModeHandler implements CommandHandler {
     private static final Logger log = LogManager.getLogger(SetStreamingModeHandler.class);
 
     @Override public void handle(String action, JsonObject params, String responseText) {
-        JsonElement jsonElement = extractParameter(Commands.SET_STREAMING_MODE.getPlaceholder(), params);
-        boolean isOn = "on".equalsIgnoreCase(jsonElement.getAsString()) || "true".equalsIgnoreCase(jsonElement.getAsString());
+
+        boolean isOn = params.get("state").getAsBoolean();
         SystemSession systemSession = SystemSession.getInstance();
         systemSession.setStreamingMode(isOn);
 

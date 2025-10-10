@@ -12,11 +12,7 @@ import static elite.intel.util.json.JsonParameterExtractor.extractParameter;
 public class RouteAnnouncementsOnOffHandler implements CommandHandler {
 
     @Override public void handle(String action, JsonObject params, String responseText) {
-        JsonElement jsonElement = extractParameter(Commands.ROUTE_ON_OFF.getPlaceholder(), params);
-
-        if(jsonElement == null) {return;}
-
-        boolean isOn = "on".equalsIgnoreCase(jsonElement.getAsString()) || "true".equalsIgnoreCase(jsonElement.getAsString());
+        boolean isOn = params.get("state").getAsBoolean();
         PlayerSession playerSession = PlayerSession.getInstance();
         playerSession.setRouteAnnouncementOn(isOn);
         EventBusManager.publish(new AiVoxResponseEvent("Route Announcements: " + (isOn ? "On" : "Off")));

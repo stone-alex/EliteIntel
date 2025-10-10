@@ -5,9 +5,9 @@ import elite.intel.ai.brain.handlers.commands.CommandHandler;
 import elite.intel.ai.hands.GameController;
 
 
-public class GenericGameControllHandler extends CustomCommandOperator implements CommandHandler {
+public class GenericGameControlHandler extends CustomCommandOperator implements CommandHandler {
 
-    public GenericGameControllHandler(GameController controller) {
+    public GenericGameControlHandler(GameController controller) {
         super(controller.getMonitor(), controller.getExecutor());
     }
 

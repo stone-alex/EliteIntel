@@ -13,7 +13,6 @@ public class AnalyzeShipyardHandler extends BaseQueryAnalyzer implements QueryHa
         PlayerSession playerSession = PlayerSession.getInstance();
         ShipyardDto shipyard = playerSession.getCurrentLocation().getShipyard();
 
-
         return analyzeData(new DataDto(shipyard).toJson(), originalUserInput);
     }
 

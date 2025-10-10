@@ -15,9 +15,7 @@ public class AnalyzeDistanceFromLastBioSample extends BaseQueryAnalyzer implemen
         PlayerSession playerSession = PlayerSession.getInstance();
         Status status = Status.getInstance();
         LocationDto currentLocation = playerSession.getCurrentLocation();
-        if(currentLocation == null) {
-            return analyzeData(toJson("Current location is not available."), originalUserInput);
-        }
+
         if (status.getStatus() == null) {
             return analyzeData(toJson("No data available"), originalUserInput);
         }

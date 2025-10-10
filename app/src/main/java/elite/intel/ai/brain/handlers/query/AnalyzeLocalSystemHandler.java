@@ -14,7 +14,7 @@ public class AnalyzeLocalSystemHandler extends BaseQueryAnalyzer implements Quer
     public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         PlayerSession playerSession = PlayerSession.getInstance();
         LocationDto currentLocation = playerSession.getCurrentLocation();
-        if (currentLocation == null) return analyzeData(toJson("No data available"), originalUserInput);
+        if (currentLocation.getBodyId() < 0) return analyzeData(toJson("No data available"), originalUserInput);
 
         StarSystemDto edsmData = EdsmApiClient.searchStarSystem(currentLocation.getStarName(), 1);
 

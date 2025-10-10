@@ -18,8 +18,7 @@ public class AnalyzeLocalStations extends BaseQueryAnalyzer implements QueryHand
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         PlayerSession playerSession = PlayerSession.getInstance();
         LocationDto currentLocation = playerSession.getCurrentLocation();
-        String starName = currentLocation == null ? "no data" : currentLocation.getStarName();
-        StationsDto stationsDto = EdsmApiClient.searchStations(starName);
+        StationsDto stationsDto = EdsmApiClient.searchStations(playerSession.getCurrentLocation().getStarName());
         List<DataDto> data = new ArrayList<>();
         stationsDto.getData().getStations().forEach(station -> {
             OutfittingDto outfitting = EdsmApiClient.searchOutfitting(station.getMarketId(), null, null);

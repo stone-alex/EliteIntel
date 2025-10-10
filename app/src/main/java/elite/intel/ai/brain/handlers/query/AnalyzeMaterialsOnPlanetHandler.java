@@ -16,7 +16,7 @@ public class AnalyzeMaterialsOnPlanetHandler extends BaseQueryAnalyzer implement
     public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         PlayerSession playerSession = PlayerSession.getInstance();
         LocationDto currentLocation = playerSession.getCurrentLocation();
-        if(currentLocation == null) return analyzeData(toJson("No location data available"), originalUserInput);
+        if(currentLocation.getBodyId() < 0) return analyzeData(toJson("No location data available"), originalUserInput);
         List<MaterialDto> materials = currentLocation.getMaterials();
 
         if (materials.isEmpty()) {

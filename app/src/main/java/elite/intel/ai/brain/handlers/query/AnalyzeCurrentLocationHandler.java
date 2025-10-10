@@ -10,12 +10,7 @@ public class AnalyzeCurrentLocationHandler extends BaseQueryAnalyzer implements 
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         PlayerSession playerSession = PlayerSession.getInstance();
-        LocationDto currentLocation = playerSession.getCurrentLocation();
-        if (currentLocation == null) {
-            return analyzeData(GsonFactory.getGson().toJson("Current location data is not available"), originalUserInput);
-        } else {
-            return analyzeData(new DataDto(currentLocation).toJson(), originalUserInput);
-        }
+        return analyzeData(new DataDto(playerSession.getCurrentLocation()).toJson(), originalUserInput);
     }
 
     record DataDto(LocationDto location) implements ToJsonConvertible {

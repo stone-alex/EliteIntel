@@ -16,7 +16,7 @@ public class StationsDto implements ToJsonConvertible {
     }
 
     public StationsData getData() {
-        return data;
+        return data == null ? new StationsData() : data;
     }
 
     @Override

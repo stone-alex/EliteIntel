@@ -104,44 +104,44 @@ public enum Commands {
 
 
     /// Generic simple commands. no parameters, but require binding
-    ACTIVATE("activate", BINDING_ACTIVATE.getGameBinding(), null,  GenericGameControllHandler.class),
-    NIGHT_VISION_ON("activate_night_vision", BINDING_NIGHT_VISION_TOGGLE.getGameBinding(), null,  GenericGameControllHandler.class),
-    NIGHT_VISION_OFF("deactivate_night_vision", BINDING_NIGHT_VISION_TOGGLE.getGameBinding(), null,  GenericGameControllHandler.class),
-    CYCLE_NEXT_PAGE("cycle_next_page", BINDING_CYCLE_NEXT_PAGE.getGameBinding(), null,  GenericGameControllHandler.class),
-    CYCLE_NEXT_PANEL("cycle_next_panel", BINDING_CYCLE_NEXT_PANEL.getGameBinding(), null,  GenericGameControllHandler.class),
-    CYCLE_PREVIOUS_PAGE("cycle_previous_page", BINDING_CYCLE_PREVIOUS_PAGE.getGameBinding(), null,  GenericGameControllHandler.class),
-    CYCLE_PREVIOUS_PANEL("cycle_previous_panel", BINDING_CYCLE_PREVIOUS_PANEL.getGameBinding(), null,  GenericGameControllHandler.class),
-    CYCLE_NEXT_SUBSYSTEM("cycle_next_subsystem", BINDING_CYCLE_NEXT_SUBSYSTEM.getGameBinding(), null,  GenericGameControllHandler.class),
-    CYCLE_PREVIOUS_SUBSYSTEM("cycle_previous_subsystem", BINDING_CYCLE_PREVIOUS_SUBSYSTEM.getGameBinding(), null,  GenericGameControllHandler.class),
-    DEPLOY_HEAT_SINK("deploy_heat_sink", BINDING_DEPLOY_HEAT_SINK.getGameBinding(), null,  GenericGameControllHandler.class),
-    DRIVE_ASSIST("drive_assist", BINDING_DRIVE_ASSIST.getGameBinding(), null,  GenericGameControllHandler.class),
-    EXPLORATION_FSSQUIT("exit_fss", BINDING_EXPLORATION_FSSQUIT.getGameBinding(), null,  GenericGameControllHandler.class),
+    ACTIVATE("activate", BINDING_ACTIVATE.getGameBinding(), null, GenericGameControlHandler.class),
+    NIGHT_VISION_ON("activate_night_vision", BINDING_NIGHT_VISION_TOGGLE.getGameBinding(), null, GenericGameControlHandler.class),
+    NIGHT_VISION_OFF("deactivate_night_vision", BINDING_NIGHT_VISION_TOGGLE.getGameBinding(), null, GenericGameControlHandler.class),
+    CYCLE_NEXT_PAGE("cycle_next_page", BINDING_CYCLE_NEXT_PAGE.getGameBinding(), null, GenericGameControlHandler.class),
+    CYCLE_NEXT_PANEL("cycle_next_panel", BINDING_CYCLE_NEXT_PANEL.getGameBinding(), null, GenericGameControlHandler.class),
+    CYCLE_PREVIOUS_PAGE("cycle_previous_page", BINDING_CYCLE_PREVIOUS_PAGE.getGameBinding(), null, GenericGameControlHandler.class),
+    CYCLE_PREVIOUS_PANEL("cycle_previous_panel", BINDING_CYCLE_PREVIOUS_PANEL.getGameBinding(), null, GenericGameControlHandler.class),
+    CYCLE_NEXT_SUBSYSTEM("cycle_next_subsystem", BINDING_CYCLE_NEXT_SUBSYSTEM.getGameBinding(), null, GenericGameControlHandler.class),
+    CYCLE_PREVIOUS_SUBSYSTEM("cycle_previous_subsystem", BINDING_CYCLE_PREVIOUS_SUBSYSTEM.getGameBinding(), null, GenericGameControlHandler.class),
+    DEPLOY_HEAT_SINK("deploy_heat_sink", BINDING_DEPLOY_HEAT_SINK.getGameBinding(), null, GenericGameControlHandler.class),
+    DRIVE_ASSIST("drive_assist", BINDING_DRIVE_ASSIST.getGameBinding(), null, GenericGameControlHandler.class),
+    EXPLORATION_FSSQUIT("exit_fss", BINDING_EXPLORATION_FSSQUIT.getGameBinding(), null, GenericGameControlHandler.class),
 
-    RADAR_DECREASE_RANGE("decrease_radar_range", BINDING_RADAR_DECREASE_RANGE.getGameBinding(), null,  GenericGameControllHandler.class),
-    RADAR_INCREASE_RANGE("increase_radar_range", BINDING_RADAR_INCREASE_RANGE.getGameBinding(), null,  GenericGameControllHandler.class),
+    RADAR_DECREASE_RANGE("decrease_radar_range", BINDING_RADAR_DECREASE_RANGE.getGameBinding(), null, GenericGameControlHandler.class),
+    RADAR_INCREASE_RANGE("increase_radar_range", BINDING_RADAR_INCREASE_RANGE.getGameBinding(), null, GenericGameControlHandler.class),
 
-    RECALL_DISMISS_SHIP("recall_or_dismiss_ship", BINDING_RECALL_DISMISS_SHIP.getGameBinding(), null,  GenericGameControllHandler.class),
+    RECALL_DISMISS_SHIP("recall_or_dismiss_ship", BINDING_RECALL_DISMISS_SHIP.getGameBinding(), null, GenericGameControlHandler.class),
 
-    REQUEST_DEFENSIVE_BEHAVIOUR("fighter_orders_defend_fighter_order", BINDING_REQUEST_DEFENSIVE_BEHAVIOUR.getGameBinding(), null,  GenericGameControllHandler.class),
-    REQUEST_FOCUS_TARGET("fighter_orders_attack_my_target_fighter_order", BINDING_REQUEST_DEFENSIVE_BEHAVIOUR.getGameBinding(), null,  GenericGameControllHandler.class),
-    REQUEST_HOLD_FIRE("fighter_orders_hold_your_fire_fighter_order", BINDING_REQUEST_HOLD_FIRE.getGameBinding(), null,  GenericGameControllHandler.class),
-    REQUEST_REQUEST_DOCK("fighter_orders_recall", BINDING_REQUEST_REQUEST_DOCK.getGameBinding(), null,  GenericGameControllHandler.class),
+    REQUEST_DEFENSIVE_BEHAVIOUR("fighter_orders_defend_fighter_order", BINDING_REQUEST_DEFENSIVE_BEHAVIOUR.getGameBinding(), null, GenericGameControlHandler.class),
+    REQUEST_FOCUS_TARGET("fighter_orders_attack_my_target_fighter_order", BINDING_REQUEST_DEFENSIVE_BEHAVIOUR.getGameBinding(), null, GenericGameControlHandler.class),
+    REQUEST_HOLD_FIRE("fighter_orders_hold_your_fire_fighter_order", BINDING_REQUEST_HOLD_FIRE.getGameBinding(), null, GenericGameControlHandler.class),
+    REQUEST_REQUEST_DOCK("fighter_orders_recall", BINDING_REQUEST_REQUEST_DOCK.getGameBinding(), null, GenericGameControlHandler.class),
 
-    SET_SPEED25("set_speed_to_slow_throttle_25", BINDING_SET_SPEED25.getGameBinding(), null,  GenericGameControllHandler.class),
-    SET_SPEED50("set_speed_to_medium_throttle_50", BINDING_SET_SPEED50.getGameBinding(), null,  GenericGameControllHandler.class),
-    SET_SPEED75("set_speed_to_optimal_throttle_75", BINDING_SET_SPEED75.getGameBinding(),  null, GenericGameControllHandler.class),
-    SET_SPEED100("set_speed_to_maximum_throttle_100", BINDING_SET_SPEED100.getGameBinding(), null,  GenericGameControllHandler.class),
-    SET_SPEED_ZERO("set_speed_to_zero_0", BINDING_SET_SPEED_ZERO.getGameBinding(), null,  GenericGameControllHandler.class),
-    TAXI("taxi", BINDING_SET_SPEED_ZERO.getGameBinding(), null,  GenericGameControllHandler.class),
+    SET_SPEED25("set_speed_to_slow_throttle_25", BINDING_SET_SPEED25.getGameBinding(), null, GenericGameControlHandler.class),
+    SET_SPEED50("set_speed_to_medium_throttle_50", BINDING_SET_SPEED50.getGameBinding(), null, GenericGameControlHandler.class),
+    SET_SPEED75("set_speed_to_optimal_throttle_75", BINDING_SET_SPEED75.getGameBinding(), null, GenericGameControlHandler.class),
+    SET_SPEED100("set_speed_to_maximum_throttle_100", BINDING_SET_SPEED100.getGameBinding(), null, GenericGameControlHandler.class),
+    SET_SPEED_ZERO("set_speed_to_zero_0", BINDING_SET_SPEED_ZERO.getGameBinding(), null, GenericGameControlHandler.class),
+    TAXI("taxi", BINDING_SET_SPEED_ZERO.getGameBinding(), null, GenericGameControlHandler.class),
 
 
-    SELECT_HIGHEST_THREAT("target_highest_threat", BINDING_SELECT_HIGHEST_THREAT.getGameBinding(), null,  GenericGameControllHandler.class),
-    TARGET_NEXT_ROUTE_SYSTEM("select_or_target_next_system_in_route", BINDING_TARGET_NEXT_ROUTE_SYSTEM.getGameBinding(), null,  GenericGameControllHandler.class),
+    SELECT_HIGHEST_THREAT("target_highest_threat", BINDING_SELECT_HIGHEST_THREAT.getGameBinding(), null, GenericGameControlHandler.class),
+    TARGET_NEXT_ROUTE_SYSTEM("select_or_target_next_system_in_route", BINDING_TARGET_NEXT_ROUTE_SYSTEM.getGameBinding(), null, GenericGameControlHandler.class),
 
-    TARGET_WINGMAN0("target_wingman1", BINDING_TARGET_WINGMAN0.getGameBinding(), null,  GenericGameControllHandler.class),
-    TARGET_WINGMAN1("target_wingman2", BINDING_TARGET_WINGMAN1.getGameBinding(), null,  GenericGameControllHandler.class),
-    TARGET_WINGMAN2("target_wingman3", BINDING_TARGET_WINGMAN2.getGameBinding(), null,  GenericGameControllHandler.class),
-    WING_NAV_LOCK("lock_on_wingman", BINDING_WING_NAV_LOCK.getGameBinding(), null,  GenericGameControllHandler.class);
+    TARGET_WINGMAN0("target_wingman1", BINDING_TARGET_WINGMAN0.getGameBinding(), null, GenericGameControlHandler.class),
+    TARGET_WINGMAN1("target_wingman2", BINDING_TARGET_WINGMAN1.getGameBinding(), null, GenericGameControlHandler.class),
+    TARGET_WINGMAN2("target_wingman3", BINDING_TARGET_WINGMAN2.getGameBinding(), null, GenericGameControlHandler.class),
+    WING_NAV_LOCK("lock_on_wingman", BINDING_WING_NAV_LOCK.getGameBinding(), null, GenericGameControlHandler.class);
 
     ///
     private final String action;
@@ -159,12 +159,9 @@ public enum Commands {
     public static String[] getCustomCommands() {
         String[] result = new String[Commands.values().length];
         for (int i = 0; i < Commands.values().length; i++) {
-            // These commands used in custom handlers. exclude from generic command handler
-
             result[i] = Commands.values()[i].getAction();
         }
         return result;
-
     }
 
     public String getAction() {

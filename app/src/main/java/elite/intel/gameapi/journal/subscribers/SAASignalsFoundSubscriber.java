@@ -109,7 +109,7 @@ public class SAASignalsFoundSubscriber {
 
     private static void announce(String sb) {
         Status status = Status.getInstance();
-        if (status.isInMainShip() && !status.isLanded()) {
+        if (status.isInMainShip() && !status.isLanded() && !status.isDocked()) {
             EventBusManager.publish(new SensorDataEvent(sb));
         }
     }

@@ -23,6 +23,8 @@ The app uses Google Speech-to-Text (STT) and Text-to-Speech (TTS) for **natural 
 and either xAI's Grok or OpenAI's GPT for handling commands, queries, and chats. It processes game data from journal and auxiliary
 files, pulls in info from EDSM when needed, and keeps things responsive.
 
+**NOTE: Grok-4 is very slow. I highly recommend using OpenAI's GPT.**
+
 The project is open-source under
 a [Creative Commons license CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en),
 so feel free to check out the code and contribute. (see [DEVELOPERS.md](DEVELOPERS.md) for details)

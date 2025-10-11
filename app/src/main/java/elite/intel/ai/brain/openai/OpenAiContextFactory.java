@@ -4,7 +4,7 @@ import elite.intel.ai.brain.AICadence;
 import elite.intel.ai.brain.AIPersonality;
 import elite.intel.ai.brain.AiContextFactory;
 import elite.intel.ai.brain.AiRequestHints;
-import elite.intel.ai.brain.handlers.query.QueryActions;
+import elite.intel.ai.brain.handlers.query.Queries;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.util.Ranks;
@@ -12,8 +12,8 @@ import elite.intel.util.Ranks;
 import java.util.Objects;
 
 import static elite.intel.ai.brain.handlers.commands.custom.Commands.*;
-import static elite.intel.ai.brain.handlers.query.QueryActions.GENERAL_CONVERSATION;
-import static elite.intel.ai.brain.handlers.query.QueryActions.WHAT_IS_YOUR_DESIGNATION;
+import static elite.intel.ai.brain.handlers.query.Queries.GENERAL_CONVERSATION;
+import static elite.intel.ai.brain.handlers.query.Queries.WHAT_IS_YOUR_DESIGNATION;
 import static elite.intel.util.Abbreviations.generateAbbreviations;
 
 public class OpenAiContextFactory implements AiContextFactory {
@@ -65,7 +65,7 @@ public class OpenAiContextFactory implements AiContextFactory {
         sb.append("For type='command': Provide empty response_text for single word commands (e.g., 'deploy landing gear').\n");
         sb.append("For navigation commands (e.g., 'jump', 'hyperspace', 'go to next system'), map to '" + JUMP_TO_HYPERSPACE.getAction() + "' 'supercruise' to '"+ENTER_SUPER_CRUISE.getAction()+"'.  'cancel_resume_navigation' to "+NAVIGATION_ON_OFF.getAction()+" 'Stop', 'cut engines' map to speed commands " + SET_OPTIMAL_SPEED.getAction() + ". 'Activate', 'toggle', 'left', 'right', 'up', 'down', 'close' to UI commands like" + SET_OPTIMAL_SPEED.getAction() + ". ");
         sb.append("For for set, change, swap, add etc type commands that require value provide params json {\"key\":\"value\"} where key always 'key' and value is what you determine value tobe.");
-        sb.append("For toggle commands such as turn off, cancel, enable or disable, provide json {\"state\":\"true\"} / {\"state\":\"false\"}. ");
+        sb.append("For toggle commands such as turn off, turn on, cancel, enable or disable, ALWAYS provide params json {\"state\":\"true\"} / {\"state\":\"false\"}. ");
         sb.append("For type='query': \n" +
                 "    - If action is a quick query (e.g., '" + WHAT_IS_YOUR_DESIGNATION.getAction() + "', '" + GENERAL_CONVERSATION.getAction() + "'), set 'response_text' to '' (empty string, no initial TTS).\n" +
                 "    - If action is a data query (listed in data queries section), set 'response_text' to 'Moment...' for user feedback during delay.\n" +
@@ -86,7 +86,7 @@ public class OpenAiContextFactory implements AiContextFactory {
         StringBuilder quickQueries = new StringBuilder();
         StringBuilder dataQueries = new StringBuilder();
 
-        for (QueryActions query : QueryActions.values()) {
+        for (Queries query : Queries.values()) {
             String description = query.getDescription();
             if (query.isRequiresFollowUp()) {
                 quickQueries.append("    - ").append(query.getAction()).append(": ").append(description).append("\n");

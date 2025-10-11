@@ -1,6 +1,6 @@
 package elite.intel.ai.brain.handlers;
 
-import elite.intel.ai.brain.handlers.query.QueryActions;
+import elite.intel.ai.brain.handlers.query.Queries;
 import elite.intel.ai.brain.handlers.query.QueryHandler;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager; 
@@ -44,7 +44,7 @@ public class QueryHandlerFactory {
      * @throws RuntimeException if a handler cannot be instantiated or registered for any action.
      */
     public Map<String, QueryHandler> registerQueryHandlers() {
-        for (QueryActions action : QueryActions.values()) {
+        for (Queries action : Queries.values()) {
             try {
                 QueryHandler handler = instantiateHandler(action.getHandlerClass(), QueryHandler.class);
                 queryHandlers.put(action.getAction(), handler);

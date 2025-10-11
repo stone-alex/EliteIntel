@@ -1,7 +1,7 @@
 package elite.intel.ai.brain;
 
 import elite.intel.ai.brain.handlers.commands.custom.Commands;
-import elite.intel.ai.brain.handlers.query.QueryActions;
+import elite.intel.ai.brain.handlers.query.Queries;
 
 import java.util.Arrays;
 import java.util.List;
@@ -34,8 +34,8 @@ public class AiRequestHints {
     }
 
     static {
-        QUERIES = Arrays.stream(QueryActions.values())
-                .map(QueryActions::getAction)
+        QUERIES = Arrays.stream(Queries.values())
+                .map(Queries::getAction)
                 .collect(Collectors.toList());
     }
 

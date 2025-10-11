@@ -1,15 +1,11 @@
 package elite.intel.ai.brain.handlers.commands.custom;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.commands.CommandHandler;
 import elite.intel.ai.mouth.AiVoices;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.SystemSession;
-
-import static elite.intel.ai.brain.handlers.commands.custom.Commands.SET_AI_VOICE;
-import static elite.intel.util.json.JsonParameterExtractor.extractParameter;
 
 /**
  * The SetAiVoice class implements the CommandHandler interface and facilitates the
@@ -19,7 +15,7 @@ import static elite.intel.util.json.JsonParameterExtractor.extractParameter;
  * and updates the system's AI voice configuration. If the provided voice name is invalid
  * or null, an error event is published via the EventBusManager.
  */
-public class SetAiVoice implements CommandHandler {
+public class ChangeAiVoiceHandler implements CommandHandler {
 
     @Override public void handle(String action, JsonObject params, String responseText) {
         String voiceName = params.get("key").getAsString();
@@ -34,6 +30,7 @@ public class SetAiVoice implements CommandHandler {
         SystemSession systemSession = SystemSession.getInstance();
         try {
             systemSession.setAIVoice(AiVoices.valueOf(voiceName.toUpperCase()));
+            EventBusManager.publish(new AiVoxResponseEvent("AI voice set to " + voiceName.toUpperCase()));
         } catch (IllegalArgumentException e) {
             EventBusManager.publish(new AiVoxResponseEvent("Sorry, I don't understand voice name: " + voiceName.toUpperCase() + ". Error: " + e.getMessage()));
         }

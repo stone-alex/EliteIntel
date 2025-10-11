@@ -83,6 +83,7 @@ public class JumpCompletedSubscriber {
             primaryStar.setTrafficDto(trafficDto);
             primaryStar.setDeathsDto(deathsDto);
         } else if (roueSet) {
+            sb.append("Arrived at: ").append(event.getStarSystem()).append(" star system.");
             Map<Integer, NavRouteDto> adjustedRoute = AdjustRoute.adjustRoute(orderedRoute, event.getStarSystem());
             playerSession.setNavRoute(adjustedRoute);
             int remainingJump = adjustedRoute.size();
@@ -97,12 +98,12 @@ public class JumpCompletedSubscriber {
                                 .append(", ")
                                 .append(isFuelStarClause(nextStop.getStarClass()))
                 );
+                sb.append(remainingJump).append(" jumps remaining: ").append(" to ").append(finalDestination).append(".");
             }
-
-            sb.append(remainingJump).append(" jumps remaining: ").append(" to ").append(finalDestination).append(".");
         }
 
         playerSession.saveLocation(primaryStar);
+
         if(playerSession.isRouteAnnouncementOn()) {
             EventBusManager.publish(new SensorDataEvent(sb.toString()));
         }

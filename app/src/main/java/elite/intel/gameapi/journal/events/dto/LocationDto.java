@@ -26,7 +26,7 @@ public class LocationDto implements ToJsonConvertible {
     private double Z;
     private double distance;
     private String starName;
-    private String starType;
+    private String starClass;
     private boolean isFuelStar;
     private String planetName="";
     private String planetShortName="";
@@ -636,13 +636,13 @@ public class LocationDto implements ToJsonConvertible {
         this.weMappedIt = weMappedIt;
     }
 
-    public String getStarType() {
-        return starType;
+    public String getStarClass() {
+        return starClass;
     }
 
-    public void setStarType(String starType) {
-        this.starType = starType;
-        if(starType != null && "KGBFOAM".contains(starType)) {
+    public void setStarClass(String starClass) {
+        this.starClass = starClass;
+        if(starClass != null && "KGBFOAM".contains(starClass)) {
             setFuelStar(true);
         }
     }
@@ -667,7 +667,7 @@ public class LocationDto implements ToJsonConvertible {
         if (o == null || getClass() != o.getClass()) return false;
 
         LocationDto that = (LocationDto) o;
-        return Double.compare(getX(), that.getX()) == 0 && Double.compare(getY(), that.getY()) == 0 && Double.compare(getZ(), that.getZ()) == 0 && Double.compare(getDistance(), that.getDistance()) == 0 && isFuelStar() == that.isFuelStar() && getMarketID() == that.getMarketID() && getPopulation() == that.getPopulation() && Double.compare(getPowerplayStateControlProgress(), that.getPowerplayStateControlProgress()) == 0 && getPowerplayStateReinforcement() == that.getPowerplayStateReinforcement() && getPowerplayStateUndermining() == that.getPowerplayStateUndermining() && Double.compare(getGravity(), that.getGravity()) == 0 && Double.compare(getSurfaceTemperature(), that.getSurfaceTemperature()) == 0 && Double.compare(getOrbitalCruiseEntryAltitude(), that.getOrbitalCruiseEntryAltitude()) == 0 && isOurDiscovery() == that.isOurDiscovery() && isWeMappedIt() == that.isWeMappedIt() && getBodyId() == that.getBodyId() && isLandable() == that.isLandable() && isTerraformable() == that.isTerraformable() && isTidalLocked() == that.isTidalLocked() && Double.compare(getRadius(), that.getRadius()) == 0 && Double.compare(getMassEM(), that.getMassEM()) == 0 && getBioSignals() == that.getBioSignals() && getGeoSignals() == that.getGeoSignals() && isHasRings() == that.isHasRings() && Objects.equals(getCodexEntries(), that.getCodexEntries()) && Objects.equals(getMaterials(), that.getMaterials()) && Objects.equals(getSaaSignals(), that.getSaaSignals()) && Objects.equals(getFssSignals(), that.getFssSignals()) && Objects.equals(getGenus(), that.getGenus()) && Objects.equals(getPartialBioSamples(), that.getPartialBioSamples()) && Objects.equals(getStationServices(), that.getStationServices()) && Objects.equals(getPowers(), that.getPowers()) && Objects.equals(getDetectedSignals(), that.getDetectedSignals()) && Objects.equals(getStarName(), that.getStarName()) && Objects.equals(getStarType(), that.getStarType()) && Objects.equals(getPlanetName(), that.getPlanetName()) && Objects.equals(getPlanetShortName(), that.getPlanetShortName()) && Objects.equals(getPlanetData(), that.getPlanetData()) && Objects.equals(getTrafficDto(), that.getTrafficDto()) && Objects.equals(getDeathsDto(), that.getDeathsDto()) && Objects.equals(getStationName(), that.getStationName()) && Objects.equals(getStationType(), that.getStationType()) && Objects.equals(getStationFaction(), that.getStationFaction()) && Objects.equals(getStationGovernment(), that.getStationGovernment()) && Objects.equals(getStationAllegiance(), that.getStationAllegiance()) && Objects.equals(getStationEconomy(), that.getStationEconomy()) && Objects.equals(getAllegiance(), that.getAllegiance()) && Objects.equals(getEconomy(), that.getEconomy()) && Objects.equals(getSecondEconomy(), that.getSecondEconomy()) && Objects.equals(getGovernment(), that.getGovernment()) && Objects.equals(getSecurity(), that.getSecurity()) && Objects.equals(getBodyType(), that.getBodyType()) && Objects.equals(getControllingPower(), that.getControllingPower()) && Objects.equals(getPowerplayState(), that.getPowerplayState()) && Arrays.equals(getLandingCoordinates(), that.getLandingCoordinates()) && Objects.equals(getMarket(), that.getMarket()) && Objects.equals(getOutfitting(), that.getOutfitting()) && Objects.equals(getShipyard(), that.getShipyard()) && getLocationType() == that.getLocationType() && Objects.equals(getPlanetClass(), that.getPlanetClass()) && Objects.equals(getAtmosphere(), that.getAtmosphere());
+        return Double.compare(getX(), that.getX()) == 0 && Double.compare(getY(), that.getY()) == 0 && Double.compare(getZ(), that.getZ()) == 0 && Double.compare(getDistance(), that.getDistance()) == 0 && isFuelStar() == that.isFuelStar() && getMarketID() == that.getMarketID() && getPopulation() == that.getPopulation() && Double.compare(getPowerplayStateControlProgress(), that.getPowerplayStateControlProgress()) == 0 && getPowerplayStateReinforcement() == that.getPowerplayStateReinforcement() && getPowerplayStateUndermining() == that.getPowerplayStateUndermining() && Double.compare(getGravity(), that.getGravity()) == 0 && Double.compare(getSurfaceTemperature(), that.getSurfaceTemperature()) == 0 && Double.compare(getOrbitalCruiseEntryAltitude(), that.getOrbitalCruiseEntryAltitude()) == 0 && isOurDiscovery() == that.isOurDiscovery() && isWeMappedIt() == that.isWeMappedIt() && getBodyId() == that.getBodyId() && isLandable() == that.isLandable() && isTerraformable() == that.isTerraformable() && isTidalLocked() == that.isTidalLocked() && Double.compare(getRadius(), that.getRadius()) == 0 && Double.compare(getMassEM(), that.getMassEM()) == 0 && getBioSignals() == that.getBioSignals() && getGeoSignals() == that.getGeoSignals() && isHasRings() == that.isHasRings() && Objects.equals(getCodexEntries(), that.getCodexEntries()) && Objects.equals(getMaterials(), that.getMaterials()) && Objects.equals(getSaaSignals(), that.getSaaSignals()) && Objects.equals(getFssSignals(), that.getFssSignals()) && Objects.equals(getGenus(), that.getGenus()) && Objects.equals(getPartialBioSamples(), that.getPartialBioSamples()) && Objects.equals(getStationServices(), that.getStationServices()) && Objects.equals(getPowers(), that.getPowers()) && Objects.equals(getDetectedSignals(), that.getDetectedSignals()) && Objects.equals(getStarName(), that.getStarName()) && Objects.equals(getStarClass(), that.getStarClass()) && Objects.equals(getPlanetName(), that.getPlanetName()) && Objects.equals(getPlanetShortName(), that.getPlanetShortName()) && Objects.equals(getPlanetData(), that.getPlanetData()) && Objects.equals(getTrafficDto(), that.getTrafficDto()) && Objects.equals(getDeathsDto(), that.getDeathsDto()) && Objects.equals(getStationName(), that.getStationName()) && Objects.equals(getStationType(), that.getStationType()) && Objects.equals(getStationFaction(), that.getStationFaction()) && Objects.equals(getStationGovernment(), that.getStationGovernment()) && Objects.equals(getStationAllegiance(), that.getStationAllegiance()) && Objects.equals(getStationEconomy(), that.getStationEconomy()) && Objects.equals(getAllegiance(), that.getAllegiance()) && Objects.equals(getEconomy(), that.getEconomy()) && Objects.equals(getSecondEconomy(), that.getSecondEconomy()) && Objects.equals(getGovernment(), that.getGovernment()) && Objects.equals(getSecurity(), that.getSecurity()) && Objects.equals(getBodyType(), that.getBodyType()) && Objects.equals(getControllingPower(), that.getControllingPower()) && Objects.equals(getPowerplayState(), that.getPowerplayState()) && Arrays.equals(getLandingCoordinates(), that.getLandingCoordinates()) && Objects.equals(getMarket(), that.getMarket()) && Objects.equals(getOutfitting(), that.getOutfitting()) && Objects.equals(getShipyard(), that.getShipyard()) && getLocationType() == that.getLocationType() && Objects.equals(getPlanetClass(), that.getPlanetClass()) && Objects.equals(getAtmosphere(), that.getAtmosphere());
     }
 
     @Override public int hashCode() {
@@ -685,7 +685,7 @@ public class LocationDto implements ToJsonConvertible {
         result = 31 * result + Double.hashCode(getZ());
         result = 31 * result + Double.hashCode(getDistance());
         result = 31 * result + Objects.hashCode(getStarName());
-        result = 31 * result + Objects.hashCode(getStarType());
+        result = 31 * result + Objects.hashCode(getStarClass());
         result = 31 * result + Boolean.hashCode(isFuelStar());
         result = 31 * result + Objects.hashCode(getPlanetName());
         result = 31 * result + Objects.hashCode(getPlanetShortName());

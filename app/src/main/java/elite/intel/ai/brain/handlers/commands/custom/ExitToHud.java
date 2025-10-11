@@ -11,7 +11,7 @@ import elite.intel.ai.hands.GameController;
  * out of nested menus and sub-windows in a game interface, ultimately returning to the
  * Heads-Up Display (HUD) of the game. It extends CustomCommandOperator and implements
  * the CommandHandler interface to define and execute the required sequence of commands.
- *
+ * <p>
  * This functionality is achieved by simulating keyboard operations multiple times
  * in quick succession, using the provided key binding configurations.
  */
@@ -23,20 +23,27 @@ public class ExitToHud extends CustomCommandOperator implements CommandHandler {
     }
 
     @Override public void handle(String action, JsonObject params, String responseText) {
-            String exit = ControllerBindings.GameCommand.BINDING_EXIT_KEY.getGameBinding();
-            String headLookReset = ControllerBindings.GameCommand.BINDING_HEAD_LOOK_RESET.getGameBinding();
-            String quitFFS = ControllerBindings.GameCommand.BINDING_EXPLORATION_FSSQUIT.getGameBinding();
-            //back out of nested menus and sub windows
-            
-            operateKeyboard(quitFFS, 0);
-            operateKeyboard(exit, 0);
-            operateKeyboard(exit, 0);
-            operateKeyboard(exit, 0);
-            operateKeyboard(exit, 0);
-            operateKeyboard(exit, 0);
-            operateKeyboard(exit, 0);
-            operateKeyboard(exit, 0);
-            operateKeyboard(exit, 0); // exit from all sub windows back to HUD
-            operateKeyboard(headLookReset, 0);
+        String exit = ControllerBindings.GameCommand.BINDING_EXIT_KEY.getGameBinding();
+        String headLookReset = ControllerBindings.GameCommand.BINDING_HEAD_LOOK_RESET.getGameBinding();
+        String quitFFS = ControllerBindings.GameCommand.BINDING_EXPLORATION_FSSQUIT.getGameBinding();
+        //back out of nested menus and sub windows
+
+        operateKeyboard(quitFFS, 0);
+        operateKeyboard(exit, 0);
+        operateKeyboard(headLookReset, 0);
+        operateKeyboard(exit, 0);
+        operateKeyboard(headLookReset, 0);
+        operateKeyboard(exit, 0);
+        operateKeyboard(headLookReset, 0);
+        operateKeyboard(exit, 0);
+        operateKeyboard(headLookReset, 0);
+        operateKeyboard(exit, 0);
+        operateKeyboard(headLookReset, 0);
+        operateKeyboard(exit, 0);
+        operateKeyboard(headLookReset, 0);
+        operateKeyboard(exit, 0);
+        operateKeyboard(headLookReset, 0);
+        operateKeyboard(exit, 0); // exit from all sub windows back to HUD
+        operateKeyboard(headLookReset, 0);
     }
 }

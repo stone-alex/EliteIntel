@@ -15,7 +15,7 @@ public class PlanetBiomeAnalyzerHandler extends BaseQueryAnalyzer implements Que
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         PlayerSession playerSession = PlayerSession.getInstance();
 
-        String instructions = "Parse the genusToBiome map, where each value is formatted as 'Planet:<types>|Atmosphere:<types>|Gravity:<constraint>|Temperature:<range>|Volcanism:<types>|System:<constraints>'. Parse locations list to find planets with bioSignals present. Using the location's atmosphere, gravity, temperature, volcanism, and system details, identify genera whose biome conditions match. Return a list of matching genera, prioritizing specific matches over broad ones. Do not list planet conditions.";
+        String instructions = "Parse the genusToBiome map, where each value is formatted as 'Planet:<types>|Atmosphere:<types>|Gravity:<constraint>|Temperature:<range>|Volcanism:<types>|System:<constraints>'. Parse locations list to find planets with bioSignals present. Using the location's atmosphere, gravity, temperature, volcanism, and system details, identify genera whose biome conditions match. Return a list of matching genera, for planet(s) that have bioSignals prioritizing specific matches over broad ones. Use planeShortName, do not list planet conditions.";
 
         Map<Long, LocationDto> locations = playerSession.getLocations();
 

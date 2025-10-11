@@ -977,7 +977,6 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     }
 
     public GalacticCoordinates getGalacticCoordinates() {
-        GalacticCoordinates result;
         Map<Long, LocationDto> locations = getLocations();
         for (LocationDto location : locations.values()) {
             if (location.getLocationType().equals(LocationDto.LocationType.PRIMARY_STAR)) {

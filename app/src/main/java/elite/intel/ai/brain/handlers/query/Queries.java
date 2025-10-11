@@ -1,14 +1,14 @@
 package elite.intel.ai.brain.handlers.query;
 
-public enum QueryActions {
+public enum Queries {
 
-    ANALYZE_SCAN("query_analyze_last_scan", "Analyze the most recent scan data.", AnalyzeLastScanHandler.class, true),
+    //ANALYZE_SCAN("query_analyze_last_scan", "Analyze the most recent scan data.", AnalyzeLastScanHandler.class, true),
     QUERY_SEARCH_SIGNAL_DATA("query_analise_star_system_data", "Contains locations (planets, moons, planetary rings, raw materials, bio forms, bio samples, stations, starports etc) using gravity (G) and temperature (K) units. Use shortName for planets", AnalyzeSignalDataHandler.class, true),  // Clarify planetary/moon scope, avoid vehicle overlap
     ANALYZE_CURRENT_PLANET("query_current__location", "Where are we? Analyze data for the current planetary or station location.", AnalyzeCurrentLocationHandler.class, true),  // Emphasize planetary/station context
     ANALYZE_STAR_SYSTEM_EXPLORATION("query_star_system_exploration", "Analyze exploration data and profits for the current star system.", AnalyzeExplorationProfitsHandler.class, true),
     ANALYZE_BODY_MATERIALS("query_planetary_materials", "Analyze material composition on this planet.", AnalyzeMaterialsOnPlanetHandler.class, true),  // Specify planetary to avoid ship/cargo confusion
     ANALYZE_EXO_BIOLOGY("query_exobiology_samples", "Analyze bio-sample collection progress for current planet, including completed, partial, and remaining species.", AnalyzeBioSamplesHandler.class, true),  // "exobiology" to distinguish from commodities,
-    ANALYZE_CURRENT_FUEL_STATUS("query_ship_fuel_status", "Analyze ship fuel tank capacity and reserve, return percent available.", AnalyzeFuelStatusHandler.class, true),
+    ANALYZE_CURRENT_FUEL_STATUS("query_ship_fuel_status", "Analyze ship fuel tank capacity and reserve, return percent available. Do not confuse ship with fleet carrier. Fleet carrier uses tritium for fuel, Ship uses hydrogen.", AnalyzeFuelStatusHandler.class, true),
     ANALYZE_FSD_TARGET("query_fsd_target_analysis", "Analyze FSD destination for allegiance, traffic, and security.", AnalyzeFsdTargetHandler.class, true),
     ANALYZE_LOCAL_MARKETS("query_local_commodity_markets", "Analyze commodity market contents at the current location.", AnalyzeLocalMarketsHandler.class, true),  // "commodity" to avoid bio or material overlap,
     ANALYZE_LOCAL_OUTFITTING("query_local_outfitting", "Analyze available outfitting options.", AnalyzeLocalOutfittingHandler.class, true),
@@ -34,10 +34,9 @@ public enum QueryActions {
     HOW_FAR_ARE_WE_FROM_BUBBLE("query_distance_to_bubble", "Calculate distance to the Bubble in light years using 3D coordinates.", AnalyzeDistanceFromTheBubble.class, false),
     HOW_FAR_IS_OUR_CARRIER("query_distance_to_fleet_carrier", "Calculate distance to our fleet carrier in light years using 3D coordinates.", AnalyzeDistanceFromFleetCarrierHandler.class, false),
     HOW_FAR_ARE_WE_FROM_LAST_BIO_SAMPLE("query_distance_to_last_exobiology_sample", "Calculate distance to the last bio-sample using user latitude, longitude, planet radius, and sample coordinates.", AnalyzeDistanceFromLastBioSample.class, true),
-    PERFORM_PRELIMENARY_BIOME_ANALYSIS("query_analyse_biome_for_planet_or_planets", "Use data provided to analyze probable genus and species that might be present on the plant(s)", PlanetBiomeAnalyzerHandler.class, true),
+    PERFORM_PRELIMINARY_BIOME_ANALYSIS("query_analyse_biome_for_planet_or_planets", "Use data provided to analyze probable genus and species that might be present on the plant(s)", PlanetBiomeAnalyzerHandler.class, true),
 
     TARGET_MARKET_STATION_NAME("query_where_is_the_market_located", "Remind user which station we have to visit to buy/sell commodity", RemindTargetMarketStationHandler.class, false),
-
     GENERAL_CONVERSATION("general_conversation", "Handle general conversation when no other query matches.", ConversationalQueryHandler.class, true);
 
 
@@ -46,7 +45,7 @@ public enum QueryActions {
     private final Class<? extends QueryHandler> handlerClass;
     private final boolean requiresFollowUp;
 
-    QueryActions(String action, String description, Class<? extends QueryHandler> handlerClass, boolean requiresFollowUp) {
+    Queries(String action, String description, Class<? extends QueryHandler> handlerClass, boolean requiresFollowUp) {
         this.action = action;
         this.description = description;
         this.handlerClass = handlerClass;

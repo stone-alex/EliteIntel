@@ -25,11 +25,12 @@ public enum Commands {
 
 
     /// Commands the require parameters
+    LIGHTS_ON_OFF("toggle_lights", null, "lights", LightsOnOffHandler.class),
     ADD_MINING_TARGET("add_mining_target", null, "mining_target", AddMiningTargetHandler.class),
     CLEAR_MINING_TARGETS("clear_mining_targets",  null, null, ClearMiningTargetsHandler.class),
     CLEAR_CACHE("clear_cache", null,  "session_clear", ClearCacheHandler.class),
     FIND_COMMODITY("find_where_to_buy", null, "commodity_target", FindCommodityHandler.class),
-    SET_AI_VOICE("set_or_change_voice_to", null, "voice_name", SetAiVoice.class),
+    SET_AI_VOICE("set_or_change_voice_to", null, "voice_name", ChangeAiVoiceHandler.class),
     SET_HOME_SYSTEM("set_location_as_home_star_system", null,  null, SetCurrentStarAsHomeSystem.class),
     SET_PERSONALITY("set_personality", null, PlayerSession.PERSONALITY, SetPersonalityHandler.class),
     SET_PROFILE("set_profile", null,  PlayerSession.PROFILE, SetCadenceHandler.class),
@@ -56,6 +57,7 @@ public enum Commands {
     OPEN_SYSTEM_MAP("open_local_map", null, null,  OpenSystemMapHandler.class),
     CLOSE_ANY_MAP("close_map", null, null,  ExitToHud.class),
     EXIT_TO_HUD("display_hud", null, null,  ExitToHud.class),
+    EXIT("exit", null, null,  ExitToHud.class),
 
     DISPLAY_COMMS_PANEL("display_comms_panel", null, null,  DisplayCommsPanelHandler.class),
     DISPLAY_CONTACTS_PANEL("display_contacts", null, null,  DisplayContactsPanelHandler.class),
@@ -96,11 +98,13 @@ public enum Commands {
 
     GET_HEADING_TO_LZ("navigate_bearing_direction_to_landing_zone", null, null,  NavigateToLandingZone.class),
     DEPLOY_SRV("deploy_srv", null, null,  DeploySrvHandler.class),
+    BOARD_SRV("get_on_board_srv", null, null,  BoardSrvHandler.class),
     CLEAR_CODEX_ENTRIES("clear_codex_entries", null, null,  ClearCodexEntriesHandler.class),
     CALCULATE_FLEET_CARRIER_ROUTE("calculate_fleet_carrier_route", null, null,  CalculateFleetCarrierRouteHandler.class),
     ENTER_NEXT_FLEET_CARRIER_DESTINATION("enter_next_fleet_carrier_destination", null, null,  EnterNextCarrierDestinationHandler.class),
     LIST_HELP_TOPICS("list_help_topics", null, null,  HelpHandler.class),
     SHUT_DOWN("system_shut_down", null, null,  SystemShutDownRequestHandler.class),
+
 
 
     /// Generic simple commands. no parameters, but require binding

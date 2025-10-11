@@ -17,7 +17,7 @@ public class AnalyzeDistanceFromLastBioSample extends BaseQueryAnalyzer implemen
         LocationDto currentLocation = playerSession.getCurrentLocation();
 
         if (status.getStatus() == null) {
-            return analyzeData(toJson("No data available"), originalUserInput);
+            return analyzeData(toJson("No planet data available"), originalUserInput);
         }
 
         double latitude = status.getStatus().getLatitude();
@@ -29,7 +29,7 @@ public class AnalyzeDistanceFromLastBioSample extends BaseQueryAnalyzer implemen
         }
 
         if(currentLocation.getPartialBioSamples().isEmpty()){
-            return analyzeData(toJson("No bio samples available."), originalUserInput);
+            return analyzeData(toJson("No partial bio scans data."), originalUserInput);
         }
 
         BioSampleDto bioSample = currentLocation.getPartialBioSamples().getLast();

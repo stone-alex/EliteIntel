@@ -28,8 +28,8 @@ import elite.intel.util.json.GsonFactory;
  */
 public class BaseQueryAnalyzer {
 
-    protected QueryActions findQuery(String action) {
-        for (QueryActions qa : QueryActions.values()) {
+    protected Queries findQuery(String action) {
+        for (Queries qa : Queries.values()) {
             if (qa.getAction().equals(action)) {
                 return qa;
             }

@@ -24,7 +24,7 @@ public class AnalyzeRouterHandler extends BaseQueryAnalyzer implements QueryHand
     public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         EventBusManager.publish(new AiVoxResponseEvent("Analyzing route..."));
 
-        QueryActions query = findQuery(action);
+        Queries query = findQuery(action);
         PlayerSession playerSession = PlayerSession.getInstance();
 
         Collection<ToJsonConvertible> route = new LinkedHashSet<>();

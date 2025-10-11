@@ -4,7 +4,7 @@ import elite.intel.ai.brain.AICadence;
 import elite.intel.ai.brain.AIPersonality;
 import elite.intel.ai.brain.AiContextFactory;
 import elite.intel.ai.brain.AiRequestHints;
-import elite.intel.ai.brain.handlers.query.QueryActions;
+import elite.intel.ai.brain.handlers.query.Queries;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.util.Ranks;
@@ -12,7 +12,7 @@ import elite.intel.util.Ranks;
 import java.util.Objects;
 
 import static elite.intel.ai.brain.handlers.commands.custom.Commands.*;
-import static elite.intel.ai.brain.handlers.query.QueryActions.*;
+import static elite.intel.ai.brain.handlers.query.Queries.*;
 import static elite.intel.util.Abbreviations.generateAbbreviations;
 
 /**
@@ -279,7 +279,7 @@ public class GrokContextFactory implements AiContextFactory {
         StringBuilder quickQueries = new StringBuilder();
         StringBuilder dataQueries = new StringBuilder();
 
-        for (QueryActions query : QueryActions.values()) {
+        for (Queries query : Queries.values()) {
             String description = query.getDescription();
             if (query.isRequiresFollowUp()) {
                 quickQueries.append("    - ").append(query.getAction()).append(": ").append(description).append("\n");

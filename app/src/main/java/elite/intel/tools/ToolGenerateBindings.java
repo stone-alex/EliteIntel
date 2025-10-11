@@ -11,8 +11,8 @@ import java.io.IOException;
 import java.util.*;
 import java.util.TreeMap;
 
-public class HelpGenerateBindings {
-    private static final Logger log = LogManager.getLogger(HelpGenerateBindings.class);
+public class ToolGenerateBindings {
+    private static final Logger log = LogManager.getLogger(ToolGenerateBindings.class);
     private static final Set<String> BLACKLISTED_ACTIONS = new HashSet<>(Arrays.asList(
             "PrimaryFire", "SecondaryFire", "TriggerFieldNeutraliser",
             "BuggyPrimaryFireButton", "BuggySecondaryFireButton"
@@ -41,7 +41,7 @@ public class HelpGenerateBindings {
                 if (!first) {
                     sb.append(",\n");
                 }
-                sb.append(String.format("%s(\"%s\", \"%s\", GenericGameController.class)",toEnumName(userCommand), userCommand, binding));
+                sb.append(String.format("%s(\"%s\")",toEnumName(userCommand), binding));
                 first = false;
             }
             

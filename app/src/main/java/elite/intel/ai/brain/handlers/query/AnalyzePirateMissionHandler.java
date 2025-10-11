@@ -13,19 +13,19 @@ public class AnalyzePirateMissionHandler extends BaseQueryAnalyzer implements Qu
 
     @Override
     public JsonObject handle(String action, JsonObject params, String originalUserInput) {
-        QueryActions query = findQuery(action);
+        Queries query = findQuery(action);
         String data = buildDataForAiResponse(query);
         return analyzeData(data, originalUserInput);
     }
 
-    private String buildDataForAiResponse(QueryActions query) {
+    private String buildDataForAiResponse(Queries query) {
         PlayerSession session = PlayerSession.getInstance();
         Map<Long, MissionDto> missions = session.getMissions();
         Set<BountyDto> bounties = session.getBounties();
 
-        Map<QueryActions, Supplier<String>> queryHandlers = new HashMap<>();
-        queryHandlers.put(QueryActions.QUERY_PIRATE_MISSION_KILLS_REMAINING, () -> computeKillsRemaining(missions, bounties));
-        queryHandlers.put(QueryActions.QUERY_PIRATE_MISSION_PROFIT, () -> computeMissionProfit(missions, bounties));
+        Map<Queries, Supplier<String>> queryHandlers = new HashMap<>();
+        queryHandlers.put(Queries.QUERY_PIRATE_MISSION_KILLS_REMAINING, () -> computeKillsRemaining(missions, bounties));
+        queryHandlers.put(Queries.QUERY_PIRATE_MISSION_PROFIT, () -> computeMissionProfit(missions, bounties));
 
         return queryHandlers.getOrDefault(query, () -> "no data available").get();
     }

@@ -118,7 +118,7 @@ public class SystemSession extends SessionPersistence implements java.io.Seriali
     }
 
     public AiVoices getAIVoice() {
-        return this.aiVoice == null ? AiVoices.JENNIFER : this.aiVoice;
+        return this.aiVoice == null ? AiVoices.STEVE : this.aiVoice;
     }
 
     public void setAIVoice(AiVoices voice) {

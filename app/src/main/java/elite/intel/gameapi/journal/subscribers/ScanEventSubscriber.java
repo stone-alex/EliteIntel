@@ -52,7 +52,7 @@ public class ScanEventSubscriber extends BiomeAnalyzer {
         }
 
         location.setLocationType(locationType);
-        location.setStarType(event.getStarType());
+        location.setStarClass(event.getStarType());
 
         if(!PRIMARY_STAR.equals(locationType)) {
             location.setX(playerSession.getCurrentLocation().getX());
@@ -115,7 +115,9 @@ public class ScanEventSubscriber extends BiomeAnalyzer {
         }
 
         if (location.getBioSignals() > 0 && playerSession.isDiscoveryAnnouncementOn()) {
-            analyzeBiome(location);
+            if(!"Detailed".equals(event.getScanType())) {
+                analyzeBiome(location);
+            }
         } else {
             announceIfNewDiscovery(event, location);
         }

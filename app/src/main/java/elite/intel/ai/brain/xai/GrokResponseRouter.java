@@ -8,18 +8,17 @@ import elite.intel.ai.brain.AIRouterInterface;
 import elite.intel.ai.brain.AiContextFactory;
 import elite.intel.ai.brain.AiQueryInterface;
 import elite.intel.ai.brain.commons.ResponseRouter;
-import elite.intel.ai.brain.handlers.query.QueryActions;
+import elite.intel.ai.brain.handlers.query.Queries;
 import elite.intel.ai.brain.handlers.query.QueryHandler;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
 import elite.intel.session.SystemSession;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 
-import static elite.intel.ai.brain.handlers.query.QueryActions.GENERAL_CONVERSATION;
+import static elite.intel.ai.brain.handlers.query.Queries.GENERAL_CONVERSATION;
 
 /**
  * GrokResponseRouter acts as a central router for handling AI responses, commands, and queries.
@@ -118,7 +117,7 @@ public class GrokResponseRouter extends ResponseRouter implements AIRouterInterf
                     : false;
 
             // Override requiresFollowUp from QueryActions to ensure consistency
-            for (QueryActions qa : QueryActions.values()) {
+            for (Queries qa : Queries.values()) {
                 if (qa.getAction().equals(action)) {
                     requiresFollowUp = qa.isRequiresFollowUp();
                     break;

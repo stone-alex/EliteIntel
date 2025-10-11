@@ -8,11 +8,10 @@ import elite.intel.ai.brain.AIRouterInterface;
 import elite.intel.ai.brain.AiContextFactory;
 import elite.intel.ai.brain.AiQueryInterface;
 import elite.intel.ai.brain.commons.ResponseRouter;
-import elite.intel.ai.brain.handlers.query.QueryActions;
+import elite.intel.ai.brain.handlers.query.Queries;
 import elite.intel.ai.brain.handlers.query.QueryHandler;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
 import elite.intel.session.SystemSession;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -82,8 +81,8 @@ public class OpenAiResponseRouter extends ResponseRouter implements AIRouterInte
     private void handleQuery(String action, JsonObject params, String userInput) {
         QueryHandler handler = getQueryHandlers().get(action);
         if (handler == null || action == null || action.isEmpty()) {
-            handler = getQueryHandlers().get(QueryActions.GENERAL_CONVERSATION.getAction());
-            action = QueryActions.GENERAL_CONVERSATION.getAction();
+            handler = getQueryHandlers().get(Queries.GENERAL_CONVERSATION.getAction());
+            action = Queries.GENERAL_CONVERSATION.getAction();
             log.info("No specific query handler found, routing to general_conversation");
         }
 
@@ -97,7 +96,7 @@ public class OpenAiResponseRouter extends ResponseRouter implements AIRouterInte
                     : false;
 
             // Override requiresFollowUp from QueryActions to ensure consistency
-            for (QueryActions qa : QueryActions.values()) {
+            for (Queries qa : Queries.values()) {
                 if (qa.getAction().equals(action)) {
                     requiresFollowUp = qa.isRequiresFollowUp();
                     break;

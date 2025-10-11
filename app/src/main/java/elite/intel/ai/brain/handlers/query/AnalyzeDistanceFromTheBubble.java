@@ -6,22 +6,22 @@ import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 
-import java.util.Map;
-
 public class AnalyzeDistanceFromTheBubble extends BaseQueryAnalyzer implements QueryHandler{
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         PlayerSession playerSession = PlayerSession.getInstance();
-
         PlayerSession.GalacticCoordinates galacticCoordinates = playerSession.getGalacticCoordinates();
 
-
         if(galacticCoordinates == null){
-            return analyzeData(toJson("Local Coordinates are not available."), originalUserInput);
+            LocationDto currentLocation = playerSession.getCurrentLocation();
+            galacticCoordinates = new PlayerSession.GalacticCoordinates(currentLocation.getX(), currentLocation.getY(), currentLocation.getZ());
+            if (galacticCoordinates.x() == 0 && galacticCoordinates.y() == 0 && galacticCoordinates.z() == 0) {
+                return analyzeData(toJson("Local Coordinates are not available."), originalUserInput);
+            }
         }
 
-        String instruction = "Center of the bubble (Earth) is at 0 0 0. Use the coordinates provided in light years to calculate distance";
-        return analyzeData(new DataDto(galacticCoordinates,instruction).toJson(), originalUserInput);
+        String instruction = "Center of the bubble (Earth) is at 0 0 0. Use the coordinates provided in light years to calculate distance. If asked about amount of fleet carrier fuel needed to cover thg distance use 90 tons of fuel per 500 light year jump to calculate the amount.";
+        return analyzeData(new DataDto(galacticCoordinates, instruction).toJson(), originalUserInput);
     }
 
     record DataDto(PlayerSession.GalacticCoordinates galacticCoordinates, String instruction) implements ToJsonConvertible {

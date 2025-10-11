@@ -41,8 +41,8 @@ public class KeyProcessor {
     public static final int KEY_NUMLOCK = KeyEvent.VK_NUM_LOCK;
     public static final int KEY_NUMSLASH = KeyEvent.VK_DIVIDE;
     public static final int KEY_NUMASTERISK = KeyEvent.VK_MULTIPLY;
-    public static final int KEY_NUMMINUS = KeyEvent.VK_SUBTRACT;
-    public static final int KEY_NUMPLUS = KeyEvent.VK_ADD;
+    public static final int KEY_NUMPAD_SUBTRACT = KeyEvent.VK_SUBTRACT;
+    public static final int KEY_NUMPAD_ADD = KeyEvent.VK_ADD;
     public static final int KEY_NUMPAD_1 = KeyEvent.VK_NUMPAD1;
     public static final int KEY_NUMPAD_2 = KeyEvent.VK_NUMPAD2;
     public static final int KEY_NUMPAD_3 = KeyEvent.VK_NUMPAD3;

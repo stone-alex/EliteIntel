@@ -187,3 +187,6 @@
 "with voice to"="set voice to"
 "wo, the voice to"="set voice to"
 "it's the ways to"="set voice to"
+"deploy the survey"="deploy SRV"
+"degrees"="decrease"
+"bias"="bio"

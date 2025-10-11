@@ -63,8 +63,10 @@ public class OpenAiContextFactory implements AiContextFactory {
 
     private void inputClassificationClause(StringBuilder sb) {
         sb.append("For type='command': Provide empty response_text for single word commands (e.g., 'deploy landing gear').\n");
-        sb.append("For navigation commands (e.g., 'jump', 'hyperspace', 'go to next system'), map to '" + JUMP_TO_HYPERSPACE.getAction() + "' 'supercruise' to '"+ENTER_SUPER_CRUISE.getAction()+"'.  'cancel_resume_navigation' to "+NAVIGATION_ON_OFF.getAction()+" 'Stop', 'cut engines' map to speed commands " + SET_OPTIMAL_SPEED.getAction() + ". 'Activate', 'toggle', 'left', 'right', 'up', 'down', 'close' to UI commands like" + SET_OPTIMAL_SPEED.getAction() + ". ");
+        sb.append("For navigation commands (e.g., 'jump', 'hyperspace', 'go to next system'), map to '" + JUMP_TO_HYPERSPACE.getAction() + "' 'supercruise' to '"+ENTER_SUPER_CRUISE.getAction()+"'.  'cancel_resume_navigation' to "+NAVIGATION_ON_OFF.getAction()+" 'Stop', 'cut engines' map to speed commands " + STOP.getAction() + ". 'Activate', 'toggle', 'left', 'right', 'up', 'down', 'close' to UI commands like" + SET_OPTIMAL_SPEED.getAction() + ". ");
         sb.append("For for set, change, swap, add etc type commands that require value provide params json {\"key\":\"value\"} where key always 'key' and value is what you determine value tobe.");
+        sb.append("For commands like "+INCREASE_SPEED_BY.getAction()+" provide params json {\"key\":\"value\"} where value is a positive integer. example: {\"key\":\"3\"}.");
+        sb.append("For commands like "+DECREASE_SPEED_BY.getAction()+" provide params json {\"key\":\"value\"} where value is a negative integer example: {\"key\":\"-3\"}.");
         sb.append("For toggle commands such as turn off, turn on, cancel, enable or disable, ALWAYS provide params json {\"state\":\"true\"} / {\"state\":\"false\"}. ");
         sb.append("For type='query': \n" +
                 "    - If action is a quick query (e.g., '" + WHAT_IS_YOUR_DESIGNATION.getAction() + "', '" + GENERAL_CONVERSATION.getAction() + "'), set 'response_text' to '' (empty string, no initial TTS).\n" +
@@ -122,10 +124,6 @@ public class OpenAiContextFactory implements AiContextFactory {
         sb.append("Output JSON: {\"response_text\": \"TTS output in the configured personality and cadence\", \"details\": \"optional extra info\"}\n");
         sb.append("Data format: JSON array or object, e.g., for signals: [{\"name\": \"Fleet Carrier XYZ\", \"type\": \"Carrier\"}, {\"name\": \"Distress Signal\", \"type\": \"USS\"}]\n");
         sb.append("Provide extremely brief and concise answers. Always use planetShortName for locations if available.");
-        sb.append("Examples for ROGUE personality (brief, bold, witty, with profanity):\n" +
-                "    - Intent: 'tell me if carrier XYZ is here' Data: [{\"name\": \"Fleet Carrier XYZ\", \"type\": \"Carrier\"}] -> {\"response_text\": \"Carrier XYZ’s right here. A massive thing.\", \"details\": \"Detected in local signals.\"}\n" +
-                "    - Intent: 'summarize local signals' Data: [{\"name\": \"Fleet Carrier XYZ\", \"type\": \"Carrier\"}, {\"name\": \"Distress Signal\", \"type\": \"USS\"}] -> {\"response_text\": \"One carrier, one distress signal. Shit’s lively out here.\", \"details\": \"Carrier: XYZ, USS: Distress Signal\"}\n"
-        );
         return sb.toString();
     }
 

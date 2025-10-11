@@ -13,8 +13,8 @@ import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.AudioPlayer;
 import elite.intel.util.DaftSecretarySanitizer;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.sound.sampled.*;
 import java.io.File;
@@ -71,6 +71,7 @@ public class GoogleSTTImpl implements EarsInterface {
     private int consecutiveSilence = 0;
     private Thread processingThread;
     Map<String, String> corrections;
+
     public GoogleSTTImpl() {
     }
 
@@ -194,7 +195,6 @@ public class GoogleSTTImpl implements EarsInterface {
      */
     @SuppressWarnings("deprecation") private void startStreaming() { // v2 is not an option as it is for SAAS v1 uses bidiStreamingCall and there is no upgrade
         int retryCount = 0;
-        int maxRetries = 15; // Cap to prevent infinite loops
         StringBuffer currentTranscript = new StringBuffer();
         List<Float> confidences = Collections.synchronizedList(new ArrayList<>());
         while (isListening.get()) {
@@ -267,7 +267,6 @@ public class GoogleSTTImpl implements EarsInterface {
                             if (rms > RMS_THRESHOLD_HIGH) {
                                 consecutiveVoice++;
                                 consecutiveSilence = 0;
-                                //EventBusManager.publish(new TTSInterruptEvent(false));
                             } else {
                                 consecutiveVoice = 0;
                                 if (rms < RMS_THRESHOLD_LOW) {
@@ -386,36 +385,10 @@ public class GoogleSTTImpl implements EarsInterface {
                         Thread.currentThread().interrupt();
                     }
                 }
-                retryCount = 0; // Reset on successful session
             } catch (Exception e) {
                 log.error("Streaming recognition failed: {}", e.getMessage());
-                if (retryCount < maxRetries) {
-                    retryCount++;
-                    long backoffMs = (long) Math.pow(2, retryCount) * 1000; // Exponential: 2s, 4s, 8s, etc.
-                    log.info("Retrying after backoff: {} ms (attempt {}/{})", backoffMs, retryCount, maxRetries);
-                    try {
-                        Thread.sleep(backoffMs);
-                    } catch (InterruptedException ie) {
-                        log.error("Backoff interrupted", ie);
-                        Thread.currentThread().interrupt();
-                        break;
-                    }
-                    // Recreate client to reset connection
-                    if (speechClient != null) {
-                        speechClient.close();
-                    }
-                    try {
-                        speechClient = createSpeechClient();
-                    } catch (Exception ce) {
-                        log.error("Failed to recreate SpeechClient during retry: {}", ce.getMessage());
-                        break;
-                    }
-                } else {
-                    log.error("Max retries reached; stopping streaming.");
-                    EventBusManager.publish(new AppLogEvent("STT max retries hit; pausing listener."));
-                    stop();
-                    break;
-                }
+                EventBusManager.publish(new AppLogEvent("STT max retries hit; pausing listener."));
+                stop();
             }
         }
     }
@@ -470,7 +443,7 @@ public class GoogleSTTImpl implements EarsInterface {
     private void sendToAi(String sanitizedTranscript, float confidence) {
         boolean hasAiReference = !sanitizedTranscript.isBlank()
                 && (sanitizedTranscript.toLowerCase().contains("computer"))
-                || (sanitizedTranscript.toLowerCase().contains(SystemSession.getInstance().getAIVoice().getName().toLowerCase())) ;
+                || (sanitizedTranscript.toLowerCase().contains(SystemSession.getInstance().getAIVoice().getName().toLowerCase()));
 
         EventBusManager.publish(new TTSInterruptEvent(hasAiReference));
         AudioPlayer.getInstance().playBeep(); //user notification, we are processing the input now.

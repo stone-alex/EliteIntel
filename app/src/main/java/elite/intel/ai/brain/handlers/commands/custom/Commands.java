@@ -43,6 +43,9 @@ public enum Commands {
     ROUTE_ON_OFF("toggle_route_announcements",  null,  "route_on_off", RouteAnnouncementsOnOffHandler.class),
     HELP("help_with_topic",  null, "help_topic", HelpHandler.class),
 
+    INCREASE_SPEED_BY("speed_plus", BINDING_INCREASE_SPEED.getGameBinding(), "value", SpeedControlHandler.class),
+    DECREASE_SPEED_BY("speed_minus", BINDING_DECREASE_SPEED.getGameBinding(), "value", SpeedControlHandler.class),
+
 
     /// Commands that have specific handler impl (which uses N bindings inside)
     /// Commands that have specific hanodler impl (which uses N bindings inside)
@@ -136,6 +139,7 @@ public enum Commands {
     SET_SPEED75("set_speed_to_optimal_throttle_75", BINDING_SET_SPEED75.getGameBinding(), null, GenericGameControlHandler.class),
     SET_SPEED100("set_speed_to_maximum_throttle_100", BINDING_SET_SPEED100.getGameBinding(), null, GenericGameControlHandler.class),
     SET_SPEED_ZERO("set_speed_to_zero_0", BINDING_SET_SPEED_ZERO.getGameBinding(), null, GenericGameControlHandler.class),
+    STOP("stop", BINDING_SET_SPEED_ZERO.getGameBinding(), null, GenericGameControlHandler.class),
     TAXI("taxi", BINDING_SET_SPEED_ZERO.getGameBinding(), null, GenericGameControlHandler.class),
 
 

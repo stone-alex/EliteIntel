@@ -123,6 +123,8 @@ public class ControllerBindings {
         BINDING_SET_OPTIMAL_SPEED("SetSpeed75"),
         BINDING_SET_SPEED100("SetSpeed100"),
         BINDING_SET_SPEED_ZERO("SetSpeedZero"),
+        BINDING_INCREASE_SPEED("ForwardKey"),
+        BINDING_DECREASE_SPEED("BackwardKey"),
 
         BINDING_SHIP_LIGHTS_TOGGLE("ShipSpotLightToggle"),
         BINDING_BUGGY_LIGHTS_TOGGLE("HeadlightsBuggyButton"),

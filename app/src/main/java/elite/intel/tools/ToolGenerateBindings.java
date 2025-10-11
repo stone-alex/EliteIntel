@@ -13,10 +13,6 @@ import java.util.TreeMap;
 
 public class ToolGenerateBindings {
     private static final Logger log = LogManager.getLogger(ToolGenerateBindings.class);
-    private static final Set<String> BLACKLISTED_ACTIONS = new HashSet<>(Arrays.asList(
-            "PrimaryFire", "SecondaryFire", "TriggerFieldNeutraliser",
-            "BuggyPrimaryFireButton", "BuggySecondaryFireButton"
-    ));
     public static final String FILE_NAME = "KeyboardBindingsMapping.txt";
 
     public static void main(String[] args) {
@@ -32,11 +28,6 @@ public class ToolGenerateBindings {
             sb.append("####################################################################\n\n");
             boolean first = true;
             for (String binding : bindings.keySet()) {
-                if (BLACKLISTED_ACTIONS.contains(binding) || binding.startsWith("Humanoid")) {
-                    log.debug("Skipping blacklisted or Humanoid action: {}", binding);
-                    continue;
-                }
-
                 String userCommand = generateUserFriendlyCommand(binding);
                 if (!first) {
                     sb.append(",\n");
@@ -47,7 +38,7 @@ public class ToolGenerateBindings {
             
             File outputFile = new File(FILE_NAME);
             try (FileWriter writer = new FileWriter(outputFile)) {
-                writer.write(sb.toString());
+                writer.write(sb.toString().replace("__", "_"));
                 log.info("Generated {} at {}", FILE_NAME, outputFile.getAbsolutePath());
             } catch (IOException e) {
                 log.error("Failed to write {}: {}", FILE_NAME, e.getMessage());

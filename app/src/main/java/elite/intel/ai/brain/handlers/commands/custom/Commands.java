@@ -47,8 +47,7 @@ public enum Commands {
     DECREASE_SPEED_BY("speed_minus", BINDING_DECREASE_SPEED.getGameBinding(), "value", SpeedControlHandler.class),
 
 
-    /// Commands that have specific handler impl (which uses N bindings inside)
-    /// Commands that have specific hanodler impl (which uses N bindings inside)
+    /// Commands that have a specific handler impl (which uses N bindings inside)
     INCREASE_ENGINES_POWER("transfer_power_to_engines", null, null,  SetPowerToEnginesHandler.class),
     NAVIGATE_TO_NEXT_BIO_SAMPLE("navigate_directions_to_codex_entry_or_bio_sample", null, null,  NavigateToNextBioSample.class),
     INCREASE_SHIELDS_POWER("transfer_power_to_shields", null, null,  SetPowerToSystemsHandler.class),

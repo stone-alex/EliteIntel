@@ -36,11 +36,11 @@ public class AnalyzeDistanceFromFleetCarrierHandler extends BaseQueryAnalyzer im
 
         float jumpRange = shipLoadout == null ? -1 : shipLoadout.getMaxJumpRange();
 
-        double carrier_location_x = carrierData.getX();
-        double carrier_location_y = carrierData.getY();
-        double carrier_location_z = carrierData.getZ();
+        double carrierLocationX = carrierData.getX();
+        double carrierLocationY = carrierData.getY();
+        double carrierDataZ = carrierData.getZ();
 
-        if(carrier_location_x == 0 && carrier_location_y == 0 && carrier_location_z == 0){
+        if(carrierLocationX == 0 && carrierLocationY == 0 && carrierDataZ == 0){
             return analyzeData(toJson("Carrier coordinates are not available."), originalUserInput);
         }
 
@@ -48,7 +48,7 @@ public class AnalyzeDistanceFromFleetCarrierHandler extends BaseQueryAnalyzer im
             return analyzeData(toJson("Current location coordinates are not available."), originalUserInput);
         }
 
-        double distance = NavigationUtils.calculateGalacticDistance(x, y, z, carrier_location_x, carrier_location_y, carrier_location_z);
+        double distance = NavigationUtils.calculateGalacticDistance(x, y, z, carrierLocationX, carrierLocationY, carrierDataZ);
 
         String instruction = "Distance is in Light Years. If jump range is > 0 also calculate number of jumps required to reach the carrier. Jump range is in light years. Return whole numbers only, no decimals";
         return analyzeData(

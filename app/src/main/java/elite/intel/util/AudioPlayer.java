@@ -22,25 +22,16 @@ public final class AudioPlayer {
     }
     public void playBeep() {
         try {
-            // Load resource from classpath
             InputStream resourceStream = getClass().getResourceAsStream("/beep.wav");
             if (resourceStream == null) {
                 log.error("Resource 'beep.wav' not found in classpath");
                 return;
             }
-            // Wrap in BufferedInputStream to support mark/reset
             InputStream audioStream = new BufferedInputStream(resourceStream);
-            log.info("Successfully loaded beep.wav resource");
-            // Create an AudioInputStream
             AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(audioStream);
-            log.info("Created AudioInputStream for beep.wav");
-            // Get a Clip to play the audio
             Clip clip = AudioSystem.getClip();
             clip.open(audioInputStream);
-            log.info("Opened clip for beep.wav");
             clip.start();
-            log.info("Started playing beep.wav");
-            // Ensure clip closes after playback
             clip.addLineListener(event -> {
                 if (event.getType() == LineEvent.Type.STOP) {
                     clip.close();

@@ -21,29 +21,6 @@ import java.io.File;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * Implementation of the EarsInterface using Google Speech-To-Text (STT) API.
- * This class enables real-time streaming speech recognition and supports
- * Voice Activity Detection (VAD) for efficient voice processing.
- * <p>
- * Key Features:
- * - Streams audio data to Google STT API with configurable parameters such as sampling rate,
- * buffer size, and thresholds.
- * - Utilizes Voice Activity Detection (VAD) to identify active speech and handle silence effectively.
- * - Supports dynamic audio format detection and calibration of RMS thresholds.
- * - Manages the lifecycle of the speech recognition process, including start, stop, and error handling.
- * <p>
- * Audio Data Flow:
- * - Audio input is captured from the system's microphone and processed to detect voice activity.
- * - Active voice data is streamed to the Google STT API for transcription, while silence is suppressed.
- * - Transcription results are collected into a thread-safe queue for further processing.
- * <p>
- * Typical Lifecycle:
- * 1. Initialize audio settings and thresholds based on system hardware capabilities.
- * 2. Start the recognition process in a separate thread.
- * 3. Stream audio input while monitoring for voice activity.
- * 4. Handle transcription results or stop the process when needed.
- */
 public class GoogleSTTImpl implements EarsInterface {
     private static final Logger log = LogManager.getLogger(GoogleSTTImpl.class);
 
@@ -53,7 +30,6 @@ public class GoogleSTTImpl implements EarsInterface {
     private double RMS_THRESHOLD_LOW; // Dynamically calibrated
 
     private static final int CHANNELS = 1; // Mono
-    private static final int RESTART_DELAY_MS = 50; // 50ms sleep after stream close
     private static final int STREAM_DURATION_MS = 290000; // ~4 min 50 sec; below Google V1 limit for safety
     private static final int KEEP_ALIVE_INTERVAL_MS = 3000; // Keep-alive interval
     private static final int ENTER_VOICE_FRAMES = 1; // Quick enter to avoid clipping
@@ -75,27 +51,6 @@ public class GoogleSTTImpl implements EarsInterface {
     public GoogleSTTImpl() {
     }
 
-    /**
-     * Starts the speech recognition process by setting up the necessary configurations,
-     * initializing resources, and launching a background thread for processing audio input.
-     * <p>
-     * This method performs the following steps:
-     * 1. Ensures that speech recognition is not already running.
-     * 2. Resets the listening state to active.
-     * 3. Detects the supported audio format including sample rate and buffer size.
-     * 4. Calibrates root mean square (RMS) thresholds for audio sensitivity.
-     * 5. Initializes the speech client with the configured API key.
-     * 6. Starts a background thread responsible for streaming audio to the speech-to-text service.
-     * 7. Initializes the AI command interface.
-     * <p>
-     * If the speech recognition service or audio stream is already running, the method logs a warning
-     * and exits without performing any operations.
-     * <p>
-     * Exceptions thrown during setup or initialization are logged and re-thrown as runtime exceptions.
-     *
-     * @throws RuntimeException if the speech client initialization or AI command interface
-     *                          startup fails.
-     */
     @Override
     public void start() {
         if (processingThread != null && processingThread.isAlive()) {
@@ -139,7 +94,9 @@ public class GoogleSTTImpl implements EarsInterface {
         // Start processing thread
         this.processingThread = new Thread(this::startStreaming);
         this.processingThread.start();
-        EventBusManager.publish(new AiVoxResponseEvent("Voice Input Enabled"));
+        if (SystemSession.getInstance().getRmsThresholdLow() != null) {
+            EventBusManager.publish(new AiVoxResponseEvent("Voice Input Enabled"));
+        }
     }
 
     @Override
@@ -155,44 +112,6 @@ public class GoogleSTTImpl implements EarsInterface {
         EventBusManager.publish(new AiVoxResponseEvent("Voice input disabled."));
     }
 
-    /**
-     * Starts the streaming process for speech-to-text recognition. This method manages
-     * the configuration, audio input processing, and interaction with the speech recognition
-     * API to handle real-time audio data.
-     * <p>
-     * The method operates in a loop while listening is active and handles several tasks:
-     * - Configuring the streaming recognition with necessary settings such as audio
-     * format and API parameters.
-     * - Initiating the audio input from the system's microphone using the specified
-     * audio format and sample rate.
-     * - Sending audio input in real-time to the speech recognition API for processing.
-     * - Handling the Voice Activity Detection (VAD) mechanism to manage periods of silence
-     * and distinguish active speech from background noise or inactivity.
-     * - Continuously updating the state of voice activity (active or silent) based on
-     * computed RMS (Root Mean Square) values of the audio buffer.
-     * - Sending keep-alive signals to maintain the connection during long periods of silence.
-     * <p>
-     * An observer is attached to the API stream to process the responses, handle errors,
-     * and manage session completions:
-     * - Responses from the API are processed to extract recognition results and handle them
-     * appropriately.
-     * - Errors occurring during the streaming are logged for further troubleshooting.
-     * - A completion handler ensures proper termination of the streaming session.
-     * <p>
-     * In case of interruptions or failures, the method attempts to recover by waiting
-     * for a delay and retries the streaming process. It also ensures that
-     * resources like the audio line and API stream observer are properly closed.
-     * <p>
-     * Note: This method requires that the field `isListening` is actively
-     * controlled to determine when streaming should start and stop.
-     * It is designed to handle continuous streaming sessions until explicitly
-     * interrupted.
-     * <p>
-     * Exceptions:
-     * - Logs errors and exceptions that occur during audio capture, API interactions,
-     *   or other failures.
-     * - Recovers from interruptions by retrying the connection after a specified delay.
-     */
     @SuppressWarnings("deprecation") private void startStreaming() { // v2 is not an option as it is for SAAS v1 uses bidiStreamingCall and there is no upgrade
         int retryCount = 0;
         StringBuffer currentTranscript = new StringBuffer();
@@ -212,7 +131,6 @@ public class GoogleSTTImpl implements EarsInterface {
                 if (lastBuffer != null) {
                     requests.add(StreamingRecognizeRequest.newBuilder().setAudioContent(ByteString.copyFrom(lastBuffer)).build());
                 }
-
 
                 requestObserver = speechClient.streamingRecognizeCallable().bidiStreamingCall(
                         new ApiStreamObserver<>() {
@@ -410,15 +328,6 @@ public class GoogleSTTImpl implements EarsInterface {
         return Math.sqrt(sum / samples);
     }
 
-    /**
-     * Processes a streaming recognition result obtained from the speech-to-text service.
-     * The method evaluates the recognition result, logs the data, and publishes events
-     * to notify other components if applicable.
-     *
-     * @param result the {@code StreamingRecognitionResult} object containing the recognition
-     *               alternatives, confidence scores, and transcript data. It also indicates
-     *               whether the result is final.
-     */
     private void processStreamingRecognitionResult(StreamingRecognitionResult result, StringBuffer currentTranscript, List<Float> confidences) {
         if (result.getAlternativesCount() > 0) {
             SpeechRecognitionAlternative alt = result.getAlternatives(0);

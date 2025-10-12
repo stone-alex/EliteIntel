@@ -3,13 +3,14 @@ package elite.intel.ai.mouth.google;
 import com.google.cloud.texttospeech.v1.*;
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.ConfigManager;
-import elite.intel.ai.mouth.*;
+import elite.intel.ai.mouth.AiVoices;
+import elite.intel.ai.mouth.AudioDeClicker;
+import elite.intel.ai.mouth.MouthInterface;
 import elite.intel.ai.mouth.subscribers.events.*;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.sound.sampled.*;
 import java.lang.reflect.InvocationTargetException;
@@ -76,7 +77,9 @@ public class GoogleTTSImpl implements MouthInterface {
         processingThread = new Thread(this::processVoiceQueue, "VoiceGeneratorThread");
         processingThread.start();
         log.info("VoiceGenerator started");
-        EventBusManager.publish(new AiVoxResponseEvent("Speech enabled."));
+        if (SystemSession.getInstance().getRmsThresholdLow() != null) {
+            EventBusManager.publish(new AiVoxResponseEvent("Speech enabled."));
+        }
     }
 
     @Override

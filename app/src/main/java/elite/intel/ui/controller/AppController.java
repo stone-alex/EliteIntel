@@ -346,7 +346,7 @@ public class AppController implements AppControllerInterface, ActionListener {
         EventBusManager.publish(new MissionCriticalAnnouncementEvent("Warning! Speech to Text connection failed. Re-connecting..."));
         ears = ApiFactory.getInstance().getEarsImpl();
         ears.stop();
-        SleepNoThrow.sleep(20_000);
+        SleepNoThrow.sleep(30_000); // wait 30 seconds before restart.
         ears.start();
     }
 }

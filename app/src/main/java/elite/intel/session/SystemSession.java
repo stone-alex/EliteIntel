@@ -3,16 +3,11 @@ package elite.intel.session;
 import com.google.common.eventbus.Subscribe;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.gson.reflect.TypeToken;
 import elite.intel.ai.brain.AICadence;
 import elite.intel.ai.brain.AIPersonality;
 import elite.intel.ai.mouth.AiVoices;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.LoadGameEvent;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Consumer;
 
 /**
  * The SystemSession class manages the state and configuration of the system session,
@@ -66,8 +61,6 @@ public class SystemSession extends SessionPersistence implements java.io.Seriali
     private String missionStatement = "";
     private String alternativeName = "";
     private String title = "";
-    private String action = "";
-    private JsonObject params;
 
     private SystemSession() {
         super(SESSION_DIR);
@@ -90,8 +83,6 @@ public class SystemSession extends SessionPersistence implements java.io.Seriali
         registerField(MISSION_STATEMENT, this::getMissionStatement, this::setMissionStatement, String.class);
         registerField(ALTERNATIVE_NAME, this::getAlternativeName, this::setAlternativeName, String.class);
         registerField(TITLE, this::getTitle, this::setTitle, String.class);
-        registerField(ACTION, this::getAction, this::setAction, String.class);
-        registerField(PARAMS, this::getParams, this::setParams, JsonObject.class);
 
         EventBusManager.register(this);
         loadSavedStateFromDisk();
@@ -270,24 +261,6 @@ public class SystemSession extends SessionPersistence implements java.io.Seriali
 
     public void setTitle(String title) {
         this.title = title;
-        save();
-    }
-
-    public String getAction() {
-        return action;
-    }
-
-    public void setAction(String action) {
-        this.action = action;
-        save();
-    }
-
-    public JsonObject getParams() {
-        return params;
-    }
-
-    public void setParams(JsonObject params) {
-        this.params = params;
         save();
     }
 

@@ -123,9 +123,6 @@ public class GameController {
             return;
         }
 
-        SystemSession systemSession = SystemSession.getInstance();
-        systemSession.setAction(action);
-        systemSession.setParams(params);
         log.debug("Updated SessionTracker with action: {}, params: {}", action, params);
         KeyBindingsParser.KeyBinding binding = monitor.getBindings().get(action);
         if (binding == null) {

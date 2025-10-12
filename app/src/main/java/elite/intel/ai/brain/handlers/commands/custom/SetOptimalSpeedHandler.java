@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.commands.CommandHandler;
 import elite.intel.ai.hands.GameController;
 
-import static elite.intel.ai.brain.handlers.commands.ControllerBindings.GameCommand.BINDING_SET_SPEED75;
+import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_SET_SPEED75;
 
 /**
  * The SetOptimalSpeedHandler class is responsible for handling the command

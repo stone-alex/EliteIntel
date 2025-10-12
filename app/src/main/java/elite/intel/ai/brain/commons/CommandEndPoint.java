@@ -3,11 +3,11 @@ package elite.intel.ai.brain.commons;
 import elite.intel.ai.ApiFactory;
 import elite.intel.ai.brain.AIChatInterface;
 import elite.intel.ai.brain.AIRouterInterface;
-import elite.intel.ai.brain.AiContextFactory;
+import elite.intel.ai.brain.AiPromptFactory;
 
 public abstract class CommandEndPoint extends AiEndPoint {
 
-    private final AiContextFactory contextFactory;
+    private final AiPromptFactory contextFactory;
     private final AIRouterInterface router;
     private final AIChatInterface chatInterface;
 
@@ -15,10 +15,10 @@ public abstract class CommandEndPoint extends AiEndPoint {
     protected CommandEndPoint() {
         this.router = ApiFactory.getInstance().getAiRouter();
         this.chatInterface = ApiFactory.getInstance().getChatEndpoint();
-        this.contextFactory = ApiFactory.getInstance().getAiContextFactory();
+        this.contextFactory = ApiFactory.getInstance().getAiPromptFactory();
     }
 
-    public AiContextFactory getContextFactory() {
+    public AiPromptFactory getContextFactory() {
         return contextFactory;
     }
 

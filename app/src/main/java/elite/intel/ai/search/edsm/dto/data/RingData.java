@@ -8,7 +8,7 @@ public class RingData {
     @SerializedName("type")
     public String type;
     @SerializedName("mass")
-    public long mass;
+    public double mass;
     @SerializedName("innerRadius")
     public double innerRadius;
     @SerializedName("outerRadius")
@@ -22,7 +22,7 @@ public class RingData {
         return type;
     }
 
-    public long getMass() {
+    public double getMass() {
         return mass;
     }
 

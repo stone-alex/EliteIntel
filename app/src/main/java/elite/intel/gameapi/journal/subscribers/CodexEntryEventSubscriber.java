@@ -48,13 +48,13 @@ public class CodexEntryEventSubscriber {
             sb.append(", ");
             sb.append("Voucher Amount: ");
             sb.append(event.getVoucherAmount());
-            sb.append(" credits.");
+            sb.append(" credits (one per planet only).");
             Boolean isAnnounced = playerSession.paymentHasBeenAnnounced(genus);
 
             if (projectedPayment != null && projectedPayment.payment() != null && !isAnnounced) {
                 sb.append("Vista Genomics Payment: ").append(projectedPayment).append(" credits. For a complete set of three samples");
                 if (projectedPayment.firstDiscoveryBonus() != null && currentLocation.isOurDiscovery()) {
-                    sb.append(", plus about ");
+                    sb.append(", plus");
                     sb.append(projectedPayment.firstDiscoveryBonus());
                     sb.append(" bonus for first discovery.");
                 }

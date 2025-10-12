@@ -8,8 +8,8 @@ import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.Status;
 import elite.intel.util.SleepNoThrow;
 
-import static elite.intel.ai.brain.handlers.commands.ControllerBindings.GameCommand.BINDING_HARDPOINTS_TOGGLE;
-import static elite.intel.ai.brain.handlers.commands.ControllerBindings.GameCommand.BINDING_JUMP_TO_HYPERSPACE;
+import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_HARDPOINTS_TOGGLE;
+import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_JUMP_TO_HYPERSPACE;
 
 public class JumpToHyperspaceHandler extends CustomCommandOperator implements CommandHandler {
 

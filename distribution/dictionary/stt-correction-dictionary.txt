@@ -190,3 +190,5 @@
 "deploy the survey"="deploy SRV"
 "degrees"="decrease"
 "bias"="bio"
+"carrier feel"="tritium"
+"bitch"="which"

@@ -6,7 +6,7 @@ import elite.intel.util.json.ToJsonConvertible;
 public class CarrierDataDto implements ToJsonConvertible {
 
 
-    private String location;
+    private String starName;
     private long totalBalance;
     private long reserveBalance;
     private String callSign;
@@ -235,12 +235,12 @@ public class CarrierDataDto implements ToJsonConvertible {
         this.repairSupplyTax = repairSupplyTax;
     }
 
-    public String getLocation() {
-        return location;
+    public String getStarName() {
+        return starName;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
+    public void setStarName(String starName) {
+        this.starName = starName;
     }
 
 

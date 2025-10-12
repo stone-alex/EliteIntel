@@ -2,11 +2,10 @@ package elite.intel.ai.brain.handlers.commands.custom;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.commands.CommandHandler;
-import elite.intel.ai.brain.handlers.commands.ControllerBindings;
 import elite.intel.ai.hands.GameController;
 
-import static elite.intel.ai.brain.handlers.commands.ControllerBindings.GameCommand.BINDING_EXPLORATION_FSSDISCOVERY_SCAN;
-import static elite.intel.ai.brain.handlers.commands.ControllerBindings.GameCommand.BINDING_SET_SPEED_ZERO;
+import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_EXPLORATION_FSSDISCOVERY_SCAN;
+import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_SET_SPEED_ZERO;
 
 public class DisplayFssAndScanHandler extends CustomCommandOperator implements CommandHandler {
 

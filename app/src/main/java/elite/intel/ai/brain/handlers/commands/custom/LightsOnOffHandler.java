@@ -2,7 +2,7 @@ package elite.intel.ai.brain.handlers.commands.custom;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.commands.CommandHandler;
-import elite.intel.ai.brain.handlers.commands.ControllerBindings;
+import elite.intel.ai.brain.handlers.commands.Bindings;
 import elite.intel.ai.hands.GameController;
 import elite.intel.session.Status;
 
@@ -21,16 +21,16 @@ public class LightsOnOffHandler extends CustomCommandOperator implements Command
                 if (status.isLightsOn()) {
                     return;
                 } else {
-                    toggleLights(ControllerBindings.GameCommand.BINDING_BUGGY_LIGHTS_TOGGLE.getGameBinding());
+                    toggleLights(Bindings.GameCommand.BINDING_BUGGY_LIGHTS_TOGGLE.getGameBinding());
                 }
             } else {
                 if (!status.isLightsOn()) {
                     return;
                 } else if (status.isSrvHighBeam()) {
-                    toggleLights(ControllerBindings.GameCommand.BINDING_BUGGY_LIGHTS_TOGGLE.getGameBinding());
+                    toggleLights(Bindings.GameCommand.BINDING_BUGGY_LIGHTS_TOGGLE.getGameBinding());
                 } else {
-                    toggleLights(ControllerBindings.GameCommand.BINDING_BUGGY_LIGHTS_TOGGLE.getGameBinding());
-                    toggleLights(ControllerBindings.GameCommand.BINDING_BUGGY_LIGHTS_TOGGLE.getGameBinding());
+                    toggleLights(Bindings.GameCommand.BINDING_BUGGY_LIGHTS_TOGGLE.getGameBinding());
+                    toggleLights(Bindings.GameCommand.BINDING_BUGGY_LIGHTS_TOGGLE.getGameBinding());
                 }
             }
         }
@@ -39,14 +39,14 @@ public class LightsOnOffHandler extends CustomCommandOperator implements Command
             if (on) {
                 if (status.isLightsOn()) {
                     return;
-                } else if (status.isSrvHighBeam()) {
-                    toggleLights(ControllerBindings.GameCommand.BINDING_SHIP_LIGHTS_TOGGLE.getGameBinding());
+                } else {
+                    toggleLights(Bindings.GameCommand.BINDING_SHIP_LIGHTS_TOGGLE.getGameBinding());
                 }
             } else {
                 if (!status.isLightsOn()) {
                     return;
                 } else {
-                    toggleLights(ControllerBindings.GameCommand.BINDING_SHIP_LIGHTS_TOGGLE.getGameBinding());
+                    toggleLights(Bindings.GameCommand.BINDING_SHIP_LIGHTS_TOGGLE.getGameBinding());
                 }
             }
         }

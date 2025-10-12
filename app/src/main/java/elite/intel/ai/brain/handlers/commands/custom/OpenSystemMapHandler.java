@@ -2,7 +2,7 @@ package elite.intel.ai.brain.handlers.commands.custom;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.commands.CommandHandler;
-import elite.intel.ai.brain.handlers.commands.ControllerBindings;
+import elite.intel.ai.brain.handlers.commands.Bindings;
 import elite.intel.ai.hands.GameController;
 
 /**
@@ -27,7 +27,7 @@ public class OpenSystemMapHandler extends CustomCommandOperator implements Comma
     }
 
     @Override public void handle(String action, JsonObject params, String responseText) {
-        String openMap = ControllerBindings.GameCommand.BINDING_LOCAL_MAP.getGameBinding();
+        String openMap = Bindings.GameCommand.BINDING_LOCAL_MAP.getGameBinding();
         operateKeyboard(openMap, 0);
     }
 }

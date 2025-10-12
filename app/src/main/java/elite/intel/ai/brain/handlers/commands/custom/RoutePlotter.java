@@ -4,7 +4,7 @@ import elite.intel.ai.hands.GameController;
 import elite.intel.ai.hands.KeyProcessor;
 import elite.intel.util.AudioPlayer;
 
-import static elite.intel.ai.brain.handlers.commands.ControllerBindings.GameCommand.*;
+import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.*;
 
 public class RoutePlotter extends CustomCommandOperator {
 

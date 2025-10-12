@@ -5,8 +5,8 @@ import elite.intel.ai.brain.handlers.commands.CommandHandler;
 import elite.intel.ai.hands.GameController;
 import elite.intel.session.Status;
 
-import static elite.intel.ai.brain.handlers.commands.ControllerBindings.GameCommand.BINDING_FOCUS_LOADOUT_PANEL;
-import static elite.intel.ai.brain.handlers.commands.ControllerBindings.GameCommand.BINDING_FOCUS_RADAR_PANEL_BUGGY;
+import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_FOCUS_LOADOUT_PANEL;
+import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_FOCUS_RADAR_PANEL_BUGGY;
 
 public class DisplayLoadoutPanelHandler extends CustomCommandOperator implements CommandHandler {
 

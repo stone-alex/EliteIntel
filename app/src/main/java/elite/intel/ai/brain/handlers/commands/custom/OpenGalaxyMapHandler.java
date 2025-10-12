@@ -5,8 +5,8 @@ import elite.intel.ai.brain.handlers.commands.CommandHandler;
 import elite.intel.ai.hands.GameController;
 import elite.intel.session.Status;
 
-import static elite.intel.ai.brain.handlers.commands.ControllerBindings.GameCommand.BINDING_GALAXY_MAP;
-import static elite.intel.ai.brain.handlers.commands.ControllerBindings.GameCommand.BINDING_GALAXY_MAP_BUGGY;
+import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_GALAXY_MAP;
+import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_GALAXY_MAP_BUGGY;
 
 /**
  * The OpenGalaxyMapHandler class is responsible for handling commands related to opening

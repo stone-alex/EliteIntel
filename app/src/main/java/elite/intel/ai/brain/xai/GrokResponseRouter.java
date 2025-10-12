@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import elite.intel.ai.ApiFactory;
 import elite.intel.ai.brain.AIConstants;
 import elite.intel.ai.brain.AIRouterInterface;
-import elite.intel.ai.brain.AiContextFactory;
+import elite.intel.ai.brain.AiPromptFactory;
 import elite.intel.ai.brain.AiQueryInterface;
 import elite.intel.ai.brain.commons.ResponseRouter;
 import elite.intel.ai.brain.handlers.query.Queries;
@@ -36,7 +36,7 @@ public class GrokResponseRouter extends ResponseRouter implements AIRouterInterf
     private static final Logger log = LogManager.getLogger(GrokResponseRouter.class);
     private static final GrokResponseRouter INSTANCE = new GrokResponseRouter();
     private final AiQueryInterface queryInterface;
-    private final AiContextFactory contextFactory;
+    private final AiPromptFactory contextFactory;
 
     public static GrokResponseRouter getInstance() {
         return INSTANCE;
@@ -45,7 +45,7 @@ public class GrokResponseRouter extends ResponseRouter implements AIRouterInterf
     private GrokResponseRouter() {
         try {
             this.queryInterface = ApiFactory.getInstance().getQueryEndpoint();
-            this.contextFactory = ApiFactory.getInstance().getAiContextFactory();
+            this.contextFactory = ApiFactory.getInstance().getAiPromptFactory();
         } catch (Exception e) {
             log.error("Failed to initialize GrokResponseRouter", e);
             throw new RuntimeException("GrokResponseRouter initialization failed", e);

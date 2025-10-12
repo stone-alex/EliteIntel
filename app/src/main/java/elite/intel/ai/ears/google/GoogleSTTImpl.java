@@ -226,6 +226,7 @@ public class GoogleSTTImpl implements EarsInterface {
                             @Override
                             public void onError(Throwable t) {
                                 log.error("STT error: {}", t.getMessage());
+                                // Event will attempt service re-start in 20 seconds
                                 stop();
                                 EventBusManager.publish(new STTConnectionFailed());
                             }
@@ -343,9 +344,7 @@ public class GoogleSTTImpl implements EarsInterface {
                 } catch (LineUnavailableException | IllegalArgumentException e) {
                     log.error("Audio capture failed: {}", e.getMessage());
                 } finally {
-                    if (requestObserver != null) {
-                        requestObserver.onCompleted();
-                    }
+                    requestObserver.onCompleted();
                     // Send any pending transcript on stream close
                     if (!isActive && currentTranscript.length() > 0) {
                         String fullTranscript = currentTranscript.toString().trim();
@@ -377,12 +376,6 @@ public class GoogleSTTImpl implements EarsInterface {
                         synchronized (confidences) {
                             confidences.clear();
                         }
-                    }
-                    try {
-                        Thread.sleep(RESTART_DELAY_MS);
-                    } catch (InterruptedException e) {
-                        log.warn("Restart delay interrupted. System exiting?", e);
-                        Thread.currentThread().interrupt();
                     }
                 }
             } catch (Exception e) {

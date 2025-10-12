@@ -5,8 +5,8 @@ import elite.intel.ai.brain.handlers.commands.CommandHandler;
 import elite.intel.ai.hands.GameController;
 import elite.intel.session.Status;
 
-import static elite.intel.ai.brain.handlers.commands.ControllerBindings.GameCommand.BINDING_EJECT_ALL_CARGO;
-import static elite.intel.ai.brain.handlers.commands.ControllerBindings.GameCommand.BINDING_EJECT_ALL_CARGO_BUGGY;
+import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_EJECT_ALL_CARGO;
+import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_EJECT_ALL_CARGO_BUGGY;
 
 public class EjectAllCargoHandler extends CustomCommandOperator implements CommandHandler {
 

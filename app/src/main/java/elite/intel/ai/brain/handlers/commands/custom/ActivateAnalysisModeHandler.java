@@ -7,8 +7,8 @@ import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.Status;
 
-import static elite.intel.ai.brain.handlers.commands.ControllerBindings.GameCommand.BINDING_ACTIVATE_ANALYSIS_MODE;
-import static elite.intel.ai.brain.handlers.commands.ControllerBindings.GameCommand.BINDING_ACTIVATE_ANALYSIS_MODE_BUGGY;
+import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_ACTIVATE_ANALYSIS_MODE;
+import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_ACTIVATE_ANALYSIS_MODE_BUGGY;
 
 public class ActivateAnalysisModeHandler extends CustomCommandOperator implements CommandHandler {
 

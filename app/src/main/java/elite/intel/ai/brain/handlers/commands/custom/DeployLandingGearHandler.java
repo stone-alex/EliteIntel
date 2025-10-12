@@ -7,7 +7,7 @@ import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.Status;
 
-import static elite.intel.ai.brain.handlers.commands.ControllerBindings.GameCommand.BINDING_LANDING_GEAR_TOGGLE;
+import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_LANDING_GEAR_TOGGLE;
 
 public class DeployLandingGearHandler extends CustomCommandOperator implements CommandHandler {
 

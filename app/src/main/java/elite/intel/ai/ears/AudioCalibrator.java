@@ -6,7 +6,7 @@ import elite.intel.gameapi.EventBusManager;
 import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
 import elite.intel.session.SystemSession;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager; 
+import org.apache.logging.log4j.LogManager;
 
 import javax.sound.sampled.*;
 import java.util.concurrent.CompletableFuture;
@@ -20,100 +20,178 @@ import java.util.concurrent.TimeoutException;
  */
 public class AudioCalibrator {
     private static final Logger log = LogManager.getLogger(AudioCalibrator.class);
-    private static final int CALIBRATION_DURATION_MS = 10000; // 10 seconds for calibration
+    private static final int NOISE_CALIBRATION_DURATION_MS = 3000; // 3 seconds for noise floor
+    private static final int SPEECH_CALIBRATION_DURATION_MS = 10000; // 10 seconds for speech
     private static final int TTS_TIMEOUT_MS = 3000; // 3 seconds max wait for TTS
     private static final double DEFAULT_RMS_THRESHOLD_HIGH = 150.0; // Fallback
-    private static final double DEFAULT_RMS_THRESHOLD_LOW = 15.0; // Fallback
+    private static final double DEFAULT_RMS_THRESHOLD_LOW = 15.0; // Fallback, but we'll adjust with noise
     private static final double MIN_SPEECH_RMS = 100.0; // Minimum RMS for speech
+    private static final double NOISE_LOW_FACTOR = 2.0; // Multiplier for low threshold above noise avg
+    private static final double NOISE_LOW_OFFSET = 5.0; // Small offset for margin
+    private static final double SPEECH_HIGH_FACTOR = 0.5; // Set high to half speech avg for sensitivity
+    private static final double MIN_HIGH_LOW_RATIO = 3.0; // Ensure high >= low * this
+    private static final double MAX_NOISE_AVG = 50.0; // Warn if noise floor too high
 
     /**
-     * Calibrates RMS thresholds based on a short audio sample from the provided audio line.
-     * Waits for TTS prompt to complete before starting calibration.
+     * Calibrates RMS thresholds based on separate noise and speech samples from the provided audio line.
+     * First measures noise floor in silence, then prompts for speech.
      *
      * @param sampleRateHertz The sample rate of the audio format.
      * @param bufferSize      The buffer size for audio capture.
      * @return AudioSettingsTuple containing RMS_THRESHOLD_HIGH and RMS_THRESHOLD_LOW.
      */
     public static AudioSettingsTuple<Double, Double> calibrateRMS(int sampleRateHertz, int bufferSize) {
-        log.info("Starting RMS calibration for {}ms", CALIBRATION_DURATION_MS);
-
-        CompletableFuture<Void> ttsPlaybackStarted = new CompletableFuture<>();
-        Object ttsSubscriber = new Object() {
-            @Subscribe
-            public void onTTSPlaybackStartEvent(TTSPlaybackStartEvent event) {
-                if (event.getText().equals("Please speak for a few seconds to calibrate audio...")) {
-                    log.debug("TTS playback start event received");
-                    ttsPlaybackStarted.complete(null);
-                }
-            }
-        };
-        EventBusManager.register(ttsSubscriber);
-
-        EventBusManager.publish(new AiVoxResponseEvent("Please speak for a few seconds to calibrate audio..."));
-
-        try {
-            ttsPlaybackStarted.get(TTS_TIMEOUT_MS, TimeUnit.MILLISECONDS);
-            log.info("TTS playback started");
-        } catch (TimeoutException e) {
-            log.warn("TTS playback timed out after {}ms", TTS_TIMEOUT_MS);
-        } catch (Exception e) {
-            log.error("TTS playback wait failed: {}", e.getMessage());
-        } finally {
-            EventBusManager.unregister(ttsSubscriber);
-        }
+        log.info("Starting RMS calibration: noise for {}ms, then speech for {}ms", NOISE_CALIBRATION_DURATION_MS, SPEECH_CALIBRATION_DURATION_MS);
 
         AudioFormat format = new AudioFormat(sampleRateHertz, 16, 1, true, false);
         DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
         byte[] buffer = new byte[bufferSize];
+
+        // Step 1: Calibrate noise floor (remain silent)
+        double avgNoiseRMS = calibrateNoiseFloor(format, bufferSize, buffer, info);
+
+        double lowThreshold = Math.max(DEFAULT_RMS_THRESHOLD_LOW, avgNoiseRMS * NOISE_LOW_FACTOR + NOISE_LOW_OFFSET);
+        log.info("Calibrated low threshold from noise: {}", lowThreshold);
+
+        // Step 2: Calibrate speech
+        double highThreshold = calibrateSpeech(format, bufferSize, buffer, info, lowThreshold);
+
+        // Ensure reasonable ratio, clamp
+        if (highThreshold < lowThreshold * MIN_HIGH_LOW_RATIO) {
+            log.warn("Speech high too close to low; adjusting to fallback ratio");
+            highThreshold = lowThreshold * MIN_HIGH_LOW_RATIO;
+        }
+        highThreshold = Math.max(100.0, Math.min(highThreshold, 2000.0)); // Reasonable clamp for speech
+        lowThreshold = Math.max(10.0, Math.min(lowThreshold, 100.0)); // Clamp low to avoid too tight
+
+        SystemSession systemSession = SystemSession.getInstance();
+        systemSession.setRmsThresholdHigh(highThreshold);
+        systemSession.setRmsThresholdLow(lowThreshold);
+
+        log.info("Final calibrated RMS thresholds: HIGH={}, LOW={}", highThreshold, lowThreshold);
+        return new AudioSettingsTuple<>(highThreshold, lowThreshold);
+    }
+
+    private static double calibrateNoiseFloor(AudioFormat format, int bufferSize, byte[] buffer, DataLine.Info info) {
+        CompletableFuture<Void> ttsPlaybackStarted = new CompletableFuture<>();
+        Object ttsSubscriber = createTTSSubscriber(ttsPlaybackStarted, "Remain silent for a few seconds to calibrate audio noise floor...");
+        EventBusManager.register(ttsSubscriber);
+        EventBusManager.publish(new AiVoxResponseEvent("Remain silent for a few seconds to calibrate audio noise floor..."));
+
+        try {
+            ttsPlaybackStarted.get(TTS_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            log.info("Noise TTS playback started");
+        } catch (TimeoutException e) {
+            log.warn("Noise TTS playback timed out after {}ms", TTS_TIMEOUT_MS);
+        } catch (Exception e) {
+            log.error("Noise TTS playback wait failed: {}", e.getMessage());
+        } finally {
+            EventBusManager.unregister(ttsSubscriber);
+        }
+
         double sumRMS = 0.0;
         double peakRMS = 0.0;
         int sampleCount = 0;
-        int speechSamples = 0;
         long startTime = System.currentTimeMillis();
 
         try (TargetDataLine line = (TargetDataLine) AudioSystem.getLine(info)) {
             line.open(format, bufferSize);
             line.start();
-            while (System.currentTimeMillis() - startTime < CALIBRATION_DURATION_MS) {
+            while (System.currentTimeMillis() - startTime < NOISE_CALIBRATION_DURATION_MS) {
                 int bytesRead = line.read(buffer, 0, buffer.length);
                 if (bytesRead > 0) {
                     double rms = calculateRMS(buffer, bytesRead);
                     sumRMS += rms;
                     sampleCount++;
                     if (rms > peakRMS) peakRMS = rms;
-                    if (rms > MIN_SPEECH_RMS) speechSamples++;
-                    log.trace("Calibration RMS sample: {}", rms);
+                    log.trace("Noise calibration RMS sample: {}", rms);
                 }
             }
         } catch (LineUnavailableException | IllegalArgumentException e) {
-            log.error("Calibration failed: {}", e.getMessage());
+            log.error("Noise calibration failed: {}", e.getMessage());
             EventBusManager.publish(new AiVoxResponseEvent("Audio calibration failed. Using default settings."));
-            return new AudioSettingsTuple<>(DEFAULT_RMS_THRESHOLD_HIGH, DEFAULT_RMS_THRESHOLD_LOW);
+            return DEFAULT_RMS_THRESHOLD_LOW / NOISE_LOW_FACTOR; // Fallback avg noise estimate
         } finally {
-            log.info("Calibration completed. Samples: {}, Speech samples: {}, Average RMS: {}, Peak RMS: {}",
-                    sampleCount, speechSamples, sampleCount > 0 ? sumRMS / sampleCount : 0.0, peakRMS);
+            log.info("Noise calibration completed. Samples: {}, Average RMS: {}, Peak RMS: {}",
+                    sampleCount, sampleCount > 0 ? sumRMS / sampleCount : 0.0, peakRMS);
+        }
+
+        double avgNoise = sampleCount > 0 ? sumRMS / sampleCount : 0.0;
+        if (avgNoise > MAX_NOISE_AVG) {
+            log.warn("High noise floor detected (avg: {}); consider quieter environment", avgNoise);
+            EventBusManager.publish(new AiVoxResponseEvent("Noisy environment detected; calibration may be suboptimal."));
+        }
+        return avgNoise;
+    }
+
+    private static double calibrateSpeech(AudioFormat format, int bufferSize, byte[] buffer, DataLine.Info info, double lowThreshold) {
+        CompletableFuture<Void> ttsPlaybackStarted = new CompletableFuture<>();
+        Object ttsSubscriber = createTTSSubscriber(ttsPlaybackStarted, "Now speak for a few seconds to calibrate audio...");
+        EventBusManager.register(ttsSubscriber);
+        EventBusManager.publish(new AiVoxResponseEvent("Now speak for a few seconds to calibrate audio..."));
+
+        try {
+            ttsPlaybackStarted.get(TTS_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            log.info("Speech TTS playback started");
+        } catch (TimeoutException e) {
+            log.warn("Speech TTS playback timed out after {}ms", TTS_TIMEOUT_MS);
+        } catch (Exception e) {
+            log.error("Speech TTS playback wait failed: {}", e.getMessage());
+        } finally {
+            EventBusManager.unregister(ttsSubscriber);
+        }
+
+        double sumSpeechRMS = 0.0;
+        double peakSpeechRMS = 0.0;
+        int speechSampleCount = 0;
+        int totalSampleCount = 0;
+        long startTime = System.currentTimeMillis();
+
+        try (TargetDataLine line = (TargetDataLine) AudioSystem.getLine(info)) {
+            line.open(format, bufferSize);
+            line.start();
+            while (System.currentTimeMillis() - startTime < SPEECH_CALIBRATION_DURATION_MS) {
+                int bytesRead = line.read(buffer, 0, buffer.length);
+                if (bytesRead > 0) {
+                    double rms = calculateRMS(buffer, bytesRead);
+                    totalSampleCount++;
+                    if (rms > lowThreshold * 2) { // Qualify as speech (above low with margin)
+                        sumSpeechRMS += rms;
+                        speechSampleCount++;
+                        if (rms > peakSpeechRMS) peakSpeechRMS = rms;
+                        log.trace("Speech calibration RMS sample: {}", rms);
+                    }
+                }
+            }
+        } catch (LineUnavailableException | IllegalArgumentException e) {
+            log.error("Speech calibration failed: {}", e.getMessage());
+            EventBusManager.publish(new AiVoxResponseEvent("Audio calibration failed. Using default settings."));
+            return DEFAULT_RMS_THRESHOLD_HIGH;
+        } finally {
+            log.info("Speech calibration completed. Total samples: {}, Speech samples: {}, Average speech RMS: {}, Peak speech RMS: {}",
+                    totalSampleCount, speechSampleCount, speechSampleCount > 0 ? sumSpeechRMS / speechSampleCount : 0.0, peakSpeechRMS);
             EventBusManager.publish(new AiVoxResponseEvent("Audio calibration complete."));
         }
 
-        if (sampleCount == 0 || speechSamples < sampleCount / 4) {
-            log.warn("Insufficient speech detected during calibration (speech samples: {}). Using default thresholds.", speechSamples);
-            return new AudioSettingsTuple<>(150.0, 15.0);
+        if (speechSampleCount < totalSampleCount / 4) {
+            log.warn("Insufficient speech detected (speech samples: {}). Using default high.", speechSampleCount);
+            return DEFAULT_RMS_THRESHOLD_HIGH;
         }
 
-        double avgRMS = sumRMS / sampleCount;
-        double highThreshold = Math.max(avgRMS * 1.0, peakRMS * 0.2); // Lower multiplier to 1.0
-        double lowThreshold = avgRMS * 0.3; // Increase to 0.3
+        double avgSpeechRMS = sumSpeechRMS / speechSampleCount;
+        return avgSpeechRMS * SPEECH_HIGH_FACTOR;
+    }
 
-        // Clamp thresholds
-        highThreshold = Math.max(400.0, Math.min(highThreshold, 800.0));
-        lowThreshold = Math.max(50.0, Math.min(lowThreshold, 80.0));
-
-        SystemSession systemSession = SystemSession.getInstance();
-        systemSession.setRmsThresholdHigh(highThreshold);
-        systemSession.setRmsThresholdLow(lowThreshold);
-
-        log.info("Calibrated RMS thresholds: HIGH={}, LOW={}", highThreshold, lowThreshold);
-        return new AudioSettingsTuple<>(highThreshold, lowThreshold);
+    private static Object createTTSSubscriber(CompletableFuture<Void> future, String expectedText) {
+        return new Object() {
+            @Subscribe
+            public void onTTSPlaybackStartEvent(TTSPlaybackStartEvent event) {
+                if (event.getText().equals(expectedText)) {
+                    log.debug("TTS playback start event received for: {}", expectedText);
+                    future.complete(null);
+                }
+            }
+        };
     }
 
     /**

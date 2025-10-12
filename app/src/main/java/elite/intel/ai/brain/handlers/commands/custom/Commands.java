@@ -4,7 +4,7 @@ import elite.intel.ai.brain.handlers.commands.CommandHandler;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 
-import static elite.intel.ai.brain.handlers.commands.ControllerBindings.GameCommand.*;
+import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.*;
 
 /**
  * CommandActionsCustom represents an enumeration of customizable command actions,

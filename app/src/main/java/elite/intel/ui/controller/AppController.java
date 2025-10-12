@@ -343,10 +343,10 @@ public class AppController implements AppControllerInterface, ActionListener {
 
     @Subscribe
     public void onSttConnectionFailed(STTConnectionFailed event) {
-        EventBusManager.publish(new MissionCriticalAnnouncementEvent("Warning! Speech to Text connection failed. Attempting re-connect in 10 seconds"));
+        EventBusManager.publish(new MissionCriticalAnnouncementEvent("Warning! Speech to Text connection failed. Re-connecting..."));
         ears = ApiFactory.getInstance().getEarsImpl();
         ears.stop();
-        SleepNoThrow.sleep(10000);
+        SleepNoThrow.sleep(20_000);
         ears.start();
     }
 }

@@ -6,8 +6,8 @@ import elite.intel.ai.hands.GameController;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import static elite.intel.ai.brain.handlers.commands.ControllerBindings.GameCommand.BINDING_EXPLORATION_FSSDISCOVERY_SCAN;
-import static elite.intel.ai.brain.handlers.commands.ControllerBindings.GameCommand.BINDING_SET_SPEED_ZERO;
+import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_EXPLORATION_FSSDISCOVERY_SCAN;
+import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_SET_SPEED_ZERO;
 
 /**
  * The PerformFSSScanHandler class is responsible for executing a sequence of key bindings

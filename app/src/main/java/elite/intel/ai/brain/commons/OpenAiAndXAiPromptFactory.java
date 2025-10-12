@@ -1,8 +1,8 @@
-package elite.intel.ai.brain.openai;
+package elite.intel.ai.brain.commons;
 
 import elite.intel.ai.brain.AICadence;
 import elite.intel.ai.brain.AIPersonality;
-import elite.intel.ai.brain.AiContextFactory;
+import elite.intel.ai.brain.AiPromptFactory;
 import elite.intel.ai.brain.AiRequestHints;
 import elite.intel.ai.brain.handlers.query.Queries;
 import elite.intel.session.PlayerSession;
@@ -16,27 +16,34 @@ import static elite.intel.ai.brain.handlers.query.Queries.GENERAL_CONVERSATION;
 import static elite.intel.ai.brain.handlers.query.Queries.WHAT_IS_YOUR_DESIGNATION;
 import static elite.intel.util.Abbreviations.generateAbbreviations;
 
-public class OpenAiContextFactory implements AiContextFactory {
+public class OpenAiAndXAiPromptFactory implements AiPromptFactory {
 
-    private static final OpenAiContextFactory INSTANCE = new OpenAiContextFactory();
+    private static final OpenAiAndXAiPromptFactory INSTANCE = new OpenAiAndXAiPromptFactory();
 
-    public static OpenAiContextFactory getInstance() {
+    public static OpenAiAndXAiPromptFactory getInstance() {
         return INSTANCE;
     }
 
-    private OpenAiContextFactory() {
+    private OpenAiAndXAiPromptFactory() {
         // Singleton
     }
 
-    @Override public String generateSystemInstructions(String sensorInput) {
+    private String getStandardJsonFormat() {
+        return "Always output JSON: {\"type\": \"command|query|chat\", \"response_text\": \"TTS output\", \"action\": \"action_name|query_name|null\", \"params\": {\"key\": \"value\"}, \"expect_followup\": boolean}";
+    }
+
+    @Override
+    public String generateSystemInstructions(String sensorInput) {
         StringBuilder sb = new StringBuilder();
         getSessionValues(sb);
         appendBehavior(sb);
         sb.append("Instructions: Analyze this input: ").append(sensorInput).append(". Use planetShortName for stellar objects. ");
+        sb.append(getStandardJsonFormat()).append("\n");
         return sb.toString();
     }
 
-    @Override public String generatePlayerInstructions(String playerVoiceInput) {
+    @Override
+    public String generatePlayerInstructions(String playerVoiceInput) {
         StringBuilder sb = new StringBuilder();
         sb.append("Instructions:\n\n");
         appendBehavior(sb);
@@ -44,9 +51,8 @@ public class OpenAiContextFactory implements AiContextFactory {
         sb.append(generateSupportedCommandsCause());
         sb.append(generateSupportedQueriesClause());
         sb.append(generateAbbreviations());
-        sb.append("Interpret this input: ").append(playerVoiceInput).append("\n\n ");
-        sb.append("Always output JSON: {\"type\": \"command|query|chat\", \"response_text\": \"TTS output\", \"action\": \"action_name|query_name|null\", \"params\": {\"key\": \"value\"}, \"expect_followup\": boolean} \n");
-
+        sb.append("Interpret this input: ").append(playerVoiceInput).append("\n\n");
+        sb.append(getStandardJsonFormat()).append("\n");
         inputClassificationClause(sb);
         colloquialTerms(sb);
         return sb.toString();
@@ -54,8 +60,8 @@ public class OpenAiContextFactory implements AiContextFactory {
 
     private void colloquialTerms(StringBuilder sb) {
         sb.append("Map colloquial terms to commands: 'feds', 'yanks', or 'federation space' to 'FEDERATION', 'imperials', 'imps', or 'empire' to 'IMPERIAL', 'alliance space' or 'allies' to 'ALLIANCE' for set_cadence. ");
-        sb.append("Map slang such as 'bounce', 'get out of here' to commands like "+JUMP_TO_HYPERSPACE.getAction()+". ");
-        sb.append("Infer command intent from context: phrases like 'act like', 'talk like', 'blend in with', or 'sound like' followed by a faction should trigger '" + SET_PERSONALITY.getAction() + "' with the corresponding cadence value, using current system allegiance if ambiguous. ");
+        sb.append("Map slang such as 'bounce', 'get out of here' to commands like ").append(JUMP_TO_HYPERSPACE.getAction()).append(". ");
+        sb.append("Infer command intent from context: phrases like 'act like', 'talk like', 'blend in with', or 'sound like' followed by a faction should trigger '").append(SET_PERSONALITY.getAction()).append("' with the corresponding cadence value, using current system allegiance if ambiguous. ");
         sb.append("Examples:\n" +
                 "    - Input 'What’s the weather in Los Angeles?' -> {\"type\": \"query\", \"response_text\": \"\", \"action\": \"general_conversation\", \"params\": {}, \"expect_followup\": true}\n" +
                 "    - Input 'Is the next star scoopable?' -> {\"type\": \"query\", \"response_text\": \"\", \"action\": \"query_analyze_route\", \"params\": {}, \"expect_followup\": false}\n");
@@ -63,15 +69,14 @@ public class OpenAiContextFactory implements AiContextFactory {
 
     private void inputClassificationClause(StringBuilder sb) {
         sb.append("For type='command': Provide empty response_text for single word commands (e.g., 'deploy landing gear').\n");
-
-        sb.append("For navigation commands (e.g., 'jump', 'hyperspace', 'go to next system'), map to '" + JUMP_TO_HYPERSPACE.getAction() + "' 'supercruise' to '"+ENTER_SUPER_CRUISE.getAction()+"'.  'cancel_resume_navigation' to "+NAVIGATION_ON_OFF.getAction()+" 'Stop', 'cut engines' map to speed commands " + STOP.getAction() + ". 'Activate', 'toggle', 'left', 'right', 'up', 'down', 'close' to UI commands like" + ACTIVATE.getAction() + ". ");
-        sb.append("For for set, change, swap, add etc type commands that require value provide params json {\"key\":\"value\"} where key always 'key' and value is what you determine value tobe.");
-        sb.append("For commands like "+INCREASE_SPEED_BY.getAction()+" provide params json {\"key\":\"value\"} where value is a positive integer. example: {\"key\":\"3\"}.");
-        sb.append("For commands like "+DECREASE_SPEED_BY.getAction()+" provide params json {\"key\":\"value\"} where value is a negative integer example: {\"key\":\"-3\"}.");
+        sb.append("For navigation commands (e.g., 'jump', 'hyperspace', 'go to next system'), map to '").append(JUMP_TO_HYPERSPACE.getAction()).append("'. 'supercruise' to '").append(ENTER_SUPER_CRUISE.getAction()).append("'. 'cancel_resume_navigation' to ").append(NAVIGATION_ON_OFF.getAction()).append(". 'Stop', 'cut engines' map to speed commands ").append(STOP.getAction()).append(". 'Activate', 'toggle', 'left', 'right', 'up', 'down', 'close' to UI commands like ").append(ACTIVATE.getAction()).append(". ");
+        sb.append("For set, change, swap, add etc type commands that require value provide params json {\"key\":\"value\"} where key always 'key' and value is what you determine value to be.");
+        sb.append("For commands like ").append(INCREASE_SPEED_BY.getAction()).append(" provide params json {\"key\":\"value\"} where value is a positive integer. example: {\"key\":\"3\"}.");
+        sb.append("For commands like ").append(DECREASE_SPEED_BY.getAction()).append(" provide params json {\"key\":\"value\"} where value is a negative integer example: {\"key\":\"-3\"}.");
         sb.append("For toggle commands such as turn off, turn on, cancel, enable or disable, ALWAYS provide params json {\"state\":\"true\"} / {\"state\":\"false\"}. ");
 
         sb.append("For type='query': \n" +
-                "    - If action is a quick query (e.g., '" + WHAT_IS_YOUR_DESIGNATION.getAction() + "', '" + GENERAL_CONVERSATION.getAction() + "'), set 'response_text' to '' (empty string, no initial TTS).\n" +
+                "    - If action is a quick query (e.g., '").append(WHAT_IS_YOUR_DESIGNATION.getAction()).append("', '").append(GENERAL_CONVERSATION.getAction()).append("'), set 'response_text' to '' (empty string, no initial TTS).\n" +
                 "    - If action is a data query (listed in data queries section), set 'response_text' to '' for user feedback during delay.\n" +
                 "    - For 'general_conversation', use general knowledge outside Elite Dangerous unless the input explicitly mentions the game.\n" +
                 "    - Do not generate or infer answers here; the app will handle final response via handlers.\n");
@@ -109,27 +114,26 @@ public class OpenAiContextFactory implements AiContextFactory {
         return sb.toString();
     }
 
-
-
     private String generateSupportedCommandsCause() {
         StringBuilder sb = new StringBuilder();
         sb.append("Supported commands: ").append(AiRequestHints.customCommands);
         return sb.toString();
     }
 
-
-    @Override public String generateAnalysisPrompt(String userIntent, String dataJson) {
+    @Override
+    public String generateAnalysisPrompt(String userIntent, String dataJson) {
         StringBuilder sb = new StringBuilder();
         getSessionValues(sb);
         appendBehavior(sb);
         sb.append("Task: Analyze the provided JSON data against the user's intent: ").append(userIntent).append(". Return precise answers (e.g., yes/no for specific searches) or summaries as requested, using the configured personality and cadence in 'response_text'.\n");
-        sb.append("Output JSON: {\"response_text\": \"TTS output in the configured personality and cadence\", \"details\": \"optional extra info\"}\n");
+        sb.append(getStandardJsonFormat()).append("\n");
         sb.append("Data format: JSON array or object, e.g., for signals: [{\"name\": \"Fleet Carrier XYZ\", \"type\": \"Carrier\"}, {\"name\": \"Distress Signal\", \"type\": \"USS\"}]\n");
-        sb.append("Provide extremely brief and concise answers. Always use planetShortName for locations if available.");
+        sb.append("Answer in 1-3 words max. Use ONLY planetShortName (e.g., '12 d'). NEVER use planetName (e.g., 'Prielee UN-T d3-34 12 d') or bodyId. Example: Query: 'Which planet has four bio signals?' Answer: '12 d'");
         return sb.toString();
     }
 
-    @Override public String generateSystemPrompt() {
+    @Override
+    public String generateSystemPrompt() {
         StringBuilder sb = new StringBuilder();
         getSessionValues(sb);
         appendBehavior(sb);
@@ -137,16 +141,16 @@ public class OpenAiContextFactory implements AiContextFactory {
         sb.append(generateSupportedQueriesClause());
         sb.append("Round billions to nearest million. ");
         sb.append("Round millions to nearest 250000. ");
-        sb.append("Always output JSON: {\"type\": \"command|chat\", \"response_text\": \"TTS output\", \"action\": \"set_mining_target|set_current_system|...\", \"params\": {\"key\": \"value\"}, \"expect_followup\": boolean}. ");
-        sb.append("Always output JSON for 'navigate_to_coordinates' command using numbers, not spelled out words. Example: {\"latitude\":-35,4320,\"longitude\":76.4324} do not confuse with navigate to landing zone or bio sample. ");
-        sb.append("For type='query' in initial classification, follow response_text rules from player instructions. For tool/follow-up, use full analyzed response in 'response_text'. ");
+        sb.append(getStandardJsonFormat()).append("\n");
+        sb.append("Provide extremely brief and concise answers. Always use planetShortName for locations if available.");
+        sb.append("Always output JSON for 'navigate_to_coordinates' command using numbers, not spelled out words. Example: {\"latitude\":-35.4320,\"longitude\":76.4324} do not confuse with navigate to landing zone or bio sample. ");
         sb.append("For type='query' in initial classification, follow response_text rules from player instructions. For tool/follow-up, use full analyzed response in 'response_text'. ");
         sb.append("For type='chat', set 'expect_followup': true if response poses a question or requires user clarification; otherwise, false. ");
-
         return sb.toString();
     }
 
-    @Override public String generateQueryPrompt() {
+    @Override
+    public String generateQueryPrompt() {
         StringBuilder sb = new StringBuilder();
         getSessionValues(sb);
         appendBehavior(sb);
@@ -154,18 +158,17 @@ public class OpenAiContextFactory implements AiContextFactory {
         sb.append("When processing a 'tool' role message, use the provided data's 'response_text' as the primary response if available, ensuring it matches the context of the query. ");
         sb.append("Provide extremely brief and concise answers. Use planetShortName for locations when available.");
         sb.append(generateSupportedQueriesClause());
-
         sb.append("For 'general_conversation', generate a response using general knowledge outside Elite Dangerous unless the input explicitly mentions the game, lean into UNHINGED slang matching cadence for a playful vibe.");
-        sb.append("Always output JSON: {\"type\": \"command|chat\", \"response_text\": \"TTS output\", \"action\": \"set_mining_target|set_current_system|...\", \"params\": {\"key\": \"value\"}, \"expect_followup\": boolean}. ");
+        sb.append(getStandardJsonFormat()).append("\n");
         sb.append("For type='query' in initial classification, follow response_text rules from player instructions. For tool/follow-up, use full analyzed response in 'response_text'. ");
         sb.append("For type='chat', set 'expect_followup': true if response poses a question or requires user clarification; otherwise, false. ");
         return sb.toString();
     }
 
-    @Override public void appendBehavior(StringBuilder sb) {
+    @Override
+    public void appendBehavior(StringBuilder sb) {
         SystemSession systemSession = SystemSession.getInstance();
         AICadence aiCadence = systemSession.getAICadence();
-        AIPersonality personality = SystemSession.getInstance().getAIPersonality();
         AIPersonality aiPersonality = systemSession.getAIPersonality();
 
         sb.append("You are an AI assistant for Elite Dangerous.");
@@ -183,11 +186,11 @@ public class OpenAiContextFactory implements AiContextFactory {
         sb.append("Round billions to nearest million. ");
         sb.append("Round millions to nearest 250000. ");
         sb.append("Start responses directly with the requested information, avoiding conversational fillers like 'noted,' 'well,' 'right,' 'understood,' or similar phrases. ");
-        if (personality.equals(AIPersonality.UNHINGED) || personality.equals(AIPersonality.FRIENDLY)) {
+        if (aiPersonality.equals(AIPersonality.UNHINGED) || aiPersonality.equals(AIPersonality.FRIENDLY)) {
             sb.append("For UNHINGED personality, use playful slang matching cadence.");
         }
-        if (personality.equals(AIPersonality.ROGUE)) {
-            sb.append("For ROGUE personality, use bold exessive profanity (e.g., " + getProfanityExamples() + "), but keep it sharp and witty.");
+        if (aiPersonality.equals(AIPersonality.ROGUE)) {
+            sb.append("For ROGUE personality, use bold excessive profanity (e.g., ").append(getProfanityExamples()).append("), but keep it sharp and witty.");
         }
     }
 
@@ -222,7 +225,7 @@ public class OpenAiContextFactory implements AiContextFactory {
         String aiName = SystemSession.getInstance().getAIVoice().getName();
         sb.append("Context: You are ").append(aiName).append(", onboard AI for a ").append(currentShip).append(" ship in Elite Dangerous. ");
         if (carrierName != null && !carrierName.isEmpty()) {
-            sb.append("Our home base is FleetCarrier " + carrierName + ". ");
+            sb.append("Our home base is FleetCarrier ").append(carrierName).append(". ");
         }
         sb.append("When addressing me, choose one at random each time from: ").append(playerName).append(", ").append(playerMilitaryRank).append(", ").append(playerTitle).append(", ").append(playerHonorific).append(". ");
         if (missionStatement != null && !missionStatement.isEmpty()) {
@@ -231,7 +234,6 @@ public class OpenAiContextFactory implements AiContextFactory {
         }
         sb.append("\n\n");
     }
-
 
     private static String getProfanityExamples() {
         SystemSession systemSession = SystemSession.getInstance();
@@ -243,7 +245,7 @@ public class OpenAiContextFactory implements AiContextFactory {
     private String generateClassifyClause() {
         StringBuilder sb = new StringBuilder();
         sb.append("Classify input as one of:\n" +
-                "    - 'command': Triggers an app action or keyboard event (DO SOMETHING). Use for inputs starting with verbs like 'set', 'get', 'drop', 'retract', 'deploy', 'find', 'locate', 'activate' (e.g., 'deploy landing gear', 'set mining target', 'find carrier fuel'). Treat imperative verbs as commands even if question-phrased (e.g., 'get distance' is a command). Only match supported commands listed in GameCommands or CustomCommands. Provide empty response_text for single-word commands;. Match commands before queries or chat.\n" +
+                "    - 'command': Triggers an app action or keyboard event (DO SOMETHING). Use for inputs starting with verbs like 'set', 'get', 'drop', 'retract', 'deploy', 'find', 'locate', 'activate' (e.g., 'deploy landing gear', 'set mining target', 'find carrier fuel'). Treat imperative verbs as commands even if question-phrased (e.g., 'get distance' is a command). Only match supported commands listed in GameCommands or CustomCommands. Provide empty response_text for single-word commands. Match commands before queries or chat.\n" +
                 "    - 'query': Requests information from game state (LOOK UP or COMPUTE SOMETHING). Use for inputs starting with interrogative words like 'what', 'where', 'when', 'how', 'how far', 'how many', 'how much', 'what is', 'where is' (e.g., 'how far are we from last bio sample', 'what is in our cargo hold'). Explicitly match queries about distance to the last bio sample with phrases containing 'how far' or 'distance' followed by 'bio sample', 'biosample', 'last sample', 'last bio sample', 'previous bio sample', or 'previous biosample', with or without prefixes like 'query', 'query about game state', or 'query question' (e.g., 'how far are we from last bio sample', 'how far away from the last bio sample', 'query how far are we from the last biosample', 'query about game state query question how far are we from the last bio sample', 'distance to last sample'). Normalize input by stripping prefixes ('query', 'query about game state', 'query question') and replacing 'bio sample' with 'biosample' for matching. These must trigger the query handler (HOW_FAR_ARE_WE_FROM_LAST_SAMPLE) with action 'query_how_far_we_moved_from_last_bio_sample' to send raw game state data (e.g., planet radius, last bio sample coordinates, current coordinates) for AI analysis, returning 'Distance from last sample is: <distance> meters.' in the configured personality and cadence. Set response_text to '' for user feedback during analysis. Match supported queries listed in QueryActions. Queries take priority over chat but not commands.\n" +
                 "    - 'chat': General conversation, questions unrelated to game actions or state, or unmatched inputs (general chat). Use for lore, opinions, or casual talk (e.g., 'How’s it going?', 'What’s the vibe in this system?'). Only classify as chat if the input does not start with interrogative words ('what', 'where', 'when', 'how', 'how far', 'how many', 'how much', 'what is', 'where is') or command verbs ('set', 'get', 'drop', 'retract', 'deploy', 'find', 'locate', 'activate') and does not match any specific query or command pattern in QueryActions or GameCommands/CustomCommands. If ambiguous (e.g., pure 'where'), set response_text to 'Say again?', action to null, and expect_followup to true.\n");
         return sb.toString();

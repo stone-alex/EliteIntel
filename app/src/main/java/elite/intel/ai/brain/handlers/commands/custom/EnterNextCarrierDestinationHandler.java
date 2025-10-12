@@ -6,9 +6,13 @@ import elite.intel.ai.hands.GameController;
 import elite.intel.ai.hands.KeyProcessor;
 import elite.intel.ai.search.spansh.carrier.CarrierJump;
 import elite.intel.session.PlayerSession;
+import elite.intel.util.AudioPlayer;
+import elite.intel.util.SleepNoThrow;
 
 import java.util.Collections;
 import java.util.Map;
+
+import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_ACTIVATE;
 
 public class EnterNextCarrierDestinationHandler extends CustomCommandOperator implements CommandHandler {
 
@@ -27,6 +31,10 @@ public class EnterNextCarrierDestinationHandler extends CustomCommandOperator im
             KeyProcessor keyProcessor = KeyProcessor.getInstance();
             if(carrierJump.getSystemName() != null) {
                 keyProcessor.enterText(carrierJump.getSystemName());
+                SleepNoThrow.sleep(250);
+                keyProcessor.pressKey(KeyProcessor.KEY_ENTER);
+                keyProcessor.pressKey(KeyProcessor.KEY_ENTER);
+                AudioPlayer.getInstance().playBeep();
             }
         }
     }

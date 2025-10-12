@@ -27,7 +27,7 @@ package elite.intel.ai.brain;
  * - generatePlayerInstructions(String playerVoiceInput): Generates instructions for the player based on
  * their voice input, enabling the system to respond contextually to the player's commands or inquiries.
  */
-public interface AiContextFactory {
+public interface AiPromptFactory {
     String generateSystemInstructions(String sensorInput);
     String generatePlayerInstructions(String playerVoiceInput);
     String generateAnalysisPrompt(String userIntent, String dataJson);

@@ -3,7 +3,6 @@ package elite.intel.gameapi.journal.subscribers;
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
 import elite.intel.gameapi.journal.events.DockedEvent;
 import elite.intel.gameapi.journal.events.dto.CarrierDataDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
@@ -34,7 +33,7 @@ public class DockedSubscriber {
                 carrierData.setX(coordinates.x());
                 carrierData.setY(coordinates.y());
                 carrierData.setZ(coordinates.z());
-                carrierData.setLocation(event.getStarSystem());
+                carrierData.setStarName(event.getStarSystem());
                 playerSession.setCarrierData(carrierData);
             }
         } else {

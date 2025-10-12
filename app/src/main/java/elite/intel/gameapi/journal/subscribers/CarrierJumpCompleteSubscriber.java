@@ -1,9 +1,6 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.intel.ai.search.edsm.EdsmApiClient;
-import elite.intel.ai.search.edsm.dto.DeathsDto;
-import elite.intel.ai.search.edsm.dto.TrafficDto;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.journal.events.CarrierJumpEvent;
@@ -36,14 +33,13 @@ public class CarrierJumpCompleteSubscriber {
 
         if(FLEET_CARRIER.equals(playerSession.getCurrentLocation().getLocationType())){
             playerSession.saveLocation(toLocationDto(event));
-            playerSession.clearLocations();
         }
 
         if(carrierData != null && starPos[0] > 0) {
             carrierData.setX(starPos[0]);
             carrierData.setY(starPos[1]);
             carrierData.setZ(starPos[2]);
-            carrierData.setLocation(starSystem);
+            carrierData.setStarName(starSystem);
             playerSession.setCarrierData(carrierData);
         }
 

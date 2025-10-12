@@ -7,7 +7,7 @@ import elite.intel.session.Status;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import static elite.intel.ai.brain.handlers.commands.ControllerBindings.GameCommand.*;
+import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.*;
 
 /**
  * The SetPowerToSystemsHandler class extends the CustomCommandOperator and implements

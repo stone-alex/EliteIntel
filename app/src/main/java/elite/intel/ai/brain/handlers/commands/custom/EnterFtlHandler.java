@@ -8,7 +8,7 @@ import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.Status;
 import elite.intel.util.SleepNoThrow;
 
-import static elite.intel.ai.brain.handlers.commands.ControllerBindings.GameCommand.*;
+import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.*;
 
 public class EnterFtlHandler extends CustomCommandOperator implements CommandHandler {
 
@@ -28,6 +28,10 @@ public class EnterFtlHandler extends CustomCommandOperator implements CommandHan
         } else if (status.isInMainShip()) {
             if (status.isHardpointsDeployed()) {
                 operateKeyboard(BINDING_HARDPOINTS_TOGGLE.getGameBinding(), 0);
+                SleepNoThrow.sleep(2000);
+            }
+            if(status.isCargoScoopDeployed()) {
+                operateKeyboard(BINDING_TOGGLE_CARGO_SCOOP.getGameBinding(), 0);
                 SleepNoThrow.sleep(2000);
             }
             if (status.isInSupercruise()) {

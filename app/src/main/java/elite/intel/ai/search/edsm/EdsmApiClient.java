@@ -85,6 +85,7 @@ public class EdsmApiClient {
             return new SystemBodiesDto();
         }
         String response = getResponse(query);
+        System.out.println(response);
         long timestamp = System.currentTimeMillis();
         SystemBodiesData data;
         if (response.isEmpty()) {

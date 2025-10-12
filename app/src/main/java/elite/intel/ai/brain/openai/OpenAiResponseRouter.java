@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import elite.intel.ai.ApiFactory;
 import elite.intel.ai.brain.AIConstants;
 import elite.intel.ai.brain.AIRouterInterface;
-import elite.intel.ai.brain.AiContextFactory;
+import elite.intel.ai.brain.AiPromptFactory;
 import elite.intel.ai.brain.AiQueryInterface;
 import elite.intel.ai.brain.commons.ResponseRouter;
 import elite.intel.ai.brain.handlers.query.Queries;
@@ -22,7 +22,7 @@ public class OpenAiResponseRouter extends ResponseRouter implements AIRouterInte
     private static final Logger log = LogManager.getLogger(OpenAiResponseRouter.class);
     private static OpenAiResponseRouter instance;
     private final AiQueryInterface queryInterface;
-    private final AiContextFactory contextFactory;
+    private final AiPromptFactory contextFactory;
 
     public static synchronized OpenAiResponseRouter getInstance() {
         if (instance == null) {
@@ -34,7 +34,7 @@ public class OpenAiResponseRouter extends ResponseRouter implements AIRouterInte
     private OpenAiResponseRouter() {
         try {
             this.queryInterface = ApiFactory.getInstance().getQueryEndpoint();
-            this.contextFactory = ApiFactory.getInstance().getAiContextFactory();
+            this.contextFactory = ApiFactory.getInstance().getAiPromptFactory();
         } catch (Exception e) {
             log.error("Failed to initialize OpenAiResponseRouter", e);
             throw new RuntimeException("OpenAiResponseRouter initialization failed", e);

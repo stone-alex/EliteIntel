@@ -7,8 +7,8 @@ import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.Status;
 
-import static elite.intel.ai.brain.handlers.commands.ControllerBindings.GameCommand.BINDING_TOGGLE_CARGO_SCOOP;
-import static elite.intel.ai.brain.handlers.commands.ControllerBindings.GameCommand.BINDING_TOGGLE_CARGO_SCOOP_BUGGY;
+import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_TOGGLE_CARGO_SCOOP;
+import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_TOGGLE_CARGO_SCOOP_BUGGY;
 
 public class OpenCargoScoopHandler extends CustomCommandOperator implements CommandHandler {
 

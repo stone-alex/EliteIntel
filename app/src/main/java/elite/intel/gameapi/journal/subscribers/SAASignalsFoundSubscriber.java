@@ -57,8 +57,8 @@ public class SAASignalsFoundSubscriber {
                 for (SAASignalsFoundEvent.Genus genus : event.getGenuses()) {
                     BioForms.ProjectedPayment averagePayment = BioForms.getAverageProjectedPayment(genus.getGenusLocalised());
                     if (averagePayment != null) {
-                        averageProjectedPayment = averagePayment.payment();
-                        averageFirstDiscoveryBonus =averagePayment.firstDiscoveryBonus();
+                        averageProjectedPayment = averageProjectedPayment + averagePayment.payment();
+                        averageFirstDiscoveryBonus = averageFirstDiscoveryBonus + averagePayment.firstDiscoveryBonus();
                     }
 
                     if (!hasBeenScanned) {

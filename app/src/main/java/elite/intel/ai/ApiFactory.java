@@ -1,6 +1,7 @@
 package elite.intel.ai;
 
 import elite.intel.ai.brain.*;
+import elite.intel.ai.brain.commons.OpenAiAndXAiPromptFactory;
 import elite.intel.ai.brain.openai.*;
 import elite.intel.ai.brain.xai.*;
 import elite.intel.ai.ears.EarsInterface;
@@ -9,7 +10,6 @@ import elite.intel.ai.mouth.MouthInterface;
 import elite.intel.ai.mouth.google.GoogleTTSImpl;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
 import elite.intel.ui.event.AppLogEvent;
 
 /**
@@ -53,12 +53,12 @@ public class ApiFactory {
         };
     }
 
-    public AiContextFactory getAiContextFactory() {
+    public AiPromptFactory getAiPromptFactory() {
         String apiKey = ConfigManager.getInstance().getSystemKey(ConfigManager.AI_API_KEY);
         ProviderEnum provider = KeyDetector.detectProvider(apiKey, "LLM");
         return switch (provider) {
-            case GROK -> GrokContextFactory.getInstance();
-            case OPENAI -> OpenAiContextFactory.getInstance();
+            case GROK -> OpenAiAndXAiPromptFactory.getInstance();
+            case OPENAI -> OpenAiAndXAiPromptFactory.getInstance();
             default -> throw new IllegalStateException("Unknown AI key format");
         };
     }

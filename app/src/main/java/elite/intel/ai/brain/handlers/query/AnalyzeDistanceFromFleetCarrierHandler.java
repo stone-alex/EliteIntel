@@ -62,9 +62,9 @@ public class AnalyzeDistanceFromFleetCarrierHandler extends BaseQueryAnalyzer im
         );
     }
 
-    record DataDto(double distance, float jumpRange, String fleetCarrierIsLocatedAt, String instruction) implements ToJsonConvertible {
-        @Override public String toJson() {
-            return GsonFactory.getGson().toJson(this);
+        record DataDto(double distance, float jumpRange, String fleetCarrierIsLocatedAt, String instruction) implements ToJsonConvertible {
+            @Override public String toJson() {
+                return GsonFactory.getGson().toJson(this);
+            }
         }
-    }
 }

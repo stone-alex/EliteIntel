@@ -126,9 +126,10 @@ public class OpenAiAndXAiPromptFactory implements AiPromptFactory {
         getSessionValues(sb);
         appendBehavior(sb);
         sb.append("Task: Analyze the provided JSON data against the user's intent: ").append(userIntent).append(". Return precise answers (e.g., yes/no for specific searches) or summaries as requested, using the configured personality and cadence in 'response_text'.\n");
-        sb.append(getStandardJsonFormat()).append("\n");
-        sb.append("Data format: JSON array or object, e.g., for signals: [{\"name\": \"Fleet Carrier XYZ\", \"type\": \"Carrier\"}, {\"name\": \"Distress Signal\", \"type\": \"USS\"}]\n");
+        sb.append("Data is provided in JSON. Strictly follow the 'instructions' field in data for analysis and response format. ");
+        sb.append("Return only the exact result specified by the instructions");
         sb.append("Answer in 1-3 words max. Use ONLY planetShortName (e.g., '12 d'). NEVER use planetName (e.g., 'Prielee UN-T d3-34 12 d') or bodyId. Example: Query: 'Which planet has four bio signals?' Answer: '12 d'");
+        sb.append(getStandardJsonFormat()).append("\n");
         return sb.toString();
     }
 

@@ -192,3 +192,5 @@
 "bias"="bio"
 "carrier feel"="tritium"
 "bitch"="which"
+"buyers signals"="bio signals"
+"bios signals"="bio signals"

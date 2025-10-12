@@ -27,23 +27,42 @@ AnalyzeBioSamplesHandler extends BaseQueryAnalyzer implements QueryHandler {
         Map<Long, LocationDto> locations = playerSession.getLocations();
 
         List<BioSampleDto> partialScans = currentLocation.getPartialBioSamples();
-        List<GenusDto> genus = currentLocation.getGenus();
+        List<GenusDto> genusListForCurrentLocation = currentLocation.getGenus();
         List<BioSampleDto> samplesCompletedForThisPlanet = completedScansForPlanet(playerSession);
         List<BioSampleDto> allBioSamplesForThisStarSystem = playerSession.getBioCompletedSamples();
+        List<GenusDto> genusListNotScannedForCurrentLocation = calculateGenusNotYetScanned(samplesCompletedForThisPlanet, genusListForCurrentLocation);
         List<String> planetNamesWithBioFormsWeHaveNotScanned = getPlanetsWithBioFormNotYetScanned(allBioSamplesForThisStarSystem, locations);
         List<String> planetNamesWithPartialBioScans = getPlanetsWithPartialBioScans(partialScans, locations);
 
-        String instructions = "'partialScans' contains partial bio scans (3 scans require to complete a bio sample. 'genus' all genus present on current planet. 'allBioSamplesForThisStarSystem' all completed bio samples for this star system. 'planetNamesWithBioFormsWeHaveNotScanned' list of planets that contain bio forms which remain to be scanned. 'planetNamesWithPartialBioScans' list of planets that contain partial bio scans. 'planetNamesWithPartialBioScans' list of planet names where bio scans are incomplete / partial samples. Name the genus and short planet names that still require scans.";
+        String instructions = "'partialScans' contains partial bio scans (3 scans require to complete a bio sample. 'genusListForCurrentLocation' all genusListForCurrentLocation present on current planet. 'allBioSamplesForThisStarSystem' all completed bio samples for this star system. 'planetNamesWithBioFormsWeHaveNotScanned' list of planets that contain bio forms which remain to be scanned. 'planetNamesWithPartialBioScans' list of planets that contain partial bio scans. 'planetNamesWithPartialBioScans' list of planet names where bio scans are incomplete / partial samples. Name the genusListForCurrentLocation.";
         return analyzeData(
                 new DataDto(partialScans,
-                        genus,
+                        genusListForCurrentLocation,
                         samplesCompletedForThisPlanet,
                         allBioSamplesForThisStarSystem,
                         planetNamesWithBioFormsWeHaveNotScanned,
                         planetNamesWithPartialBioScans,
+                        genusListNotScannedForCurrentLocation,
                         instructions
                 ).toJson(), originalUserInput
         );
+    }
+
+    private List<GenusDto> calculateGenusNotYetScanned(List<BioSampleDto> completedSamples, List<GenusDto> genusListForCurrentLocation) {
+        ArrayList<GenusDto> result = new ArrayList<>();
+        for (GenusDto genus : genusListForCurrentLocation) {
+            boolean found = false;
+            for (BioSampleDto sample : completedSamples) {
+                if (sample.getGenus().equals(genus.getSpecies())) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                result.add(genus);
+            }
+        }
+        return result;
     }
 
     private List<String> getPlanetsWithPartialBioScans(List<BioSampleDto> partialScans, Map<Long, LocationDto> locations) {
@@ -76,6 +95,7 @@ AnalyzeBioSamplesHandler extends BaseQueryAnalyzer implements QueryHandler {
                    List<BioSampleDto> allBioSamplesForThisStarSystem,
                    List<String> planetNamesWithBioFormsWeHaveNotScanned,
                    List<String> planetNamesWithPartialBioScans,
+                   List<GenusDto> genusListNotScannedForCurrentLocation,
                    String instructions
 
     ) implements ToJsonConvertible {

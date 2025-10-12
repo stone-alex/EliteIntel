@@ -46,9 +46,11 @@ public class CodexEntryEventSubscriber {
 
         if (!alreadyHaveThisEntry) {
             sb.append(", ");
-            sb.append("Voucher Amount: ");
-            sb.append(event.getVoucherAmount());
-            sb.append(" credits (one per planet only).");
+            if(event.getVoucherAmount() > 0) {
+                sb.append("Voucher Amount: ");
+                sb.append(event.getVoucherAmount());
+                sb.append(" credits (AI, this instructions if for you: Never say 'each' to the user. ever! Codex entries do not pay for each. Ever. Never say that to the user!!!).");
+            }
             Boolean isAnnounced = playerSession.paymentHasBeenAnnounced(genus);
 
             if (projectedPayment != null && projectedPayment.payment() != null && !isAnnounced) {

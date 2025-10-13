@@ -34,7 +34,8 @@ AnalyzeBioSamplesHandler extends BaseQueryAnalyzer implements QueryHandler {
         List<String> planetNamesWithBioFormsWeHaveNotScanned = getPlanetsWithBioFormNotYetScanned(allBioSamplesForThisStarSystem, locations);
         List<String> planetNamesWithPartialBioScans = getPlanetsWithPartialBioScans(partialScans, locations);
 
-        String instructions = "'partialScans' contains partial bio scans (3 scans require to complete a bio sample. 'genusListForCurrentLocation' all genusListForCurrentLocation present on current planet. 'allBioSamplesForThisStarSystem' all completed bio samples for this star system. 'planetNamesWithBioFormsWeHaveNotScanned' list of planets that contain bio forms which remain to be scanned. 'planetNamesWithPartialBioScans' list of planets that contain partial bio scans. 'planetNamesWithPartialBioScans' list of planet names where bio scans are incomplete / partial samples. Name the genusListForCurrentLocation.";
+        String instructions = "Analyze Elite Dangerous bio samples. 'partialScans': partial bio scans (3 scans needed per sample). 'genusListForCurrentLocation': all genus on current planet. 'allBioSamplesForThisStarSystem': completed bio samples in star system. 'planetNamesWithBioFormsWeHaveNotScanned': planets with unscanned bio forms. 'planetNamesWithPartialBioScans': planets with incomplete scans. 'genusListNotScannedForCurrentLocation': unscanned genus on current planet. For queries about unscanned genus or planets, list names from 'planetNamesWithBioFormsWeHaveNotScanned' and 'genusListNotScannedForCurrentLocation'. ";
+
         return analyzeData(
                 new DataDto(partialScans,
                         genusListForCurrentLocation,

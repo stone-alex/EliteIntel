@@ -194,3 +194,6 @@
 "bitch"="which"
 "buyers signals"="bio signals"
 "bios signals"="bio signals"
+"by home"="biome"
+"by own"="biome"
+"by our"="biome"

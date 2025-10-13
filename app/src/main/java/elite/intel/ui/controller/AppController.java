@@ -255,7 +255,7 @@ public class AppController implements AppControllerInterface, ActionListener {
     }
 
     private String streamingModeIsOffMessage() {
-        return "Streaming mode is Off. " + systemSession.getAIVoice().getName() + " is listening to you.";
+        return "Streaming mode is Off. AI is listening to you.";
     }
 
     private String streamingModeIsOnMessage() {
@@ -343,7 +343,7 @@ public class AppController implements AppControllerInterface, ActionListener {
 
     @Subscribe
     public void onSttConnectionFailed(STTConnectionFailed event) {
-        EventBusManager.publish(new MissionCriticalAnnouncementEvent("Warning! Speech to Text connection failed. Re-connecting..."));
+        EventBusManager.publish(new MissionCriticalAnnouncementEvent("Warning! Speech to Text connection failed. Re-connecting in 30 seconds."));
         ears = ApiFactory.getInstance().getEarsImpl();
         ears.stop();
         SleepNoThrow.sleep(30_000); // wait 30 seconds before restart.

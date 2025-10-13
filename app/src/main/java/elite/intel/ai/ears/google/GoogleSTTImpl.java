@@ -33,7 +33,7 @@ public class GoogleSTTImpl implements EarsInterface {
 
     private static final int CHANNELS = 1; // Mono
     private static final int STREAM_DURATION_MS = 290000; // ~4 min 50 sec; below Google V1 limit
-    private static final int KEEP_ALIVE_INTERVAL_MS = 3000; // Set to 500ms to prevent timeouts
+    private static final int KEEP_ALIVE_INTERVAL_MS = 1500; // Set to 500ms to prevent timeouts
     private static final int ENTER_VOICE_FRAMES = 1; // Quick enter to avoid clipping
     private static final int EXIT_SILENCE_FRAMES = 10; // ~1s silence to exit
     private static final int MAX_RETRIES = 5; // Max retry attempts for errors
@@ -194,7 +194,6 @@ public class GoogleSTTImpl implements EarsInterface {
                 try (TargetDataLine line = (TargetDataLine) AudioSystem.getLine(info)) {
                     log.info("Using streaming format: SampleRate={}, Channels={}", sampleRateHertz, CHANNELS);
                     line.open(format, bufferSize);
-                    // stopWavRecording(); // <-- uncomment for debugging.
                     line.start();
                     byte[] buffer = new byte[bufferSize];
                     byte[] silentBuffer = new byte[bufferSize]; // Zero-filled buffer for keep-alive
@@ -334,7 +333,6 @@ public class GoogleSTTImpl implements EarsInterface {
                         synchronized (confidences) {
                             confidences.clear();
                         }
-                        // stopWavRecording(); // <-- uncomment for debugging.
                     }
                 }
                 retryCount = 0; // Reset retries on success
@@ -443,40 +441,5 @@ public class GoogleSTTImpl implements EarsInterface {
                 .setInterimResults(true)
                 .setSingleUtterance(false)
                 .build();
-    }
-
-    // for debugging audio quality
-    private void stopWavRecording() {
-        if (audioInputStream != null) {
-            try {
-                audioInputStream.close();
-                log.info("Stopped WAV recording");
-            } catch (Exception e) {
-                log.error("Failed to stop WAV recording", e);
-            }
-        }
-    }
-
-    // for debugging audio quality
-    private void startWavRecording() {
-        try {
-            AudioFormat format = new AudioFormat(sampleRateHertz, 16, CHANNELS, true, false);
-            wavFile = new File("audio_debug.wav");
-            DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
-            TargetDataLine line = (TargetDataLine) AudioSystem.getLine(info);
-            line.open(format, bufferSize);
-            line.start();
-            audioInputStream = new AudioInputStream(line);
-            new Thread(() -> {
-                try {
-                    AudioSystem.write(audioInputStream, AudioFileFormat.Type.WAVE, wavFile);
-                    log.info("Started WAV recording to {}", wavFile.getAbsolutePath());
-                } catch (Exception e) {
-                    log.error("Failed to write WAV file", e);
-                }
-            }).start();
-        } catch (Exception e) {
-            log.error("Failed to start WAV recording", e);
-        }
     }
 }

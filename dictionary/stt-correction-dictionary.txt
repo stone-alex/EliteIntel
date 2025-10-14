@@ -197,3 +197,6 @@
 "by home"="biome"
 "by own"="biome"
 "by our"="biome"
+"with career"="fleet carrier"
+"internet next"="enter next"
+"the internet"="enter"

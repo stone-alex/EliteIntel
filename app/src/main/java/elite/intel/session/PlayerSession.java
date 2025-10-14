@@ -460,8 +460,9 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         return targetFactions;
     }
 
-    public void saveLocation(LocationDto object) {
-        locations.put(object.getBodyId(), object);
+    public void saveLocation(LocationDto location) {
+        if (location.getBodyId() == -1) return;
+        locations.put(location.getBodyId(), location);
         save();
     }
 

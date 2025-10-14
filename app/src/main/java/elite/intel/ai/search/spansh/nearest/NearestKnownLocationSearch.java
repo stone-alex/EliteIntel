@@ -1,5 +1,7 @@
 package elite.intel.ai.search.spansh.nearest;
 
+import elite.intel.ai.search.edsm.EdsmApiClient;
+import elite.intel.ai.search.edsm.dto.StarSystemDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.util.json.GsonFactory;
 import org.apache.logging.log4j.LogManager;
@@ -65,15 +67,15 @@ public class NearestKnownLocationSearch {
                 return null;
             }
 
-            LocationDto location = new LocationDto(-1);
-            location.setLocationType(LocationDto.LocationType.STAR);
-            location.setStarName(spanshResponse.system.name);
-            location.setX(spanshResponse.system.x);
-            location.setY(spanshResponse.system.y);
-            location.setZ(spanshResponse.system.z);
-            location.setDistance(spanshResponse.system.distance);
+            LocationDto temp = new LocationDto(-1);
+            temp.setLocationType(LocationDto.LocationType.STAR);
+            temp.setStarName(spanshResponse.system.name);
+            temp.setX(spanshResponse.system.x);
+            temp.setY(spanshResponse.system.y);
+            temp.setZ(spanshResponse.system.z);
+            temp.setDistance(spanshResponse.system.distance);
 
-            return location;
+            return temp;
         } catch (IOException | InterruptedException e) {
             log.error("Failed to get nearest known location: {}", e.getMessage(), e);
             return null;

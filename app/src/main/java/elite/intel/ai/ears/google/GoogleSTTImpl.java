@@ -4,7 +4,10 @@ import com.google.api.gax.rpc.ApiStreamObserver;
 import com.google.cloud.speech.v1.*;
 import com.google.protobuf.ByteString;
 import elite.intel.ai.ConfigManager;
-import elite.intel.ai.ears.*;
+import elite.intel.ai.ears.AudioCalibrator;
+import elite.intel.ai.ears.AudioFormatDetector;
+import elite.intel.ai.ears.AudioSettingsTuple;
+import elite.intel.ai.ears.EarsInterface;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.mouth.subscribers.events.TTSInterruptEvent;
 import elite.intel.gameapi.EventBusManager;
@@ -152,7 +155,6 @@ public class GoogleSTTImpl implements EarsInterface {
                             @Override
                             public void onError(Throwable t) {
                                 log.error("STT error: {}", t.getMessage(), t);
-                                EventBusManager.publish(new STTConnectionFailed());
                                 stop();
                             }
 
@@ -277,7 +279,6 @@ public class GoogleSTTImpl implements EarsInterface {
                     }
                 } catch (LineUnavailableException | IllegalArgumentException e) {
                     log.error("Audio capture failed: {}", e.getMessage(), e);
-                    EventBusManager.publish(new STTConnectionFailed());
                     stop();
                     break;
                 } finally {
@@ -331,7 +332,6 @@ public class GoogleSTTImpl implements EarsInterface {
                             break;
                         }
                         retryCount++;
-                        continue;
                     } else {
                         log.error("Max retries reached for stream error ({}); stopping STT", sre.getStatus().getCode());
                         EventBusManager.publish(new AppLogEvent("STT max retries hit; pausing listener."));
@@ -340,7 +340,6 @@ public class GoogleSTTImpl implements EarsInterface {
                     }
                 } else {
                     log.error("Streaming recognition failed: {}", e.getMessage(), e);
-                    EventBusManager.publish(new STTConnectionFailed());
                     stop();
                     break;
                 }

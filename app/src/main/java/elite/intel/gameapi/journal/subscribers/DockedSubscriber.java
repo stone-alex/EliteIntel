@@ -2,6 +2,8 @@ package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
+import elite.intel.ai.search.edsm.EdsmApiClient;
+import elite.intel.ai.search.edsm.dto.MarketDto;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.DockedEvent;
 import elite.intel.gameapi.journal.events.dto.CarrierDataDto;
@@ -18,15 +20,23 @@ public class DockedSubscriber {
     @Subscribe
     public void onDockedEvent(DockedEvent event) {
         PlayerSession playerSession = PlayerSession.getInstance();
-        LocationDto currentLocation = playerSession.getCurrentLocation();
-        currentLocation.setMarketID(event.getMarketID());
-        currentLocation.setStationName(event.getStationName());
-        currentLocation.setStationEconomy(event.getStationEconomyLocalised());
-        currentLocation.setStationServices(event.getStationServices());
-        currentLocation.setStationType(event.getStationType());
-        currentLocation.setStationGovernment(event.getStationGovernmentLocalised());
+        LocationDto location = playerSession.getLocation(-1);
+
+        location.setMarketID(event.getMarketID());
+        location.setStationName(event.getStationName());
+        location.setStationEconomy(event.getStationEconomyLocalised());
+        location.setStationServices(event.getStationServices());
+        location.setStationType(event.getStationType());
+        location.setStationGovernment(event.getStationGovernmentLocalised());
+        location.setStarName(event.getStarSystem());
+        location.setMarketID(event.getMarketID());
+        location.setStationName(event.getStationName());
+        location.setPlanetName(null);
+        location.setPlanetShortName(null);
+        MarketDto marketDto = EdsmApiClient.searchMarket(event.getMarketID(), null, null);
+        location.setMarket(marketDto);
         if("FleetCarrier".equalsIgnoreCase(event.getStationType())) {
-            currentLocation.setLocationType(FLEET_CARRIER);
+            location.setLocationType(FLEET_CARRIER);
             PlayerSession.GalacticCoordinates coordinates = playerSession.getGalacticCoordinates();
             if(coordinates != null) {
                 CarrierDataDto carrierData = playerSession.getCarrierData();
@@ -37,10 +47,10 @@ public class DockedSubscriber {
                 playerSession.setCarrierData(carrierData);
             }
         } else {
-            currentLocation.setLocationType(STATION);
+            location.setLocationType(STATION);
         }
 
-        if(event.getStationFaction()  != null) currentLocation.setStationFaction(event.getStationFaction().getName());
+        if(event.getStationFaction()  != null) location.setStationFaction(event.getStationFaction().getName());
 
         StringBuilder sb = new StringBuilder();
         List<String> stationServices = event.getStationServices();
@@ -66,6 +76,6 @@ public class DockedSubscriber {
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("Data available for: " + availableData + "."));
         }
 
-        playerSession.saveLocation(currentLocation);
+        playerSession.saveLocation(location);
     }
 }

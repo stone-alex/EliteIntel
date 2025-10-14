@@ -13,6 +13,7 @@ import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
+import elite.intel.util.StringUtls;
 
 import java.io.IOException;
 import java.util.List;
@@ -22,23 +23,18 @@ import static elite.intel.util.StringUtls.capitalizeWords;
 public class FindCommodityHandler implements CommandHandler {
 
     @Override public void handle(String action, JsonObject params, String responseText) {
-        String commodity = params.get("key").getAsString();
+        String commodity = StringUtls.capitalizeWords(params.get("key").getAsString());
         PlayerSession playerSession = PlayerSession.getInstance();
         playerSession.clearMarkets();
 
-        LocationDto currentLocation = playerSession.getCurrentLocation();
-        LocationDto nearestKnownLocation = NearestKnownLocationSearch.findNearest(
-                currentLocation.getX(), currentLocation.getY(), currentLocation.getZ()
-        );
-
-        String starName = nearestKnownLocation == null ? currentLocation.getStarName() : nearestKnownLocation.getStarName();
+        String starName = playerSession.getPrimaryStar();
 
         SpanshMarketClient client = new SpanshMarketClient();
         try {
             List<StationMarket> markets = client.searchMarkets(new MarketSearchCriteria(
                     starName,
                     1,
-                    250,
+                    500,
                     commodity,
                     true,
                     false,

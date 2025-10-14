@@ -997,6 +997,16 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         return null;
     }
 
+    public String getPrimaryStar() {
+        Map<Long, LocationDto> locations = getLocations();
+        for (LocationDto location : locations.values()) {
+            if (location.getLocationType().equals(LocationDto.LocationType.PRIMARY_STAR)) {
+                return location.getStarName();
+            }
+        }
+        return null;
+    }
+
     public long getCurrentWealth() {
         return currentWealth;
     }

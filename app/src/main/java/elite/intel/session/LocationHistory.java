@@ -38,6 +38,9 @@ public class LocationHistory extends SessionPersistence implements java.io.Seria
     Map<Long, LocationDto> locations = new HashMap<>();
 
     public void saveLocations(Map<Long, LocationDto> locations) {
+        if (locations == null || locations.isEmpty()) {
+            return;
+        }
         this.locations.putAll(locations);
         save();
     }

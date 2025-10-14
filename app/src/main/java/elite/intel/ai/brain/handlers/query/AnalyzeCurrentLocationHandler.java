@@ -10,7 +10,8 @@ public class AnalyzeCurrentLocationHandler extends BaseQueryAnalyzer implements 
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         PlayerSession playerSession = PlayerSession.getInstance();
-        String instructions = "If we are on a station, return station name and planet we are orbiting.";
+
+        String instructions = "Use this data to provide answers for our location. NOTE: For questions such as 'where are we?' Use planetShortName for location name unless we are on the station. If we are on a station, return station name and planet we are orbiting.";
 
         return analyzeData(new DataDto(playerSession.getCurrentLocation(), instructions).toJson(), originalUserInput);
     }

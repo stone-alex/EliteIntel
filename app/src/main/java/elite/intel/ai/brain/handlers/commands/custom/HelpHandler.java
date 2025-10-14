@@ -16,9 +16,7 @@ public class HelpHandler implements CommandHandler {
 
     @Override public void handle(String action, JsonObject params, String responseText) {
 
-        JsonElement jsonElement = params.get(HELP.getParamKey());
-        String topic = jsonElement == null ? null : jsonElement.getAsString();
-
+        String topic = params.get("key").getAsString();
         HelpData helpData = HelpData.getInstance();
         String result = topic == null ? null : helpData.getHelp(topic);
 

@@ -12,11 +12,13 @@ public class AnalyzeCargoHoldHandler extends BaseQueryAnalyzer implements QueryH
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         PlayerSession playerSession = PlayerSession.getInstance();
 
-        return analyzeData(new DataDto(playerSession.getShipLoadout(), playerSession.getShipCargo()).toJson(), originalUserInput);
+        String instructions = "Use this data provide questions regarding cargo and/or ship loadout if relevant. Cargo is listed 1 unit = 1 ton. ";
+
+        return analyzeData(new DataDto(playerSession.getShipLoadout(), playerSession.getShipCargo(), instructions).toJson(), originalUserInput);
     }
 
 
-    record DataDto(LoadoutEvent loadout, GameEvents.CargoEvent cargo) implements ToJsonConvertible {
+    record DataDto(LoadoutEvent loadout, GameEvents.CargoEvent cargo, String instructions) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }

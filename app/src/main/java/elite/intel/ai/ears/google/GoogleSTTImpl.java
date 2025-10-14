@@ -13,13 +13,12 @@ import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.AudioPlayer;
 import elite.intel.util.DaftSecretarySanitizer;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.sound.sampled.*;
-import java.io.File;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -33,23 +32,17 @@ public class GoogleSTTImpl implements EarsInterface {
 
     private static final int CHANNELS = 1; // Mono
     private static final int STREAM_DURATION_MS = 290000; // ~4 min 50 sec; below Google V1 limit
-    private static final int KEEP_ALIVE_INTERVAL_MS = 1500; // Set to 500ms to prevent timeouts
+    private static final int KEEP_ALIVE_INTERVAL_MS = 250; // Reduced for timeout fix
+    private static final int KEEP_ALIVE_BUFFER_SIZE = 320; // ~10ms at 16000Hz; minimal for cost
     private static final int ENTER_VOICE_FRAMES = 1; // Quick enter to avoid clipping
     private static final int EXIT_SILENCE_FRAMES = 10; // ~1s silence to exit
     private static final int MAX_RETRIES = 5; // Max retry attempts for errors
     private static final long BASE_BACKOFF_MS = 2000; // Base backoff for retries
     private static final long MIN_STREAM_GAP_MS = 30000; // Enforce 30s between stream starts
 
-    private File wavFile = null; // Output WAV for debugging
     private SpeechClient speechClient;
     private final AtomicBoolean isListening = new AtomicBoolean(true);
     private long lastAudioSentTime = System.currentTimeMillis();
-    private byte[] lastBuffer = null;
-    private AudioInputStream audioInputStream = null;
-
-    private boolean isActive = false;
-    private int consecutiveVoice = 0;
-    private int consecutiveSilence = 0;
     private Thread processingThread;
     Map<String, String> corrections;
 
@@ -146,9 +139,6 @@ public class GoogleSTTImpl implements EarsInterface {
 
                 List<StreamingRecognizeRequest> requests = new ArrayList<>();
                 requests.add(StreamingRecognizeRequest.newBuilder().setStreamingConfig(streamingConfig).build());
-                if (lastBuffer != null) {
-                    requests.add(StreamingRecognizeRequest.newBuilder().setAudioContent(ByteString.copyFrom(lastBuffer)).build());
-                }
 
                 requestObserver = speechClient.streamingRecognizeCallable().bidiStreamingCall(
                         new ApiStreamObserver<>() {
@@ -161,21 +151,9 @@ public class GoogleSTTImpl implements EarsInterface {
 
                             @Override
                             public void onError(Throwable t) {
-                                if (t instanceof StatusRuntimeException sre) {
-                                    if (sre.getStatus().getCode() == Status.Code.RESOURCE_EXHAUSTED ||
-                                            sre.getStatus().getCode() == Status.Code.OUT_OF_RANGE) {
-                                        log.warn("Stream error ({}): {}", sre.getStatus().getCode(), t.getMessage());
-                                        isListening.set(false); // Trigger retry
-                                    } else {
-                                        log.error("STT error: {}", t.getMessage(), t);
-                                        EventBusManager.publish(new STTConnectionFailed());
-                                        stop();
-                                    }
-                                } else {
-                                    log.error("STT error: {}", t.getMessage(), t);
-                                    EventBusManager.publish(new STTConnectionFailed());
-                                    stop();
-                                }
+                                log.error("STT error: {}", t.getMessage(), t);
+                                EventBusManager.publish(new STTConnectionFailed());
+                                stop();
                             }
 
                             @Override
@@ -198,10 +176,10 @@ public class GoogleSTTImpl implements EarsInterface {
                     byte[] buffer = new byte[bufferSize];
                     byte[] silentBuffer = new byte[bufferSize]; // Zero-filled buffer for keep-alive
 
-                    // Reset VAD state per session
-                    isActive = false;
-                    consecutiveVoice = 0;
-                    consecutiveSilence = 0;
+                    // Reset VAD state per session - local vars now
+                    boolean isActive = false;
+                    int consecutiveVoice = 0;
+                    int consecutiveSilence = 0;
 
                     long lastLoopTime = System.currentTimeMillis();
                     while (isListening.get() && line.isOpen() && (System.currentTimeMillis() - lastStreamStart) < STREAM_DURATION_MS) {
@@ -248,16 +226,18 @@ public class GoogleSTTImpl implements EarsInterface {
                         boolean sendKeepAlive = (currentTime - lastAudioSentTime) >= KEEP_ALIVE_INTERVAL_MS;
 
                         if (isActive || sendKeepAlive) {
+                            ByteString audioContent;
+                            if (isActive) {
+                                audioContent = ByteString.copyFrom(trimmedBuffer);
+                            } else {
+                                byte[] keepAliveBuffer = new byte[KEEP_ALIVE_BUFFER_SIZE]; // Small silent for cost savings
+                                audioContent = ByteString.copyFrom(keepAliveBuffer);
+                            }
                             requestObserver.onNext(StreamingRecognizeRequest.newBuilder()
-                                    .setAudioContent(ByteString.copyFrom(trimmedBuffer))
+                                    .setAudioContent(audioContent)
                                     .build());
                             lastAudioSentTime = currentTime;
-                            log.debug("Sent audio: keepAlive={}, RMS={}", sendKeepAlive && !isActive, rms);
-                            if (sendKeepAlive && !isActive) {
-                                log.debug("Sending keep-alive (silence)");
-                            } else {
-                                log.debug("Sending voice audio, RMS: {}", rms);
-                            }
+                            log.debug("Sent audio: keepAlive={}, RMS={}, size={}", sendKeepAlive && !isActive, rms, audioContent.size());
                         } else {
                             log.debug("Skipping send (silence, RMS: {})", rms);
                         }
@@ -273,7 +253,7 @@ public class GoogleSTTImpl implements EarsInterface {
                                 EventBusManager.publish(new AppLogEvent("STT Sanitized: [" + sanitizedTranscript + "]."));
                                 boolean isStreamingModeOn = SystemSession.getInstance().isStreamingModeOn();
                                 float avgConfidence;
-                                synchronized (confidences) {
+                                synchronized (confidences) { // Sync on the list instance for thread-safety
                                     avgConfidence = (float) confidences.stream().mapToDouble(Float::doubleValue).average().orElse(0.0);
                                 }
                                 if (avgConfidence > 0.3) {
@@ -302,8 +282,8 @@ public class GoogleSTTImpl implements EarsInterface {
                     break;
                 } finally {
                     requestObserver.onCompleted();
-                    // Send any pending transcript on stream close
-                    if (!isActive && currentTranscript.length() > 0) {
+                    // Send any pending transcript on stream close (removed redundant !isActive check - always process if present)
+                    if (currentTranscript.length() > 0) {
                         String fullTranscript = currentTranscript.toString().trim();
                         EventBusManager.publish(new AppLogEvent("STT Heard: [" + fullTranscript + "]."));
                         if (!fullTranscript.isBlank() && fullTranscript.length() >= 3) {
@@ -335,7 +315,7 @@ public class GoogleSTTImpl implements EarsInterface {
                         }
                     }
                 }
-                retryCount = 0; // Reset retries on success
+                retryCount = 0; // Reset848 retries on success
             } catch (Exception e) {
                 if (e instanceof StatusRuntimeException sre &&
                         (sre.getStatus().getCode() == Status.Code.RESOURCE_EXHAUSTED ||
@@ -351,7 +331,6 @@ public class GoogleSTTImpl implements EarsInterface {
                             break;
                         }
                         retryCount++;
-                        isListening.set(true); // Retry
                         continue;
                     } else {
                         log.error("Max retries reached for stream error ({}); stopping STT", sre.getStatus().getCode());
@@ -372,7 +351,7 @@ public class GoogleSTTImpl implements EarsInterface {
     private SpeechClient createSpeechClient() throws Exception {
         String apiKey = ConfigManager.getInstance().getSystemKey(ConfigManager.STT_API_KEY);
         if (apiKey == null || apiKey.trim().isEmpty()) {
-            log.error("STT API key not found in system.conf");
+            log.error("STT API key not extracted in system.conf");
             throw new IllegalStateException("STT API key missing");
         }
         SpeechSettings settings = SpeechSettings.newBuilder()

@@ -29,7 +29,7 @@ public enum Commands {
     ADD_MINING_TARGET("add_mining_target", null, "mining_target", AddMiningTargetHandler.class),
     CLEAR_MINING_TARGETS("clear_mining_targets",  null, null, ClearMiningTargetsHandler.class),
     CLEAR_CACHE("clear_cache", null,  "session_clear", ClearCacheHandler.class),
-    FIND_COMMODITY("find_where_to_buy", null, "commodity_target", FindCommodityHandler.class),
+    FIND_COMMODITY("find_market_where_to_buy", null, "commodity", FindCommodityHandler.class),
     SET_AI_VOICE("set_or_change_voice_to", null, "voice_name", ChangeAiVoiceHandler.class),
     SET_HOME_SYSTEM("set_location_as_home_star_system", null,  null, SetCurrentStarAsHomeSystem.class),
     SET_PERSONALITY("set_personality", null, PlayerSession.PERSONALITY, SetPersonalityHandler.class),

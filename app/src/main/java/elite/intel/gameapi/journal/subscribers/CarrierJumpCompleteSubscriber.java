@@ -8,6 +8,7 @@ import elite.intel.gameapi.journal.events.dto.CarrierDataDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.LocationHistory;
 import elite.intel.session.PlayerSession;
+import elite.intel.session.Status;
 import elite.intel.util.AdjustRoute;
 
 import java.util.Map;
@@ -31,7 +32,11 @@ public class CarrierJumpCompleteSubscriber {
         CarrierDataDto carrierData = playerSession.getCarrierData();
         playerSession.setCarrierDepartureTime(null);
 
-        if(FLEET_CARRIER.equals(playerSession.getCurrentLocation().getLocationType())){
+        Status status = Status.getInstance();
+        String stationName = playerSession.getCurrentLocation().getStationName();
+        CarrierDataDto carrierInfo = playerSession.getCarrierData();
+
+        if(status.isDocked() && stationName.equalsIgnoreCase(carrierInfo.getCallSign())){
             playerSession.saveLocation(toLocationDto(event));
         }
 

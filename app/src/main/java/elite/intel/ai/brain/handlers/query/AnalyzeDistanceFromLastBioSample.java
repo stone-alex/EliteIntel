@@ -16,6 +16,8 @@ public class AnalyzeDistanceFromLastBioSample extends BaseQueryAnalyzer implemen
         Status status = Status.getInstance();
         LocationDto currentLocation = playerSession.getCurrentLocation();
 
+        String instructions = "use userLatitude, userLongitude, bioSample.scanLatitude, bioSample.scanLongitude and planetRadius to calculate distance to the last partial bio-sample.";
+
         if (status.getStatus() == null) {
             return analyzeData(toJson("No planet data available"), originalUserInput);
         }
@@ -33,10 +35,10 @@ public class AnalyzeDistanceFromLastBioSample extends BaseQueryAnalyzer implemen
         }
 
         BioSampleDto bioSample = currentLocation.getPartialBioSamples().getLast();
-        return analyzeData(new DataDto(latitude, longitude, planetRadius, bioSample).toJson(), originalUserInput);
+        return analyzeData(new DataDto(latitude, longitude, planetRadius, bioSample, instructions).toJson(), originalUserInput);
     }
 
-    record DataDto(double userLatitude, double userLongitude, double planetRadius, BioSampleDto bioSample) implements ToJsonConvertible {
+    record DataDto(double userLatitude, double userLongitude, double planetRadius, BioSampleDto bioSample, String instructions) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }

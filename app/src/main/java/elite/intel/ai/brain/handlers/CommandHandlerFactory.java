@@ -1,7 +1,7 @@
 package elite.intel.ai.brain.handlers;
 
 import elite.intel.ai.brain.handlers.commands.CommandHandler;
-import elite.intel.ai.brain.handlers.commands.custom.Commands;
+import elite.intel.ai.brain.handlers.commands.Commands;
 import elite.intel.ai.hands.GameController;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

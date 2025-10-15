@@ -1,10 +1,9 @@
 package elite.intel.ai.hands;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.brain.handlers.commands.custom.Commands;
+import elite.intel.ai.brain.handlers.commands.Commands;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.session.SystemSession;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager; 
 

@@ -1,6 +1,6 @@
 package elite.intel.ai.brain;
 
-import elite.intel.ai.brain.handlers.commands.custom.Commands;
+import elite.intel.ai.brain.handlers.commands.Commands;
 import elite.intel.ai.brain.handlers.query.Queries;
 
 import java.util.Arrays;

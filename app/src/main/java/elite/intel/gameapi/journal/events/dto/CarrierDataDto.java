@@ -9,6 +9,8 @@ import java.util.Map;
 public class CarrierDataDto implements ToJsonConvertible {
 
 
+    private static final int MAX_CARRIER_SINGLE_JUMP_RANGE = 500;
+    private static final int MAX_FUEL_PER_JUMP = 90;
     private String starName;
     private long totalBalance;
     private long reserveBalance;
@@ -312,6 +314,26 @@ public class CarrierDataDto implements ToJsonConvertible {
             }
         }
     }
+
+
+    public int getFuelReserve() {
+        Integer tritiumInReserve = getCommodity().get("tritium");
+        if (tritiumInReserve == null) {
+            tritiumInReserve = 0;
+        }
+        return tritiumInReserve;
+    }
+
+
+    public int getRange() {
+        Integer tritiumInReserve = getCommodity().get("tritium");
+        if (tritiumInReserve == null) {
+            tritiumInReserve = 0;
+        }
+        int totalFuelAvailable = getFuelSupply() + tritiumInReserve;
+        return (totalFuelAvailable / MAX_FUEL_PER_JUMP) * MAX_CARRIER_SINGLE_JUMP_RANGE;
+    }
+
 
     @Override public String toJson() {
         return GsonFactory.getGson().toJson(this);

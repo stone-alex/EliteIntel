@@ -6,9 +6,7 @@ import elite.intel.ai.ConfigManager;
 import elite.intel.ai.brain.AICadence;
 import elite.intel.ai.brain.AIPersonality;
 import elite.intel.ai.brain.AiCommandInterface;
-import elite.intel.ai.brain.xai.GrokCommandEndPoint;
 import elite.intel.ai.ears.EarsInterface;
-import elite.intel.ai.ears.STTConnectionFailed;
 import elite.intel.ai.mouth.AiVoices;
 import elite.intel.ai.mouth.MouthInterface;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
@@ -338,13 +336,5 @@ public class AppController implements AppControllerInterface, ActionListener {
         appendToLog("Exiting...");
         SleepNoThrow.sleep(1000);
         System.exit(0);
-    }
-
-
-    @Subscribe
-    public void onSttConnectionFailed(STTConnectionFailed event) {
-//        EventBusManager.publish(new MissionCriticalAnnouncementEvent("Warning! Speech to Text connection failed. Re-connecting in 30 seconds."));
-//        ears = ApiFactory.getInstance().getEarsImpl();
-//        ears.start();
     }
 }

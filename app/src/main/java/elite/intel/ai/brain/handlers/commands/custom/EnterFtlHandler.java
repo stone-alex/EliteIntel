@@ -35,9 +35,13 @@ public class EnterFtlHandler extends CustomCommandOperator implements CommandHan
                 SleepNoThrow.sleep(2000);
             }
             if (status.isInSupercruise()) {
+                operateKeyboard(BINDING_SET_SPEED100.getGameBinding(), 0);
                 operateKeyboard(BINDING_JUMP_TO_HYPERSPACE.getGameBinding(), 0);
             } else {
+                operateKeyboard(BINDING_SET_SPEED100.getGameBinding(), 0);
                 operateKeyboard(BINDING_ENTER_SUPERCRUISE.getGameBinding(), 0);
+                SleepNoThrow.sleep(10_250);
+                operateKeyboard(BINDING_SET_SPEED100.getGameBinding(), 0);
             }
         } else {
             EventBusManager.publish(new AiVoxResponseEvent("Get in to your ship, so we can blast out of here."));

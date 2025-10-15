@@ -200,3 +200,4 @@
 "with career"="fleet carrier"
 "internet next"="enter next"
 "the internet"="enter"
+"b plus"="speed plus"

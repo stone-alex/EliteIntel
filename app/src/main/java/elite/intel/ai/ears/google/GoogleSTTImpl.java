@@ -16,8 +16,6 @@ import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.AudioPlayer;
 import elite.intel.util.DaftSecretarySanitizer;
-import io.grpc.Status;
-import io.grpc.StatusRuntimeException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -39,8 +37,8 @@ public class GoogleSTTImpl implements EarsInterface {
     private static final int KEEP_ALIVE_BUFFER_SIZE = 320; // ~10ms at 16000Hz; minimal for cost
     private static final int ENTER_VOICE_FRAMES = 1; // Quick enter to avoid clipping
     private static final int EXIT_SILENCE_FRAMES = 10; // ~1s silence to exit
-    private static final int MAX_RETRIES = 5; // Max retry attempts for errors
     private static final long BASE_BACKOFF_MS = 2000; // Base backoff for retries
+    private static final long MAX_BACKOFF_MS = 60000; // Cap at 1 min
     private static final long MIN_STREAM_GAP_MS = 30000; // Enforce 30s between stream starts
 
     private SpeechClient speechClient;
@@ -116,6 +114,7 @@ public class GoogleSTTImpl implements EarsInterface {
         StringBuffer currentTranscript = new StringBuffer();
         List<Float> confidences = Collections.synchronizedList(new ArrayList<>());
         long lastStreamStart = 0; // Track stream start frequency
+        AtomicBoolean needRestart = new AtomicBoolean(false);
 
         while (isListening.get()) {
             // Enforce minimum gap between stream starts
@@ -155,7 +154,7 @@ public class GoogleSTTImpl implements EarsInterface {
                             @Override
                             public void onError(Throwable t) {
                                 log.error("STT error: {}", t.getMessage(), t);
-                                stop();
+                                needRestart.set(true);
                             }
 
                             @Override
@@ -178,13 +177,13 @@ public class GoogleSTTImpl implements EarsInterface {
                     byte[] buffer = new byte[bufferSize];
                     byte[] silentBuffer = new byte[bufferSize]; // Zero-filled buffer for keep-alive
 
-                    // Reset VAD state per session - local vars now
+                    // Reset VAD state per session
                     boolean isActive = false;
                     int consecutiveVoice = 0;
                     int consecutiveSilence = 0;
 
                     long lastLoopTime = System.currentTimeMillis();
-                    while (isListening.get() && line.isOpen() && (System.currentTimeMillis() - lastStreamStart) < STREAM_DURATION_MS) {
+                    while (isListening.get() && !needRestart.get() && line.isOpen() && (System.currentTimeMillis() - lastStreamStart) < STREAM_DURATION_MS) {
                         int bytesRead = line.read(buffer, 0, buffer.length);
                         long loopDuration = System.currentTimeMillis() - lastLoopTime;
                         log.debug("Bytes read: {}, Loop duration: {}ms, VAD active: {}", bytesRead, loopDuration, isActive);
@@ -262,7 +261,7 @@ public class GoogleSTTImpl implements EarsInterface {
                                     if (isStreamingModeOn) {
                                         String voiceName = SystemSession.getInstance().getAIVoice().getName();
                                         if (sanitizedTranscript.toLowerCase().startsWith("computer") || sanitizedTranscript.toLowerCase().contains(voiceName.toLowerCase())) {
-                                            sendToAi(sanitizedTranscript.replace("computer,", "").replace(voiceName.toLowerCase() + ",", ""), 100);
+                                            sendToAi(sanitizedTranscript.replace("computer,", "").replace(voiceName.toLowerCase() + ",", ""), avgConfidence);
                                         }
                                     } else {
                                         sendToAi(sanitizedTranscript, avgConfidence);
@@ -277,80 +276,72 @@ public class GoogleSTTImpl implements EarsInterface {
                             }
                         }
                     }
-                } catch (LineUnavailableException | IllegalArgumentException e) {
-                    log.error("Audio capture failed: {}", e.getMessage(), e);
-                    stop();
-                    break;
-                } finally {
+                }
+            } catch (LineUnavailableException | IllegalArgumentException e) {
+                log.error("Audio capture failed: {}", e.getMessage(), e);
+                needRestart.set(true);
+            } catch (Exception e) {
+                log.error("Streaming recognition failed: {}", e.getMessage(), e);
+                needRestart.set(true);
+            } finally {
+                if (requestObserver != null) {
                     requestObserver.onCompleted();
-                    // Send any pending transcript on stream close (removed redundant !isActive check - always process if present)
-                    if (currentTranscript.length() > 0) {
-                        String fullTranscript = currentTranscript.toString().trim();
-                        EventBusManager.publish(new AppLogEvent("STT Heard: [" + fullTranscript + "]."));
-                        if (!fullTranscript.isBlank() && fullTranscript.length() >= 3) {
-                            log.info("Final accumulated transcript: {}", fullTranscript);
-                            String sanitizedTranscript = DaftSecretarySanitizer.getInstance().correctMistakes(fullTranscript);
+                }
+                // Send any pending transcript on stream close
+                if (currentTranscript.length() > 0) {
+                    String fullTranscript = currentTranscript.toString().trim();
+                    EventBusManager.publish(new AppLogEvent("STT Heard: [" + fullTranscript + "]."));
+                    if (!fullTranscript.isBlank() && fullTranscript.length() >= 3) {
+                        log.info("Final accumulated transcript: {}", fullTranscript);
+                        String sanitizedTranscript = DaftSecretarySanitizer.getInstance().correctMistakes(fullTranscript);
 
-                            EventBusManager.publish(new AppLogEvent("STT Sanitized: [" + sanitizedTranscript + "]."));
-                            boolean isStreamingModeOn = SystemSession.getInstance().isStreamingModeOn();
-                            float avgConfidence;
-                            synchronized (confidences) {
-                                avgConfidence = (float) confidences.stream().mapToDouble(Float::doubleValue).average().orElse(0.0);
-                            }
-                            if (avgConfidence > 0.3) {
-                                if (isStreamingModeOn) {
-                                    String voiceName = SystemSession.getInstance().getAIVoice().getName();
-                                    if (sanitizedTranscript.toLowerCase().startsWith("computer") || sanitizedTranscript.toLowerCase().startsWith(voiceName.toLowerCase())) {
-                                        sendToAi(sanitizedTranscript.replace("computer,", "").replace(voiceName.toLowerCase() + ",", ""), avgConfidence);
-                                    }
-                                } else {
-                                    sendToAi(sanitizedTranscript, avgConfidence);
+                        EventBusManager.publish(new AppLogEvent("STT Sanitized: [" + sanitizedTranscript + "]."));
+                        boolean isStreamingModeOn = SystemSession.getInstance().isStreamingModeOn();
+                        float avgConfidence;
+                        synchronized (confidences) {
+                            avgConfidence = (float) confidences.stream().mapToDouble(Float::doubleValue).average().orElse(0.0);
+                        }
+                        if (avgConfidence > 0.3) {
+                            if (isStreamingModeOn) {
+                                String voiceName = SystemSession.getInstance().getAIVoice().getName();
+                                if (sanitizedTranscript.toLowerCase().startsWith("computer") || sanitizedTranscript.toLowerCase().startsWith(voiceName.toLowerCase())) {
+                                    sendToAi(sanitizedTranscript.replace("computer,", "").replace(voiceName.toLowerCase() + ",", ""), avgConfidence);
                                 }
                             } else {
-                                log.info("Discarded transcript: {} (avg confidence: {})", fullTranscript, avgConfidence);
+                                sendToAi(sanitizedTranscript, avgConfidence);
                             }
-                        }
-                        currentTranscript.setLength(0);
-                        synchronized (confidences) {
-                            confidences.clear();
+                        } else {
+                            log.info("Discarded transcript: {} (avg confidence: {})", fullTranscript, avgConfidence);
                         }
                     }
-                }
-                retryCount = 0; // Reset848 retries on success
-            } catch (Exception e) {
-                if (e instanceof StatusRuntimeException sre &&
-                        (sre.getStatus().getCode() == Status.Code.RESOURCE_EXHAUSTED ||
-                                sre.getStatus().getCode() == Status.Code.OUT_OF_RANGE)) {
-                    if (retryCount < MAX_RETRIES) {
-                        long backoff = (long) (BASE_BACKOFF_MS * Math.pow(2, retryCount));
-                        log.info("Stream error ({}), retrying after {}ms (attempt {}/{})",
-                                sre.getStatus().getCode(), backoff, retryCount + 1, MAX_RETRIES);
-                        try {
-                            Thread.sleep(backoff);
-                        } catch (InterruptedException ie) {
-                            log.warn("Retry interrupted");
-                            break;
-                        }
-                        retryCount++;
-                    } else {
-                        log.error("Max retries reached for stream error ({}); stopping STT", sre.getStatus().getCode());
-                        EventBusManager.publish(new AppLogEvent("STT max retries hit; pausing listener."));
-                        stop();
-                        break;
+                    currentTranscript.setLength(0);
+                    synchronized (confidences) {
+                        confidences.clear();
                     }
-                } else {
-                    log.error("Streaming recognition failed: {}", e.getMessage(), e);
-                    stop();
-                    break;
                 }
             }
+
+            if (needRestart.get()) {
+                long backoff = Math.min(BASE_BACKOFF_MS * (long) Math.pow(2, retryCount), MAX_BACKOFF_MS);
+                log.info("Stream failed, retrying after {}ms (attempt {})", backoff, retryCount + 1);
+                try {
+                    Thread.sleep(backoff);
+                } catch (InterruptedException ie) {
+                    log.warn("Retry interrupted");
+                    break;
+                }
+                retryCount++;
+            } else {
+                retryCount = 0; // Reset on success
+            }
+            needRestart.set(false); // Reset flag
         }
     }
 
     private SpeechClient createSpeechClient() throws Exception {
         String apiKey = ConfigManager.getInstance().getSystemKey(ConfigManager.STT_API_KEY);
         if (apiKey == null || apiKey.trim().isEmpty()) {
-            log.error("STT API key not extracted in system.conf");
+            log.error("STT API key not found in system.conf");
             throw new IllegalStateException("STT API key missing");
         }
         SpeechSettings settings = SpeechSettings.newBuilder()

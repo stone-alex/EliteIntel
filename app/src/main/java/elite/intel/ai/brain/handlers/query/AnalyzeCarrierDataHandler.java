@@ -13,16 +13,18 @@ public class AnalyzeCarrierDataHandler extends BaseQueryAnalyzer implements Quer
 
         PlayerSession playerSession = PlayerSession.getInstance();
         CarrierDataDto stats = playerSession.getCarrierData();
+        int fuelSupply = stats.getFuelSupply();
+        Integer tritiumInReserve = stats.getCommodity().get("tritium");
 
-        if (stats == null || (stats.getTotalBalance() == 0 && stats.getFuelSupply() == 0)) {
+        if (stats.getTotalBalance() == 0 && fuelSupply == 0) {
             return analyzeData(toJson("No data available. Please open carrier management panel."), originalUserInput);
         } else {
             String instructions = "use this data to answer questions about fleet carrier. The reserveBalance is amount of credits reserved for weekly operation expense (usually 31 million per week). totalBalance is amount of credits in fleet carrier bank, this includes the reserve balance. The marketBalance is amount of money allocated for purchases. The negative amount in marketBalance indicates escrow reserved for commodities that carrier wants to purchase. The X,Y,Z coordinates are in light years where 0,0,0 is Earth (bubble).";
-            return analyzeData(new DataDto(stats, instructions).toJson(), originalUserInput);
+            return analyzeData(new DataDto(stats, fuelSupply, tritiumInReserve, instructions).toJson(), originalUserInput);
         }
     }
 
-    record DataDto(CarrierDataDto data, String instructions) implements ToJsonConvertible{
+    record DataDto(CarrierDataDto data, int fuelSupply, Integer fuelSupplyReserve, String instructions) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }

@@ -3,6 +3,9 @@ package elite.intel.gameapi.journal.events.dto;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class CarrierDataDto implements ToJsonConvertible {
 
 
@@ -34,6 +37,7 @@ public class CarrierDataDto implements ToJsonConvertible {
     private int repairSupplyTax;
     private int fuelSupply=0;
     private double x,y,z;
+    private Map<String, Integer> commodity = new HashMap<>();
 
     public long getTotalBalance() {
         return totalBalance;
@@ -277,6 +281,36 @@ public class CarrierDataDto implements ToJsonConvertible {
     public void setX(double x) {
         if(x == 0) return;
         this.x = x;
+    }
+
+    public Map<String, Integer> getCommodity() {
+        return commodity == null ? new HashMap<>() : commodity;
+    }
+
+    public void addCommodity(String commodity, Integer amount) {
+        if (commodity == null) return;
+        String c = commodity.toLowerCase();
+        Integer existingAmount = this.commodity.get(c);
+        if (existingAmount != null) {
+            existingAmount = existingAmount + amount;
+            this.commodity.put(c, existingAmount);
+        } else {
+            this.commodity.put(c, amount);
+        }
+    }
+
+    public void removeCommodity(String commodity, int amount) {
+        if (commodity == null) return;
+        String c = commodity.toLowerCase();
+        Integer existingCommodity = this.commodity.get(c);
+        if (existingCommodity != null) {
+            existingCommodity = existingCommodity - amount;
+            if (existingCommodity > 0) {
+                this.commodity.put(c, existingCommodity);
+            } else {
+                this.commodity.remove(c);
+            }
+        }
     }
 
     @Override public String toJson() {

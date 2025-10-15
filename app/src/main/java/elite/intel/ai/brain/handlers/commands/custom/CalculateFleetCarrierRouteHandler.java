@@ -23,6 +23,12 @@ public class CalculateFleetCarrierRouteHandler implements CommandHandler {
         PlayerSession playerSession = PlayerSession.getInstance();
         CarrierDataDto carrierData = playerSession.getCarrierData();
         int fuelSupply = carrierData.getFuelSupply();
+        Integer tritiumInReserve = carrierData.getCommodity().get("tritium");
+        if (tritiumInReserve != null && tritiumInReserve > 0) {
+            fuelSupply = fuelSupply + tritiumInReserve;
+        }
+
+
         int cargoCapacity = carrierData.getCargoCapacity();
         int cargoSpaceUsed = carrierData.getCargoSpaceUsed();
         String destination = ClipboardUtils.getClipboardText();

@@ -11,7 +11,7 @@ import elite.intel.util.Ranks;
 
 import java.util.Objects;
 
-import static elite.intel.ai.brain.handlers.commands.custom.Commands.*;
+import static elite.intel.ai.brain.handlers.commands.Commands.*;
 import static elite.intel.ai.brain.handlers.query.Queries.GENERAL_CONVERSATION;
 import static elite.intel.ai.brain.handlers.query.Queries.WHAT_IS_YOUR_DESIGNATION;
 import static elite.intel.util.Abbreviations.generateAbbreviations;

@@ -334,7 +334,6 @@ public class AppController implements AppControllerInterface, ActionListener {
         systemSession.clearChatHistory();
         model.setServicesRunning(false);
         appendToLog("Exiting...");
-        SleepNoThrow.sleep(1000);
         System.exit(0);
     }
 }

@@ -40,7 +40,7 @@ public class EnterFtlHandler extends CustomCommandOperator implements CommandHan
             } else {
                 operateKeyboard(BINDING_SET_SPEED100.getGameBinding(), 0);
                 operateKeyboard(BINDING_ENTER_SUPERCRUISE.getGameBinding(), 0);
-                SleepNoThrow.sleep(10_250);
+                SleepNoThrow.sleep(11_000);
                 operateKeyboard(BINDING_SET_SPEED100.getGameBinding(), 0);
             }
         } else {

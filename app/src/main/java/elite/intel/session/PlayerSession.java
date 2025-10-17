@@ -430,19 +430,6 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         return bounties;
     }
 
-    @Subscribe
-    public void onMissionAccepted(MissionAcceptedEvent event) {
-        addMission(new MissionDto(event));
-        save();
-    }
-
-    @Subscribe
-    public void onMissionCompleted(MissionCompletedEvent event) {
-        removeMission(event.getMissionID());
-        if (missions.isEmpty()) targetFactions.clear();
-        save();
-    }
-
     public void addTargetFaction(String faction) {
         targetFactions.add(faction);
         save();

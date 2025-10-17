@@ -18,11 +18,16 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 
+import static elite.intel.ai.brain.handlers.query.Queries.GENERAL_CONVERSATION;
+
 public class OpenAiResponseRouter extends ResponseRouter implements AIRouterInterface {
+
     private static final Logger log = LogManager.getLogger(OpenAiResponseRouter.class);
+
     private static OpenAiResponseRouter instance;
     private final AiQueryInterface queryInterface;
     private final AiPromptFactory contextFactory;
+    private final SystemSession systemSession;
 
     public static synchronized OpenAiResponseRouter getInstance() {
         if (instance == null) {
@@ -35,6 +40,7 @@ public class OpenAiResponseRouter extends ResponseRouter implements AIRouterInte
         try {
             this.queryInterface = ApiFactory.getInstance().getQueryEndpoint();
             this.contextFactory = ApiFactory.getInstance().getAiPromptFactory();
+            this.systemSession = SystemSession.getInstance();
         } catch (Exception e) {
             log.error("Failed to initialize OpenAiResponseRouter", e);
             throw new RuntimeException("OpenAiResponseRouter initialization failed", e);
@@ -69,8 +75,7 @@ public class OpenAiResponseRouter extends ResponseRouter implements AIRouterInte
                     handleChat(responseText);
                     break;
                 default:
-                    log.warn("Unknown or missing response type: '{}'", type);
-                    handleChat("I'm not sure what you meant. Please try again.");
+                    handleChat(responseText);
             }
         } catch (Exception e) {
             log.error("Failed to process Open AI response: {}", e.getMessage(), e);
@@ -81,8 +86,8 @@ public class OpenAiResponseRouter extends ResponseRouter implements AIRouterInte
     private void handleQuery(String action, JsonObject params, String userInput) {
         QueryHandler handler = getQueryHandlers().get(action);
         if (handler == null || action == null || action.isEmpty()) {
-            handler = getQueryHandlers().get(Queries.GENERAL_CONVERSATION.getAction());
-            action = Queries.GENERAL_CONVERSATION.getAction();
+            handler = getQueryHandlers().get(GENERAL_CONVERSATION.getAction());
+            action = GENERAL_CONVERSATION.getAction();
             log.info("No specific query handler found, routing to general_conversation");
         }
 
@@ -103,9 +108,11 @@ public class OpenAiResponseRouter extends ResponseRouter implements AIRouterInte
                 }
             }
 
+
+
             if (responseTextToUse != null && !responseTextToUse.isEmpty()) {
                 EventBusManager.publish(new AiVoxResponseEvent(responseTextToUse));
-                SystemSession.getInstance().clearChatHistory();
+                systemSession.clearChatHistory();
                 log.info("Spoke final query response (action: {}): {}", action, responseTextToUse);
             } else if (requiresFollowUp) {
                 JsonArray messages = new JsonArray();
@@ -130,7 +137,7 @@ public class OpenAiResponseRouter extends ResponseRouter implements AIRouterInte
                 messages.add(toolResult);
 
                 log.debug("Sending follow-up to OpenAiQueryEndPoint for action: {}", action);
-                SystemSession.getInstance().appendToChatHistory(userMessage, systemMessage);
+                systemSession.appendToChatHistory(userMessage, systemMessage);
                 JsonObject followUpResponse = queryInterface.sendToAi(messages);
 
                 if (followUpResponse == null) {

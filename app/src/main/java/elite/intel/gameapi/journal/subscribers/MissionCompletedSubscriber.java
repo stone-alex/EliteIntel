@@ -1,6 +1,7 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.journal.events.MissionCompletedEvent;
@@ -60,6 +61,6 @@ public class MissionCompletedSubscriber {
         }
 
 
-        EventBusManager.publish(new SensorDataEvent("Mission against Faction:\"" + targetFaction + "\" Completed: " + event.toString()));
+        EventBusManager.publish(new SensorDataEvent("Notify: Mission against Faction \"" + targetFaction + "\" Completed: " + event.toString()));
     }
 }

@@ -39,10 +39,10 @@ public class BaseQueryAnalyzer {
 
 
     protected JsonObject analyzeData(String dataJsonStr, String originalUserInput) {
-        // For analysis-needed queries
+
         AiAnalysisInterface aiAnalysisInterface = ApiFactory.getInstance().getAnalysisEndpoint();
         JsonObject analysis = aiAnalysisInterface.analyzeData(originalUserInput, dataJsonStr);
-        // Ensure response_text is present
+
         if (!analysis.has("response_text")) {
             analysis = GenericResponse.getInstance().genericResponse("Analysis incomplete");
         }

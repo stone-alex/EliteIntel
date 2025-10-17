@@ -1,6 +1,7 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.journal.events.BountyEvent;
@@ -34,26 +35,25 @@ public class BountyEventSubscriber {
         sessionData.setRewards(rewards);
         playerSession.addBounty(sessionData);
 
-        //List<BountyEvent.Reward> rewards = event.getRewards();
         StringBuilder sb = new StringBuilder();
         String killConfirmed = "";
         Set<String> targetFactions = playerSession.getTargetFactions();
 
         if (!targetFactions.isEmpty() && targetFactions.contains(event.getVictimFaction())) {
-            killConfirmed = "Mission Kill Confirmed, ";
+            killConfirmed = " Mission Kill Confirmed, ";
         } else {
-            killConfirmed = "Kill Confirmed, ";
+            killConfirmed = " Kill Confirmed, ";
         }
         sb.append(killConfirmed);
         for (BountyDto.Reward reward : rewards) {
-            sb.append("Reward: ").append(reward.getReward()).append(" credits ");
-            sb.append("From: " + reward.getFaction()).append(", ");
+            sb.append(" Reward: ").append(reward.getReward()).append(" credits ");
+            sb.append(" From: " + reward.getFaction()).append(", ");
         }
 
-        if (rewards.size() > 1) sb.append("Rewards sum: ").append(event.getTotalReward()).append(" credits. ");
+        if (rewards.size() > 1) sb.append(" Rewards sum: ").append(event.getTotalReward()).append(" credits. ");
         playerSession.addBountyReward(event.getTotalReward());
 
         sb.append("Total bounties collected: ").append(playerSession.getBountyCollectedThisSession()).append(" credits. ");
-        EventBusManager.publish(new SensorDataEvent(sb.toString()));
+        EventBusManager.publish(new AiVoxResponseEvent(sb.toString()));
     }
 }

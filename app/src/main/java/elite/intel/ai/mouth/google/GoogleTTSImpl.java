@@ -95,7 +95,7 @@ public class GoogleTTSImpl implements MouthInterface {
             processingThread.join(5000);
             log.info("VoiceGenerator stopped");
         } catch (InterruptedException e) {
-            log.error("Interrupted while waiting for VoiceGenerator to stop", e);
+            log.warn("Interrupted while waiting for VoiceGenerator to stop. System shutdown?", e);
             Thread.currentThread().interrupt();
         }
         try {

@@ -131,7 +131,7 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
         messages.add(systemMessage);
 
         // Append existing chat history if any
-        JsonArray history = SystemSession.getInstance().getChatHistory();
+        JsonArray history = systemSession.getChatHistory();
         for (int i = 0; i < history.size(); i++) {
             messages.add(history.get(i));
         }

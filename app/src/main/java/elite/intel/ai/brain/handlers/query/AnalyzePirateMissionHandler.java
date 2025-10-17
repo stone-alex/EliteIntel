@@ -4,31 +4,32 @@ import com.google.gson.JsonObject;
 import elite.intel.gameapi.journal.events.dto.BountyDto;
 import elite.intel.gameapi.journal.events.dto.MissionDto;
 import elite.intel.session.PlayerSession;
+import elite.intel.util.json.GsonFactory;
+import elite.intel.util.json.ToJsonConvertible;
 
 import java.util.*;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class AnalyzePirateMissionHandler extends BaseQueryAnalyzer implements QueryHandler {
 
     @Override
     public JsonObject handle(String action, JsonObject params, String originalUserInput) {
-        Queries query = findQuery(action);
-        String data = buildDataForAiResponse(query);
-        return analyzeData(data, originalUserInput);
-    }
 
-    private String buildDataForAiResponse(Queries query) {
         PlayerSession session = PlayerSession.getInstance();
         Map<Long, MissionDto> missions = session.getMissions();
         Set<BountyDto> bounties = session.getBounties();
+        String remainingKills = computeKillsRemaining(missions, bounties);
+        String missionProfit = computeMissionProfit(missions, bounties);
 
-        Map<Queries, Supplier<String>> queryHandlers = new HashMap<>();
-        queryHandlers.put(Queries.QUERY_PIRATE_MISSION_KILLS_REMAINING, () -> computeKillsRemaining(missions, bounties));
-        queryHandlers.put(Queries.QUERY_PIRATE_MISSION_PROFIT, () -> computeMissionProfit(missions, bounties));
-
-        return queryHandlers.getOrDefault(query, () -> "no data available").get();
+        return analyzeData(new DataDto(remainingKills, missionProfit, "Do not sum anything do not calculate! Just use data pre-calculated for you to answer the question. If asked about total kills remaining only return the number of kills remaining to complete all assignments. Else provide complete summary.").toJson(), originalUserInput);
     }
+
+    record DataDto(String totalMissionKillsLeft, String totalMissionProfit, String instructions) implements ToJsonConvertible {
+        @Override public String toJson() {
+            return GsonFactory.getGson().toJson(this);
+        }
+    }
+
 
     private String computeKillsRemaining(Map<Long, MissionDto> missions, Set<BountyDto> bounties) {
         // Count unique kills by victimFaction
@@ -154,12 +155,14 @@ public class AnalyzePirateMissionHandler extends BaseQueryAnalyzer implements Qu
             factionSummaries.add(summary.toString());
         }
 
-        String response = String.join(". ", factionSummaries);
+        String summary = String.join(". ", factionSummaries);
+        StringBuilder sb = new StringBuilder();
         if (!factionSummaries.isEmpty()) {
-            response += ". " + totalKillsRemaining + " kills remain to complete the assignment";
+            sb.append(totalKillsRemaining).append(" kills remain to complete the assignment. Summary: ");
         }
+        sb.append(summary);
 
-        return response.length() > 0 ? response.toString() : "no missions available";
+        return sb.toString();
     }
 
     private String computeMissionProfit(Map<Long, MissionDto> missions, Set<BountyDto> bounties) {

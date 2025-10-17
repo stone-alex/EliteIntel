@@ -325,15 +325,14 @@ public class AppController implements AppControllerInterface, ActionListener {
     public void onSystemShutdownEvent(SystemShutDownEvent event){
         EventBusManager.publish(new MissionCriticalAnnouncementEvent("System shutting down..."));
         appendToLog("SYSTEM: Shutting down...");
-        SleepNoThrow.sleep(5000);
         fileMonitor.stop();
         journalParser.stop();
         brain.stop();
         ears.stop();
         mouth.stop();
-        systemSession.clearChatHistory();
         model.setServicesRunning(false);
-        appendToLog("Exiting...");
+        systemSession.clearChatHistory();
+        SleepNoThrow.sleep(5000);
         System.exit(0);
     }
 }

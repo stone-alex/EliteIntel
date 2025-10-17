@@ -2,6 +2,7 @@ package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
+import elite.intel.ai.mouth.subscribers.events.TTSInterruptEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
 import elite.intel.gameapi.journal.events.ShipTargetedEvent;
@@ -92,6 +93,7 @@ public class ShipTargetedEventSubscriber {
                 if (playerSession.getShipScan(key) == null || playerSession.getShipScan(key).isEmpty()) {
                     //new scan
                     playerSession.putShipScan(key, data);
+                    EventBusManager.publish(new TTSInterruptEvent());
                     EventBusManager.publish(new MissionCriticalAnnouncementEvent(info.toString()));
                 }
             } catch (NoSuchAlgorithmException e) {
@@ -118,11 +120,11 @@ public class ShipTargetedEventSubscriber {
 
         Set<String> targetFactions = playerSession.getTargetFactions();
         if (!targetFactions.isEmpty() && targetFactions.contains(faction)) {
-            return "Mission Target! ";
+            return " Mission Target! ";
         }
 
         if (legalStatus.equalsIgnoreCase("wanted")) {
-            return "Legal Target!";
+            return " Legal Target!";
         } else return null;
     }
 

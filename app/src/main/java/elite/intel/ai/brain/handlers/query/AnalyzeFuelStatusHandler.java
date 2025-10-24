@@ -5,8 +5,8 @@ import elite.intel.gameapi.gamestate.dtos.GameEvents;
 import elite.intel.gameapi.journal.events.LoadoutEvent;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.Status;
+import elite.intel.util.json.AiData;
 import elite.intel.util.json.GsonFactory;
-import elite.intel.util.json.ToJsonConvertible;
 
 public class AnalyzeFuelStatusHandler extends BaseQueryAnalyzer implements QueryHandler {
 
@@ -17,20 +17,25 @@ public class AnalyzeFuelStatusHandler extends BaseQueryAnalyzer implements Query
         Status status = Status.getInstance();
         GameEvents.StatusEvent fuelStatus =status.getStatus();
         LoadoutEvent loadout = playerSession.getShipLoadout();
+
         if(loadout != null && fuelStatus != null) {
-            return analyzeData(new DataDto(loadout, fuelStatus).toJson(), originalUserInput);
+            return process(new DataDto("Use loadout data and fuel fuelStatus.fuelMain to provide answers.", loadout, fuelStatus), originalUserInput);
         } else if(loadout != null) {
-            return analyzeData(new DataDto(loadout, null).toJson(), originalUserInput);
+            return process(new DataDto("Use loadout data to provide answers.", loadout, null), originalUserInput);
         }
         else {
-            return analyzeData(toJson("Data not available"), originalUserInput);
+            return process("Data not available");
         }
     }
 
 
-    record DataDto(LoadoutEvent loadout, GameEvents.StatusEvent fuelData)  implements ToJsonConvertible {
+    record DataDto(String instructions, LoadoutEvent loadout, GameEvents.StatusEvent fuelData) implements AiData {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
+        }
+
+        @Override public String getInstructions() {
+            return instructions;
         }
     }
 }

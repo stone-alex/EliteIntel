@@ -3,29 +3,13 @@ package elite.intel.ai.brain.handlers.query;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import elite.intel.ai.ApiFactory;
+import elite.intel.ai.brain.AIConstants;
 import elite.intel.ai.brain.AiAnalysisInterface;
+import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.gameapi.EventBusManager;
+import elite.intel.util.json.AiData;
 import elite.intel.util.json.GsonFactory;
 
-/**
- * The BaseQueryAnalyzer class provides core functionality for analyzing queries and processing data.
- * It serves as a foundational class designed to be extended by specific query handlers.
- * <p>
- * Core responsibilities include:
- * - Identifying and matching query actions based on provided action strings.
- * - Performing data analysis using an external AI analysis interface and ensuring the response
- * adheres to the expected structure.
- * <p>
- * Implementing classes can utilize the utilities provided by BaseQueryAnalyzer to standardize
- * query handling and analysis processes.
- * <p>
- * Methods:
- * - findQuery: Matches a specific action string to its corresponding QueryActions enumeration.
- * - analyzeData: Sends given data for analysis via an AI interface and validates the response structure.
- * <p>
- * This class assumes the existence of:
- * - An enumeration `QueryActions` that defines various supported actions and their properties.
- * - An implementation of the `AiAnalysisInterface` for data analysis.
- */
 public class BaseQueryAnalyzer {
 
     protected Queries findQuery(String action) {
@@ -37,16 +21,20 @@ public class BaseQueryAnalyzer {
         throw new IllegalArgumentException("No query action found for: " + action);
     }
 
-
-    protected JsonObject analyzeData(String dataJsonStr, String originalUserInput) {
+    protected JsonObject process(AiData data, String originalUserInput) {
 
         AiAnalysisInterface aiAnalysisInterface = ApiFactory.getInstance().getAnalysisEndpoint();
-        JsonObject analysis = aiAnalysisInterface.analyzeData(originalUserInput, dataJsonStr);
+        JsonObject analysis = aiAnalysisInterface.analyzeData(originalUserInput, data);
 
-        if (!analysis.has("response_text")) {
+        if (!analysis.has(AIConstants.PROPERTY_RESPONSE_TEXT)) {
             analysis = GenericResponse.getInstance().genericResponse("Analysis incomplete");
         }
         return analysis;
+    }
+
+    protected JsonObject process(String message) {
+        EventBusManager.publish(new AiVoxResponseEvent(message));
+        return new JsonObject();
     }
 
     protected Gson getGson() {

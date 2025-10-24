@@ -7,11 +7,14 @@ import elite.intel.ai.search.edsm.dto.ShipyardDto;
 import elite.intel.ai.search.edsm.dto.StationsDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
+import elite.intel.util.json.AiData;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static elite.intel.ai.brain.handlers.query.Queries.ANALYZE_LOCAL_STATIONS;
 
 public class AnalyzeLocalStations extends BaseQueryAnalyzer implements QueryHandler {
 
@@ -19,19 +22,29 @@ public class AnalyzeLocalStations extends BaseQueryAnalyzer implements QueryHand
         PlayerSession playerSession = PlayerSession.getInstance();
         LocationDto currentLocation = playerSession.getCurrentLocation();
         StationsDto stationsDto = EdsmApiClient.searchStations(playerSession.getCurrentLocation().getStarName());
-        List<DataDto> data = new ArrayList<>();
+        List<DataElement> data = new ArrayList<>();
         stationsDto.getData().getStations().forEach(station -> {
             OutfittingDto outfitting = EdsmApiClient.searchOutfitting(station.getMarketId(), null, null);
             ShipyardDto shipyard = EdsmApiClient.searchShipyard(station.getMarketId(), null, null);
-            data.add(new DataDto(station.getName(), outfitting, shipyard, currentLocation));
+            data.add(new DataElement(station.getName(), outfitting, shipyard, currentLocation));
         });
 
-        return analyzeData(toJson(data), originalUserInput);
+        return process(new DataDto(ANALYZE_LOCAL_STATIONS.getInstructions(), data), originalUserInput);
     }
 
-    record DataDto(String stationName, OutfittingDto outfitting, ShipyardDto shipyard, LocationDto currentLocation) implements ToJsonConvertible {
+    record DataElement(String stationName, OutfittingDto outfitting, ShipyardDto shipyard, LocationDto currentLocation) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
+        }
+    }
+
+    record DataDto(String instructions, List<DataElement> data) implements AiData {
+        @Override public String toJson() {
+            return GsonFactory.getGson().toJson(this);
+        }
+
+        @Override public String getInstructions() {
+            return instructions;
         }
     }
 }

@@ -2,7 +2,6 @@ package elite.intel.ai.brain.openai;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.ConfigManager;
-import elite.intel.session.SystemSession;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -12,8 +11,10 @@ import java.net.URL;
 public class OpenAiClient {
 
     private static final String API_URL = "https://api.openai.com/v1/chat/completions";
-    public static final String MODEL = "gpt-4.1-mini"; // Fast, cost-effective model
-    public static final int MAX_TOKENS_DEFAULT = 4096;
+
+    public static final String MODEL_GPT_4_1_MINI = "gpt-4.1-mini";
+    public static final String MODEL_GPT_4_1_NANO = "gpt-4.1-nano";
+
     private static OpenAiClient instance;
 
     private OpenAiClient() {
@@ -29,11 +30,10 @@ public class OpenAiClient {
 
     JsonObject createRequestBodyHeader(String model, float temp) {
 
-        JsonObject body = new JsonObject();
-        body.addProperty("model", model);
-        body.addProperty("temperature", temp);
-        body.addProperty("max_tokens", MAX_TOKENS_DEFAULT);
-        return body;
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("model", model);
+        jsonObject.addProperty("temperature", temp);
+        return jsonObject;
     }
 
     JsonObject createErrorResponse(String message) {

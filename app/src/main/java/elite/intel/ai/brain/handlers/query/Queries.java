@@ -4,7 +4,7 @@ public enum Queries {
 
     //ANALYZE_SCAN("query_analyze_last_scan", "Analyze the most recent scan data.", AnalyzeLastScanHandler.class, true),
     QUERY_SEARCH_SIGNAL_DATA("query_analise_star_system_data", "Contains locations (planets, moons, planetary rings, raw materials, bio forms, bio samples, stations, starports etc) using gravity (G) and temperature (K) units. Use shortName for planets", AnalyzeSignalDataHandler.class, true),  // Clarify planetary/moon scope, avoid vehicle overlap
-    ANALYZE_CURRENT_PLANET("query_current__location", "Where are we? Analyze data for the current planetary or station location.", AnalyzeCurrentLocationHandler.class, true),  // Emphasize planetary/station context
+    ANALYZE_CURRENT_PLANET("query_current_location", "Where are we? Analyze data for the current planetary or station location.", AnalyzeCurrentLocationHandler.class, true),  // Emphasize planetary/station context
     ANALYZE_STAR_SYSTEM_EXPLORATION("query_star_system_exploration", "Analyze exploration data and profits for the current star system.", AnalyzeExplorationProfitsHandler.class, true),
     ANALYZE_BODY_MATERIALS("query_planetary_materials", "Analyze material composition on this planet.", AnalyzeMaterialsOnPlanetHandler.class, true),  // Specify planetary to avoid ship/cargo confusion
     ANALYZE_EXO_BIOLOGY("query_exobiology_samples", "Analyze bio-sample collection progress for current planet, including completed, partial, and remaining species.", AnalyzeBioSamplesHandler.class, true),  // "exobiology" to distinguish from commodities,
@@ -14,6 +14,7 @@ public enum Queries {
     ANALYZE_LOCAL_OUTFITTING("query_local_outfitting", "Analyze available outfitting options.", AnalyzeLocalOutfittingHandler.class, true),
     ANALYZE_LOCAL_SHIPYARD("query_local_shipyard", "Analyze shipyard contents.", AnalyzeShipyardHandler.class, true),
     ANALYZE_LOCAL_STATIONS("query_local_stations_services", "Summarize services at local stations.", AnalyzeLocalStations.class, true),
+    ANALYZE_LOCAL_SYSTEM("query_local_system_data", "-- instructions in class --", AnalyzeLocalSystemHandler.class, true),
     ANALYZE_CARRIER_ROUTE("query_fleet_carrier_route", "Use this data to analyze the current fleet carrier route.", AnalyzeCarrierRouteHandler.class, true),
     HOW_FAR_TO_FINAL_DESTINATION("query_distance_to_final_destination", "Calculate distance to the final destination.", AnalyzeDistanceToFinalDestination.class, false),
     LIST_AVAILABLE_VOICES("list_available_voices", "List available AI voices.", ListAvailableVoices.class, false),
@@ -41,13 +42,13 @@ public enum Queries {
 
 
     private final String action;
-    private final String description;
+    private final String instructions;
     private final Class<? extends QueryHandler> handlerClass;
     private final boolean requiresFollowUp;
 
     Queries(String action, String description, Class<? extends QueryHandler> handlerClass, boolean requiresFollowUp) {
         this.action = action;
-        this.description = description;
+        this.instructions = description;
         this.handlerClass = handlerClass;
         this.requiresFollowUp = requiresFollowUp;
     }
@@ -56,8 +57,8 @@ public enum Queries {
         return action;
     }
 
-    public String getDescription() {
-        return description;
+    public String getInstructions() {
+        return instructions;
     }
 
     public Class<? extends QueryHandler> getHandlerClass() {

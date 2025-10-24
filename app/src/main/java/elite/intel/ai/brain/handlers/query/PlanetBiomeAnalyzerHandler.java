@@ -4,8 +4,8 @@ import com.google.gson.JsonObject;
 import elite.intel.gameapi.data.BioForms;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
+import elite.intel.util.json.AiData;
 import elite.intel.util.json.GsonFactory;
-import elite.intel.util.json.ToJsonConvertible;
 
 import java.util.Collection;
 import java.util.Map;
@@ -19,13 +19,16 @@ public class PlanetBiomeAnalyzerHandler extends BaseQueryAnalyzer implements Que
 
         Map<Long, LocationDto> locations = playerSession.getLocations();
 
-
-        return analyzeData(new DataDto(BioForms.getGenusToBiome(), locations.values(), instructions).toJson(), originalUserInput);
+        return process(new DataDto(BioForms.getGenusToBiome(), locations.values(), instructions), originalUserInput);
     }
 
-    record DataDto(Map<String, String> genusToBiome, Collection<LocationDto> locations, String instructions) implements ToJsonConvertible {
+    record DataDto(Map<String, String> genusToBiome, Collection<LocationDto> locations, String instructions) implements AiData {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
+        }
+
+        @Override public String getInstructions() {
+            return instructions;
         }
     }
 

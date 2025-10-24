@@ -5,8 +5,8 @@ import elite.intel.gameapi.journal.events.dto.BioSampleDto;
 import elite.intel.gameapi.journal.events.dto.GenusDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
+import elite.intel.util.json.AiData;
 import elite.intel.util.json.GsonFactory;
-import elite.intel.util.json.ToJsonConvertible;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +22,7 @@ AnalyzeBioSamplesHandler extends BaseQueryAnalyzer implements QueryHandler {
         PlayerSession playerSession = PlayerSession.getInstance();
         LocationDto currentLocation = playerSession.getCurrentLocation();
         if (currentLocation.getBodyId() < 0) {
-            return analyzeData("Current location data is not available", originalUserInput);
+            return process("Current location data is not available");
         }
         Map<Long, LocationDto> locations = playerSession.getLocations();
 
@@ -34,18 +34,20 @@ AnalyzeBioSamplesHandler extends BaseQueryAnalyzer implements QueryHandler {
         List<String> planetNamesWithBioFormsWeHaveNotScanned = getPlanetsWithBioFormNotYetScanned(allBioSamplesForThisStarSystem, locations);
         List<String> planetNamesWithPartialBioScans = getPlanetsWithPartialBioScans(partialScans, locations);
 
-        String instructions = "Analyze Elite Dangerous bio samples. 'partialScans': partial bio scans (3 scans needed per sample). 'genusListForCurrentLocation': all genus on current planet. 'allBioSamplesForThisStarSystem': completed bio samples in star system. 'planetNamesWithBioFormsWeHaveNotScanned': planets with unscanned bio forms. 'planetNamesWithPartialBioScans': planets with incomplete scans. 'genusListNotScannedForCurrentLocation': unscanned genus on current planet. For queries about unscanned genus or planets, list names from 'planetNamesWithBioFormsWeHaveNotScanned' and 'genusListNotScannedForCurrentLocation'. ";
+        String instructions = "Analyze Elite Dangerous bio samples. 'partialScans': partial bio scans (3 scans needed per sample). 'genusListForCurrentLocation': all genus on current planet. 'allBioSamplesForThisStarSystem': completed bio samples in star system, not yet delivered to Vista Genomics. 'planetNamesWithBioFormsWeHaveNotScanned': planets with unscanned bio forms. 'planetNamesWithPartialBioScans': planets with incomplete scans. 'genusListNotScannedForCurrentLocation': unscanned genus on current planet. For queries about unscanned genus or planets, list names from 'planetNamesWithBioFormsWeHaveNotScanned' and 'genusListNotScannedForCurrentLocation'. ";
 
-        return analyzeData(
-                new DataDto(partialScans,
+        return process(
+                new DataDto(
+                        instructions,
+                        partialScans,
                         genusListForCurrentLocation,
                         samplesCompletedForThisPlanet,
                         allBioSamplesForThisStarSystem,
                         planetNamesWithBioFormsWeHaveNotScanned,
                         planetNamesWithPartialBioScans,
-                        genusListNotScannedForCurrentLocation,
-                        instructions
-                ).toJson(), originalUserInput
+                        genusListNotScannedForCurrentLocation
+
+                ), originalUserInput
         );
     }
 
@@ -90,18 +92,22 @@ AnalyzeBioSamplesHandler extends BaseQueryAnalyzer implements QueryHandler {
         return result;
     }
 
-    record DataDto(List<BioSampleDto> partialBioFormScans,
+    record DataDto(String instructions,
+                   List<BioSampleDto> partialBioFormScans,
                    List<GenusDto> allBioFormsOnPlanet,
                    List<BioSampleDto> bioSamplesCompletedForThisPlanet,
                    List<BioSampleDto> allBioSamplesForThisStarSystem,
                    List<String> planetNamesWithBioFormsWeHaveNotScanned,
                    List<String> planetNamesWithPartialBioScans,
-                   List<GenusDto> genusListNotScannedForCurrentLocation,
-                   String instructions
+                   List<GenusDto> genusListNotScannedForCurrentLocation
 
-    ) implements ToJsonConvertible {
+    ) implements AiData {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
+        }
+
+        @Override public String getInstructions() {
+            return instructions;
         }
     }
 }

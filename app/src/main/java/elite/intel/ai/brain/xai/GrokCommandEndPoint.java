@@ -10,7 +10,6 @@ import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.UserInputEvent;
 import elite.intel.session.SystemSession;
-import elite.intel.util.SleepNoThrow;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.JsonUtils;
 import org.apache.logging.log4j.LogManager;
@@ -145,7 +144,7 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
         }
 
         // Log sanitized input
-        log.info("Sanitized voice userInput: [{}] (confidence: {})", toDebugString(userInput), confidence);
+        log.info("Sanitized voice userInput:\n{} (confidence: {})", userInput, confidence);
 
         JsonArray messages = new JsonArray();
         JsonObject systemMessage = new JsonObject();
@@ -231,7 +230,7 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
         // Serialize to JSON string
         Gson gson = GsonFactory.getGson();
         String jsonString = gson.toJson(requestBody);
-        log.debug("JSON prepared for callXaiApi: [{}]", toDebugString(jsonString));
+        log.debug("JSON prepared for callXaiApi:\n{}", jsonString);
         executor.submit(() -> {
             try {
                 JsonObject apiResponse = callXaiApi(jsonString);
@@ -241,7 +240,7 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
                 }
                 getRouter().processAiResponse(apiResponse, null);
             } catch (JsonSyntaxException e) {
-                log.error("JSON parsing failed for input: [{}]", toDebugString(jsonString), e);
+                log.error("JSON parsing failed for input:\n{}", jsonString, e);
                 throw e;
             }
         });
@@ -252,7 +251,7 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
             HttpURLConnection conn = GrokClient.getInstance().getHttpURLConnection();
 
             // Log the input string
-            log.debug("xAI API call: [{}]", toDebugString(jsonString));
+            log.debug("xAI API call:\n{}", jsonString);
             // Store the messages array from the request body
             JsonObject requestBody = GsonFactory.getGson().fromJson(jsonString, JsonObject.class);
             JsonArray messages = requestBody.getAsJsonArray("messages");
@@ -275,7 +274,7 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
             }
 
             // Log raw response
-            log.debug("xAI API response: [{}]", toDebugString(response));
+            log.debug("xAI API response:\n{}", response);
 
             if (responseCode != 200) {
                 String errorResponse = "";
@@ -294,31 +293,31 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
             try {
                 json = JsonParser.parseString(response).getAsJsonObject();
             } catch (JsonSyntaxException e) {
-                log.error("Failed to parse API response: [{}]", toDebugString(response), e);
+                log.error("Failed to parse API response:\n{}", response, e);
                 throw e;
             }
 
             // Extract content safely
             JsonArray choices = json.getAsJsonArray("choices");
             if (choices == null || choices.isEmpty()) {
-                log.error("No choices in API response: [{}]", toDebugString(response));
+                log.error("No choices in API response:\n{}", response);
                 return null;
             }
 
             JsonObject message = choices.get(0).getAsJsonObject().getAsJsonObject("message");
             if (message == null) {
-                log.error("No message in API response choices: [{}]", toDebugString(response));
+                log.error("No message in API response choices:\n{}", response);
                 return null;
             }
 
             String content = message.get("content").getAsString();
             if (content == null) {
-                log.error("No content in API response message: [{}]", toDebugString(response));
+                log.error("No content in API response message:\n{}", response);
                 return null;
             }
 
             // Log content before parsing
-            log.debug("API response content: [{}]", toDebugString(content));
+            log.debug("API response content:\n{}", content);
 
             // Extract JSON from content (after double newline or first valid JSON object)
             String jsonContent;
@@ -329,7 +328,7 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
                 // Fallback: Find first { that starts a valid JSON object
                 jsonStart = content.indexOf("{");
                 if (jsonStart == -1) {
-                    log.error("No JSON object found in content: [{}]", toDebugString(content));
+                    log.error("No JSON object found in content:\n{}", content);
                     return null;
                 }
                 jsonContent = content.substring(jsonStart);
@@ -337,25 +336,25 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
                 try {
                     JsonParser.parseString(jsonContent);
                 } catch (JsonSyntaxException e) {
-                    log.error("Invalid JSON object in content: [{}]", toDebugString(jsonContent), e);
+                    log.error("Invalid JSON object in content:\n{}", jsonContent, e);
                     return null;
                 }
             }
 
             // Log extracted JSON
-            log.info("Extracted JSON content: [{}]", toDebugString(jsonContent));
+            log.info("Extracted JSON content:\n{}", jsonContent);
 
             // Parse JSON content
             try {
                 return JsonParser.parseString(jsonContent).getAsJsonObject();
             } catch (JsonSyntaxException e) {
-                log.error("Failed to parse API response content: [{}]", toDebugString(jsonContent), e);
+                log.error("Failed to parse API response content:\n{}", jsonContent, e);
                 throw e;
             }
         } catch (Exception e) {
             String aiServerError = serverErrorMessage(e);
             log.error("AI API call failed: {}", e.getMessage(), e);
-            log.error("Input data: [{}]", toDebugString(jsonString));
+            log.error("Input data:\n{}", jsonString);
             return GrokClient.getInstance().createErrorResponse("API call failed: " + aiServerError);
         } finally {
             systemSession.clearChatHistory();

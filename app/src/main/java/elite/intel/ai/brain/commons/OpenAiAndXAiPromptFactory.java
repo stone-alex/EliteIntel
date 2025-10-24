@@ -8,6 +8,7 @@ import elite.intel.ai.brain.handlers.query.Queries;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.util.Ranks;
+import elite.intel.util.json.AiData;
 
 import java.util.Objects;
 
@@ -37,7 +38,7 @@ public class OpenAiAndXAiPromptFactory implements AiPromptFactory {
         StringBuilder sb = new StringBuilder();
         getSessionValues(sb);
         appendBehavior(sb);
-        sb.append("Instructions: Analyze this input: ").append(sensorInput).append(". Use planetShortName for stellar objects. ");
+        sb.append("Instructions: Notify user about: ").append(sensorInput);
         sb.append(getStandardJsonFormat()).append("\n");
         return sb.toString();
     }
@@ -78,7 +79,7 @@ public class OpenAiAndXAiPromptFactory implements AiPromptFactory {
         sb.append("For type='query': \n" +
                 "    - If action is a quick query (e.g., '").append(WHAT_IS_YOUR_DESIGNATION.getAction()).append("', '").append(GENERAL_CONVERSATION.getAction()).append("'), set 'response_text' to '' (empty string, no initial TTS).\n" +
                 "    - If action is a data query (listed in data queries section), set 'response_text' to '' for user feedback during delay.\n" +
-                "    - For 'general_conversation', use general knowledge outside Elite Dangerous unless the input explicitly mentions the game.\n" +
+                "    - For 'general_conversation', use general knowledge outside simulation unless the input explicitly mentions the simulation.\n" +
                 "    - Do not generate or infer answers here; the app will handle final response via handlers.\n");
 
         sb.append("For type='chat': \n" +
@@ -96,18 +97,17 @@ public class OpenAiAndXAiPromptFactory implements AiPromptFactory {
         StringBuilder dataQueries = new StringBuilder();
 
         for (Queries query : Queries.values()) {
-            String description = query.getDescription();
             if (query.isRequiresFollowUp()) {
-                quickQueries.append("    - ").append(query.getAction()).append(": ").append(description).append("\n");
+                quickQueries.append("    - ").append(query.getAction()).append(": ").append(".\n");
             } else {
-                dataQueries.append("    - ").append(query.getAction()).append(": ").append(description).append("\n");
+                dataQueries.append("    - ").append(query.getAction()).append(": ").append(".\n");
             }
         }
 
-        sb.append("Quick queries (simple, direct info, no data analysis delay):\n");
-        sb.append(quickQueries.length() > 0 ? quickQueries : "    - None defined.\n");
-        sb.append("Data queries (require analyzing game state, may have delay):\n");
-        sb.append(dataQueries.length() > 0 ? dataQueries : "    - None defined.\n");
+        sb.append("Quick queries:\n");
+        sb.append(!quickQueries.isEmpty() ? quickQueries : "    - None defined.\n");
+        sb.append("Data queries:\n");
+        sb.append(!dataQueries.isEmpty() ? dataQueries : "    - None defined.\n");
 
         appendBehavior(sb);
         sb.append("All supported queries: ").append(AiRequestHints.supportedQueries).append("\n");
@@ -121,14 +121,16 @@ public class OpenAiAndXAiPromptFactory implements AiPromptFactory {
     }
 
     @Override
-    public String generateAnalysisPrompt(String userIntent, String dataJson) {
+    public String generateAnalysisPrompt(String userIntent, AiData data) {
         StringBuilder sb = new StringBuilder();
         getSessionValues(sb);
+        sb.append("Instructions:\n");
         appendBehavior(sb);
-        sb.append("Task: Analyze the provided JSON data against the user's intent: ").append(userIntent).append(". Return precise answers (e.g., yes/no for specific searches) or summaries as requested, using the configured personality and cadence in 'response_text'.\n");
-        sb.append("Data is provided in JSON. Strictly follow the 'instructions' field in data for analysis and response format. ");
-        sb.append("Return only the exact result specified by the instructions");
-        sb.append("Answer in 6-12 words max. Use ONLY planetShortName (e.g., '12 d'). NEVER use planetName (e.g., 'Swois UN-T d3-34 12 d') or bodyId. Example: Query: 'Which planet has four bio signals?' Answer: '12 d'");
+        sb.append("Task:\n");
+        sb.append("Analyze the provided JSON data: ");
+        sb.append(data.getInstructions()).append(". ");
+        sb.append("against the user's intent: ").append(userIntent).append(". Return precise answers (e.g., yes/no for specific searches) or summaries as requested, using the configured personality and cadence in 'response_text'.\n");
+        sb.append("Return only the exact result specified by the instructions.\n");
         sb.append(getStandardJsonFormat()).append("\n");
         return sb.toString();
     }
@@ -159,9 +161,10 @@ public class OpenAiAndXAiPromptFactory implements AiPromptFactory {
         sb.append("When processing a 'tool' role message, use the provided data's 'response_text' as the primary response if available, ensuring it matches the context of the query. ");
         sb.append("Provide extremely brief and concise answers. Use planetShortName for locations when available.");
         sb.append(generateSupportedQueriesClause());
-        sb.append("For 'general_conversation', generate a response using general knowledge outside Elite Dangerous unless the input explicitly mentions the game, lean into UNHINGED slang matching cadence for a playful vibe.");
+        sb.append("For 'general_conversation', generate a response using general knowledge outside simulation unless the input explicitly mentions the simulation, lean into UNHINGED slang matching cadence for a playful vibe.");
         sb.append(getStandardJsonFormat()).append("\n");
         sb.append("For type='query' in initial classification, follow response_text rules from player instructions. For tool/follow-up, use full analyzed response in 'response_text'. ");
+        sb.append("Query Data is provided in JSON. Strictly follow the 'instructions' field in data for analysis and response format. ");
         sb.append("For type='chat', set 'expect_followup': true if response poses a question or requires user clarification; otherwise, false. ");
         return sb.toString();
     }
@@ -172,7 +175,6 @@ public class OpenAiAndXAiPromptFactory implements AiPromptFactory {
         AICadence aiCadence = systemSession.getAICadence();
         AIPersonality aiPersonality = systemSession.getAIPersonality();
 
-        sb.append("You are an AI assistant for Elite Dangerous.");
         sb.append("Behavior: ");
         sb.append(aiCadence.getCadenceClause()).append(" ");
         sb.append("Apply personality: ").append(aiPersonality.name().toUpperCase()).append(" - ").append(aiPersonality.getBehaviorClause()).append(" ");
@@ -184,8 +186,9 @@ public class OpenAiAndXAiPromptFactory implements AiPromptFactory {
         sb.append("Distances between stars in light years. Distance between planets in light seconds. Distances between bio samples are in metres");
         sb.append("Bio samples are taken from organisms not stellar objects.");
         sb.append("Always use planetShortName for locations when available.");
-        sb.append("Round billions to nearest million. ");
+        sb.append("Round billions to nearest 1000000. ");
         sb.append("Round millions to nearest 250000. ");
+        sb.append("Use ONLY planetShortName (e.g., '12 d'). NEVER use planetName (e.g., 'Swois UN-T d3-34 12 d') or bodyId. Example: Query: 'Which planet has four bio signals?' Answer: '12 d'");
         sb.append("Start responses directly with the requested information, avoiding conversational fillers like 'noted,' 'well,' 'right,' 'understood,' or similar phrases. ");
         if (aiPersonality.equals(AIPersonality.UNHINGED) || aiPersonality.equals(AIPersonality.FRIENDLY)) {
             sb.append("For UNHINGED personality, use playful slang matching cadence.");
@@ -224,16 +227,15 @@ public class OpenAiAndXAiPromptFactory implements AiPromptFactory {
 
     private void appendContext(StringBuilder sb, String currentShip, String playerName, String playerMilitaryRank, String playerHonorific, String playerTitle, String missionStatement, String carrierName, String carrierCallSign) {
         String aiName = SystemSession.getInstance().getAIVoice().getName();
-        sb.append("Context: You are ").append(aiName).append(", onboard AI for a ").append(currentShip).append(" ship in Elite Dangerous. ");
+        sb.append("Context: You are ").append(aiName).append(", onboard AI for a ").append(currentShip).append(" ship in a simulation. ");
         if (carrierName != null && !carrierName.isEmpty()) {
             sb.append("Our home base is FleetCarrier ").append(carrierName).append(". ");
         }
         sb.append("When addressing me, choose one at random each time from: ").append(playerName).append(", ").append(playerMilitaryRank).append(", ").append(playerTitle).append(", ").append(playerHonorific).append(". ");
         if (missionStatement != null && !missionStatement.isEmpty()) {
             sb.append(" Session theme: ").append(missionStatement).append(": ");
-            sb.append("\n\n");
         }
-        sb.append("\n\n");
+        sb.append("\n. ");
     }
 
     private static String getProfanityExamples() {
@@ -246,9 +248,9 @@ public class OpenAiAndXAiPromptFactory implements AiPromptFactory {
     private String generateClassifyClause() {
         StringBuilder sb = new StringBuilder();
         sb.append("Classify input as one of:\n" +
-                "    - 'command': Triggers an app action or keyboard event (DO SOMETHING). Use for inputs starting with verbs like 'set', 'switch to', 'get', 'drop', 'retract', 'deploy', 'find', 'locate', 'activate' (e.g., 'deploy landing gear', 'set mining target', 'find carrier fuel'). Treat imperative verbs as commands even if question-phrased (e.g., 'get distance' is a command). Only match supported commands listed in GameCommands or CustomCommands. Provide empty response_text for single-word commands. Match commands before queries or chat.\n" +
-                "    - 'query': Requests information from game state (LOOK UP or COMPUTE SOMETHING). Use for inputs starting with interrogative words like 'what', 'where', 'when', 'how', 'how far', 'how many', 'how much', 'what is', 'where is' (e.g., 'how far are we from last bio sample', 'what is in our cargo hold'). Explicitly match queries about distance to the last bio sample with phrases containing 'how far' or 'distance' followed by 'bio sample', 'biosample', 'last sample', 'last bio sample', 'previous bio sample', or 'previous biosample', with or without prefixes like 'query', 'query about game state', or 'query question' (e.g., 'how far are we from last bio sample', 'how far away from the last bio sample', 'query how far are we from the last biosample', 'query about game state query question how far are we from the last bio sample', 'distance to last sample'). Normalize input by stripping prefixes ('query', 'query about game state', 'query question') and replacing 'bio sample' with 'biosample' for matching. These must trigger the query handler (HOW_FAR_ARE_WE_FROM_LAST_SAMPLE) with action 'query_how_far_we_moved_from_last_bio_sample' to send raw game state data (e.g., planet radius, last bio sample coordinates, current coordinates) for AI analysis, returning 'Distance from last sample is: <distance> meters.' in the configured personality and cadence. Set response_text to '' for user feedback during analysis. Match supported queries listed in QueryActions. Queries take priority over chat but not commands.\n" +
-                "    - 'chat': General conversation, questions unrelated to game actions or state, or unmatched inputs (general chat). Use for lore, opinions, or casual talk (e.g., 'How’s it going?', 'What’s the vibe in this system?'). Only classify as chat if the input does not start with interrogative words ('what', 'where', 'when', 'how', 'how far', 'how many', 'how much', 'what is', 'where is') or command verbs ('set', 'get', 'drop', 'retract', 'deploy', 'find', 'locate', 'activate') and does not match any specific query or command pattern in QueryActions or GameCommands/CustomCommands. If ambiguous (e.g., pure 'where'), set response_text to 'Say again?', action to null, and expect_followup to true.\n");
+                "    - 'command': Triggers an app action or keyboard event (DO SOMETHING). Use for inputs starting with verbs like 'set', 'switch to', 'get', 'drop', 'retract', 'deploy', 'find', 'locate', 'activate' (e.g., 'deploy landing gear', 'set mining target', 'find carrier fuel'). Treat imperative verbs as commands even if question-phrased (e.g., 'get distance' is a command). Only match supported commands listed in simulationCommands or CustomCommands. Provide empty response_text for single-word commands. Match commands before queries or chat.\n" +
+                "    - 'query': Requests information from simulation state (LOOK UP or COMPUTE SOMETHING). Use for inputs starting with interrogative words like 'what', 'where', 'when', 'how', 'how far', 'how many', 'how much', 'what is', 'where is' (e.g., 'how far are we from last bio sample', 'what is in our cargo hold'). Explicitly match queries about distance to the last bio sample with phrases containing 'how far' or 'distance' followed by 'bio sample', 'biosample', 'last sample', 'last bio sample', 'previous bio sample', or 'previous biosample', with or without prefixes like 'query', 'query about simulation state', or 'query question' (e.g., 'how far are we from last bio sample', 'how far away from the last bio sample', 'query how far are we from the last biosample', 'query about simulation state query question how far are we from the last bio sample', 'distance to last sample'). Normalize input by stripping prefixes ('query', 'query about simulation state', 'query question') and replacing 'bio sample' with 'biosample' for matching. These must trigger the query handler (HOW_FAR_ARE_WE_FROM_LAST_SAMPLE) with action 'query_how_far_we_moved_from_last_bio_sample' to send raw simulation state data (e.g., planet radius, last bio sample coordinates, current coordinates) for AI analysis, returning 'Distance from last sample is: <distance> meters.' in the configured personality and cadence. Set response_text to '' for user feedback during analysis. Match supported queries listed in QueryActions. Queries take priority over chat but not commands.\n" +
+                "    - 'chat': General conversation, questions unrelated to simulation actions or state, or unmatched inputs (general chat). Use for lore, opinions, or casual talk. Only classify as chat if the input does not start with interrogative words ('what', 'where', 'when', 'how', 'how far', 'how many', 'how much', 'what is', 'where is') or command verbs ('set', 'get', 'drop', 'retract', 'deploy', 'find', 'locate', 'activate') and does not match any specific query or command pattern in QueryActions or simulationCommands/CustomCommands. If ambiguous (e.g., pure 'where'), set response_text to 'Say again?', action to null, and expect_followup to true.\n");
         return sb.toString();
     }
 }

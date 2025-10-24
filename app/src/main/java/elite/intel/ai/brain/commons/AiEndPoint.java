@@ -44,25 +44,4 @@ public abstract class AiEndPoint {
         }
         return sb.toString();
     }
-
-    protected String toDebugString(String input) {
-        if (input == null) return "null";
-        StringBuilder sb = new StringBuilder();
-        for (char c : input.toCharArray()) {
-            if (c < 32 || c == 127 || c == 0xFEFF) {
-                sb.append(String.format("\\u%04x", (int) c));
-            } else {
-                sb.append(c);
-            }
-        }
-        return sb.toString();
-    }
-
-/*    protected ThreadLocal<JsonArray> getMessageHistory() {
-        return messageHistory;
-    }
-
-    protected void clearMessageHistory() {
-        messageHistory.remove();
-    }*/
 }

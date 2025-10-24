@@ -9,24 +9,15 @@ import java.time.Instant;
 
 public class SensorDataEvent extends BaseEvent {
 
-
     public SensorDataEvent(String sensorData) {
         super(Instant.now().toString(), Duration.ofSeconds(10), "SensorData");
-        this.sensorData = "Notify user: " + sensorData;
-        this.confidence = 100;
+        this.sensorData = sensorData;
     }
 
-
     private String sensorData;
-    private float confidence;
-
 
     public String getSensorData() {
         return sensorData;
-    }
-
-    public float getConfidence() {
-        return confidence;
     }
 
     @Override public String getEventType() {
@@ -34,14 +25,7 @@ public class SensorDataEvent extends BaseEvent {
     }
 
     @Override
-    public String toJson() {
-        return GsonFactory.getGson().toJson(this);
-    }
-
-    @Override
     public JsonObject toJsonObject() {
         return GsonFactory.toJsonObject(this);
     }
-
-
 }

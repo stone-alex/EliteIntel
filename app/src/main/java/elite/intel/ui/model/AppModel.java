@@ -5,11 +5,6 @@ import elite.intel.ui.view.AppView;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,8 +16,6 @@ import java.util.Map;
 public class AppModel implements AppModelInterface {
     private String log = "";
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
-    private boolean streamingMode;
-    private boolean privacyModeOn;
     private boolean showSystemLog;
 
     @Override
@@ -125,13 +118,11 @@ public class AppModel implements AppModelInterface {
 
 
     @Override public void setStreamingModeOn(boolean on) {
-        this.streamingMode = on;
         pcs.firePropertyChange(AppView.PROPERTY_STREAMING_MODE, !on, on);
     }
 
     @Override
     public void setPrivacyModeOn(boolean on) {
-        this.privacyModeOn = on;
         pcs.firePropertyChange(AppView.PROPERTY_PRIVACY_MODE, !on, on);
     }
 

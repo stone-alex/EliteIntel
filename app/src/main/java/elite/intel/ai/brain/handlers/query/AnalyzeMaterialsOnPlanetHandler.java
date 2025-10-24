@@ -4,11 +4,10 @@ import com.google.gson.JsonObject;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.gameapi.journal.events.dto.MaterialDto;
 import elite.intel.session.PlayerSession;
+import elite.intel.util.json.AiData;
 import elite.intel.util.json.GsonFactory;
-import elite.intel.util.json.ToJsonConvertible;
 
 import java.util.List;
-import java.util.Map;
 
 public class AnalyzeMaterialsOnPlanetHandler extends BaseQueryAnalyzer implements QueryHandler {
 
@@ -16,19 +15,24 @@ public class AnalyzeMaterialsOnPlanetHandler extends BaseQueryAnalyzer implement
     public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         PlayerSession playerSession = PlayerSession.getInstance();
         LocationDto currentLocation = playerSession.getCurrentLocation();
-        if(currentLocation.getBodyId() < 0) return analyzeData(toJson("No location data available"), originalUserInput);
+        if (currentLocation.getBodyId() < 0) return process("No location data available");
+
         List<MaterialDto> materials = currentLocation.getMaterials();
 
         if (materials.isEmpty()) {
-            return analyzeData(toJson(" no materials data available..."), originalUserInput);
+            return process(" no materials data available...");
         } else {
-            return analyzeData(new DataDto(materials).toJson(), originalUserInput);
+            return process(new DataDto("Analyze material composition on this planet.", materials), originalUserInput);
         }
     }
 
-    record DataDto(List<MaterialDto> materials) implements ToJsonConvertible {
+    record DataDto(String instructions, List<MaterialDto> materials) implements AiData {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
+        }
+
+        @Override public String getInstructions() {
+            return instructions;
         }
     }
 }

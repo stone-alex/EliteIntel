@@ -51,7 +51,7 @@ public class GrokChatEndPoint extends AiEndPoint implements AIChatInterface {
             body.add("messages", sanitizedMessages);
 
             bodyString = body.toString();
-            log.info("xAI API chat call: [{}]", toDebugString(bodyString));
+            log.info("xAI API chat call:\n{}", bodyString);
 
             try (var os = conn.getOutputStream()) {
                 os.write(bodyString.getBytes(StandardCharsets.UTF_8));
@@ -70,7 +70,7 @@ public class GrokChatEndPoint extends AiEndPoint implements AIChatInterface {
             }
 
             // Log raw response
-            log.info("xAI API response: [{}]", toDebugString(response));
+            log.info("xAI API response:\n{}", response);
 
             if (responseCode != 200) {
                 String errorResponse = "";
@@ -89,31 +89,31 @@ public class GrokChatEndPoint extends AiEndPoint implements AIChatInterface {
             try {
                 json = JsonParser.parseString(response).getAsJsonObject();
             } catch (JsonSyntaxException e) {
-                log.error("Failed to parse API response: [{}]", toDebugString(response), e);
+                log.error("Failed to parse API response:\n{}", response, e);
                 throw e;
             }
 
             // Extract content safely
             JsonArray choices = json.getAsJsonArray("choices");
             if (choices == null || choices.isEmpty()) {
-                log.error("No choices in API response: [{}]", toDebugString(response));
+                log.error("No choices in API response:\n{}", response);
                 return null;
             }
 
             JsonObject message = choices.get(0).getAsJsonObject().getAsJsonObject("message");
             if (message == null) {
-                log.error("No message in API response choices: [{}]", toDebugString(response));
+                log.error("No message in API response choices:\n{}", response);
                 return null;
             }
 
             String content = message.get("content").getAsString();
             if (content == null) {
-                log.error("No content in API response message: [{}]", toDebugString(response));
+                log.error("No content in API response message:\n{}", response);
                 return null;
             }
 
             // Log content before parsing
-            log.info("API response content: [{}]", toDebugString(content));
+            log.info("API response content:\n{}", content);
 
             // Extract JSON from content (after double newline or first valid JSON object)
             String jsonContent;
@@ -134,24 +134,24 @@ public class GrokChatEndPoint extends AiEndPoint implements AIChatInterface {
                 try {
                     JsonParser.parseString(jsonContent);
                 } catch (JsonSyntaxException e) {
-                    log.error("Invalid JSON object in content: [{}]", toDebugString(jsonContent), e);
+                    log.error("Invalid JSON object in content:\n{}", jsonContent, e);
                     return null;
                 }
             }
 
             // Log extracted JSON
-            log.info("Extracted JSON content: [{}]", toDebugString(jsonContent));
+            log.info("Extracted JSON content:\n{}", jsonContent);
 
             // Parse JSON content
             try {
                 return JsonParser.parseString(jsonContent).getAsJsonObject();
             } catch (JsonSyntaxException e) {
-                log.error("Failed to parse API response content: [{}]", toDebugString(jsonContent), e);
+                log.error("Failed to parse API response content:\n{}", jsonContent, e);
                 throw e;
             }
         } catch (Exception e) {
             log.error("AI API chat call fatal error: {}", e.getMessage(), e);
-            log.error("Input data: [{}]", toDebugString(bodyString != null ? bodyString : "null"));
+            log.error("Input data:\n{}", bodyString != null ? bodyString : "null");
             return null;
         }
     }

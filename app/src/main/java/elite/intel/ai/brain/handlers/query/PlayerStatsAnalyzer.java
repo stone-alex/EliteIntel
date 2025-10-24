@@ -3,9 +3,13 @@ package elite.intel.ai.brain.handlers.query;
 import com.google.gson.JsonObject;
 import elite.intel.gameapi.journal.events.dto.RankAndProgressDto;
 import elite.intel.session.PlayerSession;
+import elite.intel.util.json.AiData;
+import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.JsonDataFactory;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager; 
+
+import static elite.intel.ai.brain.handlers.query.Queries.QUERY_PLAYER_STATS_ANALYSIS;
 
 /**
  * The PlayerStatsAnalyzer class is responsible for handling and analyzing player statistics queries.
@@ -50,7 +54,16 @@ public class PlayerStatsAnalyzer extends BaseQueryAnalyzer implements QueryHandl
             return GenericResponse.getInstance().genericResponse("Data error");
         }
 
-        return analyzeData(dataJsonStr, originalUserInput);
+        return process(new DataDto(QUERY_PLAYER_STATS_ANALYSIS.getInstructions(), dataJsonStr), originalUserInput);
+    }
 
+    record DataDto(String instructions, String data) implements AiData {
+        @Override public String toJson() {
+            return GsonFactory.getGson().toJson(this);
+        }
+
+        @Override public String getInstructions() {
+            return instructions;
+        }
     }
 }

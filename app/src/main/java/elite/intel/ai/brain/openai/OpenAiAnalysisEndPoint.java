@@ -1,13 +1,11 @@
 package elite.intel.ai.brain.openai;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
+import com.google.gson.*;
 import elite.intel.ai.ApiFactory;
 import elite.intel.ai.brain.AIConstants;
 import elite.intel.ai.brain.AiAnalysisInterface;
 import elite.intel.ai.brain.commons.AiEndPoint;
+import elite.intel.util.json.AiData;
 import elite.intel.util.json.GsonFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,6 +14,9 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
+
+import static elite.intel.ai.brain.AIConstants.PROPERTY_CONTENT;
+import static elite.intel.ai.brain.AIConstants.PROPERTY_MESSAGE;
 
 public class OpenAiAnalysisEndPoint extends AiEndPoint implements AiAnalysisInterface {
     private static final Logger logger = LogManager.getLogger(OpenAiAnalysisEndPoint.class);
@@ -32,13 +33,13 @@ public class OpenAiAnalysisEndPoint extends AiEndPoint implements AiAnalysisInte
     }
 
     @Override
-    public JsonObject analyzeData(String userIntent, String dataJson) {
+    public JsonObject analyzeData(String originalUserInput, AiData data) {
         try {
             OpenAiClient client = OpenAiClient.getInstance();
             HttpURLConnection conn = client.getHttpURLConnection();
-            String systemPrompt = ApiFactory.getInstance().getAiPromptFactory().generateAnalysisPrompt(userIntent, dataJson);
+            String systemPrompt = ApiFactory.getInstance().getAiPromptFactory().generateAnalysisPrompt(originalUserInput, data);
 
-            JsonObject request = client.createRequestBodyHeader(OpenAiClient.MODEL, 1);
+            JsonObject request = client.createRequestBodyHeader(OpenAiClient.MODEL_GPT_4_1_MINI, 1);
 
             JsonObject messageSystem = new JsonObject();
             messageSystem.addProperty("role", AIConstants.ROLE_SYSTEM);
@@ -46,7 +47,7 @@ public class OpenAiAnalysisEndPoint extends AiEndPoint implements AiAnalysisInte
 
             JsonObject messageUser = new JsonObject();
             messageUser.addProperty("role", AIConstants.ROLE_USER);
-            messageUser.addProperty("content", "User intent: " + userIntent + "\nData: " + dataJson);
+            messageUser.addProperty("content", "User Input: " + originalUserInput + "\nData: " + data.toJson());
 
             JsonArray messages = new JsonArray();
             messages.add(messageSystem);
@@ -54,7 +55,7 @@ public class OpenAiAnalysisEndPoint extends AiEndPoint implements AiAnalysisInte
             request.add("messages", messages);
 
             String jsonString = GsonFactory.getGson().toJson(request);
-            logger.debug("Open AI API call: [{}]", toDebugString(jsonString));
+            logger.debug("Open AI API call:\n{}", jsonString);
 
             try (var os = conn.getOutputStream()) {
                 os.write(jsonString.getBytes(StandardCharsets.UTF_8));
@@ -72,7 +73,7 @@ public class OpenAiAnalysisEndPoint extends AiEndPoint implements AiAnalysisInte
                 logger.info("Stripped BOM from response");
             }
 
-            logger.debug("Open AI API response: [{}]", toDebugString(response));
+            logger.debug("Open AI API response:\n{}", response);
 
             if (responseCode != 200) {
                 String errorResponse = "";
@@ -91,30 +92,36 @@ public class OpenAiAnalysisEndPoint extends AiEndPoint implements AiAnalysisInte
             try {
                 json = JsonParser.parseString(response).getAsJsonObject();
             } catch (JsonSyntaxException e) {
-                logger.error("Failed to parse API response: [{}]", toDebugString(response), e);
+                logger.error("Failed to parse API response:\n{}", response, e);
                 return client.createErrorResponse("Analysis error.");
             }
 
             // Extract content safely
+            JsonElement jsonElement = json.get("usage");
+            if(jsonElement != null) {
+                logger.info("API usage:\n{}", ("Prompt Tokens: "+jsonElement.getAsJsonObject().get("prompt_tokens")+"  Total Tokens:"+ jsonElement.getAsJsonObject().get("total_tokens")));
+            }
+
             JsonArray choices = json.getAsJsonArray("choices");
+
             if (choices == null || choices.isEmpty()) {
-                logger.error("No choices in API response: [{}]", toDebugString(response));
+                logger.error("No choices in API response:\n{}", response);
                 return client.createErrorResponse("Analysis error.");
             }
 
-            JsonObject message = choices.get(0).getAsJsonObject().getAsJsonObject("message");
+            JsonObject message = choices.get(0).getAsJsonObject().getAsJsonObject(PROPERTY_MESSAGE);
             if (message == null) {
-                logger.error("No message in API response choices: [{}]", toDebugString(response));
+                logger.error("No message in API response choices:\n{}", response);
                 return client.createErrorResponse("Analysis error.");
             }
 
-            String content = message.get("content").getAsString();
+            String content = message.get(PROPERTY_CONTENT).getAsString();
             if (content == null) {
-                logger.error("No content in API response message: [{}]", toDebugString(response));
+                logger.error("No content in API response message:\n{}", response);
                 return client.createErrorResponse("Analysis error.");
             }
 
-            logger.debug("API response content: [{}]", toDebugString(content));
+            logger.debug("API response content:\n{}", content);
 
             // Extract JSON from content
             String jsonContent;
@@ -124,19 +131,19 @@ public class OpenAiAnalysisEndPoint extends AiEndPoint implements AiAnalysisInte
             } else {
                 jsonStart = content.indexOf("{");
                 if (jsonStart == -1) {
-                    logger.error("No JSON object found in content: [{}]", toDebugString(content));
+                    logger.error("No JSON object found in content:\n{}", content);
                     return client.createErrorResponse("Analysis error.");
                 }
                 jsonContent = content.substring(jsonStart);
             }
 
-            logger.info("Extracted JSON content: [{}]", toDebugString(jsonContent));
+            logger.info("Extracted JSON content:\n{}", jsonContent);
 
             // Parse extracted JSON content
             try {
                 return JsonParser.parseString(jsonContent).getAsJsonObject();
             } catch (JsonSyntaxException e) {
-                logger.error("Failed to parse API response content: [{}]", toDebugString(jsonContent), e);
+                logger.error("Failed to parse API response content:\n{}", jsonContent, e);
                 return client.createErrorResponse("Analysis error.");
             }
         } catch (IOException e) {

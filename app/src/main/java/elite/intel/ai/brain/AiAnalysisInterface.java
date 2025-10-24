@@ -1,6 +1,7 @@
 package elite.intel.ai.brain;
 
 import com.google.gson.JsonObject;
+import elite.intel.util.json.AiData;
 
 /**
  * Provides a contract for analyzing data based on user intent and raw data input.
@@ -8,5 +9,5 @@ import com.google.gson.JsonObject;
  * data analysis and return the resulting output within a structured JSON format.
  */
 public interface AiAnalysisInterface {
-    JsonObject analyzeData(String userIntent, String dataJson);
+    JsonObject analyzeData(String userIntent, AiData data);
 }

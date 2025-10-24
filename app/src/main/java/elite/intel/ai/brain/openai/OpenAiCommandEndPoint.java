@@ -121,7 +121,7 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
         }
 
         // Log sanitized input
-        log.info("Sanitized voice userInput: [{}] (confidence: {})", toDebugString(userInput), confidence);
+        log.info("Sanitized voice userInput:\n{}\n (confidence: {})", userInput, confidence);
 
         JsonArray messages = new JsonArray();
         JsonObject systemMessage = new JsonObject();
@@ -201,12 +201,12 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
 
         // Create API request body
         OpenAiClient client = OpenAiClient.getInstance();
-        JsonObject requestBody = client.createRequestBodyHeader(OpenAiClient.MODEL, 0.01f);
+        JsonObject requestBody = client.createRequestBodyHeader(OpenAiClient.MODEL_GPT_4_1_NANO, 0.01f);
         requestBody.add("messages", messages);
 
         // Serialize to JSON string
         String jsonString = GsonFactory.getGson().toJson(requestBody);
-        log.debug("JSON prepared for callOpenAiApi: [{}]", toDebugString(jsonString));
+        log.debug("JSON prepared for callOpenAiApi:\n{}", jsonString);
         executor.submit(() -> {
             try {
                 JsonObject apiResponse = callOpenAiApi(messages);
@@ -216,7 +216,7 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
                 }
                 getRouter().processAiResponse(apiResponse, null);
             } catch (JsonSyntaxException e) {
-                log.error("JSON parsing failed for input: [{}]", toDebugString(jsonString), e);
+                log.error("JSON parsing failed for input:\n{}", jsonString, e);
                 throw e;
             }
         });
@@ -225,10 +225,10 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
     private JsonObject callOpenAiApi(JsonArray messages) {
         try {
             OpenAiClient client = OpenAiClient.getInstance();
-            JsonObject requestBody = client.createRequestBodyHeader(OpenAiClient.MODEL, 0.01f);
+            JsonObject requestBody = client.createRequestBodyHeader(OpenAiClient.MODEL_GPT_4_1_NANO, 0.01f);
             requestBody.add("messages", messages);
             String jsonString = GsonFactory.getGson().toJson(requestBody);
-            log.debug("Open AI API call: [{}]", toDebugString(jsonString));
+            log.debug("Open AI API call:\n{}", jsonString);
 
             // Store messages for history
             systemSession.setChatHistory(messages);
@@ -251,7 +251,7 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
             }
 
             // Log raw response
-            log.debug("Open AI API response: [{}]", toDebugString(response));
+            log.debug("Open AI API response:\n{}", response);
 
             if (responseCode != 200) {
                 String errorResponse = "";
@@ -270,31 +270,31 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
             try {
                 json = JsonParser.parseString(response).getAsJsonObject();
             } catch (JsonSyntaxException e) {
-                log.error("Failed to parse API response: [{}]", toDebugString(response), e);
+                log.error("Failed to parse API response:\n{}", response, e);
                 return client.createErrorResponse("Failed to parse API response");
             }
 
             // Extract content
             JsonArray choices = json.getAsJsonArray("choices");
             if (choices == null || choices.isEmpty()) {
-                log.error("No choices in API response: [{}]", toDebugString(response));
+                log.error("No choices in API response:\n{}", response);
                 return client.createErrorResponse("No choices in API response");
             }
 
             JsonObject message = choices.get(0).getAsJsonObject().getAsJsonObject("message");
             if (message == null) {
-                log.error("No message in API response choices: [{}]", toDebugString(response));
+                log.error("No message in API response choices:\n{}", response);
                 return client.createErrorResponse("No message in API response");
             }
 
             String content = message.get("content").getAsString();
             if (content == null) {
-                log.error("No content in API response message: [{}]", toDebugString(response));
+                log.error("No content in API response message:\n{}", response);
                 return client.createErrorResponse("No content in API response");
             }
 
             // Log content before parsing
-            log.debug("API response content: [{}]", toDebugString(content));
+            log.debug("API response content:\n{}", content);
 
             // Parse JSON content
             String jsonContent;
@@ -304,26 +304,26 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
             } else {
                 jsonStart = content.indexOf("{");
                 if (jsonStart == -1) {
-                    log.error("No JSON object found in content: [{}]", toDebugString(content));
+                    log.error("No JSON object found in content:\n{}", content);
                     return client.createErrorResponse("No JSON object in content");
                 }
                 jsonContent = content.substring(jsonStart);
                 try {
                     JsonParser.parseString(jsonContent);
                 } catch (JsonSyntaxException e) {
-                    log.error("Invalid JSON object in content: [{}]", toDebugString(jsonContent), e);
+                    log.error("Invalid JSON object in content:\n{}", jsonContent, e);
                     return client.createErrorResponse("Invalid JSON in content");
                 }
             }
 
             // Log extracted JSON
-            log.info("Extracted JSON content: [{}]", toDebugString(jsonContent));
+            log.info("Extracted JSON content:\n{}", jsonContent);
 
             // Parse JSON content
             try {
                 return JsonParser.parseString(jsonContent).getAsJsonObject();
             } catch (JsonSyntaxException e) {
-                log.error("Failed to parse API response content: [{}]", toDebugString(jsonContent), e);
+                log.error("Failed to parse API response content:\n{}", jsonContent, e);
                 return client.createErrorResponse("Failed to parse API content");
             }
         } catch (IOException e) {

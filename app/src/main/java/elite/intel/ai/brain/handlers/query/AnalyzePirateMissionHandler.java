@@ -4,8 +4,8 @@ import com.google.gson.JsonObject;
 import elite.intel.gameapi.journal.events.dto.BountyDto;
 import elite.intel.gameapi.journal.events.dto.MissionDto;
 import elite.intel.session.PlayerSession;
+import elite.intel.util.json.AiData;
 import elite.intel.util.json.GsonFactory;
-import elite.intel.util.json.ToJsonConvertible;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -21,12 +21,18 @@ public class AnalyzePirateMissionHandler extends BaseQueryAnalyzer implements Qu
         String remainingKills = computeKillsRemaining(missions, bounties);
         String missionProfit = computeMissionProfit(missions, bounties);
 
-        return analyzeData(new DataDto(remainingKills, missionProfit, "Do not sum anything do not calculate! Just use data pre-calculated for you to answer the question. If asked about total kills remaining only return the number of kills remaining to complete all assignments. Else provide complete summary.").toJson(), originalUserInput);
+        String instructions = "Do not sum anything do not calculate! Just use data pre-calculated for you to answer the question. If asked about total kills remaining only return the number of kills remaining to complete all assignments. Else provide complete summary.";
+
+        return process(new DataDto(instructions, remainingKills, missionProfit), originalUserInput);
     }
 
-    record DataDto(String totalMissionKillsLeft, String totalMissionProfit, String instructions) implements ToJsonConvertible {
+    record DataDto(String instructions, String totalMissionKillsLeft, String totalMissionProfit) implements AiData {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
+        }
+
+        @Override public String getInstructions() {
+            return instructions;
         }
     }
 
@@ -279,6 +285,6 @@ public class AnalyzePirateMissionHandler extends BaseQueryAnalyzer implements Qu
             response.append(String.format(", Total - %d credits", totalProfit));
         }
 
-        return response.length() > 0 ? response.toString() : "no missions available";
+        return !response.isEmpty() ? response.toString() : "no missions available";
     }
 }

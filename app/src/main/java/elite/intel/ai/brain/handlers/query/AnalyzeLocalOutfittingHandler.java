@@ -1,11 +1,12 @@
 package elite.intel.ai.brain.handlers.query;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import elite.intel.ai.search.edsm.dto.OutfittingDto;
 import elite.intel.session.PlayerSession;
+import elite.intel.util.json.AiData;
 import elite.intel.util.json.GsonFactory;
-import elite.intel.util.json.ToJsonConvertible;
+
+import static elite.intel.ai.brain.handlers.query.Queries.ANALYZE_LOCAL_OUTFITTING;
 
 public class AnalyzeLocalOutfittingHandler extends BaseQueryAnalyzer implements QueryHandler {
 
@@ -14,13 +15,16 @@ public class AnalyzeLocalOutfittingHandler extends BaseQueryAnalyzer implements 
         PlayerSession playerSession = PlayerSession.getInstance();
         OutfittingDto outfitting = playerSession.getCurrentLocation().getOutfitting();
 
-
-        return analyzeData(new DataDto(outfitting).toJson(), originalUserInput);
+        return process(new DataDto(ANALYZE_LOCAL_OUTFITTING.getInstructions(), outfitting), originalUserInput);
     }
 
-    private record DataDto(OutfittingDto outfitting) implements ToJsonConvertible {
+    private record DataDto(String instructions, OutfittingDto outfitting) implements AiData {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
+        }
+
+        @Override public String getInstructions() {
+            return instructions;
         }
     }
 }

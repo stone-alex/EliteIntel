@@ -5,8 +5,8 @@ import elite.intel.gameapi.journal.events.dto.BioSampleDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.Status;
+import elite.intel.util.json.AiData;
 import elite.intel.util.json.GsonFactory;
-import elite.intel.util.json.ToJsonConvertible;
 
 public class AnalyzeDistanceFromLastBioSample extends BaseQueryAnalyzer implements QueryHandler {
 
@@ -19,7 +19,7 @@ public class AnalyzeDistanceFromLastBioSample extends BaseQueryAnalyzer implemen
         String instructions = "use userLatitude, userLongitude, bioSample.scanLatitude, bioSample.scanLongitude and planetRadius to calculate distance to the last partial bio-sample.";
 
         if (status.getStatus() == null) {
-            return analyzeData(toJson("No planet data available"), originalUserInput);
+            return process("No planet data available");
         }
 
         double latitude = status.getStatus().getLatitude();
@@ -27,20 +27,24 @@ public class AnalyzeDistanceFromLastBioSample extends BaseQueryAnalyzer implemen
         double planetRadius = status.getStatus().getPlanetRadius();
 
         if (latitude == 0 || longitude == 0 || planetRadius == 0) {
-            return analyzeData(toJson("Your current position is not available."), originalUserInput);
+            return process("Your current position is not available.");
         }
 
         if(currentLocation.getPartialBioSamples().isEmpty()){
-            return analyzeData(toJson("No partial bio scans data."), originalUserInput);
+            return process("No partial bio scans data.");
         }
 
         BioSampleDto bioSample = currentLocation.getPartialBioSamples().getLast();
-        return analyzeData(new DataDto(latitude, longitude, planetRadius, bioSample, instructions).toJson(), originalUserInput);
+        return process(new DataDto(instructions, latitude, longitude, planetRadius, bioSample), originalUserInput);
     }
 
-    record DataDto(double userLatitude, double userLongitude, double planetRadius, BioSampleDto bioSample, String instructions) implements ToJsonConvertible {
+    record DataDto(String instructions, double userLatitude, double userLongitude, double planetRadius, BioSampleDto bioSample) implements AiData {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
+        }
+
+        @Override public String getInstructions() {
+            return instructions;
         }
     }
 }

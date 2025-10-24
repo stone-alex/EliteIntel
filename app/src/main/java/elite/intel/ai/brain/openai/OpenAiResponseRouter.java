@@ -72,7 +72,8 @@ public class OpenAiResponseRouter extends ResponseRouter implements AIRouterInte
                     handleQuery(action, params, userInput);
                     break;
                 case AIConstants.TYPE_CHAT:
-                    handleChat(responseText);
+                    handleQuery(GENERAL_CONVERSATION.getAction(), params, userInput);
+                    //handleChat(responseText);
                     break;
                 default:
                     handleChat(responseText);
@@ -112,7 +113,7 @@ public class OpenAiResponseRouter extends ResponseRouter implements AIRouterInte
 
             if (responseTextToUse != null && !responseTextToUse.isEmpty()) {
                 EventBusManager.publish(new AiVoxResponseEvent(responseTextToUse));
-                systemSession.clearChatHistory();
+                //systemSession.clearChatHistory();
                 log.info("Spoke final query response (action: {}): {}", action, responseTextToUse);
             } else if (requiresFollowUp) {
                 JsonArray messages = new JsonArray();

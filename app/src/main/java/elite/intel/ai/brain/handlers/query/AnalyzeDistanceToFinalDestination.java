@@ -4,6 +4,8 @@ import com.google.gson.JsonObject;
 import elite.intel.gameapi.gamestate.dtos.NavRouteDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
+import elite.intel.util.json.AiData;
+import elite.intel.util.json.GsonFactory;
 
 import java.util.List;
 
@@ -18,10 +20,10 @@ public class AnalyzeDistanceToFinalDestination extends BaseQueryAnalyzer impleme
         List<NavRouteDto> orderedRoute = playerSession.getOrderedRoute();
 
         if (here == null) {
-            return analyzeData(toJson("Current location data unavailable."), originalUserInput);
+            return process("Current location data unavailable.");
         }
         if (orderedRoute == null || orderedRoute.isEmpty()) {
-            return analyzeData(toJson("No route data available."), originalUserInput);
+            return process("No route data available.");
         }
 
         // Create NavRouteDto for current location
@@ -34,7 +36,17 @@ public class AnalyzeDistanceToFinalDestination extends BaseQueryAnalyzer impleme
 
         String distanceData = getDistanceDataForAnnouncement(currentLocation, orderedRoute);
         // AI cadence or error response
-        return analyzeData(toJson(distanceData), originalUserInput);
+        return process(new DataDto("Use this data to answer questions about distance to final destination", distanceData), originalUserInput);
+    }
+
+    record DataDto(String instructions, String data) implements AiData {
+        @Override public String toJson() {
+            return GsonFactory.getGson().toJson(this);
+        }
+
+        @Override public String getInstructions() {
+            return instructions;
+        }
     }
 
     private static String getDistanceDataForAnnouncement(NavRouteDto currentSystem, List<NavRouteDto> route) {

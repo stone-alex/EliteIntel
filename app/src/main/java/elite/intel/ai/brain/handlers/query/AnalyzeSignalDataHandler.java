@@ -7,12 +7,14 @@ import elite.intel.gameapi.journal.events.FSSBodySignalsEvent;
 import elite.intel.gameapi.journal.events.dto.BioSampleDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
+import elite.intel.util.json.AiData;
 import elite.intel.util.json.GsonFactory;
-import elite.intel.util.json.ToJsonConvertible;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static elite.intel.ai.brain.handlers.query.Queries.QUERY_SEARCH_SIGNAL_DATA;
 
 public class AnalyzeSignalDataHandler  extends BaseQueryAnalyzer implements QueryHandler {
 
@@ -24,25 +26,30 @@ public class AnalyzeSignalDataHandler  extends BaseQueryAnalyzer implements Quer
         LocationDto currentLocation = playerSession.getCurrentLocation();
         List<FSSBodySignalsEvent.Signal> fssBodySignals = playerSession.getCurrentLocation().getFssSignals();
         Map<Long, LocationDto> allLocations = playerSession.getLocations();
-        List<BioSampleDto> allComplletedBioScans = playerSession.getBioCompletedSamples();
+        List<BioSampleDto> allCompletedBioScans = playerSession.getBioCompletedSamples();
         SystemBodiesDto edsmData = EdsmApiClient.searchSystemBodies(currentLocation.getStarName());
         Map<String, Integer> planetsRequireBioScans = planetsWithBioFormsNotYetScanned();
         Map<String, Integer> planetsWithGeoSignals = planetsWithGeoSignals();
 
-        return analyzeData(new DataDto(fssBodySignals, allLocations, allComplletedBioScans, planetsRequireBioScans, planetsWithGeoSignals, edsmData).toJson(), originalUserInput);
+        return process(new DataDto(QUERY_SEARCH_SIGNAL_DATA.getInstructions(), fssBodySignals, allLocations, allCompletedBioScans, planetsRequireBioScans, planetsWithGeoSignals, edsmData), originalUserInput);
     }
 
     record DataDto(
+            String instructions,
             List<FSSBodySignalsEvent.Signal> filteredSpectrumScans,
             Map<Long, LocationDto> allStellarObjectsInStarSystem,
-            List<BioSampleDto> allComplletedBioScans,
+            List<BioSampleDto> allCompletedBioScans,
             Map<String, Integer> planetsRequireBioScans,
             Map<String, Integer> planetsWithGeoSignals,
             SystemBodiesDto edsmData
-    ) implements ToJsonConvertible {
+    ) implements AiData {
 
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
+        }
+
+        @Override public String getInstructions() {
+            return instructions;
         }
     }
 

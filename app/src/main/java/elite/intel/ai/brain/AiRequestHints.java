@@ -39,18 +39,14 @@ public class AiRequestHints {
                 .collect(Collectors.toList());
     }
 
-    private static String formatCommands() {
-        return "Supported commands: '" + String.join("', '", COMMANDS) + "', ";
-    }
-
     private static String formatQueries() {
         return "Supported queries: '" + String.join("', '", QUERIES) + "'. ";
     }
 
-    private static String formatCustomCommands() {
+    private static String formatCommands() {
         return "Supported custom commands: '" + String.join("', '", Commands.getCustomCommands()) + "'. ";
     }
 
     public static final String supportedQueries = formatQueries();
-    public static final String customCommands = formatCustomCommands();
+    public static final String customCommands = formatCommands();
 }

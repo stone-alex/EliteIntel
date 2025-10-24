@@ -5,14 +5,13 @@ import elite.intel.ai.search.edsm.EdsmApiClient;
 import elite.intel.ai.search.edsm.dto.SystemBodiesDto;
 import elite.intel.gameapi.journal.events.FSSBodySignalsEvent;
 import elite.intel.gameapi.journal.events.dto.BioSampleDto;
+import elite.intel.gameapi.journal.events.dto.FssSignalDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.AiData;
 import elite.intel.util.json.GsonFactory;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static elite.intel.ai.brain.handlers.query.Queries.QUERY_SEARCH_SIGNAL_DATA;
 
@@ -24,6 +23,7 @@ public class AnalyzeSignalDataHandler  extends BaseQueryAnalyzer implements Quer
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
 
         LocationDto currentLocation = playerSession.getCurrentLocation();
+        Set<FssSignalDto> detectedSignals = getDetectedSignals();
         List<FSSBodySignalsEvent.Signal> fssBodySignals = playerSession.getCurrentLocation().getFssSignals();
         Map<Long, LocationDto> allLocations = playerSession.getLocations();
         List<BioSampleDto> allCompletedBioScans = playerSession.getBioCompletedSamples();
@@ -31,11 +31,23 @@ public class AnalyzeSignalDataHandler  extends BaseQueryAnalyzer implements Quer
         Map<String, Integer> planetsRequireBioScans = planetsWithBioFormsNotYetScanned();
         Map<String, Integer> planetsWithGeoSignals = planetsWithGeoSignals();
 
-        return process(new DataDto(QUERY_SEARCH_SIGNAL_DATA.getInstructions(), fssBodySignals, allLocations, allCompletedBioScans, planetsRequireBioScans, planetsWithGeoSignals, edsmData), originalUserInput);
+        return process(new DataDto(QUERY_SEARCH_SIGNAL_DATA.getInstructions(), detectedSignals, fssBodySignals, allLocations, allCompletedBioScans, planetsRequireBioScans, planetsWithGeoSignals, edsmData), originalUserInput);
+    }
+
+    private Set<FssSignalDto> getDetectedSignals() {
+        Map<Long, LocationDto> locations = playerSession.getLocations();
+        if(locations.isEmpty()) return new HashSet<>();
+        for(LocationDto location : locations.values()){
+            if(LocationDto.LocationType.PRIMARY_STAR.equals(location.getLocationType())){
+                return location.getDetectedSignals();
+            }
+        }
+        return new HashSet<>();
     }
 
     record DataDto(
             String instructions,
+            Set<FssSignalDto> detectedSignals,
             List<FSSBodySignalsEvent.Signal> filteredSpectrumScans,
             Map<Long, LocationDto> allStellarObjectsInStarSystem,
             List<BioSampleDto> allCompletedBioScans,

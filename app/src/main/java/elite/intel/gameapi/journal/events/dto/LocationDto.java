@@ -5,6 +5,7 @@ import elite.intel.ai.search.edsm.dto.data.BodyData;
 import elite.intel.gameapi.journal.events.CodexEntryEvent;
 import elite.intel.gameapi.journal.events.FSSBodySignalsEvent;
 import elite.intel.gameapi.journal.events.SAASignalsFoundEvent;
+import elite.intel.util.StringUtls;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 
@@ -190,6 +191,9 @@ public class LocationDto implements ToJsonConvertible {
 
     public void setPlanetName(String planetName) {
         this.planetName = planetName;
+        if (starName != null && planetShortName == null) {
+            this.planetShortName = StringUtls.subtractString(planetName, starName);
+        }
     }
 
     public BodyData getPlanetData() {
@@ -454,7 +458,11 @@ public class LocationDto implements ToJsonConvertible {
 
 
     public String getPlanetShortName() {
-        return planetShortName;
+        if (starName != null && planetShortName == null) {
+            return StringUtls.subtractString(planetName, starName);
+        } else {
+            return planetShortName;
+        }
     }
 
     public void setPlanetShortName(String planetShortName) {

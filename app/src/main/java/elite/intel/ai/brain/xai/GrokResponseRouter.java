@@ -71,7 +71,7 @@ public class GrokResponseRouter extends ResponseRouter implements AIRouterInterf
 
             switch (type) {
                 case AIConstants.TYPE_COMMAND:
-                    handleCommand(action, params, responseText, jsonResponse);
+                    handleCommand(action, params, responseText);
                     break;
                 case AIConstants.TYPE_QUERY:
                     handleQuery(action, params, userInput);

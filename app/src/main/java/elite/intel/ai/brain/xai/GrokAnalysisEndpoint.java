@@ -130,7 +130,7 @@ public class GrokAnalysisEndpoint extends AiEndPoint implements AiAnalysisInterf
                 jsonContent = content.substring(jsonStart);
             }
 
-            logger.info("Extracted JSON content:\n{}", jsonContent);
+            logger.info("Extracted JSON content:\n\n{}\n\n", jsonContent);
 
             // Parse extracted JSON content
             try {

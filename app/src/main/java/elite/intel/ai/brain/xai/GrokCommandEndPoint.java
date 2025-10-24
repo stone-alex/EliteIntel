@@ -342,7 +342,7 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
             }
 
             // Log extracted JSON
-            log.info("Extracted JSON content:\n{}", jsonContent);
+            log.info("Extracted JSON content:\n\n{}\n\n", jsonContent);
 
             // Parse JSON content
             try {

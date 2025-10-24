@@ -66,7 +66,7 @@ public class OpenAiResponseRouter extends ResponseRouter implements AIRouterInte
 
             switch (type) {
                 case AIConstants.TYPE_COMMAND:
-                    handleCommand(action, params, responseText, jsonResponse);
+                    handleCommand(action, params, responseText);
                     break;
                 case AIConstants.TYPE_QUERY:
                     handleQuery(action, params, userInput);
@@ -108,7 +108,6 @@ public class OpenAiResponseRouter extends ResponseRouter implements AIRouterInte
                     break;
                 }
             }
-
 
 
             if (responseTextToUse != null && !responseTextToUse.isEmpty()) {

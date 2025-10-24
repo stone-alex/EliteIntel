@@ -134,7 +134,7 @@ public class GrokQueryEndPoint extends AiEndPoint implements AiQueryInterface {
             }
 
             // Log extracted JSON
-            log.info("Extracted JSON content:\n{}", jsonContent);
+            log.info("Extracted JSON content:\n\n{}\n\n", jsonContent);
 
             // Parse JSON content
             try {

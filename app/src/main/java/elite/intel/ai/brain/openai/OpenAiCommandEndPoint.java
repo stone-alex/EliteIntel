@@ -121,7 +121,7 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
         }
 
         // Log sanitized input
-        log.info("Sanitized voice userInput:\n{}\n (confidence: {})", userInput, confidence);
+        log.info("Sanitized voice userInput:\n{} (confidence: {})", userInput, confidence);
 
         JsonArray messages = new JsonArray();
         JsonObject systemMessage = new JsonObject();
@@ -317,7 +317,7 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
             }
 
             // Log extracted JSON
-            log.info("Extracted JSON content:\n{}", jsonContent);
+            log.info("Extracted JSON content:\n\n{}\n\n", jsonContent);
 
             // Parse JSON content
             try {

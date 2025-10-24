@@ -3,6 +3,7 @@ package elite.intel.ai.mouth.google;
 import com.google.cloud.texttospeech.v1.*;
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.ConfigManager;
+import elite.intel.ai.TtsEvent;
 import elite.intel.ai.mouth.AiVoices;
 import elite.intel.ai.mouth.AudioDeClicker;
 import elite.intel.ai.mouth.MouthInterface;
@@ -143,6 +144,7 @@ public class GoogleTTSImpl implements MouthInterface {
         }
     }
 
+/*
     @Subscribe
     public void onInterruptEvent(TTSInterruptEvent event) {
         if(SystemSession.getInstance().isStreamingModeOn()) {
@@ -153,6 +155,7 @@ public class GoogleTTSImpl implements MouthInterface {
             interruptAndClear();
         }
     }
+*/
 
     @Subscribe
     @Override
@@ -258,6 +261,7 @@ public class GoogleTTSImpl implements MouthInterface {
 
             currentLine.set(null);
             try (SourceDataLine line = (SourceDataLine) AudioSystem.getLine(info)) {
+                EventBusManager.publish(new TtsEvent(true));
                 line.open(format, bufferBytes);
                 currentLine.set(line);
                 log.debug("SourceDataLine opened in {}ms", System.currentTimeMillis() - lineOpenStartTime);
@@ -266,7 +270,6 @@ public class GoogleTTSImpl implements MouthInterface {
                 line.write(silenceBuffer, 0, silenceBuffer.length);
                 line.start();
                 log.info("Spoke with voice {}: {}", voiceName, text);
-
                 long writeStartTime = System.currentTimeMillis();
                 for (int i = 0; i < audioData.length; i += bufferBytes) {
                     if (interruptRequested.get()) {
@@ -319,6 +322,7 @@ public class GoogleTTSImpl implements MouthInterface {
         } finally {
             currentLine.set(null);
             interruptRequested.set(false);
+            EventBusManager.publish(new TtsEvent(false));
         }
         log.debug("VoiceRequest processing completed in {}ms", System.currentTimeMillis() - startTime);
     }

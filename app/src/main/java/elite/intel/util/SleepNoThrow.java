@@ -6,7 +6,7 @@ public class SleepNoThrow {
         try {
             Thread.sleep(millis);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            // no throw
         }
     }
 }

@@ -2,8 +2,10 @@ package elite.intel.ai.ears.google;
 
 import com.google.api.gax.rpc.ApiStreamObserver;
 import com.google.cloud.speech.v1.*;
+import com.google.common.eventbus.Subscribe;
 import com.google.protobuf.ByteString;
 import elite.intel.ai.ConfigManager;
+import elite.intel.ai.TtsEvent;
 import elite.intel.ai.ears.AudioCalibrator;
 import elite.intel.ai.ears.AudioFormatDetector;
 import elite.intel.ai.ears.AudioSettingsTuple;
@@ -43,11 +45,13 @@ public class GoogleSTTImpl implements EarsInterface {
 
     private SpeechClient speechClient;
     private final AtomicBoolean isListening = new AtomicBoolean(true);
+    private final AtomicBoolean isSpeaking = new AtomicBoolean(false);
     private long lastAudioSentTime = System.currentTimeMillis();
     private Thread processingThread;
     Map<String, String> corrections;
 
     public GoogleSTTImpl() {
+        EventBusManager.register(this);
     }
 
     @Override
@@ -184,6 +188,9 @@ public class GoogleSTTImpl implements EarsInterface {
 
                     long lastLoopTime = System.currentTimeMillis();
                     while (isListening.get() && !needRestart.get() && line.isOpen() && (System.currentTimeMillis() - lastStreamStart) < STREAM_DURATION_MS) {
+
+                        //if(isSpeaking.get()) continue;
+
                         int bytesRead = line.read(buffer, 0, buffer.length);
                         long loopDuration = System.currentTimeMillis() - lastLoopTime;
                         log.debug("Bytes read: {}, Loop duration: {}ms, VAD active: {}", bytesRead, loopDuration, isActive);
@@ -213,7 +220,7 @@ public class GoogleSTTImpl implements EarsInterface {
                             }
                         }
 
-                        if (!isActive && consecutiveVoice >= ENTER_VOICE_FRAMES) {
+                        if (!isActive && consecutiveVoice >= ENTER_VOICE_FRAMES && !isSpeaking.get()) {
                             isActive = true;
                             log.debug("VAD: Entered active state (voice detected)");
                         }
@@ -377,11 +384,6 @@ public class GoogleSTTImpl implements EarsInterface {
     }
 
     private void sendToAi(String sanitizedTranscript, float confidence) {
-        boolean hasAiReference = !sanitizedTranscript.isBlank()
-                && (sanitizedTranscript.toLowerCase().contains("computer"))
-                || (sanitizedTranscript.toLowerCase().contains(SystemSession.getInstance().getAIVoice().getName().toLowerCase()));
-
-        EventBusManager.publish(new TTSInterruptEvent(hasAiReference));
         AudioPlayer.getInstance().playBeep();
         log.info("Processing sanitizedTranscript: {}", sanitizedTranscript);
         EventBusManager.publish(new UserInputEvent(sanitizedTranscript, confidence));
@@ -410,5 +412,10 @@ public class GoogleSTTImpl implements EarsInterface {
                 .setInterimResults(true)
                 .setSingleUtterance(false)
                 .build();
+    }
+
+    @Subscribe
+    public void onTtsEvent(TtsEvent event) {
+        isSpeaking.set(event.isSpeaking());
     }
 }

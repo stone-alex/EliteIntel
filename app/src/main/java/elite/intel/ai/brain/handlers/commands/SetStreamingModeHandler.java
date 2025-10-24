@@ -39,7 +39,7 @@ public class SetStreamingModeHandler implements CommandHandler {
         systemSession.setStreamingMode(isOn);
 
         if (isOn) {
-            EventBusManager.publish(new AiVoxResponseEvent("streaming mode is on. Please prefix your commands to me with Computer or " + systemSession.getAIVoice().getName()));
+            EventBusManager.publish(new AiVoxResponseEvent("streaming mode is on. Please prefix your commands to me with Computer or " + systemSession.getAIVoice().getName()+"."));
         } else {
             EventBusManager.publish(new AiVoxResponseEvent("streaming mode is off... I am listening."));
         }

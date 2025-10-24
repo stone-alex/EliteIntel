@@ -30,7 +30,7 @@ public class OpenAiAndXAiPromptFactory implements AiPromptFactory {
     }
 
     private String getStandardJsonFormat() {
-        return "Always output JSON: {\"type\": \"command|query|chat\", \"response_text\": \"TTS output\", \"action\": \"action_name|query_name|null\", \"params\": {\"key\": \"value\"}, \"expect_followup\": boolean}";
+        return "Always output JSON: {\"type\": \"command|query|chat\", \"response_text\": \"TTS output\", \"action\": \"action_name|query_name\", \"params\": {\"key\": \"value\"}, \"expect_followup\": boolean}";
     }
 
     @Override

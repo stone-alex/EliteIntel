@@ -34,7 +34,7 @@ public enum Commands {
     SET_PERSONALITY("set_personality", null, PlayerSession.PERSONALITY, SetPersonalityHandler.class),
     SET_PROFILE("set_profile", null,  PlayerSession.PROFILE, SetCadenceHandler.class),
     SET_RADIO_TRANSMISSION_MODDE("turn_radio_transmission_on_off", null, SystemSession.RADION_TRANSMISSION_ON_OFF, SetRadioTransmissionOnOff.class),
-    SET_STREAMING_MODE("set_streaming_mode", null,  "streaming_mode", SetStreamingModeHandler.class),
+    SET_STREAMING_MODE("toggle_streaming_mode", null,  "streaming_mode_on_off", SetStreamingModeHandler.class),
     NAVIGATE_TO_TARGET("navigate_to_coordinates", null,  "lat_lon", NavigateToCoordinatesHandler.class),
     NAVIGATION_ON_OFF("toggle_navigator_guidance",  null,  "navigation_on_off", NavigationOnOffHandler.class),
     DISCOVERY_ON_OFF("toggle_discovery_announcements",  null, "discovery_on_off", DiscoveryOnOffHandler.class),

@@ -8,7 +8,8 @@ import elite.intel.session.SystemSession;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ListAvailableVoices implements QueryHandler {
+public class
+ListAvailableVoices implements QueryHandler {
     @Override
     public JsonObject handle(String action, JsonObject params, String originalUserInput) {
         SystemSession session = SystemSession.getInstance();

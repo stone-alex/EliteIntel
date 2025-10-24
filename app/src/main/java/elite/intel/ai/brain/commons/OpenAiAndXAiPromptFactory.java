@@ -193,9 +193,12 @@ public class OpenAiAndXAiPromptFactory implements AiPromptFactory {
         if (aiPersonality.equals(AIPersonality.UNHINGED) || aiPersonality.equals(AIPersonality.FRIENDLY)) {
             sb.append("For UNHINGED personality, use playful slang matching cadence.");
         }
+
         if (aiPersonality.equals(AIPersonality.ROGUE)) {
-            sb.append("For ROGUE personality, use bold excessive profanity (e.g., ").append(getProfanityExamples()).append("), but keep it sharp and witty.");
+            //sb.append("For ROGUE personality, use bold excessive profanity (e.g., ").append(getProfanityExamples()).append("), but keep it sharp and witty.");
+            sb.append("For ROGUE personality, use bold excessive profanity");
         }
+
     }
 
     private void getSessionValues(StringBuilder sb) {
@@ -238,12 +241,12 @@ public class OpenAiAndXAiPromptFactory implements AiPromptFactory {
         sb.append("\n. ");
     }
 
-    private static String getProfanityExamples() {
+/*    private static String getProfanityExamples() {
         SystemSession systemSession = SystemSession.getInstance();
         AICadence aiCadence = systemSession.getAICadence() != null ? systemSession.getAICadence() : AICadence.IMPERIAL;
         String third = aiCadence == AICadence.IMPERIAL ? "'arse', 'bloke', 'bollocks'" : "'ass', 'dude', 'rad'";
-        return "'shit', 'piss', 'cunt', 'cock', 'cocksucker', 'motherfucker', 'tits', 'fuck', " + third;
-    }
+        return "'shit', 'piss', 'cunt', 'cock', 'cocksucker', 'motherfucker', 'fuck', " + third;
+    }*/
 
     private String generateClassifyClause() {
         StringBuilder sb = new StringBuilder();

@@ -5,7 +5,7 @@ import elite.intel.ai.hands.GameController;
 
 import static elite.intel.ai.brain.handlers.commands.Commands.INCREASE_SPEED_BY;
 
-public class SpeedControlHandler extends CustomCommandOperator implements CommandHandler {
+public class SpeedControlHandler extends CommandOperator implements CommandHandler {
 
     public SpeedControlHandler(GameController controller) {
         super(controller.getMonitor(), controller.getExecutor());

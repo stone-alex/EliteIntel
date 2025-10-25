@@ -9,7 +9,7 @@ import elite.intel.util.SleepNoThrow;
 
 import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.*;
 
-public class EnterFtlHandler extends CustomCommandOperator implements CommandHandler {
+public class EnterFtlHandler extends CommandOperator implements CommandHandler {
 
     public EnterFtlHandler(GameController controller) {
         super(controller.getMonitor(), controller.getExecutor());

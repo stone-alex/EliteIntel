@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
 
 
-public class GenericGameControlHandler extends CustomCommandOperator implements CommandHandler {
+public class GenericGameControlHandler extends CommandOperator implements CommandHandler {
 
     public GenericGameControlHandler(GameController controller) {
         super(controller.getMonitor(), controller.getExecutor());

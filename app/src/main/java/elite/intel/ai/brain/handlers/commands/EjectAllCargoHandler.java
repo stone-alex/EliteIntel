@@ -7,7 +7,7 @@ import elite.intel.session.Status;
 import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_EJECT_ALL_CARGO;
 import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_EJECT_ALL_CARGO_BUGGY;
 
-public class EjectAllCargoHandler extends CustomCommandOperator implements CommandHandler {
+public class EjectAllCargoHandler extends CommandOperator implements CommandHandler {
 
     public EjectAllCargoHandler(GameController controller) {
         super(controller.getMonitor(), controller.getExecutor());

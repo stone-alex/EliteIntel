@@ -15,7 +15,7 @@ import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDIN
  * (SET_SPEED75) and executes the corresponding keyboard operation through
  * the inherited functionality from the CustomCommandOperator class.
  */
-public class SetOptimalSpeedHandler extends CustomCommandOperator implements CommandHandler {
+public class SetOptimalSpeedHandler extends CommandOperator implements CommandHandler {
 
     public SetOptimalSpeedHandler(GameController commandHandler) {
         super(commandHandler.getMonitor(), commandHandler.getExecutor());

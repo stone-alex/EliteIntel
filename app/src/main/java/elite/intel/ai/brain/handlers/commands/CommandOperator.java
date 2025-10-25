@@ -13,12 +13,12 @@ import org.apache.logging.log4j.Logger;
  * tied to game-related commands. It facilitates executing key bindings with a specified
  * hold duration and logs the results of the execution.
  */
-public class CustomCommandOperator {
-    private static final Logger log = LogManager.getLogger(CustomCommandOperator.class);
+public class CommandOperator {
+    private static final Logger log = LogManager.getLogger(CommandOperator.class);
     private final BindingsMonitor monitor;
     private final KeyBindingExecutor executor;
 
-    public CustomCommandOperator(BindingsMonitor monitor, KeyBindingExecutor executor) {
+    public CommandOperator(BindingsMonitor monitor, KeyBindingExecutor executor) {
         this.monitor = monitor;
         this.executor = executor;
     }

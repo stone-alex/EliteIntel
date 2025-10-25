@@ -139,8 +139,6 @@ public class OpenAiAnalysisEndPoint extends AiEndPoint implements AiAnalysisInte
                 jsonContent = content.substring(jsonStart);
             }
 
-            //logger.info("Extracted JSON content:\n\n{}\n\n", content);
-
             // Parse extracted JSON content
             try {
                 return JsonParser.parseString(jsonContent).getAsJsonObject();

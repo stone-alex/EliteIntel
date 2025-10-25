@@ -7,7 +7,7 @@ import elite.intel.session.Status;
 import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_RESET_POWER_DISTRIBUTION;
 import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_RESET_POWER_DISTRIBUTION_BUGGY;
 
-public class ResetPowerSettings extends CustomCommandOperator implements CommandHandler {
+public class ResetPowerSettings extends CommandOperator implements CommandHandler {
 
 
     public ResetPowerSettings(GameController commandHandler) {

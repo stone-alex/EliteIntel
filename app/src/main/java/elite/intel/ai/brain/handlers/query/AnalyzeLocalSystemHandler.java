@@ -22,7 +22,7 @@ public class AnalyzeLocalSystemHandler extends BaseQueryAnalyzer implements Quer
         if (edsmData.getData() == null) {
             return process(new DataDto("Use currentLocation data to provide answers.", currentLocation, null), originalUserInput);
         } else {
-            return process(new DataDto("Use currentLocation and EDSM data to provide answers.", currentLocation, edsmData), originalUserInput);
+            return process(new DataDto("Use currentLocation in combination with EDSM data to provide answers.", currentLocation, edsmData), originalUserInput);
         }
     }
 

@@ -10,7 +10,7 @@ import elite.intel.session.PlayerSession;
 import java.util.Comparator;
 import java.util.List;
 
-public class PlotRouteToBestMarketHandler extends CustomCommandOperator implements CommandHandler {
+public class PlotRouteToBestMarketHandler extends CommandOperator implements CommandHandler {
 
 
     private final GameController commandHandler;

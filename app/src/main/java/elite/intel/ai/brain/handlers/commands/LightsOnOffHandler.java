@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
 import elite.intel.session.Status;
 
-public class LightsOnOffHandler extends CustomCommandOperator implements CommandHandler {
+public class LightsOnOffHandler extends CommandOperator implements CommandHandler {
 
     public LightsOnOffHandler(GameController controller) {
         super(controller.getMonitor(), controller.getExecutor());

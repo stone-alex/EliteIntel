@@ -8,7 +8,7 @@ import elite.intel.session.Status;
 
 import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_HARDPOINTS_TOGGLE;
 
-public class DeployHardpointsHandler extends CustomCommandOperator implements CommandHandler {
+public class DeployHardpointsHandler extends CommandOperator implements CommandHandler {
 
     public DeployHardpointsHandler(GameController controller) {
         super(controller.getMonitor(), controller.getExecutor());

@@ -9,7 +9,7 @@ import elite.intel.session.Status;
 import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_TOGGLE_CARGO_SCOOP;
 import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_TOGGLE_CARGO_SCOOP_BUGGY;
 
-public class CloseCargoScoopHandler extends CustomCommandOperator implements CommandHandler {
+public class CloseCargoScoopHandler extends CommandOperator implements CommandHandler {
 
 
     public CloseCargoScoopHandler(GameController controller) {

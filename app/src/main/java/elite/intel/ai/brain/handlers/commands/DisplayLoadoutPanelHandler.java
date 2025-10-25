@@ -7,7 +7,7 @@ import elite.intel.session.Status;
 import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_FOCUS_LOADOUT_PANEL;
 import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_FOCUS_RADAR_PANEL_BUGGY;
 
-public class DisplayLoadoutPanelHandler extends CustomCommandOperator implements CommandHandler {
+public class DisplayLoadoutPanelHandler extends CommandOperator implements CommandHandler {
 
 
     public DisplayLoadoutPanelHandler(GameController controller) {

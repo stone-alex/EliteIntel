@@ -7,7 +7,7 @@ import elite.intel.session.Status;
 import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_FOCUS_LEFT_PANEL;
 import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_FOCUS_LEFT_PANEL_BUGGY;
 
-public class DisplayNavigationPanelHandler extends CustomCommandOperator implements CommandHandler {
+public class DisplayNavigationPanelHandler extends CommandOperator implements CommandHandler {
 
 
     public DisplayNavigationPanelHandler(GameController controller) {

@@ -7,7 +7,7 @@ import elite.intel.session.Status;
 import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_FOCUS_INTERNAL_PANEL;
 import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_FOCUS_INTERNAL_PANEL_BUGGY;
 
-public class DisplayInternalPanelHandler extends CustomCommandOperator implements CommandHandler {
+public class DisplayInternalPanelHandler extends CommandOperator implements CommandHandler {
 
 
     public DisplayInternalPanelHandler(GameController controller) {

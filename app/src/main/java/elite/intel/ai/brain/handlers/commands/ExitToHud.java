@@ -13,7 +13,7 @@ import elite.intel.ai.hands.GameController;
  * This functionality is achieved by simulating keyboard operations multiple times
  * in quick succession, using the provided key binding configurations.
  */
-public class ExitToHud extends CustomCommandOperator implements CommandHandler {
+public class ExitToHud extends CommandOperator implements CommandHandler {
 
 
     public ExitToHud(GameController commandHandler) {

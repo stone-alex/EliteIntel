@@ -19,10 +19,8 @@ import java.util.Scanner;
 public class OpenAiChatEndPoint extends AiEndPoint implements AIChatInterface {
     private static final Logger log = LogManager.getLogger(OpenAiChatEndPoint.class);
     private static OpenAiChatEndPoint instance;
-    private final SystemSession systemSession;
 
     private OpenAiChatEndPoint() {
-        systemSession = SystemSession.getInstance();
     }
 
     public static synchronized OpenAiChatEndPoint getInstance() {

@@ -32,7 +32,7 @@ import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDIN
  * Exceptions:
  * - The constructor may throw an Exception if there are issues during its initialization.
  */
-public class OpenGalaxyMapHandler extends CustomCommandOperator implements CommandHandler {
+public class OpenGalaxyMapHandler extends CommandOperator implements CommandHandler {
 
     public OpenGalaxyMapHandler(GameController commandHandler) throws Exception {
         super(commandHandler.getMonitor(), commandHandler.getExecutor());

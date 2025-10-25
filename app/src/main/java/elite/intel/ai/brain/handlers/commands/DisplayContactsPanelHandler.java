@@ -7,7 +7,7 @@ import elite.intel.session.Status;
 import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_FOCUS_CONTACTS_PANEL;
 import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_FOCUS_CONTACTS_PANEL_BUGGY;
 
-public class DisplayContactsPanelHandler extends CustomCommandOperator implements CommandHandler {
+public class DisplayContactsPanelHandler extends CommandOperator implements CommandHandler {
 
 
     public DisplayContactsPanelHandler(GameController controller) {

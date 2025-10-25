@@ -3,7 +3,7 @@ package elite.intel.ai.brain.handlers.commands;
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
 
-public class BoardSrvHandler extends CustomCommandOperator implements CommandHandler {
+public class BoardSrvHandler extends CommandOperator implements CommandHandler {
 
     public BoardSrvHandler(GameController controller) {
         super(controller.getMonitor(), controller.getExecutor());

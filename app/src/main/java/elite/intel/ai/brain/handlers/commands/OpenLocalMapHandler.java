@@ -7,7 +7,7 @@ import elite.intel.session.Status;
 import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_LOCAL_MAP;
 import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_LOCAL_MAP_BUGGY;
 
-public class OpenLocalMapHandler extends CustomCommandOperator implements CommandHandler {
+public class OpenLocalMapHandler extends CommandOperator implements CommandHandler {
 
 
     public OpenLocalMapHandler(GameController controller) {

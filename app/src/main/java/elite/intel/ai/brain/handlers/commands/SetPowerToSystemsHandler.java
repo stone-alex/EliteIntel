@@ -17,7 +17,7 @@ import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.*;
  * for systems and engines by invoking key bindings stored within the game's configuration.
  * The operations are performed with a fixed delay between each action.
  */
-public class SetPowerToSystemsHandler extends CustomCommandOperator implements CommandHandler {
+public class SetPowerToSystemsHandler extends CommandOperator implements CommandHandler {
 
     private static final Logger log = LogManager.getLogger(SetPowerToSystemsHandler.class);
 

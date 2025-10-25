@@ -6,7 +6,7 @@ import elite.intel.util.AudioPlayer;
 
 import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.*;
 
-public class RoutePlotter extends CustomCommandOperator {
+public class RoutePlotter extends CommandOperator {
 
 
     public RoutePlotter(GameController commandHandler) {

@@ -11,7 +11,7 @@ import elite.intel.util.SleepNoThrow;
 import java.util.Collections;
 import java.util.Map;
 
-public class EnterNextCarrierDestinationHandler extends CustomCommandOperator implements CommandHandler {
+public class EnterNextCarrierDestinationHandler extends CommandOperator implements CommandHandler {
 
 
     public EnterNextCarrierDestinationHandler(GameController commandHandler) {

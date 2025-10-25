@@ -8,7 +8,7 @@ import elite.intel.session.Status;
 
 import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_ACTIVATE_COMBAT_MODE;
 
-public class ActivateCombatModeHandler extends CustomCommandOperator implements CommandHandler {
+public class ActivateCombatModeHandler extends CommandOperator implements CommandHandler {
 
     public ActivateCombatModeHandler(GameController controller) {
         super(controller.getMonitor(), controller.getExecutor());

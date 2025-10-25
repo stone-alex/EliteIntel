@@ -7,7 +7,7 @@ import elite.intel.session.PlayerSession;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class PlotRouteToHomeHandler extends CustomCommandOperator implements CommandHandler {
+public class PlotRouteToHomeHandler extends CommandOperator implements CommandHandler {
 
 
     private static final Logger log = LogManager.getLogger(PlotRouteToHomeHandler.class);

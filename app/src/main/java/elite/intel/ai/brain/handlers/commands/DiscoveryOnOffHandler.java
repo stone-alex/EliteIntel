@@ -8,12 +8,10 @@ import elite.intel.session.PlayerSession;
 public class DiscoveryOnOffHandler implements CommandHandler {
 
     @Override public void handle(String action, JsonObject params, String responseText) {
-
         boolean isOn = params.get("state").getAsBoolean();
 
         PlayerSession playerSession = PlayerSession.getInstance();
         playerSession.setDiscoveryAnnouncementOn(isOn);
         EventBusManager.publish(new AiVoxResponseEvent("Discovery Announcements: " + (isOn ? "On" : "Off")));
-
     }
 }

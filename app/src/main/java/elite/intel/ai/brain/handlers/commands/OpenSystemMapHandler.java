@@ -18,7 +18,7 @@ import elite.intel.ai.hands.GameController;
  * - handle(JsonObject params, String responseText): Invokes the keyboard operation
  * for the SYSTEM_MAP command based on the associated key binding.
  */
-public class OpenSystemMapHandler extends CustomCommandOperator implements CommandHandler {
+public class OpenSystemMapHandler extends CommandOperator implements CommandHandler {
 
     public OpenSystemMapHandler(GameController commandHandler) throws Exception {
         super(commandHandler.getMonitor(), commandHandler.getExecutor());

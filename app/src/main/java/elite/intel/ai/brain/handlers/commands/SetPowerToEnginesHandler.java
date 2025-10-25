@@ -39,7 +39,7 @@ import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.*;
  * - handle: Executes the power redistribution operation triggered by the command, using
  * provided parameters and response text.
  */
-public class SetPowerToEnginesHandler extends CustomCommandOperator implements CommandHandler {
+public class SetPowerToEnginesHandler extends CommandOperator implements CommandHandler {
 
     private static final Logger log = LogManager.getLogger(SetPowerToEnginesHandler.class);
 

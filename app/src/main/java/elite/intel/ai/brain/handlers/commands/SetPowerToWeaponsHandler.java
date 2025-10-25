@@ -19,7 +19,7 @@ import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.*;
  * The sequence of operations is performed through processing key bindings, which are
  * fetched and executed as defined by the game's commands.
  */
-public class SetPowerToWeaponsHandler extends CustomCommandOperator implements CommandHandler {
+public class SetPowerToWeaponsHandler extends CommandOperator implements CommandHandler {
 
     private static final Logger log = LogManager.getLogger(SetPowerToWeaponsHandler.class);
 

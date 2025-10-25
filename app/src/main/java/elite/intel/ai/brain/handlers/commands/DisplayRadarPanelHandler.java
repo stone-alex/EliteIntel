@@ -7,7 +7,7 @@ import elite.intel.session.Status;
 import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_FOCUS_RADAR_PANEL;
 import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_FOCUS_RADAR_PANEL_BUGGY;
 
-public class DisplayRadarPanelHandler extends CustomCommandOperator implements CommandHandler {
+public class DisplayRadarPanelHandler extends CommandOperator implements CommandHandler {
 
     public DisplayRadarPanelHandler(GameController controller) {
         super(controller.getMonitor(), controller.getExecutor());

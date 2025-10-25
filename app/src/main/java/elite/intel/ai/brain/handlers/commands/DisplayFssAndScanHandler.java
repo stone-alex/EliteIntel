@@ -6,7 +6,7 @@ import elite.intel.ai.hands.GameController;
 import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_EXPLORATION_FSSDISCOVERY_SCAN;
 import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_SET_SPEED_ZERO;
 
-public class DisplayFssAndScanHandler extends CustomCommandOperator implements CommandHandler {
+public class DisplayFssAndScanHandler extends CommandOperator implements CommandHandler {
 
 
     public DisplayFssAndScanHandler(GameController commandHandler) {

@@ -42,7 +42,7 @@ public class OpenAiQueryEndPoint extends AiEndPoint implements AiQueryInterface 
             body.add("messages", sanitizedMessages);
 
             bodyString = GsonFactory.getGson().toJson(body);
-            log.info("Open AI API query call:\n{}", bodyString);
+            log.info("Open AI API query call:\n\n{}\n\n", bodyString);
 
             try (var os = conn.getOutputStream()) {
                 os.write(bodyString.getBytes(StandardCharsets.UTF_8));
@@ -70,8 +70,7 @@ public class OpenAiQueryEndPoint extends AiEndPoint implements AiQueryInterface 
                 } catch (Exception e) {
                     log.warn("Failed to read error stream: {}", e.getMessage());
                 }
-                log.error("Open AI API error: {} - {}", responseCode, conn.getResponseMessage());
-                log.info("Error response body: {}", errorResponse);
+                log.error("Open AI API error: {} - {}", responseCode, conn.getResponseMessage()+" " +errorResponse);
                 return null;
             }
 
@@ -104,7 +103,7 @@ public class OpenAiQueryEndPoint extends AiEndPoint implements AiQueryInterface 
             }
 
             // Log content before parsing
-            log.info("API response content:\n{}", content);
+            log.info("API response content:\n\n{}\n\n", content);
 
             // Extract JSON from content (after double newline or first valid JSON object)
             String jsonContent;
@@ -123,19 +122,19 @@ public class OpenAiQueryEndPoint extends AiEndPoint implements AiQueryInterface 
                 try {
                     JsonParser.parseString(jsonContent);
                 } catch (JsonSyntaxException e) {
-                    log.error("Invalid JSON object in content:\n{}", jsonContent, e);
+                    log.error("Invalid JSON object in content:\n\n{}\n\n", GsonFactory.getGson().toJson(jsonContent), e);
                     return null;
                 }
             }
 
             // Log extracted JSON
-            log.info("Extracted JSON content:\n\n{}\n\n", jsonContent);
+            log.info("Extracted JSON content:\n\n{}\n\n", GsonFactory.getGson().toJson(jsonContent));
 
             // Parse JSON content
             try {
                 return JsonParser.parseString(jsonContent).getAsJsonObject();
             } catch (JsonSyntaxException e) {
-                log.error("Failed to parse API response content:\n{}", jsonContent, e);
+                log.error("Failed to parse API response content:\n{}", GsonFactory.getGson().toJson(jsonContent), e);
                 return null;
             }
         } catch (Exception e) {

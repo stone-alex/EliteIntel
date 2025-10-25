@@ -7,7 +7,6 @@ import com.google.gson.JsonSyntaxException;
 import elite.intel.ai.brain.AIChatInterface;
 import elite.intel.ai.brain.AIConstants;
 import elite.intel.ai.brain.commons.AiEndPoint;
-import elite.intel.session.SystemSession;
 import elite.intel.util.json.GsonFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -45,7 +44,7 @@ public class OpenAiChatEndPoint extends AiEndPoint implements AIChatInterface {
             body.add("messages", sanitizedMessages);
 
             bodyString = GsonFactory.getGson().toJson(body);
-            log.info("Open AI API chat call:\n{}", bodyString);
+            log.info("Open AI API chat call:\n\n{}\n\n", bodyString);
 
             try (var os = conn.getOutputStream()) {
                 os.write(bodyString.getBytes(StandardCharsets.UTF_8));
@@ -64,7 +63,7 @@ public class OpenAiChatEndPoint extends AiEndPoint implements AIChatInterface {
             }
 
             // Log raw response
-            log.info("Open AI API response:\n{}", response);
+            log.info("Open AI API response:\n\n{}\n\n", response);
 
             if (responseCode != 200) {
                 String errorResponse = "";
@@ -73,8 +72,7 @@ public class OpenAiChatEndPoint extends AiEndPoint implements AIChatInterface {
                 } catch (Exception e) {
                     log.warn("Failed to read error stream: {}", e.getMessage());
                 }
-                log.error("Open AI API error: {} - {}", responseCode, conn.getResponseMessage());
-                log.info("Error response body: {}", errorResponse);
+                log.error("Open AI API error: {} - {}", responseCode, conn.getResponseMessage() + ". " + errorResponse);
                 return null;
             }
 
@@ -107,7 +105,7 @@ public class OpenAiChatEndPoint extends AiEndPoint implements AIChatInterface {
             }
 
             // Log content before parsing
-            log.info("API response content:\n{}", content);
+            log.info("API response content:\n\n{}\n\n", content);
 
             // Extract JSON from content (after double newline or first valid JSON object)
             String jsonContent;
@@ -137,13 +135,13 @@ public class OpenAiChatEndPoint extends AiEndPoint implements AIChatInterface {
             }
 
             // Log extracted JSON
-            log.info("Extracted JSON content:\n {}", jsonContent);
+            log.info("Extracted JSON content:\n\n{}\n\n", GsonFactory.getGson().toJson(jsonContent));
 
             // Parse JSON content
             try {
                 return JsonParser.parseString(jsonContent).getAsJsonObject();
             } catch (JsonSyntaxException e) {
-                log.error("Failed to parse API response content:\n{}", jsonContent, e);
+                log.error("Failed to parse API response content:\n\n{}\n\n", GsonFactory.getGson().toJson(jsonContent), e);
                 JsonObject result = new JsonObject();
                 result.addProperty("type", AIConstants.TYPE_CHAT);
                 result.addProperty(AIConstants.PROPERTY_RESPONSE_TEXT, content);

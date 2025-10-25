@@ -260,8 +260,7 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
                 } catch (Exception e) {
                     log.warn("Failed to read error stream: {}", e.getMessage());
                 }
-                log.error("Open AI API error: {} - {}", responseCode, conn.getResponseMessage());
-                log.info("Error response body: {}", errorResponse);
+                log.error("Open AI API error: {} - {}", responseCode, conn.getResponseMessage()+" "+errorResponse);
                 return client.createErrorResponse("API error: " + responseCode);
             }
 
@@ -317,13 +316,13 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
             }
 
             // Log extracted JSON
-            log.info("Extracted JSON content:\n\n{}\n\n", jsonContent);
+            log.info("Extracted JSON content:\n\n{}\n\n", GsonFactory.getGson().toJson(jsonContent));
 
             // Parse JSON content
             try {
                 return JsonParser.parseString(jsonContent).getAsJsonObject();
             } catch (JsonSyntaxException e) {
-                log.error("Failed to parse API response content:\n{}", jsonContent, e);
+                log.error("Failed to parse API response content:\n\n{}\n\n", GsonFactory.getGson().toJson(jsonContent), e);
                 return client.createErrorResponse("Failed to parse API content");
             }
         } catch (IOException e) {

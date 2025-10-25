@@ -83,7 +83,6 @@ public class OpenAiAnalysisEndPoint extends AiEndPoint implements AiAnalysisInte
                     log.warn("Failed to read error stream: {}", e.getMessage());
                 }
                 log.error("Open AI API error: {} - {}", responseCode, conn.getResponseMessage());
-                log.info("Error response body: {}", errorResponse);
                 return client.createErrorResponse("Analysis error.");
             }
 

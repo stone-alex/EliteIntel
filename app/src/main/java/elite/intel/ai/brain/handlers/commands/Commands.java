@@ -139,6 +139,8 @@ public enum Commands {
     SET_SPEED_ZERO("set_speed_to_zero_0", BINDING_SET_SPEED_ZERO.getGameBinding(), null, GenericGameControlHandler.class),
     STOP("stop", BINDING_SET_SPEED_ZERO.getGameBinding(), null, GenericGameControlHandler.class),
     TAXI("taxi", BINDING_SET_SPEED_ZERO.getGameBinding(), null, GenericGameControlHandler.class),
+    TAXI1("take_us_in", BINDING_SET_SPEED_ZERO.getGameBinding(), null, GenericGameControlHandler.class),
+    TAXI2("autodocking", BINDING_SET_SPEED_ZERO.getGameBinding(), null, GenericGameControlHandler.class),
 
 
     SELECT_HIGHEST_THREAT("target_highest_threat", BINDING_SELECT_HIGHEST_THREAT.getGameBinding(), null, GenericGameControlHandler.class),

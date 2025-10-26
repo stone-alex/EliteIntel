@@ -16,7 +16,7 @@ public class AnalyzeCarrierDataHandler extends BaseQueryAnalyzer implements Quer
         if (stats.getTotalBalance() == 0 && stats.getFuelSupply() == 0) {
             return process("No data available. Please open carrier management panel.");
         } else {
-            String instructions = "range is in light years, when asked about range use the maxRange value provided. reserveBalance: credits reserved for weekly ops (usually 31M/week). totalBalance: total credits in carrier bank, including reserveBalance. marketBalance: credits for purchases; negative means escrow for buys. X,Y,Z: light years from Sol (0,0,0). Do not improvise or assume anything. If data not available state so.";
+            String instructions = "range is in light years, when asked about range use the maxRange value provided. reserveBalance: credits reserved for weekly ops (usually thirty one million credits per week). totalBalance: total credits in carrier bank, including reserveBalance. marketBalance: credits for purchases; negative means escrow for buys. X,Y,Z: light years from Sol (0,0,0). Do not improvise or assume anything. If data not available state so.";
             return process(new DataDto(instructions, stats, stats.getFuelSupply(), stats.getFuelReserve(), (stats.getFuelSupply() + stats.getFuelReserve()), stats.getRange()), originalUserInput);
         }
     }

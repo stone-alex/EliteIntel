@@ -995,6 +995,16 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         return null;
     }
 
+    public LocationDto getPrimarySystem() {
+        Map<Long, LocationDto> locations = getLocations();
+        for (LocationDto location : locations.values()) {
+            if (location.getLocationType().equals(LocationDto.LocationType.PRIMARY_STAR)) {
+                return location;
+            }
+        }
+        return null;
+    }
+
     public long getCurrentWealth() {
         return currentWealth;
     }
@@ -1006,6 +1016,11 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     public Boolean paymentHasBeenAnnounced(String genus) {
         Boolean b = genusPaymentAnnounced.get(genus);
         return b != null && b;
+    }
+
+    public void updateRouteNode(NavRouteDto dto) {
+        routeMap.put(dto.getLeg(), dto);
+        save();
     }
 
     public record GalacticCoordinates(double x, double y, double z) {

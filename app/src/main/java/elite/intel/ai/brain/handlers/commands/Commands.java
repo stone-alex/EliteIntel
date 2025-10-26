@@ -54,8 +54,8 @@ public enum Commands {
     INCREASE_WEAPONS_POWER("transfer_power_to_weapons", null, null,  SetPowerToWeaponsHandler.class),
     RESET_POWER("reset_power_settings", null, null,  ResetPowerSettings.class),
 
-    OPEN_GALAXY_MAP("open_galaxy_map", null, null,  OpenGalaxyMapHandler.class),
-    OPEN_SYSTEM_MAP("open_local_map", null, null,  OpenSystemMapHandler.class),
+    OPEN_GALAXY_MAP("open_galaxy_star_map", null, null,  OpenGalaxyMapHandler.class),
+    OPEN_SYSTEM_MAP("open_local_system_map", null, null,  OpenSystemMapHandler.class),
     CLOSE_ANY_MAP("close_map", null, null,  ExitToHud.class),
     EXIT_TO_HUD("display_hud", null, null,  ExitToHud.class),
     EXIT("exit", null, null,  ExitToHud.class),
@@ -93,7 +93,7 @@ public enum Commands {
     PLOT_ROUTE_TO_CARRIER("plot_route_to_fleet_carrier", null, null,  PlotRouteToMyFleetCarrier.class),
     PLOT_ROUTE_TO_BEST_MARKET("plot_route_to_best_market", null, null,  PlotRouteToBestMarketHandler.class),
     SET_OPTIMAL_SPEED("set_optimal_speed", null, null,  SetOptimalSpeedHandler.class),
-    TAKE_ME_HOME("take_us_home", null, null,  PlotRouteToHomeHandler.class),
+    TAKE_ME_HOME("plot_route_to_home_star", null, null,  PlotRouteToHomeHandler.class),
     OPEN_FSS_AND_SCAN("open_fss_and_perform_scan", null, null,  DisplayFssAndScanHandler.class),
     HONK("perform_honk", null, null,  DisplayFssAndScanHandler.class),
 

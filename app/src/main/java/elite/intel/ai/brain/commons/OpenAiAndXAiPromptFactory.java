@@ -47,6 +47,7 @@ public class OpenAiAndXAiPromptFactory implements AiPromptFactory {
     public String generatePlayerInstructions(String playerVoiceInput) {
         StringBuilder sb = new StringBuilder();
         sb.append("Instructions:\n\n");
+        sb.append("Map commands or queries to the provided Supported Command or Supported Queries. ");
         appendBehavior(sb);
         sb.append(generateClassifyClause());
         sb.append(generateSupportedCommandsCause());
@@ -63,6 +64,7 @@ public class OpenAiAndXAiPromptFactory implements AiPromptFactory {
         sb.append("Map colloquial terms to commands: 'feds', 'yanks', or 'federation space' to 'FEDERATION', 'imperials', 'imps', or 'empire' to 'IMPERIAL', 'alliance space' or 'allies' to 'ALLIANCE' for set_cadence. ");
         sb.append("Map slang such as 'bounce', 'get out of here' to commands like ").append(JUMP_TO_HYPERSPACE.getAction()).append(". ");
         sb.append("Infer command intent from context: phrases like 'act like', 'talk like', 'blend in with', or 'sound like' followed by a faction should trigger '").append(SET_PERSONALITY.getAction()).append("' with the corresponding cadence value, using current system allegiance if ambiguous. ");
+
         sb.append("Examples:\n" +
                 "    - Input 'What’s the weather in Los Angeles?' -> {\"type\": \"query\", \"response_text\": \"\", \"action\": \"general_conversation\", \"params\": {}, \"expect_followup\": true}\n" +
                 "    - Input 'Is the next star scoopable?' -> {\"type\": \"query\", \"response_text\": \"\", \"action\": \"query_analyze_route\", \"params\": {}, \"expect_followup\": false}\n");
@@ -70,7 +72,7 @@ public class OpenAiAndXAiPromptFactory implements AiPromptFactory {
 
     private void inputClassificationClause(StringBuilder sb) {
         sb.append("For type='command': Provide empty response_text for single word commands (e.g., 'deploy landing gear').\n");
-        sb.append("For navigation commands (e.g., 'jump', 'hyperspace', 'go to next system'), map to '").append(JUMP_TO_HYPERSPACE.getAction()).append("'. 'supercruise' to '").append(ENTER_SUPER_CRUISE.getAction()).append("'. 'cancel_resume_navigation' to ").append(NAVIGATION_ON_OFF.getAction()).append(". 'Stop', 'cut engines' map to speed commands ").append(STOP.getAction()).append(". 'Activate', 'toggle', 'left', 'right', 'up', 'down', 'close' to UI commands like ").append(ACTIVATE.getAction()).append(". ");
+        //sb.append("For navigation commands (e.g., 'jump', 'hyperspace', 'go to next system'), map to '").append(JUMP_TO_HYPERSPACE.getAction()).append("'. 'supercruise' to '").append(ENTER_SUPER_CRUISE.getAction()).append("'. 'cancel_resume_navigation' to ").append(NAVIGATION_ON_OFF.getAction()).append(". 'Stop', 'cut engines' map to speed commands ").append(STOP.getAction()).append(". 'Activate', 'toggle', 'left', 'right', 'up', 'down', 'close' to UI commands like ").append(ACTIVATE.getAction()).append(". ");
         sb.append("For set, change, swap, add etc type commands that require value provide params json {\"key\":\"value\"} where key always 'key' and value is what you determine value to be.");
         sb.append("For commands like ").append(INCREASE_SPEED_BY.getAction()).append(" provide params json {\"key\":\"value\"} where value is a positive integer. example: {\"key\":\"3\"}.");
         sb.append("For commands like ").append(DECREASE_SPEED_BY.getAction()).append(" provide params json {\"key\":\"value\"} where value is a negative integer example: {\"key\":\"-3\"}.");

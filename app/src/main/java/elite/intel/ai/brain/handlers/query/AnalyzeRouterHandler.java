@@ -34,13 +34,24 @@ public class AnalyzeRouterHandler extends BaseQueryAnalyzer implements QueryHand
         Collection<ToJsonConvertible> route = new LinkedHashSet<>();
         Collection<NavRouteDto> orderedRoute = playerSession.getOrderedRoute();
         for (NavRouteDto dto : orderedRoute) {
-            DeathsDto deathsDto = EdsmApiClient.searchDeaths(dto.getName());
-            Thread.sleep(500);
-            TrafficDto trafficDto = EdsmApiClient.searchTraffic(dto.getName());
-            Thread.sleep(500);
+            if(dto.getDeathData() == null) {
+                DeathsDto deathsDto = EdsmApiClient.searchDeaths(dto.getName());
+                if (deathsDto.getData().getDeaths().getTotal() > 0) {
+                    dto.setDeathData(deathsDto);
+                    route.add(deathsDto);
+                }
+            }
+
+            if(dto.getTraffic() == null) {
+                TrafficDto trafficDto = EdsmApiClient.searchTraffic(dto.getName());
+                if (trafficDto.getData().getTraffic().getTotal() > 0) {
+                    dto.setTraffic(trafficDto);
+                    route.add(trafficDto);
+                }
+            }
+
             route.add(dto);
-            if (deathsDto.getData().getDeaths().getTotal() > 0) route.add(deathsDto);
-            if (trafficDto.getData().getTraffic().getTotal() > 0) route.add(trafficDto);
+            playerSession.updateRouteNode(dto);
         }
 
         String data = JsonDataFactory.getInstance().toJsonArrayString(route);

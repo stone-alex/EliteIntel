@@ -1,5 +1,7 @@
 package elite.intel.gameapi.gamestate.dtos;
 
+import elite.intel.ai.search.edsm.dto.DeathsDto;
+import elite.intel.ai.search.edsm.dto.TrafficDto;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 
@@ -10,6 +12,8 @@ public class NavRouteDto extends BaseJsonDto implements ToJsonConvertible {
     private String starClass;
     private String name;
     private boolean isScoopable;
+    private DeathsDto deathData;
+    private TrafficDto traffic;
     double X;
     double  Y;
     double  Z;
@@ -81,5 +85,21 @@ public class NavRouteDto extends BaseJsonDto implements ToJsonConvertible {
 
     public void setZ(double z) {
         Z = z;
+    }
+
+    public DeathsDto getDeathData() {
+        return deathData;
+    }
+
+    public void setDeathData(DeathsDto deathData) {
+        this.deathData = deathData;
+    }
+
+    public TrafficDto getTraffic() {
+        return traffic;
+    }
+
+    public void setTraffic(TrafficDto traffic) {
+        this.traffic = traffic;
     }
 }

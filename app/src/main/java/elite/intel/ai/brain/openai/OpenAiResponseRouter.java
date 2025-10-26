@@ -13,6 +13,7 @@ import elite.intel.ai.brain.handlers.query.QueryHandler;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.SystemSession;
+import elite.intel.util.json.GsonFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -72,6 +73,7 @@ public class OpenAiResponseRouter extends ResponseRouter implements AIRouterInte
                     handleQuery(action, params, userInput);
                     break;
                 case AIConstants.TYPE_CHAT:
+                    params.addProperty(AIConstants.PROPERTY_RESPONSE_TEXT, responseText);
                     handleQuery(GENERAL_CONVERSATION.getAction(), params, userInput);
                     //handleChat(responseText);
                     break;

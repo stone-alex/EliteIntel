@@ -8,7 +8,7 @@ import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.data.BioForms;
 import elite.intel.gameapi.journal.events.dto.GenusDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
-import elite.intel.util.json.AiData;
+import elite.intel.ai.brain.handlers.query.struct.AiData;
 import elite.intel.util.json.GsonFactory;
 
 import java.util.List;

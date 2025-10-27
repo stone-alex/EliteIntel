@@ -5,7 +5,7 @@ import elite.intel.ai.ApiFactory;
 import elite.intel.ai.brain.AIConstants;
 import elite.intel.ai.brain.AiAnalysisInterface;
 import elite.intel.ai.brain.commons.AiEndPoint;
-import elite.intel.util.json.AiData;
+import elite.intel.ai.brain.handlers.query.struct.AiData;
 import elite.intel.util.json.GsonFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,11 +35,11 @@ public class GrokAnalysisEndpoint extends AiEndPoint implements AiAnalysisInterf
         return instance;
     }
 
-    @Override public JsonObject analyzeData(String userIntent, AiData data) {
+    @Override public JsonObject analyzeData(String userIntent, AiData struct) {
         try {
             GrokClient client = GrokClient.getInstance();
             HttpURLConnection conn = client.getHttpURLConnection();
-            String systemPrompt = ApiFactory.getInstance().getAiPromptFactory().generateAnalysisPrompt(userIntent, data);
+            String systemPrompt = ApiFactory.getInstance().getAiPromptFactory().generateAnalysisPrompt(userIntent, struct.getInstructions());
 
             JsonObject request = client.createRequestBodyHeader(GrokClient.MODEL_GROK_4_FAST_REASONING, 1);
 
@@ -49,7 +49,7 @@ public class GrokAnalysisEndpoint extends AiEndPoint implements AiAnalysisInterf
 
             JsonObject messageUser = new JsonObject();
             messageUser.addProperty("role", AIConstants.ROLE_USER);
-            messageUser.addProperty("content", "User intent: " + userIntent + "\nData: " + data.toJson());
+            messageUser.addProperty("content", "User intent: " + userIntent + "\nData: " + struct.getData().toJson());
 
             request.add("messages", gson.toJsonTree(new Object[]{messageSystem, messageUser}));
 

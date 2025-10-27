@@ -1,8 +1,8 @@
 package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
+import elite.intel.ai.brain.handlers.query.struct.AiData;
 import elite.intel.session.PlayerSession;
-import elite.intel.util.json.AiData;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.JsonDataFactory;
 import elite.intel.util.json.ToJsonConvertible;

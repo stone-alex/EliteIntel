@@ -5,7 +5,7 @@ import elite.intel.ai.ApiFactory;
 import elite.intel.ai.brain.AIConstants;
 import elite.intel.ai.brain.AiAnalysisInterface;
 import elite.intel.ai.brain.commons.AiEndPoint;
-import elite.intel.util.json.AiData;
+import elite.intel.ai.brain.handlers.query.struct.AiData;
 import elite.intel.util.json.GsonFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,11 +33,11 @@ public class OpenAiAnalysisEndPoint extends AiEndPoint implements AiAnalysisInte
     }
 
     @Override
-    public JsonObject analyzeData(String originalUserInput, AiData data) {
+    public JsonObject analyzeData(String originalUserInput, AiData struct) {
         try {
             OpenAiClient client = OpenAiClient.getInstance();
             HttpURLConnection conn = client.getHttpURLConnection();
-            String systemPrompt = ApiFactory.getInstance().getAiPromptFactory().generateAnalysisPrompt(originalUserInput, data);
+            String systemPrompt = ApiFactory.getInstance().getAiPromptFactory().generateAnalysisPrompt(originalUserInput, struct.getInstructions());
 
             JsonObject request = client.createRequestBodyHeader(OpenAiClient.MODEL_GPT_4_1_MINI, 1);
 
@@ -47,7 +47,7 @@ public class OpenAiAnalysisEndPoint extends AiEndPoint implements AiAnalysisInte
 
             JsonObject messageUser = new JsonObject();
             messageUser.addProperty("role", AIConstants.ROLE_USER);
-            messageUser.addProperty("content", "User Input: " + originalUserInput + ". Data: " + data.toJson()+". ");
+            messageUser.addProperty("content", "User Input: " + originalUserInput + ". Data: " + struct.getData().toJson()+". ");
 
             JsonArray messages = new JsonArray();
             messages.add(messageSystem);

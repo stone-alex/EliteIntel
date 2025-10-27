@@ -1,12 +1,13 @@
 package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
+import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.gameapi.journal.events.dto.BioSampleDto;
 import elite.intel.gameapi.journal.events.dto.GenusDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
-import elite.intel.util.json.AiData;
 import elite.intel.util.json.GsonFactory;
+import elite.intel.util.json.ToJsonConvertible;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,19 +37,20 @@ AnalyzeBioSamplesHandler extends BaseQueryAnalyzer implements QueryHandler {
 
         String instructions = "Analyze Elite Dangerous bio samples. 'partialScans': partial bio scans (3 scans needed per sample). 'genusListForCurrentLocation': all genus on current planet. 'allBioSamplesForThisStarSystem': completed bio samples in star system, not yet delivered to Vista Genomics. 'planetNamesWithBioFormsWeHaveNotScanned': planets with unscanned bio forms. 'planetNamesWithPartialBioScans': planets with incomplete scans. 'genusListNotScannedForCurrentLocation': unscanned genus on current planet. For queries about unscanned genus or planets, list names from 'planetNamesWithBioFormsWeHaveNotScanned' and 'genusListNotScannedForCurrentLocation'. ";
 
-        return process(
-                new DataDto(
-                        instructions,
-                        partialScans,
-                        genusListForCurrentLocation,
-                        samplesCompletedForThisPlanet,
-                        allBioSamplesForThisStarSystem,
-                        planetNamesWithBioFormsWeHaveNotScanned,
-                        planetNamesWithPartialBioScans,
-                        genusListNotScannedForCurrentLocation
+        AiDataStruct struct = new AiDataStruct();
+        struct.setInstructions(instructions);
+        struct.setData(new DataDto(
+                partialScans,
+                genusListForCurrentLocation,
+                samplesCompletedForThisPlanet,
+                allBioSamplesForThisStarSystem,
+                planetNamesWithBioFormsWeHaveNotScanned,
+                planetNamesWithPartialBioScans,
+                genusListNotScannedForCurrentLocation
 
-                ), originalUserInput
-        );
+        ));
+
+        return process(struct, originalUserInput);
     }
 
     private List<GenusDto> calculateGenusNotYetScanned(List<BioSampleDto> completedSamples, List<GenusDto> genusListForCurrentLocation) {
@@ -92,7 +94,7 @@ AnalyzeBioSamplesHandler extends BaseQueryAnalyzer implements QueryHandler {
         return result;
     }
 
-    record DataDto(String instructions,
+    record DataDto(
                    List<BioSampleDto> partialBioFormScans,
                    List<GenusDto> allBioFormsOnPlanet,
                    List<BioSampleDto> bioSamplesCompletedForThisPlanet,
@@ -101,13 +103,10 @@ AnalyzeBioSamplesHandler extends BaseQueryAnalyzer implements QueryHandler {
                    List<String> planetNamesWithPartialBioScans,
                    List<GenusDto> genusListNotScannedForCurrentLocation
 
-    ) implements AiData {
+    ) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }
 
-        @Override public String getInstructions() {
-            return instructions;
-        }
     }
 }

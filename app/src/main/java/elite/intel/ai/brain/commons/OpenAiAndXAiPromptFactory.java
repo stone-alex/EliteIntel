@@ -8,7 +8,6 @@ import elite.intel.ai.brain.handlers.query.Queries;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.util.Ranks;
-import elite.intel.util.json.AiData;
 
 import java.util.Objects;
 
@@ -123,14 +122,14 @@ public class OpenAiAndXAiPromptFactory implements AiPromptFactory {
     }
 
     @Override
-    public String generateAnalysisPrompt(String userIntent, AiData data) {
+    public String generateAnalysisPrompt(String userIntent, String instructions) {
         StringBuilder sb = new StringBuilder();
         getSessionValues(sb);
         sb.append("Instructions:\n");
         appendBehavior(sb);
         sb.append("Task:\n");
         sb.append("Analyze the provided JSON data: ");
-        sb.append(data.getInstructions()).append(". ");
+        sb.append(instructions).append(". ");
         sb.append("against the user's intent: ").append(userIntent).append(". Return precise answers (e.g., yes/no for specific searches) or summaries as requested, using the configured personality and cadence in 'response_text'.\n");
         sb.append("Return only the exact result specified by the instructions.\n");
         sb.append(getStandardJsonFormat()).append("\n");

@@ -1,7 +1,7 @@
 package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
-import elite.intel.util.json.AiData;
+import elite.intel.ai.brain.handlers.query.struct.AiData;
 import elite.intel.util.json.GsonFactory;
 
 public class ConversationalQueryHandler extends BaseQueryAnalyzer implements QueryHandler {

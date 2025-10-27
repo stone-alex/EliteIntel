@@ -5,10 +5,9 @@ import com.google.gson.JsonObject;
 import elite.intel.ai.ApiFactory;
 import elite.intel.ai.brain.AIConstants;
 import elite.intel.ai.brain.AiAnalysisInterface;
-import elite.intel.ai.brain.openai.OpenAiAnalysisEndPoint;
+import elite.intel.ai.brain.handlers.query.struct.AiData;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.util.json.AiData;
 import elite.intel.util.json.GsonFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,12 +25,12 @@ public class BaseQueryAnalyzer {
         throw new IllegalArgumentException("No query action found for: " + action);
     }
 
-    protected JsonObject process(AiData data, String originalUserInput) {
+    protected JsonObject process(AiData struct, String originalUserInput) {
 
-        log.info("Processing data: \n\n{}\n\n", GsonFactory.getGson().toJson(data));
+        log.info("Processing data: \n\n{}\n\n", GsonFactory.getGson().toJson(struct));
 
         AiAnalysisInterface aiAnalysisInterface = ApiFactory.getInstance().getAnalysisEndpoint();
-        JsonObject analysis = aiAnalysisInterface.analyzeData(originalUserInput, data);
+        JsonObject analysis = aiAnalysisInterface.analyzeData(originalUserInput, struct);
 
         if (!analysis.has(AIConstants.PROPERTY_RESPONSE_TEXT)) {
             analysis = GenericResponse.getInstance().genericResponse("Analysis incomplete");

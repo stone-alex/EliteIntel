@@ -1,9 +1,9 @@
 package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
+import elite.intel.ai.brain.handlers.query.struct.AiData;
 import elite.intel.gameapi.journal.events.dto.CarrierDataDto;
 import elite.intel.session.PlayerSession;
-import elite.intel.util.json.AiData;
 import elite.intel.util.json.GsonFactory;
 
 public class AnalyzeCarrierDataHandler extends BaseQueryAnalyzer implements QueryHandler {

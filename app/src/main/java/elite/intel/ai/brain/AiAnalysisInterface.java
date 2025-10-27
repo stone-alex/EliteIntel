@@ -1,7 +1,7 @@
 package elite.intel.ai.brain;
 
 import com.google.gson.JsonObject;
-import elite.intel.util.json.AiData;
+import elite.intel.ai.brain.handlers.query.struct.AiData;
 
 /**
  * Provides a contract for analyzing data based on user intent and raw data input.

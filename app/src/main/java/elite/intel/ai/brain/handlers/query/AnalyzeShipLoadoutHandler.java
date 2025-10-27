@@ -1,7 +1,7 @@
 package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.brain.handlers.query.struct.AiData;
+import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.gameapi.journal.events.LoadoutEvent;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
@@ -16,16 +16,12 @@ public class AnalyzeShipLoadoutHandler extends BaseQueryAnalyzer implements Quer
         LoadoutEvent shipLoadout = playerSession.getShipLoadout();
         if (shipLoadout == null) return process("No data available");
 
-        return process(new DataDto(QUERY_SHIP_LOADOUT.getInstructions(), shipLoadout), originalUserInput);
+        return process(new AiDataStruct(QUERY_SHIP_LOADOUT.getInstructions(), new DataDto(shipLoadout)), originalUserInput);
     }
 
-    record DataDto(String instructions, ToJsonConvertible data) implements AiData {
+    record DataDto(ToJsonConvertible data) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
-        }
-
-        @Override public String getInstructions() {
-            return instructions;
         }
     }
 }

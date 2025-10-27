@@ -8,20 +8,17 @@ public class AiDataStruct implements AiData {
     private String instructions;
     private ToJsonConvertible data;
 
-    public String getInstructions() {
-        return instructions;
+    public AiDataStruct(String instructions, ToJsonConvertible data) {
+        this.instructions = instructions;
+        this.data = data;
     }
 
-    public void setInstructions(String instructions) {
-        this.instructions = instructions;
+    @Override public String getInstructions() {
+        return instructions;
     }
 
     @Override public ToJsonConvertible getData() {
         return data;
-    }
-
-    public void setData(ToJsonConvertible data) {
-        this.data = data;
     }
 
     @Override public String toJson() {

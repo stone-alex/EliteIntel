@@ -2,12 +2,14 @@ package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.query.struct.AiData;
+import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.ai.search.edsm.EdsmApiClient;
 import elite.intel.ai.search.edsm.dto.DeathsDto;
 import elite.intel.ai.search.edsm.dto.TrafficDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
+import elite.intel.util.json.ToJsonConvertible;
 
 public class AnalyzeCurrentLocationHandler extends BaseQueryAnalyzer implements QueryHandler {
 
@@ -18,16 +20,14 @@ public class AnalyzeCurrentLocationHandler extends BaseQueryAnalyzer implements 
         LocationDto location = playerSession.getCurrentLocation();
         DeathsDto deathsDto = EdsmApiClient.searchDeaths(playerSession.getPrimarySystem().getStarName());
         TrafficDto trafficDto = EdsmApiClient.searchTraffic(playerSession.getPrimarySystem().getStarName());
-        return process(new DataDto(instructions, location, deathsDto,trafficDto), originalUserInput);
+
+        AiDataStruct struct = new AiDataStruct(instructions, new DataDto(location, deathsDto,trafficDto));
+        return process(struct, originalUserInput);
     }
 
-    record DataDto(String instructions, LocationDto location, DeathsDto deathsData, TrafficDto trafficData) implements AiData {
+    record DataDto(LocationDto location, DeathsDto deathsData, TrafficDto trafficData) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
-        }
-
-        @Override public String getInstructions() {
-            return instructions;
         }
     }
 }

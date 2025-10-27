@@ -1,10 +1,11 @@
 package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.brain.handlers.query.struct.AiData;
+import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.ai.search.spansh.market.StationMarket;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
+import elite.intel.util.json.ToJsonConvertible;
 
 public class RemindTargetMarketStationHandler extends BaseQueryAnalyzer implements QueryHandler {
 
@@ -15,16 +16,13 @@ public class RemindTargetMarketStationHandler extends BaseQueryAnalyzer implemen
         if (targetMarketStation == null) {
             return process("No target market station is set.");
         }
-        return process(new DataDto(targetMarketStation, "Remind the user stationName where market is located"), originalUserInput);
+
+        return process(new AiDataStruct("Remind the user stationName where market is located", new DataDto(targetMarketStation)), originalUserInput);
     }
 
-    private record DataDto(StationMarket stationMarket, String instructions) implements AiData {
+    private record DataDto(StationMarket stationMarket) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
-        }
-
-        @Override public String getInstructions() {
-            return instructions;
         }
     }
 }

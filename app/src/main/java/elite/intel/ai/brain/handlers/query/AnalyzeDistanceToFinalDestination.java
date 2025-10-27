@@ -2,10 +2,12 @@ package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.query.struct.AiData;
+import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.gameapi.gamestate.dtos.NavRouteDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
+import elite.intel.util.json.ToJsonConvertible;
 
 import java.util.List;
 
@@ -36,16 +38,13 @@ public class AnalyzeDistanceToFinalDestination extends BaseQueryAnalyzer impleme
 
         String distanceData = getDistanceDataForAnnouncement(currentLocation, orderedRoute);
         // AI cadence or error response
-        return process(new DataDto("Use this data to answer questions about distance to final destination", distanceData), originalUserInput);
+        AiDataStruct struct = new AiDataStruct("Use this data to answer questions about distance to final destination", new DataDto(distanceData));
+        return process(struct, originalUserInput);
     }
 
-    record DataDto(String instructions, String data) implements AiData {
+    record DataDto(String data) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
-        }
-
-        @Override public String getInstructions() {
-            return instructions;
         }
     }
 

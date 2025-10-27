@@ -1,7 +1,7 @@
 package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.brain.handlers.query.struct.AiData;
+import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.ai.search.edsm.dto.ShipyardDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
@@ -16,16 +16,12 @@ public class AnalyzeShipyardHandler extends BaseQueryAnalyzer implements QueryHa
         PlayerSession playerSession = PlayerSession.getInstance();
         ShipyardDto shipyard = playerSession.getCurrentLocation().getShipyard();
 
-        return process(new DataDto(ANALYZE_LOCAL_SHIPYARD.getInstructions(), shipyard), originalUserInput);
+        return process(new AiDataStruct(ANALYZE_LOCAL_SHIPYARD.getInstructions(), new DataDto(shipyard)), originalUserInput);
     }
 
-    private record DataDto(String instructions, ToJsonConvertible shipyard) implements AiData {
+    private record DataDto(ToJsonConvertible shipyard) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
-        }
-
-        @Override public String getInstructions() {
-            return instructions;
         }
     }
 }

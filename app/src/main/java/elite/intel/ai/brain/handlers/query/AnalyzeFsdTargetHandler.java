@@ -1,29 +1,26 @@
 package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.brain.handlers.query.struct.AiData;
+import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
+import elite.intel.util.json.ToJsonConvertible;
 
 public class AnalyzeFsdTargetHandler extends BaseQueryAnalyzer implements QueryHandler {
 
     @Override
     public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-
         PlayerSession playerSession = PlayerSession.getInstance();
         String fsdTarget = playerSession.getFsdTarget();
         String data = fsdTarget != null ? toJson(fsdTarget) : toJson(" no information available...");
         String instructions = "Use this data to provide answers for the currently selected FSD target";
-        return process(new DataDto(instructions, data), originalUserInput);
+        AiDataStruct struct = new AiDataStruct(instructions, new DataDto(data));
+        return process(struct, originalUserInput);
     }
 
-    record DataDto(String instructions, String data) implements AiData {
+    record DataDto(String data) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
-        }
-
-        @Override public String getInstructions() {
-            return instructions;
         }
     }
 

@@ -1,12 +1,13 @@
 package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.brain.handlers.query.struct.AiData;
+import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.gameapi.gamestate.dtos.GameEvents;
 import elite.intel.gameapi.journal.events.LoadoutEvent;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.Status;
 import elite.intel.util.json.GsonFactory;
+import elite.intel.util.json.ToJsonConvertible;
 
 public class AnalyzeFuelStatusHandler extends BaseQueryAnalyzer implements QueryHandler {
 
@@ -19,9 +20,9 @@ public class AnalyzeFuelStatusHandler extends BaseQueryAnalyzer implements Query
         LoadoutEvent loadout = playerSession.getShipLoadout();
 
         if(loadout != null && fuelStatus != null) {
-            return process(new DataDto("Use loadout data and fuel fuelStatus.fuelMain to provide answers.", loadout, fuelStatus), originalUserInput);
+            return process(new AiDataStruct("Use loadout data and fuel fuelStatus.fuelMain to provide answers.", new DataDto(loadout, fuelStatus)), originalUserInput);
         } else if(loadout != null) {
-            return process(new DataDto("Use loadout data to provide answers.", loadout, null), originalUserInput);
+            return process(new AiDataStruct("Use loadout data to provide answers.", new DataDto(loadout, null)), originalUserInput);
         }
         else {
             return process("Data not available");
@@ -29,13 +30,9 @@ public class AnalyzeFuelStatusHandler extends BaseQueryAnalyzer implements Query
     }
 
 
-    record DataDto(String instructions, LoadoutEvent loadout, GameEvents.StatusEvent fuelData) implements AiData {
+    record DataDto(LoadoutEvent loadout, GameEvents.StatusEvent fuelData) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
-        }
-
-        @Override public String getInstructions() {
-            return instructions;
         }
     }
 }

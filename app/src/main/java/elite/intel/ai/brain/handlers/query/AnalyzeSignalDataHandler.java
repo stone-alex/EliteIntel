@@ -2,6 +2,7 @@ package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.query.struct.AiData;
+import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.search.edsm.EdsmApiClient;
 import elite.intel.ai.search.edsm.dto.DeathsDto;
@@ -15,6 +16,7 @@ import elite.intel.gameapi.journal.events.dto.FssSignalDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
+import elite.intel.util.json.ToJsonConvertible;
 
 import java.util.*;
 
@@ -41,7 +43,24 @@ public class AnalyzeSignalDataHandler  extends BaseQueryAnalyzer implements Quer
         TrafficDto trafficDto = EdsmApiClient.searchTraffic(primaryStarName);
         StationsDto stationsDto = EdsmApiClient.searchStations(primaryStarName);
 
-        return process(new DataDto(QUERY_SEARCH_SIGNAL_DATA.getInstructions(), detectedSignals, fssBodySignals, allLocations, allCompletedBioScans, planetsRequireBioScans, planetsWithGeoSignals, edsmData, deathsDto, trafficDto, stationsDto), originalUserInput);
+        return process(
+                new AiDataStruct(
+                        QUERY_SEARCH_SIGNAL_DATA.getInstructions(),
+                        new DataDto(
+                                detectedSignals,
+                                fssBodySignals,
+                                allLocations,
+                                allCompletedBioScans,
+                                planetsRequireBioScans,
+                                planetsWithGeoSignals,
+                                edsmData,
+                                deathsDto,
+                                trafficDto,
+                                stationsDto
+                        )
+                ),
+                originalUserInput
+        );
     }
 
     private Set<FssSignalDto> getDetectedSignals() {
@@ -56,7 +75,6 @@ public class AnalyzeSignalDataHandler  extends BaseQueryAnalyzer implements Quer
     }
 
     record DataDto(
-            String instructions,
             Set<FssSignalDto> detectedSignals,
             List<FSSBodySignalsEvent.Signal> filteredSpectrumScans,
             Map<Long, LocationDto> allStellarObjectsInStarSystem,
@@ -67,14 +85,10 @@ public class AnalyzeSignalDataHandler  extends BaseQueryAnalyzer implements Quer
             DeathsDto edsmDeathData,
             TrafficDto edsmTrafficData,
             StationsDto edsmStationsData
-    ) implements AiData {
+    ) implements ToJsonConvertible {
 
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
-        }
-
-        @Override public String getInstructions() {
-            return instructions;
         }
     }
 

@@ -2,8 +2,10 @@ package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.query.struct.AiData;
+import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
+import elite.intel.util.json.ToJsonConvertible;
 
 import static elite.intel.ai.brain.handlers.query.Queries.TOTAL_BOUNTIES_COLLECTED;
 
@@ -14,16 +16,14 @@ public class AnalyzeBountiesCollectedHandler extends BaseQueryAnalyzer implement
         PlayerSession playerSession = PlayerSession.getInstance();
         long totalBounties = playerSession.getBountyCollectedThisSession();
 
-        return process(new DataDto(TOTAL_BOUNTIES_COLLECTED.getInstructions(), totalBounties), originalUserInput);
+        AiDataStruct struct = new AiDataStruct(TOTAL_BOUNTIES_COLLECTED.getInstructions(), new DataDto(totalBounties));
+
+        return process(struct, originalUserInput);
     }
 
-    record DataDto(String instructions, long totalBounties) implements AiData {
+    record DataDto(long totalBounties) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
-        }
-
-        @Override public String getInstructions() {
-            return instructions;
         }
     }
 }

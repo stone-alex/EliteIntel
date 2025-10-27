@@ -1,10 +1,11 @@
 package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.brain.handlers.query.struct.AiData;
+import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
+import elite.intel.util.json.ToJsonConvertible;
 
 public class AnalyzeDistanceFromTheBubble extends BaseQueryAnalyzer implements QueryHandler{
 
@@ -21,16 +22,13 @@ public class AnalyzeDistanceFromTheBubble extends BaseQueryAnalyzer implements Q
         }
 
         String instruction = "Center of the bubble (Earth) is at 0 0 0. Use the coordinates provided in light years to calculate distance. If asked about amount of fleet carrier fuel needed to cover thg distance use 90 tons of fuel per 500 light year jump to calculate the amount.";
-        return process(new DataDto(instruction, galacticCoordinates), originalUserInput);
+        AiDataStruct struct = new AiDataStruct(instruction, new DataDto(galacticCoordinates));
+        return process(struct, originalUserInput);
     }
 
-    record DataDto(String instructions, PlayerSession.GalacticCoordinates galacticCoordinates) implements AiData {
+    record DataDto(PlayerSession.GalacticCoordinates galacticCoordinates) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
-        }
-
-        @Override public String getInstructions() {
-            return instructions;
         }
     }
 }

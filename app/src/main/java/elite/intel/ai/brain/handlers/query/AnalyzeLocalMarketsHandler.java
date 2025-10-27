@@ -1,10 +1,11 @@
 package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.brain.handlers.query.struct.AiData;
+import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.ai.search.spansh.market.StationMarket;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
+import elite.intel.util.json.ToJsonConvertible;
 
 import java.util.List;
 
@@ -14,16 +15,12 @@ public class AnalyzeLocalMarketsHandler extends BaseQueryAnalyzer implements Que
     public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         PlayerSession playerSession = PlayerSession.getInstance();
         List<StationMarket> markets = playerSession.getMarkets();
-        return process(new DataDto("Use markets data to provide answers.", markets), originalUserInput);
+        return process(new AiDataStruct("Use markets data to provide answers.", new DataDto(markets)), originalUserInput);
     }
 
-    private record DataDto(String instructions, List<StationMarket> markets) implements AiData {
+    private record DataDto(List<StationMarket> markets) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
-        }
-
-        @Override public String getInstructions() {
-            return instructions;
         }
     }
 }

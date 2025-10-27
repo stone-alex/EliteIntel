@@ -1,7 +1,7 @@
 package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.brain.handlers.query.struct.AiData;
+import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.ai.search.edsm.EdsmApiClient;
 import elite.intel.ai.search.edsm.dto.DeathsDto;
 import elite.intel.ai.search.edsm.dto.StarSystemDto;
@@ -27,19 +27,15 @@ public class AnalyzeLocalSystemHandler extends BaseQueryAnalyzer implements Quer
         DeathsDto deathsDto = EdsmApiClient.searchDeaths(location.getStarName());
 
         if (edsmData.getData() == null) {
-            return process(new DataDto("Use currentStarSystem data to provide answers.", location, null, null, null), originalUserInput);
+            return process(new AiDataStruct("Use currentStarSystem data to provide answers.", new DataDto(location, null, null, null)), originalUserInput);
         } else {
-            return process(new DataDto("Use currentStarSystem in combination with EDSM data to provide answers.", location, edsmData, trafficDto, deathsDto), originalUserInput);
+            return process(new AiDataStruct("Use currentStarSystem in combination with EDSM data to provide answers.", new DataDto(location, edsmData, trafficDto, deathsDto)), originalUserInput);
         }
     }
 
-    record DataDto(String instructions, ToJsonConvertible currentStarSystem, ToJsonConvertible edsmData, TrafficDto trafficData, DeathsDto deathsData) implements AiData {
+    record DataDto(ToJsonConvertible currentStarSystem, ToJsonConvertible edsmData, TrafficDto trafficData, DeathsDto deathsData) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
-        }
-
-        @Override public String getInstructions() {
-            return instructions;
         }
     }
 }

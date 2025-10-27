@@ -1,11 +1,12 @@
 package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.brain.handlers.query.struct.AiData;
+import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.gameapi.gamestate.dtos.GameEvents;
 import elite.intel.gameapi.journal.events.LoadoutEvent;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
+import elite.intel.util.json.ToJsonConvertible;
 
 public class AnalyzeCargoHoldHandler extends BaseQueryAnalyzer implements QueryHandler {
 
@@ -14,17 +15,15 @@ public class AnalyzeCargoHoldHandler extends BaseQueryAnalyzer implements QueryH
 
         String instructions = "Use this data provide questions regarding cargo and/or ship loadout if relevant. Cargo is listed 1 unit = 1 ton. ";
 
-        return process(new DataDto(instructions, playerSession.getShipLoadout(), playerSession.getShipCargo()), originalUserInput);
+        AiDataStruct struct = new AiDataStruct(instructions, new DataDto(playerSession.getShipLoadout(), playerSession.getShipCargo()));
+
+        return process(struct, originalUserInput);
     }
 
 
-    record DataDto(String instructions, LoadoutEvent loadout, GameEvents.CargoEvent cargo) implements AiData {
+    record DataDto(LoadoutEvent loadout, GameEvents.CargoEvent cargo) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
-        }
-
-        @Override public String getInstructions() {
-            return instructions;
         }
     }
 }

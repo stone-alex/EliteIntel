@@ -37,9 +37,7 @@ AnalyzeBioSamplesHandler extends BaseQueryAnalyzer implements QueryHandler {
 
         String instructions = "Analyze Elite Dangerous bio samples. 'partialScans': partial bio scans (3 scans needed per sample). 'genusListForCurrentLocation': all genus on current planet. 'allBioSamplesForThisStarSystem': completed bio samples in star system, not yet delivered to Vista Genomics. 'planetNamesWithBioFormsWeHaveNotScanned': planets with unscanned bio forms. 'planetNamesWithPartialBioScans': planets with incomplete scans. 'genusListNotScannedForCurrentLocation': unscanned genus on current planet. For queries about unscanned genus or planets, list names from 'planetNamesWithBioFormsWeHaveNotScanned' and 'genusListNotScannedForCurrentLocation'. ";
 
-        AiDataStruct struct = new AiDataStruct();
-        struct.setInstructions(instructions);
-        struct.setData(new DataDto(
+        AiDataStruct struct = new AiDataStruct(instructions, new DataDto(
                 partialScans,
                 genusListForCurrentLocation,
                 samplesCompletedForThisPlanet,

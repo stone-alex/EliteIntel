@@ -1,11 +1,12 @@
 package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.brain.handlers.query.struct.AiData;
+import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.gameapi.journal.events.dto.MaterialDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
+import elite.intel.util.json.ToJsonConvertible;
 
 import java.util.List;
 
@@ -22,17 +23,13 @@ public class AnalyzeMaterialsOnPlanetHandler extends BaseQueryAnalyzer implement
         if (materials.isEmpty()) {
             return process(" no materials data available...");
         } else {
-            return process(new DataDto("Analyze material composition on this planet.", materials), originalUserInput);
+            return process(new AiDataStruct("Analyze material composition on this planet.", new DataDto(materials)), originalUserInput);
         }
     }
 
-    record DataDto(String instructions, List<MaterialDto> materials) implements AiData {
+    record DataDto(List<MaterialDto> materials) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
-        }
-
-        @Override public String getInstructions() {
-            return instructions;
         }
     }
 }

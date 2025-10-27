@@ -1,7 +1,7 @@
 package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.brain.handlers.query.struct.AiData;
+import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.search.edsm.EdsmApiClient;
 import elite.intel.ai.search.edsm.dto.DeathsDto;
@@ -34,7 +34,7 @@ public class AnalyzeRouterHandler extends BaseQueryAnalyzer implements QueryHand
         Collection<ToJsonConvertible> route = new LinkedHashSet<>();
         Collection<NavRouteDto> orderedRoute = playerSession.getOrderedRoute();
         for (NavRouteDto dto : orderedRoute) {
-            if(dto.getDeathData() == null) {
+            if (dto.getDeathData() == null) {
                 DeathsDto deathsDto = EdsmApiClient.searchDeaths(dto.getName());
                 if (deathsDto.getData().getDeaths().getTotal() > 0) {
                     dto.setDeathData(deathsDto);
@@ -42,7 +42,7 @@ public class AnalyzeRouterHandler extends BaseQueryAnalyzer implements QueryHand
                 }
             }
 
-            if(dto.getTraffic() == null) {
+            if (dto.getTraffic() == null) {
                 TrafficDto trafficDto = EdsmApiClient.searchTraffic(dto.getName());
                 if (trafficDto.getData().getTraffic().getTotal() > 0) {
                     dto.setTraffic(trafficDto);
@@ -66,16 +66,12 @@ public class AnalyzeRouterHandler extends BaseQueryAnalyzer implements QueryHand
             return GenericResponse.getInstance().genericResponse("Data error!");
         }
 
-        return process(new DataDto(QUERY_ANALYZE_ROUTE.getInstructions(), data), originalUserInput);
+        return process(new AiDataStruct(QUERY_ANALYZE_ROUTE.getInstructions(), new DataDto(data)), originalUserInput);
     }
 
-    record DataDto(String instructions, String data) implements AiData {
+    record DataDto(String data) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
-        }
-
-        @Override public String getInstructions() {
-            return instructions;
         }
     }
 }

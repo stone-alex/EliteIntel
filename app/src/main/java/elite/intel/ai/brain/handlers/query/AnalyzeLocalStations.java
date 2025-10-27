@@ -2,6 +2,7 @@ package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.query.struct.AiData;
+import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.ai.search.edsm.EdsmApiClient;
 import elite.intel.ai.search.edsm.dto.OutfittingDto;
 import elite.intel.ai.search.edsm.dto.ShipyardDto;
@@ -29,7 +30,7 @@ public class AnalyzeLocalStations extends BaseQueryAnalyzer implements QueryHand
             data.add(new DataElement(station.getName(), outfitting, shipyard, currentLocation));
         });
 
-        return process(new DataDto(ANALYZE_LOCAL_STATIONS.getInstructions(), data), originalUserInput);
+        return process(new AiDataStruct(ANALYZE_LOCAL_STATIONS.getInstructions(), new DataDto(data)),originalUserInput);
     }
 
     record DataElement(String stationName, OutfittingDto outfitting, ShipyardDto shipyard, LocationDto currentLocation) implements ToJsonConvertible {
@@ -38,13 +39,9 @@ public class AnalyzeLocalStations extends BaseQueryAnalyzer implements QueryHand
         }
     }
 
-    record DataDto(String instructions, List<DataElement> data) implements AiData {
+    record DataDto(List<DataElement> data) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
-        }
-
-        @Override public String getInstructions() {
-            return instructions;
         }
     }
 }

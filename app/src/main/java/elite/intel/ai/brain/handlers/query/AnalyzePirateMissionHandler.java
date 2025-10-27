@@ -1,11 +1,12 @@
 package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.brain.handlers.query.struct.AiData;
+import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.gameapi.journal.events.dto.BountyDto;
 import elite.intel.gameapi.journal.events.dto.MissionDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
+import elite.intel.util.json.ToJsonConvertible;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -23,16 +24,12 @@ public class AnalyzePirateMissionHandler extends BaseQueryAnalyzer implements Qu
 
         String instructions = "Do not sum anything do not calculate! Just use data pre-calculated for you to answer the question. If asked about total kills remaining only return the number of kills remaining to complete all assignments. Else provide complete summary.";
 
-        return process(new DataDto(instructions, remainingKills, missionProfit), originalUserInput);
+        return process(new AiDataStruct(instructions, new DataDto(remainingKills, missionProfit)), originalUserInput);
     }
 
-    record DataDto(String instructions, String totalMissionKillsLeft, String totalMissionProfit) implements AiData {
+    record DataDto(String totalMissionKillsLeft, String totalMissionProfit) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
-        }
-
-        @Override public String getInstructions() {
-            return instructions;
         }
     }
 

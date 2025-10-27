@@ -27,7 +27,7 @@ public class BaseQueryAnalyzer {
 
     protected JsonObject process(AiData struct, String originalUserInput) {
 
-        log.info("Processing data: \n\n{}\n\n", GsonFactory.getGson().toJson(struct));
+        log.info("Processing data: \n\n{}\n\n", struct.getData().toJson());
 
         AiAnalysisInterface aiAnalysisInterface = ApiFactory.getInstance().getAnalysisEndpoint();
         JsonObject analysis = aiAnalysisInterface.analyzeData(originalUserInput, struct);

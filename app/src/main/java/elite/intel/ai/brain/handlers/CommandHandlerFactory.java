@@ -53,7 +53,7 @@ public class CommandHandlerFactory {
         return commandHandlers;
     }
 
-    private CommandHandler instantiateCommandHandler(Class<? extends CommandHandler> handlerClass, String actionOrBinding) {
+    private CommandHandler instantiateCommandHandler(Class<? extends CommandHandler> handlerClass, String action) {
         try {
             try {
                 Constructor<? extends CommandHandler> constructor = handlerClass.getDeclaredConstructor(GameController.class);
@@ -65,10 +65,10 @@ public class CommandHandlerFactory {
                 return constructor.newInstance();
             }
         } catch (NoSuchMethodException e) {
-            log.error("No suitable constructor found for handler: {}, action/binding: {}", handlerClass.getName(), actionOrBinding);
+            log.error("No suitable constructor found for handler: {}, action/binding: {}", handlerClass.getName(), action);
             throw new RuntimeException("Failed to instantiate command handler: " + handlerClass.getName(), e);
         } catch (Exception e) {
-            log.error("Failed to instantiate command handler: {}, action/binding: {}", handlerClass.getName(), actionOrBinding, e);
+            log.error("Failed to instantiate command handler: {}, action/binding: {}", handlerClass.getName(), action, e);
             throw new RuntimeException("Failed to instantiate command handler: " + handlerClass.getName(), e);
         }
     }

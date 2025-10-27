@@ -11,13 +11,12 @@ import elite.intel.ai.ears.AudioFormatDetector;
 import elite.intel.ai.ears.AudioSettingsTuple;
 import elite.intel.ai.ears.EarsInterface;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
-import elite.intel.ai.mouth.subscribers.events.TTSInterruptEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.UserInputEvent;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.AudioPlayer;
-import elite.intel.util.DaftSecretarySanitizer;
+import elite.intel.util.STTSanitizer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -60,7 +59,7 @@ public class GoogleSTTImpl implements EarsInterface {
             log.warn("Speech recognition is already running");
             return;
         }
-        corrections = DaftSecretarySanitizer.getInstance().getCorrections();
+        corrections = STTSanitizer.getInstance().getCorrections();
         isListening.set(true);
 
         // Detect audio format
@@ -256,7 +255,7 @@ public class GoogleSTTImpl implements EarsInterface {
                             EventBusManager.publish(new AppLogEvent("STT Heard: [" + fullTranscript + "]."));
                             if (!fullTranscript.isBlank() && fullTranscript.length() >= 3) {
                                 log.info("Final accumulated transcript: {}", fullTranscript);
-                                String sanitizedTranscript = DaftSecretarySanitizer.getInstance().correctMistakes(fullTranscript);
+                                String sanitizedTranscript = STTSanitizer.getInstance().correctMistakes(fullTranscript);
 
                                 EventBusManager.publish(new AppLogEvent("STT Sanitized: [" + sanitizedTranscript + "]."));
                                 boolean isStreamingModeOn = SystemSession.getInstance().isStreamingModeOn();
@@ -300,7 +299,7 @@ public class GoogleSTTImpl implements EarsInterface {
                     EventBusManager.publish(new AppLogEvent("STT Heard: [" + fullTranscript + "]."));
                     if (!fullTranscript.isBlank() && fullTranscript.length() >= 3) {
                         log.info("Final accumulated transcript: {}", fullTranscript);
-                        String sanitizedTranscript = DaftSecretarySanitizer.getInstance().correctMistakes(fullTranscript);
+                        String sanitizedTranscript = STTSanitizer.getInstance().correctMistakes(fullTranscript);
 
                         EventBusManager.publish(new AppLogEvent("STT Sanitized: [" + sanitizedTranscript + "]."));
                         boolean isStreamingModeOn = SystemSession.getInstance().isStreamingModeOn();

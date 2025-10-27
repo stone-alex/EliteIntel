@@ -10,8 +10,6 @@ public class FriendsEventSubscriber {
 
     @Subscribe
     public void onFriendsEvent(FriendsEvent event) {
-        String friendNamer = event.getName();
-        String friendStatus = event.getStatus();
-        EventBusManager.publish(new SensorDataEvent("Friend: " + friendNamer + " is " + friendStatus));
+        EventBusManager.publish(new SensorDataEvent("Friend: " + event.getName() + " is " + event.getStatus()));
     }
 }

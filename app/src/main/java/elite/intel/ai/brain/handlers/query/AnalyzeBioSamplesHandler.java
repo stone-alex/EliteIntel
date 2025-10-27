@@ -45,7 +45,6 @@ AnalyzeBioSamplesHandler extends BaseQueryAnalyzer implements QueryHandler {
                 planetNamesWithBioFormsWeHaveNotScanned,
                 planetNamesWithPartialBioScans,
                 genusListNotScannedForCurrentLocation
-
         ));
 
         return process(struct, originalUserInput);

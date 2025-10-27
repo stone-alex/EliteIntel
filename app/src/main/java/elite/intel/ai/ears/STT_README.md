@@ -14,7 +14,7 @@ The STT implementation resides in the `app/src/main/java/elite/intel/comms/ears`
 
 - **`EarsInterface.java`**: Defines the contract for all STT implementations with `start()` and `stop()` methods.
 - **`google/GoogleSTTImpl.java`**: A reference implementation using the Google Speech-to-Text API.
-- **`util/DaftSecretarySanitizer.java`**: Handles correction of misheard phrases using the dictionary file at `APP_HOME/dictionary/daft-secretary-dictionary.txt`.
+- **`util/STTSanitizer.java`**: Handles correction of misheard phrases using the dictionary file at `APP_HOME/dictionary/daft-secretary-dictionary.txt`.
 - **`util/AudioFormatDetector.java`**: Utility class for detecting supported audio formats to ensure high-quality audio input.
 - **`util/AudioSettingsTuple.java`**: Utility class for returning paired audio format parameters (sample rate and buffer size).
 - **`ai/KeyDetector.java`**: Detects the STT provider based on the API key format.
@@ -192,11 +192,11 @@ public class AudioSettingsTuple<K, V> {
 
 ### 4. Dictionary Integration
 
-- Use `DaftSecretarySanitizer` to correct misheard phrases based on `APP_HOME/dictionary/daft-secretary-dictionary.txt`. The sanitizer is a singleton, accessible via `getInstance()`, and requires no additional setup beyond calling `correctMistakes()`.
+- Use `STTSanitizer` to correct misheard phrases based on `APP_HOME/dictionary/daft-secretary-dictionary.txt`. The sanitizer is a singleton, accessible via `getInstance()`, and requires no additional setup beyond calling `correctMistakes()`.
 - The dictionary maps misheard phrases (e.g., "southwest") to corrected commands (e.g., "set voice to").
 - Example:
   ```java
-  String sanitizedTranscript = DaftSecretarySanitizer.getInstance().correctMistakes(rawTranscript);
+  String sanitizedTranscript = STTSanitizer.getInstance().correctMistakes(rawTranscript);
   ```
 
 ### 5. Event Publishing
@@ -279,7 +279,7 @@ The `GoogleSTTImpl` class in `comms/ears/google` provides a complete example of 
 - **Dynamic Audio Format Detection**: Uses `AudioFormatDetector` to select a compatible sample rate (48kHz, 44.1kHz, 16kHz).
 - **Voice Activity Detection (VAD)**: Uses RMS thresholds to detect voice and silence, optimizing API usage.
 - **Streaming**: Manages long-running audio streams with periodic restarts to respect API limits.
-- **Dictionary Correction**: Integrates with `DaftSecretarySanitizer` to correct misheard phrases.
+- **Dictionary Correction**: Integrates with `STTSanitizer` to correct misheard phrases.
 - **Event Integration**: Publishes transcriptions as `UserInputEvent` for command/query processing.
 - **Thread Safety**: Uses `AtomicBoolean` and `BlockingQueue` for safe multithreaded operation.
 - **Logging**: Logs to `APP_HOME/logs` and publishes `AppLogEvent` for UI feedback.
@@ -356,7 +356,7 @@ Review `GoogleSTTImpl.java` for implementation details, especially:
 
 ## Best Practices
 
-- **DRY**: Reuse `AudioFormatDetector`, `AudioSettingsTuple`, `DaftSecretarySanitizer`, and `DictionaryLoader` across implementations.
+- **DRY**: Reuse `AudioFormatDetector`, `AudioSettingsTuple`, `STTSanitizer`, and `DictionaryLoader` across implementations.
 - **SRP**: Ensure the STT class focuses only on speech recognition and delegates command processing to handlers.
 - **No Magic Strings/Numbers**: Define constants for thresholds, file paths, and API settings.
 - **Thread Safety**: Use thread-safe collections (e.g., `BlockingQueue`, `AtomicBoolean`) for shared state.

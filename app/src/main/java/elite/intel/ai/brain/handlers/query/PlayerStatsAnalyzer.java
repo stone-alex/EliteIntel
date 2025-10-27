@@ -17,7 +17,6 @@ public class PlayerStatsAnalyzer extends BaseQueryAnalyzer implements QueryHandl
 
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        Queries query = findQuery(action);
         RankAndProgressDto data = PlayerSession.getInstance().getRankAndProgressDto();
 
         if (data == null) {

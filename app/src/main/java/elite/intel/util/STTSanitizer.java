@@ -12,24 +12,24 @@ import java.util.regex.Pattern;
 
 
 /**
- * The DaftSecretarySanitizer class is a singleton utility for sanitizing
+ * The STTSanitizer class is a singleton utility for sanitizing
  * transcripts and correcting common speech-to-text (STT) transcription mistakes.
  * It processes and replaces misheard words from STT results using a correction
  * dictionary, which is either loaded from or created in the application directory.
  * <p>
  * This class also provides helper functions such as word capitalization.
  */
-public class DaftSecretarySanitizer {
+public class STTSanitizer {
 
-    private static final DaftSecretarySanitizer INSTANCE = new DaftSecretarySanitizer();
-    private final Logger log = LogManager.getLogger(DaftSecretarySanitizer.class);
+    private static final STTSanitizer INSTANCE = new STTSanitizer();
+    private final Logger log = LogManager.getLogger(STTSanitizer.class);
     private final Map<String, String> STT_CORRECTIONS = loadCorrections();
 
-    private DaftSecretarySanitizer() {
+    private STTSanitizer() {
         // Private constructor for singleton
     }
 
-    public static DaftSecretarySanitizer getInstance() {
+    public static STTSanitizer getInstance() {
         return INSTANCE;
     }
 

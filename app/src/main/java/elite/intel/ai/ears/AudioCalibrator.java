@@ -38,7 +38,8 @@ public class AudioCalibrator {
      */
     public static AudioSettingsTuple<Double, Double> calibrateRMS(int sampleRateHertz, int bufferSize) {
         log.info("Starting RMS calibration: noise for {}ms, speech for {}ms, with {}ms TTS delays",
-                NOISE_CALIBRATION_DURATION_MS, SPEECH_CALIBRATION_DURATION_MS, TTS_PROMPT_DELAY_MS);
+                NOISE_CALIBRATION_DURATION_MS, SPEECH_CALIBRATION_DURATION_MS, TTS_PROMPT_DELAY_MS
+        );
 
         AudioFormat format = new AudioFormat(sampleRateHertz, 16, 1, true, false);
         DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);

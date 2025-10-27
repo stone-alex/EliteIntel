@@ -4,9 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.ConfigManager;
 import elite.intel.gameapi.journal.events.CommanderEvent;
 import elite.intel.session.PlayerSession;
-import elite.intel.util.DaftSecretarySanitizer;
 
-import static elite.intel.session.PlayerSession.PLAYER_NAME;
 import static elite.intel.util.StringUtls.capitalizeWords;
 
 @SuppressWarnings("unused")

@@ -38,8 +38,7 @@ public class AnalyzeDistanceToFinalDestination extends BaseQueryAnalyzer impleme
 
         String distanceData = getDistanceDataForAnnouncement(currentLocation, orderedRoute);
         // AI cadence or error response
-        AiDataStruct struct = new AiDataStruct("Use this data to answer questions about distance to final destination", new DataDto(distanceData));
-        return process(struct, originalUserInput);
+        return process(new AiDataStruct("Use this data to answer questions about distance to final destination", new DataDto(distanceData)), originalUserInput);
     }
 
     record DataDto(String data) implements ToJsonConvertible {

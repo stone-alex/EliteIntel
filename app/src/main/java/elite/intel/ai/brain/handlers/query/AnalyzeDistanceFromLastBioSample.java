@@ -36,8 +36,7 @@ public class AnalyzeDistanceFromLastBioSample extends BaseQueryAnalyzer implemen
         }
 
         BioSampleDto bioSample = currentLocation.getPartialBioSamples().getLast();
-        AiDataStruct struct = new AiDataStruct(instructions, new DataDto(latitude, longitude, planetRadius, bioSample));
-        return process(struct, originalUserInput);
+        return process(new AiDataStruct(instructions, new DataDto(latitude, longitude, planetRadius, bioSample)), originalUserInput);
     }
 
     record DataDto(double userLatitude, double userLongitude, double planetRadius, BioSampleDto bioSample) implements ToJsonConvertible {

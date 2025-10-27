@@ -22,8 +22,7 @@ public class AnalyzeDistanceFromTheBubble extends BaseQueryAnalyzer implements Q
         }
 
         String instruction = "Center of the bubble (Earth) is at 0 0 0. Use the coordinates provided in light years to calculate distance. If asked about amount of fleet carrier fuel needed to cover thg distance use 90 tons of fuel per 500 light year jump to calculate the amount.";
-        AiDataStruct struct = new AiDataStruct(instruction, new DataDto(galacticCoordinates));
-        return process(struct, originalUserInput);
+        return process(new AiDataStruct(instruction, new DataDto(galacticCoordinates)), originalUserInput);
     }
 
     record DataDto(PlayerSession.GalacticCoordinates galacticCoordinates) implements ToJsonConvertible {

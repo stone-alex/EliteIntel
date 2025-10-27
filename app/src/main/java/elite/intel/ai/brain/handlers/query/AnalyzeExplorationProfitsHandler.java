@@ -20,8 +20,7 @@ public class AnalyzeExplorationProfitsHandler extends BaseQueryAnalyzer implemen
         Map<Long, LocationDto> planetsAndMoons = playerSession.getLocations();
         List<FSSBodySignalsEvent.Signal> fullSpectrumScanBodySignals = playerSession.getCurrentLocation().getFssSignals();
         String instructions = "Use this data to provide answers on potential exo-biology exploration profits.";
-        AiDataStruct struct = new AiDataStruct(instructions, new DataDto(allCompletedBioSamples, planetsAndMoons, fullSpectrumScanBodySignals));
-        return process(struct, originalUserInput);
+        return process(new AiDataStruct(instructions, new DataDto(allCompletedBioSamples, planetsAndMoons, fullSpectrumScanBodySignals)), originalUserInput);
     }
 
     record DataDto(

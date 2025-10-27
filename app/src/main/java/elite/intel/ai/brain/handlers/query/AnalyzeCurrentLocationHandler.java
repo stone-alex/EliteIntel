@@ -21,8 +21,7 @@ public class AnalyzeCurrentLocationHandler extends BaseQueryAnalyzer implements 
         DeathsDto deathsDto = EdsmApiClient.searchDeaths(playerSession.getPrimarySystem().getStarName());
         TrafficDto trafficDto = EdsmApiClient.searchTraffic(playerSession.getPrimarySystem().getStarName());
 
-        AiDataStruct struct = new AiDataStruct(instructions, new DataDto(location, deathsDto,trafficDto));
-        return process(struct, originalUserInput);
+        return process(new AiDataStruct(instructions, new DataDto(location, deathsDto,trafficDto)), originalUserInput);
     }
 
     record DataDto(LocationDto location, DeathsDto deathsData, TrafficDto trafficData) implements ToJsonConvertible {

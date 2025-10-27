@@ -16,9 +16,7 @@ public class AnalyzeBountiesCollectedHandler extends BaseQueryAnalyzer implement
         PlayerSession playerSession = PlayerSession.getInstance();
         long totalBounties = playerSession.getBountyCollectedThisSession();
 
-        AiDataStruct struct = new AiDataStruct(TOTAL_BOUNTIES_COLLECTED.getInstructions(), new DataDto(totalBounties));
-
-        return process(struct, originalUserInput);
+        return process(new AiDataStruct(TOTAL_BOUNTIES_COLLECTED.getInstructions(), new DataDto(totalBounties)), originalUserInput);
     }
 
     record DataDto(long totalBounties) implements ToJsonConvertible {

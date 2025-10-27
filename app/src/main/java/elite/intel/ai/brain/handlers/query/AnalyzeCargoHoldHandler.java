@@ -15,9 +15,7 @@ public class AnalyzeCargoHoldHandler extends BaseQueryAnalyzer implements QueryH
 
         String instructions = "Use this data provide questions regarding cargo and/or ship loadout if relevant. Cargo is listed 1 unit = 1 ton. ";
 
-        AiDataStruct struct = new AiDataStruct(instructions, new DataDto(playerSession.getShipLoadout(), playerSession.getShipCargo()));
-
-        return process(struct, originalUserInput);
+        return process(new AiDataStruct(instructions, new DataDto(playerSession.getShipLoadout(), playerSession.getShipCargo())), originalUserInput);
     }
 
 

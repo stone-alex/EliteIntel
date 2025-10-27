@@ -5,12 +5,17 @@ import com.google.gson.JsonObject;
 import elite.intel.ai.ApiFactory;
 import elite.intel.ai.brain.AIConstants;
 import elite.intel.ai.brain.AiAnalysisInterface;
+import elite.intel.ai.brain.openai.OpenAiAnalysisEndPoint;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.util.json.AiData;
 import elite.intel.util.json.GsonFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class BaseQueryAnalyzer {
+
+    private static final Logger log = LogManager.getLogger(BaseQueryAnalyzer.class);
 
     protected Queries findQuery(String action) {
         for (Queries qa : Queries.values()) {
@@ -22,6 +27,8 @@ public class BaseQueryAnalyzer {
     }
 
     protected JsonObject process(AiData data, String originalUserInput) {
+
+        log.info("Processing data: \n\n{}\n\n", GsonFactory.getGson().toJson(data));
 
         AiAnalysisInterface aiAnalysisInterface = ApiFactory.getInstance().getAnalysisEndpoint();
         JsonObject analysis = aiAnalysisInterface.analyzeData(originalUserInput, data);

@@ -1,5 +1,6 @@
 package elite.intel.gameapi.journal.subscribers;
 
+import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.search.edsm.EdsmApiClient;
 import elite.intel.ai.search.edsm.dto.DeathsDto;
@@ -19,6 +20,7 @@ import elite.intel.session.PlayerSession;
 import elite.intel.util.AdjustRoute;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -86,9 +88,12 @@ public class JumpCompletedSubscriber {
             sb.append("Arrived at: ").append(event.getStarSystem()).append(" star system.");
             Map<Integer, NavRouteDto> adjustedRoute = AdjustRoute.adjustRoute(orderedRoute, event.getStarSystem());
             playerSession.setNavRoute(adjustedRoute);
-            int remainingJump = adjustedRoute.size();
+
+            List<NavRouteDto> temp = adjustedRoute.values().stream().toList();
+            temp.sort(Comparator.comparingInt(NavRouteDto::getLeg));
+            int remainingJump = temp.size();
             if (remainingJump > 0) {
-                orderedRoute.stream().findFirst().ifPresent(
+                temp.stream().findFirst().ifPresent(
                         nextStop -> sb
                                 .append(" Next stop: ")
                                 .append(nextStop.getName())

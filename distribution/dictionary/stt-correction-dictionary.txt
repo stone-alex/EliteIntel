@@ -201,3 +201,5 @@
 "internet next"="enter next"
 "the internet"="enter"
 "b plus"="speed plus"
+"affiliate carrier"="fleet carrier"
+"drought back"="plot the route back"

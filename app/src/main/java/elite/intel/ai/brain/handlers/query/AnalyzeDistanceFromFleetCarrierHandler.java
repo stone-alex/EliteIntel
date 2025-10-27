@@ -16,26 +16,8 @@ public class AnalyzeDistanceFromFleetCarrierHandler extends BaseQueryAnalyzer im
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         PlayerSession playerSession = PlayerSession.getInstance();
         CarrierDataDto carrierData = playerSession.getCarrierData();
-        String carrierLocation = playerSession.getLastKnownCarrierLocation();
-        double x = 0, y = 0, z = 0;
-
-        Map<Long, LocationDto> locations = playerSession.getLocations();
-        for (LocationDto location : locations.values()) {
-            if (location.getLocationType().equals(LocationDto.LocationType.PRIMARY_STAR)) {
-                x = location.getX();
-                y = location.getY();
-                z = location.getZ();
-                break;
-            }
-        }
-
-
-        LoadoutEvent shipLoadout = playerSession.getShipLoadout();
         if (carrierData == null) return process("No data available");
-        boolean currentLocationCoordinatesAreNotAvailable = x == 0 && y == 0 && z == 0;
-
-        float jumpRange = shipLoadout == null ? -1 : shipLoadout.getMaxJumpRange();
-
+        String carrierLocation = playerSession.getLastKnownCarrierLocation();
         double carrierLocationX = carrierData.getX();
         double carrierLocationY = carrierData.getY();
         double carrierDataZ = carrierData.getZ();
@@ -44,10 +26,19 @@ public class AnalyzeDistanceFromFleetCarrierHandler extends BaseQueryAnalyzer im
             return process("Carrier coordinates are not available.");
         }
 
+        double x = 0, y = 0, z = 0;
+        LocationDto primarySystem = playerSession.getPrimarySystem();
+        x=primarySystem.getX();
+        y=primarySystem.getY();
+        z=primarySystem.getZ();
+        boolean currentLocationCoordinatesAreNotAvailable = x == 0 && y == 0 && z == 0;
         if (currentLocationCoordinatesAreNotAvailable) {
             return process("Current location coordinates are not available.");
         }
 
+
+        LoadoutEvent shipLoadout = playerSession.getShipLoadout();
+        float jumpRange = shipLoadout == null ? -1 : shipLoadout.getMaxJumpRange();
         double distance = NavigationUtils.calculateGalacticDistance(x, y, z, carrierLocationX, carrierLocationY, carrierDataZ);
 
         String instruction = "Distance is in Light Years. If jump range is > 0 also calculate number of jumps required to reach the carrier. Jump range is in light years. Return whole numbers only, no decimals";

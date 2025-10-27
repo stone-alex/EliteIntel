@@ -232,7 +232,7 @@ public class OpenAiAndXAiPromptFactory implements AiPromptFactory {
 
     private void appendContext(StringBuilder sb, String currentShip, String playerName, String playerMilitaryRank, String playerHonorific, String playerTitle, String missionStatement, String carrierName, String carrierCallSign) {
         String aiName = SystemSession.getInstance().getAIVoice().getName();
-        sb.append("Context: You are ").append(aiName).append(", onboard AI for a ").append(currentShip).append(" ship in a simulation. ");
+        sb.append("Context: You are ").append(aiName).append(", co-pilot and data analyst in a simulation. ");
         if (carrierName != null && !carrierName.isEmpty()) {
             sb.append("Our home base is FleetCarrier ").append(carrierName).append(". ");
         }

@@ -31,22 +31,22 @@ public class CalculateFleetCarrierRouteHandler implements CommandHandler {
         int cargoCapacity = carrierData.getCargoCapacity();
         int cargoSpaceUsed = carrierData.getCargoSpaceUsed();
         String destination = ClipboardUtils.getClipboardText();
-
+        EventBusManager.publish(new AiVoxResponseEvent("Accessing Spansh... Stand by..."));
 
         if(carrierData.getX() == 0 && carrierData.getY() == 0 && carrierData.getZ() == 0) {
             EventBusManager.publish(new AiVoxResponseEvent("Fleet Carrier location not available."));
             return;
         }
 
-        LocationDto nearest = NearestKnownLocationSearch.findNearest(carrierData.getX(), carrierData.getY(), carrierData.getZ());
+        LocationDto nearestStartingPoint = NearestKnownLocationSearch.findNearest(carrierData.getX(), carrierData.getY(), carrierData.getZ());
 
-        if (destination == null || nearest == null) {
+        if (destination == null || nearestStartingPoint == null) {
             EventBusManager.publish(new AiVoxResponseEvent("No destination or nearest known location found."));
             return;
         }
 
         CarrierRouteCriteria carrierRouteCriteria = new CarrierRouteCriteria(
-                nearest.getStarName(),
+                nearestStartingPoint.getStarName(),
                 destination,
                 cargoCapacity,
                 cargoSpaceUsed,
@@ -59,11 +59,15 @@ public class CalculateFleetCarrierRouteHandler implements CommandHandler {
         int fuelRequired = route.values().stream().mapToInt(CarrierJump::getFuelUsed).sum();
         int numJumps = route.size();
 
-        EventBusManager.publish(new AiVoxResponseEvent(
-                "Calculated Fleet Carrier route to " + destination + ". " +
-                        numJumps + " jumps, with a total of " +
-                        fuelRequired + " tons of fuel required. When you are ready - open the Galaxy Map from Fleet Carrier panel, select the text field and ask me to enter next carrier jump location.")
-        );
+        if (numJumps == 0) {
+            EventBusManager.publish(new AiVoxResponseEvent("Unable to plot route to " + destination + ". Data is not available in Spansh. Try another star system near by."));
+        } else {
+            EventBusManager.publish(new AiVoxResponseEvent(
+                    "Calculated Fleet Carrier route to " + destination + ". " +
+                            numJumps + " jumps, with a total of " +
+                            fuelRequired + " tons of fuel required. When you are ready - open the Galaxy Map from Fleet Carrier panel, select the text field and ask me to enter next carrier jump location.")
+            );
+        }
 
     }
 }

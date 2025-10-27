@@ -3,9 +3,9 @@ package elite.intel.ai.brain.handlers.query;
 public enum Queries {
 
     //ANALYZE_SCAN("query_analyze_last_scan", "Analyze the most recent scan data.", AnalyzeLastScanHandler.class, true),
-    QUERY_SEARCH_SIGNAL_DATA("query_analise_star_system_data", "Contains locations (planets, moons, planetary rings, raw materials, detectedSignals, bio forms, bio samples, stations, starports etc) using gravity (G) and temperature (K) units. Use shortName for planets", AnalyzeSignalDataHandler.class, true),
-    ANALYZE_CURRENT_PLANET("query_current_location", "Where are we? Analyze data for the current planetary or station location.", AnalyzeCurrentLocationHandler.class, true),  // Emphasize planetary/station context
-    ANALYZE_STAR_SYSTEM_EXPLORATION("query_star_system_exploration", "Analyze exploration data and profits for the current star system.", AnalyzeExplorationProfitsHandler.class, true),
+    QUERY_SEARCH_SIGNAL_DATA("query_star_system_signals_stations_and_planetary_stats", "Data may contain information about planets, moons, planetary rings, raw materials, detectedSignals, bio forms, bio samples, stations, starports etc. Use gravity (G) and temperature (K) units. Offer celsius alternative. Use planetShotName for planets", AnalyzeSignalDataHandler.class, true),
+    ANALYZE_STAR_SYSTEM_EXPLORATION("query_exploration_profits_data", "use this data to answer questions about exploration profits for this star system", AnalyzeExplorationProfitsHandler.class, true),
+    ANALYZE_CURRENT_PLANET("query_current_location", "Where are we? Analyze data for the current planetary or station location.", AnalyzeCurrentLocationHandler.class, true),  // Emphasize planetary/station context,
     ANALYZE_BODY_MATERIALS("query_planetary_materials", "Analyze material composition on this planet.", AnalyzeMaterialsOnPlanetHandler.class, true),  // Specify planetary to avoid ship/cargo confusion
     ANALYZE_EXO_BIOLOGY("query_exobiology_samples", "Analyze bio-sample collection progress for current planet, including completed, partial, and remaining species.", AnalyzeBioSamplesHandler.class, true),  // "exobiology" to distinguish from commodities,
     ANALYZE_CURRENT_FUEL_STATUS("query_ship_fuel_status", "Analyze ship fuel tank capacity and reserve, return percent available. Do not confuse ship with fleet carrier. Fleet carrier uses tritium for fuel, Ship uses hydrogen.", AnalyzeFuelStatusHandler.class, true),
@@ -14,12 +14,12 @@ public enum Queries {
     ANALYZE_LOCAL_OUTFITTING("query_local_outfitting", "Analyze available outfitting options.", AnalyzeLocalOutfittingHandler.class, true),
     ANALYZE_LOCAL_SHIPYARD("query_local_shipyard", "Analyze shipyard contents.", AnalyzeShipyardHandler.class, true),
     ANALYZE_LOCAL_STATIONS("query_local_stations_services", "Summarize services at local stations.", AnalyzeLocalStations.class, true),
-    ANALYZE_LOCAL_SYSTEM("query_local_system_data", "-- instructions in class --", AnalyzeLocalSystemHandler.class, true),
+    //ANALYZE_LOCAL_SYSTEM("query_local_system_data", "-- instructions in class --", AnalyzeLocalSystemHandler.class, true),
     ANALYZE_CARRIER_ROUTE("query_fleet_carrier_route", "Use this data to analyze the current fleet carrier route.", AnalyzeCarrierRouteHandler.class, true),
     HOW_FAR_TO_FINAL_DESTINATION("query_distance_to_final_destination", "Calculate distance to the final destination.", AnalyzeDistanceToFinalDestination.class, false),
     LIST_AVAILABLE_VOICES("list_available_voices", "List available AI voices.", ListAvailableVoices.class, false),
     QUERY_ANALYZE_ON_BOARD_CARGO("query_ship_cargo_contents", "Analyze contents of the ship’s cargo hold.", AnalyzeCargoHoldHandler.class, true),  // "ship" to avoid carrier/planet mix-up
-    QUERY_ANALYZE_ROUTE("query_plotted_route_analysis", "Analyze the current plotted route.", AnalyzeRouterHandler.class, true),
+    QUERY_ANALYZE_ROUTE("query_plotted_route_analysis", "Analyze the current plotted route. Number of  jumps = number of nodes.", AnalyzeRouterHandler.class, true),
     QUERY_CARRIER_STATS("query_fleet_carrier_info", "Analyze fleet carrier data (e.g., fuel, market, balance, location)", AnalyzeCarrierDataHandler.class, true),  // "vehicle" to distinguish from planets
     QUERY_PIRATE_MISSION_KILLS_REMAINING("query_pirate_mission_kills", "Summarize remaining kills for active pirate missions.", AnalyzePirateMissionHandler.class, true),
     QUERY_PIRATE_MISSION_PROFIT("query_pirate_mission_profit", "Summarize potential profit from active pirate missions.", AnalyzePirateMissionHandler.class, true),

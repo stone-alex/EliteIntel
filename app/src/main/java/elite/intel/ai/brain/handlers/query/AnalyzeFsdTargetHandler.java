@@ -13,8 +13,7 @@ public class AnalyzeFsdTargetHandler extends BaseQueryAnalyzer implements QueryH
         PlayerSession playerSession = PlayerSession.getInstance();
         String fsdTarget = playerSession.getFsdTarget();
         String data = fsdTarget != null ? toJson(fsdTarget) : toJson(" no information available...");
-        String instructions = "Use this data to provide answers for the currently selected FSD target";
-        return process(new AiDataStruct(instructions, new DataDto(data)), originalUserInput);
+        return process(new AiDataStruct("Use this data to provide answers for the currently selected FSD target", new DataDto(data)), originalUserInput);
     }
 
     record DataDto(String data) implements ToJsonConvertible {

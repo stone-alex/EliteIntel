@@ -39,8 +39,10 @@ public class BaseQueryAnalyzer {
     }
 
     protected JsonObject process(String message) {
-        EventBusManager.publish(new AiVoxResponseEvent(message));
-        return new JsonObject();
+        JsonObject object = new JsonObject();
+        object.addProperty(AIConstants.PROPERTY_RESPONSE_TEXT, message);
+        object.addProperty(AIConstants.PROPERTY_EXPECT_FOLLOWUP, false);
+        return object;
     }
 
     protected Gson getGson() {

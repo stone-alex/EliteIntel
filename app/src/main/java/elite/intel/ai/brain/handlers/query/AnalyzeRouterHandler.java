@@ -23,7 +23,6 @@ import static elite.intel.ai.brain.handlers.query.Queries.QUERY_ANALYZE_ROUTE;
 public class AnalyzeRouterHandler extends BaseQueryAnalyzer implements QueryHandler {
     private static final Logger log = LogManager.getLogger(AnalyzeRouterHandler.class);
 
-
     @Override
     public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         EventBusManager.publish(new AiVoxResponseEvent("Analyzing route..."));

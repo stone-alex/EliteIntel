@@ -19,8 +19,7 @@ public class AnalyzeExplorationProfitsHandler extends BaseQueryAnalyzer implemen
         List<BioSampleDto> allCompletedBioSamples = playerSession.getBioCompletedSamples();
         Map<Long, LocationDto> planetsAndMoons = playerSession.getLocations();
         List<FSSBodySignalsEvent.Signal> fullSpectrumScanBodySignals = playerSession.getCurrentLocation().getFssSignals();
-        String instructions = "Use this data to provide answers on potential exo-biology exploration profits.";
-        return process(new AiDataStruct(instructions, new DataDto(allCompletedBioSamples, planetsAndMoons, fullSpectrumScanBodySignals)), originalUserInput);
+        return process(new AiDataStruct("Use this data to provide answers on potential exo-biology exploration profits.", new DataDto(allCompletedBioSamples, planetsAndMoons, fullSpectrumScanBodySignals)), originalUserInput);
     }
 
     record DataDto(

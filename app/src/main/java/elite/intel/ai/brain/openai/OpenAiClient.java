@@ -2,13 +2,14 @@ package elite.intel.ai.brain.openai;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.ConfigManager;
+import elite.intel.ai.brain.Client;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 
-public class OpenAiClient {
+public class OpenAiClient implements Client {
 
     private static final String API_URL = "https://api.openai.com/v1/chat/completions";
 
@@ -28,7 +29,7 @@ public class OpenAiClient {
         return instance;
     }
 
-    JsonObject createRequestBodyHeader(String model, float temp) {
+    @Override public JsonObject createRequestBodyHeader(String model, float temp) {
 
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("model", model);
@@ -36,13 +37,13 @@ public class OpenAiClient {
         return jsonObject;
     }
 
-    JsonObject createErrorResponse(String message) {
+    @Override public JsonObject createErrorResponse(String message) {
         JsonObject error = new JsonObject();
         error.addProperty("response_text", message);
         return error;
     }
 
-    HttpURLConnection getHttpURLConnection() throws IOException {
+    @Override public HttpURLConnection getHttpURLConnection() throws IOException {
         URI uri = URI.create(API_URL);
         URL url = uri.toURL();
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();

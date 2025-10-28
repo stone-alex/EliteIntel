@@ -14,15 +14,6 @@ import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
-/**
- * The GrokAnalysisEndpoint class provides functionality for analyzing user-provided data using
- * an AI-based service. It implements the AiAnalysisInterface and communicates with an external
- * API to process user intents and data for generating analysis results.
- * <p>
- * This class is designed as a singleton, ensuring only one instance is created and utilized
- * throughout the application. It makes HTTP requests to an AI endpoint to analyze the input,
- * processes the response, and extracts relevant content as a JSON object.
- */
 public class GrokAnalysisEndpoint extends AiEndPoint implements AiAnalysisInterface {
     private static final Logger logger = LogManager.getLogger(GrokAnalysisEndpoint.class);
     private final Gson gson = GsonFactory.getGson();
@@ -56,47 +47,9 @@ public class GrokAnalysisEndpoint extends AiEndPoint implements AiAnalysisInterf
             String jsonString = gson.toJson(request);
             logger.debug("xAI API call:\n{}", jsonString);
 
-            try (var os = conn.getOutputStream()) {
-                os.write(jsonString.getBytes(StandardCharsets.UTF_8));
-            }
+            Response response = callApi(conn, jsonString, client);
 
-            int responseCode = conn.getResponseCode();
-            String response;
-            try (Scanner scanner = new Scanner(conn.getInputStream(), StandardCharsets.UTF_8)) {
-                response = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
-            }
-
-            // Strip BOM if present
-            if (response.startsWith("\uFEFF")) {
-                response = response.substring(1);
-                logger.info("Stripped BOM from response");
-            }
-
-            logger.debug("xAI API response:\n{}", response);
-
-            if (responseCode != 200) {
-                String errorResponse = "";
-                try (Scanner scanner = new Scanner(conn.getErrorStream(), StandardCharsets.UTF_8)) {
-                    errorResponse = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
-                } catch (Exception e) {
-                    logger.warn("Failed to read error stream: {}", e.getMessage());
-                }
-                logger.error("xAI API error: {} - {}", responseCode, conn.getResponseMessage());
-                logger.info("Error response body: {}", errorResponse);
-                return client.createErrorResponse("Analysis error.");
-            }
-
-            // Parse response
-            JsonObject json;
-            try {
-                json = JsonParser.parseString(response).getAsJsonObject();
-            } catch (JsonSyntaxException e) {
-                logger.error("Failed to parse API response:\n{}", response, e);
-                return client.createErrorResponse("Analysis error.");
-            }
-
-            // Extract content safely
-            JsonArray choices = json.getAsJsonArray("choices");
+            JsonArray choices = response.responseData().getAsJsonArray("choices");
             if (choices == null || choices.isEmpty()) {
                 logger.error("No choices in API response:\n{}", response);
                 return client.createErrorResponse("Analysis error.");
@@ -104,19 +57,18 @@ public class GrokAnalysisEndpoint extends AiEndPoint implements AiAnalysisInterf
 
             JsonObject message = choices.get(0).getAsJsonObject().getAsJsonObject("message");
             if (message == null) {
-                logger.error("No message in API response choices:\n{}", response);
+                logger.error("No message in API response choices:\n{}", response.responseMessage());
                 return client.createErrorResponse("Analysis error.");
             }
 
             String content = message.get("content").getAsString();
             if (content == null) {
-                logger.error("No content in API response message:\n{}", response);
+                logger.error("No content in API response message:\n{}", response.responseMessage());
                 return client.createErrorResponse("Analysis error.");
             }
 
             logger.debug("API response content:\n{}", content);
 
-            // Extract JSON from content
             String jsonContent;
             int jsonStart = content.indexOf("\n\n{");
             if (jsonStart != -1) {
@@ -132,7 +84,6 @@ public class GrokAnalysisEndpoint extends AiEndPoint implements AiAnalysisInterf
 
             logger.info("Extracted JSON content:\n\n{}\n\n", jsonContent);
 
-            // Parse extracted JSON content
             try {
                 return JsonParser.parseString(jsonContent).getAsJsonObject();
             } catch (JsonSyntaxException e) {

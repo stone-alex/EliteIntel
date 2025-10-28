@@ -3,6 +3,7 @@ package elite.intel.ai.brain.xai;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.ConfigManager;
+import elite.intel.ai.brain.Client;
 import elite.intel.session.SystemSession;
 
 import java.io.IOException;
@@ -10,7 +11,7 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 
-public class GrokClient {
+public class GrokClient implements Client {
 
     private GrokClient() {
     }
@@ -34,7 +35,7 @@ public class GrokClient {
 
     private static final GrokClient instance = new GrokClient();
 
-    JsonObject createRequestBodyHeader(String model, float temp) {
+    @Override public JsonObject createRequestBodyHeader(String model, float temp) {
 
         JsonObject header = new JsonObject();
         header.addProperty("model", model);
@@ -43,13 +44,13 @@ public class GrokClient {
         return header;
     }
 
-    JsonObject createErrorResponse(String message) {
+    @Override public JsonObject createErrorResponse(String message) {
         JsonObject error = new JsonObject();
         error.addProperty("response_text", message);
         return error;
     }
 
-    HttpURLConnection getHttpURLConnection() throws IOException {
+    @Override public HttpURLConnection getHttpURLConnection() throws IOException {
         URI uri = URI.create(API_URL);
         URL url = uri.toURL();
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();

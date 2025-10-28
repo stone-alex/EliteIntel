@@ -187,9 +187,6 @@ public class GoogleSTTImpl implements EarsInterface {
 
                     long lastLoopTime = System.currentTimeMillis();
                     while (isListening.get() && !needRestart.get() && line.isOpen() && (System.currentTimeMillis() - lastStreamStart) < STREAM_DURATION_MS) {
-
-                        //if(isSpeaking.get()) continue;
-
                         int bytesRead = line.read(buffer, 0, buffer.length);
                         long loopDuration = System.currentTimeMillis() - lastLoopTime;
                         log.debug("Bytes read: {}, Loop duration: {}ms, VAD active: {}", bytesRead, loopDuration, isActive);

@@ -16,40 +16,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.net.HttpURLConnection;
-import java.nio.charset.StandardCharsets;
-import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * The GrokCommandEndPoint class implements the AiCommandInterface to handle
- * AI conversational interactions and sensor data events. It processes user-inputted
- * commands, sensor data, and communicates with AI services to generate responses.
- * This class interacts with various components, including a router, chat interface,
- * and context factory.
- * <p>
- * It provides mechanisms to:
- * - Start and stop the endpoint.
- * - Process user voice commands with error-handling, confidence-checking, and sanitization.
- * - Process sensor data events with system context and generate AI responses.
- * - Manage chat history for continued conversations.
- * - Communicate with external AI APIs via JSON serialization and HTTP calls.
- * <p>
- * The class utilizes the thread-safe ThreadLocal storage for maintaining the context
- * of current conversations and ensures robust error handling and logging during its operation.
- * <p>
- * Events handled:
- * - UserInputEvent: Captures user voice commands and processes them.
- * - SensorDataEvent: Handles system-generated sensor data for AI interaction.
- * <p>
- * Dependencies:
- * - Router for handling AI response routing.
- * - AI Chat Interface for communicating with the AI engine.
- * - AI Context Factory for generating system prompts.
- * - Gson for JSON processing.
- * - EventBus for subscribing and publishing events.
- * - Logging framework for detailed debugging and error reporting.
- */
 public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInterface {
     private static final Logger log = LogManager.getLogger(GrokCommandEndPoint.class);
     private ExecutorService executor;
@@ -129,7 +98,6 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
 
     private void processVoiceCommand(String userInput, float confidence) {
 
-        // Sanitize input
         userInput = escapeJson(userInput);
         if (userInput == null || userInput.isEmpty()) {
             JsonObject errorResponse = new JsonObject();
@@ -143,7 +111,6 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
             return;
         }
 
-        // Log sanitized input
         log.info("Sanitized voice userInput:\n{} (confidence: {})", userInput, confidence);
 
         JsonArray messages = new JsonArray();
@@ -153,13 +120,11 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
         systemMessage.addProperty("content", systemPrompt);
         messages.add(systemMessage);
 
-        // Append existing chat history if any
         JsonArray history = SystemSession.getInstance().getChatHistory();
         for (int i = 0; i < history.size(); i++) {
             messages.add(history.get(i));
         }
 
-        // Add current user message
         JsonObject userMessage = new JsonObject();
         userMessage.addProperty("role", AIConstants.ROLE_USER);
         String userContent = buildVoiceRequest(userInput);
@@ -180,10 +145,8 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
             return;
         }
 
-        // Route the response without speaking here
         getRouter().processAiResponse(apiResponse, userInput);
 
-        // Handle history updates for chat continuations
         String type = JsonUtils.getAsStringOrEmpty(apiResponse, "type").toLowerCase();
         String responseText = JsonUtils.getAsStringOrEmpty(apiResponse, AIConstants.PROPERTY_RESPONSE_TEXT);
         if ("chat".equals(type)) {
@@ -222,12 +185,10 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
         userMessage.addProperty("content", buildSystemRequest(input));
         messages.add(userMessage);
 
-        // Create API request body
         GrokClient client = GrokClient.getInstance();
         JsonObject requestBody = client.createRequestBodyHeader(GrokClient.MODEL_GROK_4_FAST_NON_REASONING, 0.01f);
         requestBody.add("messages", messages);
 
-        // Serialize to JSON string
         Gson gson = GsonFactory.getGson();
         String jsonString = gson.toJson(requestBody);
         log.debug("JSON prepared for callXaiApi:\n{}", jsonString);
@@ -248,91 +209,32 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
 
     private JsonObject callXaiApi(String jsonString) {
         try {
-            HttpURLConnection conn = GrokClient.getInstance().getHttpURLConnection();
+            GrokClient client = GrokClient.getInstance();
+            HttpURLConnection conn = client.getHttpURLConnection();
 
-            // Log the input string
             log.debug("xAI API call:\n{}", jsonString);
-            // Store the messages array from the request body
             JsonObject requestBody = GsonFactory.getGson().fromJson(jsonString, JsonObject.class);
             JsonArray messages = requestBody.getAsJsonArray("messages");
             systemSession.setChatHistory(messages);
 
-            try (var os = conn.getOutputStream()) {
-                os.write(jsonString.getBytes(StandardCharsets.UTF_8));
-            }
 
-            int responseCode = conn.getResponseCode();
-            String response;
-            try (Scanner scanner = new Scanner(conn.getInputStream(), StandardCharsets.UTF_8)) {
-                response = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
-            }
+            Response response = callApi(conn, jsonString, client);
+            StracturedResponse stracturedResponse = checkResponse(response);
+            if (!stracturedResponse.isSuccessful()) return null;
 
-            // Strip BOM if present
-            if (response.startsWith("\uFEFF")) {
-                response = response.substring(1);
-                log.info("Stripped BOM from response");
-            }
+            log.debug("API response content:\n{}", stracturedResponse.content());
 
-            // Log raw response
-            log.debug("xAI API response:\n{}", response);
-
-            if (responseCode != 200) {
-                String errorResponse = "";
-                try (Scanner scanner = new Scanner(conn.getErrorStream(), StandardCharsets.UTF_8)) {
-                    errorResponse = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
-                } catch (Exception e) {
-                    log.warn("Failed to read error stream: {}", e.getMessage());
-                }
-                log.error("xAI API error: {} - {}", responseCode, conn.getResponseMessage());
-                log.info("Error response body: {}", errorResponse);
-                return null;
-            }
-
-            // Parse response
-            JsonObject json;
-            try {
-                json = JsonParser.parseString(response).getAsJsonObject();
-            } catch (JsonSyntaxException e) {
-                log.error("Failed to parse API response:\n{}", response, e);
-                throw e;
-            }
-
-            // Extract content safely
-            JsonArray choices = json.getAsJsonArray("choices");
-            if (choices == null || choices.isEmpty()) {
-                log.error("No choices in API response:\n{}", response);
-                return null;
-            }
-
-            JsonObject message = choices.get(0).getAsJsonObject().getAsJsonObject("message");
-            if (message == null) {
-                log.error("No message in API response choices:\n{}", response);
-                return null;
-            }
-
-            String content = message.get("content").getAsString();
-            if (content == null) {
-                log.error("No content in API response message:\n{}", response);
-                return null;
-            }
-
-            // Log content before parsing
-            log.debug("API response content:\n{}", content);
-
-            // Extract JSON from content (after double newline or first valid JSON object)
             String jsonContent;
-            int jsonStart = content.indexOf("\n\n{");
+            int jsonStart = stracturedResponse.content().indexOf("\n\n{");
             if (jsonStart != -1) {
-                jsonContent = content.substring(jsonStart + 2); // Skip \n\n
+                jsonContent = stracturedResponse.content().substring(jsonStart + 2); // Skip \n\n
             } else {
-                // Fallback: Find first { that starts a valid JSON object
-                jsonStart = content.indexOf("{");
+                jsonStart = stracturedResponse.content().indexOf("{");
                 if (jsonStart == -1) {
-                    log.error("No JSON object found in content:\n{}", content);
+                    log.error("No JSON object found in content:\n{}", stracturedResponse.content());
                     return null;
                 }
-                jsonContent = content.substring(jsonStart);
-                // Validate JSON
+                jsonContent = stracturedResponse.content().substring(jsonStart);
                 try {
                     JsonParser.parseString(jsonContent);
                 } catch (JsonSyntaxException e) {
@@ -341,10 +243,8 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
                 }
             }
 
-            // Log extracted JSON
             log.info("Extracted JSON content:\n\n{}\n\n", jsonContent);
 
-            // Parse JSON content
             try {
                 return JsonParser.parseString(jsonContent).getAsJsonObject();
             } catch (JsonSyntaxException e) {

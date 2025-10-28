@@ -20,8 +20,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.nio.charset.StandardCharsets;
-import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -201,7 +199,7 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
 
         // Create API request body
         OpenAiClient client = OpenAiClient.getInstance();
-        JsonObject requestBody = client.createRequestBodyHeader(OpenAiClient.MODEL_GPT_4_1_MINI, 0.01f);
+        JsonObject requestBody = client.createRequestBodyHeader(OpenAiClient.MODEL_GPT_4_1_MINI, 0.10f);
         requestBody.add("messages", messages);
 
         // Serialize to JSON string
@@ -225,7 +223,7 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
     private JsonObject callOpenAiApi(JsonArray messages) {
         try {
             OpenAiClient client = OpenAiClient.getInstance();
-            JsonObject requestBody = client.createRequestBodyHeader(OpenAiClient.MODEL_GPT_4_1_MINI, 0.01f);
+            JsonObject requestBody = client.createRequestBodyHeader(OpenAiClient.MODEL_GPT_4_1_MINI, 0.10f);
             requestBody.add("messages", messages);
             String jsonString = GsonFactory.getGson().toJson(requestBody);
             log.debug("Open AI API call:\n{}", jsonString);
@@ -234,61 +232,24 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
             systemSession.setChatHistory(messages);
 
             HttpURLConnection conn = client.getHttpURLConnection();
-            try (var os = conn.getOutputStream()) {
-                os.write(jsonString.getBytes(StandardCharsets.UTF_8));
-            }
-
-            int responseCode = conn.getResponseCode();
-            String response;
-            try (Scanner scanner = new Scanner(conn.getInputStream(), StandardCharsets.UTF_8)) {
-                response = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
-            }
-
-            // Strip BOM if present
-            if (response.startsWith("\uFEFF")) {
-                response = response.substring(1);
-                log.info("Stripped BOM from response");
-            }
-
-            // Log raw response
-            log.debug("Open AI API response:\n{}", response);
-
-            if (responseCode != 200) {
-                String errorResponse = "";
-                try (Scanner scanner = new Scanner(conn.getErrorStream(), StandardCharsets.UTF_8)) {
-                    errorResponse = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
-                } catch (Exception e) {
-                    log.warn("Failed to read error stream: {}", e.getMessage());
-                }
-                log.error("Open AI API error: {} - {}", responseCode, conn.getResponseMessage()+" "+errorResponse);
-                return client.createErrorResponse("API error: " + responseCode);
-            }
-
-            // Parse response
-            JsonObject json;
-            try {
-                json = JsonParser.parseString(response).getAsJsonObject();
-            } catch (JsonSyntaxException e) {
-                log.error("Failed to parse API response:\n{}", response, e);
-                return client.createErrorResponse("Failed to parse API response");
-            }
+            Response response = callApi(conn, jsonString, client);
 
             // Extract content
-            JsonArray choices = json.getAsJsonArray("choices");
+            JsonArray choices = response.responseData().getAsJsonArray("choices");
             if (choices == null || choices.isEmpty()) {
-                log.error("No choices in API response:\n{}", response);
+                log.error("No choices in API response:\n{}", response.responseMessage());
                 return client.createErrorResponse("No choices in API response");
             }
 
             JsonObject message = choices.get(0).getAsJsonObject().getAsJsonObject("message");
             if (message == null) {
-                log.error("No message in API response choices:\n{}", response);
+                log.error("No message in API response choices:\n{}", response.responseMessage());
                 return client.createErrorResponse("No message in API response");
             }
 
             String content = message.get("content").getAsString();
             if (content == null) {
-                log.error("No content in API response message:\n{}", response);
+                log.error("No content in API response message:\n{}", response.responseMessage());
                 return client.createErrorResponse("No content in API response");
             }
 

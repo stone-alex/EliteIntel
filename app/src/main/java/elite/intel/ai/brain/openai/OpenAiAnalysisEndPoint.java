@@ -12,8 +12,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.nio.charset.StandardCharsets;
-import java.util.Scanner;
 
 import static elite.intel.ai.brain.AIConstants.PROPERTY_CONTENT;
 import static elite.intel.ai.brain.AIConstants.PROPERTY_MESSAGE;
@@ -57,60 +55,24 @@ public class OpenAiAnalysisEndPoint extends AiEndPoint implements AiAnalysisInte
             String jsonString = GsonFactory.getGson().toJson(request);
             log.info("Analysis call:\n\n{}\n\n", jsonString);
 
-            try (var os = conn.getOutputStream()) {
-                os.write(jsonString.getBytes(StandardCharsets.UTF_8));
-            }
-
-            int responseCode = conn.getResponseCode();
-            String response;
-            try (Scanner scanner = new Scanner(conn.getInputStream(), StandardCharsets.UTF_8)) {
-                response = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
-            }
-
-            // Strip BOM if present
-            if (response.startsWith("\uFEFF")) {
-                response = response.substring(1);
-                log.info("Stripped BOM from response");
-            }
-
-            log.debug("Open AI API response:\n{}", response);
-
-            if (responseCode != 200) {
-                String errorResponse = "";
-                try (Scanner scanner = new Scanner(conn.getErrorStream(), StandardCharsets.UTF_8)) {
-                    errorResponse = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
-                } catch (Exception e) {
-                    log.warn("Failed to read error stream: {}", e.getMessage());
-                }
-                log.error("Open AI API error: {} - {}", responseCode, conn.getResponseMessage() + " " + errorResponse);
-                return client.createErrorResponse("Analysis error.");
-            }
-
-            // Parse response
-            JsonObject json;
-            try {
-                json = JsonParser.parseString(response).getAsJsonObject();
-            } catch (JsonSyntaxException e) {
-                log.error("Failed to parse API response:\n{}", response, e);
-                return client.createErrorResponse("Analysis error.");
-            }
+            Response response = callApi(conn, jsonString, client);
 
             // Extract content safely
-            JsonElement jsonElement = json.get("usage");
+            JsonElement jsonElement = response.responseData().get("usage");
             if(jsonElement != null) {
                 log.info("API usage:\n{}", ("Prompt Tokens: "+jsonElement.getAsJsonObject().get("prompt_tokens")+"  Total Tokens:"+ jsonElement.getAsJsonObject().get("total_tokens")));
             }
 
-            JsonArray choices = json.getAsJsonArray("choices");
+            JsonArray choices = response.responseData().getAsJsonArray("choices");
 
             if (choices == null || choices.isEmpty()) {
-                log.error("No choices in API response:\n{}", response);
+                log.error("No choices in API response:\n{}", response.responseMessage());
                 return client.createErrorResponse("Analysis error.");
             }
 
             JsonObject message = choices.get(0).getAsJsonObject().getAsJsonObject(PROPERTY_MESSAGE);
             if (message == null) {
-                log.error("No message in API response choices:\n{}", response);
+                log.error("No message in API response choices:\n{}", response.responseMessage());
                 return client.createErrorResponse("Analysis error.");
             }
 
@@ -118,7 +80,7 @@ public class OpenAiAnalysisEndPoint extends AiEndPoint implements AiAnalysisInte
 
             String content = message.get(PROPERTY_CONTENT).getAsString();
             if (content == null) {
-                log.error("No content in API response message:\n{}", response);
+                log.error("No content in API response message:\n{}", response.responseMessage());
                 return client.createErrorResponse("Analysis error.");
             }
 

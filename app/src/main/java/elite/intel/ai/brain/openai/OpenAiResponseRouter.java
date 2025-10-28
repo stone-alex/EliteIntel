@@ -13,7 +13,6 @@ import elite.intel.ai.brain.handlers.query.QueryHandler;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.SystemSession;
-import elite.intel.util.json.GsonFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

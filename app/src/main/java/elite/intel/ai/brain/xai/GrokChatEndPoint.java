@@ -53,48 +53,11 @@ public class GrokChatEndPoint extends AiEndPoint implements AIChatInterface {
             bodyString = body.toString();
             log.info("xAI API chat call:\n{}", bodyString);
 
-            try (var os = conn.getOutputStream()) {
-                os.write(bodyString.getBytes(StandardCharsets.UTF_8));
-            }
 
-            int responseCode = conn.getResponseCode();
-            String response;
-            try (Scanner scanner = new Scanner(conn.getInputStream(), StandardCharsets.UTF_8)) {
-                response = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
-            }
-
-            // Strip BOM if present
-            if (response.startsWith("\uFEFF")) {
-                response = response.substring(1);
-                log.info("Stripped BOM from response");
-            }
-
-            // Log raw response
-            log.info("xAI API response:\n{}", response);
-
-            if (responseCode != 200) {
-                String errorResponse = "";
-                try (Scanner scanner = new Scanner(conn.getErrorStream(), StandardCharsets.UTF_8)) {
-                    errorResponse = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
-                } catch (Exception e) {
-                    log.warn("Failed to read error stream: {}", e.getMessage());
-                }
-                log.error("xAI API error: {} - {}", responseCode, conn.getResponseMessage());
-                log.info("Error response body: {}", errorResponse);
-                return null;
-            }
-
-            // Parse response
-            JsonObject json;
-            try {
-                json = JsonParser.parseString(response).getAsJsonObject();
-            } catch (JsonSyntaxException e) {
-                log.error("Failed to parse API response:\n{}", response, e);
-                throw e;
-            }
+            Response response = callApi(conn, bodyString, client);
 
             // Extract content safely
-            JsonArray choices = json.getAsJsonArray("choices");
+            JsonArray choices = response.responseData().getAsJsonArray("choices");
             if (choices == null || choices.isEmpty()) {
                 log.error("No choices in API response:\n{}", response);
                 return null;
@@ -102,13 +65,13 @@ public class GrokChatEndPoint extends AiEndPoint implements AIChatInterface {
 
             JsonObject message = choices.get(0).getAsJsonObject().getAsJsonObject("message");
             if (message == null) {
-                log.error("No message in API response choices:\n{}", response);
+                log.error("No message in API response choices:\n{}", response.responseMessage());
                 return null;
             }
 
             String content = message.get("content").getAsString();
             if (content == null) {
-                log.error("No content in API response message:\n{}", response);
+                log.error("No content in API response message:\n{}", response.responseMessage());
                 return null;
             }
 

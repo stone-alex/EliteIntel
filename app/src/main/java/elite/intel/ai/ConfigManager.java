@@ -230,14 +230,14 @@ public class ConfigManager {
 
     private void saveSystemKey(SystemSession session, String keyType, String value) {
         if(AI_API_KEY.equalsIgnoreCase(keyType)) {session.setAiApiKey(value);}
-        if(TTS_API_KEY.equalsIgnoreCase(keyType)) {session.setSttApiKey(value);}
-        if(STT_API_KEY.equalsIgnoreCase(keyType)) {session.setTtsApiKey(value);}
+        if(TTS_API_KEY.equalsIgnoreCase(keyType)) {session.setTtsApiKey(value);}
+        if(STT_API_KEY.equalsIgnoreCase(keyType)) {session.setSttApiKey(value);}
     }
 
     private String getSystemKeyByType(SystemSession systemSession, String keyType) {
         if (AI_API_KEY.equals(keyType)) {return systemSession.getAiApiKey();}
-        if (TTS_API_KEY.equals(keyType)) {return systemSession.getSttApiKey();}
-        if (STT_API_KEY.equals(keyType)) {return systemSession.getTtsApiKey();}
+        if (TTS_API_KEY.equals(keyType)) {return systemSession.getTtsApiKey();}
+        if (STT_API_KEY.equals(keyType)) {return systemSession.getSttApiKey();}
         return null;
     }
 

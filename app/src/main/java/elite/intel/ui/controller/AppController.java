@@ -23,6 +23,8 @@ import elite.intel.ui.event.SystemShutDownEvent;
 import elite.intel.ui.model.AppModelInterface;
 import elite.intel.ui.view.AppViewInterface;
 import elite.intel.util.SleepNoThrow;
+import elite.intel.yt.StreamChatVocalizer;
+import elite.intel.yt.YouTubeChatVocalizer;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -71,6 +73,7 @@ public class AppController implements AppControllerInterface, ActionListener {
     EarsInterface ears;
     MouthInterface mouth;
     AiCommandInterface brain;
+    StreamChatVocalizer streamChatVocalizer;
     JournalParser journalParser = new JournalParser();
 
     public AppController(AppModelInterface model, AppViewInterface view) {
@@ -101,7 +104,6 @@ public class AppController implements AppControllerInterface, ActionListener {
 
     @Override
     public void handleSaveSystemConfig() {
-        systemSession.clearSystemConfigValues();
         Map<String, String> systemConfig = view.getSystemConfigInput();
         configManager.writeConfigFile(ConfigManager.SYSTEM_CONFIG_FILENAME, systemConfig, true);
         model.setSystemConfig(systemConfig);
@@ -175,7 +177,8 @@ public class AppController implements AppControllerInterface, ActionListener {
             String mission_statement = configManager.getPlayerKey(ConfigManager.PLAYER_MISSION_STATEMENT);
             playerSession.setPlayerMissionStatement(mission_statement);
 
-            //EventBusManager.publish(new AiVoxResponseEvent("I am "+systemSession.getAIVoice().getName()));
+            streamChatVocalizer = YouTubeChatVocalizer.getInstance();
+            streamChatVocalizer.start();
 
             appendToLog("Available voices: " + listVoices());
             appendToLog("Available personalities: " + listPersonalities());
@@ -189,6 +192,7 @@ public class AppController implements AppControllerInterface, ActionListener {
             brain.stop();
             ears.stop();
             mouth.stop();
+            streamChatVocalizer.stop();
             systemSession.clearChatHistory();
             systemSession.clearSystemConfigValues();
             playerSession.clearOnShutDown();

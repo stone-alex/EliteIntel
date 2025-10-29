@@ -36,8 +36,6 @@ public class SystemSession extends SessionPersistence implements java.io.Seriali
     public static final String MISSION_STATEMENT = "mission_statement";
     public static final String ALTERNATIVE_NAME = "alternative_name";
     public static final String TITLE = "title";
-    public static final String ACTION = "action";
-    public static final String PARAMS = "params";
 
     private final static String RMS_THRESHOLD_HIGH = "RMS_THRESHOLD_HIGH";
     private final static String RMS_THRESHOLD_LOW = "RMS_THRESHOLD_LOW";

@@ -20,6 +20,11 @@ public class VocalisationRouter {
         EventBusManager.publish(new VocalisationRequestEvent(event.getText(), MissionCriticalAnnouncementEvent.class));
     }
 
+    @Subscribe
+    public void onYtEvent(YtVoxEvent event) {
+        EventBusManager.publish(new VocalisationRequestEvent(event.getText(), event.useRandomVoice(), YtVoxEvent.class));
+    }
+
     /// --- on/off based on user settings
     @Subscribe
     public void onNavigationVocalisationRequest(NavigationVocalisationEvent event) {

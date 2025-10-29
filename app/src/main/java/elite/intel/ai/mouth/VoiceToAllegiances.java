@@ -16,10 +16,10 @@ public class VoiceToAllegiances {
     private VoiceToAllegiances() {
         cadenceToVoices = new EnumMap<>(AICadence.class);
         cadenceToVoices.put(AICadence.IMPERIAL, Arrays.asList(
-                AiVoices.CHARLES, // en-GB-Chirp3-HD-Algenib
+                //AiVoices.CHARLES, // en-GB-Chirp3-HD-Algenib
                 AiVoices.ANNA,    // en-GB-Chirp-HD-F
                 AiVoices.MARY,    // en-GB-Neural2-A
-                AiVoices.BETTY,   // en-GB-Chirp3-HD-Aoede
+                //AiVoices.BETTY,   // en-GB-Chirp3-HD-Aoede
                 AiVoices.OLIVIA   // en-GB-Chirp3-HD-Aoede
         ));
         cadenceToVoices.put(AICadence.FEDERATION, Arrays.asList(
@@ -28,11 +28,11 @@ public class VoiceToAllegiances {
                 AiVoices.JOSEPH,  // en-US-Chirp3-HD-Sadachbia
                 AiVoices.JENNIFER,// en-US-Chirp3-HD-Sulafat
                 AiVoices.RACHEL,  // en-US-Chirp3-HD-Zephyr
-                AiVoices.KAREN,   // en-US-Chirp3-HD-Despina
+                //AiVoices.KAREN,   // en-US-Chirp3-HD-Despina
                 AiVoices.EMMA     // en-US-Chirp3-HD-Despina
         ));
         cadenceToVoices.put(AICadence.ALLIANCE, Arrays.asList(
-                AiVoices.CHARLES, // en-GB-Chirp3-HD-Algenib (British)
+                //AiVoices.CHARLES, // en-GB-Chirp3-HD-Algenib (British)
                 AiVoices.STEVE,   // en-US-Chirp3-HD-Algenib (US)
                 AiVoices.RACHEL,  // en-US-Chirp3-HD-Zephyr (US, diverse)
                 AiVoices.MARY     // en-GB-Neural2-A (British)

@@ -60,11 +60,14 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     private JCheckBox toggleStreamingModeCheckBox;
     private JCheckBox togglePrivacyModeCheckBox;
     private JTextArea logArea;
+    private JPasswordField systemYouTubeStreamKey;
+    private JCheckBox ytLockedCheck;
+    private JTextField systemYouTubeStreamUrl;
 
     // Player tab components
     private JTextField playerAltNameField;
     private JTextField playerTitleField;
-    private JTextField playerMissionDescription; // was JTextArea
+    private JTextField playerMissionDescription;
     private JTextField journalDirField;
     private JTextField bindingsDirField;
     private JButton savePlayerInfoButton;
@@ -136,6 +139,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         bindLock(sttLockedCheck, sttApiKeyField);
         bindLock(llmLockedCheck, llmApiKeyField);
         bindLock(ttsLockedCheck, ttsApiKeyField);
+        bindLock(ytLockedCheck, systemYouTubeStreamKey);
         toggleStreamingModeCheckBox.setEnabled(false);//enabled when services start
         toggleStreamingModeCheckBox.setToolTipText("Prevent AI from processing unless you prefix your command or query with word 'computer'");
         toggleStreamingModeCheckBox.setText("Toggle Streaming Mode");
@@ -184,6 +188,26 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         addField(panel, ttsApiKeyField, gbc, 1, 0.8);
         ttsLockedCheck = new JCheckBox("Locked", true);
         addCheck(panel, ttsLockedCheck, gbc, 2, 0.2);
+
+        // Row YouTube KEY
+        nextRow(gbc);
+        addLabel(panel, "YouTube API Key:", gbc, 0);
+        systemYouTubeStreamKey = new JPasswordField();
+        systemYouTubeStreamKey.setPreferredSize(new Dimension(200, 42));
+        systemYouTubeStreamKey.setToolTipText("YouTube API Key");
+        addField(panel, systemYouTubeStreamKey, gbc, 1, 0.8);
+        ytLockedCheck = new JCheckBox("Locked", true);
+        addCheck(panel, ytLockedCheck, gbc, 2, 0.2);
+
+        // Row YouTube URL
+        nextRow(gbc);
+        addLabel(panel, "YouTube Stream:", gbc, 0);
+        systemYouTubeStreamUrl = new JTextField();
+        systemYouTubeStreamUrl.setPreferredSize(new Dimension(200, 42));
+        systemYouTubeStreamUrl.setToolTipText("Enter your Stream URL if you want TTS for chat");
+        addField(panel, systemYouTubeStreamUrl, gbc, 1, 1.0);
+
+
 
         // Row 3: Buttons
         nextRow(gbc);
@@ -304,7 +328,17 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         installTextLimit(playerMissionDescription, 120);
         addField(panel, playerMissionDescription, gbc, 1, 1.0);
 
-        // Row 3: Journal Directory
+/*
+        // Row 3: YouTube URL
+        nextRow(gbc);
+        addLabel(panel, "YouTube:", gbc, 0);
+        playerYouTubeStreamUrl = new JTextField();
+        playerYouTubeStreamUrl.setPreferredSize(new Dimension(200, 42));
+        playerMissionDescription.setToolTipText("Enter your Stream URL if you want TTS for chat");
+        addField(panel, playerYouTubeStreamUrl, gbc, 1, 1.0);
+*/
+
+        // Row 4: Journal Directory
         nextRow(gbc);
         addLabel(panel, "Journal Directory:", gbc, 0);
         journalDirField = new JTextField();
@@ -333,7 +367,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         selectJournalDirButton.setActionCommand(ACTION_SELECT_JOURNAL_DIR);
         addField(panel, selectJournalDirButton, gbc, 2, 0.2);
 
-        // Row 4: Bindings Directory
+        // Row 5: Bindings Directory
         nextRow(gbc);
         addLabel(panel, "Bindings Directory:", gbc, 0);
         bindingsDirField = new JTextField();
@@ -619,6 +653,13 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
             ttsApiKeyField.setText(cfg.getOrDefault(ConfigManager.TTS_API_KEY, ""));
             ttsLockedCheck.setSelected(!cfg.getOrDefault(ConfigManager.TTS_API_KEY, "").isEmpty());
         }
+        if(systemYouTubeStreamKey != null) {
+            systemYouTubeStreamKey.setText(cfg.getOrDefault(ConfigManager.YT_API_KEY, ""));
+            ytLockedCheck.setSelected(!cfg.getOrDefault(ConfigManager.YT_API_KEY, "").isEmpty());
+        }
+        if(systemYouTubeStreamUrl != null) {
+            systemYouTubeStreamUrl.setText(cfg.getOrDefault(ConfigManager.YT_URL, ""));
+        }
     }
 
     @Override
@@ -636,6 +677,13 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
                 case ConfigManager.STT_API_KEY:
                     ttsApiKeyField.setText(entry.getValue());
                     ttsLockedCheck.setSelected(!cfg.getOrDefault(ConfigManager.TTS_API_KEY, "").isEmpty());
+                    break;
+                case ConfigManager.YT_API_KEY:
+                    systemYouTubeStreamKey.setText(entry.getValue());
+                    ytLockedCheck.setSelected(!cfg.getOrDefault(ConfigManager.YT_API_KEY, "").isEmpty());
+                    break;
+                case ConfigManager.YT_URL:
+                    systemYouTubeStreamUrl.setText(entry.getValue());
                     break;
             }
         }
@@ -685,6 +733,8 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         if (sttApiKeyField != null) cfg.put(ConfigManager.TTS_API_KEY, new String(sttApiKeyField.getPassword()));
         if (llmApiKeyField != null) cfg.put(ConfigManager.AI_API_KEY, new String(llmApiKeyField.getPassword()));
         if (ttsApiKeyField != null) cfg.put(ConfigManager.STT_API_KEY, new String(ttsApiKeyField.getPassword()));
+        if (systemYouTubeStreamUrl != null) cfg.put(ConfigManager.YT_URL, systemYouTubeStreamUrl.getText());
+        if (systemYouTubeStreamKey != null) cfg.put(ConfigManager.YT_API_KEY, systemYouTubeStreamKey.getText());
         return cfg;
     }
 
@@ -703,11 +753,11 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     // User config I/O
     public void setUserConfig(Map<String, String> cfg) {
         if (cfg == null) return;
-        if (playerAltNameField != null)
-            playerAltNameField.setText(cfg.getOrDefault(ConfigManager.PLAYER_ALTERNATIVE_NAME, ""));
+        if (playerAltNameField != null) playerAltNameField.setText(cfg.getOrDefault(ConfigManager.PLAYER_ALTERNATIVE_NAME, ""));
         if (playerTitleField != null) playerTitleField.setText(cfg.getOrDefault(ConfigManager.PLAYER_CUSTOM_TITLE, ""));
-        if (playerMissionDescription != null)
-            playerMissionDescription.setText(cfg.getOrDefault(ConfigManager.PLAYER_MISSION_STATEMENT, ""));
+        if (playerMissionDescription != null) playerMissionDescription.setText(cfg.getOrDefault(ConfigManager.PLAYER_MISSION_STATEMENT, ""));
+        if (systemYouTubeStreamUrl != null) {
+            systemYouTubeStreamUrl.setText(cfg.getOrDefault(ConfigManager.YT_URL, ""));}
         if (journalDirField != null) journalDirField.setText(cfg.getOrDefault(ConfigManager.JOURNAL_DIR, ""));
         if (bindingsDirField != null) bindingsDirField.setText(cfg.getOrDefault(ConfigManager.BINDINGS_DIR, ""));
     }
@@ -728,8 +778,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         Map<String, String> cfg = new HashMap<>();
         if (playerAltNameField != null) cfg.put(ConfigManager.PLAYER_ALTERNATIVE_NAME, playerAltNameField.getText());
         if (playerTitleField != null) cfg.put(ConfigManager.PLAYER_CUSTOM_TITLE, playerTitleField.getText());
-        if (playerMissionDescription != null)
-            cfg.put(ConfigManager.PLAYER_MISSION_STATEMENT, playerMissionDescription.getText());
+        if (playerMissionDescription != null) cfg.put(ConfigManager.PLAYER_MISSION_STATEMENT, playerMissionDescription.getText());
         if (journalDirField != null) cfg.put(ConfigManager.JOURNAL_DIR, journalDirField.getText());
         if (bindingsDirField != null) cfg.put(ConfigManager.BINDINGS_DIR, bindingsDirField.getText());
         return cfg;

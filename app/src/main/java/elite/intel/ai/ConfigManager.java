@@ -47,6 +47,8 @@ public class ConfigManager {
 
     // Config keys
     public static final String AI_API_KEY = "ai_api_key";
+    public static final String YT_API_KEY = "yt_api_key";
+    public static final String YT_URL = "yt_url";
     public static final String TTS_API_KEY = "tts_api_key"; // New key for Google API
     public static final String STT_API_KEY = "stt_api_key";
     public static final String PLAYER_MISSION_STATEMENT = "mission_statement";
@@ -62,6 +64,8 @@ public class ConfigManager {
     private ConfigManager() {
         // Initialize default configs
         DEFAULT_SYSTEM_CONFIG.put(AI_API_KEY, "");
+        DEFAULT_SYSTEM_CONFIG.put(YT_API_KEY, "");
+        DEFAULT_SYSTEM_CONFIG.put(YT_URL, "");
         DEFAULT_SYSTEM_CONFIG.put(TTS_API_KEY, "");
         DEFAULT_SYSTEM_CONFIG.put(STT_API_KEY, "");
         DEFAULT_SYSTEM_CONFIG.put(DEBUG_SWITCH, "false");
@@ -211,7 +215,6 @@ public class ConfigManager {
         SystemSession systemSession = SystemSession.getInstance();
         String key = getSystemKeyByType(systemSession, keyType);
 
-
         if (key == null || key.isEmpty() || key.equals("null")) {
             String value = readConfig(SYSTEM_CONFIG_FILENAME).get(keyType);
             if (value != null || !value.isEmpty()) {
@@ -231,10 +234,6 @@ public class ConfigManager {
         if(STT_API_KEY.equalsIgnoreCase(keyType)) {session.setTtsApiKey(value);}
     }
 
-    private void savePlayerKey(SystemSession session, String keyType, String value) {
-
-    }
-
     private String getSystemKeyByType(SystemSession systemSession, String keyType) {
         if (AI_API_KEY.equals(keyType)) {return systemSession.getAiApiKey();}
         if (TTS_API_KEY.equals(keyType)) {return systemSession.getSttApiKey();}
@@ -243,7 +242,7 @@ public class ConfigManager {
     }
 
     private String getPlayerKeyByType(SystemSession systemSession, String keyType) {
-        if( PLAYER_MISSION_STATEMENT.equals(keyType)) {return systemSession.getMissionStatement();}
+        if(PLAYER_MISSION_STATEMENT.equals(keyType)) {return systemSession.getMissionStatement();}
         if(PLAYER_ALTERNATIVE_NAME.equals(keyType)) {return systemSession.getAlternativeName();}
         if(PLAYER_CUSTOM_TITLE.equals(keyType)) {return systemSession.getTitle();}
         if(JOURNAL_DIR.equals(keyType)) {return systemSession.getJournalDir();}
@@ -260,7 +259,6 @@ public class ConfigManager {
         if (key == null || key.isEmpty() || key.equals("null")) {
             String value = readConfig(USER_CONFIG_FILENAME).get(keyType);
             if (value != null || !value.isEmpty()) {
-                savePlayerKey(systemSession, keyType, value);
                 return value;
             } else {
                 throw new IllegalStateException(String.format("No value found for user key %s", keyType));

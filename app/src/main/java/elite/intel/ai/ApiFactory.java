@@ -6,6 +6,7 @@ import elite.intel.ai.brain.openai.*;
 import elite.intel.ai.brain.xai.*;
 import elite.intel.ai.ears.EarsInterface;
 import elite.intel.ai.ears.google.GoogleSTTImpl;
+import elite.intel.ai.ears.vosk.VoskSTTImpl;
 import elite.intel.ai.mouth.MouthInterface;
 import elite.intel.ai.mouth.google.GoogleTTSImpl;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
@@ -119,9 +120,10 @@ public class ApiFactory {
                 return new GoogleSTTImpl();
             // TODO: Add Deepgram, Azure STT, etc.
             default:
-                EventBusManager.publish(new AppLogEvent("Unknown STT key format"));
-                EventBusManager.publish(new AiVoxResponseEvent("Using default Google STT—confirm?"));
-                return new GoogleSTTImpl();
+                String message = "Using default Vosk STT Impl";
+                EventBusManager.publish(new AppLogEvent(message));
+                EventBusManager.publish(new AiVoxResponseEvent(message));
+                return new VoskSTTImpl();
         }
     }
 }

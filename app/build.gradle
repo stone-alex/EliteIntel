@@ -9,9 +9,15 @@ repositories {
     maven {
         url 'https://oss.sonatype.org/content/repositories/snapshots'
     }
+    maven {
+        url 'https://jitpack.io'
+    }
 }
 
 dependencies {
+    implementation 'com.alphacephei:vosk:0.3.45'
+    implementation 'net.java.dev.jna:jna:5.14.0'
+
     // Text to Speech
     implementation 'com.google.cloud:google-cloud-texttospeech:2.73.0'
 
@@ -62,6 +68,8 @@ sourceSets {
             include 'beep.wav'
             include '**/*.xml'
             include 'META-INF/MANIFEST.MF'
+            include 'model/**' // Include Vosk model
+            include 'native/**' // Include native libraries
         }
     }
 }
@@ -74,6 +82,20 @@ shadowJar {
     mergeServiceFiles()
     destinationDirectory = file("${rootProject.projectDir}/distribution")
 }
+
+// Copy Vosk model to resources
+task copyModel(type: Copy) {
+    from 'src/main/resources/model/vosk-en-us'
+    into 'build/resources/main/model/vosk-en-us'
+}
+
+// Copy native library to resources
+task copyNative(type: Copy) {
+    from 'src/main/resources/native'
+    into 'build/resources/main/native'
+}
+
+processResources.dependsOn copyModel, copyNative
 
 // Ensure only the fat JAR is produced and used by assemble/build
 tasks.named('jar') {

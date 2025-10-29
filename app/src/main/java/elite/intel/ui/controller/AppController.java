@@ -130,30 +130,22 @@ public class AppController implements AppControllerInterface, ActionListener {
 
         if (isServiceRunning) {
 
-            boolean haveKeys = true;
             String ttsApiKey = String.valueOf(configManager.getSystemKey(ConfigManager.TTS_API_KEY));
             if (ttsApiKey == null || ttsApiKey.trim().isEmpty() || ttsApiKey.equals("null")) {
                 appendToLog("SYSTEM: TTS API key not found in system.conf. I have no mouth to speak with");
                 isServiceRunning = false;
-                haveKeys = false;
             }
 
             String sttApiKey = String.valueOf(configManager.getSystemKey(ConfigManager.STT_API_KEY));
             if (sttApiKey == null || sttApiKey.trim().isEmpty() || sttApiKey.equals("null")) {
                 appendToLog("SYSTEM: STT API key not found in system.conf. I have no ears to hear with");
                 isServiceRunning = false;
-                haveKeys = false;
             }
 
             String aiApiKey = String.valueOf(configManager.getSystemKey(ConfigManager.AI_API_KEY));
             if (aiApiKey == null || aiApiKey.trim().isEmpty() || aiApiKey.equals("null")) {
                 appendToLog("SYSTEM: AI API key not found in system.conf. I have no brain to process with");
                 isServiceRunning = false;
-                haveKeys = false;
-            }
-
-            if (!haveKeys) {
-                return false;
             }
 
 

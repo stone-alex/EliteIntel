@@ -3,6 +3,7 @@ package elite.intel.gameapi;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import elite.intel.ai.ConfigManager;
 import elite.intel.ai.brain.handlers.CommandHandlerFactory;
 import elite.intel.ai.hands.GameController;
 import elite.intel.gameapi.gamestate.dtos.GameEvents;
@@ -66,7 +67,7 @@ public class AuxiliaryFilesMonitor implements Runnable {
     private final GameController _gameHandler;
 
     public AuxiliaryFilesMonitor() {
-        this.directory = Paths.get(System.getProperty("user.home"), "Saved Games", "Frontier Developments", "Elite Dangerous");
+        this.directory = ConfigManager.getInstance().getJournalPath();
         this._gameHandler = CommandHandlerFactory.getInstance().getGameCommandHandler();
     }
 

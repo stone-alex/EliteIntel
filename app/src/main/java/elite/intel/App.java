@@ -14,6 +14,8 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
 
 import javax.swing.*;
+import com.formdev.flatlaf.FlatLightLaf;
+
 
 public class App {
 
@@ -36,10 +38,10 @@ public class App {
         //noinspection ResultOfMethodCallIgnored
         SystemSession.getInstance(); //Initialize system session
         EventBusManager.publish(new LoadSessionEvent());
-
+        FlatLightLaf.setup();
         SwingUtilities.invokeLater(() -> {
             try {
-                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                UIManager.setLookAndFeel( new FlatLightLaf() );
             } catch (Exception e) {
                 e.printStackTrace();
             }

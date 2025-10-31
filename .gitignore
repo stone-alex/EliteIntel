@@ -7,7 +7,6 @@ app/src/main/resources/elite-intel-xai-api-key.conf
 ./player.conf
 ./system.conf
 ./session/status.json
-
 ./brainstorming.txt
 ./test.json
 ./misc

@@ -36,6 +36,9 @@ dependencies {
 
     //Utils
     implementation 'org.apache.commons:commons-lang3:3.18.0'
+
+    //Look and Feel
+    implementation 'com.formdev:flatlaf:3.5.2'
 }
 
 

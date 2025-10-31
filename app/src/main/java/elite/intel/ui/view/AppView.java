@@ -107,7 +107,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     public AppView() {
         super("Elite Intel");
         // Apply a readable, Windows-friendly font to the entire UI BEFORE creating components
-        installUIFont(getPlatformDefaultFont(18f)); // Adjust base size here (e.g., 14f, 15f, 16f)
+        installUIFont(getPlatformDefaultFont(20f)); // Adjust base size here (e.g., 14f, 15f, 16f)
         installDarkDefaults(); // set dark defaults before components are created
 
 

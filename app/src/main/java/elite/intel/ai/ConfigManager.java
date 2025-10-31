@@ -111,6 +111,7 @@ public class ConfigManager {
     public Path getJournalPath() {
         String customJournalDir = ConfigManager.getInstance().getPlayerKey(ConfigManager.JOURNAL_DIR);
         if (customJournalDir == null || customJournalDir.isBlank()) {
+            //fall back, but only works on windows. //TODO: change this to throw an erro message
             return Paths.get(System.getProperty("user.home"), "Saved Games", "Frontier Developments", "Elite Dangerous");
         } else {
             return Paths.get(customJournalDir);

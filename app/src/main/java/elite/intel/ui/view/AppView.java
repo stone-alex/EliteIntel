@@ -328,16 +328,6 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         installTextLimit(playerMissionDescription, 120);
         addField(panel, playerMissionDescription, gbc, 1, 1.0);
 
-/*
-        // Row 3: YouTube URL
-        nextRow(gbc);
-        addLabel(panel, "YouTube:", gbc, 0);
-        playerYouTubeStreamUrl = new JTextField();
-        playerYouTubeStreamUrl.setPreferredSize(new Dimension(200, 42));
-        playerMissionDescription.setToolTipText("Enter your Stream URL if you want TTS for chat");
-        addField(panel, playerYouTubeStreamUrl, gbc, 1, 1.0);
-*/
-
         // Row 4: Journal Directory
         nextRow(gbc);
         addLabel(panel, "Journal Directory:", gbc, 0);
@@ -795,8 +785,25 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     // Logs and Help
     public void setLogText(String text) {
         if (logArea != null) {
-            logArea.setText(text == null ? "" : text);
-            logArea.setCaretPosition(logArea.getDocument().getLength());
+            if (text == null) {
+                return;
+            } else {
+                // Type text one character at a time
+                StringBuilder sb = new StringBuilder();
+                Timer timer = new Timer(7, null); // 25ms delay between characters
+                final int[] i = {0};
+                timer.addActionListener(e -> {
+                    if (i[0] < text.length()) {
+                        sb.append(text.charAt(i[0]));
+                        logArea.setText(sb.toString());
+                        logArea.setCaretPosition(logArea.getDocument().getLength());
+                        i[0]++;
+                    } else {
+                        timer.stop();
+                    }
+                });
+                timer.start();
+            }
         }
     }
 

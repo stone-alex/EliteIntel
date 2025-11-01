@@ -16,19 +16,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * AppView is the main UI frame of the application responsible for displaying and controlling
- * various aspects of the system and user configuration, logs, and help content. It extends
- * JFrame and implements the AppViewInterface for standardized interaction.
- * <p>
- * The class includes predefined UI styles for a dark theme and organizes its interface
- * into multiple tabs: System, Player, and Help. It also allows for integration with external
- * listeners to handle UI control actions.
- * <p>
- * Features:
- * - Displays and updates system configuration, user configuration, logs, and help content.
- * - Supports user inputs for various text fields and checkboxes.
- * - Integrates with action listeners for handling events.
- * - Implements custom styles for a cohesive dark-themed UI.
+ * Represents the main graphical user interface of the application.
+ * The `AppView` class organizes and manages user interactions, layouts,
+ * and theming for various sections such as system configuration, player
+ * configuration, and help documentation.
  */
 public class AppView extends JFrame implements PropertyChangeListener, AppViewInterface {
 
@@ -774,15 +765,14 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         return cfg;
     }
 
+
     /**
-     * Updates the log text displayed in the log area of the user interface.
-     * If the provided text is null, the log area will be cleared.
-     * The method also ensures that the caret (text cursor) is positioned
-     * at the end of the updated text.
+     * Updates the content of the log area with the given text. If the current text
+     * in the log area and the new text share a common prefix, only the differing
+     * part of the text is gradually updated using an animated effect.
      *
-     * @param text The new text to display in the log area. If null, the log area will be cleared.
+     * @param text the new log text to display in the log area; if null, the method does nothing
      */
-    // Logs and Help
     public void setLogText(String text) {
         if (logArea != null && text != null) {
             String currentText = logArea.getText();

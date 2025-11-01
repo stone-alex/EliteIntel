@@ -34,7 +34,7 @@ public class CarrierJumpCompleteSubscriber {
         String stationName = playerSession.getCurrentLocation().getStationName();
         CarrierDataDto carrierInfo = playerSession.getCarrierData();
 
-        if (status.isDocked() && stationName != null && stationName.equalsIgnoreCase(carrierInfo.getCallSign())) {
+        if (status.isDocked()) {
             playerSession.saveLocation(toLocationDto(event));
         }
 

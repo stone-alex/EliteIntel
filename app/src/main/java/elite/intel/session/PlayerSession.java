@@ -967,10 +967,9 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     public GalacticCoordinates getGalacticCoordinates() {
 
         Status status = Status.getInstance();
-        String stationName = getCurrentLocation().getStationName();
         CarrierDataDto carrierInfo = getCarrierData();
 
-        if(status.isDocked() && stationName != null && stationName.equalsIgnoreCase(carrierInfo.getCallSign())){
+        if(status.isDocked()){
             // we are on the fleet carrier
             return new GalacticCoordinates(carrierInfo.getX(), carrierInfo.getY(), carrierInfo.getZ());
         }

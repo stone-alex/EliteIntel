@@ -89,6 +89,17 @@ Welcome to developing for Elite Intel, a Java-based QoL app for *Elite Dangerous
 
 If open-sourced, code falls under Creative Commons (e.g., CC BY-NC-SA 4.0). Attribute third-party work.
 
+
+## Intelli J IDEA Note:
+There are classes instantiated via reflection. Intelli J IDEA will flag these as unused. To fix this, add @Subscribe to the list of annotations that are considered as usage.
+
+1. Go to File > Settings (or IntelliJ IDEA > Preferences on macOS).
+2. Navigate to Editor > Inspections.
+3. In the search bar, type "Unused declaration" to find the inspection related to unused code.
+4. Click on Unused declaration to expand it.
+5. You'll see an option called Annotations. Click on the ellipsis (...) next to it.
+6. In the dialog that appears, you can add @Subscribe to the list of annotations that are considered as usage.
+
 ## Contact
 
 Submit a pull request. Open an issue on GitHub. Or contact me via Discord: [discord.gg/3qAqBENsBm](https://discord.gg/3qAqBENsBm).

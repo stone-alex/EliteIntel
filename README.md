@@ -4,7 +4,9 @@
 
 ## Installation & Setup
 
-# 👉[Download Installation and Configuration](https://github.com/stone-alex/eliteintel/wiki/Installation-and-Configuration)👈
+## 👉[Download Installation and Configuration](https://github.com/stone-alex/eliteintel/wiki/Installation-and-Configuration)👈
+
+### Linux and Windows are supported.
 
 If you run into issues, hit us up on GitHub issues or 👉[**Discord**](https://discord.gg/3qAqBENsBm).👈
 Feedback and bug reports are super welcome!
@@ -14,16 +16,18 @@ Feedback and bug reports are super welcome!
 ## Overview
 
 Elite Intel is your AI-powered, TOS-compliant sidekick for *Elite Dangerous*.
-It's a Quality of Life (QoL) app that enhances gameplay with voice-activated commands **uttered in natural language**,
+It's a Quality of Life (QoL) app that enhances gameplay with voice-activated commands 
+**uttered in natural language**,
 real-time journal parsing, and smart AI assistance—all while staying fully compliant
 with Frontier Developments' Terms of Service. No AFK play, no botting, and no
 automation that gives unfair advantages; everything requires your input.
 
 The app uses Google Speech-to-Text (STT) and Text-to-Speech (TTS) for **natural voice interactions**,
-and either xAI's Grok or OpenAI's GPT for handling commands, queries, and chats. It processes game data from journal and auxiliary
-files, pulls in info from EDSM when needed, and keeps things responsive.
+and either OpenAI's GPT or xAI's Grok for handling commands, queries, and chats. It processes 
+game data from journal and auxiliary files, pulls in info from EDSM when needed, and keeps 
+things responsive.
 
-**NOTE: Grok-4 is very slow. I highly recommend using OpenAI's GPT.**
+**NOTE: Grok-4 is slow. I highly recommend using OpenAI's GPT.**
 
 The project is open-source under
 a [Creative Commons license CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en),
@@ -49,7 +53,7 @@ so feel free to check out the code and contribute. (see [DEVELOPERS.md](DEVELOPE
   Alliance mixing both), and 4 personalities:
 
   - **Professional**: Military-style, no-nonsense replies with profile-specific cadence; skips idle chit-chat.
-  - **Friendly**: Casual and concise, like chatting with a buddy, using slang that fits the profile.
+  - **Casual**: Casual and concise, like chatting with a buddy, using slang that fits the profile.
   - **Unhinged**: Super brief, playful, and cheeky with humor and light sarcasm; slang matches the cadence.
   - **Rogue**: Bold and witty, extremely concise with heavy jargon and occasional cheeky language (nothing too wild,
     but watch out for that edge).

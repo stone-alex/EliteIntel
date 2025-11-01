@@ -113,8 +113,8 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
 
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/images/elite-logo.png")));
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setMinimumSize(new Dimension(1200, 900));
-        setSize(new Dimension(1200, 900));
+        setMinimumSize(new Dimension(1200, 1000));
+        setSize(new Dimension(1200, 1000));
         setLocationRelativeTo(null);
 
         JPanel root = new JPanel(new BorderLayout());

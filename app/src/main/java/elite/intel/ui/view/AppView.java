@@ -784,14 +784,23 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
      */
     // Logs and Help
     public void setLogText(String text) {
-        if (logArea != null) {
-            if (text == null) {
+        if (logArea != null && text != null) {
+            String currentText = logArea.getText();
+            if (currentText.equals(text)) {
                 return;
-            } else {
-                // Type text one character at a time
-                StringBuilder sb = new StringBuilder();
-                Timer timer = new Timer(7, null); // 25ms delay between characters
-                final int[] i = {0};
+            }
+
+            int commonPrefixLength = 0;
+            int minLength = Math.min(currentText.length(), text.length());
+            while (commonPrefixLength < minLength &&
+                    currentText.charAt(commonPrefixLength) == text.charAt(commonPrefixLength)) {
+                commonPrefixLength++;
+            }
+
+            if (commonPrefixLength < text.length()) {
+                StringBuilder sb = new StringBuilder(text.substring(0, commonPrefixLength));
+                Timer timer = new Timer(7, null);
+                final int[] i = {commonPrefixLength};
                 timer.addActionListener(e -> {
                     if (i[0] < text.length()) {
                         sb.append(text.charAt(i[0]));
@@ -806,7 +815,6 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
             }
         }
     }
-
     public void setHelpMarkdown(String markdown) {
         if (helpPane == null) return;
         helpPane.setText(markdown);
@@ -875,8 +883,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     private static void installTextLimit(JTextField field, int maxChars) {
         ((AbstractDocument) field.getDocument()).setDocumentFilter(new DocumentFilter() {
             @Override
-            public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr)
-                    throws BadLocationException {
+            public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
                 if (string == null) return;
                 int newLen = fb.getDocument().getLength() + string.length();
                 if (newLen <= maxChars) {

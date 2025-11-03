@@ -259,9 +259,11 @@ public class GoogleTTSImpl implements MouthInterface {
             int silenceFrames = (int) (format.getSampleRate() / 50);
             byte[] silenceBuffer = new byte[silenceFrames * format.getFrameSize()];
 
+
             currentLine.set(null);
             try (SourceDataLine line = (SourceDataLine) AudioSystem.getLine(info)) {
                 EventBusManager.publish(new TtsEvent(true));
+
                 line.open(format, bufferBytes);
                 currentLine.set(line);
                 log.debug("SourceDataLine opened in {}ms", System.currentTimeMillis() - lineOpenStartTime);

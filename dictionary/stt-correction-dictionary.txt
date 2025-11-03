@@ -203,3 +203,4 @@
 "b plus"="speed plus"
 "affiliate carrier"="fleet carrier"
 "drought back"="plot the route back"
+"optimized speed"="optimize speed"

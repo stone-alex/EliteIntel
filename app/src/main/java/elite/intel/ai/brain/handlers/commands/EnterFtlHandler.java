@@ -39,7 +39,7 @@ public class EnterFtlHandler extends CommandOperator implements CommandHandler {
             } else {
                 operateKeyboard(BINDING_SET_SPEED100.getGameBinding(), 0);
                 operateKeyboard(BINDING_ENTER_SUPERCRUISE.getGameBinding(), 0);
-                SleepNoThrow.sleep(11_000);
+                SleepNoThrow.sleep(12_000);
                 operateKeyboard(BINDING_SET_SPEED100.getGameBinding(), 0);
             }
         } else {

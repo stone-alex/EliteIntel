@@ -37,6 +37,7 @@ public class GoogleTTSImpl implements MouthInterface {
     private final GoogleVoiceProvider googleVoiceProvider;
     private final AtomicBoolean interruptRequested = new AtomicBoolean(false);
     private final AtomicReference<SourceDataLine> currentLine = new AtomicReference<>();
+    private SourceDataLine persistentLine; // Add persistent line
 
     private static final GoogleTTSImpl INSTANCE = new GoogleTTSImpl();
 
@@ -99,6 +100,8 @@ public class GoogleTTSImpl implements MouthInterface {
             log.warn("Interrupted while waiting for VoiceGenerator to stop. System shutdown?", e);
             Thread.currentThread().interrupt();
         }
+        // Close persistent line
+        closePersistentLine();
         try {
             if (textToSpeechClient != null) {
                 textToSpeechClient.close();
@@ -132,10 +135,10 @@ public class GoogleTTSImpl implements MouthInterface {
         SourceDataLine line = currentLine.get();
         if (line != null) {
             line.stop();
-            line.close();
+            line.flush(); // Flush instead of close
             currentLine.set(null);
         }
-        interruptRequested.set(false); // Reset flag to allow new vocalizations
+        interruptRequested.set(false);
         log.info("TTS interrupted and queue cleared, thread alive={}, interruptRequested={}",
                 processingThread != null && processingThread.isAlive(), interruptRequested.get());
         if (processingThread == null || !processingThread.isAlive()) {
@@ -177,6 +180,12 @@ public class GoogleTTSImpl implements MouthInterface {
     }
 
     private void processVoiceQueue() {
+        // Open persistent line at thread start
+        if (!openPersistentLine()) {
+            log.error("Failed to open persistent audio line, cannot process voice queue");
+            return;
+        }
+
         while (running) {
             try {
                 log.trace("Polling voice queue, size={}, interruptRequested={}",
@@ -185,6 +194,7 @@ public class GoogleTTSImpl implements MouthInterface {
                 if (request == null) {
                     if (Thread.currentThread().isInterrupted() || !running) {
                         log.info("Shutting down VoiceGenerator due to interruption or stop signal");
+                        closePersistentLine();
                         return;
                     }
                     continue;
@@ -198,9 +208,43 @@ public class GoogleTTSImpl implements MouthInterface {
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 log.info("VoiceGenerator interrupted, shutting down");
+                closePersistentLine();
                 return;
             } catch (Exception e) {
                 log.error("Unexpected error in VoiceGenerator", e);
+            }
+        }
+        closePersistentLine();
+    }
+
+    private boolean openPersistentLine() {
+        try {
+            AudioFormat format = new AudioFormat(24000, 16, 1, true, false);
+            DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
+            int bufferBytes = (int) (format.getFrameSize() * format.getSampleRate() / 10);
+            
+            persistentLine = (SourceDataLine) AudioSystem.getLine(info);
+            persistentLine.open(format, bufferBytes);
+            persistentLine.start();
+            log.info("Persistent audio line opened successfully");
+            return true;
+        } catch (LineUnavailableException e) {
+            log.error("Failed to open persistent audio line: {}", e.getMessage(), e);
+            return false;
+        }
+    }
+
+    private void closePersistentLine() {
+        if (persistentLine != null) {
+            try {
+                persistentLine.drain();
+                persistentLine.stop();
+                persistentLine.close();
+                log.info("Persistent audio line closed");
+            } catch (Exception e) {
+                log.error("Error closing persistent audio line", e);
+            } finally {
+                persistentLine = null;
             }
         }
     }
@@ -248,77 +292,46 @@ public class GoogleTTSImpl implements MouthInterface {
             log.debug("Google TTS API call completed in {}ms", apiEndTime - apiStartTime);
 
             byte[] audioData = response.getAudioContent().toByteArray();
+            AudioDeClicker.sanitize(audioData, 40);
 
-            AudioDeClicker.sanitize(audioData, 40); // removes clicks and applies fade in and fade out
+            // Use persistent line instead of opening/closing
+            if (persistentLine == null || !persistentLine.isOpen()) {
+                log.warn("Persistent line not available, attempting to reopen");
+                if (!openPersistentLine()) {
+                    log.error("Cannot play audio, line unavailable");
+                    return;
+                }
+            }
 
-            log.debug("Opening SourceDataLine");
-            long lineOpenStartTime = System.currentTimeMillis();
-            AudioFormat format = new AudioFormat(24000, 16, 1, true, false);
-            DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
+            currentLine.set(persistentLine);
+            EventBusManager.publish(new TtsEvent(true));
+
+            log.debug("Starting playback on persistent line");
+            AudioFormat format = persistentLine.getFormat();
             int bufferBytes = (int) (format.getFrameSize() * format.getSampleRate() / 10);
             int silenceFrames = (int) (format.getSampleRate() / 50);
             byte[] silenceBuffer = new byte[silenceFrames * format.getFrameSize()];
 
-
-            currentLine.set(null);
-            try (SourceDataLine line = (SourceDataLine) AudioSystem.getLine(info)) {
-                EventBusManager.publish(new TtsEvent(true));
-
-                line.open(format, bufferBytes);
-                currentLine.set(line);
-                log.debug("SourceDataLine opened in {}ms", System.currentTimeMillis() - lineOpenStartTime);
-
-                log.debug("Starting playback");
-                line.write(silenceBuffer, 0, silenceBuffer.length);
-                line.start();
-                log.info("Spoke with voice {}: {}", voiceName, text);
-                long writeStartTime = System.currentTimeMillis();
-                for (int i = 0; i < audioData.length; i += bufferBytes) {
-                    if (interruptRequested.get()) {
-                        log.debug("Playback interrupted mid-stream: {}", text);
-                        break;
-                    }
-                    int len = Math.min(bufferBytes, audioData.length - i);
-                    line.write(audioData, i, len);
-                }
+            persistentLine.write(silenceBuffer, 0, silenceBuffer.length);
+            log.info("Spoke with voice {}: {}", voiceName, text);
+            long writeStartTime = System.currentTimeMillis();
+            for (int i = 0; i < audioData.length; i += bufferBytes) {
                 if (interruptRequested.get()) {
-                    line.flush();
-                    log.debug("Playback interrupted");
-                } else {
-                    line.drain();
+                    log.debug("Playback interrupted mid-stream: {}", text);
+                    break;
                 }
-                publishCompletionEvent(originType);
-                
-                log.debug("Audio playback completed in {}ms", System.currentTimeMillis() - writeStartTime);
-            } catch (LineUnavailableException e) {
-                log.error("Audio device unavailable, possible contention: {}", e.getMessage(), e);
-                try {
-                    log.debug("Retrying SourceDataLine open");
-                    SourceDataLine retryLine = (SourceDataLine) AudioSystem.getLine(info);
-                    retryLine.open(format, bufferBytes);
-                    currentLine.set(retryLine);
-                    retryLine.write(silenceBuffer, 0, silenceBuffer.length);
-                    retryLine.start();
-                    for (int i = 0; i < audioData.length; i += bufferBytes) {
-                        if (interruptRequested.get()) {
-                            log.debug("Playback interrupted mid-stream on retry: {}", text);
-                            break;
-                        }
-                        int len = Math.min(bufferBytes, audioData.length - i);
-                        retryLine.write(audioData, i, len);
-                    }
-                    if (interruptRequested.get()) {
-                        retryLine.flush();
-                    } else {
-                        retryLine.drain();
-                    }
-                    retryLine.close();
-                    publishCompletionEvent(originType);
-                    log.info("Audio playback retried successfully");
-                } catch (LineUnavailableException retryEx) {
-                    log.error("Retry failed for audio device: {}", retryEx.getMessage(), retryEx);
-                }
+                int len = Math.min(bufferBytes, audioData.length - i);
+                persistentLine.write(audioData, i, len);
             }
+            if (interruptRequested.get()) {
+                persistentLine.flush();
+                log.debug("Playback interrupted");
+            } else {
+                persistentLine.drain();
+            }
+            publishCompletionEvent(originType);
+            log.debug("Audio playback completed in {}ms", System.currentTimeMillis() - writeStartTime);
+
         } catch (Exception e) {
             log.error("Text-to-speech error: {}", e.getMessage(), e);
         } finally {

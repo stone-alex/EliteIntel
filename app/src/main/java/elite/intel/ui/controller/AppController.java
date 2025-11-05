@@ -257,7 +257,7 @@ public class AppController implements AppControllerInterface, ActionListener {
     }
 
     private String streamingModeIsOffMessage() {
-        return "Streaming mode is Off. AI is listening to you.";
+        return "I am listening";
     }
 
     private String streamingModeIsOnMessage() {
@@ -320,8 +320,20 @@ public class AppController implements AppControllerInterface, ActionListener {
                 handleSelectJournalDir();
             } else if (ACTION_SELECT_BINDINGS_DIR.equals(command)) {
                 handleSelectBindingsDir();
+            } else if (ACTION_RECALIBRATE_AUTIO.equals(command)) {
+                recalibrateAudio();
             }
         }
+    }
+
+    private void recalibrateAudio() {
+        appendToLog("Recalibrating audio...");
+        ears.stop();
+        systemSession.setRmsThresholdHigh(null);
+        systemSession.setRmsThresholdLow(null);
+        EventBusManager.publish(new MissionCriticalAnnouncementEvent("Recalibrating audio..."));
+        SleepNoThrow.sleep(5000);
+        ears.start();
     }
 
 

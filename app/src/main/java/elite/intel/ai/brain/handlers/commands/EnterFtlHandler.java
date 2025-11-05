@@ -36,6 +36,8 @@ public class EnterFtlHandler extends CommandOperator implements CommandHandler {
             if (status.isInSupercruise()) {
                 operateKeyboard(BINDING_SET_SPEED100.getGameBinding(), 0);
                 operateKeyboard(BINDING_JUMP_TO_HYPERSPACE.getGameBinding(), 0);
+                SleepNoThrow.sleep(12_000);
+                operateKeyboard(BINDING_SET_SPEED100.getGameBinding(), 0);
             } else {
                 operateKeyboard(BINDING_SET_SPEED100.getGameBinding(), 0);
                 operateKeyboard(BINDING_ENTER_SUPERCRUISE.getGameBinding(), 0);

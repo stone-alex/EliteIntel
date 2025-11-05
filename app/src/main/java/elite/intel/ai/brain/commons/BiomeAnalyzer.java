@@ -24,7 +24,7 @@ public class BiomeAnalyzer extends BaseQueryAnalyzer {
 
         List<GenusDto> genus = location.getGenus();
         if(genus == null || genus.isEmpty()) {
-            String instructions = "Parse the genusToBiome map, where each value is formatted as 'Planet:<types>|Atmosphere:<types>|Gravity:<constraint>|Temperature:<range>|Volcanism:<types>|System:<constraints>'. Using the location's atmosphere, gravity, temperature, volcanism, and system details, identify genera whose biome conditions match. Return a list of matching genera, prioritizing specific matches over broad ones, however Bacterium is a most likely candidate, while genus like Brain Trees and are extremely rare.";
+            String instructions = "Parse the genusToBiome map, where each value is formatted as 'Planet:<types>|Atmosphere:<types>|Gravity:<constraint>|Temperature:<range>|Volcanism:<types>|System:<constraints>'. Using the location's atmosphere, gravity, temperature, volcanism, and system details, identify genera whose biome conditions match. Return a list of matching genera, prioritizing specific matches over broad ones. Do not return details on negative results. Return possible matches only. Bacterium is a most likely candidate, while genus like Brain Trees and are extremely rare.";
 
             JsonObject jsonObject = process(
                     new AiDataStruct(instructions, new DataDto(BioForms.getGenusToBiome(), location)),

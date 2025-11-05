@@ -1,6 +1,7 @@
 package elite.intel.ui.view;
 
 import elite.intel.ai.ConfigManager;
+import org.checkerframework.checker.lock.qual.EnsuresLockHeld;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -32,6 +33,8 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     private static final Color SEL_BG = new Color(0x3A3D41); // selection background
     private static final Color TAB_UNSELECTED = new Color(0x2A2C2F);
     private static final Color TAB_SELECTED = new Color(0x33363A);
+    public static final String LABEL_STREAMING_MODE = "Streaming Mode";
+    public static final String LABEL_PRIVACY_MODE = "Privacy Mode";
     // ----- END COLORS -----
 
 
@@ -48,6 +51,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     private JCheckBox ttsLockedCheck;
     private JButton saveSystemButton;
     private JButton startStopServicesButton;
+    private JButton recalibrateAudioButton;
     private JCheckBox toggleStreamingModeCheckBox;
     private JCheckBox togglePrivacyModeCheckBox;
     private JTextArea logArea;
@@ -133,12 +137,12 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         bindLock(ytLockedCheck, systemYouTubeStreamKey);
         toggleStreamingModeCheckBox.setEnabled(false);//enabled when services start
         toggleStreamingModeCheckBox.setToolTipText("Prevent AI from processing unless you prefix your command or query with word 'computer'");
-        toggleStreamingModeCheckBox.setText("Toggle Streaming Mode");
+        toggleStreamingModeCheckBox.setText(LABEL_STREAMING_MODE);
         toggleStreamingModeCheckBox.setForeground(Color.GREEN);
 
         togglePrivacyModeCheckBox.setEnabled(false); // enabled when services start
         togglePrivacyModeCheckBox.setToolTipText("Temporary disable Speech to Text completely");
-        togglePrivacyModeCheckBox.setText("Toggle Privacy Mode");
+        togglePrivacyModeCheckBox.setText(LABEL_PRIVACY_MODE);
         togglePrivacyModeCheckBox.setForeground(Color.GREEN);
 
         journalDirField.setEditable(false);
@@ -254,18 +258,42 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         startStopServicesButton.setActionCommand(ACTION_TOGGLE_SERVICES);
         styleButton(startStopServicesButton);
 
+        recalibrateAudioButton = new JButton("Recalibrate Audio") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                try {
+                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    Color base = BG_PANEL;
+                    ButtonModel m = getModel();
+                    if (m.isPressed()) base = base.darker();
+                    else if (m.isRollover()) base = base.brighter();
+                    g2.setColor(base);
+                    g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
+                } finally {
+                    g2.dispose();
+                }
+                super.paintComponent(g);
+            }
+        };
+
+        recalibrateAudioButton.setActionCommand(ACTION_RECALIBRATE_AUTIO);
+        styleButton(recalibrateAudioButton);
+
+
         showDetailedLog = new JCheckBox("Show Detailed Log", false);
         showDetailedLog.setActionCommand(ACTION_TOGGLE_SYSTEM_LOG);
 
-        toggleStreamingModeCheckBox = new JCheckBox("Toggle Streaming Mode", false);
+        toggleStreamingModeCheckBox = new JCheckBox(LABEL_STREAMING_MODE, false);
         toggleStreamingModeCheckBox.setActionCommand(ACTION_TOGGLE_STREAMING_MODE);
 
-        togglePrivacyModeCheckBox = new JCheckBox("Toggle Streaming Mode", false);
+        togglePrivacyModeCheckBox = new JCheckBox(LABEL_STREAMING_MODE, false);
         togglePrivacyModeCheckBox.setActionCommand(ACTION_TOGGLE_PRIVACY_MODE);
 
 
         buttons.add(saveSystemButton);
         buttons.add(startStopServicesButton);
+        buttons.add(recalibrateAudioButton);
         buttons.add(showDetailedLog);
         buttons.add(toggleStreamingModeCheckBox);
         buttons.add(togglePrivacyModeCheckBox);
@@ -606,6 +634,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     public void addActionListener(ActionListener l) {
         if (saveSystemButton != null) saveSystemButton.addActionListener(l);
         if (startStopServicesButton != null) startStopServicesButton.addActionListener(l);
+        if (recalibrateAudioButton != null) recalibrateAudioButton.addActionListener(l);
         if (savePlayerInfoButton != null) savePlayerInfoButton.addActionListener(l);
         if (toggleStreamingModeCheckBox != null) toggleStreamingModeCheckBox.addActionListener(l);
         if (togglePrivacyModeCheckBox != null) togglePrivacyModeCheckBox.addActionListener(l);
@@ -1007,6 +1036,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     public static final String ACTION_TOGGLE_SYSTEM_LOG = "toggleSystemLog";
     public static final String ACTION_SELECT_JOURNAL_DIR = "selectJournalDir";
     public static final String ACTION_SELECT_BINDINGS_DIR = "selectBindingsDir";
+    public static final String ACTION_RECALIBRATE_AUTIO = "recalibrateAudio";
     // ----- END ACTION COMMANDS -----
 
 
@@ -1046,12 +1076,14 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
             Boolean privacyModeOn = (Boolean) evt.getNewValue();
             togglePrivacyModeCheckBox.setSelected(privacyModeOn);
             togglePrivacyModeCheckBox.setForeground(privacyModeOn ? Color.RED : Color.GREEN);
-            togglePrivacyModeCheckBox.setText(privacyModeOn ? "I can't hear You" : "I am Listening...");
+            togglePrivacyModeCheckBox.setText(privacyModeOn ? "Turn Mic Off" : "Turn Mic On");
         } else if (evt.getPropertyName().equals(PROPERTY_HELP_MARKDOWN)) {
             setHelpMarkdown((String) evt.getNewValue());
         } else if (evt.getPropertyName().equals(PROPERTY_SERVICES_TOGGLE)) {
             toggleStreamingModeCheckBox.setEnabled((Boolean) evt.getNewValue());
             togglePrivacyModeCheckBox.setEnabled((Boolean) evt.getNewValue());
         }
+
+
     }
 }

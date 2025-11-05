@@ -26,6 +26,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GoogleSTTImpl implements EarsInterface {
     private static final Logger log = LogManager.getLogger(GoogleSTTImpl.class);
+    public static final double MIN_CONFIDENCE_LEVEL = 0.3; // 1 = 100%
 
     private int sampleRateHertz;  // Dynamically detected
     private int bufferSize; // Dynamically calculated based on sample rate
@@ -260,7 +261,7 @@ public class GoogleSTTImpl implements EarsInterface {
                                 synchronized (confidences) { // Sync on the list instance for thread-safety
                                     avgConfidence = (float) confidences.stream().mapToDouble(Float::doubleValue).average().orElse(0.0);
                                 }
-                                if (avgConfidence > 0.3) {
+                                if (avgConfidence > MIN_CONFIDENCE_LEVEL) {
                                     if (isStreamingModeOn) {
                                         String voiceName = SystemSession.getInstance().getAIVoice().getName();
                                         if (sanitizedTranscript.toLowerCase().startsWith("computer") || sanitizedTranscript.toLowerCase().contains(voiceName.toLowerCase())) {
@@ -304,7 +305,7 @@ public class GoogleSTTImpl implements EarsInterface {
                         synchronized (confidences) {
                             avgConfidence = (float) confidences.stream().mapToDouble(Float::doubleValue).average().orElse(0.0);
                         }
-                        if (avgConfidence > 0.3) {
+                        if (avgConfidence > MIN_CONFIDENCE_LEVEL) {
                             if (isStreamingModeOn) {
                                 String voiceName = SystemSession.getInstance().getAIVoice().getName();
                                 if (sanitizedTranscript.toLowerCase().startsWith("computer") || sanitizedTranscript.toLowerCase().startsWith(voiceName.toLowerCase())) {

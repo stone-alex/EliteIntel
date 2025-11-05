@@ -163,6 +163,7 @@ public class GoogleTTSImpl implements MouthInterface {
     @Subscribe
     @Override
     public void onVoiceProcessEvent(VocalisationRequestEvent event) {
+
         log.debug("Received VoiceProcessEvent: text='{}', useRandom={}", event.getText(), event.useRandomVoice());
         if (event.getText() == null || event.getText().isEmpty()) {
             return;
@@ -171,6 +172,11 @@ public class GoogleTTSImpl implements MouthInterface {
             String voiceName = event.useRandomVoice()
                     ? googleVoiceProvider.getRandomVoice().getName()
                     : googleVoiceProvider.getUserSelectedVoice().getName();
+
+            if(event.isChatStreamChatVolcaisation()){
+                voiceName = googleVoiceProvider.getVoiceParams(AiVoices.JENNIFER.getName()).getName();
+            }
+
             voiceQueue.put(new VoiceRequest(event.getText(), voiceName, googleVoiceProvider.getSpeechRate(voiceName), event.getOriginType()));
             log.debug("Added VoiceRequest to queue: text='{}', voice='{}'", event.getText(), voiceName);
         } catch (InterruptedException e) {

@@ -15,6 +15,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Represents the main graphical user interface of the application.
@@ -71,6 +72,13 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
 
     // Help tab
     private JEditorPane helpPane; // HTML rendering
+
+
+    private Timer logTypewriterTimer;
+    private String pendingLogText;
+    private final AtomicInteger typeIndex = new AtomicInteger(0);
+    private final StringBuilder typeBuffer = new StringBuilder();
+
 
     /**
      * Constructs a new instance of the AppView GUI.
@@ -281,7 +289,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         styleButton(recalibrateAudioButton);
 
 
-        showDetailedLog = new JCheckBox("Show Detailed Log", false);
+        showDetailedLog = new JCheckBox("Detailed Log", false);
         showDetailedLog.setActionCommand(ACTION_TOGGLE_SYSTEM_LOG);
 
         toggleStreamingModeCheckBox = new JCheckBox(LABEL_STREAMING_MODE, false);
@@ -802,38 +810,47 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
      *
      * @param text the new log text to display in the log area; if null, the method does nothing
      */
+// In setLogText:
     public void setLogText(String text) {
-        if (logArea != null && text != null) {
-            String currentText = logArea.getText();
-            if (currentText.equals(text)) {
-                return;
-            }
+        if (logArea == null || text == null) return;
 
-            int commonPrefixLength = 0;
-            int minLength = Math.min(currentText.length(), text.length());
-            while (commonPrefixLength < minLength &&
-                    currentText.charAt(commonPrefixLength) == text.charAt(commonPrefixLength)) {
-                commonPrefixLength++;
-            }
+        String current = logArea.getText();
+        if (current.equals(text)) return;
 
-            if (commonPrefixLength < text.length()) {
-                StringBuilder sb = new StringBuilder(text.substring(0, commonPrefixLength));
-                Timer timer = new Timer(7, null);
-                final int[] i = {commonPrefixLength};
-                timer.addActionListener(e -> {
-                    if (i[0] < text.length()) {
-                        sb.append(text.charAt(i[0]));
-                        logArea.setText(sb.toString());
-                        logArea.setCaretPosition(logArea.getDocument().getLength());
-                        i[0]++;
-                    } else {
-                        timer.stop();
-                    }
-                });
-                timer.start();
-            }
+        // Cancel any ongoing
+        if (logTypewriterTimer != null) {
+            logTypewriterTimer.stop();
         }
+
+        int prefix = 0;
+        int min = Math.min(current.length(), text.length());
+        while (prefix < min && current.charAt(prefix) == text.charAt(prefix)) prefix++;
+
+        // Init
+        typeBuffer.setLength(0);
+        typeBuffer.append(text, 0, prefix);
+        typeIndex.set(prefix);
+        pendingLogText = text;
+
+        // Reuse or create timer
+        if (logTypewriterTimer == null) {
+            logTypewriterTimer = new Timer(7, e -> {
+                int idx = typeIndex.get();
+                if (idx < pendingLogText.length()) {
+                    typeBuffer.append(pendingLogText.charAt(idx));
+                    logArea.setText(typeBuffer.toString());
+                    logArea.setCaretPosition(logArea.getDocument().getLength());
+                    typeIndex.incrementAndGet();
+                } else {
+                    logTypewriterTimer.stop();
+                }
+            });
+        } else {
+            logTypewriterTimer.restart();
+        }
+        logTypewriterTimer.start();
     }
+
     public void setHelpMarkdown(String markdown) {
         if (helpPane == null) return;
         helpPane.setText(markdown);
@@ -1071,7 +1088,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
             Boolean streamingModeOn = (Boolean) evt.getNewValue();
             toggleStreamingModeCheckBox.setSelected(streamingModeOn);
             toggleStreamingModeCheckBox.setForeground(streamingModeOn ? Color.RED : Color.GREEN);
-            toggleStreamingModeCheckBox.setText(streamingModeOn ? "I am Ignoring You" : "Streaming Mode Off");
+            toggleStreamingModeCheckBox.setText(streamingModeOn ? "Streaming On" : "Streaming Off");
         } else if (evt.getPropertyName().equals(PROPERTY_PRIVACY_MODE)) {
             Boolean privacyModeOn = (Boolean) evt.getNewValue();
             togglePrivacyModeCheckBox.setSelected(privacyModeOn);
@@ -1083,7 +1100,5 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
             toggleStreamingModeCheckBox.setEnabled((Boolean) evt.getNewValue());
             togglePrivacyModeCheckBox.setEnabled((Boolean) evt.getNewValue());
         }
-
-
     }
 }

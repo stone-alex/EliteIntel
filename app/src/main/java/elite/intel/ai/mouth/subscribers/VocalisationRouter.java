@@ -22,7 +22,7 @@ public class VocalisationRouter {
 
     @Subscribe
     public void onYtEvent(YtVoxEvent event) {
-        EventBusManager.publish(new VocalisationRequestEvent(event.getText(), event.useRandomVoice(), YtVoxEvent.class));
+        EventBusManager.publish(new VocalisationRequestEvent(event.getText(), event.useRandomVoice(), true, YtVoxEvent.class));
     }
 
     /// --- on/off based on user settings

@@ -2,6 +2,7 @@ package elite.intel.ai.mouth.subscribers.events;
 
 public class VocalisationRequestEvent extends BaseVoxEvent {
     private final Class<? extends BaseVoxEvent> originType;
+    private boolean isChatStreamChatVolcaisation;
 
     public VocalisationRequestEvent(String textToVoice, Class<? extends BaseVoxEvent> originType) {
         super(textToVoice, false);
@@ -13,7 +14,19 @@ public class VocalisationRequestEvent extends BaseVoxEvent {
         this.originType = originType;
     }
 
+    public VocalisationRequestEvent(String textToVoice, boolean useRandom, boolean isChatStreamChatVolcaisation, Class<? extends BaseVoxEvent> originType) {
+        super(textToVoice, useRandom);
+        this.originType = originType;
+        this.isChatStreamChatVolcaisation = isChatStreamChatVolcaisation;
+    }
+
+
     public Class<? extends BaseVoxEvent> getOriginType() {
         return originType;
     }
+
+    public boolean isChatStreamChatVolcaisation() {
+        return isChatStreamChatVolcaisation;
+    }
+
 }

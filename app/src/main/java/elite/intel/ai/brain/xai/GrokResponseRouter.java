@@ -65,8 +65,8 @@ public class GrokResponseRouter extends ResponseRouter implements AIRouterInterf
                     handleQuery(action, params, userInput);
                     break;
                 case AIConstants.TYPE_CHAT:
-                    handleQuery(GENERAL_CONVERSATION.getAction(), params, userInput);
-                    //handleChat(responseText);
+                    //handleQuery(GENERAL_CONVERSATION.getAction(), params, userInput);
+                    handleChat(responseText);
                     break;
                 default:
                     log.warn("Unknown or missing response type: '{}'", type);

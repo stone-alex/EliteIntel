@@ -412,6 +412,6 @@ public class GoogleSTTImpl implements EarsInterface {
 
     @Subscribe
     public void onTtsEvent(TtsEvent event) {
-        isSpeaking.set(event.isSpeaking());
+        //isSpeaking.set(event.isSpeaking());
     }
 }

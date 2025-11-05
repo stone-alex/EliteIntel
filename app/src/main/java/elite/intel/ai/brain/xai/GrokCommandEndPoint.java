@@ -15,6 +15,7 @@ import elite.intel.util.json.JsonUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -169,9 +170,7 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
             return;
         }
 
-
         String input = event.getSensorData();
-
 
         JsonArray messages = new JsonArray();
         JsonObject systemMessage = new JsonObject();
@@ -194,7 +193,7 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
         log.debug("JSON prepared for callXaiApi:\n{}", jsonString);
         executor.submit(() -> {
             try {
-                JsonObject apiResponse = callXaiApi(jsonString);
+                JsonObject apiResponse = callXaiApi(messages);
                 if (apiResponse == null) {
                     EventBusManager.publish(new AiVoxResponseEvent("Failure processing system request. Check programming"));
                     return;
@@ -207,58 +206,80 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
         });
     }
 
-    private JsonObject callXaiApi(String jsonString) {
+    private JsonObject callXaiApi(JsonArray messages) {
         try {
             GrokClient client = GrokClient.getInstance();
-            HttpURLConnection conn = client.getHttpURLConnection();
+            JsonObject requestBody = client.createRequestBodyHeader(GrokClient.MODEL_GROK_4_FAST_REASONING, 0.10f);
+            requestBody.add("messages", messages);
+            String jsonString = GsonFactory.getGson().toJson(requestBody);
+            log.debug("X AI API call:\n{}", jsonString);
 
-            log.debug("xAI API call:\n{}", jsonString);
-            JsonObject requestBody = GsonFactory.getGson().fromJson(jsonString, JsonObject.class);
-            JsonArray messages = requestBody.getAsJsonArray("messages");
+            // Store messages for history
             systemSession.setChatHistory(messages);
 
-
+            HttpURLConnection conn = client.getHttpURLConnection();
             Response response = callApi(conn, jsonString, client);
-            StracturedResponse stracturedResponse = checkResponse(response);
-            if (!stracturedResponse.isSuccessful()) return null;
 
-            log.debug("API response content:\n{}", stracturedResponse.content());
+            // Extract content
+            JsonArray choices = response.responseData().getAsJsonArray("choices");
+            if (choices == null || choices.isEmpty()) {
+                log.error("No choices in API response:\n{}", response.responseMessage());
+                return client.createErrorResponse("No choices in API response");
+            }
 
+            JsonObject message = choices.get(0).getAsJsonObject().getAsJsonObject("message");
+            if (message == null) {
+                log.error("No message in API response choices:\n{}", response.responseMessage());
+                return client.createErrorResponse("No message in API response");
+            }
+
+            String content = message.get("content").getAsString();
+            if (content == null) {
+                log.error("No content in API response message:\n{}", response.responseMessage());
+                return client.createErrorResponse("No content in API response");
+            }
+
+            // Log content before parsing
+            log.debug("API response content:\n{}", content);
+
+            // Parse JSON content
             String jsonContent;
-            int jsonStart = stracturedResponse.content().indexOf("\n\n{");
+            int jsonStart = content.indexOf("\n\n{");
             if (jsonStart != -1) {
-                jsonContent = stracturedResponse.content().substring(jsonStart + 2); // Skip \n\n
+                jsonContent = content.substring(jsonStart + 2); // Skip \n\n
             } else {
-                jsonStart = stracturedResponse.content().indexOf("{");
+                jsonStart = content.indexOf("{");
                 if (jsonStart == -1) {
-                    log.error("No JSON object found in content:\n{}", stracturedResponse.content());
-                    return null;
+                    log.error("No JSON object found in content:\n{}", content);
+                    return client.createErrorResponse("No JSON object in content");
                 }
-                jsonContent = stracturedResponse.content().substring(jsonStart);
+                jsonContent = content.substring(jsonStart);
                 try {
                     JsonParser.parseString(jsonContent);
                 } catch (JsonSyntaxException e) {
                     log.error("Invalid JSON object in content:\n{}", jsonContent, e);
-                    return null;
+                    return client.createErrorResponse("Invalid JSON in content");
                 }
             }
 
-            log.info("Extracted JSON content:\n\n{}\n\n", jsonContent);
+            // Log extracted JSON
+            log.info("Extracted JSON content:\n\n{}\n\n", GsonFactory.getGson().toJson(jsonContent));
 
+            // Parse JSON content
             try {
                 return JsonParser.parseString(jsonContent).getAsJsonObject();
             } catch (JsonSyntaxException e) {
-                log.error("Failed to parse API response content:\n{}", jsonContent, e);
-                throw e;
+                log.error("Failed to parse API response content:\n\n{}\n\n", GsonFactory.getGson().toJson(jsonContent), e);
+                return client.createErrorResponse("Failed to parse API content");
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
+            log.error("X AI API call failed: {}", e.getMessage(), e);
             String aiServerError = serverErrorMessage(e);
-            log.error("AI API call failed: {}", e.getMessage(), e);
-            log.error("Input data:\n{}", jsonString);
             return GrokClient.getInstance().createErrorResponse("API call failed: " + aiServerError);
         } finally {
             systemSession.clearChatHistory();
         }
+
     }
 
     private String serverErrorMessage(Exception e) {

@@ -1,9 +1,6 @@
 package elite.intel.ai.brain.commons;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
+import com.google.gson.*;
 import elite.intel.ai.brain.Client;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,7 +23,10 @@ public abstract class AiEndPoint {
             JsonObject original = messages.get(i).getAsJsonObject();
             JsonObject sanitizedObj = new JsonObject();
             sanitizedObj.addProperty("role", original.get("role").getAsString());
-            sanitizedObj.addProperty("content", escapeJson(original.get("content").getAsString()));
+            JsonElement content = original.get("content");
+            if(content!=null) {
+                sanitizedObj.addProperty("content", escapeJson(content.getAsString()));
+            }
             sanitized.add(sanitizedObj);
         }
         return sanitized;

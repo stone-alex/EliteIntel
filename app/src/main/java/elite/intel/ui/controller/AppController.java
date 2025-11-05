@@ -19,6 +19,7 @@ import elite.intel.gameapi.UserInputEvent;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
+import elite.intel.ui.event.StreamModelTogleEvent;
 import elite.intel.ui.event.SystemShutDownEvent;
 import elite.intel.ui.model.AppModelInterface;
 import elite.intel.ui.view.AppViewInterface;
@@ -235,6 +236,11 @@ public class AppController implements AppControllerInterface, ActionListener {
         return sb.toString().replace(", ]", "]");
     }
 
+
+    @Subscribe
+    public void onStreamModeToggle(StreamModelTogleEvent event){
+        toggleStreamingMode(event.isStreaming());
+    }
 
 
     @Override

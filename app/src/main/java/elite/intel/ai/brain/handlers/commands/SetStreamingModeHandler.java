@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.SystemSession;
+import elite.intel.ui.event.StreamModelTogleEvent;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -39,9 +40,9 @@ public class SetStreamingModeHandler implements CommandHandler {
         systemSession.setStreamingMode(isOn);
 
         if (isOn) {
-            EventBusManager.publish(new AiVoxResponseEvent("streaming mode is on. Please prefix your commands to me with Computer or " + systemSession.getAIVoice().getName()+"."));
+            EventBusManager.publish(new StreamModelTogleEvent(true));
         } else {
-            EventBusManager.publish(new AiVoxResponseEvent("streaming mode is off... I am listening."));
+            EventBusManager.publish(new StreamModelTogleEvent(false));
         }
     }
 }

@@ -168,7 +168,7 @@ public class JournalParser implements Runnable {
                                 }
                             }
                         } catch (Exception e) {
-                            log.error("Corrupted Journal File: {}", line, e);
+                            log.error("Corrupted Journal File: {}", line);
                         }
 
                         lastPosition += line.getBytes(StandardCharsets.UTF_8).length + System.lineSeparator().getBytes(StandardCharsets.UTF_8).length;

@@ -65,7 +65,6 @@ public class GrokResponseRouter extends ResponseRouter implements AIRouterInterf
                     handleQuery(action, params, userInput);
                     break;
                 case AIConstants.TYPE_CHAT:
-                    //handleQuery(GENERAL_CONVERSATION.getAction(), params, userInput);
                     handleChat(responseText);
                     break;
                 default:
@@ -154,6 +153,8 @@ public class GrokResponseRouter extends ResponseRouter implements AIRouterInterf
         } catch (Exception e) {
             log.error("Query handling failed for action {}: {}", action, e.getMessage(), e);
             handleChat("Error accessing data banks: " + e.getMessage());
+        } finally {
+            SystemSession.getInstance().clearChatHistory();
         }
     }
 }

@@ -243,7 +243,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         registerField(TOTAL_BOUNTY_CLAIMED, this::getTotalBountyClaimed, this::setTotalBountyClaimed, Integer.class);
         registerField(GOODS_SOLD_THIS_SESSION, this::getGoodsSoldThisSession, this::setGoodsSoldThisSession, Integer.class);
         registerField(TOTAL_DISTANCE_TRAVELED, this::getTotalDistanceTraveled, this::setTotalDistanceTraveled, Double.class);
-        registerField(FSD_TARGET, this::getFsdTarget, this::setFsdTarget, String.class);
+        registerField(FSD_TARGET, this::getFsdTarget, this::setFsdTarget, ToJsonConvertible.class);
         registerField("radio_on_off", this::isRadioTransmissionOn, this::setRadioTransmissionOn, Boolean.class);
         registerField("navigation_vox_on_off", this::isNavigationAnnouncementOn, this::setNavigationAnnouncementOn, Boolean.class);
         registerField("mining_vox_on_off", this::isMiningAnnouncementOn, this::setMiningAnnouncementOn, Boolean.class);

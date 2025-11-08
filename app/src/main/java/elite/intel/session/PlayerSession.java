@@ -9,7 +9,9 @@ import elite.intel.gameapi.gamestate.dtos.GameEvents;
 import elite.intel.gameapi.gamestate.dtos.NavRouteDto;
 import elite.intel.gameapi.journal.events.*;
 import elite.intel.gameapi.journal.events.dto.*;
+import elite.intel.util.json.ToJsonConvertible;
 
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -128,7 +130,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     private int totalBountyClaimed = 0;
     private int goodsSoldThisSession = 0;
     private double totalDistanceTraveled = 0.0;
-    private String fsdTarget;
+    private ToJsonConvertible fsdTarget;
     private Boolean isRadioTransmissionOn;
     private Boolean isMiningAnnouncementOn = true;
     private Boolean isNavigationAnnouncementOn = true;
@@ -867,12 +869,12 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         save();
     }
 
-    public void setFsdTarget(String json) {
+    public void setFsdTarget(ToJsonConvertible json) {
         this.fsdTarget = json;
         save();
     }
 
-    public String getFsdTarget() {
+    public ToJsonConvertible getFsdTarget() {
         return fsdTarget;
     }
 

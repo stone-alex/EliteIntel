@@ -14,12 +14,12 @@ public class AnalyzeFsdTargetHandler extends BaseQueryAnalyzer implements QueryH
     public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         EventBusManager.publish(new AiVoxResponseEvent("Analyzing FSD telemetry... stand by..."));
         PlayerSession playerSession = PlayerSession.getInstance();
-        String fsdTarget = playerSession.getFsdTarget();
-        String data = fsdTarget != null ? toJson(fsdTarget) : toJson(" no information available...");
-        return process(new AiDataStruct("Use this data to provide answers for the currently selected FSD target", new DataDto(data)), originalUserInput);
+
+        ToJsonConvertible fsdTarget = playerSession.getFsdTarget();
+        return process(new AiDataStruct("Use this data to provide answers for the currently selected FSD target", new DataDto(fsdTarget)), originalUserInput);
     }
 
-    record DataDto(String data) implements ToJsonConvertible {
+    record DataDto(ToJsonConvertible data) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }

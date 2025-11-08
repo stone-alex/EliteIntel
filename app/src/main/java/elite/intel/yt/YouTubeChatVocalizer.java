@@ -75,7 +75,8 @@ public class YouTubeChatVocalizer implements StreamChatVocalizer {
             }
 
             if (conf.getSystemKey(ConfigManager.YT_URL) == null) {
-                continue;
+                this.streamRunning.set(false);
+                return;
             }
 
             fetchChatIdIfNotSet();
@@ -86,8 +87,6 @@ public class YouTubeChatVocalizer implements StreamChatVocalizer {
 
             try {
                 String url = String.format(YT_CHAT_API_URL, this.chatId, conf.getSystemKey(ConfigManager.YT_API_KEY));
-
-                if(url==null || url.isEmpty()) return;
 
                 if (nextPageToken != null) {
                     url += "&pageToken=" + nextPageToken;

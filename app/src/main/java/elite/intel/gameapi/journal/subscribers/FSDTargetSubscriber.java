@@ -6,6 +6,7 @@ import elite.intel.ai.search.edsm.dto.DeathsDto;
 import elite.intel.ai.search.edsm.dto.StarSystemDto;
 import elite.intel.ai.search.edsm.dto.TrafficDto;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.gameapi.data.FsdTarget;
 import elite.intel.gameapi.journal.events.FSDTargetEvent;
 import elite.intel.session.PlayerSession;
 import elite.intel.ui.event.AppLogEvent;
@@ -23,26 +24,11 @@ public class FSDTargetSubscriber {
         DeathsDto deathsDto = EdsmApiClient.searchDeaths(event.getName());
         TrafficDto trafficDto = EdsmApiClient.searchTraffic(event.getName());
 
-        playerSession.setFsdTarget(
-                new DataDto(
-                        systemDto,
-                        deathsDto,
-                        trafficDto,
-                        isFuelStarClause(event.getStarClass())
-                ).toJson()
-        );
-
+        playerSession.setFsdTarget(new FsdTarget(systemDto,deathsDto,trafficDto, isFuelStarClause(event.getStarClass())));
     }
 
     private String isFuelStarClause(String starClass) {
         boolean isFuelStar = "KGBFOAM".toUpperCase().contains(starClass.toUpperCase());
         return isFuelStar ? " (Fuel Star)" : "";
-    }
-
-    record DataDto(StarSystemDto systemDto, DeathsDto deathsDto, TrafficDto trafficDto, String fuelStarStatus) implements ToJsonConvertible {
-
-        @Override public String toJson() {
-            return GsonFactory.getGson().toJson(this);
-        }
     }
 }

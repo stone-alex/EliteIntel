@@ -1,7 +1,10 @@
 package elite.intel.ui.view;
 
 import elite.intel.ai.ConfigManager;
-import org.checkerframework.checker.lock.qual.EnsuresLockHeld;
+import elite.intel.gameapi.EventBusManager;
+import elite.intel.session.SystemSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -36,6 +39,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     private static final Color TAB_SELECTED = new Color(0x33363A);
     public static final String LABEL_STREAMING_MODE = "Streaming Mode";
     public static final String LABEL_PRIVACY_MODE = "Privacy Mode";
+    private static final Logger log = LoggerFactory.getLogger(AppView.class);
     // ----- END COLORS -----
 
 
@@ -112,7 +116,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         // Apply a readable, Windows-friendly font to the entire UI BEFORE creating components
         installUIFont(getPlatformDefaultFont(20f)); // Adjust base size here (e.g., 14f, 15f, 16f)
         installDarkDefaults(); // set dark defaults before components are created
-
+        EventBusManager.register(this);
 
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/images/elite-logo.png")));
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -521,6 +525,11 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
             c.setForeground(FG);
         }
 
+        if(c instanceof JTextArea) {
+            c.setBackground(Color.BLACK);
+            c.setForeground(ACCENT);
+        }
+
         // Text components
         if (c instanceof JTextComponent tc) {
             tc.setCaretColor(FG);
@@ -654,6 +663,12 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     @Override
     public JFrame getUiComponent() {
         return this;
+    }
+
+    @Override public void setupControlls(boolean isServiceRunning) {
+        toggleStreamingModeCheckBox.setEnabled(isServiceRunning);
+        togglePrivacyModeCheckBox.setEnabled(isServiceRunning);
+        startStopServicesButton.setText(isServiceRunning ? "Stop Service" : "Start Service");
     }
 
     // System config I/O
@@ -1086,9 +1101,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
             setLogText((String) evt.getNewValue());
         } else if (evt.getPropertyName().equals(PROPERTY_STREAMING_MODE)) {
             Boolean streamingModeOn = (Boolean) evt.getNewValue();
-            toggleStreamingModeCheckBox.setSelected(streamingModeOn);
-            toggleStreamingModeCheckBox.setForeground(streamingModeOn ? Color.RED : Color.GREEN);
-            toggleStreamingModeCheckBox.setText(streamingModeOn ? "Streaming On" : "Streaming Off");
+            setupStreamingCheckBox(streamingModeOn);
         } else if (evt.getPropertyName().equals(PROPERTY_PRIVACY_MODE)) {
             Boolean privacyModeOn = (Boolean) evt.getNewValue();
             togglePrivacyModeCheckBox.setSelected(privacyModeOn);
@@ -1099,6 +1112,13 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         } else if (evt.getPropertyName().equals(PROPERTY_SERVICES_TOGGLE)) {
             toggleStreamingModeCheckBox.setEnabled((Boolean) evt.getNewValue());
             togglePrivacyModeCheckBox.setEnabled((Boolean) evt.getNewValue());
+            setupStreamingCheckBox(SystemSession.getInstance().isStreamingModeOn());
         }
+    }
+
+    private void setupStreamingCheckBox(Boolean streamingModeOn) {
+        toggleStreamingModeCheckBox.setSelected(streamingModeOn);
+        toggleStreamingModeCheckBox.setForeground(streamingModeOn ? Color.RED : Color.GREEN);
+        toggleStreamingModeCheckBox.setText(streamingModeOn ? "Streaming On" : "Streaming Off");
     }
 }

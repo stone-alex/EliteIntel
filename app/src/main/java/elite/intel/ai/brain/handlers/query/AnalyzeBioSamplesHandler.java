@@ -2,6 +2,8 @@ package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
+import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.dto.BioSampleDto;
 import elite.intel.gameapi.journal.events.dto.GenusDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
@@ -9,17 +11,16 @@ import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static elite.intel.util.ExoBio.completedScansForPlanet;
 
-public class
-AnalyzeBioSamplesHandler extends BaseQueryAnalyzer implements QueryHandler {
+public class AnalyzeBioSamplesHandler extends BaseQueryAnalyzer implements QueryHandler {
 
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
+        EventBusManager.publish(new AiVoxResponseEvent("Analyzing exobiology data... stand by..."));
+
         PlayerSession playerSession = PlayerSession.getInstance();
         LocationDto currentLocation = playerSession.getCurrentLocation();
         if (currentLocation.getBodyId() < 0) {
@@ -30,20 +31,14 @@ AnalyzeBioSamplesHandler extends BaseQueryAnalyzer implements QueryHandler {
         List<BioSampleDto> partialScans = currentLocation.getPartialBioSamples();
         List<GenusDto> genusListForCurrentLocation = currentLocation.getGenus();
         List<BioSampleDto> samplesCompletedForThisPlanet = completedScansForPlanet(playerSession);
-        List<BioSampleDto> allBioSamplesForThisStarSystem = playerSession.getBioCompletedSamples();
         List<GenusDto> genusListNotScannedForCurrentLocation = calculateGenusNotYetScanned(samplesCompletedForThisPlanet, genusListForCurrentLocation);
-        List<String> planetNamesWithBioFormsWeHaveNotScanned = getPlanetsWithBioFormNotYetScanned(allBioSamplesForThisStarSystem, locations);
-        List<String> planetNamesWithPartialBioScans = getPlanetsWithPartialBioScans(partialScans, locations);
 
-        String instructions = "Analyze Elite Dangerous bio samples. 'partialScans': partial bio scans (3 scans needed per sample). 'genusListForCurrentLocation': all genus on current planet. 'allBioSamplesForThisStarSystem': completed bio samples in star system, not yet delivered to Vista Genomics. 'planetNamesWithBioFormsWeHaveNotScanned': planets with unscanned bio forms. 'planetNamesWithPartialBioScans': planets with incomplete scans. 'genusListNotScannedForCurrentLocation': unscanned genus on current planet. For queries about unscanned genus or planets, list names from 'planetNamesWithBioFormsWeHaveNotScanned' and 'genusListNotScannedForCurrentLocation'. ";
+        String instructions = "Analyze bio samples. 'partialScans': partial bio scans (3 scans needed per sample). 'genusListForCurrentLocation': all genus on current planet. 'genusListNotScannedForCurrentLocation': unscanned genus on current planet. For queries about unscanned genus list variant and species from 'genusListNotScannedForCurrentLocation'. ";
 
         AiDataStruct struct = new AiDataStruct(instructions, new DataDto(
                 partialScans,
                 genusListForCurrentLocation,
                 samplesCompletedForThisPlanet,
-                allBioSamplesForThisStarSystem,
-                planetNamesWithBioFormsWeHaveNotScanned,
-                planetNamesWithPartialBioScans,
                 genusListNotScannedForCurrentLocation
         ));
 
@@ -67,37 +62,10 @@ AnalyzeBioSamplesHandler extends BaseQueryAnalyzer implements QueryHandler {
         return result;
     }
 
-    private List<String> getPlanetsWithPartialBioScans(List<BioSampleDto> partialScans, Map<Long, LocationDto> locations) {
-        ArrayList<String> result = new ArrayList<>();
-        for (LocationDto locationDto : locations.values()) {
-            for (BioSampleDto sample : partialScans) {
-                if (sample.getPlanetName().equalsIgnoreCase(locationDto.getPlanetName())) {
-                    result.add(locationDto.getPlanetShortName());
-                }
-            }
-        }
-        return result;
-    }
-
-    private List<String> getPlanetsWithBioFormNotYetScanned(List<BioSampleDto> allBioSamplesForThisStarSystem, Map<Long, LocationDto> locations) {
-        List<String> result = new ArrayList<>();
-        for (LocationDto location : locations.values()) {
-            for (BioSampleDto sample : allBioSamplesForThisStarSystem) {
-                if (sample.getPlanetName().equalsIgnoreCase(location.getPlanetName())) {
-                    result.add(location.getPlanetShortName());
-                }
-            }
-        }
-        return result;
-    }
-
     record DataDto(
                    List<BioSampleDto> partialBioFormScans,
                    List<GenusDto> allBioFormsOnPlanet,
                    List<BioSampleDto> bioSamplesCompletedForThisPlanet,
-                   List<BioSampleDto> allBioSamplesForThisStarSystem,
-                   List<String> planetNamesWithBioFormsWeHaveNotScanned,
-                   List<String> planetNamesWithPartialBioScans,
                    List<GenusDto> genusListNotScannedForCurrentLocation
 
     ) implements ToJsonConvertible {

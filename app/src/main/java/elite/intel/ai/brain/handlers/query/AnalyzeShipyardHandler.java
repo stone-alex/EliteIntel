@@ -2,7 +2,9 @@ package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
+import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.search.edsm.dto.ShipyardDto;
+import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
@@ -13,6 +15,7 @@ public class AnalyzeShipyardHandler extends BaseQueryAnalyzer implements QueryHa
 
     @Override
     public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
+        EventBusManager.publish(new AiVoxResponseEvent("Analyzing shipyard data... stand by..."));
         PlayerSession playerSession = PlayerSession.getInstance();
         ShipyardDto shipyard = playerSession.getCurrentLocation().getShipyard();
 

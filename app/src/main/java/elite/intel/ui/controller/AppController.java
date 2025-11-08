@@ -19,7 +19,7 @@ import elite.intel.gameapi.UserInputEvent;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
-import elite.intel.ui.event.StreamModelTogleEvent;
+import elite.intel.ui.event.StreamModelToggleEvent;
 import elite.intel.ui.event.SystemShutDownEvent;
 import elite.intel.ui.model.AppModelInterface;
 import elite.intel.ui.view.AppViewInterface;
@@ -238,8 +238,10 @@ public class AppController implements AppControllerInterface, ActionListener {
 
 
     @Subscribe
-    public void onStreamModeToggle(StreamModelTogleEvent event){
-        toggleStreamingMode(event.isStreaming());
+    public void onStreamModeToggle(StreamModelToggleEvent event){
+        JCheckBox temp = new JCheckBox();
+        temp.setSelected(event.isStreaming());
+        executeCommand(temp, ACTION_TOGGLE_STREAMING_MODE);
     }
 
 
@@ -267,7 +269,7 @@ public class AppController implements AppControllerInterface, ActionListener {
     }
 
     private String streamingModeIsOnMessage() {
-        return "Streaming mode is On. (voice to text will still be processing, but I will not hear you. Prefix your command with word computer or " + systemSession.getAIVoice().getName() + ") ";
+        return "Streaming mode is On. Voice to text will still be processing, but I will not react to you. Please prefix your command with word computer";
     }
 
     private void handleSelectJournalDir() {
@@ -298,30 +300,32 @@ public class AppController implements AppControllerInterface, ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        String command = e.getActionCommand();
+        executeCommand(e.getSource(), command);
+    }
 
-        if (e.getSource() instanceof JCheckBox) {
-            String command = e.getActionCommand();
+    private void executeCommand(Object e, String command) {
+        if (e instanceof JCheckBox) {
             if (ACTION_TOGGLE_SYSTEM_LOG.equals(command)) {
-                boolean show = ((JCheckBox) e.getSource()).isSelected();
+                boolean show = ((JCheckBox) e).isSelected();
                 model.showSystemLog(show);
                 appendToLog("Further System log will be " + (show ? "shown" : "filtered"));
             } else if (ACTION_TOGGLE_STREAMING_MODE.equals(command)) {
-                boolean isSelected = ((JCheckBox) e.getSource()).isSelected();
+                boolean isSelected = ((JCheckBox) e).isSelected();
                 toggleStreamingMode(isSelected);
             } else if (ACTION_TOGGLE_PRIVACY_MODE.equals(command)) {
-                boolean isSelected = ((JCheckBox) e.getSource()).isSelected();
+                boolean isSelected = ((JCheckBox) e).isSelected();
                 togglePrivacyMode(isSelected);
             }
         }
 
-        if (e.getSource() instanceof JButton) {
-            String command = e.getActionCommand();
+        if (e instanceof JButton) {
             if (ACTION_SAVE_SYSTEM_CONFIG.equals(command)) {
                 handleSaveSystemConfig();
             } else if (ACTION_SAVE_USER_CONFIG.equals(command)) {
                 handleSaveUserConfig();
             } else if (ACTION_TOGGLE_SERVICES.equals(command)) {
-                ((JButton) e.getSource()).setText(startStopServices() ? "Stop Service" : "Start Service");
+                setupControls(startStopServices());
             } else if (ACTION_SELECT_JOURNAL_DIR.equals(command)) {
                 handleSelectJournalDir();
             } else if (ACTION_SELECT_BINDINGS_DIR.equals(command)) {
@@ -330,6 +334,10 @@ public class AppController implements AppControllerInterface, ActionListener {
                 recalibrateAudio();
             }
         }
+    }
+
+    private void setupControls(boolean isServiceRunning) {
+        view.setupControlls(isServiceRunning);
     }
 
     private void recalibrateAudio() {

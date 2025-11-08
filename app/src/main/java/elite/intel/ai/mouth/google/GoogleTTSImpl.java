@@ -10,6 +10,7 @@ import elite.intel.ai.mouth.MouthInterface;
 import elite.intel.ai.mouth.subscribers.events.*;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.SystemSession;
+import elite.intel.ui.event.AppLogEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -80,7 +81,7 @@ public class GoogleTTSImpl implements MouthInterface {
         processingThread.start();
         log.info("VoiceGenerator started");
         if (SystemSession.getInstance().getRmsThresholdLow() != null) {
-            EventBusManager.publish(new AiVoxResponseEvent("Speech enabled."));
+            EventBusManager.publish(new AppLogEvent("Speech enabled."));
         }
     }
 

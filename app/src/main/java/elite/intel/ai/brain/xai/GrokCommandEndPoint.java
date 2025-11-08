@@ -49,7 +49,7 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
             });
             elite.intel.gameapi.EventBusManager.register(this);
             log.info("GrokCommandEndPoint started");
-            EventBusManager.publish(new AiVoxResponseEvent("X Ai is Online."));
+            EventBusManager.publish(new AiVoxResponseEvent("Systems Online."));
         } else {
             log.debug("GrokCommandEndPoint already started");
         }

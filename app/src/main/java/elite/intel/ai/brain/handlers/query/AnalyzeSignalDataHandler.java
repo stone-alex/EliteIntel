@@ -28,7 +28,7 @@ public class AnalyzeSignalDataHandler  extends BaseQueryAnalyzer implements Quer
 
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing... stand by..."));
+        EventBusManager.publish(new AiVoxResponseEvent("Analyzing star system data... stand by..."));
 
         Set<FssSignalDto> detectedSignals = getDetectedSignals();
         List<FSSBodySignalsEvent.Signal> fssBodySignals = playerSession.getCurrentLocation().getFssSignals();

@@ -25,7 +25,7 @@ public class AnalyzeRouterHandler extends BaseQueryAnalyzer implements QueryHand
 
     @Override
     public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing route..."));
+        EventBusManager.publish(new AiVoxResponseEvent("Analyzing route telemetry... Stand By..."));
 
         Queries query = findQuery(action);
         PlayerSession playerSession = PlayerSession.getInstance();

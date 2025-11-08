@@ -53,7 +53,7 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
             });
             EventBusManager.register(this);
             log.info("OpenAiCommandEndPoint started");
-            EventBusManager.publish(new AiVoxResponseEvent("Open AI is Online."));
+            EventBusManager.publish(new AiVoxResponseEvent("Systems Online."));
         } else {
             log.debug("OpenAiCommandEndPoint already started");
         }

@@ -2,6 +2,8 @@ package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
+import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.dto.CarrierDataDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
@@ -11,6 +13,7 @@ public class AnalyzeCarrierDataHandler extends BaseQueryAnalyzer implements Quer
 
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
+        EventBusManager.publish(new AiVoxResponseEvent("Analyzing fleet carrier data... stand by..."));
         PlayerSession playerSession = PlayerSession.getInstance();
         CarrierDataDto stats = playerSession.getCarrierData();
 

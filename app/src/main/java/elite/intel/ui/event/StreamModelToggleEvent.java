@@ -1,10 +1,10 @@
 package elite.intel.ui.event;
 
-public class StreamModelTogleEvent {
+public class StreamModelToggleEvent {
 
     private boolean isStreaming;
 
-    public StreamModelTogleEvent(boolean isStreaming) {
+    public StreamModelToggleEvent(boolean isStreaming) {
         this.isStreaming = isStreaming;
     }
 

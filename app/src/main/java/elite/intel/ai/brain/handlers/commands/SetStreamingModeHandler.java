@@ -1,10 +1,9 @@
 package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.SystemSession;
-import elite.intel.ui.event.StreamModelTogleEvent;
+import elite.intel.ui.event.StreamModelToggleEvent;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -40,9 +39,9 @@ public class SetStreamingModeHandler implements CommandHandler {
         systemSession.setStreamingMode(isOn);
 
         if (isOn) {
-            EventBusManager.publish(new StreamModelTogleEvent(true));
+            EventBusManager.publish(new StreamModelToggleEvent(true));
         } else {
-            EventBusManager.publish(new StreamModelTogleEvent(false));
+            EventBusManager.publish(new StreamModelToggleEvent(false));
         }
     }
 }

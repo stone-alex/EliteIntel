@@ -12,4 +12,5 @@ public interface AppViewInterface {
     Map<String, String> getUserConfigInput();
     void addActionListener(ActionListener listener);
     JFrame getUiComponent();
+    void setupControlls(boolean isServiceRunning);
 }

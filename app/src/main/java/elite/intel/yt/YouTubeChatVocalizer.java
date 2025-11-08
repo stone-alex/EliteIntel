@@ -53,9 +53,9 @@ public class YouTubeChatVocalizer implements StreamChatVocalizer {
     }
 
     public void start() {
-        if (streamRunning.get()) return;
-
-        streamRunning.set(true);
+        String ytUrl = ConfigManager.getInstance().getSystemKey(ConfigManager.YT_URL);
+        streamRunning.set(ytUrl != null && !ytUrl.isEmpty());
+        if(!streamRunning.get()) return;
         executor.submit(this::pollChat);
     }
 

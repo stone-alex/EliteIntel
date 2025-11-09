@@ -58,9 +58,6 @@ public class SetPowerToSystemsHandler extends CommandOperator implements Command
     private void performOperation(String resetPowerDistribution, String increaseSystemsPower, String increaseEnginesPower) {
         operateKeyboard(resetPowerDistribution, 0);
         operateKeyboard(increaseSystemsPower, 0);
-        operateKeyboard(increaseEnginesPower, 0);
-        operateKeyboard(increaseSystemsPower, 0);
-        operateKeyboard(increaseEnginesPower, 0);
         operateKeyboard(increaseSystemsPower, 0);
 
         log.info("Power distribution complete");

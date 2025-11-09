@@ -79,9 +79,6 @@ public class SetPowerToEnginesHandler extends CommandOperator implements Command
     private void performAction(String resetPowerDistribution, String increaseEnginePower, String increaseSystemPower) {
         operateKeyboard(resetPowerDistribution, 0);
         operateKeyboard(increaseEnginePower, 0);
-        operateKeyboard(increaseSystemPower, 0);
-        operateKeyboard(increaseEnginePower, 0);
-        operateKeyboard(increaseSystemPower, 0);
         operateKeyboard(increaseEnginePower, 0);
         log.info("Diverting power to engines");
     }

@@ -58,11 +58,7 @@ public class SetPowerToWeaponsHandler extends CommandOperator implements Command
     private void performAction(String resetPowerDistribution, String increaseWeaponsPower, String increaseEnginesPower) {
         operateKeyboard(resetPowerDistribution, 0);
         operateKeyboard(increaseWeaponsPower, 0);
-        operateKeyboard(increaseEnginesPower, 0);
         operateKeyboard(increaseWeaponsPower, 0);
-        operateKeyboard(increaseEnginesPower, 0);
-        operateKeyboard(increaseWeaponsPower, 0);
-
         log.info("Diverting power to weapons");
     }
 }

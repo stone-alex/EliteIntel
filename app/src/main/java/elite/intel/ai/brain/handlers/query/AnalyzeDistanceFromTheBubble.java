@@ -19,9 +19,10 @@ public class AnalyzeDistanceFromTheBubble extends BaseQueryAnalyzer implements Q
         if(galacticCoordinates == null){
             LocationDto currentLocation = playerSession.getCurrentLocation();
             galacticCoordinates = new PlayerSession.GalacticCoordinates(currentLocation.getX(), currentLocation.getY(), currentLocation.getZ());
-            if (galacticCoordinates.x() == 0 && galacticCoordinates.y() == 0 && galacticCoordinates.z() == 0) {
-                return process("Local Coordinates are not available.");
-            }
+        }
+
+        if (galacticCoordinates.x() == 0 && galacticCoordinates.y() == 0 && galacticCoordinates.z() == 0) {
+            return process("Local Coordinates are not available.");
         }
 
         String instruction = "Center of the bubble (Earth) is at 0 0 0. Use the coordinates provided in light years to calculate distance. If asked about amount of fleet carrier fuel needed to cover thg distance use 90 tons of fuel per 500 light year jump to calculate the amount.";

@@ -10,17 +10,16 @@ import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 
+import static elite.intel.ai.brain.handlers.query.Queries.QUERY_ANALYZE_ON_BOARD_CARGO;
+
 public class AnalyzeCargoHoldHandler extends BaseQueryAnalyzer implements QueryHandler {
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         EventBusManager.publish(new AiVoxResponseEvent("Analyzing cargo data... stand by..."));
         PlayerSession playerSession = PlayerSession.getInstance();
 
-        String instructions = "Use this data provide questions regarding cargo and/or ship loadout if relevant. Cargo is listed 1 unit = 1 ton. ";
-
-        return process(new AiDataStruct(instructions, new DataDto(playerSession.getShipLoadout(), playerSession.getShipCargo())), originalUserInput);
+        return process(new AiDataStruct(QUERY_ANALYZE_ON_BOARD_CARGO.getInstructions(), new DataDto(playerSession.getShipLoadout(), playerSession.getShipCargo())), originalUserInput);
     }
-
 
     record DataDto(LoadoutEvent loadout, GameEvents.CargoEvent cargo) implements ToJsonConvertible {
         @Override public String toJson() {

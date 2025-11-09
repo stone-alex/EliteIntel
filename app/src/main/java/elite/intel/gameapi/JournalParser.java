@@ -9,6 +9,7 @@ import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
 import elite.intel.gameapi.journal.EventRegistry;
 import elite.intel.gameapi.journal.events.BaseEvent;
 import elite.intel.ui.event.AppLogEvent;
+import elite.intel.util.json.GsonFactory;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager; 
 
@@ -149,7 +150,11 @@ public class JournalParser implements Runnable {
 
                         try {
                             String sanitizedLine = line.replaceAll("[\\p{Cntrl}\\p{Cc}\\p{Cf}]", "").trim();
-                            JsonElement element = JsonParser.parseString(sanitizedLine);
+                            if(!sanitizedLine.startsWith("{")) {
+                                continue;
+                            }
+
+                            JsonElement element = GsonFactory.getGson().fromJson(sanitizedLine, JsonElement.class);
                             if (!element.isJsonObject()) {
                                 lastPosition += line.getBytes(StandardCharsets.UTF_8).length + System.lineSeparator().getBytes(StandardCharsets.UTF_8).length;
                                 continue;

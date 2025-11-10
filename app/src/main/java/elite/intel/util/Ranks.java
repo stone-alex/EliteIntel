@@ -146,11 +146,11 @@ public class Ranks {
         rankMap.put(6, "Dangerous");
         rankMap.put(7, "Deadly");
         rankMap.put(8, "Elite");
-        rankMap.put(9, "Elite I");
-        rankMap.put(10, "Elite II");
-        rankMap.put(11, "Elite III");
-        rankMap.put(12, "Elite IV");
-        rankMap.put(13, "Elite V");
+        rankMap.put(9, "Elite 1");
+        rankMap.put(10, "Elite 2");
+        rankMap.put(11, "Elite 3");
+        rankMap.put(12, "Elite 4");
+        rankMap.put(13, "Elite 5");
         return rankMap;
     }
 
@@ -170,11 +170,11 @@ public class Ranks {
         rankMap.put(6, "Ecologist");
         rankMap.put(7, "Geneticist");
         rankMap.put(8, "Elite");
-        rankMap.put(9, "Elite I");
-        rankMap.put(10, "Elite II");
-        rankMap.put(11, "Elite III");
-        rankMap.put(12, "Elite IV");
-        rankMap.put(13, "Elite V");
+        rankMap.put(9, "Elite 1");
+        rankMap.put(10, "Elite 2");
+        rankMap.put(11, "Elite 3");
+        rankMap.put(12, "Elite 4");
+        rankMap.put(13, "Elite 5");
         return rankMap;
     }
 
@@ -194,11 +194,11 @@ public class Ranks {
         rankMap.put(6, "Ranger");
         rankMap.put(7, "Pioneer");
         rankMap.put(8, "Elite");
-        rankMap.put(9, "Elite I");
-        rankMap.put(10, "Elite II");
-        rankMap.put(11, "Elite III");
-        rankMap.put(12, "Elite IV");
-        rankMap.put(13, "Elite V");
+        rankMap.put(9, "Elite 1");
+        rankMap.put(10, "Elite 2");
+        rankMap.put(11, "Elite 3");
+        rankMap.put(12, "Elite 4");
+        rankMap.put(13, "Elite 5");
         return rankMap;
     }
 
@@ -217,11 +217,11 @@ public class Ranks {
         rankMap.put(6, "Entrepreneur");
         rankMap.put(7, "Tycoon");
         rankMap.put(8, "Elite");
-        rankMap.put(9, "Elite I");
-        rankMap.put(10, "Elite II");
-        rankMap.put(11, "Elite III");
-        rankMap.put(12, "Elite VI");
-        rankMap.put(13, "Elite V");
+        rankMap.put(9, "Elite 1");
+        rankMap.put(10, "Elite 2");
+        rankMap.put(11, "Elite 3");
+        rankMap.put(12, "Elite 4");
+        rankMap.put(13, "Elite 5");
         return rankMap;
     }
 

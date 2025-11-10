@@ -100,6 +100,7 @@ public enum Commands {
     GET_HEADING_TO_LZ("navigate_bearing_direction_to_landing_zone", null, null,  NavigateToLandingZone.class),
     DEPLOY_SRV("deploy_srv", null, null,  DeploySrvHandler.class),
     BOARD_SHIP("get_on_board_ship", null, null,  BoardSrvHandler.class),
+    REQUESTING_EXTRACTION("requesting_extraction", null, null,  BoardSrvHandler.class),
     CLEAR_CODEX_ENTRIES("clear_codex_entries", null, null,  ClearCodexEntriesHandler.class),
     CALCULATE_FLEET_CARRIER_ROUTE("calculate_fleet_carrier_route", null, null,  CalculateFleetCarrierRouteHandler.class),
     ENTER_NEXT_FLEET_CARRIER_DESTINATION("enter_next_fleet_carrier_destination", null, null,  EnterNextCarrierDestinationHandler.class),

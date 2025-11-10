@@ -16,7 +16,7 @@ import java.util.Map;
 public class AppModel implements AppModelInterface {
     private String log = "";
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
-    private boolean showSystemLog = true;
+    private boolean showSystemLog = false;
 
     @Override
     public Map<String, String> getSystemConfig() {

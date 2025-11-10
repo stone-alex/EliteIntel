@@ -18,7 +18,7 @@ public class PromotionSubscriber {
         Integer exploreRank = event.getExplore();
         Integer soldier = event.getSoldier();
         Integer federalNavyRank = event.getFederation();
-        Integer exobiologist = event.getExobiologist();
+        Integer exobiologyRank = event.getExobiologist();
 
         PlayerSession session = PlayerSession.getInstance();
         RankAndProgressDto rankAndProgressDto = session.getRankAndProgressDto();
@@ -51,8 +51,8 @@ public class PromotionSubscriber {
             String string = Ranks.getExplorationRankMap().get(exploreRank);
             EventBusManager.publish(new SensorDataEvent("Pilate Federation promotion to exploration rank of: " + string));
         }
-        if (exobiologist != null) {
-            String string = Ranks.getExobiologyRankMap().get(exploreRank);
+        if (exobiologyRank != null) {
+            String string = Ranks.getExobiologyRankMap().get(exobiologyRank);
             EventBusManager.publish(new SensorDataEvent("Pilate Federation promotion to exobiology rank of: " + string));
         }
         if (soldier != null) {

@@ -417,7 +417,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         styleButton(recalibrateAudioButton);
 
 
-        showDetailedLog = new JCheckBox("Detailed Log", true);
+        showDetailedLog = new JCheckBox("Detailed Log", false);
         showDetailedLog.setActionCommand(ACTION_TOGGLE_SYSTEM_LOG);
 
         toggleStreamingModeCheckBox = new JCheckBox(LABEL_STREAMING_MODE, false);

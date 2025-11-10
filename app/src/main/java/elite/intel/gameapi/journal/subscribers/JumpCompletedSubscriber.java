@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static elite.intel.util.GravityCalculator.calculateSurfaceGravity;
 import static elite.intel.util.StringUtls.isFuelStarClause;
@@ -89,7 +90,7 @@ public class JumpCompletedSubscriber {
             Map<Integer, NavRouteDto> adjustedRoute = AdjustRoute.adjustRoute(orderedRoute, event.getStarSystem());
             playerSession.setNavRoute(adjustedRoute);
 
-            List<NavRouteDto> temp = adjustedRoute.values().stream().toList();
+            List<NavRouteDto> temp = adjustedRoute.values().stream().collect(Collectors.toList());
             temp.sort(Comparator.comparingInt(NavRouteDto::getLeg));
             int remainingJump = temp.size();
             if (remainingJump > 0) {

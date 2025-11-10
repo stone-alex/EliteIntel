@@ -80,6 +80,9 @@ public class ScanEventSubscriber extends BiomeAnalyzer {
         location.setMaterials(toListOfMaterials(event.getMaterials()));
         location.setDistance(event.getDistanceFromArrivalLS());
         location.setOurDiscovery(!event.isWasDiscovered());
+        location.setRotationPeriod(event.getRotationPeriod());
+        location.setOrbitalPeriod(event.getOrbitalPeriod());
+        location.setAxialTilt(event.getAxialTilt());
         location.setWeMappedIt(!event.isWasMapped());
         location.setPlanetShortName(subtractString(event.getBodyName(), event.getStarSystem()));
 

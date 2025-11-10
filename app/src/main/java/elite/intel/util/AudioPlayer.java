@@ -13,6 +13,7 @@ public final class AudioPlayer {
 
     private static final Logger log = LogManager.getLogger(AudioPlayer.class);
     private static AudioPlayer instance;
+    private static float volume = 0.8f;
 
     private AudioPlayer() {
     }
@@ -22,6 +23,17 @@ public final class AudioPlayer {
             instance = new AudioPlayer();
         }
         return instance;
+    }
+
+    public float getVolume() {
+        return volume;
+    }
+
+    public void setVolume(float volume) {
+        if (volume < 0.0f || volume > 1.0f) {
+            throw new IllegalArgumentException("Volume must be between 0.0 and 1.0");
+        }
+        AudioPlayer.volume = volume;
     }
 
     public void playBeep(String soundFile) {
@@ -35,6 +47,12 @@ public final class AudioPlayer {
             AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(audioStream);
             Clip clip = AudioSystem.getClip();
             clip.open(audioInputStream);
+            if (clip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
+                FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+                float range = gainControl.getMaximum() - gainControl.getMinimum();
+                float gain = (range * volume) + gainControl.getMinimum();
+                gainControl.setValue(gain);
+            }
             clip.start();
             clip.addLineListener(event -> {
                 if (event.getType() == LineEvent.Type.STOP) {

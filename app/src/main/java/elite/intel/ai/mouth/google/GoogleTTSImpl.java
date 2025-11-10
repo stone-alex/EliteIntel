@@ -292,6 +292,7 @@ public class GoogleTTSImpl implements MouthInterface {
             SynthesisInput input = SynthesisInput.newBuilder().setText(text).build();
             AudioConfig config = AudioConfig.newBuilder()
                     .setAudioEncoding(AudioEncoding.LINEAR16)
+                    .setVolumeGainDb(12)
                     .setSpeakingRate(speechRate)
                     .build();
             SynthesizeSpeechResponse response = textToSpeechClient.synthesizeSpeech(input, voice, config);

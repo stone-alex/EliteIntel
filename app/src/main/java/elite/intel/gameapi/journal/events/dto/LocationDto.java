@@ -26,6 +26,9 @@ public class LocationDto implements ToJsonConvertible {
     private double Y;
     private double Z;
     private double distance;
+    private double rotationPeriod;
+    private double axialTilt;
+    private double orbitalPeriod;
     private String starName;
     private String starClass;
     private boolean isFuelStar;
@@ -98,6 +101,22 @@ public class LocationDto implements ToJsonConvertible {
         partialBioSamples.clear();
     }
 
+    public double getAxialTilt() {
+        return axialTilt;
+    }
+
+    public void setAxialTilt(double axialTilt) {
+        this.axialTilt = axialTilt;
+    }
+
+    public double getOrbitalPeriod() {
+        return orbitalPeriod;
+    }
+
+    public void setOrbitalPeriod(double orbitalPeriod) {
+        this.orbitalPeriod = orbitalPeriod;
+    }
+
     public enum BioStatus {
         BIO_FORMS_PRESENT,
         NO_BIO_FORMS,
@@ -167,6 +186,15 @@ public class LocationDto implements ToJsonConvertible {
     public void setZ(double z) {
         if(z == 0) return;
         Z = z;
+    }
+
+
+    public double getRotationPeriod() {
+        return rotationPeriod;
+    }
+
+    public void setRotationPeriod(double rotationPeriod) {
+        this.rotationPeriod = rotationPeriod;
     }
 
     public double getDistance() {

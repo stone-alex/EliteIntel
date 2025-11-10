@@ -16,6 +16,9 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -28,6 +31,45 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class AppView extends JFrame implements PropertyChangeListener, AppViewInterface {
 
+    public static final String LABEL_STREAMING_MODE = "Streaming Mode";
+    public static final String LABEL_PRIVACY_MODE = "Privacy Mode";
+    // ----- ACTION COMMANDS -----
+    // Action commands are used to trigger specific actions in the UI.
+    // They are passed to the controller via the actionPerformed() method.
+    // The controller can then use the action command to determine what to do.
+    //
+    // Note: Action commands are not intended to be used for communication between the UI and the controller.
+    //       They are only intended to be used for communication between the UI and the model.
+    //
+    // Action commands are defined here and referenced in the UI code.
+    //
+    public static final String ACTION_SAVE_USER_CONFIG = "saveUserConfig";
+    public static final String ACTION_SAVE_SYSTEM_CONFIG = "saveSystemConfig";
+    public static final String ACTION_TOGGLE_SERVICES = "toggleServices";
+    public static final String ACTION_TOGGLE_STREAMING_MODE = "toggleStreamingMode";
+    public static final String ACTION_TOGGLE_PRIVACY_MODE = "togglePrivacyMode";
+    public static final String ACTION_TOGGLE_SYSTEM_LOG = "toggleSystemLog";
+    public static final String ACTION_SELECT_JOURNAL_DIR = "selectJournalDir";
+    public static final String ACTION_SELECT_BINDINGS_DIR = "selectBindingsDir";
+    public static final String ACTION_RECALIBRATE_AUTIO = "recalibrateAudio";
+    // ----- END COLORS -----
+    // ----- PROPERTY CHANGE EVENTS -----
+    // Property change events are used to notify the UI of changes in the model.
+    // They are passed to the controller via the propertyChange() method.
+    // The controller can then use the property name to determine what to do.
+    //
+    // Note: Property change events are not intended to be used for communication between the UI and the controller.
+    //       They are only intended to be used for communication between the UI and the model.
+    //
+    // Property change events are defined here and referenced in the UI code.
+    //
+    public static final String PROPERTY_SYSTEM_CONFIG_UPDATED = "systemConfigUpdated";
+    public static final String PROPERTY_LOG_UPDATED = "logUpdated";
+    public static final String PROPERTY_USER_CONFIG_UPDATED = "userConfigUpdated";
+    public static final String PROPERTY_STREAMING_MODE = "streamingModeUpdated";
+    public static final String PROPERTY_PRIVACY_MODE = "privacyModeUpdated";
+    public static final String PROPERTY_HELP_MARKDOWN = "helpMarkdownUpdated";
+    public static final String PROPERTY_SERVICES_TOGGLE = "servicesToggled";
     // ----- COLORS (adjust to taste) -----
     private static final Color BG = new Color(0x1D1D1D); // base background
     private static final Color BG_PANEL = new Color(0x2B2D30); // panels/inputs background
@@ -37,15 +79,11 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     private static final Color SEL_BG = new Color(0x3A3D41); // selection background
     private static final Color TAB_UNSELECTED = new Color(0x2A2C2F);
     private static final Color TAB_SELECTED = new Color(0x33363A);
-    public static final String LABEL_STREAMING_MODE = "Streaming Mode";
-    public static final String LABEL_PRIVACY_MODE = "Privacy Mode";
     private static final Logger log = LoggerFactory.getLogger(AppView.class);
-    // ----- END COLORS -----
-
-
     // Title
     private final JLabel titleLabel;
-
+    private final AtomicInteger typeIndex = new AtomicInteger(0);
+    private final StringBuilder typeBuffer = new StringBuilder();
     // System tab components
     private JPasswordField sttApiKeyField;
     private JCheckBox sttLockedCheck;
@@ -63,59 +101,29 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     private JPasswordField systemYouTubeStreamKey;
     private JCheckBox ytLockedCheck;
     private JTextField systemYouTubeStreamUrl;
-
     // Player tab components
     private JTextField playerAltNameField;
     private JTextField playerTitleField;
     private JTextField playerMissionDescription;
     private JTextField journalDirField;
+
+
+    // ---------- Public API ----------
     private JTextField bindingsDirField;
     private JButton savePlayerInfoButton;
     private JButton selectJournalDirButton;
     private JButton selectBindingsDirButton;
-
     // Help tab
     private JEditorPane helpPane; // HTML rendering
-
-
     private Timer logTypewriterTimer;
     private String pendingLogText;
-    private final AtomicInteger typeIndex = new AtomicInteger(0);
-    private final StringBuilder typeBuffer = new StringBuilder();
 
-
-    /**
-     * Constructs a new instance of the AppView GUI.
-     * This class represents the primary user interface for the application, initialized with
-     * a specific layout and various UI components such as tabs, labels, buttons, and checkboxes.
-     * <p>
-     * Key Functionalities:
-     * - Sets up the window's size, location, and appearance, including a default dark theme
-     * and global font settings.
-     * - Configures the main UI components including a tabbed panel for System, Player,
-     * and Help sections.
-     * - Applies custom styling and properties such as font sizes, colors, and borders to enhance
-     * readability and usability.
-     * - Sets initial states and bindings for UI elements related to user preferences and
-     * streaming mode controls.
-     * <p>
-     * Behavior:
-     * - The constructor initializes the application's primary JFrame with specific
-     * properties like dimensions, a window icon, and close operation behavior.
-     * - It prepares UI components, applies consistent dark styling, and binds
-     * interactive elements for enabling/disabling features based on user actions.
-     * <p>
-     * Constraints:
-     * - Requires initialization of style defaults and font settings on Swing components
-     * prior to component creation to apply them consistently.
-     * - Assumes a dark theme and utilizes a predefined set of color and font resources for
-     * styling UI elements.
-     */
     public AppView() {
         super("Elite Intel");
-        // Apply a readable, Windows-friendly font to the entire UI BEFORE creating components
-        installUIFont(getPlatformDefaultFont(20f)); // Adjust base size here (e.g., 14f, 15f, 16f)
-        installDarkDefaults(); // set dark defaults before components are created
+        // Load and apply custom font before any other UI setup
+        loadCustomFont();
+        // Apply dark theme defaults
+        installDarkDefaults();
         EventBusManager.register(this);
 
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/images/elite-logo.png")));
@@ -162,6 +170,123 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         bindingsDirField.setEditable(false);
         bindingsDirField.setPreferredSize(new Dimension(200, 42));
     }
+
+
+    private void loadCustomFont() {
+        try {
+            Font font = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("/fonts/Electrolize-Regular.ttf")).deriveFont(20f);
+            GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(font);
+            UIManager.put("defaultFont", font);
+
+            // Update all component fonts
+            for (Map.Entry<Object, Object> entry : UIManager.getDefaults().entrySet()) {
+                if (entry.getValue() instanceof FontUIResource) {
+                    UIManager.put(entry.getKey(), new FontUIResource(font));
+                }
+            }
+        } catch (FontFormatException | IOException e) {
+            log.error("Failed to load custom font: {}", e.getMessage());
+        }
+    }
+
+
+    // Simple dark defaults so new components pick up colors automatically (no L&F swap)
+    private void installDarkDefaults() {
+        UIManager.put("Panel.background", BG);
+        UIManager.put("OptionPane.background", BG);
+        UIManager.put("TabbedPane.background", BG);
+        UIManager.put("TabbedPane.foreground", FG);
+        UIManager.put("TabbedPane.contentAreaColor", BG);
+        UIManager.put("Label.foreground", FG);
+        UIManager.put("CheckBox.foreground", FG);
+        UIManager.put("RadioButton.foreground", FG);
+        UIManager.put("Button.foreground", FG);
+        UIManager.put("Button.background", BG_PANEL);
+        UIManager.put("ScrollPane.background", BG);
+        UIManager.put("Viewport.background", BG);
+        UIManager.put("TextField.background", BG_PANEL);
+        UIManager.put("PasswordField.background", BG_PANEL);
+        UIManager.put("TextArea.background", BG_PANEL);
+        UIManager.put("EditorPane.background", BG_PANEL);
+        UIManager.put("TextField.foreground", FG);
+        UIManager.put("PasswordField.foreground", FG);
+        UIManager.put("TextArea.foreground", FG);
+        UIManager.put("EditorPane.foreground", FG);
+        UIManager.put("TextField.inactiveForeground", FG_MUTED);
+        UIManager.put("PasswordField.inactiveForeground", FG_MUTED);
+        UIManager.put("TextArea.inactiveForeground", FG_MUTED);
+        UIManager.put("EditorPane.inactiveForeground", FG_MUTED);
+    }
+
+    /**
+     * Binds a lock checkbox to a specific field, allowing the field's state
+     * (enabled, editable, or read-only) to be toggled based on the checkbox selection.
+     *
+     * @param lockCheck The checkbox that controls the locking mechanism.
+     * @param field     The UI component whose state will be controlled by the checkbox.
+     *                  Supports JTextComponent and other JComponent types.
+     */
+    private static void bindLock(JCheckBox lockCheck, JComponent field) {
+        Runnable apply = () -> {
+            boolean locked = lockCheck.isSelected();
+            if (field instanceof JTextComponent tc) {
+                tc.setEnabled(!locked);
+            } else {
+                field.setEnabled(!locked);
+            }
+        };
+        lockCheck.addItemListener(e -> apply.run());
+        apply.run(); // initialize once
+    }
+
+    /**
+     * Applies a character limit on a specified {@link JTextField}.
+     * This method ensures that users cannot input or paste text exceeding the given maximum number of characters.
+     * It achieves this by utilizing a {@link DocumentFilter} on the text field's document.
+     *
+     * @param field    The {@link JTextField} component on which the character limit will be applied.
+     *                 If the field is null, the method does nothing.
+     * @param maxChars The maximum allowed number of characters in the {@link JTextField}.
+     *                 Input exceeding this limit will be truncated or ignored.
+     */
+    private void installTextLimit(JTextField field, int maxChars) {
+        ((AbstractDocument) field.getDocument()).setDocumentFilter(new DocumentFilter() {
+            @Override
+            public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
+                if (string == null) return;
+                int newLen = fb.getDocument().getLength() + string.length();
+                if (newLen <= maxChars) {
+                    super.insertString(fb, offset, string, attr);
+                } else {
+                    int allowed = maxChars - fb.getDocument().getLength();
+                    if (allowed > 0) {
+                        super.insertString(fb, offset, string.substring(0, allowed), attr);
+                    }
+                }
+            }
+
+            @Override
+            public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs)
+                    throws BadLocationException {
+                if (text == null) {
+                    super.replace(fb, offset, length, null, attrs);
+                    return;
+                }
+                int curLen = fb.getDocument().getLength();
+                int newLen = curLen - length + text.length();
+                if (newLen <= maxChars) {
+                    super.replace(fb, offset, length, text, attrs);
+                } else {
+                    int allowed = maxChars - (curLen - length);
+                    if (allowed > 0) {
+                        super.replace(fb, offset, length, text.substring(0, allowed), attrs);
+                    }
+                }
+            }
+        });
+    }
+
+    // ---------- Helpers ----------
 
     private JPanel buildSystemTab() {
         JPanel panel = new JPanel(new GridBagLayout());
@@ -213,7 +338,6 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         systemYouTubeStreamUrl.setPreferredSize(new Dimension(200, 42));
         systemYouTubeStreamUrl.setToolTipText("Enter your Stream URL if you want TTS for chat");
         addField(panel, systemYouTubeStreamUrl, gbc, 1, 1.0);
-
 
 
         // Row 3: Buttons
@@ -463,46 +587,6 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         return panel;
     }
 
-    // Install a global UI font across all Swing components
-    private static void installUIFont(Font base) {
-        if (base == null) return;
-        FontUIResource f = new FontUIResource(base);
-        for (Object key : UIManager.getLookAndFeelDefaults().keySet()) {
-            Object val = UIManager.get(key);
-            if (val instanceof FontUIResource) {
-                UIManager.put(key, f);
-            }
-        }
-    }
-
-    // Simple dark defaults so new components pick up colors automatically (no L&F swap)
-    private static void installDarkDefaults() {
-        UIManager.put("Panel.background", BG);
-        UIManager.put("OptionPane.background", BG);
-        UIManager.put("TabbedPane.background", BG);
-        UIManager.put("TabbedPane.foreground", FG);
-        UIManager.put("TabbedPane.contentAreaColor", BG);
-        UIManager.put("Label.foreground", FG);
-        UIManager.put("CheckBox.foreground", FG);
-        UIManager.put("RadioButton.foreground", FG);
-        UIManager.put("Button.foreground", FG);
-        UIManager.put("Button.background", BG_PANEL);
-        UIManager.put("ScrollPane.background", BG);
-        UIManager.put("Viewport.background", BG);
-        UIManager.put("TextField.background", BG_PANEL);
-        UIManager.put("PasswordField.background", BG_PANEL);
-        UIManager.put("TextArea.background", BG_PANEL);
-        UIManager.put("EditorPane.background", BG_PANEL);
-        UIManager.put("TextField.foreground", FG);
-        UIManager.put("PasswordField.foreground", FG);
-        UIManager.put("TextArea.foreground", FG);
-        UIManager.put("EditorPane.foreground", FG);
-        UIManager.put("TextField.inactiveForeground", FG_MUTED);
-        UIManager.put("PasswordField.inactiveForeground", FG_MUTED);
-        UIManager.put("TextArea.inactiveForeground", FG_MUTED);
-        UIManager.put("EditorPane.inactiveForeground", FG_MUTED);
-    }
-
     /**
      * Recursively applies a dark theme to the specified UI component and its children.
      * This method updates the background, foreground, borders, and other style aspects
@@ -525,7 +609,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
             c.setForeground(FG);
         }
 
-        if(c instanceof JTextArea) {
+        if (c instanceof JTextArea) {
             c.setBackground(Color.BLACK);
             c.setForeground(ACCENT);
         }
@@ -588,66 +672,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
             }
         }
     }
-
-    // Choose a sensible Windows-default font, fallback to Dialog if not available
-    private static Font getPlatformDefaultFont(@SuppressWarnings("SameParameterValue") /*configured above for convenience*/ float size) {
-        String[] candidates = {
-                "Segoe UI",       // Windows 10/11
-                "Tahoma",         // Older Windows
-                "Verdana",        // Widely available
-                "Dialog"          // Cross-platform fallback
-        };
-        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        for (String name : candidates) {
-            for (String fam : ge.getAvailableFontFamilyNames()) {
-                if (fam.equalsIgnoreCase(name)) {
-                    return new Font(fam, Font.PLAIN, Math.round(size));
-                }
-            }
-        }
-        return new Font("Dialog", Font.PLAIN, Math.round(size));
-    }
-
-
-    private JPanel buildHelpTab() {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBorder(new EmptyBorder(4, 4, 4, 4));
-
-        helpPane = new JEditorPane();
-        helpPane.setEditable(false);
-        helpPane.setContentType("text/html");
-        helpPane.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
-
-        JScrollPane scroll = new JScrollPane(helpPane);
-        panel.add(scroll, BorderLayout.CENTER);
-        return panel;
-    }
-
-
-    /**
-     * Binds a lock checkbox to a specific field, allowing the field's state
-     * (enabled, editable, or read-only) to be toggled based on the checkbox selection.
-     *
-     * @param lockCheck The checkbox that controls the locking mechanism.
-     * @param field     The UI component whose state will be controlled by the checkbox.
-     *                  Supports JTextComponent and other JComponent types.
-     */
-    private static void bindLock(JCheckBox lockCheck, JComponent field) {
-        Runnable apply = () -> {
-            boolean locked = lockCheck.isSelected();
-            if (field instanceof JTextComponent tc) {
-                tc.setEnabled(!locked);
-            } else {
-                field.setEnabled(!locked);
-            }
-        };
-        lockCheck.addItemListener(e -> apply.run());
-        apply.run(); // initialize once
-    }
-
-
-    // ---------- Public API ----------
-
+    
     public void addActionListener(ActionListener l) {
         if (saveSystemButton != null) saveSystemButton.addActionListener(l);
         if (startStopServicesButton != null) startStopServicesButton.addActionListener(l);
@@ -686,11 +711,11 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
             ttsApiKeyField.setText(cfg.getOrDefault(ConfigManager.TTS_API_KEY, ""));
             ttsLockedCheck.setSelected(!cfg.getOrDefault(ConfigManager.TTS_API_KEY, "").isEmpty());
         }
-        if(systemYouTubeStreamKey != null) {
+        if (systemYouTubeStreamKey != null) {
             systemYouTubeStreamKey.setText(cfg.getOrDefault(ConfigManager.YT_API_KEY, ""));
             ytLockedCheck.setSelected(!cfg.getOrDefault(ConfigManager.YT_API_KEY, "").isEmpty());
         }
-        if(systemYouTubeStreamUrl != null) {
+        if (systemYouTubeStreamUrl != null) {
             systemYouTubeStreamUrl.setText(cfg.getOrDefault(ConfigManager.YT_URL, ""));
         }
     }
@@ -790,7 +815,8 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         if (playerTitleField != null) playerTitleField.setText(cfg.getOrDefault(ConfigManager.PLAYER_CUSTOM_TITLE, ""));
         if (playerMissionDescription != null) playerMissionDescription.setText(cfg.getOrDefault(ConfigManager.PLAYER_MISSION_STATEMENT, ""));
         if (systemYouTubeStreamUrl != null) {
-            systemYouTubeStreamUrl.setText(cfg.getOrDefault(ConfigManager.YT_URL, ""));}
+            systemYouTubeStreamUrl.setText(cfg.getOrDefault(ConfigManager.YT_URL, ""));
+        }
         if (journalDirField != null) journalDirField.setText(cfg.getOrDefault(ConfigManager.JOURNAL_DIR, ""));
         if (bindingsDirField != null) bindingsDirField.setText(cfg.getOrDefault(ConfigManager.BINDINGS_DIR, ""));
     }
@@ -817,7 +843,6 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         return cfg;
     }
 
-
     /**
      * Updates the content of the log area with the given text. If the current text
      * in the log area and the new text share a common prefix, only the differing
@@ -825,7 +850,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
      *
      * @param text the new log text to display in the log area; if null, the method does nothing
      */
-// In setLogText:
+//TODO: Analyze this for re-paint bug
     public void setLogText(String text) {
         if (logArea == null || text == null) return;
 
@@ -865,14 +890,13 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         }
         logTypewriterTimer.start();
     }
-
+    
     public void setHelpMarkdown(String markdown) {
         if (helpPane == null) return;
         helpPane.setText(markdown);
         helpPane.setCaretPosition(0);
     }
-
-    // ---------- Helpers ----------
+    // ----- END ACTION COMMANDS -----
 
     /**
      * Creates and initializes a basic instance of {@link GridBagConstraints} with default styling
@@ -921,54 +945,6 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         gbc.gridy++;
     }
 
-    /**
-     * Applies a character limit on a specified {@link JTextField}.
-     * This method ensures that users cannot input or paste text exceeding the given maximum number of characters.
-     * It achieves this by utilizing a {@link DocumentFilter} on the text field's document.
-     *
-     * @param field    The {@link JTextField} component on which the character limit will be applied.
-     *                 If the field is null, the method does nothing.
-     * @param maxChars The maximum allowed number of characters in the {@link JTextField}.
-     *                 Input exceeding this limit will be truncated or ignored.
-     */
-    private static void installTextLimit(JTextField field, int maxChars) {
-        ((AbstractDocument) field.getDocument()).setDocumentFilter(new DocumentFilter() {
-            @Override
-            public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
-                if (string == null) return;
-                int newLen = fb.getDocument().getLength() + string.length();
-                if (newLen <= maxChars) {
-                    super.insertString(fb, offset, string, attr);
-                } else {
-                    int allowed = maxChars - fb.getDocument().getLength();
-                    if (allowed > 0) {
-                        super.insertString(fb, offset, string.substring(0, allowed), attr);
-                    }
-                }
-            }
-
-            @Override
-            public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs)
-                    throws BadLocationException {
-                if (text == null) {
-                    super.replace(fb, offset, length, null, attrs);
-                    return;
-                }
-                int curLen = fb.getDocument().getLength();
-                int newLen = curLen - length + text.length();
-                if (newLen <= maxChars) {
-                    super.replace(fb, offset, length, text, attrs);
-                } else {
-                    int allowed = maxChars - (curLen - length);
-                    if (allowed > 0) {
-                        super.replace(fb, offset, length, text.substring(0, allowed), attrs);
-                    }
-                }
-            }
-        });
-    }
-
-
     // Keep button styling lightweight; painting is handled by the inline subclass above
     private void styleButton(JButton b) {
         b.setOpaque(false);
@@ -980,7 +956,6 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
                 new EmptyBorder(6, 12, 6, 12)
         ));
     }
-
 
     /**
      * Styles the specified JTabbedPane with a dark theme and custom tab rendering.
@@ -1048,48 +1023,6 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
             }
         });
     }
-
-
-    // ----- ACTION COMMANDS -----
-    // Action commands are used to trigger specific actions in the UI.
-    // They are passed to the controller via the actionPerformed() method.
-    // The controller can then use the action command to determine what to do.
-    //
-    // Note: Action commands are not intended to be used for communication between the UI and the controller.
-    //       They are only intended to be used for communication between the UI and the model.
-    //
-    // Action commands are defined here and referenced in the UI code.
-    //
-    public static final String ACTION_SAVE_USER_CONFIG = "saveUserConfig";
-    public static final String ACTION_SAVE_SYSTEM_CONFIG = "saveSystemConfig";
-    public static final String ACTION_TOGGLE_SERVICES = "toggleServices";
-    public static final String ACTION_TOGGLE_STREAMING_MODE = "toggleStreamingMode";
-    public static final String ACTION_TOGGLE_PRIVACY_MODE = "togglePrivacyMode";
-    public static final String ACTION_TOGGLE_SYSTEM_LOG = "toggleSystemLog";
-    public static final String ACTION_SELECT_JOURNAL_DIR = "selectJournalDir";
-    public static final String ACTION_SELECT_BINDINGS_DIR = "selectBindingsDir";
-    public static final String ACTION_RECALIBRATE_AUTIO = "recalibrateAudio";
-    // ----- END ACTION COMMANDS -----
-
-
-    // ----- PROPERTY CHANGE EVENTS -----
-    // Property change events are used to notify the UI of changes in the model.
-    // They are passed to the controller via the propertyChange() method.
-    // The controller can then use the property name to determine what to do.
-    //
-    // Note: Property change events are not intended to be used for communication between the UI and the controller.
-    //       They are only intended to be used for communication between the UI and the model.
-    //
-    // Property change events are defined here and referenced in the UI code.
-    //
-    public static final String PROPERTY_SYSTEM_CONFIG_UPDATED = "systemConfigUpdated";
-    public static final String PROPERTY_LOG_UPDATED = "logUpdated";
-    public static final String PROPERTY_USER_CONFIG_UPDATED = "userConfigUpdated";
-    public static final String PROPERTY_STREAMING_MODE = "streamingModeUpdated";
-    public static final String PROPERTY_PRIVACY_MODE = "privacyModeUpdated";
-    public static final String PROPERTY_HELP_MARKDOWN = "helpMarkdownUpdated";
-    public static final String PROPERTY_SERVICES_TOGGLE = "servicesToggled";
-
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {

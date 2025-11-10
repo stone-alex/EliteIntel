@@ -251,7 +251,6 @@ public class AppController implements AppControllerInterface, ActionListener {
         systemSession.setStreamingMode(streamingModeOnOff);
         model.setStreamingModeOn(streamingModeOnOff);
         EventBusManager.publish(new AiVoxResponseEvent(streamingModeOnOff ? streamingModeIsOnMessage() : streamingModeIsOffMessage()));
-        appendToLog(streamingModeOnOff ? streamingModeIsOnMessage() : streamingModeIsOffMessage());
     }
 
     @Override

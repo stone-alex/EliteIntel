@@ -31,7 +31,7 @@ public class EnterNextCarrierDestinationHandler extends CommandOperator implemen
                 SleepNoThrow.sleep(250);
                 keyProcessor.pressKey(KeyProcessor.KEY_ENTER);
                 keyProcessor.pressKey(KeyProcessor.KEY_ENTER);
-                AudioPlayer.getInstance().playBeep();
+                AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_2);
             }
         }
     }

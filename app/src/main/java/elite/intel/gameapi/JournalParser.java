@@ -2,16 +2,14 @@ package elite.intel.gameapi;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import elite.intel.ai.ConfigManager;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
-import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
 import elite.intel.gameapi.journal.EventRegistry;
 import elite.intel.gameapi.journal.events.BaseEvent;
 import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.json.GsonFactory;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager; 
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -48,14 +46,11 @@ import java.util.concurrent.TimeUnit;
 public class JournalParser implements Runnable {
     private static final Logger log = LogManager.getLogger(JournalParser.class);
     private final Path journalDir;
-
+    private Thread processingThread;
+    private volatile boolean isRunning;
     public JournalParser() {
         journalDir = ConfigManager.getInstance().getJournalPath();
     }
-
-
-    private Thread processingThread;
-    private volatile boolean isRunning;
 
     public synchronized void start() {
         if (processingThread != null && processingThread.isAlive()) {
@@ -150,7 +145,11 @@ public class JournalParser implements Runnable {
 
                         try {
                             String sanitizedLine = line.replaceAll("[\\p{Cntrl}\\p{Cc}\\p{Cf}]", "").trim();
-                            if(!sanitizedLine.startsWith("{")) {
+                            if (!sanitizedLine.startsWith("{")) {
+                                continue;
+                            }
+
+                            if (!sanitizedLine.endsWith("}")) {
                                 continue;
                             }
 

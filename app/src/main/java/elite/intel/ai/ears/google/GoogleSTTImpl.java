@@ -381,7 +381,7 @@ public class GoogleSTTImpl implements EarsInterface {
     }
 
     private void sendToAi(String sanitizedTranscript, float confidence) {
-        AudioPlayer.getInstance().playBeep();
+        AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_1);
         log.info("Processing sanitizedTranscript: {}", sanitizedTranscript);
         EventBusManager.publish(new UserInputEvent(sanitizedTranscript, confidence));
     }

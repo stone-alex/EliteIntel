@@ -64,6 +64,7 @@ sourceSets {
             include '**/*.wav'
             include 'beep.wav'
             include '**/*.xml'
+            include '**/fonts/*.ttf'
             include 'META-INF/MANIFEST.MF'
         }
     }

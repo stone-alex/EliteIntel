@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import elite.intel.ai.search.spansh.carrier.CarrierJump;
 import elite.intel.ai.search.spansh.market.StationMarket;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.gameapi.data.FsdTarget;
 import elite.intel.gameapi.gamestate.dtos.GameEvents;
 import elite.intel.gameapi.gamestate.dtos.NavRouteDto;
 import elite.intel.gameapi.journal.events.*;
@@ -130,7 +131,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     private int totalBountyClaimed = 0;
     private int goodsSoldThisSession = 0;
     private double totalDistanceTraveled = 0.0;
-    private ToJsonConvertible fsdTarget;
+    private FsdTarget fsdTarget;
     private Boolean isRadioTransmissionOn;
     private Boolean isMiningAnnouncementOn = true;
     private Boolean isNavigationAnnouncementOn = true;
@@ -243,7 +244,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         registerField(TOTAL_BOUNTY_CLAIMED, this::getTotalBountyClaimed, this::setTotalBountyClaimed, Integer.class);
         registerField(GOODS_SOLD_THIS_SESSION, this::getGoodsSoldThisSession, this::setGoodsSoldThisSession, Integer.class);
         registerField(TOTAL_DISTANCE_TRAVELED, this::getTotalDistanceTraveled, this::setTotalDistanceTraveled, Double.class);
-        registerField(FSD_TARGET, this::getFsdTarget, this::setFsdTarget, ToJsonConvertible.class);
+        registerField(FSD_TARGET, this::getFsdTarget, this::setFsdTarget, FsdTarget.class);
         registerField("radio_on_off", this::isRadioTransmissionOn, this::setRadioTransmissionOn, Boolean.class);
         registerField("navigation_vox_on_off", this::isNavigationAnnouncementOn, this::setNavigationAnnouncementOn, Boolean.class);
         registerField("mining_vox_on_off", this::isMiningAnnouncementOn, this::setMiningAnnouncementOn, Boolean.class);
@@ -869,12 +870,12 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         save();
     }
 
-    public void setFsdTarget(ToJsonConvertible json) {
+    public void setFsdTarget(FsdTarget json) {
         this.fsdTarget = json;
         save();
     }
 
-    public ToJsonConvertible getFsdTarget() {
+    public FsdTarget getFsdTarget() {
         return fsdTarget;
     }
 

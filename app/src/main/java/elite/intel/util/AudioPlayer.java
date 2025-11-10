@@ -8,6 +8,9 @@ import java.io.*;
 
 public final class AudioPlayer {
 
+    public static final String BEEP_1 = "/beep1.wav";
+    public static final String BEEP_2 = "/beep1.wav";
+
     private static final Logger log = LogManager.getLogger(AudioPlayer.class);
     private static AudioPlayer instance;
 
@@ -20,9 +23,10 @@ public final class AudioPlayer {
         }
         return instance;
     }
-    public void playBeep() {
+
+    public void playBeep(String soundFile) {
         try {
-            InputStream resourceStream = getClass().getResourceAsStream("/beep.wav");
+            InputStream resourceStream = getClass().getResourceAsStream(soundFile);
             if (resourceStream == null) {
                 log.error("Resource 'beep.wav' not found in classpath");
                 return;

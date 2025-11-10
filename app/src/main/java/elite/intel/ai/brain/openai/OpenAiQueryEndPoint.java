@@ -43,7 +43,7 @@ public class OpenAiQueryEndPoint extends AiEndPoint implements AiQueryInterface 
             body.add("messages", sanitizedMessages);
 
             jsonString = GsonFactory.getGson().toJson(body);
-            log.info("Open AI API query call:\n\n{}\n\n", jsonString);
+            log.debug("Open AI API query call:\n\n{}\n\n", jsonString);
 
 
 
@@ -69,7 +69,7 @@ public class OpenAiQueryEndPoint extends AiEndPoint implements AiQueryInterface 
             }
 
             // Log content before parsing
-            log.info("API response content:\n\n{}\n\n", content);
+            log.debug("API response content:\n\n{}\n\n", content);
 
             // Extract JSON from content (after double newline or first valid JSON object)
             String jsonContent;
@@ -94,7 +94,7 @@ public class OpenAiQueryEndPoint extends AiEndPoint implements AiQueryInterface 
             }
 
             // Log extracted JSON
-            log.info("Extracted JSON content:\n\n{}\n\n", GsonFactory.getGson().toJson(jsonContent));
+            log.debug("Extracted JSON content:\n\n{}\n\n", GsonFactory.getGson().toJson(jsonContent));
 
             // Parse JSON content
             try {

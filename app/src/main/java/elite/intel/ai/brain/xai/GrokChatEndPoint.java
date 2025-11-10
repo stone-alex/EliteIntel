@@ -51,7 +51,7 @@ public class GrokChatEndPoint extends AiEndPoint implements AIChatInterface {
             body.add("messages", sanitizedMessages);
 
             bodyString = body.toString();
-            log.info("xAI API chat call:\n{}", bodyString);
+            log.debug("xAI API chat call:\n{}", bodyString);
 
 
             Response response = callApi(conn, bodyString, client);
@@ -76,7 +76,7 @@ public class GrokChatEndPoint extends AiEndPoint implements AIChatInterface {
             }
 
             // Log content before parsing
-            log.info("API response content:\n{}", content);
+            log.debug("API response content:\n{}", content);
 
             // Extract JSON from content (after double newline or first valid JSON object)
             String jsonContent;
@@ -103,7 +103,7 @@ public class GrokChatEndPoint extends AiEndPoint implements AIChatInterface {
             }
 
             // Log extracted JSON
-            log.info("Extracted JSON content:\n\n{}\n\n", jsonContent);
+            log.debug("Extracted JSON content:\n\n{}\n\n", jsonContent);
 
             // Parse JSON content
             try {

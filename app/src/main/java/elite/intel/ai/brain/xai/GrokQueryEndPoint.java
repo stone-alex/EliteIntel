@@ -35,7 +35,7 @@ public class GrokQueryEndPoint extends AiEndPoint implements AiQueryInterface {
             body.add("messages", sanitizedMessages);
 
             bodyString = body.toString();
-            log.info("xAI API query call:\n{}", bodyString);
+            log.debug("xAI API query call:\n{}", bodyString);
 
             Response response = callApi(conn, bodyString, client);
             StracturedResponse stracturedResponse = checkResponse(response);
@@ -43,7 +43,7 @@ public class GrokQueryEndPoint extends AiEndPoint implements AiQueryInterface {
                 return null;
             }
 
-            log.info("API response content:\n{}", stracturedResponse.content());
+            log.debug("API response content:\n{}", stracturedResponse.content());
 
             String jsonContent;
             int jsonStart = stracturedResponse.content().indexOf("\n\n{");
@@ -64,7 +64,7 @@ public class GrokQueryEndPoint extends AiEndPoint implements AiQueryInterface {
                 }
             }
 
-            log.info("Extracted JSON content:\n\n{}\n\n", jsonContent);
+            log.debug("Extracted JSON content:\n\n{}\n\n", jsonContent);
 
             try {
                 return JsonParser.parseString(jsonContent).getAsJsonObject();

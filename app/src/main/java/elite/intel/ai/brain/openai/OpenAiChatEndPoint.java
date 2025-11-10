@@ -44,7 +44,7 @@ public class OpenAiChatEndPoint extends AiEndPoint implements AIChatInterface {
             body.add("messages", sanitizedMessages);
 
             jsonString = GsonFactory.getGson().toJson(body);
-            log.info("Open AI API chat call:\n\n{}\n\n", jsonString);
+            log.debug("Open AI API chat call:\n\n{}\n\n", jsonString);
 
             Response response = callApi(conn, jsonString, client);
 
@@ -68,7 +68,7 @@ public class OpenAiChatEndPoint extends AiEndPoint implements AIChatInterface {
             }
 
             // Log content before parsing
-            log.info("API response content:\n\n{}\n\n", content);
+            log.debug("API response content:\n\n{}\n\n", content);
 
             // Extract JSON from content (after double newline or first valid JSON object)
             String jsonContent;
@@ -98,7 +98,7 @@ public class OpenAiChatEndPoint extends AiEndPoint implements AIChatInterface {
             }
 
             // Log extracted JSON
-            log.info("Extracted JSON content:\n\n{}\n\n", GsonFactory.getGson().toJson(jsonContent));
+            log.debug("Extracted JSON content:\n\n{}\n\n", GsonFactory.getGson().toJson(jsonContent));
 
             // Parse JSON content
             try {

@@ -53,7 +53,7 @@ public class OpenAiAnalysisEndPoint extends AiEndPoint implements AiAnalysisInte
             request.add("messages", messages);
 
             String jsonString = GsonFactory.getGson().toJson(request);
-            log.info("Analysis call:\n\n{}\n\n", jsonString);
+            log.debug("Analysis call:\n\n{}\n\n", jsonString);
 
             Response response = callApi(conn, jsonString, client);
 
@@ -76,7 +76,7 @@ public class OpenAiAnalysisEndPoint extends AiEndPoint implements AiAnalysisInte
                 return client.createErrorResponse("Analysis error.");
             }
 
-            log.info("AI Response: \n\n{}\n\n", GsonFactory.getGson().toJson(message));
+            log.debug("AI Response: \n\n{}\n\n", GsonFactory.getGson().toJson(message));
 
             String content = message.get(PROPERTY_CONTENT).getAsString();
             if (content == null) {

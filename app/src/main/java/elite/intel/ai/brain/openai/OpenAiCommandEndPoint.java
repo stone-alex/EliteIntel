@@ -277,7 +277,7 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
             }
 
             // Log extracted JSON
-            log.info("Extracted JSON content:\n\n{}\n\n", GsonFactory.getGson().toJson(jsonContent));
+            log.debug("Extracted JSON content:\n\n{}\n\n", GsonFactory.getGson().toJson(jsonContent));
 
             // Parse JSON content
             try {

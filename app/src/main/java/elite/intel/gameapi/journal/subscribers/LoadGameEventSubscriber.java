@@ -6,6 +6,7 @@ import elite.intel.gameapi.gamestate.dtos.NavRouteDto;
 import elite.intel.gameapi.journal.events.LoadGameEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
+import elite.intel.session.ShipRoute;
 import elite.intel.util.AdjustRoute;
 
 import java.util.List;
@@ -15,10 +16,13 @@ import static elite.intel.util.StringUtls.capitalizeWords;
 
 public class LoadGameEventSubscriber {
 
+    private final ShipRoute shipRoute = ShipRoute.getInstance();
+
+
     @Subscribe
     public void onEvent(LoadGameEvent event) {
-        PlayerSession playerSession = PlayerSession.getInstance();
 
+        PlayerSession playerSession = PlayerSession.getInstance();
         playerSession.setShipFuelLevel(event.getFuelLevel());
 
         String inGameName = event.getCommander();
@@ -34,14 +38,14 @@ public class LoadGameEventSubscriber {
     }
 
     private void cleanUpRoute(PlayerSession playerSession) {
-        List<NavRouteDto> orderedRoute = playerSession.getOrderedRoute();
+        List<NavRouteDto> orderedRoute = shipRoute.getOrderedRoute();
         boolean roueSet = !orderedRoute.isEmpty();
         LocationDto currentLocation = playerSession.getCurrentLocation();
         if (!roueSet) {return;}
         if (currentLocation == null) {return;}
 
         Map<Integer, NavRouteDto> adjustedRoute = AdjustRoute.adjustRoute(orderedRoute, currentLocation.getStarName());
-        playerSession.setNavRoute(adjustedRoute);
+        shipRoute.setNavRoute(adjustedRoute);
     }
 
     private static void initValuesFromConfig(PlayerSession playerSession) {

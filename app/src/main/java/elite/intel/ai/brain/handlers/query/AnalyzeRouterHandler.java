@@ -9,6 +9,7 @@ import elite.intel.ai.search.edsm.dto.TrafficDto;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.gamestate.dtos.NavRouteDto;
 import elite.intel.session.PlayerSession;
+import elite.intel.session.ShipRoute;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.JsonDataFactory;
 import elite.intel.util.json.ToJsonConvertible;
@@ -29,9 +30,10 @@ public class AnalyzeRouterHandler extends BaseQueryAnalyzer implements QueryHand
 
         Queries query = findQuery(action);
         PlayerSession playerSession = PlayerSession.getInstance();
+        ShipRoute shipRoute = ShipRoute.getInstance();
 
         Collection<ToJsonConvertible> route = new LinkedHashSet<>();
-        Collection<NavRouteDto> orderedRoute = playerSession.getOrderedRoute();
+        Collection<NavRouteDto> orderedRoute = shipRoute.getOrderedRoute();
         for (NavRouteDto dto : orderedRoute) {
             if (dto.getDeathData() == null) {
                 DeathsDto deathsDto = EdsmApiClient.searchDeaths(dto.getName());
@@ -50,7 +52,7 @@ public class AnalyzeRouterHandler extends BaseQueryAnalyzer implements QueryHand
             }
 
             route.add(dto);
-            playerSession.updateRouteNode(dto);
+            shipRoute.updateRouteNode(dto);
         }
 
         String data = JsonDataFactory.getInstance().toJsonArrayString(route);

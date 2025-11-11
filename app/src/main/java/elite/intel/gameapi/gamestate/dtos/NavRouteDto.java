@@ -7,6 +7,9 @@ import elite.intel.util.json.ToJsonConvertible;
 
 public class NavRouteDto extends BaseJsonDto implements ToJsonConvertible {
 
+    double X;
+    double Y;
+    double Z;
     private int leg;
     private int remainingJumps;
     private String starClass;
@@ -14,10 +17,6 @@ public class NavRouteDto extends BaseJsonDto implements ToJsonConvertible {
     private boolean isScoopable;
     private DeathsDto deathData;
     private TrafficDto traffic;
-    double X;
-    double  Y;
-    double  Z;
-
 
     public int getLeg() {
         return leg;

@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
 import elite.intel.ai.hands.KeyProcessor;
 import elite.intel.ai.search.spansh.carrier.CarrierJump;
+import elite.intel.session.FleetCarrierRoute;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.AudioPlayer;
 import elite.intel.util.SleepNoThrow;
@@ -20,7 +21,7 @@ public class EnterNextCarrierDestinationHandler extends CommandOperator implemen
 
 
     @Override public void handle(String action, JsonObject params, String responseText) {
-        Map<Integer, CarrierJump> fleetCarrierRoute = PlayerSession.getInstance().getFleetCarrierRoute();
+        Map<Integer, CarrierJump> fleetCarrierRoute = FleetCarrierRoute.getInstance().getFleetCarrierRoute();
 
         if (!fleetCarrierRoute.isEmpty()) {
             Integer nextLeg = Collections.min(fleetCarrierRoute.keySet());

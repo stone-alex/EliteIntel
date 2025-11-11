@@ -30,6 +30,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class GoogleTTSImpl implements MouthInterface {
     private static final Logger log = LogManager.getLogger(GoogleTTSImpl.class);
+    public static final int VOLUME_GAIN_DB = 6;
 
     private TextToSpeechClient textToSpeechClient;
     private final BlockingQueue<VoiceRequest> voiceQueue;
@@ -292,7 +293,7 @@ public class GoogleTTSImpl implements MouthInterface {
             SynthesisInput input = SynthesisInput.newBuilder().setText(text).build();
             AudioConfig config = AudioConfig.newBuilder()
                     .setAudioEncoding(AudioEncoding.LINEAR16)
-                    .setVolumeGainDb(12)
+                    .setVolumeGainDb(VOLUME_GAIN_DB)
                     .setSpeakingRate(speechRate)
                     .build();
             SynthesizeSpeechResponse response = textToSpeechClient.synthesizeSpeech(input, voice, config);

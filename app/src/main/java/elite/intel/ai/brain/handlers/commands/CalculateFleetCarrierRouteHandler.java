@@ -9,6 +9,7 @@ import elite.intel.ai.search.spansh.nearest.NearestKnownLocationSearch;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.dto.CarrierDataDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
+import elite.intel.session.FleetCarrierRoute;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.ClipboardUtils;
 
@@ -20,6 +21,7 @@ public class CalculateFleetCarrierRouteHandler implements CommandHandler {
         SpanshCarrierRouter client = new SpanshCarrierRouter();
 
         PlayerSession playerSession = PlayerSession.getInstance();
+        FleetCarrierRoute fleetCarrierRoute = FleetCarrierRoute.getInstance();
         CarrierDataDto carrierData = playerSession.getCarrierData();
         int fuelSupply = carrierData.getFuelSupply();
         Integer tritiumInReserve = carrierData.getCommodity().get("tritium");
@@ -54,7 +56,7 @@ public class CalculateFleetCarrierRouteHandler implements CommandHandler {
         );
 
         Map<Integer, CarrierJump> route = client.calculateRoute(carrierRouteCriteria, fuelSupply);
-        playerSession.setFleetCarrierRoute(route);
+        fleetCarrierRoute.setFleetCarrierRoute(route);
 
         int fuelRequired = route.values().stream().mapToInt(CarrierJump::getFuelUsed).sum();
         int numJumps = route.size();

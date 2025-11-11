@@ -8,6 +8,7 @@ import elite.intel.gameapi.journal.events.CarrierLocationEvent;
 import elite.intel.gameapi.journal.events.dto.CarrierDataDto;
 import elite.intel.gameapi.journal.events.dto.FssSignalDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
+import elite.intel.session.FleetCarrierRoute;
 import elite.intel.session.LocationHistory;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.AdjustRoute;
@@ -26,10 +27,11 @@ public class CarrierLocationSubscriber {
 
         if ("FleetCarrier".equalsIgnoreCase(event.getCarrierType())) {
             playerSession.setLastKnownCarrierLocation(event.getStarSystem());
+            FleetCarrierRoute route = FleetCarrierRoute.getInstance();
             CarrierDataDto carrierData = playerSession.getCarrierData();
             carrierData.setStarName(event.getStarSystem());
             AdjustRoute.adjustFleetCarrierRoute(event.getStarSystem());
-            Map<Integer, CarrierJump> fleetCarrierRoute = playerSession.getFleetCarrierRoute();
+            Map<Integer, CarrierJump> fleetCarrierRoute = route.getFleetCarrierRoute();
             boolean routeEntryFount = false;
             for(Map.Entry<Integer, CarrierJump> entry : fleetCarrierRoute.entrySet()) {
                 if(entry.getValue().getSystemName().equals(event.getStarSystem())) {

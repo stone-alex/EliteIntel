@@ -22,6 +22,11 @@ import java.util.*;
  * gameplay metrics, and interactions within the game world.
  */
 public class PlayerSession extends SessionPersistence implements java.io.Serializable {
+    public static final String RADIO_ON_OFF = "radio_on_off";
+    public static final String NAVIGATION_VOX_ON_OFF = "navigation_vox_on_off";
+    public static final String MINING_VOX_ON_OFF = "mining_vox_on_off";
+    public static final String DISCOVERY_VOX_ON_OFF = "discovery_vox_on_off";
+    public static final String ROUTE_VOX_ON_OFF = "route_vox_on_off";
     private static volatile PlayerSession instance;
     private static final String SESSION_FILE = "player_session.json";
 
@@ -60,7 +65,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     public static final String CARRIER_LOCATION = "last_known_carrier_location";
     private static final String CURRENT_LOCATION = "current_location";
     private static final String REPUTATION = "reputation";
-    private static final String ROUTE_MAP = "routeMap";
+
     private static final String STELLAR_OBJECTS = "locations";
     private static final String BIO_SAMPLES = "bio_samples";
     private static final String SHIP_LOADOUT = "ship_loadout";
@@ -82,7 +87,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     private final Map<String, String> shipScans = new HashMap<>();
     private final Map<Long, MissionDto> missions = new LinkedHashMap<>();
     private final Map<Long, LocationDto> locations = new HashMap<>();
-    private final Map<Integer, NavRouteDto> routeMap = new LinkedHashMap<>();
+
     private final Set<String> targetFactions = new LinkedHashSet<>();
     private final Set<BountyDto> bounties = new LinkedHashSet<>();
     private final Set<String> miningTargets = new HashSet<>();
@@ -121,7 +126,6 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     private String lastKnownCarrierLocation = "";
     private double shipFuelLevel = 0;
     private Map<String, String> friendsStatus = new HashMap<>();
-    Map<Integer, CarrierJump> fleetCarrierRoute = new HashMap<>();
     private String carrierDepartureTime = "";
     private String jumpingToStarSystem = "";
     private String playerHighestMilitaryRank = "";
@@ -161,11 +165,8 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         }, new TypeToken<Map<String, Boolean>>() {
         }.getType());
 
-        registerField(ROUTE_MAP, this::getRoute, v -> {
-            routeMap.clear();
-            routeMap.putAll((Map<Integer, NavRouteDto>) v);
-        }, new TypeToken<Map<Integer, NavRouteDto>>() {
-        }.getType());
+
+
         registerField(TARGET_FACTIONS, this::getTargetFactions, v -> {
             targetFactions.clear();
             targetFactions.addAll((Set<String>) v);
@@ -229,12 +230,6 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         }, new TypeToken<Map<String, String>>() {
         }.getType());
 
-        registerField("fleet_carrier_route", this::getFleetCarrierRoute, v -> {
-            fleetCarrierRoute.clear();
-            fleetCarrierRoute.putAll(v);
-        }, new TypeToken<Map<Integer, CarrierJump>>() {
-        }.getType());
-
         registerField(CARRIER_DEPARTURE_TIME, this::getCarrierDepartureTime, this::setCarrierDepartureTime, String.class);
         registerField(JUMPING_TO_STARSYSTEM, this::getJumpingToStarSystem, this::setJumpingToStarSystem, String.class);
         registerField(PLAYER_HIGHEST_MILITARY_RANK, this::getPlayerHighestMilitaryRank, this::setPlayerHighestMilitaryRank, String.class);
@@ -245,11 +240,11 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         registerField(GOODS_SOLD_THIS_SESSION, this::getGoodsSoldThisSession, this::setGoodsSoldThisSession, Integer.class);
         registerField(TOTAL_DISTANCE_TRAVELED, this::getTotalDistanceTraveled, this::setTotalDistanceTraveled, Double.class);
         registerField(FSD_TARGET, this::getFsdTarget, this::setFsdTarget, FsdTarget.class);
-        registerField("radio_on_off", this::isRadioTransmissionOn, this::setRadioTransmissionOn, Boolean.class);
-        registerField("navigation_vox_on_off", this::isNavigationAnnouncementOn, this::setNavigationAnnouncementOn, Boolean.class);
-        registerField("mining_vox_on_off", this::isMiningAnnouncementOn, this::setMiningAnnouncementOn, Boolean.class);
-        registerField("discovery_vox_on_off", this::isDiscoveryAnnouncementOn, this::setDiscoveryAnnouncementOn, Boolean.class);
-        registerField("route_vox_on_off", this::isRouteAnnouncementOn, this::setRouteAnnouncementOn, Boolean.class);
+        registerField(RADIO_ON_OFF, this::isRadioTransmissionOn, this::setRadioTransmissionOn, Boolean.class);
+        registerField(NAVIGATION_VOX_ON_OFF, this::isNavigationAnnouncementOn, this::setNavigationAnnouncementOn, Boolean.class);
+        registerField(MINING_VOX_ON_OFF, this::isMiningAnnouncementOn, this::setMiningAnnouncementOn, Boolean.class);
+        registerField(DISCOVERY_VOX_ON_OFF, this::isDiscoveryAnnouncementOn, this::setDiscoveryAnnouncementOn, Boolean.class);
+        registerField(ROUTE_VOX_ON_OFF, this::isRouteAnnouncementOn, this::setRouteAnnouncementOn, Boolean.class);
 
 
         loadSavedStateFromDisk();
@@ -335,29 +330,6 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         save();
     }
 
-    public void setNavRoute(Map<Integer, NavRouteDto> routeMap) {
-        this.routeMap.clear();
-        this.routeMap.putAll(routeMap);
-        save();
-    }
-
-    private Map<Integer, NavRouteDto> getRoute() {
-        return routeMap;
-    }
-
-    public List<NavRouteDto> getOrderedRoute() {
-        if (routeMap.isEmpty()) {
-            return new ArrayList<>();
-        }
-        List<NavRouteDto> orderedRoute = new ArrayList<>(routeMap.values());
-        orderedRoute.sort(Comparator.comparingInt(NavRouteDto::getLeg));
-        return orderedRoute;
-    }
-
-    public void clearRoute() {
-        routeMap.clear();
-        save();
-    }
 
     public RankAndProgressDto getRankAndProgressDto() {
         return rankAndProgressDto;
@@ -940,14 +912,6 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         save();
     }
 
-    public void setFleetCarrierRoute(Map<Integer, CarrierJump> fleetCarrierRoute) {
-        this.fleetCarrierRoute = fleetCarrierRoute;
-        save();
-    }
-
-    public Map<Integer, CarrierJump> getFleetCarrierRoute() {
-        return fleetCarrierRoute;
-    }
 
     private Map<String, Boolean> getGenusPaymentAnnounced() {
         return genusPaymentAnnounced;
@@ -1020,10 +984,6 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         return b != null && b;
     }
 
-    public void updateRouteNode(NavRouteDto dto) {
-        routeMap.put(dto.getLeg(), dto);
-        save();
-    }
 
     public record GalacticCoordinates(double x, double y, double z) {
 

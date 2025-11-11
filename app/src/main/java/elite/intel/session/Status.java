@@ -9,6 +9,14 @@ public class Status extends StatusFlags implements java.io.Serializable {
     private GameEvents.StatusEvent gameStatus = new GameEvents.StatusEvent();
     private Long lastStatusChange = null;
 
+    private Status(String fileName) {
+        super(SESSION_DIR);
+        ensureFileAndDirectoryExist(fileName);
+        loadFromDisk();
+        registerField("game_status", this::getStatus, this::setStatus, GameEvents.StatusEvent.class);
+        registerField("last_change", this::getLastStatusChange, this::setLastStatusChange, Long.class);
+    }
+
     public static Status getInstance() {
         if (instance == null) {
             synchronized (Status.class) {
@@ -18,14 +26,6 @@ public class Status extends StatusFlags implements java.io.Serializable {
             }
         }
         return instance;
-    }
-
-    private Status(String fileName) {
-        super(SESSION_DIR);
-        ensureFileAndDirectoryExist(fileName);
-        loadFromDisk();
-        registerField("game_status", this::getStatus, this::setStatus, GameEvents.StatusEvent.class);
-        registerField("last_change", this::getLastStatusChange, this::setLastStatusChange, Long.class);
     }
 
     public GameEvents.StatusEvent getStatus() {

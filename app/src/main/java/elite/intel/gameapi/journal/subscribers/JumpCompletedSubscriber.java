@@ -17,6 +17,8 @@ import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.gameapi.journal.events.dto.MaterialDto;
 import elite.intel.session.LocationHistory;
 import elite.intel.session.PlayerSession;
+import elite.intel.session.ShipRoute;
+import elite.intel.session.Status;
 import elite.intel.util.AdjustRoute;
 
 import java.util.ArrayList;
@@ -31,7 +33,8 @@ import static elite.intel.util.StringUtls.isFuelStarClause;
 @SuppressWarnings("unused")
 public class JumpCompletedSubscriber {
 
-    PlayerSession playerSession = PlayerSession.getInstance();
+    private final PlayerSession playerSession = PlayerSession.getInstance();
+    private final ShipRoute shipRoute = ShipRoute.getInstance();
 
 
     @Subscribe
@@ -69,11 +72,11 @@ public class JumpCompletedSubscriber {
         sb.append(" Hyperspace Jump Successful: ");
         sb.append(" Distance traveled: ").append(event.getJumpDist()).append(" ly. ");
 
-        List<NavRouteDto> orderedRoute = playerSession.getOrderedRoute();
+        List<NavRouteDto> orderedRoute = shipRoute.getOrderedRoute();
         boolean roueSet = !orderedRoute.isEmpty();
 
         if (finalDestination != null && finalDestination.equalsIgnoreCase(event.getStarSystem())) {
-            playerSession.clearRoute();
+            shipRoute.clearRoute();
             sb.append(" Arrived at final destination: ").append(finalDestination);
             TrafficDto trafficDto = EdsmApiClient.searchTraffic(finalDestination);
             if (trafficDto.getData() != null && trafficDto.getData().getTraffic() != null) {
@@ -88,7 +91,7 @@ public class JumpCompletedSubscriber {
         } else if (roueSet) {
             sb.append("Arrived at: ").append(event.getStarSystem()).append(" star system.");
             Map<Integer, NavRouteDto> adjustedRoute = AdjustRoute.adjustRoute(orderedRoute, event.getStarSystem());
-            playerSession.setNavRoute(adjustedRoute);
+            shipRoute.setNavRoute(adjustedRoute);
 
             List<NavRouteDto> temp = adjustedRoute.values().stream().collect(Collectors.toList());
             temp.sort(Comparator.comparingInt(NavRouteDto::getLeg));

@@ -209,7 +209,7 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
     private JsonObject callXaiApi(JsonArray messages) {
         try {
             GrokClient client = GrokClient.getInstance();
-            JsonObject requestBody = client.createRequestBodyHeader(GrokClient.MODEL_GROK_4_FAST_REASONING, 0.10f);
+            JsonObject requestBody = client.createRequestBodyHeader(GrokClient.MODEL_GROK_4_FAST_REASONING, 1.00f);
             requestBody.add("messages", messages);
             String jsonString = GsonFactory.getGson().toJson(requestBody);
             log.debug("X AI API call:\n{}", jsonString);

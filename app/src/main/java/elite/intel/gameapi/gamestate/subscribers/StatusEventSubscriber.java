@@ -26,8 +26,6 @@ public class StatusEventSubscriber {
             }
         }
 
-        determineCurrentLocation(status);
-
         status.setStatus(event);
         status.setLastStatusChange(System.currentTimeMillis());
 
@@ -57,19 +55,6 @@ public class StatusEventSubscriber {
 
         if(status.isLowHealth()){
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("Low health warning!"));
-        }
-    }
-
-    private void determineCurrentLocation(Status status) {
-        PlayerSession playerSession = PlayerSession.getInstance();
-        LocationDto currentLocation = playerSession.getCurrentLocation();
-
-        if (status.getStatus() != null && status.getStatus().getDestination() != null) {
-            boolean notSameBodyId = currentLocation.getBodyId() != status.getStatus().getDestination().getBody();
-            boolean bodyNameDoesNotMatch = !currentLocation.getPlanetName().equalsIgnoreCase(status.getStatus().getDestination().getName());
-            if (notSameBodyId && bodyNameDoesNotMatch) {
-                playerSession.setCurrentLocationId(status.getStatus().getDestination().getBody());
-            }
         }
     }
 }

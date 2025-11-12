@@ -47,8 +47,7 @@ public class OpenAiResponseRouter extends ResponseRouter implements AIRouterInte
         }
     }
 
-    @Override
-    public void processAiResponse(JsonObject jsonResponse, @Nullable String userInput) {
+    @Override public void processAiResponse(JsonObject jsonResponse, @Nullable String userInput) {
         if (jsonResponse == null) {
             log.error("Null Open AI response received");
             return;
@@ -74,10 +73,10 @@ public class OpenAiResponseRouter extends ResponseRouter implements AIRouterInte
                 case AIConstants.TYPE_CHAT:
                     params.addProperty(AIConstants.PROPERTY_RESPONSE_TEXT, responseText);
                     handleQuery(GENERAL_CONVERSATION.getAction(), params, userInput);
-                    //handleChat(responseText);
                     break;
                 default:
-                    handleChat(responseText);
+                    log.warn("Unknown or missing response type: '{}'", type);
+                    handleChat("I'm not sure what you meant. Please try again.");
             }
         } catch (Exception e) {
             log.error("Failed to process Open AI response: {}", e.getMessage(), e);
@@ -162,6 +161,8 @@ public class OpenAiResponseRouter extends ResponseRouter implements AIRouterInte
         } catch (Exception e) {
             log.error("Query handling failed for action {}: {}", action, e.getMessage(), e);
             handleChat("Error accessing data banks: " + e.getMessage());
+        } finally {
+            SystemSession.getInstance().clearChatHistory();
         }
     }
 }

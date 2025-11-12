@@ -25,6 +25,7 @@ public class GrokResponseRouter extends ResponseRouter implements AIRouterInterf
     private static final GrokResponseRouter INSTANCE = new GrokResponseRouter();
     private final AiQueryInterface queryInterface;
     private final AiPromptFactory contextFactory;
+    private final SystemSession systemSession;
 
     public static GrokResponseRouter getInstance() {
         return INSTANCE;
@@ -34,6 +35,7 @@ public class GrokResponseRouter extends ResponseRouter implements AIRouterInterf
         try {
             this.queryInterface = ApiFactory.getInstance().getQueryEndpoint();
             this.contextFactory = ApiFactory.getInstance().getAiPromptFactory();
+            this.systemSession = SystemSession.getInstance();
         } catch (Exception e) {
             log.error("Failed to initialize GrokResponseRouter", e);
             throw new RuntimeException("GrokResponseRouter initialization failed", e);
@@ -104,7 +106,7 @@ public class GrokResponseRouter extends ResponseRouter implements AIRouterInterf
 
             if (!requiresFollowUp && responseTextToUse != null && !responseTextToUse.isEmpty()) {
                 EventBusManager.publish(new AiVoxResponseEvent(responseTextToUse));
-                SystemSession.getInstance().clearChatHistory();
+                systemSession.clearChatHistory();
                 log.info("Spoke final query response (action: {}): {}", action, responseTextToUse);
             } else if (requiresFollowUp) {
                 JsonArray messages = new JsonArray();
@@ -129,7 +131,7 @@ public class GrokResponseRouter extends ResponseRouter implements AIRouterInterf
                 messages.add(toolResult);
 
                 log.debug("Sending follow-up to GrokQueryEndPoint for action: {}", action);
-                SystemSession.getInstance().appendToChatHistory(userMessage, systemMessage);
+                systemSession.appendToChatHistory(userMessage, systemMessage);
                 JsonObject followUpResponse = queryInterface.sendToAi(messages);
 
                 if (followUpResponse == null) {
@@ -154,7 +156,7 @@ public class GrokResponseRouter extends ResponseRouter implements AIRouterInterf
             log.error("Query handling failed for action {}: {}", action, e.getMessage(), e);
             handleChat("Error accessing data banks: " + e.getMessage());
         } finally {
-            SystemSession.getInstance().clearChatHistory();
+            systemSession.clearChatHistory();
         }
     }
 }

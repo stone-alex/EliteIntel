@@ -14,6 +14,7 @@ import javax.swing.plaf.basic.BasicTabbedPaneUI;
 import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import javax.swing.ImageIcon;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -79,6 +80,9 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     private static final Color SEL_BG = new Color(0x3A3D41); // selection background
     private static final Color TAB_UNSELECTED = new Color(0x2A2C2F);
     private static final Color TAB_SELECTED = new Color(0x33363A);
+    private static final String ICON_AI = "/images/ai.png";
+    private static final String ICON_PLAYER = "/images/controller.png";
+    private static final String ICON_SETTINGS = "/images/settings.png";
     private static final Logger log = LoggerFactory.getLogger(AppView.class);
     // Title
     private final JLabel titleLabel;
@@ -144,9 +148,16 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         // Tabs
         JTabbedPane tabs = new JTabbedPane();
         styleTabbedPane(tabs);
-        tabs.addTab("System", buildSystemTab());
-        tabs.addTab("Player", buildPlayerTab());
-        //tabs.addTab("Help", buildHelpTab()); // <- Help tab disabled for now
+
+
+        ImageIcon aiIcon = new ImageIcon(new ImageIcon(getClass().getResource(ICON_AI)).getImage().getScaledInstance(24, 24, Image.SCALE_SMOOTH));
+        ImageIcon playerIcon = new ImageIcon(new ImageIcon(getClass().getResource(ICON_PLAYER)).getImage().getScaledInstance(24, 24, Image.SCALE_SMOOTH));
+        ImageIcon settingsIcon = new ImageIcon(new ImageIcon(getClass().getResource(ICON_SETTINGS)).getImage().getScaledInstance(24, 24, Image.SCALE_SMOOTH));
+
+        tabs.addTab("Ai", aiIcon, buildSystemTab());
+        tabs.addTab("Player", playerIcon, buildPlayerTab());
+        tabs.addTab("Settings", settingsIcon, buildSettingsTab());
+
         root.add(tabs, BorderLayout.CENTER);
         applyDarkPalette(getContentPane());
 
@@ -291,56 +302,8 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     private JPanel buildSystemTab() {
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = baseGbc();
-
         // Fields (80% width field, 20% checkbox)
-
-        // Row 0: Grok API Key
-        nextRow(gbc);
-        addLabel(panel, "xAI or Open AI Key:", gbc, 0);
-        llmApiKeyField = new JPasswordField();
-        llmApiKeyField.setPreferredSize(new Dimension(200, 42));
-        addField(panel, llmApiKeyField, gbc, 1, 0.8);
-        llmLockedCheck = new JCheckBox("Locked", true);
-        addCheck(panel, llmLockedCheck, gbc, 2, 0.2);
-
-        // Row 1: STT Key
-        nextRow(gbc);
-        addLabel(panel, "Google STT Key:", gbc, 0);
-        sttApiKeyField = new JPasswordField();
-        sttApiKeyField.setPreferredSize(new Dimension(200, 42));
-        addField(panel, sttApiKeyField, gbc, 1, 0.8);
-        sttLockedCheck = new JCheckBox("Locked", true);
-        addCheck(panel, sttLockedCheck, gbc, 2, 0.2);
-
-        // Row 2: TTS Key
-        nextRow(gbc);
-        addLabel(panel, "Google TTS Key:", gbc, 0);
-        ttsApiKeyField = new JPasswordField();
-        ttsApiKeyField.setPreferredSize(new Dimension(200, 42));
-        addField(panel, ttsApiKeyField, gbc, 1, 0.8);
-        ttsLockedCheck = new JCheckBox("Locked", true);
-        addCheck(panel, ttsLockedCheck, gbc, 2, 0.2);
-
-        // Row YouTube KEY
-        nextRow(gbc);
-        addLabel(panel, "YouTube API Key:", gbc, 0);
-        systemYouTubeStreamKey = new JPasswordField();
-        systemYouTubeStreamKey.setPreferredSize(new Dimension(200, 42));
-        systemYouTubeStreamKey.setToolTipText("YouTube API Key");
-        addField(panel, systemYouTubeStreamKey, gbc, 1, 0.8);
-        ytLockedCheck = new JCheckBox("Locked", true);
-        addCheck(panel, ytLockedCheck, gbc, 2, 0.2);
-
-        // Row YouTube URL
-        nextRow(gbc);
-        addLabel(panel, "YouTube Stream:", gbc, 0);
-        systemYouTubeStreamUrl = new JTextField();
-        systemYouTubeStreamUrl.setPreferredSize(new Dimension(200, 42));
-        systemYouTubeStreamUrl.setToolTipText("Enter your Stream URL if you want TTS for chat");
-        addField(panel, systemYouTubeStreamUrl, gbc, 1, 1.0);
-
-
-        // Row 3: Buttons
+        // Row 1: Buttons
         nextRow(gbc);
         gbc.gridx = 0;
         gbc.gridwidth = 3;
@@ -351,27 +314,6 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
         buttons.setOpaque(false);
         // Use inline subclass to custom-paint the dark background (no reassignment issues)
-        saveSystemButton = new JButton("Save Configuration") {
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                try {
-                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    Color base = BG_PANEL;
-                    ButtonModel m = getModel();
-                    if (m.isPressed()) base = base.darker();
-                    else if (m.isRollover()) base = base.brighter();
-                    g2.setColor(base);
-                    g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
-                } finally {
-                    g2.dispose();
-                }
-                super.paintComponent(g);
-            }
-        };
-        styleButton(saveSystemButton);
-        saveSystemButton.setActionCommand(ACTION_SAVE_SYSTEM_CONFIG);
-
 
         startStopServicesButton = new JButton("Start Services") {
             @Override
@@ -394,29 +336,6 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         startStopServicesButton.setActionCommand(ACTION_TOGGLE_SERVICES);
         styleButton(startStopServicesButton);
 
-        recalibrateAudioButton = new JButton("Recalibrate Audio") {
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                try {
-                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    Color base = BG_PANEL;
-                    ButtonModel m = getModel();
-                    if (m.isPressed()) base = base.darker();
-                    else if (m.isRollover()) base = base.brighter();
-                    g2.setColor(base);
-                    g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
-                } finally {
-                    g2.dispose();
-                }
-                super.paintComponent(g);
-            }
-        };
-
-        recalibrateAudioButton.setActionCommand(ACTION_RECALIBRATE_AUTIO);
-        styleButton(recalibrateAudioButton);
-
-
         showDetailedLog = new JCheckBox("Detailed Log", false);
         showDetailedLog.setActionCommand(ACTION_TOGGLE_SYSTEM_LOG);
 
@@ -426,17 +345,13 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         togglePrivacyModeCheckBox = new JCheckBox(LABEL_STREAMING_MODE, false);
         togglePrivacyModeCheckBox.setActionCommand(ACTION_TOGGLE_PRIVACY_MODE);
 
-
-        buttons.add(saveSystemButton);
         buttons.add(startStopServicesButton);
-        buttons.add(recalibrateAudioButton);
         buttons.add(showDetailedLog);
         buttons.add(toggleStreamingModeCheckBox);
         buttons.add(togglePrivacyModeCheckBox);
-
         panel.add(buttons, gbc);
 
-        // Row 4+: Logs area fills remaining space
+        // Row 2: Logs area fills remaining space
         nextRow(gbc);
         gbc.gridx = 0;
         gbc.gridwidth = 3;
@@ -483,7 +398,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         installTextLimit(playerMissionDescription, 120);
         addField(panel, playerMissionDescription, gbc, 1, 1.0);
 
-        // Row 4: Journal Directory
+        // Row 3: Journal Directory
         nextRow(gbc);
         addLabel(panel, "Journal Directory:", gbc, 0);
         journalDirField = new JTextField();
@@ -586,6 +501,129 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
 
         return panel;
     }
+
+
+    private JPanel buildSettingsTab(){
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = baseGbc();
+        nextRow(gbc);
+
+        // LLM key field
+        addLabel(panel, "xAI or Open AI Key:", gbc, 0);
+        llmApiKeyField = new JPasswordField();
+        llmApiKeyField.setPreferredSize(new Dimension(200, 42));
+        addField(panel, llmApiKeyField, gbc, 1, 0.8);
+        llmLockedCheck = new JCheckBox("Locked", true);
+        addCheck(panel, llmLockedCheck, gbc, 2, 0.2);
+
+        // Row 1: STT Key
+        nextRow(gbc);
+        addLabel(panel, "Google STT Key:", gbc, 0);
+        sttApiKeyField = new JPasswordField();
+        sttApiKeyField.setPreferredSize(new Dimension(200, 42));
+        addField(panel, sttApiKeyField, gbc, 1, 0.8);
+        sttLockedCheck = new JCheckBox("Locked", true);
+        addCheck(panel, sttLockedCheck, gbc, 2, 0.2);
+
+        // Row 2: TTS Key
+        nextRow(gbc);
+        addLabel(panel, "Google TTS Key:", gbc, 0);
+        ttsApiKeyField = new JPasswordField();
+        ttsApiKeyField.setPreferredSize(new Dimension(200, 42));
+        addField(panel, ttsApiKeyField, gbc, 1, 0.8);
+        ttsLockedCheck = new JCheckBox("Locked", true);
+        addCheck(panel, ttsLockedCheck, gbc, 2, 0.2);
+
+        // Row YouTube KEY
+        nextRow(gbc);
+        addLabel(panel, "YouTube API Key:", gbc, 0);
+        systemYouTubeStreamKey = new JPasswordField();
+        systemYouTubeStreamKey.setPreferredSize(new Dimension(200, 42));
+        systemYouTubeStreamKey.setToolTipText("YouTube API Key");
+        addField(panel, systemYouTubeStreamKey, gbc, 1, 0.8);
+        ytLockedCheck = new JCheckBox("Locked", true);
+        addCheck(panel, ytLockedCheck, gbc, 2, 0.2);
+
+        // Row YouTube URL
+        nextRow(gbc);
+        addLabel(panel, "YouTube Stream:", gbc, 0);
+        systemYouTubeStreamUrl = new JTextField();
+        systemYouTubeStreamUrl.setPreferredSize(new Dimension(200, 42));
+        systemYouTubeStreamUrl.setToolTipText("Enter your Stream URL if you want TTS for chat");
+        addField(panel, systemYouTubeStreamUrl, gbc, 1, 1.0);
+
+        // Row 3: Buttons
+        nextRow(gbc);
+        gbc.gridx = 0;
+        gbc.gridwidth = 3;
+        gbc.weightx = 1;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.WEST;
+
+        JPanel buttons = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+        buttons.setOpaque(false);
+        // Use inline subclass to custom-paint the dark background (no reassignment issues)
+        saveSystemButton = new JButton("Save Configuration") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                try {
+                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    Color base = BG_PANEL;
+                    ButtonModel m = getModel();
+                    if (m.isPressed()) base = base.darker();
+                    else if (m.isRollover()) base = base.brighter();
+                    g2.setColor(base);
+                    g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
+                } finally {
+                    g2.dispose();
+                }
+                super.paintComponent(g);
+            }
+        };
+        styleButton(saveSystemButton);
+        saveSystemButton.setActionCommand(ACTION_SAVE_SYSTEM_CONFIG);
+
+
+        recalibrateAudioButton = new JButton("Recalibrate Audio") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                try {
+                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    Color base = BG_PANEL;
+                    ButtonModel m = getModel();
+                    if (m.isPressed()) base = base.darker();
+                    else if (m.isRollover()) base = base.brighter();
+                    g2.setColor(base);
+                    g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
+                } finally {
+                    g2.dispose();
+                }
+                super.paintComponent(g);
+            }
+        };
+
+        recalibrateAudioButton.setActionCommand(ACTION_RECALIBRATE_AUTIO);
+        styleButton(recalibrateAudioButton);
+
+        buttons.add(saveSystemButton);
+        buttons.add(recalibrateAudioButton);
+        panel.add(buttons, gbc);
+
+        // Row 6: Filler area (reserved for future use)
+        nextRow(gbc);
+        gbc.gridx = 0;
+        gbc.gridwidth = 3;
+        gbc.weightx = 1;
+        gbc.weighty = 1; // take the rest of the space
+        gbc.fill = GridBagConstraints.BOTH;
+        panel.add(Box.createGlue(), gbc);
+
+        return panel;
+    }
+
+
 
     /**
      * Recursively applies a dark theme to the specified UI component and its children.

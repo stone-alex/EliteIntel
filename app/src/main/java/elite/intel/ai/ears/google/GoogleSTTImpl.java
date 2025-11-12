@@ -2,10 +2,8 @@ package elite.intel.ai.ears.google;
 
 import com.google.api.gax.rpc.ApiStreamObserver;
 import com.google.cloud.speech.v1.*;
-import com.google.common.eventbus.Subscribe;
 import com.google.protobuf.ByteString;
 import elite.intel.ai.ConfigManager;
-import elite.intel.ai.TtsEvent;
 import elite.intel.ai.ears.AudioCalibrator;
 import elite.intel.ai.ears.AudioFormatDetector;
 import elite.intel.ai.ears.AudioSettingsTuple;
@@ -25,14 +23,8 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GoogleSTTImpl implements EarsInterface {
-    private static final Logger log = LogManager.getLogger(GoogleSTTImpl.class);
     public static final double MIN_CONFIDENCE_LEVEL = 0.3; // 1 = 100%
-
-    private int sampleRateHertz;  // Dynamically detected
-    private int bufferSize; // Dynamically calculated based on sample rate
-    private double RMS_THRESHOLD_HIGH; // Dynamically calibrated
-    private double RMS_THRESHOLD_LOW; // Dynamically calibrated
-
+    private static final Logger log = LogManager.getLogger(GoogleSTTImpl.class);
     private static final int CHANNELS = 1; // Mono
     private static final int STREAM_DURATION_MS = 290000; // ~4 min 50 sec; below Google V1 limit
     private static final int KEEP_ALIVE_INTERVAL_MS = 250; // Reduced for timeout fix
@@ -42,13 +34,16 @@ public class GoogleSTTImpl implements EarsInterface {
     private static final long BASE_BACKOFF_MS = 2000; // Base backoff for retries
     private static final long MAX_BACKOFF_MS = 60000; // Cap at 1 min
     private static final long MIN_STREAM_GAP_MS = 30000; // Enforce 30s between stream starts
-
-    private SpeechClient speechClient;
     private final AtomicBoolean isListening = new AtomicBoolean(true);
     private final AtomicBoolean isSpeaking = new AtomicBoolean(false);
+    Map<String, String> corrections;
+    private int sampleRateHertz;  // Dynamically detected
+    private int bufferSize; // Dynamically calculated based on sample rate
+    private double RMS_THRESHOLD_HIGH; // Dynamically calibrated
+    private double RMS_THRESHOLD_LOW; // Dynamically calibrated
+    private SpeechClient speechClient;
     private long lastAudioSentTime = System.currentTimeMillis();
     private Thread processingThread;
-    Map<String, String> corrections;
 
     public GoogleSTTImpl() {
         EventBusManager.register(this);
@@ -409,10 +404,5 @@ public class GoogleSTTImpl implements EarsInterface {
                 .setInterimResults(true)
                 .setSingleUtterance(false)
                 .build();
-    }
-
-    @Subscribe
-    public void onTtsEvent(TtsEvent event) {
-        //isSpeaking.set(event.isSpeaking());
     }
 }

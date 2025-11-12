@@ -27,7 +27,6 @@ and either OpenAI's GPT or xAI's Grok for handling commands, queries, and chats.
 game data from journal and auxiliary files, pulls in info from EDSM when needed, and keeps 
 things responsive.
 
-**NOTE: Grok-4 is slow. I highly recommend using OpenAI's GPT.**
 
 The project is open-source under
 a [Creative Commons license CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en),
@@ -77,11 +76,11 @@ so feel free to check out the code and contribute. (see [DEVELOPERS.md](DEVELOPE
 ### Legal data only
 
 The app sticks to legal data sources only—no memory reading or hidden game hacks. When it tells you that no data
-available even if you see it on in-game screens, it means this data indeed not available in either journals or EDSM.
+available even if you see it on in-game screens, it means this data indeed not available in either journals, EDSM and Spansh.
 
 ### Session Persistence
 
-The app maintains persisted session and recovers from crashes or restarts without losing your session progress.
+The app maintains a persisted session and recovers from crashes or restarts without losing your session progress.
 You can delete your session data by removing files from the session folder.
 
 ### Mic Calibration and STT corrections
@@ -105,13 +104,13 @@ The correction dictionary format is:
 - A few commands do multiple keystrokes for convenience (e.g., "Display HUD" to exit nested menus quickly), but only to
   avoid VR frustration—not for advantages.
 - Current setup needs API keys for Google STT/TTS and Open AI or xAI and is not plug-and-play without them.
-- Google and Open AI or xAI are not free. You must make an account and get your own keys. See Help tab in the app for
-  instructions.
-- English only - No support for other languages.
+- Google and Open AI or xAI are not free. You must make an account and get your own keys. Typical monthly cost is less than a burger.
+  See Help tab in the app for instructions.
+- English only - No support for other languages. (The game must run in English)
 
 ### Current Implementation Limitations (Beta-Specific)
 
-As this is an early beta, here are some known areas we're still refining:
+As this is a public beta release, here are some known areas we're still refining:
 
 1. All on-foot keybinds are currently disabled, though data analysis features remain available.
 2. Not all mission types have been fully tested—expect potential quirks with less common ones.
@@ -136,6 +135,7 @@ chat. Here are some examples to give you an idea:
   biological stuff in this system."
   AI: "Two bodies in the system show biological signals. One icy world likely has bacteria; the other is a metal-rich,
   terraformable planet with five signals detected."
+- **Biome Analysis**: "Tell me about the biome in this system" or "Analyze biome for planet X"
 - **Jump Command**: "Transition to Hyperspace" or "enter supercruise" or "exit supercruise" or "Engage the FSD" or "Time
   to jump—hit it!" or "Get us outta here, quick!"
   AI: Engages FSD without extra talk (in Professional mode) or with a quick quip in others.

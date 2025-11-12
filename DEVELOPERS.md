@@ -5,6 +5,22 @@
 Welcome to developing for Elite Intel, a Java-based QoL app for *Elite Dangerous*. This guide ensures contributions align with the app’s architecture and Frontier’s TOS. The app uses an event-driven design (`elite.intel.gameapi`), Swing UI (`elite.intel.ui`), and integrates STT/TTS (via
 `elite.intel.ai.ears` and `elite.intel.ai.mouth`) and AI (via `elite.intel.ai.brain`).
 
+### How does the app work?
+The app monitors journal and auxiliary files and builds local cache of relevant data stored in json format.
+In addition Elite Intel uses custom API to access EDSM and Spansh data sources for specific features.
+The user speaks in to microphone, this audio is sent to STT for processing, and resulting text is sent to AI for 
+analysis and response. The AI figures out intent from the input. The input can be a command, a query or chat. 
+AI will do it's best attempt to map the input to a specific action such as a command or query. If non matches the AI will 
+respond with a chat.
+
+The commands are handled by command handlers and in most cases execute a keystroke, or a short keystroke sequence.
+In other cases the command might require access to EDSM or Spansh for tasks such as finding a market or plotting a route.
+
+If the input matches a query the AI will respond with a different format of data, which is in turn routed to the 
+query handler for processing. The querry handler will aggregate data necessary to perform the action and send it to 
+AI for analysis in a different prompt along with the original user input. AI will respond with the data analysis response.
+
+
 ## Coding Standards
 
 - **Language**: Pure Java (no external dependencies beyond configured APIs).
@@ -14,6 +30,10 @@ Welcome to developing for Elite Intel, a Java-based QoL app for *Elite Dangerous
 - **Modularity**: New features should subscribe to journal events (`elite.intel.gameapi.journal.events`) or custom events via `@Subscribe`.
 - **TOS Compliance**: No AFK automation or game file modifications. All actions require user input.
 
+The app's architecture is decoupled and modular. This means modules do not have a direct dependency or
+knowledge of each other. If you want to add a new API integration to an alternative LLM, STT or TTS, all you
+have to do is implement the contract in the interfaces and place your code in correct packages following the convention.
+If you want to implement a new command or query follow the established patterns.
 
 ## Contribution Workflow
 

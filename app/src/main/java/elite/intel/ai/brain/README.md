@@ -1,5 +1,10 @@
 # Implementing a New LLM Backend in the Brain Package
 
+________________
+### NOTE: This package is undergoing refactoring.
+________________
+
+
 The `brain` package is the extensible AI integration layer for the Elite Dangerous companion app. It routes user inputs (voice/text) to handlers for commands (e.g., key bindings like deploying landing gear), queries (e.g., analyzing ship loadout), and general chat (e.g., trivia or casual
 conversation)—all while adhering to TOS compliance. It focuses on QoL features like hands-free VR control, on-demand analysis of legally available data (via journal/aux files), and natural language interaction, avoiding automation, botting, or memory reading.
 

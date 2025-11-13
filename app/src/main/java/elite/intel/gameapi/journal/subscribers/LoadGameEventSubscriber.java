@@ -24,10 +24,8 @@ public class LoadGameEventSubscriber {
 
         PlayerSession playerSession = PlayerSession.getInstance();
         playerSession.setShipFuelLevel(event.getFuelLevel());
-
-        String inGameName = event.getCommander();
-        String alternativeName = ConfigManager.getInstance().getPlayerKey(ConfigManager.PLAYER_ALTERNATIVE_NAME);
-        String usePlayerName = capitalizeWords(alternativeName != null || !alternativeName.isEmpty() ? alternativeName : inGameName);
+        String nikName = ConfigManager.getInstance().getPlayerKey(ConfigManager.PLAYER_ALTERNATIVE_NAME);
+        String usePlayerName = capitalizeWords(nikName != null || !nikName.isEmpty() ? nikName : "Commander");
         playerSession.setPlayerName(usePlayerName);
 
         playerSession.setCurrentShip(event.getShip());

@@ -2,17 +2,13 @@ package elite.intel.session;
 
 import com.google.common.eventbus.Subscribe;
 import com.google.gson.reflect.TypeToken;
-import elite.intel.ai.search.spansh.carrier.CarrierJump;
 import elite.intel.ai.search.spansh.market.StationMarket;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.data.FsdTarget;
 import elite.intel.gameapi.gamestate.dtos.GameEvents;
-import elite.intel.gameapi.gamestate.dtos.NavRouteDto;
 import elite.intel.gameapi.journal.events.*;
 import elite.intel.gameapi.journal.events.dto.*;
-import elite.intel.util.json.ToJsonConvertible;
 
-import java.io.IOException;
 import java.util.*;
 
 /**
@@ -27,9 +23,6 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     public static final String MINING_VOX_ON_OFF = "mining_vox_on_off";
     public static final String DISCOVERY_VOX_ON_OFF = "discovery_vox_on_off";
     public static final String ROUTE_VOX_ON_OFF = "route_vox_on_off";
-    private static volatile PlayerSession instance;
-    private static final String SESSION_FILE = "player_session.json";
-
     // Existing constants
     public static final String CARRIER_DEPARTURE_TIME = "carrier_departure_time";
     public static final String FINAL_DESTINATION = "final_destination";
@@ -63,9 +56,16 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     public static final String SHIP_SCANS = "shipScans";
     public static final String TARGET_FACTIONS = "targetFactions";
     public static final String CARRIER_LOCATION = "last_known_carrier_location";
+    public static final String SESSION_DIR = "session/";
+    public static final String TRACKING = "tracking";
+    public static final String BOUNTY_COLLECTED_THIS_SESSION = "bountyCollectedThisSession";
+    public static final String RANK_AND_PROGRESS_DTO = "rankAndProgressDto";
+    public static final String MARKETS = "markets";
+    public static final String FSD_TARGET = "fsd_target";
+    public static final String JUMPING_TO_STARSYSTEM = "jumping_to_starsystem";
+    private static final String SESSION_FILE = "player_session.json";
     private static final String CURRENT_LOCATION = "current_location";
     private static final String REPUTATION = "reputation";
-
     private static final String STELLAR_OBJECTS = "locations";
     private static final String BIO_SAMPLES = "bio_samples";
     private static final String SHIP_LOADOUT = "ship_loadout";
@@ -75,14 +75,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     private static final String BOUNTIES = "bounties";
     private static final String MINING_TARGETS = "miningTargets";
     private static final String HOME_SYSTEM = "home_system";
-    public static final String SESSION_DIR = "session/";
-    public static final String TRACKING = "tracking";
-    public static final String BOUNTY_COLLECTED_THIS_SESSION = "bountyCollectedThisSession";
-    public static final String RANK_AND_PROGRESS_DTO = "rankAndProgressDto";
-    public static final String MARKETS = "markets";
-    public static final String FSD_TARGET = "fsd_target";
-    public static final String JUMPING_TO_STARSYSTEM = "jumping_to_starsystem";
-
+    private static volatile PlayerSession instance;
     // Existing fields
     private final Map<String, String> shipScans = new HashMap<>();
     private final Map<Long, MissionDto> missions = new LinkedHashMap<>();
@@ -164,7 +157,6 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
             genusPaymentAnnounced.putAll((Map<String, Boolean>) v);
         }, new TypeToken<Map<String, Boolean>>() {
         }.getType());
-
 
 
         registerField(TARGET_FACTIONS, this::getTargetFactions, v -> {
@@ -252,10 +244,6 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         addShutdownHook();
     }
 
-    private void addShutdownHook() {
-        Runtime.getRuntime().addShutdownHook(new Thread(this::save));
-    }
-
     public static PlayerSession getInstance() {
         if (instance == null) {
             synchronized (PlayerSession.class) {
@@ -265,6 +253,10 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
             }
         }
         return instance;
+    }
+
+    private void addShutdownHook() {
+        Runtime.getRuntime().addShutdownHook(new Thread(this::save));
     }
 
     private void loadSavedStateFromDisk() {
@@ -917,7 +909,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         return genusPaymentAnnounced;
     }
 
-    public void setGenusPaymentAnnounced(String genus){
+    public void setGenusPaymentAnnounced(String genus) {
         genusPaymentAnnounced.put(genus, true);
         save();
     }
@@ -936,7 +928,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         Status status = Status.getInstance();
         CarrierDataDto carrierInfo = getCarrierData();
 
-        if(status.isDocked()){
+        if (status.isDocked()) {
             // we are on the fleet carrier
             return new GalacticCoordinates(carrierInfo.getX(), carrierInfo.getY(), carrierInfo.getZ());
         }
@@ -984,13 +976,12 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         return b != null && b;
     }
 
-
-    public record GalacticCoordinates(double x, double y, double z) {
-
-    }
-
     @Subscribe
     public void onShutDownEvent(ShutdownEvent event) {
         save();
+    }
+
+    public record GalacticCoordinates(double x, double y, double z) {
+
     }
 }

@@ -14,10 +14,7 @@ public class CommanderEventSubscriber {
     public void onEvent(CommanderEvent event) {
         PlayerSession session = PlayerSession.getInstance();
         ConfigManager configManager = ConfigManager.getInstance();
-
-        String inGameName = event.getName();
-        String alternativeName = configManager.getPlayerKey(ConfigManager.PLAYER_ALTERNATIVE_NAME);
-
-        session.setPlayerName(capitalizeWords(alternativeName != null || !alternativeName.isEmpty() ? alternativeName : inGameName));
+        String nikName = configManager.getPlayerKey(ConfigManager.PLAYER_ALTERNATIVE_NAME);
+        session.setPlayerName(capitalizeWords(nikName != null || !nikName.isEmpty() ? nikName : "Commander"));
     }
 }

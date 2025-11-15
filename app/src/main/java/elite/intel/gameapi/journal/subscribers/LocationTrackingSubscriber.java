@@ -135,7 +135,6 @@ public class LocationTrackingSubscriber {
     private void orbitalNavigation(NavigationUtils.Direction navigator, PlayerMovedEvent event) {
 
         boolean glideAngleOk = isGlideAngleOk(event, navigator);
-        boolean movingAway = navigator.distanceToTarget() > lastDistance;
         boolean trajectoryDeviation = isHeadingDeviation(navigator);
 
         int glideAngle = -calculateGlideAngle(event.getAltitude(), navigator.distanceToTarget());
@@ -150,18 +149,15 @@ public class LocationTrackingSubscriber {
         String glideAngleText = glideAngleOk ? "Glide Angle:" + glideAngle : "Steep Glide Angle:" + glideAngle;
 
         if (trajectoryDeviation) {
-            // off course, we are moving away from the target.
             log.info("Off course, we are moving away from the target.");
             vocalize("Moving Away", navigator.distanceToTarget(), navigator.bearingToTarget(), false);
 
         } else if (distanceToTarget > TOO_FAR_FOR_GLIDE) {
-            // on course, but too far to announce glide angles
             vocalize("On course.", navigator.distanceToTarget(), navigator.bearingToTarget(), false);
             log.info("On course, but too far to announce glide angles.");
             hasAnnouncedGlideAngleOnApproach = false;
 
         } else if (distanceToTarget > distanceToEdgeOfRadius && distanceToTarget < TOO_FAR_FOR_GLIDE) {
-            // on course. close to the glide zone, announce glide angle.
             vocalize(glideAngleText, navigator.distanceToTarget(), navigator.bearingToTarget(), !hasAnnouncedGlideAngleOnApproach);
             log.info("On course. close to the glide zone, announce glide angle.");
             hasAnnouncedGlideAngleOnApproach = hasEnteredGlide(navigator, event);
@@ -169,7 +165,6 @@ public class LocationTrackingSubscriber {
         } else if (distanceToTarget <= GLIDE_ENTRY_RADIUS) {
             vocalize(glideAngleText, navigator.distanceToTarget(), navigator.bearingToTarget(), false);
             log.info("Destination to target is less than " + GLIDE_ENTRY_RADIUS + " meters. Distance to target: " + distanceToTarget + ".");
-
         }
 
         lastDistance = distanceToTarget;

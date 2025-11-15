@@ -3,7 +3,7 @@ package elite.intel.ai.brain.handlers.query;
 public enum Queries {
 
     //ANALYZE_LOCAL_SYSTEM("query_local_system_data", "-- instructions in class --", AnalyzeLocalSystemHandler.class, true),
-
+    ANALYZE_DISTANCE_TO_STELLAR_OBJECT("query_what_is_the_distance_to_planet", "-- instructions in class --", AnalyzeDistanceToStellarObject.class, true),
     ANALYZE_CARRIER_ROUTE("query_fleet_carrier_route", "Use this data to analyze the current fleet carrier route.", AnalyzeCarrierRouteHandler.class, true),
     ANALYZE_SCAN("query_analyze_last_scan", "Analyze the most recent scan data.", AnalyzeLastScanHandler.class, true),
     QUERY_SEARCH_SIGNAL_DATA("query_star_system_data_signals_bio_samples_for_vista_genomics_stations_and_planetary_stats", "Data may contain information about planets, moons, planetary rings, raw materials, detectedSignals, bio forms, bio samples, stations, starports etc. Use gravity (G) and temperature (K) units. Offer celsius alternative. Use allCompletedBioScans for questions about bio samples not yet delivered to Vista Genomics.  Use planetShotName for planets", AnalyzeSignalDataHandler.class, true),

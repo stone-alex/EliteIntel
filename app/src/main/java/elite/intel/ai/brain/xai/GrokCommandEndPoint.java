@@ -20,6 +20,8 @@ import java.net.HttpURLConnection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static elite.intel.util.json.JsonUtils.getAsStringOrEmpty;
+
 public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInterface {
     private static final Logger log = LogManager.getLogger(GrokCommandEndPoint.class);
     private ExecutorService executor;
@@ -144,12 +146,16 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
             getRouter().processAiResponse(errorResponse, userInput);
             systemSession.clearChatHistory();
             return;
+        } else {
+            String type = JsonUtils.getAsStringOrEmpty(apiResponse, "type").toLowerCase();
+            String action = getAsStringOrEmpty(apiResponse, AIConstants.TYPE_ACTION).toLowerCase();
+            log.info("Processing Action: {} for type {}", action, type);
         }
 
         getRouter().processAiResponse(apiResponse, userInput);
 
-        String type = JsonUtils.getAsStringOrEmpty(apiResponse, "type").toLowerCase();
-        String responseText = JsonUtils.getAsStringOrEmpty(apiResponse, AIConstants.PROPERTY_RESPONSE_TEXT);
+        String type = getAsStringOrEmpty(apiResponse, "type").toLowerCase();
+        String responseText = getAsStringOrEmpty(apiResponse, AIConstants.PROPERTY_RESPONSE_TEXT);
         if ("chat".equals(type)) {
             boolean expectFollowup = apiResponse.has(AIConstants.PROPERTY_EXPECT_FOLLOWUP) && apiResponse.get(AIConstants.PROPERTY_EXPECT_FOLLOWUP).getAsBoolean();
             JsonObject assistantMessage = new JsonObject();

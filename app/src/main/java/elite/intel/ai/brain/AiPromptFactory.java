@@ -7,5 +7,5 @@ public interface AiPromptFactory {
     String generateAnalysisPrompt(String userIntent, String instructions);
     String generateSystemPrompt();
     String generateQueryPrompt();
-    void appendBehavior(StringBuilder sb);
+    String appendBehavior();
 }

@@ -375,9 +375,9 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         GridBagConstraints gbc = baseGbc();
 
         // Row 0: Alternative Name
-        addLabel(panel, "Alternative Name:", gbc, 0);
+        addLabel(panel, "Commander Name:", gbc, 0);
         playerAltNameField = new JTextField();
-        playerAltNameField.setToolTipText("If your name can't be pronounced properly by TTS, provide an alternative name here. (optional) ");
+        playerAltNameField.setToolTipText("If you want Elite Intel refer to you by name once in a while.");
         playerAltNameField.setPreferredSize(new Dimension(200, 42));
         addField(panel, playerAltNameField, gbc, 1, 1.0); // full width in Player tab (no checkbox)
 

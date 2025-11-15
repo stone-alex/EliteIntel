@@ -11,8 +11,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.net.HttpURLConnection;
-import java.nio.charset.StandardCharsets;
-import java.util.Scanner;
+
+import static elite.intel.ai.brain.AIConstants.PROPERTY_CONTENT;
+import static elite.intel.ai.brain.AIConstants.PROPERTY_MESSAGE;
 
 public class GrokAnalysisEndpoint extends AiEndPoint implements AiAnalysisInterface {
     private static final Logger logger = LogManager.getLogger(GrokAnalysisEndpoint.class);

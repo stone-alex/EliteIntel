@@ -30,8 +30,7 @@ public class OpenAiAnalysisEndPoint extends AiEndPoint implements AiAnalysisInte
         return instance;
     }
 
-    @Override
-    public JsonObject analyzeData(String originalUserInput, AiData struct) {
+    @Override public JsonObject analyzeData(String originalUserInput, AiData struct) {
         try {
             OpenAiClient client = OpenAiClient.getInstance();
             HttpURLConnection conn = client.getHttpURLConnection();
@@ -57,7 +56,6 @@ public class OpenAiAnalysisEndPoint extends AiEndPoint implements AiAnalysisInte
 
             Response response = callApi(conn, jsonString, client);
 
-            // Extract content safely
             JsonElement jsonElement = response.responseData().get("usage");
             if(jsonElement != null) {
                 log.info("API usage:\n{}", ("Prompt Tokens: "+jsonElement.getAsJsonObject().get("prompt_tokens")+"  Total Tokens:"+ jsonElement.getAsJsonObject().get("total_tokens")));

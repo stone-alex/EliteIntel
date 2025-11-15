@@ -74,7 +74,6 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     private static final String CARRIER_STATS = "carrier_stats";
     private static final String BOUNTIES = "bounties";
     private static final String MINING_TARGETS = "miningTargets";
-    private static final String HOME_SYSTEM = "home_system";
     private static volatile PlayerSession instance;
     // Existing fields
     private final Map<String, String> shipScans = new HashMap<>();
@@ -183,7 +182,6 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         }.getType());
         registerField(BIO_SAMPLES, this::getBioCompletedSamples, this::setBioSamples, new TypeToken<List<BioSampleDto>>() {
         }.getType());
-        registerField(HOME_SYSTEM, this::getHomeSystem, this::setHomeSystem, LocationDto.class);
         registerField(SHIP_LOADOUT, this::getShipLoadout, this::setShipLoadout, new TypeToken<LoadoutEvent>() {
         }.getType());
         registerField(SHIP_CARGO, this::getShipCargo, this::setShipCargo, GameEvents.CargoEvent.class);
@@ -476,15 +474,6 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     public void clearMiningTargets() {
         miningTargets.clear();
         save();
-    }
-
-    public void setHomeSystem(LocationDto currentLocation) {
-        homeSystem = currentLocation;
-        save();
-    }
-
-    public LocationDto getHomeSystem() {
-        return homeSystem;
     }
 
     public List<StationMarket> getMarkets() {

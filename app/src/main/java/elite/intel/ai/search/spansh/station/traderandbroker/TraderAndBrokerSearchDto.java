@@ -5,7 +5,6 @@ import elite.intel.gameapi.gamestate.dtos.BaseJsonDto;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 
-
 import java.util.Comparator;
 import java.util.List;
 
@@ -29,7 +28,12 @@ public class TraderAndBrokerSearchDto extends BaseJsonDto implements ToJsonConve
     @SerializedName("size")
     private int size;
 
-    public static class Result implements ToJsonConvertible{
+    public List<Result> getResults() {
+        results.sort(Comparator.comparingDouble(Result::getDistance));
+        return results;
+    }
+
+    public static class Result implements ToJsonConvertible {
 
         @SerializedName("controlling_minor_faction")
         private String controllingMinorFaction;
@@ -320,10 +324,5 @@ public class TraderAndBrokerSearchDto extends BaseJsonDto implements ToJsonConve
 
         @SerializedName("z")
         private int z;
-    }
-
-    public List<Result> getResults() {
-        results.sort(Comparator.comparingDouble(Result::getDistance));
-        return results;
     }
 }

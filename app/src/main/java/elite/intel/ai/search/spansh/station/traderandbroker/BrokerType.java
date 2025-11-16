@@ -1,4 +1,4 @@
-package elite.intel.ai.search.spansh.traderandbroker;
+package elite.intel.ai.search.spansh.station.traderandbroker;
 
 public enum BrokerType {
 

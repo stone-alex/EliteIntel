@@ -1,4 +1,4 @@
-package elite.intel.ai.search.spansh.traderandbroker;
+package elite.intel.ai.search.spansh.station.traderandbroker;
 
 import com.google.gson.annotations.SerializedName;
 import elite.intel.gameapi.gamestate.dtos.BaseJsonDto;
@@ -7,7 +7,7 @@ import elite.intel.util.json.ToJsonConvertible;
 import java.util.Collections;
 import java.util.List;
 
-public class MaterialTraderOrBrokerSearchCriteria extends BaseJsonDto implements ToJsonConvertible {
+public class TraderAndBrokerSearchCriteria extends BaseJsonDto implements ToJsonConvertible {
 
     @SerializedName("filters")
     private Filters filters;

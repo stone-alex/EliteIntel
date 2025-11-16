@@ -39,7 +39,9 @@ public enum Queries {
     TIME_IN_ZONE("what_time_is_it_in", "Calculate current time at the location requested by user. The data provides currenmt UTC time", TimeQueryHandler.class, true),
     PERFORM_PRELIMINARY_BIOME_ANALYSIS("query_analyse_biome_for_planet_or_planets", "Use data provided to analyze probable genus and species that might be present on the plant(s)", PlanetBiomeAnalyzerHandler.class, true),
 
-    TARGET_MARKET_STATION_NAME("query_where_is_the_market_located", "Remind user which station we have to visit to buy/sell commodity", RemindTargetMarketStationHandler.class, false),
+    TARGET_MARKET_STATION_NAME("query_remind_where_commodity_market_is_located", "Remind user which station we have to visit to buy/sell commodity", RemindTargetMarketStationHandler.class, false),
+    TARGET_STATION_REMINDER("query_remind_where_the_broker_or_material_trader_station_is_located", "Remind user which station to visit for material trader or technology broker", RemindTargetStationHandler.class, false),
+
     GENERAL_CONVERSATION("general_conversation", "Handle general conversation when no other query matches.", ConversationalQueryHandler.class, true);
 
 

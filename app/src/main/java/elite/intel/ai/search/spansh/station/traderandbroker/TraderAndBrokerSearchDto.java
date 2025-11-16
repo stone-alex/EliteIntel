@@ -1,13 +1,15 @@
-package elite.intel.ai.search.spansh.traderandbroker;
+package elite.intel.ai.search.spansh.station.traderandbroker;
 
 import com.google.gson.annotations.SerializedName;
 import elite.intel.gameapi.gamestate.dtos.BaseJsonDto;
+import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 
 
+import java.util.Comparator;
 import java.util.List;
 
-public class TraderOrBrokerSearchDto extends BaseJsonDto implements ToJsonConvertible {
+public class TraderAndBrokerSearchDto extends BaseJsonDto implements ToJsonConvertible {
 
     @SerializedName("count")
     private int count;
@@ -27,7 +29,7 @@ public class TraderOrBrokerSearchDto extends BaseJsonDto implements ToJsonConver
     @SerializedName("size")
     private int size;
 
-    public static class Result {
+    public static class Result implements ToJsonConvertible{
 
         @SerializedName("controlling_minor_faction")
         private String controllingMinorFaction;
@@ -267,6 +269,10 @@ public class TraderOrBrokerSearchDto extends BaseJsonDto implements ToJsonConver
         public double getDistance() {
             return Math.round(distance * 100.0) / 100.0;
         }
+
+        @Override public String toJson() {
+            return GsonFactory.getGson().toJson(this);
+        }
     }
 
     public static class Search {
@@ -323,9 +329,8 @@ public class TraderOrBrokerSearchDto extends BaseJsonDto implements ToJsonConver
         private int z;
     }
 
-
     public List<Result> getResults() {
-        results.sort((o1, o2) -> Double.compare(o1.getDistance(), o2.getDistance()));
+        results.sort(Comparator.comparingDouble(Result::getDistance));
         return results;
     }
 }

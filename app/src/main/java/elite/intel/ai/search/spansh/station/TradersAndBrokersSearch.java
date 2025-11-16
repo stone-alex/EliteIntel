@@ -1,8 +1,9 @@
-package elite.intel.ai.brain.handlers.commands.commons;
+package elite.intel.ai.search.spansh.station;
 
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
-import elite.intel.ai.search.spansh.traderandbroker.*;
+import elite.intel.ai.search.spansh.station.traderandbroker.*;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.session.DestinationReminder;
 import elite.intel.session.PlayerSession;
 
 import java.util.ArrayList;
@@ -24,16 +25,16 @@ public class TradersAndBrokersSearch {
     }
 
 
-    public String location(TraderType traderType, BrokerType brokerType, int maxDistance) {
-
+    public String location(TraderType traderType, BrokerType brokerType, Number maxDistance) {
+        int distanceInLightYears = maxDistance == null ? 250 : maxDistance.intValue();
         PlayerSession playerSession = PlayerSession.getInstance();
         PlayerSession.GalacticCoordinates galacticCoordinates = playerSession.getGalacticCoordinates();
 
-        MaterialTraderOrBrokerSearchCriteria criteria = new MaterialTraderOrBrokerSearchCriteria();
-        criteria.setSize(1);
-        criteria.setPage(5);
+        TraderAndBrokerSearchCriteria criteria = new TraderAndBrokerSearchCriteria();
+        criteria.setSize(1); // one page
+        criteria.setPage(5); // 5 results per page
 
-        MaterialTraderOrBrokerSearchCriteria.ReferenceCoords coordinates = new MaterialTraderOrBrokerSearchCriteria.ReferenceCoords();
+        TraderAndBrokerSearchCriteria.ReferenceCoords coordinates = new TraderAndBrokerSearchCriteria.ReferenceCoords();
 
         coordinates.setX(galacticCoordinates.x());
         coordinates.setY(galacticCoordinates.y());
@@ -42,14 +43,14 @@ public class TradersAndBrokersSearch {
         criteria.setReferenceCoords(coordinates);
         criteria.setSort(new ArrayList<>());
 
-        MaterialTraderOrBrokerSearchCriteria.Filters filters = new MaterialTraderOrBrokerSearchCriteria.Filters();
-        MaterialTraderOrBrokerSearchCriteria.Distance distance = new MaterialTraderOrBrokerSearchCriteria.Distance();
+        TraderAndBrokerSearchCriteria.Filters filters = new TraderAndBrokerSearchCriteria.Filters();
+        TraderAndBrokerSearchCriteria.Distance distance = new TraderAndBrokerSearchCriteria.Distance();
         distance.setMin(0);
-        distance.setMax(maxDistance);
+        distance.setMax(distanceInLightYears);
         filters.setDistance(distance);
 
         if (traderType != null) {
-            MaterialTraderOrBrokerSearchCriteria.MaterialTrader trader = new MaterialTraderOrBrokerSearchCriteria.MaterialTrader();
+            TraderAndBrokerSearchCriteria.MaterialTrader trader = new TraderAndBrokerSearchCriteria.MaterialTrader();
             trader.setValue(
                     Arrays.asList(
                             traderType.getType()
@@ -57,7 +58,7 @@ public class TradersAndBrokersSearch {
             );
             filters.setMaterialTrader(trader);
         } else if (brokerType != null) {
-            MaterialTraderOrBrokerSearchCriteria.TechnologyBroker broker = new MaterialTraderOrBrokerSearchCriteria.TechnologyBroker();
+            TraderAndBrokerSearchCriteria.TechnologyBroker broker = new TraderAndBrokerSearchCriteria.TechnologyBroker();
             broker.setValue(
                     Arrays.asList(
                             brokerType.getType()
@@ -67,13 +68,15 @@ public class TradersAndBrokersSearch {
         }
 
         criteria.setFilters(filters);
-        List<TraderOrBrokerSearchDto.Result> results = SearchForMaterialBrokerOrTreder.findMaterialTrader(criteria);
+        List<TraderAndBrokerSearchDto.Result> results = SearchForMaterialBrokerOrTreder.findMaterialTrader(criteria);
 
         if (results == null || results.isEmpty()) {
             EventBusManager.publish(new AiVoxResponseEvent("No raw material traders found."));
             return null;
         }
 
-        return results.get(0).getSystemName();
+        TraderAndBrokerSearchDto.Result result = results.get(0);
+        DestinationReminder.getInstance().setDestination(result);
+        return result.getSystemName();
     }
 }

@@ -1,4 +1,4 @@
-package elite.intel.ai.search.spansh.traderandbroker;
+package elite.intel.ai.search.spansh.station.traderandbroker;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -21,7 +21,7 @@ public class SearchForMaterialBrokerOrTreder {
     private static final HttpClient httpClient = HttpClient.newHttpClient();
     private static final Gson gson = GsonFactory.getGson();
 
-    public static List<TraderOrBrokerSearchDto.Result> findMaterialTrader(ToJsonConvertible searchCriteria) {
+    public static List<TraderAndBrokerSearchDto.Result> findMaterialTrader(ToJsonConvertible searchCriteria) {
 
         try {
             HttpRequest postRequest = HttpRequest.newBuilder()
@@ -59,7 +59,7 @@ public class SearchForMaterialBrokerOrTreder {
             }
 
             JsonObject getJson = gson.fromJson(searchResultResponse.body(), JsonObject.class);
-            TraderOrBrokerSearchDto dto = GsonFactory.getGson().fromJson(getJson, TraderOrBrokerSearchDto.class);
+            TraderAndBrokerSearchDto dto = GsonFactory.getGson().fromJson(getJson, TraderAndBrokerSearchDto.class);
             return dto.getResults();
         } catch (Exception e) {
             log.error("Failed to find material trader", e);

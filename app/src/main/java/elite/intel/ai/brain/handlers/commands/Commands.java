@@ -23,18 +23,17 @@ import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.*;
 public enum Commands {
 
 
-    /// Commands the require parameters
     LIGHTS_ON_OFF("toggle_lights", null, "lights", LightsOnOffHandler.class),
     ADD_MINING_TARGET("add_mining_target", null, "mining_target", AddMiningTargetHandler.class),
     CLEAR_MINING_TARGETS("clear_mining_targets",  null, null, ClearMiningTargetsHandler.class),
     CLEAR_CACHE("clear_cache", null,  "session_clear", ClearCacheHandler.class),
 
-    MIND_RAW_MATERIAL_TRADER("find_raw_material_trader", null, null, FindRawMaterialTraderHandler.class),
-    MIND_ENCODED_MATERIAL_TRADER("find_encoded_material_trader", null, null, FindEncodedMaterialTraderHandler.class),
-    MIND_MANUFACTURED_MATERIAL_TRADER("find_manufactured_material_trader", null, null, FindManufacturedMaterialTraderHandler.class),
+    MIND_RAW_MATERIAL_TRADER("find_raw_material_trader", null, "distance", FindRawMaterialTraderHandler.class),
+    MIND_ENCODED_MATERIAL_TRADER("find_encoded_material_trader", null, "distance", FindEncodedMaterialTraderHandler.class),
+    MIND_MANUFACTURED_MATERIAL_TRADER("find_manufactured_material_trader", null, "distance", FindManufacturedMaterialTraderHandler.class),
 
-    FIND_HUMAN_TECHNOLOGY_BROKER("find_human_technology_broker", null, null, FindHumanTechologyBrokerHandler.class),
-    FIND_GUARDIAN_TECHNOLOGY_BROKER("find_guardian_technology_broker", null, null, FindGuadrianTechologyBroker.class),
+    FIND_HUMAN_TECHNOLOGY_BROKER("find_human_technology_broker", null, "distance", FindHumanTechologyBrokerHandler.class),
+    FIND_GUARDIAN_TECHNOLOGY_BROKER("find_guardian_technology_broker", null, "distance", FindGuadrianTechologyBroker.class),
 
     FIND_COMMODITY("find_market_where_to_buy", null, "commodity", FindCommodityHandler.class),
     SET_AI_VOICE("set_or_change_voice_to", null, "voice_name", ChangeAiVoiceHandler.class),

@@ -1,10 +1,10 @@
 package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.brain.handlers.commands.commons.TradersAndBrokersSearch;
+import elite.intel.ai.search.spansh.station.TradersAndBrokersSearch;
 import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
-import elite.intel.ai.search.spansh.traderandbroker.BrokerType;
+import elite.intel.ai.search.spansh.station.traderandbroker.BrokerType;
 import elite.intel.gameapi.EventBusManager;
 
 public class FindHumanTechologyBrokerHandler extends CommandOperator implements CommandHandler {
@@ -17,9 +17,10 @@ public class FindHumanTechologyBrokerHandler extends CommandOperator implements 
     }
 
     @Override public void handle(String action, JsonObject params, String responseText) {
+        Number distance = params.get("key") == null ? 250 : params.get("key").getAsNumber();
         EventBusManager.publish(new AiVoxResponseEvent("Searching for " + BrokerType.HUMAN.getType() + " techology broker... Stand by..."));
         TradersAndBrokersSearch search = TradersAndBrokersSearch.getInstance();
         RoutePlotter routePlotter = new RoutePlotter(this.gameController);
-        routePlotter.plotRoute(search.location(null, BrokerType.HUMAN, 250));
+        routePlotter.plotRoute(search.location(null, BrokerType.HUMAN, distance));
     }
 }

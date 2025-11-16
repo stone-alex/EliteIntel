@@ -1,10 +1,10 @@
 package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.brain.handlers.commands.commons.TradersAndBrokersSearch;
+import elite.intel.ai.search.spansh.station.TradersAndBrokersSearch;
 import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
-import elite.intel.ai.search.spansh.traderandbroker.TraderType;
+import elite.intel.ai.search.spansh.station.traderandbroker.TraderType;
 import elite.intel.gameapi.EventBusManager;
 
 public class FindManufacturedMaterialTraderHandler extends CommandOperator implements CommandHandler {
@@ -17,9 +17,10 @@ public class FindManufacturedMaterialTraderHandler extends CommandOperator imple
     }
 
     @Override public void handle(String action, JsonObject params, String responseText) {
+        Number distance = params.get("key") == null ? 250 : params.get("key").getAsNumber();
         EventBusManager.publish(new AiVoxResponseEvent("Searching for "+TraderType.MANUFACTURED.getType()+" material traders... Stand by..."));
         TradersAndBrokersSearch search = TradersAndBrokersSearch.getInstance();
         RoutePlotter routePlotter = new RoutePlotter(this.gameController);
-        routePlotter.plotRoute(search.location(TraderType.MANUFACTURED, null, 250));
+        routePlotter.plotRoute(search.location(TraderType.MANUFACTURED, null, distance));
     }
 }

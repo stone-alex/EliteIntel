@@ -14,6 +14,9 @@ public class RoutePlotter extends CommandOperator {
     }
 
     public void plotRoute(String destination) {
+        if (destination == null || destination.isEmpty()) {
+            return;
+        }
         try {
             String openGalaxyMap = BINDING_GALAXY_MAP.getGameBinding();
             operateKeyboard(openGalaxyMap, 0);

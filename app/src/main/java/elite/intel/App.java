@@ -51,7 +51,6 @@ public class App {
             model.addPropertyChangeListener(view);
             view.displaySystemConfig(model.getSystemConfig());
             view.displayUserConfig(model.getUserConfig());
-            view.displayHelp(model.getHelpText());
             view.getUiComponent().setVisible(true);
         });
     }

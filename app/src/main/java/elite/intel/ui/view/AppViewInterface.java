@@ -7,7 +7,6 @@ import java.util.Map;
 public interface AppViewInterface {
     void displaySystemConfig(Map<String, String> config);
     void displayUserConfig(Map<String, String> config);
-    void displayHelp(String helpText);
     Map<String, String> getSystemConfigInput();
     Map<String, String> getUserConfigInput();
     void addActionListener(ActionListener listener);

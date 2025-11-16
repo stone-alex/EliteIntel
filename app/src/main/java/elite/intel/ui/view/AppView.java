@@ -14,12 +14,9 @@ import javax.swing.plaf.basic.BasicTabbedPaneUI;
 import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
-import javax.swing.ImageIcon;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -117,8 +114,6 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     private JButton savePlayerInfoButton;
     private JButton selectJournalDirButton;
     private JButton selectBindingsDirButton;
-    // Help tab
-    private JEditorPane helpPane; // HTML rendering
     private Timer logTypewriterTimer;
     private String pendingLogText;
 
@@ -182,6 +177,26 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         bindingsDirField.setPreferredSize(new Dimension(200, 42));
     }
 
+    /**
+     * Binds a lock checkbox to a specific field, allowing the field's state
+     * (enabled, editable, or read-only) to be toggled based on the checkbox selection.
+     *
+     * @param lockCheck The checkbox that controls the locking mechanism.
+     * @param field     The UI component whose state will be controlled by the checkbox.
+     *                  Supports JTextComponent and other JComponent types.
+     */
+    private static void bindLock(JCheckBox lockCheck, JComponent field) {
+        Runnable apply = () -> {
+            boolean locked = lockCheck.isSelected();
+            if (field instanceof JTextComponent tc) {
+                tc.setEnabled(!locked);
+            } else {
+                field.setEnabled(!locked);
+            }
+        };
+        lockCheck.addItemListener(e -> apply.run());
+        apply.run(); // initialize once
+    }
 
     private void loadCustomFont() {
         try {
@@ -199,7 +214,6 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
             log.error("Failed to load custom font: {}", e.getMessage());
         }
     }
-
 
     // Simple dark defaults so new components pick up colors automatically (no L&F swap)
     private void installDarkDefaults() {
@@ -227,27 +241,6 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         UIManager.put("PasswordField.inactiveForeground", FG_MUTED);
         UIManager.put("TextArea.inactiveForeground", FG_MUTED);
         UIManager.put("EditorPane.inactiveForeground", FG_MUTED);
-    }
-
-    /**
-     * Binds a lock checkbox to a specific field, allowing the field's state
-     * (enabled, editable, or read-only) to be toggled based on the checkbox selection.
-     *
-     * @param lockCheck The checkbox that controls the locking mechanism.
-     * @param field     The UI component whose state will be controlled by the checkbox.
-     *                  Supports JTextComponent and other JComponent types.
-     */
-    private static void bindLock(JCheckBox lockCheck, JComponent field) {
-        Runnable apply = () -> {
-            boolean locked = lockCheck.isSelected();
-            if (field instanceof JTextComponent tc) {
-                tc.setEnabled(!locked);
-            } else {
-                field.setEnabled(!locked);
-            }
-        };
-        lockCheck.addItemListener(e -> apply.run());
-        apply.run(); // initialize once
     }
 
     /**
@@ -503,7 +496,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     }
 
 
-    private JPanel buildSettingsTab(){
+    private JPanel buildSettingsTab() {
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = baseGbc();
         nextRow(gbc);
@@ -624,7 +617,6 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     }
 
 
-
     /**
      * Recursively applies a dark theme to the specified UI component and its children.
      * This method updates the background, foreground, borders, and other style aspects
@@ -710,7 +702,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
             }
         }
     }
-    
+
     public void addActionListener(ActionListener l) {
         if (saveSystemButton != null) saveSystemButton.addActionListener(l);
         if (startStopServicesButton != null) startStopServicesButton.addActionListener(l);
@@ -808,11 +800,6 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
 
     }
 
-    @Override
-    public void displayHelp(String helpText) {
-        setHelpMarkdown(helpText);
-    }
-
     /**
      * Retrieves the system configuration input provided by the user.
      * This method collects and returns the configuration details
@@ -829,8 +816,8 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         if (sttApiKeyField != null) cfg.put(ConfigManager.TTS_API_KEY, new String(sttApiKeyField.getPassword()));
         if (llmApiKeyField != null) cfg.put(ConfigManager.AI_API_KEY, new String(llmApiKeyField.getPassword()));
         if (ttsApiKeyField != null) cfg.put(ConfigManager.STT_API_KEY, new String(ttsApiKeyField.getPassword()));
+        if (systemYouTubeStreamKey != null) cfg.put(ConfigManager.YT_API_KEY, new String(systemYouTubeStreamKey.getPassword()));
         if (systemYouTubeStreamUrl != null) cfg.put(ConfigManager.YT_URL, systemYouTubeStreamUrl.getText());
-        if (systemYouTubeStreamKey != null) cfg.put(ConfigManager.YT_API_KEY, systemYouTubeStreamKey.getText());
         return cfg;
     }
 
@@ -928,12 +915,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         }
         logTypewriterTimer.start();
     }
-    
-    public void setHelpMarkdown(String markdown) {
-        if (helpPane == null) return;
-        helpPane.setText(markdown);
-        helpPane.setCaretPosition(0);
-    }
+
     // ----- END ACTION COMMANDS -----
 
     /**
@@ -1078,8 +1060,6 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
             togglePrivacyModeCheckBox.setSelected(privacyModeOn);
             togglePrivacyModeCheckBox.setForeground(privacyModeOn ? Color.RED : Color.GREEN);
             togglePrivacyModeCheckBox.setText(privacyModeOn ? "Turn Mic Off" : "Turn Mic On");
-        } else if (evt.getPropertyName().equals(PROPERTY_HELP_MARKDOWN)) {
-            setHelpMarkdown((String) evt.getNewValue());
         } else if (evt.getPropertyName().equals(PROPERTY_SERVICES_TOGGLE)) {
             toggleStreamingModeCheckBox.setEnabled((Boolean) evt.getNewValue());
             togglePrivacyModeCheckBox.setEnabled((Boolean) evt.getNewValue());

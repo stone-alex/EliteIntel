@@ -23,6 +23,7 @@ public class ShipRoute extends SessionPersistence implements java.io.Serializabl
         }, new TypeToken<Map<Integer, NavRouteDto>>() {
         }.getType());
 
+        loadSavedStateFromDisk();
     }
 
     public static ShipRoute getInstance() {
@@ -66,5 +67,8 @@ public class ShipRoute extends SessionPersistence implements java.io.Serializabl
         save();
     }
 
+    private void loadSavedStateFromDisk() {
+        loadSession(ShipRoute.this::loadFields);
+    }
 
 }

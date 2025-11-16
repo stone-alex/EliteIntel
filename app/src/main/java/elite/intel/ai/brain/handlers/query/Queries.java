@@ -40,7 +40,7 @@ public enum Queries {
     PERFORM_PRELIMINARY_BIOME_ANALYSIS("query_analyse_biome_for_planet_or_planets", "Use data provided to analyze probable genus and species that might be present on the plant(s)", PlanetBiomeAnalyzerHandler.class, true),
 
     TARGET_MARKET_STATION_NAME("query_remind_where_commodity_market_is_located", "Remind user which station we have to visit to buy/sell commodity", RemindTargetMarketStationHandler.class, false),
-    TARGET_STATION_REMINDER("query_information_on_chosen_broker_or_material_trader_station", "Provider answer for trader or technology-broker station based on this data.", RemindTargetStationHandler.class, false),
+    TARGET_STATION_REMINDER("query_information_on_final_destination", "Provider answer for the station at the final destination based on this data.", RemindTargetStationHandler.class, false),
 
     GENERAL_CONVERSATION("general_conversation", "Handle general conversation when no other query matches.", ConversationalQueryHandler.class, true);
 

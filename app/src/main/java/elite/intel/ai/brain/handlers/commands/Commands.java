@@ -32,8 +32,10 @@ public enum Commands {
     MIND_ENCODED_MATERIAL_TRADER("find_encoded_material_trader", null, "distance", FindEncodedMaterialTraderHandler.class),
     MIND_MANUFACTURED_MATERIAL_TRADER("find_manufactured_material_trader", null, "distance", FindManufacturedMaterialTraderHandler.class),
 
-    FIND_HUMAN_TECHNOLOGY_BROKER("find_human_technology_broker", null, "distance", FindHumanTechologyBrokerHandler.class),
-    FIND_GUARDIAN_TECHNOLOGY_BROKER("find_guardian_technology_broker", null, "distance", FindGuadrianTechologyBroker.class),
+    FIND_HUMAN_TECHNOLOGY_BROKER("find_human_technology_broker", null, "distance", FindHumanTechnologyBrokerHandler.class),
+    FIND_GUARDIAN_TECHNOLOGY_BROKER("find_guardian_technology_broker", null, "distance", FindGuadrianTechnologyBroker.class),
+
+    FIND_VISTA_GENOMICS("find_vista_genomics", null, "distance", FindVistaGenomicsHandler.class),
 
     FIND_COMMODITY("find_market_where_to_buy", null, "commodity", FindCommodityHandler.class),
     SET_AI_VOICE("set_or_change_voice_to", null, "voice_name", ChangeAiVoiceHandler.class),

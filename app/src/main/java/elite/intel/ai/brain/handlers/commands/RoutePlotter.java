@@ -33,12 +33,13 @@ public class RoutePlotter extends CommandOperator {
             Thread.sleep(200);
             KeyProcessor keyProcessor = KeyProcessor.getInstance();
             keyProcessor.enterText(destination);
-            Thread.sleep(200);
-
+            Thread.sleep(250);
+            keyProcessor.pressKey(KeyProcessor.KEY_DOWNARROW);
             keyProcessor.pressKey(KeyProcessor.KEY_ENTER);
+            Thread.sleep(250);
             keyProcessor.pressKey(KeyProcessor.KEY_ENTER);
 
-            Thread.sleep(200);
+            Thread.sleep(300);
             keyProcessor.pressAndHoldKey(KeyProcessor.KEY_ENTER, 2500);
             Thread.sleep(500);
 

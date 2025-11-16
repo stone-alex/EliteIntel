@@ -68,7 +68,7 @@ public class TradersAndBrokersSearch {
         }
 
         criteria.setFilters(filters);
-        List<TraderAndBrokerSearchDto.Result> results = SearchForMaterialBrokerOrTreder.findMaterialTrader(criteria);
+        List<TraderAndBrokerSearchDto.Result> results = SearchForMaterialBrokerOrTrader.findMaterialTrader(criteria);
 
         if (results == null || results.isEmpty()) {
             EventBusManager.publish(new AiVoxResponseEvent("No raw material traders found."));
@@ -76,7 +76,8 @@ public class TradersAndBrokersSearch {
         }
 
         TraderAndBrokerSearchDto.Result result = results.get(0);
-        DestinationReminder.getInstance().setDestination(result);
+        EventBusManager.publish(new AiVoxResponseEvent("Head to " + result.getSystemName() + " star system. When you get there looks for" + result.getStationName()));
+        DestinationReminder.getInstance().setDestinationFromJson(result.toJson());
         return result.getSystemName();
     }
 }

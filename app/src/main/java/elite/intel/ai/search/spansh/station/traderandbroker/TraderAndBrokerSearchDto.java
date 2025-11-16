@@ -91,9 +91,6 @@ public class TraderAndBrokerSearchDto extends BaseJsonDto implements ToJsonConve
         @SerializedName("system_controlling_power")
         private String systemControllingPower;
 
-        @SerializedName("system_id64")
-        private long systemId64;
-
         @SerializedName("system_name")
         private String systemName;
 
@@ -208,10 +205,6 @@ public class TraderAndBrokerSearchDto extends BaseJsonDto implements ToJsonConve
 
         public String getSystemControllingPower() {
             return systemControllingPower;
-        }
-
-        public long getSystemId64() {
-            return systemId64;
         }
 
         public String getSystemName() {

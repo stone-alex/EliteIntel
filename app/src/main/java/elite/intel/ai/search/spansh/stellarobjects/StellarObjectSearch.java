@@ -1,4 +1,4 @@
-package elite.intel.ai.search.spansh.station;
+package elite.intel.ai.search.spansh.stellarobjects;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -13,33 +13,30 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-public final class StationSearch {
-
-    private static StationSearch instance;
-
-
-    private StationSearch() {
+public class StellarObjectSearch {
+    private static StellarObjectSearch instance;
+    private final Logger log = LogManager.getLogger(StellarObjectSearch.class);
+    private final String BASE_URL = "https://spansh.co.uk/api/bodies/search/save";
+    private final String RESULTS_URL = "https://spansh.co.uk/api/bodies/search/recall/";
+    private final HttpClient httpClient = HttpClient.newHttpClient();
+    private final Gson gson = GsonFactory.getGson();
+    private StellarObjectSearch() {
     }
 
-    public static synchronized StationSearch getInstance() {
+    public static synchronized StellarObjectSearch getInstance() {
         if (instance == null) {
-            instance = new StationSearch();
+            instance = new StellarObjectSearch();
         }
         return instance;
     }
-
-    private final Logger log = LogManager.getLogger(StationSearch.class);
-    private final String BASE_URL = "https://spansh.co.uk/api/stations/search/save";
-    private final String RESULTS_URL = "https://spansh.co.uk/api/stations/search/recall/";
-    private final HttpClient httpClient = HttpClient.newHttpClient();
-    private final Gson gson = GsonFactory.getGson();
-
 
     public JsonObject performSearch(ToJsonConvertible criteria) throws IOException, InterruptedException {
 
         HttpRequest postRequest = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL))
-                .header("Content-Type", "application/x-www-form-urlencoded")
+                .header("Content-Type", "application/json;charset=UTF-8")
+                .header("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:144.0) Gecko/20100101 Firefox/144.0")
+                .header("Accept", "application/json, text/javascript, */*; q=0.01")
                 .POST(HttpRequest.BodyPublishers.ofString(criteria.toJson()))
                 .build();
 
@@ -62,6 +59,7 @@ public final class StationSearch {
         HttpRequest searchResultRequest = HttpRequest.newBuilder()
                 .uri(URI.create(RESULTS_URL + searchRefId))
                 .header("Content-Type", "application/json;charset=UTF-8")
+                .header("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:144.0) Gecko/20100101 Firefox/144.0")
                 .GET()
                 .build();
 

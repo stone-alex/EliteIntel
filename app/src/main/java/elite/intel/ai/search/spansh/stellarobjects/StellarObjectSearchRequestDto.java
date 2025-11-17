@@ -8,96 +8,45 @@ import java.util.Collections;
 import java.util.List;
 
 public class StellarObjectSearchRequestDto implements ToJsonConvertible {
-    public void setReference(Reference reference) {
-        this.reference = reference;
+
+    @SerializedName("filters")
+    private Filters filters;
+
+    @SerializedName("sort")
+    private List<Object> sort = Collections.emptyList();
+
+    @SerializedName("size")
+    private int size = 5; //default result size
+
+    @SerializedName("page")
+    private int page = 0;
+
+    @SerializedName("reference_coords")
+    private ReferenceCoords referenceCoords;
+
+    public void setFilters(Filters filters) {
+        this.filters = filters;
     }
 
-    public void setSearch(Search search) {
-        this.search = search;
+    public void setSort(List<Object> sort) {
+        this.sort = sort != null ? sort : Collections.emptyList();
     }
 
-    @SerializedName("reference")
-    private Reference reference;
+    public void setSize(int size) {
+        this.size = size;
+    }
 
-    @SerializedName("search")
-    private Search search;
+    public void setPage(int page) {
+        this.page = page;
+    }
+
+    public void setReferenceCoords(ReferenceCoords referenceCoords) {
+        this.referenceCoords = referenceCoords;
+    }
 
     @Override
     public String toJson() {
         return GsonFactory.getGson().toJson(this);
-    }
-
-
-    public static class Distance {
-
-        @SerializedName("min")
-        private int min;
-
-        @SerializedName("max")
-        private int max;
-
-        public void setMin(int min) {
-            this.min = min;
-        }
-
-        public void setMax(int max) {
-            this.max = max;
-        }
-    }
-
-
-    public static class Reference {
-        @SerializedName("x")
-        private double x;
-
-        @SerializedName("y")
-        private double y;
-
-        @SerializedName("z")
-        private double z;
-
-        public void setX(double x) {
-            this.x = x;
-        }
-
-        public void setY(double y) {
-            this.y = y;
-        }
-
-        public void setZ(double z) {
-            this.z = z;
-        }
-    }
-
-    public static class Search {
-
-        @SerializedName("filters")
-        private Filters filters;
-
-        @SerializedName("page")
-        private int page;
-
-        @SerializedName("size")
-        private int size;
-
-        @SerializedName("sort")
-        private List<Object> sort = Collections.emptyList();
-
-        public void setFilters(Filters filters) {
-            this.filters = filters;
-        }
-
-        public void setPage(int page) {
-            this.page = page;
-        }
-
-        public void setSize(int size) {
-            this.size = size;
-        }
-
-        public void setSort(List<Object> sort) {
-            this.sort = sort;
-        }
     }
 
     public static class Filters {
@@ -107,13 +56,6 @@ public class StellarObjectSearchRequestDto implements ToJsonConvertible {
 
         @SerializedName("ring_signals")
         private List<RingSignal> ringSignals;
-
-        @SerializedName("distance")
-        private Distance distance;
-
-        public void setDistance(Distance distance) {
-            this.distance = distance;
-        }
 
         public void setReserveLevel(ReserveLevel reserveLevel) {
             this.reserveLevel = reserveLevel;
@@ -155,6 +97,30 @@ public class StellarObjectSearchRequestDto implements ToJsonConvertible {
 
         public void setName(String name) {
             this.name = name;
+        }
+    }
+
+    public static class ReferenceCoords {
+
+        @SerializedName("x")
+        private double x;
+
+        @SerializedName("y")
+        private double y;
+
+        @SerializedName("z")
+        private double z;
+
+        public void setX(double x) {
+            this.x = x;
+        }
+
+        public void setY(double y) {
+            this.y = y;
+        }
+
+        public void setZ(double z) {
+            this.z = z;
         }
     }
 }

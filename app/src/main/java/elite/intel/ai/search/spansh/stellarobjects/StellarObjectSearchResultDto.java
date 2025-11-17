@@ -25,7 +25,7 @@ public class StellarObjectSearchResultDto extends BaseJsonDto implements ToJsonC
     private Search search;
 
     @SerializedName("search_reference")
-    private String search_reference;
+    private String searchReference;
 
     @SerializedName("size")
     private int size;
@@ -51,8 +51,8 @@ public class StellarObjectSearchResultDto extends BaseJsonDto implements ToJsonC
         return search;
     }
 
-    public String getSearch_reference() {
-        return search_reference;
+    public String getSearchReference() {
+        return searchReference;
     }
 
     public int getSize() {
@@ -65,7 +65,7 @@ public class StellarObjectSearchResultDto extends BaseJsonDto implements ToJsonC
         private long id64;
 
         @SerializedName("name")
-        private String name;
+        private String materialName;
 
         @SerializedName("x")
         private double x;
@@ -80,8 +80,8 @@ public class StellarObjectSearchResultDto extends BaseJsonDto implements ToJsonC
             return id64;
         }
 
-        public String getName() {
-            return name;
+        public String getMaterialName() {
+            return materialName;
         }
 
         public double getX() {
@@ -100,37 +100,37 @@ public class StellarObjectSearchResultDto extends BaseJsonDto implements ToJsonC
     public static class Result implements ToJsonConvertible {
 
         @SerializedName("arg_of_periapsis")
-        private double arg_of_periapsis;
+        private double argOfPeriapsis;
 
         @SerializedName("ascending_node")
-        private Double ascending_node;
+        private Double ascendingNode;
 
         @SerializedName("atmosphere")
         private String atmosphere;
 
         @SerializedName("atmosphere_composition")
-        private List<Composition> atmosphere_composition;
+        private List<Composition> atmosphereComposition;
 
         @SerializedName("axis_tilt")
-        private double axis_tilt;
+        private double axisTilt;
 
         @SerializedName("body_id")
-        private int body_id;
+        private int bodyId;
 
         @SerializedName("distance")
         private double distance;
 
         @SerializedName("distance_to_arrival")
-        private double distance_to_arrival;
+        private double distanceToArrival;
 
         @SerializedName("earth_masses")
-        private double earth_masses;
+        private double eMasses;
 
         @SerializedName("estimated_mapping_value")
-        private int estimated_mapping_value;
+        private int estimatedMappingValue;
 
         @SerializedName("estimated_scan_value")
-        private int estimated_scan_value;
+        private int estimatedScanValue;
 
         @SerializedName("gravity")
         private double gravity;
@@ -142,31 +142,31 @@ public class StellarObjectSearchResultDto extends BaseJsonDto implements ToJsonC
         private long id64;
 
         @SerializedName("is_landable")
-        private boolean is_landable;
+        private boolean isLandable;
 
         @SerializedName("is_main_star")
-        private Boolean is_main_star;
+        private Boolean isMainStar;
 
         @SerializedName("is_rotational_period_tidally_locked")
-        private boolean is_rotational_period_tidally_locked;
+        private boolean isRotationalPeriodTidallyLocked;
 
         @SerializedName("mean_anomaly")
-        private Double mean_anomaly;
+        private Double meanAnomaly;
 
         @SerializedName("name")
         private String name;
 
         @SerializedName("orbital_eccentricity")
-        private double orbital_eccentricity;
+        private double orbitalEccentricity;
 
         @SerializedName("orbital_inclination")
-        private double orbital_inclination;
+        private double orbitalInclination;
 
         @SerializedName("orbital_period")
-        private double orbital_period;
+        private double orbitalPeriod;
 
         @SerializedName("orbital_synchronicity")
-        private Double orbital_synchronicity;
+        private Double orbitalSynchronicity;
 
         @SerializedName("parents")
         private List<Parent> parents;
@@ -175,101 +175,98 @@ public class StellarObjectSearchResultDto extends BaseJsonDto implements ToJsonC
         private double radius;
 
         @SerializedName("reserve_level")
-        private String reserve_level;
+        private String reserveLevel;
 
         @SerializedName("rings")
         private List<Ring> rings;
 
         @SerializedName("rotational_period")
-        private double rotational_period;
+        private double rotationalPeriod;
 
         @SerializedName("semi_major_axis")
-        private double semi_major_axis;
+        private double semiMajorAxis;
 
         @SerializedName("solid_composition")
-        private List<Composition> solid_composition;
+        private List<Composition> solidComposition;
 
         @SerializedName("subtype")
         private String subtype;
 
         @SerializedName("surface_pressure")
-        private double surface_pressure;
+        private double surfacePressure;
 
         @SerializedName("surface_temperature")
-        private double surface_temperature;
-
-        @SerializedName("system_id64")
-        private long system_id64;
+        private double surfaceTemperature;
 
         @SerializedName("system_name")
-        private String system_name;
+        private String systemName;
 
         @SerializedName("system_region")
-        private String system_region;
+        private String systemRegion;
 
         @SerializedName("system_x")
-        private double system_x;
+        private double x;
 
         @SerializedName("system_y")
-        private double system_y;
+        private double y;
 
         @SerializedName("system_z")
-        private double system_z;
+        private double z;
 
         @SerializedName("terraforming_state")
-        private String terraforming_state;
+        private String terraformingState;
 
         @SerializedName("type")
         private String type;
 
         @SerializedName("updated_at")
-        private String updated_at;
+        private String updatedAt;
 
         @SerializedName("volcanism_type")
-        private String volcanism_type;
+        private String volcanismType;
 
-        public double getArg_of_periapsis() {
-            return arg_of_periapsis;
+        public double getArgOfPeriapsis() {
+            return argOfPeriapsis;
         }
 
-        public Double getAscending_node() {
-            return ascending_node;
+        public Double getAscendingNode() {
+            return ascendingNode;
         }
 
         public String getAtmosphere() {
             return atmosphere;
         }
 
-        public List<Composition> getAtmosphere_composition() {
-            return atmosphere_composition;
+        public List<Composition> getAtmosphereComposition() {
+            return atmosphereComposition;
         }
 
-        public double getAxis_tilt() {
-            return axis_tilt;
+        public double getAxisTilt() {
+            return axisTilt;
         }
 
-        public int getBody_id() {
-            return body_id;
+        public int getBodyId() {
+            return bodyId;
         }
 
         public double getDistance() {
-            return distance;
+            return Math.round(distance * 100.0) / 100.0;
         }
 
-        public double getDistance_to_arrival() {
-            return distance_to_arrival;
+        public double getDistanceToArrival() {
+            return distanceToArrival;
         }
 
-        public double getEarth_masses() {
-            return earth_masses;
+        public double geteMasses() {
+            return eMasses;
         }
 
-        public int getEstimated_mapping_value() {
-            return estimated_mapping_value;
+        public int getEstimatedMappingValue() {
+            return estimatedMappingValue;
         }
 
-        public int getEstimated_scan_value() {
-            return estimated_scan_value;
+        public int getEstimatedScanValue() {
+            return estimatedScanValue;
         }
 
         public double getGravity() {
@@ -284,40 +281,40 @@ public class StellarObjectSearchResultDto extends BaseJsonDto implements ToJsonC
             return id64;
         }
 
-        public boolean isIs_landable() {
-            return is_landable;
+        public boolean isLandable() {
+            return isLandable;
         }
 
-        public Boolean getIs_main_star() {
-            return is_main_star;
+        public Boolean getIsMainStar() {
+            return isMainStar;
         }
 
-        public boolean isIs_rotational_period_tidally_locked() {
-            return is_rotational_period_tidally_locked;
+        public boolean isRotationalPeriodTidallyLocked() {
+            return isRotationalPeriodTidallyLocked;
         }
 
-        public Double getMean_anomaly() {
-            return mean_anomaly;
+        public Double getMeanAnomaly() {
+            return meanAnomaly;
         }
 
         public String getName() {
             return name;
         }
 
-        public double getOrbital_eccentricity() {
-            return orbital_eccentricity;
+        public double getOrbitalEccentricity() {
+            return orbitalEccentricity;
         }
 
-        public double getOrbital_inclination() {
-            return orbital_inclination;
+        public double getOrbitalInclination() {
+            return orbitalInclination;
         }
 
-        public double getOrbital_period() {
-            return orbital_period;
+        public double getOrbitalPeriod() {
+            return orbitalPeriod;
         }
 
-        public Double getOrbital_synchronicity() {
-            return orbital_synchronicity;
+        public Double getOrbitalSynchronicity() {
+            return orbitalSynchronicity;
         }
 
         public List<Parent> getParents() {
@@ -328,76 +325,72 @@ public class StellarObjectSearchResultDto extends BaseJsonDto implements ToJsonC
             return radius;
         }
 
-        public String getReserve_level() {
-            return reserve_level;
+        public String getReserveLevel() {
+            return reserveLevel;
         }
 
         public List<Ring> getRings() {
             return rings;
         }
 
-        public double getRotational_period() {
-            return rotational_period;
+        public double getRotationalPeriod() {
+            return rotationalPeriod;
         }
 
-        public double getSemi_major_axis() {
-            return semi_major_axis;
+        public double getSemiMajorAxis() {
+            return semiMajorAxis;
         }
 
-        public List<Composition> getSolid_composition() {
-            return solid_composition;
+        public List<Composition> getSolidComposition() {
+            return solidComposition;
         }
 
         public String getSubtype() {
             return subtype;
         }
 
-        public double getSurface_pressure() {
-            return surface_pressure;
+        public double getSurfacePressure() {
+            return surfacePressure;
         }
 
-        public double getSurface_temperature() {
-            return surface_temperature;
+        public double getSurfaceTemperature() {
+            return surfaceTemperature;
         }
 
-        public long getSystem_id64() {
-            return system_id64;
+        public String getSystemName() {
+            return systemName;
         }
 
-        public String getSystem_name() {
-            return system_name;
+        public String getSystemRegion() {
+            return systemRegion;
         }
 
-        public String getSystem_region() {
-            return system_region;
+        public double getX() {
+            return x;
         }
 
-        public double getSystem_x() {
-            return system_x;
+        public double getY() {
+            return y;
         }
 
-        public double getSystem_y() {
-            return system_y;
+        public double getZ() {
+            return z;
         }
 
-        public double getSystem_z() {
-            return system_z;
-        }
-
-        public String getTerraforming_state() {
-            return terraforming_state;
+        public String getTerraformingState() {
+            return terraformingState;
         }
 
         public String getType() {
             return type;
         }
 
-        public String getUpdated_at() {
-            return updated_at;
+        public String getUpdatedAt() {
+            return updatedAt;
         }
 
-        public String getVolcanism_type() {
-            return volcanism_type;
+        public String getVolcanismType() {
+            return volcanismType;
         }
 
         @Override public String toJson() {
@@ -453,7 +446,7 @@ public class StellarObjectSearchResultDto extends BaseJsonDto implements ToJsonC
     public static class Ring {
 
         @SerializedName("inner_radius")
-        private double inner_radius;
+        private double innerRadius;
 
         @SerializedName("mass")
         private double mass;
@@ -462,22 +455,22 @@ public class StellarObjectSearchResultDto extends BaseJsonDto implements ToJsonC
         private String name;
 
         @SerializedName("outer_radius")
-        private double outer_radius;
+        private double outerRadius;
 
         @SerializedName("signal_count")
-        private Integer signal_count;
+        private Integer signalCount;
 
         @SerializedName("signals")
         private List<Signal> signals;
 
         @SerializedName("signals_updated_at")
-        private String signals_updated_at;
+        private String signalsUpdatedAt;
 
         @SerializedName("type")
         private String type;
 
-        public double getInner_radius() {
-            return inner_radius;
+        public double getInnerRadius() {
+            return innerRadius;
         }
 
         public double getMass() {
@@ -488,20 +481,20 @@ public class StellarObjectSearchResultDto extends BaseJsonDto implements ToJsonC
             return name;
         }
 
-        public double getOuter_radius() {
-            return outer_radius;
+        public double getOuterRadius() {
+            return outerRadius;
         }
 
-        public Integer getSignal_count() {
-            return signal_count;
+        public Integer getSignalCount() {
+            return signalCount;
         }
 
         public List<Signal> getSignals() {
             return signals;
         }
 
-        public String getSignals_updated_at() {
-            return signals_updated_at;
+        public String getSignalsUpdatedAt() {
+            return signalsUpdatedAt;
         }
 
         public String getType() {
@@ -560,17 +553,17 @@ public class StellarObjectSearchResultDto extends BaseJsonDto implements ToJsonC
     public static class Filters {
 
         @SerializedName("reserve_level")
-        private ReserveLevel reserve_level;
+        private ReserveLevel reserveLevel;
 
         @SerializedName("ring_signals")
-        private List<RingSignal> ring_signals;
+        private List<RingSignal> ringSignals;
 
-        public ReserveLevel getReserve_level() {
-            return reserve_level;
+        public ReserveLevel getReserveLevel() {
+            return reserveLevel;
         }
 
-        public List<RingSignal> getRing_signals() {
-            return ring_signals;
+        public List<RingSignal> getRingSignals() {
+            return ringSignals;
         }
     }
 

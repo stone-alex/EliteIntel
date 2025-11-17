@@ -34,7 +34,7 @@ public class FindCarrierFuelMiningSiteHandler extends CommandOperator implements
                         range.intValue()
                 );
 
-        if (tritiumLocations != null && tritiumLocations.getResults().isEmpty()) {
+        if (tritiumLocations == null || tritiumLocations.getResults().isEmpty()) {
             EventBusManager.publish(new AiVoxResponseEvent("No Tritium locations found."));
             return;
         }

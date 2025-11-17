@@ -178,11 +178,4 @@ and adapt, but give credit, don't sell it, and keep the same license.
 
 ---
 
-# stone-alex/EliteIntel
-
-Open-Source Project Developed by (CMDR PRINCE OF KRONDOR)
-...
-
-## Footer
-
-© 2025 GitHub, Inc. | Open-Source Project
+© Sudo Krondor (Alex Stone) | 2025 GitHub, Inc. | Open-Source Project

@@ -1,7 +1,5 @@
 package elite.intel.ai.search.spansh.nearest;
 
-import elite.intel.ai.search.edsm.EdsmApiClient;
-import elite.intel.ai.search.edsm.dto.StarSystemDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.util.json.GsonFactory;
 import org.apache.logging.log4j.LogManager;
@@ -16,9 +14,9 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Locale;
 
-public class NearestKnownLocationSearch {
+public class NearestKnownLocationSearchClient {
 
-    private static final Logger log = LogManager.getLogger(NearestKnownLocationSearch.class);
+    private static final Logger log = LogManager.getLogger(NearestKnownLocationSearchClient.class);
     private static final String SPANSH_API_URL = "https://spansh.co.uk/api/nearest";
     private static final String USER_AGENT = "EliteIntel/1.0 (https://github.com/elite-intel)";
 

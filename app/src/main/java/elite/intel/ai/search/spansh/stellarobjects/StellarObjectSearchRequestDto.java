@@ -51,6 +51,14 @@ public class StellarObjectSearchRequestDto implements ToJsonConvertible {
 
     public static class Filters {
 
+
+        @SerializedName("distance")
+        private Distance distance;
+
+        public void setDistance(Distance distance) {
+            this.distance = distance;
+        }
+
         @SerializedName("reserve_level")
         private ReserveLevel reserveLevel;
 
@@ -63,6 +71,22 @@ public class StellarObjectSearchRequestDto implements ToJsonConvertible {
 
         public void setRingSignals(List<RingSignal> ringSignals) {
             this.ringSignals = ringSignals;
+        }
+    }
+
+
+    public static class Distance {
+        @SerializedName("min")
+        private int min;
+        @SerializedName("max")
+        private int max;
+
+        public void setMin(int min) {
+            this.min = min;
+        }
+
+        public void setMax(int max) {
+            this.max = max;
         }
     }
 

@@ -4,8 +4,8 @@ import com.google.gson.JsonObject;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.search.spansh.carrier.CarrierJump;
 import elite.intel.ai.search.spansh.carrier.CarrierRouteCriteria;
-import elite.intel.ai.search.spansh.carrier.SpanshCarrierRouter;
-import elite.intel.ai.search.spansh.nearest.NearestKnownLocationSearch;
+import elite.intel.ai.search.spansh.carrier.SpanshCarrierRouteClient;
+import elite.intel.ai.search.spansh.nearest.NearestKnownLocationSearchClient;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.dto.CarrierDataDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
@@ -18,7 +18,7 @@ import java.util.Map;
 public class CalculateFleetCarrierRouteHandler implements CommandHandler {
 
     @Override public void handle(String action, JsonObject params, String responseText) {
-        SpanshCarrierRouter client = new SpanshCarrierRouter();
+        SpanshCarrierRouteClient client = new SpanshCarrierRouteClient();
 
         PlayerSession playerSession = PlayerSession.getInstance();
         FleetCarrierRoute fleetCarrierRoute = FleetCarrierRoute.getInstance();
@@ -40,7 +40,7 @@ public class CalculateFleetCarrierRouteHandler implements CommandHandler {
             return;
         }
 
-        LocationDto nearestStartingPoint = NearestKnownLocationSearch.findNearest(carrierData.getX(), carrierData.getY(), carrierData.getZ());
+        LocationDto nearestStartingPoint = NearestKnownLocationSearchClient.findNearest(carrierData.getX(), carrierData.getY(), carrierData.getZ());
 
         if (destination == null || nearestStartingPoint == null) {
             EventBusManager.publish(new AiVoxResponseEvent("No destination or nearest known location found."));

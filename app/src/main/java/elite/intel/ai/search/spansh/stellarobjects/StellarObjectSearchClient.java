@@ -14,13 +14,17 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class StellarObjectSearchClient {
+
     private static StellarObjectSearchClient instance;
     private final Logger log = LogManager.getLogger(StellarObjectSearchClient.class);
     private final String BASE_URL = "https://spansh.co.uk/api/bodies/search/save";
     private final String RESULTS_URL = "https://spansh.co.uk/api/bodies/search/recall/";
     private final HttpClient httpClient = HttpClient.newHttpClient();
     private final Gson gson = GsonFactory.getGson();
+
+
     private StellarObjectSearchClient() {
+        //for singleton pattern
     }
 
     public static synchronized StellarObjectSearchClient getInstance() {

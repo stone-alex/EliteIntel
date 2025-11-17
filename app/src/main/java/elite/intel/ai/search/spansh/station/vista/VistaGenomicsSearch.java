@@ -1,7 +1,7 @@
 package elite.intel.ai.search.spansh.station.vista;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.search.spansh.station.StationSearch;
+import elite.intel.ai.search.spansh.station.StationSearchClient;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 import org.apache.logging.log4j.LogManager;
@@ -16,7 +16,7 @@ public class VistaGenomicsSearch {
 
     public static List<VistaGenomicsLocationDto.Result> findVistaGenomics(ToJsonConvertible searchCriteria) {
         try {
-            JsonObject getJson = StationSearch.getInstance().performSearch(searchCriteria).getAsJsonObject();
+            JsonObject getJson = StationSearchClient.getInstance().performSearch(searchCriteria).getAsJsonObject();
             VistaGenomicsLocationDto dto = GsonFactory.getGson().fromJson(getJson, VistaGenomicsLocationDto.class);
             return dto.getResults().stream().filter(
                     result -> result.getServices().stream().anyMatch(service -> VISTA_GENOMICS.equalsIgnoreCase(service.getName())

@@ -1,7 +1,7 @@
 package elite.intel.ai.search.spansh.station.traderandbroker;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.search.spansh.station.StationSearch;
+import elite.intel.ai.search.spansh.station.StationSearchClient;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 import org.apache.logging.log4j.LogManager;
@@ -16,7 +16,7 @@ public class SearchForMaterialBrokerOrTrader {
     public static List<TraderAndBrokerSearchDto.Result> findMaterialTrader(ToJsonConvertible searchCriteria) {
 
         try {
-            JsonObject getJson = StationSearch.getInstance().performSearch(searchCriteria).getAsJsonObject();
+            JsonObject getJson = StationSearchClient.getInstance().performSearch(searchCriteria).getAsJsonObject();
             TraderAndBrokerSearchDto dto = GsonFactory.getGson().fromJson(getJson, TraderAndBrokerSearchDto.class);
             return dto.getResults();
         } catch (Exception e) {

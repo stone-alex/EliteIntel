@@ -5,6 +5,7 @@ import elite.intel.gameapi.gamestate.dtos.BaseJsonDto;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 
+import java.util.Comparator;
 import java.util.List;
 
 public class StellarObjectSearchResultDto extends BaseJsonDto implements ToJsonConvertible {
@@ -44,6 +45,7 @@ public class StellarObjectSearchResultDto extends BaseJsonDto implements ToJsonC
     }
 
     public List<Result> getResults() {
+        results.sort(Comparator.comparingDouble(Result::getDistance));
         return results;
     }
 

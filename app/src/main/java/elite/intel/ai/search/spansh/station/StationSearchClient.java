@@ -13,22 +13,22 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-public final class StationSearch {
+public final class StationSearchClient {
 
-    private static StationSearch instance;
+    private static StationSearchClient instance;
 
 
-    private StationSearch() {
+    private StationSearchClient() {
     }
 
-    public static synchronized StationSearch getInstance() {
+    public static synchronized StationSearchClient getInstance() {
         if (instance == null) {
-            instance = new StationSearch();
+            instance = new StationSearchClient();
         }
         return instance;
     }
 
-    private final Logger log = LogManager.getLogger(StationSearch.class);
+    private final Logger log = LogManager.getLogger(StationSearchClient.class);
     private final String BASE_URL = "https://spansh.co.uk/api/stations/search/save";
     private final String RESULTS_URL = "https://spansh.co.uk/api/stations/search/recall/";
     private final HttpClient httpClient = HttpClient.newHttpClient();

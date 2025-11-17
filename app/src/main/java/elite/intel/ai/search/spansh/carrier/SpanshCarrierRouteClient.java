@@ -20,9 +20,9 @@ import java.util.TreeMap;
  * Client for querying spansh.co.uk fleet carrier routing API.
  * Handles POST to queue a route job and immediate GET for results, with custom fuel calculation.
  */
-public class SpanshCarrierRouter {
+public class SpanshCarrierRouteClient {
 
-    private static final Logger log = LogManager.getLogger(SpanshCarrierRouter.class);
+    private static final Logger log = LogManager.getLogger(SpanshCarrierRouteClient.class);
     private static final String BASE_URL = "https://spansh.co.uk/api/fleetcarrier/route";
     private static final String RESULTS_URL = "https://spansh.co.uk/api/results/";
     private static final HttpClient httpClient = HttpClient.newHttpClient();

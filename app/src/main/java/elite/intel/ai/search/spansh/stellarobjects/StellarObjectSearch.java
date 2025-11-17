@@ -21,7 +21,7 @@ public class StellarObjectSearch {
     }
 
 
-    public StellarObjectSearchResultDto findRings(String material, ReserveLevel level, PlayerSession.GalacticCoordinates coords) {
+    public StellarObjectSearchResultDto findRings(String material, ReserveLevel level, PlayerSession.GalacticCoordinates coords, int range) {
 
         try {
             StellarObjectSearchClient searchClient = StellarObjectSearchClient.getInstance();
@@ -32,6 +32,10 @@ public class StellarObjectSearch {
 
             StellarObjectSearchRequestDto.Filters filters = new StellarObjectSearchRequestDto.Filters();
             filters.setReserveLevel(reserveLevel);
+            StellarObjectSearchRequestDto.Distance distance = new StellarObjectSearchRequestDto.Distance();
+            distance.setMin(0);
+            distance.setMax(range);
+            filters.setDistance(distance);
 
             StellarObjectSearchRequestDto.RingSignal ringSignal = new StellarObjectSearchRequestDto.RingSignal();
             ringSignal.setCount(Arrays.asList(1, 17));
@@ -39,6 +43,7 @@ public class StellarObjectSearch {
             ringSignal.setName(material);
 
             filters.setRingSignals(Arrays.asList(ringSignal));
+
 
             criteria.setSize(10);
             criteria.setPage(1);

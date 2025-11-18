@@ -5,6 +5,7 @@ import elite.intel.ai.search.spansh.station.traderandbroker.*;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.DestinationReminder;
 import elite.intel.session.PlayerSession;
+import elite.intel.util.TimeUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -76,7 +77,11 @@ public class TradersAndBrokersSearch {
         }
 
         TraderAndBrokerSearchDto.Result result = results.get(0);
-        EventBusManager.publish(new AiVoxResponseEvent("Head to " + result.getSystemName() + " star system. When you get there looks for" + result.getStationName()));
+        EventBusManager.publish(
+                new AiVoxResponseEvent("Head to " + result.getSystemName() + " star system. When you get there looks for" + result.getStationName()
+                        +". Data was last updated: "+ TimeUtils.transformToYMDHtimeAgo(result.getUpdatedAt(), TimeUtils.LOCAL_DATE_TIME)
+                )
+        );
         DestinationReminder.getInstance().setDestinationFromJson(result.toJson());
         return result.getSystemName();
     }

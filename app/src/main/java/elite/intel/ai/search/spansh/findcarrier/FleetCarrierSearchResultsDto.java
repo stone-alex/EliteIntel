@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 
+import java.util.Comparator;
 import java.util.List;
 
 public class FleetCarrierSearchResultsDto implements ToJsonConvertible {
@@ -35,6 +36,9 @@ public class FleetCarrierSearchResultsDto implements ToJsonConvertible {
     }
 
     public List<Result> getResults() {
+        if (results != null) {
+            results.sort(Comparator.comparingDouble(Result::getDistance));
+        }
         return results;
     }
 

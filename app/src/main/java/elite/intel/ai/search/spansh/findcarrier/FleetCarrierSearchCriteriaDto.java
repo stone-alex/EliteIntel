@@ -64,6 +64,13 @@ public class FleetCarrierSearchCriteriaDto implements ToJsonConvertible {
         public void setDistance(Distance distance) {
             this.distance = distance;
         }
+
+        @SerializedName("updated_at")
+        private UpdatedAt updatedAt;
+
+        public void setUpdatedAt(UpdatedAt updatedAt) {
+            this.updatedAt = updatedAt;
+        }
     }
 
     public static class CarrierDockingAccess {
@@ -115,5 +122,16 @@ public class FleetCarrierSearchCriteriaDto implements ToJsonConvertible {
         public void setZ(double z) {
             this.z = z;
         }
+    }
+
+    public static class UpdatedAt {
+        @SerializedName("comparison")
+        private String comparison;           // e.g. "<=>"
+
+        @SerializedName("value")
+        private List<String> value;          // ISO-8601 strings
+
+        public void setComparison(String comparison) { this.comparison = comparison; }
+        public void setValue(List<String> value) { this.value = value; }
     }
 }

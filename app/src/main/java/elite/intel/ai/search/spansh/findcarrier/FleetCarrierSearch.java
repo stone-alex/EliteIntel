@@ -2,10 +2,13 @@ package elite.intel.ai.search.spansh.findcarrier;
 
 import com.google.gson.JsonObject;
 import elite.intel.session.PlayerSession;
+import elite.intel.util.TimeUtils;
 import elite.intel.util.json.GsonFactory;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class FleetCarrierSearch {
 
@@ -30,12 +33,22 @@ public class FleetCarrierSearch {
 
             FleetCarrierSearchCriteriaDto.Distance distance = new FleetCarrierSearchCriteriaDto.Distance();
             distance.setMax(range);
-            distance.setMin(1);
+            distance.setMin(1); // excludes current star system
             filters.setDistance(distance);
 
             FleetCarrierSearchCriteriaDto.CarrierDockingAccess access = new FleetCarrierSearchCriteriaDto.CarrierDockingAccess();
             access.setValue(Arrays.asList(carrierAccess.getType()));
             filters.setCarrierDockingAccess(access);
+
+            FleetCarrierSearchCriteriaDto.UpdatedAt updatedAt = new FleetCarrierSearchCriteriaDto.UpdatedAt();
+            updatedAt.setComparison("<=>");
+
+            LocalDateTime today = LocalDateTime.now();
+            LocalDateTime yesterday = today.minusDays(1);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(TimeUtils.ISO_INSTANT);
+            updatedAt.setValue(Arrays.asList(yesterday.format(formatter), today.format(formatter)));
+
+            filters.setUpdatedAt(updatedAt);
 
             FleetCarrierSearchCriteriaDto.ReferenceCoords referenceCoords = new FleetCarrierSearchCriteriaDto.ReferenceCoords();
             referenceCoords.setX(coords.x());

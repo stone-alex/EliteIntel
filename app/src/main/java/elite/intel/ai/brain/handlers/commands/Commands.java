@@ -39,6 +39,8 @@ public enum Commands {
 
     FIND_FLEET_CARRIER_FUEL_MINING_SITE("find_fleet_carrier_fuel_mining_site", null, "distance", FindCarrierFuelMiningSiteHandler.class),
 
+    FIND_NEAREST_FLEET_CARRIER("find_nearest_fleet_carrier", null, "distance", FindNearestFleetCarrierHandler.class),
+
     FIND_COMMODITY("find_market_where_to_buy", null, "commodity", FindCommodityHandler.class),
     SET_AI_VOICE("set_or_change_voice_to", null, "voice_name", ChangeAiVoiceHandler.class),
     SET_HOME_SYSTEM("set_location_as_home_star_system", null,  null, SetCurrentStarAsHomeSystem.class),

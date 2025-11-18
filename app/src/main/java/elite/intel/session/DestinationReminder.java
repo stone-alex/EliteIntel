@@ -1,8 +1,6 @@
 package elite.intel.session;
 
 import elite.intel.ai.search.spansh.station.DestinationDto;
-import elite.intel.util.json.GsonFactory;
-import elite.intel.util.json.ToJsonConvertible;
 
 public class DestinationReminder extends SessionPersistence implements java.io.Serializable {
 
@@ -38,7 +36,8 @@ public class DestinationReminder extends SessionPersistence implements java.io.S
     }
 
     public void setDestinationFromJson(String destinationAsJson) {
-        DestinationDto destinationDto = GsonFactory.getGson().fromJson(destinationAsJson, DestinationDto.class);
+        DestinationDto destinationDto = new DestinationDto();
+        destinationDto.setJson(destinationAsJson);
         this.destination = destinationDto;
         save();
     }

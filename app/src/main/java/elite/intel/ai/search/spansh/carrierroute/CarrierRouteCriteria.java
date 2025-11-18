@@ -1,4 +1,4 @@
-package elite.intel.ai.search.spansh.carrier;
+package elite.intel.ai.search.spansh.carrierroute;
 
 /**
  * Record for carrier route search criteria.

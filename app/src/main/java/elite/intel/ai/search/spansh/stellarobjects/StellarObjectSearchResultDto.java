@@ -156,7 +156,7 @@ public class StellarObjectSearchResultDto extends BaseJsonDto implements ToJsonC
         private Double meanAnomaly;
 
         @SerializedName("name")
-        private String name;
+        private String bodyName;
 
         @SerializedName("orbital_eccentricity")
         private double orbitalEccentricity;
@@ -299,8 +299,8 @@ public class StellarObjectSearchResultDto extends BaseJsonDto implements ToJsonC
             return meanAnomaly;
         }
 
-        public String getName() {
-            return name;
+        public String getBodyName() {
+            return bodyName;
         }
 
         public double getOrbitalEccentricity() {

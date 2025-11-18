@@ -1,7 +1,7 @@
 package elite.intel.session;
 
 import com.google.gson.reflect.TypeToken;
-import elite.intel.ai.search.spansh.carrier.CarrierJump;
+import elite.intel.ai.search.spansh.carrierroute.CarrierJump;
 
 import java.util.HashMap;
 import java.util.Map;

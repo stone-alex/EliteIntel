@@ -24,7 +24,7 @@ public class FindCarrierFuelMiningSiteHandler extends CommandOperator implements
 
     @Override public void handle(String action, JsonObject params, String responseText) {
         Number range = GetNumberFromParam.getNumberFromParam(params, 1000);
-        EventBusManager.publish(new AiVoxResponseEvent("Searching for Carrier Fuel Mining Site withing " + range.intValue() + "... Stand by..."));
+        EventBusManager.publish(new AiVoxResponseEvent("Searching for Carrier Fuel Mining Site withing " + range.intValue() + " light years... Stand by..."));
 
         StellarObjectSearchResultDto tritiumLocations = StellarObjectSearch.getInstance()
                 .findRings(

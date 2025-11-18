@@ -1,10 +1,8 @@
 package elite.intel.util;
 
-import elite.intel.ai.search.spansh.carrier.CarrierJump;
+import elite.intel.ai.search.spansh.carrierroute.CarrierJump;
 import elite.intel.gameapi.gamestate.dtos.NavRouteDto;
-import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.FleetCarrierRoute;
-import elite.intel.session.PlayerSession;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;

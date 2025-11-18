@@ -1,4 +1,4 @@
-package elite.intel.ai.search.spansh.carrier;
+package elite.intel.ai.search.spansh.carrierroute;
 
 import elite.intel.gameapi.gamestate.dtos.BaseJsonDto;
 import elite.intel.util.json.ToJsonConvertible; /**

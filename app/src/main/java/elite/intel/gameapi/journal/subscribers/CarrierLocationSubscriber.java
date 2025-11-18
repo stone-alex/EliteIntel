@@ -1,9 +1,7 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.intel.ai.search.edsm.EdsmApiClient;
-import elite.intel.ai.search.edsm.dto.StarSystemDto;
-import elite.intel.ai.search.spansh.carrier.CarrierJump;
+import elite.intel.ai.search.spansh.carrierroute.CarrierJump;
 import elite.intel.gameapi.journal.events.CarrierLocationEvent;
 import elite.intel.gameapi.journal.events.dto.CarrierDataDto;
 import elite.intel.gameapi.journal.events.dto.FssSignalDto;

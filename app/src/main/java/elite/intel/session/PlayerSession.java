@@ -74,6 +74,9 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     private static final String CARRIER_STATS = "carrier_stats";
     private static final String BOUNTIES = "bounties";
     private static final String MINING_TARGETS = "miningTargets";
+    public static final String GAME_VERSION = "game_version";
+    public static final String IN_GAME_NAME = "in_game_name";
+    public static final String TARGET_MARKET_STATION = "target_market_station";
     private static volatile PlayerSession instance;
     // Existing fields
     private final Map<String, String> shipScans = new HashMap<>();
@@ -135,6 +138,8 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     private Boolean isRouteAnnouncementOn = true;
     private Map<String, Boolean> genusPaymentAnnounced = new HashMap<>();
     private StationMarket targetMarketStation;
+    private String gameVersion;
+    private String inGameName;
 
 
     private PlayerSession() {
@@ -212,7 +217,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         registerField(PLAYER_NAME, this::getPlayerName, this::setPlayerName, String.class);
         registerField(CARRIER_LOCATION, this::getLastKnownCarrierLocation, this::setLastKnownCarrierLocation, String.class);
         registerField(SHIP_FUEL_LEVEL, this::getShipFuelLevel, this::setShipFuelLevel, Double.class);
-        registerField("target_market_station", this::getTargetMarketStation, this::setTargetMarketStation, StationMarket.class);
+        registerField(TARGET_MARKET_STATION, this::getTargetMarketStation, this::setTargetMarketStation, StationMarket.class);
 
         registerField(FRIENDS_STATUS, this::getFriendsStatus, v -> {
             friendsStatus.clear();
@@ -235,6 +240,8 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         registerField(MINING_VOX_ON_OFF, this::isMiningAnnouncementOn, this::setMiningAnnouncementOn, Boolean.class);
         registerField(DISCOVERY_VOX_ON_OFF, this::isDiscoveryAnnouncementOn, this::setDiscoveryAnnouncementOn, Boolean.class);
         registerField(ROUTE_VOX_ON_OFF, this::isRouteAnnouncementOn, this::setRouteAnnouncementOn, Boolean.class);
+        registerField(GAME_VERSION, this::getGameVersion, this::setGameVersion, String.class);
+        registerField(IN_GAME_NAME, this::getInGameName, this::setInGameName, String.class);
 
 
         loadSavedStateFromDisk();
@@ -968,6 +975,24 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     @Subscribe
     public void onShutDownEvent(ShutdownEvent event) {
         save();
+    }
+
+    public void setGameVersion(String gameversion) {
+        this.gameVersion = gameversion;
+        save();
+    }
+
+    public String getGameVersion() {
+        return gameVersion;
+    }
+
+    public void setInGameName(String inGameName) {
+        this.inGameName = inGameName;
+        save();
+    }
+
+    public String getInGameName() {
+        return inGameName;
     }
 
     public record GalacticCoordinates(double x, double y, double z) {

@@ -21,6 +21,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+
+//Was experimental... will be moved to another project.
 public class YouTubeChatVocalizer implements StreamChatVocalizer {
 
     private ConfigManager conf;
@@ -53,10 +55,10 @@ public class YouTubeChatVocalizer implements StreamChatVocalizer {
     }
 
     public void start() {
-        String ytUrl = ConfigManager.getInstance().getSystemKey(ConfigManager.YT_URL);
-        streamRunning.set(ytUrl != null && !ytUrl.isEmpty());
-        if(!streamRunning.get()) return;
-        executor.submit(this::pollChat);
+//        String ytUrl = ConfigManager.getInstance().getSystemKey(ConfigManager.YT_URL);
+//        streamRunning.set(ytUrl != null && !ytUrl.isEmpty());
+//        if(!streamRunning.get()) return;
+//        executor.submit(this::pollChat);
     }
 
     public void stop() {
@@ -74,10 +76,10 @@ public class YouTubeChatVocalizer implements StreamChatVocalizer {
                 break;
             }
 
-            if (conf.getSystemKey(ConfigManager.YT_URL) == null) {
-                this.streamRunning.set(false);
-                return;
-            }
+//            if (conf.getSystemKey(ConfigManager.YT_URL) == null) {
+//                this.streamRunning.set(false);
+//                return;
+//            }
 
             fetchChatIdIfNotSet();
 
@@ -86,7 +88,7 @@ public class YouTubeChatVocalizer implements StreamChatVocalizer {
             }
 
             try {
-                String url = String.format(YT_CHAT_API_URL, this.chatId, conf.getSystemKey(ConfigManager.YT_API_KEY));
+                String url = String.format(YT_CHAT_API_URL, this.chatId, conf.getSystemKey(ConfigManager.EDSM_KEY));
 
                 if (nextPageToken != null) {
                     url += "&pageToken=" + nextPageToken;
@@ -140,8 +142,9 @@ public class YouTubeChatVocalizer implements StreamChatVocalizer {
         if (this.chatId != null) return;
         try {
 
-            String ytUrl = conf.getSystemKey(ConfigManager.YT_URL);
-            String ytKey = conf.getSystemKey(ConfigManager.YT_API_KEY);
+            //String ytUrl = conf.getSystemKey(ConfigManager.YT_URL);
+            String ytUrl = "not implemented";
+            String ytKey = conf.getSystemKey(ConfigManager.EDSM_KEY);
             if (ytKey == null || ytKey.isEmpty()) {
                 log.warn("YT key is null or empty");
                 return;

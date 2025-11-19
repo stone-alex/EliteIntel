@@ -28,7 +28,7 @@ public class App {
         // init
         ConfigManager configManager = ConfigManager.getInstance();
         configManager.getSystemKey(ConfigManager.AI_API_KEY);
-        configManager.getSystemKey(ConfigManager.YT_API_KEY);
+        configManager.getSystemKey(ConfigManager.EDSM_KEY);
         configManager.getSystemKey(ConfigManager.TTS_API_KEY);
         configManager.getSystemKey(ConfigManager.STT_API_KEY);
 

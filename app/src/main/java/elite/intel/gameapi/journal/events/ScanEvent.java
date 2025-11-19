@@ -3,6 +3,7 @@ package elite.intel.gameapi.journal.events;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 import elite.intel.util.json.GsonFactory;
+import elite.intel.util.json.ToJsonConvertible;
 
 import java.time.Duration;
 import java.util.List;
@@ -134,7 +135,7 @@ public class ScanEvent extends BaseEvent {
     }
 
     // Nested class for Materials
-    public static class Material {
+    public static class Material implements ToJsonConvertible {
         @SerializedName("Name")
         private String name;
 
@@ -155,6 +156,10 @@ public class ScanEvent extends BaseEvent {
                     .add("name='" + name + "'")
                     .add("percent=" + percent)
                     .toString();
+        }
+
+        @Override public String toJson() {
+            return GsonFactory.getGson().toJson(this);
         }
     }
 

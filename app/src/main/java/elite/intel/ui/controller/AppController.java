@@ -178,9 +178,6 @@ public class AppController implements AppControllerInterface, ActionListener {
             String mission_statement = configManager.getPlayerKey(ConfigManager.PLAYER_MISSION_STATEMENT);
             playerSession.setPlayerMissionStatement(mission_statement);
 
-            streamChatVocalizer = YouTubeChatVocalizer.getInstance();
-            streamChatVocalizer.start();
-
             appendToLog("Available voices: " + listVoices());
             appendToLog("Available personalities: " + listPersonalities());
             appendToLog("Available profiles: " + listCadences());

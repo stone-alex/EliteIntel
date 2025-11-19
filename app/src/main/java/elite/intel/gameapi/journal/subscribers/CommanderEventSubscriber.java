@@ -16,5 +16,6 @@ public class CommanderEventSubscriber {
         ConfigManager configManager = ConfigManager.getInstance();
         String nikName = configManager.getPlayerKey(ConfigManager.PLAYER_ALTERNATIVE_NAME);
         session.setPlayerName(capitalizeWords(nikName != null || !nikName.isEmpty() ? nikName : "Commander"));
+        session.setInGameName(event.getName());
     }
 }

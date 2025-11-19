@@ -44,15 +44,16 @@ public class MaterialsData extends SessionPersistence implements java.io.Seriali
         save();
     }
 
-    private void loadSavedStateFromDisk() {
-        loadSession(MaterialsData.this::loadFields);
-    }
-
     public EncodedMaterialsDto getEncodedMaterialsDto() {
         return encodedMaterialsDto;
     }
 
     public void setEncodedMaterialsDto(EncodedMaterialsDto encodedMaterialsDto) {
         this.encodedMaterialsDto = encodedMaterialsDto;
+        save();
+    }
+
+    private void loadSavedStateFromDisk() {
+        loadSession(MaterialsData.this::loadFields);
     }
 }

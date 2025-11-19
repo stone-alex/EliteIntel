@@ -8,11 +8,6 @@ import java.util.List;
 
 public class MaterialsDto implements ToJsonConvertible {
 
-    @SerializedName("msgnum")
-    private int msgnum;
-
-    @SerializedName("msg")
-    private String msg;
 
     @SerializedName("materials")
     private List<MaterialEntry> materials;

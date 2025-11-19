@@ -8,13 +8,6 @@ import java.util.List;
 
 public class EncodedMaterialsDto implements ToJsonConvertible {
 
-
-    @SerializedName("msgnum")
-    private int msgnum;
-
-    @SerializedName("msg")
-    private String msg;
-
     @SerializedName("data")
     private List<MaterialsDto.MaterialEntry> encoded;
 

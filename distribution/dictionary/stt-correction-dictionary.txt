@@ -208,3 +208,4 @@
 "by a signals"="bio signals"
 "and the next"="enter next"
 "sundown"="shutdown"
+"i'm bored the ship"="board the ship"

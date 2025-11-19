@@ -3,6 +3,7 @@ package elite.intel.gameapi.journal.subscribers;
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.ConfigManager;
 import elite.intel.ai.search.edsm.EdsmApiClient;
+import elite.intel.ai.search.edsm.dto.EncodedMaterialsDto;
 import elite.intel.ai.search.edsm.dto.MaterialsDto;
 import elite.intel.ai.search.edsm.dto.MaterialsType;
 import elite.intel.gameapi.gamestate.dtos.NavRouteDto;
@@ -39,9 +40,11 @@ public class LoadGameEventSubscriber {
         initValuesFromConfig(playerSession);
         cleanUpRoute(playerSession);
 
-        MaterialsData edsmMaterialsClient = MaterialsData.getInstance();
+        MaterialsData edsmMaterialsData = MaterialsData.getInstance();
         MaterialsDto materials = EdsmApiClient.getMaterials();
-        edsmMaterialsClient.setMaterialsDto(materials);
+        edsmMaterialsData.setMaterialsDto(materials);
+        EncodedMaterialsDto encodedMaterials = EdsmApiClient.getEncodedMaterials();
+        edsmMaterialsData.setEncodedMaterialsDto(encodedMaterials);
     }
 
     private void cleanUpRoute(PlayerSession playerSession) {

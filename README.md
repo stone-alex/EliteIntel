@@ -167,9 +167,7 @@ reflection) and principles like DRY and SRP. All PRs go through review.
 
 ## License
 
-Released under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0).
-See [creativecommons.org/licenses/by-nc-sa/4.0/](https://creativecommons.org/licenses/by-nc-sa/4.0/) for details. Share
-and adapt, but give credit, don't sell it, and keep the same license.
+Released under Creative Commons license.
 
 ## Join the Community
 

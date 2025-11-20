@@ -6,10 +6,12 @@ import elite.intel.ai.search.edsm.EdsmApiClient;
 import elite.intel.ai.search.edsm.dto.EncodedMaterialsDto;
 import elite.intel.ai.search.edsm.dto.MaterialsDto;
 import elite.intel.ai.search.edsm.dto.MaterialsType;
+import elite.intel.db.util.Database;
+import elite.intel.db.dao.MaterialsDao;
+import elite.intel.gameapi.data.EDMaterialCaps;
 import elite.intel.gameapi.gamestate.dtos.NavRouteDto;
 import elite.intel.gameapi.journal.events.LoadGameEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
-import elite.intel.session.MaterialsData;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.ShipRoute;
 import elite.intel.util.AdjustRoute;
@@ -40,11 +42,38 @@ public class LoadGameEventSubscriber {
         initValuesFromConfig(playerSession);
         cleanUpRoute(playerSession);
 
-        MaterialsData edsmMaterialsData = MaterialsData.getInstance();
-        MaterialsDto materials = EdsmApiClient.getMaterials();
-        edsmMaterialsData.setMaterialsDto(materials);
+        retrieveManufacturedAndRawMaterialsFromEDSM();
+        retrieveEncodedMaterialsFromEDSM();
+    }
+
+    private static void retrieveEncodedMaterialsFromEDSM() {
         EncodedMaterialsDto encodedMaterials = EdsmApiClient.getEncodedMaterials();
-        edsmMaterialsData.setEncodedMaterialsDto(encodedMaterials);
+        for (EncodedMaterialsDto.EncodedMaterialEntry entry : encodedMaterials.getEncoded()) {
+            Database.withDao(MaterialsDao.class, dao -> {
+                dao.upsert(
+                        entry.getMaterialName(),
+                        MaterialsType.GAME_ENCODED.getType(),
+                        entry.getQuantity(),
+                        EDMaterialCaps.getMax(entry.getMaterialName())
+                );
+                return null;
+            });
+        }
+    }
+
+    private static void retrieveManufacturedAndRawMaterialsFromEDSM() {
+        MaterialsDto rawAndManufacturedMaterials = EdsmApiClient.getMaterials();
+        for (MaterialsDto.MaterialEntry entry : rawAndManufacturedMaterials.getMaterials()) {
+            Database.withDao(MaterialsDao.class, dao -> {
+                dao.upsert(
+                        entry.getMaterialName(),
+                        MaterialsType.GAME_RAW.name(),
+                        entry.getQuantity(),
+                        EDMaterialCaps.getMax(entry.getMaterialName())
+                );
+                return null;
+            });
+        }
     }
 
     private void cleanUpRoute(PlayerSession playerSession) {

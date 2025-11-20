@@ -1,6 +1,5 @@
 package elite.intel.gameapi.journal.subscribers;
 
-import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.search.edsm.EdsmApiClient;
 import elite.intel.ai.search.edsm.dto.DeathsDto;
@@ -9,16 +8,15 @@ import elite.intel.ai.search.edsm.dto.TrafficDto;
 import elite.intel.ai.search.edsm.dto.data.BodyData;
 import elite.intel.ai.search.edsm.dto.data.DeathsStats;
 import elite.intel.ai.search.edsm.dto.data.TrafficStats;
+import elite.intel.db.Locations;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.gamestate.dtos.NavRouteDto;
 import elite.intel.gameapi.journal.events.FSDJumpEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.gameapi.journal.events.dto.MaterialDto;
-import elite.intel.session.LocationHistory;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.ShipRoute;
-import elite.intel.session.Status;
 import elite.intel.util.AdjustRoute;
 
 import java.util.ArrayList;
@@ -40,15 +38,9 @@ public class JumpCompletedSubscriber {
     @Subscribe
     public void onFSDJumpEvent(FSDJumpEvent event) {
         SystemBodiesDto systemBodiesDto = EdsmApiClient.searchSystemBodies(event.getStarSystem());
-        processEdsmData(systemBodiesDto);
+        processEdsmData(systemBodiesDto, event.getStarSystem());
 
-        LocationHistory locationHistory = LocationHistory.getInstance(event.getStarSystem());
-        if(locationHistory.getLocations() != null && !locationHistory.getLocations().isEmpty()) {
-            playerSession.setLocations(locationHistory.getLocations());
-        }
-
-        LocationDto locationDto = locationHistory.getLocations().get(event.getBodyId());
-        LocationDto primaryStar =  locationDto == null ? new LocationDto(event.getBodyId()) : locationDto;
+        LocationDto primaryStar = Locations.getInstance().findPrimaryStar(event.getStarSystem());
         primaryStar.setBodyId(event.getBodyId());
         primaryStar.setStationGovernment(event.getSystemGovernmentLocalised());
         primaryStar.setAllegiance(event.getSystemAllegiance());
@@ -64,6 +56,7 @@ public class JumpCompletedSubscriber {
         primaryStar.setPowerplayStateReinforcement(event.getPowerplayStateReinforcement());
         primaryStar.setPowerplayStateUndermining(event.getPowerplayStateUndermining());
         playerSession.setCurrentLocationId(primaryStar.getBodyId());
+        playerSession.setCurrentPrimaryStarName(primaryStar.getStarName());
 
 
         String finalDestination = playerSession.getFinalDestination();
@@ -113,19 +106,19 @@ public class JumpCompletedSubscriber {
 
         playerSession.saveLocation(primaryStar);
 
-        if(playerSession.isRouteAnnouncementOn()) {
+        if (playerSession.isRouteAnnouncementOn()) {
             EventBusManager.publish(new SensorDataEvent(sb.toString()));
         }
     }
 
-    private void processEdsmData(SystemBodiesDto systemBodiesDto) {
-        if(systemBodiesDto == null) return;
-        if(systemBodiesDto.getData() == null) return;
+    private void processEdsmData(SystemBodiesDto systemBodiesDto, String starSystem) {
+        if (systemBodiesDto == null) return;
+        if (systemBodiesDto.getData() == null) return;
         List<BodyData> bodies = systemBodiesDto.getData().getBodies();
-        if(bodies == null || bodies.isEmpty()) return;
+        if (bodies == null || bodies.isEmpty()) return;
 
-        for(BodyData  data : bodies) {
-            LocationDto stellarObject = playerSession.getLocation(data.getId());
+        for (BodyData data : bodies) {
+            LocationDto stellarObject = playerSession.getLocation(data.getId(), starSystem);
             stellarObject.setAtmosphere(data.getAtmosphereType());
             stellarObject.setBodyId(data.getBodyId());
             stellarObject.setHasRings(data.getRings() != null && !data.getRings().isEmpty());
@@ -147,8 +140,8 @@ public class JumpCompletedSubscriber {
     private LocationDto.LocationType determineType(BodyData data) {
         String type = data.getType().toLowerCase();
         boolean primaryStar = data.getDistanceToArrival() == 0;
-        if(type.contains("star") && primaryStar) return LocationDto.LocationType.PRIMARY_STAR;
-        if(type.contains("star") && !primaryStar) return LocationDto.LocationType.STAR;
+        if (type.contains("star") && primaryStar) return LocationDto.LocationType.PRIMARY_STAR;
+        if (type.contains("star") && !primaryStar) return LocationDto.LocationType.STAR;
         if (type.contains("body")) return LocationDto.LocationType.PLANET_OR_MOON;
         if (type.contains("giant")) return LocationDto.LocationType.PLANET_OR_MOON;
         if (type.contains("world")) return LocationDto.LocationType.PLANET_OR_MOON;
@@ -159,9 +152,9 @@ public class JumpCompletedSubscriber {
     }
 
     private List<MaterialDto> toMaterials(Map<String, Double> materials) {
-        if(materials == null) return new ArrayList<>();
+        if (materials == null) return new ArrayList<>();
         ArrayList<MaterialDto> materialDtos = new ArrayList<>();
-        for(Map.Entry<String, Double> entry : materials.entrySet()) {
+        for (Map.Entry<String, Double> entry : materials.entrySet()) {
             materialDtos.add(new MaterialDto(entry.getKey(), entry.getValue()));
         }
         return materialDtos;

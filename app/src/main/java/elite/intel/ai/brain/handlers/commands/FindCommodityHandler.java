@@ -20,7 +20,7 @@ public class FindCommodityHandler implements CommandHandler {
         PlayerSession playerSession = PlayerSession.getInstance();
         playerSession.clearMarkets();
 
-        String starName = playerSession.getPrimaryStar();
+        String starName = playerSession.getPrimaryStarName();
 
         SpanshMarketClient client = new SpanshMarketClient();
         try {

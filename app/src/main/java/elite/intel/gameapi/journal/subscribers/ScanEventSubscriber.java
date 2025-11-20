@@ -44,7 +44,7 @@ public class ScanEventSubscriber extends BiomeAnalyzer {
         String shortName = subtractString(event.getBodyName(), event.getStarSystem());
         String bodyName = event.getBodyName();
 
-        LocationDto location = getOrMakeLocation(event.getBodyID());
+        LocationDto location = playerSession.getLocation(event.getBodyID(), event.getStarSystem());
         LocationDto.LocationType locationType = determineLocationType(event);
 
         if(BELT_CLUSTER.equals(locationType) ){
@@ -70,6 +70,7 @@ public class ScanEventSubscriber extends BiomeAnalyzer {
         Double gravity = GravityCalculator.calculateSurfaceGravity(event.getMassEM(), event.getRadius());
         if (gravity != null) location.setGravity(gravity); //DO NOT use event.getSurfaceGravity() as it is not accurate
         location.setMassEM(event.getMassEM());
+        location.setStarName(event.getStarSystem());
         location.setRadius(event.getRadius());
         location.setSurfaceTemperature(event.getSurfaceTemperature());
         location.setLandable(event.isLandable());
@@ -87,7 +88,7 @@ public class ScanEventSubscriber extends BiomeAnalyzer {
         location.setPlanetShortName(subtractString(event.getBodyName(), event.getStarSystem()));
 
 
-        List<FSSBodySignalsEvent.Signal> fssSignals = playerSession.getLocation(event.getBodyID()).getFssSignals();
+        List<FSSBodySignalsEvent.Signal> fssSignals = playerSession.getLocation(event.getBodyID(), event.getStarSystem()).getFssSignals();
 
         int countBioSignals = 0;
         int countGeological = 0;
@@ -181,10 +182,6 @@ public class ScanEventSubscriber extends BiomeAnalyzer {
         }
     }
 
-    private LocationDto getOrMakeLocation(long id) {
-        LocationDto location = playerSession.getLocations().get(id);
-        return location == null ? new LocationDto(LocationDto.LocationType.UNKNOWN) : location;
-    }
 
     private static String getDetails(ScanEvent event, String shortName) {
         boolean hasMats = event.getMaterials() != null && !event.getMaterials().isEmpty();

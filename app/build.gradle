@@ -6,6 +6,7 @@ plugins {
 
 repositories {
     mavenCentral()
+    google()
     maven {
         url 'https://oss.sonatype.org/content/repositories/snapshots'
     }
@@ -39,6 +40,14 @@ dependencies {
 
     //Look and Feel
     implementation 'com.formdev:flatlaf:3.5.2'
+
+    // SQLite driver
+    implementation 'org.xerial:sqlite-jdbc:3.51.0.0'
+
+    // JDBI 3 - the real winner for Java + SQL in 2025
+    implementation 'org.jdbi:jdbi3-core:3.47.0'
+    implementation 'org.jdbi:jdbi3-sqlobject:3.47.0'
+    implementation 'org.jdbi:jdbi3-jackson2:3.47.0'
 }
 
 
@@ -47,6 +56,10 @@ java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
     }
+}
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs << '-parameters'
 }
 
 application {
@@ -66,6 +79,7 @@ sourceSets {
             include '**/*.xml'
             include '**/fonts/*.ttf'
             include 'META-INF/MANIFEST.MF'
+            include '**/db-migration/*.sql'
         }
     }
 }

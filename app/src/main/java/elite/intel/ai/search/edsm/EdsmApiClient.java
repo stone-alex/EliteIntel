@@ -36,7 +36,7 @@ public class EdsmApiClient {
         StringBuilder query = authenticatedUrl(endpoint);
         query.append("apiKey=").append(edsmKey);
         query.append("&commanderName=").append(URLEncoder.encode(inGamePlayerName, StandardCharsets.UTF_8));
-        query.append("&type=").append(MaterialsType.MATERIAL.getType());
+        query.append("&type=").append(MaterialsType.EDMS_MATERIAL.getType());
 
         String response = getResponse(query);
         if (response == null || response.isEmpty()) {
@@ -54,7 +54,7 @@ public class EdsmApiClient {
         StringBuilder query = authenticatedUrl(endpoint);
         query.append("apiKey=").append(edsmKey);
         query.append("&commanderName=").append(URLEncoder.encode(inGamePlayerName, StandardCharsets.UTF_8));
-        query.append("&type=").append(MaterialsType.ENCODED.getType());
+        query.append("&type=").append(MaterialsType.EDMS_ENCODED.getType());
 
         String response = getResponse(query);
         if (response == null || response.isEmpty()) {

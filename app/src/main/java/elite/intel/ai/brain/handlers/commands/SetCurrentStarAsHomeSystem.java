@@ -14,7 +14,7 @@ public class SetCurrentStarAsHomeSystem  implements CommandHandler {
     @Override public void handle(String action, JsonObject params, String responseText) {
         PlayerSession playerSession = PlayerSession.getInstance();
         HomeSystem homeSystem = HomeSystem.getInstance();
-        String primaryStar = playerSession.getPrimaryStar();
+        String primaryStar = playerSession.getPrimaryStarName();
         Map<Long, LocationDto> locations = playerSession.getLocations();
 
         for (Map.Entry<Long, LocationDto> location : locations.entrySet()) {

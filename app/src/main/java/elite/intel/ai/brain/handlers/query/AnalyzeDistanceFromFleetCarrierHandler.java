@@ -29,7 +29,7 @@ public class AnalyzeDistanceFromFleetCarrierHandler extends BaseQueryAnalyzer im
         }
 
         double x = 0, y = 0, z = 0;
-        LocationDto primarySystem = playerSession.getPrimarySystem();
+        LocationDto primarySystem = playerSession.getPrimaryStarLocation();
         x = primarySystem.getX();
         y = primarySystem.getY();
         z = primarySystem.getZ();

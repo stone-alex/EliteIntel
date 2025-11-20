@@ -1,0 +1,73 @@
+package elite.intel.db;
+
+import elite.intel.db.dao.LocationDao;
+import elite.intel.db.util.Database;
+import elite.intel.gameapi.journal.events.dto.LocationDto;
+import elite.intel.util.json.GsonFactory;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+/**
+ * Singleton class for managing locations.
+ * Use getInstance() to access the single instance of this class.
+ */
+public class Locations {
+    private static Locations instance;
+
+    private Locations() {
+    }
+
+    public static synchronized Locations getInstance() {
+        if (instance == null) {
+            instance = new Locations();
+        }
+        return instance;
+    }
+
+    public void save(LocationDto location) {
+        Database.withDao(LocationDao.class, dao -> {
+            dao.upsert(location.getBodyId(), location.getPlanetName(), location.getStarName(), location.toJson());
+            return null;
+        });
+    }
+
+    public LocationDto getLocation(String primaryStar, Long locationId) {
+        return Database.withDao(LocationDao.class, dao -> {
+            LocationDao.Location entity = dao.findByInGameIdAndPrimaryStar(locationId, primaryStar);
+            if (entity == null) {
+                return new LocationDto(locationId, primaryStar);
+            }
+            return GsonFactory.getGson().fromJson(entity.getJson(), LocationDto.class);
+        });
+    }
+
+    public Map<Long, LocationDto> findByPrimaryStar(String primaryStar) {
+        return Database.withDao(LocationDao.class, dao -> {
+            List<LocationDao.Location> byPrimaryStar = dao.findByPrimaryStar(primaryStar);
+            Map<Long, LocationDto> result = byPrimaryStar.stream().collect(
+                    Collectors.<LocationDao.Location, Long, LocationDto>toMap(
+                            LocationDao.Location::getInGameId,
+                            entity -> GsonFactory.getGson().fromJson(entity.getJson(), LocationDto.class)
+                    )
+            );
+            return result;
+        });
+    }
+
+    public LocationDto findPrimaryStar(String starSystem) {
+        return Database.withDao(LocationDao.class, dao -> {
+            List<LocationDao.Location> byPrimaryStar = dao.findByPrimaryStar(starSystem);
+            for (LocationDao.Location entity : byPrimaryStar) {
+                if (entity.getLocationName().equalsIgnoreCase(starSystem) && entity.getLocationName().equalsIgnoreCase(starSystem)) {
+                    LocationDto locationDto = GsonFactory.getGson().fromJson(entity.getJson(), LocationDto.class);
+                    if (locationDto.getLocationType().equals(LocationDto.LocationType.PRIMARY_STAR)) {
+                        return locationDto;
+                    }
+                }
+            }
+            return new LocationDto(-1);
+        });
+    }
+}

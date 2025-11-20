@@ -36,7 +36,7 @@
         <Logger name="elite.intel.gameapi.journal.subscribers" level="debug"/>
         <Logger name="elite.intel.gameapi.journal.subscribers.LocationTrackingSubscriber" level="info"/>
         <Logger name="elite.intel.gameapi.journal.EventRegistry" level="error"/>
-        <Logger name="elite.intel.yt.YouTubeChatVocalizer" level="error"/>
+        <Logger name="elite.intel.ai.search.edsm.EdsmApiClient" level="error"/>
         <Logger name="elite.intel.util.NavigationUtils" level="error"/>
         <Logger name="elite.intel.session.SessionPersistence" level="error"/>
         <Logger name="elite.intel.ai.hands.KeyBindingsParser" level="error"/>

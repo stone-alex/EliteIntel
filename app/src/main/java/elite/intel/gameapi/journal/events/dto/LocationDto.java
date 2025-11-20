@@ -11,6 +11,8 @@ import elite.intel.util.json.ToJsonConvertible;
 
 import java.util.*;
 
+import static elite.intel.util.StringUtls.subtractString;
+
 public class LocationDto implements ToJsonConvertible {
 
     private List<CodexEntryEvent> codexEntries = new ArrayList<>();
@@ -71,6 +73,11 @@ public class LocationDto implements ToJsonConvertible {
 
     public LocationDto(long id) {
         setBodyId(id);
+    }
+
+    public LocationDto(long id, String starName) {
+        setBodyId(id);
+        setStarName(starName);
     }
 
     public void setMarket(MarketDto marketDto) {
@@ -494,7 +501,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setPlanetShortName(String planetShortName) {
-        this.planetShortName = planetShortName;
+        this.planetShortName = subtractString(planetShortName, getStarName());
     }
 
     @Override

@@ -26,7 +26,7 @@ public class SAASignalsFoundSubscriber {
     public void onSAASignalsFound(SAASignalsFoundEvent event) {
         StringBuilder sb = new StringBuilder();
 
-        LocationDto location = playerSession.getLocation(event.getBodyID());
+        LocationDto location = playerSession.getLocation(event.getBodyID(), playerSession.getPrimaryStarName());
         location.addSaaSignals(event.getSignals());
         playerSession.saveLocation(location);
 
@@ -84,7 +84,7 @@ public class SAASignalsFoundSubscriber {
                 ring.setLocationType(PLANETARY_RING);
 
                 String parentBodyName = event.getBodyName().substring(0, event.getBodyName().length() - " X Ring".length());
-                LocationDto parent = playerSession.getLocation(findParentId(parentBodyName));
+                LocationDto parent = playerSession.getLocation(findParentId(parentBodyName), playerSession.getPrimaryStarName());
                 if(parent != null) parent.setHasRings(true);
                 if(event.getSignals() != null) {
                     ring.setSaaSignals(event.getSignals());

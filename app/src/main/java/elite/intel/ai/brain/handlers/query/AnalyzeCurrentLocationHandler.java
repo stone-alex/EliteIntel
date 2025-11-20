@@ -1,7 +1,6 @@
 package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.brain.handlers.query.struct.AiData;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.search.edsm.EdsmApiClient;
@@ -22,8 +21,8 @@ public class AnalyzeCurrentLocationHandler extends BaseQueryAnalyzer implements 
 
         PlayerSession playerSession = PlayerSession.getInstance();
         LocationDto location = playerSession.getCurrentLocation();
-        DeathsDto deathsDto = EdsmApiClient.searchDeaths(playerSession.getPrimarySystem().getStarName());
-        TrafficDto trafficDto = EdsmApiClient.searchTraffic(playerSession.getPrimarySystem().getStarName());
+        DeathsDto deathsDto = EdsmApiClient.searchDeaths(playerSession.getPrimaryStarLocation().getStarName());
+        TrafficDto trafficDto = EdsmApiClient.searchTraffic(playerSession.getPrimaryStarLocation().getStarName());
 
         return process(new AiDataStruct(ANALYZE_CURRENT_PLANET.getInstructions(), new DataDto(location, deathsDto,trafficDto)), originalUserInput);
     }

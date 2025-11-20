@@ -9,10 +9,10 @@ import java.util.List;
 public class EncodedMaterialsDto implements ToJsonConvertible {
 
     @SerializedName("data")
-    private List<MaterialsDto.MaterialEntry> encoded;
+    private List<EncodedMaterialsDto.EncodedMaterialEntry> encoded;
 
 
-    public List<MaterialsDto.MaterialEntry> getEncoded() {
+    public List<EncodedMaterialsDto.EncodedMaterialEntry> getEncoded() {
         return encoded;
     }
 
@@ -22,7 +22,7 @@ public class EncodedMaterialsDto implements ToJsonConvertible {
     }
 
 
-    public static class MaterialEntry implements ToJsonConvertible {
+    public static class EncodedMaterialEntry implements ToJsonConvertible {
 
         @SerializedName("name")
         private String materialName;

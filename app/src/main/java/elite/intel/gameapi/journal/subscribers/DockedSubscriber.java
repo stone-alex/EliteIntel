@@ -20,7 +20,8 @@ public class DockedSubscriber {
     @Subscribe
     public void onDockedEvent(DockedEvent event) {
         PlayerSession playerSession = PlayerSession.getInstance();
-        LocationDto location = playerSession.getLocation(-1);
+
+        LocationDto location = playerSession.getLocation(event.getMarketID(), event.getStarSystem());
 
         location.setMarketID(event.getMarketID());
         location.setStationName(event.getStationName());

@@ -1,6 +1,7 @@
 package elite.intel;
 
 import elite.intel.ai.ConfigManager;
+import elite.intel.db.util.Database;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SubscriberRegistration;
 import elite.intel.session.LoadSessionEvent;
@@ -24,7 +25,7 @@ public class App {
         // Toggle logging via system.conf
         boolean isLoggingEnabled = "TRUE".equalsIgnoreCase(ConfigManager.getInstance().getSystemKey(ConfigManager.DEBUG_SWITCH));
         Configurator.setRootLevel(isLoggingEnabled ? Level.ALL : Level.OFF);
-
+        Database.handle(); // init db
         // init
         ConfigManager configManager = ConfigManager.getInstance();
         configManager.getSystemKey(ConfigManager.AI_API_KEY);

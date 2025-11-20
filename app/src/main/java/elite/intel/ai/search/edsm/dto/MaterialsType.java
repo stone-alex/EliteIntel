@@ -1,7 +1,12 @@
 package elite.intel.ai.search.edsm.dto;
 
 public enum MaterialsType {
-    MATERIAL("materials"), ENCODED("data"), ALL("all");
+    EDMS_MATERIAL("materials"), EDMS_ENCODED("data"),
+    GAME_RAW("Raw"),
+    GAME_MANUFACTURED("Manufactured"),
+    GAME_ENCODED("Encoded"),
+    GAME_UNKNOWN("Unknown")
+    ;
 
     private String type;
 

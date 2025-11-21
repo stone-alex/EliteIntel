@@ -1,4 +1,4 @@
-package elite.intel.db;
+package elite.intel.db.managers;
 
 import elite.intel.db.dao.ShipRouteDao;
 import elite.intel.db.util.Database;
@@ -6,20 +6,20 @@ import elite.intel.gameapi.gamestate.dtos.NavRouteDto;
 
 import java.util.*;
 
-public class ShipRoute {
+public class ShipRouteManager {
 
 
-    private static volatile ShipRoute instance;
+    private static volatile ShipRouteManager instance;
 
 
-    private ShipRoute() {
+    private ShipRouteManager() {
     }
 
-    public static ShipRoute getInstance() {
+    public static ShipRouteManager getInstance() {
         if (instance == null) {
-            synchronized (ShipRoute.class) {
+            synchronized (ShipRouteManager.class) {
                 if (instance == null) {
-                    instance = new ShipRoute();
+                    instance = new ShipRouteManager();
                 }
             }
         }

@@ -1,23 +1,23 @@
-package elite.intel.db;
+package elite.intel.db.managers;
 
 import elite.intel.ai.search.spansh.station.DestinationDto;
 import elite.intel.db.dao.DestinationReminderDao;
 import elite.intel.db.util.Database;
 import elite.intel.util.json.GsonFactory;
 
-public final class DestinationReminder {
-    private static volatile DestinationReminder instance;
+public final class DestinationReminderManager {
+    private static volatile DestinationReminderManager instance;
 
-    private DestinationReminder() {
+    private DestinationReminderManager() {
     }
 
-    public static DestinationReminder getInstance() {
-        DestinationReminder result = instance;
+    public static DestinationReminderManager getInstance() {
+        DestinationReminderManager result = instance;
         if (result == null) {
-            synchronized (DestinationReminder.class) {
+            synchronized (DestinationReminderManager.class) {
                 result = instance;
                 if (result == null) {
-                    instance = result = new DestinationReminder();
+                    instance = result = new DestinationReminderManager();
                 }
             }
         }

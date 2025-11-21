@@ -1,4 +1,4 @@
-package elite.intel.db;
+package elite.intel.db.managers;
 
 import elite.intel.db.dao.LocationDao;
 import elite.intel.db.util.Database;
@@ -13,15 +13,15 @@ import java.util.Map;
  * Singleton class for managing locations.
  * Use getInstance() to access the single instance of this class.
  */
-public class Locations {
-    private static Locations instance;
+public class LocationManager {
+    private static LocationManager instance;
 
-    private Locations() {
+    private LocationManager() {
     }
 
-    public static synchronized Locations getInstance() {
+    public static synchronized LocationManager getInstance() {
         if (instance == null) {
-            instance = new Locations();
+            instance = new LocationManager();
         }
         return instance;
     }

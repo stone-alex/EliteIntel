@@ -13,7 +13,7 @@ import elite.intel.gameapi.gamestate.dtos.NavRouteDto;
 import elite.intel.gameapi.journal.events.LoadGameEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
-import elite.intel.db.ShipRoute;
+import elite.intel.db.managers.ShipRouteManager;
 import elite.intel.util.AdjustRoute;
 
 import java.util.List;
@@ -23,7 +23,7 @@ import static elite.intel.util.StringUtls.capitalizeWords;
 
 public class LoadGameEventSubscriber {
 
-    private final ShipRoute shipRoute = ShipRoute.getInstance();
+    private final ShipRouteManager shipRoute = ShipRouteManager.getInstance();
 
 
     @Subscribe

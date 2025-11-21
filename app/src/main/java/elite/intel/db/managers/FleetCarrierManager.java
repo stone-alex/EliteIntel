@@ -1,4 +1,4 @@
-package elite.intel.db;
+package elite.intel.db.managers;
 
 import elite.intel.db.dao.FleetCarrierDao;
 import elite.intel.db.dao.FleetCarrierDao.FleetCarrier;
@@ -7,16 +7,16 @@ import elite.intel.gameapi.journal.events.CarrierStatsEvent;
 import elite.intel.gameapi.journal.events.dto.CarrierDataDto;
 import elite.intel.util.json.GsonFactory;
 
-public class FleetCarriers {
+public class FleetCarrierManager {
 
-    private static FleetCarriers instance;
+    private static FleetCarrierManager instance;
 
-    private FleetCarriers() {
+    private FleetCarrierManager() {
     }
 
-    public static synchronized FleetCarriers getInstance() {
+    public static synchronized FleetCarrierManager getInstance() {
         if (instance == null) {
-            instance = new FleetCarriers();
+            instance = new FleetCarrierManager();
         }
         return instance;
     }

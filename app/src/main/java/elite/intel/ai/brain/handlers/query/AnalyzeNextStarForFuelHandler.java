@@ -5,7 +5,7 @@ import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.PlayerSession;
-import elite.intel.db.ShipRoute;
+import elite.intel.db.managers.ShipRouteManager;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.JsonDataFactory;
 import elite.intel.util.json.ToJsonConvertible;
@@ -19,7 +19,7 @@ public class AnalyzeNextStarForFuelHandler extends BaseQueryAnalyzer implements 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         EventBusManager.publish(new AiVoxResponseEvent("Analyzing route telemetry... stand by..."));
         PlayerSession playerSession = PlayerSession.getInstance();
-        Collection<? extends ToJsonConvertible> route = ShipRoute.getInstance().getOrderedRoute();
+        Collection<? extends ToJsonConvertible> route = ShipRouteManager.getInstance().getOrderedRoute();
 
         String data = JsonDataFactory.getInstance().toJsonArrayString(route);
         return process(new AiDataStruct(QUERY_NEXT_STAR_SCOOPABLE.getInstructions(), new DataDto(data)), originalUserInput);

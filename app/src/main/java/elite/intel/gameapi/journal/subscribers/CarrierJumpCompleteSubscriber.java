@@ -1,7 +1,7 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.intel.db.Locations;
+import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.journal.events.CarrierJumpEvent;
@@ -11,7 +11,6 @@ import elite.intel.session.PlayerSession;
 import elite.intel.session.Status;
 import elite.intel.util.AdjustRoute;
 
-import java.util.Map;
 import java.util.Objects;
 
 @SuppressWarnings("unused")
@@ -49,7 +48,7 @@ public class CarrierJumpCompleteSubscriber {
     }
 
     private LocationDto toLocationDto(CarrierJumpEvent event) {
-        Locations locationData = Locations.getInstance();
+        LocationManager locationData = LocationManager.getInstance();
         LocationDto location = locationData.getLocation(event.getStarSystem(), (long) event.getBodyId());
         return fillInWhatWeCan(event, Objects.requireNonNullElseGet(location, () -> new LocationDto(event.getBodyId(), event.getStarSystem())));
     }

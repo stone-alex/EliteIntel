@@ -1,4 +1,4 @@
-package elite.intel.db;
+package elite.intel.db.managers;
 
 import elite.intel.ai.search.spansh.carrierroute.CarrierJump;
 import elite.intel.db.dao.FleetCarrierRouteDao;
@@ -9,19 +9,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class FleetCarrierRoute {
+public class FleetCarrierRouteManager {
 
-    private static volatile FleetCarrierRoute instance;
+    private static volatile FleetCarrierRouteManager instance;
 
-    private FleetCarrierRoute() {
+    private FleetCarrierRouteManager() {
         // enforce singleton pattern.
     }
 
-    public static FleetCarrierRoute getInstance() {
+    public static FleetCarrierRouteManager getInstance() {
         if (instance == null) {
-            synchronized (FleetCarrierRoute.class) {
+            synchronized (FleetCarrierRouteManager.class) {
                 if (instance == null) {
-                    instance = new FleetCarrierRoute();
+                    instance = new FleetCarrierRouteManager();
                 }
             }
         }

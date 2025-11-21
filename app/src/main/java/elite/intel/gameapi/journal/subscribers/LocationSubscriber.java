@@ -2,7 +2,7 @@ package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.search.edsm.EdsmApiClient;
-import elite.intel.db.Locations;
+import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.journal.events.LocationEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
@@ -63,7 +63,7 @@ public class LocationSubscriber {
 
     private LocationDto findLocation(LocationEvent event) {
         LocationDto dto;
-        Locations locationData = Locations.getInstance();
+        LocationManager locationData = LocationManager.getInstance();
         Map<Long, LocationDto> locations = locationData.findByPrimaryStar(event.getStarSystem());
 
         if (locations == null || locations.isEmpty()) {

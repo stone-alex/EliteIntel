@@ -1,4 +1,4 @@
-package elite.intel.db;
+package elite.intel.db.managers;
 
 import elite.intel.db.dao.ReputationDao;
 import elite.intel.db.util.Database;

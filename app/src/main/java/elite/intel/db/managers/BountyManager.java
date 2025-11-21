@@ -1,4 +1,4 @@
-package elite.intel.db;
+package elite.intel.db.managers;
 
 import elite.intel.db.dao.BountyDao;
 import elite.intel.db.util.Database;
@@ -7,14 +7,14 @@ import elite.intel.util.json.GsonFactory;
 
 import java.util.Set;
 
-public class Bounties {
+public class BountyManager {
 
-    private static final Bounties INSTANCE = new Bounties();
+    private static final BountyManager INSTANCE = new BountyManager();
 
-    private Bounties() {
+    private BountyManager() {
     }
 
-    public static Bounties getInstance() {
+    public static BountyManager getInstance() {
         return INSTANCE;
     }
 

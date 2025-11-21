@@ -1,4 +1,4 @@
-package elite.intel.db;
+package elite.intel.db.managers;
 
 import elite.intel.db.dao.MissionDao;
 import elite.intel.db.util.Database;
@@ -10,15 +10,15 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class Missions {
-    private static Missions instance;
+public class MissionManager {
+    private static MissionManager instance;
 
-    private Missions() {
+    private MissionManager() {
     }
 
-    public static synchronized Missions getInstance() {
+    public static synchronized MissionManager getInstance() {
         if (instance == null) {
-            instance = new Missions();
+            instance = new MissionManager();
         }
         return instance;
     }

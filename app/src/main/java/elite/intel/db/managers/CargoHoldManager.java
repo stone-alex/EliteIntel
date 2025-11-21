@@ -1,19 +1,19 @@
-package elite.intel.db;
+package elite.intel.db.managers;
 
 import elite.intel.db.dao.CargoDao;
 import elite.intel.db.util.Database;
 import elite.intel.gameapi.gamestate.dtos.GameEvents;
 import elite.intel.util.json.GsonFactory;
 
-public class CargoHold {
-    private static CargoHold instance;
+public class CargoHoldManager {
+    private static CargoHoldManager instance;
 
-    private CargoHold() {
+    private CargoHoldManager() {
     }
 
-    public static synchronized CargoHold getInstance() {
+    public static synchronized CargoHoldManager getInstance() {
         if (instance == null) {
-            instance = new CargoHold();
+            instance = new CargoHoldManager();
         }
         return instance;
     }

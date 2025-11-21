@@ -1,21 +1,21 @@
-package elite.intel.db;
+package elite.intel.db.managers;
 
 import elite.intel.db.dao.ShipLoadoutDao;
 import elite.intel.db.util.Database;
 import elite.intel.gameapi.journal.events.LoadoutEvent;
 import elite.intel.util.json.GsonFactory;
 
-public class ShipLoadouts {
-    private static volatile ShipLoadouts instance;
+public class ShipLoadoutManager {
+    private static volatile ShipLoadoutManager instance;
 
-    private ShipLoadouts() {
+    private ShipLoadoutManager() {
     }
 
-    public static ShipLoadouts getInstance() {
+    public static ShipLoadoutManager getInstance() {
         if (instance == null) {
-            synchronized (ShipLoadouts.class) {
+            synchronized (ShipLoadoutManager.class) {
                 if (instance == null) {
-                    instance = new ShipLoadouts();
+                    instance = new ShipLoadoutManager();
                 }
             }
         }

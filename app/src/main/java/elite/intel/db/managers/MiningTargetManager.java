@@ -1,17 +1,17 @@
-package elite.intel.db;
+package elite.intel.db.managers;
 
 import elite.intel.db.dao.MiningTargetDao;
 import elite.intel.db.util.Database;
 
 import java.util.Set;
 
-public class MiningTargets {
-    private static final MiningTargets INSTANCE = new MiningTargets();
+public class MiningTargetManager {
+    private static final MiningTargetManager INSTANCE = new MiningTargetManager();
 
-    private MiningTargets() {
+    private MiningTargetManager() {
     }
 
-    public static MiningTargets getInstance() {
+    public static MiningTargetManager getInstance() {
         return INSTANCE;
     }
 

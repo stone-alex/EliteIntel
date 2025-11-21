@@ -1,17 +1,17 @@
-package elite.intel.db;
+package elite.intel.db.managers;
 
 import elite.intel.db.dao.ShipScansDao;
 import elite.intel.db.util.Database;
 
-public class ShipScans {
-    private static ShipScans instance;
+public class ShipScansManager {
+    private static ShipScansManager instance;
 
-    private ShipScans() {
+    private ShipScansManager() {
     }
 
-    public static synchronized ShipScans getInstance() {
+    public static synchronized ShipScansManager getInstance() {
         if (instance == null) {
-            instance = new ShipScans();
+            instance = new ShipScansManager();
         }
         return instance;
     }

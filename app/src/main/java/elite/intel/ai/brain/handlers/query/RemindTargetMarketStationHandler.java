@@ -3,14 +3,14 @@ package elite.intel.ai.brain.handlers.query;
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.ai.search.spansh.station.DestinationDto;
-import elite.intel.db.DestinationReminder;
+import elite.intel.db.managers.DestinationReminderManager;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 
 public class RemindTargetMarketStationHandler extends BaseQueryAnalyzer implements QueryHandler {
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        DestinationReminder reminder = DestinationReminder.getInstance();
+        DestinationReminderManager reminder = DestinationReminderManager.getInstance();
         DestinationDto destination = reminder.getDestination();
 
         if (destination == null) {

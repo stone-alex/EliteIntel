@@ -1,19 +1,19 @@
-package elite.intel.db;
+package elite.intel.db.managers;
 
 import elite.intel.db.dao.RankAndProgressDao;
 import elite.intel.db.util.Database;
 import elite.intel.gameapi.journal.events.dto.RankAndProgressDto;
 import elite.intel.util.json.GsonFactory;
 
-public final class RanksAndProgress {
-    private static RanksAndProgress instance;
+public final class RankAndProgressManager {
+    private static RankAndProgressManager instance;
 
-    private RanksAndProgress() {
+    private RankAndProgressManager() {
     }
 
-    public static synchronized RanksAndProgress getInstance() {
+    public static synchronized RankAndProgressManager getInstance() {
         if (instance == null) {
-            instance = new RanksAndProgress();
+            instance = new RankAndProgressManager();
         }
         return instance;
     }

@@ -1,17 +1,17 @@
-package elite.intel.db;
+package elite.intel.db.managers;
 
 import elite.intel.db.dao.GenusPaymentAnnouncementDao;
 import elite.intel.db.util.Database;
 
-public class GenusAnouncements {
-    private static GenusAnouncements instance;
+public class GenusAnnouncementManager {
+    private static GenusAnnouncementManager instance;
 
-    private GenusAnouncements() {
+    private GenusAnnouncementManager() {
     }
 
-    public static synchronized GenusAnouncements getInstance() {
+    public static synchronized GenusAnnouncementManager getInstance() {
         if (instance == null) {
-            instance = new GenusAnouncements();
+            instance = new GenusAnnouncementManager();
         }
         return instance;
     }

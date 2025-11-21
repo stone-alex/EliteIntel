@@ -7,7 +7,7 @@ import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.gamestate.dtos.NavRouteDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
-import elite.intel.db.ShipRoute;
+import elite.intel.db.managers.ShipRouteManager;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 
@@ -21,7 +21,7 @@ public class AnalyzeDistanceToFinalDestination extends BaseQueryAnalyzer impleme
     public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         EventBusManager.publish(new AiVoxResponseEvent("Analyzing travel telemetry... stand by..."));
         PlayerSession playerSession = PlayerSession.getInstance();
-        ShipRoute shipRoute = ShipRoute.getInstance();
+        ShipRouteManager shipRoute = ShipRouteManager.getInstance();
         LocationDto here = playerSession.getCurrentLocation();
         List<NavRouteDto> orderedRoute = shipRoute.getOrderedRoute();
 

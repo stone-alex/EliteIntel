@@ -2,7 +2,7 @@ package elite.intel.ai.search.spansh.station;
 
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.search.spansh.station.traderandbroker.*;
-import elite.intel.db.DestinationReminder;
+import elite.intel.db.managers.DestinationReminderManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.TimeUtils;
@@ -82,7 +82,7 @@ public class TradersAndBrokersSearch {
                         +". Data was last updated: "+ TimeUtils.transformToYMDHtimeAgo(result.getUpdatedAt(), TimeUtils.LOCAL_DATE_TIME)
                 )
         );
-        DestinationReminder.getInstance().setDestination(result.toJson());
+        DestinationReminderManager.getInstance().setDestination(result.toJson());
         return result.getSystemName();
     }
 }

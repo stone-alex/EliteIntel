@@ -1,4 +1,4 @@
-package elite.intel.db;
+package elite.intel.db.managers;
 
 import elite.intel.db.dao.BioSampleDao;
 import elite.intel.db.util.Database;
@@ -7,13 +7,13 @@ import elite.intel.util.json.GsonFactory;
 
 import java.util.List;
 
-public class BioSamples {
-    private static final BioSamples INSTANCE = new BioSamples();
+public class BioSamplesManager {
+    private static final BioSamplesManager INSTANCE = new BioSamplesManager();
 
-    private BioSamples() {
+    private BioSamplesManager() {
     }
 
-    public static BioSamples getInstance() {
+    public static BioSamplesManager getInstance() {
         return INSTANCE;
     }
 

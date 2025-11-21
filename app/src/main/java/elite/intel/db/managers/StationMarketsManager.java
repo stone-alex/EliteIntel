@@ -1,4 +1,4 @@
-package elite.intel.db;
+package elite.intel.db.managers;
 
 import elite.intel.ai.search.spansh.market.StationMarketDto;
 import elite.intel.db.dao.StationMarketDao;
@@ -7,13 +7,13 @@ import elite.intel.util.json.GsonFactory;
 
 import java.util.List;
 
-public class StationMarkets {
-    private static final StationMarkets INSTANCE = new StationMarkets();
+public class StationMarketsManager {
+    private static final StationMarketsManager INSTANCE = new StationMarketsManager();
 
-    private StationMarkets() {
+    private StationMarketsManager() {
     }
 
-    public static StationMarkets getInstance() {
+    public static StationMarketsManager getInstance() {
         return INSTANCE;
     }
 

@@ -8,7 +8,7 @@ import elite.intel.ai.search.edsm.dto.TrafficDto;
 import elite.intel.ai.search.edsm.dto.data.BodyData;
 import elite.intel.ai.search.edsm.dto.data.DeathsStats;
 import elite.intel.ai.search.edsm.dto.data.TrafficStats;
-import elite.intel.db.Locations;
+import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.gamestate.dtos.NavRouteDto;
@@ -16,7 +16,7 @@ import elite.intel.gameapi.journal.events.FSDJumpEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.gameapi.journal.events.dto.MaterialDto;
 import elite.intel.session.PlayerSession;
-import elite.intel.db.ShipRoute;
+import elite.intel.db.managers.ShipRouteManager;
 import elite.intel.util.AdjustRoute;
 
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ import static elite.intel.util.StringUtls.isFuelStarClause;
 public class JumpCompletedSubscriber {
 
     private final PlayerSession playerSession = PlayerSession.getInstance();
-    private final ShipRoute shipRoute = ShipRoute.getInstance();
+    private final ShipRouteManager shipRoute = ShipRouteManager.getInstance();
 
 
     @Subscribe
@@ -40,7 +40,7 @@ public class JumpCompletedSubscriber {
         SystemBodiesDto systemBodiesDto = EdsmApiClient.searchSystemBodies(event.getStarSystem());
         processEdsmData(systemBodiesDto, event.getStarSystem());
 
-        LocationDto primaryStar = Locations.getInstance().findPrimaryStar(event.getStarSystem());
+        LocationDto primaryStar = LocationManager.getInstance().findPrimaryStar(event.getStarSystem());
         primaryStar.setBodyId(event.getBodyId());
         primaryStar.setStationGovernment(event.getSystemGovernmentLocalised());
         primaryStar.setAllegiance(event.getSystemAllegiance());

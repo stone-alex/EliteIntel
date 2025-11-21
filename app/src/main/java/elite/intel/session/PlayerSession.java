@@ -1,11 +1,10 @@
 package elite.intel.session;
 
 import com.google.common.eventbus.Subscribe;
-import com.google.gson.reflect.TypeToken;
 import elite.intel.ai.search.spansh.market.StationMarketDto;
-import elite.intel.db.*;
 import elite.intel.db.dao.PlayerDao;
 import elite.intel.db.dao.ShipScansDao;
+import elite.intel.db.managers.*;
 import elite.intel.db.util.Database;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.data.FsdTarget;
@@ -13,7 +12,6 @@ import elite.intel.gameapi.gamestate.dtos.GameEvents;
 import elite.intel.gameapi.journal.events.*;
 import elite.intel.gameapi.journal.events.dto.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -23,18 +21,18 @@ public class PlayerSession  {
     private static volatile PlayerSession instance;
 
     /// Data managers.
-    private Locations locationData = Locations.getInstance();
-    private ShipScans shipScans = ShipScans.getInstance();
-    private Missions missions = Missions.getInstance();
-    private Bounties bounties = Bounties.getInstance();
-    private MiningTargets miningTargets = MiningTargets.getInstance();
-    private StationMarkets markets = StationMarkets.getInstance();
-    private RanksAndProgress rankAndProgress = RanksAndProgress.getInstance();
-    private FleetCarriers fleetCarriers = FleetCarriers.getInstance();
-    private BioSamples bioSamples = BioSamples.getInstance();
-    private ShipLoadouts shipLoadouts = ShipLoadouts.getInstance();
-    private GenusAnouncements genusAnouncements = GenusAnouncements.getInstance();
-    private CargoHold cargoHold = CargoHold.getInstance();
+    private LocationManager locationData = LocationManager.getInstance();
+    private ShipScansManager shipScans = ShipScansManager.getInstance();
+    private MissionManager missions = MissionManager.getInstance();
+    private BountyManager bounties = BountyManager.getInstance();
+    private MiningTargetManager miningTargets = MiningTargetManager.getInstance();
+    private StationMarketsManager markets = StationMarketsManager.getInstance();
+    private RankAndProgressManager rankAndProgress = RankAndProgressManager.getInstance();
+    private FleetCarrierManager fleetCarriers = FleetCarrierManager.getInstance();
+    private BioSamplesManager bioSamples = BioSamplesManager.getInstance();
+    private ShipLoadoutManager shipLoadouts = ShipLoadoutManager.getInstance();
+    private GenusAnnouncementManager genusAnouncements = GenusAnnouncementManager.getInstance();
+    private CargoHoldManager cargoHold = CargoHoldManager.getInstance();
     private ReputationManager reputationManager = ReputationManager.getInstance();
     private TargetLocationManager targetLocationManager = TargetLocationManager.getInstance();
     private FsdTargetManager fsdTargetManager = FsdTargetManager.getInstance();

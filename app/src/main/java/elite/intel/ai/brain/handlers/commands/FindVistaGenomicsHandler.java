@@ -6,7 +6,7 @@ import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.search.spansh.station.vista.VistaGenomicsLocationDto;
 import elite.intel.ai.search.spansh.station.vista.VistaGenomicsSearch;
 import elite.intel.ai.search.spansh.station.vista.VistaSearchCriteria;
-import elite.intel.db.DestinationReminder;
+import elite.intel.db.managers.DestinationReminderManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GetNumberFromParam;
@@ -59,7 +59,7 @@ public class FindVistaGenomicsHandler extends CommandOperator implements Command
         Optional<VistaGenomicsLocationDto.Result> first = results.stream().findFirst();
         RoutePlotter routePlotter = new RoutePlotter(this.controller);
         VistaGenomicsLocationDto.Result result = first.get();
-        DestinationReminder.getInstance().setDestination(result.toJson());
+        DestinationReminderManager.getInstance().setDestination(result.toJson());
         EventBusManager.publish(new AiVoxResponseEvent("Head to " + result.getSystemName() + " star system. When you get there looks for" + result.getStationName()));
         routePlotter.plotRoute(result.getSystemName());
     }

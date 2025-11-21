@@ -1,7 +1,6 @@
 package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.brain.handlers.query.struct.AiData;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.search.edsm.EdsmApiClient;
@@ -37,7 +36,7 @@ public class AnalyzeSignalDataHandler  extends BaseQueryAnalyzer implements Quer
         Map<String, Integer> planetsRequireBioScans = planetsWithBioFormsNotYetScanned();
         Map<String, Integer> planetsWithGeoSignals = planetsWithGeoSignals();
 
-        String primaryStarName = playerSession.getPrimarySystem().getStarName();
+        String primaryStarName = playerSession.getPrimaryStarName();
         SystemBodiesDto edsmData = EdsmApiClient.searchSystemBodies(primaryStarName);
         DeathsDto deathsDto = EdsmApiClient.searchDeaths(primaryStarName);
         TrafficDto trafficDto = EdsmApiClient.searchTraffic(primaryStarName);

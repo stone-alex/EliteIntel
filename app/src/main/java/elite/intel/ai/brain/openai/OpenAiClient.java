@@ -1,8 +1,8 @@
 package elite.intel.ai.brain.openai;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.ConfigManager;
 import elite.intel.ai.brain.Client;
+import elite.intel.session.SystemSession;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -49,7 +49,7 @@ public class OpenAiClient implements Client {
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
         conn.setRequestProperty("Content-Type", "application/json");
-        conn.setRequestProperty("Authorization", "Bearer " + ConfigManager.getInstance().getSystemKey(ConfigManager.AI_API_KEY));
+        conn.setRequestProperty("Authorization", "Bearer " + SystemSession.getInstance().getAiApiKey());
         conn.setRequestProperty("User-Agent", "EliteIntel/1.0");
         conn.setDoOutput(true);
         return conn;

@@ -1,7 +1,6 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.intel.ai.mouth.subscribers.events.DiscoveryAnnouncementEvent;
 import elite.intel.ai.search.edsm.EdsmApiClient;
 import elite.intel.ai.search.edsm.dto.SystemBodiesDto;
 import elite.intel.ai.search.edsm.dto.data.BodyData;
@@ -30,18 +29,23 @@ public class ApproachBodySubscriber {
         double orbitalCruiseEntryAltitude = status.getStatus().getAltitude();
 
         StringBuilder sb = new StringBuilder();
-        LocationDto location = playerSession.getLocation(event.getBodyID());
-        String planetName = location.getPlanetShortName() == null ? location.getPlanetName() : location.getPlanetShortName();
-        if(planetName.isBlank()) planetName = event.getBody();
+        LocationDto location = playerSession.getLocation(event.getBodyID(), event.getStarSystem());
 
-        sb.append("Entering orbit for ").append(planetName).append(". ");
+        if (location.getPlanetName() == null || location.getPlanetName().isEmpty()) {
+            location.setPlanetName(event.getBody());
+            location.setPlanetShortName(event.getBody());
+        }
+
+
+        sb.append("Entering orbit for ").append(location.getPlanetName()).append(". ");
 
         String currentSystem = event.getStarSystem();
 
         location.setOrbitalCruiseEntryAltitude(orbitalCruiseEntryAltitude);
         playerSession.setCurrentLocationId(event.getBodyID());
+        playerSession.setCurrentPrimaryStarName(event.getStarSystem());
 
-        if(playerSession.getTracking().isEnabled()) return;
+        if (playerSession.getTracking().isEnabled()) return;
 
 
         SystemBodiesDto systemBodiesDto = EdsmApiClient.searchSystemBodies(currentSystem);
@@ -115,7 +119,7 @@ public class ApproachBodySubscriber {
         Map<String, Double> materials = bodyData.getMaterials();
         if (!materials.isEmpty()) {
             sb.append(" ").append(materials.size()).append(" materials detected. Details available on request. ");
-            for( Map.Entry<String, Double> material : materials.entrySet()) {
+            for (Map.Entry<String, Double> material : materials.entrySet()) {
                 location.addMaterial(new MaterialDto(material.getKey(), material.getValue()));
             }
         }

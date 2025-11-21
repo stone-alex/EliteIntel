@@ -14,7 +14,6 @@ public class MissionAcceptedHandler {
     public void onMissionAcceptedEvent(MissionAcceptedEvent event) {
 
         PlayerSession playerSession = PlayerSession.getInstance();
-        playerSession.addTargetFaction(event.getTargetFaction());
         playerSession.addMission(new MissionDto(event));
         EventBusManager.publish(new SensorDataEvent("Mission Accepted: " + event.toJson()));
     }

@@ -11,6 +11,8 @@ import elite.intel.util.json.ToJsonConvertible;
 
 import java.util.*;
 
+import static elite.intel.util.StringUtls.subtractString;
+
 public class LocationDto implements ToJsonConvertible {
 
     private List<CodexEntryEvent> codexEntries = new ArrayList<>();
@@ -63,6 +65,7 @@ public class LocationDto implements ToJsonConvertible {
     private boolean ourDiscovery = false;
     private boolean weMappedIt = false;
     private String volcanism;
+    private boolean isHomeSystem;
 
     //private BioStatus bioStatus = BioStatus.SCAN_REQUIRED;
     private MarketDto market;
@@ -71,6 +74,11 @@ public class LocationDto implements ToJsonConvertible {
 
     public LocationDto(long id) {
         setBodyId(id);
+    }
+
+    public LocationDto(long id, String starName) {
+        setBodyId(id);
+        setStarName(starName);
     }
 
     public void setMarket(MarketDto marketDto) {
@@ -494,7 +502,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setPlanetShortName(String planetShortName) {
-        this.planetShortName = planetShortName;
+        this.planetShortName = subtractString(planetShortName, getStarName());
     }
 
     @Override
@@ -697,6 +705,14 @@ public class LocationDto implements ToJsonConvertible {
 
     public void setVolcanism(String volcanism) {
         this.volcanism = volcanism;
+    }
+
+    public boolean isHomeSystem() {
+        return isHomeSystem;
+    }
+
+    public void setHomeSystem(boolean homeSystem) {
+        isHomeSystem = homeSystem;
     }
 
     @Override public boolean equals(Object o) {

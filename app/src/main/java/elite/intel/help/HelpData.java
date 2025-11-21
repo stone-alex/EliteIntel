@@ -1,6 +1,5 @@
 package elite.intel.help;
 
-import elite.intel.ai.ConfigManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -28,7 +27,7 @@ public class HelpData {
     private HelpData() {
         String appDir = "help/";
         try {
-            URI jarUri = ConfigManager.class.getProtectionDomain().getCodeSource().getLocation().toURI();
+            URI jarUri = HelpData.class.getProtectionDomain().getCodeSource().getLocation().toURI();
             File jarFile = new File(jarUri);
             if (jarFile.getPath().endsWith(".jar")) {
                 String parentDir = jarFile.getParent();

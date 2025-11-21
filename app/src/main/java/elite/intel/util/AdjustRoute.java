@@ -1,8 +1,8 @@
 package elite.intel.util;
 
 import elite.intel.ai.search.spansh.carrierroute.CarrierJump;
+import elite.intel.db.managers.FleetCarrierRouteManager;
 import elite.intel.gameapi.gamestate.dtos.NavRouteDto;
-import elite.intel.session.FleetCarrierRoute;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -49,12 +49,11 @@ public class AdjustRoute {
 
 
     public static void adjustFleetCarrierRoute(String starSystem) {
-        FleetCarrierRoute route = FleetCarrierRoute.getInstance();
+        FleetCarrierRouteManager route = FleetCarrierRouteManager.getInstance();
         Map<Integer, CarrierJump> fleetCarrierRoute = route.getFleetCarrierRoute();
         Map<Integer, CarrierJump> adjustedRoute = new HashMap<>();
-        for(CarrierJump carrierJump : fleetCarrierRoute.values()){
-            if(carrierJump.getSystemName().equalsIgnoreCase(starSystem)){ continue ;}
-            else {
+        for (CarrierJump carrierJump : fleetCarrierRoute.values()) {
+            if (!carrierJump.getSystemName().equalsIgnoreCase(starSystem)) {
                 adjustedRoute.put(carrierJump.getLeg(), carrierJump);
             }
         }

@@ -2,7 +2,6 @@ package elite.intel.ai.mouth.google;
 
 import com.google.cloud.texttospeech.v1.*;
 import com.google.common.eventbus.Subscribe;
-import elite.intel.ai.ConfigManager;
 import elite.intel.ai.mouth.AiVoices;
 import elite.intel.ai.mouth.AudioDeClicker;
 import elite.intel.ai.mouth.MouthInterface;
@@ -60,9 +59,9 @@ public class GoogleTTSImpl implements MouthInterface {
         }
 
         try {
-            String apiKey = ConfigManager.getInstance().getSystemKey(ConfigManager.TTS_API_KEY);
+            String apiKey = SystemSession.getInstance().getTtsApiKey();
             if (apiKey == null || apiKey.trim().isEmpty()) {
-                log.error("TTS API key not found in system.conf");
+                log.error("TTS API key is not provided");
                 return;
             }
             TextToSpeechSettings settings = TextToSpeechSettings.newBuilder().setApiKey(apiKey).build();
@@ -161,8 +160,8 @@ public class GoogleTTSImpl implements MouthInterface {
             if (event.isChatStreamChatVolcaisation()) {
                 voiceName = googleVoiceProvider.getVoiceParams(AiVoices.JENNIFER.getName()).getName();
             }
-
             voiceQueue.put(new VoiceRequest(event.getText(), voiceName, googleVoiceProvider.getSpeechRate(voiceName), event.getOriginType()));
+            EventBusManager.publish(new AppLogEvent("AI: " + event.getText()));
             log.debug("Added VoiceRequest to queue: text='{}', voice='{}'", event.getText(), voiceName);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();

@@ -1,252 +1,54 @@
 package elite.intel.session;
 
 import com.google.common.eventbus.Subscribe;
-import com.google.gson.reflect.TypeToken;
-import elite.intel.ai.search.spansh.market.StationMarket;
+import elite.intel.ai.search.spansh.market.StationMarketDto;
+import elite.intel.db.dao.PlayerDao;
+import elite.intel.db.dao.ShipScansDao;
+import elite.intel.db.managers.*;
+import elite.intel.db.util.Database;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.data.FsdTarget;
 import elite.intel.gameapi.gamestate.dtos.GameEvents;
 import elite.intel.gameapi.journal.events.*;
 import elite.intel.gameapi.journal.events.dto.*;
 
-import java.util.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-/**
- * The PlayerSession class manages the game session data for a player.
- * It is implemented as a singleton to ensure consistent access across the application.
- * The class handles persistence of session data, including player's progress,
- * gameplay metrics, and interactions within the game world.
- */
-public class PlayerSession extends SessionPersistence implements java.io.Serializable {
-    public static final String RADIO_ON_OFF = "radio_on_off";
-    public static final String NAVIGATION_VOX_ON_OFF = "navigation_vox_on_off";
-    public static final String MINING_VOX_ON_OFF = "mining_vox_on_off";
-    public static final String DISCOVERY_VOX_ON_OFF = "discovery_vox_on_off";
-    public static final String ROUTE_VOX_ON_OFF = "route_vox_on_off";
-    // Existing constants
-    public static final String CARRIER_DEPARTURE_TIME = "carrier_departure_time";
-    public static final String FINAL_DESTINATION = "final_destination";
-    public static final String MISSIONS = "player_missions";
-    public static final String PROFILE = "profile";
-    public static final String PERSONALITY = "personality";
-    public static final String SHIP_FUEL_LEVEL = "ship_fuel_level";
-    public static final String INSURANCE_CLAIMS = "insurance_claims";
-    public static final String SHIPS_OWNED = "ships_owned";
-    public static final String TOTAL_BOUNTY_CLAIMED = "total_bounty_claimed";
-    public static final String TOTAL_BOUNTY_PROFIT = "total_bounty_profit";
-    public static final String TOTAL_DISTANCE_TRAVELED = "total_distance_traveled_in_light_years";
-    public static final String TOTAL_SYSTEMS_VISITED = "total_systems_visited";
-    public static final String TOTAL_HYPERSPACE_DISTANCE = "total_hyperspace_distance_in_light_years";
-    public static final String TOTAL_PROFITS_FROM_EXPLORATION = "total_profits_from_exploration";
-    public static final String SPECIES_FIRST_LOGGED = "species_first_logged";
-    public static final String EXOBIOLOGY_PROFITS = "exobiology_profits";
-    public static final String GOODS_SOLD_THIS_SESSION = "goods_sold_this_session";
-    public static final String HIGHEST_SINGLE_TRANSACTION = "highest_single_transaction";
-    public static final String MARKET_PROFITS = "market_profits";
-    public static final String CREW_WAGS_PAYOUT = "crew_wags_payout";
-    public static final String SHIP_CARGO_CAPACITY = "ship_cargo_capacity";
-    public static final String PLAYER_CUSTOM_TITLE = "player_title";
-    public static final String PLAYER_HIGHEST_MILITARY_RANK = "player_highest_military_rank";
-    public static final String PLAYER_NAME = "player_name";
-    public static final String PLAYER_MISSION_STATEMENT = "player_mission_statement";
-    public static final String CURRENT_SHIP = "current_ship";
-    public static final String CURRENT_SHIP_NAME = "current_ship_name";
-    public static final String PERSONAL_CREDITS_AVAILABLE = "personal_credits_available";
-    public static final String CURRENT_WEALTH = "current_wealth";
-    public static final String SHIP_SCANS = "shipScans";
-    public static final String TARGET_FACTIONS = "targetFactions";
-    public static final String CARRIER_LOCATION = "last_known_carrier_location";
-    public static final String SESSION_DIR = "session/";
-    public static final String TRACKING = "tracking";
-    public static final String BOUNTY_COLLECTED_THIS_SESSION = "bountyCollectedThisSession";
-    public static final String RANK_AND_PROGRESS_DTO = "rankAndProgressDto";
-    public static final String MARKETS = "markets";
-    public static final String FSD_TARGET = "fsd_target";
-    public static final String JUMPING_TO_STARSYSTEM = "jumping_to_starsystem";
-    private static final String SESSION_FILE = "player_session.json";
-    private static final String CURRENT_LOCATION = "current_location";
-    private static final String REPUTATION = "reputation";
-    private static final String STELLAR_OBJECTS = "locations";
-    private static final String BIO_SAMPLES = "bio_samples";
-    private static final String SHIP_LOADOUT = "ship_loadout";
-    private static final String SHIP_CARGO = "ship_cargo";
-    private static final String FRIENDS_STATUS = "friends_status";
-    private static final String CARRIER_STATS = "carrier_stats";
-    private static final String BOUNTIES = "bounties";
-    private static final String MINING_TARGETS = "miningTargets";
-    public static final String GAME_VERSION = "game_version";
-    public static final String IN_GAME_NAME = "in_game_name";
-    public static final String TARGET_MARKET_STATION = "target_market_station";
+public class PlayerSession  {
+
     private static volatile PlayerSession instance;
-    // Existing fields
-    private final Map<String, String> shipScans = new HashMap<>();
-    private final Map<Long, MissionDto> missions = new LinkedHashMap<>();
-    private final Map<Long, LocationDto> locations = new HashMap<>();
 
-    private final Set<String> targetFactions = new LinkedHashSet<>();
-    private final Set<BountyDto> bounties = new LinkedHashSet<>();
-    private final Set<String> miningTargets = new HashSet<>();
-    private List<StationMarket> markets = new ArrayList<>();
-    private long bountyCollectedThisSession = 0;
-    private RankAndProgressDto rankAndProgressDto = new RankAndProgressDto();
-    private LocationDto homeSystem = new LocationDto(0);
-    private long lastScanId = -1;
-    private CarrierDataDto carrierData = new CarrierDataDto();
-    private List<BioSampleDto> bioSamples = new ArrayList<>();
-    private LoadoutEvent loadout;
+    public static final String PLAYER_MISSION_STATEMENT = "mission_statement";
+    public static final String PLAYER_CUSTOM_TITLE = "title";
+    public static final String PLAYER_ALTERNATIVE_NAME = "alternative_name";
+    public static final String JOURNAL_DIR = "journal_dir";
+    public static final String BINDINGS_DIR = "bindings_dir";
 
-    private GameEvents.CargoEvent shipCargo;
-    private ReputationEvent reputation;
-    private TargetLocation tracking = new TargetLocation();
-    private Long currentLocationId = -1L;
 
-    // New fields for state replacement
-    private long totalHyperspaceDistance = 0;
-    private int insuranceClaims = 0;
-    private long totalProfitsFromExploration = 0;
-    private long exobiologyProfits = 0;
-    private long highestSingleTransaction = 0;
-    private String finalDestination = "";
-    private long marketProfits = 0;
-    private String currentShip = "";
-    private long totalBountyProfit = 0;
-    private String playerMissionStatement = "";
-    private long crewWagsPayout = 0;
-    private String playerTitle = "";
-    private String currentShipName = "";
-    private long personalCreditsAvailable = 0;
-    private long currentWealth = 0;
-    private int shipsOwned = 0;
-    private String playerName = "";
-    private String lastKnownCarrierLocation = "";
-    private double shipFuelLevel = 0;
-    private Map<String, String> friendsStatus = new HashMap<>();
-    private String carrierDepartureTime = "";
-    private String jumpingToStarSystem = "";
-    private String playerHighestMilitaryRank = "";
-    private int speciesFirstLogged = 0;
-    private int shipCargoCapacity = 0;
-    private int totalSystemsVisited = 0;
-    private int totalBountyClaimed = 0;
-    private int goodsSoldThisSession = 0;
-    private double totalDistanceTraveled = 0.0;
-    private FsdTarget fsdTarget;
-    private Boolean isRadioTransmissionOn;
-    private Boolean isMiningAnnouncementOn = true;
-    private Boolean isNavigationAnnouncementOn = true;
-    private Boolean isDiscoveryAnnouncementOn = true;
-    private Boolean isRouteAnnouncementOn = true;
-    private Map<String, Boolean> genusPaymentAnnounced = new HashMap<>();
-    private StationMarket targetMarketStation;
-    private String gameVersion;
-    private String inGameName;
-
+    /// Data managers.
+    private LocationManager locationData = LocationManager.getInstance();
+    private ShipScansManager shipScans = ShipScansManager.getInstance();
+    private MissionManager missions = MissionManager.getInstance();
+    private BountyManager bounties = BountyManager.getInstance();
+    private MiningTargetManager miningTargets = MiningTargetManager.getInstance();
+    private StationMarketsManager markets = StationMarketsManager.getInstance();
+    private RankAndProgressManager rankAndProgress = RankAndProgressManager.getInstance();
+    private FleetCarrierManager fleetCarriers = FleetCarrierManager.getInstance();
+    private BioSamplesManager bioSamples = BioSamplesManager.getInstance();
+    private ShipLoadoutManager shipLoadouts = ShipLoadoutManager.getInstance();
+    private GenusAnnouncementManager genusAnouncements = GenusAnnouncementManager.getInstance();
+    private CargoHoldManager cargoHold = CargoHoldManager.getInstance();
+    private ReputationManager reputationManager = ReputationManager.getInstance();
+    private TargetLocationManager targetLocationManager = TargetLocationManager.getInstance();
+    private FsdTargetManager fsdTargetManager = FsdTargetManager.getInstance();
 
     private PlayerSession() {
-        super(SESSION_DIR);
-        ensureFileAndDirectoryExist(SESSION_FILE);
-        registerField(SHIP_SCANS, this::getShipScans, v -> {
-            shipScans.clear();
-            shipScans.putAll((Map<String, String>) v);
-        }, new TypeToken<Map<String, String>>() {
-        }.getType());
-        registerField(MISSIONS, this::getMissions, v -> {
-            missions.clear();
-            missions.putAll((Map<Long, MissionDto>) v);
-        }, new TypeToken<Map<Long, MissionDto>>() {
-        }.getType());
-
-        registerField("genus_payment_announcements", this::getGenusPaymentAnnounced, v -> {
-            genusPaymentAnnounced.clear();
-            genusPaymentAnnounced.putAll((Map<String, Boolean>) v);
-        }, new TypeToken<Map<String, Boolean>>() {
-        }.getType());
-
-
-        registerField(TARGET_FACTIONS, this::getTargetFactions, v -> {
-            targetFactions.clear();
-            targetFactions.addAll((Set<String>) v);
-        }, new TypeToken<Set<String>>() {
-        }.getType());
-        registerField(BOUNTIES, this::getBounties, v -> {
-            bounties.clear();
-            bounties.addAll((Set<BountyDto>) v);
-        }, new TypeToken<Set<BountyDto>>() {
-        }.getType());
-        registerField(STELLAR_OBJECTS, this::getLocations, v -> {
-            locations.clear();
-            locations.putAll((Map<Long, LocationDto>) v);
-        }, new TypeToken<Map<Long, LocationDto>>() {
-        }.getType());
-        registerField(MINING_TARGETS, this::getMiningTargets, v -> {
-            miningTargets.clear();
-            miningTargets.addAll((Set<String>) v);
-        }, new TypeToken<Set<String>>() {
-        }.getType());
-        registerField(MARKETS, this::getMarkets, this::setMarkets, new TypeToken<List<StationMarket>>() {
-        }.getType());
-        registerField(BIO_SAMPLES, this::getBioCompletedSamples, this::setBioSamples, new TypeToken<List<BioSampleDto>>() {
-        }.getType());
-        registerField(SHIP_LOADOUT, this::getShipLoadout, this::setShipLoadout, new TypeToken<LoadoutEvent>() {
-        }.getType());
-        registerField(SHIP_CARGO, this::getShipCargo, this::setShipCargo, GameEvents.CargoEvent.class);
-        registerField(REPUTATION, this::getReputation, this::setReputation, ReputationEvent.class);
-        registerField(TRACKING, this::getTracking, this::setTracking, TargetLocation.class);
-        registerField(CURRENT_LOCATION, this::getCurrentLocationId, this::setCurrentLocationId, Long.class);
-        registerField(BOUNTY_COLLECTED_THIS_SESSION, this::getBountyCollectedThisSession, this::setBountyCollectedThisSession, Long.class);
-        registerField(RANK_AND_PROGRESS_DTO, this::getRankAndProgressDto, this::setRankAndProgressDto, RankAndProgressDto.class);
-        registerField(CARRIER_STATS, this::getCarrierData, this::setCarrierData, CarrierDataDto.class);
-
-        // New field registrations
-        registerField(TOTAL_HYPERSPACE_DISTANCE, this::getTotalHyperspaceDistance, this::setTotalHyperspaceDistance, Long.class);
-        registerField(INSURANCE_CLAIMS, this::getInsuranceClaims, this::setInsuranceClaims, Integer.class);
-        registerField(TOTAL_PROFITS_FROM_EXPLORATION, this::getTotalProfitsFromExploration, this::setTotalProfitsFromExploration, Long.class);
-        registerField(EXOBIOLOGY_PROFITS, this::getExobiologyProfits, this::setExobiologyProfits, Long.class);
-        registerField(HIGHEST_SINGLE_TRANSACTION, this::getHighestSingleTransaction, this::setHighestSingleTransaction, Long.class);
-        registerField(FINAL_DESTINATION, this::getFinalDestination, this::setFinalDestination, String.class);
-        registerField(MARKET_PROFITS, this::getMarketProfits, this::setMarketProfits, Long.class);
-        registerField(CURRENT_SHIP, this::getCurrentShip, this::setCurrentShip, String.class);
-        registerField(TOTAL_BOUNTY_PROFIT, this::getTotalBountyProfit, this::setTotalBountyProfit, Long.class);
-        registerField(PLAYER_MISSION_STATEMENT, this::getPlayerMissionStatement, this::setPlayerMissionStatement, String.class);
-        registerField(CREW_WAGS_PAYOUT, this::getCrewWagsPayout, this::setCrewWagsPayout, Long.class);
-        registerField(PLAYER_CUSTOM_TITLE, this::getPlayerTitle, this::setPlayerTitle, String.class);
-        registerField(CURRENT_SHIP_NAME, this::getCurrentShipName, this::setCurrentShipName, String.class);
-        registerField(PERSONAL_CREDITS_AVAILABLE, this::getPersonalCreditsAvailable, this::setPersonalCreditsAvailable, Long.class);
-        registerField(CURRENT_WEALTH, this::getCurrentWealth, this::setCurrentWealth, Long.class);
-        registerField(SHIPS_OWNED, this::getShipsOwned, this::setShipsOwned, Integer.class);
-        registerField(PLAYER_NAME, this::getPlayerName, this::setPlayerName, String.class);
-        registerField(CARRIER_LOCATION, this::getLastKnownCarrierLocation, this::setLastKnownCarrierLocation, String.class);
-        registerField(SHIP_FUEL_LEVEL, this::getShipFuelLevel, this::setShipFuelLevel, Double.class);
-        registerField(TARGET_MARKET_STATION, this::getTargetMarketStation, this::setTargetMarketStation, StationMarket.class);
-
-        registerField(FRIENDS_STATUS, this::getFriendsStatus, v -> {
-            friendsStatus.clear();
-            friendsStatus.putAll(v);
-        }, new TypeToken<Map<String, String>>() {
-        }.getType());
-
-        registerField(CARRIER_DEPARTURE_TIME, this::getCarrierDepartureTime, this::setCarrierDepartureTime, String.class);
-        registerField(JUMPING_TO_STARSYSTEM, this::getJumpingToStarSystem, this::setJumpingToStarSystem, String.class);
-        registerField(PLAYER_HIGHEST_MILITARY_RANK, this::getPlayerHighestMilitaryRank, this::setPlayerHighestMilitaryRank, String.class);
-        registerField(SPECIES_FIRST_LOGGED, this::getSpeciesFirstLogged, this::setSpeciesFirstLogged, Integer.class);
-        registerField(SHIP_CARGO_CAPACITY, this::getShipCargoCapacity, this::setShipCargoCapacity, Integer.class);
-        registerField(TOTAL_SYSTEMS_VISITED, this::getTotalSystemsVisited, this::setTotalSystemsVisited, Integer.class);
-        registerField(TOTAL_BOUNTY_CLAIMED, this::getTotalBountyClaimed, this::setTotalBountyClaimed, Integer.class);
-        registerField(GOODS_SOLD_THIS_SESSION, this::getGoodsSoldThisSession, this::setGoodsSoldThisSession, Integer.class);
-        registerField(TOTAL_DISTANCE_TRAVELED, this::getTotalDistanceTraveled, this::setTotalDistanceTraveled, Double.class);
-        registerField(FSD_TARGET, this::getFsdTarget, this::setFsdTarget, FsdTarget.class);
-        registerField(RADIO_ON_OFF, this::isRadioTransmissionOn, this::setRadioTransmissionOn, Boolean.class);
-        registerField(NAVIGATION_VOX_ON_OFF, this::isNavigationAnnouncementOn, this::setNavigationAnnouncementOn, Boolean.class);
-        registerField(MINING_VOX_ON_OFF, this::isMiningAnnouncementOn, this::setMiningAnnouncementOn, Boolean.class);
-        registerField(DISCOVERY_VOX_ON_OFF, this::isDiscoveryAnnouncementOn, this::setDiscoveryAnnouncementOn, Boolean.class);
-        registerField(ROUTE_VOX_ON_OFF, this::isRouteAnnouncementOn, this::setRouteAnnouncementOn, Boolean.class);
-        registerField(GAME_VERSION, this::getGameVersion, this::setGameVersion, String.class);
-        registerField(IN_GAME_NAME, this::getInGameName, this::setInGameName, String.class);
-
-
-        loadSavedStateFromDisk();
         EventBusManager.register(this);
-        addShutdownHook();
     }
 
     public static PlayerSession getInstance() {
@@ -260,235 +62,152 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         return instance;
     }
 
-    private void addShutdownHook() {
-        Runtime.getRuntime().addShutdownHook(new Thread(this::save));
+    public void putShipScan(String key, String scan) {
+        ShipScansDao.ShipScan data = new ShipScansDao.ShipScan();
+        data.setScan(scan);
+        data.setKey(key);
+        shipScans.saveScan(data);
     }
 
-    private void loadSavedStateFromDisk() {
-        loadSession(PlayerSession.this::loadFields);
+    public String getShipScan(String key) {
+        return shipScans.get(key);
     }
 
-    public void putShipScan(String shipName, String scan) {
-        shipScans.put(shipName, scan);
-        save();
-    }
-
-    public String getShipScan(String shipName) {
-        return shipScans.get(shipName);
-    }
-
-    private Map<String, String> getShipScans() {
-        return shipScans;
-    }
 
     public void addBountyReward(long totalReward) {
-        bountyCollectedThisSession += totalReward;
-        save();
+        Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            player.setTotalBountyClaimed(totalReward);
+            dao.save(player);
+            return null;
+        });
     }
 
     public void addBounty(BountyDto bounty) {
         bounties.add(bounty);
-        save();
     }
 
     public void removeBounty(BountyDto bounty) {
         bounties.remove(bounty);
-        save();
     }
 
     public long getBountyCollectedThisSession() {
-        return bountyCollectedThisSession;
-    }
-
-    private void setBountyCollectedThisSession(long value) {
-        this.bountyCollectedThisSession = value;
+        return Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            return player.getBountyCollectedThisSession();
+        });
     }
 
     public void addMission(MissionDto mission) {
-        missions.put(mission.getMissionId(), mission);
-        save();
+        missions.save(mission);
     }
 
     public Map<Long, MissionDto> getMissions() {
-        return missions;
+        return missions.getMissions();
     }
 
     public void removeMission(Long missionId) {
         missions.remove(missionId);
-        save();
     }
 
     public MissionDto getMission(Long missionId) {
-        return missions.get(missionId);
-    }
-
-    public void clearMissions() {
-        missions.clear();
-        save();
+        return missions.getMission(missionId);
     }
 
 
     public RankAndProgressDto getRankAndProgressDto() {
-        return rankAndProgressDto;
+        return rankAndProgress.get();
     }
 
     public void setRankAndProgressDto(RankAndProgressDto rankAndProgressDto) {
-        this.rankAndProgressDto = rankAndProgressDto;
-        save();
-    }
-
-    public void clearShipScans() {
-        shipScans.clear();
-        save();
-    }
-
-    public void clearOnShutDown() {
-        //
-    }
-
-    public void setCarrierStats(CarrierStatsEvent event) {
-        CarrierStatsEvent.Finance finance = event.getFinance();
-        CarrierDataDto carrierData = getCarrierData();
-        carrierData.setCallSign(event.getCallsign());
-        carrierData.setCarrierName(event.getName());
-        carrierData.setCarrierType(event.getCarrierType());
-        carrierData.setDockingAccess(event.getDockingAccess());
-        carrierData.setCurrentJumpRange(event.getJumpRangeCurr());
-        carrierData.setMaxJumpRange(event.getJumpRangeMax());
-        carrierData.setAllowNotorious(event.isAllowNotorious());
-        carrierData.setPendingDecommission(event.isPendingDecommission());
-        carrierData.setFuelLevel(event.getFuelLevel());
-
-        if (event.getSpaceUsage() != null) {
-            CarrierStatsEvent.SpaceUsage spaceUsage = event.getSpaceUsage();
-            carrierData.setCargoSpaceUsed(spaceUsage.getCargo());
-            carrierData.setCargoSpaceReserved(spaceUsage.getCargoSpaceReserved());
-            carrierData.setShipRacks(spaceUsage.getShipPacks());
-            carrierData.setModulePacks(spaceUsage.getModulePacks());
-            carrierData.setFreeSpaceInCargo(spaceUsage.getFreeSpace());
-            carrierData.setCargoCapacity(spaceUsage.getTotalCapacity());
-        }
-
-        if (finance != null) {
-            carrierData.setTotalBalance(finance.getCarrierBalance());
-            carrierData.setReserveBalance(finance.getReserveBalance());
-            carrierData.setMarketBalance(finance.getAvailableBalance());
-            carrierData.setPioneerSupplyTax(finance.getTaxRate_pioneersupplies());
-            carrierData.setShipYardSupplyTax(finance.getTaxRate_shipyard());
-            carrierData.setRearmSupplyTax(finance.getTaxRate_rearm());
-            carrierData.setRepairSupplyTax(finance.getTaxRate_repair());
-            carrierData.setRefuelSupplyTax(finance.getTaxRate_refuel());
-            setCarrierData(carrierData);
-        }
-        save();
+        rankAndProgress.save(rankAndProgressDto);
     }
 
     @Subscribe
-    public void onLoadGame(LoadGameEvent event) {
-        loadSavedStateFromDisk();
-    }
-
-    @Subscribe
-    public void onLoadSession(LoadSessionEvent event) {
-        loadSavedStateFromDisk();
-    }
-
     public void onBounty(BountyDto data) {
         bounties.add(data);
-        save();
     }
 
     public Set<BountyDto> getBounties() {
-        return bounties;
-    }
-
-    public void addTargetFaction(String faction) {
-        targetFactions.add(faction);
-        save();
-    }
-
-    public void setTargetFactions(Set<String> factions) {
-        targetFactions.addAll(factions);
-        save();
+        return bounties.getAll();
     }
 
     public Set<String> getTargetFactions() {
-        if (getMissions() == null || getMissions().isEmpty()) {
-            targetFactions.clear();
-        }
-        return targetFactions;
+        return missions.getTargetFactions();
     }
 
     public void saveLocation(LocationDto location) {
         if (location.getBodyId() == -1) return;
-        locations.put(location.getBodyId(), location);
-        save();
-    }
-
-    public void setLocations(Map<Long, LocationDto> locations) {
-        this.locations.putAll(locations);
-        save();
+        locationData.save(location);
     }
 
     public Map<Long, LocationDto> getLocations() {
-        return locations;
+        return locationData.findByPrimaryStar(getPrimaryStarName());
     }
 
-    public LocationDto getLocation(long id) {
-        return locations.get(id) == null ? new LocationDto(id) : locations.get(id);
+    public String getPrimaryStarName() {
+        return Database.withDao(PlayerDao.class, dao -> dao.get().getCurrentPrimaryStar());
+    }
+
+    public LocationDto getLocation(long id, String primaryStarName) {
+        return locationData.getLocation(primaryStarName, id);
     }
 
     public void clearBounties() {
-        bountyCollectedThisSession = 0;
+        Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            player.setBountyCollectedThisSession(0);
+            dao.save(player);
+            return null;
+        });
         setTotalBountyProfit(0);
         setTotalBountyClaimed(0);
         bounties.clear();
-        save();
     }
 
     public LocationDto getCurrentLocation() {
-        return getLocation(currentLocationId == null ? -1 : currentLocationId);
+        return Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            Long currentLocationId = player.getCurrentLocationId();
+            return currentLocationId == null ? new LocationDto(-1) : getLocation(currentLocationId, player.getCurrentPrimaryStar());
+        });
     }
 
     public void setCurrentLocationId(long id) {
-        currentLocationId = id;
-        save();
-    }
-
-    private Long getCurrentLocationId() {
-        return currentLocationId;
+        Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            player.setCurrentLocationId(id);
+            dao.save(player);
+            return null;
+        });
     }
 
     public CarrierDataDto getCarrierData() {
-        return carrierData == null ? new CarrierDataDto() : carrierData;
+        return fleetCarriers.get();
     }
 
     public void setCarrierData(CarrierDataDto carrierData) {
-        this.carrierData = carrierData;
-        save();
+        fleetCarriers.save(carrierData);
     }
 
     public Set<String> getMiningTargets() {
-        return miningTargets;
+        return miningTargets.getAll();
     }
 
     public void addMiningTarget(String miningTarget) {
-        if (miningTarget == null || miningTarget.isEmpty()) return;
-        miningTargets.add(miningTarget.toLowerCase());
-        save();
+        miningTargets.add(miningTarget);
     }
 
     public void clearMiningTargets() {
         miningTargets.clear();
-        save();
     }
 
-    public List<StationMarket> getMarkets() {
-        return markets;
+    public List<StationMarketDto> getMarkets() {
+        return markets.findForStation(getCurrentLocation().getStationName());
     }
 
-    public void setMarkets(List<StationMarket> markets) {
-        this.markets = markets;
+    public void setMarkets(List<StationMarketDto> data) {
+        markets.addList(data);
     }
 
     public void clearMarkets() {
@@ -496,427 +215,423 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     }
 
     public List<BioSampleDto> getBioCompletedSamples() {
-        return bioSamples;
+        return bioSamples.listAll();
     }
 
-    public void setBioSamples(List<BioSampleDto> bioSamples) {
-        this.bioSamples = bioSamples;
-        save();
+    public void setBioSamples(List<BioSampleDto> data) {
+        bioSamples.addInBulk(data);
     }
 
     public void addBioSample(BioSampleDto bioSampleDto) {
-        this.bioSamples.add(bioSampleDto);
-        save();
+        bioSamples.add(bioSampleDto);
     }
 
     public void clearBioSamples() {
-        this.bioSamples.clear();
-        save();
+        bioSamples.clear();
     }
 
     public void setShipLoadout(LoadoutEvent event) {
-        this.loadout = event;
-        save();
+        shipLoadouts.save(event);
     }
 
     public LoadoutEvent getShipLoadout() {
-        return loadout;
+        return shipLoadouts.get();
     }
 
 
     public void clearCash() {
-        this.bioSamples.clear();
-        this.bounties.clear();
-        this.bountyCollectedThisSession = 0;
-        this.carrierData = new CarrierDataDto();
-        this.loadout = null;
-        this.markets.clear();
-        this.missions.clear();
-        this.rankAndProgressDto = new RankAndProgressDto();
+        bounties.clear();
+        bioSamples.clear();
+        markets.clear();
+        shipLoadouts.clear();
         this.setShipLoadout(null);
-        this.shipScans.clear();
-        this.locations.clear();
-        this.targetFactions.clear();
-        this.save();
     }
 
     public void setShipCargo(GameEvents.CargoEvent event) {
-        this.shipCargo = event;
-        save();
+        cargoHold.save(event);
     }
 
     public GameEvents.CargoEvent getShipCargo() {
-        return this.shipCargo;
+        return cargoHold.get();
     }
 
     public void setReputation(ReputationEvent event) {
-        this.reputation = event;
-        save();
+        reputationManager.save(event);
     }
 
     public ReputationEvent getReputation() {
-        return this.reputation;
+        return reputationManager.get();
     }
 
     public void setLastScan(LocationDto lastScan) {
-        this.lastScanId = lastScan.getBodyId();
-        save();
+        Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            player.setLastScanId(lastScan.getBodyId());
+            dao.save(player);
+            return null;
+        });
     }
 
     public LocationDto getLastScan() {
-        return getLocation(lastScanId);
+        return Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            return getLocation(player.getLastScanId(), player.getCurrentPrimaryStar());
+        });
     }
 
     public TargetLocation getTracking() {
-        return tracking == null ? new TargetLocation() : tracking;
+        return targetLocationManager.get();
     }
 
     public void setTracking(TargetLocation tracking) {
-        this.tracking = tracking;
-        save();
+        targetLocationManager.save(tracking);
     }
 
-    // New getters and setters
-    public long getTotalHyperspaceDistance() {
-        return totalHyperspaceDistance;
-    }
 
     public void setTotalHyperspaceDistance(long totalHyperspaceDistance) {
-        this.totalHyperspaceDistance = totalHyperspaceDistance;
-        save();
-    }
-
-    public int getInsuranceClaims() {
-        return insuranceClaims;
+        Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            player.setTotalHyperspaceDistance(totalHyperspaceDistance);
+            dao.save(player);
+            return null;
+        });
     }
 
     public void setInsuranceClaims(int insuranceClaims) {
-        this.insuranceClaims = insuranceClaims;
-        save();
-    }
-
-    public long getTotalProfitsFromExploration() {
-        return totalProfitsFromExploration;
+        Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            player.setInsuranceClaims(insuranceClaims);
+            dao.save(player);
+            return null;
+        });
     }
 
     public void setTotalProfitsFromExploration(long totalProfitsFromExploration) {
-        this.totalProfitsFromExploration = totalProfitsFromExploration;
-        save();
-    }
-
-    public long getExobiologyProfits() {
-        return exobiologyProfits;
+        Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            player.setTotalProfitsFromExploration(totalProfitsFromExploration);
+            dao.save(player);
+            return null;
+        });
     }
 
     public void setExobiologyProfits(long exobiologyProfits) {
-        this.exobiologyProfits = exobiologyProfits;
-        save();
-    }
-
-    public long getHighestSingleTransaction() {
-        return highestSingleTransaction;
+        Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            player.setExobiologyProfits(exobiologyProfits);
+            dao.save(player);
+            return null;
+        });
     }
 
     public void setHighestSingleTransaction(long highestSingleTransaction) {
-        this.highestSingleTransaction = highestSingleTransaction;
-        save();
+        Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            player.setHighestSingleTransaction(highestSingleTransaction);
+            dao.save(player);
+            return null;
+        });
     }
 
     public String getFinalDestination() {
-        return finalDestination;
+        return Database.withDao(PlayerDao.class, dao -> dao.get().getFinalDestination());
     }
 
     public void setFinalDestination(String finalDestination) {
-        this.finalDestination = finalDestination;
-        save();
-    }
-
-    public long getMarketProfits() {
-        return marketProfits;
+        Database.withDao(PlayerDao.class, playerDao -> {
+            PlayerDao.Player player = playerDao.get();
+            player.setFinalDestination(finalDestination);
+            playerDao.save(player);
+            return null;
+        });
     }
 
     public void setMarketProfits(long marketProfits) {
-        this.marketProfits = marketProfits;
-        save();
-    }
-
-    public String getCurrentShip() {
-        return currentShip;
+        Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            player.setMarketProfits(marketProfits);
+            dao.save(player);
+            return null;
+        });
     }
 
     public void setCurrentShip(String currentShip) {
-        this.currentShip = currentShip;
-        save();
-    }
-
-    public long getTotalBountyProfit() {
-        return totalBountyProfit;
+        Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            player.setCurrentShip(currentShip);
+            dao.save(player);
+            return null;
+        });
     }
 
     public void setTotalBountyProfit(long totalBountyProfit) {
-        this.totalBountyProfit = totalBountyProfit;
-        save();
+        Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            player.setTotalBountyProfit(totalBountyProfit);
+            dao.save(player);
+            return null;
+        });
     }
 
     public String getPlayerMissionStatement() {
-        return playerMissionStatement;
+        return Database.withDao(PlayerDao.class, dao -> dao.get().getPlayerMissionStatement());
     }
 
     public void setPlayerMissionStatement(String playerMissionStatement) {
-        this.playerMissionStatement = playerMissionStatement;
-        save();
-    }
-
-    public long getCrewWagsPayout() {
-        return crewWagsPayout;
+        Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            player.setPlayerMissionStatement(playerMissionStatement);
+            dao.save(player);
+            return null;
+        });
     }
 
     public void setCrewWagsPayout(long crewWagsPayout) {
-        this.crewWagsPayout = crewWagsPayout;
-        save();
+        Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            player.setCrewWagsPayout(crewWagsPayout);
+            dao.save(player);
+            return null;
+        });
     }
 
     public String getPlayerTitle() {
-        return playerTitle;
+        return Database.withDao(PlayerDao.class, dao -> dao.get().getPlayerTitle());
     }
 
     public void setPlayerTitle(String playerTitle) {
-        this.playerTitle = playerTitle;
-        save();
-    }
-
-    public String getCurrentShipName() {
-        return currentShipName;
+        Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            player.setPlayerTitle(playerTitle);
+            dao.save(player);
+            return null;
+        });
     }
 
     public void setCurrentShipName(String currentShipName) {
-        this.currentShipName = currentShipName;
-        save();
+        Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            player.setCurrentShipName(currentShipName);
+            dao.save(player);
+            return null;
+        });
     }
 
-    public long getPersonalCreditsAvailable() {
-        return personalCreditsAvailable;
-    }
 
     public void setPersonalCreditsAvailable(long personalCreditsAvailable) {
-        this.personalCreditsAvailable = personalCreditsAvailable;
-        save();
-    }
-
-    public int getShipsOwned() {
-        return shipsOwned;
+        Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            player.setPersonalCreditsAvailable(personalCreditsAvailable);
+            dao.save(player);
+            return null;
+        });
     }
 
     public void setShipsOwned(int shipsOwned) {
-        this.shipsOwned = shipsOwned;
-        save();
+        Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            player.setShipsOwned(shipsOwned);
+            dao.save(player);
+            return null;
+        });
     }
 
     public String getPlayerName() {
-        return playerName;
+        return Database.withDao(PlayerDao.class, dao -> dao.get().getPlayerName());
     }
 
     public void setPlayerName(String playerName) {
-        this.playerName = playerName;
-        save();
+        Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            player.setPlayerName(playerName);
+            dao.save(player);
+            return null;
+        });
     }
 
     public String getLastKnownCarrierLocation() {
-        return lastKnownCarrierLocation;
+        return Database.withDao(PlayerDao.class, dao -> dao.get().getLastKnownCarrierLocation());
     }
 
     public void setLastKnownCarrierLocation(String lastKnownCarrierLocation) {
-        this.lastKnownCarrierLocation = lastKnownCarrierLocation;
-        save();
+        Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            player.setLastKnownCarrierLocation(lastKnownCarrierLocation);
+            dao.save(player);
+            return null;
+        });
     }
 
-    public double getShipFuelLevel() {
-        return shipFuelLevel;
-    }
 
     public void setShipFuelLevel(double shipFuelLevel) {
-        this.shipFuelLevel = shipFuelLevel;
-        save();
-    }
-
-    public Map<String, String> getFriendsStatus() {
-        return friendsStatus;
-    }
-
-    public void setFriendsStatus(Map<String, String> friendsStatus) {
-        this.friendsStatus.clear();
-        this.friendsStatus.putAll(friendsStatus);
-        save();
+        Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            player.setShipFuelLevel(shipFuelLevel);
+            dao.save(player);
+            return null;
+        });
     }
 
     public String getCarrierDepartureTime() {
-        return carrierDepartureTime;
+        return Database.withDao(PlayerDao.class, dao -> dao.get().getCarrierDepartureTime());
     }
 
     public void setCarrierDepartureTime(String carrierDepartureTime) {
-        this.carrierDepartureTime = carrierDepartureTime;
-        save();
-    }
-
-    public String getJumpingToStarSystem() {
-        return jumpingToStarSystem;
-    }
-
-    public void setJumpingToStarSystem(String jumpingToStarSystem) {
-        this.jumpingToStarSystem = jumpingToStarSystem;
-        save();
+        Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            player.setCarrierDepartureTime(carrierDepartureTime);
+            dao.save(player);
+            return null;
+        });
     }
 
     public String getPlayerHighestMilitaryRank() {
-        return playerHighestMilitaryRank;
+        return Database.withDao(PlayerDao.class, dao -> dao.get().getPlayerHighestMilitaryRank());
     }
 
     public void setPlayerHighestMilitaryRank(String playerHighestMilitaryRank) {
-        this.playerHighestMilitaryRank = playerHighestMilitaryRank;
-        save();
-    }
-
-    public int getSpeciesFirstLogged() {
-        return speciesFirstLogged;
+        Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            player.setPlayerHighestMilitaryRank(playerHighestMilitaryRank);
+            dao.save(player);
+            return null;
+        });
     }
 
     public void setSpeciesFirstLogged(int speciesFirstLogged) {
-        this.speciesFirstLogged = speciesFirstLogged;
-        save();
-    }
-
-    public int getShipCargoCapacity() {
-        return shipCargoCapacity;
+        Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            player.setSpeciesFirstLogged(speciesFirstLogged);
+            dao.save(player);
+            return null;
+        });
     }
 
     public void setShipCargoCapacity(int shipCargoCapacity) {
-        this.shipCargoCapacity = shipCargoCapacity;
-        save();
-    }
-
-    public int getTotalSystemsVisited() {
-        return totalSystemsVisited;
+        Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            player.setShipCargoCapacity(shipCargoCapacity);
+            dao.save(player);
+            return null;
+        });
     }
 
     public void setTotalSystemsVisited(int totalSystemsVisited) {
-        this.totalSystemsVisited = totalSystemsVisited;
-        save();
+        Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            player.setTotalSystemsVisited(totalSystemsVisited);
+            dao.save(player);
+            return null;
+        });
     }
 
-    public int getTotalBountyClaimed() {
-        return totalBountyClaimed;
-    }
-
-    public void setTotalBountyClaimed(int totalBountyClaimed) {
-        this.totalBountyClaimed = totalBountyClaimed;
-        save();
-    }
-
-    public int getGoodsSoldThisSession() {
-        return goodsSoldThisSession;
+    public void setTotalBountyClaimed(long totalBountyClaimed) {
+        Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            player.setTotalBountyClaimed(totalBountyClaimed);
+            dao.save(player);
+            return null;
+        });
     }
 
     public void setGoodsSoldThisSession(int goodsSoldThisSession) {
-        this.goodsSoldThisSession = goodsSoldThisSession;
-        save();
-    }
-
-    public double getTotalDistanceTraveled() {
-        return totalDistanceTraveled;
+        Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            player.setGoodsSoldThisSession(goodsSoldThisSession);
+            dao.save(player);
+            return null;
+        });
     }
 
     public void setTotalDistanceTraveled(double totalDistanceTraveled) {
-        this.totalDistanceTraveled = totalDistanceTraveled;
-        save();
+        Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            player.setTotalDistanceTraveled(totalDistanceTraveled);
+            dao.save(player);
+            return null;
+        });
     }
 
-    public void setFsdTarget(FsdTarget json) {
-        this.fsdTarget = json;
-        save();
+    public void setFsdTarget(FsdTarget fsdTarget) {
+        fsdTargetManager.save(fsdTarget);
     }
 
     public FsdTarget getFsdTarget() {
-        return fsdTarget;
+        return fsdTargetManager.get();
     }
 
     public Boolean isRadioTransmissionOn() {
-        return this.isRadioTransmissionOn;
+        return Database.withDao(PlayerDao.class, dao -> dao.get().getRadioTransmissionOn());
     }
 
     public void setRadioTransmissionOn(Boolean radioTransmissionOn) {
-        this.isRadioTransmissionOn = radioTransmissionOn;
-        save();
+        Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            player.setRadioTransmissionOn(radioTransmissionOn);
+            dao.save(player);
+            return null;
+        });
     }
-
-    public void clearLocations() {
-        locations.clear();
-        save();
-    }
-
 
     public Boolean isMiningAnnouncementOn() {
-        return isMiningAnnouncementOn == null || isMiningAnnouncementOn;
+        return Database.withDao(PlayerDao.class, dao -> dao.get().isMiningAnnouncementOn());
     }
 
     public void setMiningAnnouncementOn(Boolean miningAnnouncementOn) {
-        isMiningAnnouncementOn = miningAnnouncementOn;
-        save();
+        Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            player.setMiningAnnouncementOn(miningAnnouncementOn);
+            dao.save(player);
+            return null;
+        });
     }
 
     public Boolean isNavigationAnnouncementOn() {
-        return isNavigationAnnouncementOn == null || isNavigationAnnouncementOn;
+        return Database.withDao(PlayerDao.class, dao -> dao.get().isNavigationAnnouncementOn());
     }
 
     public void setNavigationAnnouncementOn(Boolean navigationAnnouncementOn) {
-        isNavigationAnnouncementOn = navigationAnnouncementOn;
-        save();
+        Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            player.setNavigationAnnouncementOn(navigationAnnouncementOn);
+            dao.save(player);
+            return null;
+        });
     }
 
     public Boolean isDiscoveryAnnouncementOn() {
-        return isDiscoveryAnnouncementOn == null || isDiscoveryAnnouncementOn;
+        return Database.withDao(PlayerDao.class, dao -> dao.get().isDiscoveryAnnouncementOn());
     }
 
     public void setDiscoveryAnnouncementOn(Boolean discoveryAnnouncementOn) {
-        isDiscoveryAnnouncementOn = discoveryAnnouncementOn;
-        save();
+        Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            player.setDiscoveryAnnouncementOn(discoveryAnnouncementOn);
+            dao.save(player);
+            return null;
+        });
     }
 
 
     public Boolean isRouteAnnouncementOn() {
-        return isRouteAnnouncementOn == null || isRouteAnnouncementOn;
+        return Database.withDao(PlayerDao.class, dao -> dao.get().isRouteAnnouncementOn());
     }
 
     public void setRouteAnnouncementOn(Boolean routeAnnouncementOn) {
-        isRouteAnnouncementOn = routeAnnouncementOn;
-        save();
-    }
-
-    public StationMarket getTargetMarketStation() {
-        return targetMarketStation;
-    }
-
-    public void setTargetMarketStation(StationMarket targetMarketStation) {
-        this.targetMarketStation = targetMarketStation;
-        save();
-    }
-
-
-    private Map<String, Boolean> getGenusPaymentAnnounced() {
-        return genusPaymentAnnounced;
+        Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            player.setRouteAnnouncementOn(routeAnnouncementOn);
+            dao.save(player);
+            return null;
+        });
     }
 
     public void setGenusPaymentAnnounced(String genus) {
-        genusPaymentAnnounced.put(genus, true);
-        save();
-    }
-
-    public void setGenusPaymentAnnounced(Map<String, Boolean> genusPaymentAnnounced) {
-        this.genusPaymentAnnounced = genusPaymentAnnounced;
+        genusAnouncements.put(genus, true);
     }
 
     public void clearGenusPaymentAnnounced() {
-        this.genusPaymentAnnounced.clear();
-        save();
+        genusAnouncements.clear();
     }
 
     public GalacticCoordinates getGalacticCoordinates() {
@@ -939,60 +654,122 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         return null;
     }
 
-    public String getPrimaryStar() {
-        Map<Long, LocationDto> locations = getLocations();
-        for (LocationDto location : locations.values()) {
-            if (location.getLocationType().equals(LocationDto.LocationType.PRIMARY_STAR)) {
-                return location.getStarName();
-            }
-        }
-        return null;
-    }
-
-    public LocationDto getPrimarySystem() {
-        Map<Long, LocationDto> locations = getLocations();
-        for (LocationDto location : locations.values()) {
-            if (location.getLocationType().equals(LocationDto.LocationType.PRIMARY_STAR)) {
-                return location;
-            }
-        }
-        return null;
-    }
-
-    public long getCurrentWealth() {
-        return currentWealth;
-    }
 
     public void setCurrentWealth(long currentWealth) {
-        this.currentWealth = currentWealth;
+        Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            player.setCurrentWealth(currentWealth);
+            dao.save(player);
+            return null;
+        });
     }
 
     public Boolean paymentHasBeenAnnounced(String genus) {
-        Boolean b = genusPaymentAnnounced.get(genus);
+
+        Boolean b = genusAnouncements.get(genus);
         return b != null && b;
     }
 
-    @Subscribe
-    public void onShutDownEvent(ShutdownEvent event) {
-        save();
-    }
-
     public void setGameVersion(String gameversion) {
-        this.gameVersion = gameversion;
-        save();
+        Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            player.setGameVersion(gameversion);
+            dao.save(player);
+            return null;
+        });
     }
 
     public String getGameVersion() {
-        return gameVersion;
+        return Database.withDao(PlayerDao.class, dao -> dao.get().getGameVersion());
     }
 
     public void setInGameName(String inGameName) {
-        this.inGameName = inGameName;
-        save();
+        Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            player.setInGameName(inGameName);
+            dao.save(player);
+            return null;
+        });
     }
 
     public String getInGameName() {
-        return inGameName;
+        return Database.withDao(PlayerDao.class, dao -> dao.get().getInGameName());
+    }
+
+    public void setCurrentPrimaryStarName(String starName) {
+        Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            player.setCurrentPrimaryStar(starName);
+            dao.save(player);
+            return null;
+        });
+    }
+
+    public void setJournalPath(String path){
+        Database.withDao(PlayerDao.class, dao ->{
+            PlayerDao.Player player = dao.get();
+            player.setJournalDirectory(path);
+            dao.save(player);
+            return null;
+        });
+    }
+
+    public Path getJournalPath(){
+        return Database.withDao(PlayerDao.class, dao -> {
+            String directory = dao.get().getJournalDirectory();
+            return directory == null ? Paths.get(System.getProperty("user.home"), "Saved Games", "Frontier Developments", "Elite Dangerous") : Paths.get(directory);
+        });
+    }
+
+    public void setBindingsDir(String path){
+        Database.withDao(PlayerDao.class, dao ->{
+            PlayerDao.Player player = dao.get();
+            player.setBindingsDirectory(path);
+            dao.save(player);
+            return null;
+        });
+    }
+
+    public Path getBindingsDir(){
+        return Database.withDao(PlayerDao.class, dao -> {
+            String directory = dao.get().getBindingsDirectory();
+            return directory == null ? Paths.get(System.getProperty("user.home"), "AppData", "Local", "Frontier Developments", "Elite Dangerous", "Options", "Bindings") : Paths.get(directory);
+        });
+    }
+
+    public void setAlternativeName(String alternativeName){
+        Database.withDao(PlayerDao.class, dao ->{
+            PlayerDao.Player player = dao.get();
+            player.setAlternativeName(alternativeName);
+            dao.save(player);
+            return null;
+        });
+    }
+
+    public String getAlternativeName(){
+        return Database.withDao(PlayerDao.class, dao -> dao.get().getAlternativeName());
+    }
+
+    public LocationDto getPrimaryStarLocation() {
+        return locationData.findPrimaryStar(getPrimaryStarName());
+    }
+
+    public void clearShipScans() {
+        shipScans.clear();
+    }
+
+    public void setCarrierStats(CarrierStatsEvent event) {
+        fleetCarriers.setCarrierStats(event);
+    }
+
+    public Map<String, String> asMap() {
+        Map<String, String> result = new HashMap<>();
+        result.put(PLAYER_ALTERNATIVE_NAME, getAlternativeName());
+        result.put(PLAYER_MISSION_STATEMENT, getPlayerMissionStatement());
+        result.put(PLAYER_CUSTOM_TITLE, getPlayerTitle());
+        result.put(JOURNAL_DIR, getJournalPath().toString());
+        result.put(BINDINGS_DIR, getBindingsDir().toString());
+        return result;
     }
 
     public record GalacticCoordinates(double x, double y, double z) {

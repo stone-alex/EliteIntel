@@ -8,7 +8,6 @@ import elite.intel.ai.brain.handlers.query.Queries;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.util.Ranks;
-import org.checkerframework.checker.optional.qual.Present;
 
 import java.util.Objects;
 
@@ -21,12 +20,12 @@ public class OpenAiAndXAiPromptFactory implements AiPromptFactory {
 
     private static final OpenAiAndXAiPromptFactory INSTANCE = new OpenAiAndXAiPromptFactory();
 
-    public static OpenAiAndXAiPromptFactory getInstance() {
-        return INSTANCE;
-    }
-
     private OpenAiAndXAiPromptFactory() {
         // Singleton
+    }
+
+    public static OpenAiAndXAiPromptFactory getInstance() {
+        return INSTANCE;
     }
 
     private String getStandardJsonFormat() {
@@ -213,7 +212,8 @@ public class OpenAiAndXAiPromptFactory implements AiPromptFactory {
     private String getSessionValues() {
         StringBuilder sb = new StringBuilder();
         PlayerSession playerSession = PlayerSession.getInstance();
-        String playerName = playerSession.getPlayerName();
+        String alternativeName = playerSession.getAlternativeName();
+        String playerName = alternativeName != null ? alternativeName : playerSession.getPlayerName();
         String playerTitle = playerSession.getPlayerTitle();
         String playerMilitaryRank = playerSession.getPlayerHighestMilitaryRank();
         String playerHonorific = Ranks.getPlayerHonorific();

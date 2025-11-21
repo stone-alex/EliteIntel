@@ -31,7 +31,7 @@ public class SpanshMarketClient {
      * @throws IOException          If network or parse error.
      * @throws InterruptedException If request interrupted.
      */
-    public List<StationMarket> searchMarkets(MarketSearchCriteria criteria) throws IOException, InterruptedException {
+    public List<StationMarketDto> searchMarkets(MarketSearchCriteria criteria) throws IOException, InterruptedException {
 
         // Build POST payload
         JsonObject filters = new JsonObject();
@@ -84,7 +84,7 @@ public class SpanshMarketClient {
 
         // Parse and filter results
         JsonArray resultsArray = getJson.getAsJsonArray("results");
-        List<StationMarket> stations = new ArrayList<>();
+        List<StationMarketDto> stations = new ArrayList<>();
 
         for (var stationElement : resultsArray) {
             JsonObject stationJson = stationElement.getAsJsonObject();
@@ -110,7 +110,8 @@ public class SpanshMarketClient {
                                     && (criteria.minSupply() <= 0 || item.get("supply").getAsInt() >= criteria.minSupply())
                     ) {
 
-                        StationMarket station = new StationMarket();
+                        StationMarketDto station = new StationMarketDto();
+                        station.setMarketId(stationJson.get("market_id").getAsLong());
                         station.setStationName(stationJson.get("name").getAsString());
                         station.setSystemName(stationJson.get("system_name").getAsString());
                         station.setDistance(Math.round(stationJson.get("distance").getAsDouble() * 10.0) / 10.0);
@@ -128,11 +129,11 @@ public class SpanshMarketClient {
         }
 
         if (criteria.orderByDistance())
-            stations.sort(Comparator.comparing(StationMarket::distance));
+            stations.sort(Comparator.comparing(StationMarketDto::distance));
         else if(criteria.wantToBuy())
-            stations.sort(Comparator.comparing(StationMarket::getSellPrice));
+            stations.sort(Comparator.comparing(StationMarketDto::getSellPrice));
         else
-            stations.sort(Comparator.comparing(StationMarket::getBuyPrice));
+            stations.sort(Comparator.comparing(StationMarketDto::getBuyPrice));
 
         return stations;
     }

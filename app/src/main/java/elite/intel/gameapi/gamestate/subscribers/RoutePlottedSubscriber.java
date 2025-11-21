@@ -4,7 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import elite.intel.gameapi.gamestate.dtos.GameEvents;
 import elite.intel.gameapi.gamestate.dtos.NavRouteDto;
 import elite.intel.session.PlayerSession;
-import elite.intel.session.ShipRoute;
+import elite.intel.db.managers.ShipRouteManager;
 import elite.intel.util.AdjustRoute;
 
 import java.util.*;
@@ -16,7 +16,7 @@ public class RoutePlottedSubscriber {
     public void onGameEvent(GameEvents.NavRouteEvent event) {
         int totalJumps = event.getRoute().size();
         PlayerSession playerSession = PlayerSession.getInstance();
-        ShipRoute shipRoute = ShipRoute.getInstance();
+        ShipRouteManager shipRoute = ShipRouteManager.getInstance();
 
         List<GameEvents.NavRouteEvent.RouteEntry> route = event.getRoute();
         Map<Integer, NavRouteDto> routeMap = new LinkedHashMap<>();

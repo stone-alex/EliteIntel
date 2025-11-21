@@ -12,12 +12,10 @@ public class ClearCacheHandler implements CommandHandler {
     public void handle(String action, JsonObject params, String responseText) {
 
         PlayerSession playerSession = PlayerSession.getInstance();
-        playerSession.clearOnShutDown();
         playerSession.clearCash();
 
 
         SystemSession systemSession = SystemSession.getInstance();
-        systemSession.clearSystemConfigValues();
         systemSession.clearChatHistory();
 
         EventBusManager.publish(new AiVoxResponseEvent("Session data cleared."));

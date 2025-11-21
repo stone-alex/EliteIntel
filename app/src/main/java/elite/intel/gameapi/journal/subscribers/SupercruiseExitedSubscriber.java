@@ -16,9 +16,7 @@ public class SupercruiseExitedSubscriber {
         currentLocation.setStarName(event.getStarSystem());
         currentLocation.setBodyId(event.getBodyId());
         currentLocation.setPlanetName(event.getBody());
-
         playerSession.saveLocation(currentLocation);
-
     }
 
 }

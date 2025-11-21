@@ -36,7 +36,7 @@ public class ScanOrganicSubscriber {
         String genus = event.getGenusLocalised();
         String species = subtractString(event.getSpeciesLocalised(), genus);
         long starSystemNumber = event.getSystemAddress();
-        LocationDto currentLocation = playerSession.getLocation(event.getBody());
+        LocationDto currentLocation = playerSession.getLocation(event.getBody(), playerSession.getPrimaryStarName());
         playerSession.setCurrentLocationId(event.getBody());
 
         boolean isOurDiscovery = currentLocation.isOurDiscovery();
@@ -107,6 +107,7 @@ public class ScanOrganicSubscriber {
 
             announce(sb.toString());
             BioSampleDto bioSampleDto = createBioSampleDto(genus, species, starSystemNumber, isOurDiscovery);
+
             bioSampleDto.setPayout(payment);
             bioSampleDto.setFistDiscoveryBonus(firstDiscoveryBonus);
             bioSampleDto.setScanXof3("Three of Three");
@@ -164,6 +165,7 @@ public class ScanOrganicSubscriber {
     private BioSampleDto createBioSampleDto(String genus, String species, long starSystemNumber, boolean isOurDiscovery) {
 
         BioSampleDto bioSampleDto = new BioSampleDto();
+        bioSampleDto.setPrimaryStar(playerSession.getPrimaryStarName());
         bioSampleDto.setPlanetName(playerSession.getCurrentLocation().getPlanetName());
         bioSampleDto.setPlanetShortName(playerSession.getCurrentLocation().getPlanetShortName());
         bioSampleDto.setScanLatitude(status.getStatus().getLatitude());

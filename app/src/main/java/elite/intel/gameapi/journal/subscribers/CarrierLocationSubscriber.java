@@ -2,12 +2,12 @@ package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.search.spansh.carrierroute.CarrierJump;
+import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.journal.events.CarrierLocationEvent;
 import elite.intel.gameapi.journal.events.dto.CarrierDataDto;
 import elite.intel.gameapi.journal.events.dto.FssSignalDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
-import elite.intel.session.FleetCarrierRoute;
-import elite.intel.session.LocationHistory;
+import elite.intel.db.managers.FleetCarrierRouteManager;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.AdjustRoute;
 
@@ -25,7 +25,7 @@ public class CarrierLocationSubscriber {
 
         if ("FleetCarrier".equalsIgnoreCase(event.getCarrierType())) {
             playerSession.setLastKnownCarrierLocation(event.getStarSystem());
-            FleetCarrierRoute route = FleetCarrierRoute.getInstance();
+            FleetCarrierRouteManager route = FleetCarrierRouteManager.getInstance();
             CarrierDataDto carrierData = playerSession.getCarrierData();
             carrierData.setStarName(event.getStarSystem());
             AdjustRoute.adjustFleetCarrierRoute(event.getStarSystem());
@@ -46,8 +46,8 @@ public class CarrierLocationSubscriber {
 
             if(!routeEntryFount) {
                 String carrierName = carrierData.getCarrierName();
-                LocationHistory history = LocationHistory.getInstance(event.getStarSystem());
-                Map<Long, LocationDto> locations = history.getLocations();
+                LocationManager locationData = LocationManager.getInstance();
+                Map<Long, LocationDto> locations = locationData.findByPrimaryStar(event.getStarSystem());
                 if (locations != null || !locations.isEmpty()) {
                     for (LocationDto historyLocation : locations.values()) {
                         Set<FssSignalDto> detectedSignals = historyLocation.getDetectedSignals();

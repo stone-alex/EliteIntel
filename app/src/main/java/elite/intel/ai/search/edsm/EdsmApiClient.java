@@ -1,10 +1,10 @@
 package elite.intel.ai.search.edsm;
 
 import com.google.gson.JsonSyntaxException;
-import elite.intel.ai.ConfigManager;
 import elite.intel.ai.search.edsm.dto.*;
 import elite.intel.ai.search.edsm.dto.data.*;
 import elite.intel.session.PlayerSession;
+import elite.intel.session.SystemSession;
 import elite.intel.util.json.GsonFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,13 +30,13 @@ public class EdsmApiClient {
 
     public static MaterialsDto getMaterials() {
         String endpoint = "/api-commander-v1/get-materials";
-        String edsmKey = ConfigManager.getInstance().getSystemKey(ConfigManager.EDSM_KEY);
+        String edsmKey = SystemSession.getInstance().getEdsmApiKey();
         String inGamePlayerName = PlayerSession.getInstance().getInGameName();
 
         StringBuilder query = authenticatedUrl(endpoint);
         query.append("apiKey=").append(edsmKey);
         query.append("&commanderName=").append(URLEncoder.encode(inGamePlayerName, StandardCharsets.UTF_8));
-        query.append("&type=").append(MaterialsType.MATERIAL.getType());
+        query.append("&type=").append(MaterialsType.EDMS_MATERIAL.getType());
 
         String response = getResponse(query);
         if (response == null || response.isEmpty()) {
@@ -48,13 +48,13 @@ public class EdsmApiClient {
 
     public static EncodedMaterialsDto getEncodedMaterials() {
         String endpoint = "/api-commander-v1/get-materials";
-        String edsmKey = ConfigManager.getInstance().getSystemKey(ConfigManager.EDSM_KEY);
+        String edsmKey = SystemSession.getInstance().getEdsmApiKey();
         String inGamePlayerName = PlayerSession.getInstance().getInGameName();
 
         StringBuilder query = authenticatedUrl(endpoint);
         query.append("apiKey=").append(edsmKey);
         query.append("&commanderName=").append(URLEncoder.encode(inGamePlayerName, StandardCharsets.UTF_8));
-        query.append("&type=").append(MaterialsType.ENCODED.getType());
+        query.append("&type=").append(MaterialsType.EDMS_ENCODED.getType());
 
         String response = getResponse(query);
         if (response == null || response.isEmpty()) {

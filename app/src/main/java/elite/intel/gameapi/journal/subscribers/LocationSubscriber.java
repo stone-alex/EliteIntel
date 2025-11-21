@@ -2,9 +2,9 @@ package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.search.edsm.EdsmApiClient;
+import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.journal.events.LocationEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
-import elite.intel.session.LocationHistory;
 import elite.intel.session.PlayerSession;
 
 import java.util.Map;
@@ -63,18 +63,18 @@ public class LocationSubscriber {
 
     private LocationDto findLocation(LocationEvent event) {
         LocationDto dto;
-        LocationHistory locationHistory = LocationHistory.getInstance(event.getStarSystem());
-        Map<Long, LocationDto> historyLocations = locationHistory.getLocations();
+        LocationManager locationData = LocationManager.getInstance();
+        Map<Long, LocationDto> locations = locationData.findByPrimaryStar(event.getStarSystem());
 
-        if (historyLocations == null || historyLocations.isEmpty()) {
-            dto = playerSession.getLocation(event.getBodyID());
+        if (locations == null || locations.isEmpty()) {
+            dto = playerSession.getLocation(event.getBodyID(), event.getStarSystem());
             if(dto == null) {
                 dto = playerSession.getCurrentLocation();
             }
         } else {
-            dto = historyLocations.get((long) event.getBodyID());
+            dto = locations.get((long) event.getBodyID());
             if (dto == null) {
-                dto = playerSession.getLocation(event.getBodyID());
+                dto = playerSession.getLocation(event.getBodyID(), event.getStarSystem());
                 if(dto == null) {
                     dto = playerSession.getCurrentLocation();
                 }

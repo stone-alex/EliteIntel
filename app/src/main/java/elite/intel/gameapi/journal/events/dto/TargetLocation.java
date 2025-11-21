@@ -1,6 +1,9 @@
 package elite.intel.gameapi.journal.events.dto;
 
-public class TargetLocation {
+import elite.intel.util.json.GsonFactory;
+import elite.intel.util.json.ToJsonConvertible;
+
+public class TargetLocation implements ToJsonConvertible {
 
     double latitude;
     double longitude;
@@ -56,5 +59,9 @@ public class TargetLocation {
         result = 31 * result + Boolean.hashCode(isEnabled());
         result = 31 * result + Long.hashCode(getRequestedTime());
         return result;
+    }
+
+    @Override public String toJson() {
+        return GsonFactory.getGson().toJson(this);
     }
 }

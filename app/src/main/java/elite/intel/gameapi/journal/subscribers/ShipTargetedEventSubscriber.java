@@ -4,17 +4,14 @@ import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.ai.mouth.subscribers.events.TTSInterruptEvent;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
 import elite.intel.gameapi.journal.events.ShipTargetedEvent;
 import elite.intel.session.PlayerSession;
+import elite.intel.util.Md5Utils;
 import elite.intel.util.RomanNumeralConverter;
 import elite.intel.util.TTSFriendlyNumberConverter;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager; 
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Set;
 
 public class ShipTargetedEventSubscriber {
@@ -80,24 +77,12 @@ public class ShipTargetedEventSubscriber {
                 }
             }
             String data = buildCanonicalShipString(event);
-            String key;
-            try {
-                MessageDigest md5 = MessageDigest.getInstance("MD5");
-                md5.update(data.getBytes(StandardCharsets.UTF_8));
-                byte[] digest = md5.digest();
-                StringBuilder sb = new StringBuilder();
-                for (byte b : digest) {
-                    sb.append(String.format("%02x", b & 0xff));
-                }
-                key = sb.toString();
-                if (playerSession.getShipScan(key) == null || playerSession.getShipScan(key).isEmpty()) {
-                    //new scan
-                    playerSession.putShipScan(key, data);
-                    EventBusManager.publish(new TTSInterruptEvent());
-                    EventBusManager.publish(new MissionCriticalAnnouncementEvent(info.toString()));
-                }
-            } catch (NoSuchAlgorithmException e) {
-                throw new RuntimeException(e);
+            String key = Md5Utils.generateMd5(data);
+            if (playerSession.getShipScan(key) == null || playerSession.getShipScan(key).isEmpty()) {
+                //new scan
+                playerSession.putShipScan(key, data);
+                EventBusManager.publish(new TTSInterruptEvent());
+                EventBusManager.publish(new MissionCriticalAnnouncementEvent(info.toString()));
             }
         }
     }

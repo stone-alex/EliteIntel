@@ -209,3 +209,5 @@
 "and the next"="enter next"
 "sundown"="shutdown"
 "i'm bored the ship"="board the ship"
+"extract the salary"="extract the SRV"
+"see some"="system"

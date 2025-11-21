@@ -9,7 +9,7 @@ import elite.intel.ai.search.edsm.dto.TrafficDto;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.gamestate.dtos.NavRouteDto;
 import elite.intel.session.PlayerSession;
-import elite.intel.session.ShipRoute;
+import elite.intel.db.managers.ShipRouteManager;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.JsonDataFactory;
 import elite.intel.util.json.ToJsonConvertible;
@@ -30,7 +30,7 @@ public class AnalyzeRouterHandler extends BaseQueryAnalyzer implements QueryHand
 
         Queries query = findQuery(action);
         PlayerSession playerSession = PlayerSession.getInstance();
-        ShipRoute shipRoute = ShipRoute.getInstance();
+        ShipRouteManager shipRoute = ShipRouteManager.getInstance();
 
         Collection<ToJsonConvertible> route = new LinkedHashSet<>();
         Collection<NavRouteDto> orderedRoute = shipRoute.getOrderedRoute();

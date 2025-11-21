@@ -2,10 +2,10 @@ package elite.intel.gameapi;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import elite.intel.ai.ConfigManager;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.journal.EventRegistry;
 import elite.intel.gameapi.journal.events.BaseEvent;
+import elite.intel.session.PlayerSession;
 import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.json.GsonFactory;
 import org.apache.logging.log4j.LogManager;
@@ -49,7 +49,7 @@ public class JournalParser implements Runnable {
     private Thread processingThread;
     private volatile boolean isRunning;
     public JournalParser() {
-        journalDir = ConfigManager.getInstance().getJournalPath();
+        journalDir = PlayerSession.getInstance().getJournalPath();
     }
 
     public synchronized void start() {

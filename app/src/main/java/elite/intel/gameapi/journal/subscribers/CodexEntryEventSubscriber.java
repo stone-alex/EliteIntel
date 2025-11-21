@@ -16,7 +16,7 @@ public class CodexEntryEventSubscriber {
     public void onCodexEntryEvent(CodexEntryEvent event) {
         PlayerSession playerSession = PlayerSession.getInstance();
 
-        LocationDto currentLocation = playerSession.getLocation(event.getBodyID());
+        LocationDto currentLocation = playerSession.getLocation(event.getBodyID(), event.getSystem());
         playerSession.setCurrentLocationId(event.getBodyID());
         StringBuilder sb = new StringBuilder();
 

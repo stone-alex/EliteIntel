@@ -1,8 +1,10 @@
 package elite.intel.ui.view;
 
-import elite.intel.ai.ConfigManager;
+import com.google.common.eventbus.Subscribe;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
+import elite.intel.ui.event.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,12 +15,10 @@ import javax.swing.plaf.FontUIResource;
 import javax.swing.plaf.basic.BasicTabbedPaneUI;
 import javax.swing.text.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -27,47 +27,10 @@ import java.util.concurrent.atomic.AtomicInteger;
  * and theming for various sections such as system configuration, player
  * configuration, and help documentation.
  */
-public class AppView extends JFrame implements PropertyChangeListener, AppViewInterface {
+public class AppView extends JFrame implements AppViewInterface {
 
     public static final String LABEL_STREAMING_MODE = "Streaming Mode";
     public static final String LABEL_PRIVACY_MODE = "Privacy Mode";
-    // ----- ACTION COMMANDS -----
-    // Action commands are used to trigger specific actions in the UI.
-    // They are passed to the controller via the actionPerformed() method.
-    // The controller can then use the action command to determine what to do.
-    //
-    // Note: Action commands are not intended to be used for communication between the UI and the controller.
-    //       They are only intended to be used for communication between the UI and the model.
-    //
-    // Action commands are defined here and referenced in the UI code.
-    //
-    public static final String ACTION_SAVE_USER_CONFIG = "saveUserConfig";
-    public static final String ACTION_SAVE_SYSTEM_CONFIG = "saveSystemConfig";
-    public static final String ACTION_TOGGLE_SERVICES = "toggleServices";
-    public static final String ACTION_TOGGLE_STREAMING_MODE = "toggleStreamingMode";
-    public static final String ACTION_TOGGLE_PRIVACY_MODE = "togglePrivacyMode";
-    public static final String ACTION_TOGGLE_SYSTEM_LOG = "toggleSystemLog";
-    public static final String ACTION_SELECT_JOURNAL_DIR = "selectJournalDir";
-    public static final String ACTION_SELECT_BINDINGS_DIR = "selectBindingsDir";
-    public static final String ACTION_RECALIBRATE_AUTIO = "recalibrateAudio";
-    // ----- END COLORS -----
-    // ----- PROPERTY CHANGE EVENTS -----
-    // Property change events are used to notify the UI of changes in the model.
-    // They are passed to the controller via the propertyChange() method.
-    // The controller can then use the property name to determine what to do.
-    //
-    // Note: Property change events are not intended to be used for communication between the UI and the controller.
-    //       They are only intended to be used for communication between the UI and the model.
-    //
-    // Property change events are defined here and referenced in the UI code.
-    //
-    public static final String PROPERTY_SYSTEM_CONFIG_UPDATED = "systemConfigUpdated";
-    public static final String PROPERTY_LOG_UPDATED = "logUpdated";
-    public static final String PROPERTY_USER_CONFIG_UPDATED = "userConfigUpdated";
-    public static final String PROPERTY_STREAMING_MODE = "streamingModeUpdated";
-    public static final String PROPERTY_PRIVACY_MODE = "privacyModeUpdated";
-    public static final String PROPERTY_HELP_MARKDOWN = "helpMarkdownUpdated";
-    public static final String PROPERTY_SERVICES_TOGGLE = "servicesToggled";
     // ----- COLORS (adjust to taste) -----
     private static final Color BG = new Color(0x1D1D1D); // base background
     private static final Color BG_PANEL = new Color(0x2B2D30); // panels/inputs background
@@ -81,10 +44,13 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     private static final String ICON_PLAYER = "/images/controller.png";
     private static final String ICON_SETTINGS = "/images/settings.png";
     private static final Logger log = LoggerFactory.getLogger(AppView.class);
+    private final PlayerSession playerSession = PlayerSession.getInstance();
+    private final SystemSession systemSession = SystemSession.getInstance();
     // Title
     private final JLabel titleLabel;
     private final AtomicInteger typeIndex = new AtomicInteger(0);
     private final StringBuilder typeBuffer = new StringBuilder();
+    private final AtomicBoolean isServiceRunning = new AtomicBoolean(false);
     // System tab components
     private JPasswordField sttApiKeyField;
     private JCheckBox sttLockedCheck;
@@ -94,7 +60,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     private JPasswordField ttsApiKeyField;
     private JCheckBox ttsLockedCheck;
     private JButton saveSystemButton;
-    private JButton startStopServicesButton;
+    private JToggleButton startStopServicesButton;
     private JButton recalibrateAudioButton;
     private JCheckBox toggleStreamingModeCheckBox;
     private JCheckBox togglePrivacyModeCheckBox;
@@ -107,7 +73,6 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     private JTextField playerTitleField;
     private JTextField playerMissionDescription;
     private JTextField journalDirField;
-
 
     // ---------- Public API ----------
     private JTextField bindingsDirField;
@@ -175,6 +140,8 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         journalDirField.setPreferredSize(new Dimension(200, 42));
         bindingsDirField.setEditable(false);
         bindingsDirField.setPreferredSize(new Dimension(200, 42));
+
+        initData();
     }
 
     /**
@@ -308,7 +275,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         buttons.setOpaque(false);
         // Use inline subclass to custom-paint the dark background (no reassignment issues)
 
-        startStopServicesButton = new JButton("Start Services") {
+        startStopServicesButton = new JToggleButton("Start Services") {
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
@@ -326,17 +293,28 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
                 super.paintComponent(g);
             }
         };
-        startStopServicesButton.setActionCommand(ACTION_TOGGLE_SERVICES);
+
+        startStopServicesButton.addActionListener(e -> {
+            EventBusManager.publish(new ToggleServicesEvent(!isServiceRunning.get()));
+        });
+
+
         styleButton(startStopServicesButton);
 
         showDetailedLog = new JCheckBox("Detailed Log", false);
-        showDetailedLog.setActionCommand(ACTION_TOGGLE_SYSTEM_LOG);
+        showDetailedLog.addActionListener(e -> {
+            EventBusManager.publish(new ToggleDetailedLogEvent(showDetailedLog.isSelected()));
+        });
 
         toggleStreamingModeCheckBox = new JCheckBox(LABEL_STREAMING_MODE, false);
-        toggleStreamingModeCheckBox.setActionCommand(ACTION_TOGGLE_STREAMING_MODE);
+        toggleStreamingModeCheckBox.addActionListener(e -> {
+            EventBusManager.publish(new ToggleStreamingModeEvent(toggleStreamingModeCheckBox.isSelected()));
+        });
 
         togglePrivacyModeCheckBox = new JCheckBox(LABEL_STREAMING_MODE, false);
-        togglePrivacyModeCheckBox.setActionCommand(ACTION_TOGGLE_PRIVACY_MODE);
+        togglePrivacyModeCheckBox.addActionListener(e -> {
+            EventBusManager.publish(new TogglePrivacyModeEvent(togglePrivacyModeCheckBox.isSelected()));
+        });
 
         buttons.add(startStopServicesButton);
         buttons.add(showDetailedLog);
@@ -418,7 +396,26 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
             }
         };
         styleButton(selectJournalDirButton);
-        selectJournalDirButton.setActionCommand(ACTION_SELECT_JOURNAL_DIR);
+        selectJournalDirButton.addActionListener(e -> {
+            JFileChooser chooser = new JFileChooser();
+            chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            chooser.setDialogTitle("Select Elite Dangerous Journal Directory");
+
+            // Start in current known folder (or user home if empty)
+            String current = playerSession.getJournalPath().toString();
+            if (current != null && !current.isBlank()) {
+                chooser.setCurrentDirectory(new File(current).getParentFile());
+            }
+
+            int result = chooser.showOpenDialog(AppView.this);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                File selectedDir = chooser.getSelectedFile();                 // here it is
+                String absolutePath = selectedDir.getAbsolutePath();
+
+                playerSession.setJournalPath(absolutePath);   // auto-saves to SQLite
+                journalDirField.setText(absolutePath);
+            }
+        });
         addField(panel, selectJournalDirButton, gbc, 2, 0.2);
 
         // Row 5: Bindings Directory
@@ -446,7 +443,25 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
             }
         };
         styleButton(selectBindingsDirButton);
-        selectBindingsDirButton.setActionCommand(ACTION_SELECT_BINDINGS_DIR);
+        selectBindingsDirButton.addActionListener(e -> {
+            JFileChooser chooser = new JFileChooser();
+            chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            chooser.setDialogTitle("Select Elite Dangerous Bindings Directory");
+
+            // Start in current known folder (or user home if empty)
+            String current = playerSession.getBindingsDir().toString();
+            if (current != null && !current.isBlank()) {
+                chooser.setCurrentDirectory(new File(current).getParentFile());
+            }
+
+            int result = chooser.showOpenDialog(AppView.this);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                File selectedDir = chooser.getSelectedFile();                 // here it is
+                String absolutePath = selectedDir.getAbsolutePath();
+                playerSession.setBindingsDir(absolutePath);   // auto-saves to SQLite
+                bindingsDirField.setText(absolutePath);
+            }
+        });
         addField(panel, selectBindingsDirButton, gbc, 2, 0.2);
 
         // Row 5: Save button
@@ -479,7 +494,9 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
             }
         };
         styleButton(savePlayerInfoButton);
-        savePlayerInfoButton.setActionCommand(ACTION_SAVE_USER_CONFIG);
+        savePlayerInfoButton.addActionListener(e -> {
+            savePlayerConfig();
+        });
 
         btns.add(savePlayerInfoButton);
         panel.add(btns, gbc);
@@ -538,14 +555,6 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         edsmLockedCheck = new JCheckBox("Locked", true);
         addCheck(panel, edsmLockedCheck, gbc, 2, 0.2);
 
-        // Row YouTube URL
-//        nextRow(gbc);
-//        addLabel(panel, "YouTube Stream:", gbc, 0);
-//        systemYouTubeStreamUrl = new JTextField();
-//        systemYouTubeStreamUrl.setPreferredSize(new Dimension(200, 42));
-//        systemYouTubeStreamUrl.setToolTipText("Enter your Stream URL if you want TTS for chat");
-//        addField(panel, systemYouTubeStreamUrl, gbc, 1, 1.0);
-
         // Row 3: Buttons
         nextRow(gbc);
         gbc.gridx = 0;
@@ -576,7 +585,9 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
             }
         };
         styleButton(saveSystemButton);
-        saveSystemButton.setActionCommand(ACTION_SAVE_SYSTEM_CONFIG);
+        saveSystemButton.addActionListener(e -> {
+            saveSystemConfig();
+        });
 
 
         recalibrateAudioButton = new JButton("Recalibrate Audio") {
@@ -598,7 +609,9 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
             }
         };
 
-        recalibrateAudioButton.setActionCommand(ACTION_RECALIBRATE_AUTIO);
+        recalibrateAudioButton.addActionListener(e -> {
+            EventBusManager.publish(new RecalibrateAudioEvent());
+        });
         styleButton(recalibrateAudioButton);
 
         buttons.add(saveSystemButton);
@@ -704,224 +717,106 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         }
     }
 
-    public void addActionListener(ActionListener l) {
-        if (saveSystemButton != null) saveSystemButton.addActionListener(l);
-        if (startStopServicesButton != null) startStopServicesButton.addActionListener(l);
-        if (recalibrateAudioButton != null) recalibrateAudioButton.addActionListener(l);
-        if (savePlayerInfoButton != null) savePlayerInfoButton.addActionListener(l);
-        if (toggleStreamingModeCheckBox != null) toggleStreamingModeCheckBox.addActionListener(l);
-        if (togglePrivacyModeCheckBox != null) togglePrivacyModeCheckBox.addActionListener(l);
-        if (showDetailedLog != null) showDetailedLog.addActionListener(l);
-        if (selectJournalDirButton != null) selectJournalDirButton.addActionListener(l);
-        if (selectBindingsDirButton != null) selectBindingsDirButton.addActionListener(l);
+
+    // Add near the top with the other public methods
+    @Override
+    public void initData() {
+
+        sttApiKeyField.setText(systemSession.getSttApiKey() != null ? systemSession.getSttApiKey() : "");
+        llmApiKeyField.setText(systemSession.getAiApiKey() != null ? systemSession.getAiApiKey() : "");
+        ttsApiKeyField.setText(systemSession.getTtsApiKey() != null ? systemSession.getTtsApiKey() : "");
+        edsmKeyField.setText(systemSession.getEdsmApiKey() != null ? systemSession.getEdsmApiKey() : "");
+
+        // Player tab
+        playerAltNameField.setText(playerSession.getAlternativeName() != null ? playerSession.getAlternativeName() : "");
+        playerTitleField.setText(playerSession.getPlayerTitle() != null ? playerSession.getPlayerTitle() : "");
+        playerMissionDescription.setText(playerSession.getPlayerMissionStatement() != null ? playerSession.getPlayerMissionStatement() : "");
+        journalDirField.setText(playerSession.getJournalPath().toString());
+        bindingsDirField.setText(playerSession.getBindingsDir().toString());
+
+        // streaming / privacy checkboxes
+        toggleStreamingModeCheckBox.setSelected(systemSession.isStreamingModeOn());
+        setupStreamingCheckBox(systemSession.isStreamingModeOn());
+        togglePrivacyModeCheckBox.setSelected(systemSession.isStreamingModeOn());
+        togglePrivacyModeCheckBox.setForeground(systemSession.isStreamingModeOn() ? Color.RED : Color.GREEN);
     }
+
+
+    private void saveSystemConfig() {
+        SystemSession s = SystemSession.getInstance();
+        s.setSttApiKey(sttApiKeyField.getText());
+        s.setAiApiKey(llmApiKeyField.getText());
+        s.setTtsApiKey(ttsApiKeyField.getText());
+        s.setEdsmApiKey(edsmKeyField.getText());
+        EventBusManager.publish(new AppLogEvent("System config saved"));
+        initData(); // UI instantly reflects what’s in DB
+    }
+
+    private void savePlayerConfig() {
+        PlayerSession p = PlayerSession.getInstance();
+        p.setAlternativeName(playerAltNameField.getText());
+        p.setPlayerTitle(playerTitleField.getText());
+        p.setPlayerMissionStatement(playerMissionDescription.getText());
+        p.setJournalPath(journalDirField.getText());
+        p.setBindingsDir(bindingsDirField.getText());
+        EventBusManager.publish(new AppLogEvent("Player config saved"));
+        initData();
+    }
+
 
     @Override
     public JFrame getUiComponent() {
         return this;
     }
 
-    @Override public void setupControlls(boolean isServiceRunning) {
-        toggleStreamingModeCheckBox.setEnabled(isServiceRunning);
-        togglePrivacyModeCheckBox.setEnabled(isServiceRunning);
-        startStopServicesButton.setText(isServiceRunning ? "Stop Service" : "Start Service");
-    }
-
-    // System config I/O
-    public void setSystemConfig(Map<String, String> cfg) {
-        if (cfg == null) return;
-        if (sttApiKeyField != null) {
-            sttApiKeyField.setText(cfg.getOrDefault(ConfigManager.STT_API_KEY, ""));
-            sttLockedCheck.setSelected(!cfg.getOrDefault(ConfigManager.STT_API_KEY, "").isEmpty());
-        }
-        if (llmApiKeyField != null) {
-            llmApiKeyField.setText(cfg.getOrDefault(ConfigManager.AI_API_KEY, ""));
-            llmLockedCheck.setSelected(!cfg.getOrDefault(ConfigManager.AI_API_KEY, "").isEmpty());
-        }
-        if (ttsApiKeyField != null) {
-            ttsApiKeyField.setText(cfg.getOrDefault(ConfigManager.TTS_API_KEY, ""));
-            ttsLockedCheck.setSelected(!cfg.getOrDefault(ConfigManager.TTS_API_KEY, "").isEmpty());
-        }
-        if (edsmKeyField != null) {
-            edsmKeyField.setText(cfg.getOrDefault(ConfigManager.EDSM_KEY, ""));
-            edsmLockedCheck.setSelected(!cfg.getOrDefault(ConfigManager.EDSM_KEY, "").isEmpty());
-        }
-    }
-
-    @Override
-    public void displaySystemConfig(Map<String, String> cfg) {
-        for (Map.Entry<String, String> entry : cfg.entrySet()) {
-            switch (entry.getKey()) {
-                case ConfigManager.TTS_API_KEY:
-                    sttApiKeyField.setText(entry.getValue());
-                    sttLockedCheck.setSelected(!cfg.getOrDefault(ConfigManager.STT_API_KEY, "").isEmpty());
-                    break;
-                case ConfigManager.AI_API_KEY:
-                    llmApiKeyField.setText(entry.getValue());
-                    llmLockedCheck.setSelected(!cfg.getOrDefault(ConfigManager.AI_API_KEY, "").isEmpty());
-                    break;
-                case ConfigManager.STT_API_KEY:
-                    ttsApiKeyField.setText(entry.getValue());
-                    ttsLockedCheck.setSelected(!cfg.getOrDefault(ConfigManager.TTS_API_KEY, "").isEmpty());
-                    break;
-                case ConfigManager.EDSM_KEY:
-                    edsmKeyField.setText(entry.getValue());
-                    edsmLockedCheck.setSelected(!cfg.getOrDefault(ConfigManager.EDSM_KEY, "").isEmpty());
-                    break;
-            }
-        }
-    }
-
-    @Override
-    public void displayUserConfig(Map<String, String> cfg) {
-        for (Map.Entry<String, String> entry : cfg.entrySet()) {
-            switch (entry.getKey()) {
-                case ConfigManager.PLAYER_ALTERNATIVE_NAME:
-                    playerAltNameField.setText(entry.getValue());
-                    break;
-                case ConfigManager.PLAYER_CUSTOM_TITLE:
-                    playerTitleField.setText(entry.getValue());
-                    break;
-                case ConfigManager.PLAYER_MISSION_STATEMENT:
-                    playerMissionDescription.setText(entry.getValue());
-                    break;
-                case ConfigManager.BINDINGS_DIR:
-                    bindingsDirField.setText(ConfigManager.getInstance().getBindingsPath().toAbsolutePath().toString());
-                case ConfigManager.JOURNAL_DIR:
-                    journalDirField.setText(ConfigManager.getInstance().getJournalPath().toAbsolutePath().toString());
-                    break;
-            }
-        }
+    @Override public void setServicesRunning(boolean running) {
 
     }
 
-    /**
-     * Retrieves the system configuration input provided by the user.
-     * This method collects and returns the configuration details
-     * populated in the user interface fields for system-related settings.
-     * It includes API keys for TTS, STT, and AI features, if available.
-     *
-     * @return A map containing system configuration key-value pairs,
-     * such as API keys for various services. If a field is not
-     * populated, its corresponding key will not be included in
-     * the map.
-     */
-    public Map<String, String> getSystemConfigInput() {
-        Map<String, String> cfg = new HashMap<>();
-        if (sttApiKeyField != null) cfg.put(ConfigManager.TTS_API_KEY, new String(sttApiKeyField.getPassword()));
-        if (llmApiKeyField != null) cfg.put(ConfigManager.AI_API_KEY, new String(llmApiKeyField.getPassword()));
-        if (ttsApiKeyField != null) cfg.put(ConfigManager.STT_API_KEY, new String(ttsApiKeyField.getPassword()));
-        if (edsmKeyField != null) cfg.put(ConfigManager.EDSM_KEY, new String(edsmKeyField.getPassword()));
-        //if (systemYouTubeStreamUrl != null) cfg.put(ConfigManager.YT_URL, systemYouTubeStreamUrl.getText());
-        return cfg;
-    }
+    @Subscribe
+    public void onAppLogEvent(AppLogEvent event) {
+        if (logArea == null) return;
 
-    /**
-     * Updates the user configuration by applying the provided key-value mappings
-     * to the relevant user interface fields.
-     * This method updates specific fields like the player's alternative name,
-     * title, and mission description based on the configuration values.
-     * If a field is null, no updates are made to that field.
-     *
-     * @param cfg A map containing user configuration key-value pairs.
-     *            The keys should correspond to predefined configuration constants
-     *            (e.g., PLAYER_ALTERNATIVE_NAME, PLAYER_TITLE, PLAYER_MISSION_STATEMENT).
-     *            If the map is null, the method does nothing.
-     */
-    // User config I/O
-    public void setUserConfig(Map<String, String> cfg) {
-        if (cfg == null) return;
-        if (playerAltNameField != null) playerAltNameField.setText(cfg.getOrDefault(ConfigManager.PLAYER_ALTERNATIVE_NAME, ""));
-        if (playerTitleField != null) playerTitleField.setText(cfg.getOrDefault(ConfigManager.PLAYER_CUSTOM_TITLE, ""));
-        if (playerMissionDescription != null) playerMissionDescription.setText(cfg.getOrDefault(ConfigManager.PLAYER_MISSION_STATEMENT, ""));
-//        if (systemYouTubeStreamUrl != null) {
-//            systemYouTubeStreamUrl.setText(cfg.getOrDefault(ConfigManager.YT_URL, ""));
-//        }
-        if (journalDirField != null) journalDirField.setText(cfg.getOrDefault(ConfigManager.JOURNAL_DIR, ""));
-        if (bindingsDirField != null) bindingsDirField.setText(cfg.getOrDefault(ConfigManager.BINDINGS_DIR, ""));
-    }
+        String newLine = event.getData();  // this is ONE new line, e.g. "PLAYER: Hello computer"
+        if (newLine == null || newLine.isBlank()) return;
 
-    /**
-     * Retrieves the user configuration input provided through the user interface.
-     * This method collects and returns the configuration details entered in specific
-     * fields such as the player's alternative name, title, and mission description.
-     * If certain fields are not populated, their corresponding keys will not be included
-     * in the resulting map.
-     *
-     * @return A map containing key-value pairs for user configuration. The keys correspond
-     * to predefined configuration identifiers (e.g., PLAYER_ALTERNATIVE_NAME,
-     * PLAYER_TITLE, PLAYER_MISSION_STATEMENT). If no input is provided, the map
-     * will only include non-null field values.
-     */
-    public Map<String, String> getUserConfigInput() {
-        Map<String, String> cfg = new HashMap<>();
-        if (playerAltNameField != null) cfg.put(ConfigManager.PLAYER_ALTERNATIVE_NAME, playerAltNameField.getText());
-        if (playerTitleField != null) cfg.put(ConfigManager.PLAYER_CUSTOM_TITLE, playerTitleField.getText());
-        if (playerMissionDescription != null) cfg.put(ConfigManager.PLAYER_MISSION_STATEMENT, playerMissionDescription.getText());
-        if (journalDirField != null) cfg.put(ConfigManager.JOURNAL_DIR, journalDirField.getText());
-        if (bindingsDirField != null) cfg.put(ConfigManager.BINDINGS_DIR, bindingsDirField.getText());
-        return cfg;
-    }
+        String currentText = logArea.getText();
 
-    /**
-     * Updates the content of the log area with the given text. If the current text
-     * in the log area and the new text share a common prefix, only the differing
-     * part of the text is gradually updated using an animated effect.
-     *
-     * @param text the new log text to display in the log area; if null, the method does nothing
-     */
-//TODO: Analyze this for re-paint bug
-    public void setLogText(String text) {
-        if (logArea == null || text == null) return;
+        // Build what the final text SHOULD be
+        String finalText = currentText.isEmpty() ? newLine : currentText + "\n" + newLine;
 
-        String current = logArea.getText();
-        if (current.equals(text)) return;
-
-        // Cancel any ongoing
+        // Cancel any running typewriter
         if (logTypewriterTimer != null) {
             logTypewriterTimer.stop();
         }
 
-        int prefix = 0;
-        int min = Math.min(current.length(), text.length());
-        while (prefix < min && current.charAt(prefix) == text.charAt(prefix)) prefix++;
+        // Start from end of current text
+        logArea.setText(currentText);
+        logArea.setCaretPosition(currentText.length());
 
-        // Init
-        typeBuffer.setLength(0);
-        typeBuffer.append(text, 0, prefix);
-        typeIndex.set(prefix);
-        pendingLogText = text;
+        // Type out the new line only
+        logTypewriterTimer = new Timer(7, null);
+        AtomicInteger pos = new AtomicInteger(currentText.length());
 
-        // Reuse or create timer
-        if (logTypewriterTimer == null) {
-            logTypewriterTimer = new Timer(7, e -> {
-                int idx = typeIndex.get();
-                if (idx < pendingLogText.length()) {
-                    typeBuffer.append(pendingLogText.charAt(idx));
-                    logArea.setText(typeBuffer.toString());
-                    logArea.setCaretPosition(logArea.getDocument().getLength());
-                    typeIndex.incrementAndGet();
-                } else {
-                    logTypewriterTimer.stop();
+        logTypewriterTimer.addActionListener(e -> {
+            int i = pos.get();
+            if (i < finalText.length()) {
+                try {
+                    char c = finalText.charAt(i);
+                    logArea.getDocument().insertString(i, String.valueOf(c), null);
+                    pos.incrementAndGet();
+                    logArea.setCaretPosition(i + 1);
+                } catch (BadLocationException ignored) {
+                    ((Timer) e.getSource()).stop();
                 }
-            });
-        } else {
-            logTypewriterTimer.restart();
-        }
+            } else {
+                ((Timer) e.getSource()).stop();
+            }
+        });
+
         logTypewriterTimer.start();
     }
 
-    // ----- END ACTION COMMANDS -----
-
-    /**
-     * Creates and initializes a basic instance of {@link GridBagConstraints} with default styling
-     * and layout parameters. This method configures the constraints such that components are
-     * aligned to the west, have no fill, and include uniform insets. The grid coordinates and the
-     * weight for both axes are set to zero.
-     *
-     * @return A {@link GridBagConstraints} object preconfigured with default grid position, padding,
-     * alignment, and other layout properties.
-     */
     private GridBagConstraints baseGbc() {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -961,7 +856,7 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
     }
 
     // Keep button styling lightweight; painting is handled by the inline subclass above
-    private void styleButton(JButton b) {
+    private void styleButton(AbstractButton b) {
         b.setOpaque(false);
         b.setContentAreaFilled(false);
         b.setFocusPainted(false);
@@ -972,14 +867,6 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         ));
     }
 
-    /**
-     * Styles the specified JTabbedPane with a dark theme and custom tab rendering.
-     * Configures the tab background, accent underline for the selected tab,
-     * minimal borders, and scroll tab layout policy.
-     *
-     * @param tp the JTabbedPane to be styled
-     */
-    // Paint dark tabs with ACCENT underline for the selected tab
     private void styleTabbedPane(JTabbedPane tp) {
         tp.setOpaque(true);
         tp.setBackground(BG);
@@ -1039,32 +926,17 @@ public class AppView extends JFrame implements PropertyChangeListener, AppViewIn
         });
     }
 
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals(PROPERTY_SYSTEM_CONFIG_UPDATED)) {
-            setSystemConfig((Map<String, String>) evt.getNewValue());
-        } else if (evt.getPropertyName().equals(PROPERTY_USER_CONFIG_UPDATED)) {
-            setUserConfig((Map<String, String>) evt.getNewValue());
-        } else if (evt.getPropertyName().equals(PROPERTY_LOG_UPDATED)) {
-            setLogText((String) evt.getNewValue());
-        } else if (evt.getPropertyName().equals(PROPERTY_STREAMING_MODE)) {
-            Boolean streamingModeOn = (Boolean) evt.getNewValue();
-            setupStreamingCheckBox(streamingModeOn);
-        } else if (evt.getPropertyName().equals(PROPERTY_PRIVACY_MODE)) {
-            Boolean privacyModeOn = (Boolean) evt.getNewValue();
-            togglePrivacyModeCheckBox.setSelected(privacyModeOn);
-            togglePrivacyModeCheckBox.setForeground(privacyModeOn ? Color.RED : Color.GREEN);
-            togglePrivacyModeCheckBox.setText(privacyModeOn ? "Turn Mic Off" : "Turn Mic On");
-        } else if (evt.getPropertyName().equals(PROPERTY_SERVICES_TOGGLE)) {
-            toggleStreamingModeCheckBox.setEnabled((Boolean) evt.getNewValue());
-            togglePrivacyModeCheckBox.setEnabled((Boolean) evt.getNewValue());
-            setupStreamingCheckBox(SystemSession.getInstance().isStreamingModeOn());
-        }
-    }
-
     private void setupStreamingCheckBox(Boolean streamingModeOn) {
         toggleStreamingModeCheckBox.setSelected(streamingModeOn);
         toggleStreamingModeCheckBox.setForeground(streamingModeOn ? Color.RED : Color.GREEN);
         toggleStreamingModeCheckBox.setText(streamingModeOn ? "Streaming On" : "Streaming Off");
+    }
+
+
+    @Subscribe public void onServiceStatusEvent(ServicesStateEvent event){
+        isServiceRunning.set(event.isRunning());
+        startStopServicesButton.setText(event.isRunning() ? "Stop Services" : "Start Services");
+        togglePrivacyModeCheckBox.setEnabled(event.isRunning());
+        toggleStreamingModeCheckBox.setEnabled(event.isRunning());
     }
 }

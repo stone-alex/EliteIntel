@@ -3,7 +3,7 @@ package elite.intel.ai.search.spansh.market;
 import elite.intel.gameapi.gamestate.dtos.BaseJsonDto;
 import elite.intel.util.json.ToJsonConvertible;
 
-public class StationMarket extends BaseJsonDto implements ToJsonConvertible {
+public class StationMarketDto extends BaseJsonDto implements ToJsonConvertible {
     private  String stationName;
     private  String systemName;
     private  double distance;
@@ -13,8 +13,9 @@ public class StationMarket extends BaseJsonDto implements ToJsonConvertible {
     private  int sellPrice;
     private  int buyPrice;
     private  int commoditySupply;
+    private long marketId;
 
-    public StationMarket() {
+    public StationMarketDto() {
     }
 
     public String stationName() {
@@ -87,5 +88,13 @@ public class StationMarket extends BaseJsonDto implements ToJsonConvertible {
 
     public void setBuyPrice(int buyPrice) {
         this.buyPrice = buyPrice;
+    }
+
+    public void setMarketId(long marketId) {
+        this.marketId= marketId;
+    }
+
+    public long getMarketId() {
+        return marketId;
     }
 }

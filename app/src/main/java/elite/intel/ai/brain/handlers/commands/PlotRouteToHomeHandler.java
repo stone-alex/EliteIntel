@@ -2,16 +2,13 @@ package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
+import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.db.managers.LocationManager;
+import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
-import elite.intel.session.HomeSystem;
-import elite.intel.session.PlayerSession;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class PlotRouteToHomeHandler extends CommandOperator implements CommandHandler {
 
-
-    private static final Logger log = LogManager.getLogger(PlotRouteToHomeHandler.class);
     private final GameController commandHandler;
 
     public PlotRouteToHomeHandler(GameController commandHandler) throws Exception {
@@ -20,9 +17,14 @@ public class PlotRouteToHomeHandler extends CommandOperator implements CommandHa
     }
 
     @Override public void handle(String action, JsonObject params, String responseText) {
-        HomeSystem homeSystem = HomeSystem.getInstance();
+        EventBusManager.publish(new AiVoxResponseEvent("Plotting route to home system..."));
+        LocationManager locations = LocationManager.getInstance();
+        LocationDto location =locations.getHomeSystem();
+        if(location.getBodyId() == -1){
+            EventBusManager.publish(new AiVoxResponseEvent("Home system is not set. We are homeless!"));
+            return;
+        }
         RoutePlotter plotter = new RoutePlotter(commandHandler);
-        LocationDto location = homeSystem.getHomeSystem();
         plotter.plotRoute(location.getStarName());
     }
 }

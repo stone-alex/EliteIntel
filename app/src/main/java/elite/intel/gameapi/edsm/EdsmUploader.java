@@ -3,10 +3,10 @@ package elite.intel.gameapi.edsm;
 import com.google.common.eventbus.Subscribe;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import elite.intel.ai.ConfigManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.BaseEvent;
 import elite.intel.session.PlayerSession;
+import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.json.GsonFactory;
 import org.apache.logging.log4j.LogManager;
@@ -33,7 +33,7 @@ public final class EdsmUploader {
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private final Set<String> discard = ConcurrentHashMap.newKeySet();
     private final PlayerSession playerSession = PlayerSession.getInstance();
-    private final ConfigManager configManager = ConfigManager.getInstance();
+    private final SystemSession systemSession = SystemSession.getInstance();
     private JsonArray batch = new JsonArray();
     private String commander;
     private String apiKey;
@@ -54,11 +54,11 @@ public final class EdsmUploader {
 
     private void flush() {
         commander = playerSession.getInGameName();
-        apiKey = configManager.getSystemKey(ConfigManager.EDSM_KEY);
+        apiKey = systemSession.getEdsmApiKey();
         version = playerSession.getGameVersion();
 
         if (commander.isBlank() || apiKey.isBlank()) {
-            String message = "EDSM credentials missing – upload disabled";
+            String message = "EDSM credentials missing – upload disabled commander=["+commander+"] apiKey=["+apiKey+"]";
             log.warn(message);
             EventBusManager.publish(new AppLogEvent(message));
             return;

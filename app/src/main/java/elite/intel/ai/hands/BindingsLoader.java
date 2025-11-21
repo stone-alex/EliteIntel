@@ -1,13 +1,12 @@
 package elite.intel.ai.hands;
 
-import elite.intel.ai.ConfigManager;
+import elite.intel.session.PlayerSession;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager; 
 
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Comparator;
 
 /**
@@ -20,7 +19,7 @@ public class BindingsLoader {
     private static final Logger log = LogManager.getLogger(BindingsLoader.class);
 
     public File getLatestBindsFile() throws Exception {
-        Path bindingsDir = ConfigManager.getInstance().getBindingsPath();
+        Path bindingsDir = PlayerSession.getInstance().getBindingsDir();
         Path latestFilePath = Files.list(bindingsDir)
                 .filter(p -> p.toString().endsWith(".binds"))
                 .max(Comparator.comparingLong(p -> p.toFile().lastModified()))

@@ -24,7 +24,6 @@ import elite.intel.ui.event.SystemShutDownEvent;
 import elite.intel.ui.model.AppModelInterface;
 import elite.intel.ui.view.AppViewInterface;
 import elite.intel.util.SleepNoThrow;
-import elite.intel.yt.StreamChatVocalizer;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -72,7 +71,6 @@ public class AppController implements AppControllerInterface, ActionListener {
     EarsInterface ears;
     MouthInterface mouth;
     AiCommandInterface brain;
-    StreamChatVocalizer streamChatVocalizer;
     JournalParser journalParser = new JournalParser();
     private boolean isServiceRunning = false;
 
@@ -189,7 +187,6 @@ public class AppController implements AppControllerInterface, ActionListener {
             brain.stop();
             ears.stop();
             mouth.stop();
-            if (streamChatVocalizer != null) streamChatVocalizer.stop();
             systemSession.clearChatHistory();
             isServiceRunning = false;
         }

@@ -22,7 +22,6 @@ import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.*;
  */
 public enum Commands {
 
-
     LIGHTS_ON_OFF("toggle_lights", null, "lights", LightsOnOffHandler.class),
     ADD_MINING_TARGET("add_mining_target", null, "mining_target", AddMiningTargetHandler.class),
     CLEAR_MINING_TARGETS("clear_mining_targets",  null, null, ClearMiningTargetsHandler.class),
@@ -44,8 +43,8 @@ public enum Commands {
     FIND_COMMODITY("find_market_where_to_buy", null, "commodity", FindCommodityHandler.class),
     SET_AI_VOICE("set_or_change_voice_to", null, "voice_name", ChangeAiVoiceHandler.class),
     SET_HOME_SYSTEM("set_location_as_home_star_system", null,  null, SetCurrentStarAsHomeSystem.class),
-    SET_PERSONALITY("set_personality", null, PlayerSession.PERSONALITY, SetPersonalityHandler.class),
-    SET_PROFILE("set_profile", null,  PlayerSession.PROFILE, SetCadenceHandler.class),
+    SET_PERSONALITY("set_personality", null, "personality", SetPersonalityHandler.class),
+    SET_PROFILE("set_profile", null,  "profile", SetCadenceHandler.class),
     SET_RADIO_TRANSMISSION_MODDE("turn_radio_transmission_on_off", null, SystemSession.RADION_TRANSMISSION_ON_OFF, SetRadioTransmissionOnOff.class),
     SET_STREAMING_MODE("toggle_streaming_mode", null,  "streaming_mode_on_off", SetStreamingModeHandler.class),
     NAVIGATE_TO_TARGET("navigate_to_coordinates", null,  "lat_lon", NavigateToCoordinatesHandler.class),

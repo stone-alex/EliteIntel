@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 public class DatabaseMigrator {
 
     private static final Logger log = LogManager.getLogger(DatabaseMigrator.class);
-    private static final Pattern MIGRATION_PATTERN = Pattern.compile("^(V\\d+(__.*)?\\.sql|\\d{4}-\\d{2}-\\d{2}(__.*)?\\.sql)$");
+    private static final Pattern MIGRATION_PATTERN = Pattern.compile("^(\\d{1,6})(__.*)?\\.sql$");
 
     public static void migrate(Handle handle) throws Exception {
         handle.execute("PRAGMA journal_mode = WAL;");

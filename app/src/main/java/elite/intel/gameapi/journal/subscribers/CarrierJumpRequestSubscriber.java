@@ -7,8 +7,6 @@ import elite.intel.gameapi.journal.events.CarrierJumpRequestEvent;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.TimestampFormatter;
 
-import static elite.intel.session.PlayerSession.CARRIER_DEPARTURE_TIME;
-
 @SuppressWarnings("unused")
 public class CarrierJumpRequestSubscriber {
 

@@ -1,4 +1,4 @@
-CREATE TABLE materials (
+CREATE TABLE IF NOT EXISTS materials (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     materialName TEXT NOT NULL UNIQUE,
     materialType TEXT NOT NULL,

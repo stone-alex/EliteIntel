@@ -1,14 +1,19 @@
 package elite.intel.gameapi.journal.events.dto;
 
 import elite.intel.gameapi.gamestate.dtos.BaseJsonDto;
+import elite.intel.util.Md5Utils;
 import elite.intel.util.json.ToJsonConvertible;
 
 public class BioSampleDto extends BaseJsonDto implements ToJsonConvertible {
 
+    int planetNumber;
+    long payout;
+    long fistDiscoveryBonus;
+    boolean ourDiscovery;
     private String planetName;
     private String planetShortName;
-
-    private long  bodyId;
+    private String primaryStar;
+    private long bodyId;
     private String genus;
     private double scanLatitude;
     private double scanLongitude;
@@ -16,11 +21,6 @@ public class BioSampleDto extends BaseJsonDto implements ToJsonConvertible {
     private boolean playerFarEnough;
     private boolean bioSampleCompleted;
     private String species;
-    int planetNumber;
-    long payout;
-    long fistDiscoveryBonus;
-    boolean ourDiscovery;
-
     private String scanXof3;
 
     public long getBodyId() {
@@ -141,5 +141,17 @@ public class BioSampleDto extends BaseJsonDto implements ToJsonConvertible {
 
     public void setPlanetShortName(String planetShortName) {
         this.planetShortName = planetShortName;
+    }
+
+    public String getPrimaryStar() {
+        return primaryStar;
+    }
+
+    public void setPrimaryStar(String primaryStar) {
+        this.primaryStar = primaryStar;
+    }
+
+    public String getKey() {
+        return Md5Utils.generateMd5(bodyId + planetName + genus + species);
     }
 }

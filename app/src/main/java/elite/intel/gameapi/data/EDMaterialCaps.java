@@ -91,7 +91,6 @@ public final class EDMaterialCaps {
     public static int getMax(String materialName) {
         Integer grade = GRADE_MAP.get(materialName);
         if (grade == null) {
-            System.err.println("WARNING: Unknown material: " + materialName + " (defaulting to 300)");
             return 300; // safe fallback
         }
         return CAPS[grade];

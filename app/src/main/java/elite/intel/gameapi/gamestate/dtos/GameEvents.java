@@ -2,12 +2,13 @@ package elite.intel.gameapi.gamestate.dtos;
 
 import com.google.gson.annotations.SerializedName;
 import elite.intel.util.json.GsonFactory;
+import elite.intel.util.json.ToJsonConvertible;
 
 import java.util.List;
 
 public class GameEvents {
 
-    public static class CargoEvent {
+    public static class CargoEvent implements ToJsonConvertible {
         @SerializedName("timestamp")
         private String timestamp;
         @SerializedName("event")
@@ -43,6 +44,26 @@ public class GameEvents {
         public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }
+
+        public void setTimestamp(String timestamp) {
+            this.timestamp = timestamp;
+        }
+
+        public void setEvent(String event) {
+            this.event = event;
+        }
+
+        public void setVessel(String vessel) {
+            this.vessel = vessel;
+        }
+
+        public void setCount(int count) {
+            this.count = count;
+        }
+
+        public void setInventory(List<Object> inventory) {
+            this.inventory = inventory;
+        }
     }
 
     public static class ModulesInfoEvent {
@@ -75,6 +96,22 @@ public class GameEvents {
 
             public String toJson() {
                 return GsonFactory.getGson().toJson(this);
+            }
+
+            public void setSlot(String slot) {
+                this.slot = slot;
+            }
+
+            public void setItem(String item) {
+                this.item = item;
+            }
+
+            public void setPower(double power) {
+                this.power = power;
+            }
+
+            public void setPriority(int priority) {
+                this.priority = priority;
             }
         }
 
@@ -143,6 +180,18 @@ public class GameEvents {
 
             public String toJson() {
                 return GsonFactory.getGson().toJson(this);
+            }
+
+            public void setSystem(long system) {
+                this.system = system;
+            }
+
+            public void setBody(long body) {
+                this.body = body;
+            }
+
+            public void setName(String name) {
+                this.name = name;
             }
         }
 

@@ -2,124 +2,45 @@ package elite.intel.session;
 
 import com.google.common.eventbus.Subscribe;
 import com.google.gson.reflect.TypeToken;
-import elite.intel.ai.search.spansh.market.StationMarket;
-import elite.intel.db.Locations;
-import elite.intel.db.util.Database;
+import elite.intel.ai.search.spansh.market.StationMarketDto;
+import elite.intel.db.*;
 import elite.intel.db.dao.PlayerDao;
+import elite.intel.db.dao.ShipScansDao;
+import elite.intel.db.util.Database;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.data.FsdTarget;
 import elite.intel.gameapi.gamestate.dtos.GameEvents;
 import elite.intel.gameapi.journal.events.*;
 import elite.intel.gameapi.journal.events.dto.*;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-/**
- * The PlayerSession class manages the game session data for a player.
- * It is implemented as a singleton to ensure consistent access across the application.
- * The class handles persistence of session data, including player's progress,
- * gameplay metrics, and interactions within the game world.
- */
-public class PlayerSession extends SessionPersistence implements java.io.Serializable {
-    // Existing constants
-    public static final String CARRIER_DEPARTURE_TIME = "carrier_departure_time";
-    public static final String MISSIONS = "player_missions";
-    public static final String PROFILE = "profile";
-    public static final String PERSONALITY = "personality";
-    public static final String SHIP_SCANS = "shipScans";
-    public static final String TARGET_FACTIONS = "targetFactions";
-    public static final String SESSION_DIR = "session/";
-    public static final String TRACKING = "tracking";
-    public static final String RANK_AND_PROGRESS_DTO = "rankAndProgressDto";
-    public static final String MARKETS = "markets";
-    public static final String FSD_TARGET = "fsd_target";
-    public static final String TARGET_MARKET_STATION = "target_market_station";
-    private static final String SESSION_FILE = "player_session.json";
-    private static final String REPUTATION = "reputation";
-    private static final String BIO_SAMPLES = "bio_samples";
-    private static final String SHIP_LOADOUT = "ship_loadout";
-    private static final String SHIP_CARGO = "ship_cargo";
-    private static final String FRIENDS_STATUS = "friends_status";
-    private static final String CARRIER_STATS = "carrier_stats";
-    private static final String BOUNTIES = "bounties";
-    private static final String MINING_TARGETS = "miningTargets";
+public class PlayerSession  {
+
     private static volatile PlayerSession instance;
 
-
-    // Existing fields
-    private final Map<String, String> shipScans = new HashMap<>();
-    private final Map<Long, MissionDto> missions = new LinkedHashMap<>();
-    private final Set<String> targetFactions = new LinkedHashSet<>();
-    private final Set<BountyDto> bounties = new LinkedHashSet<>();
-    private final Set<String> miningTargets = new HashSet<>();
-    private List<StationMarket> markets = new ArrayList<>();
-    private RankAndProgressDto rankAndProgressDto = new RankAndProgressDto();
-    private CarrierDataDto carrierData = new CarrierDataDto();
-    private List<BioSampleDto> bioSamples = new ArrayList<>();
-    private LoadoutEvent loadout;
-    private GameEvents.CargoEvent shipCargo;
-    private ReputationEvent reputation;
-    private TargetLocation tracking = new TargetLocation();
-    private Map<String, String> friendsStatus = new HashMap<>();
-    private FsdTarget fsdTarget;
-    private Map<String, Boolean> genusPaymentAnnounced = new HashMap<>();
-    private StationMarket targetMarketStation= new StationMarket();
-
+    /// Data managers.
     private Locations locationData = Locations.getInstance();
+    private ShipScans shipScans = ShipScans.getInstance();
+    private Missions missions = Missions.getInstance();
+    private Bounties bounties = Bounties.getInstance();
+    private MiningTargets miningTargets = MiningTargets.getInstance();
+    private StationMarkets markets = StationMarkets.getInstance();
+    private RanksAndProgress rankAndProgress = RanksAndProgress.getInstance();
+    private FleetCarriers fleetCarriers = FleetCarriers.getInstance();
+    private BioSamples bioSamples = BioSamples.getInstance();
+    private ShipLoadouts shipLoadouts = ShipLoadouts.getInstance();
+    private GenusAnouncements genusAnouncements = GenusAnouncements.getInstance();
+    private CargoHold cargoHold = CargoHold.getInstance();
+    private ReputationManager reputationManager = ReputationManager.getInstance();
+    private TargetLocationManager targetLocationManager = TargetLocationManager.getInstance();
+    private FsdTargetManager fsdTargetManager = FsdTargetManager.getInstance();
 
     private PlayerSession() {
-        super(SESSION_DIR);
-        ensureFileAndDirectoryExist(SESSION_FILE);
-        registerField(SHIP_SCANS, this::getShipScans, v -> {
-            shipScans.clear();
-            shipScans.putAll((Map<String, String>) v);
-        }, new TypeToken<Map<String, String>>() {
-        }.getType());
-        registerField(MISSIONS, this::getMissions, v -> {
-            missions.clear();
-            missions.putAll((Map<Long, MissionDto>) v);
-        }, new TypeToken<Map<Long, MissionDto>>() {
-        }.getType());
-
-
-        registerField(TARGET_FACTIONS, this::getTargetFactions, v -> {
-            targetFactions.clear();
-            targetFactions.addAll((Set<String>) v);
-        }, new TypeToken<Set<String>>() {
-        }.getType());
-        registerField(BOUNTIES, this::getBounties, v -> {
-            bounties.clear();
-            bounties.addAll((Set<BountyDto>) v);
-        }, new TypeToken<Set<BountyDto>>() {
-        }.getType());
-        registerField(MINING_TARGETS, this::getMiningTargets, v -> {
-            miningTargets.clear();
-            miningTargets.addAll((Set<String>) v);
-        }, new TypeToken<Set<String>>() {
-        }.getType());
-        registerField(MARKETS, this::getMarkets, this::setMarkets, new TypeToken<List<StationMarket>>() {
-        }.getType());
-        registerField(BIO_SAMPLES, this::getBioCompletedSamples, this::setBioSamples, new TypeToken<List<BioSampleDto>>() {
-        }.getType());
-        registerField(SHIP_LOADOUT, this::getShipLoadout, this::setShipLoadout, new TypeToken<LoadoutEvent>() {
-        }.getType());
-        registerField(SHIP_CARGO, this::getShipCargo, this::setShipCargo, GameEvents.CargoEvent.class);
-        registerField(REPUTATION, this::getReputation, this::setReputation, ReputationEvent.class);
-        registerField(TRACKING, this::getTracking, this::setTracking, TargetLocation.class);
-        registerField(RANK_AND_PROGRESS_DTO, this::getRankAndProgressDto, this::setRankAndProgressDto, RankAndProgressDto.class);
-        registerField(CARRIER_STATS, this::getCarrierData, this::setCarrierData, CarrierDataDto.class);
-        registerField(TARGET_MARKET_STATION, this::getTargetMarketStation, this::setTargetMarketStation, StationMarket.class);
-        registerField(TARGET_MARKET_STATION, this::getTargetMarketStation, this::setTargetMarketStation, StationMarket.class);
-        registerField(FRIENDS_STATUS, this::getFriendsStatus, v -> {
-            friendsStatus.clear();
-            friendsStatus.putAll(v);
-        }, new TypeToken<Map<String, String>>() {
-        }.getType());
-        registerField(FSD_TARGET, this::getFsdTarget, this::setFsdTarget, FsdTarget.class);
-
-        loadSavedStateFromDisk();
         EventBusManager.register(this);
-        addShutdownHook();
     }
 
     public static PlayerSession getInstance() {
@@ -133,26 +54,17 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         return instance;
     }
 
-    private void addShutdownHook() {
-        Runtime.getRuntime().addShutdownHook(new Thread(this::save));
+    public void putShipScan(String key, String scan) {
+        ShipScansDao.ShipScan data = new ShipScansDao.ShipScan();
+        data.setScan(scan);
+        data.setKey(key);
+        shipScans.saveScan(data);
     }
 
-    private void loadSavedStateFromDisk() {
-        loadSession(PlayerSession.this::loadFields);
+    public String getShipScan(String key) {
+        return shipScans.get(key);
     }
 
-    public void putShipScan(String shipName, String scan) {
-        shipScans.put(shipName, scan);
-        save();
-    }
-
-    public String getShipScan(String shipName) {
-        return shipScans.get(shipName);
-    }
-
-    private Map<String, String> getShipScans() {
-        return shipScans;
-    }
 
     public void addBountyReward(long totalReward) {
         Database.withDao(PlayerDao.class, dao -> {
@@ -165,12 +77,10 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
 
     public void addBounty(BountyDto bounty) {
         bounties.add(bounty);
-        save();
     }
 
     public void removeBounty(BountyDto bounty) {
         bounties.remove(bounty);
-        save();
     }
 
     public long getBountyCollectedThisSession() {
@@ -181,112 +91,41 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     }
 
     public void addMission(MissionDto mission) {
-        missions.put(mission.getMissionId(), mission);
-        save();
+        missions.save(mission);
     }
 
     public Map<Long, MissionDto> getMissions() {
-        return missions;
+        return missions.getMissions();
     }
 
     public void removeMission(Long missionId) {
         missions.remove(missionId);
-        save();
     }
 
     public MissionDto getMission(Long missionId) {
-        return missions.get(missionId);
+        return missions.getMission(missionId);
     }
 
 
     public RankAndProgressDto getRankAndProgressDto() {
-        return rankAndProgressDto;
+        return rankAndProgress.get();
     }
 
     public void setRankAndProgressDto(RankAndProgressDto rankAndProgressDto) {
-        this.rankAndProgressDto = rankAndProgressDto;
-        save();
-    }
-
-    public void clearShipScans() {
-        shipScans.clear();
-        save();
-    }
-
-    public void clearOnShutDown() {
-        //
-    }
-
-    public void setCarrierStats(CarrierStatsEvent event) {
-        CarrierStatsEvent.Finance finance = event.getFinance();
-        CarrierDataDto carrierData = getCarrierData();
-        carrierData.setCallSign(event.getCallsign());
-        carrierData.setCarrierName(event.getName());
-        carrierData.setCarrierType(event.getCarrierType());
-        carrierData.setDockingAccess(event.getDockingAccess());
-        carrierData.setCurrentJumpRange(event.getJumpRangeCurr());
-        carrierData.setMaxJumpRange(event.getJumpRangeMax());
-        carrierData.setAllowNotorious(event.isAllowNotorious());
-        carrierData.setPendingDecommission(event.isPendingDecommission());
-        carrierData.setFuelLevel(event.getFuelLevel());
-
-        if (event.getSpaceUsage() != null) {
-            CarrierStatsEvent.SpaceUsage spaceUsage = event.getSpaceUsage();
-            carrierData.setCargoSpaceUsed(spaceUsage.getCargo());
-            carrierData.setCargoSpaceReserved(spaceUsage.getCargoSpaceReserved());
-            carrierData.setShipRacks(spaceUsage.getShipPacks());
-            carrierData.setModulePacks(spaceUsage.getModulePacks());
-            carrierData.setFreeSpaceInCargo(spaceUsage.getFreeSpace());
-            carrierData.setCargoCapacity(spaceUsage.getTotalCapacity());
-        }
-
-        if (finance != null) {
-            carrierData.setTotalBalance(finance.getCarrierBalance());
-            carrierData.setReserveBalance(finance.getReserveBalance());
-            carrierData.setMarketBalance(finance.getAvailableBalance());
-            carrierData.setPioneerSupplyTax(finance.getTaxRate_pioneersupplies());
-            carrierData.setShipYardSupplyTax(finance.getTaxRate_shipyard());
-            carrierData.setRearmSupplyTax(finance.getTaxRate_rearm());
-            carrierData.setRepairSupplyTax(finance.getTaxRate_repair());
-            carrierData.setRefuelSupplyTax(finance.getTaxRate_refuel());
-            setCarrierData(carrierData);
-        }
-        save();
-    }
-
-    @Subscribe public void onLoadGame(LoadGameEvent event) {
-        loadSavedStateFromDisk();
-    }
-
-    @Subscribe public void onLoadSession(LoadSessionEvent event) {
-        loadSavedStateFromDisk();
+        rankAndProgress.save(rankAndProgressDto);
     }
 
     @Subscribe
     public void onBounty(BountyDto data) {
         bounties.add(data);
-        save();
     }
 
     public Set<BountyDto> getBounties() {
-        return bounties;
-    }
-
-    public void addTargetFaction(String faction) {
-        targetFactions.add(faction);
-        save();
-    }
-
-    public void setTargetFactions(Set<String> factions) {
-        targetFactions.addAll(factions);
-        save();
+        return bounties.getAll();
     }
 
     public Set<String> getTargetFactions() {
-        if (getMissions() == null || getMissions().isEmpty()) {
-            targetFactions.clear();
-        }
-        return targetFactions;
+        return missions.getTargetFactions();
     }
 
     public void saveLocation(LocationDto location) {
@@ -316,14 +155,13 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         setTotalBountyProfit(0);
         setTotalBountyClaimed(0);
         bounties.clear();
-        save();
     }
 
     public LocationDto getCurrentLocation() {
         return Database.withDao(PlayerDao.class, dao -> {
             PlayerDao.Player player = dao.get();
             Long currentLocationId = player.getCurrentLocationId();
-            return currentLocationId == null ? new LocationDto(-1): getLocation(currentLocationId, player.getCurrentPrimaryStar());
+            return currentLocationId == null ? new LocationDto(-1) : getLocation(currentLocationId, player.getCurrentPrimaryStar());
         });
     }
 
@@ -337,35 +175,31 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     }
 
     public CarrierDataDto getCarrierData() {
-        return carrierData == null ? new CarrierDataDto() : carrierData;
+        return fleetCarriers.get();
     }
 
     public void setCarrierData(CarrierDataDto carrierData) {
-        this.carrierData = carrierData;
-        save();
+        fleetCarriers.save(carrierData);
     }
 
     public Set<String> getMiningTargets() {
-        return miningTargets;
+        return miningTargets.getAll();
     }
 
     public void addMiningTarget(String miningTarget) {
-        if (miningTarget == null || miningTarget.isEmpty()) return;
-        miningTargets.add(miningTarget.toLowerCase());
-        save();
+        miningTargets.add(miningTarget);
     }
 
     public void clearMiningTargets() {
         miningTargets.clear();
-        save();
     }
 
-    public List<StationMarket> getMarkets() {
-        return markets;
+    public List<StationMarketDto> getMarkets() {
+        return markets.findForStation(getCurrentLocation().getStationName());
     }
 
-    public void setMarkets(List<StationMarket> markets) {
-        this.markets = markets;
+    public void setMarkets(List<StationMarketDto> data) {
+        markets.addList(data);
     }
 
     public void clearMarkets() {
@@ -373,64 +207,52 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     }
 
     public List<BioSampleDto> getBioCompletedSamples() {
-        return bioSamples;
+        return bioSamples.listAll();
     }
 
-    public void setBioSamples(List<BioSampleDto> bioSamples) {
-        this.bioSamples = bioSamples;
-        save();
+    public void setBioSamples(List<BioSampleDto> data) {
+        bioSamples.addInBulk(data);
     }
 
     public void addBioSample(BioSampleDto bioSampleDto) {
-        this.bioSamples.add(bioSampleDto);
-        save();
+        bioSamples.add(bioSampleDto);
     }
 
     public void clearBioSamples() {
-        this.bioSamples.clear();
-        save();
+        bioSamples.clear();
     }
 
     public void setShipLoadout(LoadoutEvent event) {
-        this.loadout = event;
-        save();
+        shipLoadouts.save(event);
     }
 
     public LoadoutEvent getShipLoadout() {
-        return loadout;
+        return shipLoadouts.get();
     }
 
 
     public void clearCash() {
-        this.bioSamples.clear();
-        this.bounties.clear();
-        this.carrierData = new CarrierDataDto();
-        this.loadout = null;
-        this.markets.clear();
-        this.missions.clear();
-        this.rankAndProgressDto = new RankAndProgressDto();
+        bounties.clear();
+        bioSamples.clear();
+        markets.clear();
+        shipLoadouts.clear();
         this.setShipLoadout(null);
-        this.shipScans.clear();
-        this.targetFactions.clear();
-        this.save();
     }
 
     public void setShipCargo(GameEvents.CargoEvent event) {
-        this.shipCargo = event;
-        save();
+        cargoHold.save(event);
     }
 
     public GameEvents.CargoEvent getShipCargo() {
-        return this.shipCargo;
+        return cargoHold.get();
     }
 
     public void setReputation(ReputationEvent event) {
-        this.reputation = event;
-        save();
+        reputationManager.save(event);
     }
 
     public ReputationEvent getReputation() {
-        return this.reputation;
+        return reputationManager.get();
     }
 
     public void setLastScan(LocationDto lastScan) {
@@ -450,12 +272,11 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     }
 
     public TargetLocation getTracking() {
-        return tracking == null ? new TargetLocation() : tracking;
+        return targetLocationManager.get();
     }
 
     public void setTracking(TargetLocation tracking) {
-        this.tracking = tracking;
-        save();
+        targetLocationManager.save(tracking);
     }
 
 
@@ -643,10 +464,6 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         });
     }
 
-    public Map<String, String> getFriendsStatus() {
-        return friendsStatus;
-    }
-
     public String getCarrierDepartureTime() {
         return Database.withDao(PlayerDao.class, dao -> dao.get().getCarrierDepartureTime());
     }
@@ -710,7 +527,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     }
 
     public void setGoodsSoldThisSession(int goodsSoldThisSession) {
-        Database.withDao(PlayerDao.class, dao ->{
+        Database.withDao(PlayerDao.class, dao -> {
             PlayerDao.Player player = dao.get();
             player.setGoodsSoldThisSession(goodsSoldThisSession);
             dao.save(player);
@@ -727,13 +544,12 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         });
     }
 
-    public void setFsdTarget(FsdTarget json) {
-        this.fsdTarget = json;
-        save();
+    public void setFsdTarget(FsdTarget fsdTarget) {
+        fsdTargetManager.save(fsdTarget);
     }
 
     public FsdTarget getFsdTarget() {
-        return fsdTarget;
+        return fsdTargetManager.get();
     }
 
     public Boolean isRadioTransmissionOn() {
@@ -741,7 +557,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     }
 
     public void setRadioTransmissionOn(Boolean radioTransmissionOn) {
-        Database.withDao(PlayerDao.class, dao ->{
+        Database.withDao(PlayerDao.class, dao -> {
             PlayerDao.Player player = dao.get();
             player.setRadioTransmissionOn(radioTransmissionOn);
             dao.save(player);
@@ -754,7 +570,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     }
 
     public void setMiningAnnouncementOn(Boolean miningAnnouncementOn) {
-        Database.withDao(PlayerDao.class, dao ->{
+        Database.withDao(PlayerDao.class, dao -> {
             PlayerDao.Player player = dao.get();
             player.setMiningAnnouncementOn(miningAnnouncementOn);
             dao.save(player);
@@ -767,7 +583,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     }
 
     public void setNavigationAnnouncementOn(Boolean navigationAnnouncementOn) {
-        Database.withDao(PlayerDao.class, dao ->{
+        Database.withDao(PlayerDao.class, dao -> {
             PlayerDao.Player player = dao.get();
             player.setNavigationAnnouncementOn(navigationAnnouncementOn);
             dao.save(player);
@@ -794,7 +610,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     }
 
     public void setRouteAnnouncementOn(Boolean routeAnnouncementOn) {
-        Database.withDao(PlayerDao.class, dao ->{
+        Database.withDao(PlayerDao.class, dao -> {
             PlayerDao.Player player = dao.get();
             player.setRouteAnnouncementOn(routeAnnouncementOn);
             dao.save(player);
@@ -802,24 +618,12 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
         });
     }
 
-    public StationMarket getTargetMarketStation() {
-        return targetMarketStation;
-    }
-
-    public void setTargetMarketStation(StationMarket targetMarketStation) {
-        this.targetMarketStation = targetMarketStation;
-        save();
-    }
-
-
     public void setGenusPaymentAnnounced(String genus) {
-        genusPaymentAnnounced.put(genus, true);
-        save();
+        genusAnouncements.put(genus, true);
     }
 
     public void clearGenusPaymentAnnounced() {
-        this.genusPaymentAnnounced.clear();
-        save();
+        genusAnouncements.clear();
     }
 
     public GalacticCoordinates getGalacticCoordinates() {
@@ -844,7 +648,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
 
 
     public void setCurrentWealth(long currentWealth) {
-        Database.withDao(PlayerDao.class, dao ->{
+        Database.withDao(PlayerDao.class, dao -> {
             PlayerDao.Player player = dao.get();
             player.setCurrentWealth(currentWealth);
             dao.save(player);
@@ -853,16 +657,13 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     }
 
     public Boolean paymentHasBeenAnnounced(String genus) {
-        Boolean b = genusPaymentAnnounced.get(genus);
+
+        Boolean b = genusAnouncements.get(genus);
         return b != null && b;
     }
 
-    @Subscribe public void onShutDownEvent(ShutdownEvent event) {
-        save();
-    }
-
     public void setGameVersion(String gameversion) {
-        Database.withDao(PlayerDao.class, dao ->{
+        Database.withDao(PlayerDao.class, dao -> {
             PlayerDao.Player player = dao.get();
             player.setGameVersion(gameversion);
             dao.save(player);
@@ -875,7 +676,7 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
     }
 
     public void setInGameName(String inGameName) {
-        Database.withDao(PlayerDao.class, dao ->{
+        Database.withDao(PlayerDao.class, dao -> {
             PlayerDao.Player player = dao.get();
             player.setInGameName(inGameName);
             dao.save(player);
@@ -898,6 +699,14 @@ public class PlayerSession extends SessionPersistence implements java.io.Seriali
 
     public LocationDto getPrimaryStarLocation() {
         return locationData.findPrimaryStar(getPrimaryStarName());
+    }
+
+    public void clearShipScans() {
+        shipScans.clear();
+    }
+
+    public void setCarrierStats(CarrierStatsEvent event) {
+        fleetCarriers.setCarrierStats(event);
     }
 
     public record GalacticCoordinates(double x, double y, double z) {

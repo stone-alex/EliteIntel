@@ -5,9 +5,9 @@ import elite.intel.db.util.Database;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.util.json.GsonFactory;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Singleton class for managing locations.
@@ -28,7 +28,8 @@ public class Locations {
 
     public void save(LocationDto location) {
         Database.withDao(LocationDao.class, dao -> {
-            dao.upsert(location.getBodyId(), location.getPlanetName(), location.getStarName(), location.toJson());
+            String locationName = location.getPlanetName() == null ? location.getStationName() : location.getPlanetName();
+            dao.upsert(location.getBodyId(), locationName, location.getStarName(), location.toJson());
             return null;
         });
     }
@@ -46,12 +47,10 @@ public class Locations {
     public Map<Long, LocationDto> findByPrimaryStar(String primaryStar) {
         return Database.withDao(LocationDao.class, dao -> {
             List<LocationDao.Location> byPrimaryStar = dao.findByPrimaryStar(primaryStar);
-            Map<Long, LocationDto> result = byPrimaryStar.stream().collect(
-                    Collectors.<LocationDao.Location, Long, LocationDto>toMap(
-                            LocationDao.Location::getInGameId,
-                            entity -> GsonFactory.getGson().fromJson(entity.getJson(), LocationDto.class)
-                    )
-            );
+            Map<Long, LocationDto> result = new HashMap<>();
+            for (LocationDao.Location entity : byPrimaryStar) {
+                result.put(entity.getInGameId(), GsonFactory.getGson().fromJson(entity.getJson(), LocationDto.class));
+            }
             return result;
         });
     }

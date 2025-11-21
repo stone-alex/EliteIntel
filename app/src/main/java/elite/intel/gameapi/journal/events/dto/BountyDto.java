@@ -1,6 +1,7 @@
 package elite.intel.gameapi.journal.events.dto;
 
 import elite.intel.gameapi.gamestate.dtos.BaseJsonDto;
+import elite.intel.util.Md5Utils;
 import elite.intel.util.json.ToJsonConvertible;
 
 import java.util.List;
@@ -60,6 +61,11 @@ public class BountyDto extends BaseJsonDto implements ToJsonConvertible {
 
     public void setVictimFaction(String victimFaction) {
         this.victimFaction = victimFaction;
+    }
+
+
+    public String getKey() {
+        return Md5Utils.generateMd5(pilotName + target + victimFaction + totalReward);
     }
 
     public static class Reward {

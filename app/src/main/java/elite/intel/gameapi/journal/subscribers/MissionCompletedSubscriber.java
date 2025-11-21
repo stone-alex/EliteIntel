@@ -50,17 +50,6 @@ public class MissionCompletedSubscriber {
             }
         }
 
-        if (countRemainingMissionsAgainstFaction == 0) {
-            Set<String> targetFactions = playerSession.getTargetFactions();
-            Set<String> updatedSet = new HashSet<>();
-            for(String faction : targetFactions) {
-                if(faction.equalsIgnoreCase(targetFaction)) continue;
-                updatedSet.add(faction);
-            }
-            playerSession.setTargetFactions(updatedSet);
-        }
-
-
         EventBusManager.publish(new SensorDataEvent("Notify: Mission against Faction \"" + targetFaction + "\" Completed: " + event.toString()));
     }
 }

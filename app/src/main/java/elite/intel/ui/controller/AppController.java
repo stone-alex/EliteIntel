@@ -193,7 +193,6 @@ public class AppController implements AppControllerInterface, ActionListener {
             streamChatVocalizer.stop();
             systemSession.clearChatHistory();
             systemSession.clearSystemConfigValues();
-            playerSession.clearOnShutDown();
             isServiceRunning = false;
         }
         model.setServicesRunning(isServiceRunning);

@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.search.spansh.market.MarketSearchCriteria;
 import elite.intel.ai.search.spansh.market.SpanshMarketClient;
-import elite.intel.ai.search.spansh.market.StationMarket;
+import elite.intel.ai.search.spansh.market.StationMarketDto;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.session.PlayerSession;
@@ -24,7 +24,7 @@ public class FindCommodityHandler implements CommandHandler {
 
         SpanshMarketClient client = new SpanshMarketClient();
         try {
-            List<StationMarket> markets = client.searchMarkets(new MarketSearchCriteria(
+            List<StationMarketDto> markets = client.searchMarkets(new MarketSearchCriteria(
                     starName,
                     1,
                     500,

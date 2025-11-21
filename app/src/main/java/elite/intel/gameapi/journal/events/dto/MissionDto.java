@@ -20,60 +20,62 @@ public class MissionDto extends BaseJsonDto {
 
 
     public MissionDto(MissionAcceptedEvent event) {
-        setMissionId(event.getMissionID());
-        setMissionProvider(event.getFaction());
-        setMissionType(event.getName());
-        setMissionDescription(event.getLocalisedName());
-        setMissionTarget(event.getTargetTypeLocalised());
-        setMissionTargetFaction(event.getTargetFaction());
-        setKillCount(event.getKillCount());
-        setReward(event.getReward());
-        setDestinationSystem(event.getDestinationSystem());
-        setReputationIncrease(event.getReputation() != null && "++".equals(event.getReputation()));
-        setInfluence(event.getInfluence() != null && "++".equals(event.getInfluence()));
+        if(event != null) {
+            setMissionId(event.getMissionID());
+            setMissionProvider(event.getFaction());
+            setMissionType(event.getName());
+            setMissionDescription(event.getLocalisedName());
+            setMissionTarget(event.getTargetTypeLocalised());
+            setMissionTargetFaction(event.getTargetFaction());
+            setKillCount(event.getKillCount());
+            setReward(event.getReward());
+            setDestinationSystem(event.getDestinationSystem());
+            setReputationIncrease(event.getReputation() != null && "++".equals(event.getReputation()));
+            setInfluence(event.getInfluence() != null && "++".equals(event.getInfluence()));
+        }
     }
 
-    private void setMissionId(long missionID) {
+    public void setMissionId(long missionID) {
         this.missionId = missionID;
     }
 
-    private void setInfluence(boolean b) {
+    public void setInfluence(boolean b) {
         this.influenceIncrease = b;
     }
 
-    private void setReputationIncrease(boolean b) {
+    public void setReputationIncrease(boolean b) {
         this.isReputationIncrease = b;
     }
 
-    private void setDestinationSystem(String destinationSystem) {
+    public void setDestinationSystem(String destinationSystem) {
         this.destinationSystem = destinationSystem;
     }
 
-    private void setReward(long reward) {
+    public void setReward(long reward) {
         this.reward = reward;
     }
 
-    private void setKillCount(int killCount) {
+    public void setKillCount(int killCount) {
         this.killCount = killCount;
     }
 
-    private void setMissionTargetFaction(String targetFaction) {
+    public void setMissionTargetFaction(String targetFaction) {
         this.missionTargetFaction = targetFaction;
     }
 
-    private void setMissionTarget(String targetTypeLocalised) {
+    public void setMissionTarget(String targetTypeLocalised) {
         this.missionTarget = targetTypeLocalised;
     }
 
-    private void setMissionDescription(String localisedName) {
+    public void setMissionDescription(String localisedName) {
         this.missionDescription = localisedName;
     }
 
-    private void setMissionType(String name) {
+    public void setMissionType(String name) {
         this.missionType = name;
     }
 
-    private void setMissionProvider(String faction) {
+    public void setMissionProvider(String faction) {
         this.faction = faction;
     }
 

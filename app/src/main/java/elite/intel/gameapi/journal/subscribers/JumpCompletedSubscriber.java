@@ -46,6 +46,7 @@ public class JumpCompletedSubscriber {
         primaryStar.setAllegiance(event.getSystemAllegiance());
         primaryStar.setSecurity(event.getSystemSecurityLocalised());
         primaryStar.setStarName(event.getStarSystem());
+        primaryStar.setPlanetName(event.getBody());
         primaryStar.setLocationType(LocationDto.LocationType.PRIMARY_STAR);
         primaryStar.setX(event.getStarPos()[0]);
         primaryStar.setY(event.getStarPos()[1]);

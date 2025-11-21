@@ -71,6 +71,7 @@ public class ScanEventSubscriber extends BiomeAnalyzer {
         if (gravity != null) location.setGravity(gravity); //DO NOT use event.getSurfaceGravity() as it is not accurate
         location.setMassEM(event.getMassEM());
         location.setStarName(event.getStarSystem());
+        location.setPlanetName(event.getBodyName());
         location.setRadius(event.getRadius());
         location.setSurfaceTemperature(event.getSurfaceTemperature());
         location.setLandable(event.isLandable());

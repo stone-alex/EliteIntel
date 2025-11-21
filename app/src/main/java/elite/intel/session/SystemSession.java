@@ -10,7 +10,20 @@ import elite.intel.db.dao.GameSessionDao;
 import elite.intel.db.util.Database;
 import elite.intel.util.json.GsonFactory;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class SystemSession {
+
+    // Config keys
+    public static final String AI_API_KEY = "ai_api_key";
+    public static final String EDSM_KEY = "edsm_api_key";
+    public static final String TTS_API_KEY = "tts_api_key"; // New key for Google API
+    public static final String STT_API_KEY = "stt_api_key";
+
+    public static final String DEBUG_SWITCH = "logging_enabled";
+
+
     private static volatile SystemSession instance;
 
     private SystemSession() {
@@ -202,7 +215,7 @@ public class SystemSession {
     public String getTtsApiKey() {
         return Database.withDao(GameSessionDao.class, dao -> {
             GameSessionDao.GameSession session = dao.get();
-            return session.getTtsApiKey();
+            return session.getTtsApiKey() == null ? "" : session.getTtsApiKey();
         });
     }
 
@@ -218,7 +231,7 @@ public class SystemSession {
     public String getSttApiKey() {
         return Database.withDao(GameSessionDao.class, dao -> {
             GameSessionDao.GameSession session = dao.get();
-            return session.getSttApiKey();
+            return session.getSttApiKey() == null ? "" : session.getSttApiKey();
         });
     }
 
@@ -234,7 +247,7 @@ public class SystemSession {
     public String getAiApiKey() {
         return Database.withDao(GameSessionDao.class, dao -> {
             GameSessionDao.GameSession session = dao.get();
-            return session.getAiApiKey();
+            return session.getAiApiKey() == null ? "" : session.getAiApiKey();
         });
     }
 
@@ -245,5 +258,31 @@ public class SystemSession {
             dao.save(session);
             return null;
         });
+    }
+
+    public void setEdsmApiKey(String edsmApiKey) {
+        Database.withDao(GameSessionDao.class, dao -> {
+            GameSessionDao.GameSession session = dao.get();
+            session.setEdsmApiKey(edsmApiKey);
+            dao.save(session);
+            return null;
+        });
+    }
+
+    public String getEdsmApiKey() {
+        return Database.withDao(GameSessionDao.class, dao -> {
+            GameSessionDao.GameSession session = dao.get();
+            return session.getEdsmApiKey() == null ? "" : session.getEdsmApiKey();
+        });
+    }
+
+    public Map<String, String> asMap() {
+        Map<String, String> result = new HashMap<>();
+        result.put(AI_API_KEY, getAiApiKey());
+        result.put(EDSM_KEY, getEdsmApiKey());
+        result.put(TTS_API_KEY, getTtsApiKey());
+        result.put(STT_API_KEY, getSttApiKey());
+        result.put(DEBUG_SWITCH, String.valueOf(isLoggingEnabled()));
+        return result;
     }
 }

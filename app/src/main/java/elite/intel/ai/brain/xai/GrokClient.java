@@ -2,7 +2,6 @@ package elite.intel.ai.brain.xai;
 
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.ConfigManager;
 import elite.intel.ai.brain.Client;
 import elite.intel.session.SystemSession;
 
@@ -56,7 +55,7 @@ public class GrokClient implements Client {
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
         conn.setRequestProperty("Content-Type", "application/json");
-        conn.setRequestProperty("Authorization", "Bearer " + ConfigManager.getInstance().getSystemKey(ConfigManager.AI_API_KEY));
+        conn.setRequestProperty("Authorization", "Bearer " + SystemSession.getInstance().getAiApiKey());
         conn.setDoOutput(true);
         return conn;
     }

@@ -1,7 +1,6 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.intel.ai.ConfigManager;
 import elite.intel.gameapi.journal.events.RankEvent;
 import elite.intel.gameapi.journal.events.dto.RankAndProgressDto;
 import elite.intel.session.PlayerSession;
@@ -17,7 +16,7 @@ public class RankEventSubscriber {
         playerSession.setRankAndProgressDto(rp);
 
         playerSession.setPlayerHighestMilitaryRank(rp.getHighestMilitaryRank());
-        String title = ConfigManager.getInstance().getPlayerKey(ConfigManager.PLAYER_CUSTOM_TITLE);
+        String title = PlayerSession.getInstance().getPlayerTitle();
         playerSession.setPlayerTitle(title);
 
     }

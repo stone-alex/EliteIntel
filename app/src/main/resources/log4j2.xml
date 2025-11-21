@@ -41,7 +41,6 @@
         <Logger name="elite.intel.session.SessionPersistence" level="error"/>
         <Logger name="elite.intel.ai.hands.KeyBindingsParser" level="error"/>
         <Logger name="elite.intel.ai.brain.xai.GrokCommandEndPoint" level="debug"/>
-        <Logger name="elite.intel.ai.ConfigManager" level="error"/>
         <Logger name="elite.intel.ai.ears" level="info"/>
         <Logger name="elite.intel.ai.mouth" level="error"/>
         <Logger name="elite.intel.ai.brain" level="info"/>

@@ -3,7 +3,6 @@ package elite.intel.ai.ears.google;
 import com.google.api.gax.rpc.ApiStreamObserver;
 import com.google.cloud.speech.v1.*;
 import com.google.protobuf.ByteString;
-import elite.intel.ai.ConfigManager;
 import elite.intel.ai.ears.AudioCalibrator;
 import elite.intel.ai.ears.AudioFormatDetector;
 import elite.intel.ai.ears.AudioSettingsTuple;
@@ -338,9 +337,9 @@ public class GoogleSTTImpl implements EarsInterface {
     }
 
     private SpeechClient createSpeechClient() throws Exception {
-        String apiKey = ConfigManager.getInstance().getSystemKey(ConfigManager.STT_API_KEY);
+        String apiKey = SystemSession.getInstance().getSttApiKey();
         if (apiKey == null || apiKey.trim().isEmpty()) {
-            log.error("STT API key not found in system.conf");
+            log.error("STT APIkey is not provided");
             throw new IllegalStateException("STT API key missing");
         }
         SpeechSettings settings = SpeechSettings.newBuilder()

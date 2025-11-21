@@ -15,8 +15,8 @@ public interface GameSessionDao {
 
 
     @SqlUpdate("""
-            INSERT OR REPLACE INTO game_session (id, aiPersonality,  aiCadence, aiVoice, aiApiKey, ttsApiKey, sttApiKey, loggingEnabled, privacyModeOn, rmsThresholdHigh,  rmsThresholdLow)
-                                  VALUES (1, :aiPersonality, :aiCadence, :aiVoice, :aiApiKey, :ttsApiKey, :sttApiKey, :loggingEnabled, :privacyModeOn, :rmsThresholdHigh, :rmsThresholdLow)
+            INSERT OR REPLACE INTO game_session (id, aiPersonality,  aiCadence, aiVoice, aiApiKey, ttsApiKey, sttApiKey, edsmApiKey, loggingEnabled, privacyModeOn, rmsThresholdHigh,  rmsThresholdLow)
+                                  VALUES (1, :aiPersonality, :aiCadence, :aiVoice, :aiApiKey, :ttsApiKey, :sttApiKey, :edsmApiKey, :loggingEnabled, :privacyModeOn, :rmsThresholdHigh, :rmsThresholdLow)
             """)
     void save(@BindBean GameSessionDao.GameSession data);
 
@@ -38,7 +38,7 @@ public interface GameSessionDao {
             session.setPrivacyModeOn(rs.getBoolean("privacyModeOn"));
             session.setRmsThresholdHigh(rs.getDouble("rmsThresholdHigh"));
             session.setRmsThresholdLow(rs.getDouble("rmsThresholdLow"));
-
+            session.setEdsmApiKey(rs.getString("edsmApiKey"));
             return session;
         }
     }
@@ -55,6 +55,7 @@ public interface GameSessionDao {
         private Boolean privacyModeOn;
         private Double rmsThresholdHigh = 460.00;
         private Double rmsThresholdLow = 100.00;
+        private String edsmApiKey;
 
 
         public String getAiPersonality() {
@@ -135,6 +136,14 @@ public interface GameSessionDao {
 
         public void setRmsThresholdHigh(Double rmsThresholdHigh) {
             this.rmsThresholdHigh = rmsThresholdHigh;
+        }
+
+        public void setEdsmApiKey(String edsmApiKey) {
+            this.edsmApiKey = edsmApiKey;
+        }
+
+        public String getEdsmApiKey() {
+            return edsmApiKey;
         }
     }
 }

@@ -10,6 +10,7 @@ import elite.intel.ai.mouth.MouthInterface;
 import elite.intel.ai.mouth.google.GoogleTTSImpl;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
 
 /**
@@ -33,7 +34,7 @@ public class ApiFactory {
         return instance;
     }
     public AiAnalysisInterface getAnalysisEndpoint() {
-        String apiKey = ConfigManager.getInstance().getSystemKey(ConfigManager.AI_API_KEY);
+        String apiKey = SystemSession.getInstance().getAiApiKey();
         ProviderEnum provider = KeyDetector.detectProvider(apiKey, "LLM");
         return switch (provider) {
             case GROK -> GrokAnalysisEndpoint.getInstance();
@@ -44,7 +45,7 @@ public class ApiFactory {
     }
 
     public AIChatInterface getChatEndpoint() {
-        String apiKey = ConfigManager.getInstance().getSystemKey(ConfigManager.AI_API_KEY);
+        String apiKey = SystemSession.getInstance().getAiApiKey();
         ProviderEnum provider = KeyDetector.detectProvider(apiKey, "LLM");
         return switch (provider) {
             case GROK -> GrokChatEndPoint.getInstance();
@@ -54,7 +55,7 @@ public class ApiFactory {
     }
 
     public AiPromptFactory getAiPromptFactory() {
-        String apiKey = ConfigManager.getInstance().getSystemKey(ConfigManager.AI_API_KEY);
+        String apiKey = SystemSession.getInstance().getAiApiKey();
         ProviderEnum provider = KeyDetector.detectProvider(apiKey, "LLM");
         return switch (provider) {
             case GROK -> OpenAiAndXAiPromptFactory.getInstance();
@@ -64,7 +65,7 @@ public class ApiFactory {
     }
 
     public AiCommandInterface getCommandEndpoint() {
-        String apiKey = ConfigManager.getInstance().getSystemKey(ConfigManager.AI_API_KEY);
+        String apiKey = SystemSession.getInstance().getAiApiKey();
         ProviderEnum provider = KeyDetector.detectProvider(apiKey, "LLM");
         return switch (provider) {
             case GROK -> GrokCommandEndPoint.getInstance();
@@ -74,7 +75,7 @@ public class ApiFactory {
     }
 
     public AiQueryInterface getQueryEndpoint() {
-        String apiKey = ConfigManager.getInstance().getSystemKey(ConfigManager.AI_API_KEY);
+        String apiKey = SystemSession.getInstance().getAiApiKey();
         ProviderEnum provider = KeyDetector.detectProvider(apiKey, "LLM");
         return switch (provider) {
             case GROK -> GrokQueryEndPoint.getInstance();
@@ -84,7 +85,7 @@ public class ApiFactory {
     }
 
     public AIRouterInterface getAiRouter() {
-        String apiKey = ConfigManager.getInstance().getSystemKey(ConfigManager.AI_API_KEY);
+        String apiKey = SystemSession.getInstance().getAiApiKey();
         ProviderEnum provider = KeyDetector.detectProvider(apiKey, "LLM");
         return switch (provider) {
             case GROK -> GrokResponseRouter.getInstance();
@@ -96,7 +97,7 @@ public class ApiFactory {
     ///
 
     public MouthInterface getMouthImpl() {
-        String apiKey = ConfigManager.getInstance().getSystemKey(ConfigManager.TTS_API_KEY);
+        String apiKey = SystemSession.getInstance().getTtsApiKey();
         ProviderEnum provider = KeyDetector.detectProvider(apiKey, "TTS");
         switch (provider) {
             case GOOGLE_TTS:
@@ -112,7 +113,7 @@ public class ApiFactory {
     ///
 
     public EarsInterface getEarsImpl() {
-        String apiKey = ConfigManager.getInstance().getSystemKey(ConfigManager.STT_API_KEY);
+        String apiKey =  SystemSession.getInstance().getSttApiKey();
         ProviderEnum provider = KeyDetector.detectProvider(apiKey, "STT"); // Fixed category
         switch (provider) {
             case GOOGLE_STT:

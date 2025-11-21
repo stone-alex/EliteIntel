@@ -3,10 +3,10 @@ package elite.intel.gameapi;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import elite.intel.ai.ConfigManager;
 import elite.intel.ai.brain.handlers.CommandHandlerFactory;
 import elite.intel.ai.hands.GameController;
 import elite.intel.gameapi.gamestate.dtos.GameEvents;
+import elite.intel.session.PlayerSession;
 import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.json.GsonFactory;
 import org.apache.logging.log4j.Logger;
@@ -67,7 +67,7 @@ public class AuxiliaryFilesMonitor implements Runnable {
     private final GameController _gameHandler;
 
     public AuxiliaryFilesMonitor() {
-        this.directory = ConfigManager.getInstance().getJournalPath();
+        this.directory = PlayerSession.getInstance().getJournalPath();
         this._gameHandler = CommandHandlerFactory.getInstance().getGameCommandHandler();
     }
 

@@ -32,7 +32,8 @@ public interface PlayerDao {
                        ship_cargo_capacity, ship_fuel_level, ships_owned, species_first_logged,
                        target_market_station_id, total_bounty_claimed, total_bounty_profit,
                        total_distance_traveled, total_hyperspace_distance,
-                       total_profits_from_exploration, total_systems_visited, exobiology_profits)
+                       total_profits_from_exploration, total_systems_visited, exobiology_profits, alternative_name,
+                       journal_dir, bindings_dir, logging_enabled)
                     VALUES (1, :currentPrimaryStar,
                        :bountyCollectedThisSession, :carrierDepartureTime, :crewWagsPayout,
                        :currentShip, :currentShipName, :currentLocationId, :currentWealth,
@@ -46,7 +47,9 @@ public interface PlayerDao {
                        :shipCargoCapacity, :shipFuelLevel, :shipsOwned, :speciesFirstLogged,
                        :targetMarketStationId, :totalBountyClaimed, :totalBountyProfit,
                        :totalDistanceTraveled, :totalHyperspaceDistance,
-                       :totalProfitsFromExploration, :totalSystemsVisited, :exobiologyProfits)
+                       :totalProfitsFromExploration, :totalSystemsVisited, :exobiologyProfits, :alternativeName,
+                       :journalDirectory, :bindingsDirectory, :loggingEnabled
+                    )
             """)
     void save(@BindBean Player player);
 
@@ -93,8 +96,45 @@ public interface PlayerDao {
         private long exobiologyProfits = 0;
         private String currentPrimaryStar = "";
 
+        private String alternativeName;
+        private String journalDirectory;
+        private String bindingsDirectory;
+        private Boolean loggingEnabled;
+
         public Player() {
         } // required for JDBI
+
+        public String getAlternativeName() {
+            return alternativeName;
+        }
+
+        public void setAlternativeName(String alternativeName) {
+            this.alternativeName = alternativeName;
+        }
+
+        public String getJournalDirectory() {
+            return journalDirectory;
+        }
+
+        public void setJournalDirectory(String journalDirectory) {
+            this.journalDirectory = journalDirectory;
+        }
+
+        public String getBindingsDirectory() {
+            return bindingsDirectory;
+        }
+
+        public void setBindingsDirectory(String bindingsDirectory) {
+            this.bindingsDirectory = bindingsDirectory;
+        }
+
+        public Boolean getLoggingEnabled() {
+            return loggingEnabled;
+        }
+
+        public void setLoggingEnabled(Boolean loggingEnabled) {
+            this.loggingEnabled = loggingEnabled;
+        }
 
         public String getCurrentPrimaryStar() {
             return currentPrimaryStar;
@@ -459,6 +499,10 @@ public interface PlayerDao {
             p.setTotalSystemsVisited(rs.getInt("total_systems_visited"));
             p.setExobiologyProfits(rs.getLong("exobiology_profits"));
             p.setCurrentPrimaryStar(rs.getString("current_primary_star"));
+            p.setAlternativeName(rs.getString("alternative_name"));
+            p.setJournalDirectory(rs.getString("journal_dir"));
+            p.setBindingsDirectory(rs.getString("bindings_dir"));
+            p.setLoggingEnabled(rs.getBoolean("logging_enabled"));
             return p;
         }
     }

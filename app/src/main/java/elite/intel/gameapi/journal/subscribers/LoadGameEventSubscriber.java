@@ -1,7 +1,6 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.intel.ai.ConfigManager;
 import elite.intel.ai.search.edsm.EdsmApiClient;
 import elite.intel.ai.search.edsm.dto.EncodedMaterialsDto;
 import elite.intel.ai.search.edsm.dto.MaterialsDto;
@@ -19,8 +18,6 @@ import elite.intel.util.AdjustRoute;
 import java.util.List;
 import java.util.Map;
 
-import static elite.intel.util.StringUtls.capitalizeWords;
-
 public class LoadGameEventSubscriber {
 
     private final ShipRouteManager shipRoute = ShipRouteManager.getInstance();
@@ -31,15 +28,11 @@ public class LoadGameEventSubscriber {
 
         PlayerSession playerSession = PlayerSession.getInstance();
         playerSession.setShipFuelLevel(event.getFuelLevel());
-        String nikName = ConfigManager.getInstance().getPlayerKey(ConfigManager.PLAYER_ALTERNATIVE_NAME);
-        String usePlayerName = capitalizeWords(nikName != null || !nikName.isEmpty() ? nikName : "Commander");
-        playerSession.setPlayerName(usePlayerName);
-
+        playerSession.setPlayerName(event.getCommander());
         playerSession.setCurrentShip(event.getShip());
         playerSession.setCurrentShipName(event.getShipName());
         playerSession.setPersonalCreditsAvailable(event.getCredits());
         playerSession.setGameVersion(event.getGameversion());
-        initValuesFromConfig(playerSession);
         cleanUpRoute(playerSession);
 
         retrieveManufacturedAndRawMaterialsFromEDSM();
@@ -85,11 +78,5 @@ public class LoadGameEventSubscriber {
 
         Map<Integer, NavRouteDto> adjustedRoute = AdjustRoute.adjustRoute(orderedRoute, currentLocation.getStarName());
         shipRoute.setNavRoute(adjustedRoute);
-    }
-
-    private static void initValuesFromConfig(PlayerSession playerSession) {
-        ConfigManager configManager = ConfigManager.getInstance();
-        String mission_statement = configManager.getPlayerKey(ConfigManager.PLAYER_MISSION_STATEMENT);
-        playerSession.setPlayerMissionStatement(mission_statement);
     }
 }

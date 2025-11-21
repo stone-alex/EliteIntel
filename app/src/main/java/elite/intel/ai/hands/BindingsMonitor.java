@@ -1,9 +1,8 @@
 package elite.intel.ai.hands;
 
-import elite.intel.ai.ConfigManager;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
+import elite.intel.session.PlayerSession;
 import elite.intel.ui.event.AppLogEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -62,7 +61,7 @@ public class BindingsMonitor {
 
     private BindingsMonitor() {
         this.parser = KeyBindingsParser.getInstance();
-        this.bindingsDir = ConfigManager.getInstance().getBindingsPath();
+        this.bindingsDir = PlayerSession.getInstance().getBindingsDir();
     }
 
     public synchronized void startMonitoring() throws IOException {

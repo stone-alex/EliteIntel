@@ -12,6 +12,9 @@ import elite.intel.gameapi.gamestate.dtos.GameEvents;
 import elite.intel.gameapi.journal.events.*;
 import elite.intel.gameapi.journal.events.dto.*;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -19,6 +22,13 @@ import java.util.Set;
 public class PlayerSession  {
 
     private static volatile PlayerSession instance;
+
+    public static final String PLAYER_MISSION_STATEMENT = "mission_statement";
+    public static final String PLAYER_CUSTOM_TITLE = "title";
+    public static final String PLAYER_ALTERNATIVE_NAME = "alternative_name";
+    public static final String JOURNAL_DIR = "journal_dir";
+    public static final String BINDINGS_DIR = "bindings_dir";
+
 
     /// Data managers.
     private LocationManager locationData = LocationManager.getInstance();
@@ -695,6 +705,51 @@ public class PlayerSession  {
         });
     }
 
+    public void setJournalPath(String path){
+        Database.withDao(PlayerDao.class, dao ->{
+            PlayerDao.Player player = dao.get();
+            player.setJournalDirectory(path);
+            dao.save(player);
+            return null;
+        });
+    }
+
+    public Path getJournalPath(){
+        return Database.withDao(PlayerDao.class, dao -> {
+            String directory = dao.get().getJournalDirectory();
+            return directory == null ? Paths.get(System.getProperty("user.home"), "Saved Games", "Frontier Developments", "Elite Dangerous") : Paths.get(directory);
+        });
+    }
+
+    public void setBindingsDir(String path){
+        Database.withDao(PlayerDao.class, dao ->{
+            PlayerDao.Player player = dao.get();
+            player.setBindingsDirectory(path);
+            dao.save(player);
+            return null;
+        });
+    }
+
+    public Path getBindingsDir(){
+        return Database.withDao(PlayerDao.class, dao -> {
+            String directory = dao.get().getBindingsDirectory();
+            return directory == null ? Paths.get(System.getProperty("user.home"), "AppData", "Local", "Frontier Developments", "Elite Dangerous", "Options", "Bindings") : Paths.get(directory);
+        });
+    }
+
+    public void setAlternativeName(String alternativeName){
+        Database.withDao(PlayerDao.class, dao ->{
+            PlayerDao.Player player = dao.get();
+            player.setAlternativeName(alternativeName);
+            dao.save(player);
+            return null;
+        });
+    }
+
+    public String getAlternativeName(){
+        return Database.withDao(PlayerDao.class, dao -> dao.get().getAlternativeName());
+    }
+
     public LocationDto getPrimaryStarLocation() {
         return locationData.findPrimaryStar(getPrimaryStarName());
     }
@@ -705,6 +760,16 @@ public class PlayerSession  {
 
     public void setCarrierStats(CarrierStatsEvent event) {
         fleetCarriers.setCarrierStats(event);
+    }
+
+    public Map<String, String> asMap() {
+        Map<String, String> result = new HashMap<>();
+        result.put(PLAYER_ALTERNATIVE_NAME, getAlternativeName());
+        result.put(PLAYER_MISSION_STATEMENT, getPlayerMissionStatement());
+        result.put(PLAYER_CUSTOM_TITLE, getPlayerTitle());
+        result.put(JOURNAL_DIR, getJournalPath().toString());
+        result.put(BINDINGS_DIR, getBindingsDir().toString());
+        return result;
     }
 
     public record GalacticCoordinates(double x, double y, double z) {

@@ -2,7 +2,7 @@ package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
-import elite.intel.session.DestinationReminder;
+import elite.intel.db.DestinationReminder;
 
 import static elite.intel.ai.brain.handlers.query.Queries.TARGET_STATION_REMINDER;
 

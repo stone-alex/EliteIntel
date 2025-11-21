@@ -16,7 +16,6 @@ public class ClearCacheHandler implements CommandHandler {
 
 
         SystemSession systemSession = SystemSession.getInstance();
-        systemSession.clearSystemConfigValues();
         systemSession.clearChatHistory();
 
         EventBusManager.publish(new AiVoxResponseEvent("Session data cleared."));

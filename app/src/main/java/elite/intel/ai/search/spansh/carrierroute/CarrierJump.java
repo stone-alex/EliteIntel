@@ -49,7 +49,7 @@ public class CarrierJump extends BaseJsonDto implements ToJsonConvertible {
         this.remainingFuel = remainingFuel;
     }
 
-    public boolean isHasIcyRing() {
+    public boolean getHasIcyRing() {
         return hasIcyRing;
     }
 
@@ -57,11 +57,11 @@ public class CarrierJump extends BaseJsonDto implements ToJsonConvertible {
         this.hasIcyRing = hasIcyRing;
     }
 
-    public boolean isIsPristine() {
+    public boolean isPristine() {
         return isPristine;
     }
 
-    public void setIsPristine(boolean isPristine) {
+    public void setPristine(boolean isPristine) {
         this.isPristine = isPristine;
     }
 

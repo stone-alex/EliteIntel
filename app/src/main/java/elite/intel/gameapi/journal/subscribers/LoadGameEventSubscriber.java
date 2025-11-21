@@ -13,7 +13,7 @@ import elite.intel.gameapi.gamestate.dtos.NavRouteDto;
 import elite.intel.gameapi.journal.events.LoadGameEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
-import elite.intel.session.ShipRoute;
+import elite.intel.db.ShipRoute;
 import elite.intel.util.AdjustRoute;
 
 import java.util.List;

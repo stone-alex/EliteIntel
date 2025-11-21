@@ -9,7 +9,7 @@ import elite.intel.ai.search.edsm.dto.TrafficDto;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.gamestate.dtos.NavRouteDto;
 import elite.intel.session.PlayerSession;
-import elite.intel.session.ShipRoute;
+import elite.intel.db.ShipRoute;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.JsonDataFactory;
 import elite.intel.util.json.ToJsonConvertible;

@@ -65,6 +65,7 @@ public class LocationDto implements ToJsonConvertible {
     private boolean ourDiscovery = false;
     private boolean weMappedIt = false;
     private String volcanism;
+    private boolean isHomeSystem;
 
     //private BioStatus bioStatus = BioStatus.SCAN_REQUIRED;
     private MarketDto market;
@@ -704,6 +705,14 @@ public class LocationDto implements ToJsonConvertible {
 
     public void setVolcanism(String volcanism) {
         this.volcanism = volcanism;
+    }
+
+    public boolean isHomeSystem() {
+        return isHomeSystem;
+    }
+
+    public void setHomeSystem(boolean homeSystem) {
+        isHomeSystem = homeSystem;
     }
 
     @Override public boolean equals(Object o) {

@@ -2,8 +2,7 @@ package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import elite.intel.gameapi.journal.events.NavRouteClearEvent;
-import elite.intel.session.PlayerSession;
-import elite.intel.session.ShipRoute;
+import elite.intel.db.ShipRoute;
 
 @SuppressWarnings("unused")
 public class RoutClearedSubscriber {

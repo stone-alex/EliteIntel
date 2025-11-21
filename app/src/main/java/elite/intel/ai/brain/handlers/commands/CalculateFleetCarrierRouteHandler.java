@@ -9,7 +9,7 @@ import elite.intel.ai.search.spansh.nearest.NearestKnownLocationSearchClient;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.dto.CarrierDataDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
-import elite.intel.session.FleetCarrierRoute;
+import elite.intel.db.FleetCarrierRoute;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.ClipboardUtils;
 

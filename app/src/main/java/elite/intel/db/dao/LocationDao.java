@@ -13,18 +13,19 @@ import java.util.List;
 
 public interface LocationDao {
 
-
     @SqlUpdate("""
-            INSERT INTO location (inGameId, locationName, primaryStar, json) 
-            VALUES (:inGameId, :locationName, :primaryStar, :json)
+            INSERT INTO location (inGameId, locationName, primaryStar, homeSystem, json) 
+            VALUES (:inGameId, :locationName, :primaryStar, :homeSystem, :json)
             ON CONFLICT(locationName) DO UPDATE SET
                 json = excluded.json,
-                inGameId = excluded.inGameId
+                inGameId = excluded.inGameId,
+                homeSystem = excluded.homeSystem
             """)
     void upsert(
             @Bind("inGameId") long inGameId,
             @Bind("locationName") String locationName,
             @Bind("primaryStar") String primaryStar,
+            @Bind("homeSystem") Boolean homeSystem,
             @Bind("json") String json
     );
 
@@ -41,6 +42,13 @@ public interface LocationDao {
     @RegisterRowMapper(LocationDao.LocationMapper.class)
     List<Location> findByPrimaryStar(@Bind("primaryStar") String primaryStar);
 
+    @SqlUpdate("UPDATE location SET homeSystem = :home WHERE locationName = :name")
+    void setHomeSystem(@Bind("name") String locationName, @Bind("home") boolean home);
+
+    @SqlQuery("SELECT * FROM location WHERE homeSystem = 1")
+    @RegisterRowMapper(LocationDao.LocationMapper.class)
+    Location findHomeSystem();
+
 
     class LocationMapper implements RowMapper<LocationDao.Location> {
         @Override
@@ -50,6 +58,7 @@ public interface LocationDao {
                     rs.getLong("inGameId"),
                     rs.getString("locationName"),
                     rs.getString("primaryStar"),
+                    rs.getBoolean("homeSystem"),
                     rs.getString("json")
             );
             return entity;
@@ -57,7 +66,7 @@ public interface LocationDao {
     }
 
 
-    record Location(long id, long inGameId, String locationName, String primaryStar, String json) {
+    record Location(long id, long inGameId, String locationName, String primaryStar, Boolean homeSystem, String json) {
         public long getId() {
             return id;
         }
@@ -76,6 +85,10 @@ public interface LocationDao {
 
         public String getJson() {
             return json;
+        }
+
+        public Boolean homeSystem() {
+            return homeSystem;
         }
     }
 }

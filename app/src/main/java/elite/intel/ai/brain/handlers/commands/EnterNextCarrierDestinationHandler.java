@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
 import elite.intel.ai.hands.KeyProcessor;
 import elite.intel.ai.search.spansh.carrierroute.CarrierJump;
-import elite.intel.session.FleetCarrierRoute;
+import elite.intel.db.FleetCarrierRoute;
 import elite.intel.util.AudioPlayer;
 import elite.intel.util.SleepNoThrow;
 

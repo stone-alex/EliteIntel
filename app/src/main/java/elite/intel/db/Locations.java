@@ -29,7 +29,14 @@ public class Locations {
     public void save(LocationDto location) {
         Database.withDao(LocationDao.class, dao -> {
             String locationName = location.getPlanetName() == null ? location.getStationName() : location.getPlanetName();
-            dao.upsert(location.getBodyId(), locationName, location.getStarName(), location.toJson());
+            dao.upsert(location.getBodyId(), locationName, location.getStarName(), location.isHomeSystem(), location.toJson());
+            return null;
+        });
+    }
+
+    public void setAsHomeSystem(String primaryStar) {
+        Database.withDao(LocationDao.class, dao -> {
+            dao.setHomeSystem(primaryStar, true);
             return null;
         });
     }
@@ -67,6 +74,13 @@ public class Locations {
                 }
             }
             return new LocationDto(-1);
+        });
+    }
+
+    public LocationDto getHomeSystem() {
+        return Database.withDao(LocationDao.class, dao ->{
+            LocationDao.Location homeSystem = dao.findHomeSystem();
+            return homeSystem == null ? new LocationDto(-1) : GsonFactory.getGson().fromJson(homeSystem.getJson(), LocationDto.class);
         });
     }
 }

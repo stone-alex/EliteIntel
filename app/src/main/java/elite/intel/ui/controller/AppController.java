@@ -25,7 +25,6 @@ import elite.intel.ui.model.AppModelInterface;
 import elite.intel.ui.view.AppViewInterface;
 import elite.intel.util.SleepNoThrow;
 import elite.intel.yt.StreamChatVocalizer;
-import elite.intel.yt.YouTubeChatVocalizer;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -67,7 +66,6 @@ public class AppController implements AppControllerInterface, ActionListener {
     private final AppModelInterface model;
     private final AppViewInterface view;
     private final ConfigManager configManager = ConfigManager.getInstance();
-    private boolean isServiceRunning = false;
     private final PlayerSession playerSession = PlayerSession.getInstance();
     private final SystemSession systemSession = SystemSession.getInstance();
     AuxiliaryFilesMonitor fileMonitor = new AuxiliaryFilesMonitor();
@@ -76,6 +74,7 @@ public class AppController implements AppControllerInterface, ActionListener {
     AiCommandInterface brain;
     StreamChatVocalizer streamChatVocalizer;
     JournalParser journalParser = new JournalParser();
+    private boolean isServiceRunning = false;
 
     public AppController(AppModelInterface model, AppViewInterface view) {
         this.model = model;
@@ -115,7 +114,7 @@ public class AppController implements AppControllerInterface, ActionListener {
         String formattedTime = Instant.now()
                 .atZone(ZoneId.systemDefault())
                 .format(DateTimeFormatter.ofPattern("HH:mm:ss.SSSS"));
-        model.appendLog(formattedTime+": "+data);
+        model.appendLog(formattedTime + ": " + data);
     }
 
     @Override
@@ -190,9 +189,8 @@ public class AppController implements AppControllerInterface, ActionListener {
             brain.stop();
             ears.stop();
             mouth.stop();
-            streamChatVocalizer.stop();
+            if (streamChatVocalizer != null) streamChatVocalizer.stop();
             systemSession.clearChatHistory();
-            systemSession.clearSystemConfigValues();
             isServiceRunning = false;
         }
         model.setServicesRunning(isServiceRunning);
@@ -234,7 +232,7 @@ public class AppController implements AppControllerInterface, ActionListener {
 
 
     @Subscribe
-    public void onStreamModeToggle(StreamModelToggleEvent event){
+    public void onStreamModeToggle(StreamModelToggleEvent event) {
         JCheckBox temp = new JCheckBox();
         temp.setSelected(event.isStreaming());
         executeCommand(temp, ACTION_TOGGLE_STREAMING_MODE);
@@ -347,7 +345,7 @@ public class AppController implements AppControllerInterface, ActionListener {
 
 
     @Subscribe
-    public void onSystemShutdownEvent(SystemShutDownEvent event){
+    public void onSystemShutdownEvent(SystemShutDownEvent event) {
         EventBusManager.publish(new MissionCriticalAnnouncementEvent("System shutting down..."));
         appendToLog("SYSTEM: Shutting down...");
         fileMonitor.stop();

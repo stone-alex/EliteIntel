@@ -16,7 +16,7 @@ import elite.intel.gameapi.journal.events.FSDJumpEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.gameapi.journal.events.dto.MaterialDto;
 import elite.intel.session.PlayerSession;
-import elite.intel.session.ShipRoute;
+import elite.intel.db.ShipRoute;
 import elite.intel.util.AdjustRoute;
 
 import java.util.ArrayList;

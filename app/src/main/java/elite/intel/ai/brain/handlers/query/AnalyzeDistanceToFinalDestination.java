@@ -1,14 +1,13 @@
 package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.brain.handlers.query.struct.AiData;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.gamestate.dtos.NavRouteDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
-import elite.intel.session.ShipRoute;
+import elite.intel.db.ShipRoute;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 

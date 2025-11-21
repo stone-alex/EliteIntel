@@ -2,10 +2,8 @@ package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
-import elite.intel.ai.search.spansh.market.StationMarketDto;
 import elite.intel.ai.search.spansh.station.DestinationDto;
-import elite.intel.session.DestinationReminder;
-import elite.intel.session.PlayerSession;
+import elite.intel.db.DestinationReminder;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 

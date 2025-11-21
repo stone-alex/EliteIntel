@@ -5,7 +5,7 @@ import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.PlayerSession;
-import elite.intel.session.ShipRoute;
+import elite.intel.db.ShipRoute;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.JsonDataFactory;
 import elite.intel.util.json.ToJsonConvertible;

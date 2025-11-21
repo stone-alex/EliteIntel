@@ -6,7 +6,7 @@ import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.search.spansh.carrierroute.CarrierJump;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.dto.CarrierDataDto;
-import elite.intel.session.FleetCarrierRoute;
+import elite.intel.db.FleetCarrierRoute;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;

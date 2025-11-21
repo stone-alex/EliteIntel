@@ -110,7 +110,7 @@ public class SpanshCarrierRouteClient {
                 jump.setFuelUsed(fuelUsed);
                 jump.setRemainingFuel(remainingFuel);
                 jump.setHasIcyRing(jumpJson.get("has_icy_ring").getAsBoolean());
-                jump.setIsPristine(jumpJson.get("is_system_pristine").getAsBoolean());
+                jump.setPristine(jumpJson.get("is_system_pristine").getAsBoolean());
                 jump.setX(jumpJson.get("x").getAsDouble());
                 jump.setY(jumpJson.get("y").getAsDouble());
                 jump.setZ(jumpJson.get("z").getAsDouble());

@@ -1,5 +1,6 @@
 package elite.intel.ai;
 
+import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager; 
@@ -242,19 +243,16 @@ public class ConfigManager {
         return null;
     }
 
-    private String getPlayerKeyByType(SystemSession systemSession, String keyType) {
-        if(PLAYER_MISSION_STATEMENT.equals(keyType)) {return systemSession.getMissionStatement();}
-        if(PLAYER_ALTERNATIVE_NAME.equals(keyType)) {return systemSession.getAlternativeName();}
-        if(PLAYER_CUSTOM_TITLE.equals(keyType)) {return systemSession.getTitle();}
-        if(JOURNAL_DIR.equals(keyType)) {return systemSession.getJournalDir();}
-        if(BINDINGS_DIR.equals(keyType)) {return systemSession.getBindingsDir();}
+    private String getPlayerKeyByType(PlayerSession session, String keyType) {
+        if(PLAYER_ALTERNATIVE_NAME.equals(keyType)) {return session.getPlayerName();}
+        if(PLAYER_CUSTOM_TITLE.equals(keyType)) {return session.getPlayerTitle();}
         return null;
     }
 
 
     public String getPlayerKey(String keyType) {
-        SystemSession systemSession = SystemSession.getInstance();
-        String key = getPlayerKeyByType(systemSession, keyType);
+        PlayerSession playerSession = PlayerSession.getInstance();
+        String key = getPlayerKeyByType(playerSession, keyType);
 
 
         if (key == null || key.isEmpty() || key.equals("null")) {

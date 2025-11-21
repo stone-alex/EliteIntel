@@ -4,8 +4,8 @@ import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.search.spansh.market.StationMarketDto;
+import elite.intel.db.DestinationReminder;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.session.DestinationReminder;
 import elite.intel.session.PlayerSession;
 
 import java.util.Comparator;
@@ -32,7 +32,7 @@ public class PlotRouteToBestMarketHandler extends CommandOperator implements Com
             RoutePlotter plotter = new RoutePlotter(this.commandHandler);
             plotter.plotRoute(bestMarket.systemName());
             DestinationReminder reminder = DestinationReminder.getInstance();
-            reminder.setDestinationFromJson(bestMarket.toJson());
+            reminder.setDestination(bestMarket.toJson());
             EventBusManager.publish(new AiVoxResponseEvent("Route plotted. Head to " + bestMarket.stationName() + " when you get there."));
         }
     }

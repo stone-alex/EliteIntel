@@ -16,7 +16,7 @@ public interface FleetCarrierDao {
     @SqlUpdate("INSERT OR REPLACE INTO fleet_carrier (id, json) VALUES (1, :json)")
     void save(@BindBean FleetCarrier fleetCarrier);
 
-    @SqlQuery("SELECT json FROM fleet_carrier WHERE id = 1")
+    @SqlQuery("SELECT * FROM fleet_carrier WHERE id = 1")
     FleetCarrier get();
 
 

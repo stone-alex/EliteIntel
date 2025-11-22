@@ -13,6 +13,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+@RegisterRowMapper(MaterialsDao.MaterialMapper.class)
 public interface MaterialsDao {
 
     @SqlUpdate("""
@@ -28,25 +29,17 @@ public interface MaterialsDao {
                 @Bind("maxCapacity") int maxCap);
 
 
-    @SqlQuery("SELECT * FROM materials WHERE id = :id")
-    @RegisterRowMapper(MaterialMapper.class)
-    public Material findById(long id);
-
     @SqlQuery("SELECT * FROM materials WHERE materialName = :materialName")
-    @RegisterRowMapper(MaterialMapper.class)
-    public Material findByExactName(String materialName);
+    Material findByExactName(String materialName);
 
     @SqlQuery("SELECT * FROM materials WHERE materialName LIKE :pattern")
-    @RegisterRowMapper(MaterialMapper.class)
     List<Material> search(@Bind("pattern") String pattern);
 
     @SqlQuery("SELECT * FROM materials WHERE materialType = :materialType")
-    @RegisterRowMapper(MaterialMapper.class)
     List<Material> findByMaterialType(@Bind("materialType") String materialType);
 
     @SqlQuery("SELECT * FROM materials")
-    @RegisterRowMapper(MaterialMapper.class)
-    public List<Material> listAll();
+    List<Material> listAll();
 
 
     class MaterialMapper implements RowMapper<Material> {

@@ -11,7 +11,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 
-@RegisterRowMapper(StatusDao.StatusMapper.class)
 public interface StatusDao {
 
 

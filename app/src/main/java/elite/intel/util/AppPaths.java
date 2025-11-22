@@ -3,61 +3,53 @@ package elite.intel.util;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-
 public final class AppPaths {
 
     private static Path APP_DIR;
 
     static {
-        try {
-            // 1. Try to find the real project root via Gradle-aware logic
-            Path candidate = findProjectRoot();
-            if (candidate != null && Files.exists(candidate.resolve("build.gradle"))) {
-                APP_DIR = candidate;
-            } else {
-                // 2. Fallback: go up from the running code location
-                Path codeSource = Path.of(
-                        AppPaths.class.getProtectionDomain()
-                                .getCodeSource()
-                                .getLocation()
-                                .toURI()
-                );
+        Path dir = null;
 
-                Path temp = codeSource;
-                // Go up until we find a folder containing build.gradle or settings.gradle
-                while (temp != null && temp.getParent() != null) {
-                    if (Files.exists(temp.resolve("build.gradle")) ||
-                            Files.exists(temp.resolve("settings.gradle"))) {
-                        APP_DIR = temp;
+        // start optimistic
+
+        try {
+            // CASE 1: Running from a JAR → use the JAR's folder
+            Path codeSource = Path.of(
+                    AppPaths.class.getProtectionDomain()
+                            .getCodeSource()
+                            .getLocation()
+                            .toURI()
+            );
+
+            // If it's a JAR file → use its parent directory
+            if (codeSource.toString().endsWith(".jar")) {
+                dir = codeSource.getParent(); // e.g. /home/alex/releases/elite_intel.jar → /home/alex/releases
+            } else {
+                // CASE 2: Running from IDE → walk up to find project root (build.gradle)
+                Path current = codeSource;
+                while (current != null) {
+                    if (Files.exists(current.resolve("build.gradle")) ||
+                            Files.exists(current.resolve("build.gradle.kts")) ||
+                            Files.exists(current.resolve("settings.gradle"))) {
+                        dir = current;
                         break;
                     }
-                    temp = temp.getParent();
+                    current = current.getParent();
                 }
-                // Final fallback
-                if (temp == null) throw new Exception();
             }
         } catch (Exception e) {
-            // 3. Nuclear fallback — should never happen
-            APP_DIR = Path.of(".").toAbsolutePath().normalize();
+            // ignore — will fall back
         }
+
+        // FINAL FALLBACK: current working directory (./)
+        if (dir == null) {
+            dir = Path.of(".").toAbsolutePath().normalize();
+        }
+
+        APP_DIR = dir;
     }
 
     private AppPaths() {}
-
-    /** Smart detection: walks up from current dir looking for Gradle project markers */
-    private static Path findProjectRoot() {
-        Path current = Path.of(".").toAbsolutePath().normalize();
-        while (current != null) {
-            if (Files.exists(current.resolve("build.gradle")) ||
-                    Files.exists(current.resolve("settings.gradle")) ||
-                    Files.exists(current.resolve("gradlew"))) {
-                return current;
-            }
-            if (current.getParent() == null) break;
-            current = current.getParent();
-        }
-        return null;
-    }
 
     public static Path getAppDirectory() {
         return APP_DIR;
@@ -69,5 +61,9 @@ public final class AppPaths {
 
     public static Path getConfigDirectory() {
         return APP_DIR.resolve("config");
+    }
+
+    public static Path getLogsDirectory() {
+        return APP_DIR.resolve("logs");
     }
 }

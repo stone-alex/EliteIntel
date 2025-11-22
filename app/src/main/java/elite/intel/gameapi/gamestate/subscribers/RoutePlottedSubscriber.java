@@ -1,12 +1,14 @@
 package elite.intel.gameapi.gamestate.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.intel.db.managers.ShipRouteManager;
 import elite.intel.gameapi.gamestate.dtos.GameEvents;
 import elite.intel.gameapi.gamestate.dtos.NavRouteDto;
 import elite.intel.session.PlayerSession;
-import elite.intel.db.managers.ShipRouteManager;
 
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("unused") //registered in SubscriberRegistration
 public class RoutePlottedSubscriber {
@@ -33,21 +35,15 @@ public class RoutePlottedSubscriber {
                 dto.setScoopable("KGBFOAM".contains(entry.getStarClass().toUpperCase()));
                 routeMap.put(leg, dto);
             }
-
             NavRouteDto finalDestination;
             if (!routeMap.isEmpty()) {
                 finalDestination = routeMap.entrySet().stream()
                         .reduce((first, second) -> second) // Keep the last entry
                         .map(Map.Entry::getValue)
                         .orElse(null);
-                if (finalDestination != null) {
-                    playerSession.setFinalDestination(finalDestination.getName());
-                }
-                if(playerSession.getCurrentLocation() != null) {
-                    List<NavRouteDto> orderedRoute = new ArrayList<>(routeMap.values());
-                    orderedRoute.sort(Comparator.comparingInt(NavRouteDto::getLeg));
-                    shipRoute.removeLeg(playerSession.getPrimaryStarName());
-                }
+
+                playerSession.setFinalDestination(finalDestination.getName());
+                shipRoute.setNavRoute(routeMap);
             } else {
                 shipRoute.clearRoute();
             }

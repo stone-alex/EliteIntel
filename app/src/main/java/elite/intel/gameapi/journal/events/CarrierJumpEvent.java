@@ -90,7 +90,7 @@ public class CarrierJumpEvent extends BaseEvent {
     private SystemFaction systemFaction;
 
     public CarrierJumpEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), Duration.ofSeconds(30), "CarrierJump");
+        super(json.get("timestamp").getAsString(), Duration.ofDays(30), "CarrierJump");
         CarrierJumpEvent event = GsonFactory.getGson().fromJson(json, CarrierJumpEvent.class);
         this.docked = event.docked;
         this.onFoot = event.onFoot;

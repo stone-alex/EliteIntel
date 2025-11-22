@@ -53,14 +53,6 @@ public class ScanEventSubscriber extends BiomeAnalyzer {
 
         location.setLocationType(locationType);
         location.setStarClass(event.getStarType());
-
-        if(!PRIMARY_STAR.equals(locationType)) {
-            location.setX(location.getX());
-            location.setY(location.getY());
-            location.setZ(location.getZ());
-        }
-
-
         location.setPlanetName(event.getBodyName());
         location.setBodyId(event.getBodyID());
         location.setPlanetShortName(shortName);

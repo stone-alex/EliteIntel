@@ -1,15 +1,19 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.intel.ai.search.edsm.EdsmApiClient;
+import elite.intel.ai.search.edsm.dto.StarSystemDto;
+import elite.intel.ai.search.edsm.dto.StationsDto;
 import elite.intel.ai.search.spansh.carrierroute.CarrierJump;
+import elite.intel.ai.search.spansh.client.SpanshClient;
+import elite.intel.ai.search.spansh.stellarobjects.StellarObjectSearchClient;
+import elite.intel.db.managers.FleetCarrierRouteManager;
 import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.journal.events.CarrierLocationEvent;
 import elite.intel.gameapi.journal.events.dto.CarrierDataDto;
 import elite.intel.gameapi.journal.events.dto.FssSignalDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
-import elite.intel.db.managers.FleetCarrierRouteManager;
 import elite.intel.session.PlayerSession;
-import elite.intel.session.Status;
 
 import java.util.Map;
 import java.util.Set;
@@ -32,49 +36,38 @@ public class CarrierLocationSubscriber {
             Map<Integer, CarrierJump> fleetCarrierRoute = route.getFleetCarrierRoute();
             boolean routeEntryFount = false;
 
-            Status status = Status.getInstance();
-            if(!status.isDocked() && playerSession.getMarkedId() == event.getCarrierID()) {
-                LocationManager locationData = LocationManager.getInstance();
-                LocationDto prima = locationData.getPrimaryStarAtCurrentLocation();
-                carrierData.setX(prima.getX());
-                carrierData.setY(prima.getY());
-                carrierData.setZ(prima.getZ());
-                carrierData.setStarName(event.getStarSystem());
-                playerSession.setCarrierData(carrierData);
-            } else {
-                for (Map.Entry<Integer, CarrierJump> entry : fleetCarrierRoute.entrySet()) {
-                    if (entry.getValue().getSystemName().equals(event.getStarSystem())) {
-                        routeEntryFount = true;
-                        carrierData.setX(entry.getValue().getX());
-                        carrierData.setY(entry.getValue().getY());
-                        carrierData.setZ(entry.getValue().getZ());
-                        carrierData.setStarName(event.getStarSystem());
-                        playerSession.setLastKnownCarrierLocation(event.getStarSystem());
-                        playerSession.setCarrierData(carrierData);
-                        break;
-                    }
+
+            // via carrier route
+            for (Map.Entry<Integer, CarrierJump> entry : fleetCarrierRoute.entrySet()) {
+                if (entry.getValue().getSystemName().equals(event.getStarSystem())) {
+                    routeEntryFount = true;
+                    carrierData.setX(entry.getValue().getX());
+                    carrierData.setY(entry.getValue().getY());
+                    carrierData.setZ(entry.getValue().getZ());
+                    carrierData.setStarName(event.getStarSystem());
+                    playerSession.setLastKnownCarrierLocation(event.getStarSystem());
+                    playerSession.setCarrierData(carrierData);
+                    break;
                 }
             }
-            if(!routeEntryFount) {
-                String carrierName = carrierData.getCarrierName();
-                if(carrierName == null) {return;}
-                LocationManager locationData = LocationManager.getInstance();
-                Map<Long, LocationDto> locations = locationData.findByPrimaryStar(event.getStarSystem());
-                if (locations != null || !locations.isEmpty()) {
-                    for (LocationDto historyLocation : locations.values()) {
-                        Set<FssSignalDto> detectedSignals = historyLocation.getDetectedSignals();
-                        for (FssSignalDto signal : detectedSignals) {
-                            boolean matchingCarrierName = signal.getSignalName().toLowerCase().contains(carrierName.toLowerCase());
-                            boolean isPrimaryStar = historyLocation.getLocationType().equals(PRIMARY_STAR);
-                            if (matchingCarrierName && isPrimaryStar) {
-                                carrierData.setX(historyLocation.getX());
-                                carrierData.setY(historyLocation.getY());
-                                carrierData.setZ(historyLocation.getZ());
-                                playerSession.setCarrierData(carrierData);
-                                break;
-                            }
-                        }
-                    }
+
+            if (!routeEntryFount) {
+                // try via EDSM
+                StarSystemDto starSystemDto = EdsmApiClient.searchStarSystem(event.getStarSystem(), 1);
+                StarSystemDto.Coords coords = starSystemDto.getCoords();
+                if(coords.getX() > 0 && coords.getY() > 0 && coords.getZ() > 0) {
+                    carrierData.setX(coords.getX());
+                    carrierData.setY(coords.getY());
+                    carrierData.setZ(coords.getZ());
+                    playerSession.setCarrierData(carrierData);
+                } else {
+                    // try via saved locations
+                    LocationManager locationData = LocationManager.getInstance();
+                    LocationDto location = locationData.findPrimaryStar(event.getStarSystem());
+                    carrierData.setX(location.getX());
+                    carrierData.setY(location.getY());
+                    carrierData.setZ(location.getZ());
+                    playerSession.setCarrierData(carrierData);
                 }
             }
         }

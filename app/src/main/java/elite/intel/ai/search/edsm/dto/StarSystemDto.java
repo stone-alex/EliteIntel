@@ -11,6 +11,29 @@ public class StarSystemDto implements ToJsonConvertible {
     @SerializedName("timestamp")
     public long timestamp;
 
+    @SerializedName("coords")
+    private Coords coords;
+
+    public Coords getCoords() {
+        return coords;
+    }
+
+    public static class Coords{
+        double x,y,z;
+
+        public double getX() {
+            return x;
+        }
+
+        public double getY() {
+            return y;
+        }
+
+        public double getZ() {
+            return z;
+        }
+    }
+
     public StarSystemData getData() {
         return data;
     }

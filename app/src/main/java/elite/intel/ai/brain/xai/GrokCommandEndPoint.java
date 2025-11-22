@@ -218,7 +218,7 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
             JsonObject requestBody = client.createRequestBodyHeader(GrokClient.MODEL_GROK_4_FAST_REASONING, 1.00f);
             requestBody.add("messages", messages);
             String jsonString = GsonFactory.getGson().toJson(requestBody);
-            log.debug("X AI API call:\n{}", jsonString);
+            //log.debug("X AI API call:\n{}", jsonString);
 
             // Store messages for history
             systemSession.setChatHistory(messages);

@@ -28,7 +28,6 @@ import static elite.intel.util.StringUtls.capitalizeWords;
 
 public class AppController {
 
-    private final AppViewInterface view;
     private final PlayerSession playerSession = PlayerSession.getInstance();
     private final SystemSession systemSession = SystemSession.getInstance();
     AuxiliaryFilesMonitor fileMonitor = new AuxiliaryFilesMonitor();
@@ -37,9 +36,8 @@ public class AppController {
     AiCommandInterface brain;
     JournalParser journalParser = new JournalParser();
 
-    public AppController(AppViewInterface view) {
-        this.view = view;
-        view.initData(); // initial load
+    public AppController() {
+        //view.initData(); // initial load
         EventBusManager.register(this);
     }
 

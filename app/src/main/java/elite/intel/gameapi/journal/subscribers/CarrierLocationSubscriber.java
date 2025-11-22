@@ -2,6 +2,7 @@ package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.search.spansh.carrierroute.CarrierJump;
+import elite.intel.db.dao.LocationDao;
 import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.journal.events.CarrierLocationEvent;
 import elite.intel.gameapi.journal.events.dto.CarrierDataDto;
@@ -9,6 +10,7 @@ import elite.intel.gameapi.journal.events.dto.FssSignalDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.db.managers.FleetCarrierRouteManager;
 import elite.intel.session.PlayerSession;
+import elite.intel.session.Status;
 import elite.intel.util.AdjustRoute;
 
 import java.util.Map;
@@ -31,21 +33,33 @@ public class CarrierLocationSubscriber {
             AdjustRoute.adjustFleetCarrierRoute(event.getStarSystem());
             Map<Integer, CarrierJump> fleetCarrierRoute = route.getFleetCarrierRoute();
             boolean routeEntryFount = false;
-            for(Map.Entry<Integer, CarrierJump> entry : fleetCarrierRoute.entrySet()) {
-                if(entry.getValue().getSystemName().equals(event.getStarSystem())) {
-                    routeEntryFount = true;
-                    carrierData.setX(entry.getValue().getX());
-                    carrierData.setY(entry.getValue().getY());
-                    carrierData.setZ(entry.getValue().getZ());
-                    carrierData.setStarName(event.getStarSystem());
-                    playerSession.setLastKnownCarrierLocation(event.getStarSystem());
-                    playerSession.setCarrierData(carrierData);
-                    break;
+
+            Status status = Status.getInstance();
+            if(!status.isDocked() && playerSession.getMarkedId() == event.getCarrierID()) {
+                LocationManager locationData = LocationManager.getInstance();
+                LocationDto prima = locationData.getPrimaryStarAtCurrentLocation();
+                carrierData.setX(prima.getX());
+                carrierData.setY(prima.getY());
+                carrierData.setZ(prima.getZ());
+                carrierData.setStarName(event.getStarSystem());
+                playerSession.setCarrierData(carrierData);
+            } else {
+                for (Map.Entry<Integer, CarrierJump> entry : fleetCarrierRoute.entrySet()) {
+                    if (entry.getValue().getSystemName().equals(event.getStarSystem())) {
+                        routeEntryFount = true;
+                        carrierData.setX(entry.getValue().getX());
+                        carrierData.setY(entry.getValue().getY());
+                        carrierData.setZ(entry.getValue().getZ());
+                        carrierData.setStarName(event.getStarSystem());
+                        playerSession.setLastKnownCarrierLocation(event.getStarSystem());
+                        playerSession.setCarrierData(carrierData);
+                        break;
+                    }
                 }
             }
-
             if(!routeEntryFount) {
                 String carrierName = carrierData.getCarrierName();
+                if(carrierName == null) {return;}
                 LocationManager locationData = LocationManager.getInstance();
                 Map<Long, LocationDto> locations = locationData.findByPrimaryStar(event.getStarSystem());
                 if (locations != null || !locations.isEmpty()) {

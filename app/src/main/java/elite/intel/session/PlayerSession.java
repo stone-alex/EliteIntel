@@ -772,6 +772,13 @@ public class PlayerSession  {
         return result;
     }
 
+    public long getMarkedId() {
+        return Database.withDao(PlayerDao.class, dao ->{
+            PlayerDao.Player player = dao.get();
+            return player.getMarketId();
+        });
+    }
+
     public record GalacticCoordinates(double x, double y, double z) {
 
     }

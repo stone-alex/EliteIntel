@@ -45,7 +45,7 @@ public interface PlayerDao {
                        :personalCreditsAvailable, :playerHighestMilitaryRank,
                        :playerMissionStatement, :playerName, :playerTitle,
                        :shipCargoCapacity, :shipFuelLevel, :shipsOwned, :speciesFirstLogged,
-                       :targetMarketStationId, :totalBountyClaimed, :totalBountyProfit,
+                       :marketId, :totalBountyClaimed, :totalBountyProfit,
                        :totalDistanceTraveled, :totalHyperspaceDistance,
                        :totalProfitsFromExploration, :totalSystemsVisited, :exobiologyProfits, :alternativeName,
                        :journalDirectory, :bindingsDirectory, :loggingEnabled
@@ -86,7 +86,7 @@ public interface PlayerDao {
         private double shipFuelLevel = 0.0;
         private int shipsOwned = 0;
         private int speciesFirstLogged = 0;
-        private Long targetMarketStationId = null;
+        private Long marketId = null;
         private long totalBountyClaimed = 0;
         private long totalBountyProfit = 0;
         private double totalDistanceTraveled = 0.0;
@@ -390,12 +390,12 @@ public interface PlayerDao {
             this.speciesFirstLogged = speciesFirstLogged;
         }
 
-        public Long getTargetMarketStationId() {
-            return targetMarketStationId;
+        public Long getMarketId() {
+            return marketId;
         }
 
-        public void setTargetMarketStationId(Long targetMarketStationId) {
-            this.targetMarketStationId = targetMarketStationId;
+        public void setMarketId(Long marketId) {
+            this.marketId = marketId;
         }
 
         public long getTotalBountyClaimed() {
@@ -490,7 +490,7 @@ public interface PlayerDao {
             p.setShipFuelLevel(rs.getDouble("ship_fuel_level"));
             p.setShipsOwned(rs.getInt("ships_owned"));
             p.setSpeciesFirstLogged(rs.getInt("species_first_logged"));
-            p.setTargetMarketStationId(rs.getObject("target_market_station_id") != null ? rs.getLong("target_market_station_id") : null);
+            p.setMarketId(rs.getObject("target_market_station_id") != null ? rs.getLong("target_market_station_id") : null);
             p.setTotalBountyClaimed(rs.getLong("total_bounty_claimed"));
             p.setTotalBountyProfit(rs.getLong("total_bounty_profit"));
             p.setTotalDistanceTraveled(rs.getDouble("total_distance_traveled"));

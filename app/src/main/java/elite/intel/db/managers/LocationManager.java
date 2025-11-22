@@ -83,4 +83,11 @@ public class LocationManager {
             return homeSystem == null ? new LocationDto(-1) : GsonFactory.getGson().fromJson(homeSystem.getJson(), LocationDto.class);
         });
     }
+
+    public LocationDto getPrimaryStarAtCurrentLocation() {
+        return Database.withDao(LocationDao.class, dao ->{
+            LocationDao.Location location = dao.primaryStarAtCurrentLocation();
+            return location == null ? new LocationDto(-1) : GsonFactory.getGson().fromJson(location.getJson(), LocationDto.class);
+        });
+    }
 }

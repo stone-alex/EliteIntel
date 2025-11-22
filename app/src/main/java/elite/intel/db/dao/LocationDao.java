@@ -49,6 +49,10 @@ public interface LocationDao {
     @RegisterRowMapper(LocationDao.LocationMapper.class)
     Location findHomeSystem();
 
+    @SqlQuery("select json from location where primaryStar = (select current_primary_star from player) and inGameId = (select current_location_id from player)")
+    @RegisterRowMapper(LocationDao.LocationMapper.class)
+    Location primaryStarAtCurrentLocation();
+
 
     class LocationMapper implements RowMapper<LocationDao.Location> {
         @Override

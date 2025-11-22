@@ -718,10 +718,8 @@ public class AppView extends JFrame implements AppViewInterface {
     }
 
 
-    // Add near the top with the other public methods
     @Override
     public void initData() {
-
         sttApiKeyField.setText(systemSession.getSttApiKey() != null ? systemSession.getSttApiKey() : "");
         llmApiKeyField.setText(systemSession.getAiApiKey() != null ? systemSession.getAiApiKey() : "");
         ttsApiKeyField.setText(systemSession.getTtsApiKey() != null ? systemSession.getTtsApiKey() : "");
@@ -749,7 +747,7 @@ public class AppView extends JFrame implements AppViewInterface {
         s.setTtsApiKey(ttsApiKeyField.getText());
         s.setEdsmApiKey(edsmKeyField.getText());
         EventBusManager.publish(new AppLogEvent("System config saved"));
-        initData(); // UI instantly reflects what’s in DB
+        initData();
     }
 
     private void savePlayerConfig() {
@@ -767,10 +765,6 @@ public class AppView extends JFrame implements AppViewInterface {
     @Override
     public JFrame getUiComponent() {
         return this;
-    }
-
-    @Override public void setServicesRunning(boolean running) {
-
     }
 
     @Subscribe
@@ -795,7 +789,7 @@ public class AppView extends JFrame implements AppViewInterface {
         logArea.setCaretPosition(currentText.length());
 
         // Type out the new line only
-        logTypewriterTimer = new Timer(7, null);
+        logTypewriterTimer = new Timer(15, null);
         AtomicInteger pos = new AtomicInteger(currentText.length());
 
         logTypewriterTimer.addActionListener(e -> {

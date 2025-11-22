@@ -28,9 +28,9 @@ public class App {
         Configurator.setRootLevel(isLoggingEnabled ? Level.ALL : Level.OFF);
         SubscriberRegistration.registerSubscribers();
         //noinspection ResultOfMethodCallIgnored
-        PlayerSession.getInstance(); //Initialize player session
+        PlayerSession.getInstance();
         //noinspection ResultOfMethodCallIgnored
-        SystemSession.getInstance(); //Initialize system session
+        SystemSession.getInstance().setStreamingMode(false);
         EventBusManager.publish(new LoadSessionEvent());
         FlatLightLaf.setup();
         SwingUtilities.invokeLater(() -> {
@@ -39,8 +39,8 @@ public class App {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            new AppController();
             AppView view = new AppView();
-            new AppController(view);
             view.getUiComponent().setVisible(true);
         });
     }

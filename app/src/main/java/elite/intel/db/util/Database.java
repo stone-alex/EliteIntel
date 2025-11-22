@@ -1,5 +1,6 @@
 package elite.intel.db.util;
 
+import elite.intel.util.AppPaths;
 import org.jdbi.v3.core.Handle;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.sqlobject.SqlObjectPlugin;
@@ -37,7 +38,7 @@ public class Database {
     }
 
     static {
-        Path dbPath = Paths.get("./db/database.db");
+        Path dbPath = AppPaths.getDatabasePath();
         dbPath.getParent().toFile().mkdirs();
 
         String url = "jdbc:sqlite:" + dbPath

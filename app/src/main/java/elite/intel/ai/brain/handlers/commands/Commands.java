@@ -106,7 +106,7 @@ public enum Commands {
     PLOT_ROUTE_TO_BEST_MARKET("plot_route_to_best_market", null, null,  PlotRouteToBestMarketHandler.class),
     SET_OPTIMAL_SPEED("set_optimal_speed", null, null,  SetOptimalSpeedHandler.class),
     TAKE_ME_HOME("plot_route_to_home_star", null, null,  PlotRouteToHomeHandler.class),
-    OPEN_FSS_AND_SCAN("open_fss_and_perform_scan", null, null,  DisplayFssAndScanHandler.class),
+    OPEN_FSS_AND_SCAN("open_fss_and_scan_star_system", null, null,  DisplayFssAndScanHandler.class),
     HONK("perform_honk", null, null,  DisplayFssAndScanHandler.class),
 
     GET_HEADING_TO_LZ("navigate_bearing_direction_to_landing_zone", null, null,  NavigateToLandingZone.class),

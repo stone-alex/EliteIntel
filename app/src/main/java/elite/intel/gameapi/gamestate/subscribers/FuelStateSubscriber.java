@@ -24,17 +24,17 @@ public class FuelStateSubscriber {
         double fuelReservoir = event.getFuel().getFuelReservoir();
 
 
-        if (event.getAltitude() == 0 && event.getLatitude() > 0) {
+        if (status.isInSrv()) {
             //TODO Need a way to know we are in SRV
             if (fuelReservoir <= 0.06 && !hasAnnounced) {
-                //EventBusManager.publish(new VoiceProcessEvent("SRV Fuel Critical!"));
-                //hasAnnounced = true;
+                EventBusManager.publish(new MissionCriticalAnnouncementEvent("SRV Fuel Critical!"));
+                hasAnnounced = true;
             } else {
-                ///hasAnnounced = false;
+                hasAnnounced = false;
             }
-        } else {
+        } else if (status.isInMainShip()) {
             //We are on the ship.
-            if (!hasAnnounced && oldStatus !=null && oldStatus.getFuel() != null && playerSession.getShipLoadout() != null && playerSession.getShipLoadout().getFuelCapacity() != null) {
+            if (!hasAnnounced && oldStatus != null && oldStatus.getFuel() != null && playerSession.getShipLoadout() != null && playerSession.getShipLoadout().getFuelCapacity() != null) {
                 double fuelCapacityMain = playerSession.getShipLoadout().getFuelCapacity().getMain();
                 double fuelAmount = oldStatus.getFuel().getFuelMain();
                 double remainingFuelInPercent = Math.round((fuelAmount / fuelCapacityMain * 100) * 100.0) / 100.0;

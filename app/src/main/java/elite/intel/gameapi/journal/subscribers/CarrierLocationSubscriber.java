@@ -55,7 +55,7 @@ public class CarrierLocationSubscriber {
                 // try via EDSM
                 StarSystemDto starSystemDto = EdsmApiClient.searchStarSystem(event.getStarSystem(), 1);
                 StarSystemDto.Coords coords = starSystemDto.getCoords();
-                if(coords.getX() > 0 && coords.getY() > 0 && coords.getZ() > 0) {
+                if(coords != null && coords.getX() > 0 && coords.getY() > 0 && coords.getZ() > 0) {
                     carrierData.setX(coords.getX());
                     carrierData.setY(coords.getY());
                     carrierData.setZ(coords.getZ());

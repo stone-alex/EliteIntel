@@ -115,11 +115,12 @@ public class ScanOrganicSubscriber {
             bioSampleDto.setOurDiscovery(currentLocation.isOurDiscovery());
             playerSession.addBioSample(bioSampleDto);
             currentLocation.deletePartialBioSamples();
-            playerSession.saveLocation(currentLocation);
             removeCodexEntryIfMatches(event.getVariantLocalised(), -1, false);
             scanCount = 0;
             playerSession.clearGenusPaymentAnnounced();
         }
+
+        playerSession.saveLocation(currentLocation);
     }
 
     private static void announce(String sb) {

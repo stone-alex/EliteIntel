@@ -64,16 +64,8 @@ public class LocationManager {
 
     public LocationDto findPrimaryStar(String starSystem) {
         return Database.withDao(LocationDao.class, dao -> {
-            List<LocationDao.Location> byPrimaryStar = dao.findByPrimaryStar(starSystem);
-            for (LocationDao.Location entity : byPrimaryStar) {
-                if (entity.getLocationName().equalsIgnoreCase(starSystem) && entity.getLocationName().equalsIgnoreCase(starSystem)) {
-                    LocationDto locationDto = GsonFactory.getGson().fromJson(entity.getJson(), LocationDto.class);
-                    if (locationDto.getLocationType().equals(LocationDto.LocationType.PRIMARY_STAR)) {
-                        return locationDto;
-                    }
-                }
-            }
-            return new LocationDto(-1);
+            LocationDao.Location primaryStar = dao.findPrimaryStar(starSystem);
+            return primaryStar == null ? new LocationDto(-1) : GsonFactory.getGson().fromJson(primaryStar.getJson(), LocationDto.class);
         });
     }
 
@@ -81,13 +73,6 @@ public class LocationManager {
         return Database.withDao(LocationDao.class, dao ->{
             LocationDao.Location homeSystem = dao.findHomeSystem();
             return homeSystem == null ? new LocationDto(-1) : GsonFactory.getGson().fromJson(homeSystem.getJson(), LocationDto.class);
-        });
-    }
-
-    public LocationDto getPrimaryStarAtCurrentLocation() {
-        return Database.withDao(LocationDao.class, dao ->{
-            LocationDao.Location location = dao.primaryStarAtCurrentLocation();
-            return location == null ? new LocationDto(-1) : GsonFactory.getGson().fromJson(location.getJson(), LocationDto.class);
         });
     }
 }

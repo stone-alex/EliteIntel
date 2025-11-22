@@ -53,6 +53,10 @@ public interface LocationDao {
     @RegisterRowMapper(LocationDao.LocationMapper.class)
     Location primaryStarAtCurrentLocation();
 
+    @SqlQuery("select * from location where primaryStar = :starSystem and json like '%\"PRIMARY_STAR\"%'")
+    @RegisterRowMapper(LocationDao.LocationMapper.class)
+    Location findPrimaryStar(String starSystem);
+
 
     class LocationMapper implements RowMapper<LocationDao.Location> {
         @Override

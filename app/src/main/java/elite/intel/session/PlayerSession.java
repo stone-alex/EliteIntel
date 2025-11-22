@@ -772,7 +772,7 @@ public class PlayerSession  {
         return result;
     }
 
-    public long getMarkedId() {
+    public Long getMarkedId() {
         return Database.withDao(PlayerDao.class, dao ->{
             PlayerDao.Player player = dao.get();
             return player.getMarketId();

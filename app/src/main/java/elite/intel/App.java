@@ -20,7 +20,7 @@ public class App {
     public static void main(String[] args) {
 
         //DB init first.
-        Database.handle(); // init db
+        Database.init(); // init db
 
 
         // Toggle logging via system.conf

@@ -1,13 +1,12 @@
 package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.brain.handlers.query.struct.AiData;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
-import elite.intel.ai.search.edsm.EdsmApiClient;
-import elite.intel.ai.search.edsm.dto.OutfittingDto;
-import elite.intel.ai.search.edsm.dto.ShipyardDto;
-import elite.intel.ai.search.edsm.dto.StationsDto;
+import elite.intel.search.edsm.EdsmApiClient;
+import elite.intel.search.edsm.dto.OutfittingDto;
+import elite.intel.search.edsm.dto.ShipyardDto;
+import elite.intel.search.edsm.dto.StationsDto;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;

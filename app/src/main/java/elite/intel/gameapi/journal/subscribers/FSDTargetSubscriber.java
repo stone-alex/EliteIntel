@@ -1,17 +1,13 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.intel.ai.search.edsm.EdsmApiClient;
-import elite.intel.ai.search.edsm.dto.DeathsDto;
-import elite.intel.ai.search.edsm.dto.StarSystemDto;
-import elite.intel.ai.search.edsm.dto.TrafficDto;
-import elite.intel.gameapi.EventBusManager;
+import elite.intel.search.edsm.EdsmApiClient;
+import elite.intel.search.edsm.dto.DeathsDto;
+import elite.intel.search.edsm.dto.StarSystemDto;
+import elite.intel.search.edsm.dto.TrafficDto;
 import elite.intel.gameapi.data.FsdTarget;
 import elite.intel.gameapi.journal.events.FSDTargetEvent;
 import elite.intel.session.PlayerSession;
-import elite.intel.ui.event.AppLogEvent;
-import elite.intel.util.json.GsonFactory;
-import elite.intel.util.json.ToJsonConvertible;
 
 @SuppressWarnings("unused")
 public class FSDTargetSubscriber {

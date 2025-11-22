@@ -1,7 +1,7 @@
 package elite.intel.session;
 
 import com.google.common.eventbus.Subscribe;
-import elite.intel.ai.search.spansh.market.StationMarketDto;
+import elite.intel.search.spansh.market.StationMarketDto;
 import elite.intel.db.dao.PlayerDao;
 import elite.intel.db.dao.ShipScansDao;
 import elite.intel.db.managers.*;

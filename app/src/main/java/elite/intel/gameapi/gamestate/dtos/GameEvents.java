@@ -20,6 +20,7 @@ public class GameEvents {
         @SerializedName("Inventory")
         private List<Object> inventory;
 
+
         // Getters
         public String getTimestamp() {
             return timestamp;
@@ -76,6 +77,7 @@ public class GameEvents {
             private double power;
             @SerializedName("Priority")
             private int priority;
+
 
             // Getters
             public String getSlot() {
@@ -154,6 +156,14 @@ public class GameEvents {
 
             public String toJson() {
                 return GsonFactory.getGson().toJson(this);
+            }
+
+            public void setFuelMain(double fuelMain) {
+                this.fuelMain = fuelMain;
+            }
+
+            public void setFuelReservoir(double fuelReservoir) {
+                this.fuelReservoir = fuelReservoir;
             }
         }
 
@@ -303,6 +313,74 @@ public class GameEvents {
         public double getPlanetRadius() {
             return planetRadius;
         }
+
+        public void setTimestamp(String timestamp) {
+            this.timestamp = timestamp;
+        }
+
+        public void setEvent(String event) {
+            this.event = event;
+        }
+
+        public void setFlags(int flags) {
+            this.flags = flags;
+        }
+
+        public void setFlags2(int flags2) {
+            this.flags2 = flags2;
+        }
+
+        public void setPips(int[] pips) {
+            this.pips = pips;
+        }
+
+        public void setFireGroup(int fireGroup) {
+            this.fireGroup = fireGroup;
+        }
+
+        public void setGuiFocus(int guiFocus) {
+            this.guiFocus = guiFocus;
+        }
+
+        public void setFuel(Fuel fuel) {
+            this.fuel = fuel;
+        }
+
+        public void setCargo(double cargo) {
+            this.cargo = cargo;
+        }
+
+        public void setLegalState(String legalState) {
+            this.legalState = legalState;
+        }
+
+        public void setLatitude(double latitude) {
+            this.latitude = latitude;
+        }
+
+        public void setLongitude(double longitude) {
+            this.longitude = longitude;
+        }
+
+        public void setHeading(int heading) {
+            this.heading = heading;
+        }
+
+        public void setAltitude(double altitude) {
+            this.altitude = altitude;
+        }
+
+        public void setBalance(long balance) {
+            this.balance = balance;
+        }
+
+        public void setDestination(Destination destination) {
+            this.destination = destination;
+        }
+
+        public void setPlanetRadius(double planetRadius) {
+            this.planetRadius = planetRadius;
+        }
     }
 
     public static class BackpackEvent {
@@ -318,6 +396,31 @@ public class GameEvents {
         private List<Object> consumables;
         @SerializedName("Data")
         private List<Object> data;
+
+
+        public void setTimestamp(String timestamp) {
+            this.timestamp = timestamp;
+        }
+
+        public void setEvent(String event) {
+            this.event = event;
+        }
+
+        public void setItems(List<Object> items) {
+            this.items = items;
+        }
+
+        public void setComponents(List<Object> components) {
+            this.components = components;
+        }
+
+        public void setConsumables(List<Object> consumables) {
+            this.consumables = consumables;
+        }
+
+        public void setData(List<Object> data) {
+            this.data = data;
+        }
 
         // Getters
         public String getTimestamp() {
@@ -361,6 +464,23 @@ public class GameEvents {
             private float[] starPos;
             @SerializedName("StarClass")
             private String starClass;
+
+
+            public void setStarSystem(String starSystem) {
+                this.starSystem = starSystem;
+            }
+
+            public void setSystemAddress(long systemAddress) {
+                this.systemAddress = systemAddress;
+            }
+
+            public void setStarPos(float[] starPos) {
+                this.starPos = starPos;
+            }
+
+            public void setStarClass(String starClass) {
+                this.starClass = starClass;
+            }
 
             // Getters
             public String getStarSystem() {
@@ -411,6 +531,18 @@ public class GameEvents {
         public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }
+
+        public void setTimestamp(String timestamp) {
+            this.timestamp = timestamp;
+        }
+
+        public void setEvent(String event) {
+            this.event = event;
+        }
+
+        public void setRoute(List<RouteEntry> route) {
+            this.route = route;
+        }
     }
 
     public static class FCMaterialsEvent {
@@ -426,6 +558,31 @@ public class GameEvents {
         private String carrierID;
         @SerializedName("Items")
         private List<Object> items;
+
+
+        public void setTimestamp(String timestamp) {
+            this.timestamp = timestamp;
+        }
+
+        public void setEvent(String event) {
+            this.event = event;
+        }
+
+        public void setMarketID(long marketID) {
+            this.marketID = marketID;
+        }
+
+        public void setCarrierName(String carrierName) {
+            this.carrierName = carrierName;
+        }
+
+        public void setCarrierID(String carrierID) {
+            this.carrierID = carrierID;
+        }
+
+        public void setItems(List<Object> items) {
+            this.items = items;
+        }
 
         // Getters
         public String getTimestamp() {
@@ -473,6 +630,35 @@ public class GameEvents {
         @SerializedName("Items")
         private List<Object> items;
 
+
+        public void setTimestamp(String timestamp) {
+            this.timestamp = timestamp;
+        }
+
+        public void setEvent(String event) {
+            this.event = event;
+        }
+
+        public void setMarketID(long marketID) {
+            this.marketID = marketID;
+        }
+
+        public void setStationName(String stationName) {
+            this.stationName = stationName;
+        }
+
+        public void setStarSystem(String starSystem) {
+            this.starSystem = starSystem;
+        }
+
+        public void setHorizons(boolean horizons) {
+            this.horizons = horizons;
+        }
+
+        public void setItems(List<Object> items) {
+            this.items = items;
+        }
+
         // Getters
         public String getTimestamp() {
             return timestamp;
@@ -517,6 +703,22 @@ public class GameEvents {
             private String shipTypeLocalised;
             @SerializedName("ShipPrice")
             private long shipPrice;
+
+            public void setId(int id) {
+                this.id = id;
+            }
+
+            public void setShipType(String shipType) {
+                this.shipType = shipType;
+            }
+
+            public void setShipTypeLocalised(String shipTypeLocalised) {
+                this.shipTypeLocalised = shipTypeLocalised;
+            }
+
+            public void setShipPrice(long shipPrice) {
+                this.shipPrice = shipPrice;
+            }
 
             // Getters
             public int getId() {
@@ -593,6 +795,38 @@ public class GameEvents {
         public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }
+
+        public void setTimestamp(String timestamp) {
+            this.timestamp = timestamp;
+        }
+
+        public void setEvent(String event) {
+            this.event = event;
+        }
+
+        public void setMarketID(long marketID) {
+            this.marketID = marketID;
+        }
+
+        public void setStationName(String stationName) {
+            this.stationName = stationName;
+        }
+
+        public void setStarSystem(String starSystem) {
+            this.starSystem = starSystem;
+        }
+
+        public void setHorizons(boolean horizons) {
+            this.horizons = horizons;
+        }
+
+        public void setAllowCobraMkIV(boolean allowCobraMkIV) {
+            this.allowCobraMkIV = allowCobraMkIV;
+        }
+
+        public void setPriceList(List<ShipPrice> priceList) {
+            this.priceList = priceList;
+        }
     }
 
     public static class ShipLockerEvent {
@@ -605,6 +839,22 @@ public class GameEvents {
             private int ownerID;
             @SerializedName("Count")
             private int count;
+
+            public void setName(String name) {
+                this.name = name;
+            }
+
+            public void setNameLocalised(String nameLocalised) {
+                this.nameLocalised = nameLocalised;
+            }
+
+            public void setOwnerID(int ownerID) {
+                this.ownerID = ownerID;
+            }
+
+            public void setCount(int count) {
+                this.count = count;
+            }
 
             // Getters
             public String getName() {
@@ -637,6 +887,22 @@ public class GameEvents {
             private int ownerID;
             @SerializedName("Count")
             private int count;
+
+            public void setName(String name) {
+                this.name = name;
+            }
+
+            public void setNameLocalised(String nameLocalised) {
+                this.nameLocalised = nameLocalised;
+            }
+
+            public void setOwnerID(int ownerID) {
+                this.ownerID = ownerID;
+            }
+
+            public void setCount(int count) {
+                this.count = count;
+            }
 
             // Getters
             public String getName() {
@@ -672,6 +938,31 @@ public class GameEvents {
         private List<Consumable> consumables;
         @SerializedName("Data")
         private List<Object> data;
+
+
+        public void setTimestamp(String timestamp) {
+            this.timestamp = timestamp;
+        }
+
+        public void setEvent(String event) {
+            this.event = event;
+        }
+
+        public void setItems(List<Object> items) {
+            this.items = items;
+        }
+
+        public void setComponents(List<Component> components) {
+            this.components = components;
+        }
+
+        public void setConsumables(List<Consumable> consumables) {
+            this.consumables = consumables;
+        }
+
+        public void setData(List<Object> data) {
+            this.data = data;
+        }
 
         // Getters
         public String getTimestamp() {
@@ -735,6 +1026,67 @@ public class GameEvents {
             private boolean producer;
             @SerializedName("Rare")
             private boolean rare;
+
+
+            public void setId(long id) {
+                this.id = id;
+            }
+
+            public void setName(String name) {
+                this.name = name;
+            }
+
+            public void setNameLocalised(String nameLocalised) {
+                this.nameLocalised = nameLocalised;
+            }
+
+            public void setCategory(String category) {
+                this.category = category;
+            }
+
+            public void setCategoryLocalised(String categoryLocalised) {
+                this.categoryLocalised = categoryLocalised;
+            }
+
+            public void setBuyPrice(int buyPrice) {
+                this.buyPrice = buyPrice;
+            }
+
+            public void setSellPrice(int sellPrice) {
+                this.sellPrice = sellPrice;
+            }
+
+            public void setMeanPrice(int meanPrice) {
+                this.meanPrice = meanPrice;
+            }
+
+            public void setStockBracket(int stockBracket) {
+                this.stockBracket = stockBracket;
+            }
+
+            public void setDemandBracket(int demandBracket) {
+                this.demandBracket = demandBracket;
+            }
+
+            public void setStock(int stock) {
+                this.stock = stock;
+            }
+
+            public void setDemand(int demand) {
+                this.demand = demand;
+            }
+
+            public void setConsumer(boolean consumer) {
+                this.consumer = consumer;
+            }
+
+            public void setProducer(boolean producer) {
+                this.producer = producer;
+            }
+
+            public void setRare(boolean rare) {
+                this.rare = rare;
+            }
 
             // Getters
             public long getId() {
@@ -816,6 +1168,35 @@ public class GameEvents {
         private String starSystem;
         @SerializedName("Items")
         private List<MarketItem> items;
+
+
+        public void setTimestamp(String timestamp) {
+            this.timestamp = timestamp;
+        }
+
+        public void setEvent(String event) {
+            this.event = event;
+        }
+
+        public void setMarketID(long marketID) {
+            this.marketID = marketID;
+        }
+
+        public void setStationName(String stationName) {
+            this.stationName = stationName;
+        }
+
+        public void setStationType(String stationType) {
+            this.stationType = stationType;
+        }
+
+        public void setStarSystem(String starSystem) {
+            this.starSystem = starSystem;
+        }
+
+        public void setItems(List<MarketItem> items) {
+            this.items = items;
+        }
 
         // Getters
         public String getTimestamp() {

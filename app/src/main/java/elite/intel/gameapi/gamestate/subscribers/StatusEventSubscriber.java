@@ -27,7 +27,6 @@ public class StatusEventSubscriber {
         }
 
         status.setStatus(event);
-        status.setLastStatusChange(System.currentTimeMillis());
 
         EventBusManager.publish(new PlayerMovedEvent(event.getLatitude(), event.getLongitude(), event.getPlanetRadius(), event.getAltitude()));
 

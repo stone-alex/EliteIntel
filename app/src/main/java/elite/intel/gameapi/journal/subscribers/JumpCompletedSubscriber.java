@@ -1,13 +1,13 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.intel.ai.search.edsm.EdsmApiClient;
-import elite.intel.ai.search.edsm.dto.DeathsDto;
-import elite.intel.ai.search.edsm.dto.SystemBodiesDto;
-import elite.intel.ai.search.edsm.dto.TrafficDto;
-import elite.intel.ai.search.edsm.dto.data.BodyData;
-import elite.intel.ai.search.edsm.dto.data.DeathsStats;
-import elite.intel.ai.search.edsm.dto.data.TrafficStats;
+import elite.intel.search.edsm.EdsmApiClient;
+import elite.intel.search.edsm.dto.DeathsDto;
+import elite.intel.search.edsm.dto.SystemBodiesDto;
+import elite.intel.search.edsm.dto.TrafficDto;
+import elite.intel.search.edsm.dto.data.BodyData;
+import elite.intel.search.edsm.dto.data.DeathsStats;
+import elite.intel.search.edsm.dto.data.TrafficStats;
 import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;

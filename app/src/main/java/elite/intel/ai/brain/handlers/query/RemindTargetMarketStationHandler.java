@@ -2,7 +2,7 @@ package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
-import elite.intel.ai.search.spansh.station.DestinationDto;
+import elite.intel.search.spansh.station.DestinationDto;
 import elite.intel.db.managers.DestinationReminderManager;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;

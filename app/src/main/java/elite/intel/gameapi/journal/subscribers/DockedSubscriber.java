@@ -2,8 +2,8 @@ package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
-import elite.intel.ai.search.edsm.EdsmApiClient;
-import elite.intel.ai.search.edsm.dto.MarketDto;
+import elite.intel.search.edsm.EdsmApiClient;
+import elite.intel.search.edsm.dto.MarketDto;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.DockedEvent;
 import elite.intel.gameapi.journal.events.dto.CarrierDataDto;

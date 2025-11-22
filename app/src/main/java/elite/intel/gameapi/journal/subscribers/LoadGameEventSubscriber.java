@@ -1,13 +1,11 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.intel.ai.search.edsm.EdsmApiClient;
-import elite.intel.ai.search.edsm.dto.EncodedMaterialsDto;
-import elite.intel.ai.search.edsm.dto.MaterialsDto;
-import elite.intel.ai.search.edsm.dto.MaterialsType;
-import elite.intel.db.util.Database;
-import elite.intel.db.dao.MaterialsDao;
-import elite.intel.gameapi.data.EDMaterialCaps;
+import elite.intel.search.edsm.EdsmApiClient;
+import elite.intel.search.edsm.dto.EncodedMaterialsDto;
+import elite.intel.search.edsm.dto.MaterialsDto;
+import elite.intel.search.edsm.dto.MaterialsType;
+import elite.intel.db.managers.MaterialManager;
 import elite.intel.gameapi.gamestate.dtos.NavRouteDto;
 import elite.intel.gameapi.journal.events.LoadGameEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
@@ -20,7 +18,7 @@ import java.util.Map;
 public class LoadGameEventSubscriber {
 
     private final ShipRouteManager shipRoute = ShipRouteManager.getInstance();
-
+    private final MaterialManager materialManager = MaterialManager.getInstance();
 
     @Subscribe
     public void onEvent(LoadGameEvent event) {
@@ -38,33 +36,17 @@ public class LoadGameEventSubscriber {
         retrieveEncodedMaterialsFromEDSM();
     }
 
-    private static void retrieveEncodedMaterialsFromEDSM() {
+    private void retrieveEncodedMaterialsFromEDSM() {
         EncodedMaterialsDto encodedMaterials = EdsmApiClient.getEncodedMaterials();
         for (EncodedMaterialsDto.EncodedMaterialEntry entry : encodedMaterials.getEncoded()) {
-            Database.withDao(MaterialsDao.class, dao -> {
-                dao.upsert(
-                        entry.getMaterialName(),
-                        MaterialsType.GAME_ENCODED.getType(),
-                        entry.getQuantity(),
-                        EDMaterialCaps.getMax(entry.getMaterialName())
-                );
-                return null;
-            });
+            materialManager.save(entry.getMaterialName(),MaterialsType.EDMS_ENCODED, entry.getQuantity());
         }
     }
 
-    private static void retrieveManufacturedAndRawMaterialsFromEDSM() {
+    private void retrieveManufacturedAndRawMaterialsFromEDSM() {
         MaterialsDto rawAndManufacturedMaterials = EdsmApiClient.getMaterials();
         for (MaterialsDto.MaterialEntry entry : rawAndManufacturedMaterials.getMaterials()) {
-            Database.withDao(MaterialsDao.class, dao -> {
-                dao.upsert(
-                        entry.getMaterialName(),
-                        MaterialsType.GAME_RAW.name(),
-                        entry.getQuantity(),
-                        EDMaterialCaps.getMax(entry.getMaterialName())
-                );
-                return null;
-            });
+            materialManager.save(entry.getMaterialName(),MaterialsType.GAME_RAW, entry.getQuantity());
         }
     }
 

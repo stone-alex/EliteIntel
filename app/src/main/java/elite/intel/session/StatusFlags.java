@@ -1,11 +1,7 @@
 package elite.intel.session;
 
-public abstract class StatusFlags extends SessionPersistence implements java.io.Serializable{
-    
-    StatusFlags(String directory){
-        super(directory);
-    }
-    
+public abstract class StatusFlags {
+
     // Flags (Ship/Flight States) - Odyssey-specific bitmasks
     private static final long DOCKED = 1L;
     private static final long LANDED = 2L;

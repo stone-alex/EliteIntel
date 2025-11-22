@@ -2,9 +2,9 @@ package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
-import elite.intel.ai.search.spansh.market.MarketSearchCriteria;
-import elite.intel.ai.search.spansh.market.SpanshMarketClient;
-import elite.intel.ai.search.spansh.market.StationMarketDto;
+import elite.intel.search.spansh.market.MarketSearchCriteria;
+import elite.intel.search.spansh.market.SpanshMarketClient;
+import elite.intel.search.spansh.market.StationMarketDto;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.session.PlayerSession;

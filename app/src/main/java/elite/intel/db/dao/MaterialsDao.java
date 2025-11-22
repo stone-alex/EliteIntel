@@ -63,14 +63,65 @@ public interface MaterialsDao {
         }
     }
 
-    record Material(long id, String materialName, String materialType, int amount, int maxCap) implements ToJsonConvertible {
-        public String getMaterialName() {return materialName;}
-        public String getMaterialType() {return materialType;}
-        public int getAmount() {return amount;}
-        public int getMaxCap() {return maxCap;}
-        @Override public String toJson() {
+    class Material implements ToJsonConvertible {
+        private long id;
+        private String materialName;
+        private String materialType;
+        private int amount;
+        private int maxCap;
+
+        public Material(long id, String materialName, String materialType, int amount, int maxCap) {
+            this.id = id;
+            this.materialName = materialName;
+            this.materialType = materialType;
+            this.amount = amount;
+            this.maxCap = maxCap;
+        }
+
+        public long getId() {
+            return id;
+        }
+
+        public void setId(long id) {
+            this.id = id;
+        }
+
+        public String getMaterialName() {
+            return materialName;
+        }
+
+        public void setMaterialName(String materialName) {
+            this.materialName = materialName;
+        }
+
+        public String getMaterialType() {
+            return materialType;
+        }
+
+        public void setMaterialType(String materialType) {
+            this.materialType = materialType;
+        }
+
+        public int getAmount() {
+            return amount;
+        }
+
+        public void setAmount(int amount) {
+            this.amount = amount;
+        }
+
+        public int getMaxCap() {
+            return maxCap;
+        }
+
+        public void setMaxCap(int maxCap) {
+            this.maxCap = maxCap;
+        }
+
+        @Override
+        public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }
-    };
+    }
 }
 

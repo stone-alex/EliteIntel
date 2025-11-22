@@ -1,6 +1,6 @@
 package elite.intel.db.managers;
 
-import elite.intel.ai.search.spansh.station.DestinationDto;
+import elite.intel.search.spansh.station.DestinationDto;
 import elite.intel.db.dao.DestinationReminderDao;
 import elite.intel.db.util.Database;
 import elite.intel.util.json.GsonFactory;

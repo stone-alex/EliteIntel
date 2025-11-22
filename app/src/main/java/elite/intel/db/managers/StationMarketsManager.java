@@ -1,6 +1,6 @@
 package elite.intel.db.managers;
 
-import elite.intel.ai.search.spansh.market.StationMarketDto;
+import elite.intel.search.spansh.market.StationMarketDto;
 import elite.intel.db.dao.StationMarketDao;
 import elite.intel.db.util.Database;
 import elite.intel.util.json.GsonFactory;

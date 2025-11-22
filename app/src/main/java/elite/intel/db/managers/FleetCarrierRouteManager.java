@@ -1,6 +1,6 @@
 package elite.intel.db.managers;
 
-import elite.intel.ai.search.spansh.carrierroute.CarrierJump;
+import elite.intel.search.spansh.carrierroute.CarrierJump;
 import elite.intel.db.dao.FleetCarrierRouteDao;
 import elite.intel.db.util.Database;
 

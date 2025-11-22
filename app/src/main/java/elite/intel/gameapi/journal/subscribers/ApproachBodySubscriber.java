@@ -1,9 +1,9 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.intel.ai.search.edsm.EdsmApiClient;
-import elite.intel.ai.search.edsm.dto.SystemBodiesDto;
-import elite.intel.ai.search.edsm.dto.data.BodyData;
+import elite.intel.search.edsm.EdsmApiClient;
+import elite.intel.search.edsm.dto.SystemBodiesDto;
+import elite.intel.search.edsm.dto.data.BodyData;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.journal.events.ApproachBodyEvent;

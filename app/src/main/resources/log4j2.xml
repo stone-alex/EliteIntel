@@ -36,7 +36,7 @@
         <Logger name="elite.intel.gameapi.journal.subscribers" level="debug"/>
         <Logger name="elite.intel.gameapi.journal.subscribers.LocationTrackingSubscriber" level="info"/>
         <Logger name="elite.intel.gameapi.journal.EventRegistry" level="error"/>
-        <Logger name="elite.intel.ai.search.edsm.EdsmApiClient" level="error"/>
+        <Logger name="elite.intel.search.edsm.EdsmApiClient" level="error"/>
         <Logger name="elite.intel.util.NavigationUtils" level="error"/>
         <Logger name="elite.intel.session.SessionPersistence" level="error"/>
         <Logger name="elite.intel.ai.hands.KeyBindingsParser" level="error"/>
@@ -44,7 +44,7 @@
         <Logger name="elite.intel.ai.ears" level="info"/>
         <Logger name="elite.intel.ai.mouth" level="error"/>
         <Logger name="elite.intel.ai.brain" level="info"/>
-        <Logger name="elite.intel.ai.search.spansh" level="error"/>
+        <Logger name="elite.intel.search.spansh" level="error"/>
 
         <!-- Root logger -->
         <Root level="debug">

@@ -1,7 +1,7 @@
 package elite.intel.gameapi.journal.events.dto;
 
-import elite.intel.ai.search.edsm.dto.*;
-import elite.intel.ai.search.edsm.dto.data.BodyData;
+import elite.intel.search.edsm.dto.*;
+import elite.intel.search.edsm.dto.data.BodyData;
 import elite.intel.gameapi.journal.events.CodexEntryEvent;
 import elite.intel.gameapi.journal.events.FSSBodySignalsEvent;
 import elite.intel.gameapi.journal.events.SAASignalsFoundEvent;

@@ -3,7 +3,7 @@ package elite.intel.ai.brain.handlers.commands;
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
-import elite.intel.ai.search.spansh.market.StationMarketDto;
+import elite.intel.search.spansh.market.StationMarketDto;
 import elite.intel.db.managers.DestinationReminderManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.PlayerSession;

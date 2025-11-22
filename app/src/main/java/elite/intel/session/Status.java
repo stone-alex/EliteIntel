@@ -1,27 +1,22 @@
 package elite.intel.session;
 
+import elite.intel.db.dao.StatusDao;
+import elite.intel.db.util.Database;
 import elite.intel.gameapi.gamestate.dtos.GameEvents;
 
-public class Status extends StatusFlags implements java.io.Serializable {
+public class Status extends StatusFlags{
 
-    private static final String SESSION_DIR = "session/";
     private static volatile Status instance; // Singleton instance
-    private GameEvents.StatusEvent gameStatus = new GameEvents.StatusEvent();
-    private Long lastStatusChange = null;
 
-    private Status(String fileName) {
-        super(SESSION_DIR);
-        ensureFileAndDirectoryExist(fileName);
-        loadFromDisk();
-        registerField("game_status", this::getStatus, this::setStatus, GameEvents.StatusEvent.class);
-        registerField("last_change", this::getLastStatusChange, this::setLastStatusChange, Long.class);
+    private Status() {
+        //
     }
 
     public static Status getInstance() {
         if (instance == null) {
             synchronized (Status.class) {
                 if (instance == null) {
-                    instance = new Status("status.json");
+                    instance = new Status();
                 }
             }
         }
@@ -29,25 +24,44 @@ public class Status extends StatusFlags implements java.io.Serializable {
     }
 
     public GameEvents.StatusEvent getStatus() {
-        return this.gameStatus;
+        return Database.withDao(StatusDao.class, dao -> {
+            StatusDao.Status status = dao.getStatus();
+            GameEvents.StatusEvent result = new GameEvents.StatusEvent();
+            result.setAltitude(status.getAltitude());
+            result.setBalance(status.getBalance());
+            result.setCargo(status.getCargo());
+            result.setEvent(status.getEvent());
+            result.setFlags(status.getFlags());
+            result.setFlags2(status.getFlags2());
+            result.setFireGroup(status.getFireGroup());
+            result.setGuiFocus(status.getGuiFocus());
+            result.setHeading(status.getHeading());
+            result.setLatitude(status.getLatituge());
+            result.setLongitude(status.getLongitude());
+            result.setPlanetRadius(status.getPlanetRadius());
+            return result;
+        });
     }
 
     public void setStatus(GameEvents.StatusEvent event) {
-        this.gameStatus = event;
-        lastStatusChange = System.currentTimeMillis();
-        save();
-    }
-
-    public Long getLastStatusChange() {
-        return lastStatusChange;
-    }
-
-    public void setLastStatusChange(Long lastStatusChange) {
-        this.lastStatusChange = lastStatusChange;
-    }
-
-    public void loadFromDisk() {
-        loadSession(Status.this::loadFields);
+        Database.withDao(StatusDao.class, dao -> {
+            StatusDao.Status status = new StatusDao.Status();
+            status.setAltitude(event.getAltitude());
+            status.setBalance(event.getBalance());
+            status.setCargo(event.getCargo());
+            status.setEvent(event.getEvent());
+            status.setFlags(event.getFlags());
+            status.setFlags2(event.getFlags2());
+            status.setFireGroup(event.getFireGroup());
+            status.setGuiFocus(event.getGuiFocus());
+            status.setHeading(event.getHeading());
+            status.setLatituge(event.getLatitude());
+            status.setLongitude(event.getLongitude());
+            status.setPlanetRadius(event.getPlanetRadius());
+            status.setTimestamp(event.getTimestamp());
+            dao.save(status);
+            return null;
+        });
     }
 
 

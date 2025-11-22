@@ -6,7 +6,6 @@ import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.sqlobject.SqlObjectPlugin;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class Database {
 
@@ -33,7 +32,7 @@ public class Database {
     }
 
     // shortcut if you just need a handle
-    public static Handle handle() {
+    public static Handle init() {
         return HANDLE;
     }
 

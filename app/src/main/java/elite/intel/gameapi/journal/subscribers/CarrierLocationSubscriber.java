@@ -1,24 +1,17 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.intel.ai.search.edsm.EdsmApiClient;
-import elite.intel.ai.search.edsm.dto.StarSystemDto;
-import elite.intel.ai.search.edsm.dto.StationsDto;
-import elite.intel.ai.search.spansh.carrierroute.CarrierJump;
-import elite.intel.ai.search.spansh.client.SpanshClient;
-import elite.intel.ai.search.spansh.stellarobjects.StellarObjectSearchClient;
+import elite.intel.search.edsm.EdsmApiClient;
+import elite.intel.search.edsm.dto.StarSystemDto;
+import elite.intel.search.spansh.carrierroute.CarrierJump;
 import elite.intel.db.managers.FleetCarrierRouteManager;
 import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.journal.events.CarrierLocationEvent;
 import elite.intel.gameapi.journal.events.dto.CarrierDataDto;
-import elite.intel.gameapi.journal.events.dto.FssSignalDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 
 import java.util.Map;
-import java.util.Set;
-
-import static elite.intel.gameapi.journal.events.dto.LocationDto.LocationType.PRIMARY_STAR;
 
 public class CarrierLocationSubscriber {
 

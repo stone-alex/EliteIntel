@@ -1,9 +1,9 @@
 package elite.intel.gameapi.journal.subscribers;
 
-import elite.intel.ai.search.edsm.EdsmApiClient;
-import elite.intel.ai.search.edsm.dto.MarketDto;
-import elite.intel.ai.search.edsm.dto.OutfittingDto;
-import elite.intel.ai.search.edsm.dto.ShipyardDto;
+import elite.intel.search.edsm.EdsmApiClient;
+import elite.intel.search.edsm.dto.MarketDto;
+import elite.intel.search.edsm.dto.OutfittingDto;
+import elite.intel.search.edsm.dto.ShipyardDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 

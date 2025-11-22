@@ -5,7 +5,6 @@ import elite.intel.gameapi.gamestate.dtos.GameEvents;
 import elite.intel.gameapi.gamestate.dtos.NavRouteDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.db.managers.ShipRouteManager;
-import elite.intel.util.AdjustRoute;
 
 import java.util.*;
 
@@ -47,8 +46,7 @@ public class RoutePlottedSubscriber {
                 if(playerSession.getCurrentLocation() != null) {
                     List<NavRouteDto> orderedRoute = new ArrayList<>(routeMap.values());
                     orderedRoute.sort(Comparator.comparingInt(NavRouteDto::getLeg));
-                    Map<Integer, NavRouteDto> adjustedRoute = AdjustRoute.adjustRoute(orderedRoute, playerSession.getCurrentLocation().getStarName());
-                    shipRoute.setNavRoute(adjustedRoute);
+                    shipRoute.removeLeg(playerSession.getPrimaryStarName());
                 }
             } else {
                 shipRoute.clearRoute();

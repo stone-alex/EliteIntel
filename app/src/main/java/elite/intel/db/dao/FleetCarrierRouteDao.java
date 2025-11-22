@@ -24,8 +24,8 @@ public interface FleetCarrierRouteDao {
     @SqlQuery("SELECT * FROM fleet_carrier_route")
     List<FleetCarrierRouteDao.FleetCarrierRouteLeg> getAll();
 
-    @SqlUpdate("DELETE FROM fleet_carrier_route where leg = :leg")
-    void delete(int leg);
+    @SqlUpdate("DELETE FROM fleet_carrier_route where systemName = :starSystem")
+    void delete(String starSystem);
 
     @SqlUpdate("DELETE FROM fleet_carrier_route")
     void clear();

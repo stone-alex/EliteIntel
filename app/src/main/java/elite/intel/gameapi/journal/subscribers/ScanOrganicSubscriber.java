@@ -164,16 +164,17 @@ public class ScanOrganicSubscriber {
 
     private BioSampleDto createBioSampleDto(String genus, String species, long starSystemNumber, boolean isOurDiscovery) {
 
+        LocationDto currentLocation = playerSession.getCurrentLocation();
         BioSampleDto bioSampleDto = new BioSampleDto();
         bioSampleDto.setPrimaryStar(playerSession.getPrimaryStarName());
-        bioSampleDto.setPlanetName(playerSession.getCurrentLocation().getPlanetName());
-        bioSampleDto.setPlanetShortName(playerSession.getCurrentLocation().getPlanetShortName());
+        bioSampleDto.setPlanetName(currentLocation.getPlanetName());
+        bioSampleDto.setPlanetShortName(currentLocation.getPlanetShortName());
         bioSampleDto.setScanLatitude(status.getStatus().getLatitude());
         bioSampleDto.setScanLongitude(status.getStatus().getLongitude());
         bioSampleDto.setGenus(genus);
         bioSampleDto.setSpecies(species);
         bioSampleDto.setOurDiscovery(isOurDiscovery);
-        bioSampleDto.setBodyId(playerSession.getCurrentLocation().getBodyId());
+        bioSampleDto.setBodyId(currentLocation.getBodyId());
         bioSampleDto.setDistanceToNextSample(distanceToNextSample(genus, species));
         return bioSampleDto;
     }

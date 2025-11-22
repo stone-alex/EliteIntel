@@ -33,8 +33,8 @@ public interface ShipRouteDao {
     @SqlQuery("SELECT * FROM ship_route")
     List<ShipRouteDao.Route> getAll();
 
-    @SqlUpdate("DELETE FROM ship_route where leg = :leg")
-    void delete(int leg);
+    @SqlUpdate("DELETE FROM ship_route where systemName = :starSystem")
+    void delete(String starSystem);
 
     @SqlUpdate("DELETE FROM ship_route")
     void clear();

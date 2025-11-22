@@ -6,6 +6,7 @@ import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.gamestate.status_events.PlayerMovedEvent;
 import elite.intel.gameapi.journal.BioSampleDistanceCalculator;
 import elite.intel.gameapi.journal.events.dto.BioSampleDto;
+import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.Status;
 
@@ -18,7 +19,8 @@ public class BioSampleTrackingSubscriber {
     public void onPlayerMovedEvent(PlayerMovedEvent event) {
         PlayerSession playerSession = PlayerSession.getInstance();
         Status status = Status.getInstance();
-        List<BioSampleDto> bioSamples = playerSession.getCurrentLocation().getPartialBioSamples();
+        LocationDto currentLocation = playerSession.getCurrentLocation();
+        List<BioSampleDto> bioSamples = currentLocation.getPartialBioSamples();
 
         // If no samples are being tracked, don't announce.
         if (bioSamples == null || bioSamples.isEmpty()) {
@@ -50,7 +52,8 @@ public class BioSampleTrackingSubscriber {
             }
         }
 
-        playerSession.getCurrentLocation().setPartialBioSamples(temp);
+        currentLocation.setPartialBioSamples(temp);
+        playerSession.saveLocation(currentLocation);
 
         // Announce only on state transition
         if (wasFarEnough != isFarEnough) {

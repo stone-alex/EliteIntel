@@ -58,6 +58,15 @@ public class ShipRouteManager {
         });
     }
 
+    public Map<Integer, NavRouteDto> removeLeg(String starSystem){
+        Database.withDao(ShipRouteDao.class, dao ->{
+            dao.delete(starSystem);
+            return null;
+        });
+        return getRoute();
+    }
+
+
     private Map<Integer, NavRouteDto> getRoute() {
         return Database.withDao(ShipRouteDao.class, dao -> {
             Map<Integer, NavRouteDto> result = new HashMap<>();

@@ -2,7 +2,6 @@ package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.search.spansh.carrierroute.CarrierJump;
-import elite.intel.db.dao.LocationDao;
 import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.journal.events.CarrierLocationEvent;
 import elite.intel.gameapi.journal.events.dto.CarrierDataDto;
@@ -11,7 +10,6 @@ import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.db.managers.FleetCarrierRouteManager;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.Status;
-import elite.intel.util.AdjustRoute;
 
 import java.util.Map;
 import java.util.Set;
@@ -30,7 +28,7 @@ public class CarrierLocationSubscriber {
             FleetCarrierRouteManager route = FleetCarrierRouteManager.getInstance();
             CarrierDataDto carrierData = playerSession.getCarrierData();
             carrierData.setStarName(event.getStarSystem());
-            AdjustRoute.adjustFleetCarrierRoute(event.getStarSystem());
+            FleetCarrierRouteManager.getInstance().removeLeg(event.getStarSystem());
             Map<Integer, CarrierJump> fleetCarrierRoute = route.getFleetCarrierRoute();
             boolean routeEntryFount = false;
 

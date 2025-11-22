@@ -1,6 +1,7 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.intel.db.managers.FleetCarrierRouteManager;
 import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
@@ -9,7 +10,6 @@ import elite.intel.gameapi.journal.events.dto.CarrierDataDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.Status;
-import elite.intel.util.AdjustRoute;
 
 import java.util.Objects;
 
@@ -23,7 +23,7 @@ public class CarrierJumpCompleteSubscriber {
         double[] starPos = event.getStarPos();
         playerSession.setLastKnownCarrierLocation(starSystem);
 
-        AdjustRoute.adjustFleetCarrierRoute(event.getStarSystem());
+        FleetCarrierRouteManager.getInstance().removeLeg(event.getStarSystem());
 
         CarrierDataDto carrierData = playerSession.getCarrierData();
         playerSession.setCarrierDepartureTime(null);

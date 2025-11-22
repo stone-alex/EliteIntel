@@ -55,9 +55,9 @@ public class ScanEventSubscriber extends BiomeAnalyzer {
         location.setStarClass(event.getStarType());
 
         if(!PRIMARY_STAR.equals(locationType)) {
-            location.setX(playerSession.getCurrentLocation().getX());
-            location.setY(playerSession.getCurrentLocation().getY());
-            location.setZ(playerSession.getCurrentLocation().getZ());
+            location.setX(location.getX());
+            location.setY(location.getY());
+            location.setZ(location.getZ());
         }
 
 

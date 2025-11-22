@@ -73,9 +73,9 @@ public class FleetCarrierRouteManager {
         });
     }
 
-    public void removeLeg(int leg) {
+    public void removeLeg(String starName) {
         Database.withDao(FleetCarrierRouteDao.class, dao -> {
-                    dao.delete(leg);
+                    dao.delete(starName);
                     return null;
                 }
         );

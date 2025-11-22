@@ -635,23 +635,8 @@ public class PlayerSession  {
     }
 
     public GalacticCoordinates getGalacticCoordinates() {
-
-        Status status = Status.getInstance();
-        CarrierDataDto carrierInfo = getCarrierData();
-
-        if (status.isDocked()) {
-            // we are on the fleet carrier
-            return new GalacticCoordinates(carrierInfo.getX(), carrierInfo.getY(), carrierInfo.getZ());
-        }
-
-
-        Map<Long, LocationDto> locations = getLocations();
-        for (LocationDto location : locations.values()) {
-            if (location.getLocationType().equals(LocationDto.LocationType.PRIMARY_STAR)) {
-                return new GalacticCoordinates(location.getX(), location.getY(), location.getZ());
-            }
-        }
-        return null;
+        LocationDto primaryStarLocation = getPrimaryStarLocation();
+        return new GalacticCoordinates(primaryStarLocation.getX(), primaryStarLocation.getY(), primaryStarLocation.getZ() );
     }
 
 

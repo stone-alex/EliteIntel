@@ -13,7 +13,6 @@ import elite.intel.gameapi.journal.events.LoadGameEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.db.managers.ShipRouteManager;
-import elite.intel.util.AdjustRoute;
 
 import java.util.List;
 import java.util.Map;
@@ -76,7 +75,7 @@ public class LoadGameEventSubscriber {
         if (!roueSet) {return;}
         if (currentLocation == null) {return;}
 
-        Map<Integer, NavRouteDto> adjustedRoute = AdjustRoute.adjustRoute(orderedRoute, currentLocation.getStarName());
+        Map<Integer, NavRouteDto> adjustedRoute = shipRoute.removeLeg(currentLocation.getStarName());
         shipRoute.setNavRoute(adjustedRoute);
     }
 }

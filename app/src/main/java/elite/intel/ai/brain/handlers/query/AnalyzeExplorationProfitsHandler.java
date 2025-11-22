@@ -24,7 +24,8 @@ public class AnalyzeExplorationProfitsHandler extends BaseQueryAnalyzer implemen
         PlayerSession playerSession = PlayerSession.getInstance();
         List<BioSampleDto> allCompletedBioSamples = playerSession.getBioCompletedSamples();
         Map<Long, LocationDto> planetsAndMoons = playerSession.getLocations();
-        List<FSSBodySignalsEvent.Signal> fullSpectrumScanBodySignals = playerSession.getCurrentLocation().getFssSignals();
+        LocationDto currentLocation = playerSession.getCurrentLocation();
+        List<FSSBodySignalsEvent.Signal> fullSpectrumScanBodySignals = currentLocation.getFssSignals();
         return process(new AiDataStruct(ANALYZE_STAR_SYSTEM_EXPLORATION.getInstructions(), new DataDto(allCompletedBioSamples, planetsAndMoons, fullSpectrumScanBodySignals)), originalUserInput);
     }
 

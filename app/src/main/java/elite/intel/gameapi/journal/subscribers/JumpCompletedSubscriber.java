@@ -17,7 +17,6 @@ import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.gameapi.journal.events.dto.MaterialDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.db.managers.ShipRouteManager;
-import elite.intel.util.AdjustRoute;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -84,7 +83,7 @@ public class JumpCompletedSubscriber {
             primaryStar.setDeathsDto(deathsDto);
         } else if (roueSet) {
             sb.append("Arrived at: ").append(event.getStarSystem()).append(" star system.");
-            Map<Integer, NavRouteDto> adjustedRoute = AdjustRoute.adjustRoute(orderedRoute, event.getStarSystem());
+            Map<Integer, NavRouteDto> adjustedRoute = shipRoute.removeLeg(event.getStarSystem());
             shipRoute.setNavRoute(adjustedRoute);
 
             List<NavRouteDto> temp = adjustedRoute.values().stream().collect(Collectors.toList());

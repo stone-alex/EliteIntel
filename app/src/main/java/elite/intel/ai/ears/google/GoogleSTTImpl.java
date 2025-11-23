@@ -66,7 +66,7 @@ public class GoogleSTTImpl implements EarsInterface {
         Double rms_threshold_high = systemSession.getRmsThresholdHigh();
         Double rms_threshold_low = systemSession.getRmsThresholdLow();
 
-        if (rms_threshold_high == null || rms_threshold_low == null) {
+        if (rms_threshold_high == 0 || rms_threshold_low == 0) {
             EventBusManager.publish(new AppLogEvent("Calibrating audio..."));
             AudioSettingsTuple<Double, Double> rmsThresholds = AudioCalibrator.calibrateRMS(sampleRateHertz, bufferSize);
             this.RMS_THRESHOLD_HIGH = rmsThresholds.getSampleRate();

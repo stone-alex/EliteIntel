@@ -21,12 +21,15 @@ import elite.intel.util.SleepNoThrow;
 
 import javax.swing.*;
 import java.time.Instant;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 import static elite.intel.util.StringUtls.capitalizeWords;
 
-public class AppController {
+public class AppController implements Runnable {
+    private Thread controllerThread;
+    private final AtomicBoolean isRunning = new AtomicBoolean(false);
 
     private final PlayerSession playerSession = PlayerSession.getInstance();
     private final SystemSession systemSession = SystemSession.getInstance();
@@ -37,8 +40,10 @@ public class AppController {
     JournalParser journalParser = new JournalParser();
 
     public AppController() {
-        //view.initData(); // initial load
         EventBusManager.register(this);
+        this.controllerThread = new Thread(this);
+        this.isRunning.set(true);
+        this.controllerThread.start();
     }
 
     private String listVoices() {
@@ -105,29 +110,42 @@ public class AppController {
 
 
     @Subscribe private void recalibrateAudio(RecalibrateAudioEvent event) {
-        appendToLog("Recalibrating audio...");
-        ears.stop();
-        systemSession.setRmsThresholdHigh(null);
-        systemSession.setRmsThresholdLow(null);
-        EventBusManager.publish(new MissionCriticalAnnouncementEvent("Recalibrating audio..."));
-        SleepNoThrow.sleep(5000);
-        ears.start();
+        SwingUtilities.invokeLater(() -> {
+            if(ears == null) {
+                ears = ApiFactory.getInstance().getEarsImpl();
+            }
+            if(mouth == null) {
+                mouth = ApiFactory.getInstance().getMouthImpl();
+                mouth.start();
+            }
+            appendToLog("Recalibrating audio...");
+            ears.stop();
+            systemSession.setRmsThresholdHigh(null);
+            systemSession.setRmsThresholdLow(null);
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Recalibrating audio..."));
+            SleepNoThrow.sleep(5000);
+            ears.start();
+        });
     }
 
     @Subscribe
     public void onSystemShutdownEvent(SystemShutDownEvent event) {
-        EventBusManager.publish(new MissionCriticalAnnouncementEvent("System shutting down..."));
-        appendToLog("SYSTEM: Shutting down...");
-        SleepNoThrow.sleep(7000);
-        System.exit(0);
+        SwingUtilities.invokeLater(() -> {
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("System shutting down..."));
+            appendToLog("SYSTEM: Shutting down...");
+            SleepNoThrow.sleep(7000);
+            System.exit(0);
+        });
     }
 
     @Subscribe void onToggleServiceEvent(ToggleServicesEvent event) {
-        if (event.isStartSercice()) {
-            startStopServices();
-        } else {
-            stopServices();
-        }
+        SwingUtilities.invokeLater(() -> {
+            if (event.isStartSercice()) {
+                startStopServices();
+            } else {
+                stopServices();
+            }
+        });
     }
 
     private void stopServices() {
@@ -140,6 +158,10 @@ public class AppController {
         mouth.stop();
         systemSession.clearChatHistory();
         EventBusManager.publish(new ServicesStateEvent(false));
+        isRunning.set(false);
+        if (controllerThread != null) {
+            controllerThread.interrupt();
+        }
     }
 
 
@@ -148,6 +170,18 @@ public class AppController {
                 .atZone(ZoneId.systemDefault())
                 .format(DateTimeFormatter.ofPattern("HH:mm:ss.SSSS"));
         EventBusManager.publish(new AppLogEvent(formattedTime + ": " + data));
+    }
+
+    @Override
+    public void run() {
+        while (isRunning.get()) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
     }
 
     private void startStopServices() {

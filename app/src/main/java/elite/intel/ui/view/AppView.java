@@ -126,6 +126,7 @@ public class AppView extends JFrame implements AppViewInterface {
         bindLock(llmLockedCheck, llmApiKeyField);
         bindLock(ttsLockedCheck, ttsApiKeyField);
         bindLock(edsmLockedCheck, edsmKeyField);
+
         toggleStreamingModeCheckBox.setEnabled(false);//enabled when services start
         toggleStreamingModeCheckBox.setToolTipText("Prevent AI from processing unless you prefix your command or query with word 'computer'");
         toggleStreamingModeCheckBox.setText(LABEL_STREAMING_MODE);
@@ -140,6 +141,7 @@ public class AppView extends JFrame implements AppViewInterface {
         journalDirField.setPreferredSize(new Dimension(200, 42));
         bindingsDirField.setEditable(false);
         bindingsDirField.setPreferredSize(new Dimension(200, 42));
+        recalibrateAudioButton.setEnabled(false);
 
         initData();
     }
@@ -769,46 +771,49 @@ public class AppView extends JFrame implements AppViewInterface {
 
     @Subscribe
     public void onAppLogEvent(AppLogEvent event) {
-        if (logArea == null) return;
+        SwingUtilities.invokeLater(() -> {
+            if (logArea == null) return;
 
-        String newLine = event.getData();  // this is ONE new line, e.g. "PLAYER: Hello computer"
-        if (newLine == null || newLine.isBlank()) return;
+            String newLine = event.getData();  // this is ONE new line, e.g. "PLAYER: Hello computer"
+            if (newLine == null || newLine.isBlank()) return;
 
-        String currentText = logArea.getText();
+            String currentText = logArea.getText();
 
-        // Build what the final text SHOULD be
-        String finalText = currentText.isEmpty() ? newLine : currentText + "\n" + newLine;
+            // Build what the final text SHOULD be
+            String finalText = currentText.isEmpty() ? newLine : currentText + "\n" + newLine;
 
-        // Cancel any running typewriter
-        if (logTypewriterTimer != null) {
-            logTypewriterTimer.stop();
-        }
+            // Cancel any running typewriter
+            if (logTypewriterTimer != null) {
+                logTypewriterTimer.stop();
+            }
 
-        // Start from end of current text
-        logArea.setText(currentText);
-        logArea.setCaretPosition(currentText.length());
+            // Start from end of current text
+            logArea.setText(currentText);
+            logArea.setCaretPosition(currentText.length());
 
-        // Type out the new line only
-        logTypewriterTimer = new Timer(15, null);
-        AtomicInteger pos = new AtomicInteger(currentText.length());
+            // Type out the new line only
+            logTypewriterTimer = new Timer(15, null);
+            AtomicInteger pos = new AtomicInteger(currentText.length());
 
-        logTypewriterTimer.addActionListener(e -> {
-            int i = pos.get();
-            if (i < finalText.length()) {
-                try {
-                    char c = finalText.charAt(i);
-                    logArea.getDocument().insertString(i, String.valueOf(c), null);
-                    pos.incrementAndGet();
-                    logArea.setCaretPosition(i + 1);
-                } catch (BadLocationException ignored) {
+            logTypewriterTimer.addActionListener(e -> {
+                int i = pos.get();
+                if (i < finalText.length()) {
+                    try {
+                        char c = finalText.charAt(i);
+                        logArea.getDocument().insertString(i, String.valueOf(c), null);
+                        pos.incrementAndGet();
+                        logArea.setCaretPosition(i + 1);
+                    } catch (BadLocationException ignored) {
+                        ((Timer) e.getSource()).stop();
+                    }
+                } else {
                     ((Timer) e.getSource()).stop();
                 }
-            } else {
-                ((Timer) e.getSource()).stop();
-            }
-        });
+            });
 
-        logTypewriterTimer.start();
+            logTypewriterTimer.start();
+
+        });
     }
 
     private GridBagConstraints baseGbc() {
@@ -927,9 +932,10 @@ public class AppView extends JFrame implements AppViewInterface {
     }
 
 
-    @Subscribe public void onServiceStatusEvent(ServicesStateEvent event){
+    @Subscribe public void onServiceStatusEvent(ServicesStateEvent event) {
         isServiceRunning.set(event.isRunning());
         startStopServicesButton.setText(event.isRunning() ? "Stop Services" : "Start Services");
+        recalibrateAudioButton.setEnabled(event.isRunning());
         togglePrivacyModeCheckBox.setEnabled(event.isRunning());
         toggleStreamingModeCheckBox.setEnabled(event.isRunning());
     }

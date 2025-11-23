@@ -5,22 +5,6 @@ import java.util.regex.Pattern;
 
 public class StringUtls {
 
-    private static final Pattern YOUTUBE_URL_PATTERN = Pattern.compile(
-            "(?:youtube\\.com/(?:live/|watch\\?v=|v/|embed/|shorts/)|youtu\\.be/)([\\w-]{11})(?:\\?[^\\s]*)?"
-    );
-
-
-    public static String extractVideoId(String url) {
-        if (url == null || url.trim().isEmpty()) {
-            return null;
-        }
-        Matcher matcher = YOUTUBE_URL_PATTERN.matcher(url);
-        if (matcher.find()) {
-            return matcher.group(1); // Group 1 is the video ID
-        }
-        return null;
-    }
-
 
     public static String subtractString(String a, String b) {
         if (a == null || b == null) return "";

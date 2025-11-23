@@ -35,12 +35,10 @@ public class ScanOrganicSubscriber {
         String scanType = event.getScanType();
         String genus = event.getGenusLocalised();
         String species = subtractString(event.getSpeciesLocalised(), genus);
-        long starSystemNumber = event.getSystemAddress();
         LocationDto currentLocation = playerSession.getLocation(event.getBody(), playerSession.getPrimaryStarName());
         playerSession.setCurrentLocationId(event.getBody());
 
         boolean isOurDiscovery = currentLocation.isOurDiscovery();
-
         BioForms.ProjectedPayment paymentData = BioForms.getProjectedPayment(genus, species);
 
         long payment = paymentData == null ? 0 : paymentData.payment();
@@ -84,14 +82,14 @@ public class ScanOrganicSubscriber {
                 }
             }
 
-            BioSampleDto bioSampleDto = createBioSampleDto(genus, species, starSystemNumber, isOurDiscovery);
+            BioSampleDto bioSampleDto = createBioSampleDto(genus, species, isOurDiscovery);
             bioSampleDto.setScanXof3("First of Three");
             currentLocation.addBioScan(bioSampleDto);
             announce(sb.toString());
             scanCount = 1;
 
         } else if (scan2.equalsIgnoreCase(scanType)) {
-            BioSampleDto bioSampleDto = createBioSampleDto(genus, species, starSystemNumber, isOurDiscovery);
+            BioSampleDto bioSampleDto = createBioSampleDto(genus, species,  isOurDiscovery);
             currentLocation.addBioScan(bioSampleDto);
             bioSampleDto.setScanXof3("Second of Three");
             if(scanCount == 1) {
@@ -106,7 +104,7 @@ public class ScanOrganicSubscriber {
             sb.append(" are complete. ");
 
             announce(sb.toString());
-            BioSampleDto bioSampleDto = createBioSampleDto(genus, species, starSystemNumber, isOurDiscovery);
+            BioSampleDto bioSampleDto = createBioSampleDto(genus, species, isOurDiscovery);
 
             bioSampleDto.setPayout(payment);
             bioSampleDto.setFistDiscoveryBonus(firstDiscoveryBonus);
@@ -163,7 +161,7 @@ public class ScanOrganicSubscriber {
     }
 
 
-    private BioSampleDto createBioSampleDto(String genus, String species, long starSystemNumber, boolean isOurDiscovery) {
+    private BioSampleDto createBioSampleDto(String genus, String species, boolean isOurDiscovery) {
 
         LocationDto currentLocation = playerSession.getCurrentLocation();
         BioSampleDto bioSampleDto = new BioSampleDto();

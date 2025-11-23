@@ -37,10 +37,13 @@ public class GrokQueryEndPoint extends AiEndPoint implements AiQueryInterface {
             bodyString = body.toString();
             log.debug("xAI API query call:\n{}", bodyString);
 
+            if(bodyString == null) {
+                return new JsonObject();
+            }
             Response response = callApi(conn, bodyString, client);
             StracturedResponse stracturedResponse = checkResponse(response);
             if (!stracturedResponse.isSuccessful()) {
-                return null;
+                return new JsonObject();
             }
 
             log.debug("API response content:\n{}", stracturedResponse.content());

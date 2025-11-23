@@ -19,6 +19,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Represents a player's session encompassing various aspects of gameplay including
+ * missions, bounties, mining activities, reputation, ship loadouts, and other relevant data points.
+ *
+ * This class acts as a singleton and centralizes the management of state and data related
+ * to the player's progress and session-specific details.
+ */
 public class PlayerSession  {
 
     private static volatile PlayerSession instance;

@@ -3,6 +3,7 @@ package elite.intel.ai.brain.handlers.commands;
 import com.google.gson.JsonObject;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.gameapi.data.BioForms;
 import elite.intel.gameapi.journal.events.CodexEntryEvent;
 import elite.intel.gameapi.journal.events.dto.BioSampleDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
@@ -42,12 +43,12 @@ public class NavigateToNextBioSample implements CommandHandler {
         double userLatitude = status.getStatus().getLatitude();
         double planetRadius = status.getStatus().getPlanetRadius();
 
-        List<BioSampleDto> bioScans = currentLocation.getPartialBioSamples();
-        boolean hasPartialBioScans = bioScans != null && !bioScans.isEmpty();
+        List<BioSampleDto> partialBioSamples = currentLocation.getPartialBioSamples();
+        boolean hasPartialBioScans = partialBioSamples != null && !partialBioSamples.isEmpty();
         CodexEntryEvent entry;
 
         if (hasPartialBioScans) {
-            entry = findPartialScanMatch(bioScans, codexEntries, userLatitude, userLongitude, planetRadius);
+            entry = findPartialScanMatch(partialBioSamples, codexEntries, userLatitude, userLongitude, planetRadius);
         } else {
             entry = findNearestBioForm(codexEntries, userLatitude, userLongitude, planetRadius, currentLocation.getPlanetName());
         }
@@ -70,25 +71,22 @@ public class NavigateToNextBioSample implements CommandHandler {
         EventBusManager.publish(new AiVoxResponseEvent("Navigating to: " + entry.getNameLocalised()));
     }
 
-    private  CodexEntryEvent findClosestBiologyEntry(List<CodexEntryEvent> codexEntries, double userLatitude, double userLongitude, double planetRadius, String matchGenus, List<String> filterGenus) {
-        CodexEntryEvent closestEntry = null;
-        double minDistance = Double.MAX_VALUE;
-        for (CodexEntryEvent e : codexEntries) {
-            if(e.getNameLocalised() == null) continue;
-            boolean isBiology = "$Codex_Category_Biology;".equalsIgnoreCase(e.getCategory());
-            boolean matchesGenus = matchGenus != null && e.getNameLocalised().startsWith(matchGenus);
-            boolean notFilteredGenus = filterGenus != null && !filterGenus.contains(e.getNameLocalised().split(" ")[0]);
+    private  CodexEntryEvent findClosestBiologyEntry(List<CodexEntryEvent> codexEntries, double userLatitude, double userLongitude, double planetRadius, BioSampleDto bioSample, List<String> filterGenus) {
+        final double minimumDistanceBetweenSamples = BioForms.getDistance(bioSample.getGenus());
+
+        for (CodexEntryEvent codexEntry : codexEntries) {
+            if(codexEntry.getNameLocalised() == null) continue;
+            boolean isBiology = "$Codex_Category_Biology;".equalsIgnoreCase(codexEntry.getCategory());
+            boolean matchesGenus = codexEntry.getNameLocalised().startsWith(bioSample.getGenus());
+            boolean notFilteredGenus = filterGenus != null && !filterGenus.contains(codexEntry.getNameLocalised().split(" ")[0]);
             if (isBiology && (matchesGenus || notFilteredGenus)) {
-                double entryLat = e.getLatitude();
-                double entryLon = e.getLongitude();
-                double distance = calculateSurfaceDistance(userLatitude, userLongitude, entryLat, entryLon, planetRadius, 0);
-                if (distance < minDistance) {
-                    minDistance = distance;
-                    closestEntry = e;
+                double distanceBetweenPartialSampleAndCodexEntry = calculateSurfaceDistance(bioSample.getScanLatitude(), bioSample.getScanLongitude(), codexEntry.getLatitude(), codexEntry.getLongitude(), planetRadius, 0);
+                if(distanceBetweenPartialSampleAndCodexEntry > minimumDistanceBetweenSamples) {
+                    return codexEntry;
                 }
             }
         }
-        return closestEntry;
+        return null;
     }
     
     private  CodexEntryEvent findNearestBioForm(List<CodexEntryEvent> codexEntries, double userLatitude, double userLongitude, double planetRadius, String planetName) {
@@ -105,9 +103,9 @@ public class NavigateToNextBioSample implements CommandHandler {
         return findClosestBiologyEntry(codexEntries, userLatitude, userLongitude, planetRadius, null, filterGenus);
     }
 
-    private  CodexEntryEvent findPartialScanMatch(List<BioSampleDto> bioScans, List<CodexEntryEvent> codexEntries, double userLatitude, double userLongitude, double planetRadius) {
-        for (BioSampleDto partial : bioScans) {
-            CodexEntryEvent entry = findClosestBiologyEntry(codexEntries, userLatitude, userLongitude, planetRadius, partial.getGenus(), null);
+    private  CodexEntryEvent findPartialScanMatch(List<BioSampleDto> partialBioSamples, List<CodexEntryEvent> codexEntries, double userLatitude, double userLongitude, double planetRadius) {
+        for (BioSampleDto partial : partialBioSamples) {
+            CodexEntryEvent entry = findClosestBiologyEntry(codexEntries, userLatitude, userLongitude, planetRadius, partial, null);
             if (entry != null) return entry;
         }
 

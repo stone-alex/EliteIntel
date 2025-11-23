@@ -17,10 +17,11 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+
 /**
- * The SessionPersistence class provides methods to manage the persistence of session data.
- * It handles saving, loading, and deleting session files and manages the serialization
- * and deserialization of field data with synchronized read/write access.
+ * This class manages the persistence of session data to a file. It handles
+ * reading, writing, and managing session-related information using JSON
+ * serialization. It also supports concurrent access and safe shutdown.
  */
 class SessionPersistence {
     private static final Logger log = LogManager.getLogger(SessionPersistence.class);

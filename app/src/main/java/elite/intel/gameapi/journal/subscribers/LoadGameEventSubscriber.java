@@ -1,16 +1,16 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.intel.db.managers.MaterialManager;
+import elite.intel.db.managers.ShipRouteManager;
+import elite.intel.gameapi.gamestate.dtos.NavRouteDto;
+import elite.intel.gameapi.journal.events.LoadGameEvent;
+import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.search.edsm.EdsmApiClient;
 import elite.intel.search.edsm.dto.EncodedMaterialsDto;
 import elite.intel.search.edsm.dto.MaterialsDto;
 import elite.intel.search.edsm.dto.MaterialsType;
-import elite.intel.db.managers.MaterialManager;
-import elite.intel.gameapi.gamestate.dtos.NavRouteDto;
-import elite.intel.gameapi.journal.events.LoadGameEvent;
-import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
-import elite.intel.db.managers.ShipRouteManager;
 
 import java.util.List;
 import java.util.Map;
@@ -32,21 +32,20 @@ public class LoadGameEventSubscriber {
         playerSession.setGameVersion(event.getGameversion());
         cleanUpRoute(playerSession);
 
-        retrieveManufacturedAndRawMaterialsFromEDSM();
-        retrieveEncodedMaterialsFromEDSM();
+        retrieveMatsFromEDSM();
     }
 
-    private void retrieveEncodedMaterialsFromEDSM() {
+
+    private void retrieveMatsFromEDSM() {
         EncodedMaterialsDto encodedMaterials = EdsmApiClient.getEncodedMaterials();
-        for (EncodedMaterialsDto.EncodedMaterialEntry entry : encodedMaterials.getEncoded()) {
-            materialManager.save(entry.getMaterialName(),MaterialsType.EDMS_ENCODED, entry.getQuantity());
-        }
-    }
-
-    private void retrieveManufacturedAndRawMaterialsFromEDSM() {
         MaterialsDto rawAndManufacturedMaterials = EdsmApiClient.getMaterials();
+
+        materialManager.clear();
         for (MaterialsDto.MaterialEntry entry : rawAndManufacturedMaterials.getMaterials()) {
-            materialManager.save(entry.getMaterialName(),MaterialsType.GAME_RAW, entry.getQuantity());
+            materialManager.save(entry.getMaterialName(), MaterialsType.GAME_RAW, entry.getQuantity());
+        }
+        for (EncodedMaterialsDto.EncodedMaterialEntry entry : encodedMaterials.getEncoded()) {
+            materialManager.save(entry.getMaterialName(), MaterialsType.GAME_ENCODED, entry.getQuantity());
         }
     }
 
@@ -54,8 +53,12 @@ public class LoadGameEventSubscriber {
         List<NavRouteDto> orderedRoute = shipRoute.getOrderedRoute();
         boolean roueSet = !orderedRoute.isEmpty();
         LocationDto currentLocation = playerSession.getCurrentLocation();
-        if (!roueSet) {return;}
-        if (currentLocation == null) {return;}
+        if (!roueSet) {
+            return;
+        }
+        if (currentLocation == null) {
+            return;
+        }
 
         Map<Integer, NavRouteDto> adjustedRoute = shipRoute.removeLeg(currentLocation.getStarName());
         shipRoute.setNavRoute(adjustedRoute);

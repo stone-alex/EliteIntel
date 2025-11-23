@@ -31,6 +31,10 @@ public interface FleetCarrierRouteDao {
     void clear();
 
 
+    @SqlQuery("SELECT * FROM fleet_carrier_route WHERE systemName = :starSystem")
+    FleetCarrierRouteLeg findByPrimaryStarName(String starSystem);
+
+
     class FleetCarrierRouteMapper implements RowMapper<FleetCarrierRouteLeg> {
 
         @Override public FleetCarrierRouteLeg map(ResultSet rs, StatementContext ctx) throws SQLException {

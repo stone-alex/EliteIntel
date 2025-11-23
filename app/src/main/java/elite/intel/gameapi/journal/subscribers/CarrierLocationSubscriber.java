@@ -1,14 +1,14 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.intel.search.edsm.EdsmApiClient;
-import elite.intel.search.edsm.dto.StarSystemDto;
-import elite.intel.search.spansh.carrierroute.CarrierJump;
 import elite.intel.db.managers.FleetCarrierRouteManager;
 import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.journal.events.CarrierLocationEvent;
 import elite.intel.gameapi.journal.events.dto.CarrierDataDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
+import elite.intel.search.edsm.EdsmApiClient;
+import elite.intel.search.edsm.dto.StarSystemDto;
+import elite.intel.search.spansh.carrierroute.CarrierJump;
 import elite.intel.session.PlayerSession;
 
 import java.util.Map;
@@ -25,30 +25,24 @@ public class CarrierLocationSubscriber {
             FleetCarrierRouteManager route = FleetCarrierRouteManager.getInstance();
             CarrierDataDto carrierData = playerSession.getCarrierData();
             carrierData.setStarName(event.getStarSystem());
-            FleetCarrierRouteManager.getInstance().removeLeg(event.getStarSystem());
-            Map<Integer, CarrierJump> fleetCarrierRoute = route.getFleetCarrierRoute();
-            boolean routeEntryFount = false;
 
-
-            // via carrier route
-            for (Map.Entry<Integer, CarrierJump> entry : fleetCarrierRoute.entrySet()) {
-                if (entry.getValue().getSystemName().equals(event.getStarSystem())) {
-                    routeEntryFount = true;
-                    carrierData.setX(entry.getValue().getX());
-                    carrierData.setY(entry.getValue().getY());
-                    carrierData.setZ(entry.getValue().getZ());
-                    carrierData.setStarName(event.getStarSystem());
-                    playerSession.setLastKnownCarrierLocation(event.getStarSystem());
-                    playerSession.setCarrierData(carrierData);
-                    break;
-                }
+            CarrierJump currentCompletedJump = route.findByPrimaryStar(event.getStarSystem());
+            boolean routeEntryFound = false;
+            if (currentCompletedJump != null) {
+                carrierData.setX(currentCompletedJump.getX());
+                carrierData.setY(currentCompletedJump.getY());
+                carrierData.setZ(currentCompletedJump.getZ());
+                playerSession.setCarrierData(carrierData);
+                routeEntryFound = true;
             }
 
-            if (!routeEntryFount) {
+            route.removeLeg(event.getStarSystem());
+
+            if (!routeEntryFound) {
                 // try via EDSM
                 StarSystemDto starSystemDto = EdsmApiClient.searchStarSystem(event.getStarSystem(), 1);
                 StarSystemDto.Coords coords = starSystemDto.getCoords();
-                if(coords != null && coords.getX() > 0 && coords.getY() > 0 && coords.getZ() > 0) {
+                if (coords != null && coords.getX() > 0 && coords.getY() > 0 && coords.getZ() > 0) {
                     carrierData.setX(coords.getX());
                     carrierData.setY(coords.getY());
                     carrierData.setZ(coords.getZ());

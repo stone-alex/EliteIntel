@@ -215,3 +215,4 @@
 "camera system please"="scan the system"
 "the question extraction"="extract the SRV"
 "the blower"="deploy"
+"praise"="retract"

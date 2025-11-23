@@ -9,7 +9,7 @@ public enum Queries {
     ANALYZE_DISTANCE_TO_STELLAR_OBJECT("query_what_is_the_distance_to_planet", "-- instructions in class --", AnalyzeDistanceToStellarObject.class, true),
     ANALYZE_CARRIER_ROUTE("query_fleet_carrier_route", "Use this data to analyze the current fleet carrier route.", AnalyzeCarrierRouteHandler.class, true),
     ANALYZE_SCAN("query_analyze_last_scan", "Analyze the most recent scan data.", AnalyzeLastScanHandler.class, true),
-    QUERY_SEARCH_SIGNAL_DATA("query_star_system_data_signals_bio_samples_for_vista_genomics_stations_and_planetary_stats", "Data may contain information about planets, moons, planetary rings, raw materials, detectedSignals, bio forms, bio samples, stations, starports etc. Use gravity (G) and temperature (K) units. Offer celsius alternative. Use allCompletedBioScans for questions about bio samples not yet delivered to Vista Genomics.  Use planetShotName for planets", AnalyzeSignalDataHandler.class, true),
+    QUERY_SEARCH_SIGNAL_DATA("query_star_system_data_signals_bio_samples_for_vista_genomics_stations_and_planetary_stats", "Data may contain information about planets, moons, planetary rings, raw materials, detectedSignals, bio forms, bio samples, stations, starports etc. Use gravity (G) and temperature (K) units. Offer celsius alternative. Use allCompletedBioScans for questions about bio samples not yet delivered to Vista Genomics.  Use planetShotName for planets.  If asked about how long the day last, answer in hours and minutes", AnalyzeSignalDataHandler.class, true),
     ANALYZE_STAR_SYSTEM_EXPLORATION("query_exploration_profits_data", "Use this data to provide answers on potential exo-biology exploration profits.", AnalyzeExplorationProfitsHandler.class, true),
     ANALYZE_CURRENT_PLANET("query_current_location", "Use this data to provide answers for our location. NOTE: For questions such as 'where are we?' Use planetShortName for location name unless we are on the station. If we are on a station, return station name and planet we are orbiting.", AnalyzeCurrentLocationHandler.class, true),  // Emphasize planetary/station context
     ANALYZE_BODY_MATERIALS("query_planetary_materials_present_on_planet", "Analyze material composition on this planet.", AnalyzeMaterialsOnPlanetHandler.class, true),  // Specify planetary to avoid ship/cargo confusion,
@@ -43,7 +43,7 @@ public enum Queries {
     PERFORM_PRELIMINARY_BIOME_ANALYSIS("query_analyse_biome_for_planet_or_planets", "Use data provided to analyze probable genus and species that might be present on the plant(s)", PlanetBiomeAnalyzerHandler.class, true),
 
     TARGET_MARKET_STATION_NAME("query_remind_where_commodity_market_is_located", "Remind user which station we have to visit to buy/sell commodity", RemindTargetMarketStationHandler.class, false),
-    TARGET_STATION_REMINDER("query_information_on_final_destination", "Provider answer for the station at the final destination based on this data.", RemindTargetDestinationHandler.class, false),
+    TARGET_STATION_REMINDER("query_reminder_information_on_final_destination", "Provider answer for the station at the final destination based on this data.", RemindTargetDestinationHandler.class, false),
 
     GENERAL_CONVERSATION("general_conversation", "Handle general conversation when no other query matches.", ConversationalQueryHandler.class, true);
 

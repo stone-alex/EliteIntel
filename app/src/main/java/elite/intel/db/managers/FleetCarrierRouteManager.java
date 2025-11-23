@@ -56,21 +56,27 @@ public class FleetCarrierRouteManager {
             Map<Integer, CarrierJump> result = new HashMap<>();
             List<FleetCarrierRouteDao.FleetCarrierRouteLeg> all = dao.getAll();
             for (FleetCarrierRouteDao.FleetCarrierRouteLeg leg : all) {
-                CarrierJump jump = new CarrierJump();
-                jump.setLeg(leg.getLeg());
-                jump.setDistance(leg.getDistance());
-                jump.setFuelUsed(leg.getFuelUsed());
-                jump.setHasIcyRing(leg.getHasIcyRing());
-                jump.setPristine(leg.getPristine());
-                jump.setRemainingFuel(leg.getRemainingFuel());
-                jump.setSystemName(leg.getSystemName());
-                jump.setX(leg.getX());
-                jump.setY(leg.getY());
-                jump.setZ(leg.getZ());
+                CarrierJump jump = entityToDto(leg);
                 result.put(leg.getLeg(), jump);
             }
             return result;
         });
+    }
+
+    private static CarrierJump entityToDto(FleetCarrierRouteDao.FleetCarrierRouteLeg leg) {
+        CarrierJump jump = new CarrierJump();
+        if(leg == null) return jump;
+        jump.setLeg(leg.getLeg());
+        jump.setDistance(leg.getDistance());
+        jump.setFuelUsed(leg.getFuelUsed());
+        jump.setHasIcyRing(leg.getHasIcyRing());
+        jump.setPristine(leg.getPristine());
+        jump.setRemainingFuel(leg.getRemainingFuel());
+        jump.setSystemName(leg.getSystemName());
+        jump.setX(leg.getX());
+        jump.setY(leg.getY());
+        jump.setZ(leg.getZ());
+        return jump;
     }
 
     public void removeLeg(String starName) {
@@ -85,6 +91,13 @@ public class FleetCarrierRouteManager {
         Database.withDao(FleetCarrierRouteDao.class, dao -> {
             dao.clear();
             return null;
+        });
+    }
+
+    public CarrierJump findByPrimaryStar(String starSystem) {
+        return Database.withDao(FleetCarrierRouteDao.class, dao ->{
+            FleetCarrierRouteDao.FleetCarrierRouteLeg leg = dao.findByPrimaryStarName(starSystem);
+            return entityToDto(leg);
         });
     }
 }

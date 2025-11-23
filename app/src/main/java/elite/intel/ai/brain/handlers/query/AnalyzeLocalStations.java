@@ -26,11 +26,13 @@ public class AnalyzeLocalStations extends BaseQueryAnalyzer implements QueryHand
         LocationDto currentLocation = playerSession.getCurrentLocation();
         StationsDto stationsDto = EdsmApiClient.searchStations(playerSession.getCurrentLocation().getStarName());
         List<DataElement> data = new ArrayList<>();
-        stationsDto.getData().getStations().forEach(station -> {
-            OutfittingDto outfitting = EdsmApiClient.searchOutfitting(station.getMarketId(), null, null);
-            ShipyardDto shipyard = EdsmApiClient.searchShipyard(station.getMarketId(), null, null);
-            data.add(new DataElement(station.getName(), outfitting, shipyard, currentLocation));
-        });
+        if(stationsDto.getData() != null && stationsDto.getData().getStations() != null) {
+            stationsDto.getData().getStations().forEach(station -> {
+                OutfittingDto outfitting = EdsmApiClient.searchOutfitting(station.getMarketId(), null, null);
+                ShipyardDto shipyard = EdsmApiClient.searchShipyard(station.getMarketId(), null, null);
+                data.add(new DataElement(station.getName(), outfitting, shipyard, currentLocation));
+            });
+        }
 
         return process(new AiDataStruct(ANALYZE_LOCAL_STATIONS.getInstructions(), new DataDto(data)),originalUserInput);
     }

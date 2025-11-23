@@ -44,7 +44,7 @@
 "carrier juice"="tritium"
 "carry routing"="carrier routing"
 "clip test"="Clypeus"
-"Clippers"="Clypeus"
+"Clippers"="Clypeus"7
 "cocaine"="coltan"
 "collide"="gallite"
 "colton"="coltan"
@@ -215,3 +215,4 @@
 "camera system please"="scan the system"
 "the question extraction"="extract the SRV"
 "the blower"="deploy"
+"praise"="retract"

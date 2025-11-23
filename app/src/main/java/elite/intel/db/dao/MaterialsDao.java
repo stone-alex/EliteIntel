@@ -41,6 +41,9 @@ public interface MaterialsDao {
     @SqlQuery("SELECT * FROM materials")
     List<Material> listAll();
 
+    @SqlUpdate("DELETE FROM materials")
+    void clear();
+
 
     class MaterialMapper implements RowMapper<Material> {
         @Override

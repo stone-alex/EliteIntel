@@ -5,6 +5,7 @@ import elite.intel.db.dao.MaterialsDao;
 import elite.intel.db.util.Database;
 import elite.intel.gameapi.data.EDMaterialCaps;
 import elite.intel.util.StringUtls;
+import org.sqlite.util.StringUtils;
 
 public class MaterialManager {
     private static MaterialManager instance;
@@ -24,7 +25,7 @@ public class MaterialManager {
             String name = StringUtls.capitalizeWords(materialName);
             MaterialsDao.Material material = dao.findByExactName(name);
             dao.upsert(
-                    name,
+                    StringUtls.capitalizeWords(name),
                     type.getType(),
                     amount + (material == null ? 0 : material.getAmount()),
                     EDMaterialCaps.getMax(name)
@@ -35,5 +36,12 @@ public class MaterialManager {
 
     public MaterialsDao.Material find(String materialName) {
         return Database.withDao(MaterialsDao.class, dao -> dao.findByExactName(materialName));
+    }
+
+    public void clear() {
+        Database.withDao(MaterialsDao.class, dao ->{
+            dao.clear();
+            return null;
+        });
     }
 }

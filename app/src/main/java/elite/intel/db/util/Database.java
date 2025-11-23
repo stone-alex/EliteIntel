@@ -1,7 +1,6 @@
 package elite.intel.db.util;
 
 import elite.intel.db.dao.*;
-import elite.intel.search.spansh.station.DestinationDto;
 import elite.intel.util.AppPaths;
 import org.jdbi.v3.core.Handle;
 import org.jdbi.v3.core.Jdbi;

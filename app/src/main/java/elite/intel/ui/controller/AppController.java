@@ -117,6 +117,8 @@ public class AppController implements Runnable {
 
     @Subscribe private void recalibrateAudio(RecalibrateAudioEvent event) {
         SwingUtilities.invokeLater(() -> {
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Recalibrating audio..."));
+            SleepNoThrow.sleep(5000);
             if (ears == null) {
                 ears = ApiFactory.getInstance().getEarsImpl();
             }
@@ -128,8 +130,6 @@ public class AppController implements Runnable {
             ears.stop();
             systemSession.setRmsThresholdHigh(null);
             systemSession.setRmsThresholdLow(null);
-            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Recalibrating audio..."));
-            SleepNoThrow.sleep(5000);
             ears.start();
         });
     }

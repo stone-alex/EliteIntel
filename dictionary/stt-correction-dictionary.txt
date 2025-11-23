@@ -220,3 +220,4 @@
 "I will do a check"="audio check"
 "trimming"="streaming"
 "can the system"="scan the system"
+"the blue landing gear"="deploy landing gear"

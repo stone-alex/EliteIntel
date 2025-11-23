@@ -60,37 +60,50 @@ public class NavigateToNextBioSample implements CommandHandler {
         EventBusManager.publish(new AiVoxResponseEvent(
                 "Heading to " + target.getNameLocalised() + " sample."));
     }
+
+
+
     private CodexEntryEvent findBestBioTarget(List<CodexEntryEvent> codexEntries,
                                               List<BioSampleDto> partials,
                                               double playerLat, double playerLon, double planetRadius) {
 
         boolean hasPartials = partials != null && !partials.isEmpty();
 
-        CodexEntryEvent best = null;
-        double bestDistanceToPlayer = Double.MAX_VALUE;
+        CodexEntryEvent bestPartialMatch = null;
+        CodexEntryEvent bestAny = null;
+        double bestPartialDist = Double.MAX_VALUE;
+        double bestAnyDist = Double.MAX_VALUE;
 
         for (CodexEntryEvent entry : codexEntries) {
             if (!"$Codex_Category_Biology;".equalsIgnoreCase(entry.getCategory())) continue;
             if (entry.getLatitude() == 0 && entry.getLongitude() == 0) continue;
 
-            String entryGenus = entry.getNameLocalised().split(" ")[0];
-
-            // RULE 1: Hard filter — reject any codex entry too close to a partial of same genus
-            if (hasPartials && isTooCloseToAnyPartialOfSameGenus(entry, entryGenus, partials, planetRadius)) {
-                continue; // completely invalid target
-            }
-
-            // If we get here: entry is valid → compare distance to player
+            String genus = entry.getNameLocalised().split(" ")[0];
             double distToPlayer = calculateSurfaceDistance(playerLat, playerLon,
                     entry.getLatitude(), entry.getLongitude(), planetRadius, 0);
 
-            if (distToPlayer < bestDistanceToPlayer) {
-                bestDistanceToPlayer = distToPlayer;
-                best = entry;
+            // Check if this entry is valid (not too close to any partial of same genus)
+            boolean valid = hasPartials ? !isTooCloseToAnyPartialOfSameGenus(entry, genus, partials, planetRadius) : true;
+
+            if (!valid) continue;
+
+            // If we have partials and this matches one of their genera → priority track
+            if (hasPartials && partials.stream().anyMatch(p -> genus.equalsIgnoreCase(p.getGenus()))) {
+                if (distToPlayer < bestPartialDist) {
+                    bestPartialDist = distToPlayer;
+                    bestPartialMatch = entry;
+                }
+            }
+
+            // Always track best valid of any genus (fallback)
+            if (distToPlayer < bestAnyDist) {
+                bestAnyDist = distToPlayer;
+                bestAny = entry;
             }
         }
 
-        return best;
+        // Priority: return partial genus match if available, otherwise any valid bio
+        return bestPartialMatch != null ? bestPartialMatch : bestAny;
     }
 
     private boolean isTooCloseToAnyPartialOfSameGenus(CodexEntryEvent entry, String genus,

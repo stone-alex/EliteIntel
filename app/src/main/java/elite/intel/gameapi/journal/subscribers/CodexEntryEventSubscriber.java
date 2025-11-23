@@ -7,6 +7,8 @@ import elite.intel.gameapi.data.BioForms;
 import elite.intel.gameapi.journal.events.CodexEntryEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
+import elite.intel.session.Status;
+import elite.intel.util.NavigationUtils;
 
 import static elite.intel.util.StringUtls.capitalizeWords;
 
@@ -14,7 +16,8 @@ public class CodexEntryEventSubscriber {
 
     @Subscribe
     public void onCodexEntryEvent(CodexEntryEvent event) {
-        PlayerSession playerSession = PlayerSession.getInstance();
+        final PlayerSession playerSession = PlayerSession.getInstance();
+        final Status status = Status.getInstance();
 
         LocationDto currentLocation = playerSession.getLocation(event.getBodyID(), event.getSystem());
         playerSession.setCurrentLocationId(event.getBodyID());
@@ -27,26 +30,23 @@ public class CodexEntryEventSubscriber {
 
         boolean alreadyHaveThisEntry = currentLocation.getCodexEntries().stream().anyMatch(entry -> entry.getNameLocalised().equals(event.getNameLocalised()));
 
-        if(!alreadyHaveThisEntry && event.isNewEntry()) {
+
+        if (!alreadyHaveThisEntry && event.isNewEntry()) {
             sb.append("New Codex Entry: ");
         } else {
             sb.append("Codex Entry: ");
         }
-        sb.append("Category: ");
-        sb.append(event.getCategoryLocalised());
-        sb.append(", ");
         sb.append("Name: ");
         sb.append(event.getNameLocalised());
 
-        if(bioSampleDistance > 0 && !alreadyHaveThisEntry) {
+        if (bioSampleDistance > 0 && !alreadyHaveThisEntry) {
             sb.append(" Distance between samples: ").append(bioSampleDistance).append(" meters. ");
         }
 
 
-
         if (!alreadyHaveThisEntry) {
             sb.append(", ");
-            if(event.getVoucherAmount() > 0) {
+            if (event.getVoucherAmount() > 0) {
                 sb.append("Voucher Amount: ");
                 sb.append(event.getVoucherAmount());
                 sb.append(" credits (AI, this instructions if for you: Never say 'each' to the user. ever! Codex entries do not pay for each. Ever. Never say that to the user!!!).");
@@ -62,6 +62,22 @@ public class CodexEntryEventSubscriber {
                 }
                 sb.append(".");
                 playerSession.setGenusPaymentAnnounced(genus);
+            }
+        } else {
+            for (CodexEntryEvent entry : currentLocation.getCodexEntries()) {
+                boolean isNameMatched = entry.getNameLocalised().equals(event.getNameLocalised());
+                double distanceFromPreviousSample = NavigationUtils.calculateSurfaceDistance(
+                        status.getStatus().getLatitude(),
+                        status.getStatus().getLongitude(),
+                        entry.getLatitude(),
+                        entry.getLongitude(),
+                        status.getStatus().getPlanetRadius(),
+                        0
+                );
+                if (genus != null && isNameMatched && distanceFromPreviousSample < bioSampleDistance) {
+                    sb.append(" NOTE: Too close to previous sample for the same genus. ");
+                    break;
+                }
             }
         }
 

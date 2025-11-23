@@ -13,6 +13,10 @@ import elite.intel.session.Status;
 
 public class StatusEventSubscriber {
 
+    private boolean lowFuelAnnounced = false;
+    private boolean lowOxygenAnnounced = false;
+    private boolean lowHealthAnnounced = false;
+
     @Subscribe
     public void onStatusChangedEvent(GameEvents.StatusEvent event) {
         Status status = Status.getInstance();
@@ -44,16 +48,19 @@ public class StatusEventSubscriber {
 
         /// --------------------------------------------------------------------------------------
         /// Mission-critical alerts.
-        if(status.isLowFuel()) {
+        if(status.isLowFuel() && !lowFuelAnnounced) {
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("Low fuel warning!"));
+            lowFuelAnnounced = true;
         }
 
-        if(status.isLowOxygen()) {
+        if(status.isLowOxygen() && !lowOxygenAnnounced) {
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("Low oxygen warning!"));
+            lowOxygenAnnounced = true;
         }
 
-        if(status.isLowHealth()){
+        if(status.isLowHealth() && !lowHealthAnnounced){
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("Low health warning!"));
+            lowHealthAnnounced = true;
         }
     }
 }

@@ -64,7 +64,7 @@ public class AppView extends JFrame implements AppViewInterface {
     private JButton recalibrateAudioButton;
     private JCheckBox toggleStreamingModeCheckBox;
     private JCheckBox togglePrivacyModeCheckBox;
-    private JTextArea logArea;
+    public JTextArea logArea;
     private JPasswordField edsmKeyField;
     private JCheckBox edsmLockedCheck;
     //private JTextField systemYouTubeStreamUrl;
@@ -79,7 +79,7 @@ public class AppView extends JFrame implements AppViewInterface {
     private JButton savePlayerInfoButton;
     private JButton selectJournalDirButton;
     private JButton selectBindingsDirButton;
-    private Timer logTypewriterTimer;
+    //private Timer logTypewriterTimer;
     private String pendingLogText;
 
     public AppView() {
@@ -768,10 +768,11 @@ public class AppView extends JFrame implements AppViewInterface {
     public JFrame getUiComponent() {
         return this;
     }
+/*
 
     @Subscribe
     public void onAppLogEvent(AppLogEvent event) {
-        SwingUtilities.invokeLater(() -> {
+
             if (logArea == null) return;
 
             String newLine = event.getData();  // this is ONE new line, e.g. "PLAYER: Hello computer"
@@ -812,9 +813,8 @@ public class AppView extends JFrame implements AppViewInterface {
             });
 
             logTypewriterTimer.start();
-
-        });
     }
+*/
 
     private GridBagConstraints baseGbc() {
         GridBagConstraints gbc = new GridBagConstraints();

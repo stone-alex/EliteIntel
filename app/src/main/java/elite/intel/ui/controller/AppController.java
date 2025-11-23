@@ -16,30 +16,36 @@ import elite.intel.gameapi.JournalParser;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.*;
-import elite.intel.ui.view.AppViewInterface;
+import elite.intel.ui.view.AppView;
 import elite.intel.util.SleepNoThrow;
 
 import javax.swing.*;
+import javax.swing.text.BadLocationException;
 import java.time.Instant;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static elite.intel.util.StringUtls.capitalizeWords;
 
 public class AppController implements Runnable {
-    private Thread controllerThread;
     private final AtomicBoolean isRunning = new AtomicBoolean(false);
-
     private final PlayerSession playerSession = PlayerSession.getInstance();
     private final SystemSession systemSession = SystemSession.getInstance();
+    private final Timer logTypewriterTimer = new Timer(20, null);
+    private final StringBuilder logBuffer = new StringBuilder();
+    private final AtomicBoolean typewriterActive = new AtomicBoolean(false);
     AuxiliaryFilesMonitor fileMonitor = new AuxiliaryFilesMonitor();
     EarsInterface ears;
     MouthInterface mouth;
     AiCommandInterface brain;
     JournalParser journalParser = new JournalParser();
+    private Thread controllerThread;
+    private AppView view;
 
-    public AppController() {
+    public AppController(AppView view) {
+        this.view = view;
         EventBusManager.register(this);
         this.controllerThread = new Thread(this);
         this.isRunning.set(true);
@@ -111,10 +117,10 @@ public class AppController implements Runnable {
 
     @Subscribe private void recalibrateAudio(RecalibrateAudioEvent event) {
         SwingUtilities.invokeLater(() -> {
-            if(ears == null) {
+            if (ears == null) {
                 ears = ApiFactory.getInstance().getEarsImpl();
             }
-            if(mouth == null) {
+            if (mouth == null) {
                 mouth = ApiFactory.getInstance().getMouthImpl();
                 mouth.start();
             }
@@ -183,6 +189,50 @@ public class AppController implements Runnable {
             }
         }
     }
+
+
+    @Subscribe
+    public void onAppLogEvent(AppLogEvent event) {
+        String line = "\n"+event.getData();
+        if (line == null || line.isBlank() || this.view.logArea == null) return;
+
+        synchronized (logBuffer) {
+            logBuffer.append(line);
+        }
+
+        if (typewriterActive.compareAndSet(false, true)) {
+            SwingUtilities.invokeLater(this::startTypewriter);
+        }
+    }
+
+    private void startTypewriter() {
+        logTypewriterTimer.stop();
+        logTypewriterTimer.addActionListener(e -> {
+            String nextChar;
+            synchronized (logBuffer) {
+                if (logBuffer.length() == 0) {
+                    logTypewriterTimer.stop();
+                    typewriterActive.set(false);
+                    return;
+                }
+                nextChar = String.valueOf(logBuffer.charAt(0));
+                logBuffer.deleteCharAt(0);
+            }
+
+            try {
+                int pos = this.view.logArea.getDocument().getLength();
+                this.view.logArea.getDocument().insertString(pos, nextChar, null);
+                this.view.logArea.setCaretPosition(pos + 1);
+                this.view.logArea.repaint();
+            } catch (BadLocationException ex) {
+                logTypewriterTimer.stop();
+                typewriterActive.set(false);
+            }
+        });
+        logTypewriterTimer.start();
+    }
+
+
 
     private void startStopServices() {
         String ttsApiKey = SystemSession.getInstance().getTtsApiKey();

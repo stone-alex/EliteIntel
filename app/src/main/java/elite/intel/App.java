@@ -39,8 +39,8 @@ public class App {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            new AppController();
             AppView view = new AppView();
+            new AppController(view);
             view.getUiComponent().setVisible(true);
         });
     }

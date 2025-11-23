@@ -10,9 +10,9 @@ import elite.intel.util.SleepNoThrow;
 public class SystemShutDownRequestHandler implements CommandHandler {
 
     @Override public void handle(String action, JsonObject params, String responseText) {
-        EventBusManager.publish(new AiVoxResponseEvent("Shutting down systems"));
+        EventBusManager.publish(new SystemShutDownEvent());
+        EventBusManager.publish(new AiVoxResponseEvent("Shutting down"));
         SleepNoThrow.sleep(7000);
         EventBusManager.publish(new ToggleServicesEvent(false));
-        EventBusManager.publish(new SystemShutDownEvent());
     }
 }

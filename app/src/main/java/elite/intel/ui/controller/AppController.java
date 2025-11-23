@@ -137,7 +137,7 @@ public class AppController implements Runnable {
     @Subscribe
     public void onSystemShutdownEvent(SystemShutDownEvent event) {
         SwingUtilities.invokeLater(() -> {
-            EventBusManager.publish(new MissionCriticalAnnouncementEvent("System shutting down..."));
+            this.view.setVisible(false);
             appendToLog("SYSTEM: Shutting down...");
             SleepNoThrow.sleep(7000);
             System.exit(0);

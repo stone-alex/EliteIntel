@@ -29,7 +29,7 @@ public class ChangeAiVoiceHandler implements CommandHandler {
         SystemSession systemSession = SystemSession.getInstance();
         try {
             systemSession.setAIVoice(AiVoices.valueOf(voiceName.toUpperCase()));
-            EventBusManager.publish(new AiVoxResponseEvent("AI voice set to " + voiceName.toUpperCase()));
+            EventBusManager.publish(new AiVoxResponseEvent("Voice set to " + voiceName.toUpperCase()));
         } catch (IllegalArgumentException e) {
             EventBusManager.publish(new AiVoxResponseEvent("Sorry, I don't understand voice name: " + voiceName.toUpperCase() + ". Error: " + e.getMessage()));
         }

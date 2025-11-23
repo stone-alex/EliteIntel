@@ -40,6 +40,7 @@ public class GoogleTTSImpl implements MouthInterface {
     private Thread processingThread;
     private volatile boolean running;
     private SourceDataLine persistentLine; // Add persistent line
+    private final SystemSession systemSession = SystemSession.getInstance();
 
     private GoogleTTSImpl() {
         EventBusManager.register(this);
@@ -58,8 +59,9 @@ public class GoogleTTSImpl implements MouthInterface {
             return;
         }
 
+
         try {
-            String apiKey = SystemSession.getInstance().getTtsApiKey();
+            String apiKey = systemSession.getTtsApiKey();
             if (apiKey == null || apiKey.trim().isEmpty()) {
                 log.error("TTS API key is not provided");
                 return;
@@ -76,7 +78,7 @@ public class GoogleTTSImpl implements MouthInterface {
         processingThread = new Thread(this::processVoiceQueue, "VoiceGeneratorThread");
         processingThread.start();
         log.info("VoiceGenerator started");
-        if (SystemSession.getInstance().getRmsThresholdLow() != null) {
+        if (systemSession.getRmsThresholdLow() != null) {
             EventBusManager.publish(new AppLogEvent("Speech enabled."));
         }
     }

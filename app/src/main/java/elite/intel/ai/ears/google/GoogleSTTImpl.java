@@ -43,6 +43,7 @@ public class GoogleSTTImpl implements EarsInterface {
     private SpeechClient speechClient;
     private long lastAudioSentTime = System.currentTimeMillis();
     private Thread processingThread;
+    private final SystemSession systemSession = SystemSession.getInstance();
 
     public GoogleSTTImpl() {
         EventBusManager.register(this);
@@ -62,7 +63,6 @@ public class GoogleSTTImpl implements EarsInterface {
         this.sampleRateHertz = formatResult.getSampleRate();
         this.bufferSize = formatResult.getBufferSize();
 
-        SystemSession systemSession = SystemSession.getInstance();
         Double rms_threshold_high = systemSession.getRmsThresholdHigh();
         Double rms_threshold_low = systemSession.getRmsThresholdLow();
 
@@ -89,7 +89,7 @@ public class GoogleSTTImpl implements EarsInterface {
         // Start processing thread
         this.processingThread = new Thread(this::startStreaming);
         this.processingThread.start();
-        if (SystemSession.getInstance().getRmsThresholdLow() != null) {
+        if (systemSession.getRmsThresholdLow() != null) {
             EventBusManager.publish(new AppLogEvent("Voice Input Enabled"));
         }
     }
@@ -131,6 +131,7 @@ public class GoogleSTTImpl implements EarsInterface {
             log.info("Starting new streaming session... (Time since last start: {}ms)", System.currentTimeMillis() - lastStreamStart);
             lastStreamStart = System.currentTimeMillis();
             ApiStreamObserver<StreamingRecognizeRequest> requestObserver = null;
+
 
             try {
                 Thread.currentThread().setPriority(Thread.MAX_PRIORITY - 1);
@@ -250,14 +251,14 @@ public class GoogleSTTImpl implements EarsInterface {
                                 String sanitizedTranscript = STTSanitizer.getInstance().correctMistakes(fullTranscript);
 
                                 EventBusManager.publish(new AppLogEvent("STT Sanitized: [" + sanitizedTranscript + "]."));
-                                boolean isStreamingModeOn = SystemSession.getInstance().isStreamingModeOn();
+                                boolean isStreamingModeOn = systemSession.isStreamingModeOn();
                                 float avgConfidence;
                                 synchronized (confidences) { // Sync on the list instance for thread-safety
                                     avgConfidence = (float) confidences.stream().mapToDouble(Float::doubleValue).average().orElse(0.0);
                                 }
                                 if (avgConfidence > MIN_CONFIDENCE_LEVEL) {
                                     if (isStreamingModeOn) {
-                                        String voiceName = SystemSession.getInstance().getAIVoice().getName();
+                                        String voiceName = systemSession.getAIVoice().getName();
                                         if (sanitizedTranscript.toLowerCase().startsWith("computer") || sanitizedTranscript.toLowerCase().contains(voiceName.toLowerCase())) {
                                             sendToAi(sanitizedTranscript.replace("computer,", "").replace(voiceName.toLowerCase() + ",", ""), avgConfidence);
                                         }
@@ -294,14 +295,14 @@ public class GoogleSTTImpl implements EarsInterface {
                         String sanitizedTranscript = STTSanitizer.getInstance().correctMistakes(fullTranscript);
 
                         EventBusManager.publish(new AppLogEvent("STT Sanitized: [" + sanitizedTranscript + "]."));
-                        boolean isStreamingModeOn = SystemSession.getInstance().isStreamingModeOn();
+                        boolean isStreamingModeOn = systemSession.isStreamingModeOn();
                         float avgConfidence;
                         synchronized (confidences) {
                             avgConfidence = (float) confidences.stream().mapToDouble(Float::doubleValue).average().orElse(0.0);
                         }
                         if (avgConfidence > MIN_CONFIDENCE_LEVEL) {
                             if (isStreamingModeOn) {
-                                String voiceName = SystemSession.getInstance().getAIVoice().getName();
+                                String voiceName = systemSession.getAIVoice().getName();
                                 if (sanitizedTranscript.toLowerCase().startsWith("computer") || sanitizedTranscript.toLowerCase().startsWith(voiceName.toLowerCase())) {
                                     sendToAi(sanitizedTranscript.replace("computer,", "").replace(voiceName.toLowerCase() + ",", ""), avgConfidence);
                                 }
@@ -337,7 +338,7 @@ public class GoogleSTTImpl implements EarsInterface {
     }
 
     private SpeechClient createSpeechClient() throws Exception {
-        String apiKey = SystemSession.getInstance().getSttApiKey();
+        String apiKey = systemSession.getSttApiKey();
         if (apiKey == null || apiKey.trim().isEmpty()) {
             log.error("STT APIkey is not provided");
             throw new IllegalStateException("STT API key missing");

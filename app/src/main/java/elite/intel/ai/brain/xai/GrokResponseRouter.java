@@ -67,15 +67,16 @@ public class GrokResponseRouter extends ResponseRouter implements AIRouterInterf
                     handleQuery(action, params, userInput);
                     break;
                 case AIConstants.TYPE_CHAT:
-                    handleChat(responseText);
+                    params.addProperty(AIConstants.PROPERTY_RESPONSE_TEXT, responseText);
+                    handleQuery(GENERAL_CONVERSATION.getAction(), params, userInput);
                     break;
                 default:
                     log.warn("Unknown or missing response type: '{}'", type);
-                    handleChat("I'm not sure what you meant. Please try again.");
+                    EventBusManager.publish(new AiVoxResponseEvent("I'm not sure what you meant. Please try again."));
             }
         } catch (Exception e) {
             log.error("Failed to process Grok response: {}", e.getMessage(), e);
-            handleChat("Error processing response.");
+            EventBusManager.publish(new AiVoxResponseEvent("Error processing response."));
         }
     }
 

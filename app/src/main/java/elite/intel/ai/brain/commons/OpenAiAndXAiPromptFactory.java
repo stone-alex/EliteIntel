@@ -48,10 +48,10 @@ public class OpenAiAndXAiPromptFactory implements AiPromptFactory {
         sb.append("Instructions:\n\n");
         sb.append("Map commands or queries to the provided Supported Command or Supported Queries. ");
         sb.append(inputClassificationClause());
-        sb.append(appendBehavior());
         sb.append(generateSupportedCommandsCause());
         sb.append(generateSupportedQueriesClause());
         sb.append(generateAbbreviations());
+        sb.append(appendBehavior());
         sb.append("Interpret this input: ").append(playerVoiceInput).append("\n\n");
         sb.append(getStandardJsonFormat()).append("\n");
         colloquialTerms(sb);
@@ -74,15 +74,15 @@ public class OpenAiAndXAiPromptFactory implements AiPromptFactory {
         sb.append("Classify input as one of:\n");
         sb.append("    - 'command': Triggers an app action or keyboard event (DO SOMETHING). Use for inputs starting with verbs like 'set', 'switch to', 'get', 'drop', 'retract', 'deploy', 'find', 'locate', 'activate' (e.g., 'deploy landing gear', 'set mining target', 'find carrier fuel'). Treat imperative verbs as commands even if question-phrased (e.g., 'get distance' is a command). Only match supported commands listed in simulationCommands or CustomCommands. Provide empty response_text for single-word commands. Match command and queries to the provided list only. Match commands before queries or chat.\n");
         sb.append("    - 'query': Requests information from simulation state (LOOK UP, REMIND ME or COMPUTE SOMETHING). Use for inputs starting with interrogative words like 'what', 'where', 'when', 'how', 'how far', 'how many', 'how much', 'what is', 'where is' (e.g., 'how far are we from last bio sample', 'what is in our cargo hold'). Explicitly match queries about distance to the last bio sample with phrases containing 'how far' or 'distance' followed by 'bio sample', 'biosample', 'last sample', 'last bio sample', 'previous bio sample', or 'previous biosample', with or without prefixes like 'query', 'query about simulation state', or 'query question' (e.g., 'how far are we from last bio sample', 'how far away from the last bio sample', 'query how far are we from the last biosample', 'query about simulation state query question how far are we from the last bio sample', 'distance to last sample'). Normalize input by stripping prefixes ('query', 'query about simulation state', 'query question') and replacing 'bio sample' with 'biosample' for matching. These must trigger the query handler (HOW_FAR_ARE_WE_FROM_LAST_SAMPLE) with action 'query_how_far_we_moved_from_last_bio_sample' to send raw simulation state data (e.g., planet radius, last bio sample coordinates, current coordinates) for AI analysis, returning 'Distance from last sample is: <distance> meters.' in the configured personality and cadence. Set response_text to '' for user feedback during analysis. Match supported queries listed in QueryActions. Queries take priority over chat but not commands.\n");
-        sb.append("    - 'chat': General conversation, questions unrelated to simulation actions or state, or unmatched inputs (general chat). Use for lore, opinions, or casual talk. Only classify as chat if the input does not start with interrogative words ('what', 'where', 'when', 'how', 'how far', 'how many', 'how much', 'what is', 'where is') or command verbs ('set', 'get', 'drop', 'retract', 'deploy', 'find', 'locate', 'activate') and does not match any specific query or command pattern in QueryActions or simulationCommands/CustomCommands.\n");
+        sb.append("    - 'chat': General conversation, questions unrelated to simulation actions or state, or unmatched inputs (general chat). Use for casual talk. Only classify as chat if the input does not match any specific query or command pattern in 'Supported Commands' or 'Supported Queries'.\n");
+        //sb.append("    - 'chat': General conversation, questions unrelated to simulation actions or state, or unmatched inputs (general chat). Use for casual talk. Only classify as chat if the input does not start with interrogative words ('what', 'where', 'when', 'how', 'how far', 'how many', 'how much', 'what is', 'where is') or command verbs ('set', 'get', 'drop', 'retract', 'deploy', 'find', 'locate', 'activate') and does not match any specific query or command pattern in QueryActions or simulationCommands/CustomCommands.\n");
 
         sb.append("For type='command': Provide empty response_text for single word commands (e.g., 'deploy landing gear').\n");
-        //sb.append("For navigation commands (e.g., 'jump', 'hyperspace', 'go to next system'), map to '").append(JUMP_TO_HYPERSPACE.getAction()).append("'. 'supercruise' to '").append(ENTER_SUPER_CRUISE.getAction()).append("'. 'cancel_resume_navigation' to ").append(NAVIGATION_ON_OFF.getAction()).append(". 'Stop', 'cut engines' map to speed commands ").append(STOP.getAction()).append(". 'Activate', 'toggle', 'left', 'right', 'up', 'down', 'close' to UI commands like ").append(ACTIVATE.getAction()).append(". ");
-        sb.append("For set, change, swap, add etc type commands that require value provide params json {\"key\":\"value\"} where key always 'key' and value is what you determine value to be.");
-        sb.append("Dor 'find*' commands that contain distance in light years provide {\"key\":\"value\"} where key is integer representing distance in light years. ");
-        sb.append("For commands like ").append(INCREASE_SPEED_BY.getAction()).append(" provide params json {\"key\":\"value\"} where value is a positive integer. example: {\"key\":\"3\"}.");
-        sb.append("For commands like ").append(DECREASE_SPEED_BY.getAction()).append(" provide params json {\"key\":\"value\"} where value is a negative integer example: {\"key\":\"-3\"}.");
-        sb.append("For toggle commands such as turn off, turn on, cancel, enable or disable, ALWAYS provide params json {\"state\":\"true\"} / {\"state\":\"false\"}. ");
+        sb.append("    - For set, change, swap, add etc type commands that require value provide params json {\"key\":\"value\"} where key always 'key' and value is what you determine value to be.");
+        sb.append("    - For 'find*' commands that contain distance in light years provide {\"key\":\"value\"} where key is integer representing distance in light years. ");
+        sb.append("    - For commands like ").append(INCREASE_SPEED_BY.getAction()).append(" provide params json {\"key\":\"value\"} where value is a positive integer. example: {\"key\":\"3\"}.");
+        sb.append("    - For commands like ").append(DECREASE_SPEED_BY.getAction()).append(" provide params json {\"key\":\"value\"} where value is a negative integer example: {\"key\":\"-3\"}.");
+        sb.append("    - For toggle commands such as turn off, turn on, cancel, enable or disable, ALWAYS provide params json {\"state\":\"true\"} / {\"state\":\"false\"}. ");
 
         sb.append("For type='query': \n" +
                 "    - If action is a quick query (e.g., '").append(WHAT_IS_YOUR_DESIGNATION.getAction()).append("', '").append(GENERAL_CONVERSATION.getAction()).append("'), set 'response_text' to '' (empty string, no initial TTS).\n" +
@@ -100,7 +100,7 @@ public class OpenAiAndXAiPromptFactory implements AiPromptFactory {
 
     private String generateSupportedQueriesClause() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Supported queries:\n");
+        sb.append("Supported Queries:\n");
 
         StringBuilder quickQueries = new StringBuilder();
         StringBuilder dataQueries = new StringBuilder();
@@ -112,10 +112,7 @@ public class OpenAiAndXAiPromptFactory implements AiPromptFactory {
                 dataQueries.append("    - ").append(query.getAction()).append(": ").append(".\n");
             }
         }
-
-        sb.append("Quick queries:\n");
         sb.append(!quickQueries.isEmpty() ? quickQueries : "    - None defined.\n");
-        sb.append("Data queries:\n");
         sb.append(!dataQueries.isEmpty() ? dataQueries : "    - None defined.\n");
 
         sb.append(appendBehavior());
@@ -125,7 +122,7 @@ public class OpenAiAndXAiPromptFactory implements AiPromptFactory {
 
     private String generateSupportedCommandsCause() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Supported commands: ").append(AiRequestHints.customCommands);
+        sb.append("Supported Commands: ").append(AiRequestHints.customCommands);
         return sb.toString();
     }
 

@@ -32,7 +32,7 @@ public class GenericResponse {
         String playerName = session.getPlayerName();
 
         JsonObject response = new JsonObject();
-        response.addProperty(AIConstants.PROPERTY_RESPONSE_TEXT, text + " " + ("null".equalsIgnoreCase(playerName) ? "Commander" : playerName));
+        response.addProperty(AIConstants.PROPERTY_RESPONSE_TEXT, text + " " + playerName);
         return response;
     }
 

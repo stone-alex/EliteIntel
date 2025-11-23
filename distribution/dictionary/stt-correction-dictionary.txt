@@ -216,3 +216,6 @@
 "the question extraction"="extract the SRV"
 "the blower"="deploy"
 "praise"="retract"
+"our check"="audio check"
+"I will do a check"="audio check"
+"trimming"="streaming"

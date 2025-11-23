@@ -33,7 +33,7 @@ public class AppController implements Runnable {
     private final AtomicBoolean isRunning = new AtomicBoolean(false);
     private final PlayerSession playerSession = PlayerSession.getInstance();
     private final SystemSession systemSession = SystemSession.getInstance();
-    private final Timer logTypewriterTimer = new Timer(20, null);
+    private final Timer logTypewriterTimer = new Timer(5, null);
     private final StringBuilder logBuffer = new StringBuilder();
     private final AtomicBoolean typewriterActive = new AtomicBoolean(false);
     AuxiliaryFilesMonitor fileMonitor = new AuxiliaryFilesMonitor();
@@ -87,8 +87,8 @@ public class AppController implements Runnable {
 
     @Subscribe
     public void onStreamModeToggle(StreamModelToggleEvent event) {
-        JCheckBox temp = new JCheckBox();
-        temp.setSelected(event.isStreaming());
+        this.view.toggleStreamingModeCheckBox.setSelected(event.isStreaming());
+        EventBusManager.publish(new ToggleStreamingModeEvent(event.isStreaming()));
     }
 
 

@@ -62,12 +62,11 @@ public class AppView extends JFrame implements AppViewInterface {
     private JButton saveSystemButton;
     private JToggleButton startStopServicesButton;
     private JButton recalibrateAudioButton;
-    private JCheckBox toggleStreamingModeCheckBox;
+    public JCheckBox toggleStreamingModeCheckBox;
     private JCheckBox togglePrivacyModeCheckBox;
     public JTextArea logArea;
     private JPasswordField edsmKeyField;
     private JCheckBox edsmLockedCheck;
-    //private JTextField systemYouTubeStreamUrl;
     // Player tab components
     private JTextField playerAltNameField;
     private JTextField playerTitleField;
@@ -768,53 +767,6 @@ public class AppView extends JFrame implements AppViewInterface {
     public JFrame getUiComponent() {
         return this;
     }
-/*
-
-    @Subscribe
-    public void onAppLogEvent(AppLogEvent event) {
-
-            if (logArea == null) return;
-
-            String newLine = event.getData();  // this is ONE new line, e.g. "PLAYER: Hello computer"
-            if (newLine == null || newLine.isBlank()) return;
-
-            String currentText = logArea.getText();
-
-            // Build what the final text SHOULD be
-            String finalText = currentText.isEmpty() ? newLine : currentText + "\n" + newLine;
-
-            // Cancel any running typewriter
-            if (logTypewriterTimer != null) {
-                logTypewriterTimer.stop();
-            }
-
-            // Start from end of current text
-            logArea.setText(currentText);
-            logArea.setCaretPosition(currentText.length());
-
-            // Type out the new line only
-            logTypewriterTimer = new Timer(15, null);
-            AtomicInteger pos = new AtomicInteger(currentText.length());
-
-            logTypewriterTimer.addActionListener(e -> {
-                int i = pos.get();
-                if (i < finalText.length()) {
-                    try {
-                        char c = finalText.charAt(i);
-                        logArea.getDocument().insertString(i, String.valueOf(c), null);
-                        pos.incrementAndGet();
-                        logArea.setCaretPosition(i + 1);
-                    } catch (BadLocationException ignored) {
-                        ((Timer) e.getSource()).stop();
-                    }
-                } else {
-                    ((Timer) e.getSource()).stop();
-                }
-            });
-
-            logTypewriterTimer.start();
-    }
-*/
 
     private GridBagConstraints baseGbc() {
         GridBagConstraints gbc = new GridBagConstraints();

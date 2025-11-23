@@ -5,6 +5,9 @@ import elite.intel.ai.ApiFactory;
 import elite.intel.ai.brain.AICadence;
 import elite.intel.ai.brain.AIPersonality;
 import elite.intel.ai.brain.AiCommandInterface;
+import elite.intel.ai.ears.AudioCalibrator;
+import elite.intel.ai.ears.AudioFormatDetector;
+import elite.intel.ai.ears.AudioSettingsTuple;
 import elite.intel.ai.ears.EarsInterface;
 import elite.intel.ai.mouth.AiVoices;
 import elite.intel.ai.mouth.MouthInterface;
@@ -117,20 +120,31 @@ public class AppController implements Runnable {
 
     @Subscribe private void recalibrateAudio(RecalibrateAudioEvent event) {
         SwingUtilities.invokeLater(() -> {
-            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Recalibrating audio..."));
-            SleepNoThrow.sleep(5000);
-            if (ears == null) {
-                ears = ApiFactory.getInstance().getEarsImpl();
-            }
-            if (mouth == null) {
-                mouth = ApiFactory.getInstance().getMouthImpl();
-                mouth.start();
-            }
-            appendToLog("Recalibrating audio...");
-            ears.stop();
-            systemSession.setRmsThresholdHigh(null);
-            systemSession.setRmsThresholdLow(null);
-            ears.start();
+            appendToLog("Starting audio calibration...");
+            // Stop normal listening
+            if (ears != null) ears.stop();
+
+            new Thread(() -> {
+                try {
+                    AudioSettingsTuple<Integer, Integer> format = AudioFormatDetector.detectSupportedFormat();
+                    AudioCalibrator.calibrateRMS(format.getSampleRate(), format.getBufferSize());
+
+                    // Back to EDT: restart ears + success
+                    SwingUtilities.invokeLater(() -> {
+                        if (ears != null) ears.start();
+                        EventBusManager.publish(new MissionCriticalAnnouncementEvent("Audio calibration complete"));
+                        appendToLog("Calibration complete: HIGH=" +
+                                SystemSession.getInstance().getRmsThresholdHigh() +
+                                " LOW=" + SystemSession.getInstance().getRmsThresholdLow());
+                    });
+                } catch (Exception ex) {
+                    SwingUtilities.invokeLater(() -> {
+                        if (ears != null) ears.start(); // always restart on way out
+                        appendToLog("Calibration failed: " + ex.getMessage());
+                        EventBusManager.publish(new MissionCriticalAnnouncementEvent("Audio calibration failed"));
+                    });
+                }
+            }, "AudioCalibrator-Thread").start();
         });
     }
 

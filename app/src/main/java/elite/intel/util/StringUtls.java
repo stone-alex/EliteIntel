@@ -1,5 +1,6 @@
 package elite.intel.util;
 
+import java.time.LocalDateTime;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,6 +44,31 @@ public class StringUtls {
         }
         boolean isFuelStar = "KGBFOAM".contains(starClass);
         return isFuelStar ? " a Fuel Star. " : " Warning! - Not a Fuel Star! ";
+    }
+
+    private static int getHourOfDay() {
+        return LocalDateTime.now().getHour();
+    }
+
+    public static String greeting(String playerName) {
+        if (playerName == null || playerName.isEmpty()) {
+            return "Hello, Commander!";
+        }
+
+        int hour = getHourOfDay();
+        String timeGreeting;
+
+        if (hour >= 5 && hour < 12) {
+            timeGreeting = "Good morning";
+        } else if (hour >= 12 && hour < 18) {
+            timeGreeting = "Good afternoon";
+        } else if (hour >= 18 && hour < 22) {
+            timeGreeting = "Good evening";
+        } else {
+            timeGreeting = "Good night";
+        }
+
+        return timeGreeting + ", " + playerName + "!";
     }
 
 }

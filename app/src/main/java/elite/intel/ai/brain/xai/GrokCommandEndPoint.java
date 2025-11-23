@@ -9,7 +9,9 @@ import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.UserInputEvent;
+import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
+import elite.intel.util.StringUtls;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.JsonUtils;
 import org.apache.logging.log4j.LogManager;
@@ -51,7 +53,7 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
             });
             elite.intel.gameapi.EventBusManager.register(this);
             log.info("GrokCommandEndPoint started");
-            EventBusManager.publish(new AiVoxResponseEvent("Systems Online."));
+            EventBusManager.publish(new AiVoxResponseEvent(StringUtls.greeting(PlayerSession.getInstance().getPlayerName())));
         } else {
             log.debug("GrokCommandEndPoint already started");
         }

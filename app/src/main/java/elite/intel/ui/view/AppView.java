@@ -318,10 +318,36 @@ public class AppView extends JFrame implements AppViewInterface {
             EventBusManager.publish(new TogglePrivacyModeEvent(togglePrivacyModeCheckBox.isSelected()));
         });
 
+
+        recalibrateAudioButton = new JButton("Recalibrate Audio") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                try {
+                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    Color base = BG_PANEL;
+                    ButtonModel m = getModel();
+                    if (m.isPressed()) base = base.darker();
+                    else if (m.isRollover()) base = base.brighter();
+                    g2.setColor(base);
+                    g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
+                } finally {
+                    g2.dispose();
+                }
+                super.paintComponent(g);
+            }
+        };
+
+        recalibrateAudioButton.setForeground(Color.RED);
+        recalibrateAudioButton.addActionListener(e -> {
+            EventBusManager.publish(new RecalibrateAudioEvent());
+        });
+        styleButton(recalibrateAudioButton);
         buttons.add(startStopServicesButton);
         buttons.add(showDetailedLog);
         buttons.add(toggleStreamingModeCheckBox);
         buttons.add(togglePrivacyModeCheckBox);
+        buttons.add(recalibrateAudioButton);
         panel.add(new JLabel(" ")); //<-- placeholder
         panel.add(buttons, gbc);
 
@@ -500,7 +526,34 @@ public class AppView extends JFrame implements AppViewInterface {
             savePlayerConfig();
         });
 
+
+/*        recalibrateAudioButton = new JButton("Recalibrate Audio") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                try {
+                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    Color base = Color.RED;
+                    ButtonModel m = getModel();
+                    if (m.isPressed()) base = base.darker();
+                    else if (m.isRollover()) base = base.brighter();
+                    g2.setColor(base);
+                    g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
+                } finally {
+                    g2.dispose();
+                }
+                super.paintComponent(g);
+            }
+        };
+
+        recalibrateAudioButton.addActionListener(e -> {
+            EventBusManager.publish(new RecalibrateAudioEvent());
+        });
+        styleButton(recalibrateAudioButton);
+        btns.add(recalibrateAudioButton);*/
+
         btns.add(savePlayerInfoButton);
+
         panel.add(btns, gbc);
 
         // Row 6: Filler area (reserved for future use)
@@ -591,33 +644,7 @@ public class AppView extends JFrame implements AppViewInterface {
             saveSystemConfig();
         });
 
-
-        recalibrateAudioButton = new JButton("Recalibrate Audio") {
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                try {
-                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    Color base = BG_PANEL;
-                    ButtonModel m = getModel();
-                    if (m.isPressed()) base = base.darker();
-                    else if (m.isRollover()) base = base.brighter();
-                    g2.setColor(base);
-                    g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
-                } finally {
-                    g2.dispose();
-                }
-                super.paintComponent(g);
-            }
-        };
-
-        recalibrateAudioButton.addActionListener(e -> {
-            EventBusManager.publish(new RecalibrateAudioEvent());
-        });
-        styleButton(recalibrateAudioButton);
-
         buttons.add(saveSystemButton);
-        buttons.add(recalibrateAudioButton);
         panel.add(buttons, gbc);
 
         // Row 6: Filler area (reserved for future use)

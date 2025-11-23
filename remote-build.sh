@@ -1,2 +1,2 @@
-git tag -a v2025.11.22.beta-0127 -m "Spansh Search Updates"
-git push origin v2025.11.22.beta-0127
+git tag -a v2025.11.23.beta-0129 -m "Bug fixes after major refactoring"
+git push origin v2025.11.23.beta-0129

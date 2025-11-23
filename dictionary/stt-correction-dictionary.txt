@@ -223,3 +223,7 @@
 "the blue landing gear"="deploy landing gear"
 "get a support the ship"="board the ship"
 "support the ship"="board the ship"
+"gonna start system please"="scan the star system"
+"kindness star system"="scan the star system"
+"and the star system"="scan the star system"
+"can the star system"="scan the star system"

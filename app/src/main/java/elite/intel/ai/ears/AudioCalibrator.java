@@ -46,7 +46,7 @@ public class AudioCalibrator {
         byte[] buffer = new byte[bufferSize];
 
         // Step 1: Calibrate noise floor (remain silent)
-        EventBusManager.publish(new AiVoxResponseEvent("Remain silent for audio calibration..."));
+        EventBusManager.publish(new AiVoxResponseEvent("Re-calibrating Audio. Remain silent for audio calibration..."));
         log.info("Prompted for noise calibration, waiting {}ms for TTS", TTS_PROMPT_DELAY_MS);
         try {
             Thread.sleep(TTS_PROMPT_DELAY_MS); // Wait for TTS to vocalize

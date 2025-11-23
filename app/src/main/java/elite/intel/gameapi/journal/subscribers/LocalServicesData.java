@@ -19,7 +19,9 @@ public class LocalServicesData {
 
         LocationDto currentLocation = playerSession.getCurrentLocation();
         if (marketDto.getData() != null && marketDto.getData().getCommodities() != null) {
-            sb.append(" Market, ");
+            sb.append(" Market ");
+            sb.append(marketDto.getData().getName());
+            sb.append(", ");
             currentLocation.setMarket(marketDto);
         }
 

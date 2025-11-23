@@ -303,6 +303,7 @@ public class AppView extends JFrame implements AppViewInterface {
         styleButton(startStopServicesButton);
 
         showDetailedLog = new JCheckBox("Detailed Log", false);
+        showDetailedLog.setVisible(false); // not used at this time
         showDetailedLog.addActionListener(e -> {
             EventBusManager.publish(new ToggleDetailedLogEvent(showDetailedLog.isSelected()));
         });

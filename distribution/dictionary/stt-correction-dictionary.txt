@@ -221,3 +221,5 @@
 "trimming"="streaming"
 "can the system"="scan the system"
 "the blue landing gear"="deploy landing gear"
+"get a support the ship"="board the ship"
+"support the ship"="board the ship"

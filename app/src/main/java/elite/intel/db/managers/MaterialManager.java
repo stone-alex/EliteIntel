@@ -25,7 +25,7 @@ public class MaterialManager {
             String name = StringUtls.capitalizeWords(materialName);
             MaterialsDao.Material material = dao.findByExactName(name);
             dao.upsert(
-                    StringUtls.capitalizeWords(name),
+                    StringUtls.capitalizeWords(name.trim()),
                     type.getType(),
                     amount + (material == null ? 0 : material.getAmount()),
                     EDMaterialCaps.getMax(name)

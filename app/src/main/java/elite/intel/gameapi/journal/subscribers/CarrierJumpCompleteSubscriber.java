@@ -8,8 +8,11 @@ import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.journal.events.CarrierJumpEvent;
 import elite.intel.gameapi.journal.events.dto.CarrierDataDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
+import elite.intel.search.spansh.carrierroute.CarrierJump;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.Status;
+import elite.intel.util.ClipboardUtils;
+import elite.intel.util.FleetCarrierRouterCalculator;
 
 import java.util.Objects;
 
@@ -23,7 +26,21 @@ public class CarrierJumpCompleteSubscriber {
         double[] starPos = event.getStarPos();
         playerSession.setLastKnownCarrierLocation(starSystem);
 
-        FleetCarrierRouteManager.getInstance().removeLeg(event.getStarSystem());
+
+        FleetCarrierRouteManager fleetCarrierRouteManager = FleetCarrierRouteManager.getInstance();
+        CarrierJump currentLocationLeg = fleetCarrierRouteManager.findByPrimaryStar(event.getStarSystem());
+        boolean currentLegIsNotPresent = currentLocationLeg == null;
+        boolean routePlotted = fleetCarrierRouteManager.getFleetCarrierRoute().size() > 0;
+        if (currentLegIsNotPresent && routePlotted){
+            String systemName = fleetCarrierRouteManager
+                    .getFleetCarrierRoute()
+                    .get(fleetCarrierRouteManager.getFleetCarrierRoute().size() - 1)
+                    .getSystemName();
+            ClipboardUtils.setClipboardText(systemName);
+            FleetCarrierRouterCalculator.calculate();
+        }
+
+        fleetCarrierRouteManager.removeLeg(event.getStarSystem());
 
         CarrierDataDto carrierData = playerSession.getCarrierData();
         playerSession.setCarrierDepartureTime(null);

@@ -30,7 +30,9 @@ public class FleetCarrierRouteManager {
 
 
     public void setFleetCarrierRoute(Map<Integer, CarrierJump> fleetCarrierRoute) {
+        clear();
         Database.withDao(FleetCarrierRouteDao.class, dao -> {
+
             Set<Integer> keys = fleetCarrierRoute.keySet();
             for (Integer key : keys) {
                 FleetCarrierRouteDao.FleetCarrierRouteLeg leg = new FleetCarrierRouteDao.FleetCarrierRouteLeg();

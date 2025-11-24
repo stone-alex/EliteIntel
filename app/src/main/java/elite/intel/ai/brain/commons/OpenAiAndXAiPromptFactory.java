@@ -12,8 +12,7 @@ import elite.intel.util.Ranks;
 import java.util.Objects;
 
 import static elite.intel.ai.brain.handlers.commands.Commands.*;
-import static elite.intel.ai.brain.handlers.query.Queries.GENERAL_CONVERSATION;
-import static elite.intel.ai.brain.handlers.query.Queries.WHAT_IS_YOUR_DESIGNATION;
+import static elite.intel.ai.brain.handlers.query.Queries.*;
 import static elite.intel.util.Abbreviations.generateAbbreviations;
 
 public class OpenAiAndXAiPromptFactory implements AiPromptFactory {
@@ -61,7 +60,7 @@ public class OpenAiAndXAiPromptFactory implements AiPromptFactory {
     private void colloquialTerms(StringBuilder sb) {
         sb.append("Map colloquial terms to commands: 'feds', 'yanks', or 'federation space' to 'FEDERATION', 'imperials', 'imps', or 'empire' to 'IMPERIAL', 'alliance space' or 'allies' to 'ALLIANCE' for set_cadence. ");
         sb.append("Map slang such as 'bounce', 'get out of here' to commands like ").append(JUMP_TO_HYPERSPACE.getAction()).append(". ");
-        sb.append("Map 'scan system' to commands like "+OPEN_FSS_AND_SCAN.getAction()+". ");
+        sb.append("Map 'scan system' to commands like "+OPEN_FSS_AND_SCAN.getAction()+". and 'damage report' to queries like "+QUERY_SHIP_LOADOUT.getAction());
         sb.append("Infer command intent from context: phrases like 'act like', 'talk like', 'blend in with', or 'sound like' followed by a faction should trigger '").append(SET_PERSONALITY.getAction()).append("' with the corresponding cadence value, using current system allegiance if ambiguous. ");
 
         sb.append("Examples:\n" +

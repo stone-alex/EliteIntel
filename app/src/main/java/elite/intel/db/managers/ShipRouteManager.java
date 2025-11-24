@@ -58,25 +58,12 @@ public class ShipRouteManager {
         });
     }
 
-    public Map<Integer, NavRouteDto> removeLeg(String starSystem){
+    public List<NavRouteDto> removeLeg(String starSystem){
         Database.withDao(ShipRouteDao.class, dao ->{
             dao.delete(starSystem);
             return null;
         });
-        return getRoute();
-    }
-
-
-    private Map<Integer, NavRouteDto> getRoute() {
-        return Database.withDao(ShipRouteDao.class, dao -> {
-            Map<Integer, NavRouteDto> result = new HashMap<>();
-            List<ShipRouteDao.Route> list = dao.getAll();
-            for (ShipRouteDao.Route leg : list) {
-                NavRouteDto dto = routeLegToDto(leg);
-                result.put(leg.getLeg(), dto);
-            }
-            return result;
-        });
+        return getOrderedRoute();
     }
 
     public List<NavRouteDto> getOrderedRoute() {

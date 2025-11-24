@@ -83,14 +83,10 @@ public class JumpCompletedSubscriber {
             primaryStar.setDeathsDto(deathsDto);
         } else if (roueSet) {
             sb.append("Arrived at: ").append(event.getStarSystem()).append(" star system.");
-            Map<Integer, NavRouteDto> adjustedRoute = shipRoute.removeLeg(event.getStarSystem());
-            shipRoute.setNavRoute(adjustedRoute);
-
-            List<NavRouteDto> temp = adjustedRoute.values().stream().collect(Collectors.toList());
-            temp.sort(Comparator.comparingInt(NavRouteDto::getLeg));
-            int remainingJump = temp.size();
+            List<NavRouteDto> adjustedRoute = shipRoute.removeLeg(event.getStarSystem());
+            int remainingJump = adjustedRoute.size();
             if (remainingJump > 0) {
-                temp.stream().findFirst().ifPresent(
+                adjustedRoute.stream().findFirst().ifPresent(
                         nextStop -> sb
                                 .append(" Next stop: ")
                                 .append(nextStop.getName())
@@ -100,7 +96,7 @@ public class JumpCompletedSubscriber {
                                 .append(", ")
                                 .append(isFuelStarClause(nextStop.getStarClass()))
                 );
-                sb.append(remainingJump).append(" jumps remaining to final destination.");
+                sb.append(remainingJump).append(" jumps left.");
             }
         }
 
@@ -133,6 +129,14 @@ public class JumpCompletedSubscriber {
             stellarObject.setSurfaceTemperature(data.getSurfaceTemperature());
             stellarObject.setTidalLocked(data.isRotationalPeriodTidallyLocked());
             stellarObject.setLocationType(determineType(data));
+            stellarObject.setOurDiscovery(data.getDiscovery().getCommander() == null);
+            stellarObject.setDiscoveredBy(data.getDiscovery().getCommander());
+            stellarObject.setDiscoveredOn(data.getDiscovery().getDate());
+            stellarObject.setOrbitalPeriod(data.getOrbitalPeriod());
+            stellarObject.setAxialTilt(data.getAxialTilt());
+            stellarObject.setRotationPeriod(data.getRotationalPeriod());
+            stellarObject.setVolcanism(data.getVolcanismType());
+            stellarObject.setPlanetClass(data.getSpectralClass());
             playerSession.saveLocation(stellarObject);
         }
     }

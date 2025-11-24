@@ -65,7 +65,7 @@ public class StringUtls {
         } else if (hour >= 18 && hour < 22) {
             timeGreeting = "Good evening";
         } else {
-            timeGreeting = "Good night";
+            timeGreeting = "Good evening";
         }
 
         return timeGreeting + ", " + playerName + "!";

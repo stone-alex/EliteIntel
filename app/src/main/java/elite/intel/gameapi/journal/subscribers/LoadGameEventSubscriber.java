@@ -60,8 +60,6 @@ public class LoadGameEventSubscriber {
         if (currentLocation == null) {
             return;
         }
-
-        Map<Integer, NavRouteDto> adjustedRoute = shipRoute.removeLeg(currentLocation.getStarName());
-        shipRoute.setNavRoute(adjustedRoute);
+        shipRoute.removeLeg(currentLocation.getStarName());
     }
 }

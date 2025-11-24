@@ -19,7 +19,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Represents the main graphical user interface of the application.
@@ -33,6 +32,7 @@ public class AppView extends JFrame implements AppViewInterface {
     public static final String LABEL_PRIVACY_MODE = "Privacy Mode";
     // ----- COLORS (adjust to taste) -----
     private static final Color BG = new Color(0x1D1D1D); // base background
+    private static final Color LOG_BG = new Color(0x111111); // base background
     private static final Color BG_PANEL = new Color(0x2B2D30); // panels/inputs background
     private static final Color FG = new Color(0xE6E6E6); // primary text
     private static final Color FG_MUTED = new Color(0xB0B0B0); // secondary text
@@ -48,9 +48,9 @@ public class AppView extends JFrame implements AppViewInterface {
     private final SystemSession systemSession = SystemSession.getInstance();
     // Title
     private final JLabel titleLabel;
-    private final AtomicInteger typeIndex = new AtomicInteger(0);
-    private final StringBuilder typeBuffer = new StringBuilder();
     private final AtomicBoolean isServiceRunning = new AtomicBoolean(false);
+    public JCheckBox toggleStreamingModeCheckBox;
+    public JTextArea logArea;
     // System tab components
     private JPasswordField sttApiKeyField;
     private JCheckBox sttLockedCheck;
@@ -62,9 +62,7 @@ public class AppView extends JFrame implements AppViewInterface {
     private JButton saveSystemButton;
     private JToggleButton startStopServicesButton;
     private JButton recalibrateAudioButton;
-    public JCheckBox toggleStreamingModeCheckBox;
     private JCheckBox togglePrivacyModeCheckBox;
-    public JTextArea logArea;
     private JPasswordField edsmKeyField;
     private JCheckBox edsmLockedCheck;
     // Player tab components
@@ -78,8 +76,6 @@ public class AppView extends JFrame implements AppViewInterface {
     private JButton savePlayerInfoButton;
     private JButton selectJournalDirButton;
     private JButton selectBindingsDirButton;
-    //private Timer logTypewriterTimer;
-    private String pendingLogText;
 
     public AppView() {
         super("Elite Intel");
@@ -683,7 +679,7 @@ public class AppView extends JFrame implements AppViewInterface {
         }
 
         if (c instanceof JTextArea) {
-            c.setBackground(Color.BLACK);
+            c.setBackground(LOG_BG);
             c.setForeground(ACCENT);
         }
 

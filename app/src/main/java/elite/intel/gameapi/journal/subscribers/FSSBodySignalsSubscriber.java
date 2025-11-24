@@ -44,7 +44,6 @@ public class FSSBodySignalsSubscriber extends BiomeAnalyzer {
         }
         location.setGeoSignals(geoSignals);
         playerSession.saveLocation(location);
-        SleepNoThrow.sleep(2000); // wait for the data to be saved, next event might be a detailed scan.
     }
 
 }

@@ -59,7 +59,7 @@ public class OpenAiAndXAiPromptFactory implements AiPromptFactory {
 
     private void colloquialTerms(StringBuilder sb) {
         sb.append("Map colloquial terms to commands: 'feds', 'yanks', or 'federation space' to 'FEDERATION', 'imperials', 'imps', or 'empire' to 'IMPERIAL', 'alliance space' or 'allies' to 'ALLIANCE' for set_cadence. ");
-        sb.append("Map slang such as 'bounce', 'get out of here' to commands like ").append(JUMP_TO_HYPERSPACE.getAction()).append(". ");
+        sb.append("Map slang such as 'bounce', 'proceed to next way point', 'get out of here' to commands like ").append(JUMP_TO_HYPERSPACE.getAction()).append(". ");
         sb.append("Map 'scan system' to commands like "+OPEN_FSS_AND_SCAN.getAction()+". and 'damage report' to queries like "+QUERY_SHIP_LOADOUT.getAction());
         sb.append("Infer command intent from context: phrases like 'act like', 'talk like', 'blend in with', or 'sound like' followed by a faction should trigger '").append(SET_PERSONALITY.getAction()).append("' with the corresponding cadence value, using current system allegiance if ambiguous. ");
 
@@ -92,7 +92,7 @@ public class OpenAiAndXAiPromptFactory implements AiPromptFactory {
         sb.append("For type='chat': \n" +
                 "    - Classify as 'chat' for general conversation, lore questions, opinions, or casual talk (e.g., 'How’s it going?', 'there is nothing interesting in this system', 'time to hunt some pirates').\n" +
                 "    - Generate a relevant conversational response in 'response_text' strictly adhering to the configured personality and cadence\n" +
-                "    - If input is ambiguous, unrecognized, or gibberish (e.g., 'voice to an', 'asdf'), set 'response_text' to 'Say again?', 'action' to null, and 'expect_followup' to true. Do not generate custom clarification messages.\n" +
+                "    - If input is ambiguous, unrecognized, Classify as general chat.\n" +
                 "    - Set 'expect_followup' to true if the response poses a question or invites further conversation; otherwise, false.\n");
         return sb.toString();
     }

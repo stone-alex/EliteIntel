@@ -2,6 +2,7 @@ package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.db.managers.BioSamplesManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.data.BioForms;
 import elite.intel.gameapi.journal.events.CodexEntryEvent;
@@ -10,17 +11,16 @@ import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.gameapi.journal.events.dto.TargetLocation;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.Status;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static elite.intel.util.NavigationUtils.calculateSurfaceDistance;
 
-public class NavigateToNextBioSample implements CommandHandler {
+public class NavigateToNextCodexEntry implements CommandHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(NavigateToNextBioSample.class);
     private final PlayerSession playerSession = PlayerSession.getInstance();
+    private final BioSamplesManager bioSamplesManager = BioSamplesManager.getInstance();
 
     @Override
     public void handle(String action, JsonObject params, String responseText) {
@@ -32,7 +32,8 @@ public class NavigateToNextBioSample implements CommandHandler {
             return;
         }
 
-        List<CodexEntryEvent> codexEntries = currentLocation.getCodexEntries();
+
+        List<CodexEntryEvent> codexEntries = getCodexEntries(currentLocation);
         if (codexEntries == null || codexEntries.isEmpty()) {
             EventBusManager.publish(new AiVoxResponseEvent("No codex data on this body."));
             return;
@@ -61,6 +62,23 @@ public class NavigateToNextBioSample implements CommandHandler {
                 "Heading to " + target.getNameLocalised() + " sample."));
     }
 
+    private List<CodexEntryEvent> getCodexEntries(LocationDto currentLocation) {
+        List<BioSampleDto> completedBioSamples = bioSamplesManager.findByPlanetName(currentLocation.getPlanetName());
+        List<CodexEntryEvent> codexEntries = currentLocation.getCodexEntries();
+        List<CodexEntryEvent> filteredResult = new ArrayList<>();
+
+        if (completedBioSamples == null || completedBioSamples.isEmpty()) return codexEntries;
+
+        for (CodexEntryEvent entry : codexEntries) {
+            for (BioSampleDto partial : completedBioSamples) {
+                if (!entry.getNameLocalised().contains(partial.getGenus())) {
+                    filteredResult.add(entry);
+                }
+            }
+        }
+
+        return filteredResult;
+    }
 
 
     private CodexEntryEvent findBestBioTarget(List<CodexEntryEvent> codexEntries,

@@ -237,3 +237,5 @@
 "can the star system"="scan the star system"
 "on the star system"="scan the star system"
 "and our"="enter"
+"receipt"="proceed"
+"pretty drank the landing gear"="retract landing gear"

@@ -29,7 +29,7 @@ public class GoogleSTTImpl implements EarsInterface {
     private static final int KEEP_ALIVE_INTERVAL_MS = 250; // Reduced for timeout fix
     private static final int KEEP_ALIVE_BUFFER_SIZE = 320; // ~10ms at 16000Hz; minimal for cost
     private static final int ENTER_VOICE_FRAMES = 1; // Quick enter to avoid clipping
-    private static final int EXIT_SILENCE_FRAMES = 12; // ~1s silence to exit
+    private static final int EXIT_SILENCE_FRAMES = 10; // ~1s silence to exit
     private static final long BASE_BACKOFF_MS = 2000; // Base backoff for retries
     private static final long MAX_BACKOFF_MS = 60000; // Cap at 1 min
     private static final long MIN_STREAM_GAP_MS = 30000; // Enforce 30s between stream starts

@@ -114,7 +114,7 @@ public class AppController implements Runnable {
     }
 
     private String streamingModeIsOnMessage() {
-        return "Streaming mode is On. Voice to text will still be processing, but I will not react to you. Please prefix your command with word computer";
+        return "Streaming mode is On. Prefix your command with word computer";
     }
 
 

@@ -3,12 +3,14 @@ package elite.intel.db.dao;
 import org.jdbi.v3.core.mapper.RowMapper;
 import org.jdbi.v3.core.statement.StatementContext;
 import org.jdbi.v3.sqlobject.config.RegisterRowMapper;
+import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.customizer.BindBean;
 import org.jdbi.v3.sqlobject.statement.SqlQuery;
 import org.jdbi.v3.sqlobject.statement.SqlUpdate;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 @RegisterRowMapper(BioSampleDao.BioSampleMapper.class)
 public interface BioSampleDao {
@@ -32,6 +34,8 @@ public interface BioSampleDao {
     @SqlQuery("SELECT * FROM bio_samples")
     BioSampleDao.BioSample[] listAll();
 
+    @SqlQuery("SELECT * FROM bio_samples WHERE json LIKE '%' || :planetName || '%'")
+    List<BioSample> findByPlanetName(String planetName);
 
     class BioSampleMapper implements RowMapper<BioSampleDao.BioSample> {
 

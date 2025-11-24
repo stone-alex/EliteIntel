@@ -5,6 +5,7 @@ import elite.intel.db.util.Database;
 import elite.intel.gameapi.journal.events.dto.BioSampleDto;
 import elite.intel.util.json.GsonFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class BioSamplesManager {
@@ -54,6 +55,17 @@ public class BioSamplesManager {
         Database.withDao(BioSampleDao.class, dao ->{
             dao.clear();
             return null;
+        });
+    }
+
+    public List<BioSampleDto> findByPlanetName(String planetName) {
+        return Database.withDao(BioSampleDao.class, dao ->{
+            List<BioSampleDao.BioSample> samples = dao.findByPlanetName(planetName);
+            List<BioSampleDto> result = new ArrayList<>();
+            for(BioSampleDao.BioSample sample : samples) {
+                result.add(GsonFactory.getGson().fromJson(sample.getJson(), BioSampleDto.class));
+            }
+            return result;
         });
     }
 }

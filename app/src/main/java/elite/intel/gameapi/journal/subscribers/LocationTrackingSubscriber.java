@@ -2,7 +2,6 @@ package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.mouth.subscribers.events.NavigationVocalisationEvent;
-import elite.intel.ai.mouth.subscribers.events.VocalisationSuccessfulEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.gamestate.status_events.InGlideEvent;
 import elite.intel.gameapi.gamestate.status_events.PlayerMovedEvent;
@@ -34,9 +33,14 @@ import static elite.intel.util.NavigationUtils.formatDistance;
  */
 public class LocationTrackingSubscriber {
 
-    private static final Logger log = LogManager.getLogger(LocationTrackingSubscriber.class);
     public static final int MAX_NORAMAL_SAPCE_SPEED = 700;
     public static final int APPROXIMATE_DRP_ALTITUDE = 30_000;
+    private static final Logger log = LogManager.getLogger(LocationTrackingSubscriber.class);
+    private static final long MIN_INTERVAL_MS = 15_000;
+    private static final double HYSTERESIS = 7;
+    private static final double ARRIVAL_RADIUS = 50;
+    private static final double GLIDE_ENTRY_RADIUS = 2_500_000;
+    private static final double TOO_FAR_FOR_GLIDE = 3_500_000;
     private final PlayerSession playerSession = PlayerSession.getInstance();
     private boolean hasAnnouncedOrbital = false;
     private boolean hasAnnouncedSurface = false;
@@ -46,14 +50,45 @@ public class LocationTrackingSubscriber {
     private long lastAnnounceTime = -1;
     private double lastDistanceThreshold = 0;
     private boolean lookForLandingSpotAnnounced = false;
-
-    private static final long MIN_INTERVAL_MS = 15_000;
-    private static final double[] DISTANCE_THRESHOLDS = generateDescendingSequence(10_000_000);
-    private static final double HYSTERESIS = 7;
-    private static final double ARRIVAL_RADIUS = 50;
-    private static final double GLIDE_ENTRY_RADIUS = 500_000;
-    private static final double TOO_FAR_FOR_GLIDE = 1_000_000;
     private boolean isGliding = false;
+
+    public static double[] generateDescendingSequence(double n) {
+        List<Double> sequence = new ArrayList<>();
+        double current = n;
+        // Add initial value
+        sequence.add(current);
+        while (current > 0) {
+            // Determine the current magnitude and corresponding step
+            if (current >= 10_000_000) {
+                current -= 500_000; // Half of 1,000,000
+            } else if (current >= 1_000_000) {
+                current -= 250_000; // Quarter of 100,000
+            } else if (current >= 100_000) {
+                current -= 25_000; // Quarter of 100,000
+            } else if (current >= 10_000) {
+                current -= 2_500; // Quarter of 10,000
+            } else if (current >= 1_000) {
+                current -= 250; // Quarter of 1,000
+            } else if (current >= 100) {
+                current -= 25; // Quarter of 100
+            } else {
+                current -= 25; // Continue with 25 until 0
+            }
+            // Ensure we don't go negative
+            if (current < 0) {
+                current = 0;
+            }
+            sequence.add(current);
+        }
+
+        // Convert List<Double> to double[]
+        double[] result = new double[sequence.size()];
+        for (int i = 0; i < sequence.size(); i++) {
+            result[i] = sequence.get(i);
+        }
+
+        return result;
+    }
 
     /**
      * Handles the event triggered when a player moves within the game environment.
@@ -120,7 +155,6 @@ public class LocationTrackingSubscriber {
         return event.getAltitude() < APPROXIMATE_DRP_ALTITUDE;
     }
 
-
     /**
      * Handles the navigation of a player in orbital flight. This method ensures
      * the player's movement and trajectory adhere to specific navigational parameters
@@ -186,7 +220,6 @@ public class LocationTrackingSubscriber {
                 && navigator.getSpeed() > MAX_NORAMAL_SAPCE_SPEED // in supercruise
                 && event.getAltitude() < 33_000; // in drop range
     }
-
 
     /**
      * Handles the surface navigation of a player based on their movement and proximity to
@@ -273,13 +306,7 @@ public class LocationTrackingSubscriber {
     }
 
     private void announceBearingAndDistances(NavigationUtils.Direction navigator, String prefix) {
-        for (double th : DISTANCE_THRESHOLDS) {
-            if (lastDistance > th && navigator.distanceToTarget() <= th && lastDistanceThreshold != th) {
-                lastDistanceThreshold = th;
-                vocalize(prefix, navigator.distanceToTarget(), navigator.bearingToTarget(), false);
-                break;
-            }
-        }
+        vocalize(prefix, navigator.distanceToTarget(), navigator.bearingToTarget(), false);
     }
 
     private void resetTrackingState() {
@@ -293,7 +320,6 @@ public class LocationTrackingSubscriber {
         lastDistanceThreshold = -1;
         isGliding = false;
     }
-
 
     private void vocalize(String text, double distance, double bearing, boolean highPriority) {
         if (this.isGliding) {
@@ -313,52 +339,13 @@ public class LocationTrackingSubscriber {
         }
     }
 
-
-    public static double[] generateDescendingSequence(double n) {
-        List<Double> sequence = new ArrayList<>();
-        double current = n;
-        // Add initial value
-        sequence.add(current);
-        while (current > 0) {
-            // Determine the current magnitude and corresponding step
-            if (current >= 10_000_000) {
-                current -= 500_000; // Half of 1,000,000
-            } else if (current >= 1_000_000) {
-                current -= 250_000; // Quarter of 100,000
-            } else if (current >= 100_000) {
-                current -= 25_000; // Quarter of 100,000
-            } else if (current >= 10_000) {
-                current -= 2_500; // Quarter of 10,000
-            } else if (current >= 1_000) {
-                current -= 250; // Quarter of 1,000
-            } else if (current >= 100) {
-                current -= 25; // Quarter of 100
-            } else {
-                current -= 25; // Continue with 25 until 0
-            }
-            // Ensure we don't go negative
-            if (current < 0) {
-                current = 0;
-            }
-            sequence.add(current);
-        }
-
-        // Convert List<Double> to double[]
-        double[] result = new double[sequence.size()];
-        for (int i = 0; i < sequence.size(); i++) {
-            result[i] = sequence.get(i);
-        }
-
-        return result;
-    }
-
     @Subscribe
     public void onDisembarkEvent(DisembarkEvent event) {
         resetTrackingState();
     }
 
     @Subscribe
-    public void onInGlideEvent(InGlideEvent event){
+    public void onInGlideEvent(InGlideEvent event) {
         this.isGliding = event.isGliding();
     }
 }

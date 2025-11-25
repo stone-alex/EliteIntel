@@ -1,6 +1,8 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.intel.db.dao.CodexEntryDao;
+import elite.intel.db.managers.CodexEntryManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.data.BioForms;
@@ -13,6 +15,8 @@ import elite.intel.util.NavigationUtils;
 import static elite.intel.util.StringUtls.capitalizeWords;
 
 public class CodexEntryEventSubscriber {
+
+    private final CodexEntryManager codexEntryManager = CodexEntryManager.getInstance();
 
     @Subscribe
     public void onCodexEntryEvent(CodexEntryEvent event) {
@@ -28,7 +32,7 @@ public class CodexEntryEventSubscriber {
         BioForms.ProjectedPayment projectedPayment = BioForms.getAverageProjectedPayment(capitalizeWords(firstWordOfEntryName));
         String genus = bioSampleDistance > 0 ? capitalizeWords(firstWordOfEntryName) : null;
 
-        boolean alreadyHaveThisEntry = currentLocation.getCodexEntries().stream().anyMatch(entry -> entry.getNameLocalised().equals(event.getNameLocalised()));
+        boolean alreadyHaveThisEntry = codexEntryManager.checkIfExist(currentLocation.getStarName(), currentLocation.getBodyId(), event.getNameLocalised());
 
 
         if (!alreadyHaveThisEntry && event.isNewEntry()) {
@@ -64,8 +68,8 @@ public class CodexEntryEventSubscriber {
                 playerSession.setGenusPaymentAnnounced(genus);
             }
         } else {
-            for (CodexEntryEvent entry : currentLocation.getCodexEntries()) {
-                boolean isNameMatched = entry.getNameLocalised().equals(event.getNameLocalised());
+            for (CodexEntryDao.CodexEntry entry : codexEntryManager.getForPlanet(currentLocation.getStarName(), currentLocation.getBodyId())) {
+                boolean isNameMatched = entry.getEntryName().equals(event.getNameLocalised());
                 double distanceFromPreviousSample = NavigationUtils.calculateSurfaceDistance(
                         status.getStatus().getLatitude(),
                         status.getStatus().getLongitude(),
@@ -82,8 +86,9 @@ public class CodexEntryEventSubscriber {
         }
 
         EventBusManager.publish(new SensorDataEvent(sb.toString()));
-
-        currentLocation.addCodexEntry(event);
+        if("$Codex_SubCategory_Organic_Structures;".equalsIgnoreCase(event.getSubCategory())) {
+            codexEntryManager.save(event);
+        }
         playerSession.saveLocation(currentLocation);
     }
 }

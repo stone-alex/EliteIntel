@@ -59,7 +59,10 @@ public class OpenAiAndXAiPromptFactory implements AiPromptFactory {
 
     private void colloquialTerms(StringBuilder sb) {
         sb.append("Map colloquial terms to commands: 'feds', 'yanks', or 'federation space' to 'FEDERATION', 'imperials', 'imps', or 'empire' to 'IMPERIAL', 'alliance space' or 'allies' to 'ALLIANCE' for set_cadence. ");
-        sb.append("Map slang such as 'bounce', 'proceed to next way point', 'get out of here' to commands like ").append(JUMP_TO_HYPERSPACE.getAction()).append(". ");
+        sb.append("Map slang such as 'bounce', 'proceed to the next waypoint' or 'get out of here' to commands like ").append(JUMP_TO_HYPERSPACE.getAction()).append(". Map 'select next way point' to "+TARGET_NEXT_ROUTE_SYSTEM.getAction());
+        sb.append("Important distinctions:\n" +
+                "- \"select next waypoint\", \"target next system\", \"plot next\", \"next in route\" → ONLY select/target the next system in the route (Left panel → Navigation → highlight next system). DO NOT jump.\n" +
+                "- \"jump\", \"engage\", \"hyperspace\", \"bounce\", \"proceed to the next waypoint\", \"go\", \"let's go\" → initiate hyperspace jump to the currently TARGETED system.");
         sb.append("Map 'scan system' to commands like "+OPEN_FSS_AND_SCAN.getAction()+". and 'damage report' to queries like "+QUERY_SHIP_LOADOUT.getAction());
         sb.append("Infer command intent from context: phrases like 'act like', 'talk like', 'blend in with', or 'sound like' followed by a faction should trigger '").append(SET_PERSONALITY.getAction()).append("' with the corresponding cadence value, using current system allegiance if ambiguous. ");
 

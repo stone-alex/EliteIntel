@@ -43,7 +43,7 @@ public class CodexEntryEvent extends BaseEvent {
     private long systemAddress;
 
     @SerializedName("BodyID")
-    private int bodyID;
+    private Long bodyID;
 
     @SerializedName("Latitude")
     private double latitude;
@@ -137,7 +137,7 @@ public class CodexEntryEvent extends BaseEvent {
         return systemAddress;
     }
 
-    public int getBodyID() {
+    public long getBodyID() {
         return bodyID;
     }
 
@@ -181,7 +181,6 @@ public class CodexEntryEvent extends BaseEvent {
         result = 31 * result + Objects.hashCode(getRegionLocalised());
         result = 31 * result + Objects.hashCode(getSystem());
         result = 31 * result + Long.hashCode(getSystemAddress());
-        result = 31 * result + getBodyID();
         return result;
     }
 }

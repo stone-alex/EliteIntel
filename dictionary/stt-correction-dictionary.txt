@@ -238,4 +238,6 @@
 "on the star system"="scan the star system"
 "and our"="enter"
 "receipt"="proceed"
+"run by analysis"="run biome analysis"
 "pretty drank the landing gear"="retract landing gear"
+"eccentric"="entry"

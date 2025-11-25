@@ -2,10 +2,11 @@ package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.db.dao.CodexEntryDao;
 import elite.intel.db.managers.BioSamplesManager;
+import elite.intel.db.managers.CodexEntryManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.data.BioForms;
-import elite.intel.gameapi.journal.events.CodexEntryEvent;
 import elite.intel.gameapi.journal.events.dto.BioSampleDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.gameapi.journal.events.dto.TargetLocation;
@@ -20,6 +21,7 @@ import static elite.intel.util.NavigationUtils.calculateSurfaceDistance;
 public class NavigateToNextCodexEntry implements CommandHandler {
 
     private final PlayerSession playerSession = PlayerSession.getInstance();
+    private final CodexEntryManager codexEntryManager = CodexEntryManager.getInstance();
     private final BioSamplesManager bioSamplesManager = BioSamplesManager.getInstance();
 
     @Override
@@ -33,7 +35,7 @@ public class NavigateToNextCodexEntry implements CommandHandler {
         }
 
 
-        List<CodexEntryEvent> codexEntries = getCodexEntries(currentLocation);
+        List<CodexEntryDao.CodexEntry> codexEntries = getCodexEntries(currentLocation);
         if (codexEntries == null || codexEntries.isEmpty()) {
             EventBusManager.publish(new AiVoxResponseEvent("No codex data on this body."));
             return;
@@ -43,7 +45,7 @@ public class NavigateToNextCodexEntry implements CommandHandler {
         double playerLat = status.getStatus().getLatitude();
         double playerLon = status.getStatus().getLongitude();
 
-        CodexEntryEvent target = findBestBioTarget(codexEntries, currentLocation.getPartialBioSamples(),
+        CodexEntryDao.CodexEntry target = findBestBioTarget(codexEntries, currentLocation.getPartialBioSamples(),
                 playerLat, playerLon, planetRadius);
 
         if (target == null) {
@@ -59,19 +61,19 @@ public class NavigateToNextCodexEntry implements CommandHandler {
         playerSession.setTracking(nav);
 
         EventBusManager.publish(new AiVoxResponseEvent(
-                "Heading to " + target.getNameLocalised() + " sample."));
+                "Heading to " + target.getEntryName() + " sample."));
     }
 
-    private List<CodexEntryEvent> getCodexEntries(LocationDto currentLocation) {
+    private List<CodexEntryDao.CodexEntry> getCodexEntries(LocationDto currentLocation) {
         List<BioSampleDto> completedBioSamples = bioSamplesManager.findByPlanetName(currentLocation.getPlanetName());
-        List<CodexEntryEvent> codexEntries = currentLocation.getCodexEntries();
-        List<CodexEntryEvent> filteredResult = new ArrayList<>();
+        List<CodexEntryDao.CodexEntry> codexEntries = codexEntryManager.getForPlanet(currentLocation.getStarName(), currentLocation.getBodyId());
+        List<CodexEntryDao.CodexEntry> filteredResult = new ArrayList<>();
 
         if (completedBioSamples == null || completedBioSamples.isEmpty()) return codexEntries;
 
-        for (CodexEntryEvent entry : codexEntries) {
+        for (CodexEntryDao.CodexEntry entry : codexEntries) {
             for (BioSampleDto partial : completedBioSamples) {
-                if (!entry.getNameLocalised().contains(partial.getGenus())) {
+                if (!entry.getEntryName().contains(partial.getGenus())) {
                     filteredResult.add(entry);
                 }
             }
@@ -81,22 +83,21 @@ public class NavigateToNextCodexEntry implements CommandHandler {
     }
 
 
-    private CodexEntryEvent findBestBioTarget(List<CodexEntryEvent> codexEntries,
-                                              List<BioSampleDto> partials,
-                                              double playerLat, double playerLon, double planetRadius) {
+    private CodexEntryDao.CodexEntry findBestBioTarget(List<CodexEntryDao.CodexEntry> codexEntries,
+                                                       List<BioSampleDto> partials,
+                                                       double playerLat, double playerLon, double planetRadius) {
 
         boolean hasPartials = partials != null && !partials.isEmpty();
 
-        CodexEntryEvent bestPartialMatch = null;
-        CodexEntryEvent bestAny = null;
+        CodexEntryDao.CodexEntry bestPartialMatch = null;
+        CodexEntryDao.CodexEntry bestAny = null;
         double bestPartialDist = Double.MAX_VALUE;
         double bestAnyDist = Double.MAX_VALUE;
 
-        for (CodexEntryEvent entry : codexEntries) {
-            if (!"$Codex_Category_Biology;".equalsIgnoreCase(entry.getCategory())) continue;
+        for (CodexEntryDao.CodexEntry entry : codexEntries) {
             if (entry.getLatitude() == 0 && entry.getLongitude() == 0) continue;
 
-            String genus = entry.getNameLocalised().split(" ")[0];
+            String genus = entry.getEntryName().split(" ")[0];
             double distToPlayer = calculateSurfaceDistance(playerLat, playerLon,
                     entry.getLatitude(), entry.getLongitude(), planetRadius, 0);
 
@@ -124,7 +125,7 @@ public class NavigateToNextCodexEntry implements CommandHandler {
         return bestPartialMatch != null ? bestPartialMatch : bestAny;
     }
 
-    private boolean isTooCloseToAnyPartialOfSameGenus(CodexEntryEvent entry, String genus,
+    private boolean isTooCloseToAnyPartialOfSameGenus(CodexEntryDao.CodexEntry entry, String genus,
                                                       List<BioSampleDto> partials, double planetRadius) {
         double minAllowed = BioForms.getDistance(genus); // genus-specific min distance
 

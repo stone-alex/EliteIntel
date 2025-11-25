@@ -1,10 +1,10 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.intel.db.managers.CodexEntryManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.data.BioForms;
-import elite.intel.gameapi.journal.events.CodexEntryEvent;
 import elite.intel.gameapi.journal.events.ScanOrganicEvent;
 import elite.intel.gameapi.journal.events.dto.BioSampleDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
@@ -12,9 +12,6 @@ import elite.intel.gameapi.journal.events.dto.TargetLocation;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.Status;
 import elite.intel.util.BioScanDistances;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static elite.intel.util.StringUtls.subtractString;
 
@@ -24,8 +21,15 @@ public class ScanOrganicSubscriber {
     private final String scan2 = "Sample";
     private final String scan3 = "Analyse";
     private final PlayerSession playerSession = PlayerSession.getInstance();
+    private final CodexEntryManager codexEntryManager = CodexEntryManager.getInstance();
     private final Status status = Status.getInstance();
     private int scanCount = 0;
+
+    private static void announce(String sb) {
+        if (PlayerSession.getInstance().isDiscoveryAnnouncementOn()) {
+            EventBusManager.publish(new SensorDataEvent(sb));
+        }
+    }
 
     @Subscribe
     public void onScanOrganicEvent(ScanOrganicEvent event) {
@@ -69,6 +73,7 @@ public class ScanOrganicSubscriber {
                 sb.append(" meters. ");
             }
 
+/*
             if (payment > 0 && !isAnnounced) {
                 sb.append("Vista Genomics payment: ");
                 sb.append(payment);
@@ -79,6 +84,7 @@ public class ScanOrganicSubscriber {
                     sb.append(" credits for first discovery.");
                 }
             }
+*/
 
             BioSampleDto bioSampleDto = createBioSampleDto(genus, species, isOurDiscovery);
             bioSampleDto.setScanXof3("First of Three");
@@ -87,12 +93,14 @@ public class ScanOrganicSubscriber {
             scanCount = 1;
 
         } else if (scan2.equalsIgnoreCase(scanType)) {
-            BioSampleDto bioSampleDto = createBioSampleDto(genus, species,  isOurDiscovery);
+            BioSampleDto bioSampleDto = createBioSampleDto(genus, species, isOurDiscovery);
             currentLocation.addBioScan(bioSampleDto);
             bioSampleDto.setScanXof3("Second of Three");
-            if(scanCount == 1) {
+/*
+            if (scanCount == 1) {
                 announce("Sample collected for: " + genus + ".");
             }
+*/
             scanCount = 2;
 
         } else if (scan3.equalsIgnoreCase(scanType)) {
@@ -119,26 +127,12 @@ public class ScanOrganicSubscriber {
         playerSession.saveLocation(currentLocation);
     }
 
-    private static void announce(String sb) {
-        if(PlayerSession.getInstance().isDiscoveryAnnouncementOn()) {
-            EventBusManager.publish(new SensorDataEvent(sb));
-        }
-    }
-
-
     private void removeCodexEntry(String variantLocalised) {
-        LocationDto currentLocation = playerSession.getCurrentLocation();
-        List<CodexEntryEvent> codexEntries = currentLocation.getCodexEntries();
-        if(codexEntries == null || codexEntries.isEmpty()) return;
-        List<CodexEntryEvent> adjusted = new ArrayList<>();
-        for (CodexEntryEvent entry : codexEntries){
-            boolean matchingBioForm = entry.getNameLocalised() != null && entry.getNameLocalised().equalsIgnoreCase(variantLocalised);
-            if (!matchingBioForm) {
-                adjusted.add(entry); //KEEP!
-            }
-        }
-        currentLocation.setCodexEntries(adjusted);
-        playerSession.saveLocation(currentLocation);
+        codexEntryManager.clearCompleted(
+                playerSession.getCurrentLocation().getStarName(),
+                playerSession.getCurrentLocation().getBodyId(),
+                variantLocalised
+        );
     }
 
 
@@ -159,8 +153,8 @@ public class ScanOrganicSubscriber {
         return bioSampleDto;
     }
 
-    private double distanceToNextSample(String genus, String species){
+    private double distanceToNextSample(String genus, String species) {
         BioForms.BioDetails details = BioForms.getDetails(genus, species);
-        return details == null ? BioScanDistances.GENUS_TO_CCR.get(genus): details.colonyRange();
+        return details == null ? BioScanDistances.GENUS_TO_CCR.get(genus) : details.colonyRange();
     }
 }

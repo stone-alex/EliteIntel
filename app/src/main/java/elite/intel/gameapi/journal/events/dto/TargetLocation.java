@@ -14,6 +14,10 @@ public class TargetLocation implements ToJsonConvertible {
         requestedTime = System.currentTimeMillis();
     }
 
+    public TargetLocation(boolean isEnabled) {
+        this.isEnabled = isEnabled;
+    }
+
     public double getLatitude() {
         return latitude;
     }

@@ -45,7 +45,7 @@ public enum Commands {
     SET_RADIO_TRANSMISSION_MODDE("turn_radio_transmission_on_off", null, "radio_transmission_on_off", SetRadioTransmissionOnOff.class),
     SET_STREAMING_MODE("toggle_streaming_mode", null,  "streaming_mode_on_off", SetStreamingModeHandler.class),
     NAVIGATE_TO_TARGET("navigate_to_coordinates", null,  "lat_lon", NavigateToCoordinatesHandler.class),
-    NAVIGATION_ON_OFF("toggle_navigator_guidance",  null,  "navigation_on_off", NavigationOnOffHandler.class),
+    NAVIGATION_ON_OFF("cancel_navigation",  null,  null, NavigationOnOffHandler.class),
     DISCOVERY_ON_OFF("toggle_discovery_announcements",  null, "discovery_on_off", DiscoveryOnOffHandler.class),
     MINING_ON_OFF("toggle_mining_announcements",  null,  "mining_on_off", MiningOnOffHandler.class),
     ROUTE_ON_OFF("toggle_route_announcements",  null,  "route_on_off", RouteAnnouncementsOnOffHandler.class),

@@ -4,22 +4,24 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jdbi.v3.core.Handle;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.*;
+import java.util.*;
 import java.util.regex.Pattern;
-
+import java.util.stream.Stream;
 
 public class DatabaseMigrator {
 
     private static final Logger log = LogManager.getLogger(DatabaseMigrator.class);
     private static final Pattern MIGRATION_PATTERN = Pattern.compile("^(\\d{1,6})(__.*)?\\.sql$");
+    private static final String MIGRATIONS_PATH = "/db-migration";
 
     public static void migrate(Handle handle) throws Exception {
         handle.execute("PRAGMA journal_mode = WAL;");
 
-        // Create migration tracking table + user_version fallback
         handle.execute("""
                 CREATE TABLE IF NOT EXISTS schema_migration (
                     version TEXT PRIMARY KEY,
@@ -27,32 +29,8 @@ public class DatabaseMigrator {
                 );
                 """);
 
-        // Load all migration files from classpath
-        String migrationsPath = "/db-migration";
-        SortedSet<String> allFiles = new TreeSet<>();
-        var url = DatabaseMigrator.class.getResource(migrationsPath);
-        if (url == null) throw new IllegalStateException("Migration folder not found: " + migrationsPath);
+        Set<String> allFiles = findMigrationFiles();
 
-        if ("file".equals(url.getProtocol())) {
-            // IDE / running from src
-            Files.walk(Paths.get(url.toURI()))
-                    .filter(Files::isRegularFile)
-                    .map(p -> p.getFileName().toString())
-                    .filter(name -> MIGRATION_PATTERN.matcher(name).find())
-                    .forEach(allFiles::add);
-        } else {
-            // JAR runtime — scan classpath (works with Gradle shadowJar too)
-            try (var stream = DatabaseMigrator.class.getResourceAsStream(migrationsPath)) {
-                if (stream != null) {
-                    var reader = new java.io.BufferedReader(new java.io.InputStreamReader(stream));
-                    reader.lines()
-                            .filter(name -> MIGRATION_PATTERN.matcher(name).find())
-                            .forEach(allFiles::add);
-                }
-            }
-        }
-
-        // Get already applied versions
         var applied = handle.createQuery("SELECT version FROM schema_migration")
                 .mapTo(String.class)
                 .set();
@@ -60,20 +38,67 @@ public class DatabaseMigrator {
         for (String file : allFiles) {
             if (applied.contains(file)) continue;
 
-            log.info("Applying migration: " + file); // or proper logger
-            String sql = new String(DatabaseMigrator.class.getResourceAsStream(migrationsPath + "/" + file)
-                    .readAllBytes())
-                    .replace("\r\n", "\n");
+            log.info("Applying migration: {}", file);
 
-            for (String statement : sql.split(";\\s*\n")) {
-                if (!statement.trim().isEmpty()) {
-                    handle.execute(statement.trim());
+            String sql;
+            try (var in = DatabaseMigrator.class.getResourceAsStream(MIGRATIONS_PATH + "/" + file)) {
+                if (in == null) throw new IllegalStateException("Migration not found: " + file);
+                sql = new String(in.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8)
+                        .replace("\r\n", "\n");
+            }
+
+            for (String stmt : sql.split(";\\s*\n")) {
+                if (!stmt.trim().isEmpty()) {
+                    handle.execute(stmt.trim());
                 }
             }
 
             handle.execute("INSERT INTO schema_migration (version) VALUES (?)", file);
         }
 
-        log.info("Migrations complete. Total applied: " + allFiles.size());
+        log.info("Migrations complete. Applied: {}", allFiles.size());
+    }
+
+
+    private static Set<String> findMigrationFiles() throws IOException, URISyntaxException {
+        Set<String> files = new TreeSet<>();
+        ClassLoader cl = DatabaseMigrator.class.getClassLoader();
+        String path = "db-migration";
+
+        Enumeration<URL> urls = cl.getResources(path);
+        while (urls.hasMoreElements()) {
+            URL url = urls.nextElement();
+            String protocol = url.getProtocol();
+
+            if ("jar".equals(protocol)) {
+                String urlStr = url.toString();                 // jar:file:/.../EliteIntel.jar!/db-migration
+                int sep = urlStr.indexOf("!/");
+                String jarPart = urlStr.substring(0, sep);      // jar:file:/.../EliteIntel.jar
+                URI jarUri = URI.create(jarPart);               // <-- now valid "jar:" scheme
+
+                try (FileSystem fs = FileSystems.newFileSystem(jarUri, Collections.emptyMap())) {
+                    Path root = fs.getPath("/" + path);
+                    try (var walk = Files.walk(root)) {
+                        walk.filter(Files::isRegularFile)
+                                .map(p -> p.getFileName().toString())
+                                .filter(n -> MIGRATION_PATTERN.matcher(n).matches())
+                                .forEach(files::add);
+                    }
+                }
+            } else if ("file".equals(protocol)) {
+                Path dir = Paths.get(url.toURI());
+                try (var walk = Files.walk(dir)) {
+                    walk.filter(Files::isRegularFile)
+                            .map(p -> p.getFileName().toString())
+                            .filter(n -> MIGRATION_PATTERN.matcher(n).matches())
+                            .forEach(files::add);
+                }
+            }
+        }
+
+        if (files.isEmpty()) {
+            throw new IllegalStateException("No migration files found in classpath: db-migration");
+        }
+        return files;
     }
 }

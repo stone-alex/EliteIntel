@@ -249,7 +249,7 @@ public class AppController implements Runnable {
 
 
     private void startStopServices() {
-        String ttsApiKey = SystemSession.getInstance().getTtsApiKey();
+/*        String ttsApiKey = SystemSession.getInstance().getTtsApiKey();
         if (ttsApiKey == null || ttsApiKey.trim().isEmpty() || ttsApiKey.equals("null")) {
             appendToLog("SYSTEM: TTS API key is not provided. I have no mouth to speak with");
             return;
@@ -265,7 +265,7 @@ public class AppController implements Runnable {
         if (aiApiKey == null || aiApiKey.trim().isEmpty() || aiApiKey.equals("null")) {
             appendToLog("SYSTEM: AI API key is not provided. I have no brain to process with");
             return;
-        }
+        }*/
 
         systemSession.clearChatHistory();
         journalParser.start();

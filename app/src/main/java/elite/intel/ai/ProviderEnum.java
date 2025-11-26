@@ -24,6 +24,7 @@ public enum ProviderEnum {
     DEEP_GRAM("STT"),
     IBM_WATSON_STT("STT"),
     IBM_WATSON_TTS("TTS"),
+    OLLAMA("LLM"),
     UNKNOWN("UNKNOWN");
 
     private final String category;

@@ -58,7 +58,7 @@ public final class EdsmUploader {
         version = playerSession.getGameVersion();
 
         if (commander.isBlank() || apiKey.isBlank()) {
-            String message = "EDSM credentials missing – upload disabled commander=["+commander+"] apiKey=["+apiKey+"]";
+            String message = "EDSM credentials missing – upload disabled commander name and EDSM API key required";
             log.warn(message);
             EventBusManager.publish(new AppLogEvent(message));
             return;

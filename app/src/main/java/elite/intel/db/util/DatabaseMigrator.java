@@ -71,10 +71,10 @@ public class DatabaseMigrator {
             String protocol = url.getProtocol();
 
             if ("jar".equals(protocol)) {
-                String urlStr = url.toString();                 // jar:file:/.../EliteIntel.jar!/db-migration
+                String urlStr = url.toString();
                 int sep = urlStr.indexOf("!/");
-                String jarPart = urlStr.substring(0, sep);      // jar:file:/.../EliteIntel.jar
-                URI jarUri = URI.create(jarPart);               // <-- now valid "jar:" scheme
+                String jarPart = urlStr.substring(0, sep);
+                URI jarUri = URI.create(jarPart);
 
                 try (FileSystem fs = FileSystems.newFileSystem(jarUri, Collections.emptyMap())) {
                     Path root = fs.getPath("/" + path);

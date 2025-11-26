@@ -18,7 +18,12 @@ public class PlanetBiomeAnalyzerHandler extends BaseQueryAnalyzer implements Que
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         EventBusManager.publish(new AiVoxResponseEvent("Analyzing planetary and biome data... stand by..."));
         PlayerSession playerSession = PlayerSession.getInstance();
-        String instructions = "Parse the genusToBiome map, where each value is formatted as 'Planet:<types>|Atmosphere:<types>|Gravity:<constraint>|Temperature:<range>|Volcanism:<types>|System:<constraints>'. Parse locations list to find planets with bioSignals present. Using the location's atmosphere, gravity, temperature, volcanism, and system details, identify genera whose biome conditions match. Return a list of probable matching genera, for planet(s) that have bioSignals prioritizing specific matches over broad ones. If more than one planet, provide planetShortName along with the genus. If asked about how long the day last, answer in hours and minutes, use rotationPeriod and orbitalPeriod to calculate.";
+                String instructions = "DO NOT OUTPUT ANY PLANET STATS. From genusToBiome map and locations with bioSignals:true, match biome conditions only. Reply EXACTLY:\n" +
+                "\n" +
+                "Planet <planetShortName>: <Genus1>, <Genus2>, <Genus3> (most specific first)\n" +
+                "\n" +
+                "One line per planet. If user names a specific planet, return ONLY that planet's line. No temperature, gravity, atmosphere, volcanism, periods, or explanations ever. Day length question → \"XX hours YY minutes\" only.";
+
         Map<Long, LocationDto> locations = playerSession.getLocations();
 
         return process(new AiDataStruct(instructions, new DataDto(BioForms.getGenusToBiome(), locations.values())), originalUserInput);

@@ -241,3 +241,6 @@
 "run by analysis"="run biome analysis"
 "pretty drank the landing gear"="retract landing gear"
 "eccentric"="entry"
+"analyzed"="analyze"
+"replace"="please"
+"and down"="shutdown"

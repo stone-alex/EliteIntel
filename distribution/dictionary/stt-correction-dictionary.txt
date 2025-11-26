@@ -1,4 +1,4 @@
-"32"="tritium"
+    "32"="tritium"
 "3 tm"="tritium"
 "3 tube"="tritium"
 "3tube"="tritium"
@@ -241,3 +241,5 @@
 "pretty drank the landing gear"="retract landing gear"
 "run by analysis"="run biome analysis"
 "eccentric"="entry"
+"analyzed"="analyze"
+"and down"="shutdown"

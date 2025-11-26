@@ -42,7 +42,7 @@ public class BindingsMonitor {
     private static final Logger log = LogManager.getLogger(BindingsMonitor.class);
     private static volatile BindingsMonitor instance;
     private final KeyBindingsParser parser;
-    private final Path bindingsDir;
+    private Path bindingsDir;
     private Map<String, KeyBindingsParser.KeyBinding> bindings;
     private File currentBindsFile;
     private Thread processingThread;
@@ -61,10 +61,11 @@ public class BindingsMonitor {
 
     private BindingsMonitor() {
         this.parser = KeyBindingsParser.getInstance();
-        this.bindingsDir = PlayerSession.getInstance().getBindingsDir();
+
     }
 
     public synchronized void startMonitoring() throws IOException {
+        this.bindingsDir = PlayerSession.getInstance().getBindingsDir();
         if (processingThread != null && processingThread.isAlive()) {
             log.warn("BindingsMonitor is already running");
             return;
@@ -135,13 +136,13 @@ public class BindingsMonitor {
             }
         } catch (IOException e) {
             log.error("IOException in BindingsMonitor", e);
-            EventBusManager.publish(new AiVoxResponseEvent("Error in BindingsMonitor: " + e.getMessage()));
+            EventBusManager.publish(new AiVoxResponseEvent("Please check the bindings directory"));
         } catch (InterruptedException e) {
             log.info("BindingsMonitor interrupted, shutting down");
             Thread.currentThread().interrupt(); // Restore interrupted status
         } catch (Exception e) {
             log.error("Unexpected error in BindingsMonitor", e);
-            EventBusManager.publish(new AiVoxResponseEvent("Unexpected error in BindingsMonitor: " + e.getMessage()));
+            EventBusManager.publish(new AiVoxResponseEvent("Please check the bindings directory"));
         }
     }
 
@@ -149,12 +150,11 @@ public class BindingsMonitor {
         try {
             currentBindsFile = new BindingsLoader().getLatestBindsFile();
             bindings = parser.parseBindings(currentBindsFile);
-            //EventBusManager.publish(new AiVoxResponseEvent("Key bindings updated."));
             EventBusManager.publish(new AppLogEvent("SYSTEM: Key bindings updated from file " + currentBindsFile.getAbsolutePath()));
             log.info("Key bindings updated from: {}", currentBindsFile.getName());
         } catch (Exception e) {
             log.error("Failed to parse key bindings from: {}", currentBindsFile != null ? currentBindsFile.getName() : "null", e);
-            EventBusManager.publish(new AiVoxResponseEvent("Failed to update key bindings: " + e.getMessage()));
+            EventBusManager.publish(new AiVoxResponseEvent("Failed to update key bindings. Plese check the bindings directory. "));
         }
     }
 

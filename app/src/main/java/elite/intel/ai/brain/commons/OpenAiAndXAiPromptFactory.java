@@ -31,6 +31,7 @@ public class OpenAiAndXAiPromptFactory implements AiPromptFactory {
         return "Always output JSON: {\"type\": \"command|query|chat\", \"response_text\": \"TTS output\", \"action\": \"action_name|query_name\", \"params\": {\"key\": \"value\"}, \"expect_followup\": boolean}";
     }
 
+/*
     @Override
     public String generateSystemInstructions(String sensorInput) {
         StringBuilder sb = new StringBuilder();
@@ -40,17 +41,11 @@ public class OpenAiAndXAiPromptFactory implements AiPromptFactory {
         sb.append(getStandardJsonFormat()).append("\n");
         return sb.toString();
     }
+*/
 
     @Override
     public String generatePlayerInstructions(String playerVoiceInput) {
         StringBuilder sb = new StringBuilder();
-        sb.append("Instructions:\n\n");
-        sb.append("Map commands or queries to the provided Supported Command or Supported Queries. ");
-        sb.append(inputClassificationClause());
-        sb.append(generateSupportedCommandsCause());
-        sb.append(generateSupportedQueriesClause());
-        sb.append(generateAbbreviations());
-        sb.append(appendBehavior());
         sb.append("Interpret this input: ").append(playerVoiceInput).append("\n\n");
         sb.append(getStandardJsonFormat()).append("\n");
         colloquialTerms(sb);
@@ -146,10 +141,15 @@ public class OpenAiAndXAiPromptFactory implements AiPromptFactory {
     @Override
     public String generateSystemPrompt() {
         StringBuilder sb = new StringBuilder();
+        sb.append("Instructions:\n\n");
+        sb.append("Map commands or queries to the provided Supported Command or Supported Queries. ");
+        sb.append(inputClassificationClause());
+        sb.append(generateSupportedCommandsCause());
+        sb.append(generateSupportedQueriesClause());
+        sb.append(generateAbbreviations());
+        sb.append(appendBehavior());
         sb.append(getSessionValues());
         sb.append(appendBehavior());
-        sb.append("Classify as: 'input' (data to analyze) or 'command' (trigger app action or keyboard event). ");
-        sb.append(generateSupportedQueriesClause());
         sb.append("Round billions to nearest million. ");
         sb.append("Round millions to nearest 250000. ");
         sb.append(getStandardJsonFormat()).append("\n");
@@ -176,6 +176,7 @@ public class OpenAiAndXAiPromptFactory implements AiPromptFactory {
         sb.append("For type='chat', set 'expect_followup': true if response poses a question or requires user clarification; otherwise, false. ");
         return sb.toString();
     }
+
 
     @Override
     public String appendBehavior() {

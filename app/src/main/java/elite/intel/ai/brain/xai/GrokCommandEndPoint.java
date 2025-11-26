@@ -178,8 +178,6 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
             return;
         }
 
-        String input = event.getSensorData();
-
         JsonArray messages = new JsonArray();
         JsonObject systemMessage = new JsonObject();
         systemMessage.addProperty("role", AIConstants.ROLE_SYSTEM);
@@ -189,7 +187,7 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
 
         JsonObject userMessage = new JsonObject();
         userMessage.addProperty("role", AIConstants.ROLE_USER);
-        userMessage.addProperty("content", buildSystemRequest(input));
+        userMessage.addProperty("content", event.toJson());
         messages.add(userMessage);
 
         GrokClient client = GrokClient.getInstance();

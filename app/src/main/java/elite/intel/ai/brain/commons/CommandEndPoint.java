@@ -45,7 +45,7 @@ public abstract class CommandEndPoint extends AiEndPoint {
         return contextFactory.generatePlayerInstructions(String.valueOf(transcribedText));
     }
 
-    protected String buildSystemRequest(String systemInput) {
+/*    protected String buildSystemRequest(String systemInput) {
         return contextFactory.generateSystemInstructions(systemInput);
-    }
+    }*/
 }

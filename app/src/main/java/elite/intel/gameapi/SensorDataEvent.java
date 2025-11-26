@@ -3,11 +3,12 @@ package elite.intel.gameapi;
 import com.google.gson.JsonObject;
 import elite.intel.gameapi.journal.events.BaseEvent;
 import elite.intel.util.json.GsonFactory;
+import elite.intel.util.json.ToJsonConvertible;
 
 import java.time.Duration;
 import java.time.Instant;
 
-public class SensorDataEvent extends BaseEvent {
+public class SensorDataEvent extends BaseEvent implements ToJsonConvertible {
 
     public SensorDataEvent(String sensorData) {
         super(Instant.now().toString(), Duration.ofSeconds(10), "SensorData");

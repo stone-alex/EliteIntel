@@ -29,7 +29,7 @@ public class OllamaChatEndPoint extends AiEndPoint implements AIChatInterface {
             OllamaClient client = OllamaClient.getInstance();
             HttpURLConnection conn = client.getHttpURLConnection();
 
-            JsonObject body = client.createRequestBodyHeader(OllamaClient.MODEL_PFI_MINI, 1.0f);
+            JsonObject body = client.createRequestBodyHeader(OllamaClient.MODEL_TINYLAMA, 1.0f);
 
             JsonArray sanitized = sanitizeJsonArray(messages);
             body.add("messages", sanitized);

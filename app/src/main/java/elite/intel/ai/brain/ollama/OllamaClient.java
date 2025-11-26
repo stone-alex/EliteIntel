@@ -9,7 +9,8 @@ import java.net.URL;
 
 public class OllamaClient implements Client {
 
-    public static final String MODEL_PFI_MINI = "phi3:mini";
+    public static final String MODEL_TINYLAMA = "tinyllama";
+    //public static final String MODEL_PFI_MINI = "phi3:mini";
 
     private static final OllamaClient INSTANCE = new OllamaClient();
 

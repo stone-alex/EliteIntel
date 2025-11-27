@@ -57,7 +57,7 @@ public enum Commands {
 
     /// Commands that have a specific handler impl (which uses N bindings inside)
     INCREASE_ENGINES_POWER("transfer_power_to_engines", null, null,  SetPowerToEnginesHandler.class),
-    NAVIGATE_TO_NEXT_BIO_SAMPLE("navigate_directions_to_codex_entry_or_bio_sample", null, null,  NavigateToNextCodexEntry.class),
+    NAVIGATE_TO_NEXT_BIO_SAMPLE("navigate_directions_to_codex_entry_or_organic_bio_sample", null, null,  NavigateToNextCodexEntry.class),
     INCREASE_SHIELDS_POWER("transfer_power_to_shields", null, null,  SetPowerToSystemsHandler.class),
     INCREASE_SYSTEMS_POWER("transfer_power_to_ship_systems", null, null,  SetPowerToSystemsHandler.class),
     INCREASE_WEAPONS_POWER("transfer_power_to_weapons", null, null,  SetPowerToWeaponsHandler.class),

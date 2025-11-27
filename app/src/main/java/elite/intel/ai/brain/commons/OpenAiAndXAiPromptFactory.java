@@ -41,6 +41,7 @@ public class OpenAiAndXAiPromptFactory implements AiPromptFactory {
     }
 
     private void colloquialTerms(StringBuilder sb) {
+        sb.append("Map 'organic(s) to 'bio signal(s)'");
         sb.append("Map colloquial terms to commands: 'feds', 'yanks', or 'federation space' to 'FEDERATION', 'imperials', 'imps', or 'empire' to 'IMPERIAL', 'alliance space' or 'allies' to 'ALLIANCE' for set_cadence. ");
         sb.append("Map slang such as 'bounce', 'proceed to the next waypoint' or 'get out of here' to commands like ").append(JUMP_TO_HYPERSPACE.getAction()).append(". Map 'select next way point' to "+TARGET_NEXT_ROUTE_SYSTEM.getAction());
         sb.append("Important distinctions:\n" +

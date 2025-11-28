@@ -68,6 +68,7 @@ public class CommonAiPromptFactory implements elite.intel.ai.brain.AiPromptFacto
         sb.append("    - For commands like ").append(DECREASE_SPEED_BY.getAction()).append(" provide params json {\"key\":\"value\"} where value is a negative integer example: {\"key\":\"-3\"}.");
         sb.append("    - For toggle commands such as turn off, turn on, cancel, enable or disable, ALWAYS provide params json {\"state\":\"true\"} / {\"state\":\"false\"}. ");
         sb.append("    - Distinguish between fleet carrier route and ship route. Fleet carrier fuel (tritium), and fuel for the ship (hydrogen from fuel stars). Fleet carrier has to be mentioned explicitly, else it is ship route and ship fuel.");
+        sb.append("    - Only use commands and queries provided. Else response as generic chat.");
 
         sb.append("For type='query': \n" +
                 "    - If action is a quick query (e.g., '").append(WHAT_IS_YOUR_DESIGNATION.getAction()).append("', '").append(GENERAL_CONVERSATION.getAction()).append("'), set 'response_text' to '' (empty string, no initial TTS).\n" +

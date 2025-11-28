@@ -4,6 +4,7 @@
 
 [![Architecture Overview](https://img.youtube.com/vi/tpqcodcuIig/0.jpg)](https://youtu.be/tpqcodcuIig)
 
+
 Welcome to developing for Elite Intel, a Java-based QoL app for *Elite Dangerous*. This guide ensures contributions align with the app’s architecture and Frontier’s TOS. The app uses an event-driven design (`elite.intel.gameapi`), Swing UI (`elite.intel.ui`), and integrates STT/TTS (via
 `elite.intel.ai.ears` and `elite.intel.ai.mouth`) and AI (via `elite.intel.ai.brain`).
 

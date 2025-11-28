@@ -43,9 +43,7 @@
         <Logger name="elite.intel.ai.brain.xai.GrokCommandEndPoint" level="debug"/>
         <Logger name="elite.intel.ai.ears" level="error"/>
         <Logger name="elite.intel.ai.mouth" level="error"/>
-        <Logger name="elite.intel.ai.brain.openai" level="info"/>
-        <Logger name="elite.intel.ai.brain.xai" level="info"/>
-        <Logger name="elite.intel.ai.brain.ollama" level="debug"/>
+        <Logger name="elite.intel.ai.brain" level="debug"/>
         <Logger name="elite.intel.search.spansh" level="error"/>
 
         <!-- Root logger -->

@@ -59,8 +59,8 @@ public class ApiFactory {
         String apiKey = SystemSession.getInstance().getAiApiKey();
         ProviderEnum provider = KeyDetector.detectProvider(apiKey, "LLM");
         return switch (provider) {
-            case GROK -> OpenAiAndXAiPromptFactory.getInstance();
-            case OPENAI -> OpenAiAndXAiPromptFactory.getInstance();
+            case GROK -> CommonAiPromptFactory.getInstance();
+            case OPENAI -> CommonAiPromptFactory.getInstance();
             default -> throw new IllegalStateException("Unknown AI key format");
         };
     }

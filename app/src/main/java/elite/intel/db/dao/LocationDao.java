@@ -11,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+@RegisterRowMapper(LocationDao.LocationMapper.class)
 public interface LocationDao {
 
     @SqlUpdate("""
@@ -31,30 +32,24 @@ public interface LocationDao {
 
 
     @SqlQuery("SELECT * FROM location WHERE inGameId = :inGameId")
-    @RegisterRowMapper(LocationDao.LocationMapper.class)
     LocationDao.Location findByInGameId(Long inGameId);
 
     @SqlQuery("SELECT * FROM location WHERE inGameId = :inGameId AND :primaryStar = primaryStar")
-    @RegisterRowMapper(LocationDao.LocationMapper.class)
     LocationDao.Location findByInGameIdAndPrimaryStar(Long inGameId, String primaryStar);
 
     @SqlQuery("SELECT * FROM location WHERE primaryStar = :primaryStar")
-    @RegisterRowMapper(LocationDao.LocationMapper.class)
     List<Location> findByPrimaryStar(@Bind("primaryStar") String primaryStar);
 
     @SqlUpdate("UPDATE location SET homeSystem = :home WHERE locationName = :name")
     void setHomeSystem(@Bind("name") String locationName, @Bind("home") boolean home);
 
     @SqlQuery("SELECT * FROM location WHERE homeSystem = 1")
-    @RegisterRowMapper(LocationDao.LocationMapper.class)
     Location findHomeSystem();
 
     @SqlQuery("select json from location where primaryStar = (select current_primary_star from player) and inGameId = (select current_location_id from player)")
-    @RegisterRowMapper(LocationDao.LocationMapper.class)
     Location primaryStarAtCurrentLocation();
 
     @SqlQuery("select * from location where primaryStar = :starSystem and json like '%\"PRIMARY_STAR\"%'")
-    @RegisterRowMapper(LocationDao.LocationMapper.class)
     Location findPrimaryStar(String starSystem);
 
 

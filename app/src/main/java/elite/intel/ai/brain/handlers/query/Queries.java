@@ -24,6 +24,7 @@ public enum Queries {
     LIST_AVAILABLE_VOICES("list_available_voices", "List available AI voices.", ListAvailableVoices.class, false),
     QUERY_ANALYZE_ON_BOARD_CARGO("query_ship_cargo_contents_for_commodities", "Use this data provide questions regarding cargo and/or ship loadout if relevant. Cargo is listed 1 unit = 1 ton.", AnalyzeCargoHoldHandler.class, true),  // "ship" to avoid carrier/planet mix-up
     QUERY_ANALYZE_ROUTE("query_plotted_route_analysis", "Analyze the current plotted route. Number of  jumps = number of nodes.", AnalyzeRouterHandler.class, true),
+    QUERY_ANALYZE_FUEL_ROUTE("query_can_we_fuel_on_route_analysis", "Analyze this data for re-fuel potential", AnalyzeRouterHandler.class, true),
     QUERY_CARRIER_STATS("query_fleet_carrier_info", "Analyze fleet carrier data (e.g., fuel, market, balance, location)", AnalyzeCarrierDataHandler.class, true),  // "vehicle" to distinguish from planets
     QUERY_PIRATE_MISSION_KILLS_REMAINING("query_pirate_mission_kills", "Summarize remaining kills for active pirate missions.", AnalyzePirateMissionHandler.class, true),
     QUERY_PIRATE_MISSION_PROFIT("query_pirate_mission_profit", "Summarize potential profit from active pirate missions.", AnalyzePirateMissionHandler.class, true),

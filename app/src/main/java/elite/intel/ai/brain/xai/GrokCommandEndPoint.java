@@ -40,7 +40,7 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
 
     private GrokCommandEndPoint() {
         systemSession = SystemSession.getInstance();
-        EventBusManager.register(this);
+
     }
 
 
@@ -51,7 +51,7 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
                 t.setDaemon(true);
                 return t;
             });
-            elite.intel.gameapi.EventBusManager.register(this);
+            EventBusManager.register(this);
             log.info("GrokCommandEndPoint started");
             EventBusManager.publish(new AiVoxResponseEvent(StringUtls.greeting(PlayerSession.getInstance().getPlayerName())));
         } else {
@@ -61,7 +61,7 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
 
     @Override public void stop() {
         if (running.compareAndSet(true, false)) {
-            elite.intel.gameapi.EventBusManager.unregister(this);
+            EventBusManager.unregister(this);
             if (executor != null) {
                 executor.shutdown();
                 try {
@@ -178,18 +178,16 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
             return;
         }
 
-        String input = event.getSensorData();
-
         JsonArray messages = new JsonArray();
         JsonObject systemMessage = new JsonObject();
         systemMessage.addProperty("role", AIConstants.ROLE_SYSTEM);
-        String systemPrompt = getContextFactory().generateSystemPrompt();
+        String systemPrompt = getContextFactory().generateSensorPrompt();
         systemMessage.addProperty("content", systemPrompt);
         messages.add(systemMessage);
 
         JsonObject userMessage = new JsonObject();
         userMessage.addProperty("role", AIConstants.ROLE_USER);
-        userMessage.addProperty("content", buildSystemRequest(input));
+        userMessage.addProperty("content", event.toJson());
         messages.add(userMessage);
 
         GrokClient client = GrokClient.getInstance();

@@ -17,15 +17,15 @@ import javax.sound.sampled.*;
 public class AudioCalibrator {
     private static final Logger log = LogManager.getLogger(AudioCalibrator.class);
     private static final int NOISE_CALIBRATION_DURATION_MS = 5000; // 5 seconds for noise floor
-    private static final int SPEECH_CALIBRATION_DURATION_MS = 7000; // 7 seconds for speech
+    private static final int SPEECH_CALIBRATION_DURATION_MS = 5000; // 5 seconds for speech
     private static final int TTS_PROMPT_DELAY_MS = 3000; // 3 seconds for TTS vocalization
-    private static final double DEFAULT_RMS_THRESHOLD_HIGH = 150.0; // Fallback
-    private static final double DEFAULT_RMS_THRESHOLD_LOW = 25.0; // Fallback for budget mics
+    private static final double DEFAULT_RMS_THRESHOLD_HIGH = 450; // Fallback
+    private static final double DEFAULT_RMS_THRESHOLD_LOW = 90; // Fallback for budget mics
     private static final double NOISE_LOW_FACTOR = 2.5; // Multiplier for low threshold
     private static final double NOISE_LOW_OFFSET = 25.0; // For budget mics
     private static final double SPEECH_HIGH_FACTOR = 0.5; // Set high to half speech avg
     private static final double MIN_HIGH_LOW_RATIO = 3.0; // Ensure high >= low * this
-    private static final double MAX_NOISE_AVG = 50.0; // Warn if noise floor too high
+    private static final double MAX_NOISE_AVG = 200.0; // Warn if noise floor too high
     private static final double NOISE_OUTLIER_THRESHOLD = 50.0; // Ignore noise spikes
 
     /**

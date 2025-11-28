@@ -19,6 +19,7 @@ public class GrokAnalysisEndpoint extends AiEndPoint implements AiAnalysisInterf
     private static final Logger logger = LogManager.getLogger(GrokAnalysisEndpoint.class);
     private final Gson gson = GsonFactory.getGson();
     private static final GrokAnalysisEndpoint instance = new GrokAnalysisEndpoint();
+    ApiFactory apiFactory = ApiFactory.getInstance();
 
     private GrokAnalysisEndpoint() {
     }
@@ -31,9 +32,10 @@ public class GrokAnalysisEndpoint extends AiEndPoint implements AiAnalysisInterf
         try {
             GrokClient client = GrokClient.getInstance();
             HttpURLConnection conn = client.getHttpURLConnection();
-            String systemPrompt = ApiFactory.getInstance().getAiPromptFactory().generateAnalysisPrompt(userIntent, struct.getInstructions());
 
-            JsonObject request = client.createRequestBodyHeader(GrokClient.MODEL_GROK_4_FAST_REASONING, 1);
+            String systemPrompt = apiFactory.getAiPromptFactory().generateAnalysisPrompt(userIntent, struct.getInstructions());
+
+            JsonObject request = client.createRequestBodyHeader(GrokClient.MODEL_GROK_4_FAST_REASONING, 0.8f);
 
             JsonObject messageSystem = new JsonObject();
             messageSystem.addProperty("role", AIConstants.ROLE_SYSTEM);

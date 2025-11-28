@@ -60,18 +60,18 @@ public class AuxiliaryFilesMonitor implements Runnable {
         FILE_TO_EVENT_CLASS.put("Market.json", GameEvents.MarketEvent.class);
     }
 
-    private final Path directory;
+    private  Path directory;
     private final Set<String> monitoredFileSet = new HashSet<>(MONITORED_FILES);
     private Thread processingThread;
     private volatile boolean isRunning;
     private final GameController _gameHandler;
 
     public AuxiliaryFilesMonitor() {
-        this.directory = PlayerSession.getInstance().getJournalPath();
         this._gameHandler = CommandHandlerFactory.getInstance().getGameCommandHandler();
     }
 
     public synchronized void start() {
+        this.directory = PlayerSession.getInstance().getJournalPath();
         if (processingThread != null && processingThread.isAlive()) {
             log.warn("AuxiliaryFilesMonitor is already running");
             return;
@@ -108,13 +108,13 @@ public class AuxiliaryFilesMonitor implements Runnable {
             monitorFiles();
         } catch (IOException e) {
             log.error("IOException in AuxiliaryFilesMonitor", e);
-            EventBusManager.publish(new AppLogEvent("AuxiliaryFilesMonitor failed: " + e.getMessage()));
+            EventBusManager.publish(new AppLogEvent("Check Journal directory settings."));
         } catch (InterruptedException e) {
             log.info("AuxiliaryFilesMonitor interrupted, shutting down");
             Thread.currentThread().interrupt(); // Restore interrupted status
         } catch (Exception e) {
             log.error("Unexpected error in AuxiliaryFilesMonitor", e);
-            EventBusManager.publish(new AppLogEvent("Unexpected error in AuxiliaryFilesMonitor: " + e.getMessage()));
+            EventBusManager.publish(new AppLogEvent("Check Journal directory settings."));
         }
     }
 

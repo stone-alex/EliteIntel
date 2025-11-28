@@ -45,14 +45,15 @@ import java.util.concurrent.TimeUnit;
  */
 public class JournalParser implements Runnable {
     private static final Logger log = LogManager.getLogger(JournalParser.class);
-    private final Path journalDir;
+    private  Path journalDir;
     private Thread processingThread;
     private volatile boolean isRunning;
+
     public JournalParser() {
-        journalDir = PlayerSession.getInstance().getJournalPath();
     }
 
     public synchronized void start() {
+        journalDir = PlayerSession.getInstance().getJournalPath();
         if (processingThread != null && processingThread.isAlive()) {
             log.warn("JournalParser is already running");
             return;
@@ -86,13 +87,13 @@ public class JournalParser implements Runnable {
             startReading();
         } catch (IOException e) {
             log.error("IOException in JournalParser", e);
-            EventBusManager.publish(new AppLogEvent("JournalParser failed: " + e.getMessage()));
+            EventBusManager.publish(new AppLogEvent("Please check jounral directory"));
         } catch (InterruptedException e) {
             log.info("JournalParser interrupted, shutting down");
             Thread.currentThread().interrupt(); // Restore interrupted status
         } catch (Exception e) {
             log.error("Unexpected error in JournalParser", e);
-            EventBusManager.publish(new AppLogEvent("Unexpected error in JournalParser: " + e.getMessage()));
+            EventBusManager.publish(new AppLogEvent("Please check jounral directory"));
         }
     }
 

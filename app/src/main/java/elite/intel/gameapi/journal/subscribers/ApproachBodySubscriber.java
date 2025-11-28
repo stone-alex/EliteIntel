@@ -61,13 +61,12 @@ public class ApproachBodySubscriber {
                     && !systemBodiesDto.getData().getBodies().isEmpty();
 
             if (edsmHasData) {
-                List<BodyData> bodies = systemBodiesDto.getData().getBodies();
-                for (BodyData bodyData : bodies) {
-                    if (location.getPlanetName().equalsIgnoreCase(bodyData.getName())) {
-                        extractDataFromEdsm(bodyData, location, sb);
-                        break; //we found the planet in EDSM
-                    }
-                }
+                List<BodyData> edsmData = systemBodiesDto.getData().getBodies();
+                //we found the planet in EDSM
+                edsmData.stream().filter(edsmDataItem ->
+                        location.getPlanetName().equalsIgnoreCase(edsmDataItem.getName())).findFirst().ifPresent(bodyData ->
+                        extractDataFromEdsm(bodyData, location, sb)
+                );
             } else { // no data available
                 sb.append(" No data available for ").append(event.getBody()).append(".");
                 sb.append(" Check gravity and temperature data before landing");

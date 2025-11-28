@@ -185,18 +185,16 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
             return;
         }
 
-        String input = event.getSensorData();
-
         JsonArray messages = new JsonArray();
         JsonObject systemMessage = new JsonObject();
         systemMessage.addProperty("role", AIConstants.ROLE_SYSTEM);
-        String systemPrompt = getContextFactory().generateSystemPrompt();
+        String systemPrompt = getContextFactory().generateSensorPrompt();
         systemMessage.addProperty("content", systemPrompt);
         messages.add(systemMessage);
 
         JsonObject userMessage = new JsonObject();
         userMessage.addProperty("role", AIConstants.ROLE_USER);
-        userMessage.addProperty("content", buildSystemRequest(input));
+        userMessage.addProperty("content", event.toJson());
         messages.add(userMessage);
 
         // Create API request body

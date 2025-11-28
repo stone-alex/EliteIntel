@@ -1,19 +1,11 @@
 package elite.intel.ai.brain.commons;
 
-import com.google.gson.JsonObject;
 import elite.intel.ai.ApiFactory;
 import elite.intel.ai.brain.AIChatInterface;
 import elite.intel.ai.brain.AIRouterInterface;
 import elite.intel.ai.brain.AiPromptFactory;
-import elite.intel.ai.brain.openai.OpenAiClient;
-import elite.intel.ai.brain.openai.OpenAiCommandEndPoint;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.nio.charset.StandardCharsets;
-import java.util.Scanner;
 
 public abstract class CommandEndPoint extends AiEndPoint {
 
@@ -42,10 +34,10 @@ public abstract class CommandEndPoint extends AiEndPoint {
     }
 
     protected String buildVoiceRequest(String transcribedText) {
-        return contextFactory.generatePlayerInstructions(String.valueOf(transcribedText));
+        return contextFactory.generateUserPrompt(String.valueOf(transcribedText));
     }
 
-    protected String buildSystemRequest(String systemInput) {
+/*    protected String buildSystemRequest(String systemInput) {
         return contextFactory.generateSystemInstructions(systemInput);
-    }
+    }*/
 }

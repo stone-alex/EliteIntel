@@ -7,7 +7,9 @@ import elite.intel.ai.brain.AIConstants;
 import elite.intel.ai.brain.AiAnalysisInterface;
 import elite.intel.ai.brain.handlers.query.struct.AiData;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.db.dao.ChatHistoryDao;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.session.SystemSession;
 import elite.intel.util.json.GsonFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,6 +37,7 @@ public class BaseQueryAnalyzer {
         if (!analysis.has(AIConstants.PROPERTY_RESPONSE_TEXT)) {
             analysis = GenericResponse.getInstance().genericResponse("Analysis incomplete");
         }
+        SystemSession.getInstance().clearChatHistory();
         return analysis;
     }
 

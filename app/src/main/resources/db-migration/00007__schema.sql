@@ -1,0 +1,1 @@
+update game_session set rmsThresholdLow = 90, rmsThresholdHigh = 450 where id = 1;

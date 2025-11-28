@@ -179,7 +179,7 @@ public class AppView extends JFrame implements AppViewInterface {
         }
     }
 
-    // Simple dark defaults so new components pick up colors automatically (no L&F swap)
+    // Simple dark defaults, so new components pick up colors automatically (no L&F swap)
     private void installDarkDefaults() {
         UIManager.put("Panel.background", BG);
         UIManager.put("OptionPane.background", BG);
@@ -375,7 +375,7 @@ public class AppView extends JFrame implements AppViewInterface {
         playerAltNameField = new JTextField();
         playerAltNameField.setToolTipText("If you want Elite Intel refer to you by name once in a while.");
         playerAltNameField.setPreferredSize(new Dimension(200, 42));
-        addField(panel, playerAltNameField, gbc, 1, 1.0); // full width in Player tab (no checkbox)
+        addField(panel, playerAltNameField, gbc, 1, 1.0); // full width in the Player tab (no checkbox)
 
         // Row 1: Title
         nextRow(gbc);
@@ -425,7 +425,7 @@ public class AppView extends JFrame implements AppViewInterface {
             chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             chooser.setDialogTitle("Select Elite Dangerous Journal Directory");
 
-            // Start in current known folder (or user home if empty)
+            // Start in the current known folder (or user home if empty)
             String current = playerSession.getJournalPath().toString();
             if (current != null && !current.isBlank()) {
                 chooser.setCurrentDirectory(new File(current).getParentFile());
@@ -472,7 +472,7 @@ public class AppView extends JFrame implements AppViewInterface {
             chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             chooser.setDialogTitle("Select Elite Dangerous Bindings Directory");
 
-            // Start in current known folder (or user home if empty)
+            // Start in the current known folder (or user home if empty)
             String current = playerSession.getBindingsDir().toString();
             if (current != null && !current.isBlank()) {
                 chooser.setCurrentDirectory(new File(current).getParentFile());
@@ -767,10 +767,10 @@ public class AppView extends JFrame implements AppViewInterface {
 
     private void saveSystemConfig() {
         SystemSession s = SystemSession.getInstance();
-        s.setSttApiKey(sttApiKeyField.getText());
-        s.setAiApiKey(llmApiKeyField.getText());
-        s.setTtsApiKey(ttsApiKeyField.getText());
-        s.setEdsmApiKey(edsmKeyField.getText());
+        s.setSttApiKey(new String(sttApiKeyField.getPassword()));
+        s.setAiApiKey(new String(llmApiKeyField.getPassword()));
+        s.setTtsApiKey(new String(ttsApiKeyField.getPassword()));
+        s.setEdsmApiKey(new String(edsmKeyField.getPassword()));
         EventBusManager.publish(new AppLogEvent("System config saved"));
         initData();
     }
@@ -815,7 +815,7 @@ public class AppView extends JFrame implements AppViewInterface {
         gbc.gridx = col;
         gbc.weightx = weightX;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        comp.setPreferredSize(new Dimension(0, comp.getPreferredSize().height)); // allow grow
+        comp.setPreferredSize(new Dimension(0, comp.getPreferredSize().height)); // allow to grow
         panel.add(comp, gbc);
     }
 

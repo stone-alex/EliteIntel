@@ -8,6 +8,7 @@ import elite.intel.ai.ears.EarsInterface;
 import elite.intel.ai.ears.google.GoogleSTTImpl;
 import elite.intel.ai.mouth.MouthInterface;
 import elite.intel.ai.mouth.google.GoogleTTSImpl;
+import elite.intel.ai.mouth.piper.PiperTTS;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.SystemSession;
@@ -55,7 +56,7 @@ public class ApiFactory {
         };
     }
 
-    public elite.intel.ai.brain.AiPromptFactory getAiPromptFactory() {
+    public AiPromptFactory getAiPromptFactory() {
         String apiKey = SystemSession.getInstance().getAiApiKey();
         ProviderEnum provider = KeyDetector.detectProvider(apiKey, "LLM");
         return switch (provider) {
@@ -107,7 +108,7 @@ public class ApiFactory {
             default:
                 EventBusManager.publish(new AppLogEvent("Unknown TTS key format"));
                 EventBusManager.publish(new AiVoxResponseEvent("Using default Google TTS—confirm?"));
-                return GoogleTTSImpl.getInstance();
+                return PiperTTS.getInstance();
         }
     }
 

@@ -2,7 +2,6 @@ package elite.intel.ai.brain.commons;
 
 import elite.intel.ai.brain.AICadence;
 import elite.intel.ai.brain.AIPersonality;
-import elite.intel.ai.brain.AiPromptFactory;
 import elite.intel.ai.brain.AiRequestHints;
 import elite.intel.ai.brain.handlers.query.Queries;
 import elite.intel.session.PlayerSession;
@@ -15,15 +14,15 @@ import static elite.intel.ai.brain.handlers.commands.Commands.*;
 import static elite.intel.ai.brain.handlers.query.Queries.*;
 import static elite.intel.util.Abbreviations.generateAbbreviations;
 
-public class OpenAiAndXAiPromptFactory implements AiPromptFactory {
+public class CommonAiPromptFactory implements elite.intel.ai.brain.AiPromptFactory {
 
-    private static final OpenAiAndXAiPromptFactory INSTANCE = new OpenAiAndXAiPromptFactory();
+    private static final CommonAiPromptFactory INSTANCE = new CommonAiPromptFactory();
 
-    private OpenAiAndXAiPromptFactory() {
+    private CommonAiPromptFactory() {
         // Singleton
     }
 
-    public static OpenAiAndXAiPromptFactory getInstance() {
+    public static CommonAiPromptFactory getInstance() {
         return INSTANCE;
     }
 

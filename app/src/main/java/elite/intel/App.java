@@ -23,7 +23,6 @@ public class App {
         Database.init(); // init db
 
 
-        // Toggle logging via system.conf
         boolean isLoggingEnabled = SystemSession.getInstance().isLoggingEnabled();
         Configurator.setRootLevel(isLoggingEnabled ? Level.ALL : Level.OFF);
         SubscriberRegistration.registerSubscribers();

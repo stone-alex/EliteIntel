@@ -1,7 +1,7 @@
 package elite.intel.ai;
 
 import elite.intel.ai.brain.*;
-import elite.intel.ai.brain.commons.OpenAiAndXAiPromptFactory;
+import elite.intel.ai.brain.commons.CommonAiPromptFactory;
 import elite.intel.ai.brain.openai.*;
 import elite.intel.ai.brain.xai.*;
 import elite.intel.ai.ears.EarsInterface;
@@ -39,6 +39,7 @@ public class ApiFactory {
         return switch (provider) {
             case GROK -> GrokAnalysisEndpoint.getInstance();
             case OPENAI -> OpenAiAnalysisEndPoint.getInstance();
+            //TODO: replace default with Local LLM End Points.
             default -> throw new IllegalStateException("Unknown AI key format");
         };
 
@@ -54,12 +55,12 @@ public class ApiFactory {
         };
     }
 
-    public AiPromptFactory getAiPromptFactory() {
+    public elite.intel.ai.brain.AiPromptFactory getAiPromptFactory() {
         String apiKey = SystemSession.getInstance().getAiApiKey();
         ProviderEnum provider = KeyDetector.detectProvider(apiKey, "LLM");
         return switch (provider) {
-            case GROK -> OpenAiAndXAiPromptFactory.getInstance();
-            case OPENAI -> OpenAiAndXAiPromptFactory.getInstance();
+            case GROK -> CommonAiPromptFactory.getInstance();
+            case OPENAI -> CommonAiPromptFactory.getInstance();
             default -> throw new IllegalStateException("Unknown AI key format");
         };
     }

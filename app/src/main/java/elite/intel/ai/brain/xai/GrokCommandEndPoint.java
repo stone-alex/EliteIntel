@@ -40,7 +40,7 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
 
     private GrokCommandEndPoint() {
         systemSession = SystemSession.getInstance();
-        EventBusManager.register(this);
+
     }
 
 
@@ -51,7 +51,7 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
                 t.setDaemon(true);
                 return t;
             });
-            elite.intel.gameapi.EventBusManager.register(this);
+            EventBusManager.register(this);
             log.info("GrokCommandEndPoint started");
             EventBusManager.publish(new AiVoxResponseEvent(StringUtls.greeting(PlayerSession.getInstance().getPlayerName())));
         } else {
@@ -61,7 +61,7 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
 
     @Override public void stop() {
         if (running.compareAndSet(true, false)) {
-            elite.intel.gameapi.EventBusManager.unregister(this);
+            EventBusManager.unregister(this);
             if (executor != null) {
                 executor.shutdown();
                 try {

@@ -30,10 +30,10 @@ public class PiperTTS implements MouthInterface {
     private final AtomicReference<SourceDataLine> currentLine = new AtomicReference<>();
     private final HttpClient httpClient = HttpClient.newHttpClient();
     private final BlockingQueue<VocalisationRequestEvent> queue = new LinkedBlockingQueue<>();
-    private SourceDataLine persistentLine; // Add persistent line
+    private SourceDataLine persistentLine;
     private volatile boolean running = false;
     private Thread workerThread = null;
-    private ExecutorService callbackExecutor = null; // for clean shutdown of audio
+    private ExecutorService callbackExecutor = null;
 
     private PiperTTS() {
         EventBusManager.register(this);
@@ -103,8 +103,6 @@ public class PiperTTS implements MouthInterface {
     public void interruptAndClear() {
         queue.clear();
         interruptRequested.set(true);
-
-        // Optional: instantly stop current playback
         SourceDataLine line = currentLine.get();
         if (line != null && line.isOpen()) {
             line.stop();
@@ -160,8 +158,6 @@ public class PiperTTS implements MouthInterface {
             return;
         }
 
-        // CRITICAL: Piper /synthesize = raw 22050 Hz PCM → no header
-        // So we use it directly
         if (persistentLine == null || !persistentLine.isOpen()) {
             if (!openPersistentLine()) return;
         }
@@ -176,15 +172,12 @@ public class PiperTTS implements MouthInterface {
         byte[] silence = new byte[(int)(fmt.getSampleRate() * 0.05) * frameSize];
         persistentLine.write(silence, 0, silence.length);
 
-        // THE ONLY THING THAT MATTERS: write in fixed chunks + align last chunk
         final int CHUNK = 8192;
         for (int offset = 0; offset < audioData.length; offset += CHUNK) {
             if (interruptRequested.get()) break;
 
             int remaining = audioData.length - offset;
             int thisChunk = Math.min(CHUNK, remaining);
-
-            // THIS LINE IS THE ENTIRE REASON GOOGLE WORKS AND PIPER DIDN'T
             thisChunk = (thisChunk / frameSize) * frameSize;
             if (thisChunk == 0) break;
 

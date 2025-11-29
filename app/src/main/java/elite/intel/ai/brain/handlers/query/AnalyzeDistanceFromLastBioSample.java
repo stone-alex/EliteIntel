@@ -15,7 +15,7 @@ import elite.intel.util.json.ToJsonConvertible;
 public class AnalyzeDistanceFromLastBioSample extends BaseQueryAnalyzer implements QueryHandler {
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing exobiology collection data... stand by..."));
+        EventBusManager.publish(new AiVoxResponseEvent("Analyzing exobiology collection data... Stand by..."));
         PlayerSession playerSession = PlayerSession.getInstance();
         Status status = Status.getInstance();
         LocationDto currentLocation = playerSession.getCurrentLocation();

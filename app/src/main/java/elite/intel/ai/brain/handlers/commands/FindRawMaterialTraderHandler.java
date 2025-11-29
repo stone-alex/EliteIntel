@@ -6,6 +6,7 @@ import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.search.spansh.station.TradersAndBrokersSearch;
 import elite.intel.search.spansh.station.traderandbroker.TraderType;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.session.Status;
 import elite.intel.util.json.GetNumberFromParam;
 
 public class FindRawMaterialTraderHandler extends CommandOperator implements CommandHandler {
@@ -19,10 +20,15 @@ public class FindRawMaterialTraderHandler extends CommandOperator implements Com
     }
 
     @Override public void handle(String action, JsonObject params, String responseText) {
-        Number range = GetNumberFromParam.getNumberFromParam(params, DEFAULT_RANGE);
-        EventBusManager.publish(new AiVoxResponseEvent("Searching for " + TraderType.RAW.getType() + " material traders... Stand by..."));
-        TradersAndBrokersSearch search = TradersAndBrokersSearch.getInstance();
-        RoutePlotter routePlotter = new RoutePlotter(this.gameController);
-        routePlotter.plotRoute(search.location(TraderType.RAW, null, range.intValue()));
+        Status status = Status.getInstance();
+        if(status.isInSrv() || status.isInMainShip()) {
+            Number range = GetNumberFromParam.getNumberFromParam(params, DEFAULT_RANGE);
+            EventBusManager.publish(new AiVoxResponseEvent("Searching for " + TraderType.RAW.getType() + " material traders... Stand by..."));
+            TradersAndBrokersSearch search = TradersAndBrokersSearch.getInstance();
+            RoutePlotter routePlotter = new RoutePlotter(this.gameController);
+            routePlotter.plotRoute(search.location(TraderType.RAW, null, range.intValue()));
+        } else {
+            EventBusManager.publish(new AiVoxResponseEvent("Route can only be plotted in SRV or Main Ship."));
+        }
     }
 }

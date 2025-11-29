@@ -34,6 +34,12 @@ import elite.intel.session.SystemSession;
 public class SetCadenceHandler implements CommandHandler {
     @Override public void handle(String action, JsonObject params, String responseText) {
         SystemSession systemSession = SystemSession.getInstance();
+
+        if(systemSession.isRunningPiperTts()){
+            EventBusManager.publish(new SensorDataEvent("Running Piper TTS. Cadence switching is not available"));
+            return;
+        }
+
         try {
             String profileName = params.get("key").getAsString();
             AICadence aiCadence = AICadence.valueOf(profileName.toUpperCase());

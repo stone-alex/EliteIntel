@@ -15,7 +15,7 @@ public class AnalyzeLocalMarketsHandler extends BaseQueryAnalyzer implements Que
 
     @Override
     public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing local market data... stand by..."));
+        EventBusManager.publish(new AiVoxResponseEvent("Analyzing local market data... Stand by..."));
         PlayerSession playerSession = PlayerSession.getInstance();
         List<StationMarketDto> markets = playerSession.getMarkets();
         return process(new AiDataStruct("Use markets data to provide answers.", new DataDto(markets)), originalUserInput);

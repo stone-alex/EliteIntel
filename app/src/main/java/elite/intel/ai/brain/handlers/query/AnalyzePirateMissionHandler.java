@@ -17,7 +17,7 @@ public class AnalyzePirateMissionHandler extends BaseQueryAnalyzer implements Qu
 
     @Override
     public JsonObject handle(String action, JsonObject params, String originalUserInput) {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing mission data... stand by..."));
+        EventBusManager.publish(new AiVoxResponseEvent("Analyzing mission data... Stand by..."));
         PlayerSession session = PlayerSession.getInstance();
         Map<Long, MissionDto> missions = session.getMissions();
         Set<BountyDto> bounties = session.getBounties();

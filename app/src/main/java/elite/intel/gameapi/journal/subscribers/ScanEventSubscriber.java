@@ -169,7 +169,7 @@ public class ScanEventSubscriber extends BiomeAnalyzer {
             }
         } else if (!wasDiscovered && PRIMARY_STAR.equals(location.getLocationType())) {
 
-            EventBusManager.publish(new DiscoveryAnnouncementEvent("Congrats, you’re the first here!"));
+            EventBusManager.publish(new DiscoveryAnnouncementEvent("New System discovered!"));
         } else if (PRIMARY_STAR.equals(location.getLocationType())) {
             EventBusManager.publish(new DiscoveryAnnouncementEvent("Previously discovered!"));
         }

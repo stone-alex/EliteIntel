@@ -16,7 +16,7 @@ import java.util.Map;
 public class PlanetBiomeAnalyzerHandler extends BaseQueryAnalyzer implements QueryHandler {
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing planetary and biome data... stand by..."));
+        EventBusManager.publish(new AiVoxResponseEvent("Analyzing planetary and biome data... Stand by..."));
         PlayerSession playerSession = PlayerSession.getInstance();
                 String instructions = "DO NOT OUTPUT ANY PLANET STATS. From genusToBiome map and locations with bioSignals:true, match biome conditions only. Reply EXACTLY:\n" +
                 "\n" +

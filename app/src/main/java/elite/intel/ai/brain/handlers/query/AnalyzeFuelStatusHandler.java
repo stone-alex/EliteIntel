@@ -14,7 +14,7 @@ import elite.intel.util.json.ToJsonConvertible;
 public class AnalyzeFuelStatusHandler extends BaseQueryAnalyzer implements QueryHandler {
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing ship's data... stand by..."));
+        EventBusManager.publish(new AiVoxResponseEvent("Analyzing ship's data... Stand by..."));
         //TODO: Convert info in to dtos, and write logic to figure out how much fuel is used per maximum range jump.
         PlayerSession playerSession = PlayerSession.getInstance();
         Status status = Status.getInstance();

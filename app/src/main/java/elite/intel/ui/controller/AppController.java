@@ -56,6 +56,9 @@ public class AppController implements Runnable {
     }
 
     private String listVoices() {
+        if(systemSession.isRunningPiperTts()){
+            return ""; // Voice choice is not available with Piper TTS
+        }
         StringBuilder sb = new StringBuilder();
         AiVoices[] voices = AiVoices.values();
         sb.append("[");
@@ -249,12 +252,6 @@ public class AppController implements Runnable {
 
 
     private void startStopServices() {
-        String ttsApiKey = SystemSession.getInstance().getTtsApiKey();
-        if (ttsApiKey == null || ttsApiKey.trim().isEmpty() || ttsApiKey.equals("null")) {
-            appendToLog("SYSTEM: TTS API key is not provided. I have no mouth to speak with");
-            return;
-        }
-
         String sttApiKey = SystemSession.getInstance().getSttApiKey();
         if (sttApiKey == null || sttApiKey.trim().isEmpty() || sttApiKey.equals("null")) {
             appendToLog("SYSTEM: STT API key is not provided. I have no ears to hear with");

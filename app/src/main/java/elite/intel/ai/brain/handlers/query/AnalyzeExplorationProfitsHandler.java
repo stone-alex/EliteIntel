@@ -19,7 +19,7 @@ import static elite.intel.ai.brain.handlers.query.Queries.ANALYZE_STAR_SYSTEM_EX
 public class AnalyzeExplorationProfitsHandler extends BaseQueryAnalyzer implements QueryHandler {
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing exploration data... stand by..."));
+        EventBusManager.publish(new AiVoxResponseEvent("Analyzing exploration data... Stand by..."));
 
         PlayerSession playerSession = PlayerSession.getInstance();
         List<BioSampleDto> allCompletedBioSamples = playerSession.getBioCompletedSamples();

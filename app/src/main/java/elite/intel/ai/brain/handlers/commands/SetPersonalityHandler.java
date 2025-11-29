@@ -2,6 +2,7 @@ package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.AIPersonality;
+import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.session.SystemSession;
@@ -28,12 +29,21 @@ import elite.intel.session.SystemSession;
  */
 public class SetPersonalityHandler implements CommandHandler {
 
+    private final SystemSession systemSession = SystemSession.getInstance();
     @Override public void handle(String action, JsonObject params, String responseText) {
+
+        if(systemSession.isRunningPiperTts()){
+            EventBusManager.publish(new AiVoxResponseEvent("Personalities are not available with Piper TTS"));
+            return;
+        }
+
+
         try {
             String keyValue = params.get("key").getAsString();
 
             AIPersonality aiPersonality = AIPersonality.valueOf(keyValue.toUpperCase());
-            SystemSession.getInstance().setAIPersonality(aiPersonality);
+
+            systemSession.setAIPersonality(aiPersonality);
         } catch (IllegalArgumentException e) {
             EventBusManager.publish(new SensorDataEvent("No such personality. try Professional, Casual, Friendly, Unhinged or Rogue"));
         }

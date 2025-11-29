@@ -8,6 +8,7 @@ import elite.intel.search.spansh.stellarobjects.StellarObjectSearch;
 import elite.intel.search.spansh.stellarobjects.StellarObjectSearchResultDto;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.PlayerSession;
+import elite.intel.session.Status;
 import elite.intel.util.json.GetNumberFromParam;
 
 import java.util.Optional;
@@ -23,24 +24,29 @@ public class FindCarrierFuelMiningSiteHandler extends CommandOperator implements
     }
 
     @Override public void handle(String action, JsonObject params, String responseText) {
-        Number range = GetNumberFromParam.getNumberFromParam(params, 1000);
-        EventBusManager.publish(new AiVoxResponseEvent("Searching for Carrier Fuel Mining Site withing " + range.intValue() + " light years... Stand by..."));
+        Status status = Status.getInstance();
+        if (status.isInSrv() || status.isInMainShip()) {
+            Number range = GetNumberFromParam.getNumberFromParam(params, 1000);
+            EventBusManager.publish(new AiVoxResponseEvent("Searching for Carrier Fuel Mining Site withing " + range.intValue() + " light years... Stand by..."));
 
-        StellarObjectSearchResultDto tritiumLocations = StellarObjectSearch.getInstance()
-                .findRings(
-                        "Tritium",
-                        ReserveLevel.PRISTINE,
-                        PlayerSession.getInstance().getGalacticCoordinates(),
-                        range.intValue()
-                );
+            StellarObjectSearchResultDto tritiumLocations = StellarObjectSearch.getInstance()
+                    .findRings(
+                            "Tritium",
+                            ReserveLevel.PRISTINE,
+                            PlayerSession.getInstance().getGalacticCoordinates(),
+                            range.intValue()
+                    );
 
-        if (tritiumLocations == null || tritiumLocations.getResults().isEmpty()) {
-            EventBusManager.publish(new AiVoxResponseEvent("No Tritium locations found."));
-            return;
+            if (tritiumLocations == null || tritiumLocations.getResults().isEmpty()) {
+                EventBusManager.publish(new AiVoxResponseEvent("No Tritium locations found."));
+                return;
+            }
+
+            Optional<StellarObjectSearchResultDto.Result> result = tritiumLocations.getResults().stream().findFirst();
+            RoutePlotter routePlotter = new RoutePlotter(this.gameController);
+            routePlotter.plotRoute(result.get().getSystemName());
+        } else {
+            EventBusManager.publish(new AiVoxResponseEvent("You must be in SRV or Main Ship to use this command."));
         }
-
-        Optional<StellarObjectSearchResultDto.Result> result = tritiumLocations.getResults().stream().findFirst();
-        RoutePlotter routePlotter = new RoutePlotter(this.gameController);
-        routePlotter.plotRoute(result.get().getSystemName());
     }
 }

@@ -17,7 +17,7 @@ import static elite.intel.ai.brain.handlers.query.Queries.QUERY_NEXT_STAR_SCOOPA
 public class AnalyzeNextStarForFuelHandler extends BaseQueryAnalyzer implements QueryHandler {
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing route telemetry... stand by..."));
+        EventBusManager.publish(new AiVoxResponseEvent("Analyzing route telemetry... Stand by..."));
         PlayerSession playerSession = PlayerSession.getInstance();
         Collection<? extends ToJsonConvertible> route = ShipRouteManager.getInstance().getOrderedRoute();
 

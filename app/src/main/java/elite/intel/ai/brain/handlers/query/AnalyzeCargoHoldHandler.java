@@ -15,7 +15,7 @@ import static elite.intel.ai.brain.handlers.query.Queries.QUERY_ANALYZE_ON_BOARD
 public class AnalyzeCargoHoldHandler extends BaseQueryAnalyzer implements QueryHandler {
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing cargo data... stand by..."));
+        EventBusManager.publish(new AiVoxResponseEvent("Analyzing cargo data... Stand by..."));
         PlayerSession playerSession = PlayerSession.getInstance();
 
         return process(new AiDataStruct(QUERY_ANALYZE_ON_BOARD_CARGO.getInstructions(), new DataDto(playerSession.getShipLoadout(), playerSession.getShipCargo())), originalUserInput);

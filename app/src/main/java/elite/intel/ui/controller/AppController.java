@@ -56,6 +56,9 @@ public class AppController implements Runnable {
     }
 
     private String listVoices() {
+        if(systemSession.isRunningPiperTts()){
+            return ""; // Voice choice is not available with Piper TTS
+        }
         StringBuilder sb = new StringBuilder();
         AiVoices[] voices = AiVoices.values();
         sb.append("[");

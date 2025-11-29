@@ -30,7 +30,7 @@ things responsive.
 ---
 
 👉 **The off-line Text To Speech is now available. 
-See [Piper TTS](OffLineVoiceProcessor) for instructions.** 👈
+See [Piper TTS](https://github.com/stone-alex/EliteIntel/wiki/OffLineVoiceProcessor) for instructions.** 👈
 
 
 ---

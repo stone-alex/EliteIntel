@@ -390,6 +390,8 @@ public class GoogleSTTImpl implements EarsInterface {
                 .setSampleRateHertz(sampleRateHertz)
                 .setAudioChannelCount(CHANNELS)
                 .setLanguageCode("en-US")
+                .addAlternativeLanguageCodes("en-AU")
+                .addAlternativeLanguageCodes("en-GB")
                 .setEnableAutomaticPunctuation(false)
                 .addSpeechContexts(commandContext)
                 .setModel("latest_long")

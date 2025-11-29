@@ -41,3 +41,6 @@ aplay test.wav
 ```
 
 NOTE: The in-app voice switch will not work with Piper.
+
+### To use in the app
+Simply do not provide TTS key. The app will use Piper TTS as default.

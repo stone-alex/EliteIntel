@@ -290,4 +290,8 @@ public class SystemSession {
         result.put(DEBUG_SWITCH, String.valueOf(isLoggingEnabled()));
         return result;
     }
+
+    public boolean isRunningOllama() {
+        return getAiApiKey() == null || getAiApiKey().isEmpty();
+    }
 }

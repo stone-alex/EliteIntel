@@ -52,7 +52,7 @@ public class ApiFactory {
         return switch (provider) {
             case GROK -> GrokChatEndPoint.getInstance();
             case OPENAI -> OpenAiChatEndPoint.getInstance();
-            default -> throw new IllegalStateException("Unknown AI key format");
+            default -> OllamaChatEndPoint.getInstance();
         };
     }
 
@@ -62,7 +62,7 @@ public class ApiFactory {
         return switch (provider) {
             case GROK -> CommonAiPromptFactory.getInstance();
             case OPENAI -> CommonAiPromptFactory.getInstance();
-            default -> throw new IllegalStateException("Unknown AI key format");
+            default -> CommonAiPromptFactory.getInstance();
         };
     }
 
@@ -72,7 +72,7 @@ public class ApiFactory {
         return switch (provider) {
             case GROK -> GrokCommandEndPoint.getInstance();
             case OPENAI -> OpenAiCommandEndPoint.getInstance();
-            default -> throw new IllegalStateException("Unknown AI key format");
+            default -> OllamaCommandEndPoint.getInstance();
         };
     }
 
@@ -82,7 +82,7 @@ public class ApiFactory {
         return switch (provider) {
             case GROK -> GrokQueryEndPoint.getInstance();
             case OPENAI -> OpenAiQueryEndPoint.getInstance();
-            default -> throw new IllegalStateException("Unknown AI key format");
+            default -> OllamaQueryEndPoint.getInstance();
         };
     }
 
@@ -92,7 +92,7 @@ public class ApiFactory {
         return switch (provider) {
             case GROK -> GrokResponseRouter.getInstance();
             case OPENAI -> OpenAiResponseRouter.getInstance();
-            default -> throw new IllegalStateException("Unknown AI key format");
+            default -> OllamaResponseRouter.getInstance();
         };
     }
 

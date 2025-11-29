@@ -9,8 +9,7 @@ import java.net.URL;
 
 public class OllamaClient implements Client {
 
-    public static final String MODEL_TINYLAMA = "tinyllama";
-    public static final String MODEL_PFI_MINI = "phi3:mini";
+    public static final String MODEL_OLLAMA = "llama3.2:3b";
 
     private static final OllamaClient INSTANCE = new OllamaClient();
 
@@ -23,7 +22,7 @@ public class OllamaClient implements Client {
 
     // Configurable via SystemSession (fallback to localhost)
     private String getBaseUrl() {
-        String url = "http://127.0.0.1:11434"; //TODO: change to env variable or something
+        String url = "http://35.163.153.82:11434"; //TODO: change to env variable or something
         return url != null && !url.isBlank() ? url.trim() : "http://127.0.0.1:11434";
     }
 

@@ -175,8 +175,12 @@ public class CommonAiPromptFactory implements elite.intel.ai.brain.AiPromptFacto
         AIPersonality aiPersonality = systemSession.isRunningPiperTts() ? AIPersonality.PROFESSIONAL:  systemSession.getAIPersonality();
 
         sb.append("Behavior: ");
-        sb.append(aiCadence.getCadenceClause()).append(" ");
-        sb.append("Apply personality: ").append(aiPersonality.name().toUpperCase()).append(" - ").append(aiPersonality.getBehaviorClause()).append(" ");
+        if(systemSession.isRunningOllama()) {
+            sb.append("Always respond with valid JSON only. Never explain, never add extra text. Use this exact schema: {\"type\":\"command|query|chat\",\"response_text\":\"...\",\"action\":\"...\",\"params\":{},\"expect_followup\":false}");
+        } else {
+            sb.append(aiCadence.getCadenceClause()).append(" ");
+            sb.append("Apply personality: ").append(aiPersonality.name().toUpperCase()).append(" - ").append(aiPersonality.getBehaviorClause()).append(" ");
+        }
         sb.append("Do not end responses with any fillers, or unnecessary phrases like 'Ready for exploration', 'Ready for orders', 'All set', 'Ready to explore', 'Should we proceed?', or similar open-ended questions or remarks.");
         sb.append("Do not use words like 'player' or 'you', it breaks immersion. Use 'we' instead. ");
         sb.append("For alpha numeric numbers or names, star system codes or ship plates (e.g., Syralaei RH-F, KI-U), use NATO phonetic alphabet (e.g., Syralaei Romeo Hotel dash Foxtrot, Kilo India dash Uniform). Use planetShortName for planets when available");

@@ -12,7 +12,7 @@ public class AnalyzeFsdTargetHandler extends BaseQueryAnalyzer implements QueryH
 
     @Override
     public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing FSD telemetry... stand by..."));
+        EventBusManager.publish(new AiVoxResponseEvent("Analyzing FSD telemetry... Stand by..."));
         PlayerSession playerSession = PlayerSession.getInstance();
 
         ToJsonConvertible fsdTarget = playerSession.getFsdTarget();

@@ -21,7 +21,7 @@ import static elite.intel.ai.brain.handlers.query.Queries.ANALYZE_LOCAL_STATIONS
 public class AnalyzeLocalStations extends BaseQueryAnalyzer implements QueryHandler {
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing stations data... stand by..."));
+        EventBusManager.publish(new AiVoxResponseEvent("Analyzing stations data... Stand by..."));
         PlayerSession playerSession = PlayerSession.getInstance();
         LocationDto currentLocation = playerSession.getCurrentLocation();
         StationsDto stationsDto = EdsmApiClient.searchStations(playerSession.getCurrentLocation().getStarName());

@@ -571,7 +571,7 @@ public class AppView extends JFrame implements AppViewInterface {
         nextRow(gbc);
 
         // LLM key field
-        addLabel(panel, "xAI or Open AI Key:", gbc, 0);
+        addLabel(panel, "LLM Key:", gbc, 0);
         llmApiKeyField = new JPasswordField();
         llmApiKeyField.setPreferredSize(new Dimension(200, 42));
         addField(panel, llmApiKeyField, gbc, 1, 0.8);
@@ -580,7 +580,7 @@ public class AppView extends JFrame implements AppViewInterface {
 
         // Row 1: STT Key
         nextRow(gbc);
-        addLabel(panel, "Google STT Key:", gbc, 0);
+        addLabel(panel, "STT Key:", gbc, 0);
         sttApiKeyField = new JPasswordField();
         sttApiKeyField.setPreferredSize(new Dimension(200, 42));
         addField(panel, sttApiKeyField, gbc, 1, 0.8);
@@ -589,7 +589,7 @@ public class AppView extends JFrame implements AppViewInterface {
 
         // Row 2: TTS Key
         nextRow(gbc);
-        addLabel(panel, "Google TTS Key:", gbc, 0);
+        addLabel(panel, "TTS Key:", gbc, 0);
         ttsApiKeyField = new JPasswordField();
         ttsApiKeyField.setPreferredSize(new Dimension(200, 42));
         addField(panel, ttsApiKeyField, gbc, 1, 0.8);

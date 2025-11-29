@@ -219,6 +219,11 @@ public class SystemSession {
         });
     }
 
+    public boolean isRunningPiperTts(){
+        String ttsApiKey = getTtsApiKey();
+        return ttsApiKey == null || ttsApiKey.isEmpty();
+    }
+
     public void setTtsApiKey(String ttsApiKey) {
         Database.withDao(GameSessionDao.class, dao -> {
             GameSessionDao.GameSession session = dao.get();

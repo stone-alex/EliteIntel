@@ -13,6 +13,10 @@ ListAvailableVoices implements QueryHandler {
     @Override
     public JsonObject handle(String action, JsonObject params, String originalUserInput) {
         SystemSession session = SystemSession.getInstance();
+        if (session.isRunningPiperTts()){
+            return GenericResponse.getInstance().genericResponse("Running Piper TTS. Voice switching is not available.");
+        }
+
         PlayerSession playerSession = PlayerSession.getInstance();
         AiVoices[] voices = AiVoices.values();
         List<String> voiceNames = new ArrayList<>();
@@ -21,6 +25,7 @@ ListAvailableVoices implements QueryHandler {
                 voiceNames.add(voice.getName());
             }
         }
+
         return GenericResponse.getInstance().genericResponseWithList(
                 "Available voices: " + String.join(", ", voiceNames) + ", " + playerSession.getPlayerName(),
                 voiceNames

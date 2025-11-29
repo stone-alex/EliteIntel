@@ -17,7 +17,7 @@ public class AnalyzeCarrierRouteHandler extends BaseQueryAnalyzer implements Que
 
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing fleet carrier data... stand by..."));
+        EventBusManager.publish(new AiVoxResponseEvent("Analyzing fleet carrier data... Stand by..."));
         PlayerSession playerSession = PlayerSession.getInstance();
         Map<Integer, CarrierJump> fleetCarrierRoute = FleetCarrierRouteManager.getInstance().getFleetCarrierRoute();
         CarrierDataDto carrierData = playerSession.getCarrierData();

@@ -15,7 +15,7 @@ public class AnalyzeShipyardHandler extends BaseQueryAnalyzer implements QueryHa
 
     @Override
     public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing shipyard data... stand by..."));
+        EventBusManager.publish(new AiVoxResponseEvent("Analyzing shipyard data... Stand by..."));
         PlayerSession playerSession = PlayerSession.getInstance();
         ShipyardDto shipyard = playerSession.getCurrentLocation().getShipyard();
 

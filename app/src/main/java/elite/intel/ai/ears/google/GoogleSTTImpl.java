@@ -3,10 +3,7 @@ package elite.intel.ai.ears.google;
 import com.google.api.gax.rpc.ApiStreamObserver;
 import com.google.cloud.speech.v1.*;
 import com.google.protobuf.ByteString;
-import elite.intel.ai.ears.AudioCalibrator;
-import elite.intel.ai.ears.AudioFormatDetector;
-import elite.intel.ai.ears.AudioSettingsTuple;
-import elite.intel.ai.ears.EarsInterface;
+import elite.intel.ai.ears.*;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.UserInputEvent;
@@ -68,9 +65,9 @@ public class GoogleSTTImpl implements EarsInterface {
 
         if (rms_threshold_high == 0 || rms_threshold_low == 0) {
             EventBusManager.publish(new AppLogEvent("Calibrating audio..."));
-            AudioSettingsTuple<Double, Double> rmsThresholds = AudioCalibrator.calibrateRMS(sampleRateHertz, bufferSize);
-            this.RMS_THRESHOLD_HIGH = rmsThresholds.getSampleRate();
-            this.RMS_THRESHOLD_LOW = rmsThresholds.getBufferSize();
+            RmsTupple<Double, Double> rmsThresholds = AudioCalibrator.calibrateRMS(sampleRateHertz, bufferSize);
+            this.RMS_THRESHOLD_HIGH = rmsThresholds.getRmsHigh();
+            this.RMS_THRESHOLD_LOW = rmsThresholds.getRmsLow();
         } else {
             this.RMS_THRESHOLD_HIGH = rms_threshold_high;
             this.RMS_THRESHOLD_LOW = rms_threshold_low;

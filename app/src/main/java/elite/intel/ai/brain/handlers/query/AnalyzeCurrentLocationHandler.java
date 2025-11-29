@@ -17,7 +17,7 @@ import static elite.intel.ai.brain.handlers.query.Queries.ANALYZE_CURRENT_PLANET
 public class AnalyzeCurrentLocationHandler extends BaseQueryAnalyzer implements QueryHandler {
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing current location data... stand by..."));
+        EventBusManager.publish(new AiVoxResponseEvent("Analyzing current location data... Stand by..."));
 
         PlayerSession playerSession = PlayerSession.getInstance();
         LocationDto location = playerSession.getCurrentLocation();

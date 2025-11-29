@@ -14,7 +14,7 @@ import java.util.Map;
 public class AnalyzeDistanceToStellarObject extends BaseQueryAnalyzer implements QueryHandler {
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing local star system data... stand by..."));
+        EventBusManager.publish(new AiVoxResponseEvent("Analyzing local star system data... Stand by..."));
         PlayerSession playerSession = PlayerSession.getInstance();
         return process(
                 new AiDataStruct(

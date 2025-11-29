@@ -15,7 +15,7 @@ import static elite.intel.ai.brain.handlers.query.Queries.TIME_IN_ZONE;
 public class TimeQueryHandler extends BaseQueryAnalyzer implements QueryHandler {
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing temporal data... stand by..."));
+        EventBusManager.publish(new AiVoxResponseEvent("Analyzing temporal data... Stand by..."));
 
         Instant instant = Clock.systemUTC().instant();
         String utcTime = instant.toString();

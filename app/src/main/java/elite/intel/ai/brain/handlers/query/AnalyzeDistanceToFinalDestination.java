@@ -19,7 +19,7 @@ public class AnalyzeDistanceToFinalDestination extends BaseQueryAnalyzer impleme
 
     @Override
     public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing travel telemetry... stand by..."));
+        EventBusManager.publish(new AiVoxResponseEvent("Analyzing travel telemetry... Stand by..."));
         PlayerSession playerSession = PlayerSession.getInstance();
         ShipRouteManager shipRoute = ShipRouteManager.getInstance();
         LocationDto here = playerSession.getCurrentLocation();

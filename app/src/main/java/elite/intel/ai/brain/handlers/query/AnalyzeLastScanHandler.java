@@ -14,7 +14,7 @@ import static elite.intel.ai.brain.handlers.query.Queries.ANALYZE_SCAN;
 public class AnalyzeLastScanHandler  extends BaseQueryAnalyzer implements QueryHandler {
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing scanner... stand by..."));
+        EventBusManager.publish(new AiVoxResponseEvent("Analyzing scanner... Stand by..."));
         PlayerSession playerSession = PlayerSession.getInstance();
         LocationDto lastScan = playerSession.getLastScan();
 

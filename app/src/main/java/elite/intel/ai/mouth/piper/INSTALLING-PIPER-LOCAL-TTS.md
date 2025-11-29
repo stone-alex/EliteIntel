@@ -2,7 +2,7 @@
 
 ## Piper
 Piper is A fast and local neural text-to-speech engine that embeds espeak-ng for phonemization.
-[Piper TTS priject](https://github.com/OHF-Voice/piper1-gpl)
+[Piper TTS project](https://github.com/OHF-Voice/piper1-gpl)
 
 ### 🐧 Linux Install
 

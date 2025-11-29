@@ -171,8 +171,8 @@ public class CommonAiPromptFactory implements elite.intel.ai.brain.AiPromptFacto
         StringBuilder sb = new StringBuilder();
         SystemSession systemSession = SystemSession.getInstance();
 
-        AICadence aiCadence = systemSession.isRunningPiperTts() ? AICadence.FEDERATION :  systemSession.getAICadence();
-        AIPersonality aiPersonality = systemSession.isRunningPiperTts() ? AIPersonality.PROFESSIONAL:  systemSession.getAIPersonality();
+        AICadence aiCadence = systemSession.isRunningPiperTts() ? AICadence.IMPERIAL :  systemSession.getAICadence();
+        AIPersonality aiPersonality = systemSession.isRunningPiperTts() ? AIPersonality.CASUAL:  systemSession.getAIPersonality();
 
         sb.append("Behavior: ");
         if(systemSession.isRunningOllama()) {
@@ -238,7 +238,9 @@ public class CommonAiPromptFactory implements elite.intel.ai.brain.AiPromptFacto
     }
 
     private void appendContext(StringBuilder sb, String playerName, String playerMilitaryRank, String playerHonorific, String playerTitle, String missionStatement, String carrierName) {
-        String aiName = SystemSession.getInstance().getAIVoice().getName();
+
+        SystemSession systemSession = SystemSession.getInstance();
+        String aiName =  systemSession.isRunningPiperTts() ? "Amy" : systemSession.getAIVoice().getName();
         sb.append("Context: You are ").append(aiName).append(", co-pilot and data analyst in a simulation. ");
         if (carrierName != null && !carrierName.isEmpty()) {
             sb.append("Our home base is FleetCarrier ").append(carrierName).append(". ");

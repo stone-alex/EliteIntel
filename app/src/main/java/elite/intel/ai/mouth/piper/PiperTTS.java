@@ -34,6 +34,7 @@ public class PiperTTS implements MouthInterface {
     private volatile boolean running = false;
     private Thread workerThread = null;
     private ExecutorService callbackExecutor = null;
+    private float speechSpeed;
 
     private PiperTTS() {
         EventBusManager.register(this);
@@ -134,12 +135,21 @@ public class PiperTTS implements MouthInterface {
         }
     }
 
+    public void setSpeechSpeed(float speed) {
+        this.speechSpeed = Math.clamp(speed, 0.5f, 2.0f);
+    }
 
     private void synthesizeAndPlay(String text) throws Exception {
         if (text == null || text.isBlank()) return;
         EventBusManager.publish(new AppLogEvent("AI: " + text));
-        String json = "{\"text\": \"" + text.replace("\"", "\\\"") + "\"}";
+        setSpeechSpeed(0.75f);
 
+        String json = """
+        {
+          "text": "%s",
+          "length_scale": %.2f
+        }
+        """.formatted(text.replace("\"", "\\\""), speechSpeed);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:5000/"))
                 .header("Content-Type", "application/json")

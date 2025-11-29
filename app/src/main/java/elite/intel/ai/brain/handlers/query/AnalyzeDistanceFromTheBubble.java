@@ -12,7 +12,7 @@ import elite.intel.util.json.ToJsonConvertible;
 public class AnalyzeDistanceFromTheBubble extends BaseQueryAnalyzer implements QueryHandler{
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing travel telemetry... stand by..."));
+        EventBusManager.publish(new AiVoxResponseEvent("Analyzing travel telemetry... Stand by..."));
         PlayerSession playerSession = PlayerSession.getInstance();
         PlayerSession.GalacticCoordinates galacticCoordinates = playerSession.getGalacticCoordinates();
 

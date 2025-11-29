@@ -16,7 +16,16 @@ import elite.intel.session.SystemSession;
  */
 public class ChangeAiVoiceHandler implements CommandHandler {
 
+    private final SystemSession systemSession = SystemSession.getInstance();
     @Override public void handle(String action, JsonObject params, String responseText) {
+
+
+        if(systemSession.isRunningPiperTts()){
+            EventBusManager.publish(new AiVoxResponseEvent("Running Piper TTS. Voice switching is not available. Please re-configure your Piper TTS server for alternative vocalisation."));
+            return;
+        }
+
+
         String voiceName = params.get("key").getAsString();
         if (voiceName == null || voiceName.isEmpty()) {
             EventBusManager.publish(new AiVoxResponseEvent("Sorry, the value returned was null or empty. I am unable to process your request."));
@@ -26,7 +35,6 @@ public class ChangeAiVoiceHandler implements CommandHandler {
     }
 
     private void setVoice(String voiceName) {
-        SystemSession systemSession = SystemSession.getInstance();
         try {
             systemSession.setAIVoice(AiVoices.valueOf(voiceName.toUpperCase()));
             EventBusManager.publish(new AiVoxResponseEvent("Voice set to " + voiceName.toUpperCase()));

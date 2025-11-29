@@ -19,7 +19,7 @@ public class AnalyzeBioSamplesHandler extends BaseQueryAnalyzer implements Query
 
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing exobiology data... stand by..."));
+        EventBusManager.publish(new AiVoxResponseEvent("Analyzing exobiology data... Stand by..."));
 
         PlayerSession playerSession = PlayerSession.getInstance();
         LocationDto currentLocation = playerSession.getCurrentLocation();

@@ -15,7 +15,7 @@ import elite.intel.util.json.ToJsonConvertible;
 public class AnalyzeDistanceFromFleetCarrierHandler extends BaseQueryAnalyzer implements QueryHandler {
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing travel telemetry... stand by..."));
+        EventBusManager.publish(new AiVoxResponseEvent("Analyzing travel telemetry... Stand by..."));
         PlayerSession playerSession = PlayerSession.getInstance();
         CarrierDataDto carrierData = playerSession.getCarrierData();
         if (carrierData == null) return process("No data available");

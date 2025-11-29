@@ -170,8 +170,9 @@ public class CommonAiPromptFactory implements elite.intel.ai.brain.AiPromptFacto
     public String appendBehavior() {
         StringBuilder sb = new StringBuilder();
         SystemSession systemSession = SystemSession.getInstance();
-        AICadence aiCadence = systemSession.getAICadence();
-        AIPersonality aiPersonality = systemSession.getAIPersonality();
+
+        AICadence aiCadence = systemSession.isRunningPiperTts() ? AICadence.FEDERATION :  systemSession.getAICadence();
+        AIPersonality aiPersonality = systemSession.isRunningPiperTts() ? AIPersonality.PROFESSIONAL:  systemSession.getAIPersonality();
 
         sb.append("Behavior: ");
         sb.append(aiCadence.getCadenceClause()).append(" ");

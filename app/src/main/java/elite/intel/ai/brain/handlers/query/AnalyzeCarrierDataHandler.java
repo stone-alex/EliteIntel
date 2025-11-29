@@ -13,7 +13,7 @@ public class AnalyzeCarrierDataHandler extends BaseQueryAnalyzer implements Quer
 
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing fleet carrier data... stand by..."));
+        EventBusManager.publish(new AiVoxResponseEvent("Analyzing fleet carrier data... Stand by..."));
         PlayerSession playerSession = PlayerSession.getInstance();
         CarrierDataDto stats = playerSession.getCarrierData();
 

@@ -6,6 +6,7 @@ import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
+import elite.intel.session.Status;
 
 public class PlotRouteToHomeHandler extends CommandOperator implements CommandHandler {
 
@@ -17,14 +18,21 @@ public class PlotRouteToHomeHandler extends CommandOperator implements CommandHa
     }
 
     @Override public void handle(String action, JsonObject params, String responseText) {
-        EventBusManager.publish(new AiVoxResponseEvent("Plotting route to home system..."));
-        LocationManager locations = LocationManager.getInstance();
-        LocationDto location =locations.getHomeSystem();
-        if(location.getBodyId() == -1){
-            EventBusManager.publish(new AiVoxResponseEvent("Home system is not set. We are homeless!"));
-            return;
+
+        Status status = Status.getInstance();
+        if(status.isInSrv() || status.isInMainShip()) {
+
+            EventBusManager.publish(new AiVoxResponseEvent("Plotting route to home system..."));
+            LocationManager locations = LocationManager.getInstance();
+            LocationDto location = locations.getHomeSystem();
+            if (location.getBodyId() == -1) {
+                EventBusManager.publish(new AiVoxResponseEvent("Home system is not set. We are homeless!"));
+                return;
+            }
+            RoutePlotter plotter = new RoutePlotter(commandHandler);
+            plotter.plotRoute(location.getStarName());
+        } else {
+            EventBusManager.publish(new AiVoxResponseEvent("Route can only be plotted in SRV or Main Ship."));
         }
-        RoutePlotter plotter = new RoutePlotter(commandHandler);
-        plotter.plotRoute(location.getStarName());
     }
 }

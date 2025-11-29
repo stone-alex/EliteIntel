@@ -19,7 +19,7 @@ public class PlayerStatsAnalyzer extends BaseQueryAnalyzer implements QueryHandl
 
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing commander's  data... stand by..."));
+        EventBusManager.publish(new AiVoxResponseEvent("Analyzing commander's  data... Stand by..."));
         RankAndProgressDto data = PlayerSession.getInstance().getRankAndProgressDto();
         if (data == null) {
             return GenericResponse.getInstance().genericResponse("No data available");

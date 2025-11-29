@@ -15,7 +15,7 @@ public class AnalyzeLocalOutfittingHandler extends BaseQueryAnalyzer implements 
 
     @Override
     public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing outfitting data... stand by..."));
+        EventBusManager.publish(new AiVoxResponseEvent("Analyzing outfitting data... Stand by..."));
         PlayerSession playerSession = PlayerSession.getInstance();
         OutfittingDto outfitting = playerSession.getCurrentLocation().getOutfitting();
 

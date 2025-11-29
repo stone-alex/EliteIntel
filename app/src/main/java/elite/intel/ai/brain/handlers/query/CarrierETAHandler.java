@@ -17,7 +17,7 @@ import static elite.intel.ai.brain.handlers.query.Queries.CARRIER_ETA;
 public class CarrierETAHandler extends BaseQueryAnalyzer implements QueryHandler {
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing fleet carrier telemetry... stand by..."));
+        EventBusManager.publish(new AiVoxResponseEvent("Analyzing fleet carrier telemetry... Stand by..."));
         PlayerSession playerSession = PlayerSession.getInstance();
         String carrierDepartureTime = playerSession.getCarrierDepartureTime();
         String now = TimestampFormatter.formatTimestamp(ZonedDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME), true);

@@ -1,18 +1,45 @@
 package elite.intel.ai.ears;
 
-import elite.intel.gameapi.EventBusManager;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.sound.sampled.*;
 
 /**
- * The AudioCalibrator class provides functionality to calibrate the Root Mean Square (RMS)
- * thresholds for audio input based on real-time audio analysis. This process is designed
- * to dynamically adjust audio sensitivity for improved performance across various microphone qualities.
+ * The AudioCalibrator class is responsible for calibrating audio input levels
+ * to determine thresholds for noise floor and speech detection. This calibration
+ * ensures proper differentiation between background noise and speech during
+ * audio processing.
+ * <p>
+ * The class uses a two-phase approach:
+ * 1. Noise Floor Calibration - Captures silent audio input to determine the
+ * background noise level and calculate a suitable lower threshold.
+ * 2. Speech Calibration - Captures speech audio input to determine the
+ * average and peak speech levels and calculate a suitable upper threshold.
+ * <p>
+ * Thresholds are dynamically adjusted based on the environment and input
+ * conditions to ensure accurate audio analysis. The results of the calibration
+ * are saved in a system session for use in subsequent audio processing tasks.
+ * <p>
+ * Logging is used to provide detailed information about the calibration process,
+ * including logging warnings for high noise environments or calibration failures.
+ * The thresholds are rounded for consistency and clamped within acceptable ranges.
+ * <p>
+ * Supporting components include an event bus for communication (e.g., when
+ * prompting the user for calibration activities), and the thresholds are updated
+ * into the session configuration upon completion.
+ * <p>
+ * Static constants for calibration timings, noise/speech factors, and threshold
+ * clamp values define the calibration behavior. The calibration runs are timed
+ * according to the defined durations, filtering input spikes and using fallback
+ * defaults as needed during failures.
+ * <p>
+ * Two private calibration methods perform the noise and speech calibration,
+ * utilizing RMS (Root Mean Square) calculations of the audio buffer data.
  */
 public class AudioCalibrator {
     private static final Logger log = LogManager.getLogger(AudioCalibrator.class);
@@ -28,15 +55,18 @@ public class AudioCalibrator {
     private static final double MAX_NOISE_AVG = 200.0; // Warn if noise floor too high
     private static final double NOISE_OUTLIER_THRESHOLD = 50.0; // Ignore noise spikes
 
+
     /**
-     * Calibrates RMS thresholds based on separate noise and speech samples from the provided audio line.
-     * First measures noise floor in silence, then prompts for speech, with delays for TTS vocalization.
+     * Calibrates the Root Mean Square (RMS) thresholds for audio input by analyzing the noise floor
+     * and user speech levels. This method calculates both a low RMS threshold based on ambient noise
+     * and a high RMS threshold based on speech signals. The results are stored in the system session
+     * and returned as a tuple.
      *
-     * @param sampleRateHertz The sample rate of the audio format.
-     * @param bufferSize      The buffer size for audio capture.
-     * @return AudioSettingsTuple containing RMS_THRESHOLD_HIGH and RMS_THRESHOLD_LOW.
+     * @param sampleRateHertz The sample rate of the audio input in Hertz.
+     * @param bufferSize      The size of the audio buffer to be used for recording and analysis.
+     * @return A {@code RmsTupple<Double, Double>} representing the calibrated high and low RMS thresholds.
      */
-    public static AudioSettingsTuple<Double, Double> calibrateRMS(int sampleRateHertz, int bufferSize) {
+    public static RmsTupple<Double, Double> calibrateRMS(int sampleRateHertz, int bufferSize) {
         log.info("Starting RMS calibration: noise for {}ms, speech for {}ms, with {}ms TTS delays",
                 NOISE_CALIBRATION_DURATION_MS, SPEECH_CALIBRATION_DURATION_MS, TTS_PROMPT_DELAY_MS
         );
@@ -84,11 +114,11 @@ public class AudioCalibrator {
 
         SystemSession systemSession = SystemSession.getInstance();
         systemSession.setRmsThresholdHigh(highThreshold);
-        systemSession.setRmsThresholdLow(lowThreshold);
+        systemSession.setRmsThresholdLow(lowThreshold + 10);
 
         log.info("Final calibrated RMS thresholds: HIGH={}, LOW={}", highThreshold, lowThreshold);
         EventBusManager.publish(new AppLogEvent("Audio calibration complete: HIGH=" + highThreshold + ", LOW=" + lowThreshold));
-        return new AudioSettingsTuple<>(highThreshold, lowThreshold);
+        return new RmsTupple<>(highThreshold, lowThreshold);
     }
 
     private static double calibrateNoiseFloor(AudioFormat format, int bufferSize, byte[] buffer, DataLine.Info info) {

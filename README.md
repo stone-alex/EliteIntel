@@ -27,6 +27,9 @@ and either OpenAI's GPT or xAI's Grok for handling commands, queries, and chats.
 game data from journal and auxiliary files, pulls in info from EDSM when needed, and keeps 
 things responsive.
 
+------
+👉👉👉 NOTE: **The off-line Text to Speech (TTS) is now available. See [Piper TTS](OffLineVoiceProcessor) installation instructions.** 👈👈👈
+------
 
 The project is open-source under
 a [Creative Commons license CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en),

@@ -29,41 +29,72 @@ public class SpanshClient {
 
     public JsonObject performSearch(ToJsonConvertible criteria) throws IOException, InterruptedException {
 
-        HttpRequest postRequest = HttpRequest.newBuilder()
+        String searchRefId = submitSearch(criteria);
+        if (searchRefId == null) return null;
+
+        int attempt = 0;
+        final int maxAttempts = 60;           // ~5–6 min max wait
+        final long baseDelayMs = 2_000L;       // start at 2 s
+
+        while (attempt < maxAttempts) {
+            attempt++;
+
+            HttpRequest req = HttpRequest.newBuilder()
+                    .uri(URI.create(RESULTS_URL + searchRefId))
+                    .header("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:144.0) Gecko/20100101 Firefox/144.0")
+                    .GET()
+                    .build();
+
+            HttpResponse<String> resp = httpClient.send(req, HttpResponse.BodyHandlers.ofString());
+
+            if (resp.statusCode() == 202 || resp.statusCode() == 204) {
+                // still processing
+                long delay = baseDelayMs * (1L << (attempt - 1)); // 2s → 4s → 8s …
+                delay = delay + (long) (Math.random() * 1_000);     // +0–1s jitter
+                log.debug("Search {} in progress ({}), retry in {} ms", searchRefId, resp.statusCode(), delay);
+                Thread.sleep(delay);
+                continue;
+            }
+
+            if (resp.statusCode() == 200) {
+                String body = resp.body().trim();
+                if (body.isEmpty() || body.equals("null")) {
+                    // known Spansh quirk – empty 200
+                    Thread.sleep(2_000);
+                    continue;
+                }
+                log.info("Search {} completed after {} attempts", searchRefId, attempt);
+                return gson.fromJson(body, JsonObject.class);
+            }
+
+            log.warn("Unexpected status {} for search {}", resp.statusCode(), searchRefId);
+            break;
+        }
+
+        log.error("Search {} timed out after {} attempts", searchRefId, maxAttempts);
+        return null;
+    }
+
+
+    private String submitSearch(ToJsonConvertible criteria)
+            throws IOException, InterruptedException {
+
+        HttpRequest post = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL))
                 .header("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:144.0) Gecko/20100101 Firefox/144.0")
                 .header("Content-Type", "application/x-www-form-urlencoded")
                 .POST(HttpRequest.BodyPublishers.ofString(criteria.toJson()))
                 .build();
 
-
-        HttpResponse<String> postResponse = httpClient.send(postRequest, HttpResponse.BodyHandlers.ofString());
-        if (postResponse.statusCode() != 200) {
-            log.warn("POST to station search failed with status: {}", postResponse.statusCode());
+        HttpResponse<String> resp = httpClient.send(post, HttpResponse.BodyHandlers.ofString());
+        if (resp.statusCode() != 200) {
+            log.warn("POST failed: {}", resp.statusCode());
             return null;
         }
 
-
-        JsonObject postJson = gson.fromJson(postResponse.body(), JsonObject.class);
-        String searchRefId = postJson.get("search_reference") != null ? postJson.get("search_reference").getAsString() : null;
-        if (searchRefId == null || searchRefId.isEmpty()) {
-            log.warn("Invalid or missing search reference ID in POST response");
-            return null;
-        }
-
-
-        HttpRequest searchResultRequest = HttpRequest.newBuilder()
-                .uri(URI.create(RESULTS_URL + searchRefId))
-                .header("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:144.0) Gecko/20100101 Firefox/144.0")
-                .header("Content-Type", "application/json;charset=UTF-8")
-                .GET()
-                .build();
-
-        HttpResponse<String> searchResultResponse = httpClient.send(searchResultRequest, HttpResponse.BodyHandlers.ofString());
-        if (searchResultResponse.statusCode() != 200) {
-            log.warn("GET to results/{} failed with status: {}", searchRefId, searchResultResponse.statusCode());
-            return null;
-        }
-        return gson.fromJson(searchResultResponse.body(), JsonObject.class);
+        JsonObject json = gson.fromJson(resp.body(), JsonObject.class);
+        return json.has("search_reference") ? json.get("search_reference").getAsString() : null;
     }
+
+
 }

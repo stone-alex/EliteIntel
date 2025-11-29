@@ -54,16 +54,14 @@ public class StellarObjectSearchRequestDto implements ToJsonConvertible {
 
         @SerializedName("distance")
         private Distance distance;
+        @SerializedName("reserve_level")
+        private ReserveLevel reserveLevel;
+        @SerializedName("ring_signals")
+        private List<RingSignal> ringSignals;
 
         public void setDistance(Distance distance) {
             this.distance = distance;
         }
-
-        @SerializedName("reserve_level")
-        private ReserveLevel reserveLevel;
-
-        @SerializedName("ring_signals")
-        private List<RingSignal> ringSignals;
 
         public void setReserveLevel(ReserveLevel reserveLevel) {
             this.reserveLevel = reserveLevel;

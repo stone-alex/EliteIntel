@@ -17,7 +17,7 @@ import javax.sound.sampled.TargetDataLine;
 public class AudioFormatDetector {
     private static final Logger log = LogManager.getLogger(AudioFormatDetector.class);
     private static final int CHANNELS = 1; // Mono
-    private static final int[] POSSIBLE_RATES = {48000, 44100, 16000}; // Preferred rates in order
+    private static final int[] POSSIBLE_RATES = {192000, 48000, 44100, 16000}; // Preferred rates in order
 
     /**
      * Detects a supported audio format for mono 16-bit input by checking available sample rates.

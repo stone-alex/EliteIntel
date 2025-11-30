@@ -27,7 +27,6 @@ public class FleetCarrierSearch {
 
 
     public FleetCarrierSearchResultsDto findFleetCarrier(int range, CarrierAccess carrierAccess, PlayerSession.GalacticCoordinates coords) {
-        try {
             FleetCarrierSearchCriteriaDto criteria = new FleetCarrierSearchCriteriaDto();
             FleetCarrierSearchCriteriaDto.Filters filters = new FleetCarrierSearchCriteriaDto.Filters();
 
@@ -63,8 +62,5 @@ public class FleetCarrierSearch {
             JsonObject jsonObject = FindFleetCarrierClient.getInstance().performSearch(criteria);
             return GsonFactory.getGson().fromJson(jsonObject, FleetCarrierSearchResultsDto.class);
 
-        }catch (IOException | InterruptedException e){
-            return null;
-        }
     }
 }

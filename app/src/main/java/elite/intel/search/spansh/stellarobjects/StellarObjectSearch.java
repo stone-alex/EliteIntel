@@ -23,7 +23,6 @@ public class StellarObjectSearch {
 
     public StellarObjectSearchResultDto findRings(String material, ReserveLevel level, PlayerSession.GalacticCoordinates coords, int range) {
 
-        try {
             StellarObjectSearchClient searchClient = StellarObjectSearchClient.getInstance();
             StellarObjectSearchRequestDto criteria = new StellarObjectSearchRequestDto();
 
@@ -56,8 +55,6 @@ public class StellarObjectSearch {
             criteria.setReferenceCoords(referenceCoords);
 
             return GsonFactory.getGson().fromJson(searchClient.performSearch(criteria), StellarObjectSearchResultDto.class);
-        } catch (InterruptedException | IOException e) {
-            throw new RuntimeException(e);
-        }
+
     }
 }

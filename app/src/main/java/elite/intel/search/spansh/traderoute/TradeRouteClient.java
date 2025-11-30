@@ -3,10 +3,7 @@ package elite.intel.search.spansh.traderoute;
 import elite.intel.search.spansh.client.SpanshClient;
 import elite.intel.util.json.GsonFactory;
 
-import java.io.IOException;
-
 public class TradeRouteClient extends SpanshClient {
-
 
     private static TradeRouteClient instance;
 
@@ -23,10 +20,6 @@ public class TradeRouteClient extends SpanshClient {
 
 
     public TradeRouteResponse getTradeRoute(TradeRouteSearchCriteria criteria) {
-        try {
-            return GsonFactory.getGson().fromJson(performSearch(criteria), TradeRouteResponse.class);
-        } catch (IOException | InterruptedException e) {
-            return null;
-        }
+        return GsonFactory.getGson().fromJson(performSearch(criteria), TradeRouteResponse.class);
     }
 }

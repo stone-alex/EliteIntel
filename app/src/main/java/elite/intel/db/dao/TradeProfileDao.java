@@ -17,15 +17,15 @@ public interface TradeProfileDao {
     TradeProfile getTradeProfile(int shipId);
 
     @SqlUpdate("""
-            INSERT INTO trade_profile (shipId, padSize, allowPlanetary, allowProhibited, allowPermit, allowFleetCarrier, defaultBudget, maxDistanceLy, maxHops)
-            values(:shipId, :padSize, :allowPlanetary, :allowProhibited, :allowPermit, :allowFleetCarrier, :defaultBudget, :maxDistanceLy, :maxHops)
+            INSERT INTO trade_profile (shipId, padSize, allowPlanetary, allowProhibited, allowPermit, allowFleetCarrier, startingBudget, maxDistanceLy, maxHops)
+            values(:shipId, :padSize, :allowPlanetary, :allowProhibited, :allowPermit, :allowFleetCarrier, :startingBudget, :maxDistanceLy, :maxHops)
                 on conflict do update set
                     padSize = excluded.padSize,
                     allowFleetCarrier = excluded.allowFleetCarrier,
                     allowPlanetary = excluded.allowPlanetary,
                     allowPermit = excluded.allowPermit,
                     allowProhibited = excluded.allowProhibited,
-                    defaultBudget = excluded.defaultBudget,
+                    defaultBudget = excluded.startingBudget,
                     maxDistanceLy = excluded.maxDistanceLy,
                     maxHops = excluded.maxHops
             """)
@@ -44,7 +44,7 @@ public interface TradeProfileDao {
             profile.setAllowProhibited(rs.getBoolean("allowProhibited"));
             profile.setAllowPermit(rs.getBoolean("allowPermit"));
             profile.setAllowFleetCarrier(rs.getBoolean("allowFleetCarrier"));
-            profile.setDefaultBudget(rs.getDouble("defaultBudget"));
+            profile.setStartingBudget(rs.getInt("startingBudget"));
             profile.setMaxDistanceLy(rs.getInt("maxDistanceLy"));
             profile.setMaxHops(rs.getInt("maxHops"));
             return profile;
@@ -60,7 +60,7 @@ public interface TradeProfileDao {
         private boolean allowProhibited;
         private boolean allowPermit;
         private boolean allowFleetCarrier;
-        private Double defaultBudget;
+        private Integer startingBudget;
         private Integer maxDistanceLy;
         private Integer maxHops;
 
@@ -112,12 +112,12 @@ public interface TradeProfileDao {
             this.allowFleetCarrier = allowFleetCarrier;
         }
 
-        public Double getDefaultBudget() {
-            return defaultBudget;
+        public Integer getStartingBudget() {
+            return startingBudget;
         }
 
-        public void setDefaultBudget(Double defaultBudget) {
-            this.defaultBudget = defaultBudget;
+        public void setStartingBudget(Integer startingBudget) {
+            this.startingBudget = startingBudget;
         }
 
         public Integer getMaxDistanceLy() {

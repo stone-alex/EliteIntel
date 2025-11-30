@@ -2,6 +2,7 @@ package elite.intel.ai.mouth.google;
 
 import com.google.cloud.texttospeech.v1.*;
 import com.google.common.eventbus.Subscribe;
+import elite.intel.ai.ears.IsSpeakingEvent;
 import elite.intel.ai.mouth.AiVoices;
 import elite.intel.ai.mouth.AudioDeClicker;
 import elite.intel.ai.mouth.MouthInterface;
@@ -307,6 +308,7 @@ public class GoogleTTSImpl implements MouthInterface {
             persistentLine.write(silenceBuffer, 0, silenceBuffer.length);
             log.info("Spoke with voice {}: {}", voiceName, text);
             long writeStartTime = System.currentTimeMillis();
+            EventBusManager.publish(new IsSpeakingEvent(true));
             for (int i = 0; i < audioData.length; i += bufferBytes) {
                 if (interruptRequested.get()) {
                     log.debug("Playback interrupted mid-stream: {}", text);
@@ -329,6 +331,7 @@ public class GoogleTTSImpl implements MouthInterface {
         } finally {
             currentLine.set(null);
             interruptRequested.set(false);
+            EventBusManager.publish(new IsSpeakingEvent(false));
         }
         log.debug("VoiceRequest processing completed in {}ms", System.currentTimeMillis() - startTime);
     }

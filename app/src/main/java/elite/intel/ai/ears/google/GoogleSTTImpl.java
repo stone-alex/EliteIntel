@@ -2,6 +2,7 @@ package elite.intel.ai.ears.google;
 
 import com.google.api.gax.rpc.ApiStreamObserver;
 import com.google.cloud.speech.v1.*;
+import com.google.common.eventbus.Subscribe;
 import com.google.protobuf.ByteString;
 import elite.intel.ai.ears.*;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
@@ -377,6 +378,12 @@ public class GoogleSTTImpl implements EarsInterface {
         log.info("Processing sanitizedTranscript: {}", sanitizedTranscript);
         EventBusManager.publish(new UserInputEvent(sanitizedTranscript, confidence));
     }
+
+
+    @Subscribe public void onIsSpeakingEvent(IsSpeakingEvent event) {
+        isSpeaking.set(event.isSpeaking());
+    }
+
 
     private StreamingRecognitionConfig getStreamingRecognitionConfig() {
         Set<String> correctionSet = new HashSet<>(corrections.values());

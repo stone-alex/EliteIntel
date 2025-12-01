@@ -23,10 +23,11 @@ public class CalculateTradeRouteHandler implements CommandHandler {
         if (profileManager.getCriteria().getStartingCapital() == 0) {
             String shipName = playerSession.getShipLoadout().getShipName();
             StringBuilder sb = new StringBuilder();
-            sb.append(" There is no trading profile for " + shipName + " You will have to set it once per cargo ship you own.");
-            sb.append(" To set a trading profile, say: Change trading profile, followed by profile parameter. Available parameters are:\n");
-            sb.append(" Starting Capital, distance from entry, maximum stops, allow Permit protected systems, allow Planetary Ports, allow Fleet Carrier allow Prohibited cargo.");
-            sb.append(" Example: change trading profile, set startingCapital 100000");
+            sb.append(" There is no trading profile for " + shipName + " You will have to set one up once per cargo ship you own.");
+            sb.append(" To set a trading profile, say: Change trading profile, followed by profile parameter.");
+            sb.append(" Available parameters are:\n");
+            sb.append(" Starting Capital, Distance from entry, Maximum stops, Allow Permit protected systems, Allow Planetary Ports, Allow Fleet Carriers and Allow Prohibited cargo.");
+            sb.append(" Example: change trading profile, set Starting Capital 100000");
             sb.append(" Please set one parameter at a time. Ask me to list trade profile parameters if you need help.");
             EventBusManager.publish(
                     new AiVoxResponseEvent(sb.toString())
@@ -34,14 +35,14 @@ public class CalculateTradeRouteHandler implements CommandHandler {
             return;
         }
 
-        if (profileManager.getCriteria().getMaxHops() == 0){
+        if (profileManager.getCriteria().getMaxJumps() == 0){
             String shipName = playerSession.getShipLoadout().getShipName();
             EventBusManager.publish(new AiVoxResponseEvent("There is no number of stops set for " + shipName + ". Please set it with command: Change trade profile set maximum stops, followed by number of stops."));
             return;
         }
 
 
-        if (profileManager.getCriteria().getMaxHopDistance() == 0){
+        if (profileManager.getCriteria().getMaxDistanceFromStar() == 0){
             String shipName = playerSession.getShipLoadout().getShipName();
             EventBusManager.publish(new AiVoxResponseEvent("There is no maximum distance from entry set for " + shipName + ". Please set it with command: Change trade profile set distance from entry, followed by a number of light seconds."));
             return;

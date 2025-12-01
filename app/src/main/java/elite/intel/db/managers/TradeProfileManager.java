@@ -4,6 +4,7 @@ import elite.intel.db.dao.ShipDao;
 import elite.intel.db.dao.TradeProfileDao;
 import elite.intel.db.util.Database;
 import elite.intel.search.spansh.traderoute.TradeRouteSearchCriteria;
+import elite.intel.util.ShipPadSizes;
 
 public class TradeProfileManager {
 
@@ -30,9 +31,9 @@ public class TradeProfileManager {
         criteria.setAllowProhibited(profile.isAllowProhibited());
         criteria.setAllowFleetCarriers(profile.isAllowFleetCarrier());
         criteria.setMaxCargo(ship.getCargoCapacity());
-        criteria.setMaxHopDistance(profile.getMaxDistanceLs());
-        criteria.setMaxHops(profile.getMaxJumps());
-        criteria.setRequiresLargePad(true /* TODO: Need a way to determine this*/);
+        criteria.setMaxDistanceFromStar(profile.getMaxDistanceLs());
+        criteria.setMaxJumps(profile.getMaxJumps());
+        criteria.setRequiresLargePad("L".equals(ShipPadSizes.getPadSize(ship.getShipIdentifier())));
         criteria.setStartingCapital(profile.getStartingBudget());
         return criteria;
     }

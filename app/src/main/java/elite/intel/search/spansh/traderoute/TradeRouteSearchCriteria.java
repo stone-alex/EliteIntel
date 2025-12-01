@@ -19,11 +19,11 @@ public class TradeRouteSearchCriteria implements StringQuery {
     private boolean allowFleetCarriers;
     private boolean allowPermit;
 
-    public void setMaxHops(int maxHops) {
+    public void setMaxJumps(int maxHops) {
         this.maxHops = maxHops;
     }
 
-    public void setMaxHopDistance(int maxHopDistance) {
+    public void setMaxDistanceFromStar(int maxHopDistance) {
         this.maxHopDistance = maxHopDistance;
     }
 
@@ -68,11 +68,11 @@ public class TradeRouteSearchCriteria implements StringQuery {
         this.allowPermit = allowPermit;
     }
 
-    public int getMaxHops() {
+    public int getMaxJumps() {
         return maxHops;
     }
 
-    public int getMaxHopDistance() {
+    public int getMaxDistanceFromStar() {
         return maxHopDistance;
     }
 

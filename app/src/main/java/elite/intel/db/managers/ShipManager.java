@@ -20,13 +20,13 @@ public class ShipManager {
      * Creates or updates ship on LoadoutEvent.
      *
      */
-    public void save(int shipId, String shipName, int cargoCapacity, String shipIdent) {
+    public void save(int shipId, String shipName, int cargoCapacity, String shipMake) {
         Database.withDao(ShipDao.class, dao -> {
             ShipDao.Ship ship = new ShipDao.Ship();
             ship.setShipId(shipId);
             ship.setShipName(shipName);
             ship.setCargoCapacity(cargoCapacity);
-            ship.setShipIdentifier(shipIdent);
+            ship.setShipIdentifier(shipMake);
             dao.save(ship);
             return null;
         });

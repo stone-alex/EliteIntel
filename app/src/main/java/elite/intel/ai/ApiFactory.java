@@ -106,8 +106,6 @@ public class ApiFactory {
                 return GoogleTTSImpl.getInstance();
             // TODO: Add ElevenLabs, AWS Polly, etc.
             default:
-                EventBusManager.publish(new AppLogEvent("Unknown TTS key format"));
-                EventBusManager.publish(new AiVoxResponseEvent("Using default Google TTS—confirm?"));
                 return PiperTTS.getInstance();
         }
     }

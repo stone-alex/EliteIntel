@@ -1,2 +1,2 @@
-git tag -a v2025.11.30.beta-0143 -m "Added re-sampling to 48kHz for Google STT"
-git push origin v2025.11.30.beta-0143
+git tag -a v2025.12.1.beta-0144 -m "Prompt Adjustments"
+git push origin v2025.12.1.beta-0144

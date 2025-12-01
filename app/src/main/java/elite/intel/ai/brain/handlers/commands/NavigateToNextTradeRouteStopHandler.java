@@ -34,7 +34,7 @@ public class NavigateToNextTradeRouteStopHandler extends CommandOperator impleme
         TradeRouteStationInfo tradePort = nextStop.getTradeRouteStationInfo();
         routePlotter.plotRoute(tradePort.getSystem());
 
-        reminderManager.setDestination(new Reminder(nextStop.getComodityInfo(), nextStop.getTradeRouteStationInfo()).toJson());
+        reminderManager.setDestination(new Reminder(nextStop.getCommodityInfo(), nextStop.getTradeRouteStationInfo()).toJson());
     }
 
     record Reminder(TradeCommodityInfo commodityInfo, TradeRouteStationInfo tadePortInfo) implements ToJsonConvertible {

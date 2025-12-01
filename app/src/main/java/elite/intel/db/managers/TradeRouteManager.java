@@ -130,16 +130,16 @@ public class TradeRouteManager {
     }
 
     public class TradeRouteLegTuple<K, V> {
-        private final K comodityInfo;
+        private final K commodityInfo;
         private final V tradeRouteStationInfo;
 
-        public TradeRouteLegTuple(K comodityInfo, V tradeRouteStationInfo) {
-            this.comodityInfo = comodityInfo;
+        public TradeRouteLegTuple(K commodityInfo, V tradeRouteStationInfo) {
+            this.commodityInfo = commodityInfo;
             this.tradeRouteStationInfo = tradeRouteStationInfo;
         }
 
-        public K getComodityInfo() {
-            return comodityInfo;
+        public K getCommodityInfo() {
+            return commodityInfo;
         }
 
         public V getTradeRouteStationInfo() {

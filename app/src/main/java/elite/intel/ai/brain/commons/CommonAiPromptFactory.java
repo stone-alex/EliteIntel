@@ -66,6 +66,7 @@ public class CommonAiPromptFactory implements elite.intel.ai.brain.AiPromptFacto
         sb.append("    - For 'find*' commands that contain distance in light years provide {\"key\":\"value\"} where key is integer representing distance in light years. ");
         sb.append("    - For commands like ").append(INCREASE_SPEED_BY.getAction()).append(" provide params json {\"key\":\"value\"} where value is a positive integer. example: {\"key\":\"3\"}.");
         sb.append("    - For commands like ").append(DECREASE_SPEED_BY.getAction()).append(" provide params json {\"key\":\"value\"} where value is a negative integer example: {\"key\":\"-3\"}.");
+        sb.append("    - Always extract and return numeric values as plain integers without commas, spaces, or words (e.g., 2000000, not '2 million' or 'two million').");
         sb.append("    - For toggle commands such as turn off, turn on, cancel, enable or disable, ALWAYS provide params json {\"state\":\"true\"} / {\"state\":\"false\"}. ");
         sb.append("    - Distinguish between fleet carrier route and ship route. Fleet carrier fuel (tritium), and fuel for the ship (hydrogen from fuel stars). Fleet carrier has to be mentioned explicitly, else it is ship route and ship fuel.");
         sb.append("    - Only use commands and queries provided. Else response as generic chat.");
@@ -131,7 +132,7 @@ public class CommonAiPromptFactory implements elite.intel.ai.brain.AiPromptFacto
     public String generateSystemPrompt() {
         StringBuilder sb = new StringBuilder();
         sb.append("Instructions:\n\n");
-        sb.append("Map commands or queries to the provided Supported Command or Supported Queries. ");
+        sb.append("Only return a command from the exact list provided below — never invent, combine, or create new commands, even if the user input seems similar.");
         sb.append(inputClassificationClause());
         sb.append(generateSupportedCommandsCause());
         sb.append(generateSupportedQueriesClause());

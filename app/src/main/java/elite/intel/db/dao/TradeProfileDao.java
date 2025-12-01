@@ -17,21 +17,19 @@ public interface TradeProfileDao {
     TradeProfile getTradeProfile(int shipId);
 
     @SqlUpdate("""
-            INSERT INTO trade_profile (shipId, padSize, allowPlanetary, allowProhibited, allowPermit, allowFleetCarrier, startingBudget, maxDistanceLy, maxHops)
-            values(:shipId, :padSize, :allowPlanetary, :allowProhibited, :allowPermit, :allowFleetCarrier, :startingBudget, :maxDistanceLy, :maxHops)
+            INSERT INTO trade_profile (shipId, padSize, allowPlanetary, allowProhibited, allowPermit, allowFleetCarrier, startingBudget, maxDistanceLs, maxJumps)
+            values(:shipId, :padSize, :allowPlanetary, :allowProhibited, :allowPermit, :allowFleetCarrier, :startingBudget, :maxDistanceLs, :maxJumps)
                 on conflict do update set
                     padSize = excluded.padSize,
                     allowFleetCarrier = excluded.allowFleetCarrier,
                     allowPlanetary = excluded.allowPlanetary,
                     allowPermit = excluded.allowPermit,
                     allowProhibited = excluded.allowProhibited,
-                    defaultBudget = excluded.startingBudget,
-                    maxDistanceLy = excluded.maxDistanceLy,
-                    maxHops = excluded.maxHops
+                    startingBudget = excluded.startingBudget,
+                    maxDistanceLs = excluded.maxDistanceLs,
+                    maxJumps = excluded.maxJumps
             """)
     void save(@BindBean TradeProfileDao.TradeProfile profile);
-
-
 
 
     class TradeProfileMapper implements RowMapper<TradeProfile> {
@@ -45,24 +43,23 @@ public interface TradeProfileDao {
             profile.setAllowPermit(rs.getBoolean("allowPermit"));
             profile.setAllowFleetCarrier(rs.getBoolean("allowFleetCarrier"));
             profile.setStartingBudget(rs.getInt("startingBudget"));
-            profile.setMaxDistanceLy(rs.getInt("maxDistanceLy"));
-            profile.setMaxHops(rs.getInt("maxHops"));
+            profile.setMaxDistanceLs(rs.getInt("maxDistanceLs"));
+            profile.setMaxJumps(rs.getInt("maxJumps"));
             return profile;
         }
     }
 
 
-
     class TradeProfile {
         private Integer shipId;
-        private String padSize;
-        private boolean allowPlanetary;
-        private boolean allowProhibited;
-        private boolean allowPermit;
-        private boolean allowFleetCarrier;
-        private Integer startingBudget;
-        private Integer maxDistanceLy;
-        private Integer maxHops;
+        private String padSize = "S"; //TODO must compute the actual required size.
+        private boolean allowPlanetary = false;
+        private boolean allowProhibited = false;
+        private boolean allowPermit = false;
+        private boolean allowFleetCarrier = false;
+        private Integer startingBudget = 0;
+        private Integer maxDistanceLs = 0;
+        private Integer maxJumps = 0;
 
         public Integer getShipId() {
             return shipId;
@@ -120,20 +117,20 @@ public interface TradeProfileDao {
             this.startingBudget = startingBudget;
         }
 
-        public Integer getMaxDistanceLy() {
-            return maxDistanceLy;
+        public Integer getMaxDistanceLs() {
+            return maxDistanceLs;
         }
 
-        public void setMaxDistanceLy(Integer maxDistanceLy) {
-            this.maxDistanceLy = maxDistanceLy;
+        public void setMaxDistanceLs(Integer maxDistanceLs) {
+            this.maxDistanceLs = maxDistanceLs;
         }
 
-        public Integer getMaxHops() {
-            return maxHops;
+        public Integer getMaxJumps() {
+            return maxJumps;
         }
 
-        public void setMaxHops(Integer maxHops) {
-            this.maxHops = maxHops;
+        public void setMaxJumps(Integer maxJumps) {
+            this.maxJumps = maxJumps;
         }
     }
 }

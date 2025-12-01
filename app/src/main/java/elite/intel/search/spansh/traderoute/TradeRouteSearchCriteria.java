@@ -68,6 +68,54 @@ public class TradeRouteSearchCriteria implements StringQuery {
         this.allowPermit = allowPermit;
     }
 
+    public int getMaxHops() {
+        return maxHops;
+    }
+
+    public int getMaxHopDistance() {
+        return maxHopDistance;
+    }
+
+    public String getSystem() {
+        return system;
+    }
+
+    public String getStation() {
+        return station;
+    }
+
+    public int getStartingCapital() {
+        return startingCapital;
+    }
+
+    public int getMaxCargo() {
+        return maxCargo;
+    }
+
+    public int getMaxSystemDistance() {
+        return maxSystemDistance;
+    }
+
+    public boolean isRequiresLargePad() {
+        return requiresLargePad;
+    }
+
+    public boolean isAllowProhibited() {
+        return allowProhibited;
+    }
+
+    public boolean isAllowPlanetary() {
+        return allowPlanetary;
+    }
+
+    public boolean isAllowFleetCarriers() {
+        return allowFleetCarriers;
+    }
+
+    public boolean isAllowPermit() {
+        return allowPermit;
+    }
+
     @Override public String getQuery() {
 
         String criteria = "max_hops=" + maxHops +

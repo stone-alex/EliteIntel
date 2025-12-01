@@ -27,7 +27,7 @@ and either OpenAI's GPT or xAI's Grok for handling commands, queries, and chats.
 game data from journal and auxiliary files, pulls in info from EDSM when needed, and keeps 
 things responsive.
 
-[👉**Real life LLM cost breakdown**👈](https://github.com/stone-alex/EliteIntel/wiki/LLM-Real-Love-Cost)
+[👉**Real life LLM cost breakdown**👈](https://github.com/stone-alex/EliteIntel/wiki/LLM-Real-Live-Cost)
 
 ---
 

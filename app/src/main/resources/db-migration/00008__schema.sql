@@ -16,9 +16,9 @@ create table if not exists trade_profile (
     allowProhibited   INTEGER NOT NULL DEFAULT 0,
     allowPermit       INTEGER NOT NULL DEFAULT 0,
     allowFleetCarrier INTEGER NOT NULL DEFAULT 0,
-    startingBudget     integer    NOT NULL DEFAULT 0,
-    maxDistanceLy     INTEGER,
-    maxHops           INTEGER NOT NULL DEFAULT 15,
+    startingBudget    integer NOT NULL DEFAULT 0,
+    maxDistanceLs     INTEGER,
+    maxJumps           INTEGER NOT NULL DEFAULT 15,
     FOREIGN KEY (shipId) REFERENCES ship(shipId) ON DELETE CASCADE
 );
 create index if not exists trade_profile_ship_id_index on trade_profile(shipId);

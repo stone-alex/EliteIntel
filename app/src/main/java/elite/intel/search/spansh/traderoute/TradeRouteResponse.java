@@ -8,11 +8,11 @@ import java.util.List;
 
 public class TradeRouteResponse implements ToJsonConvertible {
 
-    @SerializedName("result") public List<RouteLeg> result;
+    @SerializedName("result") public List<TradeRouteLeg> result;
     @SerializedName("state") public String state;
     @SerializedName("status") public String status;
 
-    public List<RouteLeg> getResult() {
+    public List<TradeRouteLeg> getResult() {
         return result;
     }
 
@@ -29,44 +29,6 @@ public class TradeRouteResponse implements ToJsonConvertible {
     }
 }
 
-// ──────────────────────────────────────────────────────────────────────
-
-class RouteLeg implements ToJsonConvertible {
-    @SerializedName("commodities") public List<CommodityLeg> commodities;
-    @SerializedName("cumulative_profit") public long cumulativeProfit;
-    @SerializedName("destination") public StationInfo destination;
-    @SerializedName("distance") public double distance;
-    @SerializedName("source") public StationInfo source;
-    @SerializedName("total_profit") public long totalProfit;
-
-    public List<CommodityLeg> getCommodities() {
-        return commodities;
-    }
-
-    public long getCumulativeProfit() {
-        return cumulativeProfit;
-    }
-
-    public StationInfo getDestination() {
-        return destination;
-    }
-
-    public double getDistance() {
-        return distance;
-    }
-
-    public StationInfo getSource() {
-        return source;
-    }
-
-    public long getTotalProfit() {
-        return totalProfit;
-    }
-
-    @Override public String toJson() {
-        return GsonFactory.getGson().toJson(this);
-    }
-}
 
 // ──────────────────────────────────────────────────────────────────────
 
@@ -129,60 +91,6 @@ class CommodityInfo implements ToJsonConvertible {
 
     public long getSupply() {
         return supply;
-    }
-
-    @Override public String toJson() {
-        return GsonFactory.getGson().toJson(this);
-    }
-}
-
-// ──────────────────────────────────────────────────────────────────────
-
-class StationInfo implements ToJsonConvertible {
-    @SerializedName("distance_to_arrival") public double distanceToArrival;
-    @SerializedName("market_id") public long marketId;
-    @SerializedName("market_updated_at") public long marketUpdatedAt;
-    @SerializedName("station") public String station;
-    @SerializedName("system") public String system;
-    @SerializedName("system_id64") public long systemId64;   // we ignore it but keep for completeness
-    @SerializedName("x") public double x;
-    @SerializedName("y") public double y;
-    @SerializedName("z") public double z;
-
-    public double getDistanceToArrival() {
-        return distanceToArrival;
-    }
-
-    public long getMarketId() {
-        return marketId;
-    }
-
-    public long getMarketUpdatedAt() {
-        return marketUpdatedAt;
-    }
-
-    public String getStation() {
-        return station;
-    }
-
-    public String getSystem() {
-        return system;
-    }
-
-    public long getSystemId64() {
-        return systemId64;
-    }
-
-    public double getX() {
-        return x;
-    }
-
-    public double getY() {
-        return y;
-    }
-
-    public double getZ() {
-        return z;
     }
 
     @Override public String toJson() {

@@ -118,6 +118,13 @@ public enum Commands {
     SHUT_DOWN("system_shut_down", null, null,  SystemShutDownRequestHandler.class),
 
 
+    CALCULATE_TRADE_ROUTE("calculate_trade_route", null, null, CalculateTradeRouteHandler.class),
+    CHANGE_TRADE_PROFILE_SET_STARTING_BUDGET("change_trade_profile_set_starting_budget", null, "budget", ChangeTradeProfileSetStartingBudgetHander.class),
+    CHANGE_TRADE_PROFILE_SET_MAX_NUMBER_OF_STOPS("change_trade_profile_set_maximum_number_of_stops", null, "numstops", ChangeTradeProfileSetMaxStopsHandler.class),
+    CAHNGE_TRADE_PROFILE_SET_MAX_DISTANCE_FROM_ENTRY("change_trade_profile_set_maximum_distance_from_entry", null, "maxdist", ChangeTradeProfileSetMaxDistanceFromEntryHandler.class),
+    CHANGE_TRADE_PROFILE_SET_ALLOW_PROHIBITED_CARGO("change_trade_profile_toggle_prohibited_cargo", null, "on_off", ChangeTradeProfileSetAllowProhibitedCargoHandler.class),
+    CHANGE_TRADE_PROFILE_SET_ALLOW_PLANETARY_PORT("change_trade_profile_toggle_planetary_ports", null, "on_off", ChangeTradeProfileSetIncluidePlanetaryPortsHandler.class),
+    CHANGE_TRADE_PROFILE_SET_ALLOW_PERMIT_SYSTEMS("change_trade_profile_toggle_permit_protected_star_systems", null, "on_off", ChangeTradeProfileAllowPermitSystemsHandler.class),
 
     /// Generic simple commands. no parameters, but require binding
     ACTIVATE("activate", BINDING_ACTIVATE.getGameBinding(), null, GenericGameControlHandler.class),

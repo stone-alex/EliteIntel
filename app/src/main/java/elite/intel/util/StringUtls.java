@@ -12,6 +12,16 @@ public class StringUtls {
         return a.replace(b, "").replace("null", "").trim();
     }
 
+
+    public static Integer getIntSafely(String value) {
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+
     /**
      * Converts all characters to lower case and capitalizes the first character of each word in the string
      *

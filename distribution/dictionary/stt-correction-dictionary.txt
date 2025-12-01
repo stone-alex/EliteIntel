@@ -243,3 +243,4 @@
 "eccentric"="entry"
 "analyzed"="analyze"
 "and down"="shutdown"
+"pinch"="change"

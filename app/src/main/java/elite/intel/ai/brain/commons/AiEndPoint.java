@@ -99,10 +99,10 @@ public abstract class AiEndPoint {
             LlmMetadata meta = GsonFactory.getGson().fromJson(responseData, LlmMetadata.class);
             EventBusManager.publish(
                     new AppLogEvent(
-                            "Model: " + meta.model() + "| Cached tokens " + meta.cachedTokens() +"| Reasoning Tokens:"+meta.reasoningTokens()  + "| Total Tokens:" + meta.totalTokens()
+                            "Model: " + meta.model() + "| Tokens > Cached:" + meta.cachedTokens() +"| Reasoning:"+meta.reasoningTokens() +"| Prompt:"+meta.usage().promptTokens() + "| Total:" + meta.totalTokens()
                     )
             );
-            log.info("LLM Stats: " + meta.toString());
+            log.info("LLM Stats: " + meta);
             return new Response(responseData, response);
         } catch (JsonSyntaxException e) {
             log.error("Failed to parse API response:\n{}", response, e);

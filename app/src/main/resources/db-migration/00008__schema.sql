@@ -1,0 +1,1 @@
+alter table player add column game_build text;

@@ -86,7 +86,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setTotalBountyClaimed(totalReward);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -165,7 +165,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setBountyCollectedThisSession(0);
             dao.save(player);
-            return null;
+            return Void.class;
         });
         setTotalBountyProfit(0);
         setTotalBountyClaimed(0);
@@ -185,7 +185,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setCurrentLocationId(id);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -275,7 +275,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setLastScanId(lastScan.getBodyId());
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -300,7 +300,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setTotalHyperspaceDistance(totalHyperspaceDistance);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -309,7 +309,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setInsuranceClaims(insuranceClaims);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -318,7 +318,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setTotalProfitsFromExploration(totalProfitsFromExploration);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -327,7 +327,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setExobiologyProfits(exobiologyProfits);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -336,7 +336,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setHighestSingleTransaction(highestSingleTransaction);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -349,7 +349,7 @@ public class PlayerSession  {
             PlayerDao.Player player = playerDao.get();
             player.setFinalDestination(finalDestination);
             playerDao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -358,7 +358,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setMarketProfits(marketProfits);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -367,7 +367,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setCurrentShip(currentShip);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -376,7 +376,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setTotalBountyProfit(totalBountyProfit);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -389,7 +389,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setPlayerMissionStatement(playerMissionStatement);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -398,7 +398,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setCrewWagsPayout(crewWagsPayout);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -411,7 +411,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setPlayerTitle(playerTitle);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -420,7 +420,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setCurrentShipName(currentShipName);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -430,7 +430,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setPersonalCreditsAvailable(personalCreditsAvailable);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -439,7 +439,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setShipsOwned(shipsOwned);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -452,7 +452,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setPlayerName(playerName);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -465,7 +465,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setLastKnownCarrierLocation(lastKnownCarrierLocation);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -475,7 +475,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setShipFuelLevel(shipFuelLevel);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -488,7 +488,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setCarrierDepartureTime(carrierDepartureTime);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -501,7 +501,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setPlayerHighestMilitaryRank(playerHighestMilitaryRank);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -510,7 +510,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setSpeciesFirstLogged(speciesFirstLogged);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -519,7 +519,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setShipCargoCapacity(shipCargoCapacity);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -528,7 +528,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setTotalSystemsVisited(totalSystemsVisited);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -537,7 +537,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setTotalBountyClaimed(totalBountyClaimed);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -546,7 +546,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setGoodsSoldThisSession(goodsSoldThisSession);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -555,7 +555,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setTotalDistanceTraveled(totalDistanceTraveled);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -576,7 +576,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setRadioTransmissionOn(radioTransmissionOn);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -589,7 +589,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setMiningAnnouncementOn(miningAnnouncementOn);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -602,7 +602,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setNavigationAnnouncementOn(navigationAnnouncementOn);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -615,7 +615,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setDiscoveryAnnouncementOn(discoveryAnnouncementOn);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -629,7 +629,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setRouteAnnouncementOn(routeAnnouncementOn);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -652,7 +652,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setCurrentWealth(currentWealth);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -667,7 +667,16 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setGameVersion(gameversion);
             dao.save(player);
-            return null;
+            return Void.class;
+        });
+    }
+    
+    public void setGameBuild(String gameBuild){
+        Database.withDao(PlayerDao.class, dao ->{
+            PlayerDao.Player player = dao.get();
+            player.setGameBuild(gameBuild);
+            dao.save(player);
+            return Void.class;
         });
     }
 
@@ -675,12 +684,16 @@ public class PlayerSession  {
         return Database.withDao(PlayerDao.class, dao -> dao.get().getGameVersion());
     }
 
+    public String getGameBuild(){
+        return Database.withDao(PlayerDao.class, dao -> dao.get().getGameBuild());
+    }
+
     public void setInGameName(String inGameName) {
         Database.withDao(PlayerDao.class, dao -> {
             PlayerDao.Player player = dao.get();
             player.setInGameName(inGameName);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -693,7 +706,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setCurrentPrimaryStar(starName);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -702,7 +715,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setJournalDirectory(path);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -718,7 +731,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setBindingsDirectory(path);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -734,7 +747,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setAlternativeName(alternativeName);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 

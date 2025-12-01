@@ -18,7 +18,7 @@ create table if not exists trade_profile (
     allowFleetCarrier INTEGER NOT NULL DEFAULT 0,
     startingBudget    integer NOT NULL DEFAULT 0,
     maxDistanceLs     INTEGER,
-    maxJumps           INTEGER NOT NULL DEFAULT 15,
+    maxJumps          INTEGER NOT NULL DEFAULT 15,
     FOREIGN KEY (shipId) REFERENCES ship(shipId) ON DELETE CASCADE
 );
 create index if not exists trade_profile_ship_id_index on trade_profile(shipId);
@@ -26,9 +26,7 @@ create index if not exists trade_profile_ship_id_index on trade_profile(shipId);
 create table if not exists trade_route (
     id                INTEGER PRIMARY KEY AUTOINCREMENT,
     legNumber         INTEGER not null unique,
-    marketId          bigint not null,
-    station           text   not null,
-    starSystem        text   not null,
-    distanceToArrival double not null,
-    json              text   not null
+    starSystem              text    not null,
+    commodityInfoJson text    not null,
+    stationInfoJson   text    not null
 );

@@ -119,6 +119,7 @@ public enum Commands {
 
 
     CALCULATE_TRADE_ROUTE("calculate_trade_route", null, null, CalculateTradeRouteHandler.class),
+    NAVIGATE_TO_NEXT_TRADE_ROUTE_STOP("navigate_to_next_trade_route_stop", null, null, NavigateToNextTradeRouteStopHandler.class),
     CHANGE_TRADE_PROFILE_SET_STARTING_BUDGET("change_trade_profile_set_starting_budget", null, "budget", ChangeTradeProfileSetStartingBudgetHander.class),
     CHANGE_TRADE_PROFILE_SET_MAX_NUMBER_OF_STOPS("change_trade_profile_set_maximum_number_of_stops", null, "numstops", ChangeTradeProfileSetMaxStopsHandler.class),
     CAHNGE_TRADE_PROFILE_SET_MAX_DISTANCE_FROM_ENTRY("change_trade_profile_set_maximum_distance_from_entry", null, "maxdist", ChangeTradeProfileSetMaxDistanceFromEntryHandler.class),

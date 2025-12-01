@@ -9,8 +9,8 @@ import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.*;
 public class RoutePlotter extends CommandOperator {
 
 
-    public RoutePlotter(GameController commandHandler) {
-        super(commandHandler.getMonitor(), commandHandler.getExecutor());
+    public RoutePlotter(GameController cameController) {
+        super(cameController.getMonitor(), cameController.getExecutor());
     }
 
     public void plotRoute(String destination) {

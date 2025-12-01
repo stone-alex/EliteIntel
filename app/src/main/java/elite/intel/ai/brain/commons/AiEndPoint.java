@@ -2,6 +2,10 @@ package elite.intel.ai.brain.commons;
 
 import com.google.gson.*;
 import elite.intel.ai.brain.Client;
+import elite.intel.gameapi.EventBusManager;
+import elite.intel.ui.event.AppLogEvent;
+import elite.intel.util.json.GsonFactory;
+import elite.intel.util.json.LlmMetadata;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -24,7 +28,7 @@ public abstract class AiEndPoint {
             JsonObject sanitizedObj = new JsonObject();
             sanitizedObj.addProperty("role", original.get("role").getAsString());
             JsonElement content = original.get("content");
-            if(content!=null) {
+            if (content != null) {
                 sanitizedObj.addProperty("content", escapeJson(content.getAsString()));
             }
             sanitized.add(sanitizedObj);
@@ -83,7 +87,7 @@ public abstract class AiEndPoint {
             log.info("Stripped BOM from response");
         }
 
-        log.debug("Open AI API response:\n{}", response);
+        log.debug("Open AI API response ->:\n{}", response);
 
         if (responseCode != 200) {
             return new Response(processServerError(conn, responseCode, client), response);
@@ -91,36 +95,43 @@ public abstract class AiEndPoint {
 
 
         try {
-            return new Response(JsonParser.parseString(response).getAsJsonObject(), response);
+            JsonObject responseData = JsonParser.parseString(response).getAsJsonObject();
+            LlmMetadata meta = GsonFactory.getGson().fromJson(responseData, LlmMetadata.class);
+            EventBusManager.publish(
+                    new AppLogEvent(
+                            "Model: " + meta.model() + "| Tokens > Cached:" + meta.cachedTokens() +"| Reasoning:"+meta.reasoningTokens() +"| Prompt:"+meta.usage().promptTokens() + "| Total:" + meta.totalTokens()
+                    )
+            );
+            log.info("LLM Stats: " + meta);
+            return new Response(responseData, response);
         } catch (JsonSyntaxException e) {
             log.error("Failed to parse API response:\n{}", response, e);
             return new Response(client.createErrorResponse("Failed to parse API response"), response);
         }
     }
 
-    public record Response(JsonObject responseData, String responseMessage) {
-    }
-
-
     public StracturedResponse checkResponse(Response response) {
         JsonArray choices = response.responseData().getAsJsonArray("choices");
         if (choices == null || choices.isEmpty()) {
             log.error("No choices in API response:\n{}", response.responseMessage());
-            return new StracturedResponse(null,null,null,false);
+            return new StracturedResponse(null, null, null, false);
         }
 
         JsonObject message = choices.get(0).getAsJsonObject().getAsJsonObject("message");
         if (message == null) {
             log.error("No message in API response choices:\n{}", response.responseMessage());
-            return new StracturedResponse(null,null,null,false);
+            return new StracturedResponse(null, null, null, false);
         }
 
         String content = message.get("content").getAsString();
         if (content == null) {
             log.error("No content in API response message:\n{}", response.responseMessage());
-            return new StracturedResponse(null,null,null,false);
+            return new StracturedResponse(null, null, null, false);
         }
-        return new StracturedResponse(choices,message,content, true);
+        return new StracturedResponse(choices, message, content, true);
+    }
+
+    public record Response(JsonObject responseData, String responseMessage) {
     }
 
     public record StracturedResponse(JsonArray choices, JsonObject message, String content, boolean isSuccessful) {

@@ -23,6 +23,7 @@ public enum Commands {
     ADD_MINING_TARGET("add_mining_target", null, "mining_target", AddMiningTargetHandler.class),
     CLEAR_MINING_TARGETS("clear_mining_targets",  null, null, ClearMiningTargetsHandler.class),
     CLEAR_CACHE("clear_cache", null,  "session_clear", ClearCacheHandler.class),
+    INTERRUPT_TTS("shut_up_cancel_interrupt_tts_vocalization", null, null, ShutUpHandler.class),
 
     MIND_RAW_MATERIAL_TRADER("find_raw_material_trader", null, "distance", FindRawMaterialTraderHandler.class),
     MIND_ENCODED_MATERIAL_TRADER("find_encoded_material_trader", null, "distance", FindEncodedMaterialTraderHandler.class),

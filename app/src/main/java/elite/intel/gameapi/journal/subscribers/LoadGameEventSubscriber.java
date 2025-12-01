@@ -31,6 +31,7 @@ public class LoadGameEventSubscriber {
         playerSession.setCurrentShipName(event.getShipName());
         playerSession.setPersonalCreditsAvailable(event.getCredits());
         playerSession.setGameVersion(event.getGameversion());
+        playerSession.setGameBuild(event.getBuild());
         cleanUpRoute(playerSession);
 
         retrieveMatsFromEDSM();

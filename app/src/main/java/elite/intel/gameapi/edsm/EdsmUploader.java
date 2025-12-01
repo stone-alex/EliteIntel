@@ -71,6 +71,8 @@ public final class EdsmUploader {
         payload.addProperty("apiKey", apiKey);
         payload.addProperty("fromSoftware", "EliteIntel");
         payload.addProperty("fromSoftwareVersion", version);
+        payload.addProperty("fromGameVersion", playerSession.getGameVersion());
+        payload.addProperty("fromGameBuild", playerSession.getGameBuild());
         payload.add("message", batch);
 
         HttpRequest req = HttpRequest.newBuilder(URI.create(URL))

@@ -1,7 +1,9 @@
 package elite.intel.ai.mouth.piper;
 
+import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.ears.IsSpeakingEvent;
 import elite.intel.ai.mouth.MouthInterface;
+import elite.intel.ai.mouth.subscribers.events.TTSInterruptEvent;
 import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.ui.event.AppLogEvent;
@@ -112,6 +114,9 @@ public class PiperTTS implements MouthInterface {
         }
     }
 
+    @Subscribe public void shutUp(TTSInterruptEvent event) {
+        interruptAndClear();
+    }
 
     @Override
     public void onVoiceProcessEvent(VocalisationRequestEvent event) {

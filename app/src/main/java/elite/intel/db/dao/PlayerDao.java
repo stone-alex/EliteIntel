@@ -33,7 +33,7 @@ public interface PlayerDao {
                        target_market_station_id, total_bounty_claimed, total_bounty_profit,
                        total_distance_traveled, total_hyperspace_distance,
                        total_profits_from_exploration, total_systems_visited, exobiology_profits, alternative_name,
-                       journal_dir, bindings_dir, logging_enabled)
+                       journal_dir, bindings_dir, logging_enabled, game_build)
                     VALUES (1, :currentPrimaryStar,
                        :bountyCollectedThisSession, :carrierDepartureTime, :crewWagsPayout,
                        :currentShip, :currentShipName, :currentLocationId, :currentWealth,
@@ -48,7 +48,7 @@ public interface PlayerDao {
                        :marketId, :totalBountyClaimed, :totalBountyProfit,
                        :totalDistanceTraveled, :totalHyperspaceDistance,
                        :totalProfitsFromExploration, :totalSystemsVisited, :exobiologyProfits, :alternativeName,
-                       :journalDirectory, :bindingsDirectory, :loggingEnabled
+                       :journalDirectory, :bindingsDirectory, :loggingEnabled, :gameBuild
                     )
             """)
     void save(@BindBean Player player);
@@ -95,7 +95,7 @@ public interface PlayerDao {
         private int totalSystemsVisited = 0;
         private long exobiologyProfits = 0;
         private String currentPrimaryStar = "";
-
+        private String gameBuild = "r321306";
         private String alternativeName;
         private String journalDirectory;
         private String bindingsDirectory;
@@ -453,6 +453,14 @@ public interface PlayerDao {
         public void setExobiologyProfits(long exobiologyProfits) {
             this.exobiologyProfits = exobiologyProfits;
         }
+
+        public String getGameBuild() {
+            return gameBuild;
+        }
+
+        public void setGameBuild(String gameBuild) {
+            this.gameBuild = gameBuild;
+        }
     }
 
     class PlayerMapper implements RowMapper<Player> {
@@ -503,6 +511,7 @@ public interface PlayerDao {
             p.setJournalDirectory(rs.getString("journal_dir"));
             p.setBindingsDirectory(rs.getString("bindings_dir"));
             p.setLoggingEnabled(rs.getBoolean("logging_enabled"));
+            p.setGameBuild(rs.getString("game_build"));
             return p;
         }
     }

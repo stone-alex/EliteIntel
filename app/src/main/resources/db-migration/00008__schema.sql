@@ -1,3 +1,4 @@
+alter table player add column game_build text;
 create table if not exists ship (
     id             INTEGER PRIMARY KEY AUTOINCREMENT,
     shipName       TEXT    NOT NULL,

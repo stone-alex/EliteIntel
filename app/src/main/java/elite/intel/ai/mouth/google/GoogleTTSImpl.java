@@ -7,6 +7,7 @@ import elite.intel.ai.mouth.AiVoices;
 import elite.intel.ai.mouth.AudioDeClicker;
 import elite.intel.ai.mouth.MouthInterface;
 import elite.intel.ai.mouth.subscribers.events.BaseVoxEvent;
+import elite.intel.ai.mouth.subscribers.events.TTSInterruptEvent;
 import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
 import elite.intel.ai.mouth.subscribers.events.VocalisationSuccessfulEvent;
 import elite.intel.gameapi.EventBusManager;
@@ -147,9 +148,11 @@ public class GoogleTTSImpl implements MouthInterface {
         }
     }
 
-    @Subscribe
-    @Override
-    public void onVoiceProcessEvent(VocalisationRequestEvent event) {
+    @Subscribe public void shutUp(TTSInterruptEvent event) {
+        interruptAndClear();
+    }
+
+    @Subscribe @Override public void onVoiceProcessEvent(VocalisationRequestEvent event) {
 
         log.debug("Received VoiceProcessEvent: text='{}', useRandom={}", event.getText(), event.useRandomVoice());
         if (event.getText() == null || event.getText().isEmpty()) {

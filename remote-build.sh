@@ -1,2 +1,2 @@
-git tag -a v2025.11.29.beta-0140 -m "Added Piper TTS Local support"
-git push origin v2025.11.29.beta-0140
+git tag -a v2025.11.30.beta-0143 -m "Added re-sampling to 48kHz for Google STT"
+git push origin v2025.11.30.beta-0143

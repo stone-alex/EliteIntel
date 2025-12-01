@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GoogleSTTImpl implements EarsInterface {
     public static final double MIN_CONFIDENCE_LEVEL = 0.3; // 1 = 100%
+    private static final int TARGET_SAMPLE_RATE = 48000;  // Google loves 48k best quality/cost
     private static final Logger log = LogManager.getLogger(GoogleSTTImpl.class);
     private static final int CHANNELS = 1; // Mono
     private static final int STREAM_DURATION_MS = 290000; // ~4 min 50 sec; below Google V1 limit
@@ -33,7 +34,9 @@ public class GoogleSTTImpl implements EarsInterface {
     private static final long MIN_STREAM_GAP_MS = 30000; // Enforce 30s between stream starts
     private final AtomicBoolean isListening = new AtomicBoolean(true);
     private final AtomicBoolean isSpeaking = new AtomicBoolean(false);
+    private final SystemSession systemSession = SystemSession.getInstance();
     Map<String, String> corrections;
+    private Resampler resampler;  // lazy-init when needed
     private int sampleRateHertz;  // Dynamically detected
     private int bufferSize; // Dynamically calculated based on sample rate
     private double RMS_THRESHOLD_HIGH; // Dynamically calibrated
@@ -41,7 +44,6 @@ public class GoogleSTTImpl implements EarsInterface {
     private SpeechClient speechClient;
     private long lastAudioSentTime = System.currentTimeMillis();
     private Thread processingThread;
-    private final SystemSession systemSession = SystemSession.getInstance();
 
     public GoogleSTTImpl() {
         EventBusManager.register(this);
@@ -106,6 +108,12 @@ public class GoogleSTTImpl implements EarsInterface {
     }
 
     @SuppressWarnings("deprecation") private void startStreaming() {
+
+        if (sampleRateHertz != TARGET_SAMPLE_RATE) {
+            resampler = new Resampler(sampleRateHertz, TARGET_SAMPLE_RATE, CHANNELS);
+            log.info("Enabled live downsampling {} → {} Hz", sampleRateHertz, TARGET_SAMPLE_RATE);
+        }
+
         int retryCount = 0;
         StringBuffer currentTranscript = new StringBuffer();
         List<Float> confidences = Collections.synchronizedList(new ArrayList<>());
@@ -179,23 +187,24 @@ public class GoogleSTTImpl implements EarsInterface {
                     int consecutiveVoice = 0;
                     int consecutiveSilence = 0;
 
-                    long lastLoopTime = System.currentTimeMillis();
                     while (isListening.get() && !needRestart.get() && line.isOpen() && (System.currentTimeMillis() - lastStreamStart) < STREAM_DURATION_MS) {
                         int bytesRead = line.read(buffer, 0, buffer.length);
-                        long loopDuration = System.currentTimeMillis() - lastLoopTime;
-                        log.debug("Bytes read: {}, Loop duration: {}ms, VAD active: {}", bytesRead, loopDuration, isActive);
-                        lastLoopTime = System.currentTimeMillis();
 
-                        byte[] trimmedBuffer = silentBuffer; // Default to silent buffer
-                        if (bytesRead > 0) {
-                            trimmedBuffer = new byte[bytesRead];
-                            System.arraycopy(buffer, 0, trimmedBuffer, 0, bytesRead);
+                        byte[] audioToProcess;   // this is what we will RMS-check and send
+                        int bytesToProcess;
+
+                        if (resampler != null && bytesRead > 0) {
+                            // 192→48 kHz (or any other) downsampling happens here
+                            audioToProcess = resampler.resample(buffer, bytesRead);
+                            bytesToProcess = audioToProcess.length;
                         } else {
-                            log.warn("No audio data read: bytesRead={}", bytesRead);
+                            // no resampling needed (or silence)
+                            audioToProcess = (bytesRead > 0) ? buffer : silentBuffer;
+                            bytesToProcess = (bytesRead > 0) ? bytesRead : silentBuffer.length;
                         }
 
                         // Compute RMS for VAD (use actual buffer if available)
-                        double rms = bytesRead > 0 ? calculateRMS(trimmedBuffer, bytesRead) : 0.0;
+                        double rms = bytesRead > 0 ? calculateRMS(audioToProcess, bytesToProcess) : 0.0;
 
                         // Update state with hysteresis
                         if (rms > RMS_THRESHOLD_HIGH) {
@@ -224,18 +233,15 @@ public class GoogleSTTImpl implements EarsInterface {
                         boolean sendKeepAlive = (currentTime - lastAudioSentTime) >= KEEP_ALIVE_INTERVAL_MS;
 
                         if (isActive || sendKeepAlive) {
-                            ByteString audioContent;
-                            if (isActive) {
-                                audioContent = ByteString.copyFrom(trimmedBuffer);
-                            } else {
-                                byte[] keepAliveBuffer = new byte[KEEP_ALIVE_BUFFER_SIZE]; // Small silent for cost savings
-                                audioContent = ByteString.copyFrom(keepAliveBuffer);
-                            }
+                            byte[] keepAliveBuffer = new byte[KEEP_ALIVE_BUFFER_SIZE]; // Small silent for cost savings
+                            ByteString audioContent = isActive
+                                    ? ByteString.copyFrom(audioToProcess, 0, bytesToProcess)
+                                    : ByteString.copyFrom(keepAliveBuffer);
+
                             requestObserver.onNext(StreamingRecognizeRequest.newBuilder()
                                     .setAudioContent(audioContent)
                                     .build());
                             lastAudioSentTime = currentTime;
-                            log.debug("Sent audio: keepAlive={}, RMS={}, size={}", sendKeepAlive && !isActive, rms, audioContent.size());
                         } else {
                             log.debug("Skipping send (silence, RMS: {})", rms);
                         }
@@ -394,7 +400,7 @@ public class GoogleSTTImpl implements EarsInterface {
 
         RecognitionConfig config = RecognitionConfig.newBuilder()
                 .setEncoding(RecognitionConfig.AudioEncoding.LINEAR16)
-                .setSampleRateHertz(sampleRateHertz)
+                .setSampleRateHertz(TARGET_SAMPLE_RATE)
                 .setAudioChannelCount(CHANNELS)
                 .setLanguageCode("en-US")
                 .addAlternativeLanguageCodes("en-AU")

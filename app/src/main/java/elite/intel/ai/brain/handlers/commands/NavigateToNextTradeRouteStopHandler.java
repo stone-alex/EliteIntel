@@ -6,8 +6,10 @@ import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.db.managers.DestinationReminderManager;
 import elite.intel.db.managers.TradeRouteManager;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.gameapi.gamestate.dtos.GameEvents;
 import elite.intel.search.spansh.station.marketstation.TradeStopDto;
 import elite.intel.search.spansh.traderoute.TradeCommodity;
+import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 
@@ -16,6 +18,7 @@ import java.util.List;
 public class NavigateToNextTradeRouteStopHandler extends CommandOperator implements CommandHandler {
 
     private GameController gameController;
+    private final PlayerSession playerSession = PlayerSession.getInstance();
 
     public NavigateToNextTradeRouteStopHandler(GameController controller) {
         super(controller.getMonitor(), controller.getExecutor());
@@ -32,8 +35,16 @@ public class NavigateToNextTradeRouteStopHandler extends CommandOperator impleme
             return;
         }
 
+        GameEvents.CargoEvent shipCargo = playerSession.getShipCargo();
+        boolean cargoLoaded = shipCargo.getCount() > 0;
+
         TradeRouteManager.TradeRouteLegTuple<Integer, TradeStopDto> nextStop = tradeRouteManager.getNextStop();
-        routePlotter.plotRoute(nextStop.getTradeStopDto().getSourceSystem());
+
+        if(!cargoLoaded) {
+            routePlotter.plotRoute(nextStop.getTradeStopDto().getSourceSystem());
+        } else {
+            routePlotter.plotRoute(nextStop.getTradeStopDto().getDestinationSystem());
+        }
 
         reminderManager.setDestination(
                 new Reminder(

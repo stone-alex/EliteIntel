@@ -2,9 +2,9 @@ package elite.intel.search.spansh.station.marketstation;
 
 import com.google.gson.annotations.SerializedName;
 import elite.intel.gameapi.gamestate.dtos.BaseJsonDto;
-import elite.intel.search.spansh.stellarobjects.StellarObjectSearchRequestDto;
 import elite.intel.util.json.ToJsonConvertible;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -49,19 +49,29 @@ public class TradeStationSearchCriteria extends BaseJsonDto implements ToJsonCon
 
     // === Nested classes ===
 
+    public static class StationType {
+        @SerializedName("value")
+         List<String> types= Arrays.asList("Asteroid base", "Coriolis Starport", "Mega ship");
+
+        public void setTypes(List<String> types) {
+            this.types = types;
+        }
+    }
 
     public static class Distance {
         @SerializedName("min")
-        private int min;
+        private String min; // sure it makes sense to use int, but API wants this as String...
         @SerializedName("max")
-        private int max;
+        private String max; // sure it makes sense to use int, but API wants this as String...
 
         public void setMin(int min) {
-            this.min = min;
+            //API wants this as String...
+            this.min = String.valueOf(min);
         }
 
         public void setMax(int max) {
-            this.max = max;
+            //API wants this as String...
+            this.max = String.valueOf(max);
         }
     }
 
@@ -73,6 +83,8 @@ public class TradeStationSearchCriteria extends BaseJsonDto implements ToJsonCon
         @SerializedName("distance")
         private Distance distance;
 
+        @SerializedName("type")
+        private StationType stationType;
 
         @SerializedName("small_pads")
         private RangeFilter smallPads;
@@ -82,6 +94,10 @@ public class TradeStationSearchCriteria extends BaseJsonDto implements ToJsonCon
 
         @SerializedName("large_pads")
         private RangeFilter largePads;
+
+        public void setStationType(StationType stationType) {
+            this.stationType = stationType;
+        }
 
         // Setters
         public void setDistanceToArrival(RangeFilter distanceToArrival) {
@@ -116,7 +132,8 @@ public class TradeStationSearchCriteria extends BaseJsonDto implements ToJsonCon
         @SerializedName("z")
         private int z;
 
-        public ReferenceCoords() {}
+        public ReferenceCoords() {
+        }
 
         public ReferenceCoords(int x, int y, int z) {
             this.x = x;
@@ -125,9 +142,17 @@ public class TradeStationSearchCriteria extends BaseJsonDto implements ToJsonCon
         }
 
         // Setters
-        public void setX(int x) { this.x = x; }
-        public void setY(int y) { this.y = y; }
-        public void setZ(int z) { this.z = z; }
+        public void setX(int x) {
+            this.x = x;
+        }
+
+        public void setY(int y) {
+            this.y = y;
+        }
+
+        public void setZ(int z) {
+            this.z = z;
+        }
     }
 
     public static class RangeFilter {
@@ -138,7 +163,8 @@ public class TradeStationSearchCriteria extends BaseJsonDto implements ToJsonCon
         @SerializedName("value")
         private int[] value = new int[2];
 
-        public RangeFilter() {}
+        public RangeFilter() {
+        }
 
         public RangeFilter(int min, int max) {
             this.value[0] = min;

@@ -137,7 +137,7 @@ public class TradeRouteSearchCriteria implements StringQuery {
                 + "&permit=" + (allowPermit ? 1 : 0);
         return criteria.replace(" ", "%20");
     }
-
+//max_hops=5&max_hop_distance=50&system=Tir&station=Anand+Metallurgic+Base&starting_capital=25000000&max_cargo=250&max_system_distance=10000000&requires_large_pad=1&allow_prohibited=0&allow_planetary=0&allow_player_owned=0&allow_restricted_access=0&unique=0&permit=0
     @Override public String toString() {
         return new StringJoiner(", ", "[", "]")
                 .add("maxHops=" + maxHops)

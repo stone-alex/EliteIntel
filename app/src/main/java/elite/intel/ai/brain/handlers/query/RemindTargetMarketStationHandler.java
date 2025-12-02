@@ -4,7 +4,9 @@ import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.commands.NavigateToNextTradeRouteStopHandler;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.db.managers.DestinationReminderManager;
+import elite.intel.gameapi.gamestate.dtos.GameEvents;
 import elite.intel.search.spansh.traderoute.TradeCommodity;
+import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 
@@ -21,6 +23,7 @@ public class RemindTargetMarketStationHandler extends BaseQueryAnalyzer implemen
 
         String pickupAtStation = data.stopInfo().getSourceStation();
         String dropOffAtStation = data.stopInfo().getDestinationStation();
+
         List<TradeCommodity> commodities = data.commodities();
         List<Commodity> list = new ArrayList<>();
         for (TradeCommodity commodity : commodities) {

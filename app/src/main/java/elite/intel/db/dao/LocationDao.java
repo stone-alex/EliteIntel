@@ -59,7 +59,7 @@ public interface LocationDao {
                 json ->> '$.X' AS x,
                 json ->> '$.Y' AS y,
                 json ->> '$.Z' AS z
-            from location location where primaryStar = (select current_primary_star from player) and json ->> '$.X' != 0 and json ->> '$.Y' !=0 and json ->> '$.Z' !=0;
+            from location location where primaryStar = (select current_primary_star from player) and json ->> '$.X' != 0 and json ->> '$.Y' !=0 and json ->> '$.Z' !=0 LIMIT 1;
             """)
     @RegisterConstructorMapper(Coordinates.class)
     Coordinates currentCoordinates();

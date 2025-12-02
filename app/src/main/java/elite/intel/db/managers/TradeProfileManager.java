@@ -17,6 +17,8 @@ import elite.intel.util.json.GsonFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Arrays;
+
 public class TradeProfileManager {
 
     public static final int MAX_DISTANCE_TO_STATION = 100;
@@ -78,6 +80,9 @@ public class TradeProfileManager {
 
             TradeStationSearchCriteria.Filters filters = new TradeStationSearchCriteria.Filters();
             filters.setDistanceToArrival(new TradeStationSearchCriteria.RangeFilter(0, 6000));
+            TradeStationSearchCriteria.StationType stationType = new TradeStationSearchCriteria.StationType();
+            stationType.setTypes(Arrays.asList("Asteroid base", "Coriolis Starport", "Mega ship"));
+            filters.setStationType(stationType);
             initialStationCriteria.setFilters(filters);
 
             /// NOTE: Spansh API is very inconsistent. We can't reuse RangeFilter because distance must be passed without "<=>"

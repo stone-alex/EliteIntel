@@ -1,7 +1,6 @@
 package elite.intel.session;
 
 import com.google.common.eventbus.Subscribe;
-import elite.intel.search.spansh.market.StationMarketDto;
 import elite.intel.db.dao.PlayerDao;
 import elite.intel.db.dao.ShipScansDao;
 import elite.intel.db.managers.*;
@@ -209,12 +208,12 @@ public class PlayerSession  {
         miningTargets.clear();
     }
 
-    public List<StationMarketDto> getMarkets() {
+    public GameEvents.MarketEvent getMarket() {
         return markets.findForStation(getCurrentLocation().getStationName());
     }
 
-    public void setMarkets(List<StationMarketDto> data) {
-        markets.addList(data);
+    public void saveMarket(GameEvents.MarketEvent data) {
+        markets.save(data);
     }
 
     public void clearMarkets() {

@@ -1,8 +1,10 @@
 package elite.intel.util;
 
+import elite.intel.db.dao.CommodityDao;
+import elite.intel.db.util.Database;
+
 import java.time.LocalDateTime;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.List;
 
 public class StringUtls {
 
@@ -81,4 +83,56 @@ public class StringUtls {
         return timeGreeting + ", " + playerName + "!";
     }
 
+
+    public static int levenshteinDistance(String s1, String s2) {
+        int[][] dp = new int[s1.length() + 1][s2.length() + 1];
+        for (int i = 0; i <= s1.length(); i++) {
+            for (int j = 0; j <= s2.length(); j++) {
+                if (i == 0) {
+                    dp[i][j] = j;
+                } else if (j == 0) {
+                    dp[i][j] = i;
+                } else {
+                    dp[i][j] = min(dp[i - 1][j - 1] + costOfSubstitution(s1.charAt(i - 1), s2.charAt(j - 1)),
+                            dp[i - 1][j] + 1,
+                            dp[i][j - 1] + 1);
+                }
+            }
+        }
+        return dp[s1.length()][s2.length()];
+    }
+
+    private static int costOfSubstitution(char a, char b) {
+        return a == b ? 0 : 1;
+    }
+
+    private static int min(int... numbers) {
+        return java.util.Arrays.stream(numbers).min().orElse(Integer.MAX_VALUE);
+    }
+
+
+    public static String fuzzyCommodityMatch(String input, int maxDistance) {
+        if (input == null || input.isBlank()) return null;
+
+        final String lowerInput = input.trim().toLowerCase();
+        List<String> candidates = Database.withDao(CommodityDao.class, CommodityDao::getAllNamesLowerCase);
+
+        String bestLower = null;
+        int bestDist = Integer.MAX_VALUE;
+
+        for (String c : candidates) {
+            int dist = levenshteinDistance(lowerInput, c);
+            if (dist < bestDist) {
+                bestDist = dist;
+                bestLower = c;
+            }
+        }
+
+        if (bestDist <= maxDistance && bestLower != null) {
+            final String finalBestLower = bestLower;
+            return Database.withDao(CommodityDao.class, dao -> dao.getOriginalCase(finalBestLower));
+        }
+
+        return null;
+    }
 }

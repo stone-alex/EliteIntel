@@ -27,8 +27,8 @@ public interface StationMarketDao {
     StationMarketDao.StationMarket get(@BindBean StationMarketDao.StationMarket marketId);
 
 
-    @SqlQuery("SELECT * FROM station_markets WHERE stationName = :stationName")
-    List<StationMarketDao.StationMarket> findForStation(String stationName);
+    @SqlQuery("SELECT * FROM station_markets WHERE stationName = :stationName LIMIT 1")
+    StationMarketDao.StationMarket findForStation(String stationName);
 
     @SqlQuery("SELECT * FROM station_markets")
     StationMarket[] listAll();

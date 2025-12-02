@@ -2,11 +2,12 @@ package elite.intel.gameapi.gamestate.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import elite.intel.gameapi.gamestate.dtos.GameEvents;
+import elite.intel.session.PlayerSession;
 
 public class MarketSubscriber {
 
     @Subscribe
     public void onMarketEvent(GameEvents.MarketEvent marketEvent) {
-        // only items listed on the market are available in this event. the inventory is not available
+        PlayerSession.getInstance().saveMarket(marketEvent);
     }
 }

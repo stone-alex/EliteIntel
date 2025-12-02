@@ -81,7 +81,6 @@ public class DockedSubscriber {
         if (!availableData.isEmpty()) {
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("Data available for: " + availableData + "."));
         }
-
         playerSession.saveLocation(location);
     }
 }

@@ -101,7 +101,6 @@ public enum Commands {
     ACTIVATE_ANALYSIS_MODE("activate_hud_analysis_mode", null, null,  ActivateAnalysisModeHandler.class),
     ACTIVATE_COMBAT_MODE("activate_hud_combat_mode", null, null,  ActivateCombatModeHandler.class),
     PLOT_ROUTE_TO_CARRIER("plot_route_to_fleet_carrier", null, null,  PlotRouteToMyFleetCarrier.class),
-    PLOT_ROUTE_TO_BEST_MARKET("plot_route_to_best_market", null, null,  PlotRouteToBestMarketHandler.class),
     SET_OPTIMAL_SPEED("set_optimal_speed", null, null,  SetOptimalSpeedHandler.class),
     TAKE_ME_HOME("plot_route_to_home_star", null, null,  PlotRouteToHomeHandler.class),
     OPEN_FSS_AND_SCAN("open_fss_to_scan_star_system", null, null,  DisplayFssAndScanHandler.class),

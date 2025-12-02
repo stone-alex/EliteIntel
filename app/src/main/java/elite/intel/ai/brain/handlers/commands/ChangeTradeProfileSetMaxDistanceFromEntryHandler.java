@@ -17,7 +17,8 @@ public class ChangeTradeProfileSetMaxDistanceFromEntryHandler implements Command
         }
 
         TradeProfileManager manager = TradeProfileManager.getInstance();
-        manager.setDistanceFromSystemEntry(distanceFromEntry);
-        EventBusManager.publish(new AiVoxResponseEvent("Distance from system entry set to " + distanceFromEntry));
+        if(manager.setDistanceFromSystemEntry(distanceFromEntry)) {
+            EventBusManager.publish(new AiVoxResponseEvent("Distance from system entry set to " + distanceFromEntry));
+        }
     }
 }

@@ -17,7 +17,8 @@ public class ChangeTradeProfileSetStartingBudgetHander implements CommandHandler
         }
 
         TradeProfileManager manager = TradeProfileManager.getInstance();
-        manager.setStartingCapitol(budget);
-        EventBusManager.publish(new AiVoxResponseEvent("Starting budget set to " + budget+" credits."));
+        if(manager.setStartingCapitol(budget)) {
+            EventBusManager.publish(new AiVoxResponseEvent("Starting budget set to " + budget + " credits."));
+        }
     }
 }

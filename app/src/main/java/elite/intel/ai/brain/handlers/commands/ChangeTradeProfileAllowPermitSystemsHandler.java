@@ -10,7 +10,8 @@ public class ChangeTradeProfileAllowPermitSystemsHandler implements CommandHandl
     @Override public void handle(String action, JsonObject params, String responseText) {
         boolean isOn = params.get("state").getAsBoolean();
         TradeProfileManager profileManager = TradeProfileManager.getInstance();
-        profileManager.setAllowPermit(isOn);
-        EventBusManager.publish(new AiVoxResponseEvent("Permit systems: " + (isOn ? "On" : "Off")));
+        if(profileManager.setAllowPermit(isOn)) {
+            EventBusManager.publish(new AiVoxResponseEvent("Permit systems: " + (isOn ? "On" : "Off")));
+        }
     }
 }

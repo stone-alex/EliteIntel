@@ -6,6 +6,8 @@ import java.util.StringJoiner;
 
 public class TradeRouteSearchCriteria implements StringQuery {
 
+    private static int TWENTY_FOUR_HOURS = 86400;
+
     private int maxHops;
     private int maxHopDistance;
     private String system;
@@ -131,13 +133,13 @@ public class TradeRouteSearchCriteria implements StringQuery {
                 + "&allow_player_owned=" + (allowFleetCarriers ? 1 : 0)
                 + "&allow_restricted_access=0"
                 + "&unique=0"
-                + "max_price_age=86400" //request data that is no older than 24 hours
+                + "max_price_age=" + TWENTY_FOUR_HOURS
                 + "&permit=" + (allowPermit ? 1 : 0);
         return criteria.replace(" ", "%20");
     }
 
     @Override public String toString() {
-        return new StringJoiner(", ",  "[", "]")
+        return new StringJoiner(", ", "[", "]")
                 .add("maxHops=" + maxHops)
                 .add("maxHopDistance=" + maxHopDistance)
                 .add("system='" + system + "'")

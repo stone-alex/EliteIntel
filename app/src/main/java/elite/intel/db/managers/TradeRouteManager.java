@@ -4,6 +4,7 @@ import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.dao.TradeRouteDao;
 import elite.intel.db.util.Database;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.search.spansh.station.marketstation.TradeStopDto;
 import elite.intel.search.spansh.traderoute.*;
 import elite.intel.util.json.GsonFactory;
 
@@ -25,28 +26,26 @@ public class TradeRouteManager {
     }
 
 
-    public TradeRouteLegTuple<TradeCommodityInfo, TradeRouteStationInfo, String> getNextStop() {
+    public TradeRouteLegTuple<Integer, TradeStopDto> getNextStop() {
         return Database.withDao(
                 TradeRouteDao.class, dao -> {
                     TradeRouteDao.TradeRoute stop = dao.getNextStop();
 
                     return new TradeRouteLegTuple<>(
-                            GsonFactory.getGson().fromJson(stop.getCommodityInfoJson(), TradeCommodityInfo.class),
-                            GsonFactory.getGson().fromJson(stop.getStationInfoJson(), TradeRouteStationInfo.class),
-                            stop.getCommodityName()
+                            stop.getLegNumber(),
+                            GsonFactory.getGson().fromJson(stop.getJson(), TradeStopDto.class)
                     );
                 }
         );
     }
 
-    public TradeRouteLegTuple<TradeCommodityInfo, TradeRouteStationInfo, String> findForStarSystem(String starSystem) {
+    public TradeRouteLegTuple<Integer, TradeStopDto> findForStarSystem(String starSystem) {
         return Database.withDao(
                 TradeRouteDao.class, dao -> {
                     TradeRouteDao.TradeRoute stop = dao.findForStarSystem(starSystem);
                     return new TradeRouteLegTuple<>(
-                            GsonFactory.getGson().fromJson(stop.getCommodityInfoJson(), TradeCommodityInfo.class),
-                            GsonFactory.getGson().fromJson(stop.getStationInfoJson(), TradeRouteStationInfo.class),
-                            stop.getCommodityName()
+                            stop.getLegNumber(),
+                            GsonFactory.getGson().fromJson(stop.getJson(), TradeStopDto.class)
                     );
                 }
         );
@@ -84,50 +83,30 @@ public class TradeRouteManager {
         if (tradeRoute.getResult() == null) return;
         Database.withDao(TradeRouteDao.class, dao -> {
             dao.clear(); //clear previous route
-            List<TradeRouteTransaction> result = tradeRoute.getResult();
-            long counter = 0;
-            for (TradeRouteTransaction transaction : result) {
-                Optional<TradeCommodity> commodity = transaction.getCommodities().stream().findFirst();
-                TradeCommodityInfo sourceCommodity = commodity.get().getSourceCommodity();
-                TradeCommodityInfo destinationCommodity = commodity.get().getDestinationCommodity();
 
-                /// save source stop
-                TradeRouteTuple<Long, TradeRouteDao.TradeRoute> entity = toTradeRouteLeg(
-                        sourceCommodity.toJson(),
-                        transaction.getSource().toJson(),
+            List<TradeRouteTransaction> result = tradeRoute.getResult();
+            int counter = 0;
+
+            //transaction contains from and to address + list of commodities
+            for (TradeRouteTransaction transaction : result) {
+                List<TradeCommodity> commodities = transaction.getCommodities();
+                TradeStopDto stop = new TradeStopDto(
+                        ++counter,
+                        commodities,
                         transaction.getSource().getSystem(),
                         transaction.getSource().getStation(),
-                        transaction.getCommodities().stream().findFirst().get().getName(),
-                        counter
-                );
-                dao.save(entity.getEntity());
-
-                /// save destination stop
-                counter = entity.getLegNumber();
-                TradeRouteTuple<Long, TradeRouteDao.TradeRoute> destinationEntity = toTradeRouteLeg(
-                        destinationCommodity.toJson(),
-                        transaction.getDestination().toJson(),
                         transaction.getDestination().getSystem(),
-                        transaction.getDestination().getStation(),
-                        transaction.getCommodities().stream().findFirst().get().getName(),
-                        counter
+                        transaction.getDestination().getStation()
                 );
-                dao.save(destinationEntity.getEntity());
+                TradeRouteDao.TradeRoute data = new TradeRouteDao.TradeRoute();
+                data.setJson(stop.toJson());
+                data.setLegNumber(stop.getStopNumber());
+                dao.save(data);
             }
             return Void.class;
         });
     }
 
-    private TradeRouteTuple toTradeRouteLeg(String commodityInfoJson, String tradeRouteStationInfoJson, String starSystem, String portName, String commodity, long counter) {
-        TradeRouteDao.TradeRoute legSource = new TradeRouteDao.TradeRoute();
-        legSource.setLegNumber(++counter);
-        legSource.setCommodityInfoJson(commodityInfoJson);
-        legSource.setStationInfoJson(tradeRouteStationInfoJson);
-        legSource.setStarSystem(starSystem);
-        legSource.setPortName(portName);
-        legSource.setCommodityName(commodity);
-        return new TradeRouteTuple<>(counter, legSource);
-    }
 
     public boolean hasRoute() {
         return Database.withDao(TradeRouteDao.class, dao -> dao.getNextStop() != null);
@@ -152,27 +131,21 @@ public class TradeRouteManager {
         }
     }
 
-    public class TradeRouteLegTuple<K, V, N> {
-        private final K commodityInfo;
-        private final V tradeRouteStationInfo;
-        private N commodityName;
+    public class TradeRouteLegTuple<K, V> {
+        private final K legNumber;
+        private final V tradeStopDto;
 
-        public TradeRouteLegTuple(K commodityInfo, V tradeRouteStationInfo, N commodityName) {
-            this.commodityInfo = commodityInfo;
-            this.tradeRouteStationInfo = tradeRouteStationInfo;
-            this.commodityName = commodityName;
+        public TradeRouteLegTuple(K legNumber, V tradeStopDto) {
+            this.legNumber = legNumber;
+            this.tradeStopDto = tradeStopDto;
         }
 
-        public K getCommodityInfo() {
-            return commodityInfo;
+        public K getLegNumber() {
+            return legNumber;
         }
 
-        public V getTradeRouteStationInfo() {
-            return tradeRouteStationInfo;
-        }
-
-        public N getCommodityName() {
-            return commodityName;
+        public V getTradeStopDto() {
+            return tradeStopDto;
         }
     }
 }

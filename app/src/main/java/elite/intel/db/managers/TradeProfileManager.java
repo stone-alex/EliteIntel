@@ -82,7 +82,7 @@ public class TradeProfileManager {
 
             /// NOTE: Spansh API is very inconsistent. We can't reuse RangeFilter because distance must be passed without "<=>"
             TradeStationSearchCriteria.Distance distance = new TradeStationSearchCriteria.Distance();
-            distance.setMax(250);
+            distance.setMax(500);
             distance.setMin(0);
             filters.setDistanceToStarSystem(distance);
 
@@ -93,6 +93,10 @@ public class TradeProfileManager {
                     stationSearchClient.performSearch(initialStationCriteria), TradeStationSearchResultDto.class
             );
 
+            if(startingStation.getResults().isEmpty()){
+                EventBusManager.publish(new MissionCriticalAnnouncementEvent("Could not find a suitable starting trade station."));
+                return null;
+            }
             // only one station should be returned if the station is null - the method will return false.
             if (startingStation.getResults().stream().anyMatch(this::isTooFar)) {
                 EventBusManager.publish(new MissionCriticalAnnouncementEvent("Nearest trade station is too far away to calculate a trade route."));
@@ -143,92 +147,117 @@ public class TradeProfileManager {
         return profile;
     }
 
-    public void setStartingCapitol(Integer startingCapital) {
+    public boolean setStartingCapitol(Integer startingCapital) {
         final ShipDao.Ship ship = shipManager.getShip();
-        if (ship == null) return;
+        if (ship == null) {
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("No ship data availale. Please board a cargo ship."));
+            return false;
+        }
         TradeProfileDao.TradeProfile profile = getProfile(ship);
         profile.setStartingBudget(startingCapital);
-        Database.withDao(TradeProfileDao.class, dao -> {
+        return Database.withDao(TradeProfileDao.class, dao -> {
             dao.save(profile);
-            return Void.class;
+            return false;
         });
     }
 
-    public void setDistanceFromSystemEntry(Integer distance) {
+    public boolean setDistanceFromSystemEntry(Integer distance) {
         final ShipDao.Ship ship = shipManager.getShip();
-        if (ship == null) return;
+        if (ship == null) {
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("No ship data availale. Please board a cargo ship."));
+            return true;
+        }
         TradeProfileDao.TradeProfile profile = getProfile(ship);
         profile.setMaxDistanceLs(distance);
-        Database.withDao(TradeProfileDao.class, dao -> {
+        return Database.withDao(TradeProfileDao.class, dao -> {
             dao.save(profile);
-            return Void.class;
+            return true;
         });
     }
 
 
-    public void setMaximumStops(Integer maxStops) {
+    public boolean setMaximumStops(Integer maxStops) {
         final ShipDao.Ship ship = shipManager.getShip();
+        if (ship == null) {
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("No ship data availale. Please board a cargo ship."));
+            return false;
+        }
         TradeProfileDao.TradeProfile profile = getProfile(ship);
         profile.setMaxJumps(maxStops);
-        Database.withDao(TradeProfileDao.class, dao -> {
+        return Database.withDao(TradeProfileDao.class, dao -> {
             dao.save(profile);
-            return Void.class;
+            return true;
         });
     }
 
-    public void setAllowFleetCarrier(boolean allowFleetCarrier) {
+    public boolean setAllowFleetCarrier(boolean allowFleetCarrier) {
         final ShipDao.Ship ship = shipManager.getShip();
-        if (ship == null) return;
+        if (ship == null) {
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("No ship data availale. Please board a cargo ship."));
+            return false;
+        }
         TradeProfileDao.TradeProfile profile = getProfile(ship);
         profile.setAllowFleetCarrier(allowFleetCarrier);
-        Database.withDao(TradeProfileDao.class, dao -> {
+        return Database.withDao(TradeProfileDao.class, dao -> {
             dao.save(profile);
-            return Void.class;
+            return true;
         });
     }
 
-    public void setAllowPermit(boolean allowPermit) {
+    public boolean setAllowPermit(boolean allowPermit) {
         final ShipDao.Ship ship = shipManager.getShip();
-        if (ship == null) return;
+        if (ship == null) {
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("No ship data availale. Please board a cargo ship."));
+            return false;
+        }
         TradeProfileDao.TradeProfile profile = getProfile(ship);
         profile.setAllowPermit(allowPermit);
-        Database.withDao(TradeProfileDao.class, dao -> {
+        return Database.withDao(TradeProfileDao.class, dao -> {
             dao.save(profile);
-            return Void.class;
+            return true;
         });
     }
 
-    public void setAllowProhibitedCargo(boolean allowProhibitedCargo) {
+    public boolean setAllowProhibitedCargo(boolean allowProhibitedCargo) {
         final ShipDao.Ship ship = shipManager.getShip();
-        if (ship == null) return;
+        if (ship == null) {
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("No ship data availale. Please board a cargo ship."));
+            return false;
+        }
         TradeProfileDao.TradeProfile profile = getProfile(ship);
         profile.setAllowProhibited(allowProhibitedCargo);
-        Database.withDao(TradeProfileDao.class, dao -> {
+        return Database.withDao(TradeProfileDao.class, dao -> {
             dao.save(profile);
-            return Void.class;
+            return true;
         });
     }
 
 
-    public void setAllowPlanetaryPorts(boolean allowPlanetaryPorts) {
+    public boolean setAllowPlanetaryPorts(boolean allowPlanetaryPorts) {
         final ShipDao.Ship ship = shipManager.getShip();
-        if (ship == null) return;
+        if (ship == null) {
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("No ship data availale. Please board a cargo ship."));
+            return false;
+        }
         TradeProfileDao.TradeProfile profile = getProfile(ship);
         profile.setAllowPlanetary(allowPlanetaryPorts);
-        Database.withDao(TradeProfileDao.class, dao -> {
+        return Database.withDao(TradeProfileDao.class, dao -> {
             dao.save(profile);
-            return Void.class;
+            return true;
         });
     }
 
-    public void setAllowSystemPermits(boolean allowSystemPermits) {
+    public boolean setAllowSystemPermits(boolean allowSystemPermits) {
         final ShipDao.Ship ship = shipManager.getShip();
-        if (ship == null) return;
+        if (ship == null) {
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("No ship data availale. Please board a cargo ship."));
+            return false;
+        }
         TradeProfileDao.TradeProfile profile = getProfile(ship);
         profile.setAllowPermit(allowSystemPermits);
-        Database.withDao(TradeProfileDao.class, dao -> {
+        return Database.withDao(TradeProfileDao.class, dao -> {
             dao.save(profile);
-            return Void.class;
+            return true;
         });
     }
 

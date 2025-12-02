@@ -112,6 +112,10 @@ public class PiperTTS implements MouthInterface {
             line.stop();
             line.flush();
         }
+        if (workerThread == null || !workerThread.isAlive()) {
+            log.warn("Processing thread stopped unexpectedly, restarting");
+            start();
+        }
     }
 
     @Subscribe public void shutUp(TTSInterruptEvent event) {

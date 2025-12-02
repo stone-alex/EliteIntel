@@ -10,7 +10,8 @@ public class ChangeTradeProfileSetAllowProhibitedCargoHandler implements Command
     @Override public void handle(String action, JsonObject params, String responseText) {
         boolean isOn = params.get("state").getAsBoolean();
         TradeProfileManager profileManager = TradeProfileManager.getInstance();
-        profileManager.setAllowProhibitedCargo(isOn);
-        EventBusManager.publish(new AiVoxResponseEvent("Prohibited cargo: " + (isOn ? "On" : "Off")));
+        if(profileManager.setAllowProhibitedCargo(isOn)) {
+            EventBusManager.publish(new AiVoxResponseEvent("Prohibited cargo: " + (isOn ? "On" : "Off")));
+        }
     }
 }

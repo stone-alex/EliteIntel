@@ -6,11 +6,12 @@ import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.db.managers.DestinationReminderManager;
 import elite.intel.db.managers.TradeRouteManager;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.search.spansh.station.DestinationDto;
-import elite.intel.search.spansh.traderoute.TradeCommodityInfo;
-import elite.intel.search.spansh.traderoute.TradeRouteStationInfo;
+import elite.intel.search.spansh.station.marketstation.TradeStopDto;
+import elite.intel.search.spansh.traderoute.TradeCommodity;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
+
+import java.util.List;
 
 public class NavigateToNextTradeRouteStopHandler extends CommandOperator implements CommandHandler {
 
@@ -31,19 +32,17 @@ public class NavigateToNextTradeRouteStopHandler extends CommandOperator impleme
             return;
         }
 
-        TradeRouteManager.TradeRouteLegTuple<TradeCommodityInfo, TradeRouteStationInfo, String> nextStop = tradeRouteManager.getNextStop();
-        TradeRouteStationInfo tradePort = nextStop.getTradeRouteStationInfo();
-        routePlotter.plotRoute(tradePort.getSystem());
-
+        TradeRouteManager.TradeRouteLegTuple<Integer, TradeStopDto> nextStop = tradeRouteManager.getNextStop();
+        routePlotter.plotRoute(nextStop.getTradeStopDto().getSourceSystem());
 
         reminderManager.setDestination(
-                    new Reminder(
-                        nextStop.getCommodityInfo(), nextStop.getTradeRouteStationInfo(), nextStop.getCommodityName()
-                    ).toJson()
+                new Reminder(
+                        nextStop.getLegNumber(), nextStop.getTradeStopDto(), nextStop.getTradeStopDto().getCommodities()
+                ).toJson()
         );
     }
 
-    record Reminder(TradeCommodityInfo commodityInfo, TradeRouteStationInfo tadePortInfo, String commodityName) implements ToJsonConvertible {
+    public record Reminder(Integer legNumber, TradeStopDto stopInfo, List<TradeCommodity> commodities) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }

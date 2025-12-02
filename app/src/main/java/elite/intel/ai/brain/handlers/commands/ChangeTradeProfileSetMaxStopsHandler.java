@@ -16,7 +16,8 @@ public class ChangeTradeProfileSetMaxStopsHandler implements CommandHandler {
         }
 
         TradeProfileManager profileManager = TradeProfileManager.getInstance();
-        profileManager.setMaximumStops(numberOfStops);
-        EventBusManager.publish(new AiVoxResponseEvent("Maximum stops set to " + numberOfStops));
+        if(profileManager.setMaximumStops(numberOfStops)) {
+            EventBusManager.publish(new AiVoxResponseEvent("Maximum stops set to " + numberOfStops));
+        }
     }
 }

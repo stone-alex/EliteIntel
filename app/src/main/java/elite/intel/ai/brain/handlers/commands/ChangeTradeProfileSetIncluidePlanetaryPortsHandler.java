@@ -10,7 +10,8 @@ public class ChangeTradeProfileSetIncluidePlanetaryPortsHandler implements Comma
     @Override public void handle(String action, JsonObject params, String responseText) {
         boolean isOn = params.get("state").getAsBoolean();
         TradeProfileManager profileManager = TradeProfileManager.getInstance();
-        profileManager.setAllowPlanetaryPorts(isOn);
-        EventBusManager.publish(new AiVoxResponseEvent("Planetary ports: " + (isOn ? "On" : "Off")));
+        if(profileManager.setAllowPlanetaryPorts(isOn)) {
+            EventBusManager.publish(new AiVoxResponseEvent("Planetary ports: " + (isOn ? "On" : "Off")));
+        }
     }
 }

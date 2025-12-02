@@ -15,13 +15,10 @@ import java.sql.SQLException;
 public interface TradeRouteDao {
 
     @SqlUpdate("""
-            INSERT OR REPLACE INTO trade_route (legNumber, commodityInfoJson, stationInfoJson, starSystem, portName, commodityName) 
-                VALUES (:legNumber, :commodityInfoJson, :stationInfoJson, :starSystem, :portName, :commodityName)
+            INSERT OR REPLACE INTO trade_route (legNumber, json) 
+                VALUES (:legNumber, :json)
                         on conflict do update set
-                        stationInfoJson = excluded.stationInfoJson,
-                        commodityInfoJson = excluded.commodityInfoJson,
-                        starSystem = excluded.starSystem,
-                        commodityName = excluded.commodityName
+                        json = excluded.json
             """)
     void save(@BindBean TradeRouteDao.TradeRoute data);
 
@@ -31,86 +28,45 @@ public interface TradeRouteDao {
     @SqlUpdate("DELETE FROM trade_route")
     void clear();
 
-    @SqlUpdate("DELETE FROM trade_route where starSystem= :starSystem")
-    void deleteForStarSystem(@Bind String starSystem);
+    @SqlUpdate("DELETE FROM trade_route where json LIKE :pattern")
+    void deleteForStarSystem(@Bind("pattern") String pattern);
 
-    @SqlQuery("SELECT * FROM trade_route where starSystem= :starSystem")
-    TradeRoute findForStarSystem(String starSystem);
+    @SqlQuery("SELECT * FROM trade_route where json LIKE :pattern")
+    TradeRoute findForStarSystem(@Bind("pattern") String pattern);
 
 
     class TradeRouteMapper implements RowMapper<TradeRoute> {
 
         @Override public TradeRoute map(ResultSet rs, StatementContext ctx) throws SQLException {
             TradeRoute route = new TradeRoute();
-            route.setLegNumber(rs.getLong("legNumber"));
-            route.setCommodityInfoJson(rs.getString("commodityInfoJson"));
-            route.setStationInfoJson(rs.getString("stationInfoJson"));
-            route.setStarSystem(rs.getString("starSystem"));
-            route.setPortName(rs.getString("portName"));
-            route.setCommodityName(rs.getString("commodityName"));
+            route.setLegNumber(rs.getInt("legNumber"));
+            route.setJson(rs.getString("json"));
             return route;
         }
     }
 
 
     class TradeRoute {
-        private String commodityInfoJson;
-        private String stationInfoJson;
-        private Long legNumber;
-        private String starSystem;
-        private String portName;
-        private String commodityName;
-
+        private Integer legNumber;
+        private String json;
 
         public TradeRoute() {
         }
 
-        public String getCommodityInfoJson() {
-            return commodityInfoJson;
-        }
-
-        public void setCommodityInfoJson(String commodityInfoJson) {
-            this.commodityInfoJson = commodityInfoJson;
-        }
-
-        public Long getLegNumber() {
+        public Integer getLegNumber() {
             return legNumber;
         }
 
-        public void setLegNumber(Long legNumber) {
+        public void setLegNumber(Integer legNumber) {
             this.legNumber = legNumber;
         }
 
-        public String getStationInfoJson() {
-            return stationInfoJson;
+        public String getJson() {
+            return json;
         }
 
-        public void setStationInfoJson(String stationInfoJson) {
-            this.stationInfoJson = stationInfoJson;
-        }
-
-        public String getStarSystem() {
-            return starSystem;
-        }
-
-        public void setStarSystem(String starSystem) {
-            this.starSystem = starSystem;
-        }
-
-        public String getPortName() {
-            return portName;
-        }
-
-        public void setPortName(String portName) {
-            this.portName = portName;
-        }
-
-        public void setCommodityName(String commodity) {
-            this.commodityName = commodity;
-        }
-
-        public String getCommodityName() {
-            return commodityName;
+        public void setJson(String json) {
+            this.json = json;
         }
     }
 }

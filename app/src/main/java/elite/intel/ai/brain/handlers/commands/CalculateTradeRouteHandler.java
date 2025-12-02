@@ -24,7 +24,6 @@ public class CalculateTradeRouteHandler implements CommandHandler {
         TradeRouteSearchCriteria criteria = profileManager.getCriteria(true);
 
         if (criteria == null) {
-            EventBusManager.publish(new AiVoxResponseEvent("Trade profile not set or invalid"));
             return;
         }
 

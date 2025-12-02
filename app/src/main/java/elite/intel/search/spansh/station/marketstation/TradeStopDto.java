@@ -14,18 +14,22 @@ public class TradeStopDto extends BaseJsonDto implements ToJsonConvertible {
     private String sourceStation;
     private String destinationSystem;
     private String destinationStation;
+    private Long sourceMarketId;
+    private Long destinationMarketId;
 
     public TradeStopDto() {
         //Require to serialize
     }
 
-    public TradeStopDto(int stopNumber, List<TradeCommodity> commodities, String sourceSystem, String sourceDestination, String destinationSystem, String destinationStation) {
+    public TradeStopDto(int stopNumber, List<TradeCommodity> commodities, String sourceSystem, String sourceDestination, String destinationSystem, String destinationStation, Long sourceMarketId, Long destinationMarketId) {
         this.stopNumber = stopNumber;
         this.commodities = commodities;
         this.sourceSystem = sourceSystem;
         this.sourceStation = sourceDestination;
         this.destinationSystem = destinationSystem;
         this.destinationStation = destinationStation;
+        this.sourceMarketId = sourceMarketId;
+        this.destinationMarketId = destinationMarketId;
     }
 
 
@@ -75,5 +79,21 @@ public class TradeStopDto extends BaseJsonDto implements ToJsonConvertible {
 
     public void setDestinationStation(String destinationStation) {
         this.destinationStation = destinationStation;
+    }
+
+    public Long getSourceMarketId() {
+        return sourceMarketId;
+    }
+
+    public void setSourceMarketId(Long sourceMarketId) {
+        this.sourceMarketId = sourceMarketId;
+    }
+
+    public Long getDestinationMarketId() {
+        return destinationMarketId;
+    }
+
+    public void setDestinationMarketId(Long destinationMarketId) {
+        this.destinationMarketId = destinationMarketId;
     }
 }

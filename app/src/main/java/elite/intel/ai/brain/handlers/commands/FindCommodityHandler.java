@@ -27,7 +27,7 @@ public class FindCommodityHandler implements CommandHandler {
             List<StationMarketDto> markets = client.searchMarkets(new MarketSearchCriteria(
                     starName,
                     1,
-                    500,
+                    1000,
                     commodity,
                     true,
                     false,

@@ -21,12 +21,12 @@ public class TransmissionReceivedSubscriber {
         Boolean isRadioOn = playerSession.isRadioTransmissionOn();
 
 
-        if (isRadioOn == null || !isRadioOn) return;
-
         if (isPirateMessage(event.getMessageLocalised())) {
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("Pirate Alert!!!"));
             return;
         }
+
+        if (isRadioOn == null || !isRadioOn) return;
 
         if (!event.getMessageLocalised().toLowerCase().contains("entered channel")) {
             boolean isStation = event.getMessage().toLowerCase().contains("station");
@@ -61,6 +61,7 @@ public class TransmissionReceivedSubscriber {
         pirateTransmissions.add("What treats do you carry?".toLowerCase());
         pirateTransmissions.add("What do you have in your cargo hold?".toLowerCase());
         pirateTransmissions.add("Next time you should fill your hold with gold.".toLowerCase());
+        pirateTransmissions.add("I'm gonna boil you up!".toLowerCase());
 
         return pirateTransmissions.contains(message.toLowerCase());
     }

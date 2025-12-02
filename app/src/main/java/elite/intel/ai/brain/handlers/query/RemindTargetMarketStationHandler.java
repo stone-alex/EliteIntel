@@ -1,12 +1,10 @@
 package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.brain.handlers.commands.NavigateToNextTradeRouteStopHandler;
+import elite.intel.ai.brain.handlers.commands.PlotRouteToNextTradeStopHandler;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.db.managers.DestinationReminderManager;
-import elite.intel.gameapi.gamestate.dtos.GameEvents;
 import elite.intel.search.spansh.traderoute.TradeCommodity;
-import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 
@@ -19,7 +17,7 @@ public class RemindTargetMarketStationHandler extends BaseQueryAnalyzer implemen
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         DestinationReminderManager destinationReminder = DestinationReminderManager.getInstance();
-        NavigateToNextTradeRouteStopHandler.Reminder data = GsonFactory.getGson().fromJson(destinationReminder.getDestinationAsJson(), NavigateToNextTradeRouteStopHandler.Reminder.class);
+        PlotRouteToNextTradeStopHandler.Reminder data = GsonFactory.getGson().fromJson(destinationReminder.getDestinationAsJson(), PlotRouteToNextTradeStopHandler.Reminder.class);
 
         String pickupAtStation = data.stopInfo().getSourceStation();
         String dropOffAtStation = data.stopInfo().getDestinationStation();

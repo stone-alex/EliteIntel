@@ -9,7 +9,6 @@ import elite.intel.search.spansh.traderoute.*;
 import elite.intel.util.json.GsonFactory;
 
 import java.util.List;
-import java.util.Optional;
 
 public class TradeRouteManager {
 
@@ -52,9 +51,9 @@ public class TradeRouteManager {
     }
 
 
-    public void deleteForStarSystem(String starSystem) {
+    public void deleteForMarketId(long starSystem) {
         Database.withDao(TradeRouteDao.class, dao -> {
-            dao.deleteForStarSystem(starSystem);
+            dao.deleteForMarketId(starSystem);
             return Void.class;
         });
     }
@@ -96,7 +95,10 @@ public class TradeRouteManager {
                         transaction.getSource().getSystem(),
                         transaction.getSource().getStation(),
                         transaction.getDestination().getSystem(),
-                        transaction.getDestination().getStation()
+                        transaction.getDestination().getStation(),
+                        transaction.getSource().getMarketId(),
+                        transaction.getDestination().getMarketId()
+
                 );
                 TradeRouteDao.TradeRoute data = new TradeRouteDao.TradeRoute();
                 data.setJson(stop.toJson());

@@ -28,8 +28,11 @@ public interface TradeRouteDao {
     @SqlUpdate("DELETE FROM trade_route")
     void clear();
 
-    @SqlUpdate("DELETE FROM trade_route where json LIKE :pattern")
-    void deleteForStarSystem(@Bind("pattern") String pattern);
+    @SqlUpdate("""
+        DELETE FROM trade_route 
+        WHERE CAST(json_extract(json, '$.destinationMarketId') AS INTEGER) = :marketId
+    """)
+    void deleteForMarketId(@Bind("marketId") long marketId);
 
     @SqlQuery("SELECT * FROM trade_route where json LIKE :pattern")
     TradeRoute findForStarSystem(@Bind("pattern") String pattern);

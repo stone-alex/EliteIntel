@@ -15,12 +15,12 @@ import elite.intel.util.json.ToJsonConvertible;
 
 import java.util.List;
 
-public class NavigateToNextTradeRouteStopHandler extends CommandOperator implements CommandHandler {
+public class PlotRouteToNextTradeStopHandler extends CommandOperator implements CommandHandler {
 
-    private GameController gameController;
     private final PlayerSession playerSession = PlayerSession.getInstance();
+    private GameController gameController;
 
-    public NavigateToNextTradeRouteStopHandler(GameController controller) {
+    public PlotRouteToNextTradeStopHandler(GameController controller) {
         super(controller.getMonitor(), controller.getExecutor());
         this.gameController = controller;
     }
@@ -40,10 +40,21 @@ public class NavigateToNextTradeRouteStopHandler extends CommandOperator impleme
 
         TradeRouteManager.TradeRouteLegTuple<Integer, TradeStopDto> nextStop = tradeRouteManager.getNextStop();
 
-        if(!cargoLoaded) {
-            routePlotter.plotRoute(nextStop.getTradeStopDto().getSourceSystem());
+        if (!cargoLoaded) {
+            String sourceSystem = nextStop.getTradeStopDto().getSourceSystem();
+            String sourceStation = nextStop.getTradeStopDto().getSourceStation();
+            StringBuilder sb = new StringBuilder();
+            sb.append("We are heading to ").append(sourceSystem).append(", ").append(sourceStation).append(" there we will pick up ");
+            nextStop.getTradeStopDto().getCommodities().forEach(commodity -> sb.append(commodity.getName()).append(", "));
+            EventBusManager.publish(new AiVoxResponseEvent(sb.toString()));
+            routePlotter.plotRoute(sourceSystem);
         } else {
-            routePlotter.plotRoute(nextStop.getTradeStopDto().getDestinationSystem());
+            String destinationSystem = nextStop.getTradeStopDto().getDestinationSystem();
+            String destinationStation = nextStop.getTradeStopDto().getDestinationStation();
+            StringBuilder sb = new StringBuilder();
+            sb.append("We are heading to ").append(destinationSystem).append(", ").append(destinationStation).append(" to sell the freight.");
+            EventBusManager.publish(new AiVoxResponseEvent(sb.toString()));
+            routePlotter.plotRoute(destinationSystem);
         }
 
         reminderManager.setDestination(

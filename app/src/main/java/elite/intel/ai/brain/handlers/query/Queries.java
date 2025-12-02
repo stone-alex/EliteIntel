@@ -5,7 +5,7 @@ import elite.intel.ai.brain.handlers.query.struct.AnalyseMaterialsHandler;
 public enum Queries {
 
     //ANALYZE_LOCAL_SYSTEM("query_local_system_data", "-- instructions in class --", AnalyzeLocalSystemHandler.class, true),
-    ANALYZE_TRADE_PROFILE("query_current_trade_profile_info", "Let the user know details of this trade profile. ", WhatIsMyCurrentTradeProfileHandler.class, true),
+    ANALYZE_TRADE_PROFILE("query_current_trade_profile_info", "Let the user know details of this trade profile. Report max price age in hours. Omit system and station info.", WhatIsMyCurrentTradeProfileHandler.class, true),
     ANALYZE_MATERIALS_ON_HAND("query_analyze_storage_for_materials", "Provide answers about materials on hand based on this data. Use maxCap data field to compare amount available to cap amount. Material amount is measured in units. Example Answer: 'We have 12 units of mercury out of 200'", AnalyseMaterialsHandler.class, true),
     ANALYZE_DISTANCE_TO_STELLAR_OBJECT("query_what_is_the_distance_to_planet", "-- instructions in class --", AnalyzeDistanceToStellarObject.class, true),
     ANALYZE_CARRIER_ROUTE("query_fleet_carrier_route", "Use this data to analyze the current fleet carrier route.", AnalyzeCarrierRouteHandler.class, true),

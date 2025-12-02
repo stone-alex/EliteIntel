@@ -1,9 +1,7 @@
 package elite.intel.db.managers;
 
-import elite.intel.search.spansh.station.DestinationDto;
 import elite.intel.db.dao.DestinationReminderDao;
 import elite.intel.db.util.Database;
-import elite.intel.util.json.GsonFactory;
 
 public final class DestinationReminderManager {
     private static volatile DestinationReminderManager instance;
@@ -25,13 +23,12 @@ public final class DestinationReminderManager {
     }
 
 
-    public DestinationDto getDestination() {
+    public String getDestinationAsJson() {
         return Database.withDao(DestinationReminderDao.class, dao -> {
             DestinationReminderDao.Destination destination = dao.get();
             if (destination == null) return null;
-            return GsonFactory.getGson().fromJson(destination.getJson(), DestinationDto.class);
+            return destination.getJson();
         });
-
     }
 
     public void setDestination(String json) {

@@ -25,25 +25,28 @@ public class TradeRouteManager {
     }
 
 
-    public TradeRouteLegTuple<TradeCommodityInfo, TradeRouteStationInfo> getNextStop() {
+    public TradeRouteLegTuple<TradeCommodityInfo, TradeRouteStationInfo, String> getNextStop() {
         return Database.withDao(
                 TradeRouteDao.class, dao -> {
                     TradeRouteDao.TradeRoute stop = dao.getNextStop();
+
                     return new TradeRouteLegTuple<>(
                             GsonFactory.getGson().fromJson(stop.getCommodityInfoJson(), TradeCommodityInfo.class),
-                            GsonFactory.getGson().fromJson(stop.getStationInfoJson(), TradeRouteStationInfo.class)
+                            GsonFactory.getGson().fromJson(stop.getStationInfoJson(), TradeRouteStationInfo.class),
+                            stop.getCommodityName()
                     );
                 }
         );
     }
 
-    public TradeRouteLegTuple<TradeCommodityInfo, TradeRouteStationInfo> findForStarSystem(String starSystem) {
+    public TradeRouteLegTuple<TradeCommodityInfo, TradeRouteStationInfo, String> findForStarSystem(String starSystem) {
         return Database.withDao(
                 TradeRouteDao.class, dao -> {
                     TradeRouteDao.TradeRoute stop = dao.findForStarSystem(starSystem);
                     return new TradeRouteLegTuple<>(
                             GsonFactory.getGson().fromJson(stop.getCommodityInfoJson(), TradeCommodityInfo.class),
-                            GsonFactory.getGson().fromJson(stop.getStationInfoJson(), TradeRouteStationInfo.class)
+                            GsonFactory.getGson().fromJson(stop.getStationInfoJson(), TradeRouteStationInfo.class),
+                            stop.getCommodityName()
                     );
                 }
         );
@@ -149,13 +152,15 @@ public class TradeRouteManager {
         }
     }
 
-    public class TradeRouteLegTuple<K, V> {
+    public class TradeRouteLegTuple<K, V, N> {
         private final K commodityInfo;
         private final V tradeRouteStationInfo;
+        private N commodityName;
 
-        public TradeRouteLegTuple(K commodityInfo, V tradeRouteStationInfo) {
+        public TradeRouteLegTuple(K commodityInfo, V tradeRouteStationInfo, N commodityName) {
             this.commodityInfo = commodityInfo;
             this.tradeRouteStationInfo = tradeRouteStationInfo;
+            this.commodityName = commodityName;
         }
 
         public K getCommodityInfo() {
@@ -164,6 +169,10 @@ public class TradeRouteManager {
 
         public V getTradeRouteStationInfo() {
             return tradeRouteStationInfo;
+        }
+
+        public N getCommodityName() {
+            return commodityName;
         }
     }
 }

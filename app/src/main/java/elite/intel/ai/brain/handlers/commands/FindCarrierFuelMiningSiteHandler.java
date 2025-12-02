@@ -3,6 +3,7 @@ package elite.intel.ai.brain.handlers.commands;
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.db.managers.LocationManager;
 import elite.intel.search.spansh.stellarobjects.ReserveLevel;
 import elite.intel.search.spansh.stellarobjects.StellarObjectSearch;
 import elite.intel.search.spansh.stellarobjects.StellarObjectSearchResultDto;
@@ -33,7 +34,7 @@ public class FindCarrierFuelMiningSiteHandler extends CommandOperator implements
                     .findRings(
                             "Tritium",
                             ReserveLevel.PRISTINE,
-                            PlayerSession.getInstance().getGalacticCoordinates(),
+                            LocationManager.getInstance().getGalacticCoordinates(),
                             range.intValue()
                     );
 

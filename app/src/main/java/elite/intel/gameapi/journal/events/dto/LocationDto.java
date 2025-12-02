@@ -1,10 +1,9 @@
 package elite.intel.gameapi.journal.events.dto;
 
-import elite.intel.search.edsm.dto.*;
-import elite.intel.search.edsm.dto.data.BodyData;
-import elite.intel.gameapi.journal.events.CodexEntryEvent;
 import elite.intel.gameapi.journal.events.FSSBodySignalsEvent;
 import elite.intel.gameapi.journal.events.SAASignalsFoundEvent;
+import elite.intel.search.edsm.dto.*;
+import elite.intel.search.edsm.dto.data.BodyData;
 import elite.intel.util.StringUtls;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
@@ -23,24 +22,24 @@ public class LocationDto implements ToJsonConvertible {
     private List<String> stationServices;
     private List<String> powers;
     private Set<FssSignalDto> detectedSignals = new HashSet<>();
-    private double X;
-    private double Y;
-    private double Z;
-    private double distance;
-    private double rotationPeriod;
-    private double axialTilt;
-    private double orbitalPeriod;
+    private Double X;
+    private Double Y;
+    private Double Z;
+    private Double distance;
+    private Double rotationPeriod;
+    private Double axialTilt;
+    private Double orbitalPeriod;
     private String starName;
     private String starClass;
     private boolean isFuelStar;
-    private String planetName="";
-    private String planetShortName="";
+    private String planetName = "";
+    private String planetShortName = "";
     private BodyData planetData;
     private TrafficDto trafficDto;
     private DeathsDto deathsDto;
     private String stationName;
     private String stationType;
-    private long marketID;
+    private Long marketID;
     private String stationFaction;
     private String stationGovernment;
     private String stationAllegiance;
@@ -50,17 +49,17 @@ public class LocationDto implements ToJsonConvertible {
     private String secondEconomy;
     private String government;
     private String security;
-    private long population;
+    private Long population;
     private String bodyType;
     private String controllingPower;
     private String powerplayState;
-    private double powerplayStateControlProgress;
-    private int powerplayStateReinforcement;
-    private int powerplayStateUndermining;
-    private double gravity;
-    private double surfaceTemperature;
-    private double[] landingCoordinates;
-    private double orbitalCruiseEntryAltitude;
+    private Double powerplayStateControlProgress;
+    private Integer powerplayStateReinforcement;
+    private Integer powerplayStateUndermining;
+    private Double gravity;
+    private Double surfaceTemperature;
+    private Double[] landingCoordinates;
+    private Double orbitalCruiseEntryAltitude;
     private boolean ourDiscovery = false;
     private boolean weMappedIt = false;
     private String volcanism;
@@ -72,14 +71,34 @@ public class LocationDto implements ToJsonConvertible {
     private MarketDto market;
     private OutfittingDto outfitting;
     private ShipyardDto shipyard;
+    private LocationType locationType = LocationType.UNKNOWN;
+    private Long bodyId;
+    private boolean isLandable;
+    private String planetClass;
+    private boolean isTerraformable;
+    private boolean isTidalLocked;
+    private String atmosphere;
+    private Double radius;
+    private Double massEM;
+    private Integer bioSignals;
+    private Integer geoSignals;
+    private boolean hasRings;
 
-    public LocationDto(long id) {
+    public LocationDto(Long id) {
         setBodyId(id);
     }
 
-    public LocationDto(long id, String starName) {
+    public LocationDto(Long id, String starName) {
         setBodyId(id);
         setStarName(starName);
+    }
+
+    private LocationDto() {
+
+    }
+
+    public LocationDto(LocationType locationType) {
+        setLocationType(locationType);
     }
 
     public void setMarket(MarketDto marketDto) {
@@ -99,7 +118,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setShipyard(ShipyardDto shipyardDto) {
-        this.shipyard= shipyardDto;
+        this.shipyard = shipyardDto;
     }
 
     public ShipyardDto getShipyard() {
@@ -110,107 +129,62 @@ public class LocationDto implements ToJsonConvertible {
         partialBioSamples.clear();
     }
 
-    public double getAxialTilt() {
+    public Double getAxialTilt() {
         return axialTilt;
     }
 
-    public void setAxialTilt(double axialTilt) {
+    public void setAxialTilt(Double axialTilt) {
         this.axialTilt = axialTilt;
     }
 
-    public double getOrbitalPeriod() {
+    public Double getOrbitalPeriod() {
         return orbitalPeriod;
     }
 
-    public void setOrbitalPeriod(double orbitalPeriod) {
+    public void setOrbitalPeriod(Double orbitalPeriod) {
         this.orbitalPeriod = orbitalPeriod;
     }
 
-    public enum BioStatus {
-        BIO_FORMS_PRESENT,
-        NO_BIO_FORMS,
-        SCAN_REQUIRED;
-    }
-
-    private LocationType locationType = LocationType.UNKNOWN;
-    public enum LocationType {
-        STAR,
-        PRIMARY_STAR,
-        PLANET_OR_MOON,
-        PLANETARY_RING,
-        BLACK_HOLE,
-        NEBULA,
-        STATION,
-        FLEET_CARRIER,
-        FACILITY,
-        MARKET,
-        BELT_CLUSTER,
-        UNKNOWN
-    }
-
-    private long bodyId;
-    private boolean isLandable;
-    private String planetClass;
-    private boolean isTerraformable;
-    private boolean isTidalLocked;
-    private String atmosphere;
-    private double radius;
-    private double massEM;
-    private int bioSignals;
-    private int geoSignals;
-    private boolean hasRings;
-
-    private LocationDto() {
-
-    }
-
-
-    public LocationDto(LocationType locationType) {
-        setLocationType(locationType);
-    }
-
-
-    public double getX() {
+    public Double getX() {
         return X;
     }
 
-    public void setX(double x) {
-        if(x == 0) return;
+    public void setX(Double x) {
+        if (x == 0) return;
         X = x;
     }
 
-    public double getY() {
+    public Double getY() {
         return Y;
     }
 
-    public void setY(double y) {
-        if(y == 0) return;
+    public void setY(Double y) {
+        if (y == 0) return;
         Y = y;
     }
 
-    public double getZ() {
+    public Double getZ() {
         return Z;
     }
 
-    public void setZ(double z) {
-        if(z == 0) return;
+    public void setZ(Double z) {
+        if (z == 0) return;
         Z = z;
     }
 
-
-    public double getRotationPeriod() {
+    public Double getRotationPeriod() {
         return rotationPeriod;
     }
 
-    public void setRotationPeriod(double rotationPeriod) {
+    public void setRotationPeriod(Double rotationPeriod) {
         this.rotationPeriod = rotationPeriod;
     }
 
-    public double getDistance() {
+    public Double getDistance() {
         return distance;
     }
 
-    public void setDistance(double distance) {
+    public void setDistance(Double distance) {
         this.distance = distance;
     }
 
@@ -242,14 +216,15 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void addSaaSignals(List<SAASignalsFoundEvent.Signal> signals) {
-        if (this.saaSignals == null) {signals = new ArrayList<>();}
+        if (this.saaSignals == null) {
+            signals = new ArrayList<>();
+        }
         this.saaSignals.addAll(signals);
     }
 
     public List<GenusDto> getGenus() {
         return genus;
     }
-
 
     public void setGenus(List<GenusDto> genus) {
         this.genus = genus;
@@ -266,7 +241,6 @@ public class LocationDto implements ToJsonConvertible {
     public void addDetectedSignals(List<FssSignalDto> signals) {
         this.detectedSignals.addAll(signals);
     }
-
 
     public Set<FssSignalDto> getDetectedSignals() {
         return detectedSignals;
@@ -292,12 +266,9 @@ public class LocationDto implements ToJsonConvertible {
         this.trafficDto = trafficDto;
     }
 
-
-
     public void setPartialBioSamples(List<BioSampleDto> partialBioSamples) {
         this.partialBioSamples = partialBioSamples;
     }
-
 
     public String getStationName() {
         return stationName;
@@ -315,11 +286,11 @@ public class LocationDto implements ToJsonConvertible {
         this.stationType = stationType;
     }
 
-    public long getMarketID() {
+    public Long getMarketID() {
         return marketID;
     }
 
-    public void setMarketID(long marketID) {
+    public void setMarketID(Long marketID) {
         this.marketID = marketID;
     }
 
@@ -363,7 +334,6 @@ public class LocationDto implements ToJsonConvertible {
         this.stationEconomy = stationEconomy;
     }
 
-
     public String getAllegiance() {
         return allegiance;
     }
@@ -404,11 +374,11 @@ public class LocationDto implements ToJsonConvertible {
         this.security = security;
     }
 
-    public long getPopulation() {
+    public Long getPopulation() {
         return population;
     }
 
-    public void setPopulation(long population) {
+    public void setPopulation(Long population) {
         this.population = population;
     }
 
@@ -444,44 +414,43 @@ public class LocationDto implements ToJsonConvertible {
         this.powerplayState = powerplayState;
     }
 
-    public double getPowerplayStateControlProgress() {
+    public Double getPowerplayStateControlProgress() {
         return powerplayStateControlProgress;
     }
 
-    public void setPowerplayStateControlProgress(double powerplayStateControlProgress) {
+    public void setPowerplayStateControlProgress(Double powerplayStateControlProgress) {
         this.powerplayStateControlProgress = powerplayStateControlProgress;
     }
 
-    public int getPowerplayStateReinforcement() {
+    public Integer getPowerplayStateReinforcement() {
         return powerplayStateReinforcement;
     }
 
-    public void setPowerplayStateReinforcement(int powerplayStateReinforcement) {
+    public void setPowerplayStateReinforcement(Integer powerplayStateReinforcement) {
         this.powerplayStateReinforcement = powerplayStateReinforcement;
     }
 
-    public int getPowerplayStateUndermining() {
+    public Integer getPowerplayStateUndermining() {
         return powerplayStateUndermining;
     }
 
-    public void setPowerplayStateUndermining(int powerplayStateUndermining) {
+    public void setPowerplayStateUndermining(Integer powerplayStateUndermining) {
         this.powerplayStateUndermining = powerplayStateUndermining;
     }
 
-
-    public double getGravity() {
-        return gravity;
+    public Double getGravity() {
+        return gravity != null ? gravity : 0.0;
     }
 
-    public void setGravity(double gravity) {
+    public void setGravity(Double gravity) {
         this.gravity = gravity;
     }
 
-    public double getSurfaceTemperature() {
-        return surfaceTemperature;
+    public Double getSurfaceTemperature() {
+        return surfaceTemperature != null ? surfaceTemperature : 0.0;
     }
 
-    public void setSurfaceTemperature(double surfaceTemperature) {
+    public void setSurfaceTemperature(Double surfaceTemperature) {
         this.surfaceTemperature = surfaceTemperature;
     }
 
@@ -492,7 +461,6 @@ public class LocationDto implements ToJsonConvertible {
     public List<MaterialDto> getMaterials() {
         return materials;
     }
-
 
     public String getPlanetShortName() {
         if (starName != null && planetShortName == null) {
@@ -511,20 +479,19 @@ public class LocationDto implements ToJsonConvertible {
         return GsonFactory.getGson().toJson(this);
     }
 
-
-    public double[] getLandingCoordinates() {
-        return landingCoordinates;
+    public Double[] getLandingCoordinates() {
+        return landingCoordinates != null ? landingCoordinates : new Double[0];
     }
 
-    public void setLandingCoordinates(double[] landingCoordinates) {
+    public void setLandingCoordinates(Double[] landingCoordinates) {
         this.landingCoordinates = landingCoordinates;
     }
 
-    public double getOrbitalCruiseEntryAltitude() {
+    public Double getOrbitalCruiseEntryAltitude() {
         return orbitalCruiseEntryAltitude;
     }
 
-    public void setOrbitalCruiseEntryAltitude(double orbitalCruiseEntryAltitude) {
+    public void setOrbitalCruiseEntryAltitude(Double orbitalCruiseEntryAltitude) {
         this.orbitalCruiseEntryAltitude = orbitalCruiseEntryAltitude;
     }
 
@@ -535,7 +502,6 @@ public class LocationDto implements ToJsonConvertible {
     public void setOurDiscovery(boolean ourDiscovery) {
         this.ourDiscovery = ourDiscovery;
     }
-
 
     public void setMaterials(List<MaterialDto> materials) {
         this.materials = materials;
@@ -561,11 +527,11 @@ public class LocationDto implements ToJsonConvertible {
         this.detectedSignals = detectedSignals;
     }
 
-    public long getBodyId() {
-        return bodyId;
+    public Long getBodyId() {
+        return bodyId == null ? 0 : bodyId;
     }
 
-    public void setBodyId(long bodyId) {
+    public void setBodyId(Long bodyId) {
         this.bodyId = bodyId;
     }
 
@@ -609,35 +575,35 @@ public class LocationDto implements ToJsonConvertible {
         this.atmosphere = atmosphere;
     }
 
-    public double getRadius() {
-        return radius;
+    public Double getRadius() {
+        return radius != null ? radius : 0.0;
     }
 
-    public void setRadius(double radius) {
+    public void setRadius(Double radius) {
         this.radius = radius;
     }
 
-    public double getMassEM() {
-        return massEM;
+    public Double getMassEM() {
+        return massEM != null ? massEM : 0.0;
     }
 
-    public void setMassEM(double massEM) {
+    public void setMassEM(Double massEM) {
         this.massEM = massEM;
     }
 
-    public int getBioSignals() {
-        return bioSignals;
+    public Integer getBioSignals() {
+        return bioSignals != null ? bioSignals : 0;
     }
 
-    public void setBioSignals(int bioSignals) {
+    public void setBioSignals(Integer bioSignals) {
         this.bioSignals = bioSignals;
     }
 
-    public int getGeoSignals() {
-        return geoSignals;
+    public Integer getGeoSignals() {
+        return geoSignals != null ? geoSignals : 0;
     }
 
-    public void setGeoSignals(int geoSignals) {
+    public void setGeoSignals(Integer geoSignals) {
         this.geoSignals = geoSignals;
     }
 
@@ -671,7 +637,7 @@ public class LocationDto implements ToJsonConvertible {
 
     public void setStarClass(String starClass) {
         this.starClass = starClass;
-        if(starClass != null && "KGBFOAM".contains(starClass)) {
+        if (starClass != null && "KGBFOAM".contains(starClass)) {
             setFuelStar(true);
         }
     }
@@ -715,7 +681,6 @@ public class LocationDto implements ToJsonConvertible {
     public void setDiscoveredOn(String discoveredOn) {
         this.discoveredOn = discoveredOn;
     }
-
 
     @Override public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
@@ -786,5 +751,27 @@ public class LocationDto implements ToJsonConvertible {
         result = 31 * result + getGeoSignals();
         result = 31 * result + Boolean.hashCode(isHasRings());
         return result;
+    }
+
+
+    public enum BioStatus {
+        BIO_FORMS_PRESENT,
+        NO_BIO_FORMS,
+        SCAN_REQUIRED;
+    }
+
+    public enum LocationType {
+        STAR,
+        PRIMARY_STAR,
+        PLANET_OR_MOON,
+        PLANETARY_RING,
+        BLACK_HOLE,
+        NEBULA,
+        STATION,
+        FLEET_CARRIER,
+        FACILITY,
+        MARKET,
+        BELT_CLUSTER,
+        UNKNOWN
     }
 }

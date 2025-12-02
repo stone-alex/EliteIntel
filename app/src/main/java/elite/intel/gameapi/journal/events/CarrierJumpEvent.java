@@ -60,7 +60,7 @@ public class CarrierJumpEvent extends BaseEvent {
     private String body;
 
     @SerializedName("BodyID")
-    private int bodyId;
+    private Long bodyId;
 
     @SerializedName("BodyType")
     private String bodyType;
@@ -183,7 +183,7 @@ public class CarrierJumpEvent extends BaseEvent {
         return body;
     }
 
-    public int getBodyId() {
+    public Long getBodyId() {
         return bodyId;
     }
 

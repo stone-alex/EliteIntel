@@ -3,6 +3,7 @@ package elite.intel.ai.brain.handlers.commands;
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.db.managers.LocationManager;
 import elite.intel.search.spansh.findcarrier.CarrierAccess;
 import elite.intel.search.spansh.findcarrier.FleetCarrierSearch;
 import elite.intel.search.spansh.findcarrier.FleetCarrierSearchResultsDto;
@@ -36,7 +37,7 @@ public class FindNearestFleetCarrierHandler extends CommandOperator implements C
                     .findFleetCarrier(
                             range.intValue(),
                             CarrierAccess.ALL,
-                            playerSession.getGalacticCoordinates()
+                            LocationManager.getInstance().getGalacticCoordinates()
                     );
 
             String playerCarrierCallSign = null;

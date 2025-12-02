@@ -1,7 +1,9 @@
 package elite.intel.db.managers;
 
+import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.dao.TradeRouteDao;
 import elite.intel.db.util.Database;
+import elite.intel.gameapi.EventBusManager;
 import elite.intel.search.spansh.traderoute.*;
 import elite.intel.util.json.GsonFactory;
 
@@ -63,17 +65,22 @@ public class TradeRouteManager {
     }
 
 
-    public TradeRouteResponse calculateTradeRoute() {
-        TradeProfileManager profileManager = TradeProfileManager.getInstance();
+    public TradeRouteResponse calculateTradeRoute(TradeRouteSearchCriteria criteria) {
         TradeRouteClient client = TradeRouteClient.getInstance();
-        TradeRouteResponse tradeRoute = client.getTradeRoute(profileManager.getCriteria());
-        save(tradeRoute);
+        TradeRouteResponse tradeRoute = client.getTradeRoute(criteria);
+        if (tradeRoute == null) {
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Unable to calculate trade route."));
+        } else {
+            save(tradeRoute);
+        }
         return tradeRoute;
     }
 
 
     private void save(TradeRouteResponse tradeRoute) {
+        if (tradeRoute.getResult() == null) return;
         Database.withDao(TradeRouteDao.class, dao -> {
+            dao.clear(); //clear previous route
             List<TradeRouteTransaction> result = tradeRoute.getResult();
             long counter = 0;
             for (TradeRouteTransaction transaction : result) {
@@ -83,14 +90,24 @@ public class TradeRouteManager {
 
                 /// save source stop
                 TradeRouteTuple<Long, TradeRouteDao.TradeRoute> entity = toTradeRouteLeg(
-                        sourceCommodity.toJson(), transaction.getSource().toJson(), transaction.getSource().getSystem(), counter
+                        sourceCommodity.toJson(),
+                        transaction.getSource().toJson(),
+                        transaction.getSource().getSystem(),
+                        transaction.getSource().getStation(),
+                        transaction.getCommodities().stream().findFirst().get().getName(),
+                        counter
                 );
                 dao.save(entity.getEntity());
 
                 /// save destination stop
                 counter = entity.getLegNumber();
                 TradeRouteTuple<Long, TradeRouteDao.TradeRoute> destinationEntity = toTradeRouteLeg(
-                        destinationCommodity.toJson(), transaction.getDestination().toJson(), transaction.getDestination().getSystem(), counter
+                        destinationCommodity.toJson(),
+                        transaction.getDestination().toJson(),
+                        transaction.getDestination().getSystem(),
+                        transaction.getDestination().getStation(),
+                        transaction.getCommodities().stream().findFirst().get().getName(),
+                        counter
                 );
                 dao.save(destinationEntity.getEntity());
             }
@@ -98,11 +115,14 @@ public class TradeRouteManager {
         });
     }
 
-    private TradeRouteTuple toTradeRouteLeg(String commodityInfoJson, String tradeRouteStationInfoJson, String starSystem, long counter) {
+    private TradeRouteTuple toTradeRouteLeg(String commodityInfoJson, String tradeRouteStationInfoJson, String starSystem, String portName, String commodity, long counter) {
         TradeRouteDao.TradeRoute legSource = new TradeRouteDao.TradeRoute();
         legSource.setLegNumber(++counter);
         legSource.setCommodityInfoJson(commodityInfoJson);
         legSource.setStationInfoJson(tradeRouteStationInfoJson);
+        legSource.setStarSystem(starSystem);
+        legSource.setPortName(portName);
+        legSource.setCommodityName(commodity);
         return new TradeRouteTuple<>(counter, legSource);
     }
 

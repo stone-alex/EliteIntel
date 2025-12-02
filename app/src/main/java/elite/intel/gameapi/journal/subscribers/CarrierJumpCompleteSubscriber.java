@@ -66,7 +66,7 @@ public class CarrierJumpCompleteSubscriber {
 
     private LocationDto toLocationDto(CarrierJumpEvent event) {
         LocationManager locationData = LocationManager.getInstance();
-        LocationDto location = locationData.getLocation(event.getStarSystem(), (long) event.getBodyId());
+        LocationDto location = locationData.getLocation(event.getStarSystem(), event.getBodyId());
         return fillInWhatWeCan(event, Objects.requireNonNullElseGet(location, () -> new LocationDto(event.getBodyId(), event.getStarSystem())));
     }
 

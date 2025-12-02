@@ -96,7 +96,7 @@ public class LocationEvent extends BaseEvent {
     private String body;
 
     @SerializedName("BodyID")
-    private int bodyID;
+    private Long bodyID;
 
     @SerializedName("BodyType")
     private String bodyType;
@@ -300,7 +300,7 @@ public class LocationEvent extends BaseEvent {
         return body;
     }
 
-    public int getBodyID() {
+    public Long getBodyID() {
         return bodyID;
     }
 

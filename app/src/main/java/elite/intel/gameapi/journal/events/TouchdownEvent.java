@@ -36,10 +36,10 @@ public class TouchdownEvent extends BaseEvent {
     private boolean onPlanet;
 
     @SerializedName("Latitude")
-    private float latitude;
+    private Double latitude;
 
     @SerializedName("Longitude")
-    private float longitude;
+    private Double longitude;
 
     @SerializedName("NearestDestination")
     private String nearestDestination;
@@ -116,11 +116,11 @@ public class TouchdownEvent extends BaseEvent {
         return onPlanet;
     }
 
-    public float getLatitude() {
+    public Double getLatitude() {
         return latitude;
     }
 
-    public float getLongitude() {
+    public Double getLongitude() {
         return longitude;
     }
 

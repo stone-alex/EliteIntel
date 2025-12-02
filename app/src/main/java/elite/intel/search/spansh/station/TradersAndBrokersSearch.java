@@ -1,6 +1,8 @@
 package elite.intel.search.spansh.station;
 
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.db.dao.LocationDao;
+import elite.intel.db.managers.LocationManager;
 import elite.intel.search.spansh.station.traderandbroker.*;
 import elite.intel.db.managers.DestinationReminderManager;
 import elite.intel.gameapi.EventBusManager;
@@ -29,7 +31,8 @@ public class TradersAndBrokersSearch {
     public String location(TraderType traderType, BrokerType brokerType, Number maxDistance) {
         int distanceInLightYears = maxDistance == null ? 250 : maxDistance.intValue();
         PlayerSession playerSession = PlayerSession.getInstance();
-        PlayerSession.GalacticCoordinates galacticCoordinates = playerSession.getGalacticCoordinates();
+        LocationManager locationManager = LocationManager.getInstance();
+        LocationDao.Coordinates galacticCoordinates = locationManager.getGalacticCoordinates();
 
         TraderAndBrokerSearchCriteria criteria = new TraderAndBrokerSearchCriteria();
         criteria.setSize(1); // one page

@@ -13,7 +13,7 @@ public class WhatIsMyCurrentTradeProfileHandler extends BaseQueryAnalyzer implem
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         TradeProfileManager tradeProfileManager = TradeProfileManager.getInstance();
-        TradeRouteSearchCriteria criteria = tradeProfileManager.getCriteria();
+        TradeRouteSearchCriteria criteria = tradeProfileManager.getCriteria(false);
         return process(
                 new AiDataStruct(
                         ANALYZE_TRADE_PROFILE.getInstructions(),

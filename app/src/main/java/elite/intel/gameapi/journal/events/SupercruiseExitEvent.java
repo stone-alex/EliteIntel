@@ -25,7 +25,7 @@ public class SupercruiseExitEvent extends BaseEvent {
     private String body;
 
     @SerializedName("BodyID")
-    private int bodyId;
+    private Long bodyId;
 
     @SerializedName("BodyType")
     private String bodyType;
@@ -97,11 +97,11 @@ public class SupercruiseExitEvent extends BaseEvent {
         this.body = body;
     }
 
-    public int getBodyId() {
+    public Long getBodyId() {
         return bodyId;
     }
 
-    public void setBodyId(int bodyId) {
+    public void setBodyId(Long bodyId) {
         this.bodyId = bodyId;
     }
 

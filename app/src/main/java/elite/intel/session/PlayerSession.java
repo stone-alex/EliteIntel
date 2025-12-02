@@ -176,7 +176,7 @@ public class PlayerSession  {
         return Database.withDao(PlayerDao.class, dao -> {
             PlayerDao.Player player = dao.get();
             Long currentLocationId = player.getCurrentLocationId();
-            return currentLocationId == null ? new LocationDto(-1) : getLocation(currentLocationId, player.getCurrentPrimaryStar());
+            return currentLocationId == null ? new LocationDto(-1L) : getLocation(currentLocationId, player.getCurrentPrimaryStar());
         });
     }
 
@@ -639,11 +639,6 @@ public class PlayerSession  {
 
     public void clearGenusPaymentAnnounced() {
         genusAnouncements.clear();
-    }
-
-    public GalacticCoordinates getGalacticCoordinates() {
-        LocationDto primaryStarLocation = getPrimaryStarLocation();
-        return new GalacticCoordinates(primaryStarLocation.getX(), primaryStarLocation.getY(), primaryStarLocation.getZ() );
     }
 
 

@@ -2,6 +2,8 @@ package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
+import elite.intel.db.dao.LocationDao;
+import elite.intel.db.managers.LocationManager;
 import elite.intel.search.edsm.EdsmApiClient;
 import elite.intel.search.edsm.dto.MarketDto;
 import elite.intel.gameapi.EventBusManager;
@@ -35,10 +37,13 @@ public class DockedSubscriber {
         location.setPlanetName(null);
         location.setPlanetShortName(null);
         MarketDto marketDto = EdsmApiClient.searchMarket(event.getMarketID(), null, null);
-        location.setMarket(marketDto);
+        if(marketDto != null) {
+            location.setMarket(marketDto);
+            location.setStationName(marketDto.getData().getStationName());
+        }
         if("FleetCarrier".equalsIgnoreCase(event.getStationType())) {
             location.setLocationType(FLEET_CARRIER);
-            PlayerSession.GalacticCoordinates coordinates = playerSession.getGalacticCoordinates();
+            LocationDao.Coordinates coordinates = LocationManager.getInstance().getGalacticCoordinates();
             if(coordinates != null) {
                 CarrierDataDto carrierData = playerSession.getCarrierData();
                 carrierData.setX(coordinates.x());

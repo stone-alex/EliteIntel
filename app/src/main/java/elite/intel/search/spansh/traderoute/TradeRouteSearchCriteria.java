@@ -23,7 +23,7 @@ public class TradeRouteSearchCriteria implements StringQuery {
         this.maxHops = maxHops;
     }
 
-    public void setMaxDistanceFromStar(int maxHopDistance) {
+    public void setMaxJumpDistance(int maxHopDistance) {
         this.maxHopDistance = maxHopDistance;
     }
 
@@ -72,7 +72,7 @@ public class TradeRouteSearchCriteria implements StringQuery {
         return maxHops;
     }
 
-    public int getMaxDistanceFromStar() {
+    public int getMaxJumpDistance() {
         return maxHopDistance;
     }
 

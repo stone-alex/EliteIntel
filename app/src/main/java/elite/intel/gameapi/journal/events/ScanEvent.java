@@ -17,7 +17,7 @@ public class ScanEvent extends BaseEvent {
     private String bodyName;
 
     @SerializedName("BodyID")
-    private int bodyID;
+    private Long bodyID;
 
     @SerializedName("Parents")
     private List<Parent> parents;
@@ -257,7 +257,7 @@ public class ScanEvent extends BaseEvent {
         return bodyName;
     }
 
-    public int getBodyID() {
+    public Long getBodyID() {
         return bodyID;
     }
 

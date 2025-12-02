@@ -2,6 +2,7 @@ package elite.intel.db.dao;
 
 import org.jdbi.v3.core.mapper.RowMapper;
 import org.jdbi.v3.core.statement.StatementContext;
+import org.jdbi.v3.sqlobject.config.RegisterConstructorMapper;
 import org.jdbi.v3.sqlobject.config.RegisterRowMapper;
 import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.statement.SqlQuery;
@@ -53,6 +54,17 @@ public interface LocationDao {
     Location findPrimaryStar(String starSystem);
 
 
+    @SqlQuery("""
+            SELECT
+                json ->> '$.X' AS x,
+                json ->> '$.Y' AS y,
+                json ->> '$.Z' AS z
+            from location location where primaryStar = (select current_primary_star from player) and json ->> '$.X' != 0 and json ->> '$.Y' !=0 and json ->> '$.Z' !=0;
+            """)
+    @RegisterConstructorMapper(Coordinates.class)
+    Coordinates currentCoordinates();
+
+
     class LocationMapper implements RowMapper<LocationDao.Location> {
         @Override
         public LocationDao.Location map(ResultSet rs, StatementContext ctx) throws SQLException {
@@ -68,6 +80,9 @@ public interface LocationDao {
         }
     }
 
+    record Coordinates(int x, int y, int z) {
+
+    }
 
     record Location(long id, long inGameId, String locationName, String primaryStar, Boolean homeSystem, String json) {
         public long getId() {

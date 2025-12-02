@@ -1,4 +1,5 @@
-alter table player add column game_build text;
+alter table player
+add column game_build text;
 create table if not exists ship (
     id             INTEGER PRIMARY KEY AUTOINCREMENT,
     shipName       TEXT    NOT NULL,
@@ -27,7 +28,9 @@ create index if not exists trade_profile_ship_id_index on trade_profile(shipId);
 create table if not exists trade_route (
     id                INTEGER PRIMARY KEY AUTOINCREMENT,
     legNumber         INTEGER not null unique,
-    starSystem              text    not null,
+    starSystem        text    not null,
     commodityInfoJson text    not null,
-    stationInfoJson   text    not null
+    stationInfoJson   text    not null,
+    portName          text    not null,
+    commodityName     text    not null
 );

@@ -6,6 +6,7 @@ import elite.intel.db.managers.TradeProfileManager;
 import elite.intel.db.managers.TradeRouteManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.search.spansh.traderoute.TradeRouteResponse;
+import elite.intel.search.spansh.traderoute.TradeRouteSearchCriteria;
 import elite.intel.session.PlayerSession;
 
 public class CalculateTradeRouteHandler implements CommandHandler {
@@ -20,14 +21,21 @@ public class CalculateTradeRouteHandler implements CommandHandler {
             return;
         }
 
-        if (profileManager.getCriteria().getStartingCapital() == 0) {
+        TradeRouteSearchCriteria criteria = profileManager.getCriteria(true);
+
+        if (criteria == null) {
+            EventBusManager.publish(new AiVoxResponseEvent("Trade profile not set or invalid"));
+            return;
+        }
+
+        if (criteria.getStartingCapital() == 0) {
             String shipName = playerSession.getShipLoadout().getShipName();
             StringBuilder sb = new StringBuilder();
             sb.append(" There is no trading profile for " + shipName + " You will have to set one up once per cargo ship you own.");
             sb.append(" To set a trading profile, say: Change trading profile, followed by profile parameter.");
-            sb.append(" Available parameters are:\n");
+            sb.append(" Available parameters are:");
             sb.append(" Starting Capital, Distance from entry, Maximum stops, Allow Permit protected systems, Allow Planetary Ports, Allow Fleet Carriers and Allow Prohibited cargo.");
-            sb.append(" Example: change trading profile, set Starting Capital 100000");
+            sb.append(" Example: change trading profile, set Starting Capital 100000.");
             sb.append(" Please set one parameter at a time. Ask me to list trade profile parameters if you need help.");
             EventBusManager.publish(
                     new AiVoxResponseEvent(sb.toString())
@@ -35,20 +43,23 @@ public class CalculateTradeRouteHandler implements CommandHandler {
             return;
         }
 
-        if (profileManager.getCriteria().getMaxJumps() == 0){
+        if (criteria.getMaxJumps() == 0) {
             String shipName = playerSession.getShipLoadout().getShipName();
             EventBusManager.publish(new AiVoxResponseEvent("There is no number of stops set for " + shipName + ". Please set it with command: Change trade profile set maximum stops, followed by number of stops."));
             return;
         }
 
 
-        if (profileManager.getCriteria().getMaxDistanceFromStar() == 0){
+        if (criteria.getMaxSystemDistance() == 0) {
             String shipName = playerSession.getShipLoadout().getShipName();
-            EventBusManager.publish(new AiVoxResponseEvent("There is no maximum distance from entry set for " + shipName + ". Please set it with command: Change trade profile set distance from entry, followed by a number of light seconds."));
+            EventBusManager.publish(new AiVoxResponseEvent("There is no maximum distance from star to port set for " + shipName + ". Please set it with command: Change trade profile set distance from entry, followed by a number of light seconds."));
             return;
         }
 
-        TradeRouteResponse route = tradeRouteManager.calculateTradeRoute();
+        TradeRouteResponse route = tradeRouteManager.calculateTradeRoute(criteria);
+        if (route == null) {
+            return;
+        }
         long totalProfit = route.getResult().getLast().getTotalProfit();
         EventBusManager.publish(new AiVoxResponseEvent("Calculated route with profit of " + totalProfit + " credits. Ask me to plot the route to next trade station."));
     }

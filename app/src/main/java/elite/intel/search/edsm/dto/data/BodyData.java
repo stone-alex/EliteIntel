@@ -13,7 +13,7 @@ public class BodyData extends BaseJsonDto implements ToJsonConvertible {
     @SerializedName("id64")
     public long id64;
     @SerializedName("bodyId")
-    public int bodyId;
+    public Long bodyId;
     @SerializedName("name")
     public String name;
     @SerializedName("discovery")
@@ -43,7 +43,7 @@ public class BodyData extends BaseJsonDto implements ToJsonConvertible {
     @SerializedName("solarRadius")
     public double solarRadius;
     @SerializedName("surfaceTemperature")
-    public int surfaceTemperature;
+    public Double surfaceTemperature;
     @SerializedName("orbitalPeriod")
     public Double orbitalPeriod;
     @SerializedName("semiMajorAxis")
@@ -97,7 +97,7 @@ public class BodyData extends BaseJsonDto implements ToJsonConvertible {
         return id64;
     }
 
-    public int getBodyId() {
+    public Long getBodyId() {
         return bodyId;
     }
 
@@ -157,7 +157,7 @@ public class BodyData extends BaseJsonDto implements ToJsonConvertible {
         return solarRadius;
     }
 
-    public int getSurfaceTemperature() {
+    public Double getSurfaceTemperature() {
         return surfaceTemperature;
     }
 

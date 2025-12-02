@@ -1,6 +1,7 @@
 package elite.intel.search.spansh.findcarrier;
 
 import com.google.gson.JsonObject;
+import elite.intel.db.dao.LocationDao;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.TimeUtils;
 import elite.intel.util.json.GsonFactory;
@@ -26,7 +27,7 @@ public class FleetCarrierSearch {
     }
 
 
-    public FleetCarrierSearchResultsDto findFleetCarrier(int range, CarrierAccess carrierAccess, PlayerSession.GalacticCoordinates coords) {
+    public FleetCarrierSearchResultsDto findFleetCarrier(int range, CarrierAccess carrierAccess, LocationDao.Coordinates coords) {
             FleetCarrierSearchCriteriaDto criteria = new FleetCarrierSearchCriteriaDto();
             FleetCarrierSearchCriteriaDto.Filters filters = new FleetCarrierSearchCriteriaDto.Filters();
 

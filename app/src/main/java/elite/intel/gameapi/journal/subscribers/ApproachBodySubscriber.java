@@ -108,7 +108,7 @@ public class ApproachBodySubscriber {
         if (gravity > 1) {
             sb.append(" Gravity Warning!!! ");
         }
-        int surfaceTemperatureKelvin = bodyData.getSurfaceTemperature();
+        Double surfaceTemperatureKelvin = bodyData.getSurfaceTemperature();
         location.setSurfaceTemperature(surfaceTemperatureKelvin);
         sb.append(" Surface Temperature: ").append(surfaceTemperatureKelvin).append(" K.");
         if (bodyData.getAtmosphereType() != null && !bodyData.getAtmosphereType().isEmpty()) {

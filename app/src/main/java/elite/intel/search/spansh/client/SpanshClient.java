@@ -2,6 +2,8 @@ package elite.intel.search.spansh.client;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import elite.intel.gameapi.EventBusManager;
+import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.util.AudioPlayer;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
@@ -71,6 +73,10 @@ public class SpanshClient {
                 .build();
 
         HttpResponse<String> resp = httpClient.send(post, HttpResponse.BodyHandlers.ofString());
+        if(resp.statusCode() == 400){
+            log.warn("POST failed: {}", resp.body());
+            EventBusManager.publish(new SensorDataEvent("Unable to complete Shapnsh request: "+resp.body()));
+        }
 
         if (resp.statusCode() != 202) {
             log.warn("POST failed: {}", resp.statusCode());

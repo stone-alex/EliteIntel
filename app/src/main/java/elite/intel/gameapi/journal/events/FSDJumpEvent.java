@@ -23,7 +23,7 @@ public class FSDJumpEvent extends BaseEvent {
     private long systemAddress;
 
     @SerializedName("StarPos")
-    private float[] starPos;
+    private Double[] starPos;
 
     @SerializedName("SystemAllegiance")
     private String systemAllegiance;
@@ -74,7 +74,7 @@ public class FSDJumpEvent extends BaseEvent {
     private String powerplayState;
 
     @SerializedName("PowerplayStateControlProgress")
-    private float powerplayStateControlProgress;
+    private Double powerplayStateControlProgress;
 
     @SerializedName("PowerplayStateReinforcement")
     private int powerplayStateReinforcement;
@@ -83,13 +83,13 @@ public class FSDJumpEvent extends BaseEvent {
     private int powerplayStateUndermining;
 
     @SerializedName("JumpDist")
-    private float jumpDist;
+    private Double jumpDist;
 
     @SerializedName("FuelUsed")
-    private float fuelUsed;
+    private Double fuelUsed;
 
     @SerializedName("FuelLevel")
-    private float fuelLevel;
+    private Double fuelLevel;
 
     @SerializedName("Factions")
     private List<Faction> factions;
@@ -162,7 +162,7 @@ public class FSDJumpEvent extends BaseEvent {
         return systemAddress;
     }
 
-    public float[] getStarPos() {
+    public Double[] getStarPos() {
         return starPos;
     }
 
@@ -214,7 +214,7 @@ public class FSDJumpEvent extends BaseEvent {
         return powerplayState;
     }
 
-    public float getPowerplayStateControlProgress() {
+    public Double getPowerplayStateControlProgress() {
         return powerplayStateControlProgress;
     }
 
@@ -226,15 +226,15 @@ public class FSDJumpEvent extends BaseEvent {
         return powerplayStateUndermining;
     }
 
-    public float getJumpDist() {
+    public Double getJumpDist() {
         return jumpDist;
     }
 
-    public float getFuelUsed() {
+    public Double getFuelUsed() {
         return fuelUsed;
     }
 
-    public float getFuelLevel() {
+    public Double getFuelLevel() {
         return fuelLevel;
     }
 
@@ -257,7 +257,7 @@ public class FSDJumpEvent extends BaseEvent {
         private String government;
 
         @SerializedName("Influence")
-        private float influence;
+        private Double influence;
 
         @SerializedName("Allegiance")
         private String allegiance;
@@ -269,7 +269,7 @@ public class FSDJumpEvent extends BaseEvent {
         private String happinessLocalised;
 
         @SerializedName("MyReputation")
-        private float myReputation;
+        private Double myReputation;
 
         @SerializedName("ActiveStates")
         private List<ActiveState> activeStates;
@@ -286,7 +286,7 @@ public class FSDJumpEvent extends BaseEvent {
             return government;
         }
 
-        public float getInfluence() {
+        public Double getInfluence() {
             return influence;
         }
 
@@ -298,7 +298,7 @@ public class FSDJumpEvent extends BaseEvent {
             return happinessLocalised;
         }
 
-        public float getMyReputation() {
+        public Double getMyReputation() {
             return myReputation;
         }
 

@@ -47,9 +47,9 @@ public class JumpCompletedSubscriber {
         primaryStar.setStarName(event.getStarSystem());
         primaryStar.setPlanetName(event.getBody());
         primaryStar.setLocationType(LocationDto.LocationType.PRIMARY_STAR);
-        primaryStar.setX(event.getStarPos()[0]);
-        primaryStar.setY(event.getStarPos()[1]);
-        primaryStar.setZ(event.getStarPos()[2]);
+        primaryStar.setX(Double.valueOf(event.getStarPos()[0]));
+        primaryStar.setY(Double.valueOf(event.getStarPos()[1]));
+        primaryStar.setZ(Double.valueOf(event.getStarPos()[2]));
         primaryStar.setPopulation(event.getPopulation());
         primaryStar.setPowerplayState(event.getPowerplayState());
         primaryStar.setPowerplayStateControlProgress(event.getPowerplayStateControlProgress());

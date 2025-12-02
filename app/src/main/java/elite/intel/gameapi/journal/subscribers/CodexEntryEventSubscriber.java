@@ -1,6 +1,7 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.intel.ai.mouth.subscribers.events.DiscoveryAnnouncementEvent;
 import elite.intel.db.dao.CodexEntryDao;
 import elite.intel.db.managers.CodexEntryManager;
 import elite.intel.gameapi.EventBusManager;
@@ -85,7 +86,7 @@ public class CodexEntryEventSubscriber {
             }
         }
 
-        EventBusManager.publish(new SensorDataEvent(sb.toString()));
+        EventBusManager.publish(new DiscoveryAnnouncementEvent(sb.toString()));
         if("$Codex_SubCategory_Organic_Structures;".equalsIgnoreCase(event.getSubCategory())) {
             codexEntryManager.save(event);
         }

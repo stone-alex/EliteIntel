@@ -1,5 +1,6 @@
 package elite.intel.search.spansh.stellarobjects;
 
+import elite.intel.db.dao.LocationDao;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 
@@ -21,7 +22,7 @@ public class StellarObjectSearch {
     }
 
 
-    public StellarObjectSearchResultDto findRings(String material, ReserveLevel level, PlayerSession.GalacticCoordinates coords, int range) {
+    public StellarObjectSearchResultDto findRings(String material, ReserveLevel level, LocationDao.Coordinates coords, int range) {
 
             StellarObjectSearchClient searchClient = StellarObjectSearchClient.getInstance();
             StellarObjectSearchRequestDto criteria = new StellarObjectSearchRequestDto();

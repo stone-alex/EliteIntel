@@ -34,6 +34,7 @@ public class LocationSubscriber {
         dto.setStationEconomy(event.getStationEconomyLocalised());
         dto.setStationGovernment(event.getStationGovernmentLocalised());
         dto.setStationServices(event.getStationServices());
+        dto.setStarName(event.getStationName());
         dto.setStationType(event.getStationType());
         dto.setDistance(event.getDistFromStarLS());
         dto.setEconomy(event.getSystemEconomyLocalised());
@@ -58,7 +59,11 @@ public class LocationSubscriber {
         dto.setTrafficDto(EdsmApiClient.searchTraffic(event.getStarSystem()));
         dto.setDeathsDto(EdsmApiClient.searchDeaths(event.getStarSystem()));
 
-        playerSession.saveLocation(dto);
+        if(dto.getStarName() != null && dto.getStarName().length() > 0) {
+            //have to check for star name (primary star of the system). Sometimes the star name is empty.
+            //do not save locations without star name.
+            playerSession.saveLocation(dto);
+        }
     }
 
     private LocationDto findLocation(LocationEvent event) {

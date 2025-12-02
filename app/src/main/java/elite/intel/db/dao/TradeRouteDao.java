@@ -15,12 +15,13 @@ import java.sql.SQLException;
 public interface TradeRouteDao {
 
     @SqlUpdate("""
-            INSERT OR REPLACE INTO trade_route (legNumber, commodityInfoJson, stationInfoJson, starSystem) 
-                VALUES (:legNumber, :commodityInfoJson, :stationInfoJson, :starSystem, :portName)
+            INSERT OR REPLACE INTO trade_route (legNumber, commodityInfoJson, stationInfoJson, starSystem, portName, commodityName) 
+                VALUES (:legNumber, :commodityInfoJson, :stationInfoJson, :starSystem, :portName, :commodityName)
                         on conflict do update set
                         stationInfoJson = excluded.stationInfoJson,
                         commodityInfoJson = excluded.commodityInfoJson,
-                        starSystem = excluded.starSystem
+                        starSystem = excluded.starSystem,
+                        commodityName = excluded.commodityName
             """)
     void save(@BindBean TradeRouteDao.TradeRoute data);
 
@@ -41,6 +42,12 @@ public interface TradeRouteDao {
 
         @Override public TradeRoute map(ResultSet rs, StatementContext ctx) throws SQLException {
             TradeRoute route = new TradeRoute();
+            route.setLegNumber(rs.getLong("legNumber"));
+            route.setCommodityInfoJson(rs.getString("commodityInfoJson"));
+            route.setStationInfoJson(rs.getString("stationInfoJson"));
+            route.setStarSystem(rs.getString("starSystem"));
+            route.setPortName(rs.getString("portName"));
+            route.setCommodityName(rs.getString("commodityName"));
             return route;
         }
     }
@@ -51,6 +58,8 @@ public interface TradeRouteDao {
         private String stationInfoJson;
         private Long legNumber;
         private String starSystem;
+        private String portName;
+        private String commodityName;
 
 
         public TradeRoute() {
@@ -86,6 +95,22 @@ public interface TradeRouteDao {
 
         public void setStarSystem(String starSystem) {
             this.starSystem = starSystem;
+        }
+
+        public String getPortName() {
+            return portName;
+        }
+
+        public void setPortName(String portName) {
+            this.portName = portName;
+        }
+
+        public void setCommodityName(String commodity) {
+            this.commodityName = commodity;
+        }
+
+        public String getCommodityName() {
+            return commodityName;
         }
     }
 }

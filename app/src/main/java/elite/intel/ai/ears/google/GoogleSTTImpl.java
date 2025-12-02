@@ -31,7 +31,9 @@ public class GoogleSTTImpl implements EarsInterface {
     private static final int EXIT_SILENCE_FRAMES = 15; // ~1s silence to exit
     private static final long BASE_BACKOFF_MS = 2000; // Base backoff for retries
     private static final long MAX_BACKOFF_MS = 60000; // Cap at 1 min
-    private static final long MIN_STREAM_GAP_MS = 30000; // Enforce 30s between stream starts
+
+    private static final long MIN_STREAM_GAP_MS = 300;
+
     private final AtomicBoolean isListening = new AtomicBoolean(true);
     private final AtomicBoolean isSpeaking = new AtomicBoolean(false);
     private final SystemSession systemSession = SystemSession.getInstance();
@@ -158,7 +160,7 @@ public class GoogleSTTImpl implements EarsInterface {
 
                             @Override
                             public void onError(Throwable t) {
-                                log.error("STT error: {}", t.getMessage(), t);
+                                log.warn("STT: {}", t.getMessage());
                                 needRestart.set(true);
                             }
 

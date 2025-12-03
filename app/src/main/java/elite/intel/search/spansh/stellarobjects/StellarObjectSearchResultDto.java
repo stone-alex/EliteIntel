@@ -2,6 +2,7 @@ package elite.intel.search.spansh.stellarobjects;
 
 import com.google.gson.annotations.SerializedName;
 import elite.intel.gameapi.gamestate.dtos.BaseJsonDto;
+import elite.intel.gameapi.journal.events.SAASignalsFoundEvent;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 
@@ -99,7 +100,20 @@ public class StellarObjectSearchResultDto extends BaseJsonDto implements ToJsonC
         }
     }
 
+    public static class Genus {
+
+        @SerializedName("name")
+        String values;
+
+        public String getValues() {
+            return values;
+        }
+    }
+
     public static class Result implements ToJsonConvertible {
+
+        @SerializedName("genuses")
+        private List<Genus> genus;
 
         @SerializedName("arg_of_periapsis")
         private double argOfPeriapsis;
@@ -226,6 +240,10 @@ public class StellarObjectSearchResultDto extends BaseJsonDto implements ToJsonC
 
         @SerializedName("volcanism_type")
         private String volcanismType;
+
+        public List<Genus> getGenus() {
+            return genus;
+        }
 
         public double getArgOfPeriapsis() {
             return argOfPeriapsis;

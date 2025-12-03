@@ -126,7 +126,7 @@ public class SpanshClient {
     }
 
 
-    public JsonObject waitForResults(String searchRefId) throws IOException, InterruptedException {
+    private JsonObject waitForResults(String searchRefId) throws IOException, InterruptedException {
         if (searchRefId == null) return null;
 
         int attempt = 0;

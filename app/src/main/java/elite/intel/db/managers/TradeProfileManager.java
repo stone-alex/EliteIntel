@@ -162,7 +162,7 @@ public class TradeProfileManager {
         profile.setStartingBudget(startingCapital);
         return Database.withDao(TradeProfileDao.class, dao -> {
             dao.save(profile);
-            return false;
+            return true;
         });
     }
 

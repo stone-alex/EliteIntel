@@ -32,8 +32,9 @@ public class CalculateTradeRouteHandler implements CommandHandler {
             StringBuilder sb = new StringBuilder();
             sb.append(" There is no trading profile for " + shipName + " You will have to set one up once per cargo ship you own.");
             sb.append(" To set a trading profile, say: Change trading profile, followed by profile parameter.");
-            sb.append(" Available parameters are:");
-            sb.append(" Starting Capital, Distance from entry, Maximum stops, Allow Permit protected systems, Allow Planetary Ports, Allow Fleet Carriers and Allow Prohibited cargo.");
+            sb.append(" Required parameters are -");
+            sb.append(" Starting Capital, Distance from entry, Maximum stops.");
+            sb.append(" Optional parameters are - Allow Permit protected systems, Allow Planetary Ports, Allow Fleet Carriers and Allow Prohibited cargo.");
             sb.append(" Example: change trading profile, set Starting Capital 100000.");
             sb.append(" Please set one parameter at a time. Ask me to list trade profile parameters if you need help.");
             EventBusManager.publish(

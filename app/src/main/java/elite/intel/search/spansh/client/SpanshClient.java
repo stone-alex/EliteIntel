@@ -31,14 +31,21 @@ public class SpanshClient {
     }
 
 
-    private String postSearch(ToJsonConvertible criteria)
-            throws IOException, InterruptedException {
+    private String postSearch(ToJsonConvertible criteria) throws IOException, InterruptedException {
+        return post(criteria.toJson());
+    }
 
+    private String postSearch(String criteria) throws IOException, InterruptedException {
+        return post(criteria);
+    }
+
+
+    private String post(String criteria) throws IOException, InterruptedException {
         HttpRequest post = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL))
                 .header("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:144.0) Gecko/20100101 Firefox/144.0")
                 .header("Content-Type", "application/x-www-form-urlencoded")
-                .POST(HttpRequest.BodyPublishers.ofString(criteria.toJson()))
+                .POST(HttpRequest.BodyPublishers.ofString(criteria))
                 .build();
 
         HttpResponse<String> resp = httpClient.send(post, HttpResponse.BodyHandlers.ofString());
@@ -108,6 +115,15 @@ public class SpanshClient {
         return new JsonObject();
     }
 
+    public JsonObject performSearch(String json){
+        try {
+            String searchRefId = postSearch(json);
+            return waitForResults(searchRefId);
+        } catch (IOException | InterruptedException e) {
+            log.error("Error performing search", e);
+        }
+        return new JsonObject();
+    }
 
 
     public JsonObject waitForResults(String searchRefId) throws IOException, InterruptedException {

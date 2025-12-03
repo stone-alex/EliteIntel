@@ -13,7 +13,7 @@ import elite.intel.session.PlayerSession;
 
 import java.util.Map;
 
-public class FleetCarrierRouterCalculator {
+public class FleetCarrierRouteCalculator {
 
     public static void calculate() {
 
@@ -27,7 +27,6 @@ public class FleetCarrierRouterCalculator {
         if (tritiumInReserve != null && tritiumInReserve > 0) {
             fuelSupply = fuelSupply + tritiumInReserve;
         }
-
 
         int cargoCapacity = carrierData.getCargoCapacity();
         int cargoSpaceUsed = carrierData.getCargoSpaceUsed();

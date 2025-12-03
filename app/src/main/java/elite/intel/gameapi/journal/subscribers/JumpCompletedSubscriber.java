@@ -1,6 +1,15 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.intel.db.managers.LocationManager;
+import elite.intel.db.managers.ShipRouteManager;
+import elite.intel.db.managers.TradeRouteManager;
+import elite.intel.gameapi.EventBusManager;
+import elite.intel.gameapi.SensorDataEvent;
+import elite.intel.gameapi.gamestate.dtos.NavRouteDto;
+import elite.intel.gameapi.journal.events.FSDJumpEvent;
+import elite.intel.gameapi.journal.events.dto.LocationDto;
+import elite.intel.gameapi.journal.events.dto.MaterialDto;
 import elite.intel.search.edsm.EdsmApiClient;
 import elite.intel.search.edsm.dto.DeathsDto;
 import elite.intel.search.edsm.dto.SystemBodiesDto;
@@ -8,18 +17,10 @@ import elite.intel.search.edsm.dto.TrafficDto;
 import elite.intel.search.edsm.dto.data.BodyData;
 import elite.intel.search.edsm.dto.data.DeathsStats;
 import elite.intel.search.edsm.dto.data.TrafficStats;
-import elite.intel.db.managers.LocationManager;
-import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.SensorDataEvent;
-import elite.intel.gameapi.gamestate.dtos.NavRouteDto;
-import elite.intel.gameapi.journal.events.FSDJumpEvent;
-import elite.intel.gameapi.journal.events.dto.LocationDto;
-import elite.intel.gameapi.journal.events.dto.MaterialDto;
+import elite.intel.search.spansh.station.marketstation.TradeStopDto;
 import elite.intel.session.PlayerSession;
-import elite.intel.db.managers.ShipRouteManager;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -104,6 +105,41 @@ public class JumpCompletedSubscriber {
 
         if (playerSession.isRouteAnnouncementOn()) {
             EventBusManager.publish(new SensorDataEvent(sb.toString()));
+        }
+
+        TradeRouteManager tradeRouteManager = TradeRouteManager.getInstance();
+        TradeRouteManager.TradeRouteLegTuple<Integer, TradeStopDto> stop = tradeRouteManager.getNextStop();
+        if (stop != null) {
+            String destinationStation = stop.getTradeStopDto().getDestinationStation();
+            String destinationSystem = stop.getTradeStopDto().getDestinationSystem();
+            String sourceStation = stop.getTradeStopDto().getSourceStation();
+            String sourceSystem = stop.getTradeStopDto().getSourceSystem();
+
+            if (event.getStarSystem().equalsIgnoreCase(destinationSystem)) {
+                EventBusManager.publish(
+                        new SensorDataEvent(
+                                "Head to " + destinationStation
+                                        + " to sell "
+                                        + stop.getTradeStopDto()
+                                        .getCommodities()
+                                        .stream()
+                                        .map(commodity -> commodity.getName()).collect(Collectors.joining(", "))
+                        )
+                );
+            }
+
+            if (event.getStarSystem().equalsIgnoreCase(sourceSystem)) {
+                EventBusManager.publish(
+                        new SensorDataEvent(
+                                "Head to " + sourceStation
+                                        + " to buy "
+                                        + stop.getTradeStopDto()
+                                        .getCommodities()
+                                        .stream()
+                                        .map(commodity -> commodity.getName()).collect(Collectors.joining(", "))
+                        )
+                );
+            }
         }
     }
 

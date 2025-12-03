@@ -12,7 +12,7 @@ import elite.intel.search.spansh.carrierroute.CarrierJump;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.Status;
 import elite.intel.util.ClipboardUtils;
-import elite.intel.util.FleetCarrierRouterCalculator;
+import elite.intel.util.FleetCarrierRouteCalculator;
 
 import java.util.Objects;
 
@@ -37,7 +37,7 @@ public class CarrierJumpCompleteSubscriber {
                     .get(fleetCarrierRouteManager.getFleetCarrierRoute().size() - 1)
                     .getSystemName();
             ClipboardUtils.setClipboardText(systemName);
-            FleetCarrierRouterCalculator.calculate();
+            FleetCarrierRouteCalculator.calculate();
         }
 
         fleetCarrierRouteManager.removeLeg(event.getStarSystem());

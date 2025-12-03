@@ -8,6 +8,7 @@ import elite.intel.search.spansh.station.marketstation.TradeStopDto;
 import elite.intel.search.spansh.traderoute.*;
 import elite.intel.util.json.GsonFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TradeRouteManager {
@@ -24,12 +25,22 @@ public class TradeRouteManager {
         return instance;
     }
 
+    public List<TradeRouteLegTuple<Integer, TradeStopDto>> getAllStops() {
+        return Database.withDao(TradeRouteDao.class, dao->{
+            ArrayList<TradeRouteLegTuple<Integer, TradeStopDto>> result = new ArrayList<>();
+            List<TradeRouteDao.TradeRoute> stops = dao.listAll();
+            for(TradeRouteDao.TradeRoute stop : stops) {
+                result.add(new TradeRouteLegTuple<>(stop.getLegNumber(), GsonFactory.getGson().fromJson(stop.getJson(), TradeStopDto.class)));
+            }
+            return result;
+        });
+    }
 
     public TradeRouteLegTuple<Integer, TradeStopDto> getNextStop() {
         return Database.withDao(
                 TradeRouteDao.class, dao -> {
                     TradeRouteDao.TradeRoute stop = dao.getNextStop();
-
+                    if(stop == null) return null;
                     return new TradeRouteLegTuple<>(
                             stop.getLegNumber(),
                             GsonFactory.getGson().fromJson(stop.getJson(), TradeStopDto.class)

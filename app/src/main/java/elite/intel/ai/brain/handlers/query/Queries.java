@@ -5,7 +5,8 @@ import elite.intel.ai.brain.handlers.query.struct.AnalyseMaterialsHandler;
 public enum Queries {
 
     //ANALYZE_LOCAL_SYSTEM("query_local_system_data", "-- instructions in class --", AnalyzeLocalSystemHandler.class, true),
-    ANALYZE_TRADE_PROFILE("query_current_trade_profile_info", "Let the user know details of this trade profile. Report max price age in hours. Omit system and station info.", WhatIsMyCurrentTradeProfileHandler.class, true),
+    ANALYZE_SYSTEM_SECURITY("query_analyze_system_security", "--", AnalyzeSystemSecurityHandler.class, true),
+    ANALYZE_TRADE_PROFILE("query_current_trade_profile_info", "--", WhatIsMyCurrentTradeProfileHandler.class, true),
     ANALYZE_MATERIALS_ON_HAND("query_analyze_storage_for_materials", "Provide answers about materials on hand based on this data. Use maxCap data field to compare amount available to cap amount. Material amount is measured in units. Example Answer: 'We have 12 units of mercury out of 200'", AnalyseMaterialsHandler.class, true),
     ANALYZE_DISTANCE_TO_STELLAR_OBJECT("query_what_is_the_distance_to_planet", "-- instructions in class --", AnalyzeDistanceToStellarObject.class, true),
     ANALYZE_CARRIER_ROUTE("query_fleet_carrier_route", "Use this data to analyze the current fleet carrier route.", AnalyzeCarrierRouteHandler.class, true),
@@ -17,7 +18,8 @@ public enum Queries {
     ANALYZE_EXO_BIOLOGY("query_exobiology_samples_for_current_planet", "Analyze bio-sample collection progress for current planet, including completed, partial, and remaining species.", AnalyzeBioSamplesHandler.class, true),  // "exobiology" to distinguish from commodities,
     ANALYZE_CURRENT_FUEL_STATUS("query_ship_fuel_status", "Analyze ship fuel tank capacity and reserve, return percent available. Do not confuse ship with fleet carrier. Fleet carrier uses tritium for fuel, Ship uses hydrogen.", AnalyzeFuelStatusHandler.class, true),
     ANALYZE_FSD_TARGET("query_fsd_target_analysis", "Analyze FSD destination for allegiance, traffic, and security.", AnalyzeFsdTargetHandler.class, true),
-    ANALYZE_LOCAL_MARKETS("query_local_commodity_markets", "Analyze commodity market contents at the current location.", AnalyzeLocalMarketsHandler.class, true),  // "commodity" to avoid bio or material overlap,
+    ANALYZE_TRADE_ROUTE("query_trade_route_analysis", "Analyze trade route for current location.", AnalyzeTradeRouteHandler.class, true),
+    //ANALYZE_LOCAL_MARKETS("query_local_commodity_markets", "Analyze commodity market contents at the current location.", AnalyzeLocalMarketsHandler.class, true),  // "commodity" to avoid bio or material overlap,
     ANALYZE_LOCAL_OUTFITTING("query_local_outfitting", "Analyze available outfitting options.", AnalyzeLocalOutfittingHandler.class, true),
     ANALYZE_LOCAL_SHIPYARD("query_local_shipyard", "Analyze shipyard contents.", AnalyzeShipyardHandler.class, true),
     ANALYZE_LOCAL_STATIONS("query_local_stations_services", "Summarize services at local stations.", AnalyzeLocalStations.class, true),

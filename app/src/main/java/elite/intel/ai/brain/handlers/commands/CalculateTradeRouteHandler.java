@@ -49,7 +49,7 @@ public class CalculateTradeRouteHandler implements CommandHandler {
         }
 
 
-        if (criteria.getMaxSystemDistance() == 0) {
+        if (criteria.getMaxLsFromArrival() == 0) {
             String shipName = playerSession.getShipLoadout().getShipName();
             EventBusManager.publish(new AiVoxResponseEvent("There is no maximum distance from star to port set for " + shipName + ". Please set it with command: Change trade profile set distance from entry, followed by a number of light seconds."));
             return;

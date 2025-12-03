@@ -5,7 +5,6 @@ import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.db.managers.DestinationReminderManager;
 import elite.intel.db.managers.TradeRouteManager;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.gamestate.dtos.GameEvents;
 import elite.intel.gameapi.journal.events.MarketSellEvent;
 import elite.intel.search.spansh.station.marketstation.TradeStopDto;
 import elite.intel.search.spansh.traderoute.TradeCommodity;
@@ -25,19 +24,16 @@ public class MarketSellEventSubscriber {
         tradeRouteManager.deleteForMarketId(event.getMarketID());
         EventBusManager.publish(new AiVoxResponseEvent("Sold " + event.getCount() + " units of " + event.getType() + " for " + event.getTotalSale() + " credits."));
 
-        GameEvents.CargoEvent shipCargo = playerSession.getShipCargo();
-        boolean cargoLoaded = shipCargo.getCount() > 0;
-
         TradeRouteManager.TradeRouteLegTuple<Integer, TradeStopDto> nextStop = tradeRouteManager.getNextStop();
 
-        if (!cargoLoaded && nextStop != null) {
+        if (nextStop != null) {
             StringBuilder sb = new StringBuilder();
             String sourceSystem = nextStop.getTradeStopDto().getSourceSystem();
             String sourceStation = nextStop.getTradeStopDto().getSourceStation();
             String destinationSystem = nextStop.getTradeStopDto().getDestinationSystem();
             String destinationStation = nextStop.getTradeStopDto().getDestinationStation();
 
-            if(playerSession.getPrimaryStarName().equalsIgnoreCase(sourceSystem)) {
+            if (playerSession.getPrimaryStarName().equalsIgnoreCase(sourceSystem)) {
                 sb.append(" Buy ");
                 nextStop.getTradeStopDto().getCommodities().forEach(commodity -> sb.append(commodity.getName()).append(", "));
                 sb.append(" Sell at ").append(destinationSystem).append(", ").append(destinationStation).append(" port.");

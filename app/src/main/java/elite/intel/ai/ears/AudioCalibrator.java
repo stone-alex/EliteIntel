@@ -114,7 +114,7 @@ public class AudioCalibrator {
 
         SystemSession systemSession = SystemSession.getInstance();
         systemSession.setRmsThresholdHigh(highThreshold);
-        double adjustedLowThreshold = lowThreshold + 10;
+        double adjustedLowThreshold = lowThreshold + 5;
         systemSession.setRmsThresholdLow(adjustedLowThreshold);
 
         log.info("Final calibrated RMS thresholds: HIGH={}, LOW={}", highThreshold, lowThreshold);

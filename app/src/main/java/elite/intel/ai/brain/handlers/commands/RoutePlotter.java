@@ -51,6 +51,8 @@ public class RoutePlotter extends CommandOperator {
             Thread.sleep(500);
             keyProcessor.pressKey(KeyProcessor.KEY_ENTER);
 
+            //glide time
+            Thread.sleep(4500);
             //Game bug work around
             operateKeyboard(BINDING_CAM_ZOOM_OUT.getGameBinding(), 120);
             Thread.sleep(200);
@@ -61,7 +63,7 @@ public class RoutePlotter extends CommandOperator {
             keyProcessor.pressAndHoldKey(KeyProcessor.KEY_ENTER, 2500);
             Thread.sleep(500);
 
-            operateKeyboard(openGalaxyMap, 0);
+            //operateKeyboard(openGalaxyMap, 0);
             AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_2);
         } catch (InterruptedException e) {
             //

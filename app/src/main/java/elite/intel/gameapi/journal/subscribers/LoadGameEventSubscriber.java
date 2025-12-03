@@ -43,11 +43,15 @@ public class LoadGameEventSubscriber {
         MaterialsDto rawAndManufacturedMaterials = EdsmApiClient.getMaterials();
 
         materialManager.clear();
-        for (MaterialsDto.MaterialEntry entry : rawAndManufacturedMaterials.getMaterials()) {
-            materialManager.save(entry.getMaterialName(), MaterialsType.GAME_RAW, entry.getQuantity());
+        if(rawAndManufacturedMaterials != null) {
+            for (MaterialsDto.MaterialEntry entry : rawAndManufacturedMaterials.getMaterials()) {
+                materialManager.save(entry.getMaterialName(), MaterialsType.GAME_RAW, entry.getQuantity());
+            }
         }
-        for (EncodedMaterialsDto.EncodedMaterialEntry entry : encodedMaterials.getEncoded()) {
-            materialManager.save(entry.getMaterialName(), MaterialsType.GAME_ENCODED, entry.getQuantity());
+        if(encodedMaterials != null) {
+            for (EncodedMaterialsDto.EncodedMaterialEntry entry : encodedMaterials.getEncoded()) {
+                materialManager.save(entry.getMaterialName(), MaterialsType.GAME_ENCODED, entry.getQuantity());
+            }
         }
     }
 

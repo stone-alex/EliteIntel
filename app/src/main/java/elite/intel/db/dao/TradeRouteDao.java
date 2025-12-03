@@ -10,6 +10,7 @@ import org.jdbi.v3.sqlobject.statement.SqlUpdate;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 @RegisterRowMapper(TradeRouteDao.TradeRouteMapper.class)
 public interface TradeRouteDao {
@@ -36,6 +37,10 @@ public interface TradeRouteDao {
 
     @SqlQuery("SELECT * FROM trade_route where json LIKE :pattern")
     TradeRoute findForStarSystem(@Bind("pattern") String pattern);
+
+    @SqlQuery("SELECT * FROM trade_route")
+    List<TradeRoute>listAll();
+
 
 
     class TradeRouteMapper implements RowMapper<TradeRoute> {

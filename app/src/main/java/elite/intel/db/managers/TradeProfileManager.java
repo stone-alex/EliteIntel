@@ -48,8 +48,8 @@ public class TradeProfileManager {
         criteria.setAllowProhibited(profile.isAllowProhibited());
         criteria.setAllowFleetCarriers(profile.isAllowFleetCarrier());
         criteria.setMaxCargo(ship.getCargoCapacity());
-        criteria.setMaxJumpDistance((int) playerSession.getShipLoadout().getMaxJumpRange());
-        criteria.setMaxSystemDistance(profile.getMaxDistanceLs());
+        criteria.setMaxJumpDistance(((int) playerSession.getShipLoadout().getMaxJumpRange() * 10));
+        criteria.setMaxLsFromArrival(profile.getMaxDistanceLs());
         criteria.setMaxJumps(profile.getMaxJumps());
         criteria.setRequiresLargePad("L".equals(ShipPadSizes.getPadSize(ship.getShipIdentifier())));
         criteria.setStartingCapital(profile.getStartingBudget());

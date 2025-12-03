@@ -39,6 +39,10 @@ public class PlotRouteToNextTradeStopHandler extends CommandOperator implements 
         boolean cargoLoaded = shipCargo.getCount() > 0;
 
         TradeRouteManager.TradeRouteLegTuple<Integer, TradeStopDto> nextStop = tradeRouteManager.getNextStop();
+        if(nextStop == null){
+            EventBusManager.publish(new AiVoxResponseEvent("No more stops to visit."));
+            return;
+        }
 
         if (!cargoLoaded) {
             String sourceSystem = nextStop.getTradeStopDto().getSourceSystem();

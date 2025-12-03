@@ -17,9 +17,15 @@ public class WhatIsMyCurrentTradeProfileHandler extends BaseQueryAnalyzer implem
         EventBusManager.publish(new AiVoxResponseEvent("Analyzing trade profile... Stand by..."));
         TradeProfileManager tradeProfileManager = TradeProfileManager.getInstance();
         TradeRouteSearchCriteria criteria = tradeProfileManager.getCriteria(false);
+        String instructions = "Summarize the trade profile for the player in plain English.  \n" +
+                "- Convert any price age given in seconds to \"X hours\" or \"X hours Y minutes\".  \n" +
+                "- The value maxStationDistanceLs (or maxLsFromArrival) is the maximum allowed station distance **in Ls from the arrival point / main star** — it is an in-system distance, never light-years and never a distance between systems.  \n" +
+                "- Example: 6000 → \"stations no farther than 6000 Ls from the star\" or \"max 6000 Ls from arrival\".  \n" +
+                "- Never say \"light years\", \"system distance\", \"ly\", or anything that could be misinterpreted as jump range.  \n" +
+                "- Completely omit the system name and station name.";
         return process(
                 new AiDataStruct(
-                        ANALYZE_TRADE_PROFILE.getInstructions(),
+                        instructions,
                         new DataDto(criteria.getQuery())
                 ),
                 originalUserInput

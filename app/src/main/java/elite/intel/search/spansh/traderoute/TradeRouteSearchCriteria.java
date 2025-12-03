@@ -14,7 +14,7 @@ public class TradeRouteSearchCriteria implements StringQuery {
     private String station;
     private int startingCapital;
     private int maxCargo;
-    private int maxSystemDistance;
+    private int maxLsFromArrival;
     private boolean requiresLargePad;
     private boolean allowProhibited;
     private boolean allowPlanetary;
@@ -45,8 +45,8 @@ public class TradeRouteSearchCriteria implements StringQuery {
         this.maxCargo = maxCargo;
     }
 
-    public void setMaxSystemDistance(int maxSystemDistance) {
-        this.maxSystemDistance = maxSystemDistance;
+    public void setMaxLsFromArrival(int distance) {
+        this.maxLsFromArrival = distance;
     }
 
     public void setRequiresLargePad(boolean requiresLargePad) {
@@ -94,8 +94,8 @@ public class TradeRouteSearchCriteria implements StringQuery {
         return maxCargo;
     }
 
-    public int getMaxSystemDistance() {
-        return maxSystemDistance;
+    public int getMaxLsFromArrival() {
+        return maxLsFromArrival;
     }
 
     public boolean isRequiresLargePad() {
@@ -126,7 +126,7 @@ public class TradeRouteSearchCriteria implements StringQuery {
                 + "&station=" + station
                 + "&starting_capital=" + startingCapital
                 + "&max_cargo=" + maxCargo
-                + "&max_system_distance=" + maxSystemDistance
+                + "&max_system_distance=" + maxLsFromArrival
                 + (requiresLargePad ? "&requires_large_pad=1" : "")
                 + (allowProhibited ? "&allow_prohibited=1":"")
                 + (allowPlanetary ? "&allow_planetary=1":"")
@@ -147,7 +147,7 @@ public class TradeRouteSearchCriteria implements StringQuery {
                 .add("station='" + station + "'")
                 .add("startingCapital=" + startingCapital)
                 .add("maxCargo=" + maxCargo)
-                .add("maxSystemDistance=" + maxSystemDistance)
+                .add("maxSystemDistance=" + maxLsFromArrival)
                 .add("requiresLargePad=" + requiresLargePad)
                 .add("allowProhibited=" + allowProhibited)
                 .add("allowPlanetary=" + allowPlanetary)

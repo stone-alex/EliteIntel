@@ -47,6 +47,7 @@
         <Logger name="elite.intel.ai.brain" level="debug"/>
         <Logger name="elite.intel.search.spansh" level="error"/>
         <Logger name="elite.intel.db.managers" level="debug"/>
+        <Logger name="elite.intel.search.spansh.market" level="info"/>
 
         <!-- Root logger -->
         <Root level="debug">

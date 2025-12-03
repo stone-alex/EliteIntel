@@ -137,11 +137,11 @@ public class GoogleTTSImpl implements MouthInterface {
         if (line != null) {
             line.stop();
             line.flush(); // Flush instead of close
-            currentLine.set(null);
+            line.start();
+            currentLine.set(line);
         }
         interruptRequested.set(false);
-        log.info("TTS interrupted and queue cleared, thread alive={}, interruptRequested={}",
-                processingThread != null && processingThread.isAlive(), interruptRequested.get());
+        log.info("TTS interrupted and queue cleared, thread alive={}, interruptRequested={}",processingThread != null && processingThread.isAlive(), interruptRequested.get());
         if (processingThread == null || !processingThread.isAlive()) {
             log.warn("Processing thread stopped unexpectedly, restarting");
             start();

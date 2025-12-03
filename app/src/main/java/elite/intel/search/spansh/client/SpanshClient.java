@@ -130,8 +130,8 @@ public class SpanshClient {
         if (searchRefId == null) return null;
 
         int attempt = 0;
-        final int maxAttempts = 60;           // ~5–6 min max wait
-        final long baseDelayMs = 4_000L;       // start at 4 s
+        final int maxAttempts = 60;
+        long delay = 4_000L;
 
         while (attempt < maxAttempts) {
             attempt++;
@@ -149,7 +149,6 @@ public class SpanshClient {
 
             if (resp.statusCode() == 202 || resp.statusCode() == 204) {
                 // still processing
-                long delay = baseDelayMs * (1L << (attempt - 1)); // 2s → 4s → 8s …
                 delay = delay + (long) (Math.random() * 1_000);     // +0–1s jitter
                 log.debug("Search {} in progress ({}), retry in {} ms", searchRefId, resp.statusCode(), delay);
                 Thread.sleep(delay);

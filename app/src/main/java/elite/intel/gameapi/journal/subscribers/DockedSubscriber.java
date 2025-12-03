@@ -3,6 +3,7 @@ package elite.intel.gameapi.journal.subscribers;
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.dao.LocationDao;
+import elite.intel.db.managers.FleetCarrierManager;
 import elite.intel.db.managers.LocationManager;
 import elite.intel.search.edsm.EdsmApiClient;
 import elite.intel.search.edsm.dto.MarketDto;
@@ -22,7 +23,6 @@ public class DockedSubscriber {
     @Subscribe
     public void onDockedEvent(DockedEvent event) {
         PlayerSession playerSession = PlayerSession.getInstance();
-
         LocationDto location = playerSession.getLocation(event.getMarketID(), event.getStarSystem());
 
         location.setMarketID(event.getMarketID());

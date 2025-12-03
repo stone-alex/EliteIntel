@@ -111,6 +111,8 @@ public class PiperTTS implements MouthInterface {
         if (line != null && line.isOpen()) {
             line.stop();
             line.flush();
+            line.start();
+            currentLine.set(line);
         }
         if (workerThread == null || !workerThread.isAlive()) {
             log.warn("Processing thread stopped unexpectedly, restarting");

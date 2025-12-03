@@ -6,6 +6,7 @@ import com.google.common.eventbus.Subscribe;
 import com.google.protobuf.ByteString;
 import elite.intel.ai.ears.*;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.ai.mouth.subscribers.events.TTSInterruptEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.UserInputEvent;
 import elite.intel.session.SystemSession;
@@ -32,7 +33,7 @@ public class GoogleSTTImpl implements EarsInterface {
     private static final long BASE_BACKOFF_MS = 2000; // Base backoff for retries
     private static final long MAX_BACKOFF_MS = 60000; // Cap at 1 min
 
-    private static final long MIN_STREAM_GAP_MS = 300;
+    private static final long MIN_STREAM_GAP_MS = 100;
 
     private final AtomicBoolean isListening = new AtomicBoolean(true);
     private final AtomicBoolean isSpeaking = new AtomicBoolean(false);
@@ -382,6 +383,7 @@ public class GoogleSTTImpl implements EarsInterface {
     }
 
     private void sendToAi(String sanitizedTranscript, float confidence) {
+        EventBusManager.publish(new TTSInterruptEvent());
         AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_1);
         log.info("Processing sanitizedTranscript: {}", sanitizedTranscript);
         EventBusManager.publish(new UserInputEvent(sanitizedTranscript, confidence));

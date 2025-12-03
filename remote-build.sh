@@ -1,2 +1,2 @@
-git tag -a v2025.12.1.beta-0144 -m "Prompt Adjustments"
-git push origin v2025.12.1.beta-0144
+git tag -a v2025.12.3.beta-0145 -m "Introducing trade route plotting"
+git push origin v2025.12.3.beta-0145

@@ -28,6 +28,7 @@ public class FleetCarrierRouteCalculator {
             fuelSupply = fuelSupply + tritiumInReserve;
         }
 
+
         int cargoCapacity = carrierData.getCargoCapacity();
         int cargoSpaceUsed = carrierData.getCargoSpaceUsed();
         String destination = ClipboardUtils.getClipboardText();

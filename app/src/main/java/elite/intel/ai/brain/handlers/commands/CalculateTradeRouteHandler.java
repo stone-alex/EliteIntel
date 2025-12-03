@@ -56,7 +56,8 @@ public class CalculateTradeRouteHandler implements CommandHandler {
         }
 
         TradeRouteResponse route = tradeRouteManager.calculateTradeRoute(criteria);
-        if (route == null) {
+        if (route == null || route.getResult() == null || route.getResult().isEmpty()) {
+            EventBusManager.publish(new AiVoxResponseEvent("No trade route found."));
             return;
         }
         long totalProfit = route.getResult().getLast().getTotalProfit();

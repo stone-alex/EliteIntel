@@ -28,8 +28,7 @@ public class FindBrainTreesHandler extends CommandOperator implements CommandHan
     @Override public void handle(String action, JsonObject params, String responseText) {
         BrainTreeManager brainTreeManager = BrainTreeManager.getInstance();
         LocationManager locationManager = LocationManager.getInstance();
-        int totalInDb = brainTreeManager.getCount();
-        if (totalInDb == 0) {
+        if (brainTreeManager.getCount() == 0) {
             //NOTE:
             // We can get local data from Spansh, this is a fast all.
             // Brain Tree's do not disappear form the galaxy, but new locations could be added.

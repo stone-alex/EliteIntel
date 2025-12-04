@@ -17,7 +17,7 @@ public enum Queries {
     ANALYZE_BODY_MATERIALS("query_planetary_materials_present_on_planet", "Analyze material composition on this planet.", AnalyzeMaterialsOnPlanetHandler.class, true),  // Specify planetary to avoid ship/cargo confusion,
     ANALYZE_EXO_BIOLOGY("query_exobiology_samples_for_current_planet", "Analyze bio-sample collection progress for current planet, including completed, partial, and remaining species.", AnalyzeBioSamplesHandler.class, true),  // "exobiology" to distinguish from commodities,
     ANALYZE_CURRENT_FUEL_STATUS("query_ship_fuel_status", "Analyze ship fuel tank capacity and reserve, return percent available. Do not confuse ship with fleet carrier. Fleet carrier uses tritium for fuel, Ship uses hydrogen.", AnalyzeFuelStatusHandler.class, true),
-    ANALYZE_FSD_TARGET("query_fsd_target_analysis", "Analyze FSD destination for allegiance, traffic, and security.", AnalyzeFsdTargetHandler.class, true),
+    ANALYZE_FSD_TARGET("query_analyze_targeted_star_system", "Analyze selected FTL destination for allegiance, traffic, and security.", AnalyzeFsdTargetHandler.class, true),
     ANALYZE_TRADE_ROUTE("query_trade_route_analysis", "Analyze trade route for current location.", AnalyzeTradeRouteHandler.class, true),
     //ANALYZE_LOCAL_MARKETS("query_local_commodity_markets", "Analyze commodity market contents at the current location.", AnalyzeLocalMarketsHandler.class, true),  // "commodity" to avoid bio or material overlap,
     ANALYZE_LOCAL_OUTFITTING("query_local_outfitting", "Analyze available outfitting options.", AnalyzeLocalOutfittingHandler.class, true),

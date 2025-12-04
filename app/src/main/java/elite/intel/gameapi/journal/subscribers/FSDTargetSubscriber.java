@@ -1,12 +1,12 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.intel.gameapi.data.FsdTarget;
+import elite.intel.gameapi.journal.events.FSDTargetEvent;
 import elite.intel.search.edsm.EdsmApiClient;
 import elite.intel.search.edsm.dto.DeathsDto;
 import elite.intel.search.edsm.dto.StarSystemDto;
 import elite.intel.search.edsm.dto.TrafficDto;
-import elite.intel.gameapi.data.FsdTarget;
-import elite.intel.gameapi.journal.events.FSDTargetEvent;
 import elite.intel.session.PlayerSession;
 
 @SuppressWarnings("unused")
@@ -20,7 +20,7 @@ public class FSDTargetSubscriber {
         DeathsDto deathsDto = EdsmApiClient.searchDeaths(event.getName());
         TrafficDto trafficDto = EdsmApiClient.searchTraffic(event.getName());
 
-        playerSession.setFsdTarget(new FsdTarget(systemDto,deathsDto,trafficDto, isFuelStarClause(event.getStarClass())));
+        playerSession.setFsdTarget(new FsdTarget(systemDto, deathsDto, trafficDto, isFuelStarClause(event.getStarClass())));
     }
 
     private String isFuelStarClause(String starClass) {

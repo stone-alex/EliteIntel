@@ -1,10 +1,13 @@
 package elite.intel.util;
 
 import elite.intel.db.dao.CommodityDao;
+import elite.intel.db.dao.MaterialNameDao;
 import elite.intel.db.util.Database;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public class StringUtls {
 
@@ -111,11 +114,20 @@ public class StringUtls {
     }
 
 
-    public static String fuzzyCommodityMatch(String input, int maxDistance) {
+    public static String fuzzyCommodityMatch(String input, int similarity) {
+        return fuzzyMatch(input, similarity, CommodityDao.class, CommodityDao::getAllNamesLowerCase, CommodityDao::getOriginalCase);
+    }
+
+    public static String fuzzyMaterialSearch(String input, int similarity) {
+        return fuzzyMatch(input, similarity, MaterialNameDao.class, MaterialNameDao::getAllNamesLowerCase, MaterialNameDao::getOriginalCase);
+    }
+
+    /// re-use for other fuzzy search
+    private static <T> String fuzzyMatch(String input, int similarity, Class<T> daoClass, Function<T, List<String>> candidatesProvider, BiFunction<T, String, String> originalCaseProvider) {
         if (input == null || input.isBlank()) return null;
 
         final String lowerInput = input.trim().toLowerCase();
-        List<String> candidates = Database.withDao(CommodityDao.class, CommodityDao::getAllNamesLowerCase);
+        List<String> candidates = Database.withDao(daoClass, candidatesProvider);
 
         String bestLower = null;
         int bestDist = Integer.MAX_VALUE;
@@ -128,9 +140,9 @@ public class StringUtls {
             }
         }
 
-        if (bestDist <= maxDistance && bestLower != null) {
+        if (bestDist <= similarity && bestLower != null) {
             final String finalBestLower = bestLower;
-            return Database.withDao(CommodityDao.class, dao -> dao.getOriginalCase(finalBestLower));
+            return Database.withDao(daoClass, dao -> originalCaseProvider.apply(dao, finalBestLower));
         }
 
         return null;

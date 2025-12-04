@@ -113,8 +113,21 @@ public class StellarObjectSearchResultDto extends BaseJsonDto implements ToJsonC
     public static class Result implements ToJsonConvertible {
 
         @SerializedName("genuses")
-        private List<Genus> genus;
+        private List<Genus> genuses;
 
+        @SerializedName("materials")
+        private List<Material> materials;
+
+        @SerializedName("signals")
+        private List<Signal> signals;
+
+        @SerializedName("signal_count")
+        private Integer signalCount;
+
+        @SerializedName("synthesis_recipes")
+        private List<SynthesisRecipe> synthesisRecipes;
+
+        // Existing fields (kept as-is, only showing the ones you already had + new ones)
         @SerializedName("arg_of_periapsis")
         private double argOfPeriapsis;
 
@@ -214,6 +227,9 @@ public class StellarObjectSearchResultDto extends BaseJsonDto implements ToJsonC
         @SerializedName("surface_temperature")
         private double surfaceTemperature;
 
+        @SerializedName("system_id64")
+        private long systemId64;
+
         @SerializedName("system_name")
         private String systemName;
 
@@ -242,7 +258,7 @@ public class StellarObjectSearchResultDto extends BaseJsonDto implements ToJsonC
         private String volcanismType;
 
         public List<Genus> getGenus() {
-            return genus;
+            return genuses;
         }
 
         public double getArgOfPeriapsis() {
@@ -416,11 +432,25 @@ public class StellarObjectSearchResultDto extends BaseJsonDto implements ToJsonC
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }
-
-        @Override public String toString() {
-            return toJson();
-        }
     }
+
+    public static class Material {
+        @SerializedName("name") private String name;
+        @SerializedName("share") private double share;
+        // getters
+        public String getName() { return name; }
+        public double getShare() { return share; }
+    }
+
+    public static class SynthesisRecipe {
+        @SerializedName("level") private String level;
+        @SerializedName("name") private String name;
+        // getters
+        public String getLevel() { return level; }
+        public String getName() { return name; }
+    }
+
+
 
     public static class Composition {
 

@@ -33,7 +33,7 @@ public enum Commands {
     FIND_GUARDIAN_TECHNOLOGY_BROKER("find_guardian_technology_broker", null, "distance", FindGuadrianTechnologyBroker.class),
 
     FIND_VISTA_GENOMICS("find_vista_genomics", null, "distance", FindVistaGenomicsHandler.class),
-
+    FIND_BRAIN_TREES("find_brain_trees", null, "material", FindBrainTreesHandler.class),
     FIND_FLEET_CARRIER_FUEL_MINING_SITE("find_fleet_carrier_fuel_mining_site", null, "distance", FindCarrierFuelMiningSiteHandler.class),
 
     FIND_NEAREST_FLEET_CARRIER("find_nearest_fleet_carrier", null, "distance", FindNearestFleetCarrierHandler.class),

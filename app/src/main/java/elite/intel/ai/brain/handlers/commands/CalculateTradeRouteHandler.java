@@ -61,7 +61,10 @@ public class CalculateTradeRouteHandler implements CommandHandler {
             EventBusManager.publish(new AiVoxResponseEvent("No trade route found."));
             return;
         }
-        long totalProfit = route.getResult().getLast().getTotalProfit();
+        long totalProfit = route.getResult().stream()
+                .mapToLong(r -> r.getTotalProfit())
+                .sum();
+
         EventBusManager.publish(new AiVoxResponseEvent("Calculated route with profit of " + totalProfit + " credits. Ask me to plot the route to next trade station."));
     }
 }

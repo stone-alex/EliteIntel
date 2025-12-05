@@ -1,4 +1,4 @@
-    "32"="tritium"
+"32"="tritium"
 "3 tm"="tritium"
 "3 tube"="tritium"
 "3tube"="tritium"
@@ -246,3 +246,4 @@
 "pinch"="change"
 "outraging profile"="trading profile"
 "water out"="plot the route"
+"internet"="enter"

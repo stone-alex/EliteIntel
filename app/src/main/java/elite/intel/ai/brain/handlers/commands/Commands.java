@@ -44,7 +44,7 @@ public enum Commands {
     SET_HOME_SYSTEM("set_location_as_home_star_system", null, null, SetCurrentStarAsHomeSystem.class),
     SET_PERSONALITY("set_personality", null, "personality", SetPersonalityHandler.class),
     SET_PROFILE("set_profile", null, "profile", SetCadenceHandler.class),
-    SET_RADIO_TRANSMISSION_MODDE("turn_radio_transmission_on_off", null, "radio_transmission_on_off", SetRadioTransmissionOnOff.class),
+    SET_RADIO_TRANSMISSION_MODE("turn_radio_transmission_on_off", null, "radio_transmission_on_off", SetRadioTransmissionOnOff.class),
     SET_STREAMING_MODE("toggle_streaming_mode", null, "streaming_mode_on_off", SetStreamingModeHandler.class),
     NAVIGATE_TO_TARGET("navigate_to_coordinates", null, "lat_lon", NavigateToCoordinatesHandler.class),
     NAVIGATION_ON_OFF("cancel_navigation", null, null, NavigationOnOffHandler.class),

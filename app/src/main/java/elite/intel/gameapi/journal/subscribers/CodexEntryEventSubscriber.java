@@ -86,7 +86,9 @@ public class CodexEntryEventSubscriber {
             }
         }
 
-        EventBusManager.publish(new DiscoveryAnnouncementEvent(sb.toString()));
+        if(playerSession.isDiscoveryAnnouncementOn()) {
+            EventBusManager.publish(new SensorDataEvent(sb.toString()));
+        }
         if("$Codex_SubCategory_Organic_Structures;".equalsIgnoreCase(event.getSubCategory())) {
             codexEntryManager.save(event);
         }

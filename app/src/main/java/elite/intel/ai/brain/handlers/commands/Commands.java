@@ -21,8 +21,8 @@ public enum Commands {
 
     LIGHTS_ON_OFF("toggle_lights", null, "lights", LightsOnOffHandler.class),
     ADD_MINING_TARGET("add_mining_target", null, "mining_target", AddMiningTargetHandler.class),
-    CLEAR_MINING_TARGETS("clear_mining_targets",  null, null, ClearMiningTargetsHandler.class),
-    CLEAR_CACHE("clear_cache", null,  "session_clear", ClearCacheHandler.class),
+    CLEAR_MINING_TARGETS("clear_mining_targets", null, null, ClearMiningTargetsHandler.class),
+    CLEAR_CACHE("clear_cache", null, "session_clear", ClearCacheHandler.class),
     INTERRUPT_TTS("shut_up_cancel_interrupt_tts_vocalization", null, null, ShutUpHandler.class),
 
     MIND_RAW_MATERIAL_TRADER("find_raw_material_trader", null, "distance", FindRawMaterialTraderHandler.class),
@@ -35,87 +35,88 @@ public enum Commands {
     FIND_VISTA_GENOMICS("find_vista_genomics", null, "distance", FindVistaGenomicsHandler.class),
     FIND_BRAIN_TREES("find_brain_trees", null, "material", FindBrainTreesHandler.class),
     FIND_FLEET_CARRIER_FUEL_MINING_SITE("find_fleet_carrier_fuel_mining_site", null, "distance", FindCarrierFuelMiningSiteHandler.class),
+    FIND_MINING_SITE("find_mining_site_for_material", null, "material", FindMiningSiteHandler.class),
 
     FIND_NEAREST_FLEET_CARRIER("find_nearest_fleet_carrier", null, "distance", FindNearestFleetCarrierHandler.class),
 
     FIND_COMMODITY("find_market_where_to_buy", null, "commodity", FindCommodityHandler.class),
     SET_AI_VOICE("set_or_change_voice_to", null, "voice_name", ChangeAiVoiceHandler.class),
-    SET_HOME_SYSTEM("set_location_as_home_star_system", null,  null, SetCurrentStarAsHomeSystem.class),
+    SET_HOME_SYSTEM("set_location_as_home_star_system", null, null, SetCurrentStarAsHomeSystem.class),
     SET_PERSONALITY("set_personality", null, "personality", SetPersonalityHandler.class),
-    SET_PROFILE("set_profile", null,  "profile", SetCadenceHandler.class),
+    SET_PROFILE("set_profile", null, "profile", SetCadenceHandler.class),
     SET_RADIO_TRANSMISSION_MODDE("turn_radio_transmission_on_off", null, "radio_transmission_on_off", SetRadioTransmissionOnOff.class),
-    SET_STREAMING_MODE("toggle_streaming_mode", null,  "streaming_mode_on_off", SetStreamingModeHandler.class),
-    NAVIGATE_TO_TARGET("navigate_to_coordinates", null,  "lat_lon", NavigateToCoordinatesHandler.class),
-    NAVIGATION_ON_OFF("cancel_navigation",  null,  null, NavigationOnOffHandler.class),
-    DISCOVERY_ON_OFF("toggle_discovery_announcements",  null, "discovery_on_off", DiscoveryOnOffHandler.class),
-    MINING_ON_OFF("toggle_mining_announcements",  null,  "mining_on_off", MiningOnOffHandler.class),
-    ROUTE_ON_OFF("toggle_route_announcements",  null,  "route_on_off", RouteAnnouncementsOnOffHandler.class),
-    HELP("help_with_topic",  null, "help_topic", HelpHandler.class),
+    SET_STREAMING_MODE("toggle_streaming_mode", null, "streaming_mode_on_off", SetStreamingModeHandler.class),
+    NAVIGATE_TO_TARGET("navigate_to_coordinates", null, "lat_lon", NavigateToCoordinatesHandler.class),
+    NAVIGATION_ON_OFF("cancel_navigation", null, null, NavigationOnOffHandler.class),
+    DISCOVERY_ON_OFF("toggle_discovery_announcements", null, "discovery_on_off", DiscoveryOnOffHandler.class),
+    MINING_ON_OFF("toggle_mining_announcements", null, "mining_on_off", MiningOnOffHandler.class),
+    ROUTE_ON_OFF("toggle_route_announcements", null, "route_on_off", RouteAnnouncementsOnOffHandler.class),
+    HELP("help_with_topic", null, "help_topic", HelpHandler.class),
 
     INCREASE_SPEED_BY("speed_plus", BINDING_INCREASE_SPEED.getGameBinding(), "value", SpeedControlHandler.class),
     DECREASE_SPEED_BY("speed_minus", BINDING_DECREASE_SPEED.getGameBinding(), "value", SpeedControlHandler.class),
 
 
     /// Commands that have a specific handler impl (which uses N bindings inside)
-    INCREASE_ENGINES_POWER("transfer_power_to_engines", null, null,  SetPowerToEnginesHandler.class),
-    NAVIGATE_TO_NEXT_BIO_SAMPLE("navigate_to_codex_entry_or_organic_bio_sample", null, null,  NavigateToNextCodexEntry.class),
-    INCREASE_SHIELDS_POWER("transfer_power_to_shields", null, null,  SetPowerToSystemsHandler.class),
-    INCREASE_SYSTEMS_POWER("transfer_power_to_ship_systems", null, null,  SetPowerToSystemsHandler.class),
-    INCREASE_WEAPONS_POWER("transfer_power_to_weapons", null, null,  SetPowerToWeaponsHandler.class),
-    RESET_POWER("reset_power_settings", null, null,  ResetPowerSettings.class),
+    INCREASE_ENGINES_POWER("transfer_power_to_engines", null, null, SetPowerToEnginesHandler.class),
+    NAVIGATE_TO_NEXT_BIO_SAMPLE("navigate_to_codex_entry_or_organic_bio_sample", null, null, NavigateToNextCodexEntry.class),
+    INCREASE_SHIELDS_POWER("transfer_power_to_shields", null, null, SetPowerToSystemsHandler.class),
+    INCREASE_SYSTEMS_POWER("transfer_power_to_ship_systems", null, null, SetPowerToSystemsHandler.class),
+    INCREASE_WEAPONS_POWER("transfer_power_to_weapons", null, null, SetPowerToWeaponsHandler.class),
+    RESET_POWER("reset_power_settings", null, null, ResetPowerSettings.class),
 
-    OPEN_GALAXY_MAP("open_galaxy_star_map", null, null,  OpenGalaxyMapHandler.class),
-    OPEN_SYSTEM_MAP("open_local_system_map", null, null,  OpenSystemMapHandler.class),
-    CLOSE_ANY_MAP("close_map", null, null,  ExitToHud.class),
-    EXIT_TO_HUD("display_hud", null, null,  ExitToHud.class),
-    EXIT("exit", null, null,  ExitToHud.class),
+    OPEN_GALAXY_MAP("open_galaxy_star_map", null, null, OpenGalaxyMapHandler.class),
+    OPEN_SYSTEM_MAP("open_local_system_map", null, null, OpenSystemMapHandler.class),
+    CLOSE_ANY_MAP("close_map", null, null, ExitToHud.class),
+    EXIT_TO_HUD("display_hud", null, null, ExitToHud.class),
+    EXIT("exit", null, null, ExitToHud.class),
 
-    DISPLAY_COMMS_PANEL("display_comms_panel", null, null,  DisplayCommsPanelHandler.class),
-    DISPLAY_CONTACTS_PANEL("display_contacts", null, null,  DisplayContactsPanelHandler.class),
-    DISPLAY_LEFT_PANEL("display_navigation_panel", null, null,  DisplayNavigationPanelHandler.class),
-    DISPLAY_INTERNAL_PANEL("display_internal_panel", null, null,  DisplayInternalPanelHandler.class),
-    DISPLAY_STATUS_PANEL("display_status_panel", null, null,  DisplayStatusPanelHandler.class),
-    DISPLAY_RADAR_PANEL("display_radar_panel", null, null,  DisplayRadarPanelHandler.class),
-    DISPLAY_LOADOUT_PANEL("display_loadout_panel", null, null,  DisplayLoadoutPanelHandler.class),
+    DISPLAY_COMMS_PANEL("display_comms_panel", null, null, DisplayCommsPanelHandler.class),
+    DISPLAY_CONTACTS_PANEL("display_contacts", null, null, DisplayContactsPanelHandler.class),
+    DISPLAY_LEFT_PANEL("display_navigation_panel", null, null, DisplayNavigationPanelHandler.class),
+    DISPLAY_INTERNAL_PANEL("display_internal_panel", null, null, DisplayInternalPanelHandler.class),
+    DISPLAY_STATUS_PANEL("display_status_panel", null, null, DisplayStatusPanelHandler.class),
+    DISPLAY_RADAR_PANEL("display_radar_panel", null, null, DisplayRadarPanelHandler.class),
+    DISPLAY_LOADOUT_PANEL("display_loadout_panel", null, null, DisplayLoadoutPanelHandler.class),
 
     /// might not be a good idea..!
-    EJECT_ALL_CARGO("eject_all_cargo", null, null,  EjectAllCargoHandler.class),
-    GALAXY_MAP("open_galaxy_star_map", null, null,  OpenGalaxyMapHandler.class),
-    LOCAL_MAP("open_local_map", null, null,  OpenLocalMapHandler.class),
-    OPEN_CARGO_SCOOP("open_cargo_scoop", null, null,  OpenCargoScoopHandler.class),
-    CLOSE_CARGO_SCOOP("close_cargo_scoop", null, null,  CloseCargoScoopHandler.class),
-    RETRACT_HARDPOINTS("retract_hardpoints", null, null,  RetractHardpointsHandler.class),
-    DEPLOY_HARDPOINTS("deploy_hardpoints", null, null,  DeployHardpointsHandler.class),
-    WEAPONS_HOT("weapons_hot", null, null,  DeployHardpointsHandler.class),
-    DEPLOY_LANDING_GEAR("deploy_landing_gear", null, null,  DeployLandingGearHandler.class),
-    RETRACT_LANDING_GEAR("retract_landing_gear", null, null,  RetractLandingGearHandler.class),
+    EJECT_ALL_CARGO("eject_all_cargo", null, null, EjectAllCargoHandler.class),
+    GALAXY_MAP("open_galaxy_star_map", null, null, OpenGalaxyMapHandler.class),
+    LOCAL_MAP("open_local_map", null, null, OpenLocalMapHandler.class),
+    OPEN_CARGO_SCOOP("open_cargo_scoop", null, null, OpenCargoScoopHandler.class),
+    CLOSE_CARGO_SCOOP("close_cargo_scoop", null, null, CloseCargoScoopHandler.class),
+    RETRACT_HARDPOINTS("retract_hardpoints", null, null, RetractHardpointsHandler.class),
+    DEPLOY_HARDPOINTS("deploy_hardpoints", null, null, DeployHardpointsHandler.class),
+    WEAPONS_HOT("weapons_hot", null, null, DeployHardpointsHandler.class),
+    DEPLOY_LANDING_GEAR("deploy_landing_gear", null, null, DeployLandingGearHandler.class),
+    RETRACT_LANDING_GEAR("retract_landing_gear", null, null, RetractLandingGearHandler.class),
 
     //Hyperspace - direct. will fail if target is obscured.
-    JUMP_TO_HYPERSPACE("jump_to_hyperspace", null, null,  JumpToHyperspaceHandler.class),
+    JUMP_TO_HYPERSPACE("jump_to_hyperspace", null, null, JumpToHyperspaceHandler.class),
     //smarter commands, automatically determine supercruise or ftl.
-    GET_OUT_OF_HERE("lets_get_out_of_here", null, null,  EnterFtlHandler.class),
-    LETS_GO("lets_go", null, null,  EnterFtlHandler.class),
-    ENTER_SUPER_CRUISE("enter_super_cruise", null, null,  EnterFtlHandler.class),
+    GET_OUT_OF_HERE("lets_get_out_of_here", null, null, EnterFtlHandler.class),
+    LETS_GO("lets_go", null, null, EnterFtlHandler.class),
+    ENTER_SUPER_CRUISE("enter_super_cruise", null, null, EnterFtlHandler.class),
     //exit supercruise.,
-    EXIT_SUPER_CRUISE("exit_super_cruise", null, null,  ExitFtlHandler.class),
-    ACTIVATE_ANALYSIS_MODE("activate_hud_analysis_mode", null, null,  ActivateAnalysisModeHandler.class),
-    ACTIVATE_COMBAT_MODE("activate_hud_combat_mode", null, null,  ActivateCombatModeHandler.class),
-    PLOT_ROUTE_TO_CARRIER("plot_route_to_fleet_carrier", null, null,  PlotRouteToMyFleetCarrier.class),
-    SET_OPTIMAL_SPEED("set_optimal_speed", null, null,  SetOptimalSpeedHandler.class),
-    TAKE_ME_HOME("plot_route_to_home_star", null, null,  PlotRouteToHomeHandler.class),
-    OPEN_FSS_AND_SCAN("open_fss_to_scan_star_system", null, null,  DisplayFssAndScanHandler.class),
-    HONK("perform_honk", null, null,  DisplayFssAndScanHandler.class),
+    EXIT_SUPER_CRUISE("exit_super_cruise", null, null, ExitFtlHandler.class),
+    ACTIVATE_ANALYSIS_MODE("activate_hud_analysis_mode", null, null, ActivateAnalysisModeHandler.class),
+    ACTIVATE_COMBAT_MODE("activate_hud_combat_mode", null, null, ActivateCombatModeHandler.class),
+    PLOT_ROUTE_TO_CARRIER("plot_route_to_fleet_carrier", null, null, PlotRouteToMyFleetCarrier.class),
+    SET_OPTIMAL_SPEED("set_optimal_speed", null, null, SetOptimalSpeedHandler.class),
+    TAKE_ME_HOME("plot_route_to_home_star", null, null, PlotRouteToHomeHandler.class),
+    OPEN_FSS_AND_SCAN("open_fss_to_scan_star_system", null, null, DisplayFssAndScanHandler.class),
+    HONK("perform_honk", null, null, DisplayFssAndScanHandler.class),
 
-    GET_HEADING_TO_LZ("navigate_bearing_direction_to_landing_zone", null, null,  NavigateToLandingZone.class),
-    DEPLOY_SRV("deploy_srv", null, null,  DeploySrvHandler.class),
-    BOARD_SHIP("get_on_board_ship", null, null,  BoardSrvHandler.class),
-    REQUESTING_EXTRACTION("requesting_extraction", null, null,  BoardSrvHandler.class),
-    RECOVER_SRV("recover_srv", null, null,  BoardSrvHandler.class),
-    CLEAR_CODEX_ENTRIES("clear_codex_entries", null, null,  ClearCodexEntriesHandler.class),
-    CALCULATE_FLEET_CARRIER_ROUTE("calculate_fleet_carrier_route", null, null,  CalculateFleetCarrierRouteHandler.class),
-    ENTER_NEXT_FLEET_CARRIER_DESTINATION("enter_next_fleet_carrier_destination", null, null,  EnterNextCarrierDestinationHandler.class),
-    LIST_HELP_TOPICS("list_help_topics", null, null,  HelpHandler.class),
-    SHUT_DOWN("system_shut_down", null, null,  SystemShutDownRequestHandler.class),
+    GET_HEADING_TO_LZ("navigate_bearing_direction_to_landing_zone", null, null, NavigateToLandingZone.class),
+    DEPLOY_SRV("deploy_srv", null, null, DeploySrvHandler.class),
+    BOARD_SHIP("get_on_board_ship", null, null, BoardSrvHandler.class),
+    REQUESTING_EXTRACTION("requesting_extraction", null, null, BoardSrvHandler.class),
+    RECOVER_SRV("recover_srv", null, null, BoardSrvHandler.class),
+    CLEAR_CODEX_ENTRIES("clear_codex_entries", null, null, ClearCodexEntriesHandler.class),
+    CALCULATE_FLEET_CARRIER_ROUTE("calculate_fleet_carrier_route", null, null, CalculateFleetCarrierRouteHandler.class),
+    ENTER_NEXT_FLEET_CARRIER_DESTINATION("enter_next_fleet_carrier_destination", null, null, EnterNextCarrierDestinationHandler.class),
+    LIST_HELP_TOPICS("list_help_topics", null, null, HelpHandler.class),
+    SHUT_DOWN("system_shut_down", null, null, SystemShutDownRequestHandler.class),
 
 
     CALCULATE_TRADE_ROUTE("calculate_trade_route", null, null, CalculateTradeRouteHandler.class),
@@ -177,7 +178,7 @@ public enum Commands {
     private final String paramKey;
     private final Class<? extends CommandHandler> handlerClass;
 
-    Commands(String action, String binding,  String paramKey, Class<? extends CommandHandler> handlerClass) {
+    Commands(String action, String binding, String paramKey, Class<? extends CommandHandler> handlerClass) {
         this.action = action;
         this.binding = binding;
         this.paramKey = paramKey;
@@ -192,10 +193,19 @@ public enum Commands {
         return result;
     }
 
+    public static String getGameBinding(String action) {
+        Commands[] values = values();
+        for (Commands command : values) {
+            if (action.equalsIgnoreCase(command.getAction())) {
+                return command.getBinding();
+            }
+        }
+        return null;
+    }
+
     public String getAction() {
         return action;
     }
-
 
     public String getParamKey() {
         return paramKey;
@@ -207,15 +217,5 @@ public enum Commands {
 
     public Class<? extends CommandHandler> getHandlerClass() {
         return handlerClass;
-    }
-
-    public static String getGameBinding(String action) {
-        Commands[] values = values();
-        for(Commands command : values) {
-            if(action.equalsIgnoreCase(command.getAction())){
-                return command.getBinding();
-            }
-        }
-        return null;
     }
 }

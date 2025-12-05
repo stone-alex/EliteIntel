@@ -29,7 +29,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class AppView extends JFrame implements AppViewInterface {
 
     public static final String LABEL_STREAMING_MODE = "Streaming Mode";
-    public static final String LABEL_PRIVACY_MODE = "Privacy Mode";
+    public static final String LABEL_PRIVACY_MODE = "Voice Input on/off";
     // ----- COLORS (adjust to taste) -----
     private static final Color BG = new Color(0x1D1D1D); // base background
     private static final Color LOG_BG = new Color(0x111111); // base background
@@ -128,7 +128,7 @@ public class AppView extends JFrame implements AppViewInterface {
         toggleStreamingModeCheckBox.setForeground(Color.GREEN);
 
         togglePrivacyModeCheckBox.setEnabled(false); // enabled when services start
-        togglePrivacyModeCheckBox.setToolTipText("Temporary disable Speech to Text completely");
+        togglePrivacyModeCheckBox.setToolTipText("Disable Speech to Text completely");
         togglePrivacyModeCheckBox.setText(LABEL_PRIVACY_MODE);
         togglePrivacyModeCheckBox.setForeground(Color.GREEN);
 

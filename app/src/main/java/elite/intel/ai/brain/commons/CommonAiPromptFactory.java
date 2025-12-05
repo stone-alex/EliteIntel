@@ -66,6 +66,7 @@ public class CommonAiPromptFactory implements AiPromptFactory {
         sb.append("    - For 'find*' commands that contain distance in light years provide {\"key\":\"value\"} where key is integer representing distance in light years.\n");
         sb.append("    - For commands like ").append(INCREASE_SPEED_BY.getAction()).append(" provide params json {\"key\":\"value\"} where value is a positive integer. example: {\"key\":\"3\"}.\n");
         sb.append("    - For commands like ").append(DECREASE_SPEED_BY.getAction()).append(" provide params json {\"key\":\"value\"} where value is a negative integer example: {\"key\":\"-3\"}.\n");
+        sb.append("    - If asked about fleet carrier required to reach destination, query fleet carrier route, not fleet carrier stats.\n");
         sb.append("    - Always extract and return numeric values as plain integers without commas, spaces, or words (e.g., 2000000, not '2 million' or 'two million').\n");
         sb.append("    - For toggle commands such as turn off, turn on, set on, set off, enable or disable, ALWAYS provide params json {\"state\":\"true\"} / {\"state\":\"false\"}.\n");
         sb.append("    - Distinguish between fleet carrier route and ship route. Fleet carrier fuel (tritium), and fuel for the ship (hydrogen from fuel stars). Fleet carrier has to be mentioned explicitly, else it is ship route and ship fuel.\n");

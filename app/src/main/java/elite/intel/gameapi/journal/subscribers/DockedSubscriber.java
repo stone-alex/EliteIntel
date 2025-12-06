@@ -79,7 +79,7 @@ public class DockedSubscriber {
 
         String availableData = LocalServicesData.setLocalServicesData(event.getMarketID());
         if (!availableData.isEmpty()) {
-            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Data available for: " + availableData + "."));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Market data available."));
         }
         playerSession.saveLocation(location);
     }

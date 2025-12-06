@@ -3,7 +3,10 @@ package elite.intel.ai.brain.handlers.commands;
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.db.managers.DestinationReminderManager;
 import elite.intel.db.managers.LocationManager;
+import elite.intel.search.spansh.client.SpanshClient;
+import elite.intel.search.spansh.nearest.NearestKnownLocationSearchClient;
 import elite.intel.search.spansh.stellarobjects.ReserveLevel;
 import elite.intel.search.spansh.stellarobjects.StellarObjectSearch;
 import elite.intel.search.spansh.stellarobjects.StellarObjectSearchResultDto;
@@ -30,6 +33,7 @@ public class FindCarrierFuelMiningSiteHandler extends CommandOperator implements
             Number range = GetNumberFromParam.getNumberFromParam(params, 1000);
             EventBusManager.publish(new AiVoxResponseEvent("Searching for Carrier Fuel Mining Site withing " + range.intValue() + " light years... Stand by..."));
 
+
             StellarObjectSearchResultDto tritiumLocations = StellarObjectSearch.getInstance()
                     .findRings(
                             "Tritium",
@@ -44,6 +48,8 @@ public class FindCarrierFuelMiningSiteHandler extends CommandOperator implements
             }
 
             Optional<StellarObjectSearchResultDto.Result> result = tritiumLocations.getResults().stream().findFirst();
+            DestinationReminderManager reminderManager = DestinationReminderManager.getInstance();
+            reminderManager.setDestination(result.get().toJson());
             RoutePlotter routePlotter = new RoutePlotter(this.gameController);
             routePlotter.plotRoute(result.get().getSystemName());
         } else {

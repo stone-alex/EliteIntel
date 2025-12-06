@@ -1,6 +1,8 @@
 package elite.intel.search.spansh.stellarobjects;
 
+import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.db.dao.LocationDao;
+import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 
@@ -50,6 +52,10 @@ public class StellarObjectSearch {
             criteria.setFilters(filters);
 
             StellarObjectSearchRequestDto.ReferenceCoords referenceCoords = new StellarObjectSearchRequestDto.ReferenceCoords();
+            if(coords == null) {
+                EventBusManager.publish(new AiVoxResponseEvent("Local coordinates are not found."));
+                return null;
+            }
             referenceCoords.setX(coords.x());
             referenceCoords.setY(coords.y());
             referenceCoords.setZ(coords.z());

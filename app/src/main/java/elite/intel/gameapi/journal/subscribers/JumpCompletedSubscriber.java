@@ -165,9 +165,11 @@ public class JumpCompletedSubscriber {
             stellarObject.setSurfaceTemperature(data.getSurfaceTemperature());
             stellarObject.setTidalLocked(data.isRotationalPeriodTidallyLocked());
             stellarObject.setLocationType(determineType(data));
-            stellarObject.setOurDiscovery(data.getDiscovery().getCommander() == null);
-            stellarObject.setDiscoveredBy(data.getDiscovery().getCommander());
-            stellarObject.setDiscoveredOn(data.getDiscovery().getDate());
+            if(data.getDiscovery() != null) {
+                stellarObject.setOurDiscovery(data.getDiscovery().getCommander() == null);
+                stellarObject.setDiscoveredBy(data.getDiscovery().getCommander());
+                stellarObject.setDiscoveredOn(data.getDiscovery().getDate());
+            }
             stellarObject.setOrbitalPeriod(data.getOrbitalPeriod());
             stellarObject.setAxialTilt(data.getAxialTilt());
             stellarObject.setRotationPeriod(data.getRotationalPeriod());

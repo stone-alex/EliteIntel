@@ -28,17 +28,23 @@ public class GrokClient implements Client {
     private static final String API_URL = "https://api.x.ai/v1/chat/completions";
 
 
-    //public static final String MODEL_GROK_4_FAST_REASONING = "grok-4-1-fast-reasoning";
-    //public static final String MODEL_GROK_4_FAST_NON_REASONING = "grok-4-1-fast-non-reasoning";
+    /// Grok 4.1
+    // public static final String MODEL_GROK_REASONING = "grok-4-1-fast-reasoning";
+    // public static final String MODEL_GROK_NON_REASONING = "grok-4-1-fast-non-reasoning";
 
-//    public static final String MODEL_GROK_4_FAST_REASONING = "grok-4-fast-reasoning";
-//    public static final String MODEL_GROK_4_FAST_NON_REASONING = "grok-4-fast-non-reasoning";
+    /// Grok 4
+    // public static final String MODEL_GROK_REASONING = "grok-4-fast-reasoning";
+    // public static final String MODEL_GROK_NON_REASONING = "grok-4-fast-non-reasoning";
 
-    public static final String MODEL_GROK_4_FAST_REASONING = "grok-3-fast";
-    public static final String MODEL_GROK_4_FAST_NON_REASONING = "grok-3-fast";
+    /// Grok 3
+    // public static final String MODEL_GROK_NON_REASONING = "grok-3-fast";
+    
+    public static final String MODEL_GROK_NON_REASONING = "grok-3-mini";
+    public static final String MODEL_GROK_REASONING = "grok-3-fast";
 
+
+    ///
     public static final boolean IS_STREAM = false;
-
     private static final GrokClient instance = new GrokClient();
 
     @Override public JsonObject createRequestBodyHeader(String model, float temp) {

@@ -247,3 +247,5 @@
 "outraging profile"="trading profile"
 "water out"="plot the route"
 "internet"="enter"
+"analyzer"="analyze"
+"lead carry"="fleet carrier"

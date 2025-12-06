@@ -28,9 +28,11 @@ public class CarrierJumpCompleteSubscriber {
 
 
         FleetCarrierRouteManager fleetCarrierRouteManager = FleetCarrierRouteManager.getInstance();
+        CarrierDataDto carrierData = playerSession.getCarrierData();
         CarrierJump currentLocationLeg = fleetCarrierRouteManager.findByPrimaryStar(event.getStarSystem());
         boolean currentLegIsNotPresent = currentLocationLeg == null;
         boolean routePlotted = fleetCarrierRouteManager.getFleetCarrierRoute().size() > 0;
+
         if (currentLegIsNotPresent && routePlotted){
             String systemName = fleetCarrierRouteManager
                     .getFleetCarrierRoute()
@@ -40,9 +42,12 @@ public class CarrierJumpCompleteSubscriber {
             FleetCarrierRouteCalculator.calculate();
         }
 
+        int fuelUsed = currentLocationLeg.getFuelUsed();
+        carrierData.setFuelLevel(carrierData.getFuelLevel() - fuelUsed);
+        playerSession.setCarrierData(carrierData);
+
         fleetCarrierRouteManager.removeLeg(event.getStarSystem());
 
-        CarrierDataDto carrierData = playerSession.getCarrierData();
         playerSession.setCarrierDepartureTime(null);
 
         Status status = Status.getInstance();

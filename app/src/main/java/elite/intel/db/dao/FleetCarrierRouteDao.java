@@ -30,6 +30,10 @@ public interface FleetCarrierRouteDao {
     @SqlUpdate("DELETE FROM fleet_carrier_route")
     void clear();
 
+    @SqlQuery("select sum(fuelUsed) as fuelRequired from fleet_carrier_route")
+    Integer getTotalFuelRequired();
+
+
 
     @SqlQuery("SELECT * FROM fleet_carrier_route WHERE systemName = :starSystem")
     FleetCarrierRouteLeg findByPrimaryStarName(String starSystem);

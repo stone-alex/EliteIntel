@@ -17,6 +17,7 @@ public enum Queries {
     ANALYZE_BODY_MATERIALS("query_planetary_materials_present_on_planet", "Analyze material composition on this planet.", AnalyzeMaterialsOnPlanetHandler.class, true),  // Specify planetary to avoid ship/cargo confusion,
     ANALYZE_EXO_BIOLOGY("query_exobiology_samples_for_current_planet", "Analyze bio-sample collection progress for current planet, including completed, partial, and remaining species.", AnalyzeBioSamplesHandler.class, true),  // "exobiology" to distinguish from commodities,
     ANALYZE_CURRENT_FUEL_STATUS("query_ship_fuel_status", "Analyze ship fuel tank capacity and reserve, return percent available. Do not confuse ship with fleet carrier. Fleet carrier uses tritium for fuel, Ship uses hydrogen.", AnalyzeFuelStatusHandler.class, true),
+    ANALYZ_FLEET_CARRIER_FUEL_SUPPLY("query_fleet_carrier_tritium_fuel_supply", "Analyze fleet carrier fuel supply.", AnalyzeFleetCarrierFuelSupplyHandler.class, true),
     ANALYZE_FSD_TARGET("query_analyze_targeted_star_system", "Analyze selected FTL destination for allegiance, traffic, and security.", AnalyzeFsdTargetHandler.class, true),
     ANALYZE_TRADE_ROUTE("query_trade_route_analysis", "Analyze trade route for current location.", AnalyzeTradeRouteHandler.class, true),
     //ANALYZE_LOCAL_MARKETS("query_local_commodity_markets", "Analyze commodity market contents at the current location.", AnalyzeLocalMarketsHandler.class, true),  // "commodity" to avoid bio or material overlap,
@@ -25,7 +26,7 @@ public enum Queries {
     ANALYZE_LOCAL_STATIONS("query_local_stations_services", "Summarize services at local stations.", AnalyzeLocalStations.class, true),
     HOW_FAR_TO_FINAL_DESTINATION("query_distance_to_final_destination", "Calculate distance to the final destination.", AnalyzeDistanceToFinalDestination.class, false),
     LIST_AVAILABLE_VOICES("list_available_voices", "List available AI voices.", ListAvailableVoices.class, false),
-    QUERY_ANALYZE_ON_BOARD_CARGO("query_ship_cargo_contents_for_commodities", "Use this data provide questions regarding cargo and/or ship loadout if relevant. Cargo is listed 1 unit = 1 ton.", AnalyzeCargoHoldHandler.class, true),  // "ship" to avoid carrier/planet mix-up
+    QUERY_ANALYZE_ON_BOARD_CARGO("query_ship_cargo_contents_for_commodities", "Use this data provide questions regarding cargo and/or ship loadout if relevant. Cargo is listed 1 unit = 1 ton. Do not ask follow up questions. Just provide information.", AnalyzeCargoHoldHandler.class, true),  // "ship" to avoid carrier/planet mix-up
     QUERY_ANALYZE_ROUTE("query_plotted_route_analysis", "Analyze the current plotted route. Number of  jumps = number of nodes.", AnalyzeRouterHandler.class, true),
     QUERY_ANALYZE_FUEL_ROUTE("query_can_we_fuel_on_route_analysis", "Analyze this data for re-fuel potential", AnalyzeRouterHandler.class, true),
     QUERY_CARRIER_STATS("query_fleet_carrier_info", "Analyze fleet carrier data (e.g., fuel, market, balance, location)", AnalyzeCarrierDataHandler.class, true),  // "vehicle" to distinguish from planets

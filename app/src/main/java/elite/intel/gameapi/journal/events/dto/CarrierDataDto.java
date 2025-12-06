@@ -254,7 +254,7 @@ public class CarrierDataDto implements ToJsonConvertible {
         this.fuelSupply = fuelLevel;
     }
 
-    public int getFuelSupply() {
+    public int getFuelLevel() {
         return fuelSupply;
     }
 
@@ -330,7 +330,7 @@ public class CarrierDataDto implements ToJsonConvertible {
         if (tritiumInReserve == null) {
             tritiumInReserve = 0;
         }
-        int totalFuelAvailable = getFuelSupply() + tritiumInReserve;
+        int totalFuelAvailable = getFuelLevel() + tritiumInReserve;
         return (totalFuelAvailable / MAX_FUEL_PER_JUMP) * MAX_CARRIER_SINGLE_JUMP_RANGE;
     }
 

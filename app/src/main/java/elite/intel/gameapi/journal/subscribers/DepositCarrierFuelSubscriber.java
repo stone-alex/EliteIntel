@@ -10,7 +10,7 @@ public class DepositCarrierFuelSubscriber {
     @Subscribe public void onCarrierDepositFuelEvent(CarrierDepositFuelEvent event) {
         FleetCarrierManager manager = FleetCarrierManager.getInstance();
         CarrierDataDto carrierDataDto = manager.get();
-        carrierDataDto.setFuelLevel(event.getTotal());
+        carrierDataDto.setFuelLevel(carrierDataDto.getFuelReserve());
         manager.save(carrierDataDto);
     }
 }

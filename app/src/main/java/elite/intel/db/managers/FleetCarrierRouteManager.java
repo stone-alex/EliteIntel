@@ -65,6 +65,10 @@ public class FleetCarrierRouteManager {
         });
     }
 
+    public Integer  getTotalFuelRequired() {
+        return Database.withDao(FleetCarrierRouteDao.class, dao -> dao.getTotalFuelRequired());
+    }
+
     private static CarrierJump entityToDto(FleetCarrierRouteDao.FleetCarrierRouteLeg leg) {
         CarrierJump jump = new CarrierJump();
         if(leg == null) return jump;

@@ -41,8 +41,16 @@ public interface LocationDao {
     @SqlQuery("SELECT * FROM location WHERE primaryStar = :primaryStar")
     List<Location> findByPrimaryStar(@Bind("primaryStar") String primaryStar);
 
-    @SqlUpdate("UPDATE location SET homeSystem = :home WHERE locationName = :name")
-    void setHomeSystem(@Bind("name") String locationName, @Bind("home") boolean home);
+    @SqlUpdate("""
+            UPDATE location set homeSystem = 0;
+            UPDATE location
+            SET homeSystem = 1
+            WHERE (primaryStar, inGameId) = (
+                SELECT current_primary_star, current_location_id
+                FROM player
+            );
+            """)
+    void setCurrentStarSystemAsHome();
 
     @SqlQuery("SELECT * FROM location WHERE homeSystem = 1")
     Location findHomeSystem();
@@ -64,6 +72,17 @@ public interface LocationDao {
     @RegisterConstructorMapper(Coordinates.class)
     Coordinates currentCoordinates();
 
+    @SqlQuery("""
+            SELECT location.primaryStar,
+                json ->> '$.X' AS x,
+                json ->> '$.Y' AS y,
+                json ->> '$.Z' AS z
+            from location location where primaryStar = (select current_primary_star from player) and json ->> '$.X' != 0 and json ->> '$.Y' !=0 and json ->> '$.Z' !=0 LIMIT 1;
+            """)
+    @RegisterConstructorMapper(CoordinatesAndPrimaryStar.class)
+    Coordinates currentCoordinatesAndPrimaryStar();
+
+
 
     class LocationMapper implements RowMapper<LocationDao.Location> {
         @Override
@@ -80,7 +99,11 @@ public interface LocationDao {
         }
     }
 
-    record Coordinates(int x, int y, int z) {
+    record Coordinates( double x, double y, double z) {
+
+    }
+
+    record CoordinatesAndPrimaryStar(String primaryStar, double x, double y, double z) {
 
     }
 

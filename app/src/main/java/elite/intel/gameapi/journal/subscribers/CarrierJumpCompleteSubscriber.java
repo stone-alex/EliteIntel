@@ -1,6 +1,7 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.intel.db.managers.FleetCarrierManager;
 import elite.intel.db.managers.FleetCarrierRouteManager;
 import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
@@ -54,8 +55,18 @@ public class CarrierJumpCompleteSubscriber {
         String stationName = playerSession.getCurrentLocation().getStationName();
         CarrierDataDto carrierInfo = playerSession.getCarrierData();
 
+        LocationDto location = toLocationDto(event);
         if (status.isDocked()) {
-            playerSession.saveLocation(toLocationDto(event));
+            // NOTE: Assumption: we are docked at the carrier on arrival, not at some other station.
+            // NOTE: This will cause problems if we jump carrier while sitting on another station, until player jumps to another system
+
+            location.setStationName(stationName);
+            location.setX(starPos[0]);
+            location.setY(starPos[1]);
+            location.setZ(starPos[2]);
+            playerSession.setCurrentLocationId(location.getBodyId());
+            playerSession.setCurrentPrimaryStarName(starSystem);
+            playerSession.saveLocation(location);
         }
 
         if (carrierData != null && starPos[0] > 0) {

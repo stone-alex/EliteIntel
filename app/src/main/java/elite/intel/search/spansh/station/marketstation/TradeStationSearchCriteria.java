@@ -124,33 +124,33 @@ public class TradeStationSearchCriteria extends BaseJsonDto implements ToJsonCon
     public static class ReferenceCoords {
 
         @SerializedName("x")
-        private int x;
+        private double x;
 
         @SerializedName("y")
-        private int y;
+        private double y;
 
         @SerializedName("z")
-        private int z;
+        private double z;
 
         public ReferenceCoords() {
         }
 
-        public ReferenceCoords(int x, int y, int z) {
+        public ReferenceCoords(double x, double y, double z) {
             this.x = x;
             this.y = y;
             this.z = z;
         }
 
         // Setters
-        public void setX(int x) {
+        public void setX(double x) {
             this.x = x;
         }
 
-        public void setY(int y) {
+        public void setY(double y) {
             this.y = y;
         }
 
-        public void setZ(int z) {
+        public void setZ(double z) {
             this.z = z;
         }
     }

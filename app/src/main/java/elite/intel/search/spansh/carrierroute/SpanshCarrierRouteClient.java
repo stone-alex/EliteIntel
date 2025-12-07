@@ -44,7 +44,9 @@ public class SpanshCarrierRouteClient extends SpanshClient {
 
         /// search
         JsonObject result = performSearch(new Request(payload));
-
+        if (result == null || result.get("result") == null || result.get("result").getAsJsonObject().get("jumps") == null) {
+            return new TreeMap<>();
+        }
         JsonArray jumpsArray = result.get("result").getAsJsonObject().get("jumps").getAsJsonArray();
         if (jumpsArray == null || jumpsArray.size() < 2) {
             return new TreeMap<>();

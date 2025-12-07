@@ -35,9 +35,9 @@ public class LocationManager {
         });
     }
 
-    public void setAsHomeSystem(String primaryStar) {
+    public void setAsHomeSystem() {
         Database.withDao(LocationDao.class, dao -> {
-            dao.setHomeSystem(primaryStar, true);
+            dao.setCurrentStarSystemAsHome();
             return null;
         });
     }

@@ -7,7 +7,6 @@ import elite.intel.session.PlayerSession;
 public class SetCurrentStarAsHomeSystem implements CommandHandler {
 
     @Override public void handle(String action, JsonObject params, String responseText) {
-        LocationManager locations = LocationManager.getInstance();
-        locations.setAsHomeSystem(PlayerSession.getInstance().getPrimaryStarName());
+        LocationManager.getInstance().setAsHomeSystem();
     }
 }

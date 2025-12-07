@@ -20,6 +20,7 @@ public enum Queries {
     ANALYZ_FLEET_CARRIER_FUEL_SUPPLY("query_fleet_carrier_tritium_fuel_supply", "Analyze fleet carrier fuel supply.", AnalyzeFleetCarrierFuelSupplyHandler.class, true),
     ANALYZE_FSD_TARGET("query_analyze_targeted_star_system", "Analyze selected FTL destination for allegiance, traffic, and security.", AnalyzeFsdTargetHandler.class, true),
     ANALYZE_TRADE_ROUTE("query_trade_route_analysis", "Analyze trade route for current location.", AnalyzeTradeRouteHandler.class, true),
+    WHAT_IS_OUR_CARRIER_DESTINATION("query_what_is_our_fleet_carrier_destination", "Return name of the star system the fleet carrier is headed to. Or no carrier route set, if empty", AnalyzeFleetCarrierFinalDestinationHandler.class, true),
     //ANALYZE_LOCAL_MARKETS("query_local_commodity_markets", "Analyze commodity market contents at the current location.", AnalyzeLocalMarketsHandler.class, true),  // "commodity" to avoid bio or material overlap,
     ANALYZE_LOCAL_OUTFITTING("query_local_outfitting", "Analyze available outfitting options.", AnalyzeLocalOutfittingHandler.class, true),
     ANALYZE_LOCAL_SHIPYARD("query_local_shipyard", "Analyze shipyard contents.", AnalyzeShipyardHandler.class, true),

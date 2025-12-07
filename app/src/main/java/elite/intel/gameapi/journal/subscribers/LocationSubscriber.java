@@ -1,10 +1,10 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.intel.search.edsm.EdsmApiClient;
 import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.journal.events.LocationEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
+import elite.intel.search.edsm.EdsmApiClient;
 import elite.intel.session.PlayerSession;
 
 import java.util.Map;
@@ -54,12 +54,12 @@ public class LocationSubscriber {
         dto.setSecurity(event.getSystemSecurityLocalised());
         dto.setStationName(event.getStationName());
 
-        if(event.getStationFaction() != null) dto.setStationFaction(event.getStationFaction().getName());
+        if (event.getStationFaction() != null) dto.setStationFaction(event.getStationFaction().getName());
 
         dto.setTrafficDto(EdsmApiClient.searchTraffic(event.getStarSystem()));
         dto.setDeathsDto(EdsmApiClient.searchDeaths(event.getStarSystem()));
 
-        if(dto.getStarName() != null && dto.getStarName().length() > 0) {
+        if (dto.getStarName() != null && dto.getStarName().length() > 0) {
             //have to check for star name (primary star of the system). Sometimes the star name is empty.
             //do not save locations without star name.
             playerSession.saveLocation(dto);
@@ -73,14 +73,14 @@ public class LocationSubscriber {
 
         if (locations == null || locations.isEmpty()) {
             dto = playerSession.getLocation(event.getBodyID(), event.getStarSystem());
-            if(dto == null) {
+            if (dto == null) {
                 dto = playerSession.getCurrentLocation();
             }
         } else {
             dto = locations.get((long) event.getBodyID());
             if (dto == null) {
                 dto = playerSession.getLocation(event.getBodyID(), event.getStarSystem());
-                if(dto == null) {
+                if (dto == null) {
                     dto = playerSession.getCurrentLocation();
                 }
             }

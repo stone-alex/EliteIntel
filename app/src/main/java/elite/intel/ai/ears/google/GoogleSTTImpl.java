@@ -213,14 +213,18 @@ public class GoogleSTTImpl implements EarsInterface {
                         if (rms > RMS_THRESHOLD_HIGH) {
                             consecutiveVoice++;
                             consecutiveSilence = 0;
+                            // 4 debugging
+                            //EventBusManager.publish(new AppLogEvent("RMS: " + rms+" HIGH: "+RMS_THRESHOLD_HIGH+""));
                         } else {
                             consecutiveVoice = 0;
-                            if (rms < RMS_THRESHOLD_LOW) {
+                            if (rms < RMS_THRESHOLD_HIGH) { // Let's try using RMS High for gate open and close, ignore the low
                                 consecutiveSilence++;
                             } else {
                                 consecutiveSilence = 0;
                             }
                         }
+
+
 
                         if (!isActive && consecutiveVoice >= ENTER_VOICE_FRAMES && !isSpeaking.get()) {
                             isActive = true;

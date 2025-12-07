@@ -21,6 +21,8 @@ public class CalculateTradeRouteHandler implements CommandHandler {
             return;
         }
 
+        EventBusManager.publish(new AiVoxResponseEvent("Calculating trade route. Please wait. This takes time."));
+
         TradeRouteSearchCriteria criteria = profileManager.getCriteria(true);
 
         if (criteria == null) {

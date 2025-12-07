@@ -28,7 +28,6 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static elite.intel.util.StringUtls.capitalizeWords;
 
@@ -53,10 +52,18 @@ public class AppController implements Runnable {
         this.controllerThread = new Thread(this);
         this.isRunning.set(true);
         this.controllerThread.start();
+        startIfWeHaveCredentials();
+    }
+
+    private void startIfWeHaveCredentials() {
+        /// auto start session if we have credentials.
+        if (!systemSession.getAiApiKey().isEmpty() && !systemSession.getSttApiKey().isEmpty()) {
+            EventBusManager.publish(new ToggleServicesEvent(true));
+        }
     }
 
     private String listVoices() {
-        if(systemSession.isRunningPiperTts()){
+        if (systemSession.isRunningPiperTts()) {
             return ""; // Voice choice is not available with Piper TTS
         }
         StringBuilder sb = new StringBuilder();
@@ -210,7 +217,7 @@ public class AppController implements Runnable {
 
     @Subscribe
     public void onAppLogEvent(AppLogEvent event) {
-        String line = "\n"+event.getData();
+        String line = "\n" + event.getData();
         if (line == null || line.isBlank() || this.view.logArea == null) return;
 
         synchronized (logBuffer) {
@@ -248,7 +255,6 @@ public class AppController implements Runnable {
         });
         logTypewriterTimer.start();
     }
-
 
 
     private void startStopServices() {

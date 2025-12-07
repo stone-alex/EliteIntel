@@ -63,9 +63,6 @@ public class JumpCompletedSubscriber {
         String finalDestination = playerSession.getFinalDestination();
 
         StringBuilder sb = new StringBuilder();
-        sb.append(" Hyperspace Jump Successful: ");
-        sb.append(" Distance traveled: ").append(event.getJumpDist()).append(" ly. ");
-
         List<NavRouteDto> orderedRoute = shipRoute.getOrderedRoute();
         boolean roueSet = !orderedRoute.isEmpty();
 
@@ -83,16 +80,15 @@ public class JumpCompletedSubscriber {
             primaryStar.setTrafficDto(trafficDto);
             primaryStar.setDeathsDto(deathsDto);
         } else if (roueSet) {
-            sb.append("Arrived at: ").append(event.getStarSystem()).append(" star system.");
             List<NavRouteDto> adjustedRoute = shipRoute.removeLeg(event.getStarSystem());
             int remainingJump = adjustedRoute.size();
             if (remainingJump > 0) {
                 adjustedRoute.stream().findFirst().ifPresent(
                         nextStop -> sb
-                                .append(" Next stop: ")
+                                .append(" Next Waypoint: ")
                                 .append(nextStop.getName())
                                 .append(". ")
-                                .append("Star Class: ")
+                                .append(" Star Class: ")
                                 .append(nextStop.getStarClass())
                                 .append(", ")
                                 .append(isFuelStarClause(nextStop.getStarClass()))

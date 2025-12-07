@@ -100,8 +100,8 @@ public enum Commands {
     ENTER_SUPER_CRUISE("enter_super_cruise", null, null, EnterFtlHandler.class),
     //exit supercruise.,
     EXIT_SUPER_CRUISE("exit_super_cruise", null, null, ExitFtlHandler.class),
-    ACTIVATE_ANALYSIS_MODE("activate_hud_analysis_mode", null, null, ActivateAnalysisModeHandler.class),
-    ACTIVATE_COMBAT_MODE("activate_hud_combat_mode", null, null, ActivateCombatModeHandler.class),
+    ACTIVATE_ANALYSIS_MODE("swap_to_hud_analysis_mode", null, null, ActivateAnalysisModeHandler.class),
+    ACTIVATE_COMBAT_MODE("swap_to_hud_combat_mode", null, null, ActivateCombatModeHandler.class),
     PLOT_ROUTE_TO_CARRIER("plot_route_to_fleet_carrier", null, null, PlotRouteToMyFleetCarrier.class),
     SET_OPTIMAL_SPEED("set_optimal_speed", null, null, SetOptimalSpeedHandler.class),
     TAKE_ME_HOME("plot_route_to_home_star", null, null, PlotRouteToHomeHandler.class),
@@ -132,8 +132,8 @@ public enum Commands {
 
     /// Generic simple commands. no parameters, but require binding
     ACTIVATE("activate", BINDING_ACTIVATE.getGameBinding(), null, GenericGameControlHandler.class),
-    NIGHT_VISION_ON("activate_night_vision", BINDING_NIGHT_VISION_TOGGLE.getGameBinding(), null, GenericGameControlHandler.class),
-    NIGHT_VISION_OFF("deactivate_night_vision", BINDING_NIGHT_VISION_TOGGLE.getGameBinding(), null, GenericGameControlHandler.class),
+    NIGHT_VISION_ON("turn_on_night_vision", BINDING_NIGHT_VISION_TOGGLE.getGameBinding(), null, GenericGameControlHandler.class),
+    NIGHT_VISION_OFF("turn_off_night_vision", BINDING_NIGHT_VISION_TOGGLE.getGameBinding(), null, GenericGameControlHandler.class),
     CYCLE_NEXT_PAGE("cycle_next_page", BINDING_CYCLE_NEXT_PAGE.getGameBinding(), null, GenericGameControlHandler.class),
     CYCLE_NEXT_PANEL("cycle_next_panel", BINDING_CYCLE_NEXT_PANEL.getGameBinding(), null, GenericGameControlHandler.class),
     CYCLE_PREVIOUS_PAGE("cycle_previous_page", BINDING_CYCLE_PREVIOUS_PAGE.getGameBinding(), null, GenericGameControlHandler.class),

@@ -94,7 +94,7 @@ public class SpanshClient {
         return json.has("job") ? json.get("job").getAsString() : null;
     }
 
-    public JsonObject performSearch(StringQuery query) {
+    protected JsonObject performSearch(StringQuery query) {
         try {
             log.info("performing search: {}", BASE_URL+query.getQuery());
             String searchRefId = getSearch(query.getQuery());
@@ -105,7 +105,7 @@ public class SpanshClient {
         return new JsonObject();
     }
 
-    public JsonObject performSearch(ToJsonConvertible criteria){
+    protected JsonObject performSearch(ToJsonConvertible criteria){
         try {
             String searchRefId = postSearch(criteria);
             return waitForResults(searchRefId);
@@ -115,7 +115,7 @@ public class SpanshClient {
         return new JsonObject();
     }
 
-    public JsonObject performSearch(String json){
+    protected JsonObject performSearch(String json){
         try {
             String searchRefId = postSearch(json);
             return waitForResults(searchRefId);

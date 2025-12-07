@@ -21,7 +21,7 @@ import java.util.Arrays;
 
 public class TradeProfileManager {
 
-    public static final int MAX_DISTANCE_TO_STATION = 100;
+    public static final int MAX_DISTANCE_TO_INITIAL_STATION = 100;
     private static final Logger log = LogManager.getLogger(TradeProfileManager.class);
     private static TradeProfileManager instance;
     private final ShipManager shipManager = ShipManager.getInstance();
@@ -76,29 +76,28 @@ public class TradeProfileManager {
             coords.setZ(galacticCoordinates.z());
             initialStationCriteria.setReferenceCoords(coords);
             initialStationCriteria.setPage(0);
-            initialStationCriteria.setSize(1);
+
 
             TradeStationSearchCriteria.Filters filters = new TradeStationSearchCriteria.Filters();
             filters.setDistanceToArrival(new TradeStationSearchCriteria.RangeFilter(0, 6000));
             TradeStationSearchCriteria.StationType stationType = new TradeStationSearchCriteria.StationType();
-            stationType.setTypes(Arrays.asList("Asteroid base", "Coriolis Starport", "Mega ship"));
+            stationType.setTypes(Arrays.asList("Asteroid base", "Coriolis Starport", "Mega ship", "Ocellus Starport"));
             filters.setStationType(stationType);
             initialStationCriteria.setFilters(filters);
 
             /// NOTE: Spansh API is very inconsistent. We can't reuse RangeFilter because distance must be passed without "<=>"
             TradeStationSearchCriteria.Distance distance = new TradeStationSearchCriteria.Distance();
-            distance.setMax(500);
+            distance.setMax(MAX_DISTANCE_TO_INITIAL_STATION);
             distance.setMin(0);
             filters.setDistanceToStarSystem(distance);
 
             initialStationCriteria.setFilters(filters);
             log.debug("Initial station criteria: {}", initialStationCriteria.toJson());
 
-            TradeStationSearchResultDto startingStation = GsonFactory.getGson().fromJson(
-                    stationSearchClient.performSearch(initialStationCriteria), TradeStationSearchResultDto.class
-            );
+            TradeStationSearchResultDto startingStation = stationSearchClient.searchTradeStation(initialStationCriteria);
 
-            if(startingStation.getResults().isEmpty()){
+
+            if (startingStation.getResults().isEmpty()) {
                 EventBusManager.publish(new MissionCriticalAnnouncementEvent("Could not find a suitable starting trade station."));
                 return null;
             }
@@ -112,10 +111,8 @@ public class TradeProfileManager {
             criteria.setSystem(startingStation.getResults().stream().findFirst().get().getSystemName());
 
             if (criteria.getStation() == null || criteria.getSystem() == null) {
-                EventBusManager.publish(new MissionCriticalAnnouncementEvent("Unable to find a suitable trade station."));
+                EventBusManager.publish(new MissionCriticalAnnouncementEvent("Unable to find a suitable initial trade station withing " + MAX_DISTANCE_TO_INITIAL_STATION + " light years."));
                 return null;
-            } else {
-                EventBusManager.publish(new MissionCriticalAnnouncementEvent("Trade station found: " + criteria.getSystem() + " " + criteria.getStation() + ". Calculating trade route. This will take some time..."));
             }
         }
         log.debug("Trade route criteria: {}", criteria.toString());
@@ -130,7 +127,7 @@ public class TradeProfileManager {
                 myLocation.x(), myLocation.y(), myLocation.z()
         );
 
-        boolean isToFar = MAX_DISTANCE_TO_STATION < distance;
+        boolean isToFar = MAX_DISTANCE_TO_INITIAL_STATION < distance;
         if (isToFar) {
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("Found trade station within " + (int) distance + " light years."));
         }

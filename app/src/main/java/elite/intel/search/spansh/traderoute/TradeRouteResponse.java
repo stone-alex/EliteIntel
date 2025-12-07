@@ -16,6 +16,10 @@ public class TradeRouteResponse implements ToJsonConvertible {
         return result;
     }
 
+    public void setResult(List<TradeRouteTransaction> result) {
+        this.result = result;
+    }
+
     public String getState() {
         return state;
     }

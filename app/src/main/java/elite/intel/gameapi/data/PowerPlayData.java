@@ -59,6 +59,7 @@ public class PowerPlayData {
      * @return true if the power is known.
      */
     public static boolean hasPower(String powerName) {
+        if(powerName == null || powerName.isEmpty()) return false;
         return POWER_MAP.containsKey(powerName.toLowerCase().trim());
     }
 

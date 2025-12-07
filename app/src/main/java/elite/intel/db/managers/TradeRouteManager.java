@@ -80,12 +80,19 @@ public class TradeRouteManager {
     public TradeRouteResponse calculateTradeRoute(TradeRouteSearchCriteria criteria) {
         TradeRouteClient client = TradeRouteClient.getInstance();
         TradeRouteResponse tradeRoute = client.getTradeRoute(criteria);
-        if (tradeRoute == null) {
+        if(tradeRoute == null){
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("Unable to calculate trade route."));
-        } else {
-            save(tradeRoute);
+            return null;
         }
-        return tradeRoute;
+        TradeRouteResponse filteredRoute = TradeRouteFilter.getInstance().filter(tradeRoute);
+
+        if (filteredRoute == null) {
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Unable to calculate trade route."));
+            return null;
+        } else {
+            save(filteredRoute);
+        }
+        return filteredRoute;
     }
 
 

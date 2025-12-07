@@ -39,7 +39,6 @@
         <Logger name="elite.intel.search.edsm.EdsmApiClient" level="error"/>
         <Logger name="elite.intel.search.spansh.client" level="debug"/>
         <Logger name="elite.intel.util.NavigationUtils" level="error"/>
-        <Logger name="elite.intel.session.SessionPersistence" level="error"/>
         <Logger name="elite.intel.ai.hands.KeyBindingsParser" level="error"/>
         <Logger name="elite.intel.ai.brain.xai.GrokCommandEndPoint" level="debug"/>
         <Logger name="elite.intel.ai.ears" level="error"/>

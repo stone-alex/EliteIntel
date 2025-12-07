@@ -1,6 +1,8 @@
 package elite.intel.search.spansh.braintrees;
 
 import elite.intel.search.spansh.client.SpanshClient;
+import elite.intel.search.spansh.stellarobjects.StellarObjectSearchResultDto;
+import elite.intel.util.json.GsonFactory;
 
 public class BrainTreeClient extends SpanshClient {
 
@@ -22,5 +24,9 @@ public class BrainTreeClient extends SpanshClient {
             }
         }
         return instance;
+    }
+
+    public StellarObjectSearchResultDto search(BrainTreeCriteria criteria) {
+        return GsonFactory.getGson().fromJson(performSearch(criteria), StellarObjectSearchResultDto.class);
     }
 }

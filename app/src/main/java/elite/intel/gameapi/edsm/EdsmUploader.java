@@ -60,7 +60,7 @@ public final class EdsmUploader {
         if (commander.isBlank() || apiKey.isBlank()) {
             String message = "Warning: EDSM credentials are missing/incomplete. Materials info will not be updated.";
             log.warn(message);
-            EventBusManager.publish(new AppLogEvent(message));
+            /// EventBusManager.publish(new AppLogEvent(message));
             return;
         }
 

@@ -1,6 +1,7 @@
 package elite.intel.search.spansh.stellarobjects;
 
 import elite.intel.search.spansh.client.SpanshClient;
+import elite.intel.util.json.GsonFactory;
 
 public class StellarObjectSearchClient extends SpanshClient {
 
@@ -15,5 +16,9 @@ public class StellarObjectSearchClient extends SpanshClient {
             instance = new StellarObjectSearchClient();
         }
         return instance;
+    }
+
+    public StellarObjectSearchResultDto search(StellarObjectSearchRequestDto criteria) {
+        return GsonFactory.getGson().fromJson(performSearch(criteria), StellarObjectSearchResultDto.class);
     }
 }

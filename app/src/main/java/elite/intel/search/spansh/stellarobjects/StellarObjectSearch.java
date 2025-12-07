@@ -26,7 +26,7 @@ public class StellarObjectSearch {
 
     public StellarObjectSearchResultDto findRings(String material, ReserveLevel level, LocationDao.Coordinates coords, int range) {
 
-            StellarObjectSearchClient searchClient = StellarObjectSearchClient.getInstance();
+            StellarObjectSearchClient client = StellarObjectSearchClient.getInstance();
             StellarObjectSearchRequestDto criteria = new StellarObjectSearchRequestDto();
 
             StellarObjectSearchRequestDto.ReserveLevel reserveLevel = new StellarObjectSearchRequestDto.ReserveLevel();
@@ -61,7 +61,6 @@ public class StellarObjectSearch {
             referenceCoords.setZ(coords.z());
             criteria.setReferenceCoords(referenceCoords);
 
-            return GsonFactory.getGson().fromJson(searchClient.performSearch(criteria), StellarObjectSearchResultDto.class);
-
+            return client.search(criteria);
     }
 }

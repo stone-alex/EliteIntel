@@ -72,7 +72,7 @@ public class BrainTreeManager {
     }
 
     public void retrieveFromSpansh(){
-        BrainTreeClient brainTreeClient = BrainTreeClient.getInstance();
+        BrainTreeClient client = BrainTreeClient.getInstance();
 
         BrainTreeCriteria criteria = new BrainTreeCriteria();
         criteria.setPage(1);
@@ -97,7 +97,7 @@ public class BrainTreeManager {
         criteria.setReferenceCoords(coords);
         criteria.setFilters(filters);
 
-        StellarObjectSearchResultDto result = GsonFactory.getGson().fromJson(brainTreeClient.performSearch(criteria), StellarObjectSearchResultDto.class);
+        StellarObjectSearchResultDto result = client.search(criteria);
         result.getResults().forEach(this::addBrainTreeLocation);
     }
 }

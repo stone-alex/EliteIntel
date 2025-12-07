@@ -250,3 +250,4 @@
 "analyzer"="analyze"
 "lead carry"="fleet carrier"
 "click"="calculate"
+"Fleet carry around"="fleet carrier route"

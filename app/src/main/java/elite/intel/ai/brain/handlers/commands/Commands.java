@@ -129,6 +129,7 @@ public enum Commands {
     CHANGE_TRADE_PROFILE_SET_ALLOW_PLANETARY_PORT("change_trade_profile_toggle_planetary_ports", null, "on_off", ChangeTradeProfileSetIncluidePlanetaryPortsHandler.class),
     CHANGE_TRADE_PROFILE_SET_ALLOW_PERMIT_SYSTEMS("change_trade_profile_toggle_permit_protected_star_systems", null, "on_off", ChangeTradeProfileAllowPermitSystemsHandler.class),
     LIST_TRADE_ROUTE_PARAMETERS("list_available_trade_route_parameters", null, null, ListAvailableTradeRouteProfilesHandler.class),
+    CLEAR_TRADE_ROUTE("clear_trade_route", null, null, ClearTradeRouteHandler.class),
 
     /// Generic simple commands. no parameters, but require binding
     ACTIVATE("activate", BINDING_ACTIVATE.getGameBinding(), null, GenericGameControlHandler.class),

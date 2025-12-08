@@ -22,6 +22,7 @@ import static elite.intel.util.StringUtls.fuzzyCommodityMatch;
 public class FindCommodityHandler extends CommandOperator implements CommandHandler {
 
     private GameController commandHandler;
+    private PlayerSession playerSession = PlayerSession.getInstance();
 
     public FindCommodityHandler(GameController commandHandler) {
         super(commandHandler.getMonitor(), commandHandler.getExecutor());
@@ -42,9 +43,9 @@ public class FindCommodityHandler extends CommandOperator implements CommandHand
             return;
         }
 
-        EventBusManager.publish(new AiVoxResponseEvent("Searching markets in Spansh for " + commodity + "."));
+        int maxDistance = (int) (playerSession.getShipLoadout().getMaxJumpRange() * 5);
+        EventBusManager.publish(new AiVoxResponseEvent("Searching markets with best price for " + commodity + " within " + maxDistance + " light years."));
 
-        PlayerSession playerSession = PlayerSession.getInstance();
         String starName = playerSession.getPrimaryStarName();
         SpanshMarketClient client = new SpanshMarketClient();
         final ShipDao.Ship ship = ShipManager.getInstance().getShip();
@@ -53,7 +54,7 @@ public class FindCommodityHandler extends CommandOperator implements CommandHand
             List<StationMarketDto> markets = client.searchMarkets(new MarketSearchCriteria(
                     starName,
                     1,
-                    1000,
+                    maxDistance,
                     commodity,
                     false,
                     false,
@@ -74,6 +75,7 @@ public class FindCommodityHandler extends CommandOperator implements CommandHand
                 }
 
 
+                EventBusManager.publish(new AiVoxResponseEvent("Head to " + stationMarketDto.systemName() + " star system. " + stationMarketDto.stationName() + " port."));
                 DestinationReminderManager reminderManager = DestinationReminderManager.getInstance();
                 reminderManager.setDestination(stationMarketDto.toJson());
                 plotter.plotRoute(stationMarketDto.systemName());

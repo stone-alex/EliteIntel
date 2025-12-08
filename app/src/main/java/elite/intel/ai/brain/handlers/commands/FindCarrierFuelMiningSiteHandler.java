@@ -64,6 +64,7 @@ public class FindCarrierFuelMiningSiteHandler extends CommandOperator implements
             reminderManager.setDestination(result.get().toJson());
             RoutePlotter routePlotter = new RoutePlotter(this.gameController);
             routePlotter.plotRoute(result.get().getSystemName());
+            EventBusManager.publish(new AiVoxResponseEvent("Head to " + result.get().getSystemName() + " star system."));
         } else {
             EventBusManager.publish(new AiVoxResponseEvent("You must be in SRV or Main Ship to use this command."));
         }

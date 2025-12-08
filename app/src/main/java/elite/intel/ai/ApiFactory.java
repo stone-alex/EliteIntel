@@ -24,7 +24,6 @@ public class ApiFactory {
 
     /**
      * Provides LLM/STT/TTS endpoint instances based on the API key provided in the config file.
-     *
      */
     private ApiFactory() {
         // Prevent instantiation.
@@ -40,7 +39,6 @@ public class ApiFactory {
         return switch (provider) {
             case GROK -> GrokAnalysisEndpoint.getInstance();
             case OPENAI -> OpenAiAnalysisEndPoint.getInstance();
-            //TODO: replace default with Local LLM End Points.
             default -> throw new IllegalStateException("Unknown AI key format");
         };
 
@@ -111,7 +109,6 @@ public class ApiFactory {
     }
 
     ///
-
     public EarsInterface getEarsImpl() {
         String apiKey =  SystemSession.getInstance().getSttApiKey();
         ProviderEnum provider = KeyDetector.detectProvider(apiKey, "STT"); // Fixed category

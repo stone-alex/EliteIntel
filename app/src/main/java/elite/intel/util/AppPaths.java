@@ -1,5 +1,6 @@
 package elite.intel.util;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -45,11 +46,30 @@ public final class AppPaths {
         return APP_DIR.resolve("logs");
     }
 
+    public static String getSecretKeyFile() {
+        if (OsDetector.getOs() == OsDetector.OS.LINUX || OsDetector.getOs() == OsDetector.OS.MAC) {
+            return System.getProperty("user.home")
+                    + File.separator
+                    + ".local"
+                    + File.separator
+                    + "share"
+                    + File.separator
+                    + "elite-intel"
+                    + File.separator
+                    + "secret.key";
+        } else {
+            return System.getenv("LOCALAPPDATA")
+                    + File.separator
+                    + "elite-intel"
+                    + File.separator
+                    + "secret.key";
+        }
+    }
+
     static {
         Path dir = null;
 
         // start optimistic
-
         try {
             // CASE 1: Running from a JAR → use the JAR's folder
             Path codeSource = Path.of(
@@ -61,7 +81,7 @@ public final class AppPaths {
 
             // If it's a JAR file → use its parent directory
             if (codeSource.toString().endsWith(".jar")) {
-                dir = codeSource.getParent(); // e.g. /home/alex/releases/elite_intel.jar → /home/alex/releases
+                dir = codeSource.getParent();
             } else {
                 // CASE 2: Running from IDE → walk up to find project root (build.gradle)
                 Path current = codeSource;

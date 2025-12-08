@@ -6,6 +6,7 @@ import org.jdbi.v3.core.Handle;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.sqlobject.SqlObjectPlugin;
 
+import java.io.IOException;
 import java.nio.file.Path;
 
 public class Database {
@@ -37,8 +38,13 @@ public class Database {
     }
 
     static {
-        Path dbPath = AppPaths.getDatabasePath();
-        dbPath.getParent().toFile().mkdirs();
+        Path dbPath;
+        try {
+            dbPath = AppPaths.getDatabasePath();
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to create database directory " + e.getMessage(), e);
+        }
+
 
         String url = "jdbc:sqlite:" + dbPath
                 + "?journal_mode=WAL"      // safe concurrent reads/writes

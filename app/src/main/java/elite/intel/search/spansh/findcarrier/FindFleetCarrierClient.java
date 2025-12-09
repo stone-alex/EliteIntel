@@ -1,6 +1,5 @@
 package elite.intel.search.spansh.findcarrier;
 
-import com.google.gson.JsonObject;
 import elite.intel.search.spansh.client.SpanshClient;
 import elite.intel.util.json.GsonFactory;
 
@@ -19,7 +18,7 @@ public class FindFleetCarrierClient extends SpanshClient {
         return instance;
     }
 
-    public FleetCarrierSearchResultsDto search(FleetCarrierSearchCriteriaDto criteria){
+    public FleetCarrierSearchResultsDto search(FleetCarrierSearchCriteriaDto criteria) {
         return GsonFactory.getGson().fromJson(performSearch(criteria), FleetCarrierSearchResultsDto.class);
     }
 }

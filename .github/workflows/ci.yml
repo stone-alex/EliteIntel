@@ -1,5 +1,8 @@
 name: Build Release ZIP
 
+permissions:
+  contents: write
+
 on:
   push:
     tags:
@@ -45,24 +48,25 @@ jobs:
           cd release
           zip -r ../elite_intel${{ env.VERSION }}.zip .
 
-      # Optional: Set up GPG for signing (uncomment if you have secrets configured)
+      # Optional GPG signing (uncomment when ready)
       # - name: Import GPG key
       #   run: |
       #     echo "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --batch --yes --passphrase "${{ secrets.GPG_PASSPHRASE }}" --import
-      #     gpg --list-secret-keys --keyid-format LONG
-
       # - name: Sign ZIP with GPG
       #   run: gpg --batch --yes --passphrase "${{ secrets.GPG_PASSPHRASE }}" --armor --detach-sign --output elite_intel${{ env.VERSION }}.zip.asc elite_intel${{ env.VERSION }}.zip
 
-      - name: Upload ZIP artifact
-        uses: actions/upload-artifact@v4
+      - name: Create GitHub Release and attach ZIP
+        uses: softprops/action-gh-release@v2
         with:
-          name: elite_intel${{ env.VERSION }}.zip
-          path: elite_intel${{ env.VERSION }}.zip
+          files: elite_intel${{ env.VERSION }}.zip
+          # elite_intel${{ env.VERSION }}.zip.asc   # uncomment when signing
+          generate_release_notes: true   # Auto-changelog from commits, very handy
+          draft: false
+          prerelease: false
 
-      # If you also want to upload the signature (uncomment with the signing steps)
-      # - name: Upload signature artifact
+      # Optional: Keep artifact upload for debugging if you want, but release is the real deal
+      # - name: Upload ZIP artifact
       #   uses: actions/upload-artifact@v4
       #   with:
-      #     name: elite_intel${{ env.VERSION }}.zip.asc
-      #     path: elite_intel${{ env.VERSION }}.zip.asc
+      #     name: elite_intel${{ env.VERSION }}.zip
+      #     path: elite_intel${{ env.VERSION }}.zip

@@ -13,6 +13,7 @@ import elite.intel.ai.mouth.subscribers.events.VocalisationSuccessfulEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
+import elite.intel.util.AudioPlayer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -167,6 +168,7 @@ public class GoogleTTSImpl implements MouthInterface {
                 voiceName = googleVoiceProvider.getVoiceParams(AiVoices.JENNIFER.getName()).getName();
             }
             voiceQueue.put(new VoiceRequest(event.getText(), voiceName, googleVoiceProvider.getSpeechRate(voiceName), event.getOriginType()));
+            AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_2);
             EventBusManager.publish(new AppLogEvent("AI: " + event.getText()));
             log.debug("Added VoiceRequest to queue: text='{}', voice='{}'", event.getText(), voiceName);
         } catch (InterruptedException e) {
@@ -181,7 +183,6 @@ public class GoogleTTSImpl implements MouthInterface {
             log.error("Failed to open persistent audio line, cannot process voice queue");
             return;
         }
-
         while (running) {
             try {
                 log.trace("Polling voice queue, size={}, interruptRequested={}",

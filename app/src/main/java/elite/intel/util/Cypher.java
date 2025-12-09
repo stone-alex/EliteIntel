@@ -100,17 +100,24 @@ public class Cypher {
      * @return the encrypted string encoded in Base64, or null if the input data is null.
      * @throws Exception if an error occurs during encryption or key initialization.
      */
-    public static String encrypt(String data) throws Exception {
-        if (data == null) {
-            return null;
+    public static String encrypt(String data) {
+        try {
+            if (data == null) {
+                return null;
+            }
+            if(data.isEmpty()){
+                return null;
+            }
+            if (secretKey == null) {
+                initializeKey();
+            }
+            Cipher cipher = Cipher.getInstance("AES");
+            cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+            byte[] encryptedBytes = cipher.doFinal(data.getBytes());
+            return Base64.getEncoder().encodeToString(encryptedBytes);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to encrypt data", e);
         }
-        if (secretKey == null) {
-            initializeKey();
-        }
-        Cipher cipher = Cipher.getInstance("AES");
-        cipher.init(Cipher.ENCRYPT_MODE, secretKey);
-        byte[] encryptedBytes = cipher.doFinal(data.getBytes());
-        return Base64.getEncoder().encodeToString(encryptedBytes);
     }
 
 
@@ -125,16 +132,23 @@ public class Cypher {
      * @return the decrypted plaintext string, or null if the input was null.
      * @throws Exception if an error occurs during decryption or key initialization.
      */
-    public static String decrypt(String encryptedData) throws Exception {
-        if (encryptedData == null) {
-            return null;
+    public static String decrypt(String encryptedData) {
+        try {
+            if (encryptedData == null) {
+                return "";
+            }
+            if(encryptedData.isEmpty()){
+                return "";
+            }
+            if (secretKey == null) {
+                initializeKey();
+            }
+            Cipher cipher = Cipher.getInstance("AES");
+            cipher.init(Cipher.DECRYPT_MODE, secretKey);
+            byte[] decryptedBytes = cipher.doFinal(Base64.getDecoder().decode(encryptedData));
+            return new String(decryptedBytes);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to decrypt data", e);
         }
-        if (secretKey == null) {
-            initializeKey();
-        }
-        Cipher cipher = Cipher.getInstance("AES");
-        cipher.init(Cipher.DECRYPT_MODE, secretKey);
-        byte[] decryptedBytes = cipher.doFinal(Base64.getDecoder().decode(encryptedData));
-        return new String(decryptedBytes);
     }
 }

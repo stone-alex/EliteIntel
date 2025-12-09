@@ -7,6 +7,7 @@ import elite.intel.ai.mouth.subscribers.events.TTSInterruptEvent;
 import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.ui.event.AppLogEvent;
+import elite.intel.util.AudioPlayer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -90,12 +91,21 @@ public class PiperTTS implements MouthInterface {
 
     @Override
     public void stop() {
+        queue.clear();
+        interruptRequested.set(true);
+        SourceDataLine line = currentLine.get();
+        if (line != null && line.isOpen()) {
+            line.stop();
+            line.flush();
+            line.start();
+            currentLine.set(line);
+        }
         running = false;
+
         if (workerThread != null) {
             workerThread.interrupt();
             workerThread = null;
         }
-        queue.clear();
 
         if (callbackExecutor != null) {
             callbackExecutor.shutdownNow();
@@ -153,6 +163,7 @@ public class PiperTTS implements MouthInterface {
 
     private void synthesizeAndPlay(String text) throws Exception {
         if (text == null || text.isBlank()) return;
+        AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_2);
         EventBusManager.publish(new AppLogEvent("AI: " + text));
         setSpeechSpeed(0.75f);
 

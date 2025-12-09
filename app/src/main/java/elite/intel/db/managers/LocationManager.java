@@ -37,6 +37,7 @@ public class LocationManager {
 
     public void setAsHomeSystem() {
         Database.withDao(LocationDao.class, dao -> {
+            dao.clearHomeSystem();
             dao.setCurrentStarSystemAsHome();
             return null;
         });

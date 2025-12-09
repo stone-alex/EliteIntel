@@ -42,7 +42,7 @@ public interface LocationDao {
     List<Location> findByPrimaryStar(@Bind("primaryStar") String primaryStar);
 
     @SqlUpdate("""
-            UPDATE location set homeSystem = 0;
+            
             UPDATE location
             SET homeSystem = 1
             WHERE (primaryStar, inGameId) = (
@@ -51,6 +51,11 @@ public interface LocationDao {
             );
             """)
     void setCurrentStarSystemAsHome();
+
+    @SqlUpdate("""
+        UPDATE location set homeSystem = 0;
+    """)
+    void clearHomeSystem();
 
     @SqlQuery("SELECT * FROM location WHERE homeSystem = 1")
     Location findHomeSystem();
@@ -61,17 +66,6 @@ public interface LocationDao {
     @SqlQuery("select * from location where primaryStar = :starSystem and json like '%\"PRIMARY_STAR\"%'")
     Location findPrimaryStar(String starSystem);
 
-
-    @SqlQuery("""
-            SELECT
-                json ->> '$.X' AS x,
-                json ->> '$.Y' AS y,
-                json ->> '$.Z' AS z
-            from location location where primaryStar = (select current_primary_star from player) and json ->> '$.X' != 0 and json ->> '$.Y' !=0 and json ->> '$.Z' !=0 LIMIT 1;
-            """)
-    @RegisterConstructorMapper(Coordinates.class)
-    Coordinates currentCoordinates();
-
     @SqlQuery("""
             SELECT location.primaryStar,
                 json ->> '$.X' AS x,
@@ -79,8 +73,8 @@ public interface LocationDao {
                 json ->> '$.Z' AS z
             from location location where primaryStar = (select current_primary_star from player) and json ->> '$.X' != 0 and json ->> '$.Y' !=0 and json ->> '$.Z' !=0 LIMIT 1;
             """)
-    @RegisterConstructorMapper(CoordinatesAndPrimaryStar.class)
-    Coordinates currentCoordinatesAndPrimaryStar();
+    @RegisterConstructorMapper(Coordinates.class)
+    Coordinates currentCoordinates();
 
 
 
@@ -99,11 +93,7 @@ public interface LocationDao {
         }
     }
 
-    record Coordinates( double x, double y, double z) {
-
-    }
-
-    record CoordinatesAndPrimaryStar(String primaryStar, double x, double y, double z) {
+    record Coordinates(String primaryStar,  double x, double y, double z) {
 
     }
 

@@ -16,7 +16,6 @@ public class TradeRouteFilter {
 
     private StarSystemClient client = StarSystemClient.getInstance();
     private PlayerSession playerSession = PlayerSession.getInstance();
-    private LocationManager locationManager = LocationManager.getInstance();
 
     private TradeRouteFilter() {
     }
@@ -58,7 +57,7 @@ public class TradeRouteFilter {
             boolean isDestinationStrongHold = isValidDestinationPower && "stronghold".equalsIgnoreCase(ogDestinationResult.getPowerState());
 
             // ADD NEUTRAL POWER
-            if (!isValidSourcePower || !isValidDestinationPower) {
+            if (!isValidSourcePower && !isValidDestinationPower) {
                 filteredResults.add(transaction);
                 continue;
             }

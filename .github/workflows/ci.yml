@@ -41,40 +41,42 @@ jobs:
         run: cp -r distribution/* release/
 
       - name: Get version from tag
-        run: echo "VERSION=$(basename $GITHUB_REF | sed 's/^v//')" >> $GITHUB_ENV
+        run: echo "VERSION=$(basename ${{ github.ref }} | sed 's/^v//')" >> $GITHUB_ENV
 
       - name: Create ZIP
         run: |
           cd release
           zip -r ../elite_intel${{ env.VERSION }}.zip .
 
-      # Optional GPG signing (uncomment when ready)
+      # Optional GPG signing – uncomment when you have the secrets
       # - name: Import GPG key
       #   run: |
-      #     echo "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --batch --yes --passphrase "${{ secrets.GPG_PASSPHRASE }}" --import
+      #     echo "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --batch --import --passphrase "${{ secrets.GPG_PASSPHRASE }}"
       # - name: Sign ZIP with GPG
-      #   run: gpg --batch --yes --passphrase "${{ secrets.GPG_PASSPHRASE }}" --armor --detach-sign --output elite_intel${{ env.VERSION }}.zip.asc elite_intel${{ env.VERSION }}.zip
+      #   run: |
+      #     gpg --batch --armor --detach-sign \
+      #         --output elite_intel${{ env.VERSION }}.zip.asc \
+      #         --passphrase "${{ secrets.GPG_PASSPHRASE }}" \
+      #         elite_intel${{ env.VERSION }}.zip
 
       - name: Create GitHub Release and attach ZIP
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}   # Default token works fine
-          run: |
-            TAG=${GITHUB_REF#refs/tags/}
-            VERSION=${TAG#v}   # Strips the 'v' for your filename, keeps full tag for release
-            
-            gh release create "$TAG" \
-              --title "elite_intel $VERSION" \
-              --generate-notes \
-              --draft=false \
-              --prerelease=false \
-              "elite_intel${VERSION}.zip"
-            
-            # If you enable signing later, add the .asc here too:
-            # "elite_intel${VERSION}.zip" "elite_intel${VERSION}.zip.asc"
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG=${GITHUB_REF#refs/tags/}
+          VERSION=${TAG#v}
 
-      # Optional: Keep artifact upload for debugging if you want, but release is the real deal
-      # - name: Upload ZIP artifact
+          gh release create "$TAG" \
+            --title "Elite Intel $VERSION" \
+            --generate-notes \
+            elite_intel${VERSION}.zip
+
+          # Uncomment the line below when you enable signing
+          # elite_intel${VERSION}.zip elite_intel${VERSION}.zip.asc
+
+      # Optional: keep this if you still want the artifact visible in the run summary
+      # - name: Upload artifact (for debugging)
       #   uses: actions/upload-artifact@v4
       #   with:
-      #     name: elite_intel${{ env.VERSION }}.zip
+      #     name: elite_intel-${{ env.VERSION }}
       #     path: elite_intel${{ env.VERSION }}.zip

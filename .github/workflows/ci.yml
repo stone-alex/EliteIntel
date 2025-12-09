@@ -56,13 +56,21 @@ jobs:
       #   run: gpg --batch --yes --passphrase "${{ secrets.GPG_PASSPHRASE }}" --armor --detach-sign --output elite_intel${{ env.VERSION }}.zip.asc elite_intel${{ env.VERSION }}.zip
 
       - name: Create GitHub Release and attach ZIP
-        uses: softprops/action-gh-release@v2
-        with:
-          files: elite_intel${{ env.VERSION }}.zip
-          # elite_intel${{ env.VERSION }}.zip.asc   # uncomment when signing
-          generate_release_notes: true   # Auto-changelog from commits, very handy
-          draft: false
-          prerelease: false
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}   # Default token works fine
+          run: |
+            TAG=${GITHUB_REF#refs/tags/}
+            VERSION=${TAG#v}   # Strips the 'v' for your filename, keeps full tag for release
+            
+            gh release create "$TAG" \
+              --title "elite_intel $VERSION" \
+              --generate-notes \
+              --draft=false \
+              --prerelease=false \
+              "elite_intel${VERSION}.zip"
+            
+            # If you enable signing later, add the .asc here too:
+            # "elite_intel${VERSION}.zip" "elite_intel${VERSION}.zip.asc"
 
       # Optional: Keep artifact upload for debugging if you want, but release is the real deal
       # - name: Upload ZIP artifact

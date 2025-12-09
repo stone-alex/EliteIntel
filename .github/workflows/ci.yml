@@ -8,24 +8,13 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build-linux:
-    runs-on: ubuntu-latest
+  build-windows:
+    runs-on: windows-latest
     permissions:
       contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Validate Gradle Wrapper
-        uses: gradle/actions/wrapper-validation@v4
-
-      - name: Ensure Gradle wrapper is executable
-        shell: bash
-        run: |
-          set -euo pipefail
-          # Normalize line endings just in case the file was committed with CRLF
-          sed -i 's/\r$//' gradlew || true
-          chmod +x gradlew
 
       - name: Set up Oracle JDK 21
         uses: actions/setup-java@v4
@@ -35,108 +24,94 @@ jobs:
           cache: gradle
 
       - name: Diagnose Gradle projects and tasks
+        shell: cmd
         run: |
-          ./gradlew --version
-          ./gradlew -q projects
-          ./gradlew -q :app:tasks --all
+          gradlew.bat --version
+          gradlew.bat -q projects
+          gradlew.bat -q :app:tasks --all
 
-      - name: Build fat JAR distribution ZIP (shadowDistZip)
+      - name: Build (force shadowJar into distribution)
+        shell: cmd
         run: |
-          ./gradlew --stacktrace --info :app:shadowDistZip --no-daemon
+          gradlew.bat --stacktrace --info :app:shadowJar --no-daemon
 
-      - name: Extract elite_intel.jar into distribution and verify
-        shell: bash
+      - name: Locate elite_intel.jar if not in distribution
+        shell: pwsh
         run: |
-          set -euo pipefail
-          mkdir -p distribution
+          $ErrorActionPreference = 'Stop'
 
-          zipPath="app/build/distributions/app-shadow.zip"
-          if [[ -f "$zipPath" ]]; then
-            echo "Found $zipPath, extracting from app-shadow/lib/elite_intel.jar …"
-            if unzip -Z1 "$zipPath" | grep -qx "app-shadow/lib/elite_intel.jar"; then
-              unzip -j "$zipPath" "app-shadow/lib/elite_intel.jar" -d distribution >/dev/null
-            else
-              echo "Expected entry 'app-shadow/lib/elite_intel.jar' not found inside $zipPath." >&2
-            fi
-          else
-            echo "Distribution ZIP not found at $zipPath. Will look in app/build/libs as fallback …"
-          fi
+          # Ensure distribution exists (your repo already contains it, but create if needed)
+          if (-not (Test-Path "distribution")) { New-Item -ItemType Directory -Path "distribution" | Out-Null }
 
-          # Fallback: if not yet present, look for any shadow/fat jar in app/build/libs
-          if [[ ! -f distribution/elite_intel.jar ]]; then
-            cand=$(ls -1 app/build/libs/*all*.jar app/build/libs/*shadow*.jar app/build/libs/elite_intel.jar 2>/dev/null | head -n1 || true)
-            if [[ -n "${cand:-}" ]]; then
-              echo "Using fallback artifact: $cand"
-              cp "$cand" distribution/elite_intel.jar
-            fi
-          fi
+          # If jar is already there, great
+          if (Test-Path "distribution\elite_intel.jar") {
+            Write-Host "Found elite_intel.jar in distribution."
+          } else {
+            Write-Host "elite_intel.jar not in distribution, searching workspace..."
+            $found = Get-ChildItem -Path . -Recurse -Filter "elite_intel.jar" -ErrorAction SilentlyContinue | Select-Object -First 1
+            if ($found) {
+              Write-Host "Found at: $($found.FullName). Copying to distribution..."
+              Copy-Item -Force $found.FullName "distribution\elite_intel.jar"
+            } else {
+              Write-Host "No elite_intel.jar found anywhere."
+            }
+          }
 
-          if [[ ! -f distribution/elite_intel.jar ]]; then
-            echo "Unable to locate elite_intel.jar after build. Checked: $zipPath and app/build/libs." >&2
-            echo "Please ensure :app:shadowDistZip (or :app:shadowJar) produces the fat JAR." >&2
-            exit 1
-          fi
-
-          # Verify the dictionary file exists and will be packaged
-          if [[ ! -f distribution/dictionary/stt-correction-dictionary.txt ]]; then
-            echo "Required dictionary file 'distribution/dictionary/stt-correction-dictionary.txt' is missing." >&2
-            exit 1
-          fi
+          if (-not (Test-Path "distribution\elite_intel.jar")) {
+            throw "elite_intel.jar not found after build. Check that :app exists and shadowJar produced the jar."
+          }
 
       - name: Verify distribution contents
+        shell: pwsh
         run: |
-          echo "Listing 'distribution':"
-          find distribution -type f -printf '%TY-%Tm-%Td %TH:%TM:%TS %s %p\n' | sort
+          $ErrorActionPreference = 'Stop'
+          Write-Host "Listing 'distribution':"
+          Get-ChildItem -Recurse "distribution" | Format-Table LastWriteTime, Length, Name, FullName
 
       - name: Package ZIP from distribution
-        shell: bash
+        shell: pwsh
         run: |
-          set -euo pipefail
-          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
-            version="${GITHUB_REF_NAME}"
-          else
-            version="${{ github.run_number }}"
-          fi
-          zipName="elite-intel-${version}.zip"
-          rm -f "${zipName}"
-          (cd distribution && zip -r9 "../${zipName}" .)
-          echo "Packaged ${zipName}"
+          $ErrorActionPreference = 'Stop'
+          $version = if ($env:GITHUB_REF.StartsWith('refs/tags/')) { $env:GITHUB_REF_NAME } else { "${{ github.run_number }}" }
+          $zipName = "elite-intel-$version.zip"
+          if (Test-Path $zipName) { Remove-Item $zipName -Force }
+          Compress-Archive -Path "distribution\*" -DestinationPath $zipName
+          Write-Host "Packaged $zipName"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: linux-zip
+          name: windows-zip
           path: elite-intel-*.zip
           if-no-files-found: error
 
   publish-release:
     if: startsWith(github.ref, 'refs/tags/')
-    needs: build-linux
-    runs-on: ubuntu-latest
+    needs: build-windows
+    runs-on: windows-latest
     permissions:
       contents: write
     steps:
       - name: Download packaged ZIP
         uses: actions/download-artifact@v4
         with:
-          name: linux-zip
+          name: windows-zip
 
       - name: Create GitHub Release and upload asset (no third-party actions)
+        shell: pwsh
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
         run: |
-          set -euo pipefail
-          tag="${{ github.ref_name }}"
-          zip=$(ls -1 elite-intel-*.zip | head -n1)
-          if [[ -z "${zip}" ]]; then
-            echo "ZIP not found in workspace." >&2
-            exit 1
-          fi
+          $ErrorActionPreference = 'Stop'
+          $tag = "${{ github.ref_name }}"
+          $zip = Get-ChildItem -Filter 'elite-intel-*.zip' | Select-Object -First 1
+          if (-not $zip) { throw "ZIP not found in workspace." }
 
           # If release doesn't exist, create; otherwise upload/overwrite asset
-          if ! gh release view "$tag" --repo "$REPO" >/dev/null 2>&1; then
-            gh release create "$tag" "$zip" --repo "$REPO" --title "Release $tag" --notes "Automated release for $tag"
-          else
-            gh release upload "$tag" "$zip" --repo "$REPO" --clobber
-          fi
+          gh release view $tag --repo "$env:REPO" *> $null
+          if ($LASTEXITCODE -ne 0) {
+            gh release create $tag $zip.FullName --repo "$env:REPO" --title "Release $tag" --notes "Automated release for $tag"
+          } else {
+            gh release upload $tag $zip.FullName --repo "$env:REPO" --clobber
+          }

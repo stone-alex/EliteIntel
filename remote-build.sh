@@ -1,2 +1,2 @@
-git tag -a v2025.12.7.beta-0150 -m "Introducing trade route plotting"
-git push origin v2025.12.7.beta-0150
+git tag -a v2025.12.8.beta-0151 -m "Storing data in standard location"
+git push origin v2025.12.8.beta-0151

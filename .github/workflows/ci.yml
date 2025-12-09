@@ -1,117 +1,68 @@
-name: CI
+name: Build Release ZIP
 
 on:
   push:
-    branches: [ "main" ]
-    tags: [ "v*" ]
-  pull_request:
-    branches: [ "main" ]
+    tags:
+      - 'v*'
 
 jobs:
-  build-windows:
-    runs-on: windows-latest
-    permissions:
-      contents: read
+  build:
+    runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Oracle JDK 21
+      - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          distribution: oracle
-          java-version: 21
-          cache: gradle
+          java-version: '21'
+          distribution: 'temurin'
 
-      - name: Diagnose Gradle projects and tasks
-        shell: cmd
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
+      - name: Build project
+        run: ./gradlew --no-daemon clean build
+
+      - name: Extract tar
+        run: tar -xf app/build/distributions/app-shadow.tar
+
+      - name: Create release directory
+        run: mkdir release
+
+      - name: Copy fat JAR
+        run: cp app-shadow/lib/elite_intel.jar release/
+
+      - name: Copy distribution files
+        run: cp -r distribution/* release/
+
+      - name: Get version from tag
+        run: echo "VERSION=$(basename $GITHUB_REF | sed 's/^v//')" >> $GITHUB_ENV
+
+      - name: Create ZIP
         run: |
-          gradlew.bat --version
-          gradlew.bat -q projects
-          gradlew.bat -q :app:tasks --all
+          cd release
+          zip -r ../elite_intel${{ env.VERSION }}.zip .
 
-      - name: Build (force shadowJar into distribution)
-        shell: cmd
-        run: |
-          gradlew.bat --stacktrace --info :app:shadowJar --no-daemon
+      # Optional: Set up GPG for signing (uncomment if you have secrets configured)
+      # - name: Import GPG key
+      #   run: |
+      #     echo "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --batch --yes --passphrase "${{ secrets.GPG_PASSPHRASE }}" --import
+      #     gpg --list-secret-keys --keyid-format LONG
 
-      - name: Locate elite_intel.jar if not in distribution
-        shell: pwsh
-        run: |
-          $ErrorActionPreference = 'Stop'
+      # - name: Sign ZIP with GPG
+      #   run: gpg --batch --yes --passphrase "${{ secrets.GPG_PASSPHRASE }}" --armor --detach-sign --output elite_intel${{ env.VERSION }}.zip.asc elite_intel${{ env.VERSION }}.zip
 
-          # Ensure distribution exists (your repo already contains it, but create if needed)
-          if (-not (Test-Path "distribution")) { New-Item -ItemType Directory -Path "distribution" | Out-Null }
-
-          # If jar is already there, great
-          if (Test-Path "distribution\elite_intel.jar") {
-            Write-Host "Found elite_intel.jar in distribution."
-          } else {
-            Write-Host "elite_intel.jar not in distribution, searching workspace..."
-            $found = Get-ChildItem -Path . -Recurse -Filter "elite_intel.jar" -ErrorAction SilentlyContinue | Select-Object -First 1
-            if ($found) {
-              Write-Host "Found at: $($found.FullName). Copying to distribution..."
-              Copy-Item -Force $found.FullName "distribution\elite_intel.jar"
-            } else {
-              Write-Host "No elite_intel.jar found anywhere."
-            }
-          }
-
-          if (-not (Test-Path "distribution\elite_intel.jar")) {
-            throw "elite_intel.jar not found after build. Check that :app exists and shadowJar produced the jar."
-          }
-
-      - name: Verify distribution contents
-        shell: pwsh
-        run: |
-          $ErrorActionPreference = 'Stop'
-          Write-Host "Listing 'distribution':"
-          Get-ChildItem -Recurse "distribution" | Format-Table LastWriteTime, Length, Name, FullName
-
-      - name: Package ZIP from distribution
-        shell: pwsh
-        run: |
-          $ErrorActionPreference = 'Stop'
-          $version = if ($env:GITHUB_REF.StartsWith('refs/tags/')) { $env:GITHUB_REF_NAME } else { "${{ github.run_number }}" }
-          $zipName = "elite-intel-$version.zip"
-          if (Test-Path $zipName) { Remove-Item $zipName -Force }
-          Compress-Archive -Path "distribution\*" -DestinationPath $zipName
-          Write-Host "Packaged $zipName"
-
-      - name: Upload artifact
+      - name: Upload ZIP artifact
         uses: actions/upload-artifact@v4
         with:
-          name: windows-zip
-          path: elite-intel-*.zip
-          if-no-files-found: error
+          name: elite_intel${{ env.VERSION }}.zip
+          path: elite_intel${{ env.VERSION }}.zip
 
-  publish-release:
-    if: startsWith(github.ref, 'refs/tags/')
-    needs: build-windows
-    runs-on: windows-latest
-    permissions:
-      contents: write
-    steps:
-      - name: Download packaged ZIP
-        uses: actions/download-artifact@v4
-        with:
-          name: windows-zip
-
-      - name: Create GitHub Release and upload asset (no third-party actions)
-        shell: pwsh
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REPO: ${{ github.repository }}
-        run: |
-          $ErrorActionPreference = 'Stop'
-          $tag = "${{ github.ref_name }}"
-          $zip = Get-ChildItem -Filter 'elite-intel-*.zip' | Select-Object -First 1
-          if (-not $zip) { throw "ZIP not found in workspace." }
-
-          # If release doesn't exist, create; otherwise upload/overwrite asset
-          gh release view $tag --repo "$env:REPO" *> $null
-          if ($LASTEXITCODE -ne 0) {
-            gh release create $tag $zip.FullName --repo "$env:REPO" --title "Release $tag" --notes "Automated release for $tag"
-          } else {
-            gh release upload $tag $zip.FullName --repo "$env:REPO" --clobber
-          }
+      # If you also want to upload the signature (uncomment with the signing steps)
+      # - name: Upload signature artifact
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: elite_intel${{ env.VERSION }}.zip.asc
+      #     path: elite_intel${{ env.VERSION }}.zip.asc

@@ -23,18 +23,9 @@ public class AnalyzePirateMissionHandler extends BaseQueryAnalyzer implements Qu
         Set<BountyDto> bounties = session.getBounties();
         String remainingKills = computeKillsRemaining(missions, bounties);
         String missionProfit = computeMissionProfit(missions, bounties);
-
         String instructions = "Do not sum anything do not calculate! Just use data pre-calculated for you to answer the question. If asked about total kills remaining only return the number of kills remaining to complete all assignments. Else provide complete summary.";
-
         return process(new AiDataStruct(instructions, new DataDto(remainingKills, missionProfit)), originalUserInput);
     }
-
-    record DataDto(String totalMissionKillsLeft, String totalMissionProfit) implements ToJsonConvertible {
-        @Override public String toJson() {
-            return GsonFactory.getGson().toJson(this);
-        }
-    }
-
 
     private String computeKillsRemaining(Map<Long, MissionDto> missions, Set<BountyDto> bounties) {
         // Count unique kills by victimFaction
@@ -170,120 +161,24 @@ public class AnalyzePirateMissionHandler extends BaseQueryAnalyzer implements Qu
         return sb.toString();
     }
 
-    private String computeMissionProfit(Map<Long, MissionDto> missions, Set<BountyDto> bounties) {
-        // Count unique kills by victimFaction
-        Map<String, Long> uniqueKillsByTarget = bounties.stream()
-                .filter(bounty -> bounty.getVictimFaction() != null && bounty.getPilotName() != null)
-                .collect(Collectors.groupingBy(
-                        bounty -> bounty.getVictimFaction() + "|" + bounty.getPilotName(),
-                        Collectors.counting()
-                ))
-                .entrySet().stream()
-                .collect(Collectors.groupingBy(
-                        entry -> entry.getKey().split("\\|")[0],
-                        Collectors.summingLong(Map.Entry::getValue)
-                ));
+    private String computeMissionProfit(Map<Long, MissionDto> missionsMap, Set<BountyDto> bounties) {
 
-        // Sort all missions by missionId
-        List<MissionDto> sortedMissions = missions.values().stream()
-                .filter(mission -> mission.getMissionTargetFaction() != null)
-                .sorted(Comparator.comparingLong(MissionDto::getMissionId))
-                .collect(Collectors.toList());
-
-        if (sortedMissions.isEmpty()) {
-            return "no missions available";
+        Collection<MissionDto> missions = missionsMap.values();
+        long missionReward = 0;
+        for (MissionDto mission : missions) {
+            missionReward += mission.getReward();
         }
 
-        // Group missions by faction
-        Map<String, List<MissionDto>> missionsByFaction = sortedMissions.stream()
-                .collect(Collectors.groupingBy(MissionDto::getFaction));
-
-        String targetFaction = sortedMissions.get(0).getMissionTargetFaction();
-        long totalKills = uniqueKillsByTarget.getOrDefault(targetFaction, 0L);
-
-        // Prepare pending kills and rewards per faction
-        Map<String, Deque<Integer>> pendingKillsByFaction = new HashMap<>();
-        Map<String, Deque<Long>> pendingRewardsByFaction = new HashMap<>();
-        for (String faction : missionsByFaction.keySet()) {
-            Deque<Integer> kills = new LinkedList<>();
-            Deque<Long> rewards = new LinkedList<>();
-            for (MissionDto m : missionsByFaction.get(faction).stream().sorted(Comparator.comparingLong(MissionDto::getMissionId)).collect(Collectors.toList())) {
-                kills.add(m.getKillCount());
-                rewards.add(m.getReward());
-            }
-            pendingKillsByFaction.put(faction, kills);
-            pendingRewardsByFaction.put(faction, rewards);
+        long bountyReward = 0;
+        for (BountyDto bounty : bounties) {
+            bountyReward += bounty.getRewards().stream().mapToLong(r -> r.getReward()).sum();
         }
+        return "Total mission profit:" + (missionReward + bountyReward);
+    }
 
-        // Simulate kill allocation
-        Map<String, Integer> activeRemaining = new HashMap<>();
-        Map<String, Long> activeReward = new HashMap<>();
-        for (String faction : pendingKillsByFaction.keySet()) {
-            Deque<Integer> kills = pendingKillsByFaction.get(faction);
-            Deque<Long> rewards = pendingRewardsByFaction.get(faction);
-            if (!kills.isEmpty()) {
-                activeRemaining.put(faction, kills.pollFirst());
-                activeReward.put(faction, rewards.pollFirst());
-            }
+    record DataDto(String totalMissionKillsLeft, String totalMissionProfit) implements ToJsonConvertible {
+        @Override public String toJson() {
+            return GsonFactory.getGson().toJson(this);
         }
-
-        long remainingKillsToApply = totalKills;
-        while (remainingKillsToApply > 0 && !activeRemaining.isEmpty()) {
-            long minRemaining = activeRemaining.values().stream().min(Integer::compareTo).orElse(Integer.MAX_VALUE);
-            minRemaining = Math.min(minRemaining, remainingKillsToApply);
-            List<String> factionsToProcess = new ArrayList<>(activeRemaining.keySet());
-            for (String faction : factionsToProcess) {
-                int newRemaining = activeRemaining.get(faction) - (int) minRemaining;
-                activeRemaining.put(faction, newRemaining);
-                if (newRemaining <= 0) {
-                    activeRemaining.remove(faction);
-                    activeReward.remove(faction);
-                    Deque<Integer> pendingKills = pendingKillsByFaction.get(faction);
-                    Deque<Long> pendingRewards = pendingRewardsByFaction.get(faction);
-                    if (!pendingKills.isEmpty()) {
-                        activeRemaining.put(faction, pendingKills.pollFirst());
-                        activeReward.put(faction, pendingRewards.pollFirst());
-                    }
-                }
-            }
-            remainingKillsToApply -= minRemaining;
-        }
-
-        // Calculate profit for incomplete missions
-        Map<String, Long> profitByFaction = new HashMap<>();
-        for (String faction : missionsByFaction.keySet()) {
-            long factionProfit = 0;
-            // Active mission if remaining >0
-            if (activeRemaining.getOrDefault(faction, 0) > 0) {
-                factionProfit += activeReward.get(faction);
-            }
-            // All pending missions
-            Deque<Long> pendingRewards = pendingRewardsByFaction.get(faction);
-            for (Long r : pendingRewards) {
-                factionProfit += r;
-            }
-            if (factionProfit > 0) {
-                profitByFaction.put(faction, factionProfit);
-            }
-        }
-
-        // Build response string
-        List<String> factionSummaries = new ArrayList<>();
-        long totalProfit = 0;
-
-        for (String faction : profitByFaction.keySet()) {
-            long factionProfit = profitByFaction.get(faction);
-            totalProfit += factionProfit;
-            factionSummaries.add(String.format("%s - %d credits", faction, factionProfit));
-        }
-
-        factionSummaries.sort(String::compareTo);
-        StringBuilder response = new StringBuilder();
-        response.append(String.join(", ", factionSummaries));
-        if (factionSummaries.size() > 1) {
-            response.append(String.format(", Total - %d credits", totalProfit));
-        }
-
-        return !response.isEmpty() ? response.toString() : "no missions available";
     }
 }

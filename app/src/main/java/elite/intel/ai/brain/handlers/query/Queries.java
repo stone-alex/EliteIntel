@@ -31,9 +31,13 @@ public enum Queries {
     QUERY_ANALYZE_ROUTE("query_plotted_route_analysis", "Analyze the current plotted route. Number of  jumps = number of nodes.", AnalyzeRouterHandler.class, true),
     QUERY_ANALYZE_FUEL_ROUTE("query_can_we_fuel_on_route_analysis", "Analyze this data for re-fuel potential", AnalyzeRouterHandler.class, true),
     QUERY_CARRIER_STATS("query_fleet_carrier_info", "Analyze fleet carrier data (e.g., fuel, market, balance, location)", AnalyzeCarrierDataHandler.class, true),  // "vehicle" to distinguish from planets
+
+    /// First query might be enough. TODO: Check.
+    QUERY_MISSIONS("query_summarize_outstanding_missions", "Provide summary of outstanding missions", AnalyzePirateMissionHandler.class, true),
     QUERY_PIRATE_MISSION_KILLS_REMAINING("query_pirate_mission_kills", "Summarize remaining kills for active pirate missions.", AnalyzePirateMissionHandler.class, true),
     QUERY_PIRATE_MISSION_PROFIT("query_pirate_mission_profit", "Summarize potential profit from active pirate missions.", AnalyzePirateMissionHandler.class, true),
     QUERY_PIRATE_MISSION_STATUS("query_pirate_mission_progress", "Summarize progress of active pirate missions.", AnalyzePirateMissionHandler.class, true),
+
     QUERY_NEXT_STAR_SCOOPABLE("query_next_star_fuel", "Check if the next star is scoopable for fuel.", AnalyzeNextStarForFuelHandler.class, false),
     QUERY_PLAYER_STATS_ANALYSIS("query_analyze_player_profile", "Summarize player statistics.", AnalyzePlayerProfile.class, true),
     QUERY_SHIP_LOADOUT("query_ship_loadout_details", "Provide details about the ship’s loadout and health.", AnalyzeShipLoadoutHandler.class, true),

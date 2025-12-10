@@ -235,14 +235,21 @@ public class SystemSession {
     }
 
     public void setTtsApiKey(String ttsApiKey) {
-        if (ttsApiKey != null && ttsApiKey.isEmpty()) return;
-
-        Database.withDao(GameSessionDao.class, dao -> {
-            GameSessionDao.GameSession session = dao.get();
-            session.setEncryptedTTSKey(Cypher.encrypt(ttsApiKey));
-            dao.save(session);
-            return null;
-        });
+        if (ttsApiKey != null && ttsApiKey.isEmpty()) {
+            Database.withDao(GameSessionDao.class, dao ->{
+                GameSessionDao.GameSession session = dao.get();
+                session.setTtsApiKey(null);
+                dao.save(session);
+                return Void.class;
+            });
+        } else {
+            Database.withDao(GameSessionDao.class, dao -> {
+                GameSessionDao.GameSession session = dao.get();
+                session.setEncryptedTTSKey(Cypher.encrypt(ttsApiKey));
+                dao.save(session);
+                return null;
+            });
+        }
     }
 
     public String getSttApiKey() {
@@ -263,13 +270,21 @@ public class SystemSession {
     }
 
     public void setSttApiKey(String sttApiKey) {
-        if (sttApiKey != null && sttApiKey.isEmpty()) return;
-        Database.withDao(GameSessionDao.class, dao -> {
-            GameSessionDao.GameSession session = dao.get();
-            session.setEncryptedSTTKey(Cypher.encrypt(sttApiKey));
-            dao.save(session);
-            return null;
-        });
+        if (sttApiKey != null && sttApiKey.isEmpty()) {
+            Database.withDao(GameSessionDao.class, dao ->{
+                GameSessionDao.GameSession session = dao.get();
+                session.setSttApiKey(null);
+                dao.save(session);
+                return Void.class;
+            });
+        } else {
+            Database.withDao(GameSessionDao.class, dao -> {
+                GameSessionDao.GameSession session = dao.get();
+                session.setEncryptedSTTKey(Cypher.encrypt(sttApiKey));
+                dao.save(session);
+                return null;
+            });
+        }
     }
 
     public String getAiApiKey() {
@@ -290,25 +305,39 @@ public class SystemSession {
     }
 
     public void setAiApiKey(String aiApiKey) {
-        if (aiApiKey != null && aiApiKey.isEmpty()) return;
-
-        Database.withDao(GameSessionDao.class, dao -> {
-            GameSessionDao.GameSession session = dao.get();
-            session.setEncryptedLLMKey(Cypher.encrypt(aiApiKey));
-            dao.save(session);
-            return null;
-        });
+        if (aiApiKey != null && aiApiKey.isEmpty()) {
+            Database.withDao(GameSessionDao.class, dao ->{
+                GameSessionDao.GameSession session = dao.get();
+                session.setAiApiKey(null);
+                dao.save(session);
+                return Void.class;
+            });
+        } else {
+            Database.withDao(GameSessionDao.class, dao -> {
+                GameSessionDao.GameSession session = dao.get();
+                session.setEncryptedLLMKey(Cypher.encrypt(aiApiKey));
+                dao.save(session);
+                return null;
+            });
+        }
     }
 
     public void setEdsmApiKey(String edsmApiKey) {
-        if (edsmApiKey != null && edsmApiKey.isEmpty()) return;
-
-        Database.withDao(GameSessionDao.class, dao -> {
-            GameSessionDao.GameSession session = dao.get();
-            session.setEncryptedEDSSMKey(Cypher.encrypt(edsmApiKey));
-            dao.save(session);
-            return null;
-        });
+        if (edsmApiKey != null && edsmApiKey.isEmpty()) {
+            Database.withDao(GameSessionDao.class, dao ->{
+                GameSessionDao.GameSession session = dao.get();
+                session.setEdsmApiKey(null);
+                dao.save(session);
+                return Void.class;
+            });
+        } else {
+            Database.withDao(GameSessionDao.class, dao -> {
+                GameSessionDao.GameSession session = dao.get();
+                session.setEncryptedEDSSMKey(Cypher.encrypt(edsmApiKey));
+                dao.save(session);
+                return Void.class;
+            });
+        }
     }
 
     public String getEdsmApiKey() {

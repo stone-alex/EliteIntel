@@ -13,7 +13,6 @@ public class LoadoutSubscriber {
         PlayerSession playerSession = PlayerSession.getInstance();
         playerSession.setCurrentShipName(event.getShipName());
         playerSession.setCurrentShip(event.getShip());
-        playerSession.setShipCargoCapacity(event.getCargoCapacity());
         playerSession.setShipLoadout(event);
 
         ShipManager shipManager = ShipManager.getInstance();

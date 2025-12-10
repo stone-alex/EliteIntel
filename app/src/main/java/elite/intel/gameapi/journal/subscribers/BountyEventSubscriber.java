@@ -3,7 +3,6 @@ package elite.intel.gameapi.journal.subscribers;
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.journal.events.BountyEvent;
 import elite.intel.gameapi.journal.events.dto.BountyDto;
 import elite.intel.session.PlayerSession;
@@ -53,7 +52,7 @@ public class BountyEventSubscriber {
         if (rewards.size() > 1) sb.append(" Rewards sum: ").append(event.getTotalReward()).append(" credits. ");
         playerSession.addBountyReward(event.getTotalReward());
 
-        sb.append("Total bounties collected: ").append(playerSession.getBountyCollectedThisSession()).append(" credits. ");
+        sb.append("Total bounties collected: ").append(playerSession.getTotalBountyClaimed()).append(" credits. ");
         EventBusManager.publish(new AiVoxResponseEvent(sb.toString()));
     }
 }

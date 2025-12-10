@@ -19,8 +19,7 @@ public interface PlayerDao {
 
     @SqlUpdate("""
                     INSERT OR REPLACE INTO player
-                      (id, current_primary_star,
-                       bounty_collected_this_session, carrier_departure_time, crew_wags_payout,
+                      (id, current_primary_star, carrier_departure_time, crew_wags_payout,
                        current_ship, current_ship_name, current_location_id, current_wealth,
                        is_discovery_announcement_on, final_destination, game_version,
                        goods_sold_this_session, highest_single_transaction, in_game_name,
@@ -28,14 +27,12 @@ public interface PlayerDao {
                        is_radio_transmission_on, is_route_announcement_on, jumping_to_star_system,
                        last_known_carrier_location, last_scan_id, market_profits,
                        personal_credits_available, player_highest_military_rank,
-                       player_mission_statement, player_name, player_title,
-                       ship_cargo_capacity, ship_fuel_level, ships_owned, species_first_logged,
-                       target_market_station_id, total_bounty_claimed, total_bounty_profit,
-                       total_distance_traveled, total_hyperspace_distance,
+                       player_mission_statement, player_name, player_title, ships_owned, species_first_logged,
+                       total_bounty_claimed, total_distance_traveled, total_hyperspace_distance,
                        total_profits_from_exploration, total_systems_visited, exobiology_profits, alternative_name,
-                       journal_dir, bindings_dir, logging_enabled, game_build)
+                       journal_dir, bindings_dir, logging_enabled, game_build, bounty_collected_lifetime)
                     VALUES (1, :currentPrimaryStar,
-                       :bountyCollectedThisSession, :carrierDepartureTime, :crewWagsPayout,
+                       :carrierDepartureTime, :crewWagsPayout,
                        :currentShip, :currentShipName, :currentLocationId, :currentWealth,
                        :discoveryAnnouncementOn, :finalDestination, :gameVersion,
                        :goodsSoldThisSession, :highestSingleTransaction, :inGameName,
@@ -44,18 +41,15 @@ public interface PlayerDao {
                        :lastKnownCarrierLocation, :lastScanId, :marketProfits,
                        :personalCreditsAvailable, :playerHighestMilitaryRank,
                        :playerMissionStatement, :playerName, :playerTitle,
-                       :shipCargoCapacity, :shipFuelLevel, :shipsOwned, :speciesFirstLogged,
-                       :marketId, :totalBountyClaimed, :totalBountyProfit,
-                       :totalDistanceTraveled, :totalHyperspaceDistance,
-                       :totalProfitsFromExploration, :totalSystemsVisited, :exobiologyProfits, :alternativeName,
-                       :journalDirectory, :bindingsDirectory, :loggingEnabled, :gameBuild
+                       :shipsOwned, :speciesFirstLogged, :totalBountyClaimed, :totalDistanceTraveled, 
+                       :totalHyperspaceDistance, :totalProfitsFromExploration, :totalSystemsVisited, :exobiologyProfits, :alternativeName,
+                       :journalDirectory, :bindingsDirectory, :loggingEnabled, :gameBuild, :bountyCollectedLifetime
                     )
             """)
     void save(@BindBean Player player);
 
 
     class Player {
-        private long bountyCollectedThisSession = 0;
         private String carrierDepartureTime = "";
         private long crewWagsPayout = 0;
         private String currentShip = "";
@@ -82,17 +76,13 @@ public interface PlayerDao {
         private String playerMissionStatement = "";
         private String playerName = "";
         private String playerTitle = "";
-        private int shipCargoCapacity = 0;
-        private double shipFuelLevel = 0.0;
         private int shipsOwned = 0;
         private int speciesFirstLogged = 0;
-        private Long marketId = null;
         private long totalBountyClaimed = 0;
-        private long totalBountyProfit = 0;
         private double totalDistanceTraveled = 0.0;
         private long totalHyperspaceDistance = 0;
         private long totalProfitsFromExploration = 0;
-        private int totalSystemsVisited = 0;
+        private long totalSystemsVisited = 0;
         private long exobiologyProfits = 0;
         private String currentPrimaryStar = "";
         private String gameBuild = "r321306";
@@ -100,6 +90,7 @@ public interface PlayerDao {
         private String journalDirectory;
         private String bindingsDirectory;
         private Boolean loggingEnabled;
+        private Long bountyCollectedLifetime = 0L;
 
         public Player() {
         } // required for JDBI
@@ -139,15 +130,13 @@ public interface PlayerDao {
         public String getCurrentPrimaryStar() {
             return currentPrimaryStar;
         }
+
         public void setCurrentPrimaryStar(String currentPrimaryStar) {
             this.currentPrimaryStar = currentPrimaryStar;
         }
-        public long getBountyCollectedThisSession() {
-            return bountyCollectedThisSession;
-        }
 
-        public void setBountyCollectedThisSession(long bountyCollectedThisSession) {
-            this.bountyCollectedThisSession = bountyCollectedThisSession;
+        public long getBountyCollectedThisSession() {
+            return totalBountyClaimed;
         }
 
         public String getCarrierDepartureTime() {
@@ -358,22 +347,6 @@ public interface PlayerDao {
             this.playerTitle = playerTitle;
         }
 
-        public int getShipCargoCapacity() {
-            return shipCargoCapacity;
-        }
-
-        public void setShipCargoCapacity(int shipCargoCapacity) {
-            this.shipCargoCapacity = shipCargoCapacity;
-        }
-
-        public double getShipFuelLevel() {
-            return shipFuelLevel;
-        }
-
-        public void setShipFuelLevel(double shipFuelLevel) {
-            this.shipFuelLevel = shipFuelLevel;
-        }
-
         public int getShipsOwned() {
             return shipsOwned;
         }
@@ -390,28 +363,12 @@ public interface PlayerDao {
             this.speciesFirstLogged = speciesFirstLogged;
         }
 
-        public Long getMarketId() {
-            return marketId;
-        }
-
-        public void setMarketId(Long marketId) {
-            this.marketId = marketId;
-        }
-
         public long getTotalBountyClaimed() {
             return totalBountyClaimed;
         }
 
         public void setTotalBountyClaimed(long totalBountyClaimed) {
             this.totalBountyClaimed = totalBountyClaimed;
-        }
-
-        public long getTotalBountyProfit() {
-            return totalBountyProfit;
-        }
-
-        public void setTotalBountyProfit(long totalBountyProfit) {
-            this.totalBountyProfit = totalBountyProfit;
         }
 
         public double getTotalDistanceTraveled() {
@@ -438,11 +395,11 @@ public interface PlayerDao {
             this.totalProfitsFromExploration = totalProfitsFromExploration;
         }
 
-        public int getTotalSystemsVisited() {
+        public long getTotalSystemsVisited() {
             return totalSystemsVisited;
         }
 
-        public void setTotalSystemsVisited(int totalSystemsVisited) {
+        public void setTotalSystemsVisited(long totalSystemsVisited) {
             this.totalSystemsVisited = totalSystemsVisited;
         }
 
@@ -461,13 +418,21 @@ public interface PlayerDao {
         public void setGameBuild(String gameBuild) {
             this.gameBuild = gameBuild;
         }
+
+        public Long getBountyCollectedLifetime() {
+            return bountyCollectedLifetime;
+        }
+
+        public void setBountyCollectedLifetime(Long bountyCollectedLifetime) {
+            this.bountyCollectedLifetime = bountyCollectedLifetime;
+        }
     }
 
     class PlayerMapper implements RowMapper<Player> {
         @Override
         public Player map(ResultSet rs, StatementContext ctx) throws SQLException {
             Player p = new Player();
-            p.setBountyCollectedThisSession(rs.getLong("bounty_collected_this_session"));
+            p.setBountyCollectedLifetime(rs.getLong("bounty_collected_lifetime"));
             p.setCarrierDepartureTime(rs.getString("carrier_departure_time"));
             p.setCrewWagsPayout(rs.getLong("crew_wags_payout"));
             p.setCurrentShip(rs.getString("current_ship"));
@@ -494,13 +459,9 @@ public interface PlayerDao {
             p.setPlayerMissionStatement(rs.getString("player_mission_statement"));
             p.setPlayerName(rs.getString("player_name"));
             p.setPlayerTitle(rs.getString("player_title"));
-            p.setShipCargoCapacity(rs.getInt("ship_cargo_capacity"));
-            p.setShipFuelLevel(rs.getDouble("ship_fuel_level"));
             p.setShipsOwned(rs.getInt("ships_owned"));
             p.setSpeciesFirstLogged(rs.getInt("species_first_logged"));
-            p.setMarketId(rs.getObject("target_market_station_id") != null ? rs.getLong("target_market_station_id") : null);
             p.setTotalBountyClaimed(rs.getLong("total_bounty_claimed"));
-            p.setTotalBountyProfit(rs.getLong("total_bounty_profit"));
             p.setTotalDistanceTraveled(rs.getDouble("total_distance_traveled"));
             p.setTotalHyperspaceDistance(rs.getLong("total_hyperspace_distance"));
             p.setTotalProfitsFromExploration(rs.getLong("total_profits_from_exploration"));
@@ -512,6 +473,7 @@ public interface PlayerDao {
             p.setBindingsDirectory(rs.getString("bindings_dir"));
             p.setLoggingEnabled(rs.getBoolean("logging_enabled"));
             p.setGameBuild(rs.getString("game_build"));
+
             return p;
         }
     }

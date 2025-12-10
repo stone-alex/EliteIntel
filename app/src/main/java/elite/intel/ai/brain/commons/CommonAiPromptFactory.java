@@ -163,26 +163,27 @@ public class CommonAiPromptFactory implements AiPromptFactory {
         AICadence aiCadence = systemSession.isRunningPiperTts() ? AICadence.FEDERATION : systemSession.getAICadence();
         AIPersonality aiPersonality = systemSession.isRunningPiperTts() ? AIPersonality.PROFESSIONAL : systemSession.getAIPersonality();
 
-        sb.append("Behavior: ");
+        sb.append(" Behavior: ");
         sb.append(aiCadence.getCadenceClause()).append(" ");
-        sb.append("Apply personality: ").append(aiPersonality.name().toUpperCase()).append(" - ").append(aiPersonality.getBehaviorClause()).append(" ");
-        sb.append("Do not end responses with any fillers, or unnecessary phrases like 'Ready for exploration', 'Ready for orders', 'All set', 'Ready to explore', 'Should we proceed?', or similar open-ended questions or remarks.\n");
-        sb.append("Do not use words like 'player' or 'you', it breaks immersion. Use 'we' instead. ");
-        sb.append("For alpha numeric numbers or names, star system codes or ship plates (e.g., Syralaei RH-F, KI-U), use NATO phonetic alphabet (e.g., Syralaei Romeo Hotel dash Foxtrot, Kilo India dash Uniform). Use planetShortName for planets when available.\n");
-        sb.append("Spell out numerals in full words (e.g., 285 = two hundred and eighty-five, 27 = twenty-seven). ");
-        sb.append("Gravity units in G, Temperature units Kelvin provide conversion to Celsius. Mass units metric.\n");
-        sb.append("Distances between stars in light years. Distance between planets in light seconds. Distances between bio samples are in metres.\n");
-        sb.append("Bio samples are taken from organisms not stellar objects.\n");
-        sb.append("Always use planetShortName for locations when available.\n");
-        sb.append("Round billions to nearest 1000000. Round millions to nearest 250000.\n");
-        sb.append("Use ONLY planetShortName (e.g., '12 d'). NEVER use planetName or bodyId.\n");
-        sb.append("Start responses directly with the requested information, avoiding conversational fillers like 'noted,' 'well,' 'right,' 'understood,' or similar phrases.\n");
+        sb.append(" Apply personality: ").append(aiPersonality.name().toUpperCase()).append(" - ").append(aiPersonality.getBehaviorClause()).append(" ");
+        sb.append(" Do not end responses with any fillers, or unnecessary phrases like 'Ready for exploration', 'Ready for orders', 'All set', 'Ready to explore', 'Should we proceed?', or similar open-ended questions or remarks.\n");
+        sb.append(" Do not use words like 'player' or 'you', it breaks immersion. Use 'we' instead. ");
+        sb.append(" Do not confuse 'Next Waypoint' with 'Current Location'");
+        sb.append(" For alpha numeric numbers or names, star system codes or ship plates (e.g., Syralaei RH-F, KI-U), use NATO phonetic alphabet (e.g., Syralaei Romeo Hotel dash Foxtrot, Kilo India dash Uniform). Use planetShortName for planets when available.\n");
+        sb.append(" Spell out numerals in full words (e.g., 285 = two hundred and eighty-five, 27 = twenty-seven). ");
+        sb.append(" Gravity units in G, Temperature units Kelvin provide conversion to Celsius. Mass units metric.\n");
+        sb.append(" Distances between stars in light years. Distance between planets in light seconds. Distances between bio samples are in metres.\n");
+        sb.append(" Bio samples are taken from organisms not stellar objects.\n");
+        sb.append(" Always use planetShortName for locations when available.\n");
+        sb.append(" Round billions to nearest 1000000. Round millions to nearest 250000.\n");
+        sb.append(" Use ONLY planetShortName (e.g., '12 d'). NEVER use planetName or bodyId.\n");
+        sb.append(" Start responses directly with the requested information, avoiding conversational fillers like 'noted,' 'well,' 'right,' 'understood,' or similar phrases.\n");
 
         if (aiPersonality == AIPersonality.UNHINGED || aiPersonality == AIPersonality.FRIENDLY) {
-            sb.append("For UNHINGED personality, use playful slang matching cadence.\n");
+            sb.append(" For UNHINGED personality, use playful slang matching cadence.\n");
         }
         if (aiPersonality == AIPersonality.ROGUE) {
-            sb.append("For ROGUE personality, use bold excessive profanity.\n");
+            sb.append(" For ROGUE personality, use bold excessive profanity.\n");
         }
         return sb.toString();
     }

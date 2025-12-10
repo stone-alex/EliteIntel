@@ -252,3 +252,6 @@
 "lead carry"="fleet carrier"
 "click"="calculate"
 "Fleet carry around"="fleet carrier route"
+"plot had tried the route"="plot a trade route"
+"bloody"="plot"
+"floating"="plot"

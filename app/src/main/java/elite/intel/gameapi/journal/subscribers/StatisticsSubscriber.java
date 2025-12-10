@@ -20,7 +20,7 @@ public class StatisticsSubscriber {
 
         if (event.getCombat() != null) {
             playerSession.setTotalBountyClaimed(event.getCombat().getBountiesClaimed());
-            playerSession.setTotalBountyProfit(event.getCombat().getBountyHuntingProfit());
+            playerSession.setBountyCollectedLiveTime(event.getCombat().getBountyHuntingProfit());
         }
 
         if (event.getExploration() != null) {

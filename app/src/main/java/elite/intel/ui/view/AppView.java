@@ -1,10 +1,12 @@
 package elite.intel.ui.view;
 
+import com.google.api.client.util.Sleeper;
 import com.google.common.eventbus.Subscribe;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.*;
+import elite.intel.util.SleepNoThrow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -909,10 +911,13 @@ public class AppView extends JFrame implements AppViewInterface {
 
 
     @Subscribe public void onServiceStatusEvent(ServicesStateEvent event) {
-        isServiceRunning.set(event.isRunning());
-        startStopServicesButton.setText(event.isRunning() ? "Stop Services" : "Start Services");
-        recalibrateAudioButton.setEnabled(event.isRunning());
-        togglePrivacyModeCheckBox.setEnabled(event.isRunning());
-        toggleStreamingModeCheckBox.setEnabled(event.isRunning());
+        SwingUtilities.invokeLater(() -> {
+            SleepNoThrow.sleep(1000);
+            isServiceRunning.set(event.isRunning());
+            startStopServicesButton.setText(event.isRunning() ? "Stop Services" : "Start Services");
+            recalibrateAudioButton.setEnabled(event.isRunning());
+            togglePrivacyModeCheckBox.setEnabled(event.isRunning());
+            toggleStreamingModeCheckBox.setEnabled(event.isRunning());
+        });
     }
 }

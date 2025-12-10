@@ -1,7 +1,6 @@
 package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.brain.handlers.query.struct.AiData;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
@@ -14,7 +13,7 @@ public class AnalyzeBountiesCollectedHandler extends BaseQueryAnalyzer implement
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         PlayerSession playerSession = PlayerSession.getInstance();
-        long totalBounties = playerSession.getBountyCollectedThisSession();
+        long totalBounties = playerSession.getTotalBountyClaimed();
 
         return process(new AiDataStruct(TOTAL_BOUNTIES_COLLECTED.getInstructions(), new DataDto(totalBounties)), originalUserInput);
     }

@@ -1,6 +1,5 @@
 package elite.intel.search.spansh.traderoute;
 
-import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.data.PowerPlayData;
 import elite.intel.search.spansh.starsystems.StarSystemClient;
 import elite.intel.search.spansh.starsystems.StarSystemResult;
@@ -48,7 +47,6 @@ public class TradeRouteFilter {
             StarSystemResult.SystemRecord ogDestinationResult = ogDestinationSystem.getRecord();
             if (ogSourceResult == null || ogDestinationResult == null) continue;
 
-
             //toLowerCase inside method
             boolean isValidSourcePower = PowerPlayData.hasPower(ogSourceResult.getControllingPower());
             boolean isValidDestinationPower = PowerPlayData.hasPower(ogDestinationResult.getControllingPower());
@@ -76,12 +74,15 @@ public class TradeRouteFilter {
             // ADD FRIENDLY POWER
             if (isFriendlySourcePower && isFriendlyDestinationPower) {
                 filteredResults.add(transaction);
-            } else if (!isSourceStrongHold && !isDestinationStrongHold) {
-                // ADD NON-FRIENDLY non stronghold POWER
-                filteredResults.add(transaction);
+                route.setResult(filteredResults);
+                continue;
             }
 
-            route.setResult(filteredResults);
+            // ADD NON-FRIENDLY non-stronghold POWER
+            if (!isSourceStrongHold && !isDestinationStrongHold) {
+                filteredResults.add(transaction);
+                route.setResult(filteredResults);
+            }
         }
         return route;
     }

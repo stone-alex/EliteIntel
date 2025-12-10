@@ -24,7 +24,6 @@ public class LoadGameEventSubscriber {
     public void onEvent(LoadGameEvent event) {
 
         PlayerSession playerSession = PlayerSession.getInstance();
-        playerSession.setShipFuelLevel(event.getFuelLevel());
         playerSession.setPlayerName(playerSession.getAlternativeName() == null ? event.getCommander() : playerSession.getAlternativeName());
         playerSession.setInGameName(event.getCommander());
         playerSession.setCurrentShip(event.getShip());

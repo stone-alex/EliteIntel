@@ -35,7 +35,7 @@ public enum Queries {
     QUERY_PIRATE_MISSION_PROFIT("query_pirate_mission_profit", "Summarize potential profit from active pirate missions.", AnalyzePirateMissionHandler.class, true),
     QUERY_PIRATE_MISSION_STATUS("query_pirate_mission_progress", "Summarize progress of active pirate missions.", AnalyzePirateMissionHandler.class, true),
     QUERY_NEXT_STAR_SCOOPABLE("query_next_star_fuel", "Check if the next star is scoopable for fuel.", AnalyzeNextStarForFuelHandler.class, false),
-    QUERY_PLAYER_STATS_ANALYSIS("query_player_statistics", "Analyze current player statistics.", PlayerStatsAnalyzer.class, true),
+    QUERY_PLAYER_STATS_ANALYSIS("query_analyze_player_profile", "Summarize player statistics.", AnalyzePlayerProfile.class, true),
     QUERY_SHIP_LOADOUT("query_ship_loadout_details", "Provide details about the ship’s loadout and health.", AnalyzeShipLoadoutHandler.class, true),
     STATION_DATA("query_station_details", "Analyze data for the current station.", StationDataHandler.class, true),
     WHAT_ARE_YOUR_CAPABILITIES("query_app_capabilities", "Summarize application capabilities.", WhatAreYourCapabilitiesHandler.class, false),

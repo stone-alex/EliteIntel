@@ -47,7 +47,7 @@ public class MissionCompletedEvent extends BaseEvent {
     private List<FactionEffect> factionEffects;
 
     public MissionCompletedEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), Duration.ofSeconds(10), "MissionCompleted");
+        super(json.get("timestamp").getAsString(), Duration.ofMinutes(30), "MissionCompleted");
         MissionCompletedEvent event = GsonFactory.getGson().fromJson(json, MissionCompletedEvent.class);
         this.faction = event.faction;
         this.name = event.name;

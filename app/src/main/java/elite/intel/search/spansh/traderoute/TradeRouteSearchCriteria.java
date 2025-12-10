@@ -131,8 +131,6 @@ public class TradeRouteSearchCriteria implements StringQuery {
                 + (allowProhibited ? "&allow_prohibited=1":"")
                 + (allowPlanetary ? "&allow_planetary=1":"")
                 + (allowFleetCarriers ? "&allow_player_owned=1":"")
-//                + "&allow_restricted_access=0"
-//                + "&unique=0"
                 + "&max_price_age=" + THREE_HOURS
                 + (allowPermit ? "&permit=1":"");
         return criteria.replace(" ", "%20");

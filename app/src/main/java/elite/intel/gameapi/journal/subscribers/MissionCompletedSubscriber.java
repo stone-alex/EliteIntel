@@ -26,18 +26,6 @@ public class MissionCompletedSubscriber {
         }
         String targetFaction = event.getTargetFaction();
 
-        // remove bounties for this mission (total profit from bounties is saved in a separate field)
-        Set<BountyDto> bounties = playerSession.getBounties();
-        List<BountyDto> temp = bounties.stream().toList();
-        int killCount = mission.getKillCount();
-        for (int i = 0; i < killCount; i++) {
-            if(temp.isEmpty()) continue;
-            BountyDto bounty = temp.get(i);
-            if (bounty.getVictimFaction().equalsIgnoreCase(mission.getMissionTargetFaction())) {
-                playerSession.removeBounty(bounty);
-            }
-        }
-
         //we are done with this mission
         playerSession.removeMission(event.getMissionID());
 

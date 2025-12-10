@@ -8,7 +8,7 @@ import elite.intel.gameapi.journal.events.dto.MissionDto;
 import elite.intel.session.PlayerSession;
 
 @SuppressWarnings("unused")
-public class MissionAcceptedHandler {
+public class MissionAcceptedSubscriber {
 
     @Subscribe
     public void onMissionAcceptedEvent(MissionAcceptedEvent event) {

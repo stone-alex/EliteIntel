@@ -65,7 +65,7 @@ public class MissionManager {
     public void remove(Long missionId) {
         Database.withDao(MissionDao.class, dao ->{
             dao.delete(missionId);
-            return null;
+            return Void.class;
         });
     }
 }

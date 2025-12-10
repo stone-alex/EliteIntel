@@ -35,8 +35,8 @@ public enum Queries {
     /// First query might be enough. TODO: Check.
     QUERY_MISSIONS("query_summarize_outstanding_missions", "Provide summary of outstanding missions", AnalyzePirateMissionHandler.class, true),
     QUERY_PIRATE_MISSION_KILLS_REMAINING("query_pirate_mission_kills", "Summarize remaining kills for active pirate missions.", AnalyzePirateMissionHandler.class, true),
-    QUERY_PIRATE_MISSION_PROFIT("query_pirate_mission_profit", "Summarize potential profit from active pirate missions.", AnalyzePirateMissionHandler.class, true),
-    QUERY_PIRATE_MISSION_STATUS("query_pirate_mission_progress", "Summarize progress of active pirate missions.", AnalyzePirateMissionHandler.class, true),
+    QUERY_PIRATE_MISSION_PROFIT("query_analyze_pirate_mission_profit", "Summarize potential profit from active pirate missions.", AnalyzePirateMissionHandler.class, true),
+    QUERY_PIRATE_MISSION_STATUS("query_analyze_pirate_mission_progress", "Summarize progress of active pirate missions.", AnalyzePirateMissionHandler.class, true),
 
     QUERY_NEXT_STAR_SCOOPABLE("query_next_star_fuel", "Check if the next star is scoopable for fuel.", AnalyzeNextStarForFuelHandler.class, false),
     QUERY_PLAYER_STATS_ANALYSIS("query_analyze_player_profile", "Summarize player statistics.", AnalyzePlayerProfile.class, true),

@@ -140,7 +140,7 @@ public class TradeProfileManager {
             TradeProfileDao.TradeProfile p = dao.getTradeProfile(ship.getShipId());
             if (p == null) {
                 p = new TradeProfileDao.TradeProfile();
-                p.setShipId(ship.getShipId());// unique id for this profile
+                p.setShipId(ship.getShipId()); // unique id for this profile
                 p.setPadSize(ShipPadSizes.getPadSize(ship.getShipIdentifier()));
                 dao.save(p);
             }

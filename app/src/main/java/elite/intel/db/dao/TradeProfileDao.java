@@ -52,7 +52,7 @@ public interface TradeProfileDao {
 
     class TradeProfile {
         private Integer shipId;
-        private String padSize = "S"; //TODO must compute the actual required size.
+        private String padSize = "S";
         private boolean allowPlanetary = false;
         private boolean allowProhibited = false;
         private boolean allowPermit = false;
@@ -61,6 +61,7 @@ public interface TradeProfileDao {
         private Integer maxDistanceLs = 0;
         private Integer maxJumps = 0;
 
+        @SuppressWarnings("unused") // used for mapping
         public Integer getShipId() {
             return shipId;
         }
@@ -69,6 +70,7 @@ public interface TradeProfileDao {
             this.shipId = shipId;
         }
 
+        @SuppressWarnings("unused") // used for mapping
         public String getPadSize() {
             return padSize;
         }

@@ -105,11 +105,11 @@ public class ShipTargetedEventSubscriber {
 
         Set<String> targetFactions = playerSession.getTargetFactions();
         if (!targetFactions.isEmpty() && targetFactions.contains(faction)) {
-            return " Mission Target! ";
+            return " Mission Target ";
         }
 
         if (legalStatus.equalsIgnoreCase("wanted")) {
-            return " Legal Target!";
+            return " Legal Target ";
         } else return null;
     }
 

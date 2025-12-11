@@ -128,6 +128,7 @@ public enum Commands {
     CHANGE_TRADE_PROFILE_SET_ALLOW_PROHIBITED_CARGO("change_trade_profile_toggle_prohibited_cargo", null, "on_off", ChangeTradeProfileSetAllowProhibitedCargoHandler.class),
     CHANGE_TRADE_PROFILE_SET_ALLOW_PLANETARY_PORT("change_trade_profile_toggle_planetary_ports", null, "on_off", ChangeTradeProfileSetIncluidePlanetaryPortsHandler.class),
     CHANGE_TRADE_PROFILE_SET_ALLOW_PERMIT_SYSTEMS("change_trade_profile_toggle_permit_protected_star_systems", null, "on_off", ChangeTradeProfileAllowPermitSystemsHandler.class),
+    CHANGE_TRADE_PROFILE_SET_ALLOW_STRONGHOLDS("change_trade_profile_toggle_strongholds", null, "on_off", ChangeTradeProfileSetAllowEnemyStrongHoldsHandler.class),
     LIST_TRADE_ROUTE_PARAMETERS("list_available_trade_route_parameters", null, null, ListAvailableTradeRouteProfilesHandler.class),
     CLEAR_TRADE_ROUTE("clear_trade_route", null, null, ClearTradeRouteHandler.class),
 

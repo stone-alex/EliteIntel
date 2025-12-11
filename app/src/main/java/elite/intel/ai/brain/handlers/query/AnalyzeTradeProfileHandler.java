@@ -21,6 +21,7 @@ public class AnalyzeTradeProfileHandler extends BaseQueryAnalyzer implements Que
                 "- The value maxStationDistanceLs (or maxLsFromArrival) is the maximum allowed station distance **in Light Seconds from the arrival point / main star** — it is an in-system distance, never light-years and never a distance between systems.  \n" +
                 "- Example: 6000 → \"stations no farther than 6000 Ls from the star\" or \"max 6000 Ls from arrival\".  \n" +
                 "- Hops are measured in light years. (distances between stars)  \n" +
+                "- allowStrongHold field is true/false - allow or dissalow stops at enemy strongholds for power players. Mention state of allowStrongHold or not\n" +
                 "- Completely omit the system name and station name.";
         return process(
                 new AiDataStruct(

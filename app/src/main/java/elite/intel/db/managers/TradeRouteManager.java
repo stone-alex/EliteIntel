@@ -84,6 +84,12 @@ public class TradeRouteManager {
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("Unable to calculate trade route."));
             return null;
         }
+
+        if(criteria.isAllowStrongHold()) {
+            save(tradeRoute);
+            return tradeRoute;
+        }
+
         TradeRouteResponse filteredRoute = TradeRouteFilter.getInstance().filter(tradeRoute);
 
         if (filteredRoute == null) {

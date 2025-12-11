@@ -1,0 +1,1 @@
+alter table trade_profile add column allowStrongHold boolean default false;

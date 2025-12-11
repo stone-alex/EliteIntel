@@ -17,8 +17,8 @@ public interface TradeProfileDao {
     TradeProfile getTradeProfile(int shipId);
 
     @SqlUpdate("""
-            INSERT INTO trade_profile (shipId, padSize, allowPlanetary, allowProhibited, allowPermit, allowFleetCarrier, startingBudget, maxDistanceLs, maxJumps)
-            values(:shipId, :padSize, :allowPlanetary, :allowProhibited, :allowPermit, :allowFleetCarrier, :startingBudget, :maxDistanceLs, :maxJumps)
+            INSERT INTO trade_profile (shipId, padSize, allowPlanetary, allowProhibited, allowPermit, allowFleetCarrier, startingBudget, maxDistanceLs, maxJumps, allowStrongHold)
+            values(:shipId, :padSize, :allowPlanetary, :allowProhibited, :allowPermit, :allowFleetCarrier, :startingBudget, :maxDistanceLs, :maxJumps, :allowStrongHold)
                 on conflict do update set
                     padSize = excluded.padSize,
                     allowFleetCarrier = excluded.allowFleetCarrier,
@@ -27,7 +27,8 @@ public interface TradeProfileDao {
                     allowProhibited = excluded.allowProhibited,
                     startingBudget = excluded.startingBudget,
                     maxDistanceLs = excluded.maxDistanceLs,
-                    maxJumps = excluded.maxJumps
+                    maxJumps = excluded.maxJumps,
+                    allowStrongHold = excluded.allowStrongHold
             """)
     void save(@BindBean TradeProfileDao.TradeProfile profile);
 
@@ -45,6 +46,7 @@ public interface TradeProfileDao {
             profile.setStartingBudget(rs.getInt("startingBudget"));
             profile.setMaxDistanceLs(rs.getInt("maxDistanceLs"));
             profile.setMaxJumps(rs.getInt("maxJumps"));
+            profile.setAllowStrongHold(rs.getBoolean("allowStrongHold"));
             return profile;
         }
     }
@@ -57,6 +59,7 @@ public interface TradeProfileDao {
         private boolean allowProhibited = false;
         private boolean allowPermit = false;
         private boolean allowFleetCarrier = false;
+        private boolean allowStrongHold = false;
         private Integer startingBudget = 0;
         private Integer maxDistanceLs = 0;
         private Integer maxJumps = 0;
@@ -133,6 +136,14 @@ public interface TradeProfileDao {
 
         public void setMaxJumps(Integer maxJumps) {
             this.maxJumps = maxJumps;
+        }
+
+        public boolean isAllowStrongHold() {
+            return allowStrongHold;
+        }
+
+        public void setAllowStrongHold(boolean allowStrongHold) {
+            this.allowStrongHold = allowStrongHold;
         }
     }
 }

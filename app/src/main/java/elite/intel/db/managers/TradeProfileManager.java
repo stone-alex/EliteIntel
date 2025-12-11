@@ -51,6 +51,7 @@ public class TradeProfileManager {
         criteria.setMaxJumpDistance(((int) playerSession.getShipLoadout().getMaxJumpRange() * 10));
         criteria.setMaxLsFromArrival(profile.getMaxDistanceLs());
         criteria.setMaxJumps(profile.getMaxJumps());
+        criteria.setAllowStrongHold(profile.isAllowStrongHold());
         criteria.setRequiresLargePad("L".equals(ShipPadSizes.getPadSize(ship.getShipIdentifier())));
         criteria.setStartingCapital(profile.getStartingBudget());
 
@@ -148,6 +149,7 @@ public class TradeProfileManager {
         });
         return profile;
     }
+
 
     public boolean setStartingCapitol(Integer startingCapital) {
         final ShipDao.Ship ship = shipManager.getShip();
@@ -265,5 +267,15 @@ public class TradeProfileManager {
 
     public boolean hasCargoCapacity() {
         return shipManager.getShip() == null ? false : shipManager.getShip().getCargoCapacity() > 0;
+    }
+
+    public void setAllowStrongHolds(boolean isOn) {
+        Database.withDao(TradeProfileDao.class, dao ->{
+            final ShipDao.Ship ship = shipManager.getShip();
+            TradeProfileDao.TradeProfile profile = getProfile(ship);
+            profile.setAllowStrongHold(isOn);
+            dao.save(profile);
+            return Void.class;
+        });
     }
 }

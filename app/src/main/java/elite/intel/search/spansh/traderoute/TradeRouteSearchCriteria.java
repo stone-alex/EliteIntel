@@ -20,6 +20,7 @@ public class TradeRouteSearchCriteria implements StringQuery {
     private boolean allowPlanetary;
     private boolean allowFleetCarriers;
     private boolean allowPermit;
+    private boolean allowStrongHold;
 
     public void setMaxJumps(int maxHops) {
         this.maxHops = maxHops;
@@ -116,6 +117,14 @@ public class TradeRouteSearchCriteria implements StringQuery {
 
     public boolean isAllowPermit() {
         return allowPermit;
+    }
+
+    public boolean isAllowStrongHold() {
+        return allowStrongHold;
+    }
+
+    public void setAllowStrongHold(boolean allowStrongHold) {
+        this.allowStrongHold = allowStrongHold;
     }
 
     @Override public String getQuery() {

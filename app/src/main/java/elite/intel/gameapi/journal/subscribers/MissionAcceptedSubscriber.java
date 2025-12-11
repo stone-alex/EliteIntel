@@ -12,7 +12,6 @@ public class MissionAcceptedSubscriber {
 
     @Subscribe
     public void onMissionAcceptedEvent(MissionAcceptedEvent event) {
-
         PlayerSession playerSession = PlayerSession.getInstance();
         playerSession.addMission(new MissionDto(event));
         EventBusManager.publish(new SensorDataEvent("Mission Accepted: " + event.toJson()));

@@ -49,11 +49,7 @@ reflection) and principles like DRY and SRP. All PRs go through review.
 
 Released under Creative Commons license.
 
-## Join the Community
-
-- Discuss EliteIntel on the [Frontier Forums](https://forums.frontier.co.uk/forums/elite-dangerous-third-party-tools/) or [r/EliteDangerous](https://www.reddit.com/r/EliteDangerous/).
-- Find me on the Official Elite Dangerous Discord or Canonn Science Discord (search CMDR PRINCE OF KRONDOR).
-
+👉[**Discord**](https://discord.gg/3qAqBENsBm) / [**YouTube**](https://www.youtube.com/@SudoKrondor)👈
 ---
 
 © Sudo Krondor (Alex Stone) | 2025 GitHub, Inc. | Open-Source Project

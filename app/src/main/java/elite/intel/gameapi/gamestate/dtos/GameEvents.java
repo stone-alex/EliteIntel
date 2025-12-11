@@ -1019,7 +1019,7 @@ public class GameEvents {
         }
     }
 
-    public static class MarketEvent {
+    public static class MarketEvent implements ToJsonConvertible{
         public static class MarketItem {
             @SerializedName("id")
             private long id;

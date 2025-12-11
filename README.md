@@ -22,17 +22,16 @@ real-time journal parsing, and smart AI assistance—all while staying fully com
 with Frontier Developments' Terms of Service. No AFK play, no botting, and no
 automation that gives unfair advantages; everything requires your input.
 
-The app uses Google Speech-to-Text (STT) and Text-to-Speech (TTS) for **natural voice interactions**,
-and either OpenAI's GPT or xAI's Grok for handling commands, queries, and chats. It processes 
-game data from journal and auxiliary files, pulls in info from EDSM when needed, and keeps 
-things responsive.
+The app uses Speech-to-Text (STT) and Text-to-Speech (TTS) for **natural voice interactions**,
+and LLM for handling commands, queries, and chats. It processes game data from journal 
+and auxiliary files, pulls in info from EDSM when needed, and keeps things responsive.
 
-[👉**Real life LLM cost breakdown**👈](https://github.com/stone-alex/EliteIntel/wiki/LLM-Real-Live-Cost)
+
+[👉**Real life Cloud LLM cost breakdown**👈](https://github.com/stone-alex/EliteIntel/wiki/LLM-Real-Live-Cost)
 
 ---
 
-👉 **The off-line Text To Speech is now available. 
-See [Piper TTS](https://github.com/stone-alex/EliteIntel/wiki/OffLineVoiceProcessor) for instructions.** 👈
+👉 **The off-line TTS. (Linux and Windows) See [Piper TTS](https://github.com/stone-alex/EliteIntel/wiki/OffLineVoiceProcessor) for instructions.** 👈
 
 
 ---

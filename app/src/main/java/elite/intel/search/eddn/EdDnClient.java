@@ -1,9 +1,9 @@
-package elite.intel.eddn;
+package elite.intel.search.eddn;
 
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import elite.intel.eddn.schemas.EddnPayload;
+import elite.intel.search.eddn.schemas.EddnPayload;
 import elite.intel.util.json.GsonFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

@@ -1,7 +1,6 @@
-package elite.intel.eddn.schemas;
+package elite.intel.search.eddn.schemas;
 
 import com.google.gson.annotations.SerializedName;
-import java.util.List;
 
 public class EddnHeader {
     @SerializedName("softwareName")

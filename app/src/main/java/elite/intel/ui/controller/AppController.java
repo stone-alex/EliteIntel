@@ -13,7 +13,7 @@ import elite.intel.ai.mouth.AiVoices;
 import elite.intel.ai.mouth.MouthInterface;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
-import elite.intel.eddn.EdDnClient;
+import elite.intel.search.eddn.EdDnClient;
 import elite.intel.gameapi.AuxiliaryFilesMonitor;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.JournalParser;

@@ -1,6 +1,6 @@
-package elite.intel.eddn.mappers;
+package elite.intel.search.eddn.mappers;
 
-import elite.intel.eddn.schemas.CommodityMessage;
+import elite.intel.search.eddn.schemas.CommodityMessage;
 import elite.intel.gameapi.gamestate.dtos.GameEvents.MarketEvent;
 
 import java.util.stream.Collectors;

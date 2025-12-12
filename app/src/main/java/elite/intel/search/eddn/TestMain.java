@@ -1,4 +1,4 @@
-package elite.intel.eddn;
+package elite.intel.search.eddn;
 
 public class TestMain {
 

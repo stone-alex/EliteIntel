@@ -1,4 +1,4 @@
-package elite.intel.eddn;
+package elite.intel.search.eddn;
 
 import elite.intel.session.PlayerSession;
 import elite.intel.util.Cypher;

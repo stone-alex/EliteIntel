@@ -1,4 +1,4 @@
-package elite.intel.eddn.schemas;
+package elite.intel.search.eddn.schemas;
 
 import java.util.List;
 

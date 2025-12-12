@@ -1,12 +1,12 @@
 package elite.intel.gameapi.gamestate.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.intel.eddn.EdDnClient;
-import elite.intel.eddn.ZMQUtil;
-import elite.intel.eddn.mappers.ShipyardMapper;
-import elite.intel.eddn.schemas.EddnHeader;
-import elite.intel.eddn.schemas.EddnPayload;
-import elite.intel.eddn.schemas.ShipyardMessage;
+import elite.intel.search.eddn.EdDnClient;
+import elite.intel.search.eddn.ZMQUtil;
+import elite.intel.search.eddn.mappers.ShipyardMapper;
+import elite.intel.search.eddn.schemas.EddnHeader;
+import elite.intel.search.eddn.schemas.EddnPayload;
+import elite.intel.search.eddn.schemas.ShipyardMessage;
 import elite.intel.gameapi.gamestate.dtos.GameEvents;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;

@@ -1,6 +1,6 @@
-package elite.intel.eddn.mappers;
+package elite.intel.search.eddn.mappers;
 
-import elite.intel.eddn.schemas.OutfittingMessage;
+import elite.intel.search.eddn.schemas.OutfittingMessage;
 import elite.intel.gameapi.gamestate.dtos.GameEvents;
 
 public class OutfittingMapper {

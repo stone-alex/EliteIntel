@@ -48,6 +48,9 @@ dependencies {
     implementation 'org.jdbi:jdbi3-core:3.47.0'
     implementation 'org.jdbi:jdbi3-sqlobject:3.47.0'
     implementation 'org.jdbi:jdbi3-jackson2:3.47.0'
+
+    implementation 'org.zeromq:jeromq:0.6.0'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.17.2'
 }
 
 

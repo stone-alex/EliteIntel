@@ -1,6 +1,5 @@
 package elite.intel.ui.view;
 
-import com.google.api.client.util.Sleeper;
 import com.google.common.eventbus.Subscribe;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.PlayerSession;
@@ -68,6 +67,9 @@ public class AppView extends JFrame implements AppViewInterface {
     private JPasswordField edsmKeyField;
     private JCheckBox edsmLockedCheck;
     // Player tab components
+    private JCheckBox sendMarketData;
+    private JCheckBox sendShipyardData;
+    private JCheckBox sendOutfitingData;
     private JTextField playerAltNameField;
     private JTextField playerTitleField;
     private JTextField playerMissionDescription;
@@ -490,7 +492,44 @@ public class AppView extends JFrame implements AppViewInterface {
         });
         addField(panel, selectBindingsDirButton, gbc, 2, 0.2);
 
-        // Row 5: Save button
+
+
+
+        // Row 5: Check Boxes
+        nextRow(gbc);
+        gbc.gridx = 0;
+        gbc.gridwidth = 3;
+        gbc.weightx = 1;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.WEST;
+
+        JPanel checkBoxes = new JPanel(new GridLayout(0, 1, 0, 8));
+        checkBoxes.setOpaque(false);
+
+        sendMarketData = new JCheckBox("Send Market Data", false);
+        sendMarketData.addActionListener(e -> {
+            EventBusManager.publish(new ToggleSendMarketDataEvent(sendMarketData.isSelected()));
+        });
+        sendShipyardData = new JCheckBox("Send Shipyard Data", false);
+        sendShipyardData.addActionListener(e -> {
+            EventBusManager.publish(new ToggleSendShipyardDataEvent(sendShipyardData.isSelected()));
+        });
+        sendOutfitingData = new JCheckBox("Send Outfitting Data", false);
+        sendOutfitingData.addActionListener(e -> {
+            EventBusManager.publish(new ToggleSendOutfittingDataEvent(sendOutfitingData.isSelected()));
+        });
+
+        checkBoxes.add(new JLabel(" "));
+        checkBoxes.add(new JLabel("This app relies in part on crowd sourced data from pilots like you."));
+        checkBoxes.add(new JLabel("Opt In to share Market, Shipyard and Outfitting data from stations you visit to EDDM crowd sourced network."));
+        checkBoxes.add(new JLabel("Information is shared anonymously. By default you are Opt-Out (not sharing)"));
+        checkBoxes.add(sendMarketData);
+        checkBoxes.add(sendShipyardData);
+        checkBoxes.add(sendOutfitingData);
+        checkBoxes.add(new JLabel(" "));
+        panel.add(checkBoxes, gbc);
+
+        // Row 6: Save button
         nextRow(gbc);
         gbc.gridx = 0;
         gbc.gridwidth = 3;
@@ -523,38 +562,11 @@ public class AppView extends JFrame implements AppViewInterface {
         savePlayerInfoButton.addActionListener(e -> {
             savePlayerConfig();
         });
-
-
-/*        recalibrateAudioButton = new JButton("Recalibrate Audio") {
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                try {
-                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    Color base = Color.RED;
-                    ButtonModel m = getModel();
-                    if (m.isPressed()) base = base.darker();
-                    else if (m.isRollover()) base = base.brighter();
-                    g2.setColor(base);
-                    g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
-                } finally {
-                    g2.dispose();
-                }
-                super.paintComponent(g);
-            }
-        };
-
-        recalibrateAudioButton.addActionListener(e -> {
-            EventBusManager.publish(new RecalibrateAudioEvent());
-        });
-        styleButton(recalibrateAudioButton);
-        btns.add(recalibrateAudioButton);*/
-
         btns.add(savePlayerInfoButton);
-
         panel.add(btns, gbc);
 
-        // Row 6: Filler area (reserved for future use)
+
+        // Row 7: Filler area (reserved for future use)
         nextRow(gbc);
         gbc.gridx = 0;
         gbc.gridwidth = 3;
@@ -758,6 +770,10 @@ public class AppView extends JFrame implements AppViewInterface {
         playerMissionDescription.setText(playerSession.getPlayerMissionStatement() != null ? playerSession.getPlayerMissionStatement() : "");
         journalDirField.setText(playerSession.getJournalPath().toString());
         bindingsDirField.setText(playerSession.getBindingsDir().toString());
+
+        sendMarketData.setSelected(systemSession.isSendMarketData());
+        sendOutfitingData.setSelected(systemSession.isSendOutfittingData());
+        sendShipyardData.setSelected(systemSession.isSendShipyardData());
 
         // streaming / privacy checkboxes
         toggleStreamingModeCheckBox.setSelected(systemSession.isStreamingModeOn());

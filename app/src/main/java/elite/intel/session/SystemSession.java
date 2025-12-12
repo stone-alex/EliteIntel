@@ -364,4 +364,43 @@ public class SystemSession {
         result.put(DEBUG_SWITCH, String.valueOf(isLoggingEnabled()));
         return result;
     }
+
+    public void setSendMarketData(boolean enabled) {
+        Database.withDao(GameSessionDao.class, dao ->{
+            GameSessionDao.GameSession session = dao.get();
+            session.setSendMarketData(enabled);
+            dao.save(session);
+            return Void.class;
+        });
+    }
+
+    public void setSendOutfittingData(boolean enabled) {
+        Database.withDao(GameSessionDao.class, dao->{
+            GameSessionDao.GameSession session = dao.get();
+            session.setSendOutfittingData(enabled);
+            dao.save(session);
+            return Void.class;
+        });
+    }
+
+    public void setSendShipyardDataEvent(boolean enabled) {
+        Database.withDao(GameSessionDao.class, dao ->{
+            GameSessionDao.GameSession session = dao.get();
+            session.setSendShipyardData(enabled);
+            dao.save(session);
+            return Void.class;
+        });
+    }
+
+    public boolean isSendMarketData() {
+        return Database.withDao(GameSessionDao.class, dao -> dao.get().getSendMarketData());
+    }
+
+    public boolean isSendOutfittingData() {
+        return Database.withDao(GameSessionDao.class, dao -> dao.get().getSendOutfittingData());
+    }
+
+    public boolean isSendShipyardData() {
+        return Database.withDao(GameSessionDao.class, dao -> dao.get().getSendShipyardData());
+    }
 }

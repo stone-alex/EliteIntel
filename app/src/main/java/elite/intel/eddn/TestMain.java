@@ -1,11 +1,9 @@
-package elite.intel.eddm;
+package elite.intel.eddn;
 
 public class TestMain {
 
     public static void main(String[] args) {
         EdDnClient client = EdDnClient.getInstance();
-        client.startListening(jsonNode -> {
-            System.out.println(jsonNode);
-        });
+        client.start();
     }
 }

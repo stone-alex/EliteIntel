@@ -13,6 +13,7 @@ import elite.intel.ai.mouth.AiVoices;
 import elite.intel.ai.mouth.MouthInterface;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
+import elite.intel.eddn.EdDnClient;
 import elite.intel.gameapi.AuxiliaryFilesMonitor;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.JournalParser;
@@ -42,6 +43,7 @@ public class AppController implements Runnable {
     EarsInterface ears;
     MouthInterface mouth;
     AiCommandInterface brain;
+    EdDnClient edDnClient;
     JournalParser journalParser = new JournalParser();
     private Thread controllerThread;
     private AppView view;
@@ -178,6 +180,26 @@ public class AppController implements Runnable {
         });
     }
 
+
+    @Subscribe void onToggleSendMarketDataEvent(ToggleSendMarketDataEvent event) {
+        SwingUtilities.invokeLater(() -> {
+            systemSession.setSendMarketData(event.isEnabled());
+        });
+    }
+
+    @Subscribe void onToggleSendOutfittingDataEvent(ToggleSendOutfittingDataEvent event) {
+        SwingUtilities.invokeLater(() -> {
+            systemSession.setSendOutfittingData(event.isEnabled());
+        });
+    }
+
+    @Subscribe void onToggleSendShipyardDataEvent(ToggleSendShipyardDataEvent event) {
+        SwingUtilities.invokeLater(() -> {
+            systemSession.setSendShipyardDataEvent(event.isEnabled());
+        });
+    }
+
+
     private void stopServices() {
         EventBusManager.publish(new AiVoxResponseEvent("Systems offline..."));
         // Stop services
@@ -187,6 +209,7 @@ public class AppController implements Runnable {
         ears.stop();
         mouth.stop();
         systemSession.clearChatHistory();
+        //edDnClient.stop();
         EventBusManager.publish(new ServicesStateEvent(false));
         isRunning.set(false);
         if (controllerThread != null) {
@@ -285,6 +308,9 @@ public class AppController implements Runnable {
 
         String mission_statement = playerSession.getPlayerMissionStatement();
         playerSession.setPlayerMissionStatement(mission_statement);
+
+        //edDnClient = EdDnClient.getInstance();
+        //edDnClient.start();
 
         appendToLog("Available voices: " + listVoices());
         appendToLog("Available personalities: " + listPersonalities());

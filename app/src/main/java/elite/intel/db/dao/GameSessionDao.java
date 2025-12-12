@@ -15,8 +15,14 @@ public interface GameSessionDao {
 
 
     @SqlUpdate("""
-            INSERT OR REPLACE INTO game_session (id, aiPersonality,  aiCadence, aiVoice, aiApiKey, ttsApiKey, sttApiKey, edsmApiKey, loggingEnabled, privacyModeOn, rmsThresholdHigh,  rmsThresholdLow, encryptedLLMKey, encryptedSTTKey, encryptedTTSKey, encryptedEDSSMKey)
-                                  VALUES (1, :aiPersonality, :aiCadence, :aiVoice, :aiApiKey, :ttsApiKey, :sttApiKey, :edsmApiKey, :loggingEnabled, :privacyModeOn, :rmsThresholdHigh, :rmsThresholdLow, :encryptedLLMKey, :encryptedSTTKey, :encryptedTTSKey, :encryptedEDSSMKey)
+            INSERT OR REPLACE INTO game_session (id, aiPersonality,  aiCadence, aiVoice, aiApiKey, ttsApiKey, sttApiKey, 
+                                                             edsmApiKey, loggingEnabled, privacyModeOn, rmsThresholdHigh,  
+                                                             rmsThresholdLow, encryptedLLMKey, encryptedSTTKey, encryptedTTSKey, 
+                                                             encryptedEDSSMKey, sendMarketData, sendOutfittingData, sendShipyardData)
+                                  VALUES (1, :aiPersonality, :aiCadence, :aiVoice, :aiApiKey, :ttsApiKey, :sttApiKey, 
+                                                      :edsmApiKey, :loggingEnabled, :privacyModeOn, :rmsThresholdHigh, 
+                                                      :rmsThresholdLow, :encryptedLLMKey, :encryptedSTTKey, :encryptedTTSKey, 
+                                                      :encryptedEDSSMKey, :sendMarketData, :sendOutfittingData, :sendShipyardData)
             """)
     void save(@BindBean GameSessionDao.GameSession data);
 
@@ -50,6 +56,10 @@ public interface GameSessionDao {
             session.setRmsThresholdHigh(rs.getDouble("rmsThresholdHigh"));
             session.setRmsThresholdLow(rs.getDouble("rmsThresholdLow"));
             session.setEdsmApiKey(rs.getString("edsmApiKey"));
+
+            session.setSendMarketData(rs.getBoolean("sendMarketData"));
+            session.setSendOutfittingData(rs.getBoolean("sendOutfittingData"));
+            session.setSendShipyardData(rs.getBoolean("sendShipyardData"));
             return session;
         }
     }
@@ -68,13 +78,16 @@ public interface GameSessionDao {
         private String encryptedTTSKey;
         private String encryptedEDSSMKey;
 
-
         private Boolean loggingEnabled;
         private String aiVoice;
         private Boolean privacyModeOn;
         private Double rmsThresholdHigh = 460.00;
         private Double rmsThresholdLow = 100.00;
         private String edsmApiKey;
+
+        private Boolean sendMarketData;
+        private Boolean sendOutfittingData;
+        private Boolean sendShipyardData;
 
 
         public String getAiPersonality() {
@@ -195,6 +208,31 @@ public interface GameSessionDao {
 
         public void setEncryptedEDSSMKey(String encryptedEDSSMKey) {
             this.encryptedEDSSMKey = encryptedEDSSMKey;
+        }
+
+
+        public Boolean getSendMarketData() {
+            return sendMarketData;
+        }
+
+        public void setSendMarketData(Boolean sendMarketData) {
+            this.sendMarketData = sendMarketData;
+        }
+
+        public Boolean getSendOutfittingData() {
+            return sendOutfittingData;
+        }
+
+        public void setSendOutfittingData(Boolean sendOutfittingData) {
+            this.sendOutfittingData = sendOutfittingData;
+        }
+
+        public Boolean getSendShipyardData() {
+            return sendShipyardData;
+        }
+
+        public void setSendShipyardData(Boolean sendShipyardData) {
+            this.sendShipyardData = sendShipyardData;
         }
     }
 }

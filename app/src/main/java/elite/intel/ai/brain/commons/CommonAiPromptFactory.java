@@ -89,8 +89,8 @@ public class CommonAiPromptFactory implements AiPromptFactory {
     private String colloquialTerms() {
         StringBuilder sb = new StringBuilder();
         sb.append(" Map 'organic(s) to 'bio signal(s)'\n");
-        sb.append(" Map 'navigate to target system' or 'plot route to target system' to "+RECON_TARGET_SYSTEM.getAction()+" to \n");
-        sb.append(" Map 'navigate to provider system' or 'plot route to provider system' to "+RECON_PROVIDER_SYSTEM.getAction()+" to \n");
+        sb.append(" Map 'navigate to target system' or 'plot route to target system' to "+RECON_TARGET_SYSTEM.getAction()+" \n");
+        sb.append(" Map 'navigate to provider system' or 'plot route to provider system' to "+RECON_PROVIDER_SYSTEM.getAction()+" \n");
         sb.append(" Map colloquial terms to commands: 'feds', 'yanks', or 'federation space' to 'FEDERATION', 'imperials', 'imps', or 'empire' to 'IMPERIAL', 'alliance space' or 'allies' to 'ALLIANCE' for set_cadence. ");
         sb.append(" Map slang such as 'bounce', 'proceed to the next waypoint' or 'get out of here' to commands like ").append(JUMP_TO_HYPERSPACE.getAction()).append(". ");
         sb.append(" Map 'select next way point' to ").append(TARGET_NEXT_ROUTE_SYSTEM.getAction()).append("\n");

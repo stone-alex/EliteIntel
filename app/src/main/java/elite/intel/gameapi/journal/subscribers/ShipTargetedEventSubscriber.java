@@ -18,8 +18,7 @@ public class ShipTargetedEventSubscriber {
 
     private final Logger log = LogManager.getLogger(ShipTargetedEventSubscriber.class);
 
-    @Subscribe
-    public void onShipTargetedEvent(ShipTargetedEvent event) {
+    @Subscribe public void onShipTargetedEvent(ShipTargetedEvent event) {
         PlayerSession playerSession = PlayerSession.getInstance();
         log.debug(event.toJson());
 

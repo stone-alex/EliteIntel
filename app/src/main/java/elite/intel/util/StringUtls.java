@@ -2,6 +2,7 @@ package elite.intel.util;
 
 import elite.intel.db.dao.CommodityDao;
 import elite.intel.db.dao.MaterialNameDao;
+import elite.intel.db.dao.SubSystemDao;
 import elite.intel.db.util.Database;
 
 import java.time.LocalDateTime;
@@ -121,6 +122,11 @@ public class StringUtls {
     public static String fuzzyMaterialSearch(String input, int similarity) {
         return fuzzyMatch(input, similarity, MaterialNameDao.class, MaterialNameDao::getAllNamesLowerCase, MaterialNameDao::getOriginalCase);
     }
+
+    public static String fuzzySubSystemSearch(String input, int similarity) {
+        return fuzzyMatch(input, similarity, SubSystemDao.class, SubSystemDao::getAllNamesLowerCase, SubSystemDao::getOriginalCase);
+    }
+
 
     /// re-use for other fuzzy search
     private static <T> String fuzzyMatch(String input, int similarity, Class<T> daoClass, Function<T, List<String>> candidatesProvider, BiFunction<T, String, String> originalCaseProvider) {

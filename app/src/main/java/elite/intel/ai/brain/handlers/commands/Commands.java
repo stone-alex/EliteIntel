@@ -1,7 +1,5 @@
 package elite.intel.ai.brain.handlers.commands;
 
-import elite.intel.ai.brain.handlers.query.HelpHandler;
-
 import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.*;
 
 /**
@@ -153,6 +151,8 @@ public enum Commands {
     DEPLOY_HEAT_SINK("deploy_heat_sink", BINDING_DEPLOY_HEAT_SINK.getGameBinding(), null, GenericGameControlHandler.class),
     DRIVE_ASSIST("drive_assist", BINDING_DRIVE_ASSIST.getGameBinding(), null, GenericGameControlHandler.class),
     EXPLORATION_FSSQUIT("exit_fss", BINDING_EXPLORATION_FSSQUIT.getGameBinding(), null, GenericGameControlHandler.class),
+
+    TARGET_SUB_SYSTEM("target_subsystem", null, "subsystem", TargetSubSystemHandler.class),
 
     RADAR_DECREASE_RANGE("decrease_radar_range", BINDING_RADAR_DECREASE_RANGE.getGameBinding(), null, GenericGameControlHandler.class),
     RADAR_INCREASE_RANGE("increase_radar_range", BINDING_RADAR_INCREASE_RANGE.getGameBinding(), null, GenericGameControlHandler.class),

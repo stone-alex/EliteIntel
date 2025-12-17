@@ -1,6 +1,7 @@
 package elite.intel.search.spansh.traderoute;
 
 import elite.intel.gameapi.data.PowerPlayData;
+import elite.intel.search.edsm.utils.StrongHoldFilter;
 import elite.intel.search.spansh.starsystems.StarSystemClient;
 import elite.intel.search.spansh.starsystems.StarSystemResult;
 import elite.intel.search.spansh.starsystems.SystemSearchCriteria;
@@ -8,6 +9,8 @@ import elite.intel.session.PlayerSession;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static elite.intel.search.edsm.utils.StrongHoldFilter.skipEnemyStrongHold;
 
 public class TradeRouteFilter {
 
@@ -42,47 +45,10 @@ public class TradeRouteFilter {
             StarSystemResult ogSourceSystem = searchSystem(ogSource);
             StarSystemResult ogDestinationSystem = searchSystem(ogDestination);
 
-            // check if no results
-            StarSystemResult.SystemRecord ogSourceResult = ogSourceSystem.getRecord();
-            StarSystemResult.SystemRecord ogDestinationResult = ogDestinationSystem.getRecord();
-            if (ogSourceResult == null || ogDestinationResult == null) continue;
+            if(skipEnemyStrongHold(ogSourceSystem, ogDestinationSystem, pledgedPower)) continue;
 
-            //toLowerCase inside method
-            boolean isValidSourcePower = PowerPlayData.hasPower(ogSourceResult.getControllingPower());
-            boolean isValidDestinationPower = PowerPlayData.hasPower(ogDestinationResult.getControllingPower());
-
-            boolean isSourceStrongHold = isValidSourcePower && "stronghold".equalsIgnoreCase(ogSourceResult.getPowerState());
-            boolean isDestinationStrongHold = isValidDestinationPower && "stronghold".equalsIgnoreCase(ogDestinationResult.getPowerState());
-
-            // ADD NEUTRAL POWER
-            if (!isValidSourcePower && !isValidDestinationPower) {
-                filteredResults.add(transaction);
-                continue;
-            }
-
-
-            boolean isFriendlySourcePower = isValidSourcePower ? ogSourceResult
-                    .getControllingPower()
-                    .toLowerCase()
-                    .contains(pledgedPower.toLowerCase()) : false;
-
-            boolean isFriendlyDestinationPower = isValidDestinationPower ? ogDestinationResult
-                    .getControllingPower()
-                    .toLowerCase()
-                    .contains(pledgedPower.toLowerCase()) : false;
-
-            // ADD FRIENDLY POWER
-            if (isFriendlySourcePower && isFriendlyDestinationPower) {
-                filteredResults.add(transaction);
-                route.setResult(filteredResults);
-                continue;
-            }
-
-            // ADD NON-FRIENDLY non-stronghold POWER
-            if (!isSourceStrongHold && !isDestinationStrongHold) {
-                filteredResults.add(transaction);
-                route.setResult(filteredResults);
-            }
+            filteredResults.add(transaction);
+            route.setResult(filteredResults);
         }
         return route;
     }

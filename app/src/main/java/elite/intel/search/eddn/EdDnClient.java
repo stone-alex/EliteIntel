@@ -79,9 +79,9 @@ public class EdDnClient {
     public void start() {
         if (running) return;
         startListening(jsonNode -> {
-            if (jsonNode.toString().contains("commodity/3")) {
-                System.out.println(jsonNode);
-            }
+            //if (jsonNode.toString().contains("commodity/3")) {
+            //    System.out.println(jsonNode);
+            //}
         });
     }
 

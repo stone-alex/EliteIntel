@@ -4,6 +4,7 @@ import elite.intel.ai.brain.handlers.query.struct.AnalyseMaterialsHandler;
 
 public enum Queries {
 
+    HELP("help_with_topic", "--", HelpHandler.class, true),
     //ANALYZE_LOCAL_SYSTEM("query_local_system_data", "-- instructions in class --", AnalyzeLocalSystemHandler.class, true),
     ANALYZE_SYSTEM_SECURITY("query_analyze_system_security", "--", AnalyzeSystemSecurityHandler.class, true),
     ANALYZE_TRADE_PROFILE("query_current_trade_profile_info", "--", AnalyzeTradeProfileHandler.class, true),

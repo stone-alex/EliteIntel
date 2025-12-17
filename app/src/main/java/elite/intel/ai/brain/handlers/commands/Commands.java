@@ -1,5 +1,7 @@
 package elite.intel.ai.brain.handlers.commands;
 
+import elite.intel.ai.brain.handlers.query.HelpHandler;
+
 import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.*;
 
 /**
@@ -25,9 +27,16 @@ public enum Commands {
     CLEAR_CACHE("clear_cache", null, "session_clear", ClearCacheHandler.class),
     INTERRUPT_TTS("shut_up_cancel_interrupt_tts_vocalization", null, null, ShutUpHandler.class),
 
-    MIND_RAW_MATERIAL_TRADER("find_raw_material_trader", null, "distance", FindRawMaterialTraderHandler.class),
-    MIND_ENCODED_MATERIAL_TRADER("find_encoded_material_trader", null, "distance", FindEncodedMaterialTraderHandler.class),
-    MIND_MANUFACTURED_MATERIAL_TRADER("find_manufactured_material_trader", null, "distance", FindManufacturedMaterialTraderHandler.class),
+    FIND_RAW_MATERIAL_TRADER("find_raw_material_trader", null, "distance", FindRawMaterialTraderHandler.class),
+    FIND_ENCODED_MATERIAL_TRADER("find_encoded_material_trader", null, "distance", FindEncodedMaterialTraderHandler.class),
+    FIND_MANUFACTURED_MATERIAL_TRADER("find_manufactured_material_trader", null, "distance", FindManufacturedMaterialTraderHandler.class),
+
+
+    FIND_HUNTING_GROUNDS("find_hunting_grounds_for_pirate_massacre_missions", null, "range", LocatePirateHuntingGrounds.class),
+    RECON_TARGET_SYSTEM("navigate_plot_reconnaissance_route_to_target_star_system", null, null, ReconPirateMissionTargetSystemHandler.class),
+    RECON_PROVIDER_SYSTEM("navigate_plot_reconnaissance_route_to_mission_provider_system", null, null, ReconMissionProviderSystemHandler.class),
+    NAVIGATE_TO_PIRATE_MISSION_TARGET_SYSTEM("plot_route_to_pirate_massacre_mission_target_system", null, null, NavigateToPirateMassacreMissionTargetHandler.class),
+
 
     FIND_HUMAN_TECHNOLOGY_BROKER("find_human_technology_broker", null, "distance", FindHumanTechnologyBrokerHandler.class),
     FIND_GUARDIAN_TECHNOLOGY_BROKER("find_guardian_technology_broker", null, "distance", FindGuadrianTechnologyBroker.class),
@@ -52,7 +61,7 @@ public enum Commands {
     DISCOVERY_ON_OFF("toggle_discovery_announcements", null, "discovery_on_off", DiscoveryOnOffHandler.class),
     MINING_ON_OFF("toggle_mining_announcements", null, "mining_on_off", MiningOnOffHandler.class),
     ROUTE_ON_OFF("toggle_route_announcements", null, "route_on_off", RouteAnnouncementsOnOffHandler.class),
-    HELP("help_with_topic", null, "help_topic", HelpHandler.class),
+
 
     INCREASE_SPEED_BY("speed_plus", BINDING_INCREASE_SPEED.getGameBinding(), "value", SpeedControlHandler.class),
     DECREASE_SPEED_BY("speed_minus", BINDING_DECREASE_SPEED.getGameBinding(), "value", SpeedControlHandler.class),
@@ -116,7 +125,6 @@ public enum Commands {
     CLEAR_CODEX_ENTRIES("clear_codex_entries", null, null, ClearCodexEntriesHandler.class),
     CALCULATE_FLEET_CARRIER_ROUTE("calculate_fleet_carrier_route", null, null, CalculateFleetCarrierRouteHandler.class),
     ENTER_NEXT_FLEET_CARRIER_DESTINATION("enter_next_fleet_carrier_destination", null, null, EnterNextCarrierDestinationHandler.class),
-    LIST_HELP_TOPICS("list_help_topics", null, null, HelpHandler.class),
     SHUT_DOWN("system_shut_down", null, null, SystemShutDownRequestHandler.class),
 
 

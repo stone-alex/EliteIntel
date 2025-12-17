@@ -2,15 +2,13 @@ package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.mouth.subscribers.events.DiscoveryAnnouncementEvent;
+import elite.intel.db.managers.PirateMissionDataManager;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
 import elite.intel.gameapi.journal.events.FSSSignalDiscoveredEvent;
 import elite.intel.gameapi.journal.events.dto.FssSignalDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.TimeUtils;
-
-import java.util.Map;
 
 @SuppressWarnings("unused")
 public class FSSSignalDiscoveredSubscriber {
@@ -19,12 +17,17 @@ public class FSSSignalDiscoveredSubscriber {
     private static final String USS_TYPE_VALUABLE_SALVAGE = "$USS_Type_ValuableSalvage";
     private static final String USS_TYPE_VERY_VALUABLE_SALVAGE = "$USS_Type_VeryValuableSalvage";
 
+    private PirateMissionDataManager pirateMissionDataManager = PirateMissionDataManager.getInstance();
+    private PlayerSession playerSession = PlayerSession.getInstance();
+
+
     @Subscribe
     public void onFSSSignalDiscovered(FSSSignalDiscoveredEvent event) {
-        PlayerSession playerSession = PlayerSession.getInstance();
+        playerSession.saveLocation(updateLocation(event));
 
-
-        playerSession.saveLocation(updateLocation(event, playerSession));
+        if ("ResourceExtraction".equals(event.getSignalType())) {
+            pirateMissionDataManager.confirmTargetReconResourceSite(playerSession.getPrimaryStarName());
+        }
 
         if (event.getUssTypeLocalised() != null && event.getUssTypeLocalised().equals("Nonhuman signal source")) {
             publishVoice("Nonhuman signal source detected! Threat level " + event.getThreatLevel() + "!");
@@ -40,20 +43,8 @@ public class FSSSignalDiscoveredSubscriber {
         }
     }
 
-    private static LocationDto updateLocation(FSSSignalDiscoveredEvent event, PlayerSession playerSession) {
-        LocationDto currentLocation = null;
-        Map<Long, LocationDto> locations = playerSession.getLocations();
-        for(LocationDto dto : locations.values()) {
-            if(dto.getLocationType().equals(LocationDto.LocationType.PRIMARY_STAR)){
-                currentLocation = dto;
-                break;
-            }
-        }
-
-        if(currentLocation == null) {
-            currentLocation = playerSession.getCurrentLocation();
-        }
-
+    private LocationDto updateLocation(FSSSignalDiscoveredEvent event) {
+        LocationDto currentLocation = playerSession.getCurrentLocation();
         FssSignalDto signal = new FssSignalDto();
         signal.setSignalName(event.getSignalName());
         signal.setSignalNameLocalised(event.getSignalNameLocalised());

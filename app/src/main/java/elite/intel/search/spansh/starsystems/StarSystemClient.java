@@ -43,7 +43,7 @@ public class StarSystemClient extends SpanshClient {
         // we have to make a GET call to https://spansh.co.uk/api/system/2209500629347 where the number is
         // system_id64
         StationSearchResult stationSearchResult = GsonFactory.getGson().fromJson(performSearch(criteria), StationSearchResult.class);
-
+        if (stationSearchResult == null) return null;
         List<StationSearchResult.SystemResult> results = stationSearchResult.getResults();
         for (StationSearchResult.SystemResult result : results) {
             if (result.getId64() == 0) continue;

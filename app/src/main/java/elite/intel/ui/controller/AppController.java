@@ -309,12 +309,13 @@ public class AppController implements Runnable {
         String mission_statement = playerSession.getPlayerMissionStatement();
         playerSession.setPlayerMissionStatement(mission_statement);
 
-        //edDnClient = EdDnClient.getInstance();
-        //edDnClient.start();
+        if(!systemSession.isRunningPiperTts()) {
+            appendToLog("Available voices: " + listVoices());
+        }
 
-        appendToLog("Available voices: " + listVoices());
         appendToLog("Available personalities: " + listPersonalities());
         appendToLog("Available profiles: " + listCadences());
+
         EventBusManager.publish(new ServicesStateEvent(true));
     }
 }

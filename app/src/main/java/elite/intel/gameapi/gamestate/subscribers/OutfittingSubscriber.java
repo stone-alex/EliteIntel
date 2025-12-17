@@ -32,7 +32,7 @@ public class OutfittingSubscriber {
                 message
         );
 
-        if(event.getItems().size() > 0) {
+        if(event != null && event.getItems() != null && event.getItems().size() > 0) {
             EdDnClient.getInstance().upload(payload);
         }
 

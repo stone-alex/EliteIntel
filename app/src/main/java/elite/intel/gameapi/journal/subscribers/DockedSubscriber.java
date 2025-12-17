@@ -26,13 +26,11 @@ public class DockedSubscriber {
         LocationDto location = playerSession.getLocation(event.getMarketID(), event.getStarSystem());
 
         location.setMarketID(event.getMarketID());
-        location.setStationName(event.getStationName());
         location.setStationEconomy(event.getStationEconomyLocalised());
         location.setStationServices(event.getStationServices());
         location.setStationType(event.getStationType());
         location.setStationGovernment(event.getStationGovernmentLocalised());
         location.setStarName(event.getStarSystem());
-        location.setMarketID(event.getMarketID());
         location.setStationName(event.getStationName());
         location.setPlanetName(null);
         location.setPlanetShortName(null);

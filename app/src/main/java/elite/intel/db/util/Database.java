@@ -7,7 +7,11 @@ import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.sqlobject.SqlObjectPlugin;
 
 import java.io.IOException;
-import java.nio.file.Path;
+import java.net.URI;
+import java.net.URL;
+import java.nio.file.*;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Database {
 
@@ -62,26 +66,15 @@ public class Database {
             h.execute("PRAGMA synchronous = NORMAL;");        // fast + still safe on Linux
             h.execute("PRAGMA busy_timeout = 5000;");         // avoid lock errors
 
-            h.attach(BioSampleDao.class);
-            h.attach(BountyDao.class);
-            h.attach(ChatHistoryDao.class);
-            h.attach(DestinationReminderDao.class);
-            h.attach(FleetCarrierDao.class);
-            h.attach(FleetCarrierRouteDao.class);
-            h.attach(FsdTargetDao.class);
-            h.attach(GameSessionDao.class);
-            h.attach(GenusPaymentAnnouncementDao.class);
-            h.attach(LocationDao.class);
-            h.attach(MaterialsDao.class);
-            h.attach(MiningTargetDao.class);
-            h.attach(PlayerDao.class);
-            h.attach(RankAndProgressDao.class);
-            h.attach(ReputationDao.class);
-            h.attach(ShipLoadoutDao.class);
-            h.attach(ShipScansDao.class);
-            h.attach(StationMarketDao.class);
-            h.attach(StatusDao.class);
-            h.attach(TargetLocationDao.class);
+            // Automatically attach all DAO classes from elite.intel.db.dao package
+            try {
+                Set<Class<?>> daoClasses = findDaoClasses("elite.intel.db.dao");
+                for (Class<?> daoClass : daoClasses) {
+                    h.attach(daoClass);
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to attach DAO classes", e);
+            }
 
             return null;
         });
@@ -89,5 +82,65 @@ public class Database {
 
         // Run migrations (see below)
         migrateIfNeeded();
+    }
+
+    private static Set<Class<?>> findDaoClasses(String packageName) throws Exception {
+        Set<Class<?>> classes = new HashSet<>();
+        String path = packageName.replace('.', '/');
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+
+        Enumeration<URL> resources = classLoader.getResources(path);
+        while (resources.hasMoreElements()) {
+            URL resource = resources.nextElement();
+            String protocol = resource.getProtocol();
+
+            if ("file".equals(protocol)) {
+                Path root = Paths.get(resource.toURI());
+                try (var walk = Files.walk(root)) {
+                    walk.filter(p -> p.toString().endsWith(".class"))
+                            .forEach(p -> {
+                                try {
+                                    String className = packageName + "." +
+                                            root.relativize(p).toString()
+                                                    .replace(FileSystems.getDefault().getSeparator(), ".")
+                                                    .replace(".class", "");
+                                    Class<?> clazz = Class.forName(className);
+                                    if (clazz.isInterface() && clazz.getSimpleName().endsWith("Dao")) {
+                                        classes.add(clazz);
+                                    }
+                                } catch (ClassNotFoundException e) {
+                                    // Skip classes that can't be loaded
+                                }
+                            });
+                }
+            } else if ("jar".equals(protocol)) {
+                String urlStr = resource.toString();
+                int sep = urlStr.indexOf("!/");
+                String jarPart = urlStr.substring(0, sep);
+                URI jarUri = URI.create(jarPart);
+
+                try (FileSystem fs = FileSystems.newFileSystem(jarUri, Collections.emptyMap())) {
+                    Path root = fs.getPath("/" + path);
+                    try (var walk = Files.walk(root)) {
+                        walk.filter(p -> p.toString().endsWith(".class"))
+                                .forEach(p -> {
+                                    try {
+                                        String className = packageName + "." +
+                                                root.relativize(p).toString()
+                                                        .replace("/", ".")
+                                                        .replace(".class", "");
+                                        Class<?> clazz = Class.forName(className);
+                                        if (clazz.isInterface() && clazz.getSimpleName().endsWith("Dao")) {
+                                            classes.add(clazz);
+                                        }
+                                    } catch (ClassNotFoundException e) {
+                                        // Skip classes that can't be loaded
+                                    }
+                                });
+                    }
+                }
+            }
+        }
+        return classes;
     }
 }

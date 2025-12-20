@@ -17,7 +17,7 @@ public class MonetizeRoute {
 
     private final static List<String> ALLOWED_STATION_TYPES = Arrays.asList("asteroid base", "coriolis starport", "ocellus starport", "orbis starport");
 
-    public static TradeTuple findTrade(List<NavRouteDto> stops) {
+    public static TradeTransaction findTrade(List<NavRouteDto> stops) {
 
         TradeProfileManager tradeProfileManager = TradeProfileManager.getInstance();
         TradeRouteSearchCriteria criteria = tradeProfileManager.getCriteria(false);
@@ -73,7 +73,7 @@ public class MonetizeRoute {
      * @return a RouteTuple representing the best trade route with maximum profit, or null
      * if no profitable trade route is available.
      */
-    private static TradeTuple findTrade(List<Station> sourceStations, List<Station> destStations) {
+    private static TradeTransaction findTrade(List<Station> sourceStations, List<Station> destStations) {
         // Source: min buyPrice (player buys from station) with supply > 0
         Map<String, BuyInfo> sourceMinBuy = new HashMap<>();
         for (Station station : sourceStations) {
@@ -115,7 +115,7 @@ public class MonetizeRoute {
         }
 
         // Find best profit
-        TradeTuple best = null;
+        TradeTransaction best = null;
         int maxProfit = 0;
         for (String comm : sourceMinBuy.keySet()) {
             if (destMaxSell.containsKey(comm)) {
@@ -124,7 +124,7 @@ public class MonetizeRoute {
                 int profit = sell.sellPrice - buy.buyPrice;
                 if (profit > maxProfit) {
                     maxProfit = profit;
-                    best = new TradeTuple(buy, sell);
+                    best = new TradeTransaction(buy, sell);
                 }
             }
         }
@@ -216,11 +216,11 @@ public class MonetizeRoute {
         }
     }
 
-    public static class TradeTuple {
+    public static class TradeTransaction {
         private BuyInfo source;
         private SellInfo destination;
 
-        public TradeTuple(BuyInfo source, SellInfo destination) {
+        public TradeTransaction(BuyInfo source, SellInfo destination) {
             this.source = source;
             this.destination = destination;
         }

@@ -17,7 +17,7 @@ public class MonetizeRouteHandler implements CommandHandler {
         }
 
         MonetizeRouteManager monetizeRouteManager = MonetizeRouteManager.getInstance();
-        MonetizeRoute.TradeTuple tradeTuple = monetizeRouteManager.monetizeRoute();
+        MonetizeRoute.TradeTransaction tradeTuple = monetizeRouteManager.monetizeRoute();
 
         if (tradeTuple == null) {
             EventBusManager.publish(new AiVoxResponseEvent("No trade found."));

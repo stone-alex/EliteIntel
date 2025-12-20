@@ -25,10 +25,10 @@ public class MonetizeRouteManager {
         return instance;
     }
 
-    public MonetizeRoute.TradeTuple monetizeRoute() {
+    public MonetizeRoute.TradeTransaction monetizeRoute() {
 
         ShipRouteManager shipRouteManager = ShipRouteManager.getInstance();
-        MonetizeRoute.TradeTuple tradeTuple = MonetizeRoute.findTrade(shipRouteManager.getOrderedRoute());
+        MonetizeRoute.TradeTransaction tradeTuple = MonetizeRoute.findTrade(shipRouteManager.getOrderedRoute());
         if (tradeTuple == null) {
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("No trade found"));
             return null;

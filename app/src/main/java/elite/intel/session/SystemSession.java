@@ -235,7 +235,7 @@ public class SystemSession {
     }
 
     public void setTtsApiKey(String ttsApiKey) {
-        if (ttsApiKey != null && ttsApiKey.isEmpty()) {
+        if (ttsApiKey == null && ttsApiKey.isEmpty()) {
             Database.withDao(GameSessionDao.class, dao ->{
                 GameSessionDao.GameSession session = dao.get();
                 session.setTtsApiKey(null);
@@ -270,7 +270,7 @@ public class SystemSession {
     }
 
     public void setSttApiKey(String sttApiKey) {
-        if (sttApiKey != null && sttApiKey.isEmpty()) {
+        if (sttApiKey == null && sttApiKey.isEmpty()) {
             Database.withDao(GameSessionDao.class, dao ->{
                 GameSessionDao.GameSession session = dao.get();
                 session.setSttApiKey(null);
@@ -305,7 +305,7 @@ public class SystemSession {
     }
 
     public void setAiApiKey(String aiApiKey) {
-        if (aiApiKey != null && aiApiKey.isEmpty()) {
+        if (aiApiKey == null && aiApiKey.isEmpty()) {
             Database.withDao(GameSessionDao.class, dao ->{
                 GameSessionDao.GameSession session = dao.get();
                 session.setAiApiKey(null);
@@ -323,7 +323,7 @@ public class SystemSession {
     }
 
     public void setEdsmApiKey(String edsmApiKey) {
-        if (edsmApiKey != null && edsmApiKey.isEmpty()) {
+        if (edsmApiKey == null && edsmApiKey.isEmpty()) {
             Database.withDao(GameSessionDao.class, dao ->{
                 GameSessionDao.GameSession session = dao.get();
                 session.setEdsmApiKey(null);

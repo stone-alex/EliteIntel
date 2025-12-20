@@ -35,6 +35,7 @@ public enum Commands {
     RECON_PROVIDER_SYSTEM("navigate_plot_reconnaissance_route_to_mission_provider_system", null, null, ReconMissionProviderSystemHandler.class),
     NAVIGATE_TO_PIRATE_MISSION_TARGET_SYSTEM("plot_route_to_pirate_massacre_mission_target_system", null, null, NavigateToPirateMassacreMissionTargetHandler.class),
 
+    MONETIZE_ROUTE("monetize_route", null,null, MonetizeRouteHandler.class),
 
     FIND_HUMAN_TECHNOLOGY_BROKER("find_human_technology_broker", null, "distance", FindHumanTechnologyBrokerHandler.class),
     FIND_GUARDIAN_TECHNOLOGY_BROKER("find_guardian_technology_broker", null, "distance", FindGuadrianTechnologyBroker.class),

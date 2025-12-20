@@ -3,6 +3,7 @@ package elite.intel.gameapi.journal.subscribers;
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.db.managers.DestinationReminderManager;
+import elite.intel.db.managers.MonetizeRouteManager;
 import elite.intel.db.managers.TradeRouteManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.MarketSellEvent;
@@ -51,6 +52,8 @@ public class MarketSellEventSubscriber {
                     ).toJson()
             );
         }
+
+        MonetizeRouteManager.getInstance().clear();
     }
 
 

@@ -1,7 +1,9 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.intel.db.dao.RouteMonetisationDao.MonetisationTransaction;
 import elite.intel.db.managers.LocationManager;
+import elite.intel.db.managers.MonetizeRouteManager;
 import elite.intel.db.managers.ShipRouteManager;
 import elite.intel.db.managers.TradeRouteManager;
 import elite.intel.gameapi.EventBusManager;
@@ -33,12 +35,26 @@ public class JumpCompletedSubscriber {
 
     private final PlayerSession playerSession = PlayerSession.getInstance();
     private final ShipRouteManager shipRoute = ShipRouteManager.getInstance();
+    private final MonetizeRouteManager monetizeRouteManager = MonetizeRouteManager.getInstance();
 
 
     @Subscribe
     public void onFSDJumpEvent(FSDJumpEvent event) {
         SystemBodiesDto systemBodiesDto = EdsmApiClient.searchSystemBodies(event.getStarSystem());
         processEdsmData(systemBodiesDto, event.getStarSystem());
+
+        boolean isSellerSystem = monetizeRouteManager.isSeller(event.getStarSystem());
+        boolean isBuyerSystem = monetizeRouteManager.isBuyer(event.getStarSystem());
+        MonetisationTransaction station = monetizeRouteManager.getTransaction();
+
+        if (isSellerSystem && station != null) {
+            EventBusManager.publish(new SensorDataEvent("Head to " + station.getSourceStationName() + " buy " + station.getSourceCommodity()));
+        }
+
+        if (isBuyerSystem && station != null) {
+            EventBusManager.publish(new SensorDataEvent("Head to " + station.getDestinationStationName() + " sell " + station.getDestinationCommodity()));
+        }
+
 
         LocationDto primaryStar = LocationManager.getInstance().findPrimaryStar(event.getStarSystem());
         primaryStar.setBodyId(event.getBodyId());
@@ -161,7 +177,7 @@ public class JumpCompletedSubscriber {
             stellarObject.setSurfaceTemperature(data.getSurfaceTemperature());
             stellarObject.setTidalLocked(data.isRotationalPeriodTidallyLocked());
             stellarObject.setLocationType(determineType(data));
-            if(data.getDiscovery() != null) {
+            if (data.getDiscovery() != null) {
                 stellarObject.setOurDiscovery(data.getDiscovery().getCommander() == null);
                 stellarObject.setDiscoveredBy(data.getDiscovery().getCommander());
                 stellarObject.setDiscoveredOn(data.getDiscovery().getDate());

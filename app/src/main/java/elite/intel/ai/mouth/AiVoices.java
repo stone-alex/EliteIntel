@@ -15,8 +15,8 @@ public enum AiVoices {
     EMMA("Emma", 1.2, false),           // en-US-Chirp3-HD-Despina
     JAKE("Jake", 1.2, false),           // en-US-Chirp3-HD-Iapetus
     JAMES("James", 1.2, true),          // en-AU-Chirp3-HD-Algieba
-    JENNIFER("Jennifer", 1.4, false),   // en-US-Chirp3-HD-Sulafat
-    JOSEPH("Joseph", 1.2, true),        // en-US-Chirp3-HD-Sadachbia
+    JENNIFER("Jennifer", 1.2, false),   // en-US-Chirp3-HD-Sulafat
+    JOSEPH("Joseph", 1.1, true),        // en-US-Chirp3-HD-Sadachbia
     MICHAEL("Michael", 1.2, true),      // en-US-Chirp3-HD-Charon
     OLIVIA("Olivia", 1.2, false),       // en-GB-Chirp3-HD-Aoede
     RACHEL("Rachel", 1.2, false),       // en-US-Chirp3-HD-Zephyr

@@ -3,7 +3,9 @@ package elite.intel.ai.brain.handlers.query;
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.commands.PlotRouteToNextTradeStopHandler;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
+import elite.intel.db.dao.RouteMonetisationDao;
 import elite.intel.db.managers.DestinationReminderManager;
+import elite.intel.db.managers.MonetizeRouteManager;
 import elite.intel.search.spansh.traderoute.TradeCommodity;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
@@ -17,27 +19,41 @@ public class RemindTargetMarketStationHandler extends BaseQueryAnalyzer implemen
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         DestinationReminderManager destinationReminder = DestinationReminderManager.getInstance();
-        PlotRouteToNextTradeStopHandler.Reminder data = GsonFactory.getGson().fromJson(destinationReminder.getDestinationAsJson(), PlotRouteToNextTradeStopHandler.Reminder.class);
+        PlotRouteToNextTradeStopHandler.Reminder data = GsonFactory.getGson().fromJson(destinationReminder.getReminderAsJson(), PlotRouteToNextTradeStopHandler.Reminder.class);
+        MonetizeRouteManager monetizeRouteManager = MonetizeRouteManager.getInstance();
 
-        String pickupAtStation = data.stopInfo().getSourceStation();
-        String dropOffAtStation = data.stopInfo().getDestinationStation();
+        if(data.stopInfo() == null){
+            // monetized hop.
+            RouteMonetisationDao.MonetisationTransaction transaction = monetizeRouteManager.getTransaction();
+            return process(
+                    new AiDataStruct(
+                            "Remind user what commodity we are buying",
+                            new DataDto2(transaction.getSourceStationName(), transaction.getSourceCommodity(), transaction.getDestinationStarSystem())),
+                    originalUserInput
+            );
 
-        List<TradeCommodity> commodities = data.commodities();
-        List<Commodity> list = new ArrayList<>();
-        for (TradeCommodity commodity : commodities) {
-            String name = commodity.getName();
-            int amount = commodity.getAmount();
-            long buyPrice = commodity.getSourceCommodity().getBuyPrice();
-            list.add(new Commodity(name, amount, buyPrice));
+        } else {
+            // conventional trade route
+            String pickupAtStation = data.stopInfo().getSourceStation();
+            String dropOffAtStation = data.stopInfo().getDestinationStation();
+
+            List<TradeCommodity> commodities = data.commodities();
+            List<Commodity> list = new ArrayList<>();
+            for (TradeCommodity commodity : commodities) {
+                String name = commodity.getName();
+                int amount = commodity.getAmount();
+                long buyPrice = commodity.getSourceCommodity().getBuyPrice();
+                list.add(new Commodity(name, amount, buyPrice));
+            }
+
+            return process(
+                    new AiDataStruct(
+                            TARGET_MARKET_STATION_NAME.getInstructions(),
+                            new DataDto(pickupAtStation, dropOffAtStation, list)
+                    ),
+                    originalUserInput
+            );
         }
-
-        return process(
-                new AiDataStruct(
-                        TARGET_MARKET_STATION_NAME.getInstructions(),
-                        new DataDto(pickupAtStation, dropOffAtStation, list)
-                ),
-                originalUserInput
-        );
     }
 
     record Commodity(String name, int amount, long buyPrice) implements ToJsonConvertible {
@@ -48,6 +64,12 @@ public class RemindTargetMarketStationHandler extends BaseQueryAnalyzer implemen
 
 
     record DataDto(String pickupAtStation, String dropOffAtStation, List<Commodity> commodities) implements ToJsonConvertible {
+        @Override public String toJson() {
+            return GsonFactory.getGson().toJson(this);
+        }
+    }
+
+    record DataDto2(String pickupAtStation, String commodity, String dropOffLocation) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }

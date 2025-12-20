@@ -26,8 +26,6 @@ public class AnalyzeBioSamplesHandler extends BaseQueryAnalyzer implements Query
         if (currentLocation.getBodyId() < 0) {
             return process("Current location data is not available");
         }
-        Map<Long, LocationDto> locations = playerSession.getLocations();
-
         List<BioSampleDto> partialScans = currentLocation.getPartialBioSamples();
         List<GenusDto> genusListForCurrentLocation = currentLocation.getGenus();
         List<BioSampleDto> samplesCompletedForThisPlanet = completedScansForPlanet(playerSession);

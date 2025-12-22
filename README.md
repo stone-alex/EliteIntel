@@ -1,17 +1,17 @@
 # Elite Intel - Public Beta
 
-### NOTE: This is an public beta release — satbile, but expect bugs and ongoing improvements!
-
 ## Installation & Setup
 
-## 👉[Download Installation and Configuration](https://github.com/stone-alex/eliteintel/wiki/Installation-and-Configuration)👈
+### 🔽 [RELEASES](https://github.com/stone-alex/EliteIntel/releases) 🔽
+### ⚙️ [CONFIGURE](https://github.com/stone-alex/EliteIntel/wiki/Installation-and-Configuration) ⚙️
+### 🎓 [**WIKI**](https://github.com/stone-alex/eliteintel/wiki) 🎓
 
-### Linux and Windows are supported.
+--- 
 
+## Linux and Windows are supported.
 If you run into issues, hit us up on GitHub issues or 👉[**Discord**](https://discord.gg/3qAqBENsBm).👈
 Feedback and bug reports are super welcome!
 
-### 📖 Full details here: [**WIKI**](https://github.com/stone-alex/eliteintel/wiki)
 
 ## Overview
 

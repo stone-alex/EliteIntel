@@ -62,7 +62,7 @@ public class GoogleSTTImpl implements EarsInterface {
         isListening.set(true);
 
         // Detect audio format
-        AudioSettingsTuple<Integer, Integer> formatResult = AudioFormatDetector.detectSupportedFormat();
+        AudioFormatDetector.Format formatResult = AudioFormatDetector.detectSupportedFormat();
         this.sampleRateHertz = formatResult.getSampleRate();
         this.bufferSize = formatResult.getBufferSize();
 

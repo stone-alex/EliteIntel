@@ -16,8 +16,7 @@ import javax.swing.plaf.FontUIResource;
 import javax.swing.plaf.basic.BasicTabbedPaneUI;
 import javax.swing.text.*;
 import java.awt.*;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -82,7 +81,8 @@ public class AppView extends JFrame implements AppViewInterface {
     private JButton selectBindingsDirButton;
 
     public AppView() {
-        super("Elite Intel");
+        super("--");
+        setTitle("Elite Intel " + readVersionFromResources());
         // Load and apply custom font before any other UI setup
         loadCustomFont();
         // Apply dark theme defaults
@@ -145,6 +145,15 @@ public class AppView extends JFrame implements AppViewInterface {
         initData();
     }
 
+    private String readVersionFromResources(){
+        try {
+            InputStream is = getClass().getResourceAsStream("/version.txt");
+            return new BufferedReader(new InputStreamReader(is)).readLine();
+        } catch (IOException e) {
+            log.error("Failed to read version from resources: {}", e.getMessage());
+            return "Unknown";
+        }
+    }
     /**
      * Binds a lock checkbox to a specific field, allowing the field's state
      * (enabled, editable, or read-only) to be toggled based on the checkbox selection.

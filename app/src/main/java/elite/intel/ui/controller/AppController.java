@@ -13,10 +13,10 @@ import elite.intel.ai.mouth.AiVoices;
 import elite.intel.ai.mouth.MouthInterface;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
-import elite.intel.search.eddn.EdDnClient;
 import elite.intel.gameapi.AuxiliaryFilesMonitor;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.JournalParser;
+import elite.intel.search.eddn.EdDnClient;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.*;
@@ -43,7 +43,6 @@ public class AppController implements Runnable {
     EarsInterface ears;
     MouthInterface mouth;
     AiCommandInterface brain;
-    EdDnClient edDnClient;
     JournalParser journalParser = new JournalParser();
     private Thread controllerThread;
     private AppView view;
@@ -309,7 +308,7 @@ public class AppController implements Runnable {
         String mission_statement = playerSession.getPlayerMissionStatement();
         playerSession.setPlayerMissionStatement(mission_statement);
 
-        if(!systemSession.isRunningPiperTts()) {
+        if (!systemSession.isRunningPiperTts()) {
             appendToLog("Available voices: " + listVoices());
         }
 

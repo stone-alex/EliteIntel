@@ -1,2 +1,2 @@
-git tag -a v2025.12.19.beta-0162 -m "Target subsystem"
-git push origin v2025.12.19.beta-0162
+git tag -a "$(cat app/src/resources/version.txt)" -m "Target subsystem"
+git push origin "$(cat app/src/resources/version.txt)"

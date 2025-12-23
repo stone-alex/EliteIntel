@@ -29,7 +29,6 @@ public enum Commands {
     FIND_ENCODED_MATERIAL_TRADER("find_encoded_material_trader", null, "distance", FindEncodedMaterialTraderHandler.class),
     FIND_MANUFACTURED_MATERIAL_TRADER("find_manufactured_material_trader", null, "distance", FindManufacturedMaterialTraderHandler.class),
 
-
     FIND_HUNTING_GROUNDS("find_hunting_grounds_for_pirate_massacre_missions", null, "range", LocatePirateHuntingGrounds.class),
     RECON_TARGET_SYSTEM("navigate_plot_reconnaissance_route_to_target_star_system", null, null, ReconPirateMissionTargetSystemHandler.class),
     RECON_PROVIDER_SYSTEM("navigate_plot_reconnaissance_route_to_mission_provider_system", null, null, ReconMissionProviderSystemHandler.class),
@@ -61,10 +60,8 @@ public enum Commands {
     MINING_ON_OFF("toggle_mining_announcements", null, "mining_on_off", MiningOnOffHandler.class),
     ROUTE_ON_OFF("toggle_route_announcements", null, "route_on_off", RouteAnnouncementsOnOffHandler.class),
 
-
     INCREASE_SPEED_BY("speed_plus", BINDING_INCREASE_SPEED.getGameBinding(), "value", SpeedControlHandler.class),
     DECREASE_SPEED_BY("speed_minus", BINDING_DECREASE_SPEED.getGameBinding(), "value", SpeedControlHandler.class),
-
 
     /// Commands that have a specific handler impl (which uses N bindings inside)
     INCREASE_ENGINES_POWER("transfer_power_to_engines", null, null, SetPowerToEnginesHandler.class),
@@ -88,8 +85,8 @@ public enum Commands {
     DISPLAY_RADAR_PANEL("display_radar_panel", null, null, DisplayRadarPanelHandler.class),
     DISPLAY_LOADOUT_PANEL("display_loadout_panel", null, null, DisplayLoadoutPanelHandler.class),
 
-    /// might not be a good idea..!
-    EJECT_ALL_CARGO("eject_all_cargo", null, null, EjectAllCargoHandler.class),
+    // EJECT_ALL_CARGO("eject_all_cargo", null, null, EjectAllCargoHandler.class),
+
     GALAXY_MAP("open_galaxy_star_map", null, null, OpenGalaxyMapHandler.class),
     LOCAL_MAP("open_local_map", null, null, OpenLocalMapHandler.class),
     OPEN_CARGO_SCOOP("open_cargo_scoop", null, null, OpenCargoScoopHandler.class),
@@ -100,13 +97,11 @@ public enum Commands {
     DEPLOY_LANDING_GEAR("deploy_landing_gear", null, null, DeployLandingGearHandler.class),
     RETRACT_LANDING_GEAR("retract_landing_gear", null, null, RetractLandingGearHandler.class),
 
-    //Hyperspace - direct. will fail if target is obscured.
     JUMP_TO_HYPERSPACE("jump_to_hyperspace", null, null, JumpToHyperspaceHandler.class),
-    //smarter commands, automatically determine supercruise or ftl.
     GET_OUT_OF_HERE("lets_get_out_of_here", null, null, EnterFtlHandler.class),
     LETS_GO("lets_go", null, null, EnterFtlHandler.class),
     ENTER_SUPER_CRUISE("enter_super_cruise", null, null, EnterFtlHandler.class),
-    //exit supercruise.,
+
     EXIT_SUPER_CRUISE("exit_super_cruise", null, null, ExitFtlHandler.class),
     ACTIVATE_ANALYSIS_MODE("swap_to_hud_analysis_mode", null, null, ActivateAnalysisModeHandler.class),
     ACTIVATE_COMBAT_MODE("swap_to_hud_combat_mode", null, null, ActivateCombatModeHandler.class),
@@ -155,8 +150,8 @@ public enum Commands {
 
     TARGET_SUB_SYSTEM("target_subsystem", null, "subsystem", TargetSubSystemHandler.class),
 
-    RADAR_DECREASE_RANGE("decrease_radar_range", BINDING_RADAR_DECREASE_RANGE.getGameBinding(), null, GenericGameControlHandler.class),
-    RADAR_INCREASE_RANGE("increase_radar_range", BINDING_RADAR_INCREASE_RANGE.getGameBinding(), null, GenericGameControlHandler.class),
+    //RADAR_DECREASE_RANGE("decrease_radar_range", BINDING_RADAR_DECREASE_RANGE.getGameBinding(), null, GenericGameControlHandler.class),
+    //RADAR_INCREASE_RANGE("increase_radar_range", BINDING_RADAR_INCREASE_RANGE.getGameBinding(), null, GenericGameControlHandler.class),
 
     RECALL_DISMISS_SHIP("recall_or_dismiss_ship", BINDING_RECALL_DISMISS_SHIP.getGameBinding(), null, GenericGameControlHandler.class),
 
@@ -165,23 +160,22 @@ public enum Commands {
     REQUEST_HOLD_FIRE("fighter_orders_hold_your_fire_fighter_order", BINDING_REQUEST_HOLD_FIRE.getGameBinding(), null, GenericGameControlHandler.class),
     REQUEST_REQUEST_DOCK("fighter_orders_recall", BINDING_REQUEST_REQUEST_DOCK.getGameBinding(), null, GenericGameControlHandler.class),
 
+    STOP("stop", BINDING_SET_SPEED_ZERO.getGameBinding(), null, GenericGameControlHandler.class),
+    TAXI("taxi_take_us_in_autodocking", BINDING_SET_SPEED_ZERO.getGameBinding(), null, GenericGameControlHandler.class),
+
+    SET_SPEED_ZERO("set_speed_to_zero_0", BINDING_SET_SPEED_ZERO.getGameBinding(), null, GenericGameControlHandler.class),
     SET_SPEED25("set_speed_to_slow_throttle_25", BINDING_SET_SPEED25.getGameBinding(), null, GenericGameControlHandler.class),
     SET_SPEED50("set_speed_to_medium_throttle_50", BINDING_SET_SPEED50.getGameBinding(), null, GenericGameControlHandler.class),
     SET_SPEED75("set_speed_to_optimal_throttle_75", BINDING_SET_SPEED75.getGameBinding(), null, GenericGameControlHandler.class),
     SET_SPEED100("set_speed_to_maximum_throttle_100", BINDING_SET_SPEED100.getGameBinding(), null, GenericGameControlHandler.class),
-    SET_SPEED_ZERO("set_speed_to_zero_0", BINDING_SET_SPEED_ZERO.getGameBinding(), null, GenericGameControlHandler.class),
-    STOP("stop", BINDING_SET_SPEED_ZERO.getGameBinding(), null, GenericGameControlHandler.class),
-    TAXI("taxi", BINDING_SET_SPEED_ZERO.getGameBinding(), null, GenericGameControlHandler.class),
-    TAXI1("take_us_in", BINDING_SET_SPEED_ZERO.getGameBinding(), null, GenericGameControlHandler.class),
-    TAXI2("autodocking", BINDING_SET_SPEED_ZERO.getGameBinding(), null, GenericGameControlHandler.class),
 
 
     SELECT_HIGHEST_THREAT("target_highest_threat", BINDING_SELECT_HIGHEST_THREAT.getGameBinding(), null, GenericGameControlHandler.class),
     TARGET_NEXT_ROUTE_SYSTEM("select_or_target_next_system_in_route", BINDING_TARGET_NEXT_ROUTE_SYSTEM.getGameBinding(), null, GenericGameControlHandler.class),
 
-    TARGET_WINGMAN0("target_wingman1", BINDING_TARGET_WINGMAN0.getGameBinding(), null, GenericGameControlHandler.class),
-    TARGET_WINGMAN1("target_wingman2", BINDING_TARGET_WINGMAN1.getGameBinding(), null, GenericGameControlHandler.class),
-    TARGET_WINGMAN2("target_wingman3", BINDING_TARGET_WINGMAN2.getGameBinding(), null, GenericGameControlHandler.class),
+    TARGET_WINGMAN0("target_wingman_1", BINDING_TARGET_WINGMAN0.getGameBinding(), null, GenericGameControlHandler.class),
+    TARGET_WINGMAN1("target_wingman_2", BINDING_TARGET_WINGMAN1.getGameBinding(), null, GenericGameControlHandler.class),
+    TARGET_WINGMAN2("target_wingman_3", BINDING_TARGET_WINGMAN2.getGameBinding(), null, GenericGameControlHandler.class),
     WING_NAV_LOCK("lock_on_wingman", BINDING_WING_NAV_LOCK.getGameBinding(), null, GenericGameControlHandler.class);
 
     ///

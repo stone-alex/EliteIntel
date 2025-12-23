@@ -14,6 +14,7 @@ public class CarrierDataDto implements ToJsonConvertible {
     private String starName;
     private long totalBalance;
     private long reserveBalance;
+    private int fuelReserve;
     private String callSign;
     private String carrierName;
     private String carrierType;
@@ -299,6 +300,10 @@ public class CarrierDataDto implements ToJsonConvertible {
         } else {
             this.commodity.put(c, amount);
         }
+
+        if("tritium".equalsIgnoreCase(commodity)) {
+            this.fuelReserve = this.fuelReserve + amount;
+        }
     }
 
     public void removeCommodity(String commodity, int amount) {
@@ -317,13 +322,12 @@ public class CarrierDataDto implements ToJsonConvertible {
 
 
     public int getFuelReserve() {
-        Integer tritiumInReserve = getCommodity().get("tritium");
-        if (tritiumInReserve == null) {
-            tritiumInReserve = 0;
-        }
-        return tritiumInReserve;
+        return fuelReserve;
     }
 
+    public void setFuelReserve(int fuelReserve) {
+        this.fuelReserve = fuelReserve;
+    }
 
     public int getRange() {
         Integer tritiumInReserve = getCommodity().get("tritium");

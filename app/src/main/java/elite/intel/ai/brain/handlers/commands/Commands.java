@@ -34,7 +34,7 @@ public enum Commands {
     RECON_PROVIDER_SYSTEM("navigate_plot_reconnaissance_route_to_mission_provider_system", null, null, ReconMissionProviderSystemHandler.class),
     NAVIGATE_TO_PIRATE_MISSION_TARGET_SYSTEM("plot_route_to_pirate_massacre_mission_target_system", null, null, NavigateToPirateMassacreMissionTargetHandler.class),
 
-    MONETIZE_ROUTE("monetize_route", null,null, MonetizeRouteHandler.class),
+    MONETIZE_ROUTE("monetize_route", null, null, MonetizeRouteHandler.class),
 
     FIND_HUMAN_TECHNOLOGY_BROKER("find_human_technology_broker", null, "distance", FindHumanTechnologyBrokerHandler.class),
     FIND_GUARDIAN_TECHNOLOGY_BROKER("find_guardian_technology_broker", null, "distance", FindGuadrianTechnologyBroker.class),
@@ -169,6 +169,7 @@ public enum Commands {
     SET_SPEED75("set_speed_to_optimal_throttle_75", BINDING_SET_SPEED75.getGameBinding(), null, GenericGameControlHandler.class),
     SET_SPEED100("set_speed_to_maximum_throttle_100", BINDING_SET_SPEED100.getGameBinding(), null, GenericGameControlHandler.class),
 
+    SET_CARRIER_FUEL_RESERVE("set_tritium_carrier_fuel_reserve", null, "reserve", SetFleetCarrierFuelReserveHandler.class),
 
     SELECT_HIGHEST_THREAT("target_highest_threat", BINDING_SELECT_HIGHEST_THREAT.getGameBinding(), null, GenericGameControlHandler.class),
     TARGET_NEXT_ROUTE_SYSTEM("select_or_target_next_system_in_route", BINDING_TARGET_NEXT_ROUTE_SYSTEM.getGameBinding(), null, GenericGameControlHandler.class),

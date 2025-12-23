@@ -204,7 +204,6 @@ public class PiperTTS implements MouthInterface {
         // 50ms silence to kill pop
         byte[] silence = new byte[(int)(fmt.getSampleRate() * 0.05) * frameSize];
         persistentLine.write(silence, 0, silence.length);
-        //EventBusManager.publish(new IsSpeakingEvent(true));
         final int CHUNK = 8192;
         for (int offset = 0; offset < audioData.length; offset += CHUNK) {
             if (interruptRequested.get()) break;
@@ -222,6 +221,5 @@ public class PiperTTS implements MouthInterface {
         } else {
             persistentLine.flush();
         }
-        //EventBusManager.publish(new IsSpeakingEvent(false));
     }
 }

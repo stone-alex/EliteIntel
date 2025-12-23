@@ -312,7 +312,6 @@ public class GoogleTTSImpl implements MouthInterface {
             persistentLine.write(silenceBuffer, 0, silenceBuffer.length);
             log.info("Spoke with voice {}: {}", voiceName, text);
             long writeStartTime = System.currentTimeMillis();
-            //EventBusManager.publish(new IsSpeakingEvent(true));
             for (int i = 0; i < audioData.length; i += bufferBytes) {
                 if (interruptRequested.get()) {
                     log.debug("Playback interrupted mid-stream: {}", text);
@@ -335,7 +334,6 @@ public class GoogleTTSImpl implements MouthInterface {
         } finally {
             currentLine.set(null);
             interruptRequested.set(false);
-            //EventBusManager.publish(new IsSpeakingEvent(false));
         }
         log.debug("VoiceRequest processing completed in {}ms", System.currentTimeMillis() - startTime);
     }

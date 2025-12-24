@@ -401,4 +401,8 @@ public class SystemSession {
             return "Unknown";
         }
     }
+
+    public boolean isSendExplorationData() {
+        return Database.withDao(GameSessionDao.class, dao -> dao.get().getSendExplorationData());
+    }
 }

@@ -792,6 +792,7 @@ public class AppView extends JFrame implements AppViewInterface {
         sendMarketData.setSelected(systemSession.isSendMarketData());
         sendOutfitingData.setSelected(systemSession.isSendOutfittingData());
         sendShipyardData.setSelected(systemSession.isSendShipyardData());
+        sendExplorationData.setSelected(systemSession.isSendExplorationData());
 
         // streaming / privacy checkboxes
         toggleStreamingModeCheckBox.setSelected(systemSession.isStreamingModeOn());

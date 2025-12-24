@@ -1,5 +1,6 @@
 package elite.intel.gameapi.journal.subscribers;
 
+import com.google.cloud.speech.v1.DeletePhraseSetRequest;
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.db.managers.DestinationReminderManager;
@@ -51,6 +52,8 @@ public class MarketSellEventSubscriber {
                             nextStop.getLegNumber(), nextStop.getTradeStopDto(), nextStop.getTradeStopDto().getCommodities()
                     ).toJson()
             );
+        } else {
+            reminderManager.clear();
         }
 
         MonetizeRouteManager.getInstance().clear();

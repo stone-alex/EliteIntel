@@ -22,12 +22,12 @@ public class RemindTargetMarketStationHandler extends BaseQueryAnalyzer implemen
         PlotRouteToNextTradeStopHandler.Reminder data = GsonFactory.getGson().fromJson(destinationReminder.getReminderAsJson(), PlotRouteToNextTradeStopHandler.Reminder.class);
         MonetizeRouteManager monetizeRouteManager = MonetizeRouteManager.getInstance();
 
-        if(data.stopInfo() == null){
+        if(data == null || data.stopInfo() == null){
             // monetized hop.
             RouteMonetisationDao.MonetisationTransaction transaction = monetizeRouteManager.getTransaction();
             return process(
                     new AiDataStruct(
-                            "Remind user what commodity we are buying",
+                            "Remind user what commodity we are buying, at what port and what star system.",
                             new DataDto2(transaction.getSourceStationName(), transaction.getSourceCommodity(), transaction.getDestinationStarSystem())),
                     originalUserInput
             );

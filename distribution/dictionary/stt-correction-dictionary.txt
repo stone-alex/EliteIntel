@@ -256,3 +256,7 @@
 "floating"="plot"
 "admissions"="missions"
 "that reserve"="set reserve"
+"halter"="alter"
+"blood route"="plot the route"
+"below a route"="plot the route"
+"float throughout"="plot the route"

@@ -23,7 +23,7 @@ public class CommonAiPromptFactory implements AiPromptFactory {
     }
 
     private static final String JSON_FORMAT =
-            "Always output JSON: {\"type\": \"command|query|chat\", \"response_text\": \"TTS output\", \"action\": \"action_name|query_name\", \"params\": {\"key\": \"value\"}, \"expect_followup\": boolean}";
+            "Always output JSON: {\"type\": \"command|query|chat\", \"response_text\": \"TTS output\", \"action\": \"action_name|query_name\", \"params\": {\"key\": \"value\"}, \"expect_followup\": boolean} action must match provided command or query. ";
 
     @Override
     public String generateUserPrompt(String playerVoiceInput) {
@@ -35,8 +35,8 @@ public class CommonAiPromptFactory implements AiPromptFactory {
         StringBuilder sb = new StringBuilder();
 
         sb.append("Instructions:\n\n")
-                .append(" Rule #1: NEVER INVENT COMMANDS OR QUERIES!!! ALWAYS MATCH TO THE PROVIDED LIST ONLY!!! IF NOT MATCH FOUND SAY SO, NEVER LIE, EVER!!!!!!!!! ")
-                .append("Only return a command from the exact list provided below — never invent, combine, or create new commands, even if the user input seems similar.\n")
+                .append(" Rule #1: NEVER INVENT COMMANDS OR QUERIES!!! ALWAYS MATCH TO THE PROVIDED LIST ONLY!!! IF NOT MATCH FOUND SAY SO. ")
+                .append(" Only return a command or query from the exact list provided below — never invent, combine, or create new commands, even if the user input seems similar. action parameter MUST match either command or query. Do not invent action parameters. \n")
                 .append(inputClassificationClause()).append('\n')
                 .append(JSON_FORMAT).append('\n')
                 .append(supportedCommandsClause()).append('\n')

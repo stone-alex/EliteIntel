@@ -85,8 +85,6 @@ public enum Commands {
     DISPLAY_RADAR_PANEL("display_radar_panel", null, null, DisplayRadarPanelHandler.class),
     DISPLAY_LOADOUT_PANEL("display_loadout_panel", null, null, DisplayLoadoutPanelHandler.class),
 
-    // EJECT_ALL_CARGO("eject_all_cargo", null, null, EjectAllCargoHandler.class),
-
     GALAXY_MAP("open_galaxy_star_map", null, null, OpenGalaxyMapHandler.class),
     LOCAL_MAP("open_local_map", null, null, OpenLocalMapHandler.class),
     OPEN_CARGO_SCOOP("open_cargo_scoop", null, null, OpenCargoScoopHandler.class),
@@ -108,29 +106,25 @@ public enum Commands {
     PLOT_ROUTE_TO_CARRIER("plot_route_to_fleet_carrier", null, null, PlotRouteToMyFleetCarrier.class),
     SET_OPTIMAL_SPEED("set_optimal_speed", null, null, SetOptimalSpeedHandler.class),
     TAKE_ME_HOME("plot_route_to_home_star", null, null, PlotRouteToHomeHandler.class),
-    OPEN_FSS_AND_SCAN("open_fss_to_scan_star_system", null, null, DisplayFssAndScanHandler.class),
-    HONK("perform_honk", null, null, DisplayFssAndScanHandler.class),
+    OPEN_FSS_AND_SCAN("open_fss_to_scan_or_honk_star_system", null, null, DisplayFssAndScanHandler.class),
 
     GET_HEADING_TO_LZ("navigate_bearing_direction_to_landing_zone", null, null, NavigateToLandingZone.class),
     DEPLOY_SRV("deploy_srv", null, null, DeploySrvHandler.class),
-    BOARD_SHIP("get_on_board_ship", null, null, BoardSrvHandler.class),
-    REQUESTING_EXTRACTION("requesting_extraction", null, null, BoardSrvHandler.class),
     RECOVER_SRV("recover_srv", null, null, BoardSrvHandler.class),
     CLEAR_CODEX_ENTRIES("clear_codex_entries", null, null, ClearCodexEntriesHandler.class),
     CALCULATE_FLEET_CARRIER_ROUTE("calculate_fleet_carrier_route", null, null, CalculateFleetCarrierRouteHandler.class),
     ENTER_NEXT_FLEET_CARRIER_DESTINATION("enter_next_fleet_carrier_destination", null, null, EnterNextCarrierDestinationHandler.class),
     SHUT_DOWN("system_shut_down", null, null, SystemShutDownRequestHandler.class),
 
-
     CALCULATE_TRADE_ROUTE("calculate_trade_route", null, null, CalculateTradeRouteHandler.class),
     PLOT_ROUTE_TO_NEXT_TRADE_STOP("navigate_to_next_trade_stop_port_or_station", null, null, PlotRouteToNextTradeStopHandler.class),
-    CHANGE_TRADE_PROFILE_SET_STARTING_BUDGET("change_trade_profile_set_starting_budget", null, "budget", ChangeTradeProfileSetStartingBudgetHander.class),
-    CHANGE_TRADE_PROFILE_SET_MAX_NUMBER_OF_STOPS("change_trade_profile_set_maximum_number_of_stops", null, "numstops", ChangeTradeProfileSetMaxStopsHandler.class),
-    CAHNGE_TRADE_PROFILE_SET_MAX_DISTANCE_FROM_ENTRY("change_trade_profile_set_maximum_distance_from_entry", null, "maxdist", ChangeTradeProfileSetMaxDistanceFromEntryHandler.class),
-    CHANGE_TRADE_PROFILE_SET_ALLOW_PROHIBITED_CARGO("change_trade_profile_toggle_prohibited_cargo", null, "on_off", ChangeTradeProfileSetAllowProhibitedCargoHandler.class),
-    CHANGE_TRADE_PROFILE_SET_ALLOW_PLANETARY_PORT("change_trade_profile_toggle_planetary_ports", null, "on_off", ChangeTradeProfileSetIncluidePlanetaryPortsHandler.class),
-    CHANGE_TRADE_PROFILE_SET_ALLOW_PERMIT_SYSTEMS("change_trade_profile_toggle_permit_protected_star_systems", null, "on_off", ChangeTradeProfileAllowPermitSystemsHandler.class),
-    CHANGE_TRADE_PROFILE_SET_ALLOW_STRONGHOLDS("change_trade_profile_toggle_strongholds", null, "on_off", ChangeTradeProfileSetAllowEnemyStrongHoldsHandler.class),
+    CHANGE_TRADE_PROFILE_SET_STARTING_BUDGET("alter_trade_profile_set_starting_budget", null, "budget", ChangeTradeProfileSetStartingBudgetHander.class),
+    CHANGE_TRADE_PROFILE_SET_MAX_NUMBER_OF_STOPS("alter_trade_profile_set_maximum_number_of_stops", null, "numstops", ChangeTradeProfileSetMaxStopsHandler.class),
+    CAHNGE_TRADE_PROFILE_SET_MAX_DISTANCE_FROM_ENTRY("alter_trade_profile_set_maximum_distance_from_entry", null, "maxdist", ChangeTradeProfileSetMaxDistanceFromEntryHandler.class),
+    CHANGE_TRADE_PROFILE_SET_ALLOW_PROHIBITED_CARGO("alter_trade_profile_toggle_prohibited_cargo", null, "on_off", ChangeTradeProfileSetAllowProhibitedCargoHandler.class),
+    CHANGE_TRADE_PROFILE_SET_ALLOW_PLANETARY_PORT("alter_trade_profile_toggle_planetary_ports", null, "on_off", ChangeTradeProfileSetIncluidePlanetaryPortsHandler.class),
+    CHANGE_TRADE_PROFILE_SET_ALLOW_PERMIT_SYSTEMS("alter_trade_profile_toggle_permit_protected_star_systems", null, "on_off", ChangeTradeProfileAllowPermitSystemsHandler.class),
+    CHANGE_TRADE_PROFILE_SET_ALLOW_STRONGHOLDS("alter_trade_profile_toggle_strongholds", null, "on_off", ChangeTradeProfileSetAllowEnemyStrongHoldsHandler.class),
     LIST_TRADE_ROUTE_PARAMETERS("list_available_trade_route_parameters", null, null, ListAvailableTradeRouteProfilesHandler.class),
     CLEAR_TRADE_ROUTE("clear_trade_route", null, null, ClearTradeRouteHandler.class),
 
@@ -149,10 +143,6 @@ public enum Commands {
     EXPLORATION_FSSQUIT("exit_fss", BINDING_EXPLORATION_FSSQUIT.getGameBinding(), null, GenericGameControlHandler.class),
 
     TARGET_SUB_SYSTEM("target_subsystem", null, "subsystem", TargetSubSystemHandler.class),
-
-    //RADAR_DECREASE_RANGE("decrease_radar_range", BINDING_RADAR_DECREASE_RANGE.getGameBinding(), null, GenericGameControlHandler.class),
-    //RADAR_INCREASE_RANGE("increase_radar_range", BINDING_RADAR_INCREASE_RANGE.getGameBinding(), null, GenericGameControlHandler.class),
-
     RECALL_DISMISS_SHIP("recall_or_dismiss_ship", BINDING_RECALL_DISMISS_SHIP.getGameBinding(), null, GenericGameControlHandler.class),
 
     REQUEST_DEFENSIVE_BEHAVIOUR("fighter_orders_defend_fighter_order", BINDING_REQUEST_DEFENSIVE_BEHAVIOUR.getGameBinding(), null, GenericGameControlHandler.class),
@@ -161,7 +151,7 @@ public enum Commands {
     REQUEST_REQUEST_DOCK("fighter_orders_recall", BINDING_REQUEST_REQUEST_DOCK.getGameBinding(), null, GenericGameControlHandler.class),
 
     STOP("stop", BINDING_SET_SPEED_ZERO.getGameBinding(), null, GenericGameControlHandler.class),
-    TAXI("taxi_take_us_in_autodocking", BINDING_SET_SPEED_ZERO.getGameBinding(), null, GenericGameControlHandler.class),
+    TAXI("taxi_take_us_in_or_autodocking", BINDING_SET_SPEED_ZERO.getGameBinding(), null, GenericGameControlHandler.class),
 
     SET_SPEED_ZERO("set_speed_to_zero_0", BINDING_SET_SPEED_ZERO.getGameBinding(), null, GenericGameControlHandler.class),
     SET_SPEED25("set_speed_to_slow_throttle_25", BINDING_SET_SPEED25.getGameBinding(), null, GenericGameControlHandler.class),
@@ -172,7 +162,7 @@ public enum Commands {
     SET_CARRIER_FUEL_RESERVE("set_tritium_carrier_fuel_reserve", null, "reserve", SetFleetCarrierFuelReserveHandler.class),
 
     SELECT_HIGHEST_THREAT("target_highest_threat", BINDING_SELECT_HIGHEST_THREAT.getGameBinding(), null, GenericGameControlHandler.class),
-    TARGET_NEXT_ROUTE_SYSTEM("select_or_target_next_system_in_route", BINDING_TARGET_NEXT_ROUTE_SYSTEM.getGameBinding(), null, GenericGameControlHandler.class),
+    TARGET_NEXT_ROUTE_SYSTEM("select_next_system_in_route", BINDING_TARGET_NEXT_ROUTE_SYSTEM.getGameBinding(), null, GenericGameControlHandler.class),
 
     TARGET_WINGMAN0("target_wingman_1", BINDING_TARGET_WINGMAN0.getGameBinding(), null, GenericGameControlHandler.class),
     TARGET_WINGMAN1("target_wingman_2", BINDING_TARGET_WINGMAN1.getGameBinding(), null, GenericGameControlHandler.class),

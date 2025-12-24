@@ -25,7 +25,7 @@ public enum Queries {
     ANALYZE_FSD_TARGET("query_analyze_targeted_star_system", "Analyze selected FTL destination for allegiance, traffic, and security.", AnalyzeFsdTargetHandler.class, true),
     ANALYZE_TRADE_ROUTE("query_trade_route_analysis", "Analyze trade route for current location.", AnalyzeTradeRouteHandler.class, true),
     WHAT_IS_OUR_CARRIER_DESTINATION("query_what_is_our_fleet_carrier_destination", "Return name of the star system the fleet carrier is headed to. Or no carrier route set, if empty", AnalyzeFleetCarrierFinalDestinationHandler.class, true),
-    //ANALYZE_LOCAL_MARKETS("query_local_commodity_markets", "Analyze commodity market contents at the current location.", AnalyzeLocalMarketsHandler.class, true), // "commodity" to avoid bio or material overlap,
+
     ANALYZE_LOCAL_OUTFITTING("query_local_outfitting", "Analyze available outfitting options.", AnalyzeLocalOutfittingHandler.class, true),
     ANALYZE_LOCAL_SHIPYARD("query_local_shipyard", "Analyze shipyard contents.", AnalyzeShipyardHandler.class, true),
     ANALYZE_LOCAL_STATIONS("query_local_stations_services", "Summarize services at local stations.", AnalyzeLocalStations.class, true),
@@ -34,7 +34,7 @@ public enum Queries {
     QUERY_ANALYZE_ON_BOARD_CARGO("query_ship_cargo_contents_for_commodities", "Use this data provide questions regarding cargo and/or ship loadout if relevant. Cargo is listed 1 unit = 1 ton. Do not ask follow up questions. Just provide information.", AnalyzeCargoHoldHandler.class, true),  // "ship" to avoid carrier/planet mix-up
     QUERY_ANALYZE_ROUTE("query_plotted_route_analysis", "Analyze the current plotted route. Number of  jumps = number of nodes.", AnalyzeRouterHandler.class, true),
     QUERY_ANALYZE_FUEL_ROUTE("query_can_we_fuel_on_route_analysis", "Analyze this data for re-fuel potential", AnalyzeRouterHandler.class, true),
-    QUERY_CARRIER_STATS("query_fleet_carrier_info", "Analyze fleet carrier data (e.g., fuel, market, balance, location)", AnalyzeCarrierDataHandler.class, true),  // "vehicle" to distinguish from planets
+    QUERY_CARRIER_STATS("query_fleet_carrier_info_range_fuel_etc", "Analyze fleet carrier data (e.g., fuel, market, balance, location)", AnalyzeCarrierDataHandler.class, true),  // "vehicle" to distinguish from planets
 
     /// First query might be enough. TODO: Check.
     QUERY_MISSIONS("query_summarize_outstanding_missions", "Provide summary of outstanding missions", AnalyzePirateMissionHandler.class, true),

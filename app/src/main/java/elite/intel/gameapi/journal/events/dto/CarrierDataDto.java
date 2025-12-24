@@ -330,11 +330,7 @@ public class CarrierDataDto implements ToJsonConvertible {
     }
 
     public int getRange() {
-        Integer tritiumInReserve = getCommodity().get("tritium");
-        if (tritiumInReserve == null) {
-            tritiumInReserve = 0;
-        }
-        int totalFuelAvailable = getFuelLevel() + tritiumInReserve;
+        int totalFuelAvailable = getFuelLevel() + getFuelReserve();
         return (totalFuelAvailable / MAX_FUEL_PER_JUMP) * MAX_CARRIER_SINGLE_JUMP_RANGE;
     }
 

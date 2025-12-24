@@ -80,7 +80,7 @@ public class EdDnClient {
         if (running) return;
         startListening(jsonNode -> {
             //if (jsonNode.toString().contains("commodity/3")) {
-            //    System.out.println(jsonNode);
+            System.out.println(jsonNode);
             //}
         });
     }

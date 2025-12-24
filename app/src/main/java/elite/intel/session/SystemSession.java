@@ -11,6 +11,10 @@ import elite.intel.db.util.Database;
 import elite.intel.util.Cypher;
 import elite.intel.util.json.GsonFactory;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -363,6 +367,20 @@ public class SystemSession {
         });
     }
 
+    public void setExplorationData(boolean enabled) {
+        Database.withDao(GameSessionDao.class, dao ->{
+            GameSessionDao.GameSession gameSession = dao.get();
+            gameSession.setSendExplorationData(enabled);
+            dao.save(gameSession);
+            return Void.class;
+        });
+    }
+
+
+    public boolean isExplorationData() {
+        return Database.withDao(GameSessionDao.class, dao -> dao.get().getSendExplorationData());
+    }
+
     public boolean isSendMarketData() {
         return Database.withDao(GameSessionDao.class, dao -> dao.get().getSendMarketData());
     }
@@ -373,5 +391,14 @@ public class SystemSession {
 
     public boolean isSendShipyardData() {
         return Database.withDao(GameSessionDao.class, dao -> dao.get().getSendShipyardData());
+    }
+
+    public String readVersionFromResources() {
+        try {
+            InputStream is = getClass().getResourceAsStream("/version.txt");
+            return new BufferedReader(new InputStreamReader(is)).readLine();
+        } catch (IOException e) {
+            return "Unknown";
+        }
     }
 }

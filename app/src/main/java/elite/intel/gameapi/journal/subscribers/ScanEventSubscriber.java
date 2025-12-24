@@ -8,7 +8,14 @@ import elite.intel.gameapi.journal.events.FSSBodySignalsEvent;
 import elite.intel.gameapi.journal.events.ScanEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.gameapi.journal.events.dto.MaterialDto;
+import elite.intel.search.eddn.EdDnClient;
+import elite.intel.search.eddn.ZMQUtil;
+import elite.intel.search.eddn.mappers.ScanEventJournalMapper;
+import elite.intel.search.eddn.schemas.EddnHeader;
+import elite.intel.search.eddn.schemas.EddnPayload;
+import elite.intel.search.eddn.schemas.ScanEventJournalMessage;
 import elite.intel.session.PlayerSession;
+import elite.intel.session.SystemSession;
 import elite.intel.util.GravityCalculator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,7 +32,6 @@ public class ScanEventSubscriber extends BiomeAnalyzer {
 
 
     private static final Logger log = LogManager.getLogger(ScanEventSubscriber.class);
-    PlayerSession playerSession = PlayerSession.getInstance();
     private static final Set<String> valuablePlanetClasses = Set.of(
             "ammonia world",
             "water world",
@@ -38,16 +44,46 @@ public class ScanEventSubscriber extends BiomeAnalyzer {
             "sudarsky class ii gas giant",
             "gas giant with water-based life"
     );
+    private final PlayerSession playerSession = PlayerSession.getInstance();
+    private final SystemSession systemSession = SystemSession.getInstance();
+    private final EdDnClient edDnClient = EdDnClient.getInstance();
+
+    private static String getDetails(ScanEvent event, String shortName) {
+        boolean hasMats = event.getMaterials() != null && !event.getMaterials().isEmpty();
+        boolean isTerraformable = event.getTerraformState() != null && !event.getTerraformState().isEmpty();
+        boolean isLandable = event.isLandable();
+        String sensorData = "New discovery: " + shortName + ". "
+                + (hasMats ? " Materials detected. data available on request, " : " ")
+                + (isTerraformable ? " Terraformable, " : " ")
+                + (isLandable ? " landable. " : ". ");
+        return sensorData;
+    }
 
     @Subscribe
     public void onScanEvent(ScanEvent event) {
+
+        if (systemSession.isExplorationData()) {
+            ScanEventJournalMessage msg = ScanEventJournalMapper.map(event);
+            EddnHeader header = new EddnHeader(ZMQUtil.generateUploaderID());
+            header.setGameVersion(playerSession.getGameVersion());
+            header.setGameBuild(playerSession.getGameBuild());
+            header.setSoftwareVersion(systemSession.readVersionFromResources());
+
+            EddnPayload<ScanEventJournalMessage> payload = new EddnPayload<>(
+                    "https://eddn.edcd.io/schemas/journal/1",
+                    header,
+                    msg
+            );
+            edDnClient.upload(payload);
+        }
+
         String shortName = subtractString(event.getBodyName(), event.getStarSystem());
         String bodyName = event.getBodyName();
 
         LocationDto location = playerSession.getLocation(event.getBodyID(), event.getStarSystem());
         LocationDto.LocationType locationType = determineLocationType(event);
 
-        if(BELT_CLUSTER.equals(locationType) ){
+        if (BELT_CLUSTER.equals(locationType)) {
             return; // skip belt clusters.
         }
 
@@ -97,7 +133,7 @@ public class ScanEventSubscriber extends BiomeAnalyzer {
             if (location.getBioSignals() < countBioSignals) {
                 location.setBioSignals(countBioSignals);
             }
-            if( location.getGeoSignals() < countGeological) {
+            if (location.getGeoSignals() < countGeological) {
                 location.setGeoSignals(countGeological);
             }
         }
@@ -112,7 +148,7 @@ public class ScanEventSubscriber extends BiomeAnalyzer {
         }
 
         if (location.getBioSignals() > 0 && playerSession.isDiscoveryAnnouncementOn()) {
-            if(!"Detailed".equals(event.getScanType())) {
+            if (!"Detailed".equals(event.getScanType())) {
                 analyzeBiome(location);
             }
         } else {
@@ -139,7 +175,6 @@ public class ScanEventSubscriber extends BiomeAnalyzer {
             return PLANET_OR_MOON;
         }
     }
-
 
     private void announceIfNewDiscovery(ScanEvent event, LocationDto location) {
         boolean wasDiscovered = event.isWasDiscovered();
@@ -173,18 +208,6 @@ public class ScanEventSubscriber extends BiomeAnalyzer {
         } else if (PRIMARY_STAR.equals(location.getLocationType())) {
             EventBusManager.publish(new DiscoveryAnnouncementEvent("Previously discovered!"));
         }
-    }
-
-
-    private static String getDetails(ScanEvent event, String shortName) {
-        boolean hasMats = event.getMaterials() != null && !event.getMaterials().isEmpty();
-        boolean isTerraformable = event.getTerraformState() != null && !event.getTerraformState().isEmpty();
-        boolean isLandable = event.isLandable();
-        String sensorData = "New discovery: " + shortName + ". "
-                + (hasMats ? " Materials detected. data available on request, " : " ")
-                + (isTerraformable ? " Terraformable, " : " ")
-                + (isLandable ? " landable. " : ". ");
-        return sensorData;
     }
 
     private List<MaterialDto> toListOfMaterials(List<ScanEvent.Material> materials) {

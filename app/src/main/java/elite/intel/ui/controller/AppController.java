@@ -196,6 +196,12 @@ public class AppController implements Runnable {
         });
     }
 
+    @Subscribe void onToggleSendExplorationData(ToggleSendExplorationDataEvent  event){
+        SwingUtilities.invokeLater(() -> {
+            systemSession.setExplorationData(event.isEnabled());
+        });
+    }
+
 
     private void stopServices() {
         EventBusManager.publish(new AiVoxResponseEvent("Systems offline..."));

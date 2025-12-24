@@ -69,6 +69,8 @@ public class AppView extends JFrame implements AppViewInterface {
     private JCheckBox sendMarketData;
     private JCheckBox sendShipyardData;
     private JCheckBox sendOutfitingData;
+    private JCheckBox sendExplorationData;
+
     private JTextField playerAltNameField;
     private JTextField playerTitleField;
     private JTextField playerMissionDescription;
@@ -82,7 +84,7 @@ public class AppView extends JFrame implements AppViewInterface {
 
     public AppView() {
         super("--");
-        setTitle("Elite Intel " + readVersionFromResources());
+        setTitle("Elite Intel " + systemSession.readVersionFromResources());
         // Load and apply custom font before any other UI setup
         loadCustomFont();
         // Apply dark theme defaults
@@ -145,6 +147,7 @@ public class AppView extends JFrame implements AppViewInterface {
         initData();
     }
 
+/*
     private String readVersionFromResources(){
         try {
             InputStream is = getClass().getResourceAsStream("/version.txt");
@@ -154,6 +157,7 @@ public class AppView extends JFrame implements AppViewInterface {
             return "Unknown";
         }
     }
+*/
     /**
      * Binds a lock checkbox to a specific field, allowing the field's state
      * (enabled, editable, or read-only) to be toggled based on the checkbox selection.
@@ -527,6 +531,10 @@ public class AppView extends JFrame implements AppViewInterface {
         sendOutfitingData.addActionListener(e -> {
             EventBusManager.publish(new ToggleSendOutfittingDataEvent(sendOutfitingData.isSelected()));
         });
+        sendExplorationData = new JCheckBox("Send Exploration Data", false);
+        sendExplorationData.addActionListener(e -> {
+            EventBusManager.publish(new ToggleSendExplorationDataEvent(sendExplorationData.isSelected()));
+        });
 
         checkBoxes.add(new JLabel(" "));
         checkBoxes.add(new JLabel("This app relies in part on crowd sourced data from pilots like you."));
@@ -535,6 +543,7 @@ public class AppView extends JFrame implements AppViewInterface {
         checkBoxes.add(sendMarketData);
         checkBoxes.add(sendShipyardData);
         checkBoxes.add(sendOutfitingData);
+        checkBoxes.add(sendExplorationData);
         checkBoxes.add(new JLabel(" "));
         panel.add(checkBoxes, gbc);
 

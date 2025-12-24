@@ -24,6 +24,7 @@ public class OutfittingSubscriber {
         EddnHeader header = new EddnHeader(ZMQUtil.generateUploaderID());
         header.setGameVersion(playerSession.getGameVersion());
         header.setGameBuild(playerSession.getGameBuild());
+        header.setSoftwareVersion(systemSession.readVersionFromResources());
 
         OutfittingMessage message = OutfittingMapper.map(event);
         EddnPayload<OutfittingMessage> payload = new EddnPayload<>(

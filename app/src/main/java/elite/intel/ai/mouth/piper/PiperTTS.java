@@ -1,7 +1,6 @@
 package elite.intel.ai.mouth.piper;
 
 import com.google.common.eventbus.Subscribe;
-import elite.intel.ai.ears.IsSpeakingEvent;
 import elite.intel.ai.mouth.MouthInterface;
 import elite.intel.ai.mouth.subscribers.events.TTSInterruptEvent;
 import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
@@ -145,7 +144,7 @@ public class PiperTTS implements MouthInterface {
         try {
             AudioFormat format = new AudioFormat(22050, 16, 1, true, false);
             DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
-            int bufferSize = (int)(format.getFrameSize() * format.getSampleRate());
+            int bufferSize = (int) (format.getFrameSize() * format.getSampleRate());
             persistentLine = (SourceDataLine) AudioSystem.getLine(info);
             persistentLine.open(format, bufferSize);
             persistentLine.start();
@@ -168,11 +167,11 @@ public class PiperTTS implements MouthInterface {
         setSpeechSpeed(0.75f);
 
         String json = """
-        {
-          "text": "%s",
-          "length_scale": %.2f
-        }
-        """.formatted(text.replace("\"", "\\\""), speechSpeed);
+                {
+                  "text": "%s",
+                  "length_scale": %.2f
+                }
+                """.formatted(text.replace("\"", "\\\""), speechSpeed);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:5000/"))
                 .header("Content-Type", "application/json")
@@ -202,7 +201,7 @@ public class PiperTTS implements MouthInterface {
         int frameSize = fmt.getFrameSize(); // 2
 
         // 50ms silence to kill pop
-        byte[] silence = new byte[(int)(fmt.getSampleRate() * 0.05) * frameSize];
+        byte[] silence = new byte[(int) (fmt.getSampleRate() * 0.05) * frameSize];
         persistentLine.write(silence, 0, silence.length);
         final int CHUNK = 8192;
         for (int offset = 0; offset < audioData.length; offset += CHUNK) {

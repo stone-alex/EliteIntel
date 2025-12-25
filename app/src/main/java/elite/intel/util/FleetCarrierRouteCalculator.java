@@ -23,8 +23,8 @@ public class FleetCarrierRouteCalculator {
         CarrierDataDto carrierData = playerSession.getCarrierData();
 
         int fuelSupply = carrierData.getFuelLevel();
-        Integer tritiumInReserve = carrierData.getFuelReserve();
-        if (tritiumInReserve != null && tritiumInReserve > 0) {
+        int tritiumInReserve = carrierData.getFuelReserve();
+        if (tritiumInReserve > 0) {
             fuelSupply = fuelSupply + tritiumInReserve;
         }
 

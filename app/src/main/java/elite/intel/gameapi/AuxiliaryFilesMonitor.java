@@ -193,7 +193,7 @@ public class AuxiliaryFilesMonitor implements Runnable {
         } catch (IOException e) {
             log.error("Failed to read file: {}", filePath, e);
         } catch (JsonParseException e) {
-            log.error("Failed to parse JSON in file: {}", filePath, e);
+            log.error("Failed to parse JSON in file: {}", filePath);
         }
         return null;
     }

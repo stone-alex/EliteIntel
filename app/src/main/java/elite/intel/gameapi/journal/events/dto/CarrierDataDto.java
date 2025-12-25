@@ -19,8 +19,6 @@ public class CarrierDataDto implements ToJsonConvertible {
     private String carrierName;
     private String carrierType;
     private String dockingAccess;
-    private double currentJumpRange;
-    private double maxJumpRange;
     private boolean allowNotorious;
     private boolean isPendingDecommission;
     private String spaceUsage;
@@ -88,22 +86,6 @@ public class CarrierDataDto implements ToJsonConvertible {
 
     public void setDockingAccess(String dockingAccess) {
         this.dockingAccess = dockingAccess;
-    }
-
-    public double getCurrentJumpRange() {
-        return currentJumpRange;
-    }
-
-    public void setCurrentJumpRange(double currentJumpRange) {
-        this.currentJumpRange = currentJumpRange;
-    }
-
-    public double getMaxJumpRange() {
-        return maxJumpRange;
-    }
-
-    public void setMaxJumpRange(double maxJumpRange) {
-        this.maxJumpRange = maxJumpRange;
     }
 
     public boolean isAllowNotorious() {

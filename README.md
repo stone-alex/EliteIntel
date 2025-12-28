@@ -7,12 +7,16 @@
 --- 
 
 ## Linux and Windows are supported.
-If you run into issues, hit us up on GitHub issues or 👉[**Discord**](https://discord.gg/3qAqBENsBm).👈
+If you run into issues, hit us up on GitHub issues or
 Feedback and bug reports are super welcome!
 
-Alternatively, you can find me on Libera IRC.
-Private - no corpo spying, no tracking, no ads. no data collection chat:
-💬 [**IRC**](https://web.libera.chat/?channel=#EliteIntelDev)
+Two ways to get in touch:
+
+🫆 👉[**Discord**](https://discord.gg/3qAqBENsBm).👈 (Corporate, spying, tracking, and profiling) 
+
+💬 👉[**Libera IRC**](https://web.libera.chat/?channel=#EliteIntelDev)👈 **NEW**
+(Private - no corpo spying, no tracking, no ads. no data collection)
+
 
 ## Overview
 

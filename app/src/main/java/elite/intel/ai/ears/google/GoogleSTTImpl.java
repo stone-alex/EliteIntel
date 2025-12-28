@@ -92,8 +92,9 @@ public class GoogleSTTImpl implements EarsInterface {
         // Start processing thread
         this.processingThread = new Thread(this::startStreaming);
         this.processingThread.start();
-        if (systemSession.getRmsThresholdLow() != null) {
+        if (systemSession.getRmsThresholdHigh() != null) {
             EventBusManager.publish(new AppLogEvent("Voice Input Enabled"));
+            EventBusManager.publish(new AiVoxResponseEvent("Voice Input Enabled"));
         }
     }
 

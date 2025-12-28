@@ -2,6 +2,7 @@ package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import elite.intel.db.managers.CodexEntryManager;
+import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.data.BioForms;
@@ -21,6 +22,7 @@ public class ScanOrganicSubscriber {
     private final String scan2 = "Sample";
     private final String scan3 = "Analyse";
     private final PlayerSession playerSession = PlayerSession.getInstance();
+    private final LocationManager locationManager = LocationManager.getInstance();
     private final CodexEntryManager codexEntryManager = CodexEntryManager.getInstance();
     private final Status status = Status.getInstance();
     private int scanCount = 0;
@@ -38,7 +40,7 @@ public class ScanOrganicSubscriber {
         String scanType = event.getScanType();
         String genus = event.getGenusLocalised();
         String species = subtractString(event.getSpeciesLocalised(), genus);
-        LocationDto currentLocation = playerSession.getLocation(event.getBody(), playerSession.getPrimaryStarName());
+        LocationDto currentLocation = locationManager.findBySystemAddress(event.getSystemAddress(), event.getBody());
         playerSession.setCurrentLocationId(event.getBody());
 
         boolean isOurDiscovery = currentLocation.isOurDiscovery();

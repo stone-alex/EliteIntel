@@ -19,49 +19,49 @@ import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.*;
  */
 public enum Commands {
 
-    LIGHTS_ON_OFF("toggle_lights", null, "lights", LightsOnOffHandler.class),
-    ADD_MINING_TARGET("add_mining_target", null, "mining_target", AddMiningTargetHandler.class),
+    LIGHTS_ON_OFF("toggle_lights", null, "state", LightsOnOffHandler.class),
+    ADD_MINING_TARGET("add_mining_target", null, "key", AddMiningTargetHandler.class),
     CLEAR_MINING_TARGETS("clear_mining_targets", null, null, ClearMiningTargetsHandler.class),
     CLEAR_CACHE("clear_cache", null, "session_clear", ClearCacheHandler.class),
     INTERRUPT_TTS("shut_up_cancel_interrupt_tts_vocalization", null, null, ShutUpHandler.class),
 
-    FIND_RAW_MATERIAL_TRADER("find_raw_material_trader", null, "distance", FindRawMaterialTraderHandler.class),
-    FIND_ENCODED_MATERIAL_TRADER("find_encoded_material_trader", null, "distance", FindEncodedMaterialTraderHandler.class),
-    FIND_MANUFACTURED_MATERIAL_TRADER("find_manufactured_material_trader", null, "distance", FindManufacturedMaterialTraderHandler.class),
+    FIND_RAW_MATERIAL_TRADER("find_raw_material_trader", null, "key", FindRawMaterialTraderHandler.class),
+    FIND_ENCODED_MATERIAL_TRADER("find_encoded_material_trader", null, "key", FindEncodedMaterialTraderHandler.class),
+    FIND_MANUFACTURED_MATERIAL_TRADER("find_manufactured_material_trader", null, "key", FindManufacturedMaterialTraderHandler.class),
 
-    FIND_HUNTING_GROUNDS("find_hunting_grounds_for_pirate_massacre_missions", null, "range", LocatePirateHuntingGrounds.class),
+    FIND_HUNTING_GROUNDS("find_hunting_grounds_for_pirate_massacre_missions", null, "key", LocatePirateHuntingGrounds.class),
     RECON_TARGET_SYSTEM("navigate_plot_reconnaissance_route_to_target_star_system", null, null, ReconPirateMissionTargetSystemHandler.class),
     RECON_PROVIDER_SYSTEM("navigate_plot_reconnaissance_route_to_mission_provider_system", null, null, ReconMissionProviderSystemHandler.class),
     NAVIGATE_TO_PIRATE_MISSION_TARGET_SYSTEM("plot_route_to_pirate_massacre_mission_target_system", null, null, NavigateToPirateMassacreMissionTargetHandler.class),
 
     MONETIZE_ROUTE("monetize_route", null, null, MonetizeRouteHandler.class),
 
-    FIND_HUMAN_TECHNOLOGY_BROKER("find_human_technology_broker", null, "distance", FindHumanTechnologyBrokerHandler.class),
-    FIND_GUARDIAN_TECHNOLOGY_BROKER("find_guardian_technology_broker", null, "distance", FindGuadrianTechnologyBroker.class),
+    FIND_HUMAN_TECHNOLOGY_BROKER("find_human_technology_broker", null, "key", FindHumanTechnologyBrokerHandler.class),
+    FIND_GUARDIAN_TECHNOLOGY_BROKER("find_guardian_technology_broker", null, "key", FindGuadrianTechnologyBroker.class),
 
-    FIND_VISTA_GENOMICS("find_vista_genomics", null, "distance", FindVistaGenomicsHandler.class),
-    FIND_BRAIN_TREES("find_brain_trees", null, "material", FindBrainTreesHandler.class),
-    FIND_FLEET_CARRIER_FUEL_MINING_SITE("find_fleet_carrier_fuel_mining_site", null, "distance", FindCarrierFuelMiningSiteHandler.class),
-    FIND_MINING_SITE("find_mining_site_for_material", null, "material", FindMiningSiteHandler.class),
+    FIND_VISTA_GENOMICS("find_vista_genomics", null, "key", FindVistaGenomicsHandler.class),
+    FIND_BRAIN_TREES("find_brain_trees", null, "key", FindBrainTreesHandler.class),
+    FIND_FLEET_CARRIER_FUEL_MINING_SITE("find_fleet_carrier_fuel_mining_site", null, "key", FindCarrierFuelMiningSiteHandler.class),
+    FIND_MINING_SITE("find_mining_site_for_material", null, "material && max_distance", FindMiningSiteHandler.class),
 
-    FIND_NEAREST_FLEET_CARRIER("find_nearest_fleet_carrier", null, "distance", FindNearestFleetCarrierHandler.class),
+    FIND_NEAREST_FLEET_CARRIER("find_nearest_fleet_carrier", null, "key", FindNearestFleetCarrierHandler.class),
     CLEAR_FLEET_CARRIER_ROUTE("clear_fleet_carrier_route", null, null, ClearFleetCarrierRouteHandler.class),
 
-    FIND_COMMODITY("find_market_where_to_buy", null, "commodity", FindCommodityHandler.class),
-    SET_AI_VOICE("set_or_change_voice_to", null, "voice_name", ChangeAiVoiceHandler.class),
+    FIND_COMMODITY("find_market_where_to_buy", null, "key", FindCommodityHandler.class),
+    SET_AI_VOICE("set_or_change_voice_to", null, "key", ChangeAiVoiceHandler.class),
     SET_HOME_SYSTEM("set_location_as_home_star_system", null, null, SetCurrentStarAsHomeSystem.class),
     SET_PERSONALITY("set_personality", null, "personality", SetPersonalityHandler.class),
     SET_PROFILE("set_profile", null, "profile", SetCadenceHandler.class),
-    SET_RADIO_TRANSMISSION_MODE("turn_radio_transmission_on_off", null, "radio_transmission_on_off", SetRadioTransmissionOnOff.class),
-    SET_STREAMING_MODE("toggle_streaming_mode", null, "streaming_mode_on_off", SetStreamingModeHandler.class),
-    NAVIGATE_TO_TARGET("navigate_to_coordinates", null, "lat_lon", NavigateToCoordinatesHandler.class),
+    SET_RADIO_TRANSMISSION_MODE("turn_radio_transmission_on_off", null, "state", SetRadioTransmissionOnOff.class),
+    SET_STREAMING_MODE("toggle_streaming_mode", null, "state", SetStreamingModeHandler.class),
+    NAVIGATE_TO_TARGET("navigate_to_coordinates", null, "lat && lon", NavigateToCoordinatesHandler.class),
     NAVIGATION_ON_OFF("cancel_navigation", null, null, NavigationOnOffHandler.class),
-    DISCOVERY_ON_OFF("toggle_discovery_announcements", null, "discovery_on_off", DiscoveryOnOffHandler.class),
-    MINING_ON_OFF("toggle_mining_announcements", null, "mining_on_off", MiningOnOffHandler.class),
-    ROUTE_ON_OFF("toggle_route_announcements", null, "route_on_off", RouteAnnouncementsOnOffHandler.class),
+    DISCOVERY_ON_OFF("toggle_discovery_announcements", null, "state", DiscoveryOnOffHandler.class),
+    MINING_ON_OFF("toggle_mining_announcements", null, "state", MiningOnOffHandler.class),
+    ROUTE_ON_OFF("toggle_route_announcements", null, "state", RouteAnnouncementsOnOffHandler.class),
 
-    INCREASE_SPEED_BY("speed_plus", BINDING_INCREASE_SPEED.getGameBinding(), "value", SpeedControlHandler.class),
-    DECREASE_SPEED_BY("speed_minus", BINDING_DECREASE_SPEED.getGameBinding(), "value", SpeedControlHandler.class),
+    INCREASE_SPEED_BY("speed_plus", BINDING_INCREASE_SPEED.getGameBinding(), "key", SpeedControlHandler.class),
+    DECREASE_SPEED_BY("speed_minus", BINDING_DECREASE_SPEED.getGameBinding(), "key", SpeedControlHandler.class),
 
     /// Commands that have a specific handler impl (which uses N bindings inside)
     INCREASE_ENGINES_POWER("transfer_power_to_engines", null, null, SetPowerToEnginesHandler.class),
@@ -118,20 +118,22 @@ public enum Commands {
 
     CALCULATE_TRADE_ROUTE("calculate_trade_route", null, null, CalculateTradeRouteHandler.class),
     PLOT_ROUTE_TO_NEXT_TRADE_STOP("navigate_to_next_trade_stop_port_or_station", null, null, PlotRouteToNextTradeStopHandler.class),
-    CHANGE_TRADE_PROFILE_SET_STARTING_BUDGET("alter_trade_profile_set_starting_budget", null, "budget", ChangeTradeProfileSetStartingBudgetHander.class),
-    CHANGE_TRADE_PROFILE_SET_MAX_NUMBER_OF_STOPS("alter_trade_profile_set_maximum_number_of_stops", null, "numstops", ChangeTradeProfileSetMaxStopsHandler.class),
-    CAHNGE_TRADE_PROFILE_SET_MAX_DISTANCE_FROM_ENTRY("alter_trade_profile_set_maximum_distance_from_entry", null, "maxdist", ChangeTradeProfileSetMaxDistanceFromEntryHandler.class),
-    CHANGE_TRADE_PROFILE_SET_ALLOW_PROHIBITED_CARGO("alter_trade_profile_toggle_prohibited_cargo", null, "on_off", ChangeTradeProfileSetAllowProhibitedCargoHandler.class),
-    CHANGE_TRADE_PROFILE_SET_ALLOW_PLANETARY_PORT("alter_trade_profile_toggle_planetary_ports", null, "on_off", ChangeTradeProfileSetIncluidePlanetaryPortsHandler.class),
-    CHANGE_TRADE_PROFILE_SET_ALLOW_PERMIT_SYSTEMS("alter_trade_profile_toggle_permit_protected_star_systems", null, "on_off", ChangeTradeProfileAllowPermitSystemsHandler.class),
-    CHANGE_TRADE_PROFILE_SET_ALLOW_STRONGHOLDS("alter_trade_profile_toggle_strongholds", null, "on_off", ChangeTradeProfileSetAllowEnemyStrongHoldsHandler.class),
+    CHANGE_TRADE_PROFILE_SET_STARTING_BUDGET("alter_trade_profile_set_starting_budget", null, "key", ChangeTradeProfileSetStartingBudgetHander.class),
+    CHANGE_TRADE_PROFILE_SET_MAX_NUMBER_OF_STOPS("alter_trade_profile_set_maximum_number_of_stops", null, "key", ChangeTradeProfileSetMaxStopsHandler.class),
+    CAHNGE_TRADE_PROFILE_SET_MAX_DISTANCE_FROM_ENTRY("alter_trade_profile_set_maximum_distance_from_entry", null, "key", ChangeTradeProfileSetMaxDistanceFromEntryHandler.class),
+    CHANGE_TRADE_PROFILE_SET_ALLOW_PROHIBITED_CARGO("alter_trade_profile_toggle_prohibited_cargo", null, "state", ChangeTradeProfileSetAllowProhibitedCargoHandler.class),
+    CHANGE_TRADE_PROFILE_SET_ALLOW_PLANETARY_PORT("alter_trade_profile_toggle_planetary_ports", null, "state", ChangeTradeProfileSetIncluidePlanetaryPortsHandler.class),
+    CHANGE_TRADE_PROFILE_SET_ALLOW_PERMIT_SYSTEMS("alter_trade_profile_toggle_permit_protected_star_systems", null, "state", ChangeTradeProfileAllowPermitSystemsHandler.class),
+    CHANGE_TRADE_PROFILE_SET_ALLOW_STRONGHOLDS("alter_trade_profile_toggle_strongholds", null, "state", ChangeTradeProfileSetAllowEnemyStrongHoldsHandler.class),
     LIST_TRADE_ROUTE_PARAMETERS("list_available_trade_route_parameters", null, null, ListAvailableTradeRouteProfilesHandler.class),
     CLEAR_TRADE_ROUTE("clear_trade_route", null, null, ClearTradeRouteHandler.class),
 
     /// Generic simple commands. no parameters, but require binding
     ACTIVATE("activate", BINDING_ACTIVATE.getGameBinding(), null, GenericGameControlHandler.class),
-    NIGHT_VISION_ON("turn_on_night_vision", BINDING_NIGHT_VISION_TOGGLE.getGameBinding(), null, GenericGameControlHandler.class),
-    NIGHT_VISION_OFF("turn_off_night_vision", BINDING_NIGHT_VISION_TOGGLE.getGameBinding(), null, GenericGameControlHandler.class),
+
+    NIGHT_VISION_ON("turn_on_night_vision", BINDING_NIGHT_VISION_TOGGLE.getGameBinding(), "state", GenericGameControlHandler.class),
+    NIGHT_VISION_OFF("turn_off_night_vision", BINDING_NIGHT_VISION_TOGGLE.getGameBinding(), "state", GenericGameControlHandler.class),
+
     CYCLE_NEXT_PAGE("cycle_next_page", BINDING_CYCLE_NEXT_PAGE.getGameBinding(), null, GenericGameControlHandler.class),
     CYCLE_NEXT_PANEL("cycle_next_panel", BINDING_CYCLE_NEXT_PANEL.getGameBinding(), null, GenericGameControlHandler.class),
     CYCLE_PREVIOUS_PAGE("cycle_previous_page", BINDING_CYCLE_PREVIOUS_PAGE.getGameBinding(), null, GenericGameControlHandler.class),
@@ -159,7 +161,7 @@ public enum Commands {
     SET_SPEED75("set_speed_to_optimal_throttle_75", BINDING_SET_SPEED75.getGameBinding(), null, GenericGameControlHandler.class),
     SET_SPEED100("set_speed_to_maximum_throttle_100", BINDING_SET_SPEED100.getGameBinding(), null, GenericGameControlHandler.class),
 
-    SET_CARRIER_FUEL_RESERVE("set_tritium_carrier_fuel_reserve", null, "reserve", SetFleetCarrierFuelReserveHandler.class),
+    SET_CARRIER_FUEL_RESERVE("set_tritium_carrier_fuel_reserve", null, "key", SetFleetCarrierFuelReserveHandler.class),
 
     SELECT_HIGHEST_THREAT("target_highest_threat", BINDING_SELECT_HIGHEST_THREAT.getGameBinding(), null, GenericGameControlHandler.class),
     TARGET_NEXT_ROUTE_SYSTEM("select_next_system_in_route", BINDING_TARGET_NEXT_ROUTE_SYSTEM.getGameBinding(), null, GenericGameControlHandler.class),
@@ -182,10 +184,10 @@ public enum Commands {
         this.handlerClass = handlerClass;
     }
 
-    public static String[] getCustomCommands() {
+    public static String[] getCommands() {
         String[] result = new String[Commands.values().length];
         for (int i = 0; i < Commands.values().length; i++) {
-            result[i] = Commands.values()[i].getAction();
+            result[i] = "action:" + Commands.values()[i].getAction() + (Commands.values()[i].getParamKey() == null ? " paramKey: none" : " paramKey:" + Commands.values()[i].getParamKey());
         }
         return result;
     }

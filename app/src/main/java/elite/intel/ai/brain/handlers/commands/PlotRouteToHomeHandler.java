@@ -11,8 +11,9 @@ import elite.intel.session.Status;
 public class PlotRouteToHomeHandler extends CommandOperator implements CommandHandler {
 
     private final GameController commandHandler;
+    private final LocationManager locations = LocationManager.getInstance();
 
-    public PlotRouteToHomeHandler(GameController commandHandler) throws Exception {
+    public PlotRouteToHomeHandler(GameController commandHandler) {
         super(commandHandler.getMonitor(), commandHandler.getExecutor());
         this.commandHandler = commandHandler;
     }
@@ -21,9 +22,7 @@ public class PlotRouteToHomeHandler extends CommandOperator implements CommandHa
 
         Status status = Status.getInstance();
         if(status.isInSrv() || status.isInMainShip()) {
-
             EventBusManager.publish(new AiVoxResponseEvent("Plotting route to home system..."));
-            LocationManager locations = LocationManager.getInstance();
             LocationDto location = locations.getHomeSystem();
             if (location.getBodyId() == -1) {
                 EventBusManager.publish(new AiVoxResponseEvent("Home system is not set. We are homeless!"));

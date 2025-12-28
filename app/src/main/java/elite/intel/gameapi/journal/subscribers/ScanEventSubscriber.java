@@ -3,6 +3,7 @@ package elite.intel.gameapi.journal.subscribers;
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.brain.commons.BiomeAnalyzer;
 import elite.intel.ai.mouth.subscribers.events.DiscoveryAnnouncementEvent;
+import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.FSSBodySignalsEvent;
 import elite.intel.gameapi.journal.events.ScanEvent;
@@ -46,6 +47,7 @@ public class ScanEventSubscriber extends BiomeAnalyzer {
     );
     private final PlayerSession playerSession = PlayerSession.getInstance();
     private final SystemSession systemSession = SystemSession.getInstance();
+    private final LocationManager locationManager = LocationManager.getInstance();
     private final EdDnClient edDnClient = EdDnClient.getInstance();
 
     private static String getDetails(ScanEvent event, String shortName) {
@@ -80,7 +82,7 @@ public class ScanEventSubscriber extends BiomeAnalyzer {
         String shortName = subtractString(event.getBodyName(), event.getStarSystem());
         String bodyName = event.getBodyName();
 
-        LocationDto location = playerSession.getLocation(event.getBodyID(), event.getStarSystem());
+        LocationDto location = locationManager.getLocation(event.getStarSystem(), event.getBodyID());
         LocationDto.LocationType locationType = determineLocationType(event);
 
         if (BELT_CLUSTER.equals(locationType)) {
@@ -117,7 +119,7 @@ public class ScanEventSubscriber extends BiomeAnalyzer {
         location.setPlanetShortName(subtractString(event.getBodyName(), event.getStarSystem()));
 
 
-        List<FSSBodySignalsEvent.Signal> fssSignals = playerSession.getLocation(event.getBodyID(), event.getStarSystem()).getFssSignals();
+        List<FSSBodySignalsEvent.Signal> fssSignals = locationManager.getLocation(event.getStarSystem(), event.getBodyID()).getFssSignals();
 
         int countBioSignals = 0;
         int countGeological = 0;

@@ -29,7 +29,8 @@ public class FSSSignalDiscoveredSubscriber {
     private static final String USS_TYPE_VERY_VALUABLE_SALVAGE = "$USS_Type_VeryValuableSalvage";
 
     private PirateMissionDataManager pirateMissionDataManager = PirateMissionDataManager.getInstance();
-    private PlayerSession playerSession = PlayerSession.getInstance();
+    private final PlayerSession playerSession = PlayerSession.getInstance();
+    private final LocationManager locationManager = LocationManager.getInstance();
     private final SystemSession systemSession = SystemSession.getInstance();
     private final EdDnClient edDnClient = EdDnClient.getInstance();
 
@@ -37,7 +38,6 @@ public class FSSSignalDiscoveredSubscriber {
     public void onFSSSignalDiscovered(FSSSignalDiscoveredEvent event) {
 
         if(systemSession.isExplorationData()) {
-            LocationManager locationManager = LocationManager.getInstance();
             ScanFssSignalDiscoveredMessage msg = ScanFssSignalDiscoveredMapper.map(
                     event,
                     playerSession.getPrimaryStarName(),
@@ -79,7 +79,7 @@ public class FSSSignalDiscoveredSubscriber {
     }
 
     private LocationDto updateLocation(FSSSignalDiscoveredEvent event) {
-        LocationDto currentLocation = playerSession.getCurrentLocation();
+        LocationDto currentLocation = locationManager.findBySystemAddress(event.getSystemAddress());
         FssSignalDto signal = new FssSignalDto();
         signal.setSignalName(event.getSignalName());
         signal.setSignalNameLocalised(event.getSignalNameLocalised());

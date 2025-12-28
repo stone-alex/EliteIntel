@@ -27,19 +27,20 @@ public class LocationManager {
     }
 
     public void save(LocationDto location) {
-        if(location.getStarName() == null) return;
+        if (location.getStarName() == null) return;
         Database.withDao(LocationDao.class, dao -> {
             String locationName = location.getPlanetName() == null ? location.getStationName() : location.getPlanetName();
-            dao.upsert(location.getBodyId(), locationName, location.getStarName(), location.isHomeSystem(), location.toJson());
+            dao.upsert(location.getBodyId(), locationName, location.getStarName(), location.isHomeSystem(), location.getSystemAddress(), location.toJson());
             return null;
         });
     }
 
-    public void setAsHomeSystem() {
+    public void setAsHomeSystem(LocationDto location) {
         Database.withDao(LocationDao.class, dao -> {
             dao.clearHomeSystem();
-            dao.setCurrentStarSystemAsHome();
-            return null;
+            dao.setCurrentStarSystemAsHome(location.getStarName(), location.getSystemAddress());
+            dao.upsert(location.getBodyId(), location.getStarName(), location.getStarName(), true, location.getSystemAddress(), location.toJson());
+            return Void.class;
         });
     }
 
@@ -57,6 +58,37 @@ public class LocationManager {
             return GsonFactory.getGson().fromJson(entity.getJson(), LocationDto.class);
         });
     }
+
+    public LocationDto getHomeSystem() {
+        return Database.withDao(LocationDao.class, dao -> {
+            LocationDao.Location homeSystem = dao.findHomeSystem();
+            return homeSystem == null ? new LocationDto(-1L) : GsonFactory.getGson().fromJson(homeSystem.getJson(), LocationDto.class);
+        });
+    }
+
+    public LocationDto findBySystemAddress(long systemAddress, String planetName) {
+        return Database.withDao(LocationDao.class, dao -> {
+            LocationDao.Location location = dao.findBySystemAddress(systemAddress, planetName);
+            return location == null ? new LocationDto(-1L, systemAddress) : GsonFactory.getGson().fromJson(location.getJson(), LocationDto.class);
+        });
+    }
+
+    public LocationDto findBySystemAddress(long systemAddress) {
+        return Database.withDao(LocationDao.class, dao -> {
+            LocationDao.Location location = dao.findBySystemAddress(systemAddress);
+            return location == null ? new LocationDto(-1L, systemAddress) : GsonFactory.getGson().fromJson(location.getJson(), LocationDto.class);
+        });
+    }
+
+
+    public LocationDto findBySystemAddress(long systemAddress, Long bodyId) {
+        return Database.withDao(LocationDao.class, dao -> {
+            LocationDao.Location location;
+            location = dao.findBySystemAddress(systemAddress, bodyId);
+            return location == null ? new LocationDto(-1L, systemAddress) : GsonFactory.getGson().fromJson(location.getJson(), LocationDto.class);
+        });
+    }
+
 
     public Map<Long, LocationDto> findByPrimaryStar(String primaryStar) {
         return Database.withDao(LocationDao.class, dao -> {
@@ -76,10 +108,11 @@ public class LocationManager {
         });
     }
 
-    public LocationDto getHomeSystem() {
-        return Database.withDao(LocationDao.class, dao ->{
-            LocationDao.Location homeSystem = dao.findHomeSystem();
-            return homeSystem == null ? new LocationDto(-1L) : GsonFactory.getGson().fromJson(homeSystem.getJson(), LocationDto.class);
+
+    public LocationDto findByMarketId(long marketID) {
+        return Database.withDao(LocationDao.class, dao -> {
+            LocationDao.Location location = dao.findByMarketId(marketID);
+            return location == null ? new LocationDto(-1L) : GsonFactory.getGson().fromJson(location.getJson(), LocationDto.class);
         });
     }
 }

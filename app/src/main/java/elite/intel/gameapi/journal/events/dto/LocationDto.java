@@ -40,6 +40,7 @@ public class LocationDto implements ToJsonConvertible {
     private String stationName;
     private String stationType;
     private Long marketID;
+    private Long systemAddress;
     private String stationFaction;
     private String stationGovernment;
     private String stationAllegiance;
@@ -88,6 +89,12 @@ public class LocationDto implements ToJsonConvertible {
         setBodyId(id);
     }
 
+    public LocationDto(Long id, Long systemAddress) {
+        setBodyId(id);
+        setSystemAddress(systemAddress);
+    }
+
+
     public LocationDto(Long id, String starName) {
         setBodyId(id);
         setStarName(starName);
@@ -95,6 +102,14 @@ public class LocationDto implements ToJsonConvertible {
 
     private LocationDto() {
 
+    }
+
+    public Long getSystemAddress() {
+        return systemAddress;
+    }
+
+    public void setSystemAddress(Long systemAddress) {
+        this.systemAddress = systemAddress;
     }
 
     public LocationDto(LocationType locationType) {

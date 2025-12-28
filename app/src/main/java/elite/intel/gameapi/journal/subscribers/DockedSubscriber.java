@@ -20,10 +20,12 @@ import static elite.intel.gameapi.journal.events.dto.LocationDto.LocationType.ST
 
 public class DockedSubscriber {
 
+    private final PlayerSession playerSession = PlayerSession.getInstance();
+    private final LocationManager locationManager = LocationManager.getInstance();
     @Subscribe
     public void onDockedEvent(DockedEvent event) {
-        PlayerSession playerSession = PlayerSession.getInstance();
-        LocationDto location = playerSession.getLocation(event.getMarketID(), event.getStarSystem());
+
+        LocationDto location = locationManager.findByMarketId(event.getMarketID());
 
         location.setMarketID(event.getMarketID());
         location.setStationEconomy(event.getStationEconomyLocalised());

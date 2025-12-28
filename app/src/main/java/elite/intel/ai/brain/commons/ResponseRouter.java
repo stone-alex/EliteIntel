@@ -47,7 +47,7 @@ public abstract class ResponseRouter  {
 
     protected void handleCommand(String action, JsonObject params, String responseText) {
         EventBusManager.publish(new AppLogEvent("DEBUG: Processing action: " + action + " with params: " + params.toString()));
-        CommandHandler handler = getCommandHandlers().get(action);
+        CommandHandler handler = getCommandHandlers().get(action.replace("action:", ""));
         if (handler != null) {
             EventBusManager.publish(new AppLogEvent("DEBUG: Command handler: " + handler.getClass().getSimpleName()));
             new Thread(() -> handler.handle(action, params, responseText)).start();

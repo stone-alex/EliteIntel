@@ -22,7 +22,7 @@ public enum Queries {
 
     ANALYZE_CURRENT_FUEL_STATUS("query_ship_fuel_status", "Analyze ship fuel tank capacity and reserve, return percent available. Do not confuse ship with fleet carrier. Fleet carrier uses tritium for fuel, Ship uses hydrogen.", AnalyzeFuelStatusHandler.class, true),
     ANALYZE_FLEET_CARRIER_FUEL_SUPPLY("query_fleet_carrier_tritium_fuel_supply", "Analyze fleet carrier fuel supply.", AnalyzeFleetCarrierFuelSupplyHandler.class, true),
-    ANALYZE_FSD_TARGET("query_analyze_targeted_star_system", "Analyze selected FTL destination for allegiance, traffic, and security.", AnalyzeFsdTargetHandler.class, true),
+    ANALYZE_FSD_TARGET("query_analyze_fsd_target", "Analyze selected FTL destination for allegiance, traffic, and security.", AnalyzeFsdTargetHandler.class, true),
     ANALYZE_TRADE_ROUTE("query_trade_route_analysis", "Analyze trade route for current location.", AnalyzeTradeRouteHandler.class, true),
     WHAT_IS_OUR_CARRIER_DESTINATION("query_what_is_our_fleet_carrier_destination", "Return name of the star system the fleet carrier is headed to. Or no carrier route set, if empty", AnalyzeFleetCarrierFinalDestinationHandler.class, true),
 

@@ -35,7 +35,7 @@ public class CommonAiPromptFactory implements AiPromptFactory {
         StringBuilder sb = new StringBuilder();
 
         sb.append("Instructions:\n\n")
-                .append(" Rule #1: NEVER INVENT COMMANDS OR QUERIES!!! ALWAYS MATCH TO THE PROVIDED LIST ONLY!!! IF NOT MATCH FOUND SAY SO. ")
+                .append(" Rule #1: NEVER INVENT COMMANDS OR QUERIES (actions)!!! ALWAYS MATCH TO THE PROVIDED LIST ONLY!!! IF NOT MATCH FOUND SAY SO. ")
                 .append(" Only return a command or query from the exact list provided below — never invent, combine, or create new commands, even if the user input seems similar. action parameter MUST match either command or query. Do not invent action parameters. \n")
                 .append(inputClassificationClause()).append('\n')
                 .append(JSON_FORMAT).append('\n')
@@ -63,8 +63,9 @@ public class CommonAiPromptFactory implements AiPromptFactory {
         sb.append("    - 'chat': General conversation, anything that does not remotely match provided list of commands or queries are classified as general chat. Only classify as chat if the input does not match any specific query or command pattern in 'Supported Commands' or 'Supported Queries'.\n");
 
         sb.append("For type='command': Provide empty response_text for single word commands.\n");
-        sb.append("    - For set, change, swap, add etc type commands that require value provide params json {\"key\":\"value\"} where key always 'key' and value is what you determine value to be.\n");
+        sb.append("    - For set, change, swap, add etc type commands that require value provide params json {\"key\":\"value\"} where key always matching paramKey for action and value is what you determine value to be.\n");
         sb.append("    - For 'find*' commands that contain distance in light years provide {\"key\":\"value\"} where key is integer representing distance in light years.\n");
+        sb.append("    - Example: '"+FIND_MINING_SITE.getAction()+"' provide params json {\"material\":\"value\", \"max_distance\":\"value\"} \n");
         sb.append("    - For commands like ").append(INCREASE_SPEED_BY.getAction()).append(" provide params json {\"key\":\"value\"} where value is a positive integer. example: {\"key\":\"3\"}.\n");
         sb.append("    - For commands like ").append(DECREASE_SPEED_BY.getAction()).append(" provide params json {\"key\":\"value\"} where value is a negative integer example: {\"key\":\"-3\"}.\n");
         sb.append("    - If asked about fleet carrier required to reach destination, query "+ANALYZE_CARRIER_ROUTE.getAction()+", not fleet carrier stats.\n");
@@ -100,6 +101,7 @@ public class CommonAiPromptFactory implements AiPromptFactory {
         sb.append(" - \"jump\", \"engage\", \"hyperspace\", \"bounce\", \"proceed to the next waypoint\", \"go\", \"let's go\" → initiate hyperspace jump to the currently TARGETED system.\n");
         sb.append(" Map 'scan system' to commands like ").append(OPEN_FSS_AND_SCAN.getAction()).append(". and 'damage report' to queries like ").append(QUERY_SHIP_LOADOUT.getAction()).append("\n");
         sb.append(" Infer command intent from context: phrases like 'act like', 'talk like', 'blend in with', or 'sound like' followed by a faction should trigger '").append(SET_PERSONALITY.getAction()).append("' with the corresponding cadence value, using current system allegiance if ambiguous.\n");
+        sb.append(" Do not confuse traders with market. Material tader/broker is not the same as trade station / port");
         return sb.toString();
     }
 
@@ -164,7 +166,7 @@ public class CommonAiPromptFactory implements AiPromptFactory {
         SystemSession systemSession = SystemSession.getInstance();
 
         AICadence aiCadence = systemSession.isRunningPiperTts() ? AICadence.FEDERATION : systemSession.getAICadence();
-        AIPersonality aiPersonality = systemSession.isRunningPiperTts() ? AIPersonality.PROFESSIONAL : systemSession.getAIPersonality();
+        AIPersonality aiPersonality = systemSession.isRunningPiperTts() ? AIPersonality.CASUAL : systemSession.getAIPersonality();
 
         sb.append(" Behavior: ");
         sb.append(aiCadence.getCadenceClause()).append(" ");

@@ -34,6 +34,7 @@ import static elite.intel.util.StringUtls.isFuelStarClause;
 public class JumpCompletedSubscriber {
 
     private final PlayerSession playerSession = PlayerSession.getInstance();
+    private final LocationManager locationManager = LocationManager.getInstance();
     private final ShipRouteManager shipRoute = ShipRouteManager.getInstance();
     private final MonetizeRouteManager monetizeRouteManager = MonetizeRouteManager.getInstance();
 
@@ -56,8 +57,9 @@ public class JumpCompletedSubscriber {
         }
 
 
-        LocationDto primaryStar = LocationManager.getInstance().findPrimaryStar(event.getStarSystem());
+        LocationDto primaryStar = locationManager.findPrimaryStar(event.getStarSystem());
         primaryStar.setBodyId(event.getBodyId());
+        primaryStar.setSystemAddress(event.getSystemAddress());
         primaryStar.setStationGovernment(event.getSystemGovernmentLocalised());
         primaryStar.setAllegiance(event.getSystemAllegiance());
         primaryStar.setSecurity(event.getSystemSecurityLocalised());
@@ -162,7 +164,7 @@ public class JumpCompletedSubscriber {
         if (bodies == null || bodies.isEmpty()) return;
 
         for (BodyData data : bodies) {
-            LocationDto stellarObject = playerSession.getLocation(data.getId(), starSystem);
+            LocationDto stellarObject = locationManager.getLocation(starSystem, data.getBodyId());
             stellarObject.setAtmosphere(data.getAtmosphereType());
             stellarObject.setBodyId(data.getBodyId());
             stellarObject.setHasRings(data.getRings() != null && !data.getRings().isEmpty());

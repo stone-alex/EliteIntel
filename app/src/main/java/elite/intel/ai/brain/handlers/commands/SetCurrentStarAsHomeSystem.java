@@ -5,6 +5,7 @@ import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.db.dao.LocationDao;
 import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 
 public class SetCurrentStarAsHomeSystem implements CommandHandler {
@@ -16,6 +17,8 @@ public class SetCurrentStarAsHomeSystem implements CommandHandler {
             return;
         }
         EventBusManager.publish(new AiVoxResponseEvent("Setting "+ coordinates.primaryStar()+" as home system."));
-        LocationManager.getInstance().setAsHomeSystem();
+        LocationDto location = PlayerSession.getInstance().getPrimaryStarLocation();
+        location.setHomeSystem(true);
+        LocationManager.getInstance().setAsHomeSystem(location);
     }
 }

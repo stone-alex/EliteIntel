@@ -16,11 +16,12 @@ import java.util.List;
 public interface LocationDao {
 
     @SqlUpdate("""
-            INSERT INTO location (inGameId, locationName, primaryStar, homeSystem, json) 
-            VALUES (:inGameId, :locationName, :primaryStar, :homeSystem, :json)
+            INSERT INTO location (inGameId, locationName, primaryStar, homeSystem, systemAddress, json) 
+            VALUES (:inGameId, :locationName, :primaryStar, :homeSystem, :systemAddress, :json)
             ON CONFLICT(locationName) DO UPDATE SET
                 json = excluded.json,
                 inGameId = excluded.inGameId,
+                systemAddress = excluded.systemAddress,
                 homeSystem = excluded.homeSystem
             """)
     void upsert(
@@ -28,6 +29,7 @@ public interface LocationDao {
             @Bind("locationName") String locationName,
             @Bind("primaryStar") String primaryStar,
             @Bind("homeSystem") Boolean homeSystem,
+            @Bind("systemAddress") Long systemAddress,
             @Bind("json") String json
     );
 
@@ -41,16 +43,12 @@ public interface LocationDao {
     @SqlQuery("SELECT * FROM location WHERE primaryStar = :primaryStar")
     List<Location> findByPrimaryStar(@Bind("primaryStar") String primaryStar);
 
-    @SqlUpdate("""
-            
+    @SqlUpdate("""   
             UPDATE location
             SET homeSystem = 1
-            WHERE (primaryStar, inGameId) = (
-                SELECT current_primary_star, current_location_id
-                FROM player
-            );
+            WHERE primaryStar = :primaryStar and systemAddress = :systemAddress
             """)
-    void setCurrentStarSystemAsHome();
+    void setCurrentStarSystemAsHome(@Bind("primaryStar") String primaryStar, @Bind("systemAddress") Long systemAddress);
 
     @SqlUpdate("""
         UPDATE location set homeSystem = 0;
@@ -76,6 +74,17 @@ public interface LocationDao {
     @RegisterConstructorMapper(Coordinates.class)
     Coordinates currentCoordinates();
 
+    @SqlQuery("select * from location where systemAddress = :systemAddress and json->> '$.planetName' = :planetName")
+    Location findBySystemAddress(long systemAddress, String planetName);
+
+    @SqlQuery("select * from location where systemAddress = :systemAddress and json->> '$.bodyId' = :bodyId")
+    Location findBySystemAddress(long systemAddress, Long bodyId);
+
+    @SqlQuery("select * from location where systemAddress = :systemAddress")
+    Location findBySystemAddress(long systemAddress);
+
+    @SqlQuery("select * from location where json ->> '$.marketID' = :marketID")
+    Location findByMarketId(long marketID);
 
 
     class LocationMapper implements RowMapper<LocationDao.Location> {
@@ -87,6 +96,7 @@ public interface LocationDao {
                     rs.getString("locationName"),
                     rs.getString("primaryStar"),
                     rs.getBoolean("homeSystem"),
+                    rs.getLong("systemAddress"),
                     rs.getString("json")
             );
             return entity;
@@ -97,7 +107,7 @@ public interface LocationDao {
 
     }
 
-    record Location(long id, long inGameId, String locationName, String primaryStar, Boolean homeSystem, String json) {
+    record Location(long id, long inGameId, String locationName, String primaryStar, Boolean homeSystem, Long systemAddress, String json) {
         public long getId() {
             return id;
         }
@@ -114,6 +124,10 @@ public interface LocationDao {
             return primaryStar;
         }
 
+        public Long getSystemAddress() {
+            return systemAddress;
+        }
+
         public String getJson() {
             return json;
         }
@@ -121,5 +135,6 @@ public interface LocationDao {
         public Boolean homeSystem() {
             return homeSystem;
         }
+
     }
 }

@@ -262,3 +262,4 @@
 "float throughout"="plot the route"
 "algae"="audio"
 "blocked the route"="plot the route"
+"finance"="find"

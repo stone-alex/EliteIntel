@@ -187,7 +187,7 @@ public enum Commands {
     public static String[] getCommands() {
         String[] result = new String[Commands.values().length];
         for (int i = 0; i < Commands.values().length; i++) {
-            result[i] = "action:" + Commands.values()[i].getAction() + (Commands.values()[i].getParamKey() == null ? " paramKey: none" : " paramKey:" + Commands.values()[i].getParamKey());
+            result[i] = Commands.values()[i].getAction();
         }
         return result;
     }

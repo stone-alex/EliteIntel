@@ -55,7 +55,7 @@ public class OpenAiResponseRouter extends ResponseRouter implements AIRouterInte
         try {
             String type = getAsStringOrEmpty(jsonResponse, "type").toLowerCase();
             String responseText = getAsStringOrEmpty(jsonResponse, AIConstants.PROPERTY_RESPONSE_TEXT);
-            String action = getAsStringOrEmpty(jsonResponse, AIConstants.TYPE_ACTION).replace("action:", "");
+            String action = getAsStringOrEmpty(jsonResponse, AIConstants.TYPE_ACTION);
             JsonObject params = getAsObjectOrEmpty(jsonResponse, "params");
 
             if (!responseText.isEmpty() && !type.equals(AIConstants.TYPE_CHAT)) {

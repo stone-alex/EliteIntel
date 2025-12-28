@@ -198,17 +198,16 @@ public class ScanEventSubscriber extends BiomeAnalyzer {
 
         if (wasDiscovered && !STAR.equals(location.getLocationType())) {
             if (!wasMapped && !BELT_CLUSTER.equals(location.getLocationType())) {
-                //G EventBusManager.publish(new DiscoveryAnnouncementEvent(shortName + " was previously discovered, but not mapped. "));
+                // EventBusManager.publish(new DiscoveryAnnouncementEvent(shortName + " was previously discovered, but not mapped. "));
             } else if (!BELT_CLUSTER.equals(location.getLocationType())) {
                 String sensorData = getDetails(event, shortName);
                 EventBusManager.publish(new DiscoveryAnnouncementEvent(sensorData));
                 log.info(sensorData);
             }
         } else if (!wasDiscovered && PRIMARY_STAR.equals(location.getLocationType())) {
-
             EventBusManager.publish(new DiscoveryAnnouncementEvent("New System discovered!"));
         } else if (PRIMARY_STAR.equals(location.getLocationType())) {
-            EventBusManager.publish(new DiscoveryAnnouncementEvent("Previously discovered!"));
+            // EventBusManager.publish(new DiscoveryAnnouncementEvent("Previously discovered!"));
         }
     }
 

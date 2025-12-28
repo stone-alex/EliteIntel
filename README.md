@@ -10,6 +10,9 @@
 If you run into issues, hit us up on GitHub issues or 👉[**Discord**](https://discord.gg/3qAqBENsBm).👈
 Feedback and bug reports are super welcome!
 
+Alternatively, you can find me on Libera IRC.
+Private - no corpo spying, no tracking, no ads. no data collection chat:
+💬 [**IRC**](https://web.libera.chat/?channel=#EliteIntelDev)
 
 ## Overview
 

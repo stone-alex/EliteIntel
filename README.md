@@ -54,7 +54,7 @@ reflection) and principles like DRY and SRP. All PRs go through review.
 
 Released under Creative Commons license.
 
-👉[**Discord**](https://discord.gg/3qAqBENsBm) / [**YouTube**](https://www.youtube.com/@SudoKrondor)👈
+👉[**Discord**](https://discord.gg/3qAqBENsBm)👈
 ---
 
 © Sudo Krondor (Alex Stone) | 2025 GitHub, Inc. | Open-Source Project

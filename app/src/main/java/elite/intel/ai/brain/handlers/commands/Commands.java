@@ -120,7 +120,7 @@ public enum Commands {
     PLOT_ROUTE_TO_NEXT_TRADE_STOP("navigate_to_next_trade_stop_port_or_station", null, null, PlotRouteToNextTradeStopHandler.class),
     CHANGE_TRADE_PROFILE_SET_STARTING_BUDGET("alter_trade_profile_set_starting_budget", null, "key", ChangeTradeProfileSetStartingBudgetHander.class),
     CHANGE_TRADE_PROFILE_SET_MAX_NUMBER_OF_STOPS("alter_trade_profile_set_maximum_number_of_stops", null, "key", ChangeTradeProfileSetMaxStopsHandler.class),
-    CAHNGE_TRADE_PROFILE_SET_MAX_DISTANCE_FROM_ENTRY("alter_trade_profile_set_maximum_distance_from_entry", null, "key", ChangeTradeProfileSetMaxDistanceFromEntryHandler.class),
+    CHANGE_TRADE_PROFILE_SET_MAX_DISTANCE_FROM_ENTRY("alter_trade_profile_set_maximum_distance_from_entry", null, "key", ChangeTradeProfileSetMaxDistanceFromEntryHandler.class),
     CHANGE_TRADE_PROFILE_SET_ALLOW_PROHIBITED_CARGO("alter_trade_profile_toggle_prohibited_cargo", null, "state", ChangeTradeProfileSetAllowProhibitedCargoHandler.class),
     CHANGE_TRADE_PROFILE_SET_ALLOW_PLANETARY_PORT("alter_trade_profile_toggle_planetary_ports", null, "state", ChangeTradeProfileSetIncluidePlanetaryPortsHandler.class),
     CHANGE_TRADE_PROFILE_SET_ALLOW_PERMIT_SYSTEMS("alter_trade_profile_toggle_permit_protected_star_systems", null, "state", ChangeTradeProfileAllowPermitSystemsHandler.class),

@@ -79,7 +79,7 @@ public class FSSSignalDiscoveredSubscriber {
     }
 
     private LocationDto updateLocation(FSSSignalDiscoveredEvent event) {
-        LocationDto currentLocation = locationManager.findBySystemAddress(event.getSystemAddress());
+        LocationDto location = locationManager.findBySystemAddress(event.getSystemAddress());
         FssSignalDto signal = new FssSignalDto();
         signal.setSignalName(event.getSignalName());
         signal.setSignalNameLocalised(event.getSignalNameLocalised());
@@ -91,8 +91,8 @@ public class FSSSignalDiscoveredSubscriber {
         signal.setUssType(event.getUssType());
         signal.setUssTypeLocalised(event.getUssTypeLocalised());
         signal.setSystemAddress(event.getSystemAddress());
-        currentLocation.addDetectedSignal(signal);
-        return currentLocation;
+        location.addDetectedSignal(signal);
+        return location;
     }
 
     private void publishVoice(String message) {

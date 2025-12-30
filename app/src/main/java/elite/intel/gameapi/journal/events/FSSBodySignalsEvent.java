@@ -36,7 +36,7 @@ public class FSSBodySignalsEvent extends BaseEvent {
     private String bodyName;
 
     @SerializedName("BodyID")
-    private int bodyID;
+    private Long bodyID;
 
     @SerializedName("SystemAddress")
     private long systemAddress;
@@ -72,7 +72,7 @@ public class FSSBodySignalsEvent extends BaseEvent {
         return bodyName;
     }
 
-    public int getBodyID() {
+    public Long getBodyID() {
         return bodyID;
     }
 

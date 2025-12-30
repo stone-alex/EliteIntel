@@ -16,19 +16,17 @@ import java.util.List;
 public interface LocationDao {
 
     @SqlUpdate("""
-            INSERT INTO location (inGameId, locationName, primaryStar, homeSystem, systemAddress, json) 
-            VALUES (:inGameId, :locationName, :primaryStar, :homeSystem, :systemAddress, :json)
+            INSERT INTO location (inGameId, locationName, primaryStar, systemAddress, json) 
+            VALUES (:inGameId, :locationName, :primaryStar, :systemAddress, :json)
             ON CONFLICT(locationName) DO UPDATE SET
                 json = excluded.json,
                 inGameId = excluded.inGameId,
-                systemAddress = excluded.systemAddress,
-                homeSystem = excluded.homeSystem
+                systemAddress = excluded.systemAddress
             """)
     void upsert(
             @Bind("inGameId") long inGameId,
             @Bind("locationName") String locationName,
             @Bind("primaryStar") String primaryStar,
-            @Bind("homeSystem") Boolean homeSystem,
             @Bind("systemAddress") Long systemAddress,
             @Bind("json") String json
     );
@@ -42,24 +40,6 @@ public interface LocationDao {
 
     @SqlQuery("SELECT * FROM location WHERE primaryStar = :primaryStar")
     List<Location> findByPrimaryStar(@Bind("primaryStar") String primaryStar);
-
-    @SqlUpdate("""   
-            UPDATE location
-            SET homeSystem = 1
-            WHERE primaryStar = :primaryStar and systemAddress = :systemAddress
-            """)
-    void setCurrentStarSystemAsHome(@Bind("primaryStar") String primaryStar, @Bind("systemAddress") Long systemAddress);
-
-    @SqlUpdate("""
-        UPDATE location set homeSystem = 0;
-    """)
-    void clearHomeSystem();
-
-    @SqlQuery("SELECT * FROM location WHERE homeSystem = 1")
-    Location findHomeSystem();
-
-    @SqlQuery("select json from location where primaryStar = (select current_primary_star from player) and inGameId = (select current_location_id from player)")
-    Location primaryStarAtCurrentLocation();
 
     @SqlQuery("select * from location where primaryStar = :starSystem and json like '%\"PRIMARY_STAR\"%'")
     Location findPrimaryStar(String starSystem);
@@ -95,7 +75,6 @@ public interface LocationDao {
                     rs.getLong("inGameId"),
                     rs.getString("locationName"),
                     rs.getString("primaryStar"),
-                    rs.getBoolean("homeSystem"),
                     rs.getLong("systemAddress"),
                     rs.getString("json")
             );
@@ -107,7 +86,7 @@ public interface LocationDao {
 
     }
 
-    record Location(long id, long inGameId, String locationName, String primaryStar, Boolean homeSystem, Long systemAddress, String json) {
+    record Location(long id, long inGameId, String locationName, String primaryStar, Long systemAddress, String json) {
         public long getId() {
             return id;
         }
@@ -131,10 +110,5 @@ public interface LocationDao {
         public String getJson() {
             return json;
         }
-
-        public Boolean homeSystem() {
-            return homeSystem;
-        }
-
     }
 }

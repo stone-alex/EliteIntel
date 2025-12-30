@@ -30,17 +30,8 @@ public class LocationManager {
         if (location.getStarName() == null) return;
         Database.withDao(LocationDao.class, dao -> {
             String locationName = location.getPlanetName() == null ? location.getStationName() : location.getPlanetName();
-            dao.upsert(location.getBodyId(), locationName, location.getStarName(), location.isHomeSystem(), location.getSystemAddress(), location.toJson());
+            dao.upsert(location.getBodyId(), locationName, location.getStarName(), location.getSystemAddress(), location.toJson());
             return null;
-        });
-    }
-
-    public void setAsHomeSystem(LocationDto location) {
-        Database.withDao(LocationDao.class, dao -> {
-            dao.clearHomeSystem();
-            dao.setCurrentStarSystemAsHome(location.getStarName(), location.getSystemAddress());
-            dao.upsert(location.getBodyId(), location.getStarName(), location.getStarName(), true, location.getSystemAddress(), location.toJson());
-            return Void.class;
         });
     }
 
@@ -56,13 +47,6 @@ public class LocationManager {
                 return new LocationDto(locationId, primaryStar);
             }
             return GsonFactory.getGson().fromJson(entity.getJson(), LocationDto.class);
-        });
-    }
-
-    public LocationDto getHomeSystem() {
-        return Database.withDao(LocationDao.class, dao -> {
-            LocationDao.Location homeSystem = dao.findHomeSystem();
-            return homeSystem == null ? new LocationDto(-1L) : GsonFactory.getGson().fromJson(homeSystem.getJson(), LocationDto.class);
         });
     }
 

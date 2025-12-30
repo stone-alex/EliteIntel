@@ -31,6 +31,7 @@ public class JumpToHyperspaceHandler extends CommandOperator implements CommandH
                 SleepNoThrow.sleep(2000);
             }
             operateKeyboard(BINDING_SET_SPEED100.getGameBinding(), 0);
+            operateKeyboard(BINDING_TARGET_NEXT_ROUTE_SYSTEM.getGameBinding(), 0);
             operateKeyboard(BINDING_JUMP_TO_HYPERSPACE.getGameBinding(), 0);
         } else {
             EventBusManager.publish(new AiVoxResponseEvent("Get in to your ship, so we can blast out of here."));

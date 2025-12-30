@@ -17,7 +17,7 @@ public class FSSBodySignalsSubscriber extends BiomeAnalyzer {
 
     @Subscribe
     public void onFssBodySignal(FSSBodySignalsEvent event) {
-        LocationDto location = locationManager.findBySystemAddress(event.getSystemAddress(), event.getBodyName());
+        LocationDto location = locationManager.findBySystemAddress(event.getSystemAddress(), event.getBodyID());
         location.setPlanetName(event.getBodyName());
         List<FSSBodySignalsEvent.Signal> signals = event.getSignals();
         if(signals == null || signals.isEmpty()) return;
@@ -41,7 +41,6 @@ public class FSSBodySignalsSubscriber extends BiomeAnalyzer {
         }
         if(location.getBioSignals() < bioSignals) {
             location.setBioSignals(bioSignals);
-
         }
         location.setGeoSignals(geoSignals);
         playerSession.saveLocation(location);

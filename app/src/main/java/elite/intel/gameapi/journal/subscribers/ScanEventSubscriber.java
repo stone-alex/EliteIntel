@@ -54,10 +54,14 @@ public class ScanEventSubscriber extends BiomeAnalyzer {
         boolean hasMats = event.getMaterials() != null && !event.getMaterials().isEmpty();
         boolean isTerraformable = event.getTerraformState() != null && !event.getTerraformState().isEmpty();
         boolean isLandable = event.isLandable();
-        String sensorData = "New discovery: " + shortName + ". "
-                + (hasMats ? " Materials detected. data available on request, " : " ")
+        String sensorData = "New discovery: " + shortName + " "
+                + (hasMats ? ". Materials detected. data available on request, " : " ")
                 + (isTerraformable ? " Terraformable, " : " ")
                 + (isLandable ? " landable. " : ". ");
+
+        if (hasMats || isTerraformable) {
+            EventBusManager.publish(new DiscoveryAnnouncementEvent(sensorData));
+        }
         return sensorData;
     }
 
@@ -82,7 +86,7 @@ public class ScanEventSubscriber extends BiomeAnalyzer {
         String shortName = subtractString(event.getBodyName(), event.getStarSystem());
         String bodyName = event.getBodyName();
 
-        LocationDto location = locationManager.getLocation(event.getStarSystem(), event.getBodyID());
+        LocationDto location = locationManager.findBySystemAddress(event.getSystemAddress(), event.getBodyID());
         LocationDto.LocationType locationType = determineLocationType(event);
 
         if (BELT_CLUSTER.equals(locationType)) {
@@ -90,6 +94,7 @@ public class ScanEventSubscriber extends BiomeAnalyzer {
         }
 
         location.setLocationType(locationType);
+        location.setSystemAddress(event.getSystemAddress());
         location.setStarClass(event.getStarType());
         location.setPlanetName(event.getBodyName());
         location.setBodyId(event.getBodyID());
@@ -197,17 +202,15 @@ public class ScanEventSubscriber extends BiomeAnalyzer {
         }
 
         if (wasDiscovered && !STAR.equals(location.getLocationType())) {
-            if (!wasMapped && !BELT_CLUSTER.equals(location.getLocationType())) {
-                // EventBusManager.publish(new DiscoveryAnnouncementEvent(shortName + " was previously discovered, but not mapped. "));
-            } else if (!BELT_CLUSTER.equals(location.getLocationType())) {
+            if (!BELT_CLUSTER.equals(location.getLocationType())) {
                 String sensorData = getDetails(event, shortName);
-                EventBusManager.publish(new DiscoveryAnnouncementEvent(sensorData));
+
                 log.info(sensorData);
             }
         } else if (!wasDiscovered && PRIMARY_STAR.equals(location.getLocationType())) {
             EventBusManager.publish(new DiscoveryAnnouncementEvent("New System discovered!"));
         } else if (PRIMARY_STAR.equals(location.getLocationType())) {
-            // EventBusManager.publish(new DiscoveryAnnouncementEvent("Previously discovered!"));
+            EventBusManager.publish(new DiscoveryAnnouncementEvent("Previously discovered!"));
         }
     }
 

@@ -383,6 +383,21 @@ public class PlayerSession {
         return Database.withDao(PlayerDao.class, dao -> dao.get().getPlayerMissionStatement());
     }
 
+    public void setHomeSystem() {
+        LocationDto location = getCurrentLocation();
+        Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            player.setHomeSystemId(location.getSystemAddress());
+            dao.save(player);
+            return Void.class;
+        });
+    }
+
+    public LocationDto getHomeSystem() {
+        Long homeSystemId = Database.withDao(PlayerDao.class, dao -> dao.get().getHomeSystemId());
+        return locationManager.findBySystemAddress(homeSystemId);
+    }
+
     public void setPlayerMissionStatement(String playerMissionStatement) {
         Database.withDao(PlayerDao.class, dao -> {
             PlayerDao.Player player = dao.get();

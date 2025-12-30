@@ -27,7 +27,7 @@ public class SAASignalsFoundSubscriber {
     @Subscribe
     public void onSAASignalsFound(SAASignalsFoundEvent event) {
         StringBuilder sb = new StringBuilder();
-        LocationDto location = LocationManager.getInstance().findBySystemAddress(event.getSystemAddress(), event.getBodyName());
+        LocationDto location = LocationManager.getInstance().findBySystemAddress(event.getSystemAddress(), event.getBodyID());
         location.addSaaSignals(event.getSignals());
         playerSession.saveLocation(location);
 

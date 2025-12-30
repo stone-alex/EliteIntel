@@ -7,6 +7,7 @@ import elite.intel.search.edsm.dto.data.BodyData;
 import elite.intel.util.StringUtls;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
+import org.apache.logging.log4j.core.config.plugins.validation.constraints.NotBlank;
 
 import java.util.*;
 
@@ -101,14 +102,14 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     private LocationDto() {
-
+        // serialization
     }
 
     public Long getSystemAddress() {
         return systemAddress;
     }
 
-    public void setSystemAddress(Long systemAddress) {
+    public void setSystemAddress(@NotBlank Long systemAddress) {
         this.systemAddress = systemAddress;
     }
 

@@ -6,12 +6,13 @@ import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
+import elite.intel.session.PlayerSession;
 import elite.intel.session.Status;
 
 public class PlotRouteToHomeHandler extends CommandOperator implements CommandHandler {
 
     private final GameController commandHandler;
-    private final LocationManager locations = LocationManager.getInstance();
+    private final PlayerSession playerSession = PlayerSession.getInstance();
 
     public PlotRouteToHomeHandler(GameController commandHandler) {
         super(commandHandler.getMonitor(), commandHandler.getExecutor());
@@ -23,7 +24,7 @@ public class PlotRouteToHomeHandler extends CommandOperator implements CommandHa
         Status status = Status.getInstance();
         if(status.isInSrv() || status.isInMainShip()) {
             EventBusManager.publish(new AiVoxResponseEvent("Plotting route to home system..."));
-            LocationDto location = locations.getHomeSystem();
+            LocationDto location = playerSession.getHomeSystem();
             if (location.getBodyId() == -1) {
                 EventBusManager.publish(new AiVoxResponseEvent("Home system is not set. We are homeless!"));
                 return;

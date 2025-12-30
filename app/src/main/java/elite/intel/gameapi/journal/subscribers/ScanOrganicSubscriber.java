@@ -75,19 +75,6 @@ public class ScanOrganicSubscriber {
                 sb.append(" meters. ");
             }
 
-/*
-            if (payment > 0 && !isAnnounced) {
-                sb.append("Vista Genomics payment: ");
-                sb.append(payment);
-                sb.append(" credits,");
-                if (isOurDiscovery && firstDiscoveryBonus > 0) {
-                    sb.append(" Plus bonus ");
-                    sb.append(firstDiscoveryBonus);
-                    sb.append(" credits for first discovery.");
-                }
-            }
-*/
-
             BioSampleDto bioSampleDto = createBioSampleDto(genus, species, isOurDiscovery);
             bioSampleDto.setScanXof3("First of Three");
             currentLocation.addBioScan(bioSampleDto);
@@ -98,11 +85,6 @@ public class ScanOrganicSubscriber {
             BioSampleDto bioSampleDto = createBioSampleDto(genus, species, isOurDiscovery);
             currentLocation.addBioScan(bioSampleDto);
             bioSampleDto.setScanXof3("Second of Three");
-/*
-            if (scanCount == 1) {
-                announce("Sample collected for: " + genus + ".");
-            }
-*/
             scanCount = 2;
 
         } else if (scan3.equalsIgnoreCase(scanType)) {
@@ -124,6 +106,7 @@ public class ScanOrganicSubscriber {
             removeCodexEntry(event.getVariantLocalised());
             scanCount = 0;
             playerSession.clearGenusPaymentAnnounced();
+            playerSession.clearBioSamples();
         }
 
         playerSession.saveLocation(currentLocation);

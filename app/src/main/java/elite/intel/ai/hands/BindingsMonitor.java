@@ -135,6 +135,7 @@ public class BindingsMonitor {
                     break;
                 }
             }
+            checkBindings();
         } catch (IOException e) {
             log.error("IOException in BindingsMonitor", e);
             EventBusManager.publish(new AiVoxResponseEvent("Please check the bindings directory"));

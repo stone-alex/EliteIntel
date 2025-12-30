@@ -55,7 +55,7 @@ public class ScanEventSubscriber extends BiomeAnalyzer {
         boolean isTerraformable = event.getTerraformState() != null && !event.getTerraformState().isEmpty();
         boolean isLandable = event.isLandable();
         String sensorData = "New discovery: " + shortName + " "
-                + (hasMats ? ". Materials detected. data available on request, " : " ")
+                + (hasMats ? ". Materials detected. " : " ")
                 + (isTerraformable ? " Terraformable, " : " ")
                 + (isLandable ? " landable. " : ". ");
 
@@ -195,7 +195,7 @@ public class ScanEventSubscriber extends BiomeAnalyzer {
 
         if (!wasDiscovered && PLANET_OR_MOON.equals(location.getLocationType())) {
             if (event.getTerraformState() != null && !event.getTerraformState().isEmpty()) {
-                EventBusManager.publish(new DiscoveryAnnouncementEvent("New Terraformable planet: " + shortName + ". Details available on request. "));
+                EventBusManager.publish(new DiscoveryAnnouncementEvent("New Terraformable planet: " + shortName + ". "));
             } else if (event.getPlanetClass() != null && valuablePlanetClasses.contains(event.getPlanetClass().toLowerCase())) {
                 EventBusManager.publish(new DiscoveryAnnouncementEvent("New discovery logged: " + event.getPlanetClass()));
             }

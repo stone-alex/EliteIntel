@@ -267,3 +267,6 @@
 "click"="check"
 "check out carry around"="check our carrier route"
 "carry around"="carrier route"
+"recover a survey"="recover SRV"
+"kodak"="codex"
+"centry"="entry"

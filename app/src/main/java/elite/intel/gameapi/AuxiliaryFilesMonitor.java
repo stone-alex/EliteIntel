@@ -64,10 +64,10 @@ public class AuxiliaryFilesMonitor implements Runnable {
     private final Set<String> monitoredFileSet = new HashSet<>(MONITORED_FILES);
     private Thread processingThread;
     private volatile boolean isRunning;
-    private final GameController _gameHandler;
+    private final GameController gameController;
 
     public AuxiliaryFilesMonitor() {
-        this._gameHandler = CommandHandlerFactory.getInstance().getGameCommandHandler();
+        this.gameController = CommandHandlerFactory.getInstance().getGameCommandHandler();
     }
 
     public synchronized void start() {
@@ -79,12 +79,12 @@ public class AuxiliaryFilesMonitor implements Runnable {
         isRunning = true;
         processingThread = new Thread(this, "AuxiliaryFilesMonitorThread");
         processingThread.start();
-        _gameHandler.start();
+        gameController.start();
         log.info("AuxiliaryFilesMonitor started");
     }
 
     public synchronized void stop() {
-        _gameHandler.stop();
+        gameController.stop();
         if (processingThread == null || !processingThread.isAlive()) {
             log.warn("AuxiliaryFilesMonitor is not running");
             return;

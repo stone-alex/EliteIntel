@@ -24,6 +24,10 @@ public class CommandOperator {
     }
 
 
+
+
+
+
     protected void operateKeyboard(String bindingIdentifier, int holdTime) {
         KeyBindingsParser.KeyBinding binding = monitor.getBindings().get(bindingIdentifier);
 

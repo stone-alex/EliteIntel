@@ -1,5 +1,6 @@
 package elite.intel.ai.hands;
 
+import elite.intel.ai.brain.handlers.commands.Commands;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.PlayerSession;
@@ -48,6 +49,11 @@ public class BindingsMonitor {
     private Thread processingThread;
     private volatile boolean running;
 
+    private BindingsMonitor() {
+        this.parser = KeyBindingsParser.getInstance();
+
+    }
+
     public static BindingsMonitor getInstance() {
         if (instance == null) {
             synchronized (BindingsMonitor.class) {
@@ -57,11 +63,6 @@ public class BindingsMonitor {
             }
         }
         return instance;
-    }
-
-    private BindingsMonitor() {
-        this.parser = KeyBindingsParser.getInstance();
-
     }
 
     public synchronized void startMonitoring() throws IOException {
@@ -160,5 +161,15 @@ public class BindingsMonitor {
 
     public Map<String, KeyBindingsParser.KeyBinding> getBindings() {
         return bindings;
+    }
+
+    public void checkBindings() {
+
+        Commands[] commands = Commands.values();
+        for (Commands c : commands) {
+            if (getBindings().get(c.getBinding()) != null) {
+                EventBusManager.publish(new AppLogEvent("No Binding found for " + c.getBinding()));
+            }
+        }
     }
 }

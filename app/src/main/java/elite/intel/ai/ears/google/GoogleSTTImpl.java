@@ -214,8 +214,9 @@ public class GoogleSTTImpl implements EarsInterface {
                         if (rms > RMS_THRESHOLD_HIGH) {
                             consecutiveVoice++;
                             consecutiveSilence = 0;
+                            audioToProcess = Amplifier.amplify(audioToProcess, 6.0);
                             // 4 debugging
-                            //EventBusManager.publish(new AppLogEvent("RMS: " + rms+" HIGH: "+RMS_THRESHOLD_HIGH+""));
+                            // EventBusManager.publish(new AppLogEvent("RMS: " + calculateRMS(audioToProcess, bytesToProcess)));
                         } else {
                             consecutiveVoice = 0;
                             if (rms < RMS_THRESHOLD_HIGH) { // Let's try using RMS High for gate open and close, ignore the low
@@ -225,8 +226,7 @@ public class GoogleSTTImpl implements EarsInterface {
                             }
                         }
 
-
-
+                        
                         if (!isActive && consecutiveVoice >= ENTER_VOICE_FRAMES && !isSpeaking.get()) {
                             isActive = true;
                             log.debug("VAD: Entered active state (voice detected)");
@@ -242,6 +242,7 @@ public class GoogleSTTImpl implements EarsInterface {
 
                         if (isActive || sendKeepAlive) {
                             byte[] keepAliveBuffer = new byte[KEEP_ALIVE_BUFFER_SIZE]; // Small silent for cost savings
+//                            byte[] amplified = multiplyGain(audioToProcess, 3.0);
                             ByteString audioContent = isActive
                                     ? ByteString.copyFrom(audioToProcess, 0, bytesToProcess)
                                     : ByteString.copyFrom(keepAliveBuffer);
@@ -394,6 +395,27 @@ public class GoogleSTTImpl implements EarsInterface {
         EventBusManager.publish(new UserInputEvent(sanitizedTranscript, confidence));
     }
 
+/*
+    private byte[] multiplyGain(byte[] audioData, double gain) {
+        if (gain == 1.0) return audioData;
+        byte[] output = new byte[audioData.length];
+        for (int i = 0; i < audioData.length; i += 2) {
+            // Reconstruct 16-bit signed sample (Little Endian)
+            int sample = (audioData[i + 1] << 8) | (audioData[i] & 0xFF);
+            if (sample > 32767) sample -= 65536;
+
+            // Apply gain and clip to prevent overflow/distortion
+            int amplified = (int) (sample * gain);
+            if (amplified > 32767) amplified = 32767;
+            else if (amplified < -32768) amplified = -32768;
+
+            // Write back to bytes
+            output[i] = (byte) (amplified & 0xFF);
+            output[i + 1] = (byte) ((amplified >> 8) & 0xFF);
+        }
+        return output;
+    }
+*/
 
     @Subscribe public void onIsSpeakingEvent(IsSpeakingEvent event) {
         isSpeaking.set(event.isSpeaking());

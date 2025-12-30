@@ -106,7 +106,6 @@ public class ScanOrganicSubscriber {
             removeCodexEntry(event.getVariantLocalised());
             scanCount = 0;
             playerSession.clearGenusPaymentAnnounced();
-            playerSession.clearBioSamples();
         }
 
         playerSession.saveLocation(currentLocation);

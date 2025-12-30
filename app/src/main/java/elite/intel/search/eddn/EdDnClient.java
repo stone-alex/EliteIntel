@@ -97,7 +97,6 @@ public class EdDnClient {
     public <T> boolean upload(EddnPayload<T> payload) {
         try {
             String json = GsonFactory.getGson().toJson(payload);
-
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(UPLOAD_ENDPOINT))
                     .header("Content-Type", "application/json; charset=utf-8")

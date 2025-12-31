@@ -417,9 +417,9 @@ install_local_TTS() {
     
     cat << EOF
 
-    Installing Piper Text-To-Speach python server.
+    Installing Piper Text-To-Speech python server.
 
-    You can also do this manualy as described in the wiki: 
+    You can also do this manually as described in the wiki:
     https://github.com/stone-alex/EliteIntel/wiki/OffLineVoiceProcessor
 
 EOF
@@ -545,7 +545,7 @@ sleep 0.2
    create_bindings
 sleep 0.2
 #
-#       Create Startmenu shortcut
+#       Create Start menu shortcut
 #
     create_start_menu
 sleep 0.2

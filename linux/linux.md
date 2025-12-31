@@ -22,7 +22,7 @@ Make the script executable with:
 # Extra fetures
 ## Update
 You can run the script with the update flag `-u`.
-This downloads the latest release of EliteIntel form github.
+This downloads the latest release of EliteIntel from github.
 
 Example: `$ bash elite-intel-installer.sh -u`
 

@@ -22,12 +22,12 @@ Make the script executable with:
 # Extra fetures
 ## Update
 You can run the script with the update flag `-u`.
-This downloads the latest release of EliteIntel form github.
+This downloads the latest release of EliteIntel from github.
 
 Example: `$ bash elite-intel-installer.sh -u`
 
-
 **_(it will only update the `.jar` and `Dictionary` folder.)_**
+
 
 ## Delete EliteIntel
 You can **Delete** the app using this script, with the flag `-d`.
@@ -43,12 +43,11 @@ It is presumed that you have `Python3` installed beforehand, most Linux distros 
 ### Get more piper models
 This mode can also be used to download new voice models. The script will ask you what your initial intention is.
 
+Example: `$ bash elite-intel-installer.sh -T`
+
 `$ Do you want to do a fresh install, or download new models? (choose 'y' for install) [y/n]`
 
 Select `n` to download new models, otherwise you wil begin installation process for Piper-TTS.
-
-
-Example: `$ bash elite-intel-installer.sh -T`
 
 
 # Issues

@@ -19,8 +19,8 @@
 #                                                                                                                            #
 ##############################################################################################################################
 
-DEFAULT_INSTALL_LOCATION="$HOME/.var/app/elite-intel"
-INSTALL_FOLDER="elite-intel"
+DEFAULT_INSTALL_LOCATION="$HOME/.var/app/elite.intel.app"
+INSTALL_FOLDER="elite.intel.app"
 STEAM_FOLDER=$STEAM_DIR
 
 #	

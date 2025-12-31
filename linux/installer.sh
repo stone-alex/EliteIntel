@@ -1,4 +1,4 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 ##############################################################################################################################
 #                                                                                                                            #
 #    Mind you, this program is written to be as compatible with as many linux distrobutions as posible, therefore            #
@@ -19,8 +19,8 @@
 #                                                                                                                            #
 ##############################################################################################################################
 
-DEFAULT_INSTALL_LOCATION="$HOME/.var/app/java.stone-alex.eliteintel"
-INSTALL_FOLDER="java.stone-alex.eliteintel"
+DEFAULT_INSTALL_LOCATION="$HOME/.var/app/elite-intel"
+INSTALL_FOLDER="elite-intel"
 STEAM_FOLDER=$STEAM_DIR
 
 #	
@@ -113,19 +113,19 @@ EOF
     
     #    Move the files
     if [ -e "elite_intel.jar" ]; then
-        mv -r ./dictonary ./logs debug.bat run.bat elite_intel.jar "$DEFAULT_INSTALL_LOCATION"
+        mv -r ./dictionary ./logs debug.bat run.bat elite_intel.jar "$DEFAULT_INSTALL_LOCATION"
     
     elif [ -e "elite_intel*.zip" ]; then
-        local ELITE_ZIP=( elite_intel*.zip )
-        unzip $ELITE_ZIP -d $DEFAULT_INSTALL_LOCATION
+        local ELITE_ZIP="elite_intel*.zip"
+        unzip "$ELITE_ZIP" -d "$DEFAULT_INSTALL_LOCATION"
         echo "Extracted the app files to $DEFAULT_INSTALL_LOCATION"
     
     else
         echo "Couldn't find the elite_intel.jar!"
     
         curl -L -O $(curl -s https://api.github.com/repos/stone-alex/EliteIntel/releases/latest | grep "browser_download_url" | cut -d '"' -f 4)
-        local ELITE_ZIP=( elite_intel*.zip )
-        unzip $ELITE_ZIP -d $DEFAULT_INSTALL_LOCATION
+        local ELITE_ZIP="elite_intel*.zip"
+        unzip "$ELITE_ZIP" -d "$DEFAULT_INSTALL_LOCATION"
     
         echo "Re-downloaded the latest version of EliteIntel!"
     fi
@@ -186,8 +186,8 @@ update_elite_intel() {
 
     echo "Updating EliteIntel ..."
     curl -L -O $(curl -s https://api.github.com/repos/stone-alex/EliteIntel/releases/latest | grep "browser_download_url" | cut -d '"' -f 4)
-    local ELITE_ZIP=( elite_intel*.zip )
-    unzip -o $ELITE_ZIP -d $ELITEINTEL_FOLDER elite_intel.jar dictionary/stt-correction-dictionary.txt
+    local ELITE_ZIP="elite_intel*.zip"
+    unzip -o "$ELITE_ZIP" elite_intel.jar dictionary/stt-correction-dictionary.txt -d "$ELITEINTEL_FOLDER"
     
     rm $ELITE_ZIP
 

@@ -1,8 +1,8 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 ##############################################################################################################################
 #                                                                                                                            #
 #    Mind you, this program is written to be as compatible with as many linux distrobutions as posible, therefore            #
-#    I have not used any functions that can not be expected to be part of the kernel or is default shipped with many         #
+#    I have not used any functions that can not be expected to be part of the kernel, or is by default shipped with many     #
 #    distors, like "wget" is not a default installation contrary to curl.                                                    #
 #                                                                                                                            #
 #    The script is also writen with single responsibility in mind, so that if you want to test or improve                    #
@@ -19,9 +19,9 @@
 #                                                                                                                            #
 ##############################################################################################################################
 
-DEFAULT_INSTALL_LOCATION="$HOME/.var/app/java.stone-alex.eliteintel"
-INSTALL_FOLDER="java.stone-alex.eliteintel"
-STEAM_FOLDER=$STEAM_DIR
+DEFAULT_INSTALL_LOCATION="$HOME/.var/app/elite-intel.app"
+INSTALL_FOLDER="elite-intel.app"
+STEAM_FOLDER=""
 
 #	
 #	Functions
@@ -51,33 +51,34 @@ check_java_install() {
 }
 
 detect_steam() {
-	if [ -n "$STEAM_FOLDER" ]; then
-		echo "steam folder is here $STEAM_FOLDER"
-		return
-	fi
-
-	echo "Locating Steam installation..."
-
-    if command -v flatpak >/dev/null 2>&1; then
-        if flatpak list --app | grep -q '^com.valvesoftware.Steam$'; then
-            STEAM_FOLDER=$(find / -type d -name com.valvesoftware.Steam)
-            return
-        fi
-    fi
-
-    if command -v snap >/dev/null 2>&1; then
-        if snap list | awk '{print $1}' | grep -qx 'steam'; then
-            STEAM_FOLDER="$HOME/snap/steam/common/.local/share/Steam"
-            return
-        fi
-    fi
-
+    echo "Locating Steam installation..."
+    
     if command -v steam >/dev/null 2>&1; then
+        echo "looking in home-folder ..."
+
         if [ -d "$HOME/.steam/steam" ]; then
              STEAM_FOLDER="$HOME/.steam/steam"
             return
         elif [ -d "$HOME/.local/share/Steam" ]; then
              STEAM_FOLDER="$HOME/.local/share/Steam"
+            return
+        fi
+    fi
+
+    if command -v flatpak >/dev/null 2>&1; then
+        echo "Testing flatpak ..."
+        
+        if flatpak list --app | grep -q 'com.valvesoftware.Steam'; then
+            STEAM_FOLDER="$HOME/.var/app/com.valvesoftware.Steam/.local/share/Steam"
+            return
+        fi
+    fi
+
+    if command -v snap >/dev/null 2>&1; then
+        echo "Testing snap ..."
+
+        if snap list | awk '{print $1}' | grep -qx 'steam'; then
+            STEAM_FOLDER="$HOME/snap/steam/common/.steam"
             return
         fi
     fi
@@ -108,26 +109,43 @@ EOF
     
     #    Setup install directory
     if [ ! -d "$DEFAULT_INSTALL_LOCATION" ]; then
-        mkdir $DEFAULT_INSTALL_LOCATION
+        mkdir "$DEFAULT_INSTALL_LOCATION"
     fi
     
-    #    Move the files
-    if [ -e "elite_intel.jar" ]; then
-        mv -r ./dictonary ./logs debug.bat run.bat elite_intel.jar "$DEFAULT_INSTALL_LOCATION"
-    
-    elif [ -e "elite_intel*.zip" ]; then
-        local ELITE_ZIP=( elite_intel*.zip )
-        unzip $ELITE_ZIP -d $DEFAULT_INSTALL_LOCATION
+#    Move the files
+    local ELITE_ZIP="elite_intel*.zip"
+    local ELITE_JAR="elite_intel.jar"
+
+    if [ -e $ELITE_JAR ]; then
+        # If the user has downloaded a release, we try to detect if it is in the current directory
+        # Also assumes that this script will be in the distrubuted release folder
+        mv -r ./dictionary ./logs debug.bat run.bat elite_intel.jar "$DEFAULT_INSTALL_LOCATION"
+
+        cat << EOF 
+        Installed EliteIntel with files in the current directory.
+        Please check the $DEFAULT_INSTALL_LOCATION folder that all the files is present:
+        [ 'elite_intel.jar', 'dictionary/stt-correction-dictionary.txt', 'debug.bat', 'run.bat' ]
+
+EOF
+    elif [ -e $ELITE_ZIP ]; then
+        # If the user has downloaded a release.zip, and not extracted any thing we do the extraction 
+        # as if we downladed it our self
+        unzip "$ELITE_ZIP" -d $DEFAULT_INSTALL_LOCATION
+
         echo "Extracted the app files to $DEFAULT_INSTALL_LOCATION"
     
     else
+        # Last resort. We fetch the latest version of EliteIntel from Github
+        # and install it cleanly
         echo "Couldn't find the elite_intel.jar!"
     
         curl -L -O $(curl -s https://api.github.com/repos/stone-alex/EliteIntel/releases/latest | grep "browser_download_url" | cut -d '"' -f 4)
-        local ELITE_ZIP=( elite_intel*.zip )
-        unzip $ELITE_ZIP -d $DEFAULT_INSTALL_LOCATION
-    
-        echo "Re-downloaded the latest version of EliteIntel!"
+        
+        local NEW_ELITE_ZIP=( elite_intel*.zip )
+        unzip $NEW_ELITE_ZIP -d $DEFAULT_INSTALL_LOCATION
+        rm "$NEW_ELITE_ZIP"
+
+        echo "Downloaded and installed the latest version of EliteIntel!"
     fi
 }
 
@@ -136,8 +154,8 @@ create_bindings()   {
 
     cd "$DEFAULT_INSTALL_LOCATION"
 
-    BINDINGS_FOLDER=$(find "$STEAM_DIR/steamapps/compatdata/359320/pfx/drive_c/users/steamuser/" -type d -name Bindings)
-    JOURNAL_FOLDER=$(dirname "$(find "$STEAM_DIR/steamapps/compatdata/359320/pfx/drive_c/users/steamuser/" -type f -name *.json | head -n 1)")
+    BINDINGS_FOLDER=$(find "$STEAM_FOLDER/steamapps/compatdata/359320/pfx/drive_c/users/steamuser/" -type d -name Bindings)
+    JOURNAL_FOLDER=$(dirname "$(find "$STEAM_FOLDER/steamapps/compatdata/359320/pfx/drive_c/users/steamuser/" -type f -name *.json | head -n 1)")
 
 # Bindings
     ln -s "$BINDINGS_FOLDER" ed-bindings
@@ -176,20 +194,22 @@ update_elite_intel() {
 
     echo "Is this the correct installation folder: $ELITEINTEL_FOLDER"
     read -rp "Do you want to continue with the current path? [y/n] " updatePath
+
     case $updatePath in
         "y") continue;;
         "n")
             read -rp "Provide the full path: " updatePath;
-            ELITEINTEL_FOLDER=$updatePath
+            ELITEINTEL_FOLDER="$updatePath"
             ;;
     esac
 
     echo "Updating EliteIntel ..."
     curl -L -O $(curl -s https://api.github.com/repos/stone-alex/EliteIntel/releases/latest | grep "browser_download_url" | cut -d '"' -f 4)
-    local ELITE_ZIP=( elite_intel*.zip )
-    unzip -o $ELITE_ZIP -d $ELITEINTEL_FOLDER elite_intel.jar dictionary/stt-correction-dictionary.txt
+
+    local ELITE_ZIP="elite_intel*.zip"
+    unzip -o "$ELITE_ZIP" elite_intel.jar dictionary/stt-correction-dictionary.txt -d "$ELITEINTEL_FOLDER"
     
-    rm $ELITE_ZIP
+    rm "$ELITE_ZIP"
 
     echo "Done!"
     echo "Fly safe, comander"
@@ -218,6 +238,13 @@ delete_elite_intel() {
     else
         echo "It seems that EliteIntel is allready deleted!"
     fi
+
+    # Remove the startmenu shortcut
+    rm "$HOME/.local/share/applications/elite-intel.desktop"
+    
+    chmod +x $STARTMENU_DIR/elite-intel.desktop
+    update-desktop-database $HOME/.local/share/applications
+
     # Prombt for database deletion
     cat << EOF
 
@@ -225,6 +252,7 @@ delete_elite_intel() {
     This is not recomended as it also securly stores your API-KeYs for AI, STT, TTS and EDSM. 
 
 EOF
+
     read -rp "default n: [y/n]" DELETEEVERYTHING
 
     case $DELETEEVERYTHING in

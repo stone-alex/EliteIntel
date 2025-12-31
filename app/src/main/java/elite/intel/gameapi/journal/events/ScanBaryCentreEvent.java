@@ -15,7 +15,7 @@ public class ScanBaryCentreEvent extends BaseEvent {
     private long systemAddress;
 
     @SerializedName("BodyID")
-    private int bodyID;
+    private Long bodyID;
 
     @SerializedName("SemiMajorAxis")
     private double semiMajorAxis;
@@ -76,7 +76,7 @@ public class ScanBaryCentreEvent extends BaseEvent {
         return systemAddress;
     }
 
-    public int getBodyID() {
+    public Long getBodyID() {
         return bodyID;
     }
 

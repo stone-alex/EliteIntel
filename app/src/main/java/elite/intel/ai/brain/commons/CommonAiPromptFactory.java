@@ -23,7 +23,7 @@ public class CommonAiPromptFactory implements AiPromptFactory {
     }
 
     private static final String JSON_FORMAT =
-            "Always output JSON: {\"type\": \"command|query|chat\", \"response_text\": \"TTS output\", \"action\": \"action_name|query_name\", \"params\": {\"key\": \"value\"}, \"expect_followup\": boolean}";
+            "Always output JSON: {\"type\": \"command|query|chat\", \"response_text\": \"TTS output\", \"action\": \"action_name|query_name\", \"params\": {\"key\": \"value\"}, \"expect_followup\": boolean} action must match provided command or query. ";
 
     @Override
     public String generateUserPrompt(String playerVoiceInput) {
@@ -35,8 +35,8 @@ public class CommonAiPromptFactory implements AiPromptFactory {
         StringBuilder sb = new StringBuilder();
 
         sb.append("Instructions:\n\n")
-                .append(" NEVER INVENT COMMANDS OR QUERIES!!! ALWAYS MATCH TO THE PROVIDED LIST ONLY!!! IF NOT MATCH FOUND SAY SO, NEVER LIE, EVER!!!!!!!!! ")
-                .append("Only return a command from the exact list provided below — never invent, combine, or create new commands, even if the user input seems similar.\n")
+                .append(" Rule #1: NEVER INVENT COMMANDS OR QUERIES (actions)!!! ALWAYS MATCH TO THE PROVIDED LIST ONLY!!! IF NOT MATCH FOUND SAY SO. ")
+                .append(" Only return a command or query from the exact list provided below — never invent, combine, or create new commands, even if the user input seems similar. action parameter MUST match either command or query. Do not invent action parameters. \n")
                 .append(inputClassificationClause()).append('\n')
                 .append(JSON_FORMAT).append('\n')
                 .append(supportedCommandsClause()).append('\n')
@@ -60,16 +60,18 @@ public class CommonAiPromptFactory implements AiPromptFactory {
         sb.append("Classify input as one of:\n");
         sb.append("    - 'command': Triggers an app action or keyboard event (DO SOMETHING). Use for inputs starting with verbs like 'activate', 'set', 'switch to', 'get', 'drop', 'retract', 'deploy', 'find', 'locate', 'activate' (e.g., 'deploy landing gear', 'set mining target', 'find carrier fuel'). Treat imperative verbs as commands even if question-phrased (e.g., 'get distance' is a command). Only match supported commands listed in simulationCommands or CustomCommands. Provide empty response_text for single-word commands. Match command and queries to the provided list only. Match commands before queries or chat.\n");
         sb.append("    - 'query': Requests information from simulation state (LOOK UP, HELP, REMIND ME or COMPUTE SOMETHING). Use for inputs starting with interrogative words like 'can we', 'what', 'where', 'when', 'how', 'how far', 'remind', 'how many', 'how much', 'what is', 'where is' (e.g., 'how far are we from last bio sample', 'what is in our cargo hold'). Explicitly match queries about distance to the last bio sample with phrases containing 'how far' or 'distance' followed by 'bio sample', 'biosample', 'last sample', 'last bio sample', 'previous bio sample', or 'previous biosample', with or without prefixes like 'query', 'query about simulation state', or 'query question'. These must trigger the query handler (HOW_FAR_ARE_WE_FROM_LAST_SAMPLE) with action 'query_how_far_we_moved_from_last_bio_sample'. Match supported queries listed in QueryActions. Queries take priority over chat but not commands. DO NOT confuse mine and buy. Search markets for 'buy' search star systems for 'mine'. Do not confuse 'trade route' with 'ship route' with 'fleet carrier route'. 'help' or 'help me with' associated with "+HELP.getAction()+" query \n");
-        sb.append("    - 'chat': General conversation, questions unrelated to simulation actions or state, or unmatched inputs (general chat). Only classify as chat if the input does not match any specific query or command pattern in 'Supported Commands' or 'Supported Queries'.\n");
+        sb.append("    - 'chat': General conversation, anything that does not remotely match provided list of commands or queries are classified as general chat. Only classify as chat if the input does not match any specific query or command pattern in 'Supported Commands' or 'Supported Queries'.\n");
 
         sb.append("For type='command': Provide empty response_text for single word commands.\n");
-        sb.append("    - For set, change, swap, add etc type commands that require value provide params json {\"key\":\"value\"} where key always 'key' and value is what you determine value to be.\n");
+        sb.append("    - For set, change, swap, add etc type commands that require value provide params json {\"key\":\"value\"} where key always matching paramKey for action and value is what you determine value to be.\n");
         sb.append("    - For 'find*' commands that contain distance in light years provide {\"key\":\"value\"} where key is integer representing distance in light years.\n");
+        sb.append("    - For toggle commands such as on/off, enable/disable, provide params json {\"state\":\"true\"} / {\"state\":\"false\"}. use 'state' for on/off commands only, never for anything else.\n");
+        sb.append("    - Example: '"+FIND_MINING_SITE.getAction()+"' provide params json {\"material\":\"value\", \"max_distance\":\"value\"} \n");
         sb.append("    - For commands like ").append(INCREASE_SPEED_BY.getAction()).append(" provide params json {\"key\":\"value\"} where value is a positive integer. example: {\"key\":\"3\"}.\n");
         sb.append("    - For commands like ").append(DECREASE_SPEED_BY.getAction()).append(" provide params json {\"key\":\"value\"} where value is a negative integer example: {\"key\":\"-3\"}.\n");
+        sb.append("    - For commands like ").append(LIGHTS_ON_OFF.getAction()).append(" provide params json {\"state\":\"true\"} / {\"state\":\"false\"}.\n");
         sb.append("    - If asked about fleet carrier required to reach destination, query "+ANALYZE_CARRIER_ROUTE.getAction()+", not fleet carrier stats.\n");
         sb.append("    - Always extract and return numeric values as plain integers without commas, spaces, or words (e.g., 2000000, not '2 million' or 'two million').\n");
-        sb.append("    - For toggle commands such as turn off, turn on, set on, set off, enable or disable, ALWAYS provide params json {\"state\":\"true\"} / {\"state\":\"false\"}.\n");
         sb.append("    - Distinguish between fleet carrier route and ship route. Fleet carrier fuel (tritium), and fuel for the ship (hydrogen from fuel stars). Fleet carrier has to be mentioned explicitly, else it is ship route and ship fuel.\n");
         sb.append("    - Only use commands and queries provided. Else response as generic chat.\n");
 
@@ -89,8 +91,8 @@ public class CommonAiPromptFactory implements AiPromptFactory {
     private String colloquialTerms() {
         StringBuilder sb = new StringBuilder();
         sb.append(" Map 'organic(s) to 'bio signal(s)'\n");
-        sb.append(" Map 'navigate to target system' or 'plot route to target system' to "+RECON_TARGET_SYSTEM.getAction()+" to \n");
-        sb.append(" Map 'navigate to provider system' or 'plot route to provider system' to "+RECON_PROVIDER_SYSTEM.getAction()+" to \n");
+        sb.append(" Map 'navigate to target system' or 'plot route to target system' to "+RECON_TARGET_SYSTEM.getAction()+" \n");
+        sb.append(" Map 'navigate to provider system' or 'plot route to provider system' to "+RECON_PROVIDER_SYSTEM.getAction()+" \n");
         sb.append(" Map colloquial terms to commands: 'feds', 'yanks', or 'federation space' to 'FEDERATION', 'imperials', 'imps', or 'empire' to 'IMPERIAL', 'alliance space' or 'allies' to 'ALLIANCE' for set_cadence. ");
         sb.append(" Map slang such as 'bounce', 'proceed to the next waypoint' or 'get out of here' to commands like ").append(JUMP_TO_HYPERSPACE.getAction()).append(". ");
         sb.append(" Map 'select next way point' to ").append(TARGET_NEXT_ROUTE_SYSTEM.getAction()).append("\n");
@@ -100,6 +102,7 @@ public class CommonAiPromptFactory implements AiPromptFactory {
         sb.append(" - \"jump\", \"engage\", \"hyperspace\", \"bounce\", \"proceed to the next waypoint\", \"go\", \"let's go\" → initiate hyperspace jump to the currently TARGETED system.\n");
         sb.append(" Map 'scan system' to commands like ").append(OPEN_FSS_AND_SCAN.getAction()).append(". and 'damage report' to queries like ").append(QUERY_SHIP_LOADOUT.getAction()).append("\n");
         sb.append(" Infer command intent from context: phrases like 'act like', 'talk like', 'blend in with', or 'sound like' followed by a faction should trigger '").append(SET_PERSONALITY.getAction()).append("' with the corresponding cadence value, using current system allegiance if ambiguous.\n");
+        sb.append(" Do not confuse traders with market. Material tader/broker is not the same as trade station / port");
         return sb.toString();
     }
 
@@ -164,7 +167,7 @@ public class CommonAiPromptFactory implements AiPromptFactory {
         SystemSession systemSession = SystemSession.getInstance();
 
         AICadence aiCadence = systemSession.isRunningPiperTts() ? AICadence.FEDERATION : systemSession.getAICadence();
-        AIPersonality aiPersonality = systemSession.isRunningPiperTts() ? AIPersonality.PROFESSIONAL : systemSession.getAIPersonality();
+        AIPersonality aiPersonality = systemSession.isRunningPiperTts() ? AIPersonality.CASUAL : systemSession.getAIPersonality();
 
         sb.append(" Behavior: ");
         sb.append(aiCadence.getCadenceClause()).append(" ");

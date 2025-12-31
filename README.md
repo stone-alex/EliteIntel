@@ -1,17 +1,22 @@
 # Elite Intel - Public Beta
 
-### NOTE: This is an public beta release — satbile, but expect bugs and ongoing improvements!
-
 ## Installation & Setup
 
-## 👉[Download Installation and Configuration](https://github.com/stone-alex/eliteintel/wiki/Installation-and-Configuration)👈
+### 🔽 [RELEASES](https://github.com/stone-alex/EliteIntel/releases) |  ⚙️ [CONFIGURE](https://github.com/stone-alex/EliteIntel/wiki/Installation-and-Configuration) | 🎓 [**WIKI**](https://github.com/stone-alex/eliteintel/wiki) 
 
-### Linux and Windows are supported.
+--- 
 
-If you run into issues, hit us up on GitHub issues or 👉[**Discord**](https://discord.gg/3qAqBENsBm).👈
+## Linux and Windows are supported.
+If you run into issues, hit us up on GitHub issues or
 Feedback and bug reports are super welcome!
 
-### 📖 Full details here: [**WIKI**](https://github.com/stone-alex/eliteintel/wiki)
+Two ways to get in touch:
+
+🫆 👉[**Discord**](https://discord.gg/3qAqBENsBm).👈 (Corporate, spying, tracking, and profiling) 
+
+💬 👉[**Libera IRC**](https://web.libera.chat/?channel=#EliteIntelDev)👈 **NEW**
+(Private - no corpo spying, no tracking, no ads. no data collection)
+
 
 ## Overview
 
@@ -49,7 +54,7 @@ reflection) and principles like DRY and SRP. All PRs go through review.
 
 Released under Creative Commons license.
 
-👉[**Discord**](https://discord.gg/3qAqBENsBm) / [**YouTube**](https://www.youtube.com/@SudoKrondor)👈
+👉[**Discord**](https://discord.gg/3qAqBENsBm)👈
 ---
 
 © Sudo Krondor (Alex Stone) | 2025 GitHub, Inc. | Open-Source Project

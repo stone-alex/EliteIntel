@@ -17,7 +17,6 @@ public class LocationSubscriber {
     public void onLocationEvent(LocationEvent event) {
 
         LocationDto dto = findLocation(event);
-
         dto.setX(event.getStarPos()[0]);
         dto.setY(event.getStarPos()[1]);
         dto.setZ(event.getStarPos()[2]);
@@ -67,24 +66,7 @@ public class LocationSubscriber {
     }
 
     private LocationDto findLocation(LocationEvent event) {
-        LocationDto dto;
         LocationManager locationData = LocationManager.getInstance();
-        Map<Long, LocationDto> locations = locationData.findByPrimaryStar(event.getStarSystem());
-
-        if (locations == null || locations.isEmpty()) {
-            dto = playerSession.getLocation(event.getBodyID(), event.getStarSystem());
-            if (dto == null) {
-                dto = playerSession.getCurrentLocation();
-            }
-        } else {
-            dto = locations.get((long) event.getBodyID());
-            if (dto == null) {
-                dto = playerSession.getLocation(event.getBodyID(), event.getStarSystem());
-                if (dto == null) {
-                    dto = playerSession.getCurrentLocation();
-                }
-            }
-        }
-        return dto;
+        return locationData.findBySystemAddress(event.getSystemAddress(), event.getBody());
     }
 }

@@ -18,11 +18,11 @@ public interface GameSessionDao {
             INSERT OR REPLACE INTO game_session (id, aiPersonality,  aiCadence, aiVoice, aiApiKey, ttsApiKey, sttApiKey, 
                                                              edsmApiKey, loggingEnabled, privacyModeOn, rmsThresholdHigh,  
                                                              rmsThresholdLow, encryptedLLMKey, encryptedSTTKey, encryptedTTSKey, 
-                                                             encryptedEDSSMKey, sendMarketData, sendOutfittingData, sendShipyardData)
+                                                             encryptedEDSSMKey, sendMarketData, sendOutfittingData, sendShipyardData, sendExplorationData)
                                   VALUES (1, :aiPersonality, :aiCadence, :aiVoice, :aiApiKey, :ttsApiKey, :sttApiKey, 
                                                       :edsmApiKey, :loggingEnabled, :privacyModeOn, :rmsThresholdHigh, 
                                                       :rmsThresholdLow, :encryptedLLMKey, :encryptedSTTKey, :encryptedTTSKey, 
-                                                      :encryptedEDSSMKey, :sendMarketData, :sendOutfittingData, :sendShipyardData)
+                                                      :encryptedEDSSMKey, :sendMarketData, :sendOutfittingData, :sendShipyardData, :sendExplorationData)
             """)
     void save(@BindBean GameSessionDao.GameSession data);
 
@@ -43,12 +43,10 @@ public interface GameSessionDao {
             session.setSttApiKey(rs.getString("sttApiKey"));
             /// <<
 
-
             session.setEncryptedLLMKey(rs.getString("encryptedLLMKey"));
             session.setEncryptedSTTKey(rs.getString("encryptedSTTKey"));
             session.setEncryptedTTSKey(rs.getString("encryptedTTSKey"));
             session.setEncryptedEDSSMKey(rs.getString("encryptedEDSSMKey"));
-
 
             session.setLoggingEnabled(rs.getBoolean("loggingEnabled"));
             session.setAiVoice(rs.getString("aiVoice"));
@@ -60,6 +58,7 @@ public interface GameSessionDao {
             session.setSendMarketData(rs.getBoolean("sendMarketData"));
             session.setSendOutfittingData(rs.getBoolean("sendOutfittingData"));
             session.setSendShipyardData(rs.getBoolean("sendShipyardData"));
+            session.setSendExplorationData(rs.getBoolean("sendExplorationData"));
             return session;
         }
     }
@@ -88,6 +87,7 @@ public interface GameSessionDao {
         private Boolean sendMarketData;
         private Boolean sendOutfittingData;
         private Boolean sendShipyardData;
+        private Boolean sendExplorationData;
 
 
         public String getAiPersonality() {
@@ -233,6 +233,14 @@ public interface GameSessionDao {
 
         public void setSendShipyardData(Boolean sendShipyardData) {
             this.sendShipyardData = sendShipyardData;
+        }
+
+        public Boolean getSendExplorationData() {
+            return sendExplorationData;
+        }
+
+        public void setSendExplorationData(Boolean sendExplorationData) {
+            this.sendExplorationData = sendExplorationData;
         }
     }
 }

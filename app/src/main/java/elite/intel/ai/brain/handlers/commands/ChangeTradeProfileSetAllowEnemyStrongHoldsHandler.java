@@ -8,7 +8,7 @@ import elite.intel.gameapi.EventBusManager;
 public class ChangeTradeProfileSetAllowEnemyStrongHoldsHandler implements CommandHandler {
 
     @Override public void handle(String action, JsonObject params, String responseText) {
-        boolean isOn = params.get("key").getAsBoolean();
+        boolean isOn = params.get("state").getAsBoolean();
         TradeProfileManager profileManager = TradeProfileManager.getInstance();
         profileManager.setAllowStrongHolds(isOn);
         EventBusManager.publish(new AiVoxResponseEvent("Updated trade profile enemy strong holds: " + (isOn ? "On" : "Off") + ""));

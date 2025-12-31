@@ -33,7 +33,7 @@ public class ScanOrganicEvent extends BaseEvent {
     private long systemAddress;
 
     @SerializedName("Body")
-    private int body;
+    private Long body;
 
     public ScanOrganicEvent(JsonObject json) {
         super(json.get("timestamp").getAsString(), Duration.ofSeconds(30), "ScanOrganic");
@@ -96,7 +96,7 @@ public class ScanOrganicEvent extends BaseEvent {
         return systemAddress;
     }
 
-    public int getBody() {
+    public Long getBody() {
         return body;
     }
 

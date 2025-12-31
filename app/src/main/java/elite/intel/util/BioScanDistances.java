@@ -27,6 +27,7 @@ public class BioScanDistances {
             Map.entry("Tubus", 800),
             Map.entry("Tussock", 200),
             Map.entry("Thargoid", 100),
-            Map.entry("Roseum Sinuous Tubers", 100)
+            Map.entry("Roseum Sinuous Tubers", 100),
+            Map.entry("Luteolum Anemone", 100)
     );
 }

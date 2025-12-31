@@ -6,7 +6,7 @@ import elite.intel.db.dao.PirateFactionDao.PirateFaction;
 import elite.intel.db.dao.PirateMissionProviderDao.MissionProvider;
 import elite.intel.db.managers.PirateMissionDataManager.PirateMissionTuple;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.search.intra.PirateMassacreMissionSearch;
+import elite.intel.search.spansh.missions.pirates.PirateMassacreMissionSearch;
 
 import java.util.List;
 

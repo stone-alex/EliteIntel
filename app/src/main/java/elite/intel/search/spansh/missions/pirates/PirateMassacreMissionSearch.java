@@ -1,4 +1,4 @@
-package elite.intel.search.intra;
+package elite.intel.search.spansh.missions.pirates;
 
 import elite.intel.db.dao.LocationDao;
 import elite.intel.db.dao.PirateFactionDao.PirateFaction;
@@ -6,6 +6,9 @@ import elite.intel.db.dao.PirateMissionProviderDao.MissionProvider;
 import elite.intel.db.managers.LocationManager;
 import elite.intel.db.managers.PirateMissionDataManager;
 import elite.intel.db.managers.PirateMissionDataManager.PirateMissionTuple;
+import elite.intel.search.intra.IntraClient;
+import elite.intel.search.intra.IntraRequest;
+import elite.intel.search.intra.IntraResponse;
 import elite.intel.search.spansh.starsystems.StarSystemClient;
 import elite.intel.search.spansh.starsystems.StarSystemResult;
 import elite.intel.search.spansh.starsystems.SystemSearchCriteria;

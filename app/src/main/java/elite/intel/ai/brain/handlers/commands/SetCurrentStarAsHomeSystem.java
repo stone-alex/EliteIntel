@@ -11,11 +11,11 @@ public class SetCurrentStarAsHomeSystem implements CommandHandler {
 
     @Override public void handle(String action, JsonObject params, String responseText) {
         LocationDao.Coordinates coordinates = LocationManager.getInstance().getGalacticCoordinates();
-        if(coordinates == null){
+        if (coordinates == null) {
             EventBusManager.publish(new AiVoxResponseEvent("Galactic coordinates are not available."));
             return;
         }
-        EventBusManager.publish(new AiVoxResponseEvent("Setting "+ coordinates.primaryStar()+" as home system."));
-        LocationManager.getInstance().setAsHomeSystem();
+        EventBusManager.publish(new AiVoxResponseEvent("Setting " + coordinates.primaryStar() + " as home system."));
+        PlayerSession.getInstance().setHomeSystem();
     }
 }

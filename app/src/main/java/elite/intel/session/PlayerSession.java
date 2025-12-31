@@ -36,7 +36,7 @@ public class PlayerSession {
     public static final String BINDINGS_DIR = "bindings_dir";
     private static volatile PlayerSession instance;
     /// Data managers.
-    private LocationManager locationData = LocationManager.getInstance();
+    private LocationManager locationManager = LocationManager.getInstance();
     private ShipScansManager shipScans = ShipScansManager.getInstance();
     private MissionManager missions = MissionManager.getInstance();
     private BountyManager bounties = BountyManager.getInstance();
@@ -143,19 +143,15 @@ public class PlayerSession {
 
     public void saveLocation(LocationDto location) {
         if (location.getBodyId() == -1) return;
-        locationData.save(location);
+        locationManager.save(location);
     }
 
     public Map<Long, LocationDto> getLocations() {
-        return locationData.findByPrimaryStar(getPrimaryStarName());
+        return locationManager.findByPrimaryStar(getPrimaryStarName());
     }
 
     public String getPrimaryStarName() {
         return Database.withDao(PlayerDao.class, dao -> dao.get().getCurrentPrimaryStar());
-    }
-
-    public LocationDto getLocation(long id, String primaryStarName) {
-        return locationData.getLocation(primaryStarName, id);
     }
 
     public void clearBounties() {
@@ -188,7 +184,7 @@ public class PlayerSession {
         return Database.withDao(PlayerDao.class, dao -> {
             PlayerDao.Player player = dao.get();
             Long currentLocationId = player.getCurrentLocationId();
-            return currentLocationId == null ? new LocationDto(-1L) : getLocation(currentLocationId, player.getCurrentPrimaryStar());
+            return currentLocationId == null ? new LocationDto(-1L) : locationManager.getLocation(player.getCurrentPrimaryStar(), currentLocationId);
         });
     }
 
@@ -294,7 +290,7 @@ public class PlayerSession {
     public LocationDto getLastScan() {
         return Database.withDao(PlayerDao.class, dao -> {
             PlayerDao.Player player = dao.get();
-            return getLocation(player.getLastScanId(), player.getCurrentPrimaryStar());
+            return locationManager.getLocation(player.getCurrentPrimaryStar(), player.getLastScanId());
         });
     }
 
@@ -385,6 +381,21 @@ public class PlayerSession {
 
     public String getPlayerMissionStatement() {
         return Database.withDao(PlayerDao.class, dao -> dao.get().getPlayerMissionStatement());
+    }
+
+    public void setHomeSystem() {
+        LocationDto location = getCurrentLocation();
+        Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            player.setHomeSystemId(location.getSystemAddress());
+            dao.save(player);
+            return Void.class;
+        });
+    }
+
+    public LocationDto getHomeSystem() {
+        Long homeSystemId = Database.withDao(PlayerDao.class, dao -> dao.get().getHomeSystemId());
+        return locationManager.findBySystemAddress(homeSystemId);
     }
 
     public void setPlayerMissionStatement(String playerMissionStatement) {
@@ -735,7 +746,7 @@ public class PlayerSession {
     }
 
     public LocationDto getPrimaryStarLocation() {
-        return locationData.findPrimaryStar(getPrimaryStarName());
+        return locationManager.findPrimaryStar(getPrimaryStarName());
     }
 
     public void clearShipScans() {

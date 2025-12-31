@@ -18,7 +18,7 @@ public class ApproachBodyEvent extends BaseEvent {
     private String body;
 
     @SerializedName("BodyID")
-    private int bodyID;
+    private Long bodyID;
 
     public ApproachBodyEvent(JsonObject json) {
         super(json.get("timestamp").getAsString(), Duration.ofSeconds(15), "ApproachBody");
@@ -56,7 +56,7 @@ public class ApproachBodyEvent extends BaseEvent {
         return body;
     }
 
-    public int getBodyID() {
+    public Long getBodyID() {
         return bodyID;
     }
 

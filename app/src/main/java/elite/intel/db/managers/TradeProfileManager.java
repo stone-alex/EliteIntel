@@ -82,7 +82,7 @@ public class TradeProfileManager {
             TradeStationSearchCriteria.Filters filters = new TradeStationSearchCriteria.Filters();
             filters.setDistanceToArrival(new TradeStationSearchCriteria.RangeFilter(0, 6000));
             TradeStationSearchCriteria.StationType stationType = new TradeStationSearchCriteria.StationType();
-            stationType.setTypes(Arrays.asList("Asteroid base", "Coriolis Starport", "Mega ship", "Ocellus Starport"));
+            stationType.setTypes(Arrays.asList("Asteroid base", "Coriolis Starport", "Mega ship", "Ocellus Starport", "Orbis Starport"));
             filters.setStationType(stationType);
             initialStationCriteria.setFilters(filters);
 

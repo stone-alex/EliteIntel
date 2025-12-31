@@ -4,6 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.mouth.subscribers.events.DiscoveryAnnouncementEvent;
 import elite.intel.db.dao.CodexEntryDao;
 import elite.intel.db.managers.CodexEntryManager;
+import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.data.BioForms;
@@ -17,14 +18,16 @@ import static elite.intel.util.StringUtls.capitalizeWords;
 
 public class CodexEntryEventSubscriber {
 
+    private final PlayerSession playerSession = PlayerSession.getInstance();
     private final CodexEntryManager codexEntryManager = CodexEntryManager.getInstance();
+    private final LocationManager locationManager = LocationManager.getInstance();
 
     @Subscribe
     public void onCodexEntryEvent(CodexEntryEvent event) {
-        final PlayerSession playerSession = PlayerSession.getInstance();
+
         final Status status = Status.getInstance();
 
-        LocationDto currentLocation = playerSession.getLocation(event.getBodyID(), event.getSystem());
+        LocationDto currentLocation = locationManager.findBySystemAddress(event.getSystemAddress(), event.getBodyID());
         playerSession.setCurrentLocationId(event.getBodyID());
         StringBuilder sb = new StringBuilder();
 

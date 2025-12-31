@@ -7,6 +7,7 @@ import elite.intel.search.edsm.dto.data.BodyData;
 import elite.intel.util.StringUtls;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
+import org.apache.logging.log4j.core.config.plugins.validation.constraints.NotBlank;
 
 import java.util.*;
 
@@ -40,6 +41,7 @@ public class LocationDto implements ToJsonConvertible {
     private String stationName;
     private String stationType;
     private Long marketID;
+    private Long systemAddress;
     private String stationFaction;
     private String stationGovernment;
     private String stationAllegiance;
@@ -88,13 +90,27 @@ public class LocationDto implements ToJsonConvertible {
         setBodyId(id);
     }
 
+    public LocationDto(Long id, Long systemAddress) {
+        setBodyId(id);
+        setSystemAddress(systemAddress);
+    }
+
+
     public LocationDto(Long id, String starName) {
         setBodyId(id);
         setStarName(starName);
     }
 
     private LocationDto() {
+        // serialization
+    }
 
+    public Long getSystemAddress() {
+        return systemAddress;
+    }
+
+    public void setSystemAddress(@NotBlank Long systemAddress) {
+        this.systemAddress = systemAddress;
     }
 
     public LocationDto(LocationType locationType) {

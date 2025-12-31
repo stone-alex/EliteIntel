@@ -19,8 +19,8 @@
 #                                                                                                                            #
 ##############################################################################################################################
 
-DEFAULT_INSTALL_LOCATION="$HOME/.var/app/elite-intel.app"
-INSTALL_FOLDER="elite-intel.app"
+DEFAULT_INSTALL_LOCATION="$HOME/.var/app/elite.intel.app"
+INSTALL_FOLDER="elite.intel.app"
 STEAM_FOLDER=""
 
 #	
@@ -59,8 +59,14 @@ detect_steam() {
         if [ -d "$HOME/.steam/steam" ]; then
              STEAM_FOLDER="$HOME/.steam/steam"
             return
+        elif [ -d "$HOME/snap/steam/common/.local/share/Steam" ]; then
+            STEAM_FOLDER="$HOME/snap/steam/common/.local/share/Steam"
+            return
         elif [ -d "$HOME/.local/share/Steam" ]; then
              STEAM_FOLDER="$HOME/.local/share/Steam"
+            return
+        elif [ -d "$HOME/.var/app/com.valvesoftware.Steam/.local/share/Steam" ]; then
+            STEAM_FOLDER="$HOME/.var/app/com.valvesoftware.Steam/.local/share/Steam"
             return
         fi
     fi
@@ -78,7 +84,7 @@ detect_steam() {
         echo "Testing snap ..."
 
         if snap list | awk '{print $1}' | grep -qx 'steam'; then
-            STEAM_FOLDER="$HOME/snap/steam/common/.steam"
+            STEAM_FOLDER="$HOME/snap/steam/common/.local/share/Steam/"
             return
         fi
     fi
@@ -118,7 +124,7 @@ EOF
 
     if [ -e $ELITE_JAR ]; then
         # If the user has downloaded a release, we try to detect if it is in the current directory
-        # Also assumes that this script will be in the distrubuted release folder
+        # Also assumes that this script will be in the distributed release folder
         mv -r ./dictionary ./logs debug.bat run.bat elite_intel.jar "$DEFAULT_INSTALL_LOCATION"
 
         cat << EOF 
@@ -129,7 +135,7 @@ EOF
 EOF
     elif [ -e $ELITE_ZIP ]; then
         # If the user has downloaded a release.zip, and not extracted any thing we do the extraction 
-        # as if we downladed it our self
+        # as if we downloaded it our self
         unzip "$ELITE_ZIP" -d $DEFAULT_INSTALL_LOCATION
 
         echo "Extracted the app files to $DEFAULT_INSTALL_LOCATION"
@@ -149,26 +155,34 @@ EOF
     fi
 }
 
-create_bindings()   {
-    echo "Creating symlinks to EliteDangerous"
+create_bindings() {
+    echo "Creating symlinks to Elite Dangerous"
 
-    cd "$DEFAULT_INSTALL_LOCATION"
+    local PREFIX="$STEAM_FOLDER/steamapps/compatdata/359320/pfx/drive_c/users/steamuser"
 
-    BINDINGS_FOLDER=$(find "$STEAM_FOLDER/steamapps/compatdata/359320/pfx/drive_c/users/steamuser/" -type d -name Bindings)
-    JOURNAL_FOLDER=$(dirname "$(find "$STEAM_FOLDER/steamapps/compatdata/359320/pfx/drive_c/users/steamuser/" -type f -name *.json | head -n 1)")
+    BINDINGS_FOLDER=$(find "$PREFIX/AppData/Local" -type d -path "*/Frontier Developments/Elite Dangerous/Options/Bindings" 2>/dev/null | head -n1)
+    JOURNAL_FOLDER=$(find "$PREFIX/Saved Games" -type d -path "*/Frontier Developments/Elite Dangerous" 2>/dev/null | head -n1)
 
-# Bindings
-    ln -s "$BINDINGS_FOLDER" ed-bindings
-# Journal
-    ln -s "$JOURNAL_FOLDER" ed-journal
+    if [ -z "$BINDINGS_FOLDER" ] || [ -z "$JOURNAL_FOLDER" ]; then
+        echo "Folders not found. Launch Elite Dangerous once via Steam to create them."
+        return 1
+    fi
+
+    cd "$DEFAULT_INSTALL_LOCATION"  # or wherever you want the links
+
+    ln -sf "$BINDINGS_FOLDER" ed-bindings
+    ln -sf "$JOURNAL_FOLDER" ed-journal
+
+    echo "Symlinks created: ed-bindings -> $BINDINGS_FOLDER"
+    echo "                  ed-journal -> $JOURNAL_FOLDER"
 }
 
 print_usage() {
     cat << EOF
 
-    Thank you comander for trying out EliteIntell, an AI Copilot for Elite Dangerous.
+    Thank you commander for trying out EliteIntel, an AI Copilot for Elite Dangerous.
     
-    This script will help you to install EliteIntell on your linux flavour, it can also
+    This script will help you to install EliteIntel on your linux flavour, it can also
     assist with updating your existing installation. Or removing it when you are done with 
     Elite Dangerous.
 
@@ -181,7 +195,7 @@ print_usage() {
     Optional flags:     \$bash install.sh [-h] [-u] [-d]
 
                 -u       Updates the EliteIntel by fetching the latest update from github
-                -d       Deletes the EliteIntel instalation and associated files from the computer
+                -d       Deletes the EliteIntel installation and associated files from the computer
                 -h       Displays this message.
                 -T       Install Piper-TTS server or download new Piper-voice-models
 
@@ -212,7 +226,7 @@ update_elite_intel() {
     rm "$ELITE_ZIP"
 
     echo "Done!"
-    echo "Fly safe, comander"
+    echo "Fly safe, commander"
     exit 0
 }
 
@@ -236,20 +250,20 @@ delete_elite_intel() {
     if [ -d "$ELITEINTEL_FOLDER" ]; then
         rm -r "$ELITEINTEL_FOLDER"
     else
-        echo "It seems that EliteIntel is allready deleted!"
+        echo "It seems that EliteIntel is already deleted!"
     fi
 
-    # Remove the startmenu shortcut
+    # Remove the start menu shortcut
     rm "$HOME/.local/share/applications/elite-intel.desktop"
     
     chmod +x $STARTMENU_DIR/elite-intel.desktop
     update-desktop-database $HOME/.local/share/applications
 
-    # Prombt for database deletion
+    # Prompt for database deletion
     cat << EOF
 
     Do you want to remove the database to, this is non reversible damage?
-    This is not recomended as it also securly stores your API-KeYs for AI, STT, TTS and EDSM. 
+    This is not recommended as it also securely stores your API-KeYs for AI, STT, TTS and EDSM.
 
 EOF
 
@@ -279,31 +293,34 @@ EOF
 }
 
 create_start_menu() {
-    echo ""
-    echo "Creating startmenu shortcut..."
-    echo "Downloading EliteIntel icon..."
-    
-    #   Installs the launcher in a User only enviorment
-    #   It is possible to make it system wide by putinh it in: "/usr/share/applications"
-    local STARTMENU_DIR="$HOME/.local/share/applications"
+    echo "Creating desktop shortcut..."
 
-    curl -L -o "$DEFAULT_INSTALL_LOCATION/elite-logo.png" https://raw.githubusercontent.com/stone-alex/EliteIntel/master/app/src/main/resources/images/elite-logo.png
+    local DESKTOP_DIR="$HOME/.local/share/applications"
+    local DESKTOP_FILE="$DESKTOP_DIR/elite-intel.desktop"
+    local ICON_PATH="$DEFAULT_INSTALL_LOCATION/elite-logo.png"
 
-    bash -c "cat > $STARTMENU_DIR/elite-intel.desktop" << EOF
+    mkdir -p "$DESKTOP_DIR"
+
+    # Download icon only if missing
+    [ -f "$ICON_PATH" ] || curl -L -o "$ICON_PATH" https://raw.githubusercontent.com/stone-alex/EliteIntel/master/app/src/main/resources/images/elite-logo.png
+
+    cat > "$DESKTOP_FILE" << EOF
 [Desktop Entry]
+Version=1.0
 Name=Elite Intel
-Comment=Elite Intel AI companion
+Comment=Elite Dangerous AI companion
 Exec=java -jar "$DEFAULT_INSTALL_LOCATION/elite_intel.jar"
-Icon="$DEFAULT_INSTALL_LOCATION/elite-logo.png"
+Icon=$ICON_PATH
 Terminal=false
 Type=Application
-Categories=Game
+Categories=Game;Utility;
 StartupNotify=true
 EOF
 
-    chmod +x $STARTMENU_DIR/elite-intel.desktop
-    update-desktop-database $HOME/.local/share/applications
+    chmod +x "$DESKTOP_FILE"
 
+    # Optional: only update if command exists
+    command -v update-desktop-database >/dev/null && update-desktop-database "$DESKTOP_DIR"
 }
 
 download_piper_tts_models() {

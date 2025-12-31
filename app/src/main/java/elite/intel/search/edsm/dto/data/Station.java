@@ -38,6 +38,28 @@ public class Station {
     @SerializedName("updateTime")
     public StationUpdateTime updateTime;
 
+
+    //transient
+    List<Commodity> commodities;
+
+    public List<Commodity> getCommodities() {
+        return commodities;
+    }
+
+    public void setCommodities(List<Commodity> commodities) {
+        this.commodities = commodities;
+    }
+
+    //transient
+    String starSystemName;
+    public String getStarSystemName() {
+        return starSystemName;
+    }
+
+    public void setStarSystemName(String starSystemName) {
+        this.starSystemName = starSystemName;
+    }
+
     public int getId() {
         return id;
     }

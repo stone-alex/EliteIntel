@@ -7,13 +7,11 @@ import elite.intel.ai.brain.AIPersonality;
 import elite.intel.ai.brain.AiCommandInterface;
 import elite.intel.ai.ears.AudioCalibrator;
 import elite.intel.ai.ears.AudioFormatDetector;
-import elite.intel.ai.ears.AudioSettingsTuple;
 import elite.intel.ai.ears.EarsInterface;
 import elite.intel.ai.mouth.AiVoices;
 import elite.intel.ai.mouth.MouthInterface;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
-import elite.intel.search.eddn.EdDnClient;
 import elite.intel.gameapi.AuxiliaryFilesMonitor;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.JournalParser;
@@ -43,7 +41,6 @@ public class AppController implements Runnable {
     EarsInterface ears;
     MouthInterface mouth;
     AiCommandInterface brain;
-    EdDnClient edDnClient;
     JournalParser journalParser = new JournalParser();
     private Thread controllerThread;
     private AppView view;
@@ -138,7 +135,7 @@ public class AppController implements Runnable {
 
             new Thread(() -> {
                 try {
-                    AudioSettingsTuple<Integer, Integer> format = AudioFormatDetector.detectSupportedFormat();
+                    AudioFormatDetector.Format format = AudioFormatDetector.detectSupportedFormat();
                     AudioCalibrator.calibrateRMS(format.getSampleRate(), format.getBufferSize());
 
                     // Back to EDT: restart ears + success
@@ -196,6 +193,12 @@ public class AppController implements Runnable {
     @Subscribe void onToggleSendShipyardDataEvent(ToggleSendShipyardDataEvent event) {
         SwingUtilities.invokeLater(() -> {
             systemSession.setSendShipyardDataEvent(event.isEnabled());
+        });
+    }
+
+    @Subscribe void onToggleSendExplorationData(ToggleSendExplorationDataEvent  event){
+        SwingUtilities.invokeLater(() -> {
+            systemSession.setExplorationData(event.isEnabled());
         });
     }
 
@@ -309,12 +312,13 @@ public class AppController implements Runnable {
         String mission_statement = playerSession.getPlayerMissionStatement();
         playerSession.setPlayerMissionStatement(mission_statement);
 
-        //edDnClient = EdDnClient.getInstance();
-        //edDnClient.start();
+        if (!systemSession.isRunningPiperTts()) {
+            appendToLog("Available voices: " + listVoices());
+        }
 
-        appendToLog("Available voices: " + listVoices());
         appendToLog("Available personalities: " + listPersonalities());
         appendToLog("Available profiles: " + listCadences());
+
         EventBusManager.publish(new ServicesStateEvent(true));
     }
 }

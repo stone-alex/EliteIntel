@@ -26,6 +26,7 @@ public class MarketSubscriber {
         EddnHeader header = new EddnHeader(ZMQUtil.generateUploaderID());
         header.setGameVersion(session.getGameVersion());
         header.setGameBuild(session.getGameBuild());
+        header.setSoftwareVersion(systemSession.readVersionFromResources());
 
         EddnPayload<CommodityMessage> payload = new EddnPayload<>(
                 "https://eddn.edcd.io/schemas/commodity/3",

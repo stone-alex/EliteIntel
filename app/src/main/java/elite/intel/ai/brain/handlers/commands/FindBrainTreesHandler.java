@@ -19,6 +19,8 @@ import static elite.intel.util.StringUtls.fuzzyMaterialSearch;
 public class FindBrainTreesHandler extends CommandOperator implements CommandHandler {
 
     private GameController controller;
+    private final BrainTreeManager brainTreeManager = BrainTreeManager.getInstance();
+    private final LocationManager locationManager = LocationManager.getInstance();
 
     public FindBrainTreesHandler(GameController controller) {
         super(controller.getMonitor(), controller.getExecutor());
@@ -26,8 +28,6 @@ public class FindBrainTreesHandler extends CommandOperator implements CommandHan
     }
 
     @Override public void handle(String action, JsonObject params, String responseText) {
-        BrainTreeManager brainTreeManager = BrainTreeManager.getInstance();
-        LocationManager locationManager = LocationManager.getInstance();
         if (brainTreeManager.getCount() == 0) {
             //NOTE:
             // We can get local data from Spansh, this is a fast all.

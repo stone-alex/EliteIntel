@@ -2,6 +2,7 @@ package elite.intel.search.spansh.station.marketstation;
 
 import com.google.gson.annotations.SerializedName;
 import elite.intel.gameapi.gamestate.dtos.BaseJsonDto;
+import elite.intel.search.spansh.findcarrier.FleetCarrierSearchCriteriaDto;
 import elite.intel.util.json.ToJsonConvertible;
 
 import java.util.Arrays;
@@ -16,6 +17,7 @@ public class TradeStationSearchCriteria extends BaseJsonDto implements ToJsonCon
     @SerializedName("reference_coords")
     private ReferenceCoords referenceCoords;
 
+
     @SerializedName("sort")
     private List<Object> sort = Collections.emptyList();
 
@@ -25,7 +27,20 @@ public class TradeStationSearchCriteria extends BaseJsonDto implements ToJsonCon
     @SerializedName("page")
     private int page = 0;
 
+    @SerializedName("distance")
+    private Distance distance;
+
+
     // === Setters for builder-style usage ===
+
+
+    public Distance getDistance() {
+        return distance;
+    }
+
+    public void setDistance(Distance distance) {
+        this.distance = distance;
+    }
 
     public void setReferenceCoords(ReferenceCoords referenceCoords) {
         this.referenceCoords = referenceCoords;
@@ -48,6 +63,18 @@ public class TradeStationSearchCriteria extends BaseJsonDto implements ToJsonCon
     }
 
     // === Nested classes ===
+    public static class SystemName {
+        @SerializedName("value")
+        private String systemName;
+
+        public String getSystemName() {
+            return systemName;
+        }
+
+        public void setSystemName(String systemName) {
+            this.systemName = systemName;
+        }
+    }
 
     public static class StationType {
         @SerializedName("value")
@@ -77,8 +104,14 @@ public class TradeStationSearchCriteria extends BaseJsonDto implements ToJsonCon
 
     public static class Filters {
 
+        @SerializedName("updated_at")
+        private UpdatedAt updatedAt;
+
         @SerializedName("distance_to_arrival")
         private RangeFilter distanceToArrival;
+
+        @SerializedName("system_name")
+        private SystemName systemName;
 
         @SerializedName("distance")
         private Distance distance;
@@ -94,6 +127,23 @@ public class TradeStationSearchCriteria extends BaseJsonDto implements ToJsonCon
 
         @SerializedName("large_pads")
         private RangeFilter largePads;
+
+
+        public UpdatedAt getUpdatedAt() {
+            return updatedAt;
+        }
+
+        public void setUpdatedAt(UpdatedAt updatedAt) {
+            this.updatedAt = updatedAt;
+        }
+
+        public SystemName getSystemName() {
+            return systemName;
+        }
+
+        public void setSystemName(SystemName systemName) {
+            this.systemName = systemName;
+        }
 
         public void setStationType(StationType stationType) {
             this.stationType = stationType;
@@ -120,6 +170,19 @@ public class TradeStationSearchCriteria extends BaseJsonDto implements ToJsonCon
             this.distance = distanceToStarSystem;
         }
     }
+
+
+    public static class UpdatedAt {
+        @SerializedName("comparison")
+        private String comparison;           // e.g. "<=>"
+
+        @SerializedName("value")
+        private List<String> value;          // ISO-8601 strings
+
+        public void setComparison(String comparison) { this.comparison = comparison; }
+        public void setValue(List<String> value) { this.value = value; }
+    }
+
 
     public static class ReferenceCoords {
 

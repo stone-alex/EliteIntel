@@ -34,35 +34,36 @@ public class FindMiningSiteHandler extends CommandOperator implements CommandHan
             return;
         }
 
-        JsonElement key = params.get("key");
-        if (key == null) {
+        JsonElement mat = params.get("material");
+        JsonElement distance = params.get("max_distance");
+        if (mat == null) {
             EventBusManager.publish(new AiVoxResponseEvent("Did not catch the material name."));
         }
 
         String material =
                 capitalizeWords(
                         fuzzyMaterialSearch(
-                                key.getAsString(), 3
+                                mat.getAsString(), 3
                         )
                 );
 
-        StellarObjectSearchResultDto tritiumLocations = StellarObjectSearch.getInstance()
+        StellarObjectSearchResultDto miningLocations = StellarObjectSearch.getInstance()
                 .findRings(
                         material,
                         ReserveLevel.PRISTINE,
                         LocationManager.getInstance().getGalacticCoordinates(),
-                        MAX_DEFAULT_RANGE
+                        distance == null ? MAX_DEFAULT_RANGE : distance.getAsInt()
                 );
 
-        if (tritiumLocations == null || tritiumLocations.getResults().isEmpty()) {
-            EventBusManager.publish(new AiVoxResponseEvent("No Tritium locations found."));
+        if (miningLocations == null || miningLocations.getResults().isEmpty()) {
+            EventBusManager.publish(new AiVoxResponseEvent("No Mining sites found."));
             return;
         }
 
-        Optional<StellarObjectSearchResultDto.Result> result = tritiumLocations.getResults().stream().findFirst();
+        Optional<StellarObjectSearchResultDto.Result> result = miningLocations.getResults().stream().findFirst();
         RoutePlotter routePlotter = new RoutePlotter(this.controller);
         routePlotter.plotRoute(result.get().getSystemName());
         DestinationReminderManager.getInstance().setDestination(result.get().toJson());
-        EventBusManager.publish(new AiVoxResponseEvent("Found nearest " + material + " in " + result.get().getSystemName()+" system on planet "+result.get().getBodyName()));
+        EventBusManager.publish(new AiVoxResponseEvent("Found nearest " + material + " in " + result.get().getSystemName() + " system on planet " + result.get().getBodyName()));
     }
 }

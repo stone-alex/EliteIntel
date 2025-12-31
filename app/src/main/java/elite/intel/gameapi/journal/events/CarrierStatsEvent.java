@@ -11,40 +11,40 @@ import java.util.StringJoiner;
 
 public class CarrierStatsEvent extends BaseEvent {
     @SerializedName("CarrierID")
-    private long CarrierID;
+    private long carrierID;
 
     @SerializedName("CarrierType")
-    private String CarrierType;
+    private String carrierType;
 
     @SerializedName("Callsign")
-    private String Callsign;
+    private String callsign;
 
     @SerializedName("Name")
-    private String Name;
+    private String name;
 
     @SerializedName("DockingAccess")
-    private String DockingAccess;
+    private String dockingAccess;
 
     @SerializedName("AllowNotorious")
-    private boolean AllowNotorious;
+    private boolean allowNotorious;
 
     @SerializedName("FuelLevel")
-    private int FuelLevel;
+    private int fuelLevel;
 
     @SerializedName("JumpRangeCurr")
-    private double JumpRangeCurr;
+    private double jumpRangeCurr;
 
     @SerializedName("JumpRangeMax")
-    private double JumpRangeMax;
+    private double jumpRangeMax;
 
     @SerializedName("PendingDecommission")
-    private boolean PendingDecommission;
+    private boolean pendingDecommission;
 
     @SerializedName("SpaceUsage")
-    private SpaceUsage SpaceUsage;
+    private SpaceUsage spaceUsage;
 
     @SerializedName("Finance")
-    private Finance Finance;
+    private Finance finance;
 
     @SerializedName("Crew")
     private List<Crew> Crew;
@@ -58,18 +58,18 @@ public class CarrierStatsEvent extends BaseEvent {
     public CarrierStatsEvent(JsonObject json) {
         super(json.get("timestamp").getAsString(), Duration.ofSeconds(10), "CarrierStats");
         CarrierStatsEvent event = GsonFactory.getGson().fromJson(json, CarrierStatsEvent.class);
-        this.CarrierID = event.CarrierID;
-        this.CarrierType = event.CarrierType;
-        this.Callsign = event.Callsign;
-        this.Name = event.Name;
-        this.DockingAccess = event.DockingAccess;
-        this.AllowNotorious = event.AllowNotorious;
-        this.FuelLevel = event.FuelLevel;
-        this.JumpRangeCurr = event.JumpRangeCurr;
-        this.JumpRangeMax = event.JumpRangeMax;
-        this.PendingDecommission = event.PendingDecommission;
-        this.SpaceUsage = event.SpaceUsage;
-        this.Finance = event.Finance;
+        this.carrierID = event.carrierID;
+        this.carrierType = event.carrierType;
+        this.callsign = event.callsign;
+        this.name = event.name;
+        this.dockingAccess = event.dockingAccess;
+        this.allowNotorious = event.allowNotorious;
+        this.fuelLevel = event.fuelLevel;
+        this.jumpRangeCurr = event.jumpRangeCurr;
+        this.jumpRangeMax = event.jumpRangeMax;
+        this.pendingDecommission = event.pendingDecommission;
+        this.spaceUsage = event.spaceUsage;
+        this.finance = event.finance;
         this.Crew = event.Crew;
         this.ShipPacks = event.ShipPacks;
         this.ModulePacks = event.ModulePacks;
@@ -306,99 +306,99 @@ public class CarrierStatsEvent extends BaseEvent {
     }
 
     public long getCarrierID() {
-        return CarrierID;
+        return carrierID;
     }
 
     public void setCarrierID(long carrierID) {
-        this.CarrierID = carrierID;
+        this.carrierID = carrierID;
     }
 
     public String getCarrierType() {
-        return CarrierType;
+        return carrierType;
     }
 
     public void setCarrierType(String carrierType) {
-        this.CarrierType = carrierType;
+        this.carrierType = carrierType;
     }
 
     public String getCallsign() {
-        return Callsign;
+        return callsign;
     }
 
     public void setCallsign(String callsign) {
-        this.Callsign = callsign;
+        this.callsign = callsign;
     }
 
     public String getName() {
-        return Name;
+        return name;
     }
 
     public void setName(String name) {
-        this.Name = name;
+        this.name = name;
     }
 
     public String getDockingAccess() {
-        return DockingAccess;
+        return dockingAccess;
     }
 
     public void setDockingAccess(String dockingAccess) {
-        this.DockingAccess = dockingAccess;
+        this.dockingAccess = dockingAccess;
     }
 
     public boolean isAllowNotorious() {
-        return AllowNotorious;
+        return allowNotorious;
     }
 
     public void setAllowNotorious(boolean allowNotorious) {
-        this.AllowNotorious = allowNotorious;
+        this.allowNotorious = allowNotorious;
     }
 
     public int getFuelLevel() {
-        return FuelLevel;
+        return fuelLevel;
     }
 
     public void setFuelLevel(int fuelLevel) {
-        this.FuelLevel = fuelLevel;
+        this.fuelLevel = fuelLevel;
     }
 
     public double getJumpRangeCurr() {
-        return JumpRangeCurr;
+        return jumpRangeCurr;
     }
 
     public void setJumpRangeCurr(double jumpRangeCurr) {
-        this.JumpRangeCurr = jumpRangeCurr;
+        this.jumpRangeCurr = jumpRangeCurr;
     }
 
     public double getJumpRangeMax() {
-        return JumpRangeMax;
+        return jumpRangeMax;
     }
 
     public void setJumpRangeMax(double jumpRangeMax) {
-        this.JumpRangeMax = jumpRangeMax;
+        this.jumpRangeMax = jumpRangeMax;
     }
 
     public boolean isPendingDecommission() {
-        return PendingDecommission;
+        return pendingDecommission;
     }
 
     public void setPendingDecommission(boolean pendingDecommission) {
-        this.PendingDecommission = pendingDecommission;
+        this.pendingDecommission = pendingDecommission;
     }
 
     public SpaceUsage getSpaceUsage() {
-        return SpaceUsage;
+        return spaceUsage;
     }
 
     public void setSpaceUsage(SpaceUsage spaceUsage) {
-        this.SpaceUsage = spaceUsage;
+        this.spaceUsage = spaceUsage;
     }
 
     public Finance getFinance() {
-        return Finance;
+        return finance;
     }
 
     public void setFinance(Finance finance) {
-        this.Finance = finance;
+        this.finance = finance;
     }
 
     public List<Crew> getCrew() {
@@ -430,37 +430,37 @@ public class CarrierStatsEvent extends BaseEvent {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CarrierStatsEvent that = (CarrierStatsEvent) o;
-        return CarrierID == that.CarrierID &&
-                AllowNotorious == that.AllowNotorious &&
-                FuelLevel == that.FuelLevel &&
-                Double.compare(that.JumpRangeCurr, JumpRangeCurr) == 0 &&
-                Double.compare(that.JumpRangeMax, JumpRangeMax) == 0 &&
-                PendingDecommission == that.PendingDecommission &&
-                Objects.equals(CarrierType, that.CarrierType) &&
-                Objects.equals(Callsign, that.Callsign) &&
-                Objects.equals(Name, that.Name) &&
-                Objects.equals(DockingAccess, that.DockingAccess);
+        return carrierID == that.carrierID &&
+                allowNotorious == that.allowNotorious &&
+                fuelLevel == that.fuelLevel &&
+                Double.compare(that.jumpRangeCurr, jumpRangeCurr) == 0 &&
+                Double.compare(that.jumpRangeMax, jumpRangeMax) == 0 &&
+                pendingDecommission == that.pendingDecommission &&
+                Objects.equals(carrierType, that.carrierType) &&
+                Objects.equals(callsign, that.callsign) &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(dockingAccess, that.dockingAccess);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(CarrierID, CarrierType, Callsign, Name, DockingAccess,
-                AllowNotorious, FuelLevel, JumpRangeCurr, JumpRangeMax, PendingDecommission);
+        return Objects.hash(carrierID, carrierType, callsign, name, dockingAccess,
+                allowNotorious, fuelLevel, jumpRangeCurr, jumpRangeMax, pendingDecommission);
     }
 
     @Override
     public String toString() {
         return new StringJoiner(", ", CarrierStatsEvent.class.getSimpleName() + "[", "]")
-                .add("CarrierID=" + CarrierID)
-                .add("CarrierType='" + CarrierType + "'")
-                .add("Callsign='" + Callsign + "'")
-                .add("Name='" + Name + "'")
-                .add("DockingAccess='" + DockingAccess + "'")
-                .add("AllowNotorious=" + AllowNotorious)
-                .add("FuelLevel=" + FuelLevel)
-                .add("JumpRangeCurr=" + JumpRangeCurr)
-                .add("JumpRangeMax=" + JumpRangeMax)
-                .add("PendingDecommission=" + PendingDecommission)
+                .add("CarrierID=" + carrierID)
+                .add("CarrierType='" + carrierType + "'")
+                .add("Callsign='" + callsign + "'")
+                .add("Name='" + name + "'")
+                .add("DockingAccess='" + dockingAccess + "'")
+                .add("AllowNotorious=" + allowNotorious)
+                .add("FuelLevel=" + fuelLevel)
+                .add("JumpRangeCurr=" + jumpRangeCurr)
+                .add("JumpRangeMax=" + jumpRangeMax)
+                .add("PendingDecommission=" + pendingDecommission)
                 .toString();
     }
 }

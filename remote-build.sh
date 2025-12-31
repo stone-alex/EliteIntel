@@ -1,2 +1,2 @@
-git tag -a v2025.12.16.beta-0159 -m "Fixing SystemSession bug (blank keys for off-line TTS)"
-git push origin v2025.12.16.beta-0159
+git tag -a "$(cat app/src/main/resources/version.txt)" -m "Target subsystem"
+git push origin "$(cat app/src/main/resources/version.txt)"

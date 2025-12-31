@@ -21,6 +21,8 @@ public class ShipyardSubscriber {
         EddnHeader header = new EddnHeader(ZMQUtil.generateUploaderID());
         header.setGameVersion(playerSession.getGameVersion());
         header.setGameBuild(playerSession.getGameBuild());
+        header.setSoftwareVersion(systemSession.readVersionFromResources());
+
         ShipyardMessage message = ShipyardMapper.map(event);
         EddnPayload<ShipyardMessage> payload = new EddnPayload<>(
                 "https://eddn.edcd.io/schemas/shipyard/2",

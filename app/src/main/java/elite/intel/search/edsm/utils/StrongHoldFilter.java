@@ -20,7 +20,7 @@ public class StrongHoldFilter {
 
         boolean aStrongHold = aPower && "stronghold".equalsIgnoreCase(aRecord.getPowerState());
         boolean bStrongHold = bPower && "stronghold".equalsIgnoreCase(bRecord.getPowerState());
-        if (aStrongHold && bStrongHold) return true;
+        if (aStrongHold || bStrongHold) return true;
         return false;
     }
 

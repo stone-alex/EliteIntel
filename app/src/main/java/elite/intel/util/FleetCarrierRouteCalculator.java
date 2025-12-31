@@ -23,21 +23,14 @@ public class FleetCarrierRouteCalculator {
         CarrierDataDto carrierData = playerSession.getCarrierData();
 
         int fuelSupply = carrierData.getFuelLevel();
-        Integer tritiumInReserve = carrierData.getCommodity().get("tritium");
-        if (tritiumInReserve != null && tritiumInReserve > 0) {
+        int tritiumInReserve = carrierData.getFuelReserve();
+        if (tritiumInReserve > 0) {
             fuelSupply = fuelSupply + tritiumInReserve;
         }
-
 
         int cargoCapacity = carrierData.getCargoCapacity();
         int cargoSpaceUsed = carrierData.getCargoSpaceUsed();
         String destination = ClipboardUtils.getClipboardText();
-        String existingFinalDestination = routeManager.getFinalDestination();
-
-        if(!destination.equalsIgnoreCase(existingFinalDestination) && !existingFinalDestination.isEmpty()){
-            // re-calculating
-            destination = existingFinalDestination;
-        }
 
         EventBusManager.publish(new AiVoxResponseEvent("Accessing Spansh... Stand by..."));
 

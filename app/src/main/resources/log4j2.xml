@@ -27,7 +27,14 @@
         <Logger name="io.grpc.netty" level="off"/>
         <Logger name="io.grpc.netty.shaded" level="off"/>
         <Logger name="io.netty" level="off"/>
+
         <Logger name="org.apache" level="off"/>
+        <Logger name="org.sqlite" level="off"/>
+        <Logger name="org.sqlite.core" level="off"/>
+        <Logger name="org.sqlite.jdbc" level="off"/>
+        <Logger name="org.jdbi.v3.core" level="off"/>
+        <Logger name="org.jdbi.v3" level="off"/>
+
 
         <!-- Specific logger levels -->
         <Logger name="elite.intel" level="debug"/>
@@ -45,8 +52,9 @@
         <Logger name="elite.intel.ai.mouth" level="error"/>
         <Logger name="elite.intel.ai.brain" level="debug"/>
         <Logger name="elite.intel.search.spansh" level="error"/>
-        <Logger name="elite.intel.db.managers" level="debug"/>
+        <Logger name="elite.intel.db" level="error"/>
         <Logger name="elite.intel.search.spansh.market" level="info"/>
+        <Logger name="elite.intel.ai.brain.handlers" level="info"/>
 
         <!-- Root logger -->
         <Root level="debug">

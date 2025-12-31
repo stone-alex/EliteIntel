@@ -142,7 +142,7 @@ EOF
         curl -L -O $(curl -s https://api.github.com/repos/stone-alex/EliteIntel/releases/latest | grep "browser_download_url" | cut -d '"' -f 4)
         
         local NEW_ELITE_ZIP=( elite_intel*.zip )
-        unzip $NEW_ELITE_ZIP -d $DEFAULT_INSTALL_LOCATION
+        unzip "$NEW_ELITE_ZIP" -d "$DEFAULT_INSTALL_LOCATION"
         rm "$NEW_ELITE_ZIP"
 
         echo "Downloaded and installed the latest version of EliteIntel!"

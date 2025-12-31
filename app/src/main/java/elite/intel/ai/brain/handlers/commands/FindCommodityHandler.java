@@ -1,5 +1,6 @@
 package elite.intel.ai.brain.handlers.commands;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
@@ -31,15 +32,20 @@ public class FindCommodityHandler extends CommandOperator implements CommandHand
 
     @Override public void handle(String action, JsonObject params, String responseText) {
 
+        JsonElement key = params.get("key");
+        if(key == null) {
+            EventBusManager.publish(new AiVoxResponseEvent("Please specify a commodity."));
+            return;
+        }
         String commodity =
                 capitalizeWords(
                         fuzzyCommodityMatch(
-                                params.get("key").getAsString(), 3
+                                key.getAsString(), 3
                         )
                 );
 
         if (commodity == null) {
-            EventBusManager.publish(new AiVoxResponseEvent("Sorry, I couldn't find any commodities matching " + params.get("key").getAsString()));
+            EventBusManager.publish(new AiVoxResponseEvent("Sorry, I couldn't find any commodities matching " + key.getAsString()));
             return;
         }
 

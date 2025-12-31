@@ -23,7 +23,7 @@ public final class DestinationReminderManager {
     }
 
 
-    public String getDestinationAsJson() {
+    public String getReminderAsJson() {
         return Database.withDao(DestinationReminderDao.class, dao -> {
             DestinationReminderDao.Destination destination = dao.get();
             if (destination == null) return null;

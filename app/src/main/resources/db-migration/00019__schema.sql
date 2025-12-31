@@ -1,0 +1,1 @@
+alter table location add column systemAddress bigint;

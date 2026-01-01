@@ -412,9 +412,9 @@ download_piper_tts_models() {
 install_local_TTS() {
     if ! command -v python3 >/dev/null 2>&1; then
         echo "ERROR: Python is not installed on this system! Please resolve this error before trying again."
-        exit 0
+        exit 1
     fi
-    
+
     cat << EOF
 
     Installing Piper Text-To-Speech python server.
@@ -423,24 +423,21 @@ install_local_TTS() {
     https://github.com/stone-alex/EliteIntel/wiki/OffLineVoiceProcessor
 
 EOF
-    
-    local PIPER_FOLDER="$HOME/.var/app/python.piper-tts"
 
-    sudo mkdir -p "$PIPER_FOLDER"
-    cd $PIPER_FOLDER
-    
-    #
-    #   Install piper-tts
-    #
-    python3 -m venv .
-    source bin/activate
+    local PIPER_FOLDER="$HOME/.var/app/python.piper-tts"
+    local VENV_FOLDER="$PIPER_FOLDER/.venv"
+
+    mkdir -p "$PIPER_FOLDER"
+    cd "$PIPER_FOLDER"
+
+    # Create virtual environment
+    python3 -m venv "$VENV_FOLDER"
+    source "$VENV_FOLDER/bin/activate"
 
     pip install --upgrade pip
     pip install piper-tts[http]
-    
-    #
-    #   Get Piper models
-    #
+
+    # Download models into piper folder
     download_piper_tts_models
 
     local MODEL_LIST=( *.onnx )
@@ -449,18 +446,15 @@ EOF
         printf "%2d) %s\n " "$((idx + 1))" "${MODEL_LIST[$idx]}"
     done
 
-    read -rp "Select a model to use [0-9]: " _USEME
+    read -rp "Select a model to use [1-${#MODEL_LIST[@]}]: " _USEME
     local USE_MODEL="${MODEL_LIST[$((_USEME-1))]}"
 
-    #
-    #   Test the Piper installation
-    #
-
-    python3 -m piper.http_server -m $USE_MODEL &
+    # Test the Piper installation
+    python -m piper.http_server -m "$USE_MODEL" &
     local PYTHON_PID=$!
-    
+
     sleep 2
-    curl -X POST -H 'Content-Type: application/json' -d '{ "text": "This is a test." }' -o test.wav localhost:5000 
+    curl -X POST -H 'Content-Type: application/json' -d '{ "text": "This is a test." }' -o test.wav localhost:5000
 
     if command -v aplay >/dev/null 2>&1; then
         aplay test.wav
@@ -468,37 +462,39 @@ EOF
         paplay test.wav
     else
         echo "Audio player not found – test.wav saved in ${PWD}"
-    fi 
+    fi
 
-    #   Kill the python
     kill "$PYTHON_PID" 2>/dev/null
 
-    #
-    #   Create a startmenue shortcut
-    #
+    # Create desktop shortcut
     local STARTMENU_DIR="$HOME/.local/share/applications"
+    local DESKTOP_FILE="$STARTMENU_DIR/piper-tts.desktop"
+    mkdir -p "$STARTMENU_DIR"
 
-    bash -c "cat > $STARTMENU_DIR/piper-tts.desktop" << EOF
+    # Download official Piper icon (PNG works everywhere)
+    local ICON_PATH="$PIPER_FOLDER/piper-logo.png"
+    [ -f "$ICON_PATH" ] || curl -L -o "$ICON_PATH" https://contribute.rhasspy.org/img/logo.png
+
+    cat > "$DESKTOP_FILE" << EOF
 [Desktop Entry]
 Name=Piper-TTS
-Comment=Local offline Text‑to‑Speech server (piper‑tts)
-Exec=$PIPER_FOLDER/.venv/bin/python -m piper.http_server -m $USE_MODEL %F
-Icon=$PIPER_FOLDER/icons/piper-tts.svg
+Comment=Local offline Text-to-Speech server (piper-tts)
+Exec=$VENV_FOLDER/bin/python -m piper.http_server -m "$PIPER_FOLDER/$USE_MODEL"
+Icon=$ICON_PATH
 Terminal=false
 Type=Application
-Categories=Game
+Categories=Utility;Audio;
 StartupNotify=true
 EOF
 
-    chmod +x $STARTMENU_DIR/piper-tts.desktop
-    update-desktop-database $HOME/.local/share/applications
+    chmod +x "$DESKTOP_FILE"
+    command -v update-desktop-database >/dev/null && update-desktop-database "$STARTMENU_DIR"
+    cat << EOF
 
-    cat << EOF 
-   
     Piper-TTS Installed!
 
-    If you want to change the voice that piper uses, locate the 'piper-tts.desktop' file
-    and edit the voice part of the 'Exec= ... -m $USE_MODEL ..'
+    If you want to change the voice, edit '$STARTMENU_DIR/piper-tts.desktop'
+    and update the -m path in Exec= line.
 
     Enjoy local TTS!
 
@@ -506,21 +502,28 @@ EOF
     exit 0
 }
 
+
+
+
+
+
+
 #
 #       Main Loop
 #
 while getopts ":hudT" opt; do
     case $opt in
-        h) print_usage;;
-        u) update_elite_intel;;
-        d) delete_elite_intel;;
-        T) 
-            read -rp "Do you want to do a fresh install, or download new models? (choose 'y' for install) [y/n]" _PIPER
-            case $_PIPER in
-                y) install_local_TTS;;
-                n) download_piper_tts_models;;
+        h) print_usage ;;
+        u) update_elite_intel ;;
+        d) delete_elite_intel ;;
+        T)
+            read -rp "Do you want to do a fresh install, or download new models? (choose 'y' for install) [y/n]: " _PIPER
+            case "$_PIPER" in
+                y|Y) install_local_TTS ;;
+                n|N) download_piper_tts_models ;;
+                *) echo "Invalid choice, aborting TTS option." ;;
             esac
-        ;;
+            ;;
         \?) echo "Error: Invalid option -$OPTARG" >&2; print_usage ;;
         :)  echo "Error: Option -$OPTARG requires an argument." >&2; print_usage ;;
     esac
@@ -529,25 +532,25 @@ done
 #
 #		Update repositories and install/update Java runtime
 #
-   check_java_install
+check_java_install
 sleep 0.2
 #       Determine Steam installation
-   detect_steam
+detect_steam
 sleep 0.2
 #
 #		Install EliteIntel
 #
-   set_install_folder
+set_install_folder
 sleep 0.2
 #
 #		Create Symlink to relevant folders
 #
-   create_bindings
+create_bindings
 sleep 0.2
 #
 #       Create Start menu shortcut
 #
-    create_start_menu
+create_start_menu
 sleep 0.2
 
 cat << EOF

@@ -121,10 +121,8 @@ public class PirateMassacreMissionSearch {
     private StarSystemResult searchSystem(String starSystemName) {
         SystemSearchCriteria criteria = new SystemSearchCriteria();
         SystemSearchCriteria.Filters filters = new SystemSearchCriteria.Filters();
-        SystemSearchCriteria.SystemNameFilter systemName = new SystemSearchCriteria.SystemNameFilter();
-        systemName.setValue(starSystemName);
-        filters.setSystemName(systemName);
         criteria.setFilters(filters);
+        criteria.setReferenceSystem(starSystemName);
         criteria.setPage(1);
         criteria.setSize(10);
         return starSystemSearchClient.search(criteria);

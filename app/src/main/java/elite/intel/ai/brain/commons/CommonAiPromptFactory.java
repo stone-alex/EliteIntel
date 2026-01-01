@@ -1,6 +1,7 @@
 package elite.intel.ai.brain.commons;
 
 import elite.intel.ai.brain.*;
+import elite.intel.ai.brain.handlers.commands.Commands;
 import elite.intel.ai.brain.handlers.query.Queries;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
@@ -67,6 +68,7 @@ public class CommonAiPromptFactory implements AiPromptFactory {
         sb.append("    - For 'find*' commands that contain distance in light years provide {\"key\":\"value\"} where key is integer representing distance in light years.\n");
         sb.append("    - For toggle commands such as on/off, enable/disable, provide params json {\"state\":\"true\"} / {\"state\":\"false\"}. use 'state' for on/off commands only, never for anything else.\n");
         sb.append("    - Example: '"+FIND_MINING_SITE.getAction()+"' provide params json {\"material\":\"value\", \"max_distance\":\"value\"} \n");
+        sb.append("    - Example: '"+FIND_COMMODITY.getAction()+"' provide params json {\"key\":\"commodity_name\", \"max_distance\":\"value_in_ly\"} e.g. {\"key\":\"gold\",\"max_distance\":\"100\"}\n");
         sb.append("    - For commands like ").append(INCREASE_SPEED_BY.getAction()).append(" provide params json {\"key\":\"value\"} where value is a positive integer. example: {\"key\":\"3\"}.\n");
         sb.append("    - For commands like ").append(DECREASE_SPEED_BY.getAction()).append(" provide params json {\"key\":\"value\"} where value is a negative integer example: {\"key\":\"-3\"}.\n");
         sb.append("    - For commands like ").append(LIGHTS_ON_OFF.getAction()).append(" provide params json {\"state\":\"true\"} / {\"state\":\"false\"}.\n");
@@ -107,9 +109,24 @@ public class CommonAiPromptFactory implements AiPromptFactory {
     }
 
     private String supportedCommandsClause() {
-        return "Supported Commands: " + AiRequestHints.customCommands;
-    }
+        StringBuilder sb = new StringBuilder();
+        sb.append("Supported Commands:\n");
 
+        for (Commands cmd : Commands.values()) {
+            sb.append("    - ").append(cmd.getAction());
+            String params = cmd.getParameters();
+            if (params != null && !params.isEmpty()) {
+                sb.append(" params: ").append(params.replace(" | ", ", "));
+            }
+            sb.append("\n");
+        }
+
+        sb.append("\nWhen multiple params are listed (separated by ','), return them as separate keys in the params JSON.\n");
+        sb.append("Example for find_market_where_to_buy: {\"key\":\"gold\",\"max_distance\":\"100\"}\n");
+        sb.append("Example for find_mining_site_for_material: {\"material\":\"low temperature diamonds\",\"max_distance\":\"50\"}\n");
+
+        return sb.toString();
+    }
     private String supportedQueriesClause() {
         StringBuilder sb = new StringBuilder("Supported Queries:\n");
 
@@ -127,7 +144,7 @@ public class CommonAiPromptFactory implements AiPromptFactory {
         sb.append(quick.length() > 0 ? quick : "    - None defined.\n");
         sb.append(data.length() > 0 ? data : "    - None defined.\n");
         sb.append(appendBehavior());
-        sb.append("All supported queries: ").append(AiRequestHints.supportedQueries).append("\n");
+        sb.append("All supported queries: ").append(AiRequestHints.queries).append("\n");
         return sb.toString();
     }
 

@@ -56,9 +56,7 @@ public class TradeRouteFilter {
     private StarSystemResult searchSystem(String starSystemName) {
         SystemSearchCriteria criteria = new SystemSearchCriteria();
         SystemSearchCriteria.Filters filters = new SystemSearchCriteria.Filters();
-        SystemSearchCriteria.SystemNameFilter systemName = new SystemSearchCriteria.SystemNameFilter();
-        systemName.setValue(starSystemName);
-        filters.setSystemName(systemName);
+        criteria.setReferenceSystem(starSystemName);
         criteria.setFilters(filters);
         criteria.setPage(1);
         criteria.setSize(10);

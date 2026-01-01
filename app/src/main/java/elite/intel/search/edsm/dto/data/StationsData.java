@@ -16,6 +16,17 @@ public class StationsData {
     @SerializedName("stations")
     public List<Station> stations;
 
+    //Transient
+    private String starSystem;
+
+    public String getStarSystem() {
+        return starSystem;
+    }
+
+    public void setStarSystem(String starSystem) {
+        this.starSystem = starSystem;
+    }
+
     public int getId() {
         return id;
     }

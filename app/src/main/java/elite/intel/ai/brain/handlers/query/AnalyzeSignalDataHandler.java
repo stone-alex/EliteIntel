@@ -40,7 +40,7 @@ public class AnalyzeSignalDataHandler  extends BaseQueryAnalyzer implements Quer
         SystemBodiesDto edsmData = EdsmApiClient.searchSystemBodies(primaryStarName);
         DeathsDto deathsDto = EdsmApiClient.searchDeaths(primaryStarName);
         TrafficDto trafficDto = EdsmApiClient.searchTraffic(primaryStarName);
-        StationsDto stationsDto = EdsmApiClient.searchStations(primaryStarName);
+        StationsDto stationsDto = EdsmApiClient.searchStations(primaryStarName, 0);
 
         return process(
                 new AiDataStruct(

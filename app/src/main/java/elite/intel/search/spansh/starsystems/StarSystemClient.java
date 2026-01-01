@@ -24,7 +24,7 @@ public class StarSystemClient extends SpanshClient {
     private final Gson gson = GsonFactory.getGson();
 
     private StarSystemClient() {
-        super("https://spansh.co.uk/api/systems/search/save", "https://spansh.co.uk/api/stations/search/recall/");
+        super("https://spansh.co.uk/api/systems/search/save", "https://spansh.co.uk/api/systems/search/recall/");
     }
 
     public static StarSystemClient getInstance() {
@@ -36,6 +36,13 @@ public class StarSystemClient extends SpanshClient {
             }
         }
         return instance;
+    }
+
+    public List<StationSearchResult.SystemResult> searchStarSystems(SystemSearchCriteria criteria) {
+        StationSearchResult stationSearchResult = GsonFactory.getGson().fromJson(performSearch(criteria), StationSearchResult.class);
+        if (stationSearchResult == null) return null;
+        List<StationSearchResult.SystemResult> results = stationSearchResult.getResults();
+        return results;
     }
 
     public StarSystemResult search(SystemSearchCriteria criteria) {
@@ -67,7 +74,7 @@ public class StarSystemClient extends SpanshClient {
                 if (resp.statusCode() == 200) {
                     JsonObject json = gson.fromJson(resp.body(), JsonObject.class);
                     StarSystemResult starSystem = GsonFactory.getGson().fromJson(json, StarSystemResult.class);
-                    if (starSystem.getRecord().getName().equalsIgnoreCase(criteria.getFilters().getSystemName().getValue())) {
+                    if (starSystem.getRecord().getName().equalsIgnoreCase(criteria.getReferenceSystem())) {
                         return starSystem;
                     }
                 }

@@ -18,8 +18,8 @@ public class EliteIntelFactory extends BaseJsonDto implements ToJsonConvertible 
     }
 
     public AICapabilitiesDto getCapabilities() {
-        String customCommands = AiRequestHints.customCommands;
-        String supportedQueries = AiRequestHints.supportedQueries;
+        String customCommands = AiRequestHints.commands;
+        String supportedQueries = AiRequestHints.queries;
         String description = "Your capabilities include the following ship controls: commands " + customCommands + " the following queries: " + supportedQueries + ", or chat on any subject. help is available via 'help me with' command. There is also a detailed wiki on project GitHub";
         return new AICapabilitiesDto(
                 customCommands,

@@ -24,7 +24,7 @@ public class AnalyzeLocalStations extends BaseQueryAnalyzer implements QueryHand
         EventBusManager.publish(new AiVoxResponseEvent("Analyzing stations data... Stand by..."));
         PlayerSession playerSession = PlayerSession.getInstance();
         LocationDto currentLocation = playerSession.getCurrentLocation();
-        StationsDto stationsDto = EdsmApiClient.searchStations(playerSession.getCurrentLocation().getStarName());
+        StationsDto stationsDto = EdsmApiClient.searchStations(playerSession.getCurrentLocation().getStarName(), 0);
         List<DataElement> data = new ArrayList<>();
         if(stationsDto.getData() != null && stationsDto.getData().getStations() != null) {
             stationsDto.getData().getStations().forEach(station -> {

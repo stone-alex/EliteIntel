@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 ##############################################################################################################################
 #                                                                                                                            #
-#    Mind you, this program is written to be as compatible with as many linux distrobutions as posible, therefore            #
+#    Mind you, this program is written to be as compatible with as many linux distributions as possible, therefore            #
 #    I have not used any functions that can not be expected to be part of the kernel, or is by default shipped with many     #
 #    distors, like "wget" is not a default installation contrary to curl.                                                    #
 #                                                                                                                            #
-#    The script is also writen with single responsibility in mind, so that if you want to test or improve                    #
-#    only one part of the program you only have to coment out the functions you don't want to safely test and update the     #
+#    The script is also written with single responsibility in mind, so that if you want to test or improve                    #
+#    only one part of the program you only have to comment out the functions you don't want to safely test and update the     #
 #    program.                                                                                                                #
 #                                                                                                                            #
 #    !!! IMPORTANT !!!                                                                                                       #
@@ -186,7 +186,7 @@ print_usage() {
     assist with updating your existing installation. Or removing it when you are done with 
     Elite Dangerous.
 
-    Fly safe, comander!
+    Fly dangerous, commander!
 
     --------------------------------------------------------------------------------
 
@@ -226,7 +226,7 @@ update_elite_intel() {
     rm "$ELITE_ZIP"
 
     echo "Done!"
-    echo "Fly safe, commander"
+    echo "Fly Dangerous, commander"
     exit 0
 }
 
@@ -283,7 +283,7 @@ EOF
 
     EliteIntel has successfully been removed from your system.
 
-    Fly safe!
+    Fly Dangerous!
 
 EOF
         exit 0
@@ -359,7 +359,7 @@ download_piper_tts_models() {
     local MODEL=amy
     echo "Let's download some voices!"
 
-    read -rp "Choose eiteher GB or US voice list: " _LOCALE
+    read -rp "Choose either GB or US voice list: " _LOCALE
 
     case $_LOCALE in
         gb) 
@@ -502,13 +502,7 @@ EOF
     exit 0
 }
 
-
-
-
-
-
-
-#
+##########################################################################################################################
 #       Main Loop
 #
 while getopts ":hudT" opt; do

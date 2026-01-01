@@ -34,10 +34,8 @@ public class EdsmCommoditySearch {
 
     public static List<CommoditySearchResult> search(String commodityToFind, String refStarSystem, int maxDistance) {
 
-        TradeProfileManager tradeProfileManager = TradeProfileManager.getInstance();
-
-
         /*
+        TradeProfileManager tradeProfileManager = TradeProfileManager.getInstance();
         TradeRouteSearchCriteria criteria = tradeProfileManager.getCriteria(false);
         if (criteria.isAllowFleetCarriers()) {
             ALLOWED_STATION_TYPES.add("Fleet Carrier");
@@ -108,7 +106,7 @@ public class EdsmCommoditySearch {
 
             String stationName = station.getName();
             String starSystem = station.getStarSystemName();
-            AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_2); // audio indicator of background search
+            AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_3); // audio indicator of background search
 
             for (Commodity entry : commodities) {
                 if (commodityToFind.equalsIgnoreCase(entry.getName())) {
@@ -120,7 +118,7 @@ public class EdsmCommoditySearch {
                         result.setStationName(stationName);
                         result.setStationType(station.getType());
                         results.add(result);
-                        AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_1); // audio indicator of background search
+                        AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_3); // audio indicator of background search
                     }
                 }
             }

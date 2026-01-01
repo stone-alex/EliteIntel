@@ -67,7 +67,7 @@ public class CommonAiPromptFactory implements AiPromptFactory {
         sb.append("    - For set, change, swap, add etc type commands that require value provide params json {\"key\":\"value\"} where key always matching paramKey for action and value is what you determine value to be.\n");
         sb.append("    - For 'find*' commands that contain distance in light years provide {\"key\":\"value\"} where key is integer representing distance in light years.\n");
         sb.append("    - For toggle commands such as on/off, enable/disable, provide params json {\"state\":\"true\"} / {\"state\":\"false\"}. use 'state' for on/off commands only, never for anything else.\n");
-        sb.append("    - Example: '"+FIND_MINING_SITE.getAction()+"' provide params json {\"material\":\"value\", \"max_distance\":\"value\"} \n");
+        sb.append("    - Example: '"+FIND_MINING_SITE.getAction()+"' provide params json {\"material\":\"value\", \"max_distance\":\"value\"} e.g. {\"key\":\"tritium\",\"max_distance\":\"100\"}\n");
         sb.append("    - Example: '"+FIND_COMMODITY.getAction()+"' provide params json {\"key\":\"commodity_name\", \"max_distance\":\"value_in_ly\"} e.g. {\"key\":\"gold\",\"max_distance\":\"100\"}\n");
         sb.append("    - For commands like ").append(INCREASE_SPEED_BY.getAction()).append(" provide params json {\"key\":\"value\"} where value is a positive integer. example: {\"key\":\"3\"}.\n");
         sb.append("    - For commands like ").append(DECREASE_SPEED_BY.getAction()).append(" provide params json {\"key\":\"value\"} where value is a negative integer example: {\"key\":\"-3\"}.\n");

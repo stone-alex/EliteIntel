@@ -12,8 +12,7 @@ import elite.intel.session.PlayerSession;
 
 import java.util.List;
 
-import static elite.intel.util.StringUtls.capitalizeWords;
-import static elite.intel.util.StringUtls.fuzzyCommodityMatch;
+import static elite.intel.util.StringUtls.*;
 
 public class FindCommodityHandler extends CommandOperator implements CommandHandler {
 
@@ -28,7 +27,8 @@ public class FindCommodityHandler extends CommandOperator implements CommandHand
     @Override public void handle(String action, JsonObject params, String responseText) {
 
         JsonElement key = params.get("key");
-        Integer distance = params.get("max_distance").getAsInt();
+        Integer distance = getIntSafely(params.get("max_distance").getAsString());
+        if (distance < 1) distance = (int) playerSession.getShipLoadout().getMaxJumpRange() * 2;
         String starName = playerSession.getPrimaryStarName();
 
         if (key == null) {
@@ -55,7 +55,7 @@ public class FindCommodityHandler extends CommandOperator implements CommandHand
         EventBusManager.publish(new AiVoxResponseEvent("Searching markets with best price for " + commodity + " within " + distance + " light years."));
 
         List<CommoditySearchResult> results = EdsmCommoditySearch.search(commodity, starName, distance);
-        if(results.isEmpty()){
+        if (results.isEmpty()) {
             EventBusManager.publish(new AiVoxResponseEvent("No commodities found."));
             return;
         }

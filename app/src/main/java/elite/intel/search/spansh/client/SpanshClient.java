@@ -143,7 +143,7 @@ public class SpanshClient {
                     .build();
 
             log.info("polling search {} (attempt {}) url: {}", searchRefId, attempt, req.uri());
-            AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_2); // audio indicator of background search
+            AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_3); // audio indicator of background search
 
             HttpResponse<String> resp = httpClient.send(req, HttpResponse.BodyHandlers.ofString());
 

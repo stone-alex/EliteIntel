@@ -161,7 +161,6 @@ public class AppController implements Runnable {
     public void onSystemShutdownEvent(SystemShutDownEvent event) {
         SwingUtilities.invokeLater(() -> {
             this.view.setVisible(false);
-            stopServices();
             appendToLog("SYSTEM: Shutting down...");
             SleepNoThrow.sleep(7000);
             System.exit(0);

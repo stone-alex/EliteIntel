@@ -12,6 +12,7 @@ import elite.intel.gameapi.journal.events.CarrierStatsEvent;
 import elite.intel.gameapi.journal.events.LoadoutEvent;
 import elite.intel.gameapi.journal.events.ReputationEvent;
 import elite.intel.gameapi.journal.events.dto.*;
+import elite.intel.util.OsDetector;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -19,6 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static org.apache.commons.lang3.StringUtils.trimToNull;
 
 /**
  * Represents a player's session encompassing various aspects of gameplay including
@@ -711,8 +714,14 @@ public class PlayerSession {
 
     public Path getJournalPath() {
         return Database.withDao(PlayerDao.class, dao -> {
-            String directory = dao.get().getJournalDirectory();
-            return directory == null ? Paths.get(System.getProperty("user.home"), "Saved Games", "Frontier Developments", "Elite Dangerous") : Paths.get(directory);
+            String directory = trimToNull(dao.get().getJournalDirectory());
+            if(OsDetector.getOs() == OsDetector.OS.WINDOWS) {
+                return directory == null ? Paths.get(System.getProperty("user.home"), "Saved Games", "Frontier Developments", "Elite Dangerous") : Paths.get(directory);
+            } else if(OsDetector.getOs() == OsDetector.OS.LINUX) {
+                return directory == null ? Paths.get(System.getProperty("user.home"), ".var", "app", "elite.intel.app", "ed-journal") : Paths.get(directory);
+            } else {
+                return directory == null ? Paths.get(System.getProperty("user.home"), "Library", "Application Support", "Frontier Developments", "Elite Dangerous") : Paths.get(directory);
+            }
         });
     }
 
@@ -727,8 +736,14 @@ public class PlayerSession {
 
     public Path getBindingsDir() {
         return Database.withDao(PlayerDao.class, dao -> {
-            String directory = dao.get().getBindingsDirectory();
-            return directory == null ? Paths.get(System.getProperty("user.home"), "AppData", "Local", "Frontier Developments", "Elite Dangerous", "Options", "Bindings") : Paths.get(directory);
+            String directory = trimToNull(dao.get().getBindingsDirectory());
+            if(OsDetector.getOs() == OsDetector.OS.WINDOWS) {
+                return directory == null ? Paths.get(System.getProperty("user.home"), "AppData", "Local", "Frontier Developments", "Elite Dangerous", "Options", "Bindings") : Paths.get(directory);
+            } else if(OsDetector.getOs() == OsDetector.OS.LINUX){
+                return directory == null ? Paths.get(System.getProperty("user.home"), ".var", "app", "elite.intel.app", "ed-bindings") : Paths.get(directory);
+            } else {
+                return directory == null ? Paths.get(System.getProperty("user.home"), "Library", "Application Support", "Frontier Developments", "Elite Dangerous", "Options", "Bindings") : Paths.get(directory);
+            }
         });
     }
 

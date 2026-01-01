@@ -95,7 +95,7 @@ detect_steam() {
 set_install_folder() {
     cat << EOF 
 
-    Do you want to install EliteIntel with the defaultlocation?
+    Do you want to install EliteIntel with the default location?
     \$$DEFAULT_INSTALL_LOCATION
 
 EOF

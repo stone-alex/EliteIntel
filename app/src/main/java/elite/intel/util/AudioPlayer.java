@@ -10,6 +10,7 @@ public final class AudioPlayer {
 
     public static final String BEEP_1 = "/beep1.wav";
     public static final String BEEP_2 = "/beep2.wav";
+    public static final String BEEP_3 = "/beep3.wav";
 
     private static final Logger log = LogManager.getLogger(AudioPlayer.class);
     private static AudioPlayer instance;

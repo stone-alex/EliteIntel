@@ -368,7 +368,7 @@ download_piper_tts_models() {
             done
             NATIONALITY=en_GB
 
-            read -rp "select a model number [0-9]: " _MODEL
+            read -rp "select a model number [1-${#en_GB[@]}]: " _MODEL
             MODEL="${en_GB[$((_MODEL-1))]}"
             ;;
         GB) 
@@ -377,7 +377,7 @@ download_piper_tts_models() {
             done
             NATIONALITY=en_GB
             
-            read -rp "select a model number [0-9]: " _MODEL
+            read -rp "select a model number [1-${#en_GB[@]}]: " _MODEL
             MODEL="${en_GB[$((_MODEL-1))]}"
             ;;
 
@@ -387,7 +387,7 @@ download_piper_tts_models() {
             done
             NATIONALITY=en_US
 
-            read -rp "select a model number [0-9]: " _MODEL
+            read -rp "select a model number [1-${#en_US[@]}]: " _MODEL
             MODEL="${en_US[$((_MODEL-1))]}";;
         us) 
             for idx in "${!en_US[@]}"; do
@@ -395,7 +395,7 @@ download_piper_tts_models() {
             done
             NATIONALITY=en_US
 
-            read -rp "select a model number [0-9]: " _MODEL
+            read -rp "select a model number [1-${#en_US[@]}]: " _MODEL
             MODEL="${en_US[$((_MODEL-1))]}"
             ;;
     esac
@@ -424,7 +424,7 @@ install_local_TTS() {
 
 EOF
 
-    local PIPER_FOLDER="$HOME/.var/app/python.piper-tts"
+    local PIPER_FOLDER="$HOME/.var/app/piper-tts"
     local VENV_FOLDER="$PIPER_FOLDER/.venv"
 
     mkdir -p "$PIPER_FOLDER"

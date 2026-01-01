@@ -78,6 +78,7 @@ public class SAASignalsFoundSubscriber {
             } else if (event.getBodyName().contains("Ring")) {
                 //Rings are bodies
                 LocationDto ring = new LocationDto(event.getBodyID());
+                ring.setSystemAddress(event.getSystemAddress());
                 ring.setLocationType(PLANETARY_RING);
                 ring.setBodyId(event.getBodyID());
                 ring.setPlanetName(event.getBodyName());

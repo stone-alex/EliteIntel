@@ -22,6 +22,7 @@ public class FSSBodySignals {
 
         LocationDto location = locationManager.findBySystemAddress(event.getSystemAddress(), event.getBodyID());
         location.setFssSignals(event.getSignals());
+        location.setSystemAddress(event.getSystemAddress());
         locationManager.save(location);
 
         boolean containsLife = false;

@@ -42,7 +42,7 @@ public class JumpCompletedSubscriber {
     @Subscribe
     public void onFSDJumpEvent(FSDJumpEvent event) {
         SystemBodiesDto systemBodiesDto = EdsmApiClient.searchSystemBodies(event.getStarSystem());
-        processEdsmData(systemBodiesDto, event.getStarSystem());
+        processEdsmData(systemBodiesDto, event.getSystemAddress());
 
         boolean isSellerSystem = monetizeRouteManager.isSeller(event.getStarSystem());
         boolean isBuyerSystem = monetizeRouteManager.isBuyer(event.getStarSystem());
@@ -57,7 +57,7 @@ public class JumpCompletedSubscriber {
         }
 
 
-        LocationDto primaryStar = locationManager.findPrimaryStar(event.getStarSystem());
+        LocationDto primaryStar = locationManager.findBySystemAddress(event.getSystemAddress(), event.getBodyId());
         primaryStar.setBodyId(event.getBodyId());
         primaryStar.setSystemAddress(event.getSystemAddress());
         primaryStar.setStationGovernment(event.getSystemGovernmentLocalised());
@@ -157,14 +157,15 @@ public class JumpCompletedSubscriber {
         }
     }
 
-    private void processEdsmData(SystemBodiesDto systemBodiesDto, String starSystem) {
+    private void processEdsmData(SystemBodiesDto systemBodiesDto, long systemAddress) {
         if (systemBodiesDto == null) return;
         if (systemBodiesDto.getData() == null) return;
         List<BodyData> bodies = systemBodiesDto.getData().getBodies();
         if (bodies == null || bodies.isEmpty()) return;
 
         for (BodyData data : bodies) {
-            LocationDto stellarObject = locationManager.getLocation(starSystem, data.getBodyId());
+            LocationDto stellarObject = locationManager.findBySystemAddress(systemAddress, data.getBodyId());
+            stellarObject.setSystemAddress(systemAddress);
             stellarObject.setAtmosphere(data.getAtmosphereType());
             stellarObject.setBodyId(data.getBodyId());
             stellarObject.setHasRings(data.getRings() != null && !data.getRings().isEmpty());

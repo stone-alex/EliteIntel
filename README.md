@@ -2,7 +2,7 @@
 
 ## Installation & Setup
 
-### 🔽 [RELEASES](https://github.com/stone-alex/EliteIntel/releases) |  ⚙️ [CONFIGURE](https://github.com/stone-alex/EliteIntel/wiki/Installation-and-Configuration) | 🎓 [**WIKI**](https://github.com/stone-alex/eliteintel/wiki) 
+### ⚙️ [INSTALL](https://github.com/stone-alex/EliteIntel/wiki/Installation-and-Configuration) | 🎓 [**WIKI**](https://github.com/stone-alex/eliteintel/wiki) 
 
 --- 
 

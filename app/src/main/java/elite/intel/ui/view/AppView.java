@@ -8,7 +8,6 @@ import elite.intel.session.SystemSession;
 import elite.intel.ui.event.*;
 import elite.intel.util.SleepNoThrow;
 import elite.intel.util.Updater;
-import org.graalvm.nativeimage.Platform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

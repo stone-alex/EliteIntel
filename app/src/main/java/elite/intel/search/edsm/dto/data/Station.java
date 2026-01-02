@@ -53,7 +53,7 @@ public class Station {
     //transient
     String starSystemName;
     public String getStarSystemName() {
-        return starSystemName;
+        return this.starSystemName;
     }
 
     public void setStarSystemName(String starSystemName) {

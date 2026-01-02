@@ -83,6 +83,8 @@ sourceSets {
             include '**/fonts/*.ttf'
             include 'META-INF/MANIFEST.MF'
             include '**/db-migration/*.sql'
+            include '**/scripts/*.sh'
+            include '**/scripts/*.bat'
             include 'version.txt'
         }
     }

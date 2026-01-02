@@ -42,12 +42,12 @@ public enum Commands {
     FIND_VISTA_GENOMICS("find_vista_genomics", null, "key", FindVistaGenomicsHandler.class),
     FIND_BRAIN_TREES("find_brain_trees", null, "key", FindBrainTreesHandler.class),
     FIND_FLEET_CARRIER_FUEL_MINING_SITE("find_fleet_carrier_fuel_mining_site", null, "key", FindCarrierFuelMiningSiteHandler.class),
-    FIND_MINING_SITE("find_mining_site_for_material", null, "material && max_distance", FindMiningSiteHandler.class),
+    FIND_MINING_SITE("find_mining_site_for_material", null, "material , max_distance", FindMiningSiteHandler.class),
 
     FIND_NEAREST_FLEET_CARRIER("find_nearest_fleet_carrier", null, "key", FindNearestFleetCarrierHandler.class),
     CLEAR_FLEET_CARRIER_ROUTE("clear_fleet_carrier_route", null, null, ClearFleetCarrierRouteHandler.class),
 
-    FIND_COMMODITY("find_market_where_to_buy", null, "key", FindCommodityHandler.class),
+    FIND_COMMODITY("find_market_where_to_buy", null, "key , max_distance", FindCommodityHandler.class),
     SET_AI_VOICE("set_or_change_voice_to", null, "key", ChangeAiVoiceHandler.class),
     SET_HOME_SYSTEM("set_location_as_home_star_system", null, null, SetCurrentStarAsHomeSystem.class),
     SET_PERSONALITY("set_personality", null, "personality", SetPersonalityHandler.class),
@@ -174,13 +174,13 @@ public enum Commands {
     ///
     private final String action;
     private final String binding;
-    private final String paramKey;
+    private final String parameters;
     private final Class<? extends CommandHandler> handlerClass;
 
     Commands(String action, String binding, String paramKey, Class<? extends CommandHandler> handlerClass) {
         this.action = action;
         this.binding = binding;
-        this.paramKey = paramKey;
+        this.parameters = paramKey;
         this.handlerClass = handlerClass;
     }
 
@@ -206,8 +206,8 @@ public enum Commands {
         return action;
     }
 
-    public String getParamKey() {
-        return paramKey;
+    public String getParameters() {
+        return parameters;
     }
 
     public String getBinding() {

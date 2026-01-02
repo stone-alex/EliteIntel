@@ -4,6 +4,7 @@ import elite.intel.gameapi.data.PowerPlayData;
 import elite.intel.search.edsm.utils.StrongHoldFilter;
 import elite.intel.search.spansh.starsystems.StarSystemClient;
 import elite.intel.search.spansh.starsystems.StarSystemResult;
+import elite.intel.search.spansh.starsystems.StationClient;
 import elite.intel.search.spansh.starsystems.SystemSearchCriteria;
 import elite.intel.session.PlayerSession;
 
@@ -16,7 +17,7 @@ public class TradeRouteFilter {
 
     private static TradeRouteFilter instance;
 
-    private StarSystemClient client = StarSystemClient.getInstance();
+    private StationClient client = StationClient.getInstance();
     private PlayerSession playerSession = PlayerSession.getInstance();
 
     private TradeRouteFilter() {
@@ -56,9 +57,7 @@ public class TradeRouteFilter {
     private StarSystemResult searchSystem(String starSystemName) {
         SystemSearchCriteria criteria = new SystemSearchCriteria();
         SystemSearchCriteria.Filters filters = new SystemSearchCriteria.Filters();
-        SystemSearchCriteria.SystemNameFilter systemName = new SystemSearchCriteria.SystemNameFilter();
-        systemName.setValue(starSystemName);
-        filters.setSystemName(systemName);
+        criteria.setReferenceSystem(starSystemName);
         criteria.setFilters(filters);
         criteria.setPage(1);
         criteria.setSize(10);

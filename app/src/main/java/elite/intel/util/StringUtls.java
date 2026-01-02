@@ -157,4 +157,35 @@ public class StringUtls {
 
         return null;
     }
+
+    /**
+     * Converts a version string into a numeric format, preserving up to three version components
+     * (e.g., major, minor, patch-build) while padding each component to four digits. The resulting
+     * numeric representation is capped at 12 digits.
+     *
+     * @param version the version string to convert. If null, 0 is returned.
+     * @return a long representing the numeric version, or 0 if input is null or cannot be processed.
+     */
+    public static long getNumericBuild(String version) {
+        if (version == null) return 0L;
+        // Remove non-digits and non-dots
+        String cleaned = version.replaceAll("[^\\d.]", "");
+        String[] parts = cleaned.split("\\.");
+        // Take last up to 3 parts (major/minor/patch-build), pad to 4 digits each
+        StringBuilder sb = new StringBuilder();
+        int start = Math.max(0, parts.length - 3);
+        for (int i = start; i < parts.length; i++) {
+            sb.append(String.format("%4s", parts[i]).replace(' ', '0'));
+        }
+        // If less than 3, prepend zeros (e.g., 0172 -> 00000172)
+        while (sb.length() < 12) {
+            sb.insert(0, "0000");
+        }
+        return Long.parseLong(sb.substring(0, 12));
+    }
+
+    public static String normalizeVersion(String v) {
+        if (v == null) return "";
+        return v.replaceAll("[\\r\\n]+", "").trim();
+    }
 }

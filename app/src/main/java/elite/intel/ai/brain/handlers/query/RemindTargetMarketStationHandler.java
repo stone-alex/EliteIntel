@@ -13,7 +13,7 @@ import elite.intel.util.json.ToJsonConvertible;
 import java.util.ArrayList;
 import java.util.List;
 
-import static elite.intel.ai.brain.handlers.query.Queries.TARGET_MARKET_STATION_NAME;
+import static elite.intel.ai.brain.handlers.query.Queries.REMINDER;
 
 public class RemindTargetMarketStationHandler extends BaseQueryAnalyzer implements QueryHandler {
 
@@ -48,7 +48,7 @@ public class RemindTargetMarketStationHandler extends BaseQueryAnalyzer implemen
 
             return process(
                     new AiDataStruct(
-                            TARGET_MARKET_STATION_NAME.getInstructions(),
+                            REMINDER.getInstructions(),
                             new DataDto(pickupAtStation, dropOffAtStation, list)
                     ),
                     originalUserInput

@@ -36,7 +36,7 @@ public class DockedSubscriber {
         location.setStationName(event.getStationName());
         location.setPlanetName(null);
         location.setPlanetShortName(null);
-        MarketDto marketDto = EdsmApiClient.searchMarket(event.getMarketID(), null, null);
+        MarketDto marketDto = EdsmApiClient.searchMarket(event.getMarketID(), null, null, 0);
         if(marketDto != null) {
             location.setMarket(marketDto);
             location.setStationName(marketDto.getData().getStationName());

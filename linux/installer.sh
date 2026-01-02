@@ -223,7 +223,7 @@ update_elite_intel() {
     local ELITE_ZIP="elite_intel*.zip"
     unzip -o "$ELITE_ZIP" elite_intel.jar dictionary/stt-correction-dictionary.txt -d "$ELITEINTEL_FOLDER"
     
-    rm "$ELITE_ZIP"
+    rm $ELITE_ZIP
 
     echo "Done!"
     echo "Fly Dangerous, commander"

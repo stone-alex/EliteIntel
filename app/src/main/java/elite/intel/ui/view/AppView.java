@@ -1,11 +1,13 @@
 package elite.intel.ui.view;
 
 import com.google.common.eventbus.Subscribe;
+import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.*;
 import elite.intel.util.SleepNoThrow;
+import elite.intel.util.Updater;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,6 +64,7 @@ public class AppView extends JFrame implements AppViewInterface {
     private JButton saveSystemButton;
     private JToggleButton startStopServicesButton;
     private JButton recalibrateAudioButton;
+    private JButton updateAppButton;
     private JCheckBox togglePrivacyModeCheckBox;
     private JPasswordField edsmKeyField;
     private JCheckBox edsmLockedCheck;
@@ -147,17 +150,6 @@ public class AppView extends JFrame implements AppViewInterface {
         initData();
     }
 
-/*
-    private String readVersionFromResources(){
-        try {
-            InputStream is = getClass().getResourceAsStream("/version.txt");
-            return new BufferedReader(new InputStreamReader(is)).readLine();
-        } catch (IOException e) {
-            log.error("Failed to read version from resources: {}", e.getMessage());
-            return "Unknown";
-        }
-    }
-*/
     /**
      * Binds a lock checkbox to a specific field, allowing the field's state
      * (enabled, editable, or read-only) to be toggled based on the checkbox selection.
@@ -672,7 +664,41 @@ public class AppView extends JFrame implements AppViewInterface {
             saveSystemConfig();
         });
 
+        updateAppButton = new JButton("Update App") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                try {
+                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    Color base = BG_PANEL;
+                    ButtonModel m = getModel();
+                    if (m.isPressed()) base = base.darker();
+                    else if (m.isRollover()) base = base.brighter();
+                    g2.setColor(base);
+                    g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
+                } finally {
+                    g2.dispose();
+                }
+                super.paintComponent(g);
+            }
+        };
+        styleButton(updateAppButton);
+        updateAppButton.setEnabled(false);
+        updateAppButton.setText("App is Up to Date");
+        updateAppButton.addActionListener(e -> {
+            EventBusManager.publish(new AiVoxResponseEvent("Updating. See you soon..."));
+            SleepNoThrow.sleep(3000);
+            Updater.performUpdateAsync().thenAccept(success -> {
+                if (success) {
+                    SwingUtilities.invokeLater(() -> {
+                        System.exit(0);
+                    });
+                }
+            });
+        });
+
         buttons.add(saveSystemButton);
+        buttons.add(updateAppButton);
         panel.add(buttons, gbc);
 
         // Row 6: Filler area (reserved for future use)
@@ -953,6 +979,14 @@ public class AppView extends JFrame implements AppViewInterface {
             recalibrateAudioButton.setEnabled(event.isRunning());
             togglePrivacyModeCheckBox.setEnabled(event.isRunning());
             toggleStreamingModeCheckBox.setEnabled(event.isRunning());
+        });
+    }
+
+    @Subscribe public void onUpdateAvailableEvent(UpdateAvailableEvent event) {
+        SwingUtilities.invokeLater(() -> {
+            updateAppButton.setEnabled(true);
+            updateAppButton.setText("Update Available");
+            this.setTitle("New version available.");
         });
     }
 }

@@ -83,7 +83,30 @@ public class SystemSearchCriteria extends BaseJsonDto implements ToJsonConvertib
         this.page = page;
     }
 
+    public static class SystemNameFilter {
+        @SerializedName("value")
+        private String value;
+
+        public String getValue() {
+            return value;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
+        }
+    }
     public static class Filters {
+
+        @SerializedName("system_name")
+        private SystemNameFilter systemName;
+
+        public SystemNameFilter getSystemName() {
+            return systemName;
+        }
+
+        public void setSystemName(SystemNameFilter systemName) {
+            this.systemName = systemName;
+        }
 
         @SerializedName("distance")
         private Distance distance;

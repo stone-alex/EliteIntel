@@ -1,0 +1,15 @@
+INSERT OR REPLACE INTO sub_system(subsystem) values('Cargo Hatch');
+INSERT OR REPLACE INTO sub_system(subsystem) values('Drive');
+INSERT OR REPLACE INTO sub_system(subsystem) values('Mining Laser');
+INSERT OR REPLACE INTO sub_system(subsystem) values('Mine Launcher');
+INSERT OR REPLACE INTO sub_system(subsystem) values('Heatsink');
+INSERT OR REPLACE INTO sub_system(subsystem) values('Point Defence Turret');
+INSERT OR REPLACE INTO sub_system(subsystem) values('FSD');
+INSERT OR REPLACE INTO sub_system(subsystem) values('Life Support');
+INSERT OR REPLACE INTO sub_system(subsystem) values('Power Distributor');
+INSERT OR REPLACE INTO sub_system(subsystem) values('Shield Generator');
+INSERT OR REPLACE INTO sub_system(subsystem) values('Shield Cell Bank');
+INSERT OR REPLACE INTO sub_system(subsystem) values('Refinery');
+INSERT OR REPLACE INTO sub_system(subsystem) values('Cargo Hatch');
+INSERT OR REPLACE INTO sub_system(subsystem) values('Drive');
+INSERT OR REPLACE INTO sub_system(subsystem) values('Mining Laser');

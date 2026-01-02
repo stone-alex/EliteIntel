@@ -106,7 +106,7 @@ public class EdsmCommoditySearch {
 
             String stationName = station.getName();
             String starSystem = station.getStarSystemName();
-            AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_3); // audio indicator of background search
+            AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_2); // audio indicator of background search
 
             for (Commodity entry : commodities) {
                 if (commodityToFind.equalsIgnoreCase(entry.getName())) {

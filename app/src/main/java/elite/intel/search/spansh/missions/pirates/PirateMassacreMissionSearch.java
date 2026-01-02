@@ -11,6 +11,7 @@ import elite.intel.search.intra.IntraRequest;
 import elite.intel.search.intra.IntraResponse;
 import elite.intel.search.spansh.starsystems.StarSystemClient;
 import elite.intel.search.spansh.starsystems.StarSystemResult;
+import elite.intel.search.spansh.starsystems.StationClient;
 import elite.intel.search.spansh.starsystems.SystemSearchCriteria;
 import elite.intel.session.PlayerSession;
 
@@ -22,7 +23,7 @@ import static elite.intel.search.edsm.utils.StrongHoldFilter.skipEnemyStrongHold
 public class PirateMassacreMissionSearch {
 
     private static volatile PirateMassacreMissionSearch instance;
-    private StarSystemClient starSystemSearchClient = StarSystemClient.getInstance();
+    private StationClient starSystemSearchClient = StationClient.getInstance();
     private IntraClient missionSearchClient = IntraClient.getInstance();
     private LocationManager locationManager = LocationManager.getInstance();
     private PlayerSession playerSession = PlayerSession.getInstance();
@@ -105,6 +106,8 @@ public class PirateMassacreMissionSearch {
             StarSystemResult missionProviderSystem = searchSystem(pair.getMissionProvider().getStarSystemName());
             StarSystemResult battleGroundSystem = searchSystem(pair.getBettleGround().getStarSystemName());
 
+            if (missionProviderSystem == null || battleGroundSystem == null) continue;
+
             if (pledgedToPower && skipEnemyStrongHold(missionProviderSystem, battleGroundSystem, pledgedPower)) continue;
 
             result.add(
@@ -121,6 +124,13 @@ public class PirateMassacreMissionSearch {
     private StarSystemResult searchSystem(String starSystemName) {
         SystemSearchCriteria criteria = new SystemSearchCriteria();
         SystemSearchCriteria.Filters filters = new SystemSearchCriteria.Filters();
+        SystemSearchCriteria.Distance distance = new SystemSearchCriteria.Distance();
+        distance.setMax(100000);
+        distance.setMin(0);
+        SystemSearchCriteria.SystemNameFilter systemName = new SystemSearchCriteria.SystemNameFilter();
+        systemName.setValue(starSystemName);
+        filters.setSystemName(systemName);
+        filters.setDistance(distance);
         criteria.setFilters(filters);
         criteria.setReferenceSystem(starSystemName);
         criteria.setPage(1);

@@ -20,12 +20,14 @@ import elite.intel.session.SystemSession;
 import elite.intel.ui.event.*;
 import elite.intel.ui.view.AppView;
 import elite.intel.util.SleepNoThrow;
+import elite.intel.util.Updater;
 
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static elite.intel.util.StringUtls.capitalizeWords;
@@ -52,6 +54,22 @@ public class AppController implements Runnable {
         this.isRunning.set(true);
         this.controllerThread.start();
         startIfWeHaveCredentials();
+        checkForUpdates();
+    }
+
+    private void checkForUpdates() {
+        SwingUtilities.invokeLater(() -> {
+            CompletableFuture<Boolean> checkAsync = Updater.isUpdateAvailableAsync();
+            try {
+                Boolean updateAvailable = checkAsync.get();
+                if (updateAvailable) {
+                    EventBusManager.publish(new UpdateAvailableEvent());
+                }
+            } catch (Exception e) {
+                //kek
+            }
+        });
+
     }
 
     private void startIfWeHaveCredentials() {
@@ -196,7 +214,7 @@ public class AppController implements Runnable {
         });
     }
 
-    @Subscribe void onToggleSendExplorationData(ToggleSendExplorationDataEvent  event){
+    @Subscribe void onToggleSendExplorationData(ToggleSendExplorationDataEvent event) {
         SwingUtilities.invokeLater(() -> {
             systemSession.setExplorationData(event.isEnabled());
         });

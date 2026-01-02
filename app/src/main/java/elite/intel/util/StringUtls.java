@@ -183,4 +183,9 @@ public class StringUtls {
         }
         return Long.parseLong(sb.substring(0, 12));
     }
+
+    public static String normalizeVersion(String v) {
+        if (v == null) return "";
+        return v.replaceAll("[\\r\\n]+", "").trim();
+    }
 }

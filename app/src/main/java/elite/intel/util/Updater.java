@@ -16,6 +16,8 @@ import java.nio.file.attribute.PosixFilePermissions;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import static elite.intel.util.StringUtls.normalizeVersion;
+
 public class Updater {
 
     private static final Path JAR_DIR = getJarDirectory();
@@ -25,13 +27,12 @@ public class Updater {
 
     private static Path getJarDirectory() {
         try {
-            String jarPath = Updater.class
+            URI uri = Updater.class
                     .getProtectionDomain()
                     .getCodeSource()
                     .getLocation()
-                    .toURI()
-                    .getPath();
-            return Path.of(jarPath).getParent();
+                    .toURI();
+            return Path.of(uri).getParent();  // Safe: Path.of(URI) handles file:/C: correctly
         } catch (Exception e) {
             throw new RuntimeException("Cannot detect JAR directory", e);
         }
@@ -119,7 +120,7 @@ public class Updater {
     public static CompletableFuture<Boolean> isUpdateAvailableAsync() {
         return CompletableFuture.supplyAsync(() -> {
             SystemSession.getInstance().readVersionFromResources();
-            String local = SystemSession.getInstance().readVersionFromResources();
+            String local = normalizeVersion(SystemSession.getInstance().readVersionFromResources());
             if (local == null || local.isBlank()) return false;
 
             Long localVersion = StringUtls.getNumericBuild(local);
@@ -132,7 +133,7 @@ public class Updater {
                         .build();
                 HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
                 if (response.statusCode() == 200) {
-                    String remote = response.body().trim();
+                    String remote = normalizeVersion(response.body().trim());
                     Long remoteVersion = StringUtls.getNumericBuild(remote);
                     return remoteVersion > localVersion;
                 }

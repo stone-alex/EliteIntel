@@ -9,7 +9,7 @@ import java.net.URL;
 
 public class OllamaClient implements Client {
 
-    public static final String MODEL_OLLAMA = "llama3.2:3b";
+    public static final String MODEL_OLLAMA = "qwen3:8b";
 
     private static final OllamaClient INSTANCE = new OllamaClient();
 
@@ -29,8 +29,9 @@ public class OllamaClient implements Client {
     public JsonObject createRequestBodyHeader(String model, float temp) {
         JsonObject header = new JsonObject();
         header.addProperty("model", model);
-        header.addProperty("temperature", temp);
-        header.addProperty("stream", false);           // we don’t use streaming
+        header.addProperty("temperature", 0.4);
+        header.addProperty("stream", false);
+        header.addProperty("format", "json");
         return header;
     }
 

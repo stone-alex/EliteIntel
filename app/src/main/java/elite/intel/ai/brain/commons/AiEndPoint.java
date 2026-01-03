@@ -96,6 +96,7 @@ public abstract class AiEndPoint {
 
         try {
             JsonObject responseData = JsonParser.parseString(response).getAsJsonObject();
+            /*
             LlmMetadata meta = GsonFactory.getGson().fromJson(responseData, LlmMetadata.class);
             EventBusManager.publish(
                     new AppLogEvent(
@@ -103,6 +104,7 @@ public abstract class AiEndPoint {
                     )
             );
             log.info("LLM Stats: " + meta);
+            */
             return new Response(responseData, response);
         } catch (JsonSyntaxException e) {
             log.error("Failed to parse API response:\n{}", response, e);

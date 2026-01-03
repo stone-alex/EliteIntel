@@ -34,9 +34,9 @@ public record LlmMetadata(
     }
 
     public String model() { return model; }
-    public int cachedTokens() { return usage.cachedTokens(); }
-    public int totalTokens() { return usage.totalTokens(); }
-    public int reasoningTokens() { return usage.reasoningTokens(); }
+    public int cachedTokens() { return usage == null ? 0 :  usage.cachedTokens(); }
+    public int totalTokens() { return  usage == null ? 0 :  usage.totalTokens(); }
+    public int reasoningTokens() { return  usage == null ? 0 :  usage.reasoningTokens(); }
 
     @Override public String toString() {
         return new StringJoiner(", ", LlmMetadata.class.getSimpleName() + "[", "]")

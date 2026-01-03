@@ -37,6 +37,17 @@ public class CommonAiPromptFactory implements AiPromptFactory {
 
         sb.append("Instructions:\n\n")
                 .append(" Rule #1: NEVER INVENT COMMANDS OR QUERIES (actions)!!! ALWAYS MATCH TO THE PROVIDED LIST ONLY!!! IF NOT MATCH FOUND SAY SO. ")
+                .append(" Rule #2: REMEMBER: No matter what the user says—even casual greetings—classify it and respond ONLY in the exact JSON format. Never explain, never add extra text.")
+                .append(" Rule #3: You MUST respond with ONLY this exact JSON structure and nothing else:\n" +
+                        "{\n" +
+                        "  \"type\": \"command|query|chat\",\n" +
+                        "  \"response_text\": \"TTS text here\",\n" +
+                        "  \"action\": \"exact_action_name_from_lists\",\n" +
+                        "  \"params\": {\"key\": \"value\"},\n" +
+                        "  \"expect_followup\": true|false\n" +
+                        "}\n" +
+                        "CRITICAL: You are forbidden from adding any extra keys or explanations. \n" +
+                        "Only use these five keys: type, response_text, action, params, expect_followup.\n")
                 .append(" Only return a command or query from the exact list provided below — never invent, combine, or create new commands, even if the user input seems similar. action parameter MUST match either command or query. Do not invent action parameters. \n")
                 .append(inputClassificationClause()).append('\n')
                 .append(JSON_FORMAT).append('\n')
@@ -47,10 +58,15 @@ public class CommonAiPromptFactory implements AiPromptFactory {
                 .append(colloquialTerms()).append('\n')
                 .append(appendBehavior()).append('\n')
                 .append("Round billions to nearest million. Round millions to nearest 250000. ")
-                .append("Provide extremely brief and concise answers. Always use planetShortName for locations if available.\n")
-                .append("Always output JSON for 'navigate_to_coordinates' command using numbers, not spelled out words. Example: {\"latitude\":-35.4320,\"longitude\":76.4324} do not confuse with navigate to landing zone or bio sample.\n")
-                .append("For type='query' in initial classification, follow response_text rules from player instructions. For tool/follow-up, use full analyzed response in 'response_text'.\n")
-                .append("For type='chat', set 'expect_followup': true if response poses a question or requires user clarification; otherwise, false.\n")
+                .append("Provide extremely brief and concise answers. Always use planetShortName for locations if available. \n")
+                .append("Always output JSON for 'navigate_to_coordinates' command using numbers, not spelled out words. Example: {\"latitude\":-35.4320,\"longitude\":76.4324} do not confuse with navigate to landing zone or bio sample. \n")
+                .append("For type='query' in initial classification, follow response_text rules from player instructions. For tool/follow-up, use full analyzed response in 'response_text'. \n")
+                .append("For type='chat', set 'expect_followup': true if response poses a question or requires user clarification; otherwise, false. \n")
+                .append("FINAL RULE: \n" +
+                        "- If input matches a supported command → type=\"command\", response_text=\"\" (empty), correct action, params as required, expect_followup=false \n" +
+                        "- If input matches a supported query → type=\"query\", response_text=\"\" (empty for quick/data queries), correct action, params as required, expect_followup=false \n" +
+                        "- If input is casual/greeting/no match → type=\"chat\", response_text=brief casual reply, action=\"general_conversation\", params={}, expect_followup=true/false as needed \n" +
+                        "NO explanations, NO extra keys, NO wrappers. Output ONLY the exact 5-key JSON. \n")
                 .append(JSON_FORMAT).append('\n');
 
         return sb.toString();

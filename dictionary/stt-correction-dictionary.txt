@@ -267,6 +267,7 @@
 "switch ways to"="switch voice to"
 "switch wise to"="switch voice to"
 	"supergirls"="supercruise"
+	"Student mode"="streaming mode"
 
 "take a sin"="take us in"
 "target brandy, right?"="target grandidierite"
@@ -317,3 +318,8 @@
 "with career"="fleet carrier"
 "with voice to"="set voice to"
 "wo, the voice to"="set voice to"
+
+"peter naval ship pictures"="computer enable supercruise"
+"enables ship super Cruise"="computer enable supercruise"
+"enables ship supercruise"="computer enable supercruise"
+"peter enables to picture"="computer enable supercruise"

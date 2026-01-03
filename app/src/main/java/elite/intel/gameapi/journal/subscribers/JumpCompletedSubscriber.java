@@ -1,6 +1,17 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.intel.db.dao.RouteMonetisationDao.MonetisationTransaction;
+import elite.intel.db.managers.LocationManager;
+import elite.intel.db.managers.MonetizeRouteManager;
+import elite.intel.db.managers.ShipRouteManager;
+import elite.intel.db.managers.TradeRouteManager;
+import elite.intel.gameapi.EventBusManager;
+import elite.intel.gameapi.SensorDataEvent;
+import elite.intel.gameapi.gamestate.dtos.NavRouteDto;
+import elite.intel.gameapi.journal.events.FSDJumpEvent;
+import elite.intel.gameapi.journal.events.dto.LocationDto;
+import elite.intel.gameapi.journal.events.dto.MaterialDto;
 import elite.intel.search.edsm.EdsmApiClient;
 import elite.intel.search.edsm.dto.DeathsDto;
 import elite.intel.search.edsm.dto.SystemBodiesDto;
@@ -8,18 +19,10 @@ import elite.intel.search.edsm.dto.TrafficDto;
 import elite.intel.search.edsm.dto.data.BodyData;
 import elite.intel.search.edsm.dto.data.DeathsStats;
 import elite.intel.search.edsm.dto.data.TrafficStats;
-import elite.intel.db.managers.LocationManager;
-import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.SensorDataEvent;
-import elite.intel.gameapi.gamestate.dtos.NavRouteDto;
-import elite.intel.gameapi.journal.events.FSDJumpEvent;
-import elite.intel.gameapi.journal.events.dto.LocationDto;
-import elite.intel.gameapi.journal.events.dto.MaterialDto;
+import elite.intel.search.spansh.station.marketstation.TradeStopDto;
 import elite.intel.session.PlayerSession;
-import elite.intel.db.managers.ShipRouteManager;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -31,25 +34,41 @@ import static elite.intel.util.StringUtls.isFuelStarClause;
 public class JumpCompletedSubscriber {
 
     private final PlayerSession playerSession = PlayerSession.getInstance();
+    private final LocationManager locationManager = LocationManager.getInstance();
     private final ShipRouteManager shipRoute = ShipRouteManager.getInstance();
+    private final MonetizeRouteManager monetizeRouteManager = MonetizeRouteManager.getInstance();
 
 
     @Subscribe
     public void onFSDJumpEvent(FSDJumpEvent event) {
         SystemBodiesDto systemBodiesDto = EdsmApiClient.searchSystemBodies(event.getStarSystem());
-        processEdsmData(systemBodiesDto, event.getStarSystem());
+        processEdsmData(systemBodiesDto, event.getSystemAddress());
 
-        LocationDto primaryStar = LocationManager.getInstance().findPrimaryStar(event.getStarSystem());
+        boolean isSellerSystem = monetizeRouteManager.isSeller(event.getStarSystem());
+        boolean isBuyerSystem = monetizeRouteManager.isBuyer(event.getStarSystem());
+        MonetisationTransaction station = monetizeRouteManager.getTransaction();
+
+        if (isSellerSystem && station != null) {
+            EventBusManager.publish(new SensorDataEvent("Head to " + station.getSourceStationName() + " buy " + station.getSourceCommodity()));
+        }
+
+        if (isBuyerSystem && station != null) {
+            EventBusManager.publish(new SensorDataEvent("Head to " + station.getDestinationStationName() + " sell " + station.getDestinationCommodity()));
+        }
+
+
+        LocationDto primaryStar = locationManager.findBySystemAddress(event.getSystemAddress(), event.getBodyId());
         primaryStar.setBodyId(event.getBodyId());
+        primaryStar.setSystemAddress(event.getSystemAddress());
         primaryStar.setStationGovernment(event.getSystemGovernmentLocalised());
         primaryStar.setAllegiance(event.getSystemAllegiance());
         primaryStar.setSecurity(event.getSystemSecurityLocalised());
         primaryStar.setStarName(event.getStarSystem());
         primaryStar.setPlanetName(event.getBody());
         primaryStar.setLocationType(LocationDto.LocationType.PRIMARY_STAR);
-        primaryStar.setX(event.getStarPos()[0]);
-        primaryStar.setY(event.getStarPos()[1]);
-        primaryStar.setZ(event.getStarPos()[2]);
+        primaryStar.setX(Double.valueOf(event.getStarPos()[0]));
+        primaryStar.setY(Double.valueOf(event.getStarPos()[1]));
+        primaryStar.setZ(Double.valueOf(event.getStarPos()[2]));
         primaryStar.setPopulation(event.getPopulation());
         primaryStar.setPowerplayState(event.getPowerplayState());
         primaryStar.setPowerplayStateControlProgress(event.getPowerplayStateControlProgress());
@@ -62,9 +81,6 @@ public class JumpCompletedSubscriber {
         String finalDestination = playerSession.getFinalDestination();
 
         StringBuilder sb = new StringBuilder();
-        sb.append(" Hyperspace Jump Successful: ");
-        sb.append(" Distance traveled: ").append(event.getJumpDist()).append(" ly. ");
-
         List<NavRouteDto> orderedRoute = shipRoute.getOrderedRoute();
         boolean roueSet = !orderedRoute.isEmpty();
 
@@ -82,16 +98,15 @@ public class JumpCompletedSubscriber {
             primaryStar.setTrafficDto(trafficDto);
             primaryStar.setDeathsDto(deathsDto);
         } else if (roueSet) {
-            sb.append("Arrived at: ").append(event.getStarSystem()).append(" star system.");
             List<NavRouteDto> adjustedRoute = shipRoute.removeLeg(event.getStarSystem());
             int remainingJump = adjustedRoute.size();
             if (remainingJump > 0) {
                 adjustedRoute.stream().findFirst().ifPresent(
                         nextStop -> sb
-                                .append(" Next stop: ")
+                                .append(" Next Waypoint: ")
                                 .append(nextStop.getName())
                                 .append(". ")
-                                .append("Star Class: ")
+                                .append(" Star Class: ")
                                 .append(nextStop.getStarClass())
                                 .append(", ")
                                 .append(isFuelStarClause(nextStop.getStarClass()))
@@ -105,16 +120,52 @@ public class JumpCompletedSubscriber {
         if (playerSession.isRouteAnnouncementOn()) {
             EventBusManager.publish(new SensorDataEvent(sb.toString()));
         }
+
+        TradeRouteManager tradeRouteManager = TradeRouteManager.getInstance();
+        TradeRouteManager.TradeRouteLegTuple<Integer, TradeStopDto> stop = tradeRouteManager.getNextStop();
+        if (stop != null) {
+            String destinationStation = stop.getTradeStopDto().getDestinationStation();
+            String destinationSystem = stop.getTradeStopDto().getDestinationSystem();
+            String sourceStation = stop.getTradeStopDto().getSourceStation();
+            String sourceSystem = stop.getTradeStopDto().getSourceSystem();
+
+            if (event.getStarSystem().equalsIgnoreCase(destinationSystem)) {
+                EventBusManager.publish(
+                        new SensorDataEvent(
+                                "Head to " + destinationStation
+                                        + " to sell "
+                                        + stop.getTradeStopDto()
+                                        .getCommodities()
+                                        .stream()
+                                        .map(commodity -> commodity.getName()).collect(Collectors.joining(", "))
+                        )
+                );
+            }
+
+            if (event.getStarSystem().equalsIgnoreCase(sourceSystem)) {
+                EventBusManager.publish(
+                        new SensorDataEvent(
+                                "Head to " + sourceStation
+                                        + " to buy "
+                                        + stop.getTradeStopDto()
+                                        .getCommodities()
+                                        .stream()
+                                        .map(commodity -> commodity.getName()).collect(Collectors.joining(", "))
+                        )
+                );
+            }
+        }
     }
 
-    private void processEdsmData(SystemBodiesDto systemBodiesDto, String starSystem) {
+    private void processEdsmData(SystemBodiesDto systemBodiesDto, long systemAddress) {
         if (systemBodiesDto == null) return;
         if (systemBodiesDto.getData() == null) return;
         List<BodyData> bodies = systemBodiesDto.getData().getBodies();
         if (bodies == null || bodies.isEmpty()) return;
 
         for (BodyData data : bodies) {
-            LocationDto stellarObject = playerSession.getLocation(data.getId(), starSystem);
+            LocationDto stellarObject = locationManager.findBySystemAddress(systemAddress, data.getBodyId());
+            stellarObject.setSystemAddress(systemAddress);
             stellarObject.setAtmosphere(data.getAtmosphereType());
             stellarObject.setBodyId(data.getBodyId());
             stellarObject.setHasRings(data.getRings() != null && !data.getRings().isEmpty());
@@ -129,9 +180,11 @@ public class JumpCompletedSubscriber {
             stellarObject.setSurfaceTemperature(data.getSurfaceTemperature());
             stellarObject.setTidalLocked(data.isRotationalPeriodTidallyLocked());
             stellarObject.setLocationType(determineType(data));
-            stellarObject.setOurDiscovery(data.getDiscovery().getCommander() == null);
-            stellarObject.setDiscoveredBy(data.getDiscovery().getCommander());
-            stellarObject.setDiscoveredOn(data.getDiscovery().getDate());
+            if (data.getDiscovery() != null) {
+                stellarObject.setOurDiscovery(data.getDiscovery().getCommander() == null);
+                stellarObject.setDiscoveredBy(data.getDiscovery().getCommander());
+                stellarObject.setDiscoveredOn(data.getDiscovery().getDate());
+            }
             stellarObject.setOrbitalPeriod(data.getOrbitalPeriod());
             stellarObject.setAxialTilt(data.getAxialTilt());
             stellarObject.setRotationPeriod(data.getRotationalPeriod());

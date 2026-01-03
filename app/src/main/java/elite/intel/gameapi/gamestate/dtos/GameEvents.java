@@ -18,7 +18,7 @@ public class GameEvents {
         @SerializedName("Count")
         private int count;
         @SerializedName("Inventory")
-        private List<Object> inventory;
+        private List<Inventory> inventory;
 
 
         // Getters
@@ -38,7 +38,7 @@ public class GameEvents {
             return count;
         }
 
-        public List<Object> getInventory() {
+        public List<Inventory> getInventory() {
             return inventory;
         }
 
@@ -62,8 +62,33 @@ public class GameEvents {
             this.count = count;
         }
 
-        public void setInventory(List<Object> inventory) {
+        public void setInventory(List<Inventory> inventory) {
             this.inventory = inventory;
+        }
+    }
+
+
+    public static class Inventory {
+        //      "Name": "tea",
+        //      "Count": 240.0,
+        //      "Stolen": 0.0
+        @SerializedName("Name")
+        private String name;
+        @SerializedName("Count")
+        private double count;
+        @SerializedName("Stolen")
+        private double stolen;
+
+        public String getName() {
+            return name;
+        }
+
+        public double getCount() {
+            return count;
+        }
+
+        public double getStolen() {
+            return stolen;
         }
     }
 
@@ -628,7 +653,7 @@ public class GameEvents {
         @SerializedName("Horizons")
         private boolean horizons;
         @SerializedName("Items")
-        private List<Object> items;
+        private List<String> items;
 
 
         public void setTimestamp(String timestamp) {
@@ -655,7 +680,7 @@ public class GameEvents {
             this.horizons = horizons;
         }
 
-        public void setItems(List<Object> items) {
+        public void setItems(List<String> items) {
             this.items = items;
         }
 
@@ -684,7 +709,7 @@ public class GameEvents {
             return horizons;
         }
 
-        public List<Object> getItems() {
+        public List<String> getItems() {
             return items;
         }
 
@@ -994,7 +1019,7 @@ public class GameEvents {
         }
     }
 
-    public static class MarketEvent {
+    public static class MarketEvent implements ToJsonConvertible{
         public static class MarketItem {
             @SerializedName("id")
             private long id;

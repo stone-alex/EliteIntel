@@ -1,7 +1,6 @@
 package elite.intel.session;
 
 import com.google.common.eventbus.Subscribe;
-import elite.intel.search.spansh.market.StationMarketDto;
 import elite.intel.db.dao.PlayerDao;
 import elite.intel.db.dao.ShipScansDao;
 import elite.intel.db.managers.*;
@@ -9,8 +8,11 @@ import elite.intel.db.util.Database;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.data.FsdTarget;
 import elite.intel.gameapi.gamestate.dtos.GameEvents;
-import elite.intel.gameapi.journal.events.*;
+import elite.intel.gameapi.journal.events.CarrierStatsEvent;
+import elite.intel.gameapi.journal.events.LoadoutEvent;
+import elite.intel.gameapi.journal.events.ReputationEvent;
 import elite.intel.gameapi.journal.events.dto.*;
+import elite.intel.util.OsDetector;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -19,26 +21,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.apache.commons.lang3.StringUtils.trimToNull;
+
 /**
  * Represents a player's session encompassing various aspects of gameplay including
  * missions, bounties, mining activities, reputation, ship loadouts, and other relevant data points.
- *
+ * <p>
  * This class acts as a singleton and centralizes the management of state and data related
  * to the player's progress and session-specific details.
  */
-public class PlayerSession  {
-
-    private static volatile PlayerSession instance;
+public class PlayerSession {
 
     public static final String PLAYER_MISSION_STATEMENT = "mission_statement";
     public static final String PLAYER_CUSTOM_TITLE = "title";
     public static final String PLAYER_ALTERNATIVE_NAME = "alternative_name";
     public static final String JOURNAL_DIR = "journal_dir";
     public static final String BINDINGS_DIR = "bindings_dir";
-
-
+    private static volatile PlayerSession instance;
     /// Data managers.
-    private LocationManager locationData = LocationManager.getInstance();
+    private LocationManager locationManager = LocationManager.getInstance();
     private ShipScansManager shipScans = ShipScansManager.getInstance();
     private MissionManager missions = MissionManager.getInstance();
     private BountyManager bounties = BountyManager.getInstance();
@@ -81,12 +82,12 @@ public class PlayerSession  {
     }
 
 
-    public void addBountyReward(long totalReward) {
+    public void addBountyReward(long reward) {
         Database.withDao(PlayerDao.class, dao -> {
             PlayerDao.Player player = dao.get();
-            player.setTotalBountyClaimed(totalReward);
+            player.setTotalBountyClaimed(player.getTotalBountyClaimed() + reward);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -98,10 +99,10 @@ public class PlayerSession  {
         bounties.remove(bounty);
     }
 
-    public long getBountyCollectedThisSession() {
+    public long getTotalBountyClaimed() {
         return Database.withDao(PlayerDao.class, dao -> {
             PlayerDao.Player player = dao.get();
-            return player.getBountyCollectedThisSession();
+            return player.getTotalBountyClaimed();
         });
     }
 
@@ -145,38 +146,48 @@ public class PlayerSession  {
 
     public void saveLocation(LocationDto location) {
         if (location.getBodyId() == -1) return;
-        locationData.save(location);
+        locationManager.save(location);
     }
 
     public Map<Long, LocationDto> getLocations() {
-        return locationData.findByPrimaryStar(getPrimaryStarName());
+        return locationManager.findByPrimaryStar(getPrimaryStarName());
     }
 
     public String getPrimaryStarName() {
         return Database.withDao(PlayerDao.class, dao -> dao.get().getCurrentPrimaryStar());
     }
 
-    public LocationDto getLocation(long id, String primaryStarName) {
-        return locationData.getLocation(primaryStarName, id);
-    }
-
     public void clearBounties() {
         Database.withDao(PlayerDao.class, dao -> {
             PlayerDao.Player player = dao.get();
-            player.setBountyCollectedThisSession(0);
+            player.setTotalBountyClaimed(0);
             dao.save(player);
-            return null;
+            return Void.class;
         });
-        setTotalBountyProfit(0);
-        setTotalBountyClaimed(0);
         bounties.clear();
+    }
+
+    public void setBountyCollectedLiveTime(long amount) {
+        Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            player.setBountyCollectedLifetime(amount);
+            dao.save(player);
+            return Void.class;
+        });
+    }
+
+    public long getBountyCollectedLiveTime() {
+        return Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            return player.getBountyCollectedLifetime();
+        });
     }
 
     public LocationDto getCurrentLocation() {
         return Database.withDao(PlayerDao.class, dao -> {
             PlayerDao.Player player = dao.get();
             Long currentLocationId = player.getCurrentLocationId();
-            return currentLocationId == null ? new LocationDto(-1) : getLocation(currentLocationId, player.getCurrentPrimaryStar());
+            return currentLocationId == null ? new LocationDto(-1L) : locationManager.getLocation(player.getCurrentPrimaryStar(), currentLocationId);
         });
     }
 
@@ -185,7 +196,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setCurrentLocationId(id);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -209,12 +220,12 @@ public class PlayerSession  {
         miningTargets.clear();
     }
 
-    public List<StationMarketDto> getMarkets() {
+    public GameEvents.MarketEvent getMarket() {
         return markets.findForStation(getCurrentLocation().getStationName());
     }
 
-    public void setMarkets(List<StationMarketDto> data) {
-        markets.addList(data);
+    public void saveMarket(GameEvents.MarketEvent data) {
+        markets.save(data);
     }
 
     public void clearMarkets() {
@@ -275,14 +286,14 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setLastScanId(lastScan.getBodyId());
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
     public LocationDto getLastScan() {
         return Database.withDao(PlayerDao.class, dao -> {
             PlayerDao.Player player = dao.get();
-            return getLocation(player.getLastScanId(), player.getCurrentPrimaryStar());
+            return locationManager.getLocation(player.getCurrentPrimaryStar(), player.getLastScanId());
         });
     }
 
@@ -300,7 +311,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setTotalHyperspaceDistance(totalHyperspaceDistance);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -309,7 +320,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setInsuranceClaims(insuranceClaims);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -318,7 +329,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setTotalProfitsFromExploration(totalProfitsFromExploration);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -327,7 +338,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setExobiologyProfits(exobiologyProfits);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -336,7 +347,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setHighestSingleTransaction(highestSingleTransaction);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -349,7 +360,7 @@ public class PlayerSession  {
             PlayerDao.Player player = playerDao.get();
             player.setFinalDestination(finalDestination);
             playerDao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -358,7 +369,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setMarketProfits(marketProfits);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -367,16 +378,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setCurrentShip(currentShip);
             dao.save(player);
-            return null;
-        });
-    }
-
-    public void setTotalBountyProfit(long totalBountyProfit) {
-        Database.withDao(PlayerDao.class, dao -> {
-            PlayerDao.Player player = dao.get();
-            player.setTotalBountyProfit(totalBountyProfit);
-            dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -384,12 +386,27 @@ public class PlayerSession  {
         return Database.withDao(PlayerDao.class, dao -> dao.get().getPlayerMissionStatement());
     }
 
+    public void setHomeSystem() {
+        LocationDto location = getCurrentLocation();
+        Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            player.setHomeSystemId(location.getSystemAddress());
+            dao.save(player);
+            return Void.class;
+        });
+    }
+
+    public LocationDto getHomeSystem() {
+        Long homeSystemId = Database.withDao(PlayerDao.class, dao -> dao.get().getHomeSystemId());
+        return locationManager.findBySystemAddress(homeSystemId);
+    }
+
     public void setPlayerMissionStatement(String playerMissionStatement) {
         Database.withDao(PlayerDao.class, dao -> {
             PlayerDao.Player player = dao.get();
             player.setPlayerMissionStatement(playerMissionStatement);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -398,7 +415,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setCrewWagsPayout(crewWagsPayout);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -411,7 +428,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setPlayerTitle(playerTitle);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -420,7 +437,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setCurrentShipName(currentShipName);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -430,7 +447,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setPersonalCreditsAvailable(personalCreditsAvailable);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -439,7 +456,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setShipsOwned(shipsOwned);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -452,7 +469,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setPlayerName(playerName);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -465,17 +482,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setLastKnownCarrierLocation(lastKnownCarrierLocation);
             dao.save(player);
-            return null;
-        });
-    }
-
-
-    public void setShipFuelLevel(double shipFuelLevel) {
-        Database.withDao(PlayerDao.class, dao -> {
-            PlayerDao.Player player = dao.get();
-            player.setShipFuelLevel(shipFuelLevel);
-            dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -488,7 +495,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setCarrierDepartureTime(carrierDepartureTime);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -501,7 +508,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setPlayerHighestMilitaryRank(playerHighestMilitaryRank);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -510,16 +517,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setSpeciesFirstLogged(speciesFirstLogged);
             dao.save(player);
-            return null;
-        });
-    }
-
-    public void setShipCargoCapacity(int shipCargoCapacity) {
-        Database.withDao(PlayerDao.class, dao -> {
-            PlayerDao.Player player = dao.get();
-            player.setShipCargoCapacity(shipCargoCapacity);
-            dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -528,7 +526,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setTotalSystemsVisited(totalSystemsVisited);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -537,7 +535,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setTotalBountyClaimed(totalBountyClaimed);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -546,7 +544,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setGoodsSoldThisSession(goodsSoldThisSession);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -555,7 +553,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setTotalDistanceTraveled(totalDistanceTraveled);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -576,7 +574,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setRadioTransmissionOn(radioTransmissionOn);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -589,7 +587,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setMiningAnnouncementOn(miningAnnouncementOn);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -602,7 +600,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setNavigationAnnouncementOn(navigationAnnouncementOn);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -615,7 +613,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setDiscoveryAnnouncementOn(discoveryAnnouncementOn);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -629,7 +627,7 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setRouteAnnouncementOn(routeAnnouncementOn);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -641,18 +639,13 @@ public class PlayerSession  {
         genusAnouncements.clear();
     }
 
-    public GalacticCoordinates getGalacticCoordinates() {
-        LocationDto primaryStarLocation = getPrimaryStarLocation();
-        return new GalacticCoordinates(primaryStarLocation.getX(), primaryStarLocation.getY(), primaryStarLocation.getZ() );
-    }
-
 
     public void setCurrentWealth(long currentWealth) {
         Database.withDao(PlayerDao.class, dao -> {
             PlayerDao.Player player = dao.get();
             player.setCurrentWealth(currentWealth);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -667,7 +660,16 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setGameVersion(gameversion);
             dao.save(player);
-            return null;
+            return Void.class;
+        });
+    }
+
+    public void setGameBuild(String gameBuild) {
+        Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            player.setGameBuild(gameBuild);
+            dao.save(player);
+            return Void.class;
         });
     }
 
@@ -675,12 +677,16 @@ public class PlayerSession  {
         return Database.withDao(PlayerDao.class, dao -> dao.get().getGameVersion());
     }
 
+    public String getGameBuild() {
+        return Database.withDao(PlayerDao.class, dao -> dao.get().getGameBuild());
+    }
+
     public void setInGameName(String inGameName) {
         Database.withDao(PlayerDao.class, dao -> {
             PlayerDao.Player player = dao.get();
             player.setInGameName(inGameName);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
@@ -693,57 +699,69 @@ public class PlayerSession  {
             PlayerDao.Player player = dao.get();
             player.setCurrentPrimaryStar(starName);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
-    public void setJournalPath(String path){
-        Database.withDao(PlayerDao.class, dao ->{
+    public void setJournalPath(String path) {
+        Database.withDao(PlayerDao.class, dao -> {
             PlayerDao.Player player = dao.get();
             player.setJournalDirectory(path);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
-    public Path getJournalPath(){
+    public Path getJournalPath() {
         return Database.withDao(PlayerDao.class, dao -> {
-            String directory = dao.get().getJournalDirectory();
-            return directory == null ? Paths.get(System.getProperty("user.home"), "Saved Games", "Frontier Developments", "Elite Dangerous") : Paths.get(directory);
+            String directory = trimToNull(dao.get().getJournalDirectory());
+            if(OsDetector.getOs() == OsDetector.OS.WINDOWS) {
+                return directory == null ? Paths.get(System.getProperty("user.home"), "Saved Games", "Frontier Developments", "Elite Dangerous") : Paths.get(directory);
+            } else if(OsDetector.getOs() == OsDetector.OS.LINUX) {
+                return directory == null ? Paths.get(System.getProperty("user.home"), ".var", "app", "elite.intel.app", "ed-journal") : Paths.get(directory);
+            } else {
+                return directory == null ? Paths.get(System.getProperty("user.home"), "Library", "Application Support", "Frontier Developments", "Elite Dangerous") : Paths.get(directory);
+            }
         });
     }
 
-    public void setBindingsDir(String path){
-        Database.withDao(PlayerDao.class, dao ->{
+    public void setBindingsDir(String path) {
+        Database.withDao(PlayerDao.class, dao -> {
             PlayerDao.Player player = dao.get();
             player.setBindingsDirectory(path);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
-    public Path getBindingsDir(){
+    public Path getBindingsDir() {
         return Database.withDao(PlayerDao.class, dao -> {
-            String directory = dao.get().getBindingsDirectory();
-            return directory == null ? Paths.get(System.getProperty("user.home"), "AppData", "Local", "Frontier Developments", "Elite Dangerous", "Options", "Bindings") : Paths.get(directory);
+            String directory = trimToNull(dao.get().getBindingsDirectory());
+            if(OsDetector.getOs() == OsDetector.OS.WINDOWS) {
+                return directory == null ? Paths.get(System.getProperty("user.home"), "AppData", "Local", "Frontier Developments", "Elite Dangerous", "Options", "Bindings") : Paths.get(directory);
+            } else if(OsDetector.getOs() == OsDetector.OS.LINUX){
+                return directory == null ? Paths.get(System.getProperty("user.home"), ".var", "app", "elite.intel.app", "ed-bindings") : Paths.get(directory);
+            } else {
+                return directory == null ? Paths.get(System.getProperty("user.home"), "Library", "Application Support", "Frontier Developments", "Elite Dangerous", "Options", "Bindings") : Paths.get(directory);
+            }
         });
     }
 
-    public void setAlternativeName(String alternativeName){
-        Database.withDao(PlayerDao.class, dao ->{
+    public void setAlternativeName(String alternativeName) {
+        Database.withDao(PlayerDao.class, dao -> {
             PlayerDao.Player player = dao.get();
             player.setAlternativeName(alternativeName);
             dao.save(player);
-            return null;
+            return Void.class;
         });
     }
 
-    public String getAlternativeName(){
+    public String getAlternativeName() {
         return Database.withDao(PlayerDao.class, dao -> dao.get().getAlternativeName());
     }
 
     public LocationDto getPrimaryStarLocation() {
-        return locationData.findPrimaryStar(getPrimaryStarName());
+        return locationManager.findPrimaryStar(getPrimaryStarName());
     }
 
     public void clearShipScans() {
@@ -764,11 +782,36 @@ public class PlayerSession  {
         return result;
     }
 
-    public Long getMarkedId() {
-        return Database.withDao(PlayerDao.class, dao ->{
-            PlayerDao.Player player = dao.get();
-            return player.getMarketId();
-        });
+    public long getHighestTransaction() {
+        return Database.withDao(PlayerDao.class, dao -> dao.get().getHighestSingleTransaction());
+    }
+
+    public long getTradeProfits() {
+        return Database.withDao(PlayerDao.class, dao -> dao.get().getMarketProfits());
+    }
+
+    public long getPersonalCredits() {
+        return Database.withDao(PlayerDao.class, dao -> dao.get().getPersonalCreditsAvailable());
+    }
+
+    public double getTotalDistanceTraveled() {
+        return Database.withDao(PlayerDao.class, playerDao -> playerDao.get().getTotalDistanceTraveled());
+    }
+
+    public long getTotalHyperspaceDistance() {
+        return Database.withDao(PlayerDao.class, playerDao -> playerDao.get().getTotalHyperspaceDistance());
+    }
+
+    public long getTotalProfitsFromExploration() {
+        return Database.withDao(PlayerDao.class, playerDao -> playerDao.get().getTotalProfitsFromExploration());
+    }
+
+    public long getTotalSystemsVisited() {
+        return Database.withDao(PlayerDao.class, playerDao -> playerDao.get().getTotalSystemsVisited());
+    }
+
+    public long getTotalExobiologyProfits() {
+        return Database.withDao(PlayerDao.class, playerDao -> playerDao.get().getExobiologyProfits());
     }
 
     public record GalacticCoordinates(double x, double y, double z) {

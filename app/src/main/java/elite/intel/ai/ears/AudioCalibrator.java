@@ -46,8 +46,8 @@ public class AudioCalibrator {
     private static final int NOISE_CALIBRATION_DURATION_MS = 5000; // 5 seconds for noise floor
     private static final int SPEECH_CALIBRATION_DURATION_MS = 5000; // 5 seconds for speech
     private static final int TTS_PROMPT_DELAY_MS = 3000; // 3 seconds for TTS vocalization
-    private static final double DEFAULT_RMS_THRESHOLD_HIGH = 450; // Fallback
-    private static final double DEFAULT_RMS_THRESHOLD_LOW = 90; // Fallback for budget mics
+    private static final double DEFAULT_RMS_THRESHOLD_HIGH = 201; // Fallback
+    private static final double DEFAULT_RMS_THRESHOLD_LOW = 15; // Fallback for budget mics
     private static final double NOISE_LOW_FACTOR = 2.5; // Multiplier for low threshold
     private static final double NOISE_LOW_OFFSET = 25.0; // For budget mics
     private static final double SPEECH_HIGH_FACTOR = 0.5; // Set high to half speech avg
@@ -114,10 +114,11 @@ public class AudioCalibrator {
 
         SystemSession systemSession = SystemSession.getInstance();
         systemSession.setRmsThresholdHigh(highThreshold);
-        systemSession.setRmsThresholdLow(lowThreshold + 10);
+        double adjustedLowThreshold = lowThreshold + 5;
+        systemSession.setRmsThresholdLow(adjustedLowThreshold);
 
         log.info("Final calibrated RMS thresholds: HIGH={}, LOW={}", highThreshold, lowThreshold);
-        EventBusManager.publish(new AppLogEvent("Audio calibration complete: HIGH=" + highThreshold + ", LOW=" + lowThreshold));
+        EventBusManager.publish(new AppLogEvent("Audio calibration complete: HIGH=" + highThreshold + ", LOW=" + adjustedLowThreshold));
         return new RmsTupple<>(highThreshold, lowThreshold);
     }
 

@@ -154,7 +154,7 @@ public class GrokResponseRouter extends ResponseRouter implements AIRouterInterf
             }
         } catch (Exception e) {
             log.error("Query handling failed for action {}: {}", action, e.getMessage(), e);
-            handleChat("Error accessing data banks: " + e.getMessage());
+            handleChat("Error accessing data banks: ");
         } finally {
             systemSession.clearChatHistory();
         }

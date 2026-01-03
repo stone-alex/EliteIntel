@@ -1,10 +1,13 @@
 package elite.intel.ui.view;
 
 import com.google.common.eventbus.Subscribe;
+import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.*;
+import elite.intel.util.SleepNoThrow;
+import elite.intel.util.Updater;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,8 +18,7 @@ import javax.swing.plaf.FontUIResource;
 import javax.swing.plaf.basic.BasicTabbedPaneUI;
 import javax.swing.text.*;
 import java.awt.*;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -29,7 +31,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class AppView extends JFrame implements AppViewInterface {
 
     public static final String LABEL_STREAMING_MODE = "Streaming Mode";
-    public static final String LABEL_PRIVACY_MODE = "Privacy Mode";
+    public static final String LABEL_PRIVACY_MODE = "Voice Input on/off";
     // ----- COLORS (adjust to taste) -----
     private static final Color BG = new Color(0x1D1D1D); // base background
     private static final Color LOG_BG = new Color(0x111111); // base background
@@ -62,10 +64,16 @@ public class AppView extends JFrame implements AppViewInterface {
     private JButton saveSystemButton;
     private JToggleButton startStopServicesButton;
     private JButton recalibrateAudioButton;
+    private JButton updateAppButton;
     private JCheckBox togglePrivacyModeCheckBox;
     private JPasswordField edsmKeyField;
     private JCheckBox edsmLockedCheck;
     // Player tab components
+    private JCheckBox sendMarketData;
+    private JCheckBox sendShipyardData;
+    private JCheckBox sendOutfitingData;
+    private JCheckBox sendExplorationData;
+
     private JTextField playerAltNameField;
     private JTextField playerTitleField;
     private JTextField playerMissionDescription;
@@ -78,7 +86,8 @@ public class AppView extends JFrame implements AppViewInterface {
     private JButton selectBindingsDirButton;
 
     public AppView() {
-        super("Elite Intel");
+        super("--");
+        setTitle("Elite Intel " + systemSession.readVersionFromResources());
         // Load and apply custom font before any other UI setup
         loadCustomFont();
         // Apply dark theme defaults
@@ -128,7 +137,7 @@ public class AppView extends JFrame implements AppViewInterface {
         toggleStreamingModeCheckBox.setForeground(Color.GREEN);
 
         togglePrivacyModeCheckBox.setEnabled(false); // enabled when services start
-        togglePrivacyModeCheckBox.setToolTipText("Temporary disable Speech to Text completely");
+        togglePrivacyModeCheckBox.setToolTipText("Disable Speech to Text completely");
         togglePrivacyModeCheckBox.setText(LABEL_PRIVACY_MODE);
         togglePrivacyModeCheckBox.setForeground(Color.GREEN);
 
@@ -488,7 +497,49 @@ public class AppView extends JFrame implements AppViewInterface {
         });
         addField(panel, selectBindingsDirButton, gbc, 2, 0.2);
 
-        // Row 5: Save button
+
+
+
+        // Row 5: Check Boxes
+        nextRow(gbc);
+        gbc.gridx = 0;
+        gbc.gridwidth = 3;
+        gbc.weightx = 1;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.WEST;
+
+        JPanel checkBoxes = new JPanel(new GridLayout(0, 1, 0, 8));
+        checkBoxes.setOpaque(false);
+
+        sendMarketData = new JCheckBox("Send Market Data", false);
+        sendMarketData.addActionListener(e -> {
+            EventBusManager.publish(new ToggleSendMarketDataEvent(sendMarketData.isSelected()));
+        });
+        sendShipyardData = new JCheckBox("Send Shipyard Data", false);
+        sendShipyardData.addActionListener(e -> {
+            EventBusManager.publish(new ToggleSendShipyardDataEvent(sendShipyardData.isSelected()));
+        });
+        sendOutfitingData = new JCheckBox("Send Outfitting Data", false);
+        sendOutfitingData.addActionListener(e -> {
+            EventBusManager.publish(new ToggleSendOutfittingDataEvent(sendOutfitingData.isSelected()));
+        });
+        sendExplorationData = new JCheckBox("Send Exploration Data", false);
+        sendExplorationData.addActionListener(e -> {
+            EventBusManager.publish(new ToggleSendExplorationDataEvent(sendExplorationData.isSelected()));
+        });
+
+        checkBoxes.add(new JLabel(" "));
+        checkBoxes.add(new JLabel("This app relies in part on crowd sourced data from pilots like you."));
+        checkBoxes.add(new JLabel("Opt In to share Market, Shipyard and Outfitting data from stations you visit to EDDM crowd sourced network."));
+        checkBoxes.add(new JLabel("Information is shared anonymously. By default you are Opt-Out (not sharing)"));
+        checkBoxes.add(sendMarketData);
+        checkBoxes.add(sendShipyardData);
+        checkBoxes.add(sendOutfitingData);
+        checkBoxes.add(sendExplorationData);
+        checkBoxes.add(new JLabel(" "));
+        panel.add(checkBoxes, gbc);
+
+        // Row 6: Save button
         nextRow(gbc);
         gbc.gridx = 0;
         gbc.gridwidth = 3;
@@ -521,38 +572,11 @@ public class AppView extends JFrame implements AppViewInterface {
         savePlayerInfoButton.addActionListener(e -> {
             savePlayerConfig();
         });
-
-
-/*        recalibrateAudioButton = new JButton("Recalibrate Audio") {
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                try {
-                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    Color base = Color.RED;
-                    ButtonModel m = getModel();
-                    if (m.isPressed()) base = base.darker();
-                    else if (m.isRollover()) base = base.brighter();
-                    g2.setColor(base);
-                    g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
-                } finally {
-                    g2.dispose();
-                }
-                super.paintComponent(g);
-            }
-        };
-
-        recalibrateAudioButton.addActionListener(e -> {
-            EventBusManager.publish(new RecalibrateAudioEvent());
-        });
-        styleButton(recalibrateAudioButton);
-        btns.add(recalibrateAudioButton);*/
-
         btns.add(savePlayerInfoButton);
-
         panel.add(btns, gbc);
 
-        // Row 6: Filler area (reserved for future use)
+
+        // Row 7: Filler area (reserved for future use)
         nextRow(gbc);
         gbc.gridx = 0;
         gbc.gridwidth = 3;
@@ -640,7 +664,41 @@ public class AppView extends JFrame implements AppViewInterface {
             saveSystemConfig();
         });
 
+        updateAppButton = new JButton("Update App") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                try {
+                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    Color base = BG_PANEL;
+                    ButtonModel m = getModel();
+                    if (m.isPressed()) base = base.darker();
+                    else if (m.isRollover()) base = base.brighter();
+                    g2.setColor(base);
+                    g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
+                } finally {
+                    g2.dispose();
+                }
+                super.paintComponent(g);
+            }
+        };
+        styleButton(updateAppButton);
+        updateAppButton.setEnabled(false);
+        updateAppButton.setText("App is Up to Date");
+        updateAppButton.addActionListener(e -> {
+            EventBusManager.publish(new AiVoxResponseEvent("Updating. See you soon..."));
+            SleepNoThrow.sleep(3000);
+            Updater.performUpdateAsync().thenAccept(success -> {
+                if (success) {
+                    SwingUtilities.invokeLater(() -> {
+                        System.exit(0);
+                    });
+                }
+            });
+        });
+
         buttons.add(saveSystemButton);
+        buttons.add(updateAppButton);
         panel.add(buttons, gbc);
 
         // Row 6: Filler area (reserved for future use)
@@ -756,6 +814,11 @@ public class AppView extends JFrame implements AppViewInterface {
         playerMissionDescription.setText(playerSession.getPlayerMissionStatement() != null ? playerSession.getPlayerMissionStatement() : "");
         journalDirField.setText(playerSession.getJournalPath().toString());
         bindingsDirField.setText(playerSession.getBindingsDir().toString());
+
+        sendMarketData.setSelected(systemSession.isSendMarketData());
+        sendOutfitingData.setSelected(systemSession.isSendOutfittingData());
+        sendShipyardData.setSelected(systemSession.isSendShipyardData());
+        sendExplorationData.setSelected(systemSession.isSendExplorationData());
 
         // streaming / privacy checkboxes
         toggleStreamingModeCheckBox.setSelected(systemSession.isStreamingModeOn());
@@ -909,10 +972,21 @@ public class AppView extends JFrame implements AppViewInterface {
 
 
     @Subscribe public void onServiceStatusEvent(ServicesStateEvent event) {
-        isServiceRunning.set(event.isRunning());
-        startStopServicesButton.setText(event.isRunning() ? "Stop Services" : "Start Services");
-        recalibrateAudioButton.setEnabled(event.isRunning());
-        togglePrivacyModeCheckBox.setEnabled(event.isRunning());
-        toggleStreamingModeCheckBox.setEnabled(event.isRunning());
+        SwingUtilities.invokeLater(() -> {
+            SleepNoThrow.sleep(1000);
+            isServiceRunning.set(event.isRunning());
+            startStopServicesButton.setText(event.isRunning() ? "Stop Services" : "Start Services");
+            recalibrateAudioButton.setEnabled(event.isRunning());
+            togglePrivacyModeCheckBox.setEnabled(event.isRunning());
+            toggleStreamingModeCheckBox.setEnabled(event.isRunning());
+        });
+    }
+
+    @Subscribe public void onUpdateAvailableEvent(UpdateAvailableEvent event) {
+        SwingUtilities.invokeLater(() -> {
+            updateAppButton.setEnabled(true);
+            updateAppButton.setText("Update Available");
+            this.setTitle("New version available.");
+        });
     }
 }

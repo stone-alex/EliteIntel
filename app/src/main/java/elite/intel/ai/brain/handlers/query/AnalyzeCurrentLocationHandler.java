@@ -9,6 +9,7 @@ import elite.intel.search.edsm.dto.TrafficDto;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
+import elite.intel.session.Status;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 
@@ -18,16 +19,23 @@ public class AnalyzeCurrentLocationHandler extends BaseQueryAnalyzer implements 
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         EventBusManager.publish(new AiVoxResponseEvent("Analyzing current location data... Stand by..."));
-
+        Status status = Status.getInstance();
         PlayerSession playerSession = PlayerSession.getInstance();
+
+
         LocationDto location = playerSession.getCurrentLocation();
         DeathsDto deathsDto = EdsmApiClient.searchDeaths(playerSession.getPrimaryStarLocation().getStarName());
         TrafficDto trafficDto = EdsmApiClient.searchTraffic(playerSession.getPrimaryStarLocation().getStarName());
 
-        return process(new AiDataStruct(ANALYZE_CURRENT_PLANET.getInstructions(), new DataDto(location, deathsDto,trafficDto)), originalUserInput);
+        String station = "";
+        if(status.isDocked() && location.getStationName() != null || location.getStationName() != null){
+            station = "Docked at "+location.getStationName()+" "+location.getStationType();
+        }
+
+        return process(new AiDataStruct(ANALYZE_CURRENT_PLANET.getInstructions(), new DataDto(station, location, deathsDto,trafficDto)), originalUserInput);
     }
 
-    record DataDto(LocationDto location, DeathsDto deathsData, TrafficDto trafficData) implements ToJsonConvertible {
+    record DataDto(String station, LocationDto location, DeathsDto deathsData, TrafficDto trafficData) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }

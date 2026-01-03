@@ -1,26 +1,75 @@
 package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
+import elite.intel.ai.brain.handlers.commands.PlotRouteToNextTradeStopHandler;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
-import elite.intel.search.spansh.station.DestinationDto;
+import elite.intel.db.dao.RouteMonetisationDao;
 import elite.intel.db.managers.DestinationReminderManager;
+import elite.intel.db.managers.MonetizeRouteManager;
+import elite.intel.search.spansh.traderoute.TradeCommodity;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static elite.intel.ai.brain.handlers.query.Queries.REMINDER;
 
 public class RemindTargetMarketStationHandler extends BaseQueryAnalyzer implements QueryHandler {
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        DestinationReminderManager reminder = DestinationReminderManager.getInstance();
-        DestinationDto destination = reminder.getDestination();
+        DestinationReminderManager destinationReminder = DestinationReminderManager.getInstance();
+        PlotRouteToNextTradeStopHandler.Reminder data = GsonFactory.getGson().fromJson(destinationReminder.getReminderAsJson(), PlotRouteToNextTradeStopHandler.Reminder.class);
+        MonetizeRouteManager monetizeRouteManager = MonetizeRouteManager.getInstance();
 
-        if (destination == null) {
-            return process("No target market station is set.");
+        if(data == null || data.stopInfo() == null){
+            // monetized hop.
+            RouteMonetisationDao.MonetisationTransaction transaction = monetizeRouteManager.getTransaction();
+            return process(
+                    new AiDataStruct(
+                            "Remind user what commodity we are buying, at what port and what star system.",
+                            new DataDto2(transaction.getSourceStationName(), transaction.getSourceCommodity(), transaction.getDestinationStarSystem())),
+                    originalUserInput
+            );
+
+        } else {
+            // conventional trade route
+            String pickupAtStation = data.stopInfo().getSourceStation();
+            String dropOffAtStation = data.stopInfo().getDestinationStation();
+
+            List<TradeCommodity> commodities = data.commodities();
+            List<Commodity> list = new ArrayList<>();
+            for (TradeCommodity commodity : commodities) {
+                String name = commodity.getName();
+                int amount = commodity.getAmount();
+                long buyPrice = commodity.getSourceCommodity().getBuyPrice();
+                list.add(new Commodity(name, amount, buyPrice));
+            }
+
+            return process(
+                    new AiDataStruct(
+                            REMINDER.getInstructions(),
+                            new DataDto(pickupAtStation, dropOffAtStation, list)
+                    ),
+                    originalUserInput
+            );
         }
-
-        return process(new AiDataStruct("Remind the user stationName where market is located", new DataDto(destination)), originalUserInput);
     }
 
-    private record DataDto(DestinationDto destination) implements ToJsonConvertible {
+    record Commodity(String name, int amount, long buyPrice) implements ToJsonConvertible {
+        @Override public String toJson() {
+            return GsonFactory.getGson().toJson(this);
+        }
+    }
+
+
+    record DataDto(String pickupAtStation, String dropOffAtStation, List<Commodity> commodities) implements ToJsonConvertible {
+        @Override public String toJson() {
+            return GsonFactory.getGson().toJson(this);
+        }
+    }
+
+    record DataDto2(String pickupAtStation, String commodity, String dropOffLocation) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }

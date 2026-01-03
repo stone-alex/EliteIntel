@@ -12,7 +12,6 @@ public class AudioDeClicker {
         if ((audioData.length & 1) != 0) {
             byte[] even = new byte[audioData.length - 1];
             System.arraycopy(audioData, 0, even, 0, even.length);
-            audioData = even;
         }
     }
 

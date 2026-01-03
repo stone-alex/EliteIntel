@@ -2,9 +2,11 @@ package elite.intel.ai.ears.google;
 
 import com.google.api.gax.rpc.ApiStreamObserver;
 import com.google.cloud.speech.v1.*;
+import com.google.common.eventbus.Subscribe;
 import com.google.protobuf.ByteString;
 import elite.intel.ai.ears.*;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.ai.mouth.subscribers.events.TTSInterruptEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.UserInputEvent;
 import elite.intel.session.SystemSession;
@@ -20,6 +22,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GoogleSTTImpl implements EarsInterface {
     public static final double MIN_CONFIDENCE_LEVEL = 0.3; // 1 = 100%
+    private static final int TARGET_SAMPLE_RATE = 48000;  // Google loves 48k best quality/cost
     private static final Logger log = LogManager.getLogger(GoogleSTTImpl.class);
     private static final int CHANNELS = 1; // Mono
     private static final int STREAM_DURATION_MS = 290000; // ~4 min 50 sec; below Google V1 limit
@@ -29,10 +32,14 @@ public class GoogleSTTImpl implements EarsInterface {
     private static final int EXIT_SILENCE_FRAMES = 15; // ~1s silence to exit
     private static final long BASE_BACKOFF_MS = 2000; // Base backoff for retries
     private static final long MAX_BACKOFF_MS = 60000; // Cap at 1 min
-    private static final long MIN_STREAM_GAP_MS = 30000; // Enforce 30s between stream starts
+
+    private static final long MIN_STREAM_GAP_MS = 100;
+
     private final AtomicBoolean isListening = new AtomicBoolean(true);
     private final AtomicBoolean isSpeaking = new AtomicBoolean(false);
+    private final SystemSession systemSession = SystemSession.getInstance();
     Map<String, String> corrections;
+    private Resampler resampler;  // lazy-init when needed
     private int sampleRateHertz;  // Dynamically detected
     private int bufferSize; // Dynamically calculated based on sample rate
     private double RMS_THRESHOLD_HIGH; // Dynamically calibrated
@@ -40,7 +47,6 @@ public class GoogleSTTImpl implements EarsInterface {
     private SpeechClient speechClient;
     private long lastAudioSentTime = System.currentTimeMillis();
     private Thread processingThread;
-    private final SystemSession systemSession = SystemSession.getInstance();
 
     public GoogleSTTImpl() {
         EventBusManager.register(this);
@@ -56,7 +62,7 @@ public class GoogleSTTImpl implements EarsInterface {
         isListening.set(true);
 
         // Detect audio format
-        AudioSettingsTuple<Integer, Integer> formatResult = AudioFormatDetector.detectSupportedFormat();
+        AudioFormatDetector.Format formatResult = AudioFormatDetector.detectSupportedFormat();
         this.sampleRateHertz = formatResult.getSampleRate();
         this.bufferSize = formatResult.getBufferSize();
 
@@ -86,8 +92,9 @@ public class GoogleSTTImpl implements EarsInterface {
         // Start processing thread
         this.processingThread = new Thread(this::startStreaming);
         this.processingThread.start();
-        if (systemSession.getRmsThresholdLow() != null) {
+        if (systemSession.getRmsThresholdHigh() != null) {
             EventBusManager.publish(new AppLogEvent("Voice Input Enabled"));
+            EventBusManager.publish(new AiVoxResponseEvent("Voice Input Enabled"));
         }
     }
 
@@ -105,6 +112,12 @@ public class GoogleSTTImpl implements EarsInterface {
     }
 
     @SuppressWarnings("deprecation") private void startStreaming() {
+
+        if (sampleRateHertz != TARGET_SAMPLE_RATE) {
+            resampler = new Resampler(sampleRateHertz, TARGET_SAMPLE_RATE, CHANNELS);
+            log.info("Enabled live downsampling {} → {} Hz", sampleRateHertz, TARGET_SAMPLE_RATE);
+        }
+
         int retryCount = 0;
         StringBuffer currentTranscript = new StringBuffer();
         List<Float> confidences = Collections.synchronizedList(new ArrayList<>());
@@ -149,7 +162,7 @@ public class GoogleSTTImpl implements EarsInterface {
 
                             @Override
                             public void onError(Throwable t) {
-                                log.error("STT error: {}", t.getMessage(), t);
+                                log.warn("STT: {}", t.getMessage());
                                 needRestart.set(true);
                             }
 
@@ -178,37 +191,42 @@ public class GoogleSTTImpl implements EarsInterface {
                     int consecutiveVoice = 0;
                     int consecutiveSilence = 0;
 
-                    long lastLoopTime = System.currentTimeMillis();
                     while (isListening.get() && !needRestart.get() && line.isOpen() && (System.currentTimeMillis() - lastStreamStart) < STREAM_DURATION_MS) {
                         int bytesRead = line.read(buffer, 0, buffer.length);
-                        long loopDuration = System.currentTimeMillis() - lastLoopTime;
-                        log.debug("Bytes read: {}, Loop duration: {}ms, VAD active: {}", bytesRead, loopDuration, isActive);
-                        lastLoopTime = System.currentTimeMillis();
 
-                        byte[] trimmedBuffer = silentBuffer; // Default to silent buffer
-                        if (bytesRead > 0) {
-                            trimmedBuffer = new byte[bytesRead];
-                            System.arraycopy(buffer, 0, trimmedBuffer, 0, bytesRead);
+                        byte[] audioToProcess;   // this is what we will RMS-check and send
+                        int bytesToProcess;
+
+                        if (resampler != null && bytesRead > 0) {
+                            // 192→48 kHz (or any other) downsampling happens here
+                            audioToProcess = resampler.resample(buffer, bytesRead);
+                            bytesToProcess = audioToProcess.length;
                         } else {
-                            log.warn("No audio data read: bytesRead={}", bytesRead);
+                            // no resampling needed (or silence)
+                            audioToProcess = (bytesRead > 0) ? buffer : silentBuffer;
+                            bytesToProcess = (bytesRead > 0) ? bytesRead : silentBuffer.length;
                         }
 
                         // Compute RMS for VAD (use actual buffer if available)
-                        double rms = bytesRead > 0 ? calculateRMS(trimmedBuffer, bytesRead) : 0.0;
+                        double rms = bytesRead > 0 ? calculateRMS(audioToProcess, bytesToProcess) : 0.0;
 
                         // Update state with hysteresis
                         if (rms > RMS_THRESHOLD_HIGH) {
                             consecutiveVoice++;
                             consecutiveSilence = 0;
+                            audioToProcess = Amplifier.amplify(audioToProcess, 6.0);
+                            // 4 debugging
+                            // EventBusManager.publish(new AppLogEvent("RMS: " + calculateRMS(audioToProcess, bytesToProcess)));
                         } else {
                             consecutiveVoice = 0;
-                            if (rms < RMS_THRESHOLD_LOW) {
+                            if (rms < RMS_THRESHOLD_HIGH) { // Let's try using RMS High for gate open and close, ignore the low
                                 consecutiveSilence++;
                             } else {
                                 consecutiveSilence = 0;
                             }
                         }
 
+                        
                         if (!isActive && consecutiveVoice >= ENTER_VOICE_FRAMES && !isSpeaking.get()) {
                             isActive = true;
                             log.debug("VAD: Entered active state (voice detected)");
@@ -223,18 +241,16 @@ public class GoogleSTTImpl implements EarsInterface {
                         boolean sendKeepAlive = (currentTime - lastAudioSentTime) >= KEEP_ALIVE_INTERVAL_MS;
 
                         if (isActive || sendKeepAlive) {
-                            ByteString audioContent;
-                            if (isActive) {
-                                audioContent = ByteString.copyFrom(trimmedBuffer);
-                            } else {
-                                byte[] keepAliveBuffer = new byte[KEEP_ALIVE_BUFFER_SIZE]; // Small silent for cost savings
-                                audioContent = ByteString.copyFrom(keepAliveBuffer);
-                            }
+                            byte[] keepAliveBuffer = new byte[KEEP_ALIVE_BUFFER_SIZE]; // Small silent for cost savings
+//                            byte[] amplified = multiplyGain(audioToProcess, 3.0);
+                            ByteString audioContent = isActive
+                                    ? ByteString.copyFrom(audioToProcess, 0, bytesToProcess)
+                                    : ByteString.copyFrom(keepAliveBuffer);
+
                             requestObserver.onNext(StreamingRecognizeRequest.newBuilder()
                                     .setAudioContent(audioContent)
                                     .build());
                             lastAudioSentTime = currentTime;
-                            log.debug("Sent audio: keepAlive={}, RMS={}, size={}", sendKeepAlive && !isActive, rms, audioContent.size());
                         } else {
                             log.debug("Skipping send (silence, RMS: {})", rms);
                         }
@@ -373,10 +389,38 @@ public class GoogleSTTImpl implements EarsInterface {
     }
 
     private void sendToAi(String sanitizedTranscript, float confidence) {
+        EventBusManager.publish(new TTSInterruptEvent());
         AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_1);
         log.info("Processing sanitizedTranscript: {}", sanitizedTranscript);
         EventBusManager.publish(new UserInputEvent(sanitizedTranscript, confidence));
     }
+
+/*
+    private byte[] multiplyGain(byte[] audioData, double gain) {
+        if (gain == 1.0) return audioData;
+        byte[] output = new byte[audioData.length];
+        for (int i = 0; i < audioData.length; i += 2) {
+            // Reconstruct 16-bit signed sample (Little Endian)
+            int sample = (audioData[i + 1] << 8) | (audioData[i] & 0xFF);
+            if (sample > 32767) sample -= 65536;
+
+            // Apply gain and clip to prevent overflow/distortion
+            int amplified = (int) (sample * gain);
+            if (amplified > 32767) amplified = 32767;
+            else if (amplified < -32768) amplified = -32768;
+
+            // Write back to bytes
+            output[i] = (byte) (amplified & 0xFF);
+            output[i + 1] = (byte) ((amplified >> 8) & 0xFF);
+        }
+        return output;
+    }
+*/
+
+    @Subscribe public void onIsSpeakingEvent(IsSpeakingEvent event) {
+        isSpeaking.set(event.isSpeaking());
+    }
+
 
     private StreamingRecognitionConfig getStreamingRecognitionConfig() {
         Set<String> correctionSet = new HashSet<>(corrections.values());
@@ -387,7 +431,7 @@ public class GoogleSTTImpl implements EarsInterface {
 
         RecognitionConfig config = RecognitionConfig.newBuilder()
                 .setEncoding(RecognitionConfig.AudioEncoding.LINEAR16)
-                .setSampleRateHertz(sampleRateHertz)
+                .setSampleRateHertz(TARGET_SAMPLE_RATE)
                 .setAudioChannelCount(CHANNELS)
                 .setLanguageCode("en-US")
                 .addAlternativeLanguageCodes("en-AU")

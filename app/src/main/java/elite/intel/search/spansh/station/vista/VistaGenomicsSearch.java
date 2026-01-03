@@ -16,8 +16,9 @@ public class VistaGenomicsSearch {
 
     public static List<VistaGenomicsLocationDto.Result> findVistaGenomics(ToJsonConvertible searchCriteria) {
         try {
-            JsonObject getJson = StationSearchClient.getInstance().performSearch(searchCriteria).getAsJsonObject();
-            VistaGenomicsLocationDto dto = GsonFactory.getGson().fromJson(getJson, VistaGenomicsLocationDto.class);
+            StationSearchClient client = StationSearchClient.getInstance();
+            VistaGenomicsLocationDto dto = client.searchVistaGenomics(searchCriteria);
+
             return dto.getResults().stream().filter(
                     result -> result.getServices().stream().anyMatch(service -> VISTA_GENOMICS.equalsIgnoreCase(service.getName())
                     )

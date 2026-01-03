@@ -15,8 +15,14 @@ public interface GameSessionDao {
 
 
     @SqlUpdate("""
-            INSERT OR REPLACE INTO game_session (id, aiPersonality,  aiCadence, aiVoice, aiApiKey, ttsApiKey, sttApiKey, edsmApiKey, loggingEnabled, privacyModeOn, rmsThresholdHigh,  rmsThresholdLow)
-                                  VALUES (1, :aiPersonality, :aiCadence, :aiVoice, :aiApiKey, :ttsApiKey, :sttApiKey, :edsmApiKey, :loggingEnabled, :privacyModeOn, :rmsThresholdHigh, :rmsThresholdLow)
+            INSERT OR REPLACE INTO game_session (id, aiPersonality,  aiCadence, aiVoice, aiApiKey, ttsApiKey, sttApiKey, 
+                                                             edsmApiKey, loggingEnabled, privacyModeOn, rmsThresholdHigh,  
+                                                             rmsThresholdLow, encryptedLLMKey, encryptedSTTKey, encryptedTTSKey, 
+                                                             encryptedEDSSMKey, sendMarketData, sendOutfittingData, sendShipyardData, sendExplorationData)
+                                  VALUES (1, :aiPersonality, :aiCadence, :aiVoice, :aiApiKey, :ttsApiKey, :sttApiKey, 
+                                                      :edsmApiKey, :loggingEnabled, :privacyModeOn, :rmsThresholdHigh, 
+                                                      :rmsThresholdLow, :encryptedLLMKey, :encryptedSTTKey, :encryptedTTSKey, 
+                                                      :encryptedEDSSMKey, :sendMarketData, :sendOutfittingData, :sendShipyardData, :sendExplorationData)
             """)
     void save(@BindBean GameSessionDao.GameSession data);
 
@@ -29,16 +35,30 @@ public interface GameSessionDao {
         @Override public GameSession map(ResultSet rs, StatementContext ctx) throws SQLException {
             GameSession session = new GameSession();
             session.setAiPersonality(rs.getString("aiPersonality"));
-            session.setAiApiKey(rs.getString("aiApiKey"));
             session.setAiCadence(rs.getString("aiCadence"));
+
+            /// >> DEPRECATED
+            session.setAiApiKey(rs.getString("aiApiKey"));
             session.setTtsApiKey(rs.getString("ttsApiKey"));
             session.setSttApiKey(rs.getString("sttApiKey"));
+            /// <<
+
+            session.setEncryptedLLMKey(rs.getString("encryptedLLMKey"));
+            session.setEncryptedSTTKey(rs.getString("encryptedSTTKey"));
+            session.setEncryptedTTSKey(rs.getString("encryptedTTSKey"));
+            session.setEncryptedEDSSMKey(rs.getString("encryptedEDSSMKey"));
+
             session.setLoggingEnabled(rs.getBoolean("loggingEnabled"));
             session.setAiVoice(rs.getString("aiVoice"));
             session.setPrivacyModeOn(rs.getBoolean("privacyModeOn"));
             session.setRmsThresholdHigh(rs.getDouble("rmsThresholdHigh"));
             session.setRmsThresholdLow(rs.getDouble("rmsThresholdLow"));
             session.setEdsmApiKey(rs.getString("edsmApiKey"));
+
+            session.setSendMarketData(rs.getBoolean("sendMarketData"));
+            session.setSendOutfittingData(rs.getBoolean("sendOutfittingData"));
+            session.setSendShipyardData(rs.getBoolean("sendShipyardData"));
+            session.setSendExplorationData(rs.getBoolean("sendExplorationData"));
             return session;
         }
     }
@@ -46,16 +66,28 @@ public interface GameSessionDao {
 
     class GameSession {
         private String aiPersonality;
-        private String aiApiKey;
         private String aiCadence;
+
+        private String aiApiKey;
         private String ttsApiKey;
         private String sttApiKey;
+
+        private String encryptedLLMKey;
+        private String encryptedSTTKey;
+        private String encryptedTTSKey;
+        private String encryptedEDSSMKey;
+
         private Boolean loggingEnabled;
         private String aiVoice;
         private Boolean privacyModeOn;
         private Double rmsThresholdHigh = 460.00;
         private Double rmsThresholdLow = 100.00;
         private String edsmApiKey;
+
+        private Boolean sendMarketData;
+        private Boolean sendOutfittingData;
+        private Boolean sendShipyardData;
+        private Boolean sendExplorationData;
 
 
         public String getAiPersonality() {
@@ -144,6 +176,71 @@ public interface GameSessionDao {
 
         public String getEdsmApiKey() {
             return edsmApiKey;
+        }
+
+        public String getEncryptedLLMKey() {
+            return encryptedLLMKey;
+        }
+
+        public void setEncryptedLLMKey(String encryptedLLMKey) {
+            this.encryptedLLMKey = encryptedLLMKey;
+        }
+
+        public String getEncryptedSTTKey() {
+            return encryptedSTTKey;
+        }
+
+        public void setEncryptedSTTKey(String encryptedSTTKey) {
+            this.encryptedSTTKey = encryptedSTTKey;
+        }
+
+        public String getEncryptedTTSKey() {
+            return encryptedTTSKey;
+        }
+
+        public void setEncryptedTTSKey(String encryptedTTSKey) {
+            this.encryptedTTSKey = encryptedTTSKey;
+        }
+
+        public String getEncryptedEDSSMKey() {
+            return encryptedEDSSMKey;
+        }
+
+        public void setEncryptedEDSSMKey(String encryptedEDSSMKey) {
+            this.encryptedEDSSMKey = encryptedEDSSMKey;
+        }
+
+
+        public Boolean getSendMarketData() {
+            return sendMarketData;
+        }
+
+        public void setSendMarketData(Boolean sendMarketData) {
+            this.sendMarketData = sendMarketData;
+        }
+
+        public Boolean getSendOutfittingData() {
+            return sendOutfittingData;
+        }
+
+        public void setSendOutfittingData(Boolean sendOutfittingData) {
+            this.sendOutfittingData = sendOutfittingData;
+        }
+
+        public Boolean getSendShipyardData() {
+            return sendShipyardData;
+        }
+
+        public void setSendShipyardData(Boolean sendShipyardData) {
+            this.sendShipyardData = sendShipyardData;
+        }
+
+        public Boolean getSendExplorationData() {
+            return sendExplorationData;
+        }
+
+        public void setSendExplorationData(Boolean sendExplorationData) {
+            this.sendExplorationData = sendExplorationData;
         }
     }
 }

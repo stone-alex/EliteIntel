@@ -4,6 +4,7 @@ import elite.intel.db.dao.ShipRouteDao;
 import elite.intel.db.util.Database;
 import elite.intel.gameapi.gamestate.dtos.NavRouteDto;
 
+import javax.xml.crypto.Data;
 import java.util.*;
 
 public class ShipRouteManager {
@@ -101,4 +102,10 @@ public class ShipRouteManager {
         });
     }
 
+    public String getDestination() {
+        return Database.withDao(ShipRouteDao.class, dao -> {
+            List<ShipRouteDao.Route> routes = dao.getAll();
+            return routes.isEmpty() ? null : routes.get(routes.size() - 1).getSystemName();
+        });
+    }
 }

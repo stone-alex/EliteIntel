@@ -2,8 +2,9 @@ package elite.intel.ai;
 
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
+import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
+import elite.intel.util.Cypher;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,7 +73,7 @@ public class KeyDetector {
         if (matches.size() == 1) return matches.get(0);
         if (matches.size() > 1) {
             EventBusManager.publish(new AppLogEvent("Ambiguous key matches: " + matches));
-            EventBusManager.publish(new AiVoxResponseEvent("Multiple providers detected—say provider name"));
+            EventBusManager.publish(new AiVoxResponseEvent("Multiple providers detected for category " + category));
         }
         return ProviderEnum.UNKNOWN;
     }

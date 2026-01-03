@@ -47,8 +47,6 @@ public class FleetCarrierManager {
         carrierData.setCarrierName(event.getName());
         carrierData.setCarrierType(event.getCarrierType());
         carrierData.setDockingAccess(event.getDockingAccess());
-        carrierData.setCurrentJumpRange(event.getJumpRangeCurr());
-        carrierData.setMaxJumpRange(event.getJumpRangeMax());
         carrierData.setAllowNotorious(event.isAllowNotorious());
         carrierData.setPendingDecommission(event.isPendingDecommission());
         carrierData.setFuelLevel(event.getFuelLevel());

@@ -24,13 +24,13 @@ public class LoadGameEventSubscriber {
     public void onEvent(LoadGameEvent event) {
 
         PlayerSession playerSession = PlayerSession.getInstance();
-        playerSession.setShipFuelLevel(event.getFuelLevel());
         playerSession.setPlayerName(playerSession.getAlternativeName() == null ? event.getCommander() : playerSession.getAlternativeName());
         playerSession.setInGameName(event.getCommander());
         playerSession.setCurrentShip(event.getShip());
         playerSession.setCurrentShipName(event.getShipName());
         playerSession.setPersonalCreditsAvailable(event.getCredits());
         playerSession.setGameVersion(event.getGameversion());
+        playerSession.setGameBuild(event.getBuild());
         cleanUpRoute(playerSession);
 
         retrieveMatsFromEDSM();
@@ -42,11 +42,15 @@ public class LoadGameEventSubscriber {
         MaterialsDto rawAndManufacturedMaterials = EdsmApiClient.getMaterials();
 
         materialManager.clear();
-        for (MaterialsDto.MaterialEntry entry : rawAndManufacturedMaterials.getMaterials()) {
-            materialManager.save(entry.getMaterialName(), MaterialsType.GAME_RAW, entry.getQuantity());
+        if(rawAndManufacturedMaterials != null) {
+            for (MaterialsDto.MaterialEntry entry : rawAndManufacturedMaterials.getMaterials()) {
+                materialManager.save(entry.getMaterialName(), MaterialsType.GAME_RAW, entry.getQuantity());
+            }
         }
-        for (EncodedMaterialsDto.EncodedMaterialEntry entry : encodedMaterials.getEncoded()) {
-            materialManager.save(entry.getMaterialName(), MaterialsType.GAME_ENCODED, entry.getQuantity());
+        if(encodedMaterials != null) {
+            for (EncodedMaterialsDto.EncodedMaterialEntry entry : encodedMaterials.getEncoded()) {
+                materialManager.save(entry.getMaterialName(), MaterialsType.GAME_ENCODED, entry.getQuantity());
+            }
         }
     }
 

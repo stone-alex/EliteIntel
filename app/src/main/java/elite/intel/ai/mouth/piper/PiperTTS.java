@@ -1,9 +1,12 @@
 package elite.intel.ai.mouth.piper;
 
+import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.mouth.MouthInterface;
+import elite.intel.ai.mouth.subscribers.events.TTSInterruptEvent;
 import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.ui.event.AppLogEvent;
+import elite.intel.util.AudioPlayer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -87,12 +90,21 @@ public class PiperTTS implements MouthInterface {
 
     @Override
     public void stop() {
+        queue.clear();
+        interruptRequested.set(true);
+        SourceDataLine line = currentLine.get();
+        if (line != null && line.isOpen()) {
+            line.stop();
+            line.flush();
+            line.start();
+            currentLine.set(line);
+        }
         running = false;
+
         if (workerThread != null) {
             workerThread.interrupt();
             workerThread = null;
         }
-        queue.clear();
 
         if (callbackExecutor != null) {
             callbackExecutor.shutdownNow();
@@ -108,9 +120,18 @@ public class PiperTTS implements MouthInterface {
         if (line != null && line.isOpen()) {
             line.stop();
             line.flush();
+            line.start();
+            currentLine.set(line);
+        }
+        if (workerThread == null || !workerThread.isAlive()) {
+            log.warn("Processing thread stopped unexpectedly, restarting");
+            start();
         }
     }
 
+    @Subscribe public void shutUp(TTSInterruptEvent event) {
+        interruptAndClear();
+    }
 
     @Override
     public void onVoiceProcessEvent(VocalisationRequestEvent event) {
@@ -123,7 +144,7 @@ public class PiperTTS implements MouthInterface {
         try {
             AudioFormat format = new AudioFormat(22050, 16, 1, true, false);
             DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
-            int bufferSize = (int)(format.getFrameSize() * format.getSampleRate());
+            int bufferSize = (int) (format.getFrameSize() * format.getSampleRate());
             persistentLine = (SourceDataLine) AudioSystem.getLine(info);
             persistentLine.open(format, bufferSize);
             persistentLine.start();
@@ -141,15 +162,16 @@ public class PiperTTS implements MouthInterface {
 
     private void synthesizeAndPlay(String text) throws Exception {
         if (text == null || text.isBlank()) return;
+        AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_2);
         EventBusManager.publish(new AppLogEvent("AI: " + text));
         setSpeechSpeed(0.75f);
 
         String json = """
-        {
-          "text": "%s",
-          "length_scale": %.2f
-        }
-        """.formatted(text.replace("\"", "\\\""), speechSpeed);
+                {
+                  "text": "%s",
+                  "length_scale": %.2f
+                }
+                """.formatted(text.replace("\"", "\\\""), speechSpeed);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:5000/"))
                 .header("Content-Type", "application/json")
@@ -179,9 +201,8 @@ public class PiperTTS implements MouthInterface {
         int frameSize = fmt.getFrameSize(); // 2
 
         // 50ms silence to kill pop
-        byte[] silence = new byte[(int)(fmt.getSampleRate() * 0.05) * frameSize];
+        byte[] silence = new byte[(int) (fmt.getSampleRate() * 0.05) * frameSize];
         persistentLine.write(silence, 0, silence.length);
-
         final int CHUNK = 8192;
         for (int offset = 0; offset < audioData.length; offset += CHUNK) {
             if (interruptRequested.get()) break;

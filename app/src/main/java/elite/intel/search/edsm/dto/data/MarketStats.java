@@ -42,7 +42,7 @@ public class MarketStats {
         return sId;
     }
 
-    public String getsName() {
+    public String getStationName() {
         return sName;
     }
 

@@ -2,6 +2,9 @@ package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
+import elite.intel.db.dao.LocationDao;
+import elite.intel.db.managers.FleetCarrierManager;
+import elite.intel.db.managers.LocationManager;
 import elite.intel.search.edsm.EdsmApiClient;
 import elite.intel.search.edsm.dto.MarketDto;
 import elite.intel.gameapi.EventBusManager;
@@ -17,28 +20,30 @@ import static elite.intel.gameapi.journal.events.dto.LocationDto.LocationType.ST
 
 public class DockedSubscriber {
 
+    private final PlayerSession playerSession = PlayerSession.getInstance();
+    private final LocationManager locationManager = LocationManager.getInstance();
     @Subscribe
     public void onDockedEvent(DockedEvent event) {
-        PlayerSession playerSession = PlayerSession.getInstance();
 
-        LocationDto location = playerSession.getLocation(event.getMarketID(), event.getStarSystem());
+        LocationDto location = locationManager.findByMarketId(event.getMarketID());
 
         location.setMarketID(event.getMarketID());
-        location.setStationName(event.getStationName());
         location.setStationEconomy(event.getStationEconomyLocalised());
         location.setStationServices(event.getStationServices());
         location.setStationType(event.getStationType());
         location.setStationGovernment(event.getStationGovernmentLocalised());
         location.setStarName(event.getStarSystem());
-        location.setMarketID(event.getMarketID());
         location.setStationName(event.getStationName());
         location.setPlanetName(null);
         location.setPlanetShortName(null);
-        MarketDto marketDto = EdsmApiClient.searchMarket(event.getMarketID(), null, null);
-        location.setMarket(marketDto);
+        MarketDto marketDto = EdsmApiClient.searchMarket(event.getMarketID(), null, null, 0);
+        if(marketDto != null) {
+            location.setMarket(marketDto);
+            location.setStationName(marketDto.getData().getStationName());
+        }
         if("FleetCarrier".equalsIgnoreCase(event.getStationType())) {
             location.setLocationType(FLEET_CARRIER);
-            PlayerSession.GalacticCoordinates coordinates = playerSession.getGalacticCoordinates();
+            LocationDao.Coordinates coordinates = LocationManager.getInstance().getGalacticCoordinates();
             if(coordinates != null) {
                 CarrierDataDto carrierData = playerSession.getCarrierData();
                 carrierData.setX(coordinates.x());
@@ -74,9 +79,8 @@ public class DockedSubscriber {
 
         String availableData = LocalServicesData.setLocalServicesData(event.getMarketID());
         if (!availableData.isEmpty()) {
-            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Data available for: " + availableData + "."));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Market data available."));
         }
-
         playerSession.saveLocation(location);
     }
 }

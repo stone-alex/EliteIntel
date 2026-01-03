@@ -3,7 +3,6 @@ package elite.intel.gameapi.journal.subscribers;
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.journal.events.BountyEvent;
 import elite.intel.gameapi.journal.events.dto.BountyDto;
 import elite.intel.session.PlayerSession;
@@ -26,7 +25,7 @@ public class BountyEventSubscriber {
         sessionData.setTarget(event.getTarget());
         sessionData.setTotalReward(event.getTotalReward());
         List<BountyDto.Reward> rewards = new ArrayList<>();
-        for( BountyEvent.Reward reward : event.getRewards() ) {
+        for (BountyEvent.Reward reward : event.getRewards()) {
             BountyDto.Reward r = new BountyDto.Reward();
             r.setFaction(reward.getFaction());
             r.setReward(reward.getReward());
@@ -36,24 +35,16 @@ public class BountyEventSubscriber {
         playerSession.addBounty(sessionData);
 
         StringBuilder sb = new StringBuilder();
-        String killConfirmed = "";
         Set<String> targetFactions = playerSession.getTargetFactions();
-
         if (!targetFactions.isEmpty() && targetFactions.contains(event.getVictimFaction())) {
-            killConfirmed = " Mission Kill Confirmed, ";
+            sb.append(" Mission Kill Confirmed, ");
         } else {
-            killConfirmed = " Kill Confirmed, ";
-        }
-        sb.append(killConfirmed);
-        for (BountyDto.Reward reward : rewards) {
-            sb.append(" Reward: ").append(reward.getReward()).append(" credits ");
-            sb.append(" From: " + reward.getFaction()).append(", ");
+            sb.append(" Kill Confirmed, ");
         }
 
-        if (rewards.size() > 1) sb.append(" Rewards sum: ").append(event.getTotalReward()).append(" credits. ");
+        long bountyCollected = rewards.stream().mapToLong(r -> r.getReward()).sum();
+        if (rewards.size() > 0) sb.append(bountyCollected + " Bounty Claimed ");
         playerSession.addBountyReward(event.getTotalReward());
-
-        sb.append("Total bounties collected: ").append(playerSession.getBountyCollectedThisSession()).append(" credits. ");
         EventBusManager.publish(new AiVoxResponseEvent(sb.toString()));
     }
 }

@@ -3,6 +3,8 @@ package elite.intel.ai.brain.handlers.commands;
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.db.dao.LocationDao;
+import elite.intel.db.managers.LocationManager;
 import elite.intel.search.spansh.station.vista.VistaGenomicsLocationDto;
 import elite.intel.search.spansh.station.vista.VistaGenomicsSearch;
 import elite.intel.search.spansh.station.vista.VistaSearchCriteria;
@@ -41,8 +43,7 @@ public class FindVistaGenomicsHandler extends CommandOperator implements Command
         filters.setDistance(distance);
         criteria.setFilters(filters);
 
-        PlayerSession playerSession = PlayerSession.getInstance();
-        PlayerSession.GalacticCoordinates galacticCoordinates = playerSession.getGalacticCoordinates();
+        LocationDao.Coordinates galacticCoordinates = LocationManager.getInstance().getGalacticCoordinates();
 
         VistaSearchCriteria.ReferenceCoords coords = new VistaSearchCriteria.ReferenceCoords();
         coords.setX(galacticCoordinates.x());

@@ -12,8 +12,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.net.HttpURLConnection;
-import java.nio.charset.StandardCharsets;
-import java.util.Scanner;
 
 /**
  * Singleton class representing an AI chat communication endpoint with Grok.
@@ -44,7 +42,7 @@ public class GrokChatEndPoint extends AiEndPoint implements AIChatInterface {
         try {
             GrokClient client = GrokClient.getInstance();
             HttpURLConnection conn = client.getHttpURLConnection();
-            JsonObject body = client.createRequestBodyHeader(GrokClient.MODEL_GROK_4_FAST_REASONING, 1);
+            JsonObject body = client.createRequestBodyHeader(GrokClient.MODEL_GROK_REASONING, 1);
 
             // Sanitize messages
             JsonArray sanitizedMessages = sanitizeJsonArray(messages);

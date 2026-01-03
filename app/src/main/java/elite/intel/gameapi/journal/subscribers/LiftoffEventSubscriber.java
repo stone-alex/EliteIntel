@@ -9,6 +9,8 @@ public class LiftoffEventSubscriber {
 
     @Subscribe
     public void onLiftoffEvent(LiftoffEvent event) {
-        // not sure what to do with this event yet.
+        // if we have a trade route.
+        // and if the market name matches the current location.
+        // remove the leg from the trade route.
     }
 }

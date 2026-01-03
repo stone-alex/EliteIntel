@@ -16,8 +16,8 @@ public class TouchdownEventSubscriber {
     @Subscribe
     public void onTouchdownEvent(TouchdownEvent event) {
         String body = event.getBody();
-        float latitude = event.getLatitude();
-        float longitude = event.getLongitude();
+        Double latitude = event.getLatitude();
+        Double longitude = event.getLongitude();
         String pointOfInterest = event.getNearestDestinationLocalised();
         String starSystem = event.getStarSystem();
         boolean isStation = event.isOnStation();
@@ -50,7 +50,7 @@ public class TouchdownEventSubscriber {
         LocationDto currentLocation = playerSession.getCurrentLocation();
         if(currentLocation != null) {
             // only set LZ coordinates on touchdown. Event if ship departs, we can go back to where it can land again.
-            currentLocation.setLandingCoordinates(new double[]{ latitude, longitude});
+            currentLocation.setLandingCoordinates(new Double[]{ latitude, longitude});
             playerSession.saveLocation(currentLocation);
         }
 

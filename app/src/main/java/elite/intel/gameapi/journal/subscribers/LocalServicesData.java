@@ -11,7 +11,7 @@ public class LocalServicesData {
 
     public static String setLocalServicesData(long marketId) {
         StringBuilder sb = new StringBuilder();
-        MarketDto marketDto = EdsmApiClient.searchMarket(marketId, null, null);
+        MarketDto marketDto = EdsmApiClient.searchMarket(marketId, null, null, 0);
         OutfittingDto outfittingDto = EdsmApiClient.searchOutfitting(marketId, null, null);
         ShipyardDto shipyardDto = EdsmApiClient.searchShipyard(marketId, null, null);
 

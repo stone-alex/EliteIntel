@@ -18,8 +18,7 @@ public class ShipTargetedEventSubscriber {
 
     private final Logger log = LogManager.getLogger(ShipTargetedEventSubscriber.class);
 
-    @Subscribe
-    public void onShipTargetedEvent(ShipTargetedEvent event) {
+    @Subscribe public void onShipTargetedEvent(ShipTargetedEvent event) {
         PlayerSession playerSession = PlayerSession.getInstance();
         log.debug(event.toJson());
 
@@ -105,11 +104,11 @@ public class ShipTargetedEventSubscriber {
 
         Set<String> targetFactions = playerSession.getTargetFactions();
         if (!targetFactions.isEmpty() && targetFactions.contains(faction)) {
-            return " Mission Target! ";
+            return " Mission Target ";
         }
 
         if (legalStatus.equalsIgnoreCase("wanted")) {
-            return " Legal Target!";
+            return " Legal Target ";
         } else return null;
     }
 

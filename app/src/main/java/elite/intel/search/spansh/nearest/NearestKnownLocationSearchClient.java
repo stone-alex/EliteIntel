@@ -65,7 +65,7 @@ public class NearestKnownLocationSearchClient {
                 return null;
             }
 
-            LocationDto temp = new LocationDto(-1);
+            LocationDto temp = new LocationDto(-1L);
             temp.setLocationType(LocationDto.LocationType.STAR);
             temp.setStarName(spanshResponse.system.name);
             temp.setX(spanshResponse.system.x);

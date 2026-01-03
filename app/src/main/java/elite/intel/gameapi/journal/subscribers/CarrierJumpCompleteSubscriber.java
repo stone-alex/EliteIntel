@@ -1,6 +1,7 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.intel.db.managers.FleetCarrierManager;
 import elite.intel.db.managers.FleetCarrierRouteManager;
 import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
@@ -12,7 +13,7 @@ import elite.intel.search.spansh.carrierroute.CarrierJump;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.Status;
 import elite.intel.util.ClipboardUtils;
-import elite.intel.util.FleetCarrierRouterCalculator;
+import elite.intel.util.FleetCarrierRouteCalculator;
 
 import java.util.Objects;
 
@@ -28,29 +29,44 @@ public class CarrierJumpCompleteSubscriber {
 
 
         FleetCarrierRouteManager fleetCarrierRouteManager = FleetCarrierRouteManager.getInstance();
+        CarrierDataDto carrierData = playerSession.getCarrierData();
         CarrierJump currentLocationLeg = fleetCarrierRouteManager.findByPrimaryStar(event.getStarSystem());
         boolean currentLegIsNotPresent = currentLocationLeg == null;
         boolean routePlotted = fleetCarrierRouteManager.getFleetCarrierRoute().size() > 0;
+
         if (currentLegIsNotPresent && routePlotted){
             String systemName = fleetCarrierRouteManager
                     .getFleetCarrierRoute()
                     .get(fleetCarrierRouteManager.getFleetCarrierRoute().size() - 1)
                     .getSystemName();
             ClipboardUtils.setClipboardText(systemName);
-            FleetCarrierRouterCalculator.calculate();
+            FleetCarrierRouteCalculator.calculate();
         }
+
+        int fuelUsed = currentLocationLeg.getFuelUsed();
+        carrierData.setFuelLevel(carrierData.getFuelLevel() - fuelUsed);
+        playerSession.setCarrierData(carrierData);
 
         fleetCarrierRouteManager.removeLeg(event.getStarSystem());
 
-        CarrierDataDto carrierData = playerSession.getCarrierData();
         playerSession.setCarrierDepartureTime(null);
 
         Status status = Status.getInstance();
         String stationName = playerSession.getCurrentLocation().getStationName();
         CarrierDataDto carrierInfo = playerSession.getCarrierData();
 
+        LocationDto location = toLocationDto(event);
         if (status.isDocked()) {
-            playerSession.saveLocation(toLocationDto(event));
+            // NOTE: Assumption: we are docked at the carrier on arrival, not at some other station.
+            // NOTE: This will cause problems if we jump carrier while sitting on another station, until player jumps to another system
+
+            location.setStationName(stationName);
+            location.setX(starPos[0]);
+            location.setY(starPos[1]);
+            location.setZ(starPos[2]);
+            playerSession.setCurrentLocationId(location.getBodyId());
+            playerSession.setCurrentPrimaryStarName(starSystem);
+            playerSession.saveLocation(location);
         }
 
         if (carrierData != null && starPos[0] > 0) {
@@ -66,7 +82,7 @@ public class CarrierJumpCompleteSubscriber {
 
     private LocationDto toLocationDto(CarrierJumpEvent event) {
         LocationManager locationData = LocationManager.getInstance();
-        LocationDto location = locationData.getLocation(event.getStarSystem(), (long) event.getBodyId());
+        LocationDto location = locationData.getLocation(event.getStarSystem(), event.getBodyId());
         return fillInWhatWeCan(event, Objects.requireNonNullElseGet(location, () -> new LocationDto(event.getBodyId(), event.getStarSystem())));
     }
 

@@ -2,8 +2,10 @@ package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.mouth.subscribers.events.DiscoveryAnnouncementEvent;
+import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.FSSBodySignalsEvent;
+import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 
 import java.util.List;
@@ -13,9 +15,15 @@ import static elite.intel.util.StringUtls.subtractString;
 public class FSSBodySignals {
 
     private final PlayerSession playerSession = PlayerSession.getInstance();
+    private final LocationManager locationManager = LocationManager.getInstance();
 
     @Subscribe
     public void onFSSBodySignals(FSSBodySignalsEvent event) {
+
+        LocationDto location = locationManager.findBySystemAddress(event.getSystemAddress(), event.getBodyID());
+        location.setFssSignals(event.getSignals());
+        location.setSystemAddress(event.getSystemAddress());
+        locationManager.save(location);
 
         boolean containsLife = false;
         List<FSSBodySignalsEvent.Signal> signals = event.getSignals();

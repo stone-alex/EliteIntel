@@ -3,6 +3,7 @@ package elite.intel.gameapi.journal.subscribers;
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.ai.mouth.subscribers.events.RadioTransmissionEvent;
+import elite.intel.db.managers.CargoHoldManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
@@ -19,14 +20,15 @@ public class TransmissionReceivedSubscriber {
     public void onReceiveTextEvent(ReceiveTextEvent event) {
         PlayerSession playerSession = PlayerSession.getInstance();
         Boolean isRadioOn = playerSession.isRadioTransmissionOn();
+        CargoHoldManager cargoHoldManager = CargoHoldManager.getInstance();
+        boolean haveCargo = cargoHoldManager.get() == null?  false : cargoHoldManager.get().getCount() > 0;
 
-
-        if (isRadioOn == null || !isRadioOn) return;
-
-        if (isPirateMessage(event.getMessageLocalised())) {
+        if (isPirateMessage(event.getMessageLocalised()) && haveCargo) {
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("Pirate Alert!!!"));
             return;
         }
+
+        if (isRadioOn == null || !isRadioOn) return;
 
         if (!event.getMessageLocalised().toLowerCase().contains("entered channel")) {
             boolean isStation = event.getMessage().toLowerCase().contains("station");
@@ -61,6 +63,7 @@ public class TransmissionReceivedSubscriber {
         pirateTransmissions.add("What treats do you carry?".toLowerCase());
         pirateTransmissions.add("What do you have in your cargo hold?".toLowerCase());
         pirateTransmissions.add("Next time you should fill your hold with gold.".toLowerCase());
+        pirateTransmissions.add("I'm gonna boil you up!".toLowerCase());
 
         return pirateTransmissions.contains(message.toLowerCase());
     }

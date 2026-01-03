@@ -50,7 +50,7 @@ public abstract class ResponseRouter  {
         CommandHandler handler = getCommandHandlers().get(action);
         if (handler != null) {
             EventBusManager.publish(new AppLogEvent("DEBUG: Command handler: " + handler.getClass().getSimpleName()));
-            handler.handle(action, params, responseText);
+            new Thread(() -> handler.handle(action, params, responseText)).start();
             log.debug("Handled command action: {}", action);
             systemSession.clearChatHistory();
         }

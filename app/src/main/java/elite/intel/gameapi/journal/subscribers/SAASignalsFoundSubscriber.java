@@ -1,6 +1,7 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.data.BioForms;
@@ -20,13 +21,13 @@ import static elite.intel.gameapi.journal.events.dto.LocationDto.LocationType.PL
 
 public class SAASignalsFoundSubscriber {
 
-    PlayerSession playerSession = PlayerSession.getInstance();
+    private final PlayerSession playerSession = PlayerSession.getInstance();
+    private final LocationManager locationManager = LocationManager.getInstance();
 
     @Subscribe
     public void onSAASignalsFound(SAASignalsFoundEvent event) {
         StringBuilder sb = new StringBuilder();
-
-        LocationDto location = playerSession.getLocation(event.getBodyID(), playerSession.getPrimaryStarName());
+        LocationDto location = LocationManager.getInstance().findBySystemAddress(event.getSystemAddress(), event.getBodyID());
         location.addSaaSignals(event.getSignals());
         playerSession.saveLocation(location);
 
@@ -77,6 +78,7 @@ public class SAASignalsFoundSubscriber {
             } else if (event.getBodyName().contains("Ring")) {
                 //Rings are bodies
                 LocationDto ring = new LocationDto(event.getBodyID());
+                ring.setSystemAddress(event.getSystemAddress());
                 ring.setLocationType(PLANETARY_RING);
                 ring.setBodyId(event.getBodyID());
                 ring.setPlanetName(event.getBodyName());
@@ -84,7 +86,7 @@ public class SAASignalsFoundSubscriber {
                 ring.setLocationType(PLANETARY_RING);
 
                 String parentBodyName = event.getBodyName().substring(0, event.getBodyName().length() - " X Ring".length());
-                LocationDto parent = playerSession.getLocation(findParentId(parentBodyName), playerSession.getPrimaryStarName());
+                LocationDto parent = locationManager.getLocation(playerSession.getPrimaryStarName(), findParentId(parentBodyName));
                 if(parent != null) parent.setHasRings(true);
                 if(event.getSignals() != null) {
                     ring.setSaaSignals(event.getSignals());

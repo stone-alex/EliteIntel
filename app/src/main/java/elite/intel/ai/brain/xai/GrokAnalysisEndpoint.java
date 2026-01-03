@@ -12,9 +12,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.net.HttpURLConnection;
 
-import static elite.intel.ai.brain.AIConstants.PROPERTY_CONTENT;
-import static elite.intel.ai.brain.AIConstants.PROPERTY_MESSAGE;
-
 public class GrokAnalysisEndpoint extends AiEndPoint implements AiAnalysisInterface {
     private static final Logger logger = LogManager.getLogger(GrokAnalysisEndpoint.class);
     private final Gson gson = GsonFactory.getGson();
@@ -35,7 +32,7 @@ public class GrokAnalysisEndpoint extends AiEndPoint implements AiAnalysisInterf
 
             String systemPrompt = apiFactory.getAiPromptFactory().generateAnalysisPrompt(userIntent, struct.getInstructions());
 
-            JsonObject request = client.createRequestBodyHeader(GrokClient.MODEL_GROK_4_FAST_REASONING, 0.8f);
+            JsonObject request = client.createRequestBodyHeader(GrokClient.MODEL_GROK_REASONING, 0.8f);
 
             JsonObject messageSystem = new JsonObject();
             messageSystem.addProperty("role", AIConstants.ROLE_SYSTEM);

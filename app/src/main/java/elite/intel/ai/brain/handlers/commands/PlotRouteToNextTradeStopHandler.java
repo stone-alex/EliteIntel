@@ -1,0 +1,76 @@
+package elite.intel.ai.brain.handlers.commands;
+
+import com.google.gson.JsonObject;
+import elite.intel.ai.hands.GameController;
+import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.db.managers.DestinationReminderManager;
+import elite.intel.db.managers.TradeRouteManager;
+import elite.intel.gameapi.EventBusManager;
+import elite.intel.gameapi.gamestate.dtos.GameEvents;
+import elite.intel.search.spansh.station.marketstation.TradeStopDto;
+import elite.intel.search.spansh.traderoute.TradeCommodity;
+import elite.intel.session.PlayerSession;
+import elite.intel.util.json.GsonFactory;
+import elite.intel.util.json.ToJsonConvertible;
+
+import java.util.List;
+
+public class PlotRouteToNextTradeStopHandler extends CommandOperator implements CommandHandler {
+
+    private final PlayerSession playerSession = PlayerSession.getInstance();
+    private GameController gameController;
+
+    public PlotRouteToNextTradeStopHandler(GameController controller) {
+        super(controller.getMonitor(), controller.getExecutor());
+        this.gameController = controller;
+    }
+
+    @Override public void handle(String action, JsonObject params, String responseText) {
+        final RoutePlotter routePlotter = new RoutePlotter(gameController);
+        final TradeRouteManager tradeRouteManager = TradeRouteManager.getInstance();
+        final DestinationReminderManager reminderManager = DestinationReminderManager.getInstance();
+
+        if (!tradeRouteManager.hasRoute()) {
+            EventBusManager.publish(new AiVoxResponseEvent("No trade route found."));
+            return;
+        }
+
+        GameEvents.CargoEvent shipCargo = playerSession.getShipCargo();
+        boolean cargoLoaded = shipCargo.getCount() > 0;
+
+        TradeRouteManager.TradeRouteLegTuple<Integer, TradeStopDto> nextStop = tradeRouteManager.getNextStop();
+        if(nextStop == null){
+            EventBusManager.publish(new AiVoxResponseEvent("No more stops to visit."));
+            return;
+        }
+
+        if (!cargoLoaded) {
+            String sourceSystem = nextStop.getTradeStopDto().getSourceSystem();
+            String sourceStation = nextStop.getTradeStopDto().getSourceStation();
+            StringBuilder sb = new StringBuilder();
+            sb.append("We are heading to ").append(sourceSystem).append(", ").append(sourceStation).append(" there we will pick up ");
+            nextStop.getTradeStopDto().getCommodities().forEach(commodity -> sb.append(commodity.getName()).append(", "));
+            EventBusManager.publish(new AiVoxResponseEvent(sb.toString()));
+            routePlotter.plotRoute(sourceSystem);
+        } else {
+            String destinationSystem = nextStop.getTradeStopDto().getDestinationSystem();
+            String destinationStation = nextStop.getTradeStopDto().getDestinationStation();
+            StringBuilder sb = new StringBuilder();
+            sb.append("We are heading to ").append(destinationSystem).append(", ").append(destinationStation).append(" to sell the freight.");
+            EventBusManager.publish(new AiVoxResponseEvent(sb.toString()));
+            routePlotter.plotRoute(destinationSystem);
+        }
+
+        reminderManager.setDestination(
+                new Reminder(
+                        nextStop.getLegNumber(), nextStop.getTradeStopDto(), nextStop.getTradeStopDto().getCommodities()
+                ).toJson()
+        );
+    }
+
+    public record Reminder(Integer legNumber, TradeStopDto stopInfo, List<TradeCommodity> commodities) implements ToJsonConvertible {
+        @Override public String toJson() {
+            return GsonFactory.getGson().toJson(this);
+        }
+    }
+}

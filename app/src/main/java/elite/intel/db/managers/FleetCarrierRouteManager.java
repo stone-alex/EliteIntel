@@ -1,5 +1,6 @@
 package elite.intel.db.managers;
 
+import elite.intel.db.dao.FleetCarrierDao;
 import elite.intel.search.spansh.carrierroute.CarrierJump;
 import elite.intel.db.dao.FleetCarrierRouteDao;
 import elite.intel.db.util.Database;
@@ -65,6 +66,10 @@ public class FleetCarrierRouteManager {
         });
     }
 
+    public Integer  getTotalFuelRequired() {
+        return Database.withDao(FleetCarrierRouteDao.class, dao -> dao.getTotalFuelRequired());
+    }
+
     private static CarrierJump entityToDto(FleetCarrierRouteDao.FleetCarrierRouteLeg leg) {
         CarrierJump jump = new CarrierJump();
         if(leg == null) return jump;
@@ -101,5 +106,9 @@ public class FleetCarrierRouteManager {
             FleetCarrierRouteDao.FleetCarrierRouteLeg leg = dao.findByPrimaryStarName(starSystem);
             return entityToDto(leg);
         });
+    }
+
+    public String getFinalDestination() {
+        return Database.withDao(FleetCarrierRouteDao.class, dao-> dao.getDestinationSystemName());
     }
 }

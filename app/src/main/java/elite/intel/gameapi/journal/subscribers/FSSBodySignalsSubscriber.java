@@ -2,21 +2,22 @@ package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.brain.commons.BiomeAnalyzer;
+import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.journal.events.FSSBodySignalsEvent;
 import elite.intel.gameapi.journal.events.dto.FssSignalDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
-import elite.intel.util.SleepNoThrow;
 
 import java.util.List;
 
 public class FSSBodySignalsSubscriber extends BiomeAnalyzer {
 
-    PlayerSession playerSession = PlayerSession.getInstance();
+    private final PlayerSession playerSession = PlayerSession.getInstance();
+    private final LocationManager locationManager = LocationManager.getInstance();
 
     @Subscribe
     public void onFssBodySignal(FSSBodySignalsEvent event) {
-        LocationDto location = playerSession.getLocation(event.getBodyID(), playerSession.getPrimaryStarName());
+        LocationDto location = locationManager.findBySystemAddress(event.getSystemAddress(), event.getBodyID());
         location.setPlanetName(event.getBodyName());
         List<FSSBodySignalsEvent.Signal> signals = event.getSignals();
         if(signals == null || signals.isEmpty()) return;
@@ -40,7 +41,6 @@ public class FSSBodySignalsSubscriber extends BiomeAnalyzer {
         }
         if(location.getBioSignals() < bioSignals) {
             location.setBioSignals(bioSignals);
-
         }
         location.setGeoSignals(geoSignals);
         playerSession.saveLocation(location);

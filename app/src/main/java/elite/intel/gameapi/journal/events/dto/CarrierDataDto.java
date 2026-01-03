@@ -14,12 +14,11 @@ public class CarrierDataDto implements ToJsonConvertible {
     private String starName;
     private long totalBalance;
     private long reserveBalance;
+    private int fuelReserve;
     private String callSign;
     private String carrierName;
     private String carrierType;
     private String dockingAccess;
-    private double currentJumpRange;
-    private double maxJumpRange;
     private boolean allowNotorious;
     private boolean isPendingDecommission;
     private String spaceUsage;
@@ -87,22 +86,6 @@ public class CarrierDataDto implements ToJsonConvertible {
 
     public void setDockingAccess(String dockingAccess) {
         this.dockingAccess = dockingAccess;
-    }
-
-    public double getCurrentJumpRange() {
-        return currentJumpRange;
-    }
-
-    public void setCurrentJumpRange(double currentJumpRange) {
-        this.currentJumpRange = currentJumpRange;
-    }
-
-    public double getMaxJumpRange() {
-        return maxJumpRange;
-    }
-
-    public void setMaxJumpRange(double maxJumpRange) {
-        this.maxJumpRange = maxJumpRange;
     }
 
     public boolean isAllowNotorious() {
@@ -254,7 +237,7 @@ public class CarrierDataDto implements ToJsonConvertible {
         this.fuelSupply = fuelLevel;
     }
 
-    public int getFuelSupply() {
+    public int getFuelLevel() {
         return fuelSupply;
     }
 
@@ -299,6 +282,10 @@ public class CarrierDataDto implements ToJsonConvertible {
         } else {
             this.commodity.put(c, amount);
         }
+
+        if("tritium".equalsIgnoreCase(commodity)) {
+            this.fuelReserve = this.fuelReserve + amount;
+        }
     }
 
     public void removeCommodity(String commodity, int amount) {
@@ -317,20 +304,15 @@ public class CarrierDataDto implements ToJsonConvertible {
 
 
     public int getFuelReserve() {
-        Integer tritiumInReserve = getCommodity().get("tritium");
-        if (tritiumInReserve == null) {
-            tritiumInReserve = 0;
-        }
-        return tritiumInReserve;
+        return fuelReserve;
     }
 
+    public void setFuelReserve(int fuelReserve) {
+        this.fuelReserve = fuelReserve;
+    }
 
     public int getRange() {
-        Integer tritiumInReserve = getCommodity().get("tritium");
-        if (tritiumInReserve == null) {
-            tritiumInReserve = 0;
-        }
-        int totalFuelAvailable = getFuelSupply() + tritiumInReserve;
+        int totalFuelAvailable = getFuelLevel() + getFuelReserve();
         return (totalFuelAvailable / MAX_FUEL_PER_JUMP) * MAX_CARRIER_SINGLE_JUMP_RANGE;
     }
 

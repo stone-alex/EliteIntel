@@ -25,7 +25,6 @@ public class ApiFactory {
 
     /**
      * Provides LLM/STT/TTS endpoint instances based on the API key provided in the config file.
-     *
      */
     private ApiFactory() {
         // Prevent instantiation.
@@ -106,14 +105,11 @@ public class ApiFactory {
                 return GoogleTTSImpl.getInstance();
             // TODO: Add ElevenLabs, AWS Polly, etc.
             default:
-                EventBusManager.publish(new AppLogEvent("Unknown TTS key format"));
-                EventBusManager.publish(new AiVoxResponseEvent("Using default Google TTS—confirm?"));
                 return PiperTTS.getInstance();
         }
     }
 
     ///
-
     public EarsInterface getEarsImpl() {
         String apiKey =  SystemSession.getInstance().getSttApiKey();
         ProviderEnum provider = KeyDetector.detectProvider(apiKey, "STT"); // Fixed category

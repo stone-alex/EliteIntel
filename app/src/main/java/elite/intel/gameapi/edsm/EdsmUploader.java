@@ -58,9 +58,9 @@ public final class EdsmUploader {
         version = playerSession.getGameVersion();
 
         if (commander.isBlank() || apiKey.isBlank()) {
-            String message = "Warning: EDSM credentials are missing/incomplete. Either commander name or EDSM API key not found. Not a critical error but EDSM commander data will not be processed.";
+            String message = "Warning: EDSM credentials are missing/incomplete. Materials info will not be updated.";
             log.warn(message);
-            EventBusManager.publish(new AppLogEvent(message));
+            /// EventBusManager.publish(new AppLogEvent(message));
             return;
         }
 
@@ -71,6 +71,8 @@ public final class EdsmUploader {
         payload.addProperty("apiKey", apiKey);
         payload.addProperty("fromSoftware", "EliteIntel");
         payload.addProperty("fromSoftwareVersion", version);
+        payload.addProperty("fromGameVersion", playerSession.getGameVersion());
+        payload.addProperty("fromGameBuild", playerSession.getGameBuild());
         payload.add("message", batch);
 
         HttpRequest req = HttpRequest.newBuilder(URI.create(URL))

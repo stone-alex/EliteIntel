@@ -1,14 +1,15 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.intel.search.edsm.EdsmApiClient;
-import elite.intel.search.edsm.dto.SystemBodiesDto;
-import elite.intel.search.edsm.dto.data.BodyData;
+import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.journal.events.ApproachBodyEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.gameapi.journal.events.dto.MaterialDto;
+import elite.intel.search.edsm.EdsmApiClient;
+import elite.intel.search.edsm.dto.SystemBodiesDto;
+import elite.intel.search.edsm.dto.data.BodyData;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.Status;
 
@@ -17,19 +18,19 @@ import java.util.Map;
 
 public class ApproachBodySubscriber {
 
+    private final PlayerSession playerSession = PlayerSession.getInstance();
+    private final LocationManager locationManager = LocationManager.getInstance();
+
     private static double formatDouble(double value) {
         return Math.round(value * 100.0) / 100.0;
     }
 
     @Subscribe
     public void onApproachBodyEvent(ApproachBodyEvent event) {
-        PlayerSession playerSession = PlayerSession.getInstance();
         Status status = Status.getInstance();
-
         double orbitalCruiseEntryAltitude = status.getStatus().getAltitude();
-
         StringBuilder sb = new StringBuilder();
-        LocationDto location = playerSession.getLocation(event.getBodyID(), event.getStarSystem());
+        LocationDto location = locationManager.findBySystemAddress(event.getSystemAddress(), event.getBodyID());
 
         if (location.getPlanetName() == null || location.getPlanetName().isEmpty()) {
             location.setPlanetName(event.getBody());
@@ -108,7 +109,7 @@ public class ApproachBodySubscriber {
         if (gravity > 1) {
             sb.append(" Gravity Warning!!! ");
         }
-        int surfaceTemperatureKelvin = bodyData.getSurfaceTemperature();
+        Double surfaceTemperatureKelvin = bodyData.getSurfaceTemperature();
         location.setSurfaceTemperature(surfaceTemperatureKelvin);
         sb.append(" Surface Temperature: ").append(surfaceTemperatureKelvin).append(" K.");
         if (bodyData.getAtmosphereType() != null && !bodyData.getAtmosphereType().isEmpty()) {

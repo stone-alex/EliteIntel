@@ -1,8 +1,8 @@
 package elite.intel.db.managers;
 
-import elite.intel.search.spansh.market.StationMarketDto;
 import elite.intel.db.dao.StationMarketDao;
 import elite.intel.db.util.Database;
+import elite.intel.gameapi.gamestate.dtos.GameEvents;
 import elite.intel.util.json.GsonFactory;
 
 import java.util.List;
@@ -17,26 +17,20 @@ public class StationMarketsManager {
         return INSTANCE;
     }
 
-    public List<StationMarketDto> findForStation(String stationName) {
+    public GameEvents.MarketEvent findForStation(String stationName) {
         return Database.withDao(StationMarketDao.class, dao -> {
-            List<StationMarketDto> result = new java.util.ArrayList<>();
-            List<StationMarketDao.StationMarket> data = dao.findForStation(stationName);
-            for (StationMarketDao.StationMarket entity : data) {
-                result.add(GsonFactory.getGson().fromJson(entity.getJson(), StationMarketDto.class));
-            }
-            return result;
+            StationMarketDao.StationMarket data = dao.findForStation(stationName);
+            return GsonFactory.getGson().fromJson(data.getJson(), GameEvents.MarketEvent.class);
         });
     }
 
-    public void addList(List<StationMarketDto> data) {
+    public void save(GameEvents.MarketEvent market) {
         Database.withDao(StationMarketDao.class, dao -> {
-            for (StationMarketDto market : data) {
-                StationMarketDao.StationMarket stationMarket = new StationMarketDao.StationMarket();
-                stationMarket.setJson(market.toJson());
-                stationMarket.setStationName(market.stationName());
-                stationMarket.setMarketId(market.getMarketId());
-                dao.upsert(stationMarket);
-            }
+            StationMarketDao.StationMarket stationMarket = new StationMarketDao.StationMarket();
+            stationMarket.setJson(market.toJson());
+            stationMarket.setStationName(market.getStationName());
+            stationMarket.setMarketId(market.getMarketID());
+            dao.upsert(stationMarket);
             return null;
         });
     }
@@ -48,12 +42,12 @@ public class StationMarketsManager {
         });
     }
 
-    public List<StationMarketDto> listAll() {
+    public List<GameEvents.MarketEvent> listAll() {
         return Database.withDao(StationMarketDao.class, dao -> {
             StationMarketDao.StationMarket[] all = dao.listAll();
-            List<StationMarketDto> result = new java.util.ArrayList<>();
+            List<GameEvents.MarketEvent> result = new java.util.ArrayList<>();
             for (StationMarketDao.StationMarket entity : all) {
-                result.add(GsonFactory.getGson().fromJson(entity.getJson(), StationMarketDto.class));
+                result.add(GsonFactory.getGson().fromJson(entity.getJson(), GameEvents.MarketEvent.class));
             }
             return result;
         });

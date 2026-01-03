@@ -7,6 +7,7 @@ import elite.intel.util.json.GsonFactory;
 
 import java.time.Duration;
 
+
 public class ShipTargetedEvent extends BaseEvent {
     @SerializedName("TargetLocked")
     private boolean targetLocked;
@@ -44,6 +45,12 @@ public class ShipTargetedEvent extends BaseEvent {
     @SerializedName("Ship_Localised")
     private String shipLocalised;
 
+    @SerializedName("Subsystem")
+    private String subsystem;
+
+    @SerializedName("Subsystem_Localised")
+    private String subsystemLocalised;
+
     @SerializedName("Bounty")
     private int bounty;
 
@@ -63,6 +70,8 @@ public class ShipTargetedEvent extends BaseEvent {
         this.faction = event.faction;
         this.shipLocalised = event.shipLocalised;
         this.bounty = event.bounty;
+        this.subsystem = event.subsystem;
+        this.subsystemLocalised = event.subsystemLocalised;
     }
 
     @Override
@@ -130,6 +139,15 @@ public class ShipTargetedEvent extends BaseEvent {
 
     public int getBounty() {
         return bounty;
+    }
+
+
+    public String getSubsystem() {
+        return subsystem;
+    }
+
+    public String getSubsystemLocalised() {
+        return subsystemLocalised;
     }
 
     public String getFormattedTimestamp(boolean useLocalTime) {

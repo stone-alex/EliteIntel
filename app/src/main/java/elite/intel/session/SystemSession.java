@@ -8,8 +8,13 @@ import elite.intel.ai.mouth.AiVoices;
 import elite.intel.db.dao.ChatHistoryDao;
 import elite.intel.db.dao.GameSessionDao;
 import elite.intel.db.util.Database;
+import elite.intel.util.Cypher;
 import elite.intel.util.json.GsonFactory;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -215,69 +220,113 @@ public class SystemSession {
     public String getTtsApiKey() {
         return Database.withDao(GameSessionDao.class, dao -> {
             GameSessionDao.GameSession session = dao.get();
-            return session.getTtsApiKey() == null ? "" : session.getTtsApiKey();
+            return Cypher.decrypt(session.getEncryptedTTSKey());
         });
     }
 
-    public boolean isRunningPiperTts(){
+    public boolean isRunningPiperTts() {
         String ttsApiKey = getTtsApiKey();
         return ttsApiKey == null || ttsApiKey.isEmpty();
     }
 
     public void setTtsApiKey(String ttsApiKey) {
-        Database.withDao(GameSessionDao.class, dao -> {
-            GameSessionDao.GameSession session = dao.get();
-            session.setTtsApiKey(ttsApiKey);
-            dao.save(session);
-            return null;
-        });
+        if (ttsApiKey == null && ttsApiKey.isEmpty()) {
+            Database.withDao(GameSessionDao.class, dao -> {
+                GameSessionDao.GameSession session = dao.get();
+                session.setTtsApiKey(null);
+                dao.save(session);
+                return Void.class;
+            });
+        } else {
+            Database.withDao(GameSessionDao.class, dao -> {
+                GameSessionDao.GameSession session = dao.get();
+                session.setEncryptedTTSKey(Cypher.encrypt(ttsApiKey));
+                dao.save(session);
+                return null;
+            });
+        }
     }
 
     public String getSttApiKey() {
         return Database.withDao(GameSessionDao.class, dao -> {
             GameSessionDao.GameSession session = dao.get();
-            return session.getSttApiKey() == null ? "" : session.getSttApiKey();
+            return Cypher.decrypt(session.getEncryptedSTTKey());
         });
     }
 
     public void setSttApiKey(String sttApiKey) {
-        Database.withDao(GameSessionDao.class, dao -> {
-            GameSessionDao.GameSession session = dao.get();
-            session.setSttApiKey(sttApiKey);
-            dao.save(session);
-            return null;
-        });
+        if (sttApiKey == null && sttApiKey.isEmpty()) {
+            Database.withDao(GameSessionDao.class, dao -> {
+                GameSessionDao.GameSession session = dao.get();
+                session.setSttApiKey(null);
+                dao.save(session);
+                return Void.class;
+            });
+        } else {
+            Database.withDao(GameSessionDao.class, dao -> {
+                GameSessionDao.GameSession session = dao.get();
+                session.setEncryptedSTTKey(Cypher.encrypt(sttApiKey));
+                dao.save(session);
+                return null;
+            });
+        }
     }
 
     public String getAiApiKey() {
         return Database.withDao(GameSessionDao.class, dao -> {
             GameSessionDao.GameSession session = dao.get();
-            return session.getAiApiKey() == null ? "" : session.getAiApiKey();
+            return Cypher.decrypt(session.getEncryptedLLMKey());
         });
     }
 
     public void setAiApiKey(String aiApiKey) {
-        Database.withDao(GameSessionDao.class, dao -> {
-            GameSessionDao.GameSession session = dao.get();
-            session.setAiApiKey(aiApiKey);
-            dao.save(session);
-            return null;
-        });
+        if (aiApiKey == null && aiApiKey.isEmpty()) {
+            Database.withDao(GameSessionDao.class, dao -> {
+                GameSessionDao.GameSession session = dao.get();
+                session.setAiApiKey(null);
+                dao.save(session);
+                return Void.class;
+            });
+        } else {
+            Database.withDao(GameSessionDao.class, dao -> {
+                GameSessionDao.GameSession session = dao.get();
+                session.setEncryptedLLMKey(Cypher.encrypt(aiApiKey));
+                dao.save(session);
+                return null;
+            });
+        }
     }
 
     public void setEdsmApiKey(String edsmApiKey) {
-        Database.withDao(GameSessionDao.class, dao -> {
-            GameSessionDao.GameSession session = dao.get();
-            session.setEdsmApiKey(edsmApiKey);
-            dao.save(session);
-            return null;
-        });
+        if (edsmApiKey == null && edsmApiKey.isEmpty()) {
+            Database.withDao(GameSessionDao.class, dao -> {
+                GameSessionDao.GameSession session = dao.get();
+                session.setEdsmApiKey(null);
+                dao.save(session);
+                return Void.class;
+            });
+        } else {
+            Database.withDao(GameSessionDao.class, dao -> {
+                GameSessionDao.GameSession session = dao.get();
+                session.setEncryptedEDSSMKey(Cypher.encrypt(edsmApiKey));
+                dao.save(session);
+                return Void.class;
+            });
+        }
     }
 
     public String getEdsmApiKey() {
         return Database.withDao(GameSessionDao.class, dao -> {
             GameSessionDao.GameSession session = dao.get();
-            return session.getEdsmApiKey() == null ? "" : session.getEdsmApiKey();
+            String oldKey = session.getEdsmApiKey();
+            if (oldKey == null) {
+                return Cypher.decrypt(session.getEncryptedEDSSMKey());
+            } else {
+                session.setEncryptedEDSSMKey(Cypher.encrypt(oldKey));
+                session.setEdsmApiKey(null);
+                dao.save(session);
+                return Cypher.decrypt(session.getEncryptedEDSSMKey());
+            }
         });
     }
 
@@ -291,7 +340,69 @@ public class SystemSession {
         return result;
     }
 
-    public boolean isRunningOllama() {
-        return getAiApiKey() == null || getAiApiKey().isEmpty();
+    public void setSendMarketData(boolean enabled) {
+        Database.withDao(GameSessionDao.class, dao -> {
+            GameSessionDao.GameSession session = dao.get();
+            session.setSendMarketData(enabled);
+            dao.save(session);
+            return Void.class;
+        });
+    }
+
+    public void setSendOutfittingData(boolean enabled) {
+        Database.withDao(GameSessionDao.class, dao -> {
+            GameSessionDao.GameSession session = dao.get();
+            session.setSendOutfittingData(enabled);
+            dao.save(session);
+            return Void.class;
+        });
+    }
+
+    public void setSendShipyardDataEvent(boolean enabled) {
+        Database.withDao(GameSessionDao.class, dao -> {
+            GameSessionDao.GameSession session = dao.get();
+            session.setSendShipyardData(enabled);
+            dao.save(session);
+            return Void.class;
+        });
+    }
+
+    public void setExplorationData(boolean enabled) {
+        Database.withDao(GameSessionDao.class, dao ->{
+            GameSessionDao.GameSession gameSession = dao.get();
+            gameSession.setSendExplorationData(enabled);
+            dao.save(gameSession);
+            return Void.class;
+        });
+    }
+
+
+    public boolean isExplorationData() {
+        return Database.withDao(GameSessionDao.class, dao -> dao.get().getSendExplorationData());
+    }
+
+    public boolean isSendMarketData() {
+        return Database.withDao(GameSessionDao.class, dao -> dao.get().getSendMarketData());
+    }
+
+    public boolean isSendOutfittingData() {
+        return Database.withDao(GameSessionDao.class, dao -> dao.get().getSendOutfittingData());
+    }
+
+    public boolean isSendShipyardData() {
+        return Database.withDao(GameSessionDao.class, dao -> dao.get().getSendShipyardData());
+    }
+
+    public String readVersionFromResources() {
+        try {
+            InputStream is = getClass().getResourceAsStream("/version.txt");
+            return new BufferedReader(new InputStreamReader(is)).readLine();
+        } catch (IOException e) {
+            return "Unknown";
+        }
+    }
+
+    public boolean isSendExplorationData() {
+        return Database.withDao(GameSessionDao.class, dao -> dao.get().getSendExplorationData());
     }
 }

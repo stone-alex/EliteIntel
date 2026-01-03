@@ -17,7 +17,6 @@ public class EnterFtlHandler extends CommandOperator implements CommandHandler {
 
     @Override public void handle(String action, JsonObject params, String responseText) {
         Status status = Status.getInstance();
-
         if (status.isFsdCharging()) return;
 
         if (status.isFsdMassLocked()) {
@@ -29,11 +28,15 @@ public class EnterFtlHandler extends CommandOperator implements CommandHandler {
                 operateKeyboard(BINDING_HARDPOINTS_TOGGLE.getGameBinding(), 0);
                 SleepNoThrow.sleep(2000);
             }
-            if(status.isCargoScoopDeployed()) {
+            if (status.isLandingGearDown()) {
+                operateKeyboard(BINDING_LANDING_GEAR_TOGGLE.getGameBinding(), 0);
+            }
+            if (status.isCargoScoopDeployed()) {
                 operateKeyboard(BINDING_TOGGLE_CARGO_SCOOP.getGameBinding(), 0);
                 SleepNoThrow.sleep(2000);
             }
             if (status.isInSupercruise()) {
+                operateKeyboard(BINDING_TARGET_NEXT_ROUTE_SYSTEM.getGameBinding(), 0);
                 operateKeyboard(BINDING_SET_SPEED100.getGameBinding(), 0);
                 operateKeyboard(BINDING_JUMP_TO_HYPERSPACE.getGameBinding(), 0);
                 SleepNoThrow.sleep(12_000);

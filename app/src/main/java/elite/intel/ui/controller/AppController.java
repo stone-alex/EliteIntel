@@ -7,7 +7,6 @@ import elite.intel.ai.brain.AIPersonality;
 import elite.intel.ai.brain.AiCommandInterface;
 import elite.intel.ai.ears.AudioCalibrator;
 import elite.intel.ai.ears.AudioFormatDetector;
-import elite.intel.ai.ears.AudioSettingsTuple;
 import elite.intel.ai.ears.EarsInterface;
 import elite.intel.ai.mouth.AiVoices;
 import elite.intel.ai.mouth.MouthInterface;
@@ -21,14 +20,15 @@ import elite.intel.session.SystemSession;
 import elite.intel.ui.event.*;
 import elite.intel.ui.view.AppView;
 import elite.intel.util.SleepNoThrow;
+import elite.intel.util.Updater;
 
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static elite.intel.util.StringUtls.capitalizeWords;
 
@@ -53,10 +53,34 @@ public class AppController implements Runnable {
         this.controllerThread = new Thread(this);
         this.isRunning.set(true);
         this.controllerThread.start();
+        startIfWeHaveCredentials();
+        checkForUpdates();
+    }
+
+    private void checkForUpdates() {
+        SwingUtilities.invokeLater(() -> {
+            CompletableFuture<Boolean> checkAsync = Updater.isUpdateAvailableAsync();
+            try {
+                Boolean updateAvailable = checkAsync.get();
+                if (updateAvailable) {
+                    EventBusManager.publish(new UpdateAvailableEvent());
+                }
+            } catch (Exception e) {
+                //kek
+            }
+        });
+
+    }
+
+    private void startIfWeHaveCredentials() {
+        /// auto start session if we have credentials.
+        if (!systemSession.getAiApiKey().isEmpty() && !systemSession.getSttApiKey().isEmpty()) {
+            EventBusManager.publish(new ToggleServicesEvent(true));
+        }
     }
 
     private String listVoices() {
-        if(systemSession.isRunningPiperTts()){
+        if (systemSession.isRunningPiperTts()) {
             return ""; // Voice choice is not available with Piper TTS
         }
         StringBuilder sb = new StringBuilder();
@@ -129,7 +153,7 @@ public class AppController implements Runnable {
 
             new Thread(() -> {
                 try {
-                    AudioSettingsTuple<Integer, Integer> format = AudioFormatDetector.detectSupportedFormat();
+                    AudioFormatDetector.Format format = AudioFormatDetector.detectSupportedFormat();
                     AudioCalibrator.calibrateRMS(format.getSampleRate(), format.getBufferSize());
 
                     // Back to EDT: restart ears + success
@@ -171,6 +195,32 @@ public class AppController implements Runnable {
         });
     }
 
+
+    @Subscribe void onToggleSendMarketDataEvent(ToggleSendMarketDataEvent event) {
+        SwingUtilities.invokeLater(() -> {
+            systemSession.setSendMarketData(event.isEnabled());
+        });
+    }
+
+    @Subscribe void onToggleSendOutfittingDataEvent(ToggleSendOutfittingDataEvent event) {
+        SwingUtilities.invokeLater(() -> {
+            systemSession.setSendOutfittingData(event.isEnabled());
+        });
+    }
+
+    @Subscribe void onToggleSendShipyardDataEvent(ToggleSendShipyardDataEvent event) {
+        SwingUtilities.invokeLater(() -> {
+            systemSession.setSendShipyardDataEvent(event.isEnabled());
+        });
+    }
+
+    @Subscribe void onToggleSendExplorationData(ToggleSendExplorationDataEvent event) {
+        SwingUtilities.invokeLater(() -> {
+            systemSession.setExplorationData(event.isEnabled());
+        });
+    }
+
+
     private void stopServices() {
         EventBusManager.publish(new AiVoxResponseEvent("Systems offline..."));
         // Stop services
@@ -180,6 +230,7 @@ public class AppController implements Runnable {
         ears.stop();
         mouth.stop();
         systemSession.clearChatHistory();
+        //edDnClient.stop();
         EventBusManager.publish(new ServicesStateEvent(false));
         isRunning.set(false);
         if (controllerThread != null) {
@@ -210,7 +261,7 @@ public class AppController implements Runnable {
 
     @Subscribe
     public void onAppLogEvent(AppLogEvent event) {
-        String line = "\n"+event.getData();
+        String line = "\n" + event.getData();
         if (line == null || line.isBlank() || this.view.logArea == null) return;
 
         synchronized (logBuffer) {
@@ -250,7 +301,6 @@ public class AppController implements Runnable {
     }
 
 
-
     private void startStopServices() {
 /*        String ttsApiKey = SystemSession.getInstance().getTtsApiKey();
         if (ttsApiKey == null || ttsApiKey.trim().isEmpty() || ttsApiKey.equals("null")) {
@@ -286,9 +336,13 @@ public class AppController implements Runnable {
         String mission_statement = playerSession.getPlayerMissionStatement();
         playerSession.setPlayerMissionStatement(mission_statement);
 
-        appendToLog("Available voices: " + listVoices());
+        if (!systemSession.isRunningPiperTts()) {
+            appendToLog("Available voices: " + listVoices());
+        }
+
         appendToLog("Available personalities: " + listPersonalities());
         appendToLog("Available profiles: " + listCadences());
+
         EventBusManager.publish(new ServicesStateEvent(true));
     }
 }

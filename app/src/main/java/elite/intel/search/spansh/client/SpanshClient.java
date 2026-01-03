@@ -2,6 +2,9 @@ package elite.intel.search.spansh.client;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import elite.intel.gameapi.EventBusManager;
+import elite.intel.gameapi.SensorDataEvent;
+import elite.intel.util.AudioPlayer;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 import org.apache.logging.log4j.LogManager;
@@ -27,43 +30,147 @@ public class SpanshClient {
         this.RESULTS_URL = RESULTS_URL;
     }
 
-    public JsonObject performSearch(ToJsonConvertible criteria) throws IOException, InterruptedException {
 
-        HttpRequest postRequest = HttpRequest.newBuilder()
+    private String postSearch(ToJsonConvertible criteria) throws IOException, InterruptedException {
+        return post(criteria.toJson());
+    }
+
+    private String postSearch(String criteria) throws IOException, InterruptedException {
+        return post(criteria);
+    }
+
+
+    private String post(String criteria) throws IOException, InterruptedException {
+        HttpRequest post = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL))
                 .header("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:144.0) Gecko/20100101 Firefox/144.0")
                 .header("Content-Type", "application/x-www-form-urlencoded")
-                .POST(HttpRequest.BodyPublishers.ofString(criteria.toJson()))
+                .POST(HttpRequest.BodyPublishers.ofString(criteria))
                 .build();
 
-
-        HttpResponse<String> postResponse = httpClient.send(postRequest, HttpResponse.BodyHandlers.ofString());
-        if (postResponse.statusCode() != 200) {
-            log.warn("POST to station search failed with status: {}", postResponse.statusCode());
+        HttpResponse<String> resp = httpClient.send(post, HttpResponse.BodyHandlers.ofString());
+        if (resp.statusCode() != 200) {
+            log.warn("POST failed: {}", resp.statusCode());
             return null;
         }
 
+        JsonObject json = gson.fromJson(resp.body(), JsonObject.class);
+        return json.has("search_reference") ? json.get("search_reference").getAsString() : null;
+    }
 
-        JsonObject postJson = gson.fromJson(postResponse.body(), JsonObject.class);
-        String searchRefId = postJson.get("search_reference") != null ? postJson.get("search_reference").getAsString() : null;
-        if (searchRefId == null || searchRefId.isEmpty()) {
-            log.warn("Invalid or missing search reference ID in POST response");
-            return null;
-        }
+    /**
+     * Corner case, string query post, used by trade route plotter
+     * */
+    private String getSearch(String query) throws IOException, InterruptedException {
 
-
-        HttpRequest searchResultRequest = HttpRequest.newBuilder()
-                .uri(URI.create(RESULTS_URL + searchRefId))
+        HttpRequest post = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL))
                 .header("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:144.0) Gecko/20100101 Firefox/144.0")
-                .header("Content-Type", "application/json;charset=UTF-8")
-                .GET()
+                .header("Accept", "*/*")
+                .header("Accept-Language", "en-US,en;q=0.5")
+                .header("Accept-Encoding", "gzip, deflate, br, zstd")
+                .header("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
+                .header("X-Requested-With", "XMLHttpRequest")
+                .header("Origin", "https://spansh.co.uk")
+                .header("Referer", "https://spansh.co.uk/trade")
+                .header("Sec-Fetch-Dest", "empty")
+                .header("Sec-Fetch-Mode", "cors")
+                .header("Sec-Fetch-Site", "same-origin")
+                .POST(HttpRequest.BodyPublishers.ofString(query))
                 .build();
 
-        HttpResponse<String> searchResultResponse = httpClient.send(searchResultRequest, HttpResponse.BodyHandlers.ofString());
-        if (searchResultResponse.statusCode() != 200) {
-            log.warn("GET to results/{} failed with status: {}", searchRefId, searchResultResponse.statusCode());
+        HttpResponse<String> resp = httpClient.send(post, HttpResponse.BodyHandlers.ofString());
+        if(resp.statusCode() == 400){
+            log.warn("POST failed: {}", resp.body());
+            EventBusManager.publish(new SensorDataEvent("Unable to complete Shapnsh request: "+resp.body()));
+        }
+
+        if (resp.statusCode() != 202) {
+            log.warn("POST failed: {}", resp.statusCode());
             return null;
         }
-        return gson.fromJson(searchResultResponse.body(), JsonObject.class);
+
+        JsonObject json = gson.fromJson(resp.body(), JsonObject.class);
+        return json.has("job") ? json.get("job").getAsString() : null;
+    }
+
+    protected JsonObject performSearch(StringQuery query) {
+        try {
+            log.info("performing search: {}", BASE_URL+query.getQuery());
+            String searchRefId = getSearch(query.getQuery());
+            return waitForResults(searchRefId);
+        } catch (IOException | InterruptedException e) {
+            log.error("Error performing search", e);
+        }
+        return new JsonObject();
+    }
+
+    protected JsonObject performSearch(ToJsonConvertible criteria){
+        try {
+            String searchRefId = postSearch(criteria);
+            return waitForResults(searchRefId);
+        } catch (IOException | InterruptedException e) {
+            log.error("Error performing search", e);
+        }
+        return new JsonObject();
+    }
+
+    protected JsonObject performSearch(String json){
+        try {
+            String searchRefId = postSearch(json);
+            return waitForResults(searchRefId);
+        } catch (IOException | InterruptedException e) {
+            log.error("Error performing search", e);
+        }
+        return new JsonObject();
+    }
+
+
+    private JsonObject waitForResults(String searchRefId) throws IOException, InterruptedException {
+        if (searchRefId == null) return null;
+
+        int attempt = 0;
+        final int maxAttempts = 60;
+        long delay = 4_000L;
+
+        while (attempt < maxAttempts) {
+            attempt++;
+
+            HttpRequest req = HttpRequest.newBuilder()
+                    .uri(URI.create(RESULTS_URL + searchRefId))
+                    .header("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:144.0) Gecko/20100101 Firefox/144.0")
+                    .GET()
+                    .build();
+
+            log.info("polling search {} (attempt {}) url: {}", searchRefId, attempt, req.uri());
+            AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_3); // audio indicator of background search
+
+            HttpResponse<String> resp = httpClient.send(req, HttpResponse.BodyHandlers.ofString());
+
+            if (resp.statusCode() == 202 || resp.statusCode() == 204) {
+                // still processing
+                delay = delay + (long) (Math.random() * 1_000);     // +0–1s jitter
+                log.debug("Search {} in progress ({}), retry in {} ms", searchRefId, resp.statusCode(), delay);
+                Thread.sleep(delay);
+                continue;
+            }
+
+            if (resp.statusCode() == 200) {
+                String body = resp.body().trim();
+                if (body.isEmpty() || body.equals("null")) {
+                    // known Spansh quirk – empty 200
+                    Thread.sleep(2_000);
+                    continue;
+                }
+                log.info("Search {} completed after {} attempts", searchRefId, attempt);
+                return gson.fromJson(body, JsonObject.class);
+            }
+
+            log.warn("Unexpected status {} for search {}", resp.statusCode(), searchRefId);
+            break;
+        }
+
+        log.error("Search {} timed out after {} attempts", searchRefId, maxAttempts);
+        return null;
     }
 }

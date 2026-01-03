@@ -14,6 +14,7 @@ import java.time.ZonedDateTime;
 public final class GsonFactory {
     private static final Gson GSON = new GsonBuilder()
             .setPrettyPrinting()
+            .disableHtmlEscaping()
             .registerTypeAdapter(Instant.class, new InstantTypeAdapter())
             .registerTypeAdapter(ZonedDateTime.class, new ZonedDateTimeTypeAdapter())
             .create();

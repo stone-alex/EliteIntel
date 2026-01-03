@@ -2,15 +2,18 @@ package elite.intel.ai.mouth.google;
 
 import com.google.cloud.texttospeech.v1.*;
 import com.google.common.eventbus.Subscribe;
+import elite.intel.ai.ears.IsSpeakingEvent;
 import elite.intel.ai.mouth.AiVoices;
 import elite.intel.ai.mouth.AudioDeClicker;
 import elite.intel.ai.mouth.MouthInterface;
 import elite.intel.ai.mouth.subscribers.events.BaseVoxEvent;
+import elite.intel.ai.mouth.subscribers.events.TTSInterruptEvent;
 import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
 import elite.intel.ai.mouth.subscribers.events.VocalisationSuccessfulEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
+import elite.intel.util.AudioPlayer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -78,7 +81,7 @@ public class GoogleTTSImpl implements MouthInterface {
         processingThread = new Thread(this::processVoiceQueue, "VoiceGeneratorThread");
         processingThread.start();
         log.info("VoiceGenerator started");
-        if (systemSession.getRmsThresholdLow() != null) {
+        if (systemSession.getRmsThresholdHigh() != null) {
             EventBusManager.publish(new AppLogEvent("Speech enabled."));
         }
     }
@@ -135,20 +138,22 @@ public class GoogleTTSImpl implements MouthInterface {
         if (line != null) {
             line.stop();
             line.flush(); // Flush instead of close
-            currentLine.set(null);
+            line.start();
+            currentLine.set(line);
         }
         interruptRequested.set(false);
-        log.info("TTS interrupted and queue cleared, thread alive={}, interruptRequested={}",
-                processingThread != null && processingThread.isAlive(), interruptRequested.get());
+        log.info("TTS interrupted and queue cleared, thread alive={}, interruptRequested={}",processingThread != null && processingThread.isAlive(), interruptRequested.get());
         if (processingThread == null || !processingThread.isAlive()) {
             log.warn("Processing thread stopped unexpectedly, restarting");
             start();
         }
     }
 
-    @Subscribe
-    @Override
-    public void onVoiceProcessEvent(VocalisationRequestEvent event) {
+    @Subscribe public void shutUp(TTSInterruptEvent event) {
+        interruptAndClear();
+    }
+
+    @Subscribe @Override public void onVoiceProcessEvent(VocalisationRequestEvent event) {
 
         log.debug("Received VoiceProcessEvent: text='{}', useRandom={}", event.getText(), event.useRandomVoice());
         if (event.getText() == null || event.getText().isEmpty()) {
@@ -163,6 +168,7 @@ public class GoogleTTSImpl implements MouthInterface {
                 voiceName = googleVoiceProvider.getVoiceParams(AiVoices.JENNIFER.getName()).getName();
             }
             voiceQueue.put(new VoiceRequest(event.getText(), voiceName, googleVoiceProvider.getSpeechRate(voiceName), event.getOriginType()));
+            AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_2);
             EventBusManager.publish(new AppLogEvent("AI: " + event.getText()));
             log.debug("Added VoiceRequest to queue: text='{}', voice='{}'", event.getText(), voiceName);
         } catch (InterruptedException e) {
@@ -177,7 +183,6 @@ public class GoogleTTSImpl implements MouthInterface {
             log.error("Failed to open persistent audio line, cannot process voice queue");
             return;
         }
-
         while (running) {
             try {
                 log.trace("Polling voice queue, size={}, interruptRequested={}",

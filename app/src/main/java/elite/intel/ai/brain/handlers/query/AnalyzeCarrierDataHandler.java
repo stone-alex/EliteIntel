@@ -17,11 +17,11 @@ public class AnalyzeCarrierDataHandler extends BaseQueryAnalyzer implements Quer
         PlayerSession playerSession = PlayerSession.getInstance();
         CarrierDataDto stats = playerSession.getCarrierData();
 
-        if (stats.getTotalBalance() == 0 && stats.getFuelSupply() == 0) {
+        if (stats.getTotalBalance() == 0 && stats.getFuelLevel() == 0) {
             return process("No data available. Please open carrier management panel.");
         } else {
-            String instructions = "range is in light years, when asked about range use the maxRange value provided. reserveBalance: credits reserved for weekly ops (usually thirty one million credits per week). totalBalance: total credits in carrier bank, including reserveBalance. marketBalance: credits for purchases; negative means escrow for buys. X,Y,Z: light years from Sol (0,0,0). Do not improvise or assume anything. If data not available state so.";
-            return process(new AiDataStruct(instructions, new DataDto(stats, stats.getFuelSupply(), stats.getFuelReserve(), (stats.getFuelSupply() + stats.getFuelReserve()), stats.getRange())), originalUserInput);
+            String instructions = "range is in light years, max is calculated 'maxRange' value provided. reserveBalance: credits reserved for weekly ops (usually thirty one million credits per week). totalBalance: total credits in carrier bank, including reserveBalance. marketBalance: credits for purchases; negative means escrow for buys. X,Y,Z: light years from Sol (0,0,0). Do not improvise or assume anything. If data not available state so.";
+            return process(new AiDataStruct(instructions, new DataDto(stats, stats.getFuelLevel(), stats.getFuelReserve(), (stats.getFuelLevel() + stats.getFuelReserve()), stats.getRange())), originalUserInput);
         }
     }
 

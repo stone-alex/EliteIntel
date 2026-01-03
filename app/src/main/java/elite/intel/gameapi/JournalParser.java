@@ -146,11 +146,7 @@ public class JournalParser implements Runnable {
 
                         try {
                             String sanitizedLine = line.replaceAll("[\\p{Cntrl}\\p{Cc}\\p{Cf}]", "").trim();
-                            if (!sanitizedLine.startsWith("{")) {
-                                continue;
-                            }
-
-                            if (!sanitizedLine.endsWith("}")) {
+                            if (!sanitizedLine.startsWith("{") || !sanitizedLine.endsWith("}")) {
                                 continue;
                             }
 

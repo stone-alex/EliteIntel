@@ -80,25 +80,4 @@ public class RomanNumeralConverter {
 
         return result;
     }
-
-    public static void main(String[] args) {
-        // Test cases
-        String[] tests = {
-                "Viper Mk IV",
-                "Cobra MK-III",
-                "Anaconda Mk X",
-                "MK IV Shield",
-                "Type-IX Trader",
-                "Invalid Mk IIX", // Invalid Roman numeral
-                "No Roman Numeral"
-        };
-
-        for (String test : tests) {
-            try {
-                System.out.println(test + " -> " + convertRomanInName(test));
-            } catch (IllegalArgumentException e) {
-                System.out.println(test + " -> Error: " + e.getMessage());
-            }
-        }
-    }
 }

@@ -30,9 +30,11 @@ public enum Commands {
     FIND_MANUFACTURED_MATERIAL_TRADER("find_manufactured_material_trader", null, "key", FindManufacturedMaterialTraderHandler.class),
 
     FIND_HUNTING_GROUNDS("find_hunting_grounds_for_pirate_massacre_missions", null, "key", LocatePirateHuntingGrounds.class),
-    RECON_TARGET_SYSTEM("navigate_plot_reconnaissance_route_to_target_star_system", null, null, ReconPirateMissionTargetSystemHandler.class),
+    RECON_TARGET_SYSTEM("navigate_plot_reconnaissance_route_to_hunting_grounds_target_star_system", null, null, ReconPirateMissionTargetSystemHandler.class),
     RECON_PROVIDER_SYSTEM("navigate_plot_reconnaissance_route_to_mission_provider_system", null, null, ReconMissionProviderSystemHandler.class),
     NAVIGATE_TO_PIRATE_MISSION_TARGET_SYSTEM("plot_route_to_pirate_massacre_mission_target_system", null, null, NavigateToPirateMassacreMissionTargetHandler.class),
+
+    NAVIGATE_TO_MISSION_BATTLE_GROUND("navigate_to_mission_battle_ground", null, null, PloteRouteToPirateMissionArena.class),
 
     MONETIZE_ROUTE("monetize_route", null, null, MonetizeRouteHandler.class),
 

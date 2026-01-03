@@ -22,8 +22,7 @@ public class OllamaClient implements Client {
 
     // Configurable via SystemSession (fallback to localhost)
     private String getBaseUrl() {
-        String url = "http://35.163.153.82:11434"; //TODO: change to env variable or something
-        return url != null && !url.isBlank() ? url.trim() : "http://127.0.0.1:11434";
+        return "http://127.0.0.1:11434";
     }
 
     @Override

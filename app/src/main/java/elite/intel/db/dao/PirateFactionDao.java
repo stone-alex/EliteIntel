@@ -51,6 +51,10 @@ public interface PirateFactionDao {
     @SqlQuery("select * from pirate_factions where targetFaction=:targetFaction and starSystem = :starSystem limit 1")
     PirateFaction findByFactionName(@Bind("targetFaction") String targetFaction, @Bind("starSystem") String targetSystem);
 
+    @SqlQuery("""
+        select starSystem from pirate_factions where targetFaction=:targetFaction limit 1
+    """)
+    String findByFactionName(@Bind("targetFaction") String targetFaction);
 
     @SqlUpdate("update pirate_factions set hasResSite = true where starSystem = :starSystem ")
     void confirm(@Bind("starSystem") String primaryStarName);

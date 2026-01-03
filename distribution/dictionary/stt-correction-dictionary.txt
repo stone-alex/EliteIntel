@@ -271,3 +271,4 @@
 "centry"="entry"
 "dry tumor"="tritium"
 "treaty room"="tritium"
+"train station"="trade station"

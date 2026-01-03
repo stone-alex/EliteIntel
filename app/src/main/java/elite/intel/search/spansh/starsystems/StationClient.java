@@ -68,7 +68,7 @@ public class StationClient extends SpanshClient {
                 if (resp.statusCode() == 200) {
                     JsonObject json = gson.fromJson(resp.body(), JsonObject.class);
                     StarSystemResult starSystem = GsonFactory.getGson().fromJson(json, StarSystemResult.class);
-                    if (starSystem.getRecord().getName().equalsIgnoreCase(criteria.getFilters().getSystemName().getValue())) {
+                    if (starSystem.getRecord().getName().equalsIgnoreCase(criteria.getReferenceSystem())) {
                         return starSystem;
                     }
                 }

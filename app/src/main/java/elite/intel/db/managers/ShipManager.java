@@ -2,6 +2,7 @@ package elite.intel.db.managers;
 
 import elite.intel.db.dao.ShipDao;
 import elite.intel.db.util.Database;
+import elite.intel.util.ShipPadSizes;
 
 public class ShipManager {
     private static ShipManager instance;
@@ -37,5 +38,9 @@ public class ShipManager {
                         ShipLoadoutManager.getInstance().get().getShipId()
                 )
         );
+    }
+
+    public boolean requireLargePad() {
+        return "L".equals(ShipPadSizes.getPadSize(getShip().getShipIdentifier()));
     }
 }

@@ -30,7 +30,6 @@ public class TradersAndBrokersSearch {
 
     public String location(TraderType traderType, BrokerType brokerType, Number maxDistance) {
         int distanceInLightYears = maxDistance == null ? 250 : maxDistance.intValue();
-        PlayerSession playerSession = PlayerSession.getInstance();
         LocationManager locationManager = LocationManager.getInstance();
         LocationDao.Coordinates galacticCoordinates = locationManager.getGalacticCoordinates();
 

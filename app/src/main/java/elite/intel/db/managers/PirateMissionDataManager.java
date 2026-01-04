@@ -119,8 +119,8 @@ public class PirateMissionDataManager {
         });
     }
 
-    public PirateFaction findByFactionName(String targetFaction, String targetSystem) {
-        return Database.withDao(PirateFactionDao.class, dao -> dao.findByFactionName(targetFaction, targetSystem));
+    public String findStarSystemForFactionName(String targetFaction) {
+        return Database.withDao(PirateFactionDao.class, dao -> dao.findByFactionName(targetFaction));
     }
 
     public void confirmTargetReconResourceSite(String primaryStarName) {
@@ -133,6 +133,7 @@ public class PirateMissionDataManager {
             return Void.class;
         });
     }
+
 
 
     public class PirateMissionTuple<K, V> {

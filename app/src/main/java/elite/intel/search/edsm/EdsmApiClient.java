@@ -5,6 +5,7 @@ import elite.intel.search.edsm.dto.*;
 import elite.intel.search.edsm.dto.data.*;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
+import elite.intel.util.SleepNoThrow;
 import elite.intel.util.json.GsonFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -177,8 +178,10 @@ public class EdsmApiClient {
         return dto;
     }
 
-    public static StationsDto searchStations(String starSystemName) {
+    public static StationsDto searchStations(String starSystemName, int sleep) {
         if (starSystemName == null) return new StationsDto();
+        SleepNoThrow.sleep(sleep);
+
         String endpoint = "/api-system-v1/stations";
         StringBuilder query = publicUrl(endpoint);
         try {
@@ -296,8 +299,9 @@ public class EdsmApiClient {
         return dto;
     }
 
-    public static MarketDto searchMarket(long marketId, String orSystemName, String andStationName) {
+    public static MarketDto searchMarket(long marketId, String orSystemName, String andStationName, int sleep) {
         if (marketId <= 0 && (orSystemName == null || andStationName == null)) return new MarketDto();
+        SleepNoThrow.sleep(sleep);
         String endpoint = "/api-system-v1/stations/market";
         String response = getServicesResponse(marketId, orSystemName, andStationName, endpoint);
         long timestamp = System.currentTimeMillis();
@@ -388,6 +392,10 @@ public class EdsmApiClient {
             conn.setRequestProperty("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:144.0) Gecko/20100101 Firefox/144.0");
 
             int responseCode = conn.getResponseCode();
+            if(responseCode == 429) {
+                log.warn("EDSM API rate limit exceeded");
+                return "";
+            }
             if (responseCode != 200) {
                 log.error("EDSM API error: {} - {}", responseCode, conn.getResponseMessage());
                 return "";

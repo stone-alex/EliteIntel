@@ -98,8 +98,11 @@ public class NavigateToNextCodexEntry implements CommandHandler {
             if (entry.getLatitude() == 0 && entry.getLongitude() == 0) continue;
 
             String genus = entry.getEntryName().split(" ")[0];
-            double distToPlayer = calculateSurfaceDistance(playerLat, playerLon,
-                    entry.getLatitude(), entry.getLongitude(), planetRadius, 0);
+            double distToPlayer = calculateSurfaceDistance(playerLat, playerLon, entry.getLatitude(), entry.getLongitude(), planetRadius, 0);
+
+            if (hasPartials && !genus.equalsIgnoreCase(partials.getFirst().getGenus())) {
+                continue;
+            }
 
             // Check if this entry is valid (not too close to any partial of same genus)
             boolean valid = hasPartials ? !isTooCloseToAnyPartialOfSameGenus(entry, genus, partials, planetRadius) : true;

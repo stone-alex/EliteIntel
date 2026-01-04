@@ -13,9 +13,12 @@ import elite.intel.util.json.ToJsonConvertible;
 
 import java.util.*;
 
+import static elite.intel.search.edsm.utils.EdsmUtils.ALLOWED_STATION_TYPES;
+import static elite.intel.search.edsm.utils.EdsmUtils.toStationWithMarket;
+
 public class MonetizeRoute {
 
-    private final static List<String> ALLOWED_STATION_TYPES = Arrays.asList("asteroid base", "coriolis starport", "ocellus starport", "orbis starport");
+
 
     public static TradeTransaction findTrade(List<NavRouteDto> stops) {
 
@@ -43,21 +46,7 @@ public class MonetizeRoute {
     }
 
 
-    private static List<Station> toStationWithMarket(String starSystemName) {
-        StationsDto stationsData = EdsmApiClient.searchStations(starSystemName);
-        if (stationsData == null || stationsData.getData() == null || stationsData.getData().getStations() == null) return new ArrayList<>();
 
-        List<Station> stations = stationsData.getData().getStations();
-        for (Station station : stations) {
-            if(station.getType() == null) continue;
-            if (!ALLOWED_STATION_TYPES.contains(station.getType().toLowerCase())) continue;
-            station.setStarSystemName(starSystemName);
-            MarketDto market = EdsmApiClient.searchMarket(station.getMarketId(), station.getName(), null);
-            station.setCommodities(market.getData().getCommodities());
-        }
-
-        return stations;
-    }
 
 
     /**

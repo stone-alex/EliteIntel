@@ -18,6 +18,8 @@ public class TargetSubSystemHandler implements CommandHandler {
         String subSystem;
         if (key == null) {
             subSystem = "power plant";
+        } else if ("Frame Shift Drive".equalsIgnoreCase(key.getAsString())) {
+            subSystem = "FSD";
         } else {
             subSystem = key.getAsString();
         }

@@ -47,6 +47,6 @@ public class AiRequestHints {
         return "Supported custom commands: '" + String.join("', '", Commands.getCommands()) + "'. ";
     }
 
-    public static final String supportedQueries = formatQueries();
-    public static final String customCommands = formatCommands();
+    public static final String queries = formatQueries();
+    public static final String commands = formatCommands();
 }

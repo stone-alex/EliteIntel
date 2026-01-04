@@ -6,13 +6,14 @@ import elite.intel.db.managers.DestinationReminderManager;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 
-import static elite.intel.ai.brain.handlers.query.Queries.TARGET_STATION_REMINDER;
+import static elite.intel.ai.brain.handlers.query.Queries.REMINDER;
+
 
 public class RemindTargetDestinationHandler extends BaseQueryAnalyzer implements QueryHandler {
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         DestinationReminderManager destinationReminder = DestinationReminderManager.getInstance();
-        return process(new AiDataStruct(TARGET_STATION_REMINDER.getInstructions(), new DataDto(destinationReminder.getReminderAsJson())), originalUserInput);
+        return process(new AiDataStruct(REMINDER.getInstructions(), new DataDto(destinationReminder.getReminderAsJson())), originalUserInput);
     }
 
     record DataDto(String data) implements ToJsonConvertible {

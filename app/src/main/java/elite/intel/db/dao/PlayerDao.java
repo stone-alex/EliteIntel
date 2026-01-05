@@ -30,7 +30,7 @@ public interface PlayerDao {
                        player_mission_statement, player_name, player_title, ships_owned, species_first_logged,
                        total_bounty_claimed, total_distance_traveled, total_hyperspace_distance,
                        total_profits_from_exploration, total_systems_visited, exobiology_profits, alternative_name,
-                       journal_dir, bindings_dir, logging_enabled, game_build, bounty_collected_lifetime, homeSystemId)
+                       journal_dir, bindings_dir, logging_enabled, game_build, bounty_collected_lifetime, homeSystemId, localTtsServer)
                     VALUES (1, :currentPrimaryStar,
                        :carrierDepartureTime, :crewWagsPayout,
                        :currentShip, :currentShipName, :currentLocationId, :currentWealth,
@@ -43,7 +43,7 @@ public interface PlayerDao {
                        :playerMissionStatement, :playerName, :playerTitle,
                        :shipsOwned, :speciesFirstLogged, :totalBountyClaimed, :totalDistanceTraveled, 
                        :totalHyperspaceDistance, :totalProfitsFromExploration, :totalSystemsVisited, :exobiologyProfits, :alternativeName,
-                       :journalDirectory, :bindingsDirectory, :loggingEnabled, :gameBuild, :bountyCollectedLifetime, :homeSystemId
+                       :journalDirectory, :bindingsDirectory, :loggingEnabled, :gameBuild, :bountyCollectedLifetime, :homeSystemId, :localTtsServer
                     )
             """)
     void save(@BindBean Player player);
@@ -92,6 +92,7 @@ public interface PlayerDao {
         private String bindingsDirectory;
         private Boolean loggingEnabled;
         private Long bountyCollectedLifetime = 0L;
+        private String localTtsServer;
 
         public Player() {
         } // required for JDBI
@@ -435,6 +436,12 @@ public interface PlayerDao {
         public void setHomeSystemId(Long homeSystemId) {
             this.homeSystemId = homeSystemId;
         }
+        public String getLocalTtsServer() {
+            return localTtsServer;
+        }
+        public void setLocalTtsServer(String localTtsAddress) {
+            this.localTtsServer = localTtsAddress;
+        }
     }
 
     class PlayerMapper implements RowMapper<Player> {
@@ -483,6 +490,7 @@ public interface PlayerDao {
             p.setLoggingEnabled(rs.getBoolean("logging_enabled"));
             p.setGameBuild(rs.getString("game_build"));
             p.setHomeSystemId(rs.getLong("homeSystemId"));
+            p.setLocalTtsServer(rs.getString("localTtsServer"));
             return p;
         }
     }

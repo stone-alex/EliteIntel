@@ -78,6 +78,7 @@ public class AppView extends JFrame implements AppViewInterface {
     private JTextField playerTitleField;
     private JTextField playerMissionDescription;
     private JTextField journalDirField;
+    private JTextField localTtsAddressField;
 
     // ---------- Public API ----------
     private JTextField bindingsDirField;
@@ -611,6 +612,9 @@ public class AppView extends JFrame implements AppViewInterface {
         sttLockedCheck = new JCheckBox("Locked", true);
         addCheck(panel, sttLockedCheck, gbc, 2, 0.2);
 
+        nextRow(gbc);
+        addLabel(panel, " ", gbc, 0);
+
         // Row 2: TTS Key
         nextRow(gbc);
         addLabel(panel, "TTS Key:", gbc, 0);
@@ -619,6 +623,18 @@ public class AppView extends JFrame implements AppViewInterface {
         addField(panel, ttsApiKeyField, gbc, 1, 0.8);
         ttsLockedCheck = new JCheckBox("Locked", true);
         addCheck(panel, ttsLockedCheck, gbc, 2, 0.2);
+
+
+        nextRow(gbc);
+        addLabel(panel, "TTS Local Address", gbc, 0);
+        localTtsAddressField = new JTextField();
+        localTtsAddressField.setPreferredSize(new Dimension(200, 42));
+        localTtsAddressField.setText("http://localhost:5000/");
+        localTtsAddressField.setToolTipText("Local TTS Address");
+        addField(panel, localTtsAddressField, gbc, 1, 0.8);
+
+        nextRow(gbc);
+        addLabel(panel, " ", gbc, 0);
 
         // Row EDSM KEY
         nextRow(gbc);
@@ -807,6 +823,7 @@ public class AppView extends JFrame implements AppViewInterface {
         llmApiKeyField.setText(systemSession.getAiApiKey() != null ? systemSession.getAiApiKey() : "");
         ttsApiKeyField.setText(systemSession.getTtsApiKey() != null ? systemSession.getTtsApiKey() : "");
         edsmKeyField.setText(systemSession.getEdsmApiKey() != null ? systemSession.getEdsmApiKey() : "");
+        localTtsAddressField.setText(playerSession.getLocalTtsAddress() != null ? playerSession.getLocalTtsAddress() : "");
 
         // Player tab
         playerAltNameField.setText(playerSession.getAlternativeName() != null ? playerSession.getAlternativeName() : "");
@@ -834,6 +851,7 @@ public class AppView extends JFrame implements AppViewInterface {
         s.setAiApiKey(new String(llmApiKeyField.getPassword()));
         s.setTtsApiKey(new String(ttsApiKeyField.getPassword()));
         s.setEdsmApiKey(new String(edsmKeyField.getPassword()));
+        playerSession.setLocalTtsAddress(localTtsAddressField.getText());
         EventBusManager.publish(new AppLogEvent("System config saved"));
         initData();
     }

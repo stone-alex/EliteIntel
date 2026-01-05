@@ -309,7 +309,8 @@ create_start_menu() {
 Version=1.0
 Name=Elite Intel
 Comment=Elite Dangerous AI companion
-Exec=java -jar "$DEFAULT_INSTALL_LOCATION/elite_intel.jar"
+Path=$DEFAULT_INSTALL_LOCATION
+Exec=java -jar ./elite_intel.jar
 Icon=$ICON_PATH
 Terminal=false
 Type=Application

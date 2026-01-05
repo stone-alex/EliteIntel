@@ -1,27 +1,5 @@
 package elite.intel.ai.hands;
 
-/*
-Feature/Improvement:
-Check key bindings, and warn user via UI terminal about missing key binds.
-
-    - Implement KeybindCheck class as true singleton running in it’s own thread.
-    - Class location is elite.intel.ai.hands package
-    - Wireing start to the service start method in AppController::startStopServices
-    - Check for bindings. Use something like this
-    See KeyBindingExecutor lines 34 through 46 on how to construct the keybinding map
-
-    Publish list to the console:
-	EventBusManager.publish(new AppLogEvent( 
-		formatted and human readable string containing your list of missing key bindings. 
-		debug console supports basic HTML or use Ascii art. ));
-*/
-/*
-	Integer mainKeyCode = ELITE_TO_KEYPROCESSOR_MAP.get(binding.key.toUpperCase());
-            if (mainKeyCode == null) {
-                     //add to list
-            }
-*/
-
 import elite.intel.ai.hands.KeyBindingsParser;
 import elite.intel.ai.hands.BindingsMonitor;
 import elite.intel.gameapi.EventBusManager;

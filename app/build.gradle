@@ -54,7 +54,6 @@ dependencies {
 }
 
 
-
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
@@ -88,15 +87,6 @@ sourceSets {
             include 'version.txt'
         }
     }
-
-    test {
-        java {
-            srcDir 'src/test/java'
-        }
-
-        compileClasspath = sourceSets.main.output + configurations.compileClasspath
-        runtimeClasspath = output + compileClasspath
-    }
 }
 
 shadowJar {
@@ -114,12 +104,4 @@ tasks.named('jar') {
 }
 tasks.named('assemble') {
     dependsOn tasks.shadowJar
-}
-
-task runTest(type: JavaExec) {
-    group = 'application'
-    description = 'Runs the tiny hello‑world program in src/test/java'
-    classpath = sourceSets.test.runtimeClasspath
-    mainClass = 'test.Main'
-    jvmArgs '-Dlog4j2.debug=false', '-Dlog4j2.statusLevel=error'
 }

@@ -1,0 +1,1 @@
+alter table player add column localTtsServer text default 'http://localhost:5000/';

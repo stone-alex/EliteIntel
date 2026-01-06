@@ -45,7 +45,7 @@ public class KeyBindingManager {
 	// Get all bindings
 	public List<KeyBindingDao.KeyBinding> getBindings() {
 		Database.withDao(KeyBindingDao.KeyBinding.class, dao -> {
-			KeyBindingDao.KeyBinding[] bindingsList = dao.getBindings();
+			KeyBindingDao.KeyBinding[] bindingsList = dao.listAll();
 			return bindingsList;
 		});
 	}

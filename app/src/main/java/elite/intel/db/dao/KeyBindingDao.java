@@ -30,7 +30,7 @@ public interface KeyBindingDao {
     void clear();
 
     @SqlQuery("SELECT * FROM bindings")
-    List<KeyBinding> getBindings();
+    KeyBindingDao.KeyBinding[] listAll();
 
 
     class KeyBindingMapper implements RowMapper<KeyBindingDao.KeyBinding> {

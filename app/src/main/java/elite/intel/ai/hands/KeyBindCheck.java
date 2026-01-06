@@ -3,6 +3,7 @@ package elite.intel.ai.hands;
 import elite.intel.ai.hands.KeyBindingsParser;
 import elite.intel.ai.hands.BindingsMonitor;
 import elite.intel.db.managers.KeyBindingManager;
+import elite.intel.db.dao.KeyBindingDao;
 
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.ui.event.AppLogEvent;
@@ -15,7 +16,7 @@ import java.util.ArrayList;
 public class KeyBindCheck {
 	
 	private static volatile KeyBindCheck instance; 
-	private final KeyBindingManager keyBindingManager = KeyBindingManager.getInstance();
+	private final KeyBindingManager bindingManager = KeyBindingManager.getInstance();
 	
 	private KeyBindCheck () {}
 
@@ -84,7 +85,7 @@ public class KeyBindCheck {
 			.get(command.getGameBinding());
 
 			if(binding == null) {
-				KeyBindingManager.addBinding(humanize(command.getGameBinding()));
+				bindingManager.addBinding(humanize(command.getGameBinding()));
 				bindingDiscreppency = true;
 			}
 
@@ -92,7 +93,7 @@ public class KeyBindCheck {
 
 		if (bindingDiscreppency) {
 		
-			ArrayList[] bindings = KeyBindingManager.getBindings();
+			ArrayList[] bindings = bindingManager.getBindings();
 			Integer numberOfBindings = bindings.length();
 			StringBuilder missingBindings = new StringBuilder();
 			missingBindings.append("No Binding found for: [ ");

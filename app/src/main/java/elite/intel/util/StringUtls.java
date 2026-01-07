@@ -5,10 +5,6 @@ import elite.intel.db.dao.MaterialNameDao;
 import elite.intel.db.dao.SubSystemDao;
 import elite.intel.db.util.Database;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -188,4 +184,16 @@ public class StringUtls {
         if (v == null) return "";
         return v.replaceAll("[\\r\\n]+", "").trim();
     }
+
+    /*
+    Remove underscores and seperate Camelcase
+    */
+    public static String humanizeBindingName(String gameBinding) {
+        return gameBinding
+                .replaceAll("(?<=[a-z0-9])(?=[A-Z])", " ")
+                .replace("HUD", "HUD ")
+                .replaceAll("(?<=\\D)(?=\\d)", " ")
+                .replaceAll("_", " ");
+    }
+
 }

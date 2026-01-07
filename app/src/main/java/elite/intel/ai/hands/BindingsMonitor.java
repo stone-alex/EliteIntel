@@ -1,7 +1,9 @@
 package elite.intel.ai.hands;
 
-import elite.intel.ai.brain.handlers.commands.Commands;
+import elite.intel.ai.brain.handlers.commands.Bindings;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.db.dao.KeyBindingDao.KeyBinding;
+import elite.intel.db.managers.KeyBindingManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.PlayerSession;
 import elite.intel.ui.event.AppLogEvent;
@@ -11,8 +13,13 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
+
+import static elite.intel.util.StringUtls.humanizeBindingName;
 
 /**
  * The BindingsMonitor class is responsible for monitoring changes to
@@ -43,6 +50,7 @@ public class BindingsMonitor {
     private static final Logger log = LogManager.getLogger(BindingsMonitor.class);
     private static volatile BindingsMonitor instance;
     private final KeyBindingsParser parser;
+    private final KeyBindingManager keyBindingManager = KeyBindingManager.getInstance();
     private Path bindingsDir;
     private Map<String, KeyBindingsParser.KeyBinding> bindings;
     private File currentBindsFile;
@@ -134,8 +142,8 @@ public class BindingsMonitor {
                     EventBusManager.publish(new AiVoxResponseEvent("Error: Key bindings directory inaccessible"));
                     break;
                 }
+                checkForMissingBindingsAndPersist();
             }
-            checkBindings();
         } catch (IOException e) {
             log.error("IOException in BindingsMonitor", e);
             EventBusManager.publish(new AiVoxResponseEvent("Please check the bindings directory"));
@@ -164,13 +172,37 @@ public class BindingsMonitor {
         return bindings;
     }
 
-    public void checkBindings() {
+    /**
+     * Checks for missing bindings by iterating over all game commands and determines if a corresponding
+     * key binding exists. If a binding is missing, it adds a new binding through the key binding manager
+     * and records the newly added binding names.
+     *
+     * @return a list of names of key bindings that were missing and subsequently added.
+     */
+    public List<String> checkForMissingBindingsAndPersist() {
+        List<String> result = new ArrayList<>();
+        BindingsMonitor monitor = BindingsMonitor.getInstance();
+        Bindings.GameCommand[] values = Bindings.GameCommand.values();
+        List<String> oldMissingBindings = keyBindingManager
+                .getBindings()
+                .stream()
+                .map(KeyBinding::getKeyBinding)
+                .toList();
 
-        Commands[] commands = Commands.values();
-        for (Commands c : commands) {
-            if (getBindings().get(c.getBinding()) != null) {
-                EventBusManager.publish(new AppLogEvent("No Binding found for " + c.getBinding()));
+        for (Bindings.GameCommand command : values) {
+            KeyBindingsParser.KeyBinding binding = monitor
+                    .getBindings()
+                    .get(command.getGameBinding());
+
+            if (binding == null) {
+                String bindingName = humanizeBindingName(command.getGameBinding());
+                keyBindingManager.addBinding(bindingName);
+                result.add(bindingName);
+            } else if (oldMissingBindings.contains(humanizeBindingName(command.getGameBinding()))) {
+                String bindingName = humanizeBindingName(command.getGameBinding());
+                keyBindingManager.removeBinding(bindingName);
             }
         }
+        return result;
     }
 }

@@ -19,7 +19,7 @@ public interface KeyBindingDao {
         INSERT OR REPLACE INTO  bindings (key_binding)
         VALUES(:binding)
         """)
-    void save(@BindBean KeyBindingDao.KeyBinding binding);
+    void save(@Bind String binding);
     
     @SqlUpdate(""" 
         DELETE FROM bindings

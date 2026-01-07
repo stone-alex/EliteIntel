@@ -20,9 +20,7 @@ public class KeyBindingManager {
     // Add a binding
     public void addBinding(String binding) {
         Database.withDao(KeyBindingDao.class, dao -> {
-            KeyBinding entity = new KeyBinding();
-            entity.setKeyBinding(binding);
-            dao.save(entity);
+            dao.save(binding);
             return Void.class;
         });
     }

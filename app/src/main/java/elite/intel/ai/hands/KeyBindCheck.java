@@ -36,7 +36,7 @@ public class KeyBindCheck {
 
 		StringBuilder missingBindingsMessage = new StringBuilder();
 		Integer numberOfBindings = missingBindings.size();
-		missingBindingsMessage.append("No Binding found for: [ ");
+		missingBindingsMessage.append("No Binding found for: ");
 
 		for (String binding : missingBindings) {
 			missingBindingsMessage.append(binding);

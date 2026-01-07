@@ -2,6 +2,7 @@ package elite.intel.ai.hands;
 
 import elite.intel.ai.brain.handlers.commands.Bindings;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.db.dao.KeyBindingDao.KeyBinding;
 import elite.intel.db.managers.KeyBindingManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.PlayerSession;
@@ -181,6 +182,12 @@ public class BindingsMonitor {
         List<String> result = new ArrayList<>();
         BindingsMonitor monitor = BindingsMonitor.getInstance();
         Bindings.GameCommand[] values = Bindings.GameCommand.values();
+        List<String> oldMissingBindings = keyBindingManager
+                .getBindings()
+                .stream()
+                .map(KeyBinding::getKeyBinding)
+                .toList();
+
         for (Bindings.GameCommand command : values) {
             KeyBindingsParser.KeyBinding binding = monitor
                     .getBindings()
@@ -190,6 +197,9 @@ public class BindingsMonitor {
                 String bindingName = humanizeBindingName(command.getGameBinding());
                 keyBindingManager.addBinding(bindingName);
                 result.add(bindingName);
+            } else if (oldMissingBindings.contains(humanizeBindingName(command.getGameBinding()))) {
+                String bindingName = humanizeBindingName(command.getGameBinding());
+                keyBindingManager.removeBinding(bindingName);
             }
         }
         return result;

@@ -1,7 +1,6 @@
 package elite.intel.ai.hands;
 
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
-import elite.intel.db.dao.KeyBindingDao;
 import elite.intel.db.managers.KeyBindingManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.ui.event.AppLogEvent;

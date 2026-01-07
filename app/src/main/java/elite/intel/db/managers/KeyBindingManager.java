@@ -1,53 +1,51 @@
 package elite.intel.db.managers;
 
-import elite.intel.db.util.Database;
 import elite.intel.db.dao.KeyBindingDao;
+import elite.intel.db.dao.KeyBindingDao.KeyBinding;
+import elite.intel.db.util.Database;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class KeyBindingManager {
-	private static volatile KeyBindingManager instance;
+    private static volatile KeyBindingManager instance;
 
-	public static KeyBindingManager getInstance() {
-		if (instance == null) {
-			instance = new KeyBindingManager();
-		}
+    public static KeyBindingManager getInstance() {
+        if (instance == null) {
+            instance = new KeyBindingManager();
+        }
 
-		return instance;
-	}
+        return instance;
+    }
 
-	// Add a binding
-	public void addBinding(String binding) {
-		Database.withDao(KeyBindingDao.class, dao -> {
-			KeyBindingDao.KeyBinding entity = new KeyBindingDao.KeyBinding();
-			entity.setKeyBinding(binding);
-			return null;
-		});
-	}
+    // Add a binding
+    public void addBinding(String binding) {
+        Database.withDao(KeyBindingDao.class, dao -> {
+            KeyBinding entity = new KeyBinding();
+            entity.setKeyBinding(binding);
+            dao.save(entity);
+            return Void.class;
+        });
+    }
 
-	// remove a binding
-	public void removeBinding(String binding) {
-		Database.withDao(KeyBindingDao.KeyBinding.class, dao -> {
-			dao.removeBinding(binding);
-			return null;
-		});
-	}
+    // remove a binding
+    public void removeBinding(String binding) {
+        Database.withDao(KeyBindingDao.class, dao -> {
+            dao.removeBinding(binding);
+            return Void.class;
+        });
+    }
 
-	// clear table data
-	public void clear() {
-		Database.withDao(KeyBindingDao.KeyBinding.class, dao -> {
-			dao.clear();
-			return null;
-		});
-	}
+    // clear table data
+    public void clear() {
+        Database.withDao(KeyBindingDao.class, dao -> {
+            dao.clear();
+            return Void.class;
+        });
+    }
 
-	// Get all bindings
-	public List<KeyBindingDao.KeyBinding> getBindings() {
-		Database.withDao(KeyBindingDao.KeyBinding.class, dao -> {
-			KeyBindingDao.KeyBinding[] bindingsList = dao.listAll();
-			return bindingsList;
-		});
-	}
+    // Get all bindings
+    public List<KeyBinding> getBindings() {
+        return Database.withDao(KeyBindingDao.class, dao -> dao.listAll());
+    }
 
 }

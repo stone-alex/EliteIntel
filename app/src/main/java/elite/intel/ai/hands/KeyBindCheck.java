@@ -93,8 +93,8 @@ public class KeyBindCheck {
 
 		if (bindingDiscreppency) {
 		
-			ArrayList[] bindings = bindingManager.getBindings();
-			Integer numberOfBindings = bindings.length();
+			List<KeyBindingDao.KeyBinding> bindings = bindingManager.getBindings();
+			Integer numberOfBindings = bindings.size();
 			StringBuilder missingBindings = new StringBuilder();
 			missingBindings.append("No Binding found for: [ ");
 

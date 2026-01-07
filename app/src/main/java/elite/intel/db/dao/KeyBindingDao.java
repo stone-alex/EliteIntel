@@ -3,6 +3,7 @@ package elite.intel.db.dao;
 import org.jdbi.v3.core.mapper.RowMapper;
 import org.jdbi.v3.core.statement.StatementContext;
 import org.jdbi.v3.sqlobject.config.RegisterRowMapper;
+import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.customizer.BindBean;
 import org.jdbi.v3.sqlobject.statement.SqlQuery;
 import org.jdbi.v3.sqlobject.statement.SqlUpdate;
@@ -14,23 +15,23 @@ import java.util.List;
 @RegisterRowMapper(KeyBindingDao.KeyBindingMapper.class)
 public interface KeyBindingDao {
 	
-	@SqlQuery("""
-        INSERT OR UPDATE INTO bindings (key_binding)
+	@SqlUpdate("""
+        INSERT OR REPLACE INTO  bindings (key_binding)
         VALUES(:binding)
         """)
-    void addBinding(@BindBean KeyBindingDao.KeyBinding binding);
+    void save(@BindBean KeyBindingDao.KeyBinding binding);
     
     @SqlUpdate(""" 
-        DELETE * FROM bindings
+        DELETE FROM bindings
         WHERE key_binding = :binding
         """)
-    void removeBinding(@BindBean KeyBindingDao.KeyBinding binding);
+    void removeBinding(@Bind String binding);
 
-    @SqlUpdate("DELETE * FROM bindings")
+    @SqlUpdate("DELETE FROM bindings")
     void clear();
 
     @SqlQuery("SELECT * FROM bindings")
-    KeyBindingDao.KeyBinding[] listAll();
+    List<KeyBinding> listAll();
 
 
     class KeyBindingMapper implements RowMapper<KeyBindingDao.KeyBinding> {

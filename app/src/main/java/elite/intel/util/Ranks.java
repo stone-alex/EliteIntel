@@ -2,8 +2,10 @@ package elite.intel.util;
 
 import elite.intel.gameapi.journal.events.dto.RankAndProgressDto;
 import elite.intel.session.PlayerSession;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.HashMap;
+import java.util.Random;
 
 /**
  * The Ranks class provides various static methods to manage and retrieve mappings
@@ -270,7 +272,17 @@ public class Ranks {
         } else if (federation > imperial) {
             return getHonorificMap().get(getFederationRankMap().get(federation));
         } else {
-            return "Sir/Mam";
+            return chooseAtRandom(imperial, federation);
+        }
+    }
+
+    private static @NonNull String chooseAtRandom(int imperial, int federation) {
+        Random random = new Random();
+        int choice = random.nextInt(2); // Returns 0 or 1
+        if (choice == 0) {
+            return getHonorificMap().get(getImperialRankMap().get(imperial));
+        } else {
+            return getHonorificMap().get(getFederationRankMap().get(federation));
         }
     }
 
@@ -280,7 +292,7 @@ public class Ranks {
         } else if (federation > imperial) {
             return getFederationRankMap().get(federation);
         } else {
-            return "Sir/Mam"; //Default value.
+            return chooseAtRandom(imperial, federation);
         }
     }
 

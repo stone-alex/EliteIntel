@@ -1,130 +1,63 @@
 package elite.intel.ai.hands;
 
-import elite.intel.ai.hands.KeyBindingsParser;
-import elite.intel.ai.hands.BindingsMonitor;
-import elite.intel.db.managers.KeyBindingManager;
+import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.db.dao.KeyBindingDao;
-
+import elite.intel.db.managers.KeyBindingManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.ui.event.AppLogEvent;
-import elite.intel.ai.brain.handlers.commands.Bindings;
-import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 
 import java.util.List;
-import java.util.ArrayList;
 
 public class KeyBindCheck {
-	
-	private static volatile KeyBindCheck instance; 
-	private final KeyBindingManager bindingManager = KeyBindingManager.getInstance();
-	
-	private KeyBindCheck () {}
 
-	public static synchronized KeyBindCheck getInstance() {
-		if(instance == null) {
-			instance = new KeyBindCheck();
-		}
+    private static volatile KeyBindCheck instance;
+    private final KeyBindingManager bindingManager = KeyBindingManager.getInstance();
 
-		return instance;
-	}
+    private KeyBindCheck() {
+    }
 
-	/*
-		Check if there are missing key bindings
-	*/
-	public void check() {
-		BindingsMonitor monitor = BindingsMonitor.getInstance();
-		Bindings.GameCommand[] values = Bindings.GameCommand.values();
+    public static synchronized KeyBindCheck getInstance() {
+        if (instance == null) {
+            instance = new KeyBindCheck();
+        }
 
-		boolean bindingDiscreppency = false;
-		StringBuilder missingBindings = new StringBuilder();
-		missingBindings.append("No Binding found for: [ ");
+        return instance;
+    }
+
+    /*
+        Check if there are missing key bindings
+    */
+    public void check() {
+        BindingsMonitor monitor = BindingsMonitor.getInstance();
+
+        List<String> missingBindings = monitor.checkForMissingBindingsAndPersist();
+        boolean bindingDiscreppency = missingBindings.isEmpty();
+        if (!bindingDiscreppency) return;
 
 
-		for(Bindings.GameCommand command : values) {
-			KeyBindingsParser.KeyBinding binding = monitor
-			.getBindings()
-			.get(command.getGameBinding());
+        StringBuilder missingBindingsMessage = new StringBuilder();
+        missingBindingsMessage.append(" No Binding found for: [ ");
 
-			if(binding == null) {
-				missingBindings.append(humanize(command.getGameBinding()));
-				missingBindings.append(", ");
-				bindingDiscreppency = true;
-			}
+        for (String binding : missingBindings) {
+            missingBindingsMessage.append(binding);
+            missingBindingsMessage.append(", ");
+        }
 
-		}
+        if (bindingDiscreppency) {
 
-		if (bindingDiscreppency) {
-		
-			Integer numberOfBindings = missingBindings.length();
+            Integer numberOfBindings = missingBindings.size();
 
-			StringBuilder warning = new StringBuilder();
-				warning.append("Commander, there are " + numberOfBindings + " missing keybindings.");
-				warning.append("Until you bind these bindings, i can not fully function in my tasks.");
+            StringBuilder warning = new StringBuilder();
+            warning.append(" Commander, there are " + numberOfBindings + " missing keybindings.");
+            warning.append(" Until you bind these bindings, i can not fully function in my tasks.");
 
-			EventBusManager.publish(
-				new AiVoxResponseEvent(warning.toString())
-			);
+            EventBusManager.publish(
+                    new AiVoxResponseEvent(warning.toString())
+            );
 
-			EventBusManager.publish(
-				new AppLogEvent(missingBindings.toString())
-			);
-		}
-	}
-
-	/*
-		Temporary class for testing DAO implimentation
-	*/
-	public void tempCheck() {
-		BindingsMonitor monitor = BindingsMonitor.getInstance();
-		Bindings.GameCommand[] values = Bindings.GameCommand.values();
-		boolean bindingDiscreppency = false;
-		
-		for(Bindings.GameCommand command : values) {
-			KeyBindingsParser.KeyBinding binding = monitor
-			.getBindings()
-			.get(command.getGameBinding());
-
-			if(binding == null) {
-				bindingManager.addBinding(humanize(command.getGameBinding()));
-				bindingDiscreppency = true;
-			}
-
-		}
-
-		if (bindingDiscreppency) {
-		
-			List<KeyBindingDao.KeyBinding> bindings = bindingManager.getBindings();
-			Integer numberOfBindings = bindings.size();
-			StringBuilder missingBindings = new StringBuilder();
-			missingBindings.append("No Binding found for: [ ");
-
-			for (KeyBindingDao.KeyBinding key : bindings) {
-				missingBindings.append(key.getKeyBinding());
-				missingBindings.append(", ");
-			}
-
-			StringBuilder warning = new StringBuilder();
-				warning.append("Commander, there are " + numberOfBindings + " missing keybindings.");
-				warning.append("Until you bind these bindings, i can not fully function in my tasks.");
-
-			EventBusManager.publish(
-				new AiVoxResponseEvent(warning.toString())
-			);
-
-			EventBusManager.publish(
-				new AppLogEvent(missingBindings.toString())
-			);
-		}
-	}
-	/*
-		Remove underscores and seperate Camelcase
-	*/
-	private String humanize(String gameBinding) {
-		return gameBinding
-			.replaceAll("(?<=[a-z0-9])(?=[A-Z])", " ")
-			.replace("HUD", "HUD ")
-			.replaceAll("(?<=\\D)(?=\\d)", " ")
-			.replaceAll("_", " ");
-	}
-
+            EventBusManager.publish(
+                    new AppLogEvent(missingBindingsMessage.toString())
+            );
+        }
+    }
 }

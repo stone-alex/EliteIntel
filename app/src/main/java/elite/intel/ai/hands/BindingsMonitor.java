@@ -119,6 +119,7 @@ public class BindingsMonitor {
                     }
                     continue;
                 }
+                keyBindingManager.clear();
 
                 for (WatchEvent<?> event : key.pollEvents()) {
                     WatchEvent.Kind<?> kind = event.kind();
@@ -135,14 +136,14 @@ public class BindingsMonitor {
                         }
                     }
                 }
-
+                checkForMissingBindingsAndPersist();
                 boolean valid = key.reset();
                 if (!valid) {
                     log.error("Watch key no longer valid; directory may be inaccessible");
                     EventBusManager.publish(new AiVoxResponseEvent("Error: Key bindings directory inaccessible"));
                     break;
                 }
-                checkForMissingBindingsAndPersist();
+
             }
         } catch (IOException e) {
             log.error("IOException in BindingsMonitor", e);

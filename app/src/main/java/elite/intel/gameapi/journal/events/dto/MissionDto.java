@@ -1,13 +1,14 @@
 package elite.intel.gameapi.journal.events.dto;
 
 import com.google.gson.JsonObject;
+import elite.intel.gameapi.MissionTypes;
 import elite.intel.gameapi.gamestate.dtos.BaseJsonDto;
 import elite.intel.gameapi.journal.events.MissionAcceptedEvent;
 import elite.intel.util.json.GsonFactory;
 
 public class MissionDto extends BaseJsonDto {
     private String faction;
-    private String missionType;
+    private MissionTypes missionType;
     private String missionDescription;
     private String missionTarget;
     private String missionTargetFaction;
@@ -23,7 +24,7 @@ public class MissionDto extends BaseJsonDto {
         if(event != null) {
             setMissionId(event.getMissionID());
             setMissionProvider(event.getFaction());
-            setMissionType(event.getName());
+            setMissionType(toMissionType(event.getName()));
             setMissionDescription(event.getLocalisedName());
             setMissionTarget(event.getTargetTypeLocalised());
             setMissionTargetFaction(event.getTargetFaction());
@@ -33,6 +34,16 @@ public class MissionDto extends BaseJsonDto {
             setReputationIncrease(event.getReputation() != null && "++".equals(event.getReputation()));
             setInfluence(event.getInfluence() != null && "++".equals(event.getInfluence()));
         }
+    }
+
+    private MissionTypes toMissionType(String name) {
+        //TODO: Fix me. Assign different mission types based on event name
+/*        if("Delivery".equals(name)) {
+            return MissionTypes.DELIVERY;
+        } else if("Passenger".equals(name)) {
+            return MissionTypes.PASSENGER;
+        }*/
+        return MissionTypes.PIRATES;
     }
 
     public void setMissionId(long missionID) {
@@ -71,7 +82,7 @@ public class MissionDto extends BaseJsonDto {
         this.missionDescription = localisedName;
     }
 
-    public void setMissionType(String name) {
+    public void setMissionType(MissionTypes name) {
         this.missionType = name;
     }
 
@@ -83,7 +94,7 @@ public class MissionDto extends BaseJsonDto {
         return faction;
     }
 
-    public String getMissionType() {
+    public MissionTypes getMissionType() {
         return missionType;
     }
 

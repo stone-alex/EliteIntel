@@ -5,10 +5,7 @@ import elite.intel.db.util.Database;
 import elite.intel.gameapi.journal.events.dto.MissionDto;
 import elite.intel.util.json.GsonFactory;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class MissionManager {
     private static MissionManager instance;
@@ -45,7 +42,8 @@ public class MissionManager {
     public Map<Long, MissionDto> getMissions() {
         return Database.withDao(MissionDao.class, dao -> {
             Map<Long, MissionDto> result = new HashMap<>();
-            MissionDao.Mission[] missions = dao.listAll();
+            List<MissionDao.Mission> missions = dao.listAll();
+            missions.sort(Comparator.comparing(MissionDao.Mission::getKey));
             for(MissionDao.Mission mission : missions) {
                 result.put(mission.getKey(), GsonFactory.getGson().fromJson(mission.getMission(), MissionDto.class));
             }

@@ -1,5 +1,6 @@
 package elite.intel.db.dao;
 
+import elite.intel.gameapi.MissionTypes;
 import org.jdbi.v3.core.mapper.RowMapper;
 import org.jdbi.v3.core.statement.StatementContext;
 import org.jdbi.v3.sqlobject.config.RegisterRowMapper;
@@ -10,15 +11,17 @@ import org.jdbi.v3.sqlobject.statement.SqlUpdate;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 @RegisterRowMapper(MissionDao.MissionMapper.class)
 public interface MissionDao {
 
     @SqlUpdate("""
-            INSERT OR REPLACE INTO missions (key, mission)
+            INSERT OR REPLACE INTO missions (key, missionType, mission)
             VALUES(:key, :mission)
             ON CONFLICT(key) DO UPDATE SET
-            mission = excluded.mission
+            mission = excluded.mission,
+            missionType = excluded.missionType
             """)
     void upsert(@BindBean Mission mission);
 
@@ -27,7 +30,7 @@ public interface MissionDao {
     Mission get(@Bind("key") Long key);
 
     @SqlQuery("SELECT * FROM missions")
-    Mission[] listAll();
+    List<Mission> listAll();
 
 
     @SqlUpdate("DELETE FROM missions WHERE key = :missionId")
@@ -40,6 +43,7 @@ public interface MissionDao {
             Mission mission = new Mission();
             mission.setKey(rs.getLong("key"));
             mission.setMission(rs.getString("mission"));
+            mission.setMissionType(MissionTypes.valueOf(rs.getString("missionType")));
             return mission;
         }
     }
@@ -48,6 +52,7 @@ public interface MissionDao {
     class Mission {
         private Long key;
         private String mission;
+        private MissionTypes missionType;
 
         public Mission() {
         }
@@ -66,6 +71,14 @@ public interface MissionDao {
 
         public void setMission(String mission) {
             this.mission = mission;
+        }
+
+        public MissionTypes getMissionType() {
+            return missionType;
+        }
+
+        public void setMissionType(MissionTypes missionType) {
+            this.missionType = missionType;
         }
     }
 }

@@ -7,18 +7,51 @@ import elite.intel.gameapi.journal.events.MissionAcceptedEvent;
 import elite.intel.util.json.GsonFactory;
 
 public class MissionDto extends BaseJsonDto {
-    private String faction;
+    /*
+    Parameters:
+        Name: name of mission
+        LocalisedName: the mission name as displayed to the user
+        Faction: faction offering mission
+        MissionID
+        Influence: effect on influence (None/Low/Med/High)
+        Reputation: effect on reputation (None/Low/Med/High)
+        Reward: expected cash reward
+        Wing: bool
+    */
     private MissionTypes missionType;
+    private String faction;
+    private String destinationSystem;
+    private long reward;
+    private boolean influenceIncrease;
+    private boolean isReputationIncrease;
+
+    // Pirate / kill mission
     private String missionDescription;
     private String missionTarget;
     private String missionTargetFaction;
     private int killCount; // number of kills required to complete the mission
-    private long reward;
-    private String destinationSystem;
-    private boolean isReputationIncrease;
-    private boolean influenceIncrease;
+    /*
+    Optional Parameters (depending on mission type)
+        Commodity: commodity type
+        Count: number required / to deliver
+        Donation: contracted donation (as string) (for altruism missions)
+        Donated: actual donation (as int)
+        Target: name of target
+        TargetType: type of target
+        TargetFaction: target's faction
+        KillCount: number of targets
+        Expiry: mission expiry time, in ISO 8601
+        DestinationSystem
+        DestinationStation
+        DestinationSettlement
+        NewDestinationSystem (if it has been redirected)
+        NewDestinationStation (if redirected)
+        PassengerCount
+        PassengerVIPs: bool
+        PassengerWanted: bool
+        PassengerType: eg Tourist, Soldier, Explorer,...
+    * */
     private long missionId;
-
 
     public MissionDto(MissionAcceptedEvent event) {
         if(event != null) {
@@ -37,12 +70,11 @@ public class MissionDto extends BaseJsonDto {
     }
 
     private MissionTypes toMissionType(String name) {
-        //TODO: Fix me. Assign different mission types based on event name
-/*        if("Delivery".equals(name)) {
-            return MissionTypes.DELIVERY;
-        } else if("Passenger".equals(name)) {
-            return MissionTypes.PASSENGER;
-        }*/
+        for ( MissionTypes type : MissionTypes.values()) {
+            if (type.getMissionType().equalsIgnoreCase(name)){
+                return type;
+            }
+        }
         return MissionTypes.PIRATES;
     }
 

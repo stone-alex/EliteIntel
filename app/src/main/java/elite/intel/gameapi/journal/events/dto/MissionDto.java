@@ -2,7 +2,7 @@ package elite.intel.gameapi.journal.events.dto;
 
 import com.google.gson.JsonObject;
 import elite.intel.gameapi.MissionTargets;
-import elite.intel.gameapi.MissionTypes;
+import elite.intel.gameapi.MissionType;
 import elite.intel.gameapi.gamestate.dtos.BaseJsonDto;
 import elite.intel.gameapi.journal.events.MissionAcceptedEvent;
 import elite.intel.util.json.GsonFactory;
@@ -12,7 +12,7 @@ public class MissionDto extends BaseJsonDto {
     private long missionId;
     private String faction;
     private String missionDescription;
-    private MissionTypes missionType;
+    private MissionType missionType;
     private long reward;
     private boolean influenceIncrease;
     private boolean isReputationIncrease;
@@ -63,13 +63,13 @@ public class MissionDto extends BaseJsonDto {
         }
     }
 
-    private MissionTypes toMissionType(String name) {
-        for (MissionTypes type : MissionTypes.values()) {
+    private MissionType toMissionType(String name) {
+        for (MissionType type : MissionType.values()) {
             if (type.getMissionType().equalsIgnoreCase(name)) {
                 return type;
             }
         }
-        return MissionTypes.PIRATES; // TODO: Temporary default
+        return MissionType.PIRATES; // TODO: Temporary default
     }
 
     private MissionTargets toTargetType(String name) {
@@ -128,7 +128,7 @@ public class MissionDto extends BaseJsonDto {
         this.missionDescription = localisedName;
     }
 
-    public void setMissionType(MissionTypes name) {
+    public void setMissionType(MissionType name) {
         this.missionType = name;
     }
 
@@ -199,7 +199,7 @@ public class MissionDto extends BaseJsonDto {
         return faction;
     }
 
-    public MissionTypes getMissionType() {
+    public MissionType getMissionType() {
         return missionType;
     }
 

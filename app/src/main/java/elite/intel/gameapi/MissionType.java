@@ -1,6 +1,6 @@
 package elite.intel.gameapi;
 
-public enum MissionTypes {
+public enum MissionType {
     // Fighting
     PIRATES("Pirates"),
     MISSION_ASSASSINATE_PLANETARY_EXPANSION("Mission_Assassinate_Planetary_Expansion"),
@@ -50,7 +50,7 @@ public enum MissionTypes {
 
     private final String missionType;
 
-    MissionTypes(String missionType) {
+    MissionType(String missionType) {
         this.missionType = missionType;
     }
 

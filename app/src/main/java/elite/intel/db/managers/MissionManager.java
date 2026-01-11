@@ -24,8 +24,9 @@ public class MissionManager {
         MissionDao.Mission data = new MissionDao.Mission();
         data.setKey(mission.getMissionId());
         data.setMission(mission.toJson());
+        data.setMissionType(mission.getMissionType());
         Database.withDao(MissionDao.class, dao -> {
-                    dao.upsert(data);
+                    dao.upsert(data, data.getMissionType().name());
                     return null;
                 }
         );

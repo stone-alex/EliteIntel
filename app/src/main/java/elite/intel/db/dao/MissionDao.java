@@ -1,6 +1,6 @@
 package elite.intel.db.dao;
 
-import elite.intel.gameapi.MissionTypes;
+import elite.intel.gameapi.MissionType;
 import org.jdbi.v3.core.mapper.RowMapper;
 import org.jdbi.v3.core.statement.StatementContext;
 import org.jdbi.v3.sqlobject.config.RegisterRowMapper;
@@ -18,12 +18,12 @@ public interface MissionDao {
 
     @SqlUpdate("""
             INSERT OR REPLACE INTO missions (key, missionType, mission)
-            VALUES(:key, :mission)
+            VALUES(:key, :missionType, :mission)
             ON CONFLICT(key) DO UPDATE SET
             mission = excluded.mission,
             missionType = excluded.missionType
             """)
-    void upsert(@BindBean Mission mission);
+    void upsert(@BindBean Mission mission, @Bind String missionType);
 
 
     @SqlQuery("SELECT * FROM missions WHERE key = :key")
@@ -43,7 +43,7 @@ public interface MissionDao {
             Mission mission = new Mission();
             mission.setKey(rs.getLong("key"));
             mission.setMission(rs.getString("mission"));
-            mission.setMissionType(MissionTypes.valueOf(rs.getString("missionType")));
+            mission.setMissionType(MissionType.valueOf(rs.getString("missionType")));
             return mission;
         }
     }
@@ -52,7 +52,7 @@ public interface MissionDao {
     class Mission {
         private Long key;
         private String mission;
-        private MissionTypes missionType;
+        private MissionType missionType;
 
         public Mission() {
         }
@@ -73,11 +73,11 @@ public interface MissionDao {
             this.mission = mission;
         }
 
-        public MissionTypes getMissionType() {
+        public MissionType getMissionType() {
             return missionType;
         }
 
-        public void setMissionType(MissionTypes missionType) {
+        public void setMissionType(MissionType missionType) {
             this.missionType = missionType;
         }
     }

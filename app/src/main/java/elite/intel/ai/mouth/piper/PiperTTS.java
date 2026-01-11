@@ -5,6 +5,7 @@ import elite.intel.ai.mouth.MouthInterface;
 import elite.intel.ai.mouth.subscribers.events.TTSInterruptEvent;
 import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.session.PlayerSession;
 import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.AudioPlayer;
 import org.apache.logging.log4j.LogManager;
@@ -28,6 +29,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class PiperTTS implements MouthInterface {
     private static final Logger log = LogManager.getLogger(PiperTTS.class);
+    private final PlayerSession playerSession = PlayerSession.getInstance();
     private static volatile PiperTTS instance;
     private final AtomicBoolean interruptRequested = new AtomicBoolean(false);
     private final AtomicReference<SourceDataLine> currentLine = new AtomicReference<>();
@@ -173,7 +175,7 @@ public class PiperTTS implements MouthInterface {
                 }
                 """.formatted(text.replace("\"", "\\\""), speechSpeed);
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:5000/"))
+                .uri(URI.create(playerSession.getLocalTtsAddress()))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(json))
                 .build();

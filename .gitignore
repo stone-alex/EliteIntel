@@ -3,7 +3,7 @@ app/src/main/resources/elite-intel-xai-api-key.conf
 /logs
 /misc
 /session
-/temp
+*/temp
 ./session/status.json
 ./brainstorming.txt
 ./test.json

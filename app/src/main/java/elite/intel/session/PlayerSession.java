@@ -814,6 +814,19 @@ public class PlayerSession {
         return Database.withDao(PlayerDao.class, playerDao -> playerDao.get().getExobiologyProfits());
     }
 
+    public String getLocalTtsAddress() {
+        return Database.withDao(PlayerDao.class, playerDao -> playerDao.get().getLocalTtsServer());
+    }
+
+    public void setLocalTtsAddress(String address) {
+        Database.withDao(PlayerDao.class, playerDao -> {
+            PlayerDao.Player player = playerDao.get();
+            player.setLocalTtsServer(address);
+            playerDao.save(player);
+            return Void.class;
+        });
+    }
+
     public record GalacticCoordinates(double x, double y, double z) {
 
     }

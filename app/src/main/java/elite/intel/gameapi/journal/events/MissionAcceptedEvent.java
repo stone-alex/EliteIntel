@@ -54,6 +54,21 @@ public class MissionAcceptedEvent extends BaseEvent {
     @SerializedName("MissionID")
     private long missionID;
 
+    @SerializedName("Commodity")
+    private String commodity;
+
+    @SerializedName("Target")
+    private String target;
+
+    @SerializedName("Count")
+    private int count;
+
+    @SerializedName("Commodity_Localised")
+    private String commodityLocalised;
+
+    @SerializedName("DestinationSettlement")
+    private String destinationSettlement;
+
     public MissionAcceptedEvent(JsonObject json) {
         super(json.get("timestamp").getAsString(), Duration.ofSeconds(60), "MissionAccepted");
         MissionAcceptedEvent event = GsonFactory.getGson().fromJson(json, MissionAcceptedEvent.class);
@@ -72,6 +87,9 @@ public class MissionAcceptedEvent extends BaseEvent {
         this.reputation = event.reputation;
         this.reward = event.reward;
         this.missionID = event.missionID;
+        this.target = event.target;
+        this.count = event.count;
+        this.commodityLocalised = event.commodityLocalised;
     }
 
     @Override
@@ -87,6 +105,26 @@ public class MissionAcceptedEvent extends BaseEvent {
     @Override
     public JsonObject toJsonObject() {
         return GsonFactory.toJsonObject(this);
+    }
+
+    public String getTarget() {
+        return target;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public String getCommodityLocalised() {
+        return commodityLocalised;
+    }
+
+    public String getCommodity() {
+        return commodity;
+    }
+
+    public String getDestinationSettlement() {
+        return destinationSettlement;
     }
 
     public String getFaction() {
@@ -165,12 +203,16 @@ public class MissionAcceptedEvent extends BaseEvent {
                 .add("killCount=" + killCount)
                 .add("destinationSystem='" + destinationSystem + "'")
                 .add("destinationStation='" + destinationStation + "'")
+                .add("destinationSettlement='" + destinationSettlement + "'")
                 .add("expiry='" + expiry + "'")
                 .add("wing=" + wing)
                 .add("influence='" + influence + "'")
                 .add("reputation='" + reputation + "'")
                 .add("reward=" + reward)
                 .add("missionID=" + missionID)
+                .add("target='" + target + "'")
+                .add("count=" + count)
+                .add("commodityName='" + commodityLocalised + "'")
                 .toString();
     }
 }

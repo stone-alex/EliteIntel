@@ -34,9 +34,9 @@ public class MissionManager {
     }
 
     public MissionDto getMission(long missionId) {
-        return Database.withDao(MissionDao.class, dao ->{
+        return Database.withDao(MissionDao.class, dao -> {
             MissionDao.Mission mission = dao.get(missionId);
-            if(mission == null) return null;
+            if (mission == null) return null;
             return GsonFactory.getGson().fromJson(mission.getMission(), MissionDto.class);
         });
     }
@@ -46,7 +46,7 @@ public class MissionManager {
             Map<Long, MissionDto> result = new HashMap<>();
             List<MissionDao.Mission> missions = dao.listAll(missionTypes);
             missions.sort(Comparator.comparing(MissionDao.Mission::getKey));
-            for(MissionDao.Mission mission : missions) {
+            for (MissionDao.Mission mission : missions) {
                 result.put(mission.getKey(), GsonFactory.getGson().fromJson(mission.getMission(), MissionDto.class));
             }
             return result;
@@ -56,20 +56,26 @@ public class MissionManager {
     public Set<String> getTargetFactions(List<String> missionTypes) {
         Set<String> result = new HashSet<>();
         Map<Long, MissionDto> missions = getMissions(missionTypes);
-        for(MissionDto mission : missions.values()) {
+        for (MissionDto mission : missions.values()) {
             result.add(mission.getMissionTargetFaction());
         }
         return result;
     }
 
     public void remove(Long missionId) {
-        Database.withDao(MissionDao.class, dao ->{
+        Database.withDao(MissionDao.class, dao -> {
             dao.delete(missionId);
             return Void.class;
         });
     }
 
     public List<String> getPirateMissionTypes() {
-        return new ArrayList<>(Arrays.asList(MissionType.PIRATES.name()));
+        return new ArrayList<>(
+                Arrays.asList(
+                        MissionType.PIRATES.name(),
+                        MissionType.MISSION_MASSACREWING.name(),
+                        MissionType.MISSION_MASSACREWING_NAME.name()
+                )
+        );
     }
 }

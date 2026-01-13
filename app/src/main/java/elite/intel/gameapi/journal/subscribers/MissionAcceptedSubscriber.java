@@ -37,7 +37,7 @@ public class MissionAcceptedSubscriber {
 
         MissionType missionType = missionManager.getMissionType(event.getName());
 
-        if (MissionType.MISSION_PIRATE_MASSACRE.equals(missionType) || MissionType.MISSION_PIRATE_MASSACRE.equals(missionType)) {
+        if (MissionType.MISSION_PIRATE_MASSACRE.equals(missionType) || MissionType.MISSION_PIRATE_MASSACRE_WING.equals(missionType)) {
             processPirateMission(event, playerSession);
         }
     }

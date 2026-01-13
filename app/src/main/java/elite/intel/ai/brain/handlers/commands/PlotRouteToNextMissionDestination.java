@@ -25,7 +25,7 @@ public class PlotRouteToNextMissionDestination extends CommandOperator implement
 
     @Override
     public void handle(String action, JsonObject params, String responseText) {
-        Collection<MissionDto> missions = missionManager.getMissions().values();
+        Collection<MissionDto> missions = missionManager.getMissions(missionManager.getPirateMissionTypes()).values();
         if(missions.isEmpty()) {
             EventBusManager.publish(new AiVoxResponseEvent("No missions found."));
         }

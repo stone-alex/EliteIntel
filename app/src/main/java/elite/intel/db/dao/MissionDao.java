@@ -6,6 +6,7 @@ import org.jdbi.v3.core.statement.StatementContext;
 import org.jdbi.v3.sqlobject.config.RegisterRowMapper;
 import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.customizer.BindBean;
+import org.jdbi.v3.sqlobject.customizer.BindList;
 import org.jdbi.v3.sqlobject.statement.SqlQuery;
 import org.jdbi.v3.sqlobject.statement.SqlUpdate;
 
@@ -29,9 +30,8 @@ public interface MissionDao {
     @SqlQuery("SELECT * FROM missions WHERE key = :key")
     Mission get(@Bind("key") Long key);
 
-    @SqlQuery("SELECT * FROM missions")
-    List<Mission> listAll();
-
+    @SqlQuery("SELECT * FROM missions WHERE missionType IN (:missionTypes)")
+    List<Mission> listAll(@BindList("missionTypes") List<String> missionTypes);
 
     @SqlUpdate("DELETE FROM missions WHERE key = :missionId")
     void delete(Long missionId);

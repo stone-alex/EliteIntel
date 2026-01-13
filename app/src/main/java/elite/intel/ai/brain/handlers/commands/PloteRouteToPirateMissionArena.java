@@ -24,7 +24,10 @@ public class PloteRouteToPirateMissionArena extends CommandOperator implements C
 
 
     @Override public void handle(String action, JsonObject params, String responseText) {
-        Optional<String> firstFaction = missionManager.getTargetFactions().stream().findFirst();
+        Optional<String> firstFaction = missionManager.getTargetFactions(
+                missionManager.getPirateMissionTypes()
+        ).stream().findFirst();
+
         String factionName = firstFaction.get();
         if(factionName == null) {
             EventBusManager.publish(new AiVoxResponseEvent("No factions found"));

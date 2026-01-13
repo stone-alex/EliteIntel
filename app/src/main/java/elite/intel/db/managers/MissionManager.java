@@ -2,6 +2,7 @@ package elite.intel.db.managers;
 
 import elite.intel.db.dao.MissionDao;
 import elite.intel.db.util.Database;
+import elite.intel.gameapi.MissionType;
 import elite.intel.gameapi.journal.events.dto.MissionDto;
 import elite.intel.util.json.GsonFactory;
 
@@ -40,10 +41,10 @@ public class MissionManager {
         });
     }
 
-    public Map<Long, MissionDto> getMissions() {
+    public Map<Long, MissionDto> getMissions(List<String> missionTypes) {
         return Database.withDao(MissionDao.class, dao -> {
             Map<Long, MissionDto> result = new HashMap<>();
-            List<MissionDao.Mission> missions = dao.listAll();
+            List<MissionDao.Mission> missions = dao.listAll(missionTypes);
             missions.sort(Comparator.comparing(MissionDao.Mission::getKey));
             for(MissionDao.Mission mission : missions) {
                 result.put(mission.getKey(), GsonFactory.getGson().fromJson(mission.getMission(), MissionDto.class));
@@ -52,9 +53,9 @@ public class MissionManager {
         });
     }
 
-    public Set<String> getTargetFactions() {
+    public Set<String> getTargetFactions(List<String> missionTypes) {
         Set<String> result = new HashSet<>();
-        Map<Long, MissionDto> missions = getMissions();
+        Map<Long, MissionDto> missions = getMissions(missionTypes);
         for(MissionDto mission : missions.values()) {
             result.add(mission.getMissionTargetFaction());
         }
@@ -66,5 +67,9 @@ public class MissionManager {
             dao.delete(missionId);
             return Void.class;
         });
+    }
+
+    public List<String> getPirateMissionTypes() {
+        return new ArrayList<>(Arrays.asList(MissionType.PIRATES.name()));
     }
 }

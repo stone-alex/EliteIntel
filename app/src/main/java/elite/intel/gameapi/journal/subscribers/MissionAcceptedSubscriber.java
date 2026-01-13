@@ -10,6 +10,9 @@ import elite.intel.gameapi.journal.events.MissionAcceptedEvent;
 import elite.intel.gameapi.journal.events.dto.MissionDto;
 import elite.intel.session.PlayerSession;
 
+import static elite.intel.gameapi.MissionType.MISSION_PIRATE_MASSACRE;
+import static elite.intel.gameapi.MissionType.MISSION_PIRATE_MASSACRE_WING;
+
 @SuppressWarnings("unused")
 public class MissionAcceptedSubscriber {
 
@@ -37,7 +40,7 @@ public class MissionAcceptedSubscriber {
 
         MissionType missionType = missionManager.getMissionType(event.getName());
 
-        if (MissionType.MISSION_PIRATE_MASSACRE.equals(missionType) || MissionType.MISSION_PIRATE_MASSACRE_WING.equals(missionType)) {
+        if (MISSION_PIRATE_MASSACRE.equals(missionType) || MISSION_PIRATE_MASSACRE_WING.equals(missionType)) {
             processPirateMission(event, playerSession);
         }
     }

@@ -78,4 +78,8 @@ public class MissionManager {
                 )
         );
     }
+
+    public MissionType getMissionType(String missionTypeName) {
+        return MissionType.valueOf(missionTypeName);
+    }
 }

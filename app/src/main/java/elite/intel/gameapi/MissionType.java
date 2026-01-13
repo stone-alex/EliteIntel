@@ -2,13 +2,13 @@ package elite.intel.gameapi;
 
 public enum MissionType {
     // Fighting
-    PIRATES("Pirates"),
+    MISSION_PIRATE_MASSACRE("Mission_Massacre"),
+    MISSION_PIRATE_MASSACRE_WING("Mission_MassacreWing"),
+    MISSION_PIRATE_MASSACRE_WING_NAME("Mission_MassacreWing_name"),
     MISSION_ASSASSINATE_PLANETARY_EXPANSION("Mission_Assassinate_Planetary_Expansion"),
     MISSION_ASSASSINATE_PLANETARY_EXPANSION_NAME("Mission_Assassinate_Planetary_Expansion_name"),
     MISSION_ASSASSINATE_RANKEMP("Mission_Assassinate_RankEmp"),
     MISSION_ASSASSINATE_RANKEMP_NAME("Mission_Assassinate_RankEmp_name"),
-    MISSION_MASSACREWING("Mission_MassacreWing"),
-    MISSION_MASSACREWING_NAME("Mission_MassacreWing_name"),
     MISSION_PIRACY_ANARCHY("Mission_Piracy_Anarchy"),
 
     // Courier

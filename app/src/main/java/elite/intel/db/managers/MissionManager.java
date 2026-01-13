@@ -72,9 +72,9 @@ public class MissionManager {
     public List<String> getPirateMissionTypes() {
         return new ArrayList<>(
                 Arrays.asList(
-                        MissionType.PIRATES.name(),
-                        MissionType.MISSION_MASSACREWING.name(),
-                        MissionType.MISSION_MASSACREWING_NAME.name()
+                        MissionType.MISSION_PIRATE_MASSACRE.name(),
+                        MissionType.MISSION_PIRATE_MASSACRE_WING.name(),
+                        MissionType.MISSION_PIRATE_MASSACRE_WING_NAME.name()
                 )
         );
     }

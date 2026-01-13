@@ -69,7 +69,7 @@ public class MissionDto extends BaseJsonDto {
                 return type;
             }
         }
-        return MissionType.PIRATES; // TODO: Temporary default
+        throw new IllegalArgumentException("Unknown mission type: " + name);
     }
 
     private MissionTargets toTargetType(String name) {

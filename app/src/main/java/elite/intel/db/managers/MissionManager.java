@@ -21,6 +21,15 @@ public class MissionManager {
         return instance;
     }
 
+    private static Map<Long, MissionDto> toMissionMap(List<MissionDao.Mission> missions) {
+        Map<Long, MissionDto> result = new HashMap<>();
+        missions.sort(Comparator.comparing(MissionDao.Mission::getKey));
+        for (MissionDao.Mission mission : missions) {
+            result.put(mission.getKey(), GsonFactory.getGson().fromJson(mission.getMission(), MissionDto.class));
+        }
+        return result;
+    }
+
     public void save(MissionDto mission) {
         MissionDao.Mission data = new MissionDao.Mission();
         data.setKey(mission.getMissionId());
@@ -42,15 +51,11 @@ public class MissionManager {
     }
 
     public Map<Long, MissionDto> getMissions(List<String> missionTypes) {
-        return Database.withDao(MissionDao.class, dao -> {
-            Map<Long, MissionDto> result = new HashMap<>();
-            List<MissionDao.Mission> missions = dao.listAll(missionTypes);
-            missions.sort(Comparator.comparing(MissionDao.Mission::getKey));
-            for (MissionDao.Mission mission : missions) {
-                result.put(mission.getKey(), GsonFactory.getGson().fromJson(mission.getMission(), MissionDto.class));
-            }
-            return result;
-        });
+        return Database.withDao(MissionDao.class, dao -> toMissionMap(dao.findForMissionType(missionTypes)));
+    }
+
+    public Map<Long, MissionDto> getMissions() {
+        return Database.withDao(MissionDao.class, dao -> toMissionMap(dao.findAny()));
     }
 
     public Set<String> getTargetFactions(List<String> missionTypes) {

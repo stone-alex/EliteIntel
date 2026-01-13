@@ -31,7 +31,10 @@ public interface MissionDao {
     Mission get(@Bind("key") Long key);
 
     @SqlQuery("SELECT * FROM missions WHERE missionType IN (:missionTypes)")
-    List<Mission> listAll(@BindList("missionTypes") List<String> missionTypes);
+    List<Mission> findForMissionType(@BindList("missionTypes") List<String> missionTypes);
+
+    @SqlQuery("SELECT * FROM missions")
+    List<Mission> findAny();
 
     @SqlUpdate("DELETE FROM missions WHERE key = :missionId")
     void delete(Long missionId);

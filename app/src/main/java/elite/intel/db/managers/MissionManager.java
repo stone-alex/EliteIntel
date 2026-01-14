@@ -78,8 +78,7 @@ public class MissionManager {
         return new ArrayList<>(
                 Arrays.asList(
                         MissionType.MISSION_PIRATE_MASSACRE.name(),
-                        MissionType.MISSION_PIRATE_MASSACRE_WING.name(),
-                        MissionType.MISSION_PIRATE_MASSACRE_WING_NAME.name()
+                        MissionType.MISSION_PIRATE_MASSACRE_WING.name()
                 )
         );
     }

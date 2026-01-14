@@ -81,7 +81,7 @@ public class MissionDto extends BaseJsonDto {
                 return type;
             }
         }
-        return MissionTargets.PIRATES; // TODO: Temporary fallback
+        throw new IllegalArgumentException("Unknown mission target: " + name);
     }
 
     public void setTarget(String target) {

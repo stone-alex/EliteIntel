@@ -65,7 +65,7 @@ public class MissionDto extends BaseJsonDto {
 
     private MissionType toMissionType(String name) {
         for (MissionType type : MissionType.values()) {
-            if (type.name().equalsIgnoreCase(name)) {
+            if (type.getMissionType().equalsIgnoreCase(name)) {
                 return type;
             }
         }

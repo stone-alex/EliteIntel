@@ -196,4 +196,7 @@ public class StringUtls {
                 .replaceAll("_", " ");
     }
 
+    public static String removeNameEnding(String missionName) {
+        return missionName.replace("_name","");
+    }
 }

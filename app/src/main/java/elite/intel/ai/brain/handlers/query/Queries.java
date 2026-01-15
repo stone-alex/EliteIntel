@@ -5,20 +5,17 @@ import elite.intel.ai.brain.handlers.query.struct.AnalyseMaterialsHandler;
 public enum Queries {
 
     HELP("help_with_topic", "--", HelpHandler.class, true),
-    ANALYZE_KEY_BINDINGS("query_analyze_key_bindings",
-            "Use this data to assist the user in correcting or informing about missing key bindings." +
-                    "Reply with a specific item from the list." +
-                    "If the user asks for 'next binding', reply with the first one in the list." +
-                    "If the user asks for similar bindings, list all related bindings. Like: 'Map', 'Buggy','UI', 'HUD' etc..",
-            AnalyzeMisingKeyBindingHandler.class,
-            true),
+    ANALYZE_KEY_BINDINGS("query_analyze_key_bindings", "Use this data to assist the user in correcting or informing about missing key bindings.Reply with a specific item from the list.If the user asks for 'next binding', reply with the first one in the list.If the user asks for similar bindings, list all related bindings. Like: 'Map', 'Buggy','UI', 'HUD' etc..", AnalyzeMisingKeyBindingHandler.class, true),
+    ANALYZE_MISSIONS("query_analyze_missions", "Use this data to answer questions about active missions."
+            + "Group the results according to the provided lists, ignore empty categories, when specifically prompted about an empty list, respond with 'I have no data for this category'."
+            + ""
+            , AnalyzeMissionHandler.class, true),
 
     ANALYZE_SYSTEM_SECURITY("query_analyze_system_security", "--", AnalyzeSystemSecurityHandler.class, true),
     ANALYZE_TRADE_PROFILE("query_current_trade_profile_info", "--", AnalyzeTradeProfileHandler.class, true),
     ANALYZE_DISTANCE_TO_STELLAR_OBJECT("query_what_is_the_distance_to_planet", "-- instructions in class --", AnalyzeDistanceToStellarObject.class, true),
     ANALYZE_SCAN("query_analyze_last_scan", "Analyze the most recent scan data.", AnalyzeLastScanHandler.class, true),
     QUERY_SEARCH_SIGNAL_DATA("query_star_system_data_signals_bio_samples_for_vista_genomics_stations_and_planetary_stats", "Data may contain information about planets, moons, planetary rings, raw materials, detectedSignals, bio forms, bio samples, stations, starports etc. Use gravity (G) and temperature (K) units. Offer celsius alternative. Use allCompletedBioScans for questions about bio samples not yet delivered to Vista Genomics.  Use planetShotName for planets.  If asked about how long the day last, answer in hours and minutes", AnalyzeSignalDataHandler.class, true),
-
     ANALYZE_MATERIALS_ON_HAND("query_analyze_storage_for_materials", "Provide answers about materials on hand based on this data. Use maxCap data field to compare amount available to cap amount. Material amount is measured in units. Example Answer: 'We have 12 units of mercury out of 200'", AnalyseMaterialsHandler.class, true),
     ANALYZE_STAR_SYSTEM_EXPLORATION("query_exploration_profits_data", "Use this data to provide answers on potential exo-biology exploration profits.", AnalyzeExplorationProfitsHandler.class, true),
     ANALYZE_CURRENT_PLANET("query_current_location", "Use this data to provide answers for our location. NOTE: For questions such as 'where are we?' Use planetShortName for location name unless we are on the station. If we are on a station, return station name and planet we are orbiting.", AnalyzeCurrentLocationHandler.class, true),  // Emphasize planetary/station context,
@@ -46,7 +43,7 @@ public enum Queries {
     HOW_FAR_IS_OUR_CARRIER("query_distance_to_fleet_carrier", "Calculate distance to our fleet carrier in light years using 3D coordinates.", AnalyzeDistanceFromFleetCarrierHandler.class, false),
 
     /// First query might be enough. TODO: Check.
-    QUERY_MISSIONS("query_summarize_outstanding_missions", "Provide summary of outstanding missions", AnalyzePirateMissionHandler.class, true),
+    QUERY_PIRATE_MISSIONS("query_summarize_outstanding_pirate_missions", "Provide summary of outstanding missions", AnalyzePirateMissionHandler.class, true),
     QUERY_PIRATE_MISSION_KILLS_REMAINING("query_pirate_mission_kills", "Summarize remaining kills for active pirate missions.", AnalyzePirateMissionHandler.class, true),
     QUERY_PIRATE_MISSION_PROFIT("query_analyze_pirate_mission_profit", "Summarize potential profit from active pirate missions.", AnalyzePirateMissionHandler.class, true),
     QUERY_PIRATE_MISSION_STATUS("query_analyze_pirate_mission_progress", "Summarize progress of active pirate missions.", AnalyzePirateMissionHandler.class, true),

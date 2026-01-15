@@ -21,10 +21,10 @@ public class AnalyzeMissionHandler extends BaseQueryAnalyzer implements QueryHan
 
     @Override
     public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        MissionType[] availableMissionType = missionManager.getAvailableMissionType();
-        if (availableMissionType.length == 0) return process("We have no active missions");
+        MissionType[] availableMissionTypes = missionManager.getAvailableMissionTypes();
+        if (availableMissionTypes.length == 0) return process("We have no active missions");
 
-        Map<MissionType, Collection<MissionDto>> missions = Arrays.stream(availableMissionType).collect(
+        Map<MissionType, Collection<MissionDto>> missions = Arrays.stream(availableMissionTypes).collect(
                 Collectors.toMap(
                         missionType -> missionType,
                         missionType -> missionManager.getMissions(missionType).values(),

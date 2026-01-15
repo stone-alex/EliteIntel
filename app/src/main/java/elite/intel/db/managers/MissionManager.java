@@ -50,7 +50,7 @@ public class MissionManager {
         });
     }
 
-    public MissionType[] getAvailableMissionType() {
+    public MissionType[] getAvailableMissionTypes() {
         return Database.withDao(MissionDao.class, dao -> {
             String[] missionTypeNames = dao.getAvailableMissionTypes();
             MissionType[] result = new MissionType[missionTypeNames.length];

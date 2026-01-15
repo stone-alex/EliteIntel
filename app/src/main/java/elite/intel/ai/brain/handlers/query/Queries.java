@@ -6,10 +6,7 @@ public enum Queries {
 
     HELP("help_with_topic", "--", HelpHandler.class, true),
     ANALYZE_KEY_BINDINGS("query_analyze_key_bindings", "Use this data to assist the user in correcting or informing about missing key bindings.Reply with a specific item from the list.If the user asks for 'next binding', reply with the first one in the list.If the user asks for similar bindings, list all related bindings. Like: 'Map', 'Buggy','UI', 'HUD' etc..", AnalyzeMisingKeyBindingHandler.class, true),
-    ANALYZE_MISSIONS("query_analyze_missions", "Use this data to answer questions about active missions."
-            + "Group the results according to the provided lists, ignore empty categories, when specifically prompted about an empty list, respond with 'I have no data for this category'."
-            + ""
-            , AnalyzeMissionHandler.class, true),
+    ANALYZE_MISSIONS("query_analyze_missions", "Use this data to answer questions about active missions. The missions are provided as a map of MissionType to List of Missions matching that type.", AnalyzeMissionHandler.class, true),
 
     ANALYZE_SYSTEM_SECURITY("query_analyze_system_security", "--", AnalyzeSystemSecurityHandler.class, true),
     ANALYZE_TRADE_PROFILE("query_current_trade_profile_info", "--", AnalyzeTradeProfileHandler.class, true),

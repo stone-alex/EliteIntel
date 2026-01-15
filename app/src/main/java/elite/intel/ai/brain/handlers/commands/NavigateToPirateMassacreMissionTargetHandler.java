@@ -5,11 +5,11 @@ import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.db.managers.MissionManager;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.gameapi.MissionType;
 import elite.intel.gameapi.journal.events.dto.MissionDto;
 
-
-import java.util.Set;
 import java.util.List;
+import java.util.Set;
 
 public class NavigateToPirateMassacreMissionTargetHandler extends CommandOperator implements CommandHandler {
 
@@ -23,7 +23,7 @@ public class NavigateToPirateMassacreMissionTargetHandler extends CommandOperato
     @Override public void handle(String action, JsonObject params, String responseText) {
         MissionManager missionManager = MissionManager.getInstance();
 
-        List<String> missionTypes = missionManager.getPirateMissionTypes();
+        MissionType[] missionTypes = missionManager.getPirateMissionTypes();
         //list contains only missions that are not completed;
         Set<String> targetFactions = missionManager.getTargetFactions(missionTypes);
 
@@ -31,8 +31,6 @@ public class NavigateToPirateMassacreMissionTargetHandler extends CommandOperato
             EventBusManager.publish(new AiVoxResponseEvent("No pirate massacre mission providers found."));
             return;
         }
-
-
 
         MissionDto mission = missionManager.getMissions(missionTypes).values().stream().filter(
                 v -> v.getMissionType().equals("PirateMassacre")

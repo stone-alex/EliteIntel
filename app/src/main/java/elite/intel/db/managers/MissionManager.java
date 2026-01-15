@@ -50,7 +50,18 @@ public class MissionManager {
         });
     }
 
-    public Map<Long, MissionDto> getMissions(List<String> missionTypes) {
+    public MissionType[] getAvailableMissionType() {
+        return Database.withDao(MissionDao.class, dao -> {
+            String[] missionTypeNames = dao.getAvailableMissionTypes();
+            MissionType[] result = new MissionType[missionTypeNames.length];
+            for (int i = 0, typesLength = missionTypeNames.length; i < typesLength; i++) {
+                result[i] = MissionType.valueOf(missionTypeNames[i]);
+            }
+            return result;
+        });
+    }
+
+    public Map<Long, MissionDto> getMissions(MissionType... missionTypes) {
         return Database.withDao(MissionDao.class, dao -> toMissionMap(dao.findForMissionType(missionTypes)));
     }
 
@@ -58,7 +69,7 @@ public class MissionManager {
         return Database.withDao(MissionDao.class, dao -> toMissionMap(dao.findAny()));
     }
 
-    public Set<String> getTargetFactions(List<String> missionTypes) {
+    public Set<String> getTargetFactions(MissionType... missionTypes) {
         Set<String> result = new HashSet<>();
         Map<Long, MissionDto> missions = getMissions(missionTypes);
         for (MissionDto mission : missions.values()) {
@@ -74,13 +85,13 @@ public class MissionManager {
         });
     }
 
-    public List<String> getPirateMissionTypes() {
+    public MissionType[] getPirateMissionTypes() {
         return new ArrayList<>(
                 Arrays.asList(
-                        MissionType.MISSION_PIRATE_MASSACRE.name(),
-                        MissionType.MISSION_PIRATE_MASSACRE_WING.name()
+                        MissionType.MISSION_PIRATE_MASSACRE,
+                        MissionType.MISSION_PIRATE_MASSACRE_WING
                 )
-        );
+        ).toArray(MissionType[]::new);
     }
 
     public MissionType getMissionType(String missionTypeName) {

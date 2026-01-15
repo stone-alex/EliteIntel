@@ -4,6 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.db.managers.MissionManager;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.gameapi.MissionType;
 import elite.intel.gameapi.journal.events.BountyEvent;
 import elite.intel.gameapi.journal.events.dto.BountyDto;
 import elite.intel.session.PlayerSession;
@@ -39,7 +40,9 @@ public class BountyEventSubscriber {
         playerSession.addBounty(sessionData);
 
         StringBuilder sb = new StringBuilder();
-        Set<String> targetFactions = missionManager.getTargetFactions(missionManager.getPirateMissionTypes());
+        Set<String> targetFactions = missionManager.getTargetFactions(
+                missionManager.getPirateMissionTypes()
+        );
         if (!targetFactions.isEmpty() && targetFactions.contains(event.getVictimFaction())) {
             sb.append(" Mission Kill Confirmed, ");
         } else {

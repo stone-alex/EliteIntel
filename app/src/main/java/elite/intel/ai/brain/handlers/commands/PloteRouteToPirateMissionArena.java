@@ -7,6 +7,7 @@ import elite.intel.db.managers.DestinationReminderManager;
 import elite.intel.db.managers.MissionManager;
 import elite.intel.db.managers.PirateMissionDataManager;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.gameapi.MissionType;
 
 import java.util.Optional;
 

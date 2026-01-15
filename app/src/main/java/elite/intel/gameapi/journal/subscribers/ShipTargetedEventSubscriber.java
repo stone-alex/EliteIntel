@@ -5,6 +5,7 @@ import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.ai.mouth.subscribers.events.TTSInterruptEvent;
 import elite.intel.db.managers.MissionManager;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.gameapi.MissionType;
 import elite.intel.gameapi.journal.events.ShipTargetedEvent;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.Md5Utils;
@@ -104,7 +105,9 @@ public class ShipTargetedEventSubscriber {
         if (faction == null || faction.isBlank()) return null;
         if (legalStatus == null || legalStatus.isBlank()) return null;
 
-        Set<String> targetFactions = missionManager.getTargetFactions(missionManager.getPirateMissionTypes());
+        Set<String> targetFactions = missionManager.getTargetFactions(
+                missionManager.getPirateMissionTypes()
+        );
         if (!targetFactions.isEmpty() && targetFactions.contains(faction)) {
             return " Mission Target ";
         }

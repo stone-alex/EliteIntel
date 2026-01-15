@@ -30,8 +30,8 @@ public interface MissionDao {
     @SqlQuery("SELECT * FROM missions WHERE key = :key")
     Mission get(@Bind("key") Long key);
 
-    @SqlQuery("SELECT * FROM missions WHERE missionType IN (:missionTypes)")
-    List<Mission> findForMissionType(@BindList("missionTypes") MissionType[] missionTypes);
+    @SqlQuery("SELECT * FROM missions WHERE missionType IN (<missionTypes>)")
+    List<Mission> findForMissionType(@BindList("missionTypes") MissionType... missionTypes);
 
     @SqlQuery("SELECT * FROM missions")
     List<Mission> findAny();

@@ -47,7 +47,9 @@ public enum MissionType {
     MISSION_MINING("Mission_Mining"),
 
     // OnFoot,
-    MISSION_ONFOOT_ONSLAUGHT_OFFLINE_002("Mission_OnFoot_Onslaught_Offline_002");
+    MISSION_ONFOOT_ONSLAUGHT_OFFLINE_002("Mission_OnFoot_Onslaught_Offline_002"),
+
+    UNKNOWN("UnknownType");
 
     private final String missionType;
 

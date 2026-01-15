@@ -95,6 +95,7 @@ public class MissionManager {
     }
 
     public MissionType getMissionType(String missionTypeName) {
-        return MissionType.valueOf(missionTypeName);
+        MissionType[] values = MissionType.values();
+        return Arrays.stream(values).filter(type -> type.getMissionType().equalsIgnoreCase(missionTypeName)).findFirst().orElse(MissionType.UNKNOWN);
     }
 }

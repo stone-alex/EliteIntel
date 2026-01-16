@@ -72,6 +72,7 @@ public abstract class AiEndPoint {
 
 
     public Response callApi(HttpURLConnection conn, String jsonString, Client client) throws IOException {
+        log.debug("xAI API call:\n{}", jsonString);
         try (var outputStream = conn.getOutputStream()) {
             outputStream.write(jsonString.getBytes(StandardCharsets.UTF_8));
         }

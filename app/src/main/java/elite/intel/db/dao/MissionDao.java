@@ -36,7 +36,7 @@ public interface MissionDao {
     @SqlQuery("SELECT * FROM missions")
     List<Mission> findAny();
 
-    @SqlQuery("select missionType from missions")
+    @SqlQuery("SELECT DISTINCT missionType FROM missions")
     String[] getAvailableMissionTypes();
 
     @SqlUpdate("DELETE FROM missions WHERE key = :missionId")

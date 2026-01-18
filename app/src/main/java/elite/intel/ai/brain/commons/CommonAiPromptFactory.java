@@ -49,8 +49,8 @@ public class CommonAiPromptFactory implements AiPromptFactory {
                 .append("Round billions to nearest million. Round millions to nearest 250000. ")
                 .append("Provide extremely brief and concise answers. Always use planetShortName for locations if available.\n")
                 .append("Always output JSON for 'navigate_to_coordinates' command using numbers, not spelled out words. Example: {\"latitude\":-35.4320,\"longitude\":76.4324} do not confuse with navigate to landing zone or bio sample.\n")
-                .append("For type='query' in initial classification, follow response_text rules from player instructions. For tool/follow-up, use full analyzed response in 'response_text'.\n")
-                .append("For type='chat', set 'expect_followup': true if response poses a question or requires user clarification; otherwise, false.\n")
+
+
                 .append(JSON_FORMAT).append('\n');
 
         return sb.toString();
@@ -78,14 +78,16 @@ public class CommonAiPromptFactory implements AiPromptFactory {
         sb.append("    - Only use commands and queries provided. Else response as generic chat.\n");
 
         sb.append("For type='query':\n");
+        sb.append("    - In initial classification, follow response_text rules from player instructions. For tool/follow-up, use full analyzed response in 'response_text'.\n");
         sb.append("    - If action is a quick query set 'response_text' to '' (empty string, no initial TTS).\n");
         sb.append("    - If action is a data query set 'response_text' to '' for user feedback during delay.\n");
         sb.append("    - For 'general_conversation', use general knowledge outside simulation unless the input explicitly mentions the simulation.\n");
         sb.append("    - Do not generate or infer answers here; the app will handle final response via handlers.\n");
 
         sb.append("For type='chat':\n");
-        sb.append("    - Generate a relevant conversational response in 'response_text' strictly adhering to the configured personality and cadence.\n");
-        sb.append("    - Set 'expect_followup' to true if the response poses a question or invites further conversation; otherwise, false.\n");
+        sb.append("    - Set 'expect_followup': true if response poses a question or requires user clarification; otherwise, false.\n ");
+        sb.append("    - Generate a relevant conversational response in 'response_text' strictly adhering to the configured personality and cadence.\n ");
+        sb.append("    - Set 'expect_followup' to true if the response poses a question or invites further conversation; otherwise, false.\n ");
 
         return sb.toString();
     }

@@ -25,7 +25,6 @@ public class ScanOrganicSubscriber {
     private final LocationManager locationManager = LocationManager.getInstance();
     private final CodexEntryManager codexEntryManager = CodexEntryManager.getInstance();
     private final Status status = Status.getInstance();
-    private int scanCount = 0;
 
     private static void announce(String sb) {
         if (PlayerSession.getInstance().isDiscoveryAnnouncementOn()) {
@@ -60,8 +59,6 @@ public class ScanOrganicSubscriber {
             range = distance;
         }
 
-        Boolean isAnnounced = playerSession.paymentHasBeenAnnounced(genus);
-
         if (scan1.equals(scanType)) {
             sb.append(" Organic sample detected: Genus: ");
             sb.append(" ");
@@ -79,13 +76,11 @@ public class ScanOrganicSubscriber {
             bioSampleDto.setScanXof3("First of Three");
             currentLocation.addBioScan(bioSampleDto);
             announce(sb.toString());
-            scanCount = 1;
 
         } else if (scan2.equalsIgnoreCase(scanType)) {
             BioSampleDto bioSampleDto = createBioSampleDto(genus, species, isOurDiscovery);
             currentLocation.addBioScan(bioSampleDto);
             bioSampleDto.setScanXof3("Second of Three");
-            scanCount = 2;
 
         } else if (scan3.equalsIgnoreCase(scanType)) {
             sb = new StringBuilder();
@@ -104,7 +99,6 @@ public class ScanOrganicSubscriber {
             playerSession.addBioSample(bioSampleDto);
             currentLocation.deletePartialBioSamples();
             removeCodexEntry(event.getVariantLocalised());
-            scanCount = 0;
             playerSession.clearGenusPaymentAnnounced();
         }
 

@@ -303,24 +303,6 @@ public class AppController implements Runnable {
 
 
     private void startStopServices() {
-/*        String ttsApiKey = SystemSession.getInstance().getTtsApiKey();
-        if (ttsApiKey == null || ttsApiKey.trim().isEmpty() || ttsApiKey.equals("null")) {
-            appendToLog("SYSTEM: TTS API key is not provided. I have no mouth to speak with");
-            return;
-        }
-
-        String sttApiKey = SystemSession.getInstance().getSttApiKey();
-        if (sttApiKey == null || sttApiKey.trim().isEmpty() || sttApiKey.equals("null")) {
-            appendToLog("SYSTEM: STT API key is not provided. I have no ears to hear with");
-            return;
-        }
-
-        String aiApiKey = SystemSession.getInstance().getAiApiKey();
-        if (aiApiKey == null || aiApiKey.trim().isEmpty() || aiApiKey.equals("null")) {
-            appendToLog("SYSTEM: AI API key is not provided. I have no brain to process with");
-            return;
-        }*/
-
         systemSession.clearChatHistory();
         journalParser.start();
         fileMonitor.start();

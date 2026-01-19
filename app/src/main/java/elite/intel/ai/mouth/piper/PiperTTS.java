@@ -164,7 +164,7 @@ public class PiperTTS implements MouthInterface {
         if (input == null || input.isBlank()) return;
 
         //replace em-dash with comma + space
-        String text = input.replace("—", ", ");
+        String text = input.replace("—", ", ").replace("*"," ");
 
         AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_2);
         EventBusManager.publish(new AppLogEvent("AI: " + text));

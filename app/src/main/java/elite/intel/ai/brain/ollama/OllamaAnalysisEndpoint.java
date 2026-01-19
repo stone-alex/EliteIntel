@@ -33,7 +33,7 @@ public class OllamaAnalysisEndpoint extends AiEndPoint implements AiAnalysisInte
                     .getAiPromptFactory()
                     .generateAnalysisPrompt(userIntent, struct.getInstructions());
 
-            JsonObject body = client.createRequestBodyHeader(OllamaClient.MODEL_OLLAMA, 0.9f);
+            JsonObject request = client.createRequestBodyHeader(OllamaClient.MODEL_OLLAMA, 0.1f);
 
             JsonObject systemMsg = new JsonObject();
             systemMsg.addProperty("role", AIConstants.ROLE_SYSTEM);
@@ -46,20 +46,15 @@ public class OllamaAnalysisEndpoint extends AiEndPoint implements AiAnalysisInte
             JsonArray messages = new JsonArray();
             messages.add(systemMsg);
             messages.add(userMsg);
-            body.add("messages", messages);
+            request.add("messages", messages);
 
-            log.debug("Ollama analysis call:\n{}", gson.toJson(body));
+            log.debug("Ollama analysis call:\n{}", gson.toJson(request));
 
-            Response response = callApi(conn, gson.toJson(body), client);
+            Response response = callApi(conn, gson.toJson(request), client);
             JsonObject root = response.responseData();
 
-            String content = root.getAsJsonObject("message")
-                    .get("content")
-                    .getAsString();
-
-            log.debug("Ollama analysis raw response:\n{}", content);
-
-            return JsonParser.parseString(content).getAsJsonObject();
+            log.debug("Ollama analysis raw response:\n{}", root);
+            return JsonParser.parseString(root.getAsJsonObject("message").get("content").getAsString()).getAsJsonObject();
 
         } catch (Exception e) {
             log.error("Ollama analysis failed", e);

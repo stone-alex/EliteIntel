@@ -20,7 +20,7 @@ public class OllamaPromptFactory implements AiPromptFactory {
 
     private static final OllamaPromptFactory INSTANCE = new OllamaPromptFactory();
     private static final String JSON_FORMAT =
-            "Always output JSON: {\"type\": \"command|query|chat\", \"response_text\": \"TTS output\", \"action\": \"action_name|query_name\", \"params\": {\"key\": \"value\"}, \"expect_followup\": boolean} action must match provided command or query. they key for value is always 'key'. ";
+            "Always output JSON: {\"type\": \"command|query|chat\", \"response_text\": \"TTS output\", \"action\": \"action_name|query_name\", \"params\": {\"key\": \"value\"}, \"expect_followup\": boolean} action must match provided command or query. They key for value is always 'key'. ";
 
     private OllamaPromptFactory() {
     }
@@ -48,13 +48,10 @@ public class OllamaPromptFactory implements AiPromptFactory {
                 .append(inputClassificationClause()).append('\n')
                 .append(supportedCommandsClause()).append('\n')
                 .append(supportedQueriesClause()).append('\n')
+                .append(colloquialTerms()).append('\n')
         //.append(getSessionValues()).append('\n')
-        //.append(appendBehavior()).append('\n')
-        //.append(getSessionValues()).append('\n')
-        //.append(appendBehavior()).append('\n')
 /*
                 .append(generateAbbreviations()).append('\n')
-                .append(getSessionValues()).append('\n')
                 .append(colloquialTerms()).append('\n')
                 .append(appendBehavior()).append('\n')
                 ;
@@ -110,8 +107,8 @@ public class OllamaPromptFactory implements AiPromptFactory {
         sb.append(" Map 'select next way point' to ").append(TARGET_NEXT_ROUTE_SYSTEM.getAction()).append("\n");
         sb.append(" 'Resource Sites' are not for materials. They are 'hunting grounds for pirate massacre missions'. Do not confuse a 'Resource Site' with material gathering.");
         sb.append(" Map 'scan system' to commands like ").append(OPEN_FSS_AND_SCAN.getAction()).append(". and 'damage report' to queries like ").append(QUERY_SHIP_LOADOUT.getAction()).append("\n");
-        sb.append(" Infer command intent from context: phrases like 'act like', 'talk like', 'blend in with', or 'sound like' followed by a faction should trigger '").append(SET_PERSONALITY.getAction()).append("' with the corresponding cadence value, using current system allegiance if ambiguous.\n");
-        sb.append(" Do not confuse traders with market. Material tader/broker is not the same as trade station / port.");
+        //sb.append(" Infer command intent from context: phrases like 'act like', 'talk like', 'blend in with', or 'sound like' followed by a faction should trigger '").append(SET_PERSONALITY.getAction()).append("' with the corresponding cadence value, using current system allegiance if ambiguous.\n");
+        //sb.append(" Do not confuse traders with market. Material tader/broker is not the same as trade station / port.");
         return sb.toString();
     }
 
@@ -166,10 +163,10 @@ public class OllamaPromptFactory implements AiPromptFactory {
         sb.append("Instructions:\n");
         //sb.append(appendBehavior());
         sb.append("Task:\n");
-        sb.append("Analyze the provided JSON data: ").append(instructions).append(". ");
-        sb.append("against the user's intent: ").append(userIntent).append(". Return precise answers (e.g., yes/no for specific searches) or summaries as requested, using the configured personality and cadence in 'response_text'.\n");
-        sb.append("Return only the exact result specified by the instructions.\n");
-        sb.append(JSON_FORMAT).append("\n");
+        sb.append(" Analyze the provided JSON data: ").append(instructions).append(". ");
+        sb.append(" against the user's intent using instructions provided within. ").append(userIntent).append(". Return precise answers or summaries as requested in 'response_text' field. \n");
+        sb.append(appendBehavior());
+
         return sb.toString();
     }
 
@@ -198,18 +195,18 @@ public class OllamaPromptFactory implements AiPromptFactory {
         AIPersonality aiPersonality = systemSession.isRunningPiperTts() ? AIPersonality.CASUAL : systemSession.getAIPersonality();
 
         sb.append(" Behavior: ");
-        sb.append(aiCadence.getCadenceClause()).append(" ");
-        sb.append(" Apply personality: ").append(aiPersonality.name().toUpperCase()).append(" - ").append(aiPersonality.getBehaviorClause()).append(" ");
+        //sb.append(aiCadence.getCadenceClause()).append(" ");
+        //sb.append(" Apply personality: ").append(aiPersonality.name().toUpperCase()).append(" - ").append(aiPersonality.getBehaviorClause()).append(" ");
         sb.append(" Do not end responses with any fillers, or unnecessary phrases like 'Ready for exploration', 'Ready for orders', 'All set', 'Ready to explore', 'Should we proceed?', or similar open-ended questions or remarks.\n");
-//        sb.append(" Do not use words like 'player' or 'you', it breaks immersion. Use 'we' instead. ");
-//        sb.append(" Do not confuse 'Next Waypoint' with 'Current Location'");
-//        sb.append(" For alpha numeric numbers or names, star system codes or ship plates (e.g., Syralaei RH-F, KI-U), use NATO phonetic alphabet (e.g., Syralaei Romeo Hotel dash Foxtrot, Kilo India dash Uniform). Use planetShortName for planets when available.\n");
-//        sb.append(" Spell out numerals in full words (e.g., 285 = two hundred and eighty-five, 27 = twenty-seven). ");
+        sb.append(" Do not use words like 'player' or 'you', it breaks immersion. Use 'we' instead. ");
+        sb.append(" Do not confuse 'Next Waypoint' with 'Current Location'");
+        sb.append(" For alpha numeric numbers or names, star system codes or ship plates (e.g., Syralaei RH-F, KI-U), use NATO phonetic alphabet (e.g., Syralaei Romeo Hotel dash Foxtrot, Kilo India dash Uniform). Use planetShortName for planets when available.\n");
+        sb.append(" Spell out numerals in full words (e.g., 285 = two hundred and eighty-five, 27 = twenty-seven). ");
 //        sb.append(" Gravity units in G, Temperature units Kelvin provide conversion to Celsius. Mass units metric.\n");
-//        sb.append(" Distances between stars in light years. Distance between planets in light seconds. Distances between bio samples are in metres.\n");
-//        sb.append(" Bio samples are taken from organisms not stellar objects.\n");
-//        sb.append(" Always use planetShortName for locations when available.\n");
-//        sb.append(" Round billions to nearest 1000000. Round millions to nearest 250000.\n");
+        sb.append(" Distances between stars in light years. Distance between planets in light seconds. Distances between bio samples are in metres.\n");
+        sb.append(" Bio samples are taken from organisms not stellar objects.\n");
+        sb.append(" Always use planetShortName for locations when available.\n");
+        sb.append(" Round billions to nearest 1000000. Round millions to nearest 250000.\n");
 //        sb.append(" Use ONLY planetShortName (e.g., '12 d'). NEVER use planetName or bodyId.\n");
 //        sb.append(" Start responses directly with the requested information, avoiding conversational fillers like 'noted,' 'well,' 'right,' 'understood,' or similar phrases.\n")
 //

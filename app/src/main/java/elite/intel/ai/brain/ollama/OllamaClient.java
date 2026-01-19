@@ -9,7 +9,8 @@ import java.net.URL;
 
 public class OllamaClient implements Client {
 
-    public static final String MODEL_OLLAMA = "goekdenizguelmez/JOSIEFIED-Qwen3:14b";
+    //public static final String MODEL_OLLAMA = "goekdenizguelmez/JOSIEFIED-Qwen3:14b";
+    public static final String MODEL_OLLAMA = "goekdenizguelmez/JOSIEFIED-Qwen3:8b";
     public static final String MODEL_OLLAMA_SMALL = "goekdenizguelmez/JOSIEFIED-Qwen3:8b";
 
     private static final OllamaClient INSTANCE = new OllamaClient();

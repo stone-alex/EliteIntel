@@ -40,7 +40,7 @@ public class ApiFactory {
         return switch (provider) {
             case GROK -> GrokAnalysisEndpoint.getInstance();
             case OPENAI -> OpenAiAnalysisEndPoint.getInstance();
-            default -> throw new IllegalStateException("Unknown AI key format");
+            default -> OllamaAnalysisEndpoint.getInstance();
         };
 
     }
@@ -61,7 +61,7 @@ public class ApiFactory {
         return switch (provider) {
             case GROK -> CommonAiPromptFactory.getInstance();
             case OPENAI -> CommonAiPromptFactory.getInstance();
-            default -> CommonAiPromptFactory.getInstance();
+            default -> OllamaPromptFactory.getInstance();
         };
     }
 

@@ -92,7 +92,7 @@ public class OllamaCommandEndPoint extends CommandEndPoint implements AiCommandI
             boolean expect = response.has(AIConstants.PROPERTY_EXPECT_FOLLOWUP) &&
                     response.get(AIConstants.PROPERTY_EXPECT_FOLLOWUP).getAsBoolean();
             JsonObject assistant = new JsonObject();
-            assistant.addProperty("role", AIConstants.ROLE_ASSISTANT);
+            assistant.addProperty("role", AIConstants.ROLE_SYSTEM);
             assistant.addProperty("content", getAsStringOrEmpty(response, AIConstants.PROPERTY_RESPONSE_TEXT));
             if (expect) {
                 systemSession.appendToChatHistory(userMsg, assistant);

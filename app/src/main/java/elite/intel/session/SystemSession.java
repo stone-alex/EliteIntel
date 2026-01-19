@@ -405,4 +405,17 @@ public class SystemSession {
     public boolean isSendExplorationData() {
         return Database.withDao(GameSessionDao.class, dao -> dao.get().getSendExplorationData());
     }
+
+    public void setSpeechSpeed(float speed) {
+        Database.withDao(GameSessionDao.class, dao -> {
+            GameSessionDao.GameSession session = dao.get();
+            session.setSpeechSpeed(speed);
+            dao.save(session);
+            return Void.class;
+        });
+    }
+
+    public Float getSpeechSpeed() {
+        return Database.withDao(GameSessionDao.class, dao -> dao.get().getSpeechSpeed());
+    }
 }

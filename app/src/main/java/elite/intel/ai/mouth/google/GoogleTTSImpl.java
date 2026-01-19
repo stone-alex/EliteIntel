@@ -167,7 +167,7 @@ public class GoogleTTSImpl implements MouthInterface {
             if (event.isChatStreamChatVolcaisation()) {
                 voiceName = googleVoiceProvider.getVoiceParams(AiVoices.JENNIFER.getName()).getName();
             }
-            voiceQueue.put(new VoiceRequest(event.getText(), voiceName, googleVoiceProvider.getSpeechRate(voiceName), event.getOriginType()));
+            voiceQueue.put(new VoiceRequest(event.getText(), voiceName, (1f + systemSession.getSpeechSpeed()), event.getOriginType()));
             AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_2);
             EventBusManager.publish(new AppLogEvent("AI: " + event.getText()));
             log.debug("Added VoiceRequest to queue: text='{}', voice='{}'", event.getText(), voiceName);

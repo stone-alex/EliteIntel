@@ -18,11 +18,11 @@ public interface GameSessionDao {
             INSERT OR REPLACE INTO game_session (id, aiPersonality,  aiCadence, aiVoice, aiApiKey, ttsApiKey, sttApiKey, 
                                                              edsmApiKey, loggingEnabled, privacyModeOn, rmsThresholdHigh,  
                                                              rmsThresholdLow, encryptedLLMKey, encryptedSTTKey, encryptedTTSKey, 
-                                                             encryptedEDSSMKey, sendMarketData, sendOutfittingData, sendShipyardData, sendExplorationData)
+                                                             encryptedEDSSMKey, sendMarketData, sendOutfittingData, sendShipyardData, sendExplorationData, speechSpeed)
                                   VALUES (1, :aiPersonality, :aiCadence, :aiVoice, :aiApiKey, :ttsApiKey, :sttApiKey, 
                                                       :edsmApiKey, :loggingEnabled, :privacyModeOn, :rmsThresholdHigh, 
                                                       :rmsThresholdLow, :encryptedLLMKey, :encryptedSTTKey, :encryptedTTSKey, 
-                                                      :encryptedEDSSMKey, :sendMarketData, :sendOutfittingData, :sendShipyardData, :sendExplorationData)
+                                                      :encryptedEDSSMKey, :sendMarketData, :sendOutfittingData, :sendShipyardData, :sendExplorationData, :speechSpeed)
             """)
     void save(@BindBean GameSessionDao.GameSession data);
 
@@ -59,6 +59,8 @@ public interface GameSessionDao {
             session.setSendOutfittingData(rs.getBoolean("sendOutfittingData"));
             session.setSendShipyardData(rs.getBoolean("sendShipyardData"));
             session.setSendExplorationData(rs.getBoolean("sendExplorationData"));
+
+            session.setSpeechSpeed(rs.getFloat("speechSpeed"));
             return session;
         }
     }
@@ -88,6 +90,7 @@ public interface GameSessionDao {
         private Boolean sendOutfittingData;
         private Boolean sendShipyardData;
         private Boolean sendExplorationData;
+        private Float speechSpeed;
 
 
         public String getAiPersonality() {
@@ -241,6 +244,14 @@ public interface GameSessionDao {
 
         public void setSendExplorationData(Boolean sendExplorationData) {
             this.sendExplorationData = sendExplorationData;
+        }
+
+        public Float getSpeechSpeed() {
+            return speechSpeed;
+        }
+
+        public void setSpeechSpeed(Float speechSpeed) {
+            this.speechSpeed = speechSpeed;
         }
     }
 }

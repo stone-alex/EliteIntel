@@ -8,11 +8,11 @@ import elite.intel.ai.brain.AiCommandInterface;
 import elite.intel.ai.ears.AudioCalibrator;
 import elite.intel.ai.ears.AudioFormatDetector;
 import elite.intel.ai.ears.EarsInterface;
+import elite.intel.ai.hands.KeyBindCheck;
 import elite.intel.ai.mouth.AiVoices;
 import elite.intel.ai.mouth.MouthInterface;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
-import elite.intel.ai.hands.KeyBindCheck;
 import elite.intel.gameapi.AuxiliaryFilesMonitor;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.JournalParser;
@@ -22,6 +22,7 @@ import elite.intel.ui.event.*;
 import elite.intel.ui.view.AppView;
 import elite.intel.util.SleepNoThrow;
 import elite.intel.util.Updater;
+import org.apache.commons.lang3.EnumUtils;
 
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
@@ -116,6 +117,10 @@ public class AppController implements Runnable {
         return sb.toString().replace(", ]", "]");
     }
 
+    @Subscribe public void onSpeechSpeedChangeEvent(SpeechSpeedChangeEvent event) {
+        systemSession.setSpeechSpeed(event.getSpeed());
+    }
+
     @Subscribe
     public void onStreamModeToggle(StreamModelToggleEvent event) {
         this.view.toggleStreamingModeCheckBox.setSelected(event.isStreaming());
@@ -189,7 +194,7 @@ public class AppController implements Runnable {
     @Subscribe void onToggleServiceEvent(ToggleServicesEvent event) {
         SwingUtilities.invokeLater(() -> {
             if (event.isStartSercice()) {
-                startStopServices();
+                startServices();
             } else {
                 stopServices();
             }
@@ -226,10 +231,20 @@ public class AppController implements Runnable {
         EventBusManager.publish(new AiVoxResponseEvent("Systems offline..."));
         // Stop services
         journalParser.stop();
+        journalParser = null;
+
         fileMonitor.stop();
+        fileMonitor = null;
+
         brain.stop();
+        brain= null;
+
         ears.stop();
+        ears = null;
+
         mouth.stop();
+        mouth = null;
+
         systemSession.clearChatHistory();
         //edDnClient.stop();
         EventBusManager.publish(new ServicesStateEvent(false));
@@ -302,7 +317,7 @@ public class AppController implements Runnable {
     }
 
 
-    private void startStopServices() {
+    private void startServices() {
         String sttApiKey = SystemSession.getInstance().getSttApiKey();
         if (sttApiKey == null || sttApiKey.trim().isEmpty() || sttApiKey.equals("null")) {
             appendToLog("SYSTEM: STT API key is not provided. I have no ears to hear with");
@@ -316,16 +331,28 @@ public class AppController implements Runnable {
         }
 
         systemSession.clearChatHistory();
+        if(journalParser == null) {
+            journalParser = new JournalParser();
+        }
         journalParser.start();
+        if(fileMonitor == null) {
+            fileMonitor = new AuxiliaryFilesMonitor();
+        }
         fileMonitor.start();
 
-        mouth = ApiFactory.getInstance().getMouthImpl();
+        if(mouth == null) {
+            mouth = ApiFactory.getInstance().getMouthImpl();
+        }
         mouth.start();
 
-        ears = ApiFactory.getInstance().getEarsImpl();
+        if(ears == null) {
+            ears = ApiFactory.getInstance().getEarsImpl();
+        }
         ears.start();
 
-        brain = ApiFactory.getInstance().getCommandEndpoint();
+        if(brain == null) {
+            brain = ApiFactory.getInstance().getCommandEndpoint();
+        }
         brain.start();
 
         String mission_statement = playerSession.getPlayerMissionStatement();

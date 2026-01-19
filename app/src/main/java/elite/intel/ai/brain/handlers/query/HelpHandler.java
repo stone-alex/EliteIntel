@@ -32,7 +32,7 @@ public class HelpHandler extends BaseQueryAnalyzer implements QueryHandler {
             return map;
         });
 
-        return process(new AiDataStruct("Use this data to explain to the user how you can assist with a given task", new DataDto(data)), originalUserInput);
+        return process(new AiDataStruct("Use this data to explain to the user how you can assist with a given task. Provide response in text format.", new DataDto(data)), originalUserInput);
 
     }
 

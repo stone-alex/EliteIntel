@@ -76,7 +76,7 @@ public class AppController implements Runnable {
 
     private void startIfWeHaveCredentials() {
         /// auto start session if we have credentials.
-        if (!systemSession.getAiApiKey().isEmpty() && !systemSession.getSttApiKey().isEmpty()) {
+        if (!systemSession.getSttApiKey().isEmpty()) {
             EventBusManager.publish(new ToggleServicesEvent(true));
         }
     }

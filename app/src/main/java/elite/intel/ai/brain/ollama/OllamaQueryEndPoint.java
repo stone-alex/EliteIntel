@@ -27,7 +27,7 @@ public class OllamaQueryEndPoint extends AiEndPoint implements AiQueryInterface 
             OllamaClient client = OllamaClient.getInstance();
             var conn = client.getHttpURLConnection();
 
-            JsonObject request = client.createRequestBodyHeader(OllamaClient.MODEL_OLLAMA_SMALL, 0.1f);
+            JsonObject request = client.createRequestBodyHeader(OllamaClient.MODEL_OLLAMA, 0.9f);
             request.add("messages", sanitizeJsonArray(messages));
 
             log.debug("Ollama query call:\n{}", request);
@@ -39,7 +39,7 @@ public class OllamaQueryEndPoint extends AiEndPoint implements AiQueryInterface 
             log.debug("Ollama raw response:\n{}", content);
             try {
                 return JsonParser.parseString(content).getAsJsonObject();
-            } catch (JsonSyntaxException text) {
+            } catch (JsonSyntaxException | IllegalStateException text) {
                 log.error("Failed to parse Ollama response JSON: {}", text.getMessage());
                 JsonObject result = new JsonObject();
                 result.addProperty("action", AIConstants.TYPE_CHAT);

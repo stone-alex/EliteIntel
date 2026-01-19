@@ -18,7 +18,8 @@ import javax.swing.plaf.FontUIResource;
 import javax.swing.plaf.basic.BasicTabbedPaneUI;
 import javax.swing.text.*;
 import java.awt.*;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -79,6 +80,8 @@ public class AppView extends JFrame implements AppViewInterface {
     private JTextField playerMissionDescription;
     private JTextField journalDirField;
     private JTextField localTtsAddressField;
+    private JSlider speechSpeedSlider;
+    private JLabel speechSpeedLabel;
 
     // ---------- Public API ----------
     private JTextField bindingsDirField;
@@ -499,8 +502,6 @@ public class AppView extends JFrame implements AppViewInterface {
         addField(panel, selectBindingsDirButton, gbc, 2, 0.2);
 
 
-
-
         // Row 5: Check Boxes
         nextRow(gbc);
         gbc.gridx = 0;
@@ -636,6 +637,37 @@ public class AppView extends JFrame implements AppViewInterface {
         nextRow(gbc);
         addLabel(panel, " ", gbc, 0);
 
+        nextRow(gbc);
+        addLabel(panel, "Speech Throttle ", gbc, 0);
+        speechSpeedSlider = new JSlider();
+        speechSpeedSlider.setMinimum(-100);
+        speechSpeedSlider.setMaximum(0);
+        speechSpeedSlider.setMajorTickSpacing(25);
+        speechSpeedSlider.setMinorTickSpacing(5);
+        speechSpeedSlider.setInverted(true);
+        speechSpeedSlider.setSnapToTicks(true);
+        speechSpeedSlider.setValue(-(int) ((1.0f - systemSession.getSpeechSpeed()) * 100));
+        addField(panel, speechSpeedSlider, gbc, 1, 0.8);
+        speechSpeedLabel = new JLabel("");
+        setSpeedDisplayValue();
+        speechSpeedSlider.addChangeListener(e -> {
+            SwingUtilities.invokeLater(() -> {
+                EventBusManager.publish(
+                        new SpeechSpeedChangeEvent(
+                                Math.abs(100 + speechSpeedSlider.getValue()) / 100f
+                        )
+                );
+                setSpeedDisplayValue();
+            });
+        });
+
+        addLabel(panel, speechSpeedLabel, gbc, 2);
+
+
+        /// blank
+        nextRow(gbc);
+        addLabel(panel, " ", gbc, 0);
+
         // Row EDSM KEY
         nextRow(gbc);
         addLabel(panel, "EDSM API Key:", gbc, 0);
@@ -727,6 +759,11 @@ public class AppView extends JFrame implements AppViewInterface {
         panel.add(Box.createGlue(), gbc);
 
         return panel;
+    }
+
+    private void setSpeedDisplayValue() {
+        float speed = speechSpeedSlider.getValue();
+        speechSpeedLabel.setText("+" + (100 + speed) + "%");
     }
 
 
@@ -883,6 +920,13 @@ public class AppView extends JFrame implements AppViewInterface {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.NONE;
         return gbc;
+    }
+
+    private void addLabel(JPanel panel, JLabel label, GridBagConstraints gbc, int col) {
+        gbc.gridx = col;
+        gbc.weightx = 0;
+        gbc.fill = GridBagConstraints.NONE;
+        panel.add(label, gbc);
     }
 
     private void addLabel(JPanel panel, String text, GridBagConstraints gbc, int col) {

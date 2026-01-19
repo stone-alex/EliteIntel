@@ -1,13 +1,16 @@
 package elite.intel.ai.mouth.piper;
 
 import com.google.common.eventbus.Subscribe;
+import com.google.gson.JsonObject;
 import elite.intel.ai.mouth.MouthInterface;
 import elite.intel.ai.mouth.subscribers.events.TTSInterruptEvent;
 import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.PlayerSession;
+import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.AudioPlayer;
+import elite.intel.util.json.GsonFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -29,8 +32,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class PiperTTS implements MouthInterface {
     private static final Logger log = LogManager.getLogger(PiperTTS.class);
-    private final PlayerSession playerSession = PlayerSession.getInstance();
     private static volatile PiperTTS instance;
+    private final PlayerSession playerSession = PlayerSession.getInstance();
     private final AtomicBoolean interruptRequested = new AtomicBoolean(false);
     private final AtomicReference<SourceDataLine> currentLine = new AtomicReference<>();
     private final HttpClient httpClient = HttpClient.newHttpClient();
@@ -39,7 +42,6 @@ public class PiperTTS implements MouthInterface {
     private volatile boolean running = false;
     private Thread workerThread = null;
     private ExecutorService callbackExecutor = null;
-    private float speechSpeed;
 
     private PiperTTS() {
         EventBusManager.register(this);
@@ -158,26 +160,23 @@ public class PiperTTS implements MouthInterface {
         }
     }
 
-    public void setSpeechSpeed(float speed) {
-        this.speechSpeed = Math.clamp(speed, 0.5f, 2.0f);
-    }
+    private void synthesizeAndPlay(String input) throws Exception {
+        if (input == null || input.isBlank()) return;
 
-    private void synthesizeAndPlay(String text) throws Exception {
-        if (text == null || text.isBlank()) return;
+        //replace em-dash with comma + space
+        String text = input.replace("—", ", ");
+
         AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_2);
         EventBusManager.publish(new AppLogEvent("AI: " + text));
-        setSpeechSpeed(0.75f);
 
-        String json = """
-                {
-                  "text": "%s",
-                  "length_scale": %.2f
-                }
-                """.formatted(text.replace("\"", "\\\""), speechSpeed);
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("text", text);
+        jsonObject.addProperty("length_scale", SystemSession.getInstance().getSpeechSpeed());
+
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(playerSession.getLocalTtsAddress()))
                 .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(json))
+                .POST(HttpRequest.BodyPublishers.ofString(GsonFactory.getGson().toJson(jsonObject)))
                 .build();
 
         byte[] wavBytes = httpClient.send(request, BodyHandlers.ofByteArray()).body();  // Now full WAV

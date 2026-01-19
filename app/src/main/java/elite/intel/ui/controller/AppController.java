@@ -22,7 +22,6 @@ import elite.intel.ui.event.*;
 import elite.intel.ui.view.AppView;
 import elite.intel.util.SleepNoThrow;
 import elite.intel.util.Updater;
-import org.apache.commons.lang3.EnumUtils;
 
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
@@ -237,7 +236,7 @@ public class AppController implements Runnable {
         fileMonitor = null;
 
         brain.stop();
-        brain= null;
+        brain = null;
 
         ears.stop();
         ears = null;
@@ -319,26 +318,26 @@ public class AppController implements Runnable {
 
     private void startServices() {
         systemSession.clearChatHistory();
-        if(journalParser == null) {
+        if (journalParser == null) {
             journalParser = new JournalParser();
         }
         journalParser.start();
-        if(fileMonitor == null) {
+        if (fileMonitor == null) {
             fileMonitor = new AuxiliaryFilesMonitor();
         }
         fileMonitor.start();
 
-        if(mouth == null) {
+        if (mouth == null) {
             mouth = ApiFactory.getInstance().getMouthImpl();
         }
         mouth.start();
 
-        if(ears == null) {
+        if (ears == null) {
             ears = ApiFactory.getInstance().getEarsImpl();
         }
         ears.start();
 
-        if(brain == null) {
+        if (brain == null) {
             brain = ApiFactory.getInstance().getCommandEndpoint();
         }
         brain.start();
@@ -350,8 +349,10 @@ public class AppController implements Runnable {
             appendToLog("Available voices: " + listVoices());
         }
 
-        appendToLog("Available personalities: " + listPersonalities());
-        appendToLog("Available profiles: " + listCadences());
+        if (!systemSession.isRunningLocalLLM()) {
+            appendToLog("Available personalities: " + listPersonalities());
+            appendToLog("Available profiles: " + listCadences());
+        }
 
         EventBusManager.publish(new ServicesStateEvent(true));
 

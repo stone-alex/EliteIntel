@@ -71,8 +71,7 @@ public class OllamaResponseRouter extends ResponseRouter implements AIRouterInte
                     handleChat(responseText);
                     break;
                 default:
-                    log.warn("Unknown or missing response type: '{}'", type);
-                    EventBusManager.publish(new AiVoxResponseEvent("I'm not sure what you meant. Please try again."));
+                    log.info("Skipping unknown response type: {}", type);
             }
         } catch (Exception e) {
             log.error("Failed to process Grok response: {}", e.getMessage(), e);

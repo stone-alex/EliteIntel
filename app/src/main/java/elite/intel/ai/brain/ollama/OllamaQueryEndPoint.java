@@ -27,7 +27,7 @@ public class OllamaQueryEndPoint extends AiEndPoint implements AiQueryInterface 
             OllamaClient client = OllamaClient.getInstance();
             var conn = client.getHttpURLConnection();
 
-            JsonObject request = client.createRequestBodyHeader(OllamaClient.MODEL_OLLAMA, 0.9f);
+            JsonObject request = client.createRequestBodyHeader(OllamaClient.MODEL_OLLAMA, 0.1f);
             request.add("messages", sanitizeJsonArray(messages));
 
             log.debug("Ollama query call:\n{}", request);

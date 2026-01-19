@@ -316,3 +316,4 @@
 "with career"="fleet carrier"
 "with voice to"="set voice to"
 "wo, the voice to"="set voice to"
+"scam"="scan"

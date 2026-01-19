@@ -31,13 +31,6 @@ public class SetPersonalityHandler implements CommandHandler {
 
     private final SystemSession systemSession = SystemSession.getInstance();
     @Override public void handle(String action, JsonObject params, String responseText) {
-
-        if(systemSession.isRunningPiperTts()){
-            EventBusManager.publish(new AiVoxResponseEvent("Personalities are not available with Piper TTS"));
-            return;
-        }
-
-
         try {
             String keyValue = params.get("key").getAsString();
 

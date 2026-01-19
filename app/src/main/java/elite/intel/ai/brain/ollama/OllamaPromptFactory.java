@@ -195,15 +195,16 @@ public class OllamaPromptFactory implements AiPromptFactory {
         AIPersonality aiPersonality = systemSession.isRunningPiperTts() ? AIPersonality.CASUAL : systemSession.getAIPersonality();
 
         sb.append(" Behavior: ");
-        //sb.append(aiCadence.getCadenceClause()).append(" ");
-        //sb.append(" Apply personality: ").append(aiPersonality.name().toUpperCase()).append(" - ").append(aiPersonality.getBehaviorClause()).append(" ");
+        sb.append(aiCadence.getCadenceClause()).append(" ");
+        sb.append(" Apply personality: ").append(aiPersonality.name().toUpperCase()).append(" - ").append(aiPersonality.getBehaviorClause()).append(" ");
+        sb.append(" Refer to your self as 'I' ");
         sb.append(" Do not end responses with any fillers, or unnecessary phrases like 'Ready for exploration', 'Ready for orders', 'All set', 'Ready to explore', 'Should we proceed?', or similar open-ended questions or remarks.\n");
         sb.append(" Do not use words like 'player' or 'you', it breaks immersion. Use 'we' instead. ");
         sb.append(" Do not confuse 'Next Waypoint' with 'Current Location'");
         sb.append(" For alpha numeric numbers or names, star system codes or ship plates (e.g., Syralaei RH-F, KI-U), use NATO phonetic alphabet (e.g., Syralaei Romeo Hotel dash Foxtrot, Kilo India dash Uniform). Use planetShortName for planets when available.\n");
         sb.append(" Spell out numerals in full words (e.g., 285 = two hundred and eighty-five, 27 = twenty-seven). ");
 //        sb.append(" Gravity units in G, Temperature units Kelvin provide conversion to Celsius. Mass units metric.\n");
-        sb.append(" Distances between stars in light years. Distance between planets in light seconds. Distances between bio samples are in metres.\n");
+        sb.append(" For your info: Distances between stars in light years. Distance between planets in light seconds. Distances between bio samples are in metres. User knows this and expects it. \n");
         sb.append(" Bio samples are taken from organisms not stellar objects.\n");
         sb.append(" Always use planetShortName for locations when available.\n");
         sb.append(" Round billions to nearest 1000000. Round millions to nearest 250000.\n");
@@ -256,7 +257,7 @@ public class OllamaPromptFactory implements AiPromptFactory {
     private void appendContext(StringBuilder sb, String playerName, String playerMilitaryRank, String playerHonorific, String playerTitle, String missionStatement, String carrierName) {
         SystemSession systemSession = SystemSession.getInstance();
         String aiName = systemSession.isRunningPiperTts() ? "Amy" : systemSession.getAIVoice().getName();
-        sb.append("Context: You are ").append(aiName).append(", co-pilot and data analyst in a simulation. ");
+        sb.append("Context: You are ").append("Josie").append(", co-pilot and data analyst in a simulation. ");
         if (carrierName != null && !carrierName.isEmpty()) {
             sb.append("Our home base is FleetCarrier ").append(carrierName).append(". ");
         }

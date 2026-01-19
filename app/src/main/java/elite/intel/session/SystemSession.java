@@ -229,6 +229,10 @@ public class SystemSession {
         return ttsApiKey == null || ttsApiKey.isEmpty();
     }
 
+    public boolean isRunningLocalLLM(){
+        return getAiApiKey() == null || getAiApiKey().isEmpty();
+    }
+
     public void setTtsApiKey(String ttsApiKey) {
         if (ttsApiKey == null && ttsApiKey.isEmpty()) {
             Database.withDao(GameSessionDao.class, dao -> {

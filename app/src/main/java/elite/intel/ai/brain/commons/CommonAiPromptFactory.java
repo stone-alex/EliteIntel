@@ -37,37 +37,18 @@ public class CommonAiPromptFactory implements AiPromptFactory {
 
         sb.append("Instructions:\n\n")
                 .append(" Rule #1: NEVER INVENT COMMANDS OR QUERIES (actions)!!! ALWAYS MATCH TO THE PROVIDED LIST ONLY!!! IF NOT MATCH FOUND SAY SO. ")
-                .append(" Rule #2: REMEMBER: No matter what the user says—even casual greetings—classify it and respond ONLY in the exact JSON format. Never explain, never add extra text.")
-                .append(" Rule #3: You MUST respond with ONLY this exact JSON structure and nothing else:\n" +
-                        "{\n" +
-                        "  \"type\": \"command|query|chat\",\n" +
-                        "  \"response_text\": \"TTS text here\",\n" +
-                        "  \"action\": \"exact_action_name_from_lists\",\n" +
-                        "  \"params\": {\"key\": \"value\"},\n" +
-                        "  \"expect_followup\": true|false\n" +
-                        "}\n" +
-                        "CRITICAL: You are forbidden from adding any extra keys or explanations. \n" +
-                        "Only use these five keys: type, response_text, action, params, expect_followup.\n")
                 .append(" Only return a command or query from the exact list provided below — never invent, combine, or create new commands, even if the user input seems similar. action parameter MUST match either command or query. Do not invent action parameters. \n")
-                .append(inputClassificationClause()).append('\n')
+                .append(" Rule #2: Provide extremely brief and concise answers. Always use planetShortName for locations if available.\n")
+                .append(" Rule #3 Always output JSON for 'navigate_to_coordinates' command using numbers, not spelled out words. Example: {\"latitude\":-35.4320,\"longitude\":76.4324} do not confuse with navigate to landing zone or bio sample.\n")
                 .append(JSON_FORMAT).append('\n')
+
+                .append(inputClassificationClause()).append('\n')
                 .append(supportedCommandsClause()).append('\n')
                 .append(supportedQueriesClause()).append('\n')
                 .append(generateAbbreviations()).append('\n')
                 .append(getSessionValues()).append('\n')
                 .append(colloquialTerms()).append('\n')
-                .append(appendBehavior()).append('\n')
-                .append("Round billions to nearest million. Round millions to nearest 250000. ")
-                .append("Provide extremely brief and concise answers. Always use planetShortName for locations if available. \n")
-                .append("Always output JSON for 'navigate_to_coordinates' command using numbers, not spelled out words. Example: {\"latitude\":-35.4320,\"longitude\":76.4324} do not confuse with navigate to landing zone or bio sample. \n")
-                .append("For type='query' in initial classification, follow response_text rules from player instructions. For tool/follow-up, use full analyzed response in 'response_text'. \n")
-                .append("For type='chat', set 'expect_followup': true if response poses a question or requires user clarification; otherwise, false. \n")
-                .append("FINAL RULE: \n" +
-                        "- If input matches a supported command → type=\"command\", response_text=\"\" (empty), correct action, params as required, expect_followup=false \n" +
-                        "- If input matches a supported query → type=\"query\", response_text=\"\" (empty for quick/data queries), correct action, params as required, expect_followup=false \n" +
-                        "- If input is casual/greeting/no match → type=\"chat\", response_text=brief casual reply, action=\"general_conversation\", params={}, expect_followup=true/false as needed \n" +
-                        "NO explanations, NO extra keys, NO wrappers. Output ONLY the exact 5-key JSON. \n")
-                .append(JSON_FORMAT).append('\n');
+                .append(appendBehavior()).append('\n');
 
         return sb.toString();
     }
@@ -117,18 +98,15 @@ public class CommonAiPromptFactory implements AiPromptFactory {
         sb.append(" Map slang such as 'bounce', 'proceed to the next waypoint' or 'get out of here' to commands like ").append(JUMP_TO_HYPERSPACE.getAction()).append(". ");
         sb.append(" Map 'select next way point' to ").append(TARGET_NEXT_ROUTE_SYSTEM.getAction()).append("\n");
         sb.append(" 'Resource Sites' are not for materials. They are 'hunting grounds for pirate massacre missions'. Do not confuse a 'Resource Site' with material gathering.");
-        sb.append(" Important distinctions:\n");
-        sb.append(" - \"select next waypoint\", \"target next system\", \"plot next\", \"next in route\" → ONLY select/target the next system in the route (Left panel → Navigation → highlight next system). DO NOT jump.\n");
-        sb.append(" - \"jump\", \"engage\", \"hyperspace\", \"bounce\", \"proceed to the next waypoint\", \"go\", \"let's go\" → initiate hyperspace jump to the currently TARGETED system.\n");
         sb.append(" Map 'scan system' to commands like ").append(OPEN_FSS_AND_SCAN.getAction()).append(". and 'damage report' to queries like ").append(QUERY_SHIP_LOADOUT.getAction()).append("\n");
         sb.append(" Infer command intent from context: phrases like 'act like', 'talk like', 'blend in with', or 'sound like' followed by a faction should trigger '").append(SET_PERSONALITY.getAction()).append("' with the corresponding cadence value, using current system allegiance if ambiguous.\n");
-        sb.append(" Do not confuse traders with market. Material tader/broker is not the same as trade station / port");
+        sb.append(" Do not confuse traders with market. Material tader/broker is not the same as trade station / port.");
         return sb.toString();
     }
 
     private String supportedCommandsClause() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Supported Commands:\n");
+        sb.append(" Supported Commands:\n");
 
         for (Commands cmd : Commands.values()) {
             sb.append("    - ").append(cmd.getAction());
@@ -140,8 +118,11 @@ public class CommonAiPromptFactory implements AiPromptFactory {
         }
 
         sb.append("\nWhen multiple params are listed (separated by ','), return them as separate keys in the params JSON.\n");
-        sb.append("Example for find_market_where_to_buy: {\"key\":\"gold\",\"max_distance\":\"100\"}\n");
-        sb.append("Example for find_mining_site_for_material: {\"material\":\"low temperature diamonds\",\"max_distance\":\"50\"}\n");
+        sb.append(" Example for find_market_where_to_buy: {\"key\":\"gold\",\"max_distance\":\"100\"}\n");
+        sb.append(" Example for find_mining_site_for_material: {\"material\":\"low temperature diamonds\",\"max_distance\":\"50\"}\n");
+        sb.append(" Important distinctions:\n");
+        sb.append(" - \"select next waypoint\", \"target next system\", \"plot next\", \"next in route\" → ONLY select/target the next system in the route (Left panel → Navigation → highlight next system). DO NOT jump.\n");
+        sb.append(" - \"jump\", \"engage\", \"hyperspace\", \"bounce\", \"proceed to the next waypoint\", \"go\", \"let's go\" → initiate hyperspace jump to the currently TARGETED system.\n");
 
         return sb.toString();
     }

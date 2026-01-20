@@ -5,7 +5,7 @@ import elite.intel.ai.brain.Client;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.json.GsonFactory;
-import elite.intel.util.json.LlmMetadata;
+import elite.intel.util.json.OllamaMetadata;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -87,7 +87,7 @@ public abstract class AiEndPoint {
             log.info("Stripped BOM from response");
         }
 
-        log.debug("Open AI API response ->:\n{}", response);
+        log.debug("Open AI API response ->:\n{}", GsonFactory.getGson().toJson(response));
 
         if (responseCode != 200) {
             return new Response(processServerError(conn, responseCode, client), response);
@@ -96,15 +96,16 @@ public abstract class AiEndPoint {
 
         try {
             JsonObject responseData = JsonParser.parseString(response).getAsJsonObject();
-            /*
-            LlmMetadata meta = GsonFactory.getGson().fromJson(responseData, LlmMetadata.class);
+
+            OllamaMetadata meta = GsonFactory.getGson().fromJson(responseData, OllamaMetadata.class);
+            double evalTime = meta.evalDurationNs() / 1_000_000_000.0;
             EventBusManager.publish(
                     new AppLogEvent(
-                            "Model: " + meta.model() + "| Tokens > Cached:" + meta.cachedTokens() +"| Reasoning:"+meta.reasoningTokens() +"| Prompt:"+meta.usage().promptTokens() + "| Total:" + meta.totalTokens()
+                            "Eval Duration:" + (Math.round(evalTime * 1000.0) / 1000.0) + " seconds | Completion Tokens:" + meta.completionTokens() + " | Prompt Tokens:" + meta.promptTokens() + " | Total:" + meta.totalTokens()
                     )
             );
             log.info("LLM Stats: " + meta);
-            */
+
             return new Response(responseData, response);
         } catch (JsonSyntaxException e) {
             log.error("Failed to parse API response:\n{}", response, e);

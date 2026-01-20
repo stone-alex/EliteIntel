@@ -196,4 +196,30 @@ public class StringUtls {
                 .replaceAll("_", " ");
     }
 
+
+    public static String toReadableModuleName(String input) {
+        if (input == null || input.isEmpty()) {
+            return "";
+        }
+
+        String withSpaces = input.replace('_', ' ');
+
+        String[] words = withSpaces.split("\\s+");
+        StringBuilder sb = new StringBuilder();
+
+        for (String word : words) {
+            if (word.isEmpty()) continue;
+            sb.append(Character.toUpperCase(word.charAt(0)))
+                    .append(word.substring(1).toLowerCase())
+                    .append(" ");
+        }
+
+        String result = sb.toString().trim();
+
+        if (result.endsWith(" Fdl")) {
+            result = result.substring(0, result.length() - 3) + "FDL";
+        }
+
+        return result;
+    }
 }

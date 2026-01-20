@@ -3,6 +3,7 @@ package elite.intel.gameapi.journal.subscribers;
 import com.google.common.eventbus.Subscribe;
 import elite.intel.db.managers.ShipManager;
 import elite.intel.gameapi.journal.events.LoadoutEvent;
+import elite.intel.gameapi.journal.events.dto.shiploadout.LoadoutConverter;
 import elite.intel.session.PlayerSession;
 
 
@@ -13,7 +14,7 @@ public class LoadoutSubscriber {
         PlayerSession playerSession = PlayerSession.getInstance();
         playerSession.setCurrentShipName(event.getShipName());
         playerSession.setCurrentShip(event.getShip());
-        playerSession.setShipLoadout(event);
+        playerSession.setShipLoadout(LoadoutConverter.toShipLoadOutDto(event));
 
         ShipManager shipManager = ShipManager.getInstance();
         shipManager.save(event.getShipId(), event.getShipName(), event.getCargoCapacity(), event.getShip());

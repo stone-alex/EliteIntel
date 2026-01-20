@@ -35,7 +35,7 @@ public class FuelStateSubscriber {
         } else if (status.isInMainShip()) {
             //We are on the ship.
             if (!hasAnnounced && oldStatus != null && oldStatus.getFuel() != null && playerSession.getShipLoadout() != null && playerSession.getShipLoadout().getFuelCapacity() != null) {
-                double fuelCapacityMain = playerSession.getShipLoadout().getFuelCapacity().getMain();
+                double fuelCapacityMain = playerSession.getShipLoadout().getFuelCapacity().getMainTank();
                 double fuelAmount = oldStatus.getFuel().getFuelMain();
                 double remainingFuelInPercent = Math.round((fuelAmount / fuelCapacityMain * 100) * 100.0) / 100.0;
                 if (remainingFuelInPercent != 0 && remainingFuelInPercent < QUARTER_TANK_REMAINING && event.getFuel().getFuelMain() > fuelAmount) {

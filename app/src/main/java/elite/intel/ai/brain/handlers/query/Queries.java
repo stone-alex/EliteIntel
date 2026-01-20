@@ -53,7 +53,7 @@ public enum Queries {
 
     QUERY_NEXT_STAR_SCOOPABLE("query_next_star_fuel", "Check if the next star is scoopable for fuel.", AnalyzeNextStarForFuelHandler.class, false),
     QUERY_PLAYER_STATS_ANALYSIS("query_analyze_player_profile", "Summarize player statistics.", AnalyzePlayerProfile.class, true),
-    QUERY_SHIP_LOADOUT("query_ship_loadout_details", "Use this data to provide details about the ship’s build. For damage report query Use \"Health\". values 1.0  mean 100 percent. For General questions provide ship build summary. Equipments is listed as Items. Example \"Item\": \"int_fuelscoop_size6_class5\" is Fuel Scoop size 6 class 5.", AnalyzeShipLoadoutHandler.class, true),
+    QUERY_SHIP_LOADOUT("query_ship_loadout_details", "Use this data to answer user queries about ship loadout details.", AnalyzeShipLoadoutHandler.class, true),
     STATION_DATA("query_station_details", "Analyze data for the current station.", StationDataHandler.class, true),
     WHAT_ARE_YOUR_CAPABILITIES("query_app_capabilities", "Summarize application capabilities.", WhatAreYourCapabilitiesHandler.class, false),
     WHAT_IS_YOUR_DESIGNATION("query_ai_designation", "Respond with the AI’s name or designation.", WhatIsYourNameHandler.class, false),

@@ -6,6 +6,7 @@ import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.gamestate.dtos.GameEvents;
 import elite.intel.gameapi.journal.events.LoadoutEvent;
+import elite.intel.gameapi.journal.events.dto.shiploadout.ShipLoadOutDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
@@ -21,7 +22,7 @@ public class AnalyzeCargoHoldHandler extends BaseQueryAnalyzer implements QueryH
         return process(new AiDataStruct(QUERY_ANALYZE_ON_BOARD_CARGO.getInstructions(), new DataDto(playerSession.getShipLoadout(), playerSession.getShipCargo())), originalUserInput);
     }
 
-    record DataDto(LoadoutEvent loadout, GameEvents.CargoEvent cargo) implements ToJsonConvertible {
+    record DataDto(ShipLoadOutDto loadout, GameEvents.CargoEvent cargo) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }

@@ -7,6 +7,7 @@ import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.LoadoutEvent;
 import elite.intel.gameapi.journal.events.dto.CarrierDataDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
+import elite.intel.gameapi.journal.events.dto.shiploadout.ShipLoadOutDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.NavigationUtils;
 import elite.intel.util.json.GsonFactory;
@@ -38,8 +39,8 @@ public class AnalyzeDistanceFromFleetCarrierHandler extends BaseQueryAnalyzer im
             return process("Current location coordinates are not available.");
         }
 
-        LoadoutEvent shipLoadout = playerSession.getShipLoadout();
-        float jumpRange = shipLoadout == null ? -1 : shipLoadout.getMaxJumpRange();
+        ShipLoadOutDto shipLoadout = playerSession.getShipLoadout();
+        double jumpRange = shipLoadout == null ? -1 : shipLoadout.getMaxJumpRange();
         double distance = NavigationUtils.calculateGalacticDistance(x, y, z, carrierLocationX, carrierLocationY, carrierDataZ);
 
         String instruction = "Distance is in Light Years. If jump range is > 0 also calculate number of jumps required to reach the carrier. Jump range is in light years. Return whole numbers only, no decimals";
@@ -47,7 +48,7 @@ public class AnalyzeDistanceFromFleetCarrierHandler extends BaseQueryAnalyzer im
         return process(new AiDataStruct(instruction, new DataDto(distance, jumpRange, carrierLocation)), originalUserInput);
     }
 
-    record DataDto(double distance, float jumpRange, String fleetCarrierIsLocatedAt) implements ToJsonConvertible {
+    record DataDto(double distance, double jumpRange, String fleetCarrierIsLocatedAt) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }

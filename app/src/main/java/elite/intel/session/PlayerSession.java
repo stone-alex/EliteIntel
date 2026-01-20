@@ -12,6 +12,7 @@ import elite.intel.gameapi.journal.events.CarrierStatsEvent;
 import elite.intel.gameapi.journal.events.LoadoutEvent;
 import elite.intel.gameapi.journal.events.ReputationEvent;
 import elite.intel.gameapi.journal.events.dto.*;
+import elite.intel.gameapi.journal.events.dto.shiploadout.ShipLoadOutDto;
 import elite.intel.util.OsDetector;
 
 import java.nio.file.Path;
@@ -248,11 +249,11 @@ public class PlayerSession {
         bioSamples.clear();
     }
 
-    public void setShipLoadout(LoadoutEvent event) {
+    public void setShipLoadout(ShipLoadOutDto event) {
         shipLoadouts.save(event);
     }
 
-    public LoadoutEvent getShipLoadout() {
+    public ShipLoadOutDto getShipLoadout() {
         return shipLoadouts.get();
     }
 

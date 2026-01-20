@@ -38,17 +38,21 @@ public class OllamaPromptFactory implements AiPromptFactory {
     public String generateSystemPrompt() {
         StringBuilder sb = new StringBuilder();
 
-        sb.append("Instructions:\n\n")
-                .append(" Rule #1: NEVER INVENT COMMANDS OR QUERIES (actions)!!! ALWAYS MATCH TO THE PROVIDED LIST ONLY!!! IF NOT MATCH FOUND SAY SO. ")
-                .append(" Only return a command or query from the exact list provided below — never invent, combine, or create new commands, even if the user input seems similar. action parameter MUST match either command or query. Do not invent action parameters. \n")
-                .append(" Rule #2: Always output JSON for 'navigate_to_coordinates' command using numbers, not spelled out words. Example: {\"latitude\":-35.4320,\"longitude\":76.4324} do not confuse with navigate to landing zone or bio sample.\n")
-                .append(" Rule #3: Provide descriptive answers and always use planetShortName for locations if available.\n ")
-                .append(JSON_FORMAT).append('\n')
+        sb.append("Instructions:\n\n");
+        sb.append(" Rule #1: NEVER INVENT COMMANDS OR QUERIES (actions)!!! ALWAYS MATCH TO THE PROVIDED LIST ONLY!!! IF NOT MATCH FOUND SAY SO. ");
+        sb.append(" Only return a command or query from the exact list provided below — never invent, combine, or create new commands, even if the user input seems similar. action parameter MUST match either command or query. Do not invent action parameters. \n");
+        sb.append(" Rule #2: Always output JSON for 'navigate_to_coordinates' command using numbers, not spelled out words. Example: {\"latitude\":-35.4320,\"longitude\":76.4324} do not confuse with navigate to landing zone or bio sample.\n");
+        sb.append(" Rule #3: Provide descriptive answers and always use planetShortName for locations if available.\n ");
+        sb.append(" Rule #4 NEVER return interpretation! Always match input to provided commands or queries. If no match found say so!\n ");
+        sb.append(JSON_FORMAT).append('\n');
 
-                .append(inputClassificationClause()).append('\n')
-                .append(supportedCommandsClause()).append('\n')
-                .append(supportedQueriesClause()).append('\n')
-                .append(colloquialTerms()).append('\n')
+        sb.append(" For alpha numeric numbers or names, star system codes or ship plates (e.g., Syralaei RH-F, KI-U), use NATO phonetic alphabet \n");
+        sb.append(" Spell out numerals in full words (e.g., 285 = two hundred and eighty-five, 27 = twenty-seven). ");
+        sb.append(inputClassificationClause()).append('\n');
+        sb.append(supportedCommandsClause()).append('\n');
+        sb.append(supportedQueriesClause()).append('\n');
+        sb.append(colloquialTerms()).append('\n');
+        //sb.append(" Do not confuse 'Next Waypoint' with 'Current Location'");
         //.append(getSessionValues()).append('\n')
 /*
                 .append(generateAbbreviations()).append('\n')
@@ -57,7 +61,7 @@ public class OllamaPromptFactory implements AiPromptFactory {
                 ;
 */
 
-        ;
+
         return sb.toString();
     }
 
@@ -163,6 +167,18 @@ public class OllamaPromptFactory implements AiPromptFactory {
         sb.append("Instructions:\n");
         //sb.append(appendBehavior());
         sb.append("Task:\n");
+        sb.append("User asks:\n");
+        sb.append("\"" + userIntent + "\".\n");
+        sb.append("You are a strict data extractor. NEVER use external knowledge, NEVER guess, NEVER calculate, NEVER estimate, NEVER add or invent values.\n" +
+                "\n" +
+                "CRITICAL RULES – MUST FOLLOW EXACTLY:\n" +
+                "- Use ONLY the fields from the provided JSON data.\n" +
+                "- If the requested info is in a specific field (e.g. maxJumpRange), output EXACTLY that value, rounded to two decimals, followed by 'ly'. NOTHING ELSE.\n" +
+                "- If not directly present, say \"Not found in data\".\n" +
+                "- Output format: {\"response_text\": \"XX.XX ly\"} or {\"response_text\": \"Not found in data\"}\n" +
+                "- NO explanations, NO reasoning, NO extra text.\n" +
+                "\n" +
+                "Task: analyze our ship loadout what is our maximum range.");
         sb.append(" Analyze the provided JSON data: ").append(instructions).append(". ");
         sb.append(" against the user's intent using instructions provided within. ").append(userIntent).append(". Return precise answers or summaries as requested in 'response_text' field. \n");
         sb.append(appendBehavior());
@@ -201,6 +217,7 @@ public class OllamaPromptFactory implements AiPromptFactory {
         sb.append(" Do not end responses with any fillers, or unnecessary phrases like 'Ready for exploration', 'Ready for orders', 'All set', 'Ready to explore', 'Should we proceed?', or similar open-ended questions or remarks.\n");
         sb.append(" Do not use words like 'player' or 'you', it breaks immersion. Use 'we' instead. ");
         sb.append(" Do not confuse 'Next Waypoint' with 'Current Location'");
+        sb.append("Do not confuse 'ship' with 'carrier'");
         sb.append(" For alpha numeric numbers or names, star system codes or ship plates (e.g., Syralaei RH-F, KI-U), use NATO phonetic alphabet (e.g., Syralaei Romeo Hotel dash Foxtrot, Kilo India dash Uniform). Use planetShortName for planets when available.\n");
         sb.append(" Spell out numerals in full words (e.g., 285 = two hundred and eighty-five, 27 = twenty-seven). ");
 //        sb.append(" Gravity units in G, Temperature units Kelvin provide conversion to Celsius. Mass units metric.\n");

@@ -55,7 +55,7 @@ public class OllamaResponseRouter extends ResponseRouter implements AIRouterInte
             String action = getAsStringOrEmpty(jsonResponse, AIConstants.TYPE_ACTION);
             JsonObject params = getAsObjectOrEmpty(jsonResponse, "params");
 
-            if (!responseText.isEmpty() && !type.equals(AIConstants.TYPE_CHAT)) {
+            if (!responseText.isEmpty() && type.equals(AIConstants.TYPE_CHAT)) {
                 EventBusManager.publish(new AiVoxResponseEvent(responseText));
                 log.info("Spoke initial response: {}", responseText);
             }

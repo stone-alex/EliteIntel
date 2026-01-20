@@ -214,7 +214,7 @@ public class GoogleSTTImpl implements EarsInterface {
                         if (rms > RMS_THRESHOLD_HIGH) {
                             consecutiveVoice++;
                             consecutiveSilence = 0;
-                            audioToProcess = Amplifier.amplify(audioToProcess, 6.0);
+                            audioToProcess = Amplifier.amplify(audioToProcess, 3.0);
                             // 4 debugging
                             // EventBusManager.publish(new AppLogEvent("RMS: " + calculateRMS(audioToProcess, bytesToProcess)));
                         } else {

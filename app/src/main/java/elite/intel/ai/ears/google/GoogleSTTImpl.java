@@ -13,10 +13,14 @@ import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.AudioPlayer;
 import elite.intel.util.STTSanitizer;
+import elite.intel.util.WavHeader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.sound.sampled.*;
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -34,7 +38,7 @@ public class GoogleSTTImpl implements EarsInterface {
     private static final long MAX_BACKOFF_MS = 60000; // Cap at 1 min
 
     private static final long MIN_STREAM_GAP_MS = 100;
-
+    private ByteArrayOutputStream audioCollector = new ByteArrayOutputStream();
     private final AtomicBoolean isListening = new AtomicBoolean(true);
     private final AtomicBoolean isSpeaking = new AtomicBoolean(false);
     private final SystemSession systemSession = SystemSession.getInstance();
@@ -214,7 +218,7 @@ public class GoogleSTTImpl implements EarsInterface {
                         if (rms > RMS_THRESHOLD_HIGH) {
                             consecutiveVoice++;
                             consecutiveSilence = 0;
-                            audioToProcess = Amplifier.amplify(audioToProcess, 6.0);
+                            audioToProcess = Amplifier.amplify(audioToProcess, 3.0);
                             // 4 debugging
                             // EventBusManager.publish(new AppLogEvent("RMS: " + calculateRMS(audioToProcess, bytesToProcess)));
                         } else {
@@ -226,7 +230,7 @@ public class GoogleSTTImpl implements EarsInterface {
                             }
                         }
 
-                        
+
                         if (!isActive && consecutiveVoice >= ENTER_VOICE_FRAMES && !isSpeaking.get()) {
                             isActive = true;
                             log.debug("VAD: Entered active state (voice detected)");
@@ -241,8 +245,10 @@ public class GoogleSTTImpl implements EarsInterface {
                         boolean sendKeepAlive = (currentTime - lastAudioSentTime) >= KEEP_ALIVE_INTERVAL_MS;
 
                         if (isActive || sendKeepAlive) {
+                            if(isActive){
+                                audioCollector.write(audioToProcess, 0, bytesToProcess);
+                            }
                             byte[] keepAliveBuffer = new byte[KEEP_ALIVE_BUFFER_SIZE]; // Small silent for cost savings
-//                            byte[] amplified = multiplyGain(audioToProcess, 3.0);
                             ByteString audioContent = isActive
                                     ? ByteString.copyFrom(audioToProcess, 0, bytesToProcess)
                                     : ByteString.copyFrom(keepAliveBuffer);
@@ -281,6 +287,10 @@ public class GoogleSTTImpl implements EarsInterface {
                                 } else {
                                     log.info("Discarded transcript: {} (avg confidence: {})", fullTranscript, avgConfidence);
                                 }
+                            }
+                            if (audioCollector.size() > 0) {
+                                dumpAudioAsWav(audioCollector.toByteArray(), "full_audio");
+                                audioCollector.reset();  // Clear for next utterance
                             }
                             currentTranscript.setLength(0);
                             synchronized (confidences) {
@@ -395,28 +405,6 @@ public class GoogleSTTImpl implements EarsInterface {
         EventBusManager.publish(new UserInputEvent(sanitizedTranscript, confidence));
     }
 
-/*
-    private byte[] multiplyGain(byte[] audioData, double gain) {
-        if (gain == 1.0) return audioData;
-        byte[] output = new byte[audioData.length];
-        for (int i = 0; i < audioData.length; i += 2) {
-            // Reconstruct 16-bit signed sample (Little Endian)
-            int sample = (audioData[i + 1] << 8) | (audioData[i] & 0xFF);
-            if (sample > 32767) sample -= 65536;
-
-            // Apply gain and clip to prevent overflow/distortion
-            int amplified = (int) (sample * gain);
-            if (amplified > 32767) amplified = 32767;
-            else if (amplified < -32768) amplified = -32768;
-
-            // Write back to bytes
-            output[i] = (byte) (amplified & 0xFF);
-            output[i + 1] = (byte) ((amplified >> 8) & 0xFF);
-        }
-        return output;
-    }
-*/
-
     @Subscribe public void onIsSpeakingEvent(IsSpeakingEvent event) {
         isSpeaking.set(event.isSpeaking());
     }
@@ -449,5 +437,18 @@ public class GoogleSTTImpl implements EarsInterface {
                 .setInterimResults(true)
                 .setSingleUtterance(false)
                 .build();
+    }
+
+    private void dumpAudioAsWav(byte[] audio, String prefix) {
+        if(true) return; /// comment out for testing.
+
+
+        try (FileOutputStream fos = new FileOutputStream(prefix + "_" + System.currentTimeMillis() + ".wav")) {
+            WavHeader header = new WavHeader(sampleRateHertz, (short) 16);
+            fos.write(header.toByteArray());
+            fos.write(audio);
+        } catch (IOException e) {
+            log.error("Failed to dump audio: ", e);
+        }
     }
 }

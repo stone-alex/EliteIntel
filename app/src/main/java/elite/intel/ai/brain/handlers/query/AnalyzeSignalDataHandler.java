@@ -27,7 +27,7 @@ public class AnalyzeSignalDataHandler extends BaseQueryAnalyzer implements Query
     private final PlayerSession playerSession = PlayerSession.getInstance();
     private final SystemSession systemSession = SystemSession.getInstance();
 
-
+    /// TODO: break this down to several handlers. The data set is too large for local LLM.
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         EventBusManager.publish(new AiVoxResponseEvent("Analyzing star system data... Stand by..."));
         String primaryStarName = playerSession.getPrimaryStarName();
@@ -46,9 +46,18 @@ public class AnalyzeSignalDataHandler extends BaseQueryAnalyzer implements Query
         TrafficDto trafficDto = EdsmApiClient.searchTraffic(primaryStarName);
         StationsDto stationsDto = EdsmApiClient.searchStations(primaryStarName, 0);
 
+        String instructions = """
+        Data may contain information about planets, moons, planetary rings, raw materials, detectedSignals, bio forms, bio samples, stations, starports etc. 
+            - Use gravity (G) and temperature (K) units. 
+            - Offer celsius alternative. 
+            - Use allCompletedBioScans for questions about bio samples not yet delivered to Vista Genomics.  
+            - Use planetShotName for planets.  
+            - If asked about how long the day last, answer in hours and minutes
+        """;
+
         return process(
                 new AiDataStruct(
-                        QUERY_SEARCH_SIGNAL_DATA.getInstructions(),
+                        instructions,
                         new DataDto(
                                 detectedSignals,
                                 fssBodySignals,

@@ -10,8 +10,6 @@ import elite.intel.util.json.ToJsonConvertible;
 import java.time.Clock;
 import java.time.Instant;
 
-import static elite.intel.ai.brain.handlers.query.Queries.TIME_IN_ZONE;
-
 public class TimeQueryHandler extends BaseQueryAnalyzer implements QueryHandler {
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
@@ -20,7 +18,11 @@ public class TimeQueryHandler extends BaseQueryAnalyzer implements QueryHandler 
         Instant instant = Clock.systemUTC().instant();
         String utcTime = instant.toString();
 
-        return process(new AiDataStruct(TIME_IN_ZONE.getInstructions(), new DataDto(utcTime)), originalUserInput);
+        String instructions = """
+                Calculate current time at the location requested by user. The data provides current UTC time
+                """;
+
+        return process(new AiDataStruct(instructions, new DataDto(utcTime)), originalUserInput);
     }
 
 

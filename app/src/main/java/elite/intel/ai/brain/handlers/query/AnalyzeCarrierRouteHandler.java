@@ -34,7 +34,16 @@ public class AnalyzeCarrierRouteHandler extends BaseQueryAnalyzer implements Que
 
         int fuelSupply = carrierData.getFuelLevel() + fuelReserve;
 
-        String instructions = "Use the provided route data to answer user questions: reference systemName for locations; identify refuel stops as those with hasIcyRing=true; for relevant queries, return number of jumps to final destination, jumps to nearest icy ring stop, and fuel required (1 unit = 1 ton); Parse jump duration (e.g., '20 minutes') from original user query if mentioned; for ETA, calculate total time as jumps_to_destination * parsed_duration, format appropriately (e.g., 'X minutes' or 'Y hours X minutes'); include in response only if asked. Compare currentFuelSupply to fuelRequired. Return delta if fuelRequried > currentFuelSupply. Respond only with the specific info requested in a short, consistent manner without broad data dumps.";
+        String instructions = """
+                Use the provided route data to answer user questions: reference systemName for locations. 
+                Identify refuel stops as those with hasIcyRing=true.
+                For relevant queries, return number of jumps to final destination, jumps to nearest icy ring stop, and fuel required (1 unit = 1 ton). 
+                Parse jump duration (e.g., '20 minutes') from original user query if mentioned.
+                For ETA, calculate total time as jumps_to_destination * parsed_duration, format appropriately (e.g., 'X minutes' or 'Y hours X minutes'). 
+                Include in response only if asked. 
+                Compare currentFuelSupply to fuelRequired. Return delta if fuelRequried > currentFuelSupply. 
+                Respond only with the specific info requested in a short, consistent manner without broad data dumps.
+                """;
         return process(new AiDataStruct(instructions, new DataDto(fleetCarrierRoute, fuelSupply, fuelRequired)), originalUserInput);
     }
 

@@ -46,20 +46,21 @@ public class OllamaPromptFactory implements AiPromptFactory {
         sb.append("""
                 YOU ARE A STRICT COMMAND PARSER. YOU **NEVER** INVENT, NEVER GUESS, NEVER CREATE NEW ACTIONS.
                 
-                Infer best match for command or query from user input.
+                Infer command or query from user input. Map to best match of either command or query provided in the list.
+                IF zero match → {"type":"query", "response_text":"No matching command or query found.", "action":"none", "params":{}, "expect_followup":false}
                 
-                OUTPUT FORMAT - REPEAT AFTER ME - YOU **MUST** ALWAYS FOLLOW THIS EXACTLY:
-                {"type": "command|query", "response_text": "short TTS text or empty string", "action": "exact_action_name_from_list_below", "params": {object or empty}, "expect_followup": true|false}
+                OUTPUT FORMAT - YOU **MUST** ALWAYS FOLLOW THIS FORMAT EXACTLY:
+                {"type": "command|query|chat", "response_text": "short text for TTS or empty string", "action": "exact_action_name_from_list_below", "params": {object or empty}, "expect_followup": true|false}
+                IF type is command provide empty response_text
                 
                 Allowed values for "type": only "command" or "query" — nothing else.
                 Allowed values for "action": ONLY names that appear in the lists below — NO EXCEPTIONS, NO VARIATIONS, NO SPELLING MISTAKES.
-                If zero match → {"type":"query", "response_text":"No matching command or query found.", "action":"no_match", "params":{}, "expect_followup":false}
                 
-                RULE 0 (MOST IMPORTANT): If input does not clearly match ANY single command or query from the lists below → you MUST return no-match response shown above. Do NOT try to be helpful. Do NOT interpret loosely. Do NOT combine. Do NOT fallback to chat.
-                
+                RULE 0 (MOST IMPORTANT): If input does not clearly match ANY single command or query from the lists below → you MUST return no-match response shown above. Do NOT try to be helpful. Do NOT interpret loosely. Do NOT combine.
                 RULE 1: NEVER invent new action names. NEVER combine commands. NEVER split user sentence into multiple actions.
                 RULE 2: For coordinates always use decimal numbers only: {"latitude": -12.34, "longitude": 56.78}
-                RULE 3: params keys must be exactly as written in the command/query description.
+                RULE 3: params keys must be exactly as written in the command/query description. 
+                RULE 4: params key is always word "key" unless the value is a boolean. IF value is a boolean the key is word "state"
                 
                 JSON FORMAT (repeat): 
                 Always output **ONLY** valid JSON object like above. Nothing before. Nothing after. No explanations. No markdown.
@@ -182,8 +183,8 @@ public class OllamaPromptFactory implements AiPromptFactory {
                 CRITICAL RULES – MUST FOLLOW EXACTLY:
                 - Use ONLY the fields from the provided JSON data.
                 - If the requested info is in a specific field (e.g. maxJumpRange), output EXACTLY that value, rounded to two decimals.
-                - If not directly present, say \"Not found in data\"
-                - Output format: { \"type\":\"chat\", \"response_text\": \"Your analysis\"}
+                - If not directly present, say "Insufficient data"
+                - Output format: {"type":"chat", "response_text": "Your Answer"}
                 - NO explanations, NO reasoning, NO extra text.
                 Return minimalistic brief and concise answer. 
                 """

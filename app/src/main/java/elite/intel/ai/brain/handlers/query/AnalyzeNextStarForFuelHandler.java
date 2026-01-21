@@ -18,11 +18,10 @@ public class AnalyzeNextStarForFuelHandler extends BaseQueryAnalyzer implements 
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         EventBusManager.publish(new AiVoxResponseEvent("Analyzing route telemetry... Stand by..."));
-        PlayerSession playerSession = PlayerSession.getInstance();
         Collection<? extends ToJsonConvertible> route = ShipRouteManager.getInstance().getOrderedRoute();
 
         String data = JsonDataFactory.getInstance().toJsonArrayString(route);
-        return process(new AiDataStruct(QUERY_NEXT_STAR_SCOOPABLE.getInstructions(), new DataDto(data)), originalUserInput);
+        return process(new AiDataStruct("Check if the next star is scoopable for fuel.", new DataDto(data)), originalUserInput);
     }
 
     record DataDto(String data) implements ToJsonConvertible {

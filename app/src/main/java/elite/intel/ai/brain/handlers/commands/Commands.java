@@ -171,7 +171,9 @@ public enum Commands {
     TARGET_WINGMAN0("target_wingman_1", BINDING_TARGET_WINGMAN0.getGameBinding(), null, GenericGameControlHandler.class),
     TARGET_WINGMAN1("target_wingman_2", BINDING_TARGET_WINGMAN1.getGameBinding(), null, GenericGameControlHandler.class),
     TARGET_WINGMAN2("target_wingman_3", BINDING_TARGET_WINGMAN2.getGameBinding(), null, GenericGameControlHandler.class),
-    WING_NAV_LOCK("lock_on_wingman", BINDING_WING_NAV_LOCK.getGameBinding(), null, GenericGameControlHandler.class);
+    WING_NAV_LOCK("lock_on_wingman", BINDING_WING_NAV_LOCK.getGameBinding(), null, GenericGameControlHandler.class),
+    LIST_AVAILABLE_VOICES("list_available_voices", null, null, ListAvailableVoices.class),
+    ;
 
     ///
     private final String action;

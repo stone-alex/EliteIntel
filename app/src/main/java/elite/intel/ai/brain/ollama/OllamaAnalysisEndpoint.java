@@ -24,14 +24,14 @@ public class OllamaAnalysisEndpoint extends AiEndPoint implements AiAnalysisInte
     }
 
     @Override
-    public JsonObject analyzeData(String userIntent, AiData struct) {
+    public JsonObject analyzeData(String originalUserInput, AiData struct) {
         try {
             OllamaClient client = OllamaClient.getInstance();
             var conn = client.getHttpURLConnection();
 
             String systemPrompt = ApiFactory.getInstance()
                     .getAiPromptFactory()
-                    .generateAnalysisPrompt(userIntent, struct.getInstructions());
+                    .generateAnalysisPrompt(originalUserInput, struct.getInstructions());
 
             JsonObject request = client.createRequestBodyHeader(OllamaClient.MODEL_OLLAMA, 0.1f);
 

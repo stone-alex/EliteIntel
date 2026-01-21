@@ -6,8 +6,6 @@ import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 
-import static elite.intel.ai.brain.handlers.query.Queries.TOTAL_BOUNTIES_COLLECTED;
-
 public class AnalyzeBountiesCollectedHandler extends BaseQueryAnalyzer implements QueryHandler {
 
 
@@ -15,7 +13,10 @@ public class AnalyzeBountiesCollectedHandler extends BaseQueryAnalyzer implement
         PlayerSession playerSession = PlayerSession.getInstance();
         long totalBounties = playerSession.getTotalBountyClaimed();
 
-        return process(new AiDataStruct(TOTAL_BOUNTIES_COLLECTED.getInstructions(), new DataDto(totalBounties)), originalUserInput);
+        String instructions = """
+                    Summarize total bounties collected this session.
+                """;
+        return process(new AiDataStruct(instructions, new DataDto(totalBounties)), originalUserInput);
     }
 
     record DataDto(long totalBounties) implements ToJsonConvertible {

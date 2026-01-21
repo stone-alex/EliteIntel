@@ -19,7 +19,12 @@ public class AnalyzeCargoHoldHandler extends BaseQueryAnalyzer implements QueryH
         EventBusManager.publish(new AiVoxResponseEvent("Analyzing cargo data... Stand by..."));
         PlayerSession playerSession = PlayerSession.getInstance();
 
-        return process(new AiDataStruct(QUERY_ANALYZE_ON_BOARD_CARGO.getInstructions(), new DataDto(playerSession.getShipLoadout(), playerSession.getShipCargo())), originalUserInput);
+        String instructions = """
+                Use this data provide questions regarding cargo and/or ship loadout if relevant.
+                Cargo is listed 1 unit = 1 ton. 
+                    - **Do not** ask follow up questions, just provide information.
+                """;
+        return process(new AiDataStruct(instructions, new DataDto(playerSession.getShipLoadout(), playerSession.getShipCargo())), originalUserInput);
     }
 
     record DataDto(ShipLoadOutDto loadout, GameEvents.CargoEvent cargo) implements ToJsonConvertible {

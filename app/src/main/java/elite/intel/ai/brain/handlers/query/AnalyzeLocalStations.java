@@ -3,20 +3,18 @@ package elite.intel.ai.brain.handlers.query;
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.gameapi.EventBusManager;
+import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.search.edsm.EdsmApiClient;
 import elite.intel.search.edsm.dto.OutfittingDto;
 import elite.intel.search.edsm.dto.ShipyardDto;
 import elite.intel.search.edsm.dto.StationsDto;
-import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static elite.intel.ai.brain.handlers.query.Queries.ANALYZE_LOCAL_STATIONS;
 
 public class AnalyzeLocalStations extends BaseQueryAnalyzer implements QueryHandler {
 
@@ -26,7 +24,7 @@ public class AnalyzeLocalStations extends BaseQueryAnalyzer implements QueryHand
         LocationDto currentLocation = playerSession.getCurrentLocation();
         StationsDto stationsDto = EdsmApiClient.searchStations(playerSession.getCurrentLocation().getStarName(), 0);
         List<DataElement> data = new ArrayList<>();
-        if(stationsDto.getData() != null && stationsDto.getData().getStations() != null) {
+        if (stationsDto.getData() != null && stationsDto.getData().getStations() != null) {
             stationsDto.getData().getStations().forEach(station -> {
                 OutfittingDto outfitting = EdsmApiClient.searchOutfitting(station.getMarketId(), null, null);
                 ShipyardDto shipyard = EdsmApiClient.searchShipyard(station.getMarketId(), null, null);
@@ -34,7 +32,7 @@ public class AnalyzeLocalStations extends BaseQueryAnalyzer implements QueryHand
             });
         }
 
-        return process(new AiDataStruct(ANALYZE_LOCAL_STATIONS.getInstructions(), new DataDto(data)),originalUserInput);
+        return process(new AiDataStruct("Answer questions about local stations", new DataDto(data)), originalUserInput);
     }
 
     record DataElement(String stationName, OutfittingDto outfitting, ShipyardDto shipyard, LocationDto currentLocation) implements ToJsonConvertible {

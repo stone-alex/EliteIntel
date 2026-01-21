@@ -13,7 +13,7 @@ public class WhatAreYourCapabilitiesHandler extends BaseQueryAnalyzer implements
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         AICapabilitiesDto capabilities = EliteIntelFactory.getInstance().getCapabilities();
-        return process(new AiDataStruct(WHAT_ARE_YOUR_CAPABILITIES.getInstructions(), new DataDto(capabilities)), originalUserInput);
+        return process(new AiDataStruct("Summarize application capabilities.", new DataDto(capabilities)), originalUserInput);
     }
 
     record DataDto(AICapabilitiesDto capabilities) implements ToJsonConvertible {

@@ -19,7 +19,7 @@ public class AnalyzeShipyardHandler extends BaseQueryAnalyzer implements QueryHa
         PlayerSession playerSession = PlayerSession.getInstance();
         ShipyardDto shipyard = playerSession.getCurrentLocation().getShipyard();
 
-        return process(new AiDataStruct(ANALYZE_LOCAL_SHIPYARD.getInstructions(), new DataDto(shipyard)), originalUserInput);
+        return process(new AiDataStruct("Answer questions about shipyard contents", new DataDto(shipyard)), originalUserInput);
     }
 
     private record DataDto(ToJsonConvertible shipyard) implements ToJsonConvertible {

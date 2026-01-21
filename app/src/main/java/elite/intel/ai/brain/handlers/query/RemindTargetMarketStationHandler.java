@@ -13,8 +13,6 @@ import elite.intel.util.json.ToJsonConvertible;
 import java.util.ArrayList;
 import java.util.List;
 
-import static elite.intel.ai.brain.handlers.query.Queries.REMINDER;
-
 public class RemindTargetMarketStationHandler extends BaseQueryAnalyzer implements QueryHandler {
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
@@ -22,7 +20,7 @@ public class RemindTargetMarketStationHandler extends BaseQueryAnalyzer implemen
         PlotRouteToNextTradeStopHandler.Reminder data = GsonFactory.getGson().fromJson(destinationReminder.getReminderAsJson(), PlotRouteToNextTradeStopHandler.Reminder.class);
         MonetizeRouteManager monetizeRouteManager = MonetizeRouteManager.getInstance();
 
-        if(data == null || data.stopInfo() == null){
+        if (data == null || data.stopInfo() == null) {
             // monetized hop.
             RouteMonetisationDao.MonetisationTransaction transaction = monetizeRouteManager.getTransaction();
             return process(
@@ -48,7 +46,7 @@ public class RemindTargetMarketStationHandler extends BaseQueryAnalyzer implemen
 
             return process(
                     new AiDataStruct(
-                            REMINDER.getInstructions(),
+                            "Remind user about:",
                             new DataDto(pickupAtStation, dropOffAtStation, list)
                     ),
                     originalUserInput

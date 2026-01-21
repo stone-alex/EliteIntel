@@ -3,17 +3,15 @@ package elite.intel.ai.brain.handlers.query;
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.gameapi.EventBusManager;
+import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.search.edsm.EdsmApiClient;
 import elite.intel.search.edsm.dto.DeathsDto;
 import elite.intel.search.edsm.dto.TrafficDto;
-import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.Status;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
-
-import static elite.intel.ai.brain.handlers.query.Queries.ANALYZE_CURRENT_PLANET;
 
 public class AnalyzeCurrentLocationHandler extends BaseQueryAnalyzer implements QueryHandler {
 
@@ -28,11 +26,18 @@ public class AnalyzeCurrentLocationHandler extends BaseQueryAnalyzer implements 
         TrafficDto trafficDto = EdsmApiClient.searchTraffic(playerSession.getPrimaryStarLocation().getStarName());
 
         String station = "";
-        if(status.isDocked() && location.getStationName() != null || location.getStationName() != null){
-            station = "Docked at "+location.getStationName()+" "+location.getStationType();
+        if (status.isDocked() && location.getStationName() != null || location.getStationName() != null) {
+            station = "Docked at " + location.getStationName() + " " + location.getStationType();
         }
 
-        return process(new AiDataStruct(ANALYZE_CURRENT_PLANET.getInstructions(), new DataDto(station, location, deathsDto,trafficDto)), originalUserInput);
+        String instructions = """
+                    Use this data to provide answers for our location. 
+                    NOTE: For questions such as 'where are we?' 
+                    Use planetShortName for location name unless we are on the station in which case return station name. 
+                    If we are on a station, return station name and planet we are orbiting.
+                """;
+
+        return process(new AiDataStruct(instructions, new DataDto(station, location, deathsDto, trafficDto)), originalUserInput);
     }
 
     record DataDto(String station, LocationDto location, DeathsDto deathsData, TrafficDto trafficData) implements ToJsonConvertible {

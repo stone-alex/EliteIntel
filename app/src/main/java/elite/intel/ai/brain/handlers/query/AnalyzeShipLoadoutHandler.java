@@ -23,7 +23,11 @@ public class AnalyzeShipLoadoutHandler extends BaseQueryAnalyzer implements Quer
         ShipLoadOutDto shipLoadout = playerSession.getShipLoadout();
         if (shipLoadout == null) return process("No data available");
 
-        return process(new AiDataStruct(QUERY_SHIP_LOADOUT.getInstructions(), new DataDto(ShipFactsExtractor.extractFacts(shipLoadout))), originalUserInput);
+        String instructions = """
+                Use this data to answer user queries about ship loadout details.
+                """;
+
+        return process(new AiDataStruct(instructions, new DataDto(ShipFactsExtractor.extractFacts(shipLoadout))), originalUserInput);
     }
 
     record DataDto(Map<String, Object> data) implements ToJsonConvertible {

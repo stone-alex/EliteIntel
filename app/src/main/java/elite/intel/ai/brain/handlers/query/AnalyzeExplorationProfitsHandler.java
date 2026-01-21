@@ -14,8 +14,6 @@ import elite.intel.util.json.ToJsonConvertible;
 import java.util.List;
 import java.util.Map;
 
-import static elite.intel.ai.brain.handlers.query.Queries.ANALYZE_STAR_SYSTEM_EXPLORATION;
-
 public class AnalyzeExplorationProfitsHandler extends BaseQueryAnalyzer implements QueryHandler {
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
@@ -26,9 +24,13 @@ public class AnalyzeExplorationProfitsHandler extends BaseQueryAnalyzer implemen
         Map<Long, LocationDto> planetsAndMoons = playerSession.getLocations();
         LocationDto currentLocation = playerSession.getCurrentLocation();
         List<FSSBodySignalsEvent.Signal> fullSpectrumScanBodySignals = currentLocation.getFssSignals();
+
+        String instructions = """
+                Use this data to provide answers on potential exo-biology exploration profits.
+                """;
         return process(
                 new AiDataStruct(
-                        ANALYZE_STAR_SYSTEM_EXPLORATION.getInstructions(),
+                        instructions,
                         new DataDto(allCompletedBioSamples, planetsAndMoons, fullSpectrumScanBodySignals)),
                 originalUserInput
         );

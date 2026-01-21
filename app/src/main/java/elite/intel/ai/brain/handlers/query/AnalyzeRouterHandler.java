@@ -3,12 +3,12 @@ package elite.intel.ai.brain.handlers.query;
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.db.managers.ShipRouteManager;
+import elite.intel.gameapi.EventBusManager;
+import elite.intel.gameapi.gamestate.dtos.NavRouteDto;
 import elite.intel.search.edsm.EdsmApiClient;
 import elite.intel.search.edsm.dto.DeathsDto;
 import elite.intel.search.edsm.dto.TrafficDto;
-import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.gamestate.dtos.NavRouteDto;
-import elite.intel.db.managers.ShipRouteManager;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.JsonDataFactory;
 import elite.intel.util.json.ToJsonConvertible;
@@ -17,8 +17,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
-
-import static elite.intel.ai.brain.handlers.query.Queries.QUERY_ANALYZE_ROUTE;
 
 public class AnalyzeRouterHandler extends BaseQueryAnalyzer implements QueryHandler {
     private static final Logger log = LogManager.getLogger(AnalyzeRouterHandler.class);
@@ -65,7 +63,11 @@ public class AnalyzeRouterHandler extends BaseQueryAnalyzer implements QueryHand
             return GenericResponse.getInstance().genericResponse("Data error!");
         }
 
-        return process(new AiDataStruct(QUERY_ANALYZE_ROUTE.getInstructions(), new DataDto(data)), originalUserInput);
+        String instructions = """
+                Analyze the current plotted route. 
+                Number of jumps = number of nodes.
+                """;
+        return process(new AiDataStruct(instructions, new DataDto(data)), originalUserInput);
     }
 
     record DataDto(String data) implements ToJsonConvertible {

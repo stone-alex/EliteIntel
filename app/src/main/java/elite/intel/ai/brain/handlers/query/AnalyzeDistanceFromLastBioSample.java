@@ -20,7 +20,9 @@ public class AnalyzeDistanceFromLastBioSample extends BaseQueryAnalyzer implemen
         Status status = Status.getInstance();
         LocationDto currentLocation = playerSession.getCurrentLocation();
 
-        String instructions = "use userLatitude, userLongitude, bioSample.scanLatitude, bioSample.scanLongitude and planetRadius to calculate distance to the last partial bio-sample.";
+        String instructions = """
+        use userLatitude, userLongitude, bioSample.scanLatitude, bioSample.scanLongitude and planetRadius to calculate distance to the last partial bio-sample.
+        """;
 
         if (status.getStatus() == null) {
             return process("No planet data available");

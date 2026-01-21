@@ -22,11 +22,14 @@ public class AnalyzeMaterialsOnPlanetHandler extends BaseQueryAnalyzer implement
         if (currentLocation.getBodyId() < 0) return process("No location data available");
 
         List<MaterialDto> materials = currentLocation.getMaterials();
+        String instructions = """
+                    Provide answers about materials available on this planet.
+                """;
 
         if (materials.isEmpty()) {
             return process(" no materials data available...");
         } else {
-            return process(new AiDataStruct("Analyze material composition on this planet.", new DataDto(materials)), originalUserInput);
+            return process(new AiDataStruct(instructions, new DataDto(materials)), originalUserInput);
         }
     }
 

@@ -19,7 +19,7 @@ public class AnalyzeLocalOutfittingHandler extends BaseQueryAnalyzer implements 
         PlayerSession playerSession = PlayerSession.getInstance();
         OutfittingDto outfitting = playerSession.getCurrentLocation().getOutfitting();
 
-        return process(new AiDataStruct(ANALYZE_LOCAL_OUTFITTING.getInstructions(), new DataDto(outfitting)), originalUserInput);
+        return process(new AiDataStruct("Answer questions about available outfitting options", new DataDto(outfitting)), originalUserInput);
     }
 
     private record DataDto(OutfittingDto outfitting) implements ToJsonConvertible {

@@ -21,7 +21,12 @@ public class CarrierETAHandler extends BaseQueryAnalyzer implements QueryHandler
         PlayerSession playerSession = PlayerSession.getInstance();
         String carrierDepartureTime = playerSession.getCarrierDepartureTime();
         String now = TimestampFormatter.formatTimestamp(ZonedDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME), true);
-        return process(new AiDataStruct(CARRIER_ETA.getInstructions(), new DataDto(carrierDepartureTime, now)), originalUserInput);
+
+        String instructions = """
+                Calculate fleet carrier ETA using arrival and current time.
+                """;
+
+        return process(new AiDataStruct(instructions, new DataDto(carrierDepartureTime, now)), originalUserInput);
     }
 
 

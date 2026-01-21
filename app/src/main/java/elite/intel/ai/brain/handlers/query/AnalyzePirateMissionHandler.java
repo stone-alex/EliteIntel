@@ -23,7 +23,12 @@ public class AnalyzePirateMissionHandler extends BaseQueryAnalyzer implements Qu
         Set<BountyDto> bounties = session.getBounties();
         String remainingKills = computeKillsRemaining(missions, bounties);
         String missionProfit = computeMissionProfit(missions, bounties);
-        String instructions = "Do not sum anything do not calculate! Just use data pre-calculated for you to answer the question. If asked about total kills remaining only return the number of kills remaining to complete all assignments. Else provide complete summary.";
+        String instructions = """
+                Do not sum anything do not calculate! 
+                Just use data pre-calculated for you to answer the question. 
+                If asked about total kills remaining only return the number of kills remaining to complete all assignments. 
+                Else provide complete summary.
+                """;
         return process(new AiDataStruct(instructions, new DataDto(remainingKills, missionProfit)), originalUserInput);
     }
 

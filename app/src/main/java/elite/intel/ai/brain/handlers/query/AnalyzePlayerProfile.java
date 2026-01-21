@@ -35,7 +35,7 @@ public class AnalyzePlayerProfile extends BaseQueryAnalyzer implements QueryHand
 
         return process(
                 new AiDataStruct(
-                        QUERY_PLAYER_STATS_ANALYSIS.getInstructions(),
+                        "Summarize player statistics.",
                         new DataDto(
                                 data,
                                 highestMilitaryRank,

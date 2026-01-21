@@ -31,7 +31,13 @@ public class AnalyzeBioSamplesHandler extends BaseQueryAnalyzer implements Query
         List<BioSampleDto> samplesCompletedForThisPlanet = completedScansForPlanet(playerSession);
         List<GenusDto> genusListNotScannedForCurrentLocation = calculateGenusNotYetScanned(samplesCompletedForThisPlanet, genusListForCurrentLocation);
 
-        String instructions = "Analyze bio samples. 'partialScans': partial bio scans (3 scans needed per sample). 'genusListForCurrentLocation': all genus on current planet. 'genusListNotScannedForCurrentLocation': unscanned genus on current planet. For queries about unscanned genus list variant and species from 'genusListNotScannedForCurrentLocation'. ";
+        String instructions = """
+                'partialScans': partial bio scans (3 scans needed per sample). 
+                'genusListForCurrentLocation': all genus present on the current planet. 
+                'genusListNotScannedForCurrentLocation': organics and bio forms not yet scanned or catalogued. 
+                For queries about remaining bio/organic scans use 'genusListNotScannedForCurrentLocation'.
+                 
+                """;
 
         AiDataStruct struct = new AiDataStruct(instructions, new DataDto(
                 partialScans,

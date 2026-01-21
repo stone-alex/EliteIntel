@@ -38,11 +38,11 @@ public class GoogleSTTImpl implements EarsInterface {
     private static final long MAX_BACKOFF_MS = 60000; // Cap at 1 min
 
     private static final long MIN_STREAM_GAP_MS = 100;
-    private ByteArrayOutputStream audioCollector = new ByteArrayOutputStream();
     private final AtomicBoolean isListening = new AtomicBoolean(true);
     private final AtomicBoolean isSpeaking = new AtomicBoolean(false);
     private final SystemSession systemSession = SystemSession.getInstance();
     Map<String, String> corrections;
+    private ByteArrayOutputStream audioCollector = new ByteArrayOutputStream();
     private Resampler resampler;  // lazy-init when needed
     private int sampleRateHertz;  // Dynamically detected
     private int bufferSize; // Dynamically calculated based on sample rate
@@ -245,7 +245,7 @@ public class GoogleSTTImpl implements EarsInterface {
                         boolean sendKeepAlive = (currentTime - lastAudioSentTime) >= KEEP_ALIVE_INTERVAL_MS;
 
                         if (isActive || sendKeepAlive) {
-                            if(isActive){
+                            if (isActive) {
                                 audioCollector.write(audioToProcess, 0, bytesToProcess);
                             }
                             byte[] keepAliveBuffer = new byte[KEEP_ALIVE_BUFFER_SIZE]; // Small silent for cost savings
@@ -326,6 +326,9 @@ public class GoogleSTTImpl implements EarsInterface {
                         if (avgConfidence > MIN_CONFIDENCE_LEVEL) {
                             if (isStreamingModeOn) {
                                 String voiceName = systemSession.getAIVoice().getName();
+                                if (systemSession.isRunningLocalLLM()) {
+                                    voiceName = "Amelia";
+                                }
                                 if (sanitizedTranscript.toLowerCase().startsWith("computer") || sanitizedTranscript.toLowerCase().startsWith(voiceName.toLowerCase())) {
                                     sendToAi(sanitizedTranscript.replace("computer,", "").replace(voiceName.toLowerCase() + ",", ""), avgConfidence);
                                 }
@@ -440,7 +443,7 @@ public class GoogleSTTImpl implements EarsInterface {
     }
 
     private void dumpAudioAsWav(byte[] audio, String prefix) {
-        if(true) return; /// comment out for testing.
+        if (true) return; /// comment out for testing.
 
 
         try (FileOutputStream fos = new FileOutputStream(prefix + "_" + System.currentTimeMillis() + ".wav")) {

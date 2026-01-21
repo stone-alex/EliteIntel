@@ -273,3 +273,7 @@
 "treaty room"="tritium"
 "train station"="trade station"
 "scam"="scan"
+"brand"="run"
+"brown"="run"
+"enter super close"="enter supercruise"
+"lensing"="landing"

@@ -1,0 +1,1 @@
+alter table player add column localLllmAddress text default 'http://localhost:11434';

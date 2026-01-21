@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import elite.intel.ai.brain.AIChatInterface;
 import elite.intel.ai.brain.commons.AiEndPoint;
+import elite.intel.util.json.GsonFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -28,7 +29,7 @@ public class OllamaChatEndPoint extends AiEndPoint implements AIChatInterface {
             OllamaClient client = OllamaClient.getInstance();
             HttpURLConnection conn = client.getHttpURLConnection();
 
-            JsonObject body = client.createRequestBodyHeader(OllamaClient.MODEL_OLLAMA_SMALL, 0.8f);
+            JsonObject body = client.createRequestBodyHeader(OllamaClient.MODEL_OLLAMA_SMALL, 0.5f);
 
             JsonArray sanitized = sanitizeJsonArray(messages);
             body.add("messages", sanitized);
@@ -76,7 +77,7 @@ public class OllamaChatEndPoint extends AiEndPoint implements AIChatInterface {
 
 
             bodyString = body.toString();
-            log.debug("Ollama API call:\n{}", bodyString);
+            log.debug("Ollama API call:\n{}", GsonFactory.getGson().toJson(body));
 
             Response response = callApi(conn, bodyString, client);
             JsonObject root = response.responseData();
@@ -88,7 +89,7 @@ public class OllamaChatEndPoint extends AiEndPoint implements AIChatInterface {
             }
 
             String content = message.get("content").getAsString();
-            log.debug("Ollama raw response:\n{}", content);
+            log.debug("Ollama raw response:\n{}", GsonFactory.getGson().toJson(message));
 
             // Now content is already your exact schema JSON
             return JsonParser.parseString(content).getAsJsonObject();

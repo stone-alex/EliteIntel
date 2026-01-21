@@ -819,6 +819,19 @@ public class PlayerSession {
         return Database.withDao(PlayerDao.class, playerDao -> playerDao.get().getLocalTtsServer());
     }
 
+    public void setLocalLlmAddress(String address){
+        Database.withDao(PlayerDao.class, dao ->{
+            PlayerDao.Player player = dao.get();
+            player.setLocalLllmAddress(address);
+            dao.save(player);
+            return Void.class;
+        });
+    }
+
+    public String getLocalLlmAddress() {
+        return Database.withDao(PlayerDao.class, dao -> dao.get().getLocalLllmAddress());
+    }
+
     public void setLocalTtsAddress(String address) {
         Database.withDao(PlayerDao.class, playerDao -> {
             PlayerDao.Player player = playerDao.get();

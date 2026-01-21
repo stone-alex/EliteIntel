@@ -317,3 +317,7 @@
 "with voice to"="set voice to"
 "wo, the voice to"="set voice to"
 "scam"="scan"
+"brand"="run"
+"brown"="run"
+"enter super close"="enter supercruise"
+"lensing"="landing"

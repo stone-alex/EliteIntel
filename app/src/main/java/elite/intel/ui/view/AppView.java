@@ -58,6 +58,7 @@ public class AppView extends JFrame implements AppViewInterface {
     private JPasswordField sttApiKeyField;
     private JCheckBox sttLockedCheck;
     private JPasswordField llmApiKeyField;
+    private JTextField localLlmAddressField;
     private JCheckBox llmLockedCheck;
     private JCheckBox showDetailedLog;
     private JPasswordField ttsApiKeyField;
@@ -604,6 +605,16 @@ public class AppView extends JFrame implements AppViewInterface {
         llmLockedCheck = new JCheckBox("Locked", true);
         addCheck(panel, llmLockedCheck, gbc, 2, 0.2);
 
+
+        nextRow(gbc);
+        addLabel(panel, "Local LLM Address:", gbc, 0);
+        localLlmAddressField = new JTextField();
+        localLlmAddressField.setPreferredSize(new Dimension(200, 42));
+        addField(panel, localLlmAddressField, gbc, 1, 0.8);
+
+        nextRow(gbc);
+        addLabel(panel, " ", gbc, 0);
+
         // Row 1: STT Key
         nextRow(gbc);
         addLabel(panel, "STT Key:", gbc, 0);
@@ -861,6 +872,7 @@ public class AppView extends JFrame implements AppViewInterface {
         ttsApiKeyField.setText(systemSession.getTtsApiKey() != null ? systemSession.getTtsApiKey() : "");
         edsmKeyField.setText(systemSession.getEdsmApiKey() != null ? systemSession.getEdsmApiKey() : "");
         localTtsAddressField.setText(playerSession.getLocalTtsAddress() != null ? playerSession.getLocalTtsAddress() : "");
+        localLlmAddressField.setText(playerSession.getLocalLlmAddress() != null ? playerSession.getLocalLlmAddress() : "");
 
         // Player tab
         playerAltNameField.setText(playerSession.getAlternativeName() != null ? playerSession.getAlternativeName() : "");
@@ -889,6 +901,7 @@ public class AppView extends JFrame implements AppViewInterface {
         s.setTtsApiKey(new String(ttsApiKeyField.getPassword()));
         s.setEdsmApiKey(new String(edsmKeyField.getPassword()));
         playerSession.setLocalTtsAddress(localTtsAddressField.getText());
+        playerSession.setLocalLlmAddress(localLlmAddressField.getText());
         EventBusManager.publish(new AppLogEvent("System config saved"));
         initData();
     }

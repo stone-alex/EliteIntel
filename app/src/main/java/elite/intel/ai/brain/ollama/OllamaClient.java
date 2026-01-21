@@ -2,6 +2,7 @@ package elite.intel.ai.brain.ollama;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.Client;
+import elite.intel.session.PlayerSession;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -9,8 +10,13 @@ import java.net.URL;
 
 public class OllamaClient implements Client {
 
-    public static final String MODEL_OLLAMA = "goekdenizguelmez/JOSIEFIED-Qwen3:4b";
+    private final PlayerSession playerSession = PlayerSession.getInstance();
+
+    public static final String MODEL_OLLAMA = "goekdenizguelmez/JOSIEFIED-Qwen3:14b";
     public static final String MODEL_OLLAMA_SMALL = "goekdenizguelmez/JOSIEFIED-Qwen3:4b";
+
+    //public static final String MODEL_OLLAMA = "goekdenizguelmez/JOSIEFIED-Qwen3:4b";
+    //public static final String MODEL_OLLAMA_SMALL = "goekdenizguelmez/JOSIEFIED-Qwen3:4b";
 
     private static final OllamaClient INSTANCE = new OllamaClient();
 
@@ -21,9 +27,8 @@ public class OllamaClient implements Client {
         return INSTANCE;
     }
 
-    // Configurable via SystemSession (fallback to localhost)
     private String getBaseUrl() {
-        return "http://127.0.0.1:11434";
+        return playerSession.getLocalLlmAddress();
     }
 
     @Override

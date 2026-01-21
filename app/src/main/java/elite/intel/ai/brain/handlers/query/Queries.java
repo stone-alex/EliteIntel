@@ -23,7 +23,7 @@ public enum Queries {
     ANALYZE_STAR_SYSTEM_EXPLORATION("query_exploration_profits_data", "Use this data to provide answers on potential exo-biology exploration profits.", AnalyzeExplorationProfitsHandler.class, true),
     ANALYZE_CURRENT_PLANET("query_current_location", "Use this data to provide answers for our location. NOTE: For questions such as 'where are we?' Use planetShortName for location name unless we are on the station. If we are on a station, return station name and planet we are orbiting.", AnalyzeCurrentLocationHandler.class, true),  // Emphasize planetary/station context,
     ANALYZE_BODY_MATERIALS("query_planetary_materials_present_on_planet", "Analyze material composition on this planet.", AnalyzeMaterialsOnPlanetHandler.class, true),  // Specify planetary to avoid ship/cargo confusion,
-    ANALYZE_EXO_BIOLOGY("query_exobiology_samples_for_current_planet", "Analyze bio-sample collection progress for current planet, including completed, partial, and remaining species.", AnalyzeBioSamplesHandler.class, true),  // "exobiology" to distinguish from commodities,
+    ANALYZE_EXO_BIOLOGY("query_organic_and_exobiology_data_for_current_planet", "-/-", AnalyzeBioSamplesHandler.class, true),  // "exobiology" to distinguish from commodities,
 
     ANALYZE_CURRENT_FUEL_STATUS("query_ship_fuel_status", "Analyze ship fuel tank capacity and reserve, return percent available. Do not confuse ship with fleet carrier. Fleet carrier uses tritium for fuel, Ship uses hydrogen.", AnalyzeFuelStatusHandler.class, true),
     ANALYZE_FSD_TARGET("query_analyze_fsd_target", "Analyze selected FTL destination for allegiance, traffic, and security.", AnalyzeFsdTargetHandler.class, true),

@@ -41,7 +41,7 @@ public class OllamaAnalysisEndpoint extends AiEndPoint implements AiAnalysisInte
 
             JsonObject userMsg = new JsonObject();
             userMsg.addProperty("role", AIConstants.ROLE_USER);
-            userMsg.addProperty("content", "User intent: " + userIntent + "\nData: " + struct.getData().toJson());
+            userMsg.addProperty("content", struct.getData().toJson());
 
             JsonArray messages = new JsonArray();
             messages.add(systemMsg);

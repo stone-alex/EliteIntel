@@ -13,14 +13,17 @@ import elite.intel.util.Ranks;
 import java.util.Objects;
 
 import static elite.intel.ai.brain.handlers.commands.Commands.*;
-import static elite.intel.ai.brain.handlers.query.Queries.*;
+import static elite.intel.ai.brain.handlers.query.Queries.ANALYZE_EXO_BIOLOGY;
+import static elite.intel.ai.brain.handlers.query.Queries.QUERY_SHIP_LOADOUT;
 
 public class OllamaPromptFactory implements AiPromptFactory {
 
-
     private static final OllamaPromptFactory INSTANCE = new OllamaPromptFactory();
-    private static final String JSON_FORMAT =
-            "Always output JSON: {\"type\": \"command|query|chat\", \"response_text\": \"TTS output\", \"action\": \"action_name|query_name\", \"params\": {\"key\": \"value\"}, \"expect_followup\": boolean} action must match provided command or query. They key for value is always 'key'. ";
+    private static final String JSON_FORMAT = """
+            Always output JSON: 
+            {\"type\": \"command|query\", \"response_text\": \"TTS output\", \"action\": \"action_name|query_name\", \"params\": {\"key\": \"value\"}, \"expect_followup\": boolean} 
+            action must match provided command or query. They key for value is always 'key'. 
+            """;
 
     private OllamaPromptFactory() {
     }
@@ -37,82 +40,90 @@ public class OllamaPromptFactory implements AiPromptFactory {
     @Override
     public String generateSystemPrompt() {
         StringBuilder sb = new StringBuilder();
+        // ──────────────────────────────────────────────────────────────
+        //               VERY STRICT LOCAL LLM VERSION
+        // ──────────────────────────────────────────────────────────────
+        sb.append("""
+                YOU ARE A STRICT COMMAND PARSER. YOU **NEVER** INVENT, NEVER GUESS, NEVER CREATE NEW ACTIONS.
+                
+                Infer best match for command or query from user input.
+                
+                OUTPUT FORMAT - REPEAT AFTER ME - YOU **MUST** ALWAYS FOLLOW THIS EXACTLY:
+                {"type": "command|query", "response_text": "short TTS text or empty string", "action": "exact_action_name_from_list_below", "params": {object or empty}, "expect_followup": true|false}
+                
+                Allowed values for "type": only "command" or "query" — nothing else.
+                Allowed values for "action": ONLY names that appear in the lists below — NO EXCEPTIONS, NO VARIATIONS, NO SPELLING MISTAKES.
+                If zero match → {"type":"query", "response_text":"No matching command or query found.", "action":"no_match", "params":{}, "expect_followup":false}
+                
+                RULE 0 (MOST IMPORTANT): If input does not clearly match ANY single command or query from the lists below → you MUST return no-match response shown above. Do NOT try to be helpful. Do NOT interpret loosely. Do NOT combine. Do NOT fallback to chat.
+                
+                RULE 1: NEVER invent new action names. NEVER combine commands. NEVER split user sentence into multiple actions.
+                RULE 2: For coordinates always use decimal numbers only: {"latitude": -12.34, "longitude": 56.78}
+                RULE 3: params keys must be exactly as written in the command/query description.
+                
+                JSON FORMAT (repeat): 
+                Always output **ONLY** valid JSON object like above. Nothing before. Nothing after. No explanations. No markdown.
+                
+                """);
 
-        sb.append("Instructions:\n\n");
-        sb.append(" Rule #1: NEVER INVENT COMMANDS OR QUERIES (actions)!!! ALWAYS MATCH TO THE PROVIDED LIST ONLY!!! IF NOT MATCH FOUND SAY SO. ");
-        sb.append(" Only return a command or query from the exact list provided below — never invent, combine, or create new commands, even if the user input seems similar. action parameter MUST match either command or query. Do not invent action parameters. \n");
-        sb.append(" Rule #2: Always output JSON for 'navigate_to_coordinates' command using numbers, not spelled out words. Example: {\"latitude\":-35.4320,\"longitude\":76.4324} do not confuse with navigate to landing zone or bio sample.\n");
-        sb.append(" Rule #3: Provide descriptive answers and always use planetShortName for locations if available.\n ");
-        sb.append(" Rule #4 NEVER return interpretation! Always match input to provided commands or queries. If no match found say so!\n ");
-        sb.append(JSON_FORMAT).append('\n');
+        sb.append(inputClassificationClause());
+        sb.append(supportedCommandsClause());
+        sb.append(supportedQueriesClause());
+        sb.append("""
+                
+                MANDATORY PARAMS RULE FOR ALL IMPLEMENTATIONS:
+                - The key in the "params" object is ALWAYS the literal string "key" or "state" for booleans.
+                - NEVER use any other word as the key name (no "material", no "planetShortName", no "commodity" etc.)
+                - Examples of correct usage:
+                  - find mining site for low temperature diamonds → "params": {"key": "low temperature diamonds"}
+                  - analyse biome for planet 15de            → "params": {"key": "15de"}
+                  - lights on                                → "params": {"state": "true"}
+                  - increase speed by 7                      → "params": {"key": "7"}
+                  - decrease speed by 4                      → "params": {"key": "-4"}
+                  - find commodity gold within 120 ly        → "params": {"key": "gold"}   (distance in separate entry if needed)
+                
+                """);
+        sb.append(colloquialTerms());
 
-        sb.append(" For alpha numeric numbers or names, star system codes or ship plates (e.g., Syralaei RH-F, KI-U), use NATO phonetic alphabet \n");
-        sb.append(" Spell out numerals in full words (e.g., 285 = two hundred and eighty-five, 27 = twenty-seven). ");
-        sb.append(inputClassificationClause()).append('\n');
-        sb.append(supportedCommandsClause()).append('\n');
-        sb.append(supportedQueriesClause()).append('\n');
-        sb.append(colloquialTerms()).append('\n');
-        //sb.append(" Do not confuse 'Next Waypoint' with 'Current Location'");
-        //.append(getSessionValues()).append('\n')
-/*
-                .append(generateAbbreviations()).append('\n')
-                .append(colloquialTerms()).append('\n')
-                .append(appendBehavior()).append('\n')
-                ;
-*/
-
+        sb.append("""
+                
+                Final reminder — LAST SENTENCE BEFORE OUTPUT:
+                ONLY use action names exactly as listed above.
+                If unsure or no good match → return the no-match JSON shown at the beginning.
+                Output pure JSON now.
+                """);
 
         return sb.toString();
     }
 
     private String inputClassificationClause() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Classify input as one of:\n");
-        sb.append("    - 'command': Triggers an app action or keyboard event (DO SOMETHING). Use for inputs starting with verbs like 'activate', 'set', 'switch to', 'get', 'drop', 'retract', 'deploy', 'find', 'locate', 'activate' (e.g., 'deploy landing gear', 'set mining target', 'find carrier fuel'). Treat imperative verbs as commands even if question-phrased (e.g., 'get distance' is a command). Only match supported commands listed in simulationCommands or CustomCommands. Provide empty response_text for single-word commands. Match command and queries to the provided list only. Match commands before queries or chat.\n");
-        sb.append("    - 'query': Requests information from simulation state (LOOK UP, HELP, REMIND ME or COMPUTE SOMETHING). Use for inputs starting with interrogative words like 'can we', 'what', 'where', 'when', 'how', 'how far', 'remind', 'how many', 'how much', 'what is', 'where is' (e.g., 'how far are we from last bio sample', 'what is in our cargo hold'). Explicitly match queries about distance to the last bio sample with phrases containing 'how far' or 'distance' followed by 'bio sample', 'biosample', 'last sample', 'last bio sample', 'previous bio sample', or 'previous biosample', with or without prefixes like 'query', 'query about simulation state', or 'query question'. These must trigger the query handler (HOW_FAR_ARE_WE_FROM_LAST_SAMPLE) with action 'query_how_far_we_moved_from_last_bio_sample'. Match supported queries listed in QueryActions. Queries take priority over chat but not commands. DO NOT confuse mine and buy. Search markets for 'buy' search star systems for 'mine'. Do not confuse 'trade route' with 'ship route' with 'fleet carrier route'. 'help' or 'help me with' associated with " + HELP.getAction() + " query \n");
-        sb.append("    - 'chat': General conversation, anything that does not remotely match provided list of commands or queries are classified as general chat. Only classify as chat if the input does not match any specific query or command pattern in 'Supported Commands' or 'Supported Queries'.\n");
-
-        sb.append("For type='command': Provide empty response_text for single word commands.\n");
-        sb.append("    - For set, change, swap, add etc type commands that require value provide params json {\"key\":\"value\"} where key always matching paramKey for action and value is what you determine value to be.\n");
-        sb.append("    - For 'find*' commands that contain distance in light years provide {\"key\":\"value\"} where key is integer representing distance in light years.\n");
-        sb.append("    - For toggle commands such as on/off, enable/disable, provide params json {\"state\":\"true\"} / {\"state\":\"false\"}. use 'state' for on/off commands only, never for anything else.\n");
-        sb.append("    - Example: '" + FIND_MINING_SITE.getAction() + "' provide params json {\"material\":\"value\", \"max_distance\":\"value\"} e.g. {\"key\":\"tritium\",\"max_distance\":\"100\"}\n");
-        sb.append("    - Example: '" + FIND_COMMODITY.getAction() + "' provide params json {\"key\":\"commodity_name\", \"max_distance\":\"value_in_ly\"} e.g. {\"key\":\"gold\",\"max_distance\":\"100\"}\n");
-        sb.append("    - For commands like ").append(INCREASE_SPEED_BY.getAction()).append(" provide params json {\"key\":\"value\"} where value is a positive integer. example: {\"key\":\"3\"}.\n");
-        sb.append("    - For commands like ").append(DECREASE_SPEED_BY.getAction()).append(" provide params json {\"key\":\"value\"} where value is a negative integer example: {\"key\":\"-3\"}.\n");
-        sb.append("    - For commands like ").append(LIGHTS_ON_OFF.getAction()).append(" provide params json {\"state\":\"true\"} / {\"state\":\"false\"}.\n");
-        sb.append("    - If asked about fleet carrier required to reach destination, query " + ANALYZE_CARRIER_ROUTE.getAction() + ", not fleet carrier stats.\n");
-        sb.append("    - Always extract and return numeric values as plain integers without commas, spaces, or words (e.g., 2000000, not '2 million' or 'two million').\n");
-        sb.append("    - Distinguish between fleet carrier route and ship route. Fleet carrier fuel (tritium), and fuel for the ship (hydrogen from fuel stars). Fleet carrier has to be mentioned explicitly, else it is ship route and ship fuel.\n");
-        sb.append("    - Only use commands and queries provided. Else response as generic chat.\n");
-
-        sb.append("For type='query':\n");
-        sb.append("    - In initial classification, follow response_text rules from player instructions. For tool/follow-up, use full analyzed response in 'response_text'.\n");
-        sb.append("    - If action is a quick query set 'response_text' to '' (empty string, no initial TTS).\n");
-        sb.append("    - If action is a data query set 'response_text' to '' for user feedback during delay.\n");
-        sb.append("    - For 'general_conversation', use general knowledge outside simulation unless the input explicitly mentions the simulation.\n");
-        sb.append("    - Do not generate or infer answers here; the app will handle final response via handlers.\n");
-
-        sb.append("For type='chat':\n");
-        sb.append("    - Set 'expect_followup': true if response poses a question or requires user clarification; otherwise, false.\n ");
-        sb.append("    - Generate a relevant conversational response in 'response_text' strictly adhering to the configured personality and cadence.\n ");
-        sb.append("    - Set 'expect_followup' to true if the response poses a question or invites further conversation; otherwise, false.\n ");
-
-        return sb.toString();
+        return """
+                Classify as:
+                - 'command'  → only when input is very clear action request matching supported commands list exactly. Commands are inputs that start with a verb for example: 'activate', 'set', 'switch to', 'get', 'drop', 'retract', 'deploy', 'find', 'locate', 'activate'
+                - 'query'    → only when input is very clear information request matching supported queries list exactly. Queries are inputs starting with interrogative words like 'can we', 'what', 'where', 'when', 'how', 'how far', 'remind', 'how many', 'how much', 'what is', 'where is'
+                Commands have priority over queries.
+                If unsure → classify as chat. Return type 'chat' and provide a short response in 'response_text' such as \"command unclear\" or similar.
+                """;
     }
 
     private String colloquialTerms() {
         StringBuilder sb = new StringBuilder();
-        sb.append(" Map 'organic(s) to 'bio signal(s)'\n");
+        /// navigation
         sb.append(" Map 'navigate to target system' or 'plot route to target system' to " + RECON_TARGET_SYSTEM.getAction() + " \n");
         sb.append(" Map 'navigate to provider system' or 'plot route to provider system' to " + RECON_PROVIDER_SYSTEM.getAction() + " \n");
-        sb.append(" Map colloquial terms to commands: 'feds', 'yanks', or 'federation space' to 'FEDERATION', 'imperials', 'imps', or 'empire' to 'IMPERIAL', 'alliance space' or 'allies' to 'ALLIANCE' for set_cadence. ");
         sb.append(" Map slang such as 'bounce', 'proceed to the next waypoint' or 'get out of here' to commands like ").append(JUMP_TO_HYPERSPACE.getAction()).append(". ");
         sb.append(" Map 'select next way point' to ").append(TARGET_NEXT_ROUTE_SYSTEM.getAction()).append("\n");
-        sb.append(" 'Resource Sites' are not for materials. They are 'hunting grounds for pirate massacre missions'. Do not confuse a 'Resource Site' with material gathering.");
-        sb.append(" Map 'scan system' to commands like ").append(OPEN_FSS_AND_SCAN.getAction()).append(". and 'damage report' to queries like ").append(QUERY_SHIP_LOADOUT.getAction()).append("\n");
-        //sb.append(" Infer command intent from context: phrases like 'act like', 'talk like', 'blend in with', or 'sound like' followed by a faction should trigger '").append(SET_PERSONALITY.getAction()).append("' with the corresponding cadence value, using current system allegiance if ambiguous.\n");
-        //sb.append(" Do not confuse traders with market. Material tader/broker is not the same as trade station / port.");
+
+        /// exploration
+        sb.append(" Map 'organic(s) to 'bio signal(s)'\n");
+        sb.append(" Map 'scan system' to commands like ").append(OPEN_FSS_AND_SCAN.getAction());
+        sb.append(" 'Resource Sites' have no materials, those are 'hunting grounds for pirate massacre missions' only.");
+
+        /// ship-related queries
+        sb.append(" Map 'damage report' questions to queries like ").append(QUERY_SHIP_LOADOUT.getAction()).append("\n");
+        sb.append(" Map questions about organics or exobiology scans to").append(ANALYZE_EXO_BIOLOGY.getAction()).append("\n");
+        sb.append(" cargo scoop, cargo hatch, cargo doors etc are related to opening and closing cargo scoop. ");
+
         return sb.toString();
     }
 
@@ -161,27 +172,26 @@ public class OllamaPromptFactory implements AiPromptFactory {
     }
 
     @Override
-    public String generateAnalysisPrompt(String userIntent, String instructions) {
+    public String generateAnalysisPrompt(String originalUserQuestion, String instructions) {
         StringBuilder sb = new StringBuilder();
-        //sb.append(getSessionValues());
         sb.append("Instructions:\n");
-        //sb.append(appendBehavior());
-        sb.append("Task:\n");
-        sb.append("User asks:\n");
-        sb.append("\"" + userIntent + "\".\n");
-        sb.append("You are a strict data extractor. NEVER use external knowledge, NEVER guess, NEVER calculate, NEVER estimate, NEVER add or invent values.\n" +
-                "\n" +
-                "CRITICAL RULES – MUST FOLLOW EXACTLY:\n" +
-                "- Use ONLY the fields from the provided JSON data.\n" +
-                "- If the requested info is in a specific field (e.g. maxJumpRange), output EXACTLY that value, rounded to two decimals, followed by 'ly'. NOTHING ELSE.\n" +
-                "- If not directly present, say \"Not found in data\".\n" +
-                "- Output format: {\"response_text\": \"XX.XX ly\"} or {\"response_text\": \"Not found in data\"}\n" +
-                "- NO explanations, NO reasoning, NO extra text.\n" +
-                "\n" +
-                "Task: analyze our ship loadout what is our maximum range.");
-        sb.append(" Analyze the provided JSON data: ").append(instructions).append(". ");
-        sb.append(" against the user's intent using instructions provided within. ").append(userIntent).append(". Return precise answers or summaries as requested in 'response_text' field. \n");
-        sb.append(appendBehavior());
+
+        sb.append("""
+                You are Amelia, on board AI, a strict data extractor. NEVER use external knowledge, NEVER guess, NEVER calculate, NEVER estimate, NEVER add or invent values.
+                
+                CRITICAL RULES – MUST FOLLOW EXACTLY:
+                - Use ONLY the fields from the provided JSON data.
+                - If the requested info is in a specific field (e.g. maxJumpRange), output EXACTLY that value, rounded to two decimals.
+                - If not directly present, say \"Not found in data\"
+                - Output format: { \"type\":\"chat\", \"response_text\": \"Your analysis\"}
+                - NO explanations, NO reasoning, NO extra text.
+                Return minimalistic brief and concise answer. 
+                """
+        );
+        sb.append(instructions).append(". ");
+        sb.append(" User asks:\n");
+        sb.append("\"" + originalUserQuestion + "\".\n");
+        ;
 
         return sb.toString();
     }
@@ -211,15 +221,15 @@ public class OllamaPromptFactory implements AiPromptFactory {
         AIPersonality aiPersonality = systemSession.isRunningPiperTts() ? AIPersonality.CASUAL : systemSession.getAIPersonality();
 
         sb.append(" Behavior: ");
-        sb.append(aiCadence.getCadenceClause()).append(" ");
-        sb.append(" Apply personality: ").append(aiPersonality.name().toUpperCase()).append(" - ").append(aiPersonality.getBehaviorClause()).append(" ");
+        // sb.append(aiCadence.getCadenceClause()).append(" ");
+        // sb.append(" Apply personality: ").append(aiPersonality.name().toUpperCase()).append(" - ").append(aiPersonality.getBehaviorClause()).append(" ");
         sb.append(" Refer to your self as 'I' ");
         sb.append(" Do not end responses with any fillers, or unnecessary phrases like 'Ready for exploration', 'Ready for orders', 'All set', 'Ready to explore', 'Should we proceed?', or similar open-ended questions or remarks.\n");
         sb.append(" Do not use words like 'player' or 'you', it breaks immersion. Use 'we' instead. ");
         sb.append(" Do not confuse 'Next Waypoint' with 'Current Location'");
         sb.append("Do not confuse 'ship' with 'carrier'");
         sb.append(" For alpha numeric numbers or names, star system codes or ship plates (e.g., Syralaei RH-F, KI-U), use NATO phonetic alphabet (e.g., Syralaei Romeo Hotel dash Foxtrot, Kilo India dash Uniform). Use planetShortName for planets when available.\n");
-        sb.append(" Spell out numerals in full words (e.g., 285 = two hundred and eighty-five, 27 = twenty-seven). ");
+        //sb.append(" Spell out numerals in full words (e.g., 285 = two hundred and eighty-five, 27 = twenty-seven) for chat. Use raw numbers without commans for key/value pairs");
 //        sb.append(" Gravity units in G, Temperature units Kelvin provide conversion to Celsius. Mass units metric.\n");
         sb.append(" For your info: Distances between stars in light years. Distance between planets in light seconds. Distances between bio samples are in metres. User knows this and expects it. \n");
         sb.append(" Bio samples are taken from organisms not stellar objects.\n");
@@ -242,10 +252,18 @@ public class OllamaPromptFactory implements AiPromptFactory {
     @Override
     public String generateSensorPrompt() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Instructions:\n\n");
-        sb.append("You received data from ship sensors. Notify user about the information received.\n");
-        sb.append("Provide concise response. Always use planetShortName for locations if available.\n");
-        sb.append(JSON_FORMAT);
+        sb.append("""
+                Instructions:
+                You are Amelia, a ship computer. You have received data from ship censors. 
+                Provide user with summary of what censors are telling you. 
+                Do not mention censors themselves (e.g data from censors, or data received etc.) 
+                Ignore timestamps and other irrelevant fields. Only include relevant sensor readings in the response.
+                For death and traffic reports only indicated the number of ships.
+                Do not mention death or traffic reports if non present in data.
+                Always output JSON: 
+                {\"type\": \"chat\", \"response_text\": \"your summary\"}
+                """);
+
         return sb.toString();
     }
 
@@ -274,7 +292,7 @@ public class OllamaPromptFactory implements AiPromptFactory {
     private void appendContext(StringBuilder sb, String playerName, String playerMilitaryRank, String playerHonorific, String playerTitle, String missionStatement, String carrierName) {
         SystemSession systemSession = SystemSession.getInstance();
         String aiName = systemSession.isRunningPiperTts() ? "Amy" : systemSession.getAIVoice().getName();
-        sb.append("Context: You are ").append("Josie").append(", co-pilot and data analyst in a simulation. ");
+        sb.append("Context: You are ").append("Amelia").append(", co-pilot and data analyst in a simulation. ");
         if (carrierName != null && !carrierName.isEmpty()) {
             sb.append("Our home base is FleetCarrier ").append(carrierName).append(". ");
         }

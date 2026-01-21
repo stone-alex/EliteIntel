@@ -94,8 +94,8 @@ public enum Commands {
     RETRACT_HARDPOINTS("retract_hardpoints", null, null, RetractHardpointsHandler.class),
     DEPLOY_HARDPOINTS("deploy_hardpoints", null, null, DeployHardpointsHandler.class),
     WEAPONS_HOT("weapons_hot", null, null, DeployHardpointsHandler.class),
-    DEPLOY_LANDING_GEAR("deploy_landing_gear", null, null, DeployLandingGearHandler.class),
-    RETRACT_LANDING_GEAR("retract_landing_gear", null, null, RetractLandingGearHandler.class),
+    DEPLOY_LANDING_GEAR("deploy_landing_gear_down", null, null, DeployLandingGearHandler.class),
+    RETRACT_LANDING_GEAR("retract_landing_gear_up", null, null, RetractLandingGearHandler.class),
 
     JUMP_TO_HYPERSPACE("jump_to_hyperspace", null, null, JumpToHyperspaceHandler.class),
     GET_OUT_OF_HERE("lets_get_out_of_here", null, null, EnterFtlHandler.class),

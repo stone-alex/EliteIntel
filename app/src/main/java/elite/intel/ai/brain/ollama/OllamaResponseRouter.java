@@ -58,6 +58,7 @@ public class OllamaResponseRouter extends ResponseRouter implements AIRouterInte
             if (!responseText.isEmpty() && type.equals(AIConstants.TYPE_CHAT)) {
                 EventBusManager.publish(new AiVoxResponseEvent(responseText));
                 log.info("Spoke initial response: {}", responseText);
+                return;
             }
 
             switch (type) {

@@ -9,8 +9,6 @@ import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 
-import static elite.intel.ai.brain.handlers.query.Queries.QUERY_PLAYER_STATS_ANALYSIS;
-
 public class AnalyzePlayerProfile extends BaseQueryAnalyzer implements QueryHandler {
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {

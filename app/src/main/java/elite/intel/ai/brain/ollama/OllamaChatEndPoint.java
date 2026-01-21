@@ -33,8 +33,6 @@ public class OllamaChatEndPoint extends AiEndPoint implements AIChatInterface {
 
             JsonArray sanitized = sanitizeJsonArray(messages);
             body.add("messages", sanitized);
-            body.addProperty("stream", false);
-            body.addProperty("think", false);
 
             // === ADD STRUCTURED SCHEMA ENFORCEMENT ===
             JsonObject format = new JsonObject();

@@ -34,20 +34,26 @@ public class OpenAiAnalysisEndPoint extends AiEndPoint implements AiAnalysisInte
         try {
             OpenAiClient client = OpenAiClient.getInstance();
             HttpURLConnection conn = client.getHttpURLConnection();
-            String systemPrompt = ApiFactory.getInstance().getAiPromptFactory().generateAnalysisPrompt(originalUserInput, struct.getInstructions());
+            String systemPrompt = ApiFactory.getInstance().getAiPromptFactory().generateAnalysisPrompt();
 
             JsonObject request = client.createRequestBodyHeader(OpenAiClient.MODEL_GPT_4_1_MINI, 1);
 
-            JsonObject messageSystem = new JsonObject();
-            messageSystem.addProperty("role", AIConstants.ROLE_SYSTEM);
-            messageSystem.addProperty("content", systemPrompt);
+            JsonObject systemMessaage1 = new JsonObject();
+            systemMessaage1.addProperty("role", AIConstants.ROLE_SYSTEM);
+            systemMessaage1.addProperty("content", systemPrompt);
+
+            JsonObject systemMessaage2 = new JsonObject();
+            systemMessaage2.addProperty("role", AIConstants.ROLE_SYSTEM);
+            systemMessaage2.addProperty("content", "ADDITIONAL QUERY-SPECIFIC INSTRUCTIONS: " + struct.getInstructions());
+
 
             JsonObject messageUser = new JsonObject();
             messageUser.addProperty("role", AIConstants.ROLE_USER);
             messageUser.addProperty("content", "User Input: " + originalUserInput + ". Data: " + struct.getData().toJson()+". ");
 
             JsonArray messages = new JsonArray();
-            messages.add(messageSystem);
+            messages.add(systemMessaage1);
+            messages.add(systemMessaage2);
             messages.add(messageUser);
             request.add("messages", messages);
 

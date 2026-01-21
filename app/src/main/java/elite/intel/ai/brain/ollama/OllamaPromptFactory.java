@@ -13,8 +13,7 @@ import elite.intel.util.Ranks;
 import java.util.Objects;
 
 import static elite.intel.ai.brain.handlers.commands.Commands.*;
-import static elite.intel.ai.brain.handlers.query.Queries.ANALYZE_EXO_BIOLOGY;
-import static elite.intel.ai.brain.handlers.query.Queries.QUERY_SHIP_LOADOUT;
+import static elite.intel.ai.brain.handlers.query.Queries.*;
 
 public class OllamaPromptFactory implements AiPromptFactory {
 
@@ -119,10 +118,11 @@ public class OllamaPromptFactory implements AiPromptFactory {
         sb.append(" Map 'organic(s) to 'bio signal(s)'\n");
         sb.append(" Map 'scan system' to commands like ").append(OPEN_FSS_AND_SCAN.getAction());
         sb.append(" 'Resource Sites' have no materials, those are 'hunting grounds for pirate massacre missions' only.");
+        sb.append(" for questions about landable planets map to ").append(QUERY_SEARCH_SIGNAL_DATA.getAction()).append("\n");
 
         /// ship-related queries
-        sb.append(" Map 'damage report' questions to queries like ").append(QUERY_SHIP_LOADOUT.getAction()).append("\n");
-        sb.append(" Map questions about organics or exobiology scans to").append(ANALYZE_EXO_BIOLOGY.getAction()).append("\n");
+        sb.append(" Map 'damage report' questions to queries like ").append(SHIP_LOADOUT.getAction()).append("\n");
+        sb.append(" Map questions about organics or exobiology scans to").append(EXOBIOLOGY_SAMPLES.getAction()).append("\n");
         sb.append(" cargo scoop, cargo hatch, cargo doors etc are related to opening and closing cargo scoop. ");
 
         return sb.toString();
@@ -173,26 +173,20 @@ public class OllamaPromptFactory implements AiPromptFactory {
     }
 
     @Override
-    public String generateAnalysisPrompt(String originalUserQuestion, String instructions) {
+    public String generateAnalysisPrompt() {
         StringBuilder sb = new StringBuilder();
         sb.append("Instructions:\n");
-
         sb.append("""
-                You are Amelia, on board AI, a strict data extractor. NEVER use external knowledge, NEVER guess, NEVER calculate, NEVER estimate, NEVER add or invent values.
-                
+                You are Amelia, on board AI, a strict data extractor. NEVER use external knowledge, NEVER guess, NEVER calculate, NEVER estimate, NEVER add or invent values.                
                 CRITICAL RULES – MUST FOLLOW EXACTLY:
                 - Use ONLY the fields from the provided JSON data.
                 - If the requested info is in a specific field (e.g. maxJumpRange), output EXACTLY that value, rounded to two decimals.
                 - If not directly present, say "Insufficient data"
-                - Output format: {"type":"chat", "response_text": "Your Answer"}
+                - Respond ONLY with this exact JSON and nothing else: {"type":"chat", "response_text": "Your Answer"} and nothing else.
                 - NO explanations, NO reasoning, NO extra text.
                 Return minimalistic brief and concise answer. 
                 """
         );
-        sb.append(instructions).append(". ");
-        sb.append(" User asks:\n");
-        sb.append("\"" + originalUserQuestion + "\".\n");
-        ;
 
         return sb.toString();
     }
@@ -293,9 +287,9 @@ public class OllamaPromptFactory implements AiPromptFactory {
     private void appendContext(StringBuilder sb, String playerName, String playerMilitaryRank, String playerHonorific, String playerTitle, String missionStatement, String carrierName) {
         SystemSession systemSession = SystemSession.getInstance();
         String aiName = systemSession.isRunningPiperTts() ? "Amy" : systemSession.getAIVoice().getName();
-        sb.append("Context: You are ").append("Amelia").append(", co-pilot and data analyst in a simulation. ");
+        sb.append("Context: You are ").append(aiName).append(", co-pilot and data analyst in a simulation. ");
         if (carrierName != null && !carrierName.isEmpty()) {
-            sb.append("Our home base is FleetCarrier ").append(carrierName).append(". ");
+            sb.append("Our home base ").append(carrierName).append(". Do not confuse this with our ship(s).");
         }
         sb.append("When addressing me, choose one at random each time from: ")
                 .append(playerName).append(", ").append(playerMilitaryRank)

@@ -17,7 +17,7 @@ import static elite.intel.ai.brain.handlers.query.Queries.*;
 import static elite.intel.util.Abbreviations.generateAbbreviations;
 
 public class CommonAiPromptFactory implements AiPromptFactory {
-
+    private final SystemSession systemSession = SystemSession.getInstance();
     private static final CommonAiPromptFactory INSTANCE = new CommonAiPromptFactory();
     private static final String JSON_FORMAT =
             "Always output JSON: {\"type\": \"command|query|chat\", \"response_text\": \"TTS output\", \"action\": \"action_name|query_name\", \"params\": {\"key\": \"value\"}, \"expect_followup\": boolean} action must match provided command or query. ";
@@ -84,7 +84,7 @@ public class CommonAiPromptFactory implements AiPromptFactory {
         sb.append("    - For commands like ").append(INCREASE_SPEED_BY.getAction()).append(" provide params json {\"key\":\"value\"} where value is a positive integer. example: {\"key\":\"3\"}.\n");
         sb.append("    - For commands like ").append(DECREASE_SPEED_BY.getAction()).append(" provide params json {\"key\":\"value\"} where value is a negative integer example: {\"key\":\"-3\"}.\n");
         sb.append("    - For commands like ").append(LIGHTS_ON_OFF.getAction()).append(" provide params json {\"state\":\"true\"} / {\"state\":\"false\"}.\n");
-        sb.append("    - If asked about fleet carrier required to reach destination, query " + ANALYZE_CARRIER_ROUTE.getAction() + ", not fleet carrier stats.\n");
+        sb.append("    - If asked about fleet carrier required to reach destination, query " + CARRIER_ROUTE_ANALYSIS.getAction() + ", not fleet carrier stats.\n");
         sb.append("    - Always extract and return numeric values as plain integers without commas, spaces, or words (e.g., 2000000, not '2 million' or 'two million').\n");
         sb.append("    - Distinguish between fleet carrier route and ship route. Fleet carrier fuel (tritium), and fuel for the ship (hydrogen from fuel stars). Fleet carrier has to be mentioned explicitly, else it is ship route and ship fuel.\n");
         sb.append("    - Only use commands and queries provided. Else response as generic chat.\n");
@@ -113,7 +113,7 @@ public class CommonAiPromptFactory implements AiPromptFactory {
         sb.append(" Map slang such as 'bounce', 'proceed to the next waypoint' or 'get out of here' to commands like ").append(JUMP_TO_HYPERSPACE.getAction()).append(". ");
         sb.append(" Map 'select next way point' to ").append(TARGET_NEXT_ROUTE_SYSTEM.getAction()).append("\n");
         sb.append(" 'Resource Sites' are not for materials. They are 'hunting grounds for pirate massacre missions'. Do not confuse a 'Resource Site' with material gathering.");
-        sb.append(" Map 'scan system' to commands like ").append(OPEN_FSS_AND_SCAN.getAction()).append(". and 'damage report' to queries like ").append(QUERY_SHIP_LOADOUT.getAction()).append("\n");
+        sb.append(" Map 'scan system' to commands like ").append(OPEN_FSS_AND_SCAN.getAction()).append(". and 'damage report' to queries like ").append(SHIP_LOADOUT.getAction()).append("\n");
         sb.append(" Infer command intent from context: phrases like 'act like', 'talk like', 'blend in with', or 'sound like' followed by a faction should trigger '").append(SET_PERSONALITY.getAction()).append("' with the corresponding cadence value, using current system allegiance if ambiguous.\n");
         sb.append(" Do not confuse traders with market. Material tader/broker is not the same as trade station / port.");
         return sb.toString();
@@ -164,16 +164,22 @@ public class CommonAiPromptFactory implements AiPromptFactory {
     }
 
     @Override
-    public String generateAnalysisPrompt(String userIntent, String instructions) {
+    public String generateAnalysisPrompt() {
+        String aiName = systemSession.isRunningPiperTts() ? "Amelia" : systemSession.getAIVoice().getName();
         StringBuilder sb = new StringBuilder();
-        sb.append(getSessionValues());
         sb.append("Instructions:\n");
+        sb.append("You are "+aiName+", on board AI, a strict data extractor. NEVER use external knowledge, NEVER guess, NEVER calculate, NEVER estimate, NEVER add or invent values.");
+        sb.append("""                
+                CRITICAL RULES – MUST FOLLOW EXACTLY:
+                - Use ONLY the fields from the provided JSON data.
+                - If the requested info is in a specific field (e.g. maxJumpRange), output EXACTLY that value, rounded to two decimals.
+                - If not directly present, say "Insufficient data"
+                - Respond ONLY with this exact JSON and nothing else: {"type":"chat", "response_text": "Your Answer"} and nothing else.
+                - NO explanations, NO reasoning, NO extra text.
+                Return minimalistic brief and concise answer. 
+                """
+        );
         sb.append(appendBehavior());
-        sb.append("Task:\n");
-        sb.append("Analyze the provided JSON data: ").append(instructions).append(". ");
-        sb.append("against the user's intent: ").append(userIntent).append(". Return precise answers (e.g., yes/no for specific searches) or summaries as requested, using the configured personality and cadence in 'response_text'.\n");
-        sb.append("Return only the exact result specified by the instructions.\n");
-        sb.append(JSON_FORMAT).append("\n");
         return sb.toString();
     }
 
@@ -261,8 +267,8 @@ public class CommonAiPromptFactory implements AiPromptFactory {
     }
 
     private void appendContext(StringBuilder sb, String playerName, String playerMilitaryRank, String playerHonorific, String playerTitle, String missionStatement, String carrierName) {
-        SystemSession systemSession = SystemSession.getInstance();
-        String aiName = systemSession.isRunningPiperTts() ? "Amy" : systemSession.getAIVoice().getName();
+
+        String aiName = systemSession.isRunningPiperTts() ? "Amelia" : systemSession.getAIVoice().getName();
         sb.append("Context: You are ").append(aiName).append(", co-pilot and data analyst in a simulation. ");
         if (carrierName != null && !carrierName.isEmpty()) {
             sb.append("Our home base is FleetCarrier ").append(carrierName).append(". ");

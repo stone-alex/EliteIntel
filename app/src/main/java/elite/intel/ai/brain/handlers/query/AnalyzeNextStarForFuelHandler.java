@@ -3,16 +3,13 @@ package elite.intel.ai.brain.handlers.query;
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
-import elite.intel.gameapi.EventBusManager;
-import elite.intel.session.PlayerSession;
 import elite.intel.db.managers.ShipRouteManager;
+import elite.intel.gameapi.EventBusManager;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.JsonDataFactory;
 import elite.intel.util.json.ToJsonConvertible;
 
 import java.util.Collection;
-
-import static elite.intel.ai.brain.handlers.query.Queries.QUERY_NEXT_STAR_SCOOPABLE;
 
 public class AnalyzeNextStarForFuelHandler extends BaseQueryAnalyzer implements QueryHandler {
 

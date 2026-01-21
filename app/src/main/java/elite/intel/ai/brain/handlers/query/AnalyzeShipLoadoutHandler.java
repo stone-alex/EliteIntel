@@ -13,8 +13,6 @@ import elite.intel.util.json.ToJsonConvertible;
 import java.util.HashMap;
 import java.util.Map;
 
-import static elite.intel.ai.brain.handlers.query.Queries.QUERY_SHIP_LOADOUT;
-
 public class AnalyzeShipLoadoutHandler extends BaseQueryAnalyzer implements QueryHandler {
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
@@ -25,6 +23,11 @@ public class AnalyzeShipLoadoutHandler extends BaseQueryAnalyzer implements Quer
 
         String instructions = """
                 Use this data to answer user queries about ship loadout details.
+                Ship configuration builds/types:
+                    - Discovery class ships: long range jumps (more than 50ly) light, no cargo, no weapons minimal shielding.
+                    - Cargo class ships: a lot of cargo space, average jump range (less than 50ly) may have some defencive weapons minimal shielding.
+                    - Combat class ships: lazers / cannons / missiles, and massive shields are priority over cargo space or range
+                    - Mining class ships: priority is mining tools, refinery and cargo space.
                 """;
 
         return process(new AiDataStruct(instructions, new DataDto(ShipFactsExtractor.extractFacts(shipLoadout))), originalUserInput);

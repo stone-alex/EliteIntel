@@ -5,13 +5,10 @@ import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.gamestate.dtos.GameEvents;
-import elite.intel.gameapi.journal.events.LoadoutEvent;
 import elite.intel.gameapi.journal.events.dto.shiploadout.ShipLoadOutDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
-
-import static elite.intel.ai.brain.handlers.query.Queries.QUERY_ANALYZE_ON_BOARD_CARGO;
 
 public class AnalyzeCargoHoldHandler extends BaseQueryAnalyzer implements QueryHandler {
 

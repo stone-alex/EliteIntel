@@ -14,7 +14,7 @@ import elite.intel.util.json.ToJsonConvertible;
 public class AnalyzeDistanceFromTheBubble extends BaseQueryAnalyzer implements QueryHandler{
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing travel telemetry... Stand by..."));
+        EventBusManager.publish(new AiVoxResponseEvent("Analyzing galactic coordinates... Stand by..."));
         LocationDao.Coordinates galacticCoordinates = LocationManager.getInstance().getGalacticCoordinates();
 
         if (galacticCoordinates.x() == 0 && galacticCoordinates.y() == 0 && galacticCoordinates.z() == 0) {
@@ -22,9 +22,12 @@ public class AnalyzeDistanceFromTheBubble extends BaseQueryAnalyzer implements Q
         }
 
         String instruction = """
-                Center of the bubble (Earth) is at 0 0 0. 
-                Use the coordinates provided in light years to calculate distance. 
-                If asked about amount of fleet carrier fuel needed to cover thg distance use 90 tons of fuel per 500 light year jump to calculate the amount.
+                Calculate distance to the bubble.
+                    - Center of the bubble (Earth) is at coordinates 0, 0, 0. 
+                    - Use the coordinates provided to calculate the distance from the bubble.
+                    - Return answer as whole number. The distance is in light years. 
+                    - IF asked about amount of fleet carrier fuel needed to cover the distance use 90 tons of fuel per 500 light year jump to calculate the amount.
+                    Example response {"type":"chat", "response_text","X light years, carrier fuel required N tons."}
                 """;
         return process(new AiDataStruct(instruction, new DataDto(galacticCoordinates)), originalUserInput);
     }

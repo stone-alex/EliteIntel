@@ -25,24 +25,28 @@ public class GrokAnalysisEndpoint extends AiEndPoint implements AiAnalysisInterf
         return instance;
     }
 
-    @Override public JsonObject analyzeData(String userIntent, AiData struct) {
+    @Override public JsonObject analyzeData(String originalUserInput, AiData struct) {
         try {
             GrokClient client = GrokClient.getInstance();
             HttpURLConnection conn = client.getHttpURLConnection();
 
-            String systemPrompt = apiFactory.getAiPromptFactory().generateAnalysisPrompt(userIntent, struct.getInstructions());
+            String systemPrompt = apiFactory.getAiPromptFactory().generateAnalysisPrompt();
 
             JsonObject request = client.createRequestBodyHeader(GrokClient.MODEL_GROK_REASONING, 0.8f);
 
-            JsonObject messageSystem = new JsonObject();
-            messageSystem.addProperty("role", AIConstants.ROLE_SYSTEM);
-            messageSystem.addProperty("content", systemPrompt);
+            JsonObject systemMessage1 = new JsonObject();
+            systemMessage1.addProperty("role", AIConstants.ROLE_SYSTEM);
+            systemMessage1.addProperty("content", systemPrompt);
+
+            JsonObject systemMessage2 = new JsonObject();
+            systemMessage2.addProperty("role", AIConstants.ROLE_SYSTEM);
+            systemMessage2.addProperty("content", "ADDITIONAL QUERY-SPECIFIC INSTRUCTIONS: " +struct.getInstructions());
 
             JsonObject messageUser = new JsonObject();
             messageUser.addProperty("role", AIConstants.ROLE_USER);
-            messageUser.addProperty("content", "User intent: " + userIntent + "\nData: " + struct.getData().toJson());
+            messageUser.addProperty("content", "User intent: " + originalUserInput + "\nData: " + struct.getData().toJson());
 
-            request.add("messages", gson.toJsonTree(new Object[]{messageSystem, messageUser}));
+            request.add("messages", gson.toJsonTree(new Object[]{systemMessage1, systemMessage2, messageUser}));
 
             String jsonString = gson.toJson(request);
             logger.debug("xAI API call:\n{}", jsonString);

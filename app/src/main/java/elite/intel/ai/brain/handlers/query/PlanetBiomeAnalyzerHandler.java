@@ -59,6 +59,7 @@ public class PlanetBiomeAnalyzerHandler extends BaseQueryAnalyzer implements Que
         } else {
             return process(new AiDataStruct(instructions, new DataDto2(BioForms.getGenusToBiome(), locations.values())), originalUserInput);
         }
+
         return process("planet " + planetName + " not found in data");
     }
 

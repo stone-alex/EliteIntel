@@ -63,7 +63,6 @@ public class OllamaPromptFactory implements AiPromptFactory {
                 
                 JSON FORMAT (repeat): 
                 Always output **ONLY** valid JSON object like above. Nothing before. Nothing after. No explanations. No markdown.
-                
                 """);
 
         sb.append(inputClassificationClause());
@@ -117,6 +116,8 @@ public class OllamaPromptFactory implements AiPromptFactory {
         /// exploration
         sb.append(" Map 'organic(s) to 'bio signal(s)'\n");
         sb.append(" Map 'scan system' to commands like ").append(OPEN_FSS_AND_SCAN.getAction());
+        sb.append(" Map questions about materials present on the planet to "+PLANET_MATERIALS.getAction());
+        sb.append(" Map questions about materials in the inventory to "+MATERIALS_INVENTORY.getAction());
         sb.append(" 'Resource Sites' have no materials, those are 'hunting grounds for pirate massacre missions' only.");
         sb.append(" for questions about landable planets map to ").append(QUERY_SEARCH_SIGNAL_DATA.getAction()).append("\n");
 
@@ -249,14 +250,26 @@ public class OllamaPromptFactory implements AiPromptFactory {
         StringBuilder sb = new StringBuilder();
         sb.append("""
                 Instructions:
-                You are Amelia, a ship computer. You have received data from ship censors. 
-                Provide user with summary of what censors are telling you. 
-                Do not mention censors themselves (e.g data from censors, or data received etc.) 
-                Ignore timestamps and other irrelevant fields. Only include relevant sensor readings in the response.
-                For death and traffic reports only indicated the number of ships.
-                Do not mention death or traffic reports if non present in data.
-                Always output JSON: 
-                {\"type\": \"chat\", \"response_text\": \"your summary\"}
+                You are Amelia, the ship's computer.
+                
+                You receive real-time data from the ship's sensors.
+                
+                Summarise only the important readings and events that are actually present in the incoming data.
+                
+                - Ignore timestamps, metadata, status flags, and any other non-essential fields.
+                - Report only the concrete values and observations that matter.
+                - For traffic: report only the number of ships when the value is greater than 0.
+                - For incidents/losses: report only the number of ships affected when the value is greater than 0.
+                - Never mention "sensors", "censors", "sensor data", "readings from sensors", or similar phrases.
+                - Never explain where the information comes from. Just state the facts as if they are the current ship status.
+                - Do not mention traffic or incident numbers when they are zero or absent.
+                - Keep the tone calm, professional, and concise – like a ship computer readout.
+                
+                Always respond strictly in this JSON format and nothing else:
+                {"type": "chat", "response_text": "your summary here"}
+                
+                Do not put JSON inside response_text.
+                Do not add any extra text before or after the JSON.
                 """);
 
         return sb.toString();

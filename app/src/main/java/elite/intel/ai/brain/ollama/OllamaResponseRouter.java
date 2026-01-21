@@ -14,6 +14,7 @@ import elite.intel.ai.brain.xai.GrokResponseRouter;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.SystemSession;
+import elite.intel.ui.event.AppLogEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -61,6 +62,7 @@ public class OllamaResponseRouter extends ResponseRouter implements AIRouterInte
                 return;
             }
 
+            EventBusManager.publish(new AppLogEvent("AI Action: "+action));
             switch (type) {
                 case AIConstants.TYPE_COMMAND:
                     handleCommand(action, params, responseText);

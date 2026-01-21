@@ -71,13 +71,17 @@ public class OllamaCommandEndPoint extends CommandEndPoint implements AiCommandI
 
         log.info("Ollama voice input: {} (conf: {})", userInput, confidence);
 
-        JsonArray messages = buildMessageHistory();
+        JsonArray request = new JsonArray();
+        JsonObject system = new JsonObject();
+        system.addProperty("role", AIConstants.ROLE_SYSTEM);
+        system.addProperty("content", getContextFactory().generateSystemPrompt());
+        request.add(system);
         JsonObject userMsg = new JsonObject();
         userMsg.addProperty("role", AIConstants.ROLE_USER);
         userMsg.addProperty("content", buildVoiceRequest(userInput));
-        messages.add(userMsg);
+        request.add(userMsg);
 
-        JsonObject response = OllamaChatEndPoint.getInstance().sendToAi(messages);
+        JsonObject response = OllamaChatEndPoint.getInstance().sendToAi(request);
         if (response == null) {
             getRouter().processAiResponse(createError("Sorry, I couldn't reach Ollama."), userInput);
             systemSession.clearChatHistory();
@@ -120,18 +124,6 @@ public class OllamaCommandEndPoint extends CommandEndPoint implements AiCommandI
             JsonObject resp = OllamaChatEndPoint.getInstance().sendToAi(messages);
             if (resp != null) getRouter().processAiResponse(resp, null);
         });
-    }
-
-    private JsonArray buildMessageHistory() {
-        JsonArray messages = new JsonArray();
-        JsonObject system = new JsonObject();
-        system.addProperty("role", AIConstants.ROLE_SYSTEM);
-        system.addProperty("content", getContextFactory().generateSystemPrompt());
-        messages.add(system);
-
-        JsonArray history = systemSession.getChatHistory();
-        for (JsonElement e : history) messages.add(e);
-        return messages;
     }
 
     private JsonObject createError(String text) {

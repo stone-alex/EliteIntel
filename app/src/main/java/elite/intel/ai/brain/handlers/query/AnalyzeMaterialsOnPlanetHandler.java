@@ -23,7 +23,7 @@ public class AnalyzeMaterialsOnPlanetHandler extends BaseQueryAnalyzer implement
 
         List<MaterialDto> materials = currentLocation.getMaterials();
         String instructions = """
-                    Provide answers about materials available on this planet.
+                    Use this list of materials to answer questions.
                 """;
 
         if (materials.isEmpty()) {

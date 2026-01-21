@@ -21,7 +21,7 @@ import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.*;
 // @formatter:off
 public enum Commands {
 
-    LIGHTS_ON_OFF                                       ("toggle_lights", null, "state", LightsOnOffHandler.class),
+    LIGHTS_ON_OFF                                       ("toggle_lights_on_off", null, "state", LightsOnOffHandler.class),
     ADD_MINING_TARGET                                   ("add_mining_target", null, "key", AddMiningTargetHandler.class),
     CLEAR_MINING_TARGETS                                ("clear_mining_targets", null, null, ClearMiningTargetsHandler.class),
     CLEAR_CACHE                                         ("clear_cache", null, "session_clear", ClearCacheHandler.class),
@@ -69,11 +69,11 @@ public enum Commands {
 
     /// Commands that have a specific handler impl (which uses N bindings inside)
     INCREASE_ENGINES_POWER                              ("transfer_power_to_engines", null, null, SetPowerToEnginesHandler.class),
-    NAVIGATE_TO_NEXT_BIO_SAMPLE                         ("navigate_to_next_codex_entry_or_organic_bio_sample", null, null, NavigateToNextCodexEntry.class),
+    NAVIGATE_TO_NEXT_BIO_SAMPLE                         ("navigate_to_next_organic_codex_entry", null, null, NavigateToNextCodexEntry.class),
     INCREASE_SHIELDS_POWER                              ("transfer_power_to_shields", null, null, SetPowerToSystemsHandler.class),
     INCREASE_SYSTEMS_POWER                              ("transfer_power_to_ship_systems", null, null, SetPowerToSystemsHandler.class),
     INCREASE_WEAPONS_POWER                              ("transfer_power_to_weapons", null, null, SetPowerToWeaponsHandler.class),
-    RESET_POWER                                         ("reset_power_settings", null, null, ResetPowerSettings.class),
+    RESET_POWER                                         ("equalize_power_settings", null, null, ResetPowerSettings.class),
 
     OPEN_GALAXY_MAP                                     ("open_galaxy_star_map", null, null, OpenGalaxyMapHandler.class),
     OPEN_SYSTEM_MAP                                     ("open_local_system_map", null, null, OpenSystemMapHandler.class),

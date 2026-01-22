@@ -1,0 +1,78 @@
+package elite.intel.ai.brain.handlers.query;
+
+import com.google.gson.JsonObject;
+import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
+import elite.intel.gameapi.journal.events.dto.BioSampleDto;
+import elite.intel.gameapi.journal.events.dto.LocationDto;
+import elite.intel.session.PlayerSession;
+import elite.intel.util.json.GsonFactory;
+import elite.intel.util.json.ToJsonConvertible;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class AnalyzeBioSignalsHandler extends BaseQueryAnalyzer implements QueryHandler {
+
+    private final PlayerSession playerSession = PlayerSession.getInstance();
+
+    @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
+
+        List<BioSampleDto> allCompletedBioScans = playerSession.getBioCompletedSamples();
+        Map<String, Integer> planetsRequireBioScans = planetsWithBioFormsNotYetScanned();
+        String instructions = """
+                You are a strict data-only responder for this query.
+                Follow these rules in exact order:
+                
+                1. Look ONLY at the two fields in the provided JSON:
+                   - allCompletedBioScans (array): shows bodies where bio samples are already fully scanned
+                   - planetsRequireBioScans (object): shows bodies that STILL NEED bio scans (key = planet name, value = number of remaining scans needed)
+                
+                2. Decision logic — apply exactly:
+                   - If planetsRequireBioScans has any entry with value ≥ 1 → Answer YES, there are organics still needing scans. Name each planet and the remaining number.
+                   - Else if allCompletedBioScans is non-empty but planetsRequireBioScans is empty → Answer NO active unscanned organics remain (only completed scans exist).
+                   - Else (both empty) → Answer NO biological/organic signals detected in this system.
+                
+                3. Keep response_text extremely short (1 sentence max), factual, no enthusiasm, no extra commentary.
+                
+                Example of good short answers (for reference only — do NOT copy these literally):
+                - "Yes, planet 'ABC 1 b' still needs 2 bio scans."
+                - "No organics left to scan — all detected samples completed."
+                - "No biological signals detected."       
+                """;
+
+        return process(new AiDataStruct(instructions, new DataDto(allCompletedBioScans, planetsRequireBioScans)), originalUserInput);
+    }
+
+    private Map<String, Integer> planetsWithBioFormsNotYetScanned() {
+        Map<String, Integer> result = new HashMap<>();
+        Map<Long, LocationDto> locations = playerSession.getLocations();
+
+        for (LocationDto location : locations.values()) {
+            if (location.getBioSignals() > 0) {
+                int numCompletedSamples = getCompletedSamples(location.getPlanetName());
+                if (location.getBioSignals() != numCompletedSamples) {
+                    result.put(location.getPlanetName(), location.getBioSignals() - numCompletedSamples);
+                }
+            }
+        }
+        return result;
+    }
+
+    private int getCompletedSamples(String planetName) {
+        List<BioSampleDto> completedSamples = playerSession.getBioCompletedSamples();
+        int result = 0;
+        for (BioSampleDto sample : completedSamples) {
+            if (sample.getPlanetName().equalsIgnoreCase(planetName)) {
+                result++;
+            }
+        }
+        return result;
+    }
+
+    record DataDto(List<BioSampleDto> allCompletedBioScans, Map<String, Integer> planetsRequireBioScans) implements ToJsonConvertible {
+        @Override public String toJson() {
+            return GsonFactory.getGson().toJson(this);
+        }
+    }
+}

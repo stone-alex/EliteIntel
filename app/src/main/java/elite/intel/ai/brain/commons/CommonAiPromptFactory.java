@@ -174,7 +174,7 @@ public class CommonAiPromptFactory implements AiPromptFactory {
                 - Use ONLY the fields from the provided JSON data.
                 - If the requested info is in a specific field (e.g. maxJumpRange), output EXACTLY that value, rounded to two decimals.
                 - If not directly present, say "Insufficient data"
-                - Respond ONLY with this exact JSON and nothing else: {"type":"chat", "response_text": "Your Answer"} and nothing else.
+                - Respond ONLY with this exact JSON and nothing else: {"type":"chat", "response_text": "Insert Your Answer"} and nothing else.
                 - NO explanations, NO reasoning, NO extra text.
                 Return minimalistic brief and concise answer. 
                 """

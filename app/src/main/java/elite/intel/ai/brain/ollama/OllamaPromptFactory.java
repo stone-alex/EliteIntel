@@ -63,11 +63,15 @@ public class OllamaPromptFactory implements AiPromptFactory {
                 
                 JSON FORMAT (repeat): 
                 Always output **ONLY** valid JSON object like above. Nothing before. Nothing after. No explanations. No markdown.
+                
+                MANDATORY PARAMS RULE FOR ALL IMPLEMENTATIONS:
                 """);
 
         sb.append(inputClassificationClause());
         sb.append(supportedCommandsClause());
         sb.append(supportedQueriesClause());
+        sb.append(mappingHints());
+
         sb.append("""
                 
                 MANDATORY PARAMS RULE FOR ALL IMPLEMENTATIONS:
@@ -82,8 +86,6 @@ public class OllamaPromptFactory implements AiPromptFactory {
                   - find commodity gold within 120 ly        → "params": {"key": "gold"}   (distance in separate entry if needed)
                 
                 """);
-        sb.append(colloquialTerms());
-
         sb.append("""
                 
                 Final reminder — LAST SENTENCE BEFORE OUTPUT:
@@ -105,8 +107,9 @@ public class OllamaPromptFactory implements AiPromptFactory {
                 """;
     }
 
-    private String colloquialTerms() {
+    private String mappingHints() {
         StringBuilder sb = new StringBuilder();
+        sb.append(" MANDATORY MAPPINGS:");
         /// navigation
         sb.append(" Map 'navigate to target system' or 'plot route to target system' to " + RECON_TARGET_SYSTEM.getAction() + " \n");
         sb.append(" Map 'navigate to provider system' or 'plot route to provider system' to " + RECON_PROVIDER_SYSTEM.getAction() + " \n");
@@ -118,10 +121,15 @@ public class OllamaPromptFactory implements AiPromptFactory {
         sb.append(" Map 'scan system' to commands like ").append(OPEN_FSS_AND_SCAN.getAction());
         sb.append(" Map questions about materials present on the planet to "+PLANET_MATERIALS.getAction());
         sb.append(" Map questions about materials in the inventory to "+MATERIALS_INVENTORY.getAction());
+        sb.append(" Map questions about landable planets map to ").append(QUERY_STELLAR_OBJETS.getAction()).append("\n");
+        sb.append(" Map questions about bio samples / organics within solar/star system to ").append(BIO_SAMPLE_IN_STAR_SYSTEM.getAction()).append("\n");
+        sb.append(" Map questions about geological signals within solar/star system to ").append(QUERY_GEO_SIGNALS.getAction()).append("\n");
+
         sb.append(" 'Resource Sites' have no materials, those are 'hunting grounds for pirate massacre missions' only.");
-        sb.append(" for questions about landable planets map to ").append(QUERY_SEARCH_SIGNAL_DATA.getAction()).append("\n");
 
         /// ship-related queries
+        sb.append(" **DO NOT MAP** questions about ship characteristics to ").append(FSD_TARGET_ANALYSIS.getAction()).append("\n");
+        sb.append(" **CRITICAL** Map questions about ship jump range, health, damage, etc to ").append(SHIP_LOADOUT.getAction()).append("\n");
         sb.append(" Map 'damage report' questions to queries like ").append(SHIP_LOADOUT.getAction()).append("\n");
         sb.append(" Map questions about organics or exobiology scans to").append(EXOBIOLOGY_SAMPLES.getAction()).append("\n");
         sb.append(" cargo scoop, cargo hatch, cargo doors etc are related to opening and closing cargo scoop. ");

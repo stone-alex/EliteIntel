@@ -10,8 +10,8 @@ import java.net.URL;
 
 public class OllamaClient implements Client {
 
-    public static final String MODEL_OLLAMA = "goekdenizguelmez/JOSIEFIED-Qwen3:14b";
-    public static final String MODEL_OLLAMA_SMALL = "goekdenizguelmez/JOSIEFIED-Qwen3:14b";
+    public static final String MODEL_OLLAMA = "qwen2.5:14b";
+    public static final String MODEL_OLLAMA_SMALL = "qwen2.5:14b";
     private static final OllamaClient INSTANCE = new OllamaClient();
 
     //public static final String MODEL_OLLAMA = "goekdenizguelmez/JOSIEFIED-Qwen3:4b";
@@ -33,7 +33,7 @@ public class OllamaClient implements Client {
     public JsonObject createRequestBodyHeader(String model, float temp) {
         JsonObject request = new JsonObject();
         request.addProperty("model", model);
-        request.addProperty("temperature", 0.1);
+        request.addProperty("temperature", 0.5);
         request.addProperty("stream", false);
         request.addProperty("format", "json");
         request.addProperty("num_ctx", 16384);
@@ -42,15 +42,15 @@ public class OllamaClient implements Client {
 
         /// OLAMA tricks.
         /// Accuracy / Coherence
-        request.addProperty("top_k", 0.01f);            // default ~40–50, lower = more focused (try 20–30)
-        request.addProperty("top_p", 5);                // default 0.9, lower = less random (0.7–0.9 sweet spot)
-        request.addProperty("repeat_penalty", 1.1f);    // 1.05–1.2 discourages loops/repetition
-        request.addProperty("mirostat", 0);             // 0=off, 1=mirostat, 2=mirostat 2.0 (best for stable JSON output)
-        request.addProperty("mirostat_tau", 0.0f);      // target perplexity (3.0–6.0, higher = more creative)
-        request.addProperty("mirostat_eta", 0.1f);      // learning rate (default 0.1 is fine)
+//        request.addProperty("top_k", 5);            // default ~40–50, lower = more focused (try 20–30)
+//        request.addProperty("top_p", 5);                // default 0.9, lower = less random (0.7–0.9 sweet spot)
+//        request.addProperty("repeat_penalty", 1.1f);    // 1.05–1.2 discourages loops/repetition
+//        request.addProperty("mirostat", 0);             // 0=off, 1=mirostat, 2=mirostat 2.0 (best for stable JSON output)
+//        request.addProperty("mirostat_tau", 0.0f);      // target perplexity (3.0–6.0, higher = more creative)
+//        request.addProperty("mirostat_eta", 0.1f);      // learning rate (default 0.1 is fine)
 
         /// Speed / VRAM / Performance
-        request.addProperty("num_predict", 64);         // max tokens to generate (default -1 = unlimited, set 256–1024)
+        request.addProperty("num_predict", 512);         // max tokens to generate (default -1 = unlimited, set 256–1024)
         request.addProperty("num_keep", 0);             // tokens from prompt to keep in KV cache (0 = default, usually all)
         request.addProperty("num_thread", 0);           // 0 = auto (good), or set to physical cores if you want to limit CPU
 

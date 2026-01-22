@@ -9,7 +9,6 @@ import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.data.FsdTarget;
 import elite.intel.gameapi.gamestate.dtos.GameEvents;
 import elite.intel.gameapi.journal.events.CarrierStatsEvent;
-import elite.intel.gameapi.journal.events.LoadoutEvent;
 import elite.intel.gameapi.journal.events.ReputationEvent;
 import elite.intel.gameapi.journal.events.dto.*;
 import elite.intel.gameapi.journal.events.dto.shiploadout.ShipLoadOutDto;
@@ -822,14 +821,14 @@ public class PlayerSession {
     public void setLocalLlmAddress(String address){
         Database.withDao(PlayerDao.class, dao ->{
             PlayerDao.Player player = dao.get();
-            player.setLocalLllmAddress(address);
+            player.setLocalLlmAddress(address);
             dao.save(player);
             return Void.class;
         });
     }
 
     public String getLocalLlmAddress() {
-        return Database.withDao(PlayerDao.class, dao -> dao.get().getLocalLllmAddress());
+        return Database.withDao(PlayerDao.class, dao -> dao.get().getLocalLlmAddress());
     }
 
     public void setLocalTtsAddress(String address) {

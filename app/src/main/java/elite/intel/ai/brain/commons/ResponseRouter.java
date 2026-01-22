@@ -7,27 +7,29 @@ import elite.intel.ai.brain.handlers.commands.CommandHandler;
 import elite.intel.ai.brain.handlers.query.QueryHandler;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
+import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
+import elite.intel.util.Ranks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
-public abstract class ResponseRouter  {
+public abstract class ResponseRouter {
 
     private static final Logger log = LogManager.getLogger(ResponseRouter.class);
     private final SystemSession systemSession = SystemSession.getInstance();
-
-    protected ResponseRouter() {
-        commandHandlers =  CommandHandlerFactory.getInstance().registerCommandHandlers();
-        queryHandlers = QueryHandlerFactory.getInstance().registerQueryHandlers();;
-    }
-
+    private final PlayerSession playerSession = PlayerSession.getInstance();
     private final Map<String, CommandHandler> commandHandlers;
     private final Map<String, QueryHandler> queryHandlers;
 
+    protected ResponseRouter() {
+        commandHandlers = CommandHandlerFactory.getInstance().registerCommandHandlers();
+        queryHandlers = QueryHandlerFactory.getInstance().registerQueryHandlers();
+        ;
+    }
 
     protected Map<String, CommandHandler> getCommandHandlers() {
         return commandHandlers;
@@ -47,6 +49,9 @@ public abstract class ResponseRouter  {
 
     protected void handleCommand(String action, JsonObject params, String responseText) {
         EventBusManager.publish(new AppLogEvent("DEBUG: Processing action: " + action + " with params: " + params.toString()));
+        EventBusManager.publish(new AiVoxResponseEvent("Yes " + player() + "! "));
+
+
         CommandHandler handler = getCommandHandlers().get(action);
         if (handler != null) {
             EventBusManager.publish(new AppLogEvent("DEBUG: Command handler: " + handler.getClass().getSimpleName()));
@@ -81,5 +86,23 @@ public abstract class ResponseRouter  {
         if (el.isJsonObject()) return el.getAsJsonObject();
         log.debug("Expected object for key '{}' but got {}", key, el);
         return new JsonObject();
+    }
+
+
+    private String player() {
+        String alternativeName = playerSession.getAlternativeName();
+        String playerName = alternativeName != null ? alternativeName : playerSession.getPlayerName();
+        String playerTitle = playerSession.getPlayerTitle();
+        String playerMilitaryRank = playerSession.getPlayerHighestMilitaryRank();
+        String playerHonorific = Ranks.getPlayerHonorific();
+
+        List<String> result = Arrays.stream(
+                new String[]{alternativeName, playerHonorific, playerName, playerTitle, playerMilitaryRank}
+        ).filter(Objects::nonNull).collect(Collectors.toList());
+        if (result.isEmpty()) {
+            return "Commander";
+        }
+        
+        return result.get(new Random().nextInt(result.size()));
     }
 }

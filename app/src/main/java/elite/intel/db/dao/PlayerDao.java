@@ -30,7 +30,7 @@ public interface PlayerDao {
                        player_mission_statement, player_name, player_title, ships_owned, species_first_logged,
                        total_bounty_claimed, total_distance_traveled, total_hyperspace_distance,
                        total_profits_from_exploration, total_systems_visited, exobiology_profits, alternative_name,
-                       journal_dir, bindings_dir, logging_enabled, game_build, bounty_collected_lifetime, homeSystemId, localTtsServer, localLllmAddress)
+                       journal_dir, bindings_dir, logging_enabled, game_build, bounty_collected_lifetime, homeSystemId, localTtsServer, localLlmAddress)
                     VALUES (1, :currentPrimaryStar,
                        :carrierDepartureTime, :crewWagsPayout,
                        :currentShip, :currentShipName, :currentLocationId, :currentWealth,
@@ -43,7 +43,7 @@ public interface PlayerDao {
                        :playerMissionStatement, :playerName, :playerTitle,
                        :shipsOwned, :speciesFirstLogged, :totalBountyClaimed, :totalDistanceTraveled, 
                        :totalHyperspaceDistance, :totalProfitsFromExploration, :totalSystemsVisited, :exobiologyProfits, :alternativeName,
-                       :journalDirectory, :bindingsDirectory, :loggingEnabled, :gameBuild, :bountyCollectedLifetime, :homeSystemId, :localTtsServer, :localLllmAddress
+                       :journalDirectory, :bindingsDirectory, :loggingEnabled, :gameBuild, :bountyCollectedLifetime, :homeSystemId, :localTtsServer, :localLlmAddress
                     )
             """)
     void save(@BindBean Player player);
@@ -93,7 +93,7 @@ public interface PlayerDao {
         private Boolean loggingEnabled;
         private Long bountyCollectedLifetime = 0L;
         private String localTtsServer;
-        private String localLllmAddress;
+        private String localLlmAddress;
 
         public Player() {
         } // required for JDBI
@@ -444,12 +444,12 @@ public interface PlayerDao {
             this.localTtsServer = localTtsAddress;
         }
 
-        public String getLocalLllmAddress() {
-            return localLllmAddress;
+        public String getLocalLlmAddress() {
+            return localLlmAddress;
         }
 
-        public void setLocalLllmAddress(String localLllmAddress) {
-            this.localLllmAddress = localLllmAddress;
+        public void setLocalLlmAddress(String localLlmAddress) {
+            this.localLlmAddress = localLlmAddress;
         }
     }
 
@@ -500,7 +500,7 @@ public interface PlayerDao {
             p.setGameBuild(rs.getString("game_build"));
             p.setHomeSystemId(rs.getLong("homeSystemId"));
             p.setLocalTtsServer(rs.getString("localTtsServer"));
-            p.setLocalLllmAddress(rs.getString("localLllmAddress"));
+            p.setLocalLlmAddress(rs.getString("localLlmAddress"));
             return p;
         }
     }

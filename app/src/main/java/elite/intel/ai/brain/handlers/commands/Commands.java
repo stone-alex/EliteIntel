@@ -21,6 +21,7 @@ import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.*;
 // @formatter:off
 public enum Commands {
 
+    NAVIGATE_TO_NEXT_MISSION                            ("plot_route_to_next_mission",null,null, PlotRouteToNextMissionDestination.class),
     LIGHTS_ON_OFF                                       ("toggle_lights_on_off", null, "state", LightsOnOffHandler.class),
     ADD_MINING_TARGET                                   ("add_mining_target", null, "key", AddMiningTargetHandler.class),
     CLEAR_MINING_TARGETS                                ("clear_mining_targets", null, null, ClearMiningTargetsHandler.class),

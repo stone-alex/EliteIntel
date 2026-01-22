@@ -7,6 +7,7 @@ public enum Queries {
 
 
     /// ########################################################################################################################################
+    ANALYZE_KEY_BINDINGS                ("query_analyze_key_bindings",                  AnalyzeMisingKeyBindingHandler.class,true),
     HELP                                ("help",                                        HelpHandler.class, true),
     BIO_SAMPLE_IN_STAR_SYSTEM           ("query_star_system_for_organic_samples",       AnalyzeBioSignalsHandler.class, true),
     FSS_SIGNALS                         ("query_star_system_for_fss_signals",           AnalyzeFssSignalsHandler.class, true),

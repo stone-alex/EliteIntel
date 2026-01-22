@@ -20,28 +20,27 @@ public class FSSBodySignalsSubscriber extends BiomeAnalyzer {
         LocationDto location = locationManager.findBySystemAddress(event.getSystemAddress(), event.getBodyID());
         location.setPlanetName(event.getBodyName());
         List<FSSBodySignalsEvent.Signal> signals = event.getSignals();
-        if(signals == null || signals.isEmpty()) return;
+        if (signals == null || signals.isEmpty()) return;
 
         location.setFssSignals(signals);
         int bioSignals = 0;
         int geoSignals = 0;
-        for(FSSBodySignalsEvent.Signal s : signals) {
+        for (FSSBodySignalsEvent.Signal s : signals) {
             FssSignalDto signal = new FssSignalDto();
             signal.setSignalName(event.getEventName());
             signal.setSignalType(s.getTypeLocalised());
-            if("Biological".equalsIgnoreCase(s.getTypeLocalised())){
-                bioSignals++;
+            if ("Biological".equalsIgnoreCase(s.getTypeLocalised())) {
+                bioSignals = bioSignals + s.getCount();
             }
-            if("Geological".equalsIgnoreCase(s.getTypeLocalised())){
-                geoSignals++;
+            if ("Geological".equalsIgnoreCase(s.getTypeLocalised())) {
+                geoSignals = geoSignals + s.getCount();
             }
             signal.setSystemAddress(event.getSystemAddress());
             location.addDetectedSignal(signal);
             playerSession.saveLocation(location);
         }
-        if(location.getBioSignals() < bioSignals) {
-            location.setBioSignals(bioSignals);
-        }
+
+        location.setBioSignals(bioSignals);
         location.setGeoSignals(geoSignals);
         playerSession.saveLocation(location);
     }

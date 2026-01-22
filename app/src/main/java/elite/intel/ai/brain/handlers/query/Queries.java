@@ -9,7 +9,8 @@ public enum Queries {
     /// ########################################################################################################################################
     ANALYZE_KEY_BINDINGS                ("query_analyze_key_bindings",                  AnalyzeMisingKeyBindingHandler.class,true),
     HELP                                ("help",                                        HelpHandler.class, true),
-    BIO_SAMPLE_IN_STAR_SYSTEM           ("query_star_system_for_organic_samples",       AnalyzeBioSignalsHandler.class, true),
+    BIO_SAMPLE_IN_STAR_SYSTEM           ("query_organic_samples_star_system",           AnalyzeBioSignalsHandler.class, true),
+    EXOBIOLOGY_SAMPLES                  ("query_organic_samples_this_planet",           AnalyzeBioSamplesHandler.class, true),
     FSS_SIGNALS                         ("query_star_system_for_fss_signals",           AnalyzeFssSignalsHandler.class, true),
     QUERY_STELLAR_OBJETS                ("query_star_system_for_stellar_objects",       AnalyzeStrellarObjectsHandler.class, true),
     QUERY_GEO_SIGNALS                   ("query_star_system_for_geo_signals",           AnalyzeGeologyInStarSystemHandler.class, true),
@@ -23,7 +24,6 @@ public enum Queries {
     PLANET_MATERIALS                    ("query_materials_present_on_planet",           AnalyzeMaterialsOnPlanetHandler.class, true),
     EXPLORATION_PROFITS                 ("query_exploration_profits",                   AnalyzeExplorationProfitsHandler.class, true),
     CURRENT_LOCATION                    ("query_current_location",                      AnalyzeCurrentLocationHandler.class, true),
-    EXOBIOLOGY_SAMPLES                  ("query_exobiology_samples",                    AnalyzeBioSamplesHandler.class, true),
     SHIP_FUEL_STATUS                    ("query_ship_fuel_status",                      AnalyzeFuelStatusHandler.class, true),
     FSD_TARGET_ANALYSIS                 ("query_analyse_selected_target",               AnalyzeFsdTargetHandler.class, true),
     TRADE_ROUTE_ANALYSIS                ("query_trade_route_analysis",                  AnalyzeTradeRouteHandler.class, true),

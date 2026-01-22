@@ -12,14 +12,14 @@ public class ConversationalQueryHandler extends BaseQueryAnalyzer implements Que
 
         return process(
                 new AiDataStruct(
-                        "If 'User Input' field in Data is null or empty string: respond with '[summarize key data from params]'. Else: respond conversationally to the User Input.",
-                        new DataDto(params)
+                        "General Chat. Use your own knowledge to chat with user. ",
+                        new DataDto(originalUserInput)
                 ),
-                originalUserInput
+                ""
         );
     }
 
-    record DataDto(JsonObject params) implements ToJsonConvertible {
+    record DataDto(String userSay) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }

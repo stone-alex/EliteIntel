@@ -8,6 +8,7 @@ import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +20,8 @@ public class AnalyzeBioSignalsHandler extends BaseQueryAnalyzer implements Query
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
 
         List<BioSampleDto> allCompletedBioScans = playerSession.getBioCompletedSamples();
-        Map<String, Integer> planetsRequireBioScans = planetsWithBioFormsNotYetScanned();
+        List<PlanetsToScan> planetsRequireBioScans = planetsWithBioFormsNotYetScanned();
+
         String instructions = """
                 You are a strict data-only responder for this query.
                 Follow these rules in exact order:
@@ -36,7 +38,7 @@ public class AnalyzeBioSignalsHandler extends BaseQueryAnalyzer implements Query
                 3. Keep response_text extremely short (1 sentence max), factual, no enthusiasm, no extra commentary.
                 
                 Example of good short answers (for reference only — do NOT copy these literally):
-                - "Yes, planet 'ABC 1 b' still needs 2 bio scans."
+                - "Yes, planet 'ABC 1 b' still needs 2 bio scans. (name genus if available)"
                 - "No organics left to scan — all detected samples completed."
                 - "No biological signals detected."       
                 """;
@@ -44,15 +46,15 @@ public class AnalyzeBioSignalsHandler extends BaseQueryAnalyzer implements Query
         return process(new AiDataStruct(instructions, new DataDto(allCompletedBioScans, planetsRequireBioScans)), originalUserInput);
     }
 
-    private Map<String, Integer> planetsWithBioFormsNotYetScanned() {
-        Map<String, Integer> result = new HashMap<>();
+    private List<PlanetsToScan> planetsWithBioFormsNotYetScanned() {
+        List<PlanetsToScan> result = new ArrayList<>();
         Map<Long, LocationDto> locations = playerSession.getLocations();
 
         for (LocationDto location : locations.values()) {
             if (location.getBioSignals() > 0) {
                 int numCompletedSamples = getCompletedSamples(location.getPlanetName());
                 if (location.getBioSignals() != numCompletedSamples) {
-                    result.put(location.getPlanetName(), location.getBioSignals() - numCompletedSamples);
+                    result.add(new PlanetsToScan(location.getPlanetName(), location.getBioSignals() - numCompletedSamples));
                 }
             }
         }
@@ -70,7 +72,13 @@ public class AnalyzeBioSignalsHandler extends BaseQueryAnalyzer implements Query
         return result;
     }
 
-    record DataDto(List<BioSampleDto> allCompletedBioScans, Map<String, Integer> planetsRequireBioScans) implements ToJsonConvertible {
+    record DataDto(List<BioSampleDto> allCompletedBioScans, List<PlanetsToScan> planetsRequireBioScans) implements ToJsonConvertible {
+        @Override public String toJson() {
+            return GsonFactory.getGson().toJson(this);
+        }
+    }
+
+    record PlanetsToScan(String planetName,  int remainingOrganicsToScan) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }

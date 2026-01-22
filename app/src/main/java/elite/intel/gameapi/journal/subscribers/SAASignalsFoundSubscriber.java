@@ -24,6 +24,13 @@ public class SAASignalsFoundSubscriber {
     private final PlayerSession playerSession = PlayerSession.getInstance();
     private final LocationManager locationManager = LocationManager.getInstance();
 
+    private static void announce(String sb) {
+        Status status = Status.getInstance();
+        if (status.isInMainShip() && !status.isLanded() && !status.isDocked()) {
+            EventBusManager.publish(new SensorDataEvent(sb));
+        }
+    }
+
     @Subscribe
     public void onSAASignalsFound(SAASignalsFoundEvent event) {
         StringBuilder sb = new StringBuilder();
@@ -45,9 +52,7 @@ public class SAASignalsFoundSubscriber {
             }
 
             if (liveSignals > 0 && location.getBioSignals() != liveSignals) {
-                if(location.getBioSignals() < liveSignals) {
-                    location.setBioSignals(liveSignals);
-                }
+                location.setBioSignals(liveSignals);
                 location.setGenus(toGenusDto(event.getGenuses(), location.isOurDiscovery()));
                 boolean hasBeenScanned = scanBioCompleted(event, playerSession);
 
@@ -70,7 +75,7 @@ public class SAASignalsFoundSubscriber {
                 }
                 if (!hasBeenScanned) {
                     sb.append("Average projected payment of: ").append(averageProjectedPayment).append(" credits.");
-                    if(location.isOurDiscovery()) {
+                    if (location.isOurDiscovery()) {
                         sb.append(" Plus average bonus of: ").append(averageFirstDiscoveryBonus).append(" credits for first discovery.");
                     }
                 }
@@ -87,33 +92,26 @@ public class SAASignalsFoundSubscriber {
 
                 String parentBodyName = event.getBodyName().substring(0, event.getBodyName().length() - " X Ring".length());
                 LocationDto parent = locationManager.getLocation(playerSession.getPrimaryStarName(), findParentId(parentBodyName));
-                if(parent != null) parent.setHasRings(true);
-                if(event.getSignals() != null) {
+                if (parent != null) parent.setHasRings(true);
+                if (event.getSignals() != null) {
                     ring.setSaaSignals(event.getSignals());
                     ring.setGeoSignals(event.getSignals().size());
-                    if(parent != null) parent.setSaaSignals(event.getSignals());
+                    if (parent != null) parent.setSaaSignals(event.getSignals());
                 }
                 playerSession.saveLocation(ring);
-                if(parent != null) playerSession.saveLocation(parent);
+                if (parent != null) playerSession.saveLocation(parent);
             }
 
-            if(playerSession.isDiscoveryAnnouncementOn()) {
+            if (playerSession.isDiscoveryAnnouncementOn()) {
                 announce(sb.toString());
             }
         } else {
-            if(playerSession.isDiscoveryAnnouncementOn()) {
+            if (playerSession.isDiscoveryAnnouncementOn()) {
                 announce("No Signal(s) detected.");
             }
         }
 
         playerSession.saveLocation(location);
-    }
-
-    private static void announce(String sb) {
-        Status status = Status.getInstance();
-        if (status.isInMainShip() && !status.isLanded() && !status.isDocked()) {
-            EventBusManager.publish(new SensorDataEvent(sb));
-        }
     }
 
     private long findParentId(String parentBodyName) {
@@ -150,13 +148,13 @@ public class SAASignalsFoundSubscriber {
 
     private List<GenusDto> toGenusDto(List<SAASignalsFoundEvent.Genus> genuses, boolean isOurDiscovery) {
         ArrayList<GenusDto> result = new ArrayList<>();
-        for(SAASignalsFoundEvent.Genus genus: genuses) {
+        for (SAASignalsFoundEvent.Genus genus : genuses) {
             GenusDto dto = new GenusDto();
             dto.setSpecies(genus.getGenusLocalised());
             BioForms.ProjectedPayment projectedPayment = BioForms.getAverageProjectedPayment(genus.getGenusLocalised());
             if (projectedPayment != null && projectedPayment.payment() != null) {
                 dto.setRewardInCredits(projectedPayment.payment());
-                if(isOurDiscovery) {
+                if (isOurDiscovery) {
                     dto.setBonusForFirstDiscovery(projectedPayment.firstDiscoveryBonus());
                 }
             }

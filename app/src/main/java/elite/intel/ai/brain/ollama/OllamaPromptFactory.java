@@ -103,7 +103,7 @@ public class OllamaPromptFactory implements AiPromptFactory {
                 - 'command'  → only when input is very clear action request matching supported commands list exactly. Commands are inputs that start with a verb for example: 'activate', 'set', 'switch to', 'get', 'drop', 'retract', 'deploy', 'find', 'locate', 'activate'
                 - 'query'    → only when input is very clear information request matching supported queries list exactly. Queries are inputs starting with interrogative words like 'can we', 'what', 'where', 'when', 'how', 'how far', 'remind', 'how many', 'how much', 'what is', 'where is'
                 Commands have priority over queries.
-                If unsure → classify as chat. Return type 'chat' and provide a short response in 'response_text' such as \"command unclear\" or similar.
+                ELSE classify as 'chat'. Return type 'chat' and provide a short response in 'response_text'.
                 """;
     }
 
@@ -131,7 +131,8 @@ public class OllamaPromptFactory implements AiPromptFactory {
         sb.append(" **DO NOT MAP** questions about ship characteristics to ").append(FSD_TARGET_ANALYSIS.getAction()).append("\n");
         sb.append(" **CRITICAL** Map questions about ship jump range, health, damage, etc to ").append(SHIP_LOADOUT.getAction()).append("\n");
         sb.append(" Map 'damage report' questions to queries like ").append(SHIP_LOADOUT.getAction()).append("\n");
-        sb.append(" Map questions about organics or exobiology scans to").append(EXOBIOLOGY_SAMPLES.getAction()).append("\n");
+        sb.append(" Map questions about organics or exobiology for plant scans to").append(EXOBIOLOGY_SAMPLES.getAction()).append("\n");
+        sb.append(" Map questions about organics or exobiology for star system to").append(BIO_SAMPLE_IN_STAR_SYSTEM.getAction()).append("\n");
         sb.append(" cargo scoop, cargo hatch, cargo doors etc are related to opening and closing cargo scoop. ");
 
         return sb.toString();
@@ -262,22 +263,17 @@ public class OllamaPromptFactory implements AiPromptFactory {
                 
                 You receive real-time data from the ship's sensors.
                 
-                Summarise only the important readings and events that are actually present in the incoming data.
+                Summarise only the important readings and events that are actually present in the incoming data (sensorData).
                 
-                - Ignore timestamps, metadata, status flags, and any other non-essential fields.
+                - Do not mention traffic or incident numbers when they are null, zero or absent.
+                - Ignore timestamps, eventName, endOfLife, metadata, status flags, and any other non-essential fields.
                 - Report only the concrete values and observations that matter.
-                - For traffic: report only the number of ships when the value is greater than 0.
-                - For incidents/losses: report only the number of ships affected when the value is greater than 0.
                 - Never mention "sensors", "censors", "sensor data", "readings from sensors", or similar phrases.
                 - Never explain where the information comes from. Just state the facts as if they are the current ship status.
-                - Do not mention traffic or incident numbers when they are zero or absent.
                 - Keep the tone calm, professional, and concise – like a ship computer readout.
                 
                 Always respond strictly in this JSON format and nothing else:
                 {"type": "chat", "response_text": "your summary here"}
-                
-                Do not put JSON inside response_text.
-                Do not add any extra text before or after the JSON.
                 """);
 
         return sb.toString();

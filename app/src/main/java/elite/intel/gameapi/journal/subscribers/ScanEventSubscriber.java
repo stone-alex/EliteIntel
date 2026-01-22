@@ -137,13 +137,9 @@ public class ScanEventSubscriber extends BiomeAnalyzer {
                     countGeological++;
                 }
             }
-            if (location.getBioSignals() < countBioSignals) {
-                location.setBioSignals(countBioSignals);
-            }
-            if (location.getGeoSignals() < countGeological) {
-                location.setGeoSignals(countGeological);
-            }
         }
+        location.setBioSignals(countBioSignals);
+        location.setGeoSignals(countGeological);
 
 
         List<MaterialDto> materials = new ArrayList<>();

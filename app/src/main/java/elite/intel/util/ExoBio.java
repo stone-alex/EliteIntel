@@ -2,20 +2,30 @@ package elite.intel.util;
 
 import elite.intel.gameapi.journal.events.dto.BioSampleDto;
 import elite.intel.session.PlayerSession;
+import elite.intel.util.json.GsonFactory;
+import elite.intel.util.json.ToJsonConvertible;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ExoBio {
 
-    public static List<BioSampleDto> completedScansForPlanet(PlayerSession playerSession) {
+    public static List<DataDto> completedScansForPlanet(PlayerSession playerSession) {
         List<BioSampleDto> allBioSamples = playerSession.getBioCompletedSamples();
         List<BioSampleDto> completedForThisPlanet = new ArrayList<>();
+        ArrayList<DataDto> result = new ArrayList<>();
         for(BioSampleDto bioSample : allBioSamples) {
             if(bioSample.getPlanetName().equalsIgnoreCase(playerSession.getCurrentLocation().getPlanetName())) {
-                completedForThisPlanet.add(bioSample);
+                result.add(new DataDto(bioSample.getGenus(), bioSample.getSpecies(), bioSample.getScanXof3()));
             }
         }
-        return completedForThisPlanet;
+
+        return result;
+    }
+
+    public record DataDto(String genus, String species, String scanXof3) implements ToJsonConvertible {
+        @Override public String toJson() {
+            return GsonFactory.getGson().toJson(this);
+        }
     }
 }

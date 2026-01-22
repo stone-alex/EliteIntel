@@ -8,6 +8,7 @@ import elite.intel.gameapi.journal.events.dto.BioSampleDto;
 import elite.intel.gameapi.journal.events.dto.GenusDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
+import elite.intel.util.ExoBio;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 
@@ -28,33 +29,34 @@ public class AnalyzeBioSamplesHandler extends BaseQueryAnalyzer implements Query
         }
         List<BioSampleDto> partialScans = currentLocation.getPartialBioSamples();
         List<GenusDto> genusListForCurrentLocation = currentLocation.getGenus();
-        List<BioSampleDto> samplesCompletedForThisPlanet = completedScansForPlanet(playerSession);
-        List<GenusDto> genusListNotScannedForCurrentLocation = calculateGenusNotYetScanned(samplesCompletedForThisPlanet, genusListForCurrentLocation);
+        List<ExoBio.DataDto> completedScansForPlanet = completedScansForPlanet(playerSession);
+        List<GenusDto> genusListNotScannedForCurrentLocation = calculateGenusNotYetScanned(completedScansForPlanet, genusListForCurrentLocation);
 
         String instructions = """
-                'partialScans': partial bio scans (3 scans needed per sample). 
-                'genusListForCurrentLocation': all genus present on the current planet. 
-                'genusListNotScannedForCurrentLocation': organics and bio forms not yet scanned or catalogued. 
-                For queries about remaining bio/organic scans use 'genusListNotScannedForCurrentLocation'.
-                 
+                Data contains:
+                    - partialBioFormScans contains list of partially scanned genus. (3 scans require to complete a sample). 
+                    - allBioFormsOnPlanet contains list genus of all organic bio forms present on the current planet.
+                    - completedScansForPlanet contains list of genus that still require scan on the current planet.
+                    = genusListNotScannedForCurrentLocation contains list of genus we still have to scan on current planet
+                    return genus names matching user question.
                 """;
 
         AiDataStruct struct = new AiDataStruct(instructions, new DataDto(
                 partialScans,
                 genusListForCurrentLocation,
-                samplesCompletedForThisPlanet,
+                completedScansForPlanet,
                 genusListNotScannedForCurrentLocation
         ));
 
         return process(struct, originalUserInput);
     }
 
-    private List<GenusDto> calculateGenusNotYetScanned(List<BioSampleDto> completedSamples, List<GenusDto> genusListForCurrentLocation) {
+    private List<GenusDto> calculateGenusNotYetScanned(List<ExoBio.DataDto> completedSamples, List<GenusDto> genusListForCurrentLocation) {
         ArrayList<GenusDto> result = new ArrayList<>();
         for (GenusDto genus : genusListForCurrentLocation) {
             boolean found = false;
-            for (BioSampleDto sample : completedSamples) {
-                if (sample.getGenus().equals(genus.getSpecies())) {
+            for (ExoBio.DataDto sample : completedSamples) {
+                if (sample.genus().equals(genus.getSpecies())) {
                     found = true;
                     break;
                 }
@@ -69,7 +71,7 @@ public class AnalyzeBioSamplesHandler extends BaseQueryAnalyzer implements Query
     record DataDto(
                    List<BioSampleDto> partialBioFormScans,
                    List<GenusDto> allBioFormsOnPlanet,
-                   List<BioSampleDto> bioSamplesCompletedForThisPlanet,
+                   List<ExoBio.DataDto> completedScansForPlanet,
                    List<GenusDto> genusListNotScannedForCurrentLocation
 
     ) implements ToJsonConvertible {

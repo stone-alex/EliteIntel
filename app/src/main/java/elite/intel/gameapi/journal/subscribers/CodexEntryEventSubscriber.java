@@ -83,7 +83,7 @@ public class CodexEntryEventSubscriber {
                         0
                 );
                 if (genus != null && isNameMatched && distanceFromPreviousSample < bioSampleDistance) {
-                    sb.append(" NOTE: Too close to previous sample for the same genus. ");
+                    sb.append(" Warning: Too close to previous sample for the same genus! ");
                     break;
                 }
             }

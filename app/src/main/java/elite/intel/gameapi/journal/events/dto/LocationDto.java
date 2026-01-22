@@ -82,8 +82,8 @@ public class LocationDto implements ToJsonConvertible {
     private String atmosphere;
     private Double radius;
     private Double massEM;
-    private Integer bioSignals;
-    private Integer geoSignals;
+    private int bioSignals;
+    private int geoSignals;
     private boolean hasRings;
 
     public LocationDto(Long id) {
@@ -105,16 +105,16 @@ public class LocationDto implements ToJsonConvertible {
         // serialization
     }
 
+    public LocationDto(LocationType locationType) {
+        setLocationType(locationType);
+    }
+
     public Long getSystemAddress() {
         return systemAddress;
     }
 
     public void setSystemAddress(@NotBlank Long systemAddress) {
         this.systemAddress = systemAddress;
-    }
-
-    public LocationDto(LocationType locationType) {
-        setLocationType(locationType);
     }
 
     public void setMarket(MarketDto marketDto) {
@@ -607,19 +607,21 @@ public class LocationDto implements ToJsonConvertible {
         this.massEM = massEM;
     }
 
-    public Integer getBioSignals() {
-        return bioSignals != null ? bioSignals : 0;
+    public int getBioSignals() {
+        return bioSignals;
     }
 
-    public void setBioSignals(Integer bioSignals) {
-        this.bioSignals = bioSignals;
+    public void setBioSignals(int bioSignals) {
+        if (bioSignals > this.bioSignals) { // do not override to 0 on bad data.
+            this.bioSignals = bioSignals;
+        }
     }
 
-    public Integer getGeoSignals() {
-        return geoSignals != null ? geoSignals : 0;
+    public int getGeoSignals() {
+        return geoSignals;
     }
 
-    public void setGeoSignals(Integer geoSignals) {
+    public void setGeoSignals(int geoSignals) {
         this.geoSignals = geoSignals;
     }
 

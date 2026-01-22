@@ -13,8 +13,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static elite.intel.ai.brain.handlers.query.Queries.ANALYZE_MISSIONS;
-
 public class AnalyzeMissionHandler extends BaseQueryAnalyzer implements QueryHandler {
 
     private final MissionManager missionManager = MissionManager.getInstance();
@@ -31,7 +29,13 @@ public class AnalyzeMissionHandler extends BaseQueryAnalyzer implements QueryHan
                         (a, b) -> b
                 )
         );
-        return process(new AiDataStruct(ANALYZE_MISSIONS.getInstructions(), new DataDto(missions)), originalUserInput);
+
+        String instructions = """
+                Use this map of missionType to mission to answer questions about active missions.
+                Group the results by missionType 
+                when specifically prompted about an empty list, respond with 'I have no data for this category'.
+        """;
+        return process(new AiDataStruct(instructions, new DataDto(missions)), originalUserInput);
     }
 
     record DataDto(Map<MissionType, Collection<MissionDto>> missions) implements ToJsonConvertible {

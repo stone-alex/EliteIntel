@@ -49,7 +49,6 @@ public class GrokAnalysisEndpoint extends AiEndPoint implements AiAnalysisInterf
             request.add("messages", gson.toJsonTree(new Object[]{systemMessage1, systemMessage2, messageUser}));
 
             String jsonString = gson.toJson(request);
-            logger.debug("xAI API call:\n{}", jsonString);
 
             Response response = callApi(conn, jsonString, client);
 

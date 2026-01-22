@@ -222,4 +222,8 @@ public class StringUtls {
 
         return result;
     }
+
+    public static String removeNameEnding(String missionName) {
+        return missionName.replace("_name","");
+    }
 }

@@ -3,7 +3,9 @@ package elite.intel.gameapi.journal.subscribers;
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.ai.mouth.subscribers.events.TTSInterruptEvent;
+import elite.intel.db.managers.MissionManager;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.gameapi.MissionType;
 import elite.intel.gameapi.journal.events.ShipTargetedEvent;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.Md5Utils;
@@ -17,9 +19,11 @@ import java.util.Set;
 public class ShipTargetedEventSubscriber {
 
     private final Logger log = LogManager.getLogger(ShipTargetedEventSubscriber.class);
+    private final PlayerSession playerSession = PlayerSession.getInstance();
+    private final MissionManager missionManager = MissionManager.getInstance();
 
     @Subscribe public void onShipTargetedEvent(ShipTargetedEvent event) {
-        PlayerSession playerSession = PlayerSession.getInstance();
+
         log.debug(event.toJson());
 
         if (!event.isTargetLocked()) {
@@ -100,9 +104,10 @@ public class ShipTargetedEventSubscriber {
         String legalStatus = event.getLegalStatus();
         if (faction == null || faction.isBlank()) return null;
         if (legalStatus == null || legalStatus.isBlank()) return null;
-        PlayerSession playerSession = PlayerSession.getInstance();
 
-        Set<String> targetFactions = playerSession.getTargetFactions();
+        Set<String> targetFactions = missionManager.getTargetFactions(
+                missionManager.getPirateMissionTypes()
+        );
         if (!targetFactions.isEmpty() && targetFactions.contains(faction)) {
             return " Mission Target ";
         }

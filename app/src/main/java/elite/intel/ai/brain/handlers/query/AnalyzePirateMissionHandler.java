@@ -3,7 +3,9 @@ package elite.intel.ai.brain.handlers.query;
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.db.managers.MissionManager;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.gameapi.MissionType;
 import elite.intel.gameapi.journal.events.dto.BountyDto;
 import elite.intel.gameapi.journal.events.dto.MissionDto;
 import elite.intel.session.PlayerSession;
@@ -15,11 +17,16 @@ import java.util.stream.Collectors;
 
 public class AnalyzePirateMissionHandler extends BaseQueryAnalyzer implements QueryHandler {
 
+    private final PlayerSession session = PlayerSession.getInstance();
+    private final MissionManager missionManager = MissionManager.getInstance();
+
+
     @Override
     public JsonObject handle(String action, JsonObject params, String originalUserInput) {
         EventBusManager.publish(new AiVoxResponseEvent("Analyzing mission data... Stand by..."));
-        PlayerSession session = PlayerSession.getInstance();
-        Map<Long, MissionDto> missions = session.getMissions();
+        Map<Long, MissionDto> missions = missionManager.getMissions(
+                missionManager.getPirateMissionTypes()
+        );
         Set<BountyDto> bounties = session.getBounties();
         String remainingKills = computeKillsRemaining(missions, bounties);
         String missionProfit = computeMissionProfit(missions, bounties);

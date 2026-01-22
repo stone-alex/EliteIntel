@@ -110,9 +110,6 @@ public class PlayerSession {
         missions.save(mission);
     }
 
-    public Map<Long, MissionDto> getMissions() {
-        return missions.getMissions();
-    }
 
     public void removeMission(Long missionId) {
         missions.remove(missionId);
@@ -140,9 +137,6 @@ public class PlayerSession {
         return bounties.getAll();
     }
 
-    public Set<String> getTargetFactions() {
-        return missions.getTargetFactions();
-    }
 
     public void saveLocation(LocationDto location) {
         if (location.getBodyId() == -1) return;

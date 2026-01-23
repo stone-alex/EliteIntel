@@ -12,7 +12,6 @@ public class ShutDownEventSubscriber {
 
     @Subscribe
     public void onShutDownEvent(ShutdownEvent event) {
-        EventBusManager.publish(new AiVoxResponseEvent("Session off line..."));
         EventBusManager.publish(new SystemShutDownEvent());
     }
 }

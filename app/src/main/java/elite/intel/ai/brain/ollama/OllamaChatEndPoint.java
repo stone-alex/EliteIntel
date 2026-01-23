@@ -23,16 +23,16 @@ public class OllamaChatEndPoint extends AiEndPoint implements AIChatInterface {
         return INSTANCE;
     }
     @Override
-    public JsonObject sendToAi(JsonArray messages) {
+    public JsonObject processAiPrompt(JsonArray messages) {
         String bodyString = null;
         try {
             OllamaClient client = OllamaClient.getInstance();
             HttpURLConnection conn = client.getHttpURLConnection();
 
-            JsonObject body = client.createRequestBodyHeader(OllamaClient.MODEL_OLLAMA_SMALL, 0.5f);
+            JsonObject prompt = client.createPrompt(OllamaClient.MODEL_OLLAMA_SMALL, 0.5f);
 
             JsonArray sanitized = sanitizeJsonArray(messages);
-            body.add("messages", sanitized);
+            prompt.add("messages", sanitized);
 
             // === ADD STRUCTURED SCHEMA ENFORCEMENT ===
             JsonObject format = new JsonObject();
@@ -63,21 +63,21 @@ public class OllamaChatEndPoint extends AiEndPoint implements AIChatInterface {
             JsonObject options = new JsonObject();
             options.add("format", format);
             options.addProperty("raw", true);
-            body.add("options", options);
+            prompt.add("options", options);
 /*
             JsonObject options = new JsonObject();
             options.add("format", format);
             options.addProperty("raw", true);
             options.addProperty("stop", "");
             options.addProperty("temperature", 0.1);
-            body.add("options", options);
+            prompt.add("options", options);
 */
 
 
-            bodyString = body.toString();
-            log.debug("Ollama API call:\n{}", GsonFactory.getGson().toJson(body));
+            bodyString = prompt.toString();
+            log.debug("Ollama API call:\n{}", GsonFactory.getGson().toJson(prompt));
 
-            Response response = callApi(conn, bodyString, client);
+            Response response = processAiPrompt(conn, bodyString, client);
             JsonObject root = response.responseData();
 
             JsonObject message = root.getAsJsonObject("message");

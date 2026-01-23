@@ -71,7 +71,7 @@ public abstract class AiEndPoint {
     }
 
 
-    public Response callApi(HttpURLConnection conn, String jsonString, Client client) throws IOException {
+    public Response processAiPrompt(HttpURLConnection conn, String jsonString, Client client) throws IOException {
         log.debug("xAI API call:\n{}", jsonString);
         try (var outputStream = conn.getOutputStream()) {
             outputStream.write(jsonString.getBytes(StandardCharsets.UTF_8));
@@ -93,7 +93,6 @@ public abstract class AiEndPoint {
         if (responseCode != 200) {
             return new Response(processServerError(conn, responseCode, client), response);
         }
-
 
         try {
             JsonObject responseData = JsonParser.parseString(response).getAsJsonObject();

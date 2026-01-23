@@ -13,8 +13,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.net.HttpURLConnection;
-import java.nio.charset.StandardCharsets;
-import java.util.Scanner;
 
 public class OpenAiChatEndPoint extends AiEndPoint implements AIChatInterface {
     private static final Logger log = LogManager.getLogger(OpenAiChatEndPoint.class);
@@ -31,7 +29,7 @@ public class OpenAiChatEndPoint extends AiEndPoint implements AIChatInterface {
     }
 
     @Override
-    public JsonObject sendToAi(JsonArray messages) {
+    public JsonObject processAiPrompt(JsonArray messages) {
         String jsonString = null;
         try {
             // Sanitize messages
@@ -40,13 +38,13 @@ public class OpenAiChatEndPoint extends AiEndPoint implements AIChatInterface {
             Client client = OpenAiClient.getInstance();
             HttpURLConnection conn = client.getHttpURLConnection();
 
-            JsonObject body = client.createRequestBodyHeader(OpenAiClient.MODEL_GPT_4_1_MINI, 1);
-            body.add("messages", sanitizedMessages);
+            JsonObject prompt = client.createPrompt(OpenAiClient.MODEL_GPT_4_1_MINI, 1);
+            prompt.add("messages", sanitizedMessages);
 
-            jsonString = GsonFactory.getGson().toJson(body);
+            jsonString = GsonFactory.getGson().toJson(prompt);
             log.debug("Open AI API chat call:\n\n{}\n\n", jsonString);
 
-            Response response = callApi(conn, jsonString, client);
+            Response response = processAiPrompt(conn, jsonString, client);
 
             // Extract content safely
             JsonArray choices = response.responseData().getAsJsonArray("choices");

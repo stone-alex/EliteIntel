@@ -81,7 +81,7 @@ public class OllamaCommandEndPoint extends CommandEndPoint implements AiCommandI
         userMsg.addProperty("content", buildVoiceRequest(userInput));
         request.add(userMsg);
 
-        JsonObject response = OllamaChatEndPoint.getInstance().sendToAi(request);
+        JsonObject response = OllamaChatEndPoint.getInstance().processAiPrompt(request);
         if (response == null) {
             getRouter().processAiResponse(createError("Sorry, I couldn't reach Ollama."), userInput);
             systemSession.clearChatHistory();
@@ -121,7 +121,7 @@ public class OllamaCommandEndPoint extends CommandEndPoint implements AiCommandI
         messages.add(userMsg);
 
         executor.submit(() -> {
-            JsonObject resp = OllamaChatEndPoint.getInstance().sendToAi(messages);
+            JsonObject resp = OllamaChatEndPoint.getInstance().processAiPrompt(messages);
             if (resp != null) getRouter().processAiResponse(resp, null);
         });
     }

@@ -22,5 +22,5 @@ import com.google.gson.JsonObject;
  * input and output data with the AI system.
  */
 public interface AiQueryInterface {
-    JsonObject sendToAi(JsonArray messages);
+    JsonObject processAiPrompt(JsonArray messages);
 }

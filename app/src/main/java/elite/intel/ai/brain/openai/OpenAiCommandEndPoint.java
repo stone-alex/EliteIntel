@@ -199,11 +199,11 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
 
         // Create API request body
         OpenAiClient client = OpenAiClient.getInstance();
-        JsonObject requestBody = client.createRequestBodyHeader(OpenAiClient.MODEL_GPT_4_1_MINI, 0.10f);
-        requestBody.add("messages", messages);
+        JsonObject prompt = client.createPrompt(OpenAiClient.MODEL_GPT_4_1_MINI, 0.10f);
+        prompt.add("messages", messages);
 
         // Serialize to JSON string
-        String jsonString = GsonFactory.getGson().toJson(requestBody);
+        String jsonString = GsonFactory.getGson().toJson(prompt);
         log.debug("JSON prepared for callOpenAiApi:\n{}", jsonString);
         executor.submit(() -> {
             try {
@@ -223,16 +223,16 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
     private JsonObject callOpenAiApi(JsonArray messages) {
         try {
             OpenAiClient client = OpenAiClient.getInstance();
-            JsonObject requestBody = client.createRequestBodyHeader(OpenAiClient.MODEL_GPT_4_1_MINI, 0.10f);
-            requestBody.add("messages", messages);
-            String jsonString = GsonFactory.getGson().toJson(requestBody);
+            JsonObject prompt = client.createPrompt(OpenAiClient.MODEL_GPT_4_1_MINI, 0.10f);
+            prompt.add("messages", messages);
+            String jsonString = GsonFactory.getGson().toJson(prompt);
             log.debug("Open AI API call:\n{}", jsonString);
 
             // Store messages for history
             systemSession.setChatHistory(messages);
 
             HttpURLConnection conn = client.getHttpURLConnection();
-            Response response = callApi(conn, jsonString, client);
+            Response response = processAiPrompt(conn, jsonString, client);
 
             // Extract content
             JsonArray choices = response.responseData().getAsJsonArray("choices");

@@ -12,8 +12,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.net.HttpURLConnection;
-import java.nio.charset.StandardCharsets;
-import java.util.Scanner;
 
 public class OpenAiQueryEndPoint extends AiEndPoint implements AiQueryInterface {
     private static final Logger log = LogManager.getLogger(OpenAiQueryEndPoint.class);
@@ -30,7 +28,7 @@ public class OpenAiQueryEndPoint extends AiEndPoint implements AiQueryInterface 
     }
 
     @Override
-    public JsonObject sendToAi(JsonArray messages) {
+    public JsonObject processAiPrompt(JsonArray messages) {
         String jsonString = null;
         try {
             // Sanitize messages
@@ -39,15 +37,15 @@ public class OpenAiQueryEndPoint extends AiEndPoint implements AiQueryInterface 
             Client client = OpenAiClient.getInstance();
             HttpURLConnection conn = client.getHttpURLConnection();
 
-            JsonObject body = client.createRequestBodyHeader(OpenAiClient.MODEL_GPT_4_1_MINI, 1);
-            body.add("messages", sanitizedMessages);
+            JsonObject promp = client.createPrompt(OpenAiClient.MODEL_GPT_4_1_MINI, 1);
+            promp.add("messages", sanitizedMessages);
 
-            jsonString = GsonFactory.getGson().toJson(body);
+            jsonString = GsonFactory.getGson().toJson(promp);
             log.debug("Open AI API query call:\n\n{}\n\n", jsonString);
 
 
 
-            Response response = callApi(conn, jsonString, client);
+            Response response = processAiPrompt(conn, jsonString, client);
 
             // Extract content safely
             JsonArray choices = response.responseData().getAsJsonArray("choices");

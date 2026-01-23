@@ -22,16 +22,16 @@ public class OllamaQueryEndPoint extends AiEndPoint implements AiQueryInterface 
     }
 
     @Override
-    public JsonObject sendToAi(JsonArray messages) {
+    public JsonObject processAiPrompt(JsonArray messages) {
         try {
             OllamaClient client = OllamaClient.getInstance();
             var conn = client.getHttpURLConnection();
 
-            JsonObject request = client.createRequestBodyHeader(OllamaClient.MODEL_OLLAMA, 0.5f);
-            request.add("messages", sanitizeJsonArray(messages));
+            JsonObject prompt = client.createPrompt(OllamaClient.MODEL_OLLAMA, 0.5f);
+            prompt.add("messages", sanitizeJsonArray(messages));
 
-            log.debug("Ollama query call:\n{}", request);
-            Response response = callApi(conn, request.toString(), client);
+            log.debug("Ollama query call:\n{}", prompt);
+            Response response = processAiPrompt(conn, prompt.toString(), client);
 
             JsonObject root = response.responseData();
             String content = root.getAsJsonObject("message").get("content").getAsString();

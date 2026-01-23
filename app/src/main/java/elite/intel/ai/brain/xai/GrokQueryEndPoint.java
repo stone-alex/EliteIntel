@@ -23,7 +23,7 @@ public class GrokQueryEndPoint extends AiEndPoint implements AiQueryInterface {
         return INSTANCE;
     }
 
-    @Override public JsonObject sendToAi(JsonArray messages) {
+    @Override public JsonObject processAiPrompt(JsonArray messages) {
         String bodyString = null;
         try {
             JsonArray sanitizedMessages = sanitizeJsonArray(messages);
@@ -31,16 +31,16 @@ public class GrokQueryEndPoint extends AiEndPoint implements AiQueryInterface {
             GrokClient client = GrokClient.getInstance();
             HttpURLConnection conn = client.getHttpURLConnection();
 
-            JsonObject body = client.createRequestBodyHeader(GrokClient.MODEL_GROK_REASONING, 1);
-            body.add("messages", sanitizedMessages);
+            JsonObject prompt = client.createPrompt(GrokClient.MODEL_GROK_REASONING, 1);
+            prompt.add("messages", sanitizedMessages);
 
-            bodyString = body.toString();
+            bodyString = prompt.toString();
             log.debug("xAI API query call:\n{}", bodyString);
 
             if(bodyString == null) {
                 return new JsonObject();
             }
-            Response response = callApi(conn, bodyString, client);
+            Response response = processAiPrompt(conn, bodyString, client);
             StracturedResponse stracturedResponse = checkResponse(response);
             if (!stracturedResponse.isSuccessful()) {
                 return new JsonObject();

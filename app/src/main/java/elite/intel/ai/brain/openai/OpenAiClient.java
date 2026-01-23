@@ -29,7 +29,7 @@ public class OpenAiClient implements Client {
         return instance;
     }
 
-    @Override public JsonObject createRequestBodyHeader(String model, float temp) {
+    @Override public JsonObject createPrompt(String model, float temp) {
 
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("model", model);

@@ -3,7 +3,7 @@ package elite.intel.ai.brain.ollama;
 import elite.intel.ai.brain.AICadence;
 import elite.intel.ai.brain.AIPersonality;
 import elite.intel.ai.brain.AiPromptFactory;
-import elite.intel.ai.brain.AiRequestHints;
+import elite.intel.ai.brain.AiCommandsAndQueries;
 import elite.intel.ai.brain.handlers.commands.Commands;
 import elite.intel.ai.brain.handlers.query.Queries;
 import elite.intel.session.PlayerSession;
@@ -186,7 +186,7 @@ public class OllamaPromptFactory implements AiPromptFactory {
         sb.append(quick.length() > 0 ? quick : "    - None defined.\n");
         sb.append(data.length() > 0 ? data : "    - None defined.\n");
         sb.append(appendBehavior());
-        sb.append("All supported queries: ").append(AiRequestHints.queries).append("\n");
+        sb.append("All supported queries: ").append(AiCommandsAndQueries.queries).append("\n");
         return sb.toString();
     }
 

@@ -37,22 +37,22 @@ public class GrokChatEndPoint extends AiEndPoint implements AIChatInterface {
      * The first message should be the system prompt (role: system).
      * Returns the parsed JSON response content or null on error.
      */
-    @Override public JsonObject sendToAi(JsonArray messages) {
+    @Override public JsonObject processAiPrompt(JsonArray messages) {
         String bodyString = null;
         try {
             GrokClient client = GrokClient.getInstance();
             HttpURLConnection conn = client.getHttpURLConnection();
-            JsonObject body = client.createRequestBodyHeader(GrokClient.MODEL_GROK_REASONING, 1);
+            JsonObject prompt = client.createPrompt(GrokClient.MODEL_GROK_REASONING, 1);
 
             // Sanitize messages
             JsonArray sanitizedMessages = sanitizeJsonArray(messages);
-            body.add("messages", sanitizedMessages);
+            prompt.add("messages", sanitizedMessages);
 
-            bodyString = body.toString();
+            bodyString = prompt.toString();
             log.debug("xAI API chat call:\n{}", bodyString);
 
 
-            Response response = callApi(conn, bodyString, client);
+            Response response = processAiPrompt(conn, bodyString, client);
 
             // Extract content safely
             JsonArray choices = response.responseData().getAsJsonArray("choices");

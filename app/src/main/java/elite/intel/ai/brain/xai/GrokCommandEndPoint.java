@@ -137,7 +137,7 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
         messages.add(userMessage);
 
         // Send via GrokChatEndPoint
-        JsonObject apiResponse = getChatInterface().sendToAi(messages);
+        JsonObject apiResponse = getChatInterface().processAiPrompt(messages);
         if (apiResponse == null) {
             JsonObject errorResponse = new JsonObject();
             errorResponse.addProperty("type", AIConstants.TYPE_CHAT);
@@ -191,11 +191,11 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
         messages.add(userMessage);
 
         GrokClient client = GrokClient.getInstance();
-        JsonObject requestBody = client.createRequestBodyHeader(GrokClient.MODEL_GROK_NON_REASONING, 0.01f);
-        requestBody.add("messages", messages);
+        JsonObject prompt = client.createPrompt(GrokClient.MODEL_GROK_NON_REASONING, 0.01f);
+        prompt.add("messages", messages);
 
         Gson gson = GsonFactory.getGson();
-        String jsonString = gson.toJson(requestBody);
+        String jsonString = gson.toJson(prompt);
         log.debug("JSON prepared for callXaiApi:\n{}", jsonString);
         executor.submit(() -> {
             try {
@@ -215,16 +215,16 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
     private JsonObject callXaiApi(JsonArray messages) {
         try {
             GrokClient client = GrokClient.getInstance();
-            JsonObject requestBody = client.createRequestBodyHeader(GrokClient.MODEL_GROK_REASONING, 1.00f);
-            requestBody.add("messages", messages);
-            String jsonString = GsonFactory.getGson().toJson(requestBody);
+            JsonObject prompt = client.createPrompt(GrokClient.MODEL_GROK_REASONING, 1.00f);
+            prompt.add("messages", messages);
+            String jsonString = GsonFactory.getGson().toJson(prompt);
             //log.debug("X AI API call:\n{}", jsonString);
 
             // Store messages for history
             systemSession.setChatHistory(messages);
 
             HttpURLConnection conn = client.getHttpURLConnection();
-            Response response = callApi(conn, jsonString, client);
+            Response response = processAiPrompt(conn, jsonString, client);
 
             // Extract content
             JsonArray choices = response.responseData().getAsJsonArray("choices");

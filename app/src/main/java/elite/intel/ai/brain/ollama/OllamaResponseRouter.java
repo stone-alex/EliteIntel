@@ -10,7 +10,6 @@ import elite.intel.ai.brain.AiQueryInterface;
 import elite.intel.ai.brain.commons.ResponseRouter;
 import elite.intel.ai.brain.handlers.query.Queries;
 import elite.intel.ai.brain.handlers.query.QueryHandler;
-import elite.intel.ai.brain.xai.GrokResponseRouter;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.SystemSession;
@@ -135,7 +134,7 @@ public class OllamaResponseRouter extends ResponseRouter implements AIRouterInte
 
                 log.debug("Sending follow-up to GrokQueryEndPoint for action: {}", action);
                 systemSession.appendToChatHistory(userMessage, systemMessage);
-                JsonObject followUpResponse = queryInterface.sendToAi(messages);
+                JsonObject followUpResponse = queryInterface.processAiPrompt(messages);
 
                 if (followUpResponse == null) {
                     log.warn("Follow-up response is null for action: {}", action);

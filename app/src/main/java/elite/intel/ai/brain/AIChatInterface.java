@@ -20,5 +20,5 @@ import com.google.gson.JsonObject;
  * communication or decision-making.
  */
 public interface AIChatInterface {
-    JsonObject sendToAi(JsonArray messages);
+    JsonObject processAiPrompt(JsonArray messages);
 }

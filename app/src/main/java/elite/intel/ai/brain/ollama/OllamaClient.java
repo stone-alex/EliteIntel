@@ -30,7 +30,7 @@ public class OllamaClient implements Client {
     }
 
     @Override
-    public JsonObject createRequestBodyHeader(String model, float temp) {
+    public JsonObject createPrompt(String model, float temp) {
         JsonObject request = new JsonObject();
         request.addProperty("model", model);
         request.addProperty("temperature", 0.5);

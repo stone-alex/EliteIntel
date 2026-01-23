@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
  * - Maintain and initialize a list of supported queries based on predefined queries.
  * - Provide formatted strings presenting the list of commands or queries.
  */
-public class AiRequestHints {
+public class AiCommandsAndQueries {
     public static final List<String> COMMANDS;
     public static final List<String> QUERIES;
 

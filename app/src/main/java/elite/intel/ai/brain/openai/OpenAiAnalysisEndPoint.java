@@ -36,7 +36,7 @@ public class OpenAiAnalysisEndPoint extends AiEndPoint implements AiAnalysisInte
             HttpURLConnection conn = client.getHttpURLConnection();
             String systemPrompt = ApiFactory.getInstance().getAiPromptFactory().generateAnalysisPrompt();
 
-            JsonObject request = client.createRequestBodyHeader(OpenAiClient.MODEL_GPT_4_1_MINI, 1);
+            JsonObject request = client.createPrompt(OpenAiClient.MODEL_GPT_4_1_MINI, 1);
 
             JsonObject systemMessaage1 = new JsonObject();
             systemMessaage1.addProperty("role", AIConstants.ROLE_SYSTEM);
@@ -60,7 +60,7 @@ public class OpenAiAnalysisEndPoint extends AiEndPoint implements AiAnalysisInte
             String jsonString = GsonFactory.getGson().toJson(request);
             log.debug("Analysis call:\n\n{}\n\n", jsonString);
 
-            Response response = callApi(conn, jsonString, client);
+            Response response = processAiPrompt(conn, jsonString, client);
 
             JsonElement jsonElement = response.responseData().get("usage");
             if(jsonElement != null) {

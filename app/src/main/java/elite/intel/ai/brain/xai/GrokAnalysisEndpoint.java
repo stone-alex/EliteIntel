@@ -32,7 +32,7 @@ public class GrokAnalysisEndpoint extends AiEndPoint implements AiAnalysisInterf
 
             String systemPrompt = apiFactory.getAiPromptFactory().generateAnalysisPrompt();
 
-            JsonObject request = client.createRequestBodyHeader(GrokClient.MODEL_GROK_REASONING, 0.8f);
+            JsonObject prompt = client.createPrompt(GrokClient.MODEL_GROK_REASONING, 0.8f);
 
             JsonObject systemMessage1 = new JsonObject();
             systemMessage1.addProperty("role", AIConstants.ROLE_SYSTEM);
@@ -46,11 +46,11 @@ public class GrokAnalysisEndpoint extends AiEndPoint implements AiAnalysisInterf
             messageUser.addProperty("role", AIConstants.ROLE_USER);
             messageUser.addProperty("content", "User intent: " + originalUserInput + "\nData: " + struct.getData().toJson());
 
-            request.add("messages", gson.toJsonTree(new Object[]{systemMessage1, systemMessage2, messageUser}));
+            prompt.add("messages", gson.toJsonTree(new Object[]{systemMessage1, systemMessage2, messageUser}));
 
-            String jsonString = gson.toJson(request);
+            String jsonString = gson.toJson(prompt);
 
-            Response response = callApi(conn, jsonString, client);
+            Response response = processAiPrompt(conn, jsonString, client);
 
             JsonArray choices = response.responseData().getAsJsonArray("choices");
             if (choices == null || choices.isEmpty()) {

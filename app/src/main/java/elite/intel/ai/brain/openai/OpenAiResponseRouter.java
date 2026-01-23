@@ -138,7 +138,7 @@ public class OpenAiResponseRouter extends ResponseRouter implements AIRouterInte
 
                 log.debug("Sending follow-up to OpenAiQueryEndPoint for action: {}", action);
                 systemSession.appendToChatHistory(userMessage, systemMessage);
-                JsonObject followUpResponse = queryInterface.sendToAi(messages);
+                JsonObject followUpResponse = queryInterface.processAiPrompt(messages);
 
                 if (followUpResponse == null) {
                     log.warn("Follow-up response is null for action: {}", action);

@@ -140,6 +140,7 @@ public class OllamaPromptFactory implements AiPromptFactory {
         sb.append(" Map, requests such as 'board ship', 'get me on board', 'extract', 'requesting extraction' etc to command ").append(RECOVER_SRV.getAction()).append("\n");
         sb.append(" Map vague speed / throttle requests such 'optimize approach speed', 'approaching planet', 'planetary approach' etc to ").append(SET_OPTIMAL_SPEED.getAction()).append("\n");
         sb.append(" cargo scoop, cargo hatch, cargo doors etc are related to opening and closing cargo scoop. ");
+        sb.append(" Map questions about carrier to query_carrier_* queries");
 
         sb.append(" Map earth city time queries such as 'what time is it in London' or 'what time is it now' to ").append(TIME_IN_ZONE.getAction()).append("\n");
 

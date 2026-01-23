@@ -24,6 +24,8 @@ public class CarrierETAHandler extends BaseQueryAnalyzer implements QueryHandler
 
         String instructions = """
                 Calculate fleet carrier ETA using arrival and current time.
+                Return ETA in minutes. (do not return decimals, whole numbers only)
+                Example: "E.T.A.: 123 minutes"
                 """;
 
         return process(new AiDataStruct(instructions, new DataDto(carrierDepartureTime, now)), originalUserInput);

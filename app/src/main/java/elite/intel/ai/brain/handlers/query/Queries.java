@@ -22,7 +22,7 @@ public enum Queries {
     LAST_SCAN_ANALYSIS                  ("query_last_scan_analysis",                    AnalyzeLastScanHandler.class, true),
     MATERIALS_INVENTORY                 ("query_inventory",                             AnalyseMaterialsHandler.class, true),
     PLANET_MATERIALS                    ("query_materials_present_on_planet",           AnalyzeMaterialsOnPlanetHandler.class, true),
-    EXPLORATION_PROFITS                 ("query_exploration_profits",                   AnalyzeExplorationProfitsHandler.class, true),
+    EXPLORATION_PROFITS                 ("query_expobiology_and_exploration_profits",   AnalyzeExplorationProfitsHandler.class, true),
     CURRENT_LOCATION                    ("query_current_location",                      AnalyzeCurrentLocationHandler.class, true),
     SHIP_FUEL_STATUS                    ("query_ship_fuel_status",                      AnalyzeFuelStatusHandler.class, true),
     FSD_TARGET_ANALYSIS                 ("query_analyse_selected_target",               AnalyzeFsdTargetHandler.class, true),

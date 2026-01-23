@@ -20,6 +20,9 @@ public final class CodexEntryManager {
         return instance;
     }
 
+    public List<CodexEntryDao.CodexEntry> findAll() {
+        return Database.withDao(CodexEntryDao.class, dao -> dao.findAll());
+    }
 
     public List<CodexEntryDao.CodexEntry> getForPlanet(String starSystem, Long bodyId) {
         return Database.withDao(CodexEntryDao.class, dao -> {

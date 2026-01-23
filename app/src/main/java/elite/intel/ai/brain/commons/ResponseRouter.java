@@ -17,6 +17,8 @@ import org.apache.logging.log4j.Logger;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.apache.commons.lang3.StringUtils.trimToNull;
+
 public abstract class ResponseRouter {
 
     private static final Logger log = LogManager.getLogger(ResponseRouter.class);
@@ -91,8 +93,8 @@ public abstract class ResponseRouter {
 
     private String player() {
         String alternativeName = playerSession.getAlternativeName();
-        String playerName = alternativeName != null ? alternativeName : playerSession.getPlayerName();
-        String playerTitle = playerSession.getPlayerTitle();
+        String playerName = trimToNull(alternativeName) != null ? alternativeName : playerSession.getPlayerName();
+        String playerTitle = trimToNull(playerSession.getPlayerTitle()) != null ? "Commander" : playerSession.getPlayerTitle();
         String playerMilitaryRank = playerSession.getPlayerHighestMilitaryRank();
         String playerHonorific = Ranks.getPlayerHonorific();
 
@@ -102,7 +104,7 @@ public abstract class ResponseRouter {
         if (result.isEmpty()) {
             return "Commander";
         }
-        
+
         return result.get(new Random().nextInt(result.size()));
     }
 }

@@ -36,6 +36,9 @@ public interface CodexEntryDao {
     @SqlUpdate("DELETE FROM codex_entries")
     void clear();
 
+    @SqlQuery("SELECT * FROM codex_entries")
+    List<CodexEntry> findAll();
+
     class CodexEntryMapper implements RowMapper<CodexEntry> {
         @Override public CodexEntry map(ResultSet rs, StatementContext ctx) throws SQLException {
             CodexEntry entry = new CodexEntry();

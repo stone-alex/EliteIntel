@@ -1,5 +1,6 @@
 package elite.intel.ai.brain.handlers.query;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
@@ -12,7 +13,6 @@ import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -37,27 +37,29 @@ public class PlanetBiomeAnalyzerHandler extends BaseQueryAnalyzer implements Que
                 - Comma separated, no trailing comma
                 - If zero genera match → Planet <planetShortName>: no matching genus found
                 - No descriptions, no stats, no temperature, no gravity, no atmosphere words, no explanations.
-                                
+                - If no matechs detected, but planet has bio signals most porobable genus is bacteria.
+                
                 Correct response examples:
                 match found: { \"type\":\"chat\", \"response_text\": \"Planet 12 d: Aleoida, Bacterium, Osseus\"}
                 or no match found { \"type\":\"chat\", \"response_text\": \"Planet ZZ 3: none\"}
                 """;
 
         Map<Long, LocationDto> locations = playerSession.getLocations();
-        String planetName = params.get("key").getAsString().replace(" ", "");
+        JsonElement key = params.get("key");
+        String planetName = key == null ? null : key.getAsString().replace(" ", "");
 
         if (SystemSession.getInstance().isRunningLocalLLM()) {
             LocationDto location = findFirstMatchingLocation(locations, planetName);
             if (location != null) {
-                return process(new AiDataStruct(instructions, new DataDto1(BioForms.getGenusToBiome(), location)), originalUserInput);
+                return process(new AiDataStruct(instructions, new DataDto1(BioForms.getGenusToBiome(), location, starSystemCharacteristics(locations.values()))), originalUserInput);
             }
 
             location = findFirstWithBioSignals(locations);
             if (location != null) {
-                return process(new AiDataStruct(instructions, new DataDto1(BioForms.getGenusToBiome(), location)), originalUserInput);
+                return process(new AiDataStruct(instructions, new DataDto1(BioForms.getGenusToBiome(), location, starSystemCharacteristics(locations.values()))), originalUserInput);
             }
         } else {
-            return process(new AiDataStruct(instructions, new DataDto2(BioForms.getGenusToBiome(), locations.values())), originalUserInput);
+            return process(new AiDataStruct(instructions, new DataDto2(BioForms.getGenusToBiome(), locations.values(), starSystemCharacteristics(locations.values()))), originalUserInput);
         }
 
         return process("planet " + planetName + " not found in data");
@@ -90,14 +92,29 @@ public class PlanetBiomeAnalyzerHandler extends BaseQueryAnalyzer implements Que
         return null;
     }
 
+    private String starSystemCharacteristics(Collection<LocationDto> starSystem) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("System:");
+        for (LocationDto stellarObject : starSystem) {
+            if (stellarObject.getStarClass() == null && stellarObject.getPlanetClass() != null) {
+                sb.append(" has planet type:'").append(stellarObject.getPlanetClass()).append("' distance:").append(stellarObject.getDistance()).append(", ");
+            } else if (stellarObject.getStarClass() != null) {
+                sb.append("Star type").append(stellarObject.getBodyType()).append(" present, ");
+            }
+        }
+        sb.append(" .");
 
-    record DataDto1(Map<String, String> genusToBiome, LocationDto location) implements ToJsonConvertible {
+        return sb.toString();
+    }
+
+
+    record DataDto1(Map<String, String> genusToBiome, LocationDto location, String starSystemCharacteristics) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }
     }
 
-    record DataDto2(Map<String, String> genusToBiome, Collection<LocationDto> locations) implements ToJsonConvertible {
+    record DataDto2(Map<String, String> genusToBiome, Collection<LocationDto> locations, String starSystemCharacteristics) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }

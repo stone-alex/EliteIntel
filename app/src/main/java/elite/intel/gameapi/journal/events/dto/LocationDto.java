@@ -564,6 +564,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setPlanetClass(String planetClass) {
+        if(this.planetClass != null) return;
         this.planetClass = planetClass;
     }
 
@@ -654,6 +655,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setStarClass(String starClass) {
+        if(this.starClass != null) return;
         this.starClass = starClass;
         if (starClass != null && "KGBFOAM".contains(starClass)) {
             setFuelStar(true);

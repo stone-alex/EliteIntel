@@ -598,7 +598,7 @@ public class AppView extends JFrame implements AppViewInterface {
         nextRow(gbc);
 
         // LLM key field
-        addLabel(panel, "LLM Key:", gbc, 0);
+        addLabel(panel, "Cloud LLM Key:", gbc, 0);
         llmApiKeyField = new JPasswordField();
         llmApiKeyField.setPreferredSize(new Dimension(200, 42));
         addField(panel, llmApiKeyField, gbc, 1, 0.8);
@@ -617,7 +617,7 @@ public class AppView extends JFrame implements AppViewInterface {
 
         // Row 1: STT Key
         nextRow(gbc);
-        addLabel(panel, "STT Key:", gbc, 0);
+        addLabel(panel, "Cloud STT Key:", gbc, 0);
         sttApiKeyField = new JPasswordField();
         sttApiKeyField.setPreferredSize(new Dimension(200, 42));
         addField(panel, sttApiKeyField, gbc, 1, 0.8);
@@ -629,7 +629,7 @@ public class AppView extends JFrame implements AppViewInterface {
 
         // Row 2: TTS Key
         nextRow(gbc);
-        addLabel(panel, "TTS Key:", gbc, 0);
+        addLabel(panel, "Cloud TTS Key:", gbc, 0);
         ttsApiKeyField = new JPasswordField();
         ttsApiKeyField.setPreferredSize(new Dimension(200, 42));
         addField(panel, ttsApiKeyField, gbc, 1, 0.8);
@@ -638,7 +638,7 @@ public class AppView extends JFrame implements AppViewInterface {
 
 
         nextRow(gbc);
-        addLabel(panel, "TTS Local Address", gbc, 0);
+        addLabel(panel, "Local TTS Address", gbc, 0);
         localTtsAddressField = new JTextField();
         localTtsAddressField.setPreferredSize(new Dimension(200, 42));
         localTtsAddressField.setText("http://localhost:5000/");

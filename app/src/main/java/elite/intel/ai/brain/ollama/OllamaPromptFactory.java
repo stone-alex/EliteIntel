@@ -60,6 +60,7 @@ public class OllamaPromptFactory implements AiPromptFactory {
                 RULE 2: For coordinates always use decimal numbers only: {"latitude": -12.34, "longitude": 56.78}
                 RULE 3: params keys must be exactly as written in the command/query description. 
                 RULE 4: params key is always word "key" unless the value is a boolean. IF value is a boolean the key is word "state"
+                RULE 5: 'here', 'this planet' means 'current location'. 'this system' means star system we are currently in.
                 
                 JSON FORMAT (repeat): 
                 Always output **ONLY** valid JSON object like above. Nothing before. Nothing after. No explanations. No markdown.
@@ -101,7 +102,7 @@ public class OllamaPromptFactory implements AiPromptFactory {
         return """
                 Classify as:
                 - 'command'  → only when input is very clear action request matching supported commands list exactly. Commands are inputs that start with a verb for example: 'activate', 'set', 'switch to', 'get', 'drop', 'retract', 'deploy', 'find', 'locate', 'activate'
-                - 'query'    → only when input is very clear information request matching supported queries list exactly. Queries are inputs starting with interrogative words like 'can we', 'what', 'where', 'when', 'how', 'how far', 'remind', 'how many', 'how much', 'what is', 'where is'
+                - 'query'    → only when input is very clear information request matching supported queries list exactly. Queries are inputs starting with interrogative words like 'analysis', 'analyze', 'can we', 'what', 'where', 'when', 'how', 'how far', 'remind', 'how many', 'how much', 'what is', 'where is'
                 Commands have priority over queries.
                 ELSE classify as 'chat'. Return type 'chat' and provide a short response in 'response_text'.
                 """;
@@ -118,12 +119,14 @@ public class OllamaPromptFactory implements AiPromptFactory {
 
         /// exploration
         sb.append(" Map 'organic(s) to 'bio signal(s)'\n");
+        sb.append(" Map 'run biome analysis' questions to type 'query' ").append(PLANET_BIOME_ANALYSIS.getAction()).append("\n");
         sb.append(" Map 'scan system' to commands like ").append(OPEN_FSS_AND_SCAN.getAction());
-        sb.append(" Map questions about materials present on the planet to "+PLANET_MATERIALS.getAction());
-        sb.append(" Map questions about materials in the inventory to "+MATERIALS_INVENTORY.getAction());
+        sb.append(" Map questions about materials present on the planet to " + PLANET_MATERIALS.getAction());
+        sb.append(" Map questions about materials in the inventory to " + MATERIALS_INVENTORY.getAction());
         sb.append(" Map questions about landable planets map to ").append(QUERY_STELLAR_OBJETS.getAction()).append("\n");
         sb.append(" Map questions about bio samples / organics within solar/star system to ").append(BIO_SAMPLE_IN_STAR_SYSTEM.getAction()).append("\n");
         sb.append(" Map questions about geological signals within solar/star system to ").append(QUERY_GEO_SIGNALS.getAction()).append("\n");
+        sb.append(" Map questions about current location (this planet, here, etc) to").append(CURRENT_LOCATION.getAction()).append(" questions about star system map to best matching query startin gwith 'query_star_system_*' \n");
 
         sb.append(" 'Resource Sites' have no materials, those are 'hunting grounds for pirate massacre missions' only.");
 
@@ -271,6 +274,7 @@ public class OllamaPromptFactory implements AiPromptFactory {
                 - Never mention "sensors", "censors", "sensor data", "readings from sensors", or similar phrases.
                 - Never explain where the information comes from. Just state the facts as if they are the current ship status.
                 - Keep the tone calm, professional, and concise – like a ship computer readout.
+                - Temperature data is provided in K (Kelvin), covert to Celsius and announce Celsius, not Kelvin.
                 
                 Always respond strictly in this JSON format and nothing else:
                 {"type": "chat", "response_text": "your summary here"}

@@ -34,7 +34,9 @@ public class AnalyzeCurrentLocationHandler extends BaseQueryAnalyzer implements 
                     Use this data to provide answers for our location. 
                     NOTE: For questions such as 'where are we?' 
                     Use planetShortName for location name unless we are on the station in which case return station name. 
-                    If we are on a station, return station name and planet we are orbiting.
+                    - IF location is 'station', return station name and planet we are orbiting.
+                    - IF asked about Temperature: Temperature data is provided in K (Kelvin), covert to Celsius and announce Celsius, not Kelvin.
+                    - IF Asked about length of day: Use planet radius and rotationPeriod to calculate how long the day lasts if asked. 
                 """;
 
         return process(new AiDataStruct(instructions, new DataDto(station, location, deathsDto, trafficDto)), originalUserInput);

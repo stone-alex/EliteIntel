@@ -10,14 +10,11 @@ import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
-import elite.intel.util.Ranks;
+import elite.intel.util.StringUtls;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static org.apache.commons.lang3.StringUtils.trimToNull;
+import java.util.Map;
 
 public abstract class ResponseRouter {
 
@@ -51,8 +48,7 @@ public abstract class ResponseRouter {
 
     protected void handleCommand(String action, JsonObject params, String responseText) {
         EventBusManager.publish(new AppLogEvent("DEBUG: Processing action: " + action + " with params: " + params.toString()));
-        EventBusManager.publish(new AiVoxResponseEvent("Yes " + player() + "! "));
-
+        EventBusManager.publish(new AiVoxResponseEvent("%s, %s! ".formatted(StringUtls.affirmative(), StringUtls.player(playerSession))));
 
         CommandHandler handler = getCommandHandlers().get(action);
         if (handler != null) {
@@ -89,7 +85,18 @@ public abstract class ResponseRouter {
         log.debug("Expected object for key '{}' but got {}", key, el);
         return new JsonObject();
     }
+/*
 
+    private String affirmative() {
+        List<String> result = Arrays.stream(
+                new String[]{"yes", "affirmative", "ay! ay!", "certainly", "of course", "right away"}
+        ).filter(Objects::nonNull).collect(Collectors.toList());
+        if (result.isEmpty()) {
+            return "Commander";
+        }
+
+        return result.get(new Random().nextInt(result.size()));
+    }
 
     private String player() {
         String alternativeName = playerSession.getAlternativeName();
@@ -107,4 +114,5 @@ public abstract class ResponseRouter {
 
         return result.get(new Random().nextInt(result.size()));
     }
+*/
 }

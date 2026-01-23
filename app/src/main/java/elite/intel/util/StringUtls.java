@@ -4,11 +4,18 @@ import elite.intel.db.dao.CommodityDao;
 import elite.intel.db.dao.MaterialNameDao;
 import elite.intel.db.dao.SubSystemDao;
 import elite.intel.db.util.Database;
+import elite.intel.session.PlayerSession;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.Random;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import static org.apache.commons.lang3.StringUtils.trimToNull;
 
 public class StringUtls {
 
@@ -226,4 +233,34 @@ public class StringUtls {
     public static String removeNameEnding(String missionName) {
         return missionName.replace("_name","");
     }
+
+
+    public static String affirmative() {
+        List<String> result = Arrays.stream(
+                new String[]{"yes", "affirmative", "aye-aye!", "certainly", "of course", "rightaway"}
+        ).filter(Objects::nonNull).collect(Collectors.toList());
+        if (result.isEmpty()) {
+            return "Commander";
+        }
+
+        return result.get(new Random().nextInt(result.size()));
+    }
+
+    public static String player(PlayerSession playerSession) {
+        String alternativeName = playerSession.getAlternativeName();
+        String playerName = trimToNull(alternativeName) != null ? alternativeName : playerSession.getPlayerName();
+        String playerTitle = trimToNull(playerSession.getPlayerTitle()) != null ? "Commander" : playerSession.getPlayerTitle();
+        String playerMilitaryRank = playerSession.getPlayerHighestMilitaryRank();
+        String playerHonorific = Ranks.getPlayerHonorific();
+
+        List<String> result = Arrays.stream(
+                new String[]{alternativeName, playerHonorific, playerName, playerTitle, playerMilitaryRank}
+        ).filter(Objects::nonNull).collect(Collectors.toList());
+        if (result.isEmpty()) {
+            return "Commander";
+        }
+
+        return result.get(new Random().nextInt(result.size()));
+    }
+
 }

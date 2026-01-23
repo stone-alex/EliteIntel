@@ -47,7 +47,7 @@ public class AnalyzeDistanceFromFleetCarrierHandler extends BaseQueryAnalyzer im
             Distance is in Light Years. 
             If jump range is > 0 also calculate number of jumps required to reach the carrier. 
             Jump range is in light years. 
-            Return whole numbers only, no decimals
+            Return answer like 'Distance X light ears, will take Y jumps to get there' where Y is number of jumps (not half jumps. so 1.5 jumps will be 2 jumps. always round up).
         """;
 
         return process(new AiDataStruct(instruction, new DataDto(distance, jumpRange, carrierLocation)), originalUserInput);

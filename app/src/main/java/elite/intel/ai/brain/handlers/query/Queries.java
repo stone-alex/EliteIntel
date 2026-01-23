@@ -37,7 +37,7 @@ public enum Queries {
     CARRIER_ROUTE_ANALYSIS              ("query_carrier_route_analysis",                AnalyzeCarrierRouteHandler.class, true),
     CARRIER_TRITIUM_SUPPLY              ("query_carrier_fuel_supply",                   AnalyzeFleetCarrierFuelSupplyHandler.class, true),
     CARRIER_DESTINATION                 ("query_carrier_destination",                   AnalyzeFleetCarrierFinalDestinationHandler.class, true),
-    CARRIER_STATUS                      ("query_carrier_status",                        AnalyzeCarrierDataHandler.class, true),
+    CARRIER_STATUS                      ("query_carrier_statistics",                    AnalyzeCarrierDataHandler.class, true),
     CARRIER_ETA                         ("query_carrier_eta",                           CarrierETAHandler.class, false),
     DISTANCE_TO_CARRIER                 ("query_distance_to_carrier",                   AnalyzeDistanceFromFleetCarrierHandler.class, false),
     OUTSTANDING_MISSIONS                ("query_outstanding_missions",                  AnalyzePirateMissionHandler.class, true),

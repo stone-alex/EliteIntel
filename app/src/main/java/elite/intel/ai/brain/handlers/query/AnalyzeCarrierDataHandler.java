@@ -24,15 +24,42 @@ public class AnalyzeCarrierDataHandler extends BaseQueryAnalyzer implements Quer
                     Range is in light years, max is calculated 'maxRange' value provided. 
                         - reserveBalance: credits reserved for weekly ops (usually thirty one million credits per week). 
                         - totalBalance: total credits in carrier bank, including reserveBalance. 
-                        - marketBalance: credits for purchases; negative means escrow for buys. X,Y,Z: light years from Sol (0,0,0). 
-                    Do not improvise or assume anything. 
+                        - marketBalance: credits for purchases; 
+                        - fundedOperation: time in weeks the carrier can operate with current funding. 
+                    Do not improvise or assume anything.
+                    Example: Carrier balance is X credits. Or Carrier max range is X light years. Or We are funded for 19 weeks of ops.
                     If data not available state so.
                     """;
-            return process(new AiDataStruct(instructions, new DataDto(stats, stats.getFuelLevel(), stats.getFuelReserve(), (stats.getFuelLevel() + stats.getFuelReserve()), stats.getRange())), originalUserInput);
+            return process(
+                    new AiDataStruct(
+                            instructions,
+                            new DataDto(
+                                    stats.getReserveBalance(),
+                                    stats.getTotalBalance(),
+                                    stats.getMarketBalance(),
+                                    stats.getFuelLevel(),
+                                    stats.getFuelReserve(),
+                                    (stats.getFuelLevel() + stats.getFuelReserve()),
+                                    stats.getRange(),
+                                    stats.getFundedOperation()
+                            )
+
+                    ),
+                    originalUserInput
+            );
         }
     }
 
-    record DataDto(CarrierDataDto data, int fuelSupply, Integer fuelSupplyReserve, int totalFuelAvailable, int maxRange) implements ToJsonConvertible {
+    record DataDto(
+            long reserveBalance,
+            long totalBalance,
+            long marketBalance,
+            int fuelSupply,
+            int fuelSupplyReserve,
+            int totalFuelAvailable,
+            int maxRange,
+            int fundedOperation
+    ) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }

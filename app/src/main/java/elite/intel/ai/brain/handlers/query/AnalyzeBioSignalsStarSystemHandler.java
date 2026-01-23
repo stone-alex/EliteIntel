@@ -2,6 +2,9 @@ package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
+import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.gameapi.EventBusManager;
+import elite.intel.gameapi.journal.events.FSSBodySignalsEvent;
 import elite.intel.gameapi.journal.events.dto.BioSampleDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
@@ -17,7 +20,7 @@ public class AnalyzeBioSignalsStarSystemHandler extends BaseQueryAnalyzer implem
     private final PlayerSession playerSession = PlayerSession.getInstance();
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-
+        EventBusManager.publish(new AiVoxResponseEvent("Analyzing bio data for star system."));
         List<BioSampleDto> allCompletedBioScans = playerSession.getBioCompletedSamples();
         List<PlanetsToScan> planetsRequireBioScans = planetsWithBioFormsNotYetScanned();
 
@@ -50,12 +53,22 @@ public class AnalyzeBioSignalsStarSystemHandler extends BaseQueryAnalyzer implem
         Map<Long, LocationDto> locations = playerSession.getLocations();
 
         for (LocationDto location : locations.values()) {
-            if (location.getBioSignals() > 0) {
-                int numCompletedSamples = getCompletedSamples(location.getPlanetName());
-                if (location.getBioSignals() != numCompletedSamples) {
-                    result.add(new PlanetsToScan(location.getPlanetName(), location.getBioSignals() - numCompletedSamples));
+            int numCompletedSamples = getCompletedSamples(location.getPlanetName());
+            List<FSSBodySignalsEvent.Signal> fssSignals = location.getFssSignals();
+            int bioSignalCounter = 0;
+            if (fssSignals != null && !fssSignals.isEmpty()) {
+                for (FSSBodySignalsEvent.Signal signal : fssSignals) {
+                    if (signal.getTypeLocalised().toLowerCase().contains("bio")) {
+                        bioSignalCounter = bioSignalCounter + signal.getCount();
+                    }
                 }
             }
+            if (bioSignalCounter > 0) {
+                result.add(new PlanetsToScan(location.getPlanetName(), bioSignalCounter - numCompletedSamples));
+            } else if (location.getBioSignals() != numCompletedSamples) {
+                result.add(new PlanetsToScan(location.getPlanetName(), location.getBioSignals() - numCompletedSamples));
+            }
+
         }
         return result;
     }
@@ -77,7 +90,7 @@ public class AnalyzeBioSignalsStarSystemHandler extends BaseQueryAnalyzer implem
         }
     }
 
-    record PlanetsToScan(String planetName,  int remainingOrganicsToScan) implements ToJsonConvertible {
+    record PlanetsToScan(String planetName, int remainingOrganicsToScan) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }

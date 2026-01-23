@@ -316,6 +316,10 @@ public class CarrierDataDto implements ToJsonConvertible {
         return (totalFuelAvailable / MAX_FUEL_PER_JUMP) * MAX_CARRIER_SINGLE_JUMP_RANGE;
     }
 
+    public int getFundedOperation() {
+        return Math.toIntExact((getTotalBalance() - getMarketBalance()) / 31000000);
+    }
+
 
     @Override public String toJson() {
         return GsonFactory.getGson().toJson(this);

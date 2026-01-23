@@ -1,5 +1,6 @@
 package elite.intel.ai.brain.handlers.commands;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.db.managers.FleetCarrierManager;
@@ -10,7 +11,11 @@ import elite.intel.util.StringUtls;
 public class SetFleetCarrierFuelReserveHandler implements CommandHandler {
 
     @Override public void handle(String action, JsonObject params, String responseText) {
-        Integer reserve = StringUtls.getIntSafely(params.get("key").getAsString());
+        JsonElement key = params.get("key");
+        if (key == null) {
+            EventBusManager.publish(new AiVoxResponseEvent("Invalid fuel reserve value received."));
+        }
+        Integer reserve = StringUtls.getIntSafely(key.getAsString().replace(",", ""));
         if(reserve == null){
             EventBusManager.publish(new AiVoxResponseEvent("Invalid fuel reserve value received."));
             return;

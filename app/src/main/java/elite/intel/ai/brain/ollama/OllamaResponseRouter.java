@@ -107,7 +107,7 @@ public class OllamaResponseRouter extends ResponseRouter implements AIRouterInte
                 }
             }
 
-            if (!requiresFollowUp && responseTextToUse != null && !responseTextToUse.isEmpty()) {
+            if (responseTextToUse != null && !responseTextToUse.isEmpty()) {
                 EventBusManager.publish(new AiVoxResponseEvent(responseTextToUse));
                 systemSession.clearChatHistory();
                 log.info("Spoke final query response (action: {}): {}", action, responseTextToUse);

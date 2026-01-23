@@ -139,7 +139,9 @@ public class PlayerSession {
 
 
     public void saveLocation(LocationDto location) {
-        if (location.getBodyId() == -1) return;
+        if (location.getBodyId() == -1) {
+            return;
+        }
         locationManager.save(location);
     }
 

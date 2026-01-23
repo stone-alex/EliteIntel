@@ -35,6 +35,14 @@ public class SAASignalsFoundSubscriber {
     public void onSAASignalsFound(SAASignalsFoundEvent event) {
         StringBuilder sb = new StringBuilder();
         LocationDto location = LocationManager.getInstance().findBySystemAddress(event.getSystemAddress(), event.getBodyID());
+        LocationDto primaryStarLocation = playerSession.getPrimaryStarLocation();
+        location.setPlanetName(event.getBodyName());
+        location.setBodyId(event.getBodyID());
+        location.setStarName(primaryStarLocation.getStarName());
+        location.setX(primaryStarLocation.getX());
+        location.setY(primaryStarLocation.getY());
+        location.setZ(primaryStarLocation.getZ());
+
         location.addSaaSignals(event.getSignals());
         playerSession.saveLocation(location);
 

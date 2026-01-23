@@ -18,7 +18,13 @@ public class FSSBodySignalsSubscriber extends BiomeAnalyzer {
     @Subscribe
     public void onFssBodySignal(FSSBodySignalsEvent event) {
         LocationDto location = locationManager.findBySystemAddress(event.getSystemAddress(), event.getBodyID());
+        LocationDto primaryStarLocation = playerSession.getPrimaryStarLocation();
         location.setPlanetName(event.getBodyName());
+        location.setBodyId(event.getBodyID());
+        location.setStarName(primaryStarLocation.getStarName());
+        location.setX(primaryStarLocation.getX());
+        location.setY(primaryStarLocation.getY());
+        location.setZ(primaryStarLocation.getZ());
         List<FSSBodySignalsEvent.Signal> signals = event.getSignals();
         if (signals == null || signals.isEmpty()) return;
 

@@ -138,7 +138,10 @@ public class OllamaPromptFactory implements AiPromptFactory {
         sb.append(" Map questions about organics or exobiology for plant scans to").append(EXOBIOLOGY_SAMPLES.getAction()).append("\n");
         sb.append(" Map questions about organics or exobiology for star system to").append(BIO_SAMPLE_IN_STAR_SYSTEM.getAction()).append("\n");
         sb.append(" Map, requests such as 'board ship', 'get me on board', 'extract', 'requesting extraction' etc to command ").append(RECOVER_SRV.getAction()).append("\n");
+        sb.append(" Map vague speed / throttle requests such 'optimize approach speed', 'approaching planet', 'planetary approach' etc to ").append(SET_OPTIMAL_SPEED.getAction()).append("\n");
         sb.append(" cargo scoop, cargo hatch, cargo doors etc are related to opening and closing cargo scoop. ");
+
+        sb.append(" Map earth city time queries such as 'what time is it in London' or 'what time is it now' to ").append(TIME_IN_ZONE.getAction()).append("\n");
 
         return sb.toString();
     }

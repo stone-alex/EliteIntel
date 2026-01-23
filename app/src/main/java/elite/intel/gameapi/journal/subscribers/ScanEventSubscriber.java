@@ -88,6 +88,17 @@ public class ScanEventSubscriber extends BiomeAnalyzer {
 
         LocationDto location = locationManager.findBySystemAddress(event.getSystemAddress(), event.getBodyID());
         LocationDto.LocationType locationType = determineLocationType(event);
+        LocationDto primaryStarLocation = playerSession.getPrimaryStarLocation();
+        location.setBodyId(event.getBodyID());
+        location.setStarName(primaryStarLocation.getStarName());
+        location.setX(primaryStarLocation.getX());
+        location.setY(primaryStarLocation.getY());
+        location.setZ(primaryStarLocation.getZ());
+        location.setStarName(event.getStarSystem());
+        location.setBodyId(event.getBodyID());
+        location.setSystemAddress(event.getSystemAddress());
+        location.setOrbitalPeriod(event.getOrbitalPeriod());
+
 
         if (BELT_CLUSTER.equals(locationType)) {
             return; // skip belt clusters.

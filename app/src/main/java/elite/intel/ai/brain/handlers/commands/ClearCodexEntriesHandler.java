@@ -13,8 +13,8 @@ public class ClearCodexEntriesHandler implements CommandHandler {
     @Override public void handle(String action, JsonObject params, String responseText) {
 
         PlayerSession playerSession = PlayerSession.getInstance();
-        CodexEntryManager codexEntryManager = CodexEntryManager.getInstance();
         LocationDto currentLocation = playerSession.getCurrentLocation();
+        CodexEntryManager codexEntryManager = CodexEntryManager.getInstance();
         codexEntryManager.clear();
         playerSession.saveLocation(currentLocation);
         EventBusManager.publish(new AiVoxResponseEvent("Codex entries cleared."));

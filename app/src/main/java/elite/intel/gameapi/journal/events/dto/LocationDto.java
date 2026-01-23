@@ -118,6 +118,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setMarket(MarketDto marketDto) {
+        if (this.market != null && marketDto == null) return;
         this.market = marketDto;
     }
 
@@ -126,6 +127,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setOutfitting(OutfittingDto outfittingDto) {
+        if (this.outfitting != null && outfittingDto == null) return;
         this.outfitting = outfittingDto;
     }
 
@@ -134,6 +136,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setShipyard(ShipyardDto shipyardDto) {
+        if (this.shipyard != null && shipyardDto == null) return;
         this.shipyard = shipyardDto;
     }
 
@@ -150,6 +153,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setAxialTilt(Double axialTilt) {
+        if (this.axialTilt != null && this.axialTilt > 0) return;
         this.axialTilt = axialTilt;
     }
 
@@ -158,6 +162,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setOrbitalPeriod(Double orbitalPeriod) {
+        if (this.orbitalPeriod != null && this.orbitalPeriod > 0) return;
         this.orbitalPeriod = orbitalPeriod;
     }
 
@@ -193,6 +198,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setRotationPeriod(Double rotationPeriod) {
+        if (this.rotationPeriod != null && this.rotationPeriod > 0) return;
         this.rotationPeriod = rotationPeriod;
     }
 
@@ -201,6 +207,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setDistance(Double distance) {
+        if (this.distance != null && this.distance > 0) return;
         this.distance = distance;
     }
 
@@ -209,6 +216,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setStarName(String starName) {
+        if (starName == null) return;
         this.starName = starName;
     }
 
@@ -217,6 +225,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setPlanetName(String planetName) {
+        if (planetName == null) return;
         this.planetName = planetName;
         if (starName != null && planetShortName == null) {
             this.planetShortName = StringUtls.subtractString(planetName, starName);
@@ -228,10 +237,12 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setPlanetData(BodyData planetData) {
+        if (this.planetData != null) return;
         this.planetData = planetData;
     }
 
     public void addSaaSignals(List<SAASignalsFoundEvent.Signal> signals) {
+        if (signals == null || signals.isEmpty()) return;
         if (this.saaSignals == null) {
             signals = new ArrayList<>();
         }
@@ -243,6 +254,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setGenus(List<GenusDto> genus) {
+        if (genus.isEmpty()) return;
         this.genus = genus;
     }
 
@@ -251,10 +263,12 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void addDetectedSignal(FssSignalDto signal) {
+        if (signal == null) return;
         this.detectedSignals.add(signal);
     }
 
     public void addDetectedSignals(List<FssSignalDto> signals) {
+        if (signals == null || signals.isEmpty()) return;
         this.detectedSignals.addAll(signals);
     }
 
@@ -263,6 +277,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void addBioScan(BioSampleDto bioSampleDto) {
+        if (bioSampleDto == null) return;
         this.partialBioSamples.add(bioSampleDto);
     }
 
@@ -271,6 +286,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setDeathsDto(DeathsDto deathsDto) {
+        if (deathsDto == null) return;
         this.deathsDto = deathsDto;
     }
 
@@ -279,10 +295,12 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setTrafficDto(TrafficDto trafficDto) {
+        if (trafficDto == null) return;
         this.trafficDto = trafficDto;
     }
 
     public void setPartialBioSamples(List<BioSampleDto> partialBioSamples) {
+        if (partialBioSamples == null || partialBioSamples.isEmpty()) return;
         this.partialBioSamples = partialBioSamples;
     }
 
@@ -291,6 +309,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setStationName(String stationName) {
+        if (stationName == null) return;
         this.stationName = stationName;
     }
 
@@ -299,6 +318,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setStationType(String stationType) {
+        if (stationType == null) return;
         this.stationType = stationType;
     }
 
@@ -315,6 +335,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setStationFaction(String stationFaction) {
+        if (stationFaction == null) return;
         this.stationFaction = stationFaction;
     }
 
@@ -323,6 +344,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setStationGovernment(String stationGovernment) {
+        if (stationGovernment == null) return;
         this.stationGovernment = stationGovernment;
     }
 
@@ -331,6 +353,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setStationAllegiance(String stationAllegiance) {
+        if (stationAllegiance == null) return;
         this.stationAllegiance = stationAllegiance;
     }
 
@@ -339,6 +362,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setStationServices(List<String> stationServices) {
+        if (stationServices == null || stationServices.isEmpty()) return;
         this.stationServices = stationServices;
     }
 
@@ -347,6 +371,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setStationEconomy(String stationEconomy) {
+        if (stationEconomy == null) return;
         this.stationEconomy = stationEconomy;
     }
 
@@ -355,6 +380,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setAllegiance(String allegiance) {
+        if (allegiance == null) return;
         this.allegiance = allegiance;
     }
 
@@ -363,6 +389,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setEconomy(String economy) {
+        if (economy == null) return;
         this.economy = economy;
     }
 
@@ -371,6 +398,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setSecondEconomy(String secondEconomy) {
+        if (secondEconomy == null) return;
         this.secondEconomy = secondEconomy;
     }
 
@@ -379,6 +407,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setGovernment(String government) {
+        if (government == null) return;
         this.government = government;
     }
 
@@ -387,6 +416,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setSecurity(String security) {
+        if (security == null) return;
         this.security = security;
     }
 
@@ -395,6 +425,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setPopulation(Long population) {
+        if (population == null || population == 0) return;
         this.population = population;
     }
 
@@ -403,6 +434,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setBodyType(String bodyType) {
+        if (bodyType == null || bodyType.isEmpty()) return;
         this.bodyType = bodyType;
     }
 
@@ -411,6 +443,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setControllingPower(String controllingPower) {
+        if (controllingPower == null || controllingPower.isEmpty()) return;
         this.controllingPower = controllingPower;
     }
 
@@ -419,6 +452,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setPowers(List<String> powers) {
+        if (powers == null || powers.isEmpty()) return;
         this.powers = powers;
     }
 
@@ -427,6 +461,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setPowerplayState(String powerplayState) {
+        if (powerplayState == null) return;
         this.powerplayState = powerplayState;
     }
 
@@ -435,6 +470,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setPowerplayStateControlProgress(Double powerplayStateControlProgress) {
+        if (powerplayStateControlProgress == null || powerplayStateControlProgress == 0) return;
         this.powerplayStateControlProgress = powerplayStateControlProgress;
     }
 
@@ -443,6 +479,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setPowerplayStateReinforcement(Integer powerplayStateReinforcement) {
+        if (powerplayStateReinforcement == null || powerplayStateReinforcement == 0) return;
         this.powerplayStateReinforcement = powerplayStateReinforcement;
     }
 
@@ -451,6 +488,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setPowerplayStateUndermining(Integer powerplayStateUndermining) {
+        if (powerplayStateUndermining == null || powerplayStateUndermining == 0) return;
         this.powerplayStateUndermining = powerplayStateUndermining;
     }
 
@@ -459,6 +497,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setGravity(Double gravity) {
+        if (gravity == null || gravity == 0) return;
         this.gravity = gravity;
     }
 
@@ -467,10 +506,12 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setSurfaceTemperature(Double surfaceTemperature) {
+        if (surfaceTemperature == null || surfaceTemperature == 0) return;
         this.surfaceTemperature = surfaceTemperature;
     }
 
     public void addMaterial(MaterialDto materialDto) {
+        if (materialDto == null) return;
         this.materials.add(materialDto);
     }
 
@@ -487,6 +528,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setPlanetShortName(String planetShortName) {
+        if (planetShortName == null) return;
         this.planetShortName = subtractString(planetShortName, getStarName());
     }
 
@@ -500,6 +542,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setLandingCoordinates(Double[] landingCoordinates) {
+        if (landingCoordinates == null || landingCoordinates.length == 0) return;
         this.landingCoordinates = landingCoordinates;
     }
 
@@ -508,6 +551,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setOrbitalCruiseEntryAltitude(Double orbitalCruiseEntryAltitude) {
+        if (orbitalCruiseEntryAltitude == null || orbitalCruiseEntryAltitude == 0) return;
         this.orbitalCruiseEntryAltitude = orbitalCruiseEntryAltitude;
     }
 
@@ -516,10 +560,12 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setOurDiscovery(boolean ourDiscovery) {
+        if (this.ourDiscovery == true) return;
         this.ourDiscovery = ourDiscovery;
     }
 
     public void setMaterials(List<MaterialDto> materials) {
+        if (materials == null || materials.isEmpty()) return;
         this.materials = materials;
     }
 
@@ -528,6 +574,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setSaaSignals(List<SAASignalsFoundEvent.Signal> saaSignals) {
+        if (saaSignals == null || saaSignals.isEmpty()) return;
         this.saaSignals = saaSignals;
     }
 
@@ -536,10 +583,12 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setFssSignals(List<FSSBodySignalsEvent.Signal> fssSignals) {
+        if (fssSignals == null || fssSignals.isEmpty()) return;
         this.fssSignals = fssSignals;
     }
 
     public void setDetectedSignals(Set<FssSignalDto> detectedSignals) {
+        if (detectedSignals == null || detectedSignals.isEmpty()) return;
         this.detectedSignals = detectedSignals;
     }
 
@@ -548,6 +597,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setBodyId(Long bodyId) {
+        if (this.bodyId != null && this.bodyId > bodyId) return;
         this.bodyId = bodyId;
     }
 
@@ -556,7 +606,8 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setLandable(boolean landable) {
-        isLandable = landable;
+        if (this.isLandable) return;
+        this.isLandable = landable;
     }
 
     public String getPlanetClass() {
@@ -564,7 +615,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setPlanetClass(String planetClass) {
-        if(this.planetClass != null) return;
+        if (this.planetClass != null) return;
         this.planetClass = planetClass;
     }
 
@@ -573,7 +624,8 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setTerraformable(boolean terraformable) {
-        isTerraformable = terraformable;
+        if (this.isTerraformable) return;
+        this.isTerraformable = terraformable;
     }
 
     public boolean isTidalLocked() {
@@ -581,7 +633,8 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setTidalLocked(boolean tidalLocked) {
-        isTidalLocked = tidalLocked;
+        if (this.isTidalLocked) return;
+        this.isTidalLocked = tidalLocked;
     }
 
     public String getAtmosphere() {
@@ -589,6 +642,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setAtmosphere(String atmosphere) {
+        if (atmosphere == null) return;
         this.atmosphere = atmosphere;
     }
 
@@ -597,6 +651,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setRadius(Double radius) {
+        if (radius == null || radius == 0) return;
         this.radius = radius;
     }
 
@@ -605,6 +660,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setMassEM(Double massEM) {
+        if (massEM == null || massEM == 0) return;
         this.massEM = massEM;
     }
 
@@ -613,7 +669,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setBioSignals(int bioSignals) {
-        if (bioSignals > this.bioSignals) { // do not override to 0 on bad data.
+        if (bioSignals < this.bioSignals) { // do not override to 0 on bad data.
             this.bioSignals = bioSignals;
         }
     }
@@ -623,6 +679,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setGeoSignals(int geoSignals) {
+        if (this.geoSignals > 0) return; //do not overridde
         this.geoSignals = geoSignals;
     }
 
@@ -631,6 +688,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setHasRings(boolean hasRings) {
+        if (this.hasRings) return;
         this.hasRings = hasRings;
     }
 
@@ -639,6 +697,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setLocationType(LocationType locationType) {
+        if (locationType == null) return;
         this.locationType = locationType;
     }
 
@@ -647,6 +706,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setWeMappedIt(boolean weMappedIt) {
+        if (this.weMappedIt) return;
         this.weMappedIt = weMappedIt;
     }
 
@@ -655,7 +715,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setStarClass(String starClass) {
-        if(this.starClass != null) return;
+        if (this.starClass != null) return;
         this.starClass = starClass;
         if (starClass != null && "KGBFOAM".contains(starClass)) {
             setFuelStar(true);
@@ -667,6 +727,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setFuelStar(boolean fuelStar) {
+        if (this.isFuelStar) return;
         isFuelStar = fuelStar;
     }
 
@@ -675,6 +736,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setVolcanism(String volcanism) {
+        if (this.volcanism != null) return;
         this.volcanism = volcanism;
     }
 
@@ -683,6 +745,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setHomeSystem(boolean homeSystem) {
+        if (this.isHomeSystem) return;
         isHomeSystem = homeSystem;
     }
 
@@ -691,6 +754,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setDiscoveredBy(String discoveredBy) {
+        if (this.discoveredBy != null || !this.discoveredOn.isEmpty()) return;
         this.discoveredBy = discoveredBy;
     }
 
@@ -699,6 +763,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setDiscoveredOn(String discoveredOn) {
+        if (this.discoveredOn != null && !this.discoveredOn.isEmpty()) return;
         this.discoveredOn = discoveredOn;
     }
 

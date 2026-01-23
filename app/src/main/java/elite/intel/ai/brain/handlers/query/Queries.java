@@ -14,7 +14,7 @@ public enum Queries {
     FSS_SIGNALS                         ("query_star_system_for_fss_signals",           AnalyzeFssSignalsHandler.class, true),
     QUERY_STELLAR_OBJETS                ("query_star_system_for_stellar_objects",       AnalyzeStellarObjectsHandler.class, true),
     QUERY_GEO_SIGNALS                   ("query_star_system_for_geo_signals",           AnalyzeGeologyInStarSystemHandler.class, true),
-    QUERY_STATIONS                      ("query_star_system_for_stations",             AnalyzeStationsHandler.class, true),
+    QUERY_STATIONS                      ("query_star_system_for_stations",              AnalyzeStationsHandler.class, true),
     KEY_BINDINGS_ANALYSIS               ("query_key_bindings_analysis",                 AnalyzeMisingKeyBindingHandler.class, true),
     SYSTEM_SECURITY_ANALYSIS            ("query_star_system_security_analysis",         AnalyzeSystemSecurityHandler.class, true),
     TRADE_PROFILE_ANALYSIS              ("query_trade_profile_analysis",                AnalyzeTradeProfileHandler.class, true),

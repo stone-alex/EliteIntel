@@ -48,7 +48,7 @@ public class CodexEntryEventSubscriber {
         sb.append(event.getNameLocalised());
 
         if (bioSampleDistance > 0 && !alreadyHaveThisEntry) {
-            sb.append(" Distance between samples: ").append(bioSampleDistance).append(" meters. ");
+            sb.append(" Minimum distance between samples for collection: ").append(bioSampleDistance).append(" meters. ");
         }
 
 

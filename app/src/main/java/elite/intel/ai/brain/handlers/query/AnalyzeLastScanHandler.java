@@ -17,8 +17,8 @@ public class AnalyzeLastScanHandler extends BaseQueryAnalyzer implements QueryHa
         LocationDto lastScan = playerSession.getLastScan();
 
         String instructions = """
-                use this data to answer question
-                Return in format {"type":"chat", "response_text","Your Answer Here"}
+                use this data to answer questions
+                
                 """;
         return process(new AiDataStruct(instructions, new DataDto(lastScan)), originalUserInput);
     }

@@ -21,21 +21,21 @@ public class AnalyzeLocalStations extends BaseQueryAnalyzer implements QueryHand
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         EventBusManager.publish(new AiVoxResponseEvent("Analyzing stations data... Stand by..."));
         PlayerSession playerSession = PlayerSession.getInstance();
-        LocationDto currentLocation = playerSession.getCurrentLocation();
+        //LocationDto currentLocation = playerSession.getCurrentLocation();
         StationsDto stationsDto = EdsmApiClient.searchStations(playerSession.getCurrentLocation().getStarName(), 0);
         List<DataElement> data = new ArrayList<>();
         if (stationsDto.getData() != null && stationsDto.getData().getStations() != null) {
             stationsDto.getData().getStations().forEach(station -> {
                 OutfittingDto outfitting = EdsmApiClient.searchOutfitting(station.getMarketId(), null, null);
                 ShipyardDto shipyard = EdsmApiClient.searchShipyard(station.getMarketId(), null, null);
-                data.add(new DataElement(station.getName(), outfitting, shipyard, currentLocation));
+                data.add(new DataElement(station.getName(), outfitting, shipyard));
             });
         }
 
         return process(new AiDataStruct("Answer questions about local stations", new DataDto(data)), originalUserInput);
     }
 
-    record DataElement(String stationName, OutfittingDto outfitting, ShipyardDto shipyard, LocationDto currentLocation) implements ToJsonConvertible {
+    record DataElement(String stationName, OutfittingDto outfitting, ShipyardDto shipyard) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }

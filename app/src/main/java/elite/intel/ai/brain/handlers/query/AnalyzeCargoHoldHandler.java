@@ -21,10 +21,10 @@ public class AnalyzeCargoHoldHandler extends BaseQueryAnalyzer implements QueryH
                 Cargo is listed 1 unit = 1 ton. 
                     - **Do not** ask follow up questions, just provide information.
                 """;
-        return process(new AiDataStruct(instructions, new DataDto(playerSession.getShipLoadout(), playerSession.getShipCargo())), originalUserInput);
+        return process(new AiDataStruct(instructions, new DataDto(playerSession.getShipLoadout().getCargoCapacity(), playerSession.getShipCargo())), originalUserInput);
     }
 
-    record DataDto(ShipLoadOutDto loadout, GameEvents.CargoEvent cargo) implements ToJsonConvertible {
+    record DataDto(int cargoCapacity, GameEvents.CargoEvent cargo) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }

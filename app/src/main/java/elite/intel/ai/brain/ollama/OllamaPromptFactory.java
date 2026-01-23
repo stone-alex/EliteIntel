@@ -127,6 +127,7 @@ public class OllamaPromptFactory implements AiPromptFactory {
         sb.append(" Map questions about bio samples / organics within solar/star system to ").append(BIO_SAMPLE_IN_STAR_SYSTEM.getAction()).append("\n");
         sb.append(" Map questions about geological signals within solar/star system to ").append(QUERY_GEO_SIGNALS.getAction()).append("\n");
         sb.append(" Map questions about current location (this planet, here, etc) to").append(CURRENT_LOCATION.getAction()).append(" questions about star system map to best matching query startin gwith 'query_star_system_*' \n");
+        sb.append(" Map questions about stations to ").append(QUERY_STATIONS.getAction()).append(" all other question about star system map to ").append(QUERY_STELLAR_OBJETS.getAction()).append("\n");
 
         sb.append(" 'Resource Sites' have no materials, those are 'hunting grounds for pirate massacre missions' only.");
 
@@ -136,6 +137,7 @@ public class OllamaPromptFactory implements AiPromptFactory {
         sb.append(" Map 'damage report' questions to queries like ").append(SHIP_LOADOUT.getAction()).append("\n");
         sb.append(" Map questions about organics or exobiology for plant scans to").append(EXOBIOLOGY_SAMPLES.getAction()).append("\n");
         sb.append(" Map questions about organics or exobiology for star system to").append(BIO_SAMPLE_IN_STAR_SYSTEM.getAction()).append("\n");
+        sb.append(" Map, requests such as 'board ship', 'get me on board', 'extract', 'requesting extraction' etc to command ").append(RECOVER_SRV.getAction()).append("\n");
         sb.append(" cargo scoop, cargo hatch, cargo doors etc are related to opening and closing cargo scoop. ");
 
         return sb.toString();

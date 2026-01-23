@@ -81,7 +81,7 @@ public class ScanOrganicSubscriber {
             BioSampleDto bioSampleDto = createBioSampleDto(genus, species, isOurDiscovery);
             currentLocation.addBioScan(bioSampleDto);
             bioSampleDto.setScanXof3("Second of Three");
-            announce("Second out of three scans for " + genus+ " logged. ");
+            announce("Scan for " + genus+ " logged. ");
         } else if (scan3.equalsIgnoreCase(scanType)) {
             sb = new StringBuilder();
             sb.append("Organic scans for: ");

@@ -176,7 +176,7 @@ public class LocationTrackingSubscriber {
         double distanceToTarget = navigator.distanceToTarget();
 
         if (!hasAnnouncedOrbital) {
-            vocalize("Orbital Navigation", navigator.distanceToTarget(), navigator.bearingToTarget(), true);
+            vocalize(null, navigator.distanceToTarget(), navigator.bearingToTarget(), true);
             hasAnnouncedOrbital = true;
         }
 
@@ -236,7 +236,7 @@ public class LocationTrackingSubscriber {
     private void surfaceNavigation(NavigationUtils.Direction navigator, PlayerMovedEvent event) {
         //Low altitude flights or Surface Recon Vehicle.
         if (!hasAnnouncedSurface) {
-            vocalize("Surface Navigation", navigator.distanceToTarget(), navigator.bearingToTarget(), true);
+            vocalize(null, navigator.distanceToTarget(), navigator.bearingToTarget(), true);
             hasAnnouncedSurface = true;
             return;
         }
@@ -277,7 +277,7 @@ public class LocationTrackingSubscriber {
                 if (headingDeviation) {
                     vocalize(movingAway ? "Moving Away." : "Getting Closer. ", navigator.distanceToTarget(), navigator.bearingToTarget(), movingAway);
                 } else if (event.getAltitude() > 3_000 && glideAngleOk) {
-                    announceBearingAndDistances(navigator, movingAway ? "Moving Away." : "Getting Closer. Glide Angle:" + glideAngle + " degrees.");
+                    announceBearingAndDistances(navigator, movingAway ? "Moving Away." : "Getting Closer. Glide Angle " + glideAngle + " degrees.");
                 } else {
                     announceBearingAndDistances(navigator, movingAway ? "Moving Away." : "Getting Closer. ");
                 }

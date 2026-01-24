@@ -3,13 +3,13 @@ package elite.intel.db.managers;
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.brain.handlers.commands.CommandOperator;
 import elite.intel.ai.hands.GameController;
+import elite.intel.db.FuzzySearch;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.ShipTargetedEvent;
 import elite.intel.util.AudioPlayer;
 import elite.intel.util.SleepNoThrow;
 
 import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_CYCLE_NEXT_SUBSYSTEM;
-import static elite.intel.util.StringUtls.fuzzySubSystemSearch;
 
 public class SubSystemsManager extends CommandOperator {
 
@@ -45,7 +45,7 @@ public class SubSystemsManager extends CommandOperator {
 
     public void targetSubSystem(String subsystem) {
         pause = false;
-        setTarget(fuzzySubSystemSearch(subsystem, 3));
+        setTarget(FuzzySearch.fuzzySubSystemSearch(subsystem, 3));
         continueTargeting = getTarget() != null && !getTarget().isEmpty();
 
         new Thread(() -> {

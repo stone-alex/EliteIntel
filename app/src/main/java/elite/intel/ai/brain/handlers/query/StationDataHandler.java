@@ -3,9 +3,12 @@ package elite.intel.ai.brain.handlers.query;
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
+import elite.intel.search.edsm.dto.StationsDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
+
+import java.util.List;
 
 
 public class StationDataHandler extends BaseQueryAnalyzer implements QueryHandler {
@@ -18,10 +21,10 @@ public class StationDataHandler extends BaseQueryAnalyzer implements QueryHandle
                 Analyze data for the current station.
                 """;
 
-        return process(new AiDataStruct(instructions, new DataDto(location)), originalUserInput);
+        return process(new AiDataStruct(instructions, new DataDto(location.getStationServices())), originalUserInput);
     }
 
-    record DataDto(LocationDto location) implements ToJsonConvertible {
+    record DataDto(List<String> stationServices) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }

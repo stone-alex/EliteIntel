@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.db.FuzzySearch;
 import elite.intel.db.managers.DestinationReminderManager;
 import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
@@ -15,7 +16,6 @@ import elite.intel.session.Status;
 import java.util.Optional;
 
 import static elite.intel.util.StringUtls.capitalizeWords;
-import static elite.intel.util.StringUtls.fuzzyMaterialSearch;
 
 public class FindMiningSiteHandler extends CommandOperator implements CommandHandler {
 
@@ -42,7 +42,7 @@ public class FindMiningSiteHandler extends CommandOperator implements CommandHan
 
         String material =
                 capitalizeWords(
-                        fuzzyMaterialSearch(
+                        FuzzySearch.fuzzyMaterialSearch(
                                 mat.getAsString(), 3
                         )
                 );

@@ -11,13 +11,17 @@ public class SellOrganicDataSubscriber {
 
     @Subscribe
     public void onSellOrganicDataEvent(SellOrganicDataEvent event) {
-        // not sure what to do with this yet.
         PlayerSession playerSession = PlayerSession.getInstance();
         playerSession.clearBioSamples();
         CodexEntryManager codexEntryManager = CodexEntryManager.getInstance();
         codexEntryManager.clear();
         if (playerSession.isDiscoveryAnnouncementOn()) {
-            EventBusManager.publish(new SensorDataEvent("Bio Data Sold: " + event.toJson()));
+            String instructions = """
+                We sold organic data and made credits.
+                Provide user with sale summary.
+            """;
+            EventBusManager.publish(new SensorDataEvent("Bio Data Sold: " + event.toJson(),
+                    instructions));
         }
     }
 }

@@ -31,7 +31,7 @@ public class MaterialDto extends ScanEvent.Material implements ToJsonConvertible
     }
 
     public double getMaterialPercentage() {
-        return materialPercentage;
+        return Math.round(materialPercentage * 100.0) / 100.0;
     }
 
     public void setMaterialPercentage(double materialPercentage) {

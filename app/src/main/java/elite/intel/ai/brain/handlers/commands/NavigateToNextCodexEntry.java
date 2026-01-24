@@ -105,7 +105,7 @@ public class NavigateToNextCodexEntry implements CommandHandler {
             }
 
             // Check if this entry is valid (not too close to any partial of same genus)
-            boolean valid = hasPartials ? !isTooCloseToAnyPartialOfSameGenus(entry, genus, partials, planetRadius) : true;
+            boolean valid = !hasPartials || !isTooCloseToAnyPartialOfSameGenus(entry, genus, partials, planetRadius);
 
             if (!valid) continue;
 

@@ -28,7 +28,19 @@ public class ScanOrganicSubscriber {
 
     private static void announce(String sb) {
         if (PlayerSession.getInstance().isDiscoveryAnnouncementOn()) {
-            EventBusManager.publish(new SensorDataEvent(sb));
+            EventBusManager.publish(new SensorDataEvent(sb, """
+                        Use ONLY facts from sensorData—no invention, external knowledge, or additions like planet/system/payment/bonus/vehicles/scan stages.
+                        Rephrase to natural, immersive speech:
+                            - Key elements ONLY: genus/species logged, distance/completion if stated.
+                            - Use "we", "You" — NEVER "ship", "SRV", or "vehicle".
+                            Examples of style (DO NOT copy—base on data):
+                                - Data mentions genus logged → "<genus> sample logged."
+                                - Data has distance → "First <genus> logged. Maintain 500 meters between colonies."
+                                - Data signals complete → "<genus> scans complete."
+                    
+                            Output EXACTLY:
+                                {"type": "chat", "response_text": "your natural rephrase", "action": "none", "params": {}, "expect_followup": false}
+                    """));
         }
     }
 
@@ -60,9 +72,9 @@ public class ScanOrganicSubscriber {
         }
 
         if (scan1.equals(scanType)) {
-            sb.append(" Organic sample detected: Genus: ");
+            sb.append(" Organic sample detected. Genus: ");
             sb.append(" ");
-            sb.append(genus);
+            sb.append("\"").append(genus).append("\"");
             sb.append(" Species:");
             sb.append(species);
             sb.append(" First sample out of three required. ");
@@ -73,19 +85,19 @@ public class ScanOrganicSubscriber {
             }
 
             BioSampleDto bioSampleDto = createBioSampleDto(genus, species, isOurDiscovery);
-            bioSampleDto.setScanXof3("First of Three");
+            bioSampleDto.setScanXof3("1");
             currentLocation.addBioScan(bioSampleDto);
             announce(sb.toString());
 
         } else if (scan2.equalsIgnoreCase(scanType)) {
             BioSampleDto bioSampleDto = createBioSampleDto(genus, species, isOurDiscovery);
             currentLocation.addBioScan(bioSampleDto);
-            bioSampleDto.setScanXof3("Second of Three");
-            announce("Scan for " + genus+ " logged. ");
+            bioSampleDto.setScanXof3("2");
+            announce("Scan for genus \"" + genus + "\" logged. ");
         } else if (scan3.equalsIgnoreCase(scanType)) {
             sb = new StringBuilder();
-            sb.append("Organic scans for: ");
-            sb.append(genus);
+            sb.append("Organic scans for genus: ");
+            sb.append("\"").append(genus).append("\"");
             sb.append(" are complete. ");
 
             announce(sb.toString());
@@ -93,7 +105,7 @@ public class ScanOrganicSubscriber {
 
             bioSampleDto.setPayout(payment);
             bioSampleDto.setFistDiscoveryBonus(firstDiscoveryBonus);
-            bioSampleDto.setScanXof3("Three of Three");
+            bioSampleDto.setScanXof3("3");
             bioSampleDto.setBioSampleCompleted(true);
             bioSampleDto.setOurDiscovery(currentLocation.isOurDiscovery());
             playerSession.addBioSample(bioSampleDto);
@@ -112,7 +124,6 @@ public class ScanOrganicSubscriber {
                 variantLocalised
         );
     }
-
 
     private BioSampleDto createBioSampleDto(String genus, String species, boolean isOurDiscovery) {
 

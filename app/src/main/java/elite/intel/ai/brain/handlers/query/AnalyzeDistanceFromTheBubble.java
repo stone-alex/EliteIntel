@@ -1,17 +1,13 @@
 package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.db.dao.LocationDao;
 import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.journal.events.dto.LocationDto;
-import elite.intel.session.PlayerSession;
-import elite.intel.util.json.GsonFactory;
-import elite.intel.util.json.ToJsonConvertible;
+import elite.intel.util.NavigationUtils;
 
-public class AnalyzeDistanceFromTheBubble extends BaseQueryAnalyzer implements QueryHandler{
+public class AnalyzeDistanceFromTheBubble extends BaseQueryAnalyzer implements QueryHandler {
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         EventBusManager.publish(new AiVoxResponseEvent("Analyzing galactic coordinates... Stand by..."));
@@ -21,20 +17,24 @@ public class AnalyzeDistanceFromTheBubble extends BaseQueryAnalyzer implements Q
             return process("Local Coordinates are not available.");
         }
 
-        String instruction = """
-                Calculate distance to the bubble.
-                    - Center of the bubble (Earth) is at coordinates 0, 0, 0. 
-                    - Use the coordinates provided to calculate the distance from the bubble.
-                    - Return answer as whole number. The distance is in light years. 
-                    - IF asked about amount of fleet carrier fuel needed to cover the distance use 100 tons of fuel per 500 light year jump to calculate the amount.
-                    Example response {"type":"chat", "response_text","X light years, carrier fuel required N tons."}
-                """;
-        return process(new AiDataStruct(instruction, new DataDto(galacticCoordinates)), originalUserInput);
-    }
+        double distance = NavigationUtils.calculateGalacticDistance(
+                0.0, 0.0, 0.0,
+                galacticCoordinates.x(),
+                galacticCoordinates.y(),
+                galacticCoordinates.z()
+        );
+        int distLy = (int) Math.round(distance);
+        double jumps = distLy / 500.0;
+        int fuelTons = (int) Math.round(jumps * 100);
+        double totalMinutes = jumps * 20;
+        int hours = (int) (totalMinutes / 60);
+        int minutes = (int) (totalMinutes % 60);
 
-    record DataDto(LocationDao.Coordinates galacticCoordinates) implements ToJsonConvertible {
-        @Override public String toJson() {
-            return GsonFactory.getGson().toJson(this);
-        }
+        String responseText = String.format(
+                "%d light years, carrier fuel required %d tons, travel time %d hours and %d minutes",
+                distLy, fuelTons, hours, minutes
+        );
+
+        return process(responseText);
     }
 }

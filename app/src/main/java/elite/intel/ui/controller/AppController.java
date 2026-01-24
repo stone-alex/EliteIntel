@@ -16,6 +16,7 @@ import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.gameapi.AuxiliaryFilesMonitor;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.JournalParser;
+import elite.intel.gameapi.UserInputEvent;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.*;
@@ -265,6 +266,7 @@ public class AppController implements Runnable {
     public void run() {
         while (isRunning.get()) {
             try {
+                //noinspection BusyWait
                 Thread.sleep(100);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
@@ -277,7 +279,7 @@ public class AppController implements Runnable {
     @Subscribe
     public void onAppLogEvent(AppLogEvent event) {
         String line = "\n" + event.getData();
-        if (line == null || line.isBlank() || this.view.logArea == null) return;
+        if (line.isBlank() || this.view.logArea == null) return;
 
         synchronized (logBuffer) {
             logBuffer.append(line);
@@ -293,7 +295,7 @@ public class AppController implements Runnable {
         logTypewriterTimer.addActionListener(e -> {
             String nextChar;
             synchronized (logBuffer) {
-                if (logBuffer.length() == 0) {
+                if (logBuffer.isEmpty()) {
                     logTypewriterTimer.stop();
                     typewriterActive.set(false);
                     return;
@@ -355,7 +357,6 @@ public class AppController implements Runnable {
         }
 
         EventBusManager.publish(new ServicesStateEvent(true));
-
         KeyBindCheck.getInstance().check();
     }
 }

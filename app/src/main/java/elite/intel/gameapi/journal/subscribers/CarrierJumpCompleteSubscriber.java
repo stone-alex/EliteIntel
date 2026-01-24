@@ -1,7 +1,6 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.intel.db.managers.FleetCarrierManager;
 import elite.intel.db.managers.FleetCarrierRouteManager;
 import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
@@ -32,9 +31,9 @@ public class CarrierJumpCompleteSubscriber {
         CarrierDataDto carrierData = playerSession.getCarrierData();
         CarrierJump currentLocationLeg = fleetCarrierRouteManager.findByPrimaryStar(event.getStarSystem());
         boolean currentLegIsNotPresent = currentLocationLeg == null;
-        boolean routePlotted = fleetCarrierRouteManager.getFleetCarrierRoute().size() > 0;
+        boolean routePlotted = !fleetCarrierRouteManager.getFleetCarrierRoute().isEmpty();
 
-        if (currentLegIsNotPresent && routePlotted){
+        if (currentLegIsNotPresent && routePlotted) {
             String systemName = fleetCarrierRouteManager
                     .getFleetCarrierRoute()
                     .get(fleetCarrierRouteManager.getFleetCarrierRoute().size() - 1)
@@ -43,7 +42,7 @@ public class CarrierJumpCompleteSubscriber {
             FleetCarrierRouteCalculator.calculate();
         }
 
-        int fuelUsed = currentLocationLeg.getFuelUsed();
+        int fuelUsed = currentLocationLeg == null ? 0 : currentLocationLeg.getFuelUsed();
         carrierData.setFuelLevel(carrierData.getFuelLevel() - fuelUsed);
         playerSession.setCarrierData(carrierData);
 
@@ -69,7 +68,7 @@ public class CarrierJumpCompleteSubscriber {
             playerSession.saveLocation(location);
         }
 
-        if (carrierData != null && starPos[0] > 0) {
+        if (starPos[0] > 0) {
             carrierData.setX(starPos[0]);
             carrierData.setY(starPos[1]);
             carrierData.setZ(starPos[2]);
@@ -77,7 +76,7 @@ public class CarrierJumpCompleteSubscriber {
             playerSession.setCarrierData(carrierData);
         }
 
-        EventBusManager.publish(new SensorDataEvent("Carrier Location: " + event.getStarSystem()));
+        EventBusManager.publish(new SensorDataEvent("Carrier Location: " + event.getStarSystem(), "Notify user about new carrier location. Example: Carrier jump complete!. New location <starSystem>, remaining fuel supply <fuelSupply> tons. Fuel in reserve <fuelReserve> tons."));
     }
 
     private LocationDto toLocationDto(CarrierJumpEvent event) {

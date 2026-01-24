@@ -12,10 +12,8 @@ public class SAAScanCompleteSubscriber {
     public void onSAAScanComplete(SAAScanCompleteEvent event) {
 
         if (PlayerSession.getInstance().isDiscoveryAnnouncementOn()) {
-            StringBuilder sb = new StringBuilder();
-            sb.append("Surface scan complete ");
-            sb.append(efficiency(event));
-            EventBusManager.publish(new SensorDataEvent(sb.toString()));
+            String message = "Surface scan complete " + efficiency(event);
+            EventBusManager.publish(new SensorDataEvent(message, "Notify User"));
         }
     }
 

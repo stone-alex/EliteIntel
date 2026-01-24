@@ -15,10 +15,11 @@ import java.util.List;
 
 public class BioSampleTrackingSubscriber {
 
+    private final PlayerSession playerSession = PlayerSession.getInstance();
+    private final Status status = Status.getInstance();
+
     @Subscribe
     public void onPlayerMovedEvent(PlayerMovedEvent event) {
-        PlayerSession playerSession = PlayerSession.getInstance();
-        Status status = Status.getInstance();
         LocationDto currentLocation = playerSession.getCurrentLocation();
         List<BioSampleDto> bioSamples = currentLocation.getPartialBioSamples();
 
@@ -58,9 +59,9 @@ public class BioSampleTrackingSubscriber {
         // Announce only on state transition
         if (wasFarEnough != isFarEnough) {
             if (isFarEnough) {
-                EventBusManager.publish(new SensorDataEvent("Sufficient distance to take the next bio sample."));
+                EventBusManager.publish(new SensorDataEvent("You Are now far enough to take the new sample.", "Notify User."));
             } else {
-                EventBusManager.publish(new SensorDataEvent("Insufficient distance form previous sample"));
+                EventBusManager.publish(new SensorDataEvent("You Are moved too close to previous colony to take new sample.", "Warn User."));
             }
         }
     }

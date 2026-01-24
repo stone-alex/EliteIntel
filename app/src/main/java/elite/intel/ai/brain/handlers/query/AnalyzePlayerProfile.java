@@ -31,9 +31,17 @@ public class AnalyzePlayerProfile extends BaseQueryAnalyzer implements QueryHand
             return GenericResponse.getInstance().genericResponse("No data available");
         }
 
+        String instructions = """
+                Use this data to provide user with the current progression statistics.
+                If a specific question is asked, provide a detailed answer using this data only.
+                If no question is asked, provide a summary of the player's progression.
+                    - timePledge provided in seconds, convert it to hours and minutes.
+                    - powerRank is just a numeric value
+                    - all other ranks are provided in percentage, 0 means no progress, 99 means 99% to next rank.
+                """;
         return process(
                 new AiDataStruct(
-                        "Summarize player statistics.",
+                        instructions,
                         new DataDto(
                                 data,
                                 highestMilitaryRank,

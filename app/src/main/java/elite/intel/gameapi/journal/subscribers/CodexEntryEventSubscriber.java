@@ -83,14 +83,14 @@ public class CodexEntryEventSubscriber {
                         0
                 );
                 if (genus != null && isNameMatched && distanceFromPreviousSample < bioSampleDistance) {
-                    sb.append(" Warning: Too close to previous sample for the same genus! ");
+                    sb.append(" WARNING: Codex entry is too close to previous sample for the same genus! ");
                     break;
                 }
             }
         }
 
         if(playerSession.isDiscoveryAnnouncementOn()) {
-            EventBusManager.publish(new SensorDataEvent(sb.toString()));
+            EventBusManager.publish(new SensorDataEvent(sb.toString(), "Notify User"));
         }
         if("$Codex_SubCategory_Organic_Structures;".equalsIgnoreCase(event.getSubCategory())) {
             codexEntryManager.save(event);

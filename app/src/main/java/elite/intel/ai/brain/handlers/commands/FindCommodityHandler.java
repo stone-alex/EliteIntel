@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.db.FuzzySearch;
 import elite.intel.db.managers.DestinationReminderManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.search.edsm.commodity.CommoditySearchResult;
@@ -12,12 +13,13 @@ import elite.intel.session.PlayerSession;
 
 import java.util.List;
 
-import static elite.intel.util.StringUtls.*;
+import static elite.intel.util.StringUtls.capitalizeWords;
+import static elite.intel.util.StringUtls.getIntSafely;
 
 public class FindCommodityHandler extends CommandOperator implements CommandHandler {
 
-    private GameController controller;
-    private PlayerSession playerSession = PlayerSession.getInstance();
+    private final GameController controller;
+    private final PlayerSession playerSession = PlayerSession.getInstance();
 
     public FindCommodityHandler(GameController commandHandler) {
         super(commandHandler.getMonitor(), commandHandler.getExecutor());
@@ -28,7 +30,7 @@ public class FindCommodityHandler extends CommandOperator implements CommandHand
 
         JsonElement key = params.get("key");
         Integer distance = getIntSafely(params.get("max_distance").getAsString());
-        if (distance < 1) distance = (int) playerSession.getShipLoadout().getMaxJumpRange() * 2;
+        if (distance == null || distance < 1) distance = (int) playerSession.getShipLoadout().getMaxJumpRange() * 2;
         String starName = playerSession.getPrimaryStarName();
 
         if (key == null) {
@@ -36,13 +38,9 @@ public class FindCommodityHandler extends CommandOperator implements CommandHand
             return;
         }
 
-        if (distance == null) {
-            distance = (int) (playerSession.getShipLoadout().getMaxJumpRange() * 5);
-        }
-
         String commodity =
                 capitalizeWords(
-                        fuzzyCommodityMatch(
+                        FuzzySearch.fuzzyCommodityMatch(
                                 key.getAsString(), 3
                         )
                 );

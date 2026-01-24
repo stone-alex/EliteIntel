@@ -2,6 +2,7 @@ package elite.intel.db;
 
 import elite.intel.db.dao.CommodityDao;
 import elite.intel.db.dao.MaterialNameDao;
+import elite.intel.db.dao.MaterialsDao;
 import elite.intel.db.dao.SubSystemDao;
 import elite.intel.db.util.Database;
 
@@ -43,8 +44,13 @@ public class FuzzySearch {
         return fuzzyMatch(input, similarity, CommodityDao.class, CommodityDao::getAllNamesLowerCase, CommodityDao::getOriginalCase);
     }
 
-    public static String fuzzyMaterialSearch(String input, int similarity) {
+    public static String fuzzyMaterialNameSearch(String input, int similarity) {
         return fuzzyMatch(input, similarity, MaterialNameDao.class, MaterialNameDao::getAllNamesLowerCase, MaterialNameDao::getOriginalCase);
+    }
+
+
+    public static String fuzzyInventorySearch(String input, int similarity) {
+        return fuzzyMatch(input, similarity, MaterialsDao.class, MaterialsDao::getAllNamesLowerCase, MaterialsDao::getOriginalCase);
     }
 
     public static String fuzzySubSystemSearch(String input, int similarity) {

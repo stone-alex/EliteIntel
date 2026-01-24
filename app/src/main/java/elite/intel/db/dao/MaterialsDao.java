@@ -29,6 +29,12 @@ public interface MaterialsDao {
                 @Bind("maxCapacity") int maxCap);
 
 
+    @SqlQuery("SELECT LOWER(materialName) FROM materials ORDER BY materialName")
+    List<String> getAllNamesLowerCase();
+
+    @SqlQuery("SELECT materialName FROM materials WHERE LOWER(materialName) = LOWER(:materialName) LIMIT 1")
+    String getOriginalCase(@Bind("materialName") String materialName);
+
     @SqlQuery("SELECT * FROM materials WHERE materialName = :materialName")
     Material findByExactName(String materialName);
 

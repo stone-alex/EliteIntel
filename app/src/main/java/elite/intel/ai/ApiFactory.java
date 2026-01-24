@@ -59,8 +59,9 @@ public class ApiFactory {
         String apiKey = SystemSession.getInstance().getAiApiKey();
         ProviderEnum provider = KeyDetector.detectProvider(apiKey, "LLM");
         return switch (provider) {
-            case GROK -> CommonAiPromptFactory.getInstance();
-            case OPENAI -> CommonAiPromptFactory.getInstance();
+            // testing ollama prompts with cloud llms. If good, that will be the default
+            case GROK -> OllamaPromptFactory.getInstance();
+            case OPENAI -> OllamaPromptFactory.getInstance();
             default -> OllamaPromptFactory.getInstance();
         };
     }

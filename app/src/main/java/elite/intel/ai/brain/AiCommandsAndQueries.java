@@ -1,33 +1,15 @@
 package elite.intel.ai.brain;
 
-import elite.intel.ai.brain.handlers.commands.Commands;
-import elite.intel.ai.brain.handlers.query.Queries;
-
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
-import static elite.intel.ai.brain.handlers.query.Queries.*;
 import static elite.intel.ai.brain.handlers.commands.Commands.*;
+import static elite.intel.ai.brain.handlers.query.Queries.*;
 
 public class AiCommandsAndQueries {
 
     private static final AiCommandsAndQueries INSTANCE = new AiCommandsAndQueries();
+    private final Map<String, String> commandMap = Map.<String, String>ofEntries(
 
-    private AiCommandsAndQueries() {
-    }
-
-    public static AiCommandsAndQueries getInstance() {
-        return INSTANCE;
-    }
-
-    public Map<String, String> getCommandMap(){
-        return this.commandMap;
-    }
-
-    private final Map<String, String> commandMap = Map.ofEntries(
-            
             Map.entry("navigate to next mission, plot route to mission location", NAVIGATE_TO_NEXT_MISSION.getAction()),
             Map.entry("lights off, lights on, turn off the lights, turn on the lights", LIGHTS_ON_OFF.getAction()),
             Map.entry("set mining target <material>", ADD_MINING_TARGET.getAction()),
@@ -90,7 +72,7 @@ public class AiCommandsAndQueries {
             Map.entry("analysis mode, hud to analysis", ACTIVATE_ANALYSIS_MODE.getAction()),
             Map.entry("combat mode, hud to combat", ACTIVATE_COMBAT_MODE.getAction()),
             Map.entry("plot route to carrier", PLOT_ROUTE_TO_CARRIER.getAction()),
-            Map.entry("take us home, lets go home", TAKE_ME_HOME.getAction()),
+            Map.entry("take us home, go home", TAKE_ME_HOME.getAction()),
             Map.entry("set optimal speed, optimize speed, approaching planet", SET_OPTIMAL_SPEED.getAction()),
             Map.entry("open FSS and scan, scan system, hunk, scan", OPEN_FSS_AND_SCAN.getAction()),
             Map.entry("navigate to LZ/landing zone", GET_HEADING_TO_LZ.getAction()),
@@ -140,11 +122,6 @@ public class AiCommandsAndQueries {
             Map.entry("clear cache", CLEAR_CACHE.getAction()),
             Map.entry("", "")
     );
-
-    public  Map<String, String> getQueries(){
-        return queryMap;
-    }
-    
     private final Map<String, String> queryMap = Map.ofEntries(
             Map.entry("are there any missing bindings, check key bindings ", KEY_BINDINGS_ANALYSIS.getAction()),
             Map.entry("help with, how can I..., explain how to...", HELP.getAction()),
@@ -193,4 +170,19 @@ public class AiCommandsAndQueries {
             Map.entry("questions about missions that are not pirate related", ANALYZE_MISSIONS.getAction()),
             Map.entry("if nothing else matches use this", GENERAL_CONVERSATION.getAction())
     );
+
+    private AiCommandsAndQueries() {
+    }
+
+    public static AiCommandsAndQueries getInstance() {
+        return INSTANCE;
+    }
+
+    public Map<String, String> getCommandMap() {
+        return this.commandMap;
+    }
+
+    public Map<String, String> getQueries() {
+        return queryMap;
+    }
 }

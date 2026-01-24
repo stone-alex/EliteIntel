@@ -37,7 +37,7 @@ public class OllamaAnalysisEndpoint extends AiEndPoint implements AiAnalysisInte
                     .getAiPromptFactory()
                     .generateAnalysisPrompt();
 
-            JsonObject prompt = client.createPrompt(OllamaClient.MODEL_OLLAMA, 0.1f);
+            JsonObject prompt = client.createPrompt(OllamaClient.MODEL_OLLAMA, 1.0f);
 
             JsonObject systemMsg1 = new JsonObject();
             systemMsg1.addProperty("role", AIConstants.ROLE_SYSTEM);
@@ -49,7 +49,7 @@ public class OllamaAnalysisEndpoint extends AiEndPoint implements AiAnalysisInte
 
             JsonObject userMsg = new JsonObject();
             userMsg.addProperty("role", AIConstants.ROLE_USER);
-            userMsg.addProperty("content", struct.getData().toJson());
+            userMsg.addProperty("content", struct.getData().toJson().replace("\n", ""));
 
             JsonArray messages = new JsonArray();
             messages.add(systemMsg1);

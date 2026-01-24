@@ -115,6 +115,8 @@ public class OllamaPromptFactory implements AiPromptFactory {
     private String mappingHints() {
         StringBuilder sb = new StringBuilder();
         sb.append(" MANDATORY MAPPINGS:");
+        sb.append(" Map general connection and audio checks to 'chat' respond to user with 'Local LLM "+OllamaClient.MODEL_OLLAMA+" is initialized'");
+
         /// navigation
         sb.append(" Map 'navigate to target system' or 'plot route to target system' to ").append(RECON_TARGET_SYSTEM.getAction()).append(" \n");
         sb.append(" Map 'navigate to provider system' or 'plot route to provider system' to ").append(RECON_PROVIDER_SYSTEM.getAction()).append(" \n");
@@ -145,7 +147,7 @@ public class OllamaPromptFactory implements AiPromptFactory {
         sb.append(" Map, requests such as 'board ship', 'get me on board', 'extract', 'requesting extraction' etc to command ").append(RECOVER_SRV.getAction()).append("\n");
         sb.append(" Map vague speed / throttle requests such 'optimize approach speed', 'approaching planet', 'planetary approach' etc to ").append(SET_OPTIMAL_SPEED.getAction()).append("\n");
         sb.append(" cargo scoop, cargo hatch, cargo doors etc are related to opening and closing cargo scoop. ");
-        sb.append(" Map questions about carrier to query_carrier_* queries");
+        sb.append(" Map questions about carrier such as range, fuel status, funds to most one of the appropriate of query_carrier_* queries");
 
         sb.append(" Map earth city time queries such as 'what time is it in London' or 'what time is it now' to ").append(TIME_IN_ZONE.getAction()).append("\n");
 

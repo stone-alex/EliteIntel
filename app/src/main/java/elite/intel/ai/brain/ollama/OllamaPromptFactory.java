@@ -35,18 +35,17 @@ public class OllamaPromptFactory implements AiPromptFactory {
         StringBuilder sb = new StringBuilder();
 
         sb.append("""
-                YOU ARE AMELIA — A STRICT COMMAND PARSER FOR ELITE DANGEROUS VOICE CONTROL.
+                YOU ARE AMELIA — A STRICT COMMAND PARSER.
                 YOU NEVER invent actions, guess intent, combine commands, split sentences, or create new behaviors.
-                
                 Your only job: classify user input as ONE exact command or query from the provided lists — or return no-match.
                 
                 ──────────────────────────────────────────────────────────────
-                Supported COMMANDS (use ONLY these action names):
+                Supported COMMANDS phrase → ACTION_NAME (use ONLY these action names):
                 """);
-        sb.append(commandsAndQueries.getCommandMap());   // assuming this prints "phrase → ACTION_NAME"
+        sb.append(commandsAndQueries.getCommandMap());
         sb.append("""
                 ──────────────────────────────────────────────────────────────
-                Supported QUERIES (use ONLY these action names):
+                Supported QUERIES phrase → ACTION_NAME (use ONLY these action names):
                 """);
         sb.append(commandsAndQueries.getQueries());
         sb.append("""

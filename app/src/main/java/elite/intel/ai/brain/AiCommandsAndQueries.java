@@ -72,7 +72,7 @@ public class AiCommandsAndQueries {
             Map.entry("analysis mode, hud to analysis", ACTIVATE_ANALYSIS_MODE.getAction()),
             Map.entry("combat mode, hud to combat", ACTIVATE_COMBAT_MODE.getAction()),
             Map.entry("plot route to carrier", PLOT_ROUTE_TO_CARRIER.getAction()),
-            Map.entry("take us home, go home", TAKE_ME_HOME.getAction()),
+            Map.entry("plot route to home system", TAKE_ME_HOME.getAction()),
             Map.entry("set optimal speed, optimize speed, approaching planet", SET_OPTIMAL_SPEED.getAction()),  // Kept here
             Map.entry("open FSS and scan, scan system, honk, scan", OPEN_FSS_AND_SCAN.getAction()),  // Fixed typo
             Map.entry("navigate to LZ/landing zone", GET_HEADING_TO_LZ.getAction()),

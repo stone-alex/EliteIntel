@@ -42,7 +42,7 @@ public class FindBrainTreesHandler extends CommandOperator implements CommandHan
 
         String material =
                 capitalizeWords(
-                        FuzzySearch.fuzzyMaterialSearch(
+                        FuzzySearch.fuzzyMaterialNameSearch(
                                 key.getAsString(), 3
                         )
                 );

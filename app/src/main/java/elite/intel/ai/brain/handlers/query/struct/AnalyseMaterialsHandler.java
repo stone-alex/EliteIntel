@@ -11,9 +11,6 @@ import elite.intel.gameapi.EventBusManager;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 
-import javax.swing.plaf.InsetsUIResource;
-import java.util.List;
-
 import static elite.intel.util.StringUtls.capitalizeWords;
 
 public class AnalyseMaterialsHandler extends BaseQueryAnalyzer implements QueryHandler {
@@ -24,8 +21,8 @@ public class AnalyseMaterialsHandler extends BaseQueryAnalyzer implements QueryH
         if(mat == null) return process("Material parameter not provided. Unable to run analysis");
 
         String material = capitalizeWords(
-                        FuzzySearch.fuzzyMaterialSearch(
-                                mat, 3
+                        FuzzySearch.fuzzyInventorySearch(
+                                mat, 8
                         )
                 );
 

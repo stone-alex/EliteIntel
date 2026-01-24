@@ -42,7 +42,7 @@ public class FindMiningSiteHandler extends CommandOperator implements CommandHan
 
         String material =
                 capitalizeWords(
-                        FuzzySearch.fuzzyMaterialSearch(
+                        FuzzySearch.fuzzyMaterialNameSearch(
                                 mat.getAsString(), 3
                         )
                 );

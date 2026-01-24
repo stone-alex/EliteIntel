@@ -84,25 +84,18 @@ public enum Commands {
 
     DISPLAY_COMMS_PANEL                                 ("display_comms_panel", null, null, DisplayCommsPanelHandler.class),
     DISPLAY_CONTACTS_PANEL                              ("display_contacts", null, null, DisplayContactsPanelHandler.class),
-    //dup DISPLAY_LEFT_PANEL                                  ("display_navigation_panel", null, null, DisplayNavigationPanelHandler.class),
     DISPLAY_INTERNAL_PANEL                              ("display_internal_panel", null, null, DisplayInternalPanelHandler.class),
     DISPLAY_STATUS_PANEL                                ("display_status_panel", null, null, DisplayStatusPanelHandler.class),
     DISPLAY_RADAR_PANEL                                 ("display_radar_panel", null, null, DisplayRadarPanelHandler.class),
     DISPLAY_LOADOUT_PANEL                               ("display_loadout_panel", null, null, DisplayLoadoutPanelHandler.class),
-
-    //dup GALAXY_MAP                                          ("open_galaxy_star_map", null, null, OpenGalaxyMapHandler.class),
-    //dup LOCAL_MAP                                           ("open_local_map", null, null, OpenLocalMapHandler.class),
     OPEN_CARGO_SCOOP                                    ("open_cargo_scoop", null, null, OpenCargoScoopHandler.class),
     CLOSE_CARGO_SCOOP                                   ("close_cargo_scoop", null, null, CloseCargoScoopHandler.class),
     RETRACT_HARDPOINTS                                  ("retract_hardpoints", null, null, RetractHardpointsHandler.class),
     DEPLOY_HARDPOINTS                                   ("deploy_hardpoints", null, null, DeployHardpointsHandler.class),
-    //dup WEAPONS_HOT                                         ("weapons_hot", null, null, DeployHardpointsHandler.class),
     DEPLOY_LANDING_GEAR                                 ("deploy_landing_gear_down", null, null, DeployLandingGearHandler.class),
     RETRACT_LANDING_GEAR                                ("retract_landing_gear_up", null, null, RetractLandingGearHandler.class),
 
     JUMP_TO_HYPERSPACE                                  ("jump_to_hyperspace", null, null, JumpToHyperspaceHandler.class),
-    //dup GET_OUT_OF_HERE                                     ("lets_get_out_of_here", null, null, EnterFtlHandler.class),
-    //dup LETS_GO                                             ("lets_go", null, null, EnterFtlHandler.class),
     ENTER_SUPER_CRUISE                                  ("enter_super_cruise", null, null, EnterFtlHandler.class),
 
     EXIT_SUPER_CRUISE                                   ("exit_super_cruise", null, null, ExitFtlHandler.class),
@@ -147,7 +140,6 @@ public enum Commands {
     //CYCLE_PREVIOUS_SUBSYSTEM                            ("cycle_previous_subsystem", BINDING_CYCLE_PREVIOUS_SUBSYSTEM.getGameBinding(), null, GenericGameControlHandler.class),
     DEPLOY_HEAT_SINK                                    ("deploy_heat_sink", BINDING_DEPLOY_HEAT_SINK.getGameBinding(), null, GenericGameControlHandler.class),
     DRIVE_ASSIST                                        ("drive_assist", BINDING_DRIVE_ASSIST.getGameBinding(), null, GenericGameControlHandler.class),
-    //EXPLORATION_FSSQUIT                                 ("exit_fss", BINDING_EXPLORATION_FSSQUIT.getGameBinding(), null, GenericGameControlHandler.class),
 
     TARGET_SUB_SYSTEM                                   ("target_subsystem", null, "subsystem", TargetSubSystemHandler.class),
     RECALL_DISMISS_SHIP                                 ("recall_or_dismiss_ship", BINDING_RECALL_DISMISS_SHIP.getGameBinding(), null, GenericGameControlHandler.class),
@@ -156,10 +148,7 @@ public enum Commands {
     REQUEST_FOCUS_TARGET                                ("fighter_orders_attack_my_target_fighter_order", BINDING_REQUEST_DEFENSIVE_BEHAVIOUR.getGameBinding(), null, GenericGameControlHandler.class),
     REQUEST_HOLD_FIRE                                   ("fighter_orders_hold_your_fire_fighter_order", BINDING_REQUEST_HOLD_FIRE.getGameBinding(), null, GenericGameControlHandler.class),
     REQUEST_REQUEST_DOCK                                ("fighter_orders_recall", BINDING_REQUEST_REQUEST_DOCK.getGameBinding(), null, GenericGameControlHandler.class),
-
     STOP                                                ("stop", BINDING_SET_SPEED_ZERO.getGameBinding(), null, GenericGameControlHandler.class),
-    //dup TAXI                                                ("taxi_take_us_in_or_autodocking", BINDING_SET_SPEED_ZERO.getGameBinding(), null, GenericGameControlHandler.class),
-
     SET_SPEED_ZERO                                      ("set_speed_to_zero_0", BINDING_SET_SPEED_ZERO.getGameBinding(), null, GenericGameControlHandler.class),
     SET_SPEED25                                         ("set_speed_to_slow_throttle_25", BINDING_SET_SPEED25.getGameBinding(), null, GenericGameControlHandler.class),
     SET_SPEED50                                         ("set_speed_to_medium_throttle_50", BINDING_SET_SPEED50.getGameBinding(), null, GenericGameControlHandler.class),

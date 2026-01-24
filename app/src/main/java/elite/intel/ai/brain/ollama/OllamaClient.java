@@ -9,9 +9,12 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class OllamaClient implements Client {
+    // qwen2.5:14b working but .5 sec on command response.
+    // qwen2.5vl:3b
+    // qwen2.5vl:7b test
 
-    public static final String MODEL_OLLAMA = "qwen2.5:14b";
-    public static final String MODEL_OLLAMA_SMALL = "qwen2.5:14b";
+    public static final String MODEL_OLLAMA = "qwen2.5vl:7b";
+    public static final String MODEL_OLLAMA_SMALL = "qwen2.5vl:7b";
     private static final OllamaClient INSTANCE = new OllamaClient();
 
     private final PlayerSession playerSession = PlayerSession.getInstance();

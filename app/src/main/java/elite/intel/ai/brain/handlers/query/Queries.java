@@ -7,7 +7,6 @@ public enum Queries {
 
 
     /// ########################################################################################################################################
-    ANALYZE_KEY_BINDINGS                ("query_analyze_key_bindings",                  AnalyzeMisingKeyBindingHandler.class,true),
     HELP                                ("help",                                        HelpHandler.class, true),
     BIO_SAMPLE_IN_STAR_SYSTEM           ("query_organic_samples_star_system",           AnalyzeBioSignalsStarSystemHandler.class, true),
     EXOBIOLOGY_SAMPLES                  ("query_organic_samples_this_planet",           AnalyzeBioSamplesPlanetSurfaceHandler.class, true),
@@ -18,7 +17,7 @@ public enum Queries {
     KEY_BINDINGS_ANALYSIS               ("query_key_bindings_analysis",                 AnalyzeMisingKeyBindingHandler.class, true),
     SYSTEM_SECURITY_ANALYSIS            ("query_star_system_security_analysis",         AnalyzeSystemSecurityHandler.class, true),
     TRADE_PROFILE_ANALYSIS              ("query_trade_profile_analysis",                AnalyzeTradeProfileHandler.class, true),
-    DISTANCE_TO_BODY                    ("query_distance_to_body",                      AnalyzeDistanceToStellarObject.class, true),
+    DISTANCE_TO_BODY                    ("query_distance_to_stellar_object",            AnalyzeDistanceToStellarObject.class, true),
     LAST_SCAN_ANALYSIS                  ("query_last_scan_analysis",                    AnalyzeLastScanHandler.class, true),
     MATERIALS_INVENTORY                 ("query_inventory",                             AnalyseMaterialsHandler.class, true),
     PLANET_MATERIALS                    ("query_materials_present_on_planet",           AnalyzeMaterialsOnPlanetHandler.class, true),
@@ -33,7 +32,7 @@ public enum Queries {
     DISTANCE_TO_DESTINATION             ("query_distance_to_destination",               AnalyzeDistanceToFinalDestination.class, false),
     CARGO_HOLD_CONTENTS                 ("query_cargo_hold_contents",                   AnalyzeCargoHoldHandler.class, true),
     PLOTTED_ROUTE_ANALYSIS              ("query_plotted_route_analysis",                AnalyzeRouterHandler.class, true),
-    ROUTE_FUEL_CHECK                    ("query_route_fuel_check",                      AnalyzeRouterHandler.class, true),
+    // dup ROUTE_FUEL_CHECK                    ("query_route_fuel_check",                      AnalyzeRouterHandler.class, true),
     CARRIER_ROUTE_ANALYSIS              ("query_carrier_route_analysis",                AnalyzeCarrierRouteHandler.class, true),
     CARRIER_TRITIUM_SUPPLY              ("query_carrier_fuel_supply",                   AnalyzeFleetCarrierFuelSupplyHandler.class, true),
     CARRIER_DESTINATION                 ("query_carrier_destination",                   AnalyzeFleetCarrierFinalDestinationHandler.class, true),
@@ -42,7 +41,7 @@ public enum Queries {
     DISTANCE_TO_CARRIER                 ("query_distance_to_carrier",                   AnalyzeDistanceFromFleetCarrierHandler.class, false),
     OUTSTANDING_MISSIONS                ("query_outstanding_missions",                  AnalyzePirateMissionHandler.class, true),
     PIRATE_MISSION_PROGRESS             ("query_pirate_mission_progress",               AnalyzePirateMissionHandler.class, true),
-    NEXT_SCOOPABLE_STAR                 ("query_next_scoopable_star",                   AnalyzeNextStarForFuelHandler.class, false),
+    //NEXT_SCOOPABLE_STAR                 ("query_next_scoopable_star",                   AnalyzeNextStarForFuelHandler.class, false),
     PLAYER_PROFILE_ANALYSIS             ("query_player_profile_analysis",               AnalyzePlayerProfile.class, true),
     SHIP_LOADOUT                        ("query_ship_loadout",                          AnalyzeShipLoadoutHandler.class, true),
     STATION_DETAILS                     ("query_station_details",                       StationDataHandler.class, true),

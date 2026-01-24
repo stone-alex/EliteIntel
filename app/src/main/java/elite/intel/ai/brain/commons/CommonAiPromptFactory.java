@@ -2,10 +2,8 @@ package elite.intel.ai.brain.commons;
 
 import elite.intel.ai.brain.AICadence;
 import elite.intel.ai.brain.AIPersonality;
-import elite.intel.ai.brain.AiPromptFactory;
 import elite.intel.ai.brain.AiCommandsAndQueries;
-import elite.intel.ai.brain.handlers.commands.Commands;
-import elite.intel.ai.brain.handlers.query.Queries;
+import elite.intel.ai.brain.AiPromptFactory;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.util.Ranks;
@@ -17,10 +15,11 @@ import static elite.intel.ai.brain.handlers.query.Queries.*;
 import static elite.intel.util.Abbreviations.generateAbbreviations;
 
 public class CommonAiPromptFactory implements AiPromptFactory {
-    private final SystemSession systemSession = SystemSession.getInstance();
     private static final CommonAiPromptFactory INSTANCE = new CommonAiPromptFactory();
     private static final String JSON_FORMAT =
             "Always output JSON: {\"type\": \"command|query|chat\", \"response_text\": \"TTS output\", \"action\": \"action_name|query_name\", \"params\": {\"key\": \"value\"}, \"expect_followup\": boolean} action must match provided command or query. ";
+    private final AiCommandsAndQueries commandsAndQueries = AiCommandsAndQueries.getInstance();
+    private final SystemSession systemSession = SystemSession.getInstance();
 
     private CommonAiPromptFactory() {
     }
@@ -107,14 +106,8 @@ public class CommonAiPromptFactory implements AiPromptFactory {
     private String colloquialTerms() {
         StringBuilder sb = new StringBuilder();
         sb.append(" Map 'organic(s) to 'bio signal(s)'\n");
-        sb.append(" Map 'navigate to target system' or 'plot route to target system' to " + RECON_TARGET_SYSTEM.getAction() + " \n");
-        sb.append(" Map 'navigate to provider system' or 'plot route to provider system' to " + RECON_PROVIDER_SYSTEM.getAction() + " \n");
         sb.append(" Map colloquial terms to commands: 'feds', 'yanks', or 'federation space' to 'FEDERATION', 'imperials', 'imps', or 'empire' to 'IMPERIAL', 'alliance space' or 'allies' to 'ALLIANCE' for set_cadence. ");
-        sb.append(" Map slang such as 'bounce', 'proceed to the next waypoint' or 'get out of here' to commands like ").append(JUMP_TO_HYPERSPACE.getAction()).append(". ");
-        sb.append(" Map 'select next way point' to ").append(TARGET_NEXT_ROUTE_SYSTEM.getAction()).append("\n");
         sb.append(" 'Resource Sites' are not for materials. They are 'hunting grounds for pirate massacre missions'. Do not confuse a 'Resource Site' with material gathering.");
-        sb.append(" Map 'scan system' to commands like ").append(OPEN_FSS_AND_SCAN.getAction()).append(". and 'damage report' to queries like ").append(SHIP_LOADOUT.getAction()).append("\n");
-        sb.append(" Infer command intent from context: phrases like 'act like', 'talk like', 'blend in with', or 'sound like' followed by a faction should trigger '").append(SET_PERSONALITY.getAction()).append("' with the corresponding cadence value, using current system allegiance if ambiguous.\n");
         sb.append(" Do not confuse traders with market. Material tader/broker is not the same as trade station / port.");
         return sb.toString();
     }
@@ -122,44 +115,19 @@ public class CommonAiPromptFactory implements AiPromptFactory {
     private String supportedCommandsClause() {
         StringBuilder sb = new StringBuilder();
         sb.append(" Supported Commands:\n");
-
-        for (Commands cmd : Commands.values()) {
-            sb.append("    - ").append(cmd.getAction());
-            String params = cmd.getParameters();
-            if (params != null && !params.isEmpty()) {
-                sb.append(" params: ").append(params.replace(" | ", ", "));
-            }
-            sb.append("\n");
-        }
-
+        sb.append(commandsAndQueries.getCommandMap());
         sb.append("\nWhen multiple params are listed (separated by ','), return them as separate keys in the params JSON.\n");
         sb.append(" Example for find_market_where_to_buy: {\"key\":\"gold\",\"max_distance\":\"100\"}\n");
         sb.append(" Example for find_mining_site_for_material: {\"material\":\"low temperature diamonds\",\"max_distance\":\"50\"}\n");
         sb.append(" Important distinctions:\n");
         sb.append(" - \"select next waypoint\", \"target next system\", \"plot next\", \"next in route\" → ONLY select/target the next system in the route (Left panel → Navigation → highlight next system). DO NOT jump.\n");
         sb.append(" - \"jump\", \"engage\", \"hyperspace\", \"bounce\", \"proceed to the next waypoint\", \"go\", \"let's go\" → initiate hyperspace jump to the currently TARGETED system.\n");
-
         return sb.toString();
     }
 
     private String supportedQueriesClause() {
         StringBuilder sb = new StringBuilder("Supported Queries:\n");
-
-        StringBuilder quick = new StringBuilder();
-        StringBuilder data = new StringBuilder();
-
-        for (Queries query : Queries.values()) {
-            if (query.isRequiresFollowUp()) {
-                quick.append("    - ").append(query.getAction()).append("\n");
-            } else {
-                data.append("    - ").append(query.getAction()).append("\n");
-            }
-        }
-
-        sb.append(quick.length() > 0 ? quick : "    - None defined.\n");
-        sb.append(data.length() > 0 ? data : "    - None defined.\n");
-        sb.append(appendBehavior());
-        sb.append("All supported queries: ").append(AiCommandsAndQueries.queries).append("\n");
+        sb.append(commandsAndQueries.getQueries());
         return sb.toString();
     }
 
@@ -168,7 +136,7 @@ public class CommonAiPromptFactory implements AiPromptFactory {
         String aiName = systemSession.isRunningPiperTts() ? "Amelia" : systemSession.getAIVoice().getName();
         StringBuilder sb = new StringBuilder();
         sb.append("Instructions:\n");
-        sb.append("You are "+aiName+", on board AI, a strict data extractor. NEVER use external knowledge, NEVER guess, NEVER calculate, NEVER estimate, NEVER add or invent values.");
+        sb.append("You are " + aiName + ", on board AI, a strict data extractor. NEVER use external knowledge, NEVER guess, NEVER calculate, NEVER estimate, NEVER add or invent values.");
         sb.append("""                
                 CRITICAL RULES – MUST FOLLOW EXACTLY:
                 - Use ONLY the fields from the provided JSON data.

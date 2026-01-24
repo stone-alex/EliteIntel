@@ -10,6 +10,7 @@ import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AnalyzeMaterialsOnPlanetHandler extends BaseQueryAnalyzer implements QueryHandler {
@@ -23,17 +24,49 @@ public class AnalyzeMaterialsOnPlanetHandler extends BaseQueryAnalyzer implement
 
         List<MaterialDto> materials = currentLocation.getMaterials();
         String instructions = """
-                    Use this list of materials to answer questions.
+                You are a strict material list processor for planetary raw materials.
+                
+                Rules (must follow exactly):
+                - Use ONLY the "materials" array from the user message JSON
+                - Each entry has "material" (name) and "rarity" (percentage float)
+                - Rarer materials = LOWER rarity percentage
+                - More common materials = HIGHER rarity percentage
+                - Never invent, guess, calculate, or use external knowledge
+                - Never assume any field like topRare exists — it does NOT
+                
+                How to answer common patterns (be extremely brief):
+                - "X most rare / rarest / top X rare materials" → sort by rarity ASC, take first X names
+                - "X most common materials"                        → sort by rarity DESC, take first X names
+                - "most / least common materials"                  → return top 3 (most common) and bottom 3 (least common / rarest)
+                - "does it have X / is X present / can I find X"   → check if material name exists (case-insensitive), answer "Yes" or "No"
+                - "how much / percentage of X"                      → return the rarity value formatted to exactly 2 decimal places + "%" if present, else "No Data Available."
+                - "list all materials"                             → return all material names (comma-separated or line-separated)
+                
+                Output only the requested answer text — no extra words, no explanations, no JSON inside the answer.
                 """;
 
         if (materials.isEmpty()) {
             return process(" no materials data available...");
         } else {
-            return process(new AiDataStruct(instructions, new DataDto(materials)), originalUserInput);
+            return process(new AiDataStruct(instructions, new DataDto(toMaterialData(materials))), originalUserInput);
         }
     }
 
-    record DataDto(List<MaterialDto> materials) implements ToJsonConvertible {
+    private List<MaterialData> toMaterialData(List<MaterialDto> materials) {
+        ArrayList<MaterialData> data = new ArrayList<>();
+        for (MaterialDto m : materials) {
+            data.add(new MaterialData(m.getMaterialName(), Math.round(m.getMaterialPercentage() * 100.0) / 100.0));
+        }
+        return data;
+    }
+
+    record MaterialData(String material, double rarity) implements ToJsonConvertible {
+        @Override public String toJson() {
+            return GsonFactory.getGson().toJson(this);
+        }
+    }
+
+    record DataDto(List<MaterialData> materials) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }

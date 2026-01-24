@@ -279,7 +279,7 @@ public class GoogleSTTImpl implements EarsInterface {
                                     if (isStreamingModeOn) {
                                         String voiceName = systemSession.getAIVoice().getName();
                                         if (sanitizedTranscript.toLowerCase().contains("computer") || sanitizedTranscript.toLowerCase().contains(voiceName.toLowerCase()) || sanitizedTranscript.toLowerCase().contains("josie")) {
-                                            sendToAi(sanitizedTranscript.replace("computer,", "").replace(voiceName.toLowerCase() + ",", ""), avgConfidence);
+                                            sendToAi(sanitizedTranscript.replace("computer", "").replace(voiceName.toLowerCase() + ",", ""), avgConfidence);
                                         }
                                     } else {
                                         sendToAi(sanitizedTranscript, avgConfidence);

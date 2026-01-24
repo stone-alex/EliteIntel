@@ -18,7 +18,7 @@ public class AiCommandsAndQueries {
             Map.entry("find raw material trader", FIND_RAW_MATERIAL_TRADER.getAction()),
             Map.entry("find encoded material trader", FIND_ENCODED_MATERIAL_TRADER.getAction()),
             Map.entry("find manufactured material trader", FIND_MANUFACTURED_MATERIAL_TRADER.getAction()),
-            Map.entry("find hunting grounds, fund where we can hunt pirates", FIND_HUNTING_GROUNDS.getAction()),
+            Map.entry("find hunting grounds, find where we can hunt pirates", FIND_HUNTING_GROUNDS.getAction()),  // Fixed typo
             Map.entry("recon target system, plot route to recon mission location", RECON_TARGET_SYSTEM.getAction()),
             Map.entry("plot route to pirate mission provider", RECON_PROVIDER_SYSTEM.getAction()),
             Map.entry("plot route to pirate mission battle ground", NAVIGATE_TO_PIRATE_MISSION_TARGET_SYSTEM.getAction()),
@@ -43,14 +43,14 @@ public class AiCommandsAndQueries {
             Map.entry("discovery announcements on/off", DISCOVERY_ON_OFF.getAction()),
             Map.entry("mining announcements on/off", MINING_ON_OFF.getAction()),
             Map.entry("route announcements on/off", ROUTE_ON_OFF.getAction()),
-            Map.entry("set speed plus X", ROUTE_ON_OFF.getAction()),
+            Map.entry("set speed plus X", INCREASE_SPEED_BY.getAction()),  // Fixed to assumed correct action
             Map.entry("set speed minus X", DECREASE_SPEED_BY.getAction()),
             Map.entry("power to engines", INCREASE_ENGINES_POWER.getAction()),
             Map.entry("navigate to next organic/sample/marker/codex entry", NAVIGATE_TO_NEXT_BIO_SAMPLE.getAction()),
             Map.entry("power to shields, shields full power, shields up", INCREASE_SHIELDS_POWER.getAction()),
             Map.entry("power to systems", INCREASE_SYSTEMS_POWER.getAction()),
             Map.entry("power to weapons", INCREASE_WEAPONS_POWER.getAction()),
-            Map.entry("equilize power, reset power", RESET_POWER.getAction()),
+            Map.entry("equalize power, reset power", RESET_POWER.getAction()),  // Fixed typo
             Map.entry("open/show galaxy map", OPEN_GALAXY_MAP.getAction()),
             Map.entry("open/show local map", OPEN_SYSTEM_MAP.getAction()),
             Map.entry("close map", CLOSE_ANY_MAP.getAction()),
@@ -73,8 +73,8 @@ public class AiCommandsAndQueries {
             Map.entry("combat mode, hud to combat", ACTIVATE_COMBAT_MODE.getAction()),
             Map.entry("plot route to carrier", PLOT_ROUTE_TO_CARRIER.getAction()),
             Map.entry("take us home, go home", TAKE_ME_HOME.getAction()),
-            Map.entry("set optimal speed, optimize speed, approaching planet", SET_OPTIMAL_SPEED.getAction()),
-            Map.entry("open FSS and scan, scan system, hunk, scan", OPEN_FSS_AND_SCAN.getAction()),
+            Map.entry("set optimal speed, optimize speed, approaching planet", SET_OPTIMAL_SPEED.getAction()),  // Kept here
+            Map.entry("open FSS and scan, scan system, honk, scan", OPEN_FSS_AND_SCAN.getAction()),  // Fixed typo
             Map.entry("navigate to LZ/landing zone", GET_HEADING_TO_LZ.getAction()),
             Map.entry("deploy srv/surface reconnaissance vehicle", DEPLOY_SRV.getAction()),
             Map.entry("recover srv/surface reconnaissance vehicle, requesting extraction", RECOVER_SRV.getAction()),
@@ -106,7 +106,7 @@ public class AiCommandsAndQueries {
             Map.entry("stop, engine stop, full stop, taxi, set speed zero", STOP.getAction()),
             Map.entry("quarter throttle, quarter speed, speed 25", SET_SPEED25.getAction()),
             Map.entry("half throttle, half speed, speed 50", SET_SPEED50.getAction()),
-            Map.entry("set optimal speed, optimize speed, throttle 75, three quarters throttle", SET_SPEED75.getAction()),
+            Map.entry("throttle 75, three quarters throttle, set speed 75", SET_SPEED75.getAction()),  // Removed duplicates
             Map.entry("max speed, full speed", SET_SPEED100.getAction()),
             Map.entry("set fuel reserve X", SET_CARRIER_FUEL_RESERVE.getAction()),
             Map.entry("select/target highest threat", SELECT_HIGHEST_THREAT.getAction()),
@@ -116,18 +116,15 @@ public class AiCommandsAndQueries {
             Map.entry("target wingman 3", TARGET_WINGMAN2.getAction()),
             Map.entry("wing nav lock, lock on wing", WING_NAV_LOCK.getAction()),
             Map.entry("list voices", LIST_AVAILABLE_VOICES.getAction()),
-
-
             Map.entry("clear codex entries", CLEAR_CODEX_ENTRIES.getAction()),
-            Map.entry("clear cache", CLEAR_CACHE.getAction()),
-            Map.entry("", "")
+            Map.entry("clear cache", CLEAR_CACHE.getAction())
     );
     private final Map<String, String> queryMap = Map.ofEntries(
             Map.entry("are there any missing bindings, check key bindings ", KEY_BINDINGS_ANALYSIS.getAction()),
             Map.entry("help with, how can I..., explain how to...", HELP.getAction()),
             Map.entry("are there any organics in the star system, what planets have bio forms to scan, are there any bio signals in star system", BIO_SAMPLE_IN_STAR_SYSTEM.getAction()),
             Map.entry("queries about organics or exobiology for plant scans", EXOBIOLOGY_SAMPLES.getAction()),
-            Map.entry("queries about ffs signals within star system, what do you see on scanners, is <ship name> present, are there resource sites", FSS_SIGNALS.getAction()),
+            Map.entry("queries about fss signals within star system, what do you see on scanners, is <ship name> present, are there resource sites", FSS_SIGNALS.getAction()),
             Map.entry("are there landable planets, what class is the stellar object", QUERY_STELLAR_OBJETS.getAction()),
             Map.entry("what planets have geo signals", QUERY_GEO_SIGNALS.getAction()),
             Map.entry("queries about stations, ports and settlements", QUERY_STATIONS.getAction()),
@@ -136,7 +133,7 @@ public class AiCommandsAndQueries {
             Map.entry("how far is planet <planet name>, how far is station <station name>", DISTANCE_TO_BODY.getAction()),
             Map.entry("analyze X we just scanned, tell me about this last scan, ", LAST_SCAN_ANALYSIS.getAction()),
             Map.entry("check inventory how much X do we have, do we have any Y in our inventory", MATERIALS_INVENTORY.getAction()),
-            Map.entry("geology questions, persentage of material X, name X common materials on this planet, name X most rare materials on this planet", PLANET_MATERIALS.getAction()),
+            Map.entry("geology questions, percentage of material X, name X common materials on this planet, name X most rare materials on this planet", PLANET_MATERIALS.getAction()),
             Map.entry("what are potential profits from exploration data", EXPLORATION_PROFITS.getAction()),
             Map.entry("queries about current location, what is the temperature on this planet, how long does the day last here", CURRENT_LOCATION.getAction()),
             Map.entry("how much fuel does our ship has, (do not confuse with carrier)", SHIP_FUEL_STATUS.getAction()),

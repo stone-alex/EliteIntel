@@ -29,24 +29,24 @@ public class AnalyzeCurrentLocationHandler extends BaseQueryAnalyzer implements 
         DeathsDto deathsDto = EdsmApiClient.searchDeaths(playerSession.getPrimaryStarLocation().getStarName());
         TrafficDto trafficDto = EdsmApiClient.searchTraffic(playerSession.getPrimaryStarLocation().getStarName());
 
-        String station = "";
+        String station = null;
         if (status.isDocked() && location.getStationName() != null || location.getStationName() != null) {
             station = "Docked at " + location.getStationName() + " " + location.getStationType();
         }
 
         String instructions = """                
                     The user may ask multiple questions at once. Answer each one individually using the matching rule below. Do not combine them into one sentence unless natural. Do not say "Insufficient data" if the field exists for part of the question.
-                    - If asked for summary or broad 'where are we' question summarize what data you have, and silently omit what you don't have.
+                    - IF asked for summary or broad 'where are we' question return starSystemName, planetName followed by summary of what data provided. Example: Star System <starSystemName>, Planet <planetName>. - <summary>
+                    - IF 'station' is not null, return station name and planet we are orbiting. Example: Docked at <stationName> orbiting <planetName>
                     - Extract and answer ALL questions in the user input using ONLY the provided data fields.
                     - For temperature: If temperature is in data (in Kelvin), convert to Celsius and say: "Temperature on <planetName> is <X> degrees Celsius."
                     - For day length: Use dayLength directly and say: "Day on <planetName> lasts <dayLength>"
                     - Answer each requested piece of information separately and clearly.
-                    - If any requested info is missing or not in data, say "Insufficient data" only for that part.
+                    - If any requested info is missing or not in data, omit that part only.
                 
                     Use this data to provide answers for our location.
                     - IF asked 'where are we?' Use planetShortName for location name unless we are on the station in which case return stationName.
-                    - IF Asked about Temperature: Temperature data is provided in surfaceTemperatureInKelvin (Kelvin), covert to Celsius and announce Celsius. Example: Temperature on <planetName> is <X> degrees Celsius. 
-                    - IF location is 'station', return station name and planet we are orbiting.
+                    - IF Asked about Temperature: Temperature data is provided in surfaceTemperatureInKelvin (Kelvin), covert to Celsius and announce Celsius. Example: Temperature on <planetName> is <X> degrees Celsius.
                     - IF Asked about Length Of The Day: Use dayLength value. Example: Day on <planetName> lasts <X> hours and <Y> minutes
                     - IF Asked about Local Government, Controlling Powers, Controlling Faction, and localPowers/controllingFaction data is not present, the planet is uninhabited - ELSE use this data for your answer. Example: <planetName> is uninhabited. Or <planetName> is controlled by <X> powers and controlling faction is <Y>
                 """;

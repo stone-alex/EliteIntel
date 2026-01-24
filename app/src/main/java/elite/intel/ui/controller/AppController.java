@@ -358,7 +358,5 @@ public class AppController implements Runnable {
 
         EventBusManager.publish(new ServicesStateEvent(true));
         KeyBindCheck.getInstance().check();
-
-        EventBusManager.publish(new UserInputEvent("LLM connection initialization check. Are we connected?", 100f));
     }
 }

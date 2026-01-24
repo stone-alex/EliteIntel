@@ -115,41 +115,41 @@ public class OllamaPromptFactory implements AiPromptFactory {
     private String mappingHints() {
         StringBuilder sb = new StringBuilder();
         sb.append(" MANDATORY MAPPINGS:");
-        sb.append(" Map general connection and audio checks to 'chat' respond to user with 'Local LLM "+OllamaClient.MODEL_OLLAMA+" is initialized'");
+        sb.append(" general connection and audio checks to 'chat' respond to user with 'Local LLM "+OllamaClient.MODEL_OLLAMA+" is initialized'");
 
         /// navigation
-        sb.append(" Map 'navigate to target system' or 'plot route to target system' to ").append(RECON_TARGET_SYSTEM.getAction()).append(" \n");
-        sb.append(" Map 'navigate to provider system' or 'plot route to provider system' to ").append(RECON_PROVIDER_SYSTEM.getAction()).append(" \n");
-        sb.append(" Map slang such as 'bounce', 'proceed to the next waypoint' or 'get out of here' to commands like ").append(JUMP_TO_HYPERSPACE.getAction()).append(". ");
-        sb.append(" Map 'select next way point' to ").append(TARGET_NEXT_ROUTE_SYSTEM.getAction()).append("\n");
+        sb.append(" 'navigate to target system' or 'plot route to target system' -> ").append(RECON_TARGET_SYSTEM.getAction()).append(" \n");
+        sb.append(" 'navigate to provider system' or 'plot route to provider system' -> ").append(RECON_PROVIDER_SYSTEM.getAction()).append(" \n");
+        sb.append(" slang such as 'bounce', 'proceed to the next waypoint' or 'get out of here' -> ").append(JUMP_TO_HYPERSPACE.getAction()).append(". ");
+        sb.append(" 'select next way point' -> ").append(TARGET_NEXT_ROUTE_SYSTEM.getAction()).append("\n");
 
         /// exploration
-        sb.append(" Map 'organic(s) to 'bio signal(s)'\n");
-        sb.append(" Map 'run biome analysis' questions to type 'query' ").append(PLANET_BIOME_ANALYSIS.getAction()).append("\n");
-        sb.append(" Map 'scan system' to commands like ").append(OPEN_FSS_AND_SCAN.getAction());
-        sb.append(" Map questions about materials present on the planet to ").append(PLANET_MATERIALS.getAction());
-        sb.append(" Map questions about materials in the inventory to ").append(MATERIALS_INVENTORY.getAction());
-        sb.append(" Map questions about landable planets map to ").append(QUERY_STELLAR_OBJETS.getAction()).append("\n");
-        sb.append(" Map questions about bio samples / organics within solar/star system to ").append(BIO_SAMPLE_IN_STAR_SYSTEM.getAction()).append("\n");
-        sb.append(" Map questions about geological signals within solar/star system to ").append(QUERY_GEO_SIGNALS.getAction()).append("\n");
-        sb.append(" Map questions about current location (this planet, here, etc) to").append(CURRENT_LOCATION.getAction()).append(" questions about star system map to best matching query startin gwith 'query_star_system_*' \n");
-        sb.append(" Map questions about stations to ").append(QUERY_STATIONS.getAction()).append(" all other question about star system map to ").append(QUERY_STELLAR_OBJETS.getAction()).append("\n");
-        sb.append(" Map questions about day length, temperature, traffic, casualties, controlling factions for current location to ").append(CURRENT_LOCATION.getAction()).append("\n");
+        sb.append(" 'organic(s) to 'bio signal(s)'\n");
+        sb.append(" 'run biome analysis' questions to type 'query' -> ").append(PLANET_BIOME_ANALYSIS.getAction()).append("\n");
+        sb.append(" 'scan system' to commands like -> ").append(OPEN_FSS_AND_SCAN.getAction());
+        sb.append(" questions about materials present on the planet ->  ").append(PLANET_MATERIALS.getAction());
+        sb.append(" questions about materials in the inventory ->  ").append(MATERIALS_INVENTORY.getAction());
+        sb.append(" questions about landable planets ->  ").append(QUERY_STELLAR_OBJETS.getAction()).append("\n");
+        sb.append(" questions about bio samples / organics within solar/star system ->  ").append(BIO_SAMPLE_IN_STAR_SYSTEM.getAction()).append("\n");
+        sb.append(" questions about geological signals within solar/star system ->  ").append(QUERY_GEO_SIGNALS.getAction()).append("\n");
+        sb.append(" questions about current location (this planet, here, etc) -> ").append(CURRENT_LOCATION.getAction()).append(" questions about star system to best matching query startin gwith 'query_star_system_*' \n");
+        sb.append(" questions about stations to ").append(QUERY_STATIONS.getAction()).append(" all other question about star system ->  ").append(QUERY_STELLAR_OBJETS.getAction()).append("\n");
+        sb.append(" questions about day length, temperature, traffic, casualties, controlling factions for current location ->  ").append(CURRENT_LOCATION.getAction()).append("\n");
 
         sb.append(" 'Resource Sites' have no materials, those are 'hunting grounds for pirate massacre missions' only.");
 
         /// ship-related queries
-        sb.append(" **DO NOT MAP** questions about ship characteristics to ").append(FSD_TARGET_ANALYSIS.getAction()).append("\n");
-        sb.append(" **CRITICAL** Map questions about ship jump range, health, damage, etc to ").append(SHIP_LOADOUT.getAction()).append("\n");
-        sb.append(" Map 'damage report' questions to queries like ").append(SHIP_LOADOUT.getAction()).append("\n");
-        sb.append(" Map questions about organics or exobiology for plant scans to").append(EXOBIOLOGY_SAMPLES.getAction()).append("\n");
-        sb.append(" Map questions about organics or exobiology for star system to").append(BIO_SAMPLE_IN_STAR_SYSTEM.getAction()).append("\n");
-        sb.append(" Map, requests such as 'board ship', 'get me on board', 'extract', 'requesting extraction' etc to command ").append(RECOVER_SRV.getAction()).append("\n");
-        sb.append(" Map vague speed / throttle requests such 'optimize approach speed', 'approaching planet', 'planetary approach' etc to ").append(SET_OPTIMAL_SPEED.getAction()).append("\n");
+        sb.append(" **DO NOT MAP** questions about ship characteristics ->  ").append(FSD_TARGET_ANALYSIS.getAction()).append("\n");
+        sb.append(" **CRITICAL** questions about ship jump range, health, damage, etc ->  ").append(SHIP_LOADOUT.getAction()).append("\n");
+        sb.append(" 'damage report' questions to queries like ").append(SHIP_LOADOUT.getAction()).append("\n");
+        sb.append(" questions about organics or exobiology for plant scans -> ").append(EXOBIOLOGY_SAMPLES.getAction()).append("\n");
+        sb.append(" questions about organics or exobiology for star system -> ").append(BIO_SAMPLE_IN_STAR_SYSTEM.getAction()).append("\n");
+        sb.append(" requests such as 'board ship', 'get me on board', 'extract', 'requesting extraction' etc to command ").append(RECOVER_SRV.getAction()).append("\n");
+        sb.append(" vague speed / throttle requests such 'optimize approach speed', 'approaching planet', 'planetary approach' etc ->  ").append(SET_OPTIMAL_SPEED.getAction()).append("\n");
         sb.append(" cargo scoop, cargo hatch, cargo doors etc are related to opening and closing cargo scoop. ");
-        sb.append(" Map questions about carrier such as range, fuel status, funds to most one of the appropriate of query_carrier_* queries");
+        sb.append(" questions about carrier such as range, fuel status, funds to most one of the appropriate -> query_carrier_*");
 
-        sb.append(" Map earth city time queries such as 'what time is it in London' or 'what time is it now' to ").append(TIME_IN_ZONE.getAction()).append("\n");
+        sb.append(" earth city time queries such as 'what time is it in London' or 'what time is it now' ->  ").append(TIME_IN_ZONE.getAction()).append("\n");
 
         return sb.toString();
     }
@@ -207,7 +207,7 @@ public class OllamaPromptFactory implements AiPromptFactory {
                 CRITICAL RULES – MUST FOLLOW EXACTLY:
                 - Use ONLY the fields from the provided JSON data.
                 - If the requested info is in a specific field (e.g. maxJumpRange), output EXACTLY that value, rounded to two decimals.
-                - If not directly present, say "Insufficient data"
+                - If not directly present, say "No Data Available."
                 - Respond ONLY with this exact JSON and nothing else: {"type":"chat", "response_text": "Your Answer"} and nothing else.
                 - NO explanations, NO reasoning, NO extra text.
                 Return minimalistic brief and concise answer. 

@@ -20,6 +20,7 @@ import elite.intel.search.edsm.dto.data.BodyData;
 import elite.intel.search.edsm.dto.data.DeathsStats;
 import elite.intel.search.edsm.dto.data.TrafficStats;
 import elite.intel.search.spansh.station.marketstation.TradeStopDto;
+import elite.intel.search.spansh.traderoute.TradeCommodity;
 import elite.intel.session.PlayerSession;
 
 import java.util.ArrayList;
@@ -49,11 +50,11 @@ public class JumpCompletedSubscriber {
         MonetisationTransaction station = monetizeRouteManager.getTransaction();
 
         if (isSellerSystem && station != null) {
-            EventBusManager.publish(new SensorDataEvent("Head to " + station.getSourceStationName() + " buy " + station.getSourceCommodity()));
+            EventBusManager.publish(new SensorDataEvent("Head to " + station.getSourceStationName() + " buy " + station.getSourceCommodity(), "Remind User"));
         }
 
         if (isBuyerSystem && station != null) {
-            EventBusManager.publish(new SensorDataEvent("Head to " + station.getDestinationStationName() + " sell " + station.getDestinationCommodity()));
+            EventBusManager.publish(new SensorDataEvent("Head to " + station.getDestinationStationName() + " sell " + station.getDestinationCommodity(), "Remind User"));
         }
 
 
@@ -118,7 +119,7 @@ public class JumpCompletedSubscriber {
         playerSession.saveLocation(primaryStar);
 
         if (playerSession.isRouteAnnouncementOn()) {
-            EventBusManager.publish(new SensorDataEvent(sb.toString()));
+            EventBusManager.publish(new SensorDataEvent(sb.toString(), "Notify User"));
         }
 
         TradeRouteManager tradeRouteManager = TradeRouteManager.getInstance();
@@ -137,7 +138,8 @@ public class JumpCompletedSubscriber {
                                         + stop.getTradeStopDto()
                                         .getCommodities()
                                         .stream()
-                                        .map(commodity -> commodity.getName()).collect(Collectors.joining(", "))
+                                        .map(TradeCommodity::getName).collect(Collectors.joining(", ")),
+                                "Remind User"
                         )
                 );
             }
@@ -150,7 +152,8 @@ public class JumpCompletedSubscriber {
                                         + stop.getTradeStopDto()
                                         .getCommodities()
                                         .stream()
-                                        .map(commodity -> commodity.getName()).collect(Collectors.joining(", "))
+                                        .map(TradeCommodity::getName).collect(Collectors.joining(", ")),
+                                "Remind user"
                         )
                 );
             }

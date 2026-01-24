@@ -38,7 +38,7 @@ public class TransmissionReceivedSubscriber {
 
             if (isStation) {
                 if (!event.getMessageLocalised().toLowerCase().contains("fire zone")) {
-                    EventBusManager.publish(new SensorDataEvent("radio_transmission from:" + event.getFrom() + ", message:" + event.getMessageLocalised() + "."));
+                    EventBusManager.publish(new SensorDataEvent("radio_transmission from:" + event.getFrom() + ", message:" + event.getMessageLocalised() + ".", "Notify User"));
                 }
             } else {
                 EventBusManager.publish(new RadioTransmissionEvent(event.getMessageLocalised()));

@@ -90,7 +90,7 @@ public class CodexEntryEventSubscriber {
         }
 
         if(playerSession.isDiscoveryAnnouncementOn()) {
-            EventBusManager.publish(new SensorDataEvent(sb.toString()));
+            EventBusManager.publish(new SensorDataEvent(sb.toString(), "Notify User"));
         }
         if("$Codex_SubCategory_Organic_Structures;".equalsIgnoreCase(event.getSubCategory())) {
             codexEntryManager.save(event);

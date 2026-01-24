@@ -115,9 +115,15 @@ public class OllamaCommandEndPoint extends CommandEndPoint implements AiCommandI
         systemMessage.addProperty("content", getContextFactory().generateSensorPrompt());
         messages.add(systemMessage);
 
+        JsonObject instructions = new JsonObject();
+        instructions.addProperty("role", AIConstants.ROLE_SYSTEM);
+        instructions.addProperty("content", "EVENT SPECIFIC INSTRUCTIONS: "+event.getInstructions());
+        messages.add(instructions);
+
+
         JsonObject userMsg = new JsonObject();
-        userMsg.addProperty("role", AIConstants.ROLE_ASSISTANT);
-        userMsg.addProperty("content", event.toJson());
+        userMsg.addProperty("role", AIConstants.ROLE_USER);
+        userMsg.addProperty("content", event.getSensorData());
         messages.add(userMsg);
 
         executor.submit(() -> {

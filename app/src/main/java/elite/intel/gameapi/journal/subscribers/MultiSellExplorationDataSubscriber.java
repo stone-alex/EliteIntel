@@ -15,7 +15,7 @@ public class MultiSellExplorationDataSubscriber {
         int discoveredStarSystems = event.getDiscovered().size();
 
         if(PlayerSession.getInstance().isDiscoveryAnnouncementOn()) {
-            EventBusManager.publish(new SensorDataEvent(" Sold: " + discoveredStarSystems + " star systems. Reward: " + bonus + totalSale));
+            EventBusManager.publish(new SensorDataEvent(" Sold: " + discoveredStarSystems + " star systems. Reward: " + bonus + totalSale, "We made some credits. let the user know details"));
         }
     }
 }

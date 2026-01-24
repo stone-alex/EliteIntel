@@ -62,7 +62,7 @@ public class StationClient extends SpanshClient {
                 HttpResponse<String> resp = httpClient.send(post, HttpResponse.BodyHandlers.ofString());
                 if (resp.statusCode() == 400) {
                     log.warn("POST failed: {}", resp.body());
-                    EventBusManager.publish(new SensorDataEvent("Unable to complete Shapnsh request: " + resp.body()));
+                    EventBusManager.publish(new SensorDataEvent("Unable to complete Shapnsh request: " + resp.body(), "Issue a warning"));
                 }
 
                 if (resp.statusCode() == 200) {

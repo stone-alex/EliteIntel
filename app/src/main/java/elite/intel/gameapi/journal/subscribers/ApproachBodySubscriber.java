@@ -75,7 +75,7 @@ public class ApproachBodySubscriber {
         }
 
         playerSession.saveLocation(location);
-        EventBusManager.publish(new SensorDataEvent(sb.toString()));
+        EventBusManager.publish(new SensorDataEvent(sb.toString(), "Warn user about planetary approach with these data"));
     }
 
 

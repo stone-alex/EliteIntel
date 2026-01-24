@@ -58,9 +58,9 @@ public class BioSampleTrackingSubscriber {
         // Announce only on state transition
         if (wasFarEnough != isFarEnough) {
             if (isFarEnough) {
-                EventBusManager.publish(new SensorDataEvent("Sufficient distance to take the next bio sample."));
+                EventBusManager.publish(new SensorDataEvent("Sufficient distance to take the next bio sample.", "Notify User."));
             } else {
-                EventBusManager.publish(new SensorDataEvent("Insufficient distance form previous sample"));
+                EventBusManager.publish(new SensorDataEvent("Insufficient distance form previous sample", "Warn User."));
             }
         }
     }

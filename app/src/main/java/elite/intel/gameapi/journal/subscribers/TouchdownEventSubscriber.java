@@ -55,7 +55,7 @@ public class TouchdownEventSubscriber {
         }
 
         if (pointOfInterest != null && !pointOfInterest.isEmpty()) {
-            EventBusManager.publish(new SensorDataEvent(sb.toString()));
+            EventBusManager.publish(new SensorDataEvent(sb.toString(), "We have landed successfully. Notify user"));
         } else {
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("Touchdown!"));
         }

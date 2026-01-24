@@ -52,7 +52,6 @@ public class EventRegistry {
         registerEvent("SaveSession", LoadSessionEvent.class);
         registerEvent("ClearSessionCache", ClearSessionCacheEvent.class);
         registerEvent("UserInput", UserInputEvent.class);
-        registerEvent("SensorData", SensorDataEvent.class);
         registerEvent("Bounty", BountyEvent.class);
         registerEvent("Cargo", CargoEvent.class);
         registerEvent("CargoTransfer", CargoTransferEvent.class);

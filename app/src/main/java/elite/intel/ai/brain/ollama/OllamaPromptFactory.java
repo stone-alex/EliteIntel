@@ -7,6 +7,7 @@ import elite.intel.ai.brain.AiCommandsAndQueries;
 import elite.intel.ai.brain.handlers.commands.Commands;
 import elite.intel.ai.brain.handlers.query.Queries;
 import elite.intel.session.PlayerSession;
+import elite.intel.session.Status;
 import elite.intel.session.SystemSession;
 import elite.intel.util.Ranks;
 
@@ -16,6 +17,8 @@ import static elite.intel.ai.brain.handlers.commands.Commands.*;
 import static elite.intel.ai.brain.handlers.query.Queries.*;
 
 public class OllamaPromptFactory implements AiPromptFactory {
+
+    private final Status status = Status.getInstance();
 
     private static final OllamaPromptFactory INSTANCE = new OllamaPromptFactory();
     private static final String JSON_FORMAT = """
@@ -42,8 +45,9 @@ public class OllamaPromptFactory implements AiPromptFactory {
         // ──────────────────────────────────────────────────────────────
         //               VERY STRICT LOCAL LLM VERSION
         // ──────────────────────────────────────────────────────────────
+        sb.append("The user is ").append(userIs());
         sb.append("""
-                YOU ARE A STRICT COMMAND PARSER. YOU **NEVER** INVENT, NEVER GUESS, NEVER CREATE NEW ACTIONS.
+                YOU ARE AMELIA, A STRICT COMMAND PARSER. YOU **NEVER** INVENT, NEVER GUESS, NEVER CREATE NEW ACTIONS.
                 
                 Infer command or query from user input. Map to best match of either command or query provided in the list.
                 IF zero match → {"type":"query", "response_text":"No matching command or query found.", "action":"none", "params":{}, "expect_followup":false}
@@ -112,8 +116,8 @@ public class OllamaPromptFactory implements AiPromptFactory {
         StringBuilder sb = new StringBuilder();
         sb.append(" MANDATORY MAPPINGS:");
         /// navigation
-        sb.append(" Map 'navigate to target system' or 'plot route to target system' to " + RECON_TARGET_SYSTEM.getAction() + " \n");
-        sb.append(" Map 'navigate to provider system' or 'plot route to provider system' to " + RECON_PROVIDER_SYSTEM.getAction() + " \n");
+        sb.append(" Map 'navigate to target system' or 'plot route to target system' to ").append(RECON_TARGET_SYSTEM.getAction()).append(" \n");
+        sb.append(" Map 'navigate to provider system' or 'plot route to provider system' to ").append(RECON_PROVIDER_SYSTEM.getAction()).append(" \n");
         sb.append(" Map slang such as 'bounce', 'proceed to the next waypoint' or 'get out of here' to commands like ").append(JUMP_TO_HYPERSPACE.getAction()).append(". ");
         sb.append(" Map 'select next way point' to ").append(TARGET_NEXT_ROUTE_SYSTEM.getAction()).append("\n");
 
@@ -121,13 +125,14 @@ public class OllamaPromptFactory implements AiPromptFactory {
         sb.append(" Map 'organic(s) to 'bio signal(s)'\n");
         sb.append(" Map 'run biome analysis' questions to type 'query' ").append(PLANET_BIOME_ANALYSIS.getAction()).append("\n");
         sb.append(" Map 'scan system' to commands like ").append(OPEN_FSS_AND_SCAN.getAction());
-        sb.append(" Map questions about materials present on the planet to " + PLANET_MATERIALS.getAction());
-        sb.append(" Map questions about materials in the inventory to " + MATERIALS_INVENTORY.getAction());
+        sb.append(" Map questions about materials present on the planet to ").append(PLANET_MATERIALS.getAction());
+        sb.append(" Map questions about materials in the inventory to ").append(MATERIALS_INVENTORY.getAction());
         sb.append(" Map questions about landable planets map to ").append(QUERY_STELLAR_OBJETS.getAction()).append("\n");
         sb.append(" Map questions about bio samples / organics within solar/star system to ").append(BIO_SAMPLE_IN_STAR_SYSTEM.getAction()).append("\n");
         sb.append(" Map questions about geological signals within solar/star system to ").append(QUERY_GEO_SIGNALS.getAction()).append("\n");
         sb.append(" Map questions about current location (this planet, here, etc) to").append(CURRENT_LOCATION.getAction()).append(" questions about star system map to best matching query startin gwith 'query_star_system_*' \n");
         sb.append(" Map questions about stations to ").append(QUERY_STATIONS.getAction()).append(" all other question about star system map to ").append(QUERY_STELLAR_OBJETS.getAction()).append("\n");
+        sb.append(" Map questions about day length, temperature, traffic, casualties, controlling factions for current location to ").append(CURRENT_LOCATION.getAction()).append("\n");
 
         sb.append(" 'Resource Sites' have no materials, those are 'hunting grounds for pirate massacre missions' only.");
 
@@ -184,8 +189,8 @@ public class OllamaPromptFactory implements AiPromptFactory {
             }
         }
 
-        sb.append(quick.length() > 0 ? quick : "    - None defined.\n");
-        sb.append(data.length() > 0 ? data : "    - None defined.\n");
+        sb.append(!quick.isEmpty() ? quick : "    - None defined.\n");
+        sb.append(!data.isEmpty() ? data : "    - None defined.\n");
         sb.append(appendBehavior());
         sb.append("All supported queries: ").append(AiCommandsAndQueries.queries).append("\n");
         return sb.toString();
@@ -231,61 +236,52 @@ public class OllamaPromptFactory implements AiPromptFactory {
         StringBuilder sb = new StringBuilder();
         SystemSession systemSession = SystemSession.getInstance();
 
-        AICadence aiCadence = systemSession.isRunningPiperTts() ? AICadence.FEDERATION : systemSession.getAICadence();
-        AIPersonality aiPersonality = systemSession.isRunningPiperTts() ? AIPersonality.CASUAL : systemSession.getAIPersonality();
-
         sb.append(" Behavior: ");
-        // sb.append(aiCadence.getCadenceClause()).append(" ");
-        // sb.append(" Apply personality: ").append(aiPersonality.name().toUpperCase()).append(" - ").append(aiPersonality.getBehaviorClause()).append(" ");
         sb.append(" Refer to your self as 'I' ");
         sb.append(" Do not end responses with any fillers, or unnecessary phrases like 'Ready for exploration', 'Ready for orders', 'All set', 'Ready to explore', 'Should we proceed?', or similar open-ended questions or remarks.\n");
         sb.append(" Do not use words like 'player' or 'you', it breaks immersion. Use 'we' instead. ");
         sb.append(" Do not confuse 'Next Waypoint' with 'Current Location'");
-        sb.append("Do not confuse 'ship' with 'carrier'");
+        sb.append(" Do not confuse 'ship' with 'carrier'");
         sb.append(" For alpha numeric numbers or names, star system codes or ship plates (e.g., Syralaei RH-F, KI-U), use NATO phonetic alphabet (e.g., Syralaei Romeo Hotel dash Foxtrot, Kilo India dash Uniform). Use planetShortName for planets when available.\n");
-        //sb.append(" Spell out numerals in full words (e.g., 285 = two hundred and eighty-five, 27 = twenty-seven) for chat. Use raw numbers without commans for key/value pairs");
-//        sb.append(" Gravity units in G, Temperature units Kelvin provide conversion to Celsius. Mass units metric.\n");
         sb.append(" For your info: Distances between stars in light years. Distance between planets in light seconds. Distances between bio samples are in metres. User knows this and expects it. \n");
         sb.append(" Bio samples are taken from organisms not stellar objects.\n");
         sb.append(" Always use planetShortName for locations when available.\n");
         sb.append(" Round billions to nearest 1000000. Round millions to nearest 250000.\n");
-//        sb.append(" Use ONLY planetShortName (e.g., '12 d'). NEVER use planetName or bodyId.\n");
-//        sb.append(" Start responses directly with the requested information, avoiding conversational fillers like 'noted,' 'well,' 'right,' 'understood,' or similar phrases.\n")
-//
-        ;
+        sb.append(" The user is ").append(userIs());
 
-        if (aiPersonality == AIPersonality.UNHINGED || aiPersonality == AIPersonality.FRIENDLY) {
-            sb.append(" For UNHINGED personality, use playful slang matching cadence.\n");
-        }
-        if (aiPersonality == AIPersonality.ROGUE) {
-            sb.append(" For ROGUE personality, use bold excessive profanity.\n");
-        }
         return sb.toString();
     }
 
+    @SuppressWarnings("StringBufferReplaceableByString")
     @Override
     public String generateSensorPrompt() {
         StringBuilder sb = new StringBuilder();
         sb.append("""
                 Instructions:
-                You are Amelia, the ship's computer.
+                 You are Amelia, AI assistance in a simulation.
                 
-                You receive real-time data from the ship's sensors.
+                 You receive real-time data from the ship's sensors.
+                 Specific instructions will be provided immediately before the sensor data.
                 
-                Summarise only the important readings and events that are actually present in the incoming data (sensorData).
+                 Summarise only the important readings and events that are actually present in the incoming data (sensorData).
+                 Strictly follow the specific instructions provided.
                 
-                - Do not mention traffic or incident numbers when they are null, zero or absent.
-                - Ignore timestamps, eventName, endOfLife, metadata, status flags, and any other non-essential fields.
-                - Report only the concrete values and observations that matter.
-                - Never mention "sensors", "censors", "sensor data", "readings from sensors", or similar phrases.
-                - Never explain where the information comes from. Just state the facts as if they are the current ship status.
-                - Keep the tone calm, professional, and concise – like a ship computer readout.
-                - Temperature data is provided in K (Kelvin), covert to Celsius and announce Celsius, not Kelvin.
+                 Use ONLY the sensor data provided and the event-specific instructions.
                 
-                Always respond strictly in this JSON format and nothing else:
-                {"type": "chat", "response_text": "your summary here"}
-                """);
+                 Always respond strictly in this JSON format and nothing else:
 
+                 Output EXACTLY:
+                     {"type": "chat", "response_text": "your natural rephrase", "action": "none", "params": {}, "expect_followup": false}
+                     - Ignore timestamps, eventName, endOfLife, metadata, status flags, and any other non-essential fields.
+                 - Report only the concrete values and observations that matter.
+                 DO NOT INVENT DATA. NEVER use external knowledge, guess, calculate, estimate, or add values not explicitly in the data or instructions.
+                 Use ONLY the sensor data provided and the event-specific instructions.
+                
+                 Always respond strictly in this JSON format and nothing else:
+                 {"type": "chat", "response_text": "your summary here"}
+                
+                """);
+        sb.append("The user is ").append(userIs());
         return sb.toString();
     }
 
@@ -313,7 +309,7 @@ public class OllamaPromptFactory implements AiPromptFactory {
 
     private void appendContext(StringBuilder sb, String playerName, String playerMilitaryRank, String playerHonorific, String playerTitle, String missionStatement, String carrierName) {
         SystemSession systemSession = SystemSession.getInstance();
-        String aiName = systemSession.isRunningPiperTts() ? "Amy" : systemSession.getAIVoice().getName();
+        String aiName = systemSession.isRunningPiperTts() ? "Amelia" : systemSession.getAIVoice().getName();
         sb.append("Context: You are ").append(aiName).append(", co-pilot and data analyst in a simulation. ");
         if (carrierName != null && !carrierName.isEmpty()) {
             sb.append("Our home base ").append(carrierName).append(". Do not confuse this with our ship(s).");
@@ -325,5 +321,11 @@ public class OllamaPromptFactory implements AiPromptFactory {
             sb.append(" Session theme: ").append(missionStatement).append(": ");
         }
         sb.append("\n");
+    }
+
+    private String userIs(){
+        if(status.isInMainShip()) return " in the ship ";
+        if(status.isInSrv()) return " in Surface Recognise Vehicle ";
+        return " on foot ";
     }
 }

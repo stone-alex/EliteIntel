@@ -38,7 +38,7 @@ public class StartJumpSubscriber {
             PlayerSession playerSession = PlayerSession.getInstance();
             playerSession.clearGenusPaymentAnnounced();
             if (playerSession.isRouteAnnouncementOn()) {
-                EventBusManager.publish(new SensorDataEvent(sb.toString()));
+                EventBusManager.publish(new SensorDataEvent(sb.toString(), "Notify User"));
             }
         }
     }

@@ -17,7 +17,7 @@ public class SellOrganicDataSubscriber {
         CodexEntryManager codexEntryManager = CodexEntryManager.getInstance();
         codexEntryManager.clear();
         if (playerSession.isDiscoveryAnnouncementOn()) {
-            EventBusManager.publish(new SensorDataEvent("Bio Data Sold: " + event.toJson()));
+            EventBusManager.publish(new SensorDataEvent("Bio Data Sold: " + event.toJson(), "We sold organic data and made credits. Provide user with details of how much credits we made and what we were paid for."));
         }
     }
 }

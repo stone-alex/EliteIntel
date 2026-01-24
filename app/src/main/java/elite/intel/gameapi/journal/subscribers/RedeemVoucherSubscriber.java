@@ -12,7 +12,7 @@ public class RedeemVoucherSubscriber {
 
     @Subscribe
     public void onRedeemVoucherEvent(RedeemVoucherEvent event) {
-        EventBusManager.publish(new SensorDataEvent(new DataDto("Bounty Payment Awarded", event).toJson()));
+        EventBusManager.publish(new SensorDataEvent(new DataDto("Bounty Payment Awarded", event).toJson(), "We were granted a bounty payment. Notify user about credits received and what factions we received it from"));
         PlayerSession.getInstance().clearBounties();
     }
 

@@ -38,7 +38,7 @@ public class SetPersonalityHandler implements CommandHandler {
 
             systemSession.setAIPersonality(aiPersonality);
         } catch (IllegalArgumentException e) {
-            EventBusManager.publish(new SensorDataEvent("No such personality. try Professional, Casual, Friendly, Unhinged or Rogue"));
+            EventBusManager.publish(new SensorDataEvent("No such personality. try Professional, Casual, Friendly, Unhinged or Rogue", "Notify User"));
         }
     }
 }

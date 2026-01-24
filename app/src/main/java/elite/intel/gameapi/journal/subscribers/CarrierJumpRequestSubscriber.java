@@ -29,6 +29,6 @@ public class CarrierJumpRequestSubscriber {
         PlayerSession playerSession = PlayerSession.getInstance();
         playerSession.setCarrierDepartureTime(departureTime);
 
-        EventBusManager.publish(new SensorDataEvent(sb.toString()));
+        EventBusManager.publish(new SensorDataEvent(sb.toString(), "Notify User"));
     }
 }

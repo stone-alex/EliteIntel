@@ -29,7 +29,7 @@ public class MissionCompletedSubscriber {
         if (MISSION_PIRATE_MASSACRE.equals(missionType) || MISSION_PIRATE_MASSACRE_WING.equals(missionType)) {
             playerSession.removeMission(event.getMissionID());
             String targetFaction = event.getTargetFaction();
-            EventBusManager.publish(new SensorDataEvent("Notify: Mission against Faction \"" + targetFaction + "\" Completed: " + event));
+            EventBusManager.publish(new SensorDataEvent("Notify: Mission against Faction \"" + targetFaction + "\" Completed: " + event, "Notify user of a successful mission completion, provide detailed summary from the data received."));
         }
         if (false) {
             /*

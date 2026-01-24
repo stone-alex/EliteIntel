@@ -44,7 +44,7 @@ public class SetCadenceHandler implements CommandHandler {
 
             systemSession.setAICadence(aiCadence);
         } catch (IllegalArgumentException e) {
-            EventBusManager.publish(new SensorDataEvent("No such cadence. try Imperial, Federation or Alliance"));
+            EventBusManager.publish(new SensorDataEvent("No such cadence. try Imperial, Federation or Alliance", "Notify User"));
         }
 
     }

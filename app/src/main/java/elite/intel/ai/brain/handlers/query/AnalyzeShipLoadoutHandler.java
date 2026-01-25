@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.gameapi.journal.events.dto.shiploadout.EngineeringDto;
 import elite.intel.gameapi.journal.events.dto.shiploadout.ModuleDto;
 import elite.intel.gameapi.journal.events.dto.shiploadout.ShipLoadOutDto;
 import elite.intel.session.PlayerSession;
@@ -22,12 +23,17 @@ public class AnalyzeShipLoadoutHandler extends BaseQueryAnalyzer implements Quer
         if (shipLoadout == null) return process("No data available");
 
         String instructions = """
-                Use this data to answer user queries about ship loadout details.
+                Provide answers about ship loadout details, health, damage report, suitability for a task, or whatever else user asks.
+                IF damage detected (moduleHealthPercentage < 100) list damaged modules and damage percentage.
+                IF asked about a specific module equiped reply with yes, or no. If yes, list know smodule specification.
+                ______________________________________________________________
+                For questions about ship classifications/suitability use this as a general guide line:
                 Ship configuration builds/types:
                     - Discovery class ships: long range jumps (more than 50ly) light, no cargo, no weapons minimal shielding.
-                    - Cargo class ships: a lot of cargo space, average jump range (less than 50ly) may have some defencive weapons minimal shielding.
+                    - Cargo class ships: a lot of cargo space, average jump range (less than 50 light years) may have some defencive weapons minimal shielding.
                     - Combat class ships: lazers / cannons / missiles, and massive shields are priority over cargo space or range
                     - Mining class ships: priority is mining tools, refinery and cargo space.
+                ______________________________________________________________
                 """;
 
         return process(new AiDataStruct(instructions, new DataDto(ShipFactsExtractor.extractFacts(shipLoadout))), originalUserInput);
@@ -55,10 +61,16 @@ public class AnalyzeShipLoadoutHandler extends BaseQueryAnalyzer implements Quer
 
             if (loadout.getModules() != null) {
                 for (ModuleDto module : loadout.getModules()) {
-                    facts.put(module.getSlot(), module.getItem());
+                    facts.put(module.getSlot(), new ShipModule(module.getItem(), module.getHealthPercentage(), module.getEngineering()));
                 }
             }
             return facts;
+        }
+    }
+
+    record ShipModule(String moduleName, double moduleHealthPercentage, EngineeringDto engineering){
+        @Override public String toString() {
+            return GsonFactory.getGson().toJson(this);
         }
     }
 }

@@ -6,6 +6,7 @@ import elite.intel.ai.mouth.subscribers.events.DiscoveryAnnouncementEvent;
 import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.FSSBodySignalsEvent;
+import elite.intel.gameapi.journal.events.SAASignalsFoundEvent;
 import elite.intel.gameapi.journal.events.ScanEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.gameapi.journal.events.dto.MaterialDto;
@@ -29,7 +30,7 @@ import static elite.intel.gameapi.journal.events.dto.LocationDto.LocationType.*;
 import static elite.intel.util.StringUtls.subtractString;
 
 @SuppressWarnings("unused")
-public class ScanEventSubscriber extends BiomeAnalyzer {
+public class ScanEventSubscriber {
 
 
     private static final Logger log = LogManager.getLogger(ScanEventSubscriber.class);
@@ -48,6 +49,7 @@ public class ScanEventSubscriber extends BiomeAnalyzer {
     private final PlayerSession playerSession = PlayerSession.getInstance();
     private final SystemSession systemSession = SystemSession.getInstance();
     private final LocationManager locationManager = LocationManager.getInstance();
+    private final BiomeAnalyzer biomeAnalyzer = BiomeAnalyzer.getInstance();
     private final EdDnClient edDnClient = EdDnClient.getInstance();
 
     private static String getDetails(ScanEvent event, String shortName) {
@@ -136,19 +138,35 @@ public class ScanEventSubscriber extends BiomeAnalyzer {
 
 
         List<FSSBodySignalsEvent.Signal> fssSignals = locationManager.getLocation(event.getStarSystem(), event.getBodyID()).getFssSignals();
+        List<SAASignalsFoundEvent.Signal> saaSignals = locationManager.getLocation(event.getStarSystem(), event.getBodyID()).getSaaSignals();
 
         int countBioSignals = 0;
         int countGeological = 0;
         if (fssSignals != null && !fssSignals.isEmpty()) {
             for (FSSBodySignalsEvent.Signal signal : fssSignals) {
-                if ("Biological".equalsIgnoreCase(signal.getTypeLocalised())) {
-                    countBioSignals++;
+                if ("$SAA_SignalType_Biological;".equalsIgnoreCase(signal.getType())) {
+                    countBioSignals = countBioSignals + signal.getCount();
                 }
-                if ("Geological".equalsIgnoreCase(signal.getTypeLocalised())) {
-                    countGeological++;
+                if ("$SAA_SignalType_Geological;".equalsIgnoreCase(signal.getType())) {
+                    countGeological = countGeological + signal.getCount();
                 }
             }
         }
+
+        /// IF fss did not catch it, try saa
+        if (countBioSignals == 0 || countGeological == 0) {
+            if (saaSignals != null && !saaSignals.isEmpty()) {
+                for (SAASignalsFoundEvent.Signal signal : saaSignals) {
+                    if (countBioSignals == 0 && "$SAA_SignalType_Biological;".equalsIgnoreCase(signal.getType())) {
+                        countBioSignals = countBioSignals + signal.getCount();
+                    }
+                    if (countGeological == 0 && "$SAA_SignalType_Geological;".equalsIgnoreCase(signal.getType())) {
+                        countGeological = countGeological + signal.getCount();
+                    }
+                }
+            }
+        }
+
         location.setBioSignals(countBioSignals);
         location.setGeoSignals(countGeological);
 
@@ -162,10 +180,19 @@ public class ScanEventSubscriber extends BiomeAnalyzer {
         }
 
         if (location.getBioSignals() > 0 && playerSession.isDiscoveryAnnouncementOn()) {
-            EventBusManager.publish(new DiscoveryAnnouncementEvent("Life Found in "+location.getPlanetShortName()));
-            //if (!"Detailed".equals(event.getScanType())) {
-                analyzeBiome(location);
-            //}
+            EventBusManager.publish(new DiscoveryAnnouncementEvent("Life Found in " + location.getPlanetShortName()));
+            if (!"Detailed".equals(event.getScanType())) {
+                biomeAnalyzer.analyzeBiome(null,
+                        new BiomeAnalyzer.LocationData(
+                                location.getPlanetShortName(),
+                                location.getBioSignals(),
+                                location.getPlanetClass(),
+                                String.valueOf(location.getDistance()),
+                                location.getVolcanism(),
+                                location.getAtmosphere(),
+                                String.valueOf(location.getSurfaceTemperature())
+                        ));
+            }
         } else {
             announceIfNewDiscovery(event, location);
         }
@@ -188,10 +215,10 @@ public class ScanEventSubscriber extends BiomeAnalyzer {
                 break;
             }
             if (parent.getPlanet() != null && parent.getPlanet() > 0) {
-                isMoon =  true;
+                isMoon = true;
                 break;
             }
-            if(parent.getStar() == null && event.getSurfaceTemperature() > 1000){
+            if (parent.getStar() == null && event.getSurfaceTemperature() > 1000) {
                 isStar = true;
                 break;
             }
@@ -203,9 +230,9 @@ public class ScanEventSubscriber extends BiomeAnalyzer {
             return STAR;
         } else if (isBeltCluster) {
             return BELT_CLUSTER;
-        } else if(isPlanet){
+        } else if (isPlanet) {
             return PLANET;
-        } else if(isMoon){
+        } else if (isMoon) {
             return MOON;
         } else {
             return UNKNOWN;

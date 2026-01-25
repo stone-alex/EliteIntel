@@ -7,42 +7,90 @@ import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.ai.mouth.subscribers.events.DiscoveryAnnouncementEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.data.BioForms;
-import elite.intel.gameapi.journal.events.dto.GenusDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
+import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 
+import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 public class BiomeAnalyzer extends BaseQueryAnalyzer {
 
-    public void analyzeBiome(LocationDto location) {
-        if (location == null || LocationDto.LocationType.PLANET != location.getLocationType()) {
+    private static BiomeAnalyzer instance;
+
+    public static BiomeAnalyzer getInstance() {
+        if (instance == null) {
+            instance = new BiomeAnalyzer();
+        }
+        return instance;
+    }
+
+    private BiomeAnalyzer() {
+    }
+
+    public void analyzeBiome(@Nullable String originalUserInput, LocationData ... locations) {
+        if (locations == null) {
             return;
         }
 
-        List<GenusDto> genus = location.getGenus();
-        if(genus == null || genus.isEmpty()) {
-            String instructions = "Parse the genusToBiome map, where each value is formatted as 'Planet:<types>|Atmosphere:<types>|Gravity:<constraint>|Temperature:<range>|Volcanism:<types>|System:<constraints>'. Using the location's atmosphere, gravity, temperature, volcanism, and system details, identify genera whose biome conditions match. Return a list of matching genera, prioritizing specific matches over broad ones. Do not return details on negative results. Return possible matches only. Bacterium is a most likely candidate, while genus like Brain Trees and are extremely rare.";
+        PlayerSession playerSession = PlayerSession.getInstance();
+        String instructions = """
+                You are a strict classifier. IGNORE all planet properties except planetShortName, planetClass, atmosphere, temperature, volcanism (if relevant) — but ONLY to match against genusToBiome map.
+                
+                ONLY source: the provided genusToBiome map.
+                
+                For each planet:
+                - Find ALL genera whose conditions can POSSIBLY be met (lenient/partial match allowed, do NOT require 100% fit).
+                - Output: "Planet <planetName>: " followed by comma-separated list (no trailing comma).
+                - Number of genera listed MUST be equal or greater than numBioSignals.
+                - If ZERO plausible matches but numBioSignals > 0 → list "Bacterium"
+                - If no matches and numBioSignals = 0 → "Planet <shortName>: no matching genus found"
+                - Pure text only. No explanations, no stats, no other words.
+                
+                Output format: { "type":"chat", "response_text": "Planet X: Genus1, Genus2. Planet Y: GenusA" }
+                
+                Example for 2 signals with good matches: Planet B 3: X, Y (wher X and Y are genus)
+                """;
 
-            JsonObject jsonObject = process(
-                    new AiDataStruct(instructions, new DataDto(BioForms.getGenusToBiome(), location)),
-                    "Provide specific analysis of possible genus based on this data for this planet only. Do not list all possible combinations not related to this planet."
-            );
+        List<LocationData> list = List.of(locations);
+        JsonObject jsonObject = process(new AiDataStruct(instructions, new DataDto2(BioForms.getGenusToBiome(), list, starSystemCharacteristics(playerSession.getLocations().values()))), originalUserInput);
 
-            String responseTextToUse = jsonObject.has(AIConstants.PROPERTY_RESPONSE_TEXT)
-                    ? jsonObject.get(AIConstants.PROPERTY_RESPONSE_TEXT).getAsString()
-                    : null;
-            if (responseTextToUse != null && !responseTextToUse.isEmpty()) {
-                EventBusManager.publish(new DiscoveryAnnouncementEvent(responseTextToUse));
-            }
+        String responseTextToUse = jsonObject.has(AIConstants.PROPERTY_RESPONSE_TEXT)
+                ? jsonObject.get(AIConstants.PROPERTY_RESPONSE_TEXT).getAsString()
+                : null;
+        if (responseTextToUse != null && !responseTextToUse.isEmpty()) {
+            EventBusManager.publish(new DiscoveryAnnouncementEvent(responseTextToUse));
         }
     }
 
-    record DataDto(Map<String, String> genusToBiome, LocationDto location) implements ToJsonConvertible {
+    private String starSystemCharacteristics(Collection<LocationDto> starSystem) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("System:");
+        for (LocationDto stellarObject : starSystem) {
+            if (stellarObject.getStarClass() == null && stellarObject.getPlanetClass() != null) {
+                sb.append(" has planet type:'").append(stellarObject.getPlanetClass()).append("' distance:").append(stellarObject.getDistance()).append(", ");
+            } else if (stellarObject.getStarClass() != null) {
+                sb.append("Star type").append(stellarObject.getBodyType()).append(" present, ");
+            }
+        }
+        sb.append(" .");
+
+        return sb.toString();
+    }
+
+    public record LocationData(String planetName, int numBioSignals, String planetClass, String distance, String vulcanism, String atmosphere, String temperature) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }
     }
+
+    record DataDto2(Map<String, String> genusToBiome, Collection<LocationData> locations, String starSystemCharacteristics) implements ToJsonConvertible {
+        @Override public String toJson() {
+            return GsonFactory.getGson().toJson(this);
+        }
+    }
+
 }

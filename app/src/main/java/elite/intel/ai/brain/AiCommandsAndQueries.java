@@ -11,7 +11,7 @@ public class AiCommandsAndQueries {
     private final Map<String, String> commandMap = Map.<String, String>ofEntries(
 
             Map.entry("navigate to next mission, plot route to mission location", NAVIGATE_TO_NEXT_MISSION.getAction()),
-            Map.entry("lights off, lights on, turn off the lights, turn on the lights", LIGHTS_ON_OFF.getAction()),
+            Map.entry("headlights off, headlights on, turn off the lights, turn on the lights", LIGHTS_ON_OFF.getAction()),
             Map.entry("set mining target <material>", ADD_MINING_TARGET.getAction()),
             Map.entry("clear mining targets", CLEAR_MINING_TARGETS.getAction()),
             Map.entry("interrupt text to speech, silence, cancel, belay that, shut up", INTERRUPT_TTS.getAction()),
@@ -66,7 +66,7 @@ public class AiCommandsAndQueries {
             Map.entry("deploy hardpoints, weapons hot, deploy weapons", DEPLOY_HARDPOINTS.getAction()),
             Map.entry("deploy landing gear, landing gear down", DEPLOY_LANDING_GEAR.getAction()),
             Map.entry("retract landing gear, landing gear up", RETRACT_LANDING_GEAR.getAction()),
-            Map.entry("lets go, get out of here, take us to hyperspace, enter hyperspace", JUMP_TO_HYPERSPACE.getAction()),
+            Map.entry("lets go, get out of here, take us to hyperspace, enter hyperspace, next way point", JUMP_TO_HYPERSPACE.getAction()),
             Map.entry("enter super cruise, engage FSD", ENTER_SUPER_CRUISE.getAction()),
             Map.entry("exit super cruise, disengage FSD, drop", EXIT_SUPER_CRUISE.getAction()),
             Map.entry("analysis mode, hud to analysis", ACTIVATE_ANALYSIS_MODE.getAction()),
@@ -124,7 +124,6 @@ public class AiCommandsAndQueries {
             Map.entry("help with, how can I..., explain how to...", HELP.getAction()),
             Map.entry("are there any organics in the star system, what planets have bio forms to scan, are there any bio signals in star system", BIO_SAMPLE_IN_STAR_SYSTEM.getAction()),
             Map.entry("queries about organics or exobiology for plant scans", EXOBIOLOGY_SAMPLES.getAction()),
-            //Map.entry("queries about fss signals within star system, what do you see on scanners, is <ship name> present, are there resource sites", FSS_SIGNALS.getAction()),
             Map.entry("queries about star system objects, are there landable planets, what class is the stellar object", QUERY_STELLAR_OBJETS.getAction()),
             Map.entry("query, system signals, bio signals, geological signals, hostspots, mining sites, resource sites", QUERY_STELLAR_SIGNALS.getAction()),
             Map.entry("what planets have geo signals", QUERY_GEO_SIGNALS.getAction()),
@@ -163,7 +162,7 @@ public class AiCommandsAndQueries {
             Map.entry("how far are we from the bubble, how long will it take to get to the bubble", DISTANCE_TO_BUBBLE.getAction()),
             Map.entry("how far are we from last organic, bio sample, priveous bioscan", DISTANCE_TO_LAST_BIO_SAMPLE.getAction()),
             Map.entry("what time is it", TIME_IN_ZONE.getAction()),
-            Map.entry("analyze planetary biome, run biome analysis, run biome analysis on planet X", PLANET_BIOME_ANALYSIS.getAction()),
+            Map.entry("analyze planetary/moon biome, run biome analysis, run biome analysis on planet/moon X", PLANET_BIOME_ANALYSIS.getAction()),
             Map.entry("remind me about X", REMINDER.getAction()),
             Map.entry("questions about missions that are not pirate related", ANALYZE_MISSIONS.getAction()),
             Map.entry("if nothing else matches use this", GENERAL_CONVERSATION.getAction())

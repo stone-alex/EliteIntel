@@ -1,4 +1,4 @@
-package elite.intel.ai.brain.ollama;
+package elite.intel.ai.brain.commons;
 
 import elite.intel.ai.brain.AiCommandsAndQueries;
 import elite.intel.ai.brain.AiPromptFactory;
@@ -8,20 +8,20 @@ import elite.intel.util.Ranks;
 
 import java.util.Objects;
 
-public class OllamaPromptFactory implements AiPromptFactory {
+public class PromptFactory implements AiPromptFactory {
 
-    private static final OllamaPromptFactory INSTANCE = new OllamaPromptFactory();
+    private static final PromptFactory INSTANCE = new PromptFactory();
     private static final String JSON_FORMAT = """
-            Always output JSON: 
+            Always output JSON:
             {"type": "command|query", "response_text": "TTS output", "action": "action_name|query_name", "params": {"key": "value"}, "expect_followup": boolean} 
             action must match provided command or query. They key for value is always 'key'. 
             """;
     private final AiCommandsAndQueries commandsAndQueries = AiCommandsAndQueries.getInstance();
 
-    private OllamaPromptFactory() {
+    private PromptFactory() {
     }
 
-    public static OllamaPromptFactory getInstance() {
+    public static PromptFactory getInstance() {
         return INSTANCE;
     }
 
@@ -106,7 +106,7 @@ public class OllamaPromptFactory implements AiPromptFactory {
                 Rules — follow exactly:
                 - "response_text" must be:
                   - pure ASCII English text
-                  - extremely brief and concise
+                  - Respond in Military brief and clear style
                   - single clean string (no arrays, no objects, no commas as separators unless part of the natural sentence)
                   - only the final extracted answer
                 - If no matching data exists in the provided JSON → "No Data Available."

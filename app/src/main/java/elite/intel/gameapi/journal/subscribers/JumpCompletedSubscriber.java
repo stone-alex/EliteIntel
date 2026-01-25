@@ -112,7 +112,7 @@ public class JumpCompletedSubscriber {
                                 .append(", ")
                                 .append(isFuelStarClause(nextStop.getStarClass()))
                 );
-                sb.append(remainingJump).append(" jumps left.");
+                sb.append("We have ").append(remainingJump).append(" jumps left to destination.");
             }
         }
 

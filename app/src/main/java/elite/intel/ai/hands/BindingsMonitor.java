@@ -185,7 +185,7 @@ public class BindingsMonitor {
         BindingsMonitor monitor = BindingsMonitor.getInstance();
         Bindings.GameCommand[] values = Bindings.GameCommand.values();
         List<String> oldMissingBindings = keyBindingManager
-                .getBindings()
+                .getMissingBindings()
                 .stream()
                 .map(KeyBinding::getKeyBinding)
                 .toList();

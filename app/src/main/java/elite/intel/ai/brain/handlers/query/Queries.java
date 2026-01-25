@@ -50,10 +50,10 @@ public enum Queries {
     DISTANCE_TO_BUBBLE                  ("query_distance_to_bubble",                    AnalyzeDistanceFromTheBubble.class, false),
     DISTANCE_TO_LAST_BIO_SAMPLE         ("query_distance_to_last_bio_sample",           AnalyzeDistanceFromLastBioSample.class, true),
     TIME_IN_ZONE                        ("query_what_time_is_it_on_earth",              TimeQueryHandler.class, true),
-    PLANET_BIOME_ANALYSIS               ("query_planet_biome_analysis",                 PlanetBiomeAnalyzerHandler.class, true),
+    PLANET_BIOME_ANALYSIS               ("query_biome_analysis",                        BiomeAnalyzerHandler.class, true),
     REMINDER                            ("query_reminder",                              RemindTargetDestinationHandler.class, false),
     GENERAL_CONVERSATION                ("general_conversation",                        ConversationalQueryHandler.class, false),
-    ANALYZE_MISSIONS                    ("query_analyze_missions",                       AnalyzeMissionHandler.class, true);
+    ANALYZE_MISSIONS                    ("query_analyze_missions",                      AnalyzeMissionHandler.class, true);
     /// ########################################################################################################################################
 
 

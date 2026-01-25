@@ -1,7 +1,7 @@
 package elite.intel.ai;
 
 import elite.intel.ai.brain.*;
-import elite.intel.ai.brain.commons.CommonAiPromptFactory;
+import elite.intel.ai.brain.commons.PromptFactory;
 import elite.intel.ai.brain.ollama.*;
 import elite.intel.ai.brain.openai.*;
 import elite.intel.ai.brain.xai.*;
@@ -60,9 +60,9 @@ public class ApiFactory {
         ProviderEnum provider = KeyDetector.detectProvider(apiKey, "LLM");
         return switch (provider) {
             // testing ollama prompts with cloud llms. If good, that will be the default
-            case GROK -> OllamaPromptFactory.getInstance();
-            case OPENAI -> OllamaPromptFactory.getInstance();
-            default -> OllamaPromptFactory.getInstance();
+            case GROK -> PromptFactory.getInstance();
+            case OPENAI -> PromptFactory.getInstance();
+            default -> PromptFactory.getInstance();
         };
     }
 

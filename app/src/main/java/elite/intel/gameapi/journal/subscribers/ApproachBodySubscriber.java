@@ -75,7 +75,7 @@ public class ApproachBodySubscriber {
         }
 
         playerSession.saveLocation(location);
-        EventBusManager.publish(new SensorDataEvent(sb.toString(), "Warn user about planetary approach with these data"));
+        EventBusManager.publish(new SensorDataEvent(sb.toString(), "Warn user about planetary approach with these data. Temperature data is provided in K (Kelven) convert it to Celsius."));
     }
 
 

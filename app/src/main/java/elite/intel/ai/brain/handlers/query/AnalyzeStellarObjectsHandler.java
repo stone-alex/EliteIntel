@@ -4,9 +4,8 @@ import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.journal.events.FSSBodySignalsEvent;
-import elite.intel.gameapi.journal.events.SAASignalsFoundEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
+import elite.intel.gameapi.journal.events.dto.LocationDto.LocationType;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
@@ -22,15 +21,16 @@ public class AnalyzeStellarObjectsHandler extends BaseQueryAnalyzer implements Q
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         EventBusManager.publish(new AiVoxResponseEvent("Analyzing stelar objects data... Stand by..."));
-        List<LocationData> allLocations = toLocationList(playerSession.getLocations());
+        StellarObjectsData<List<LocationData>, String> data = toLocationList(playerSession.getLocations());
 
         String instructions = """
                 You are a strict data-only responder. Use ONLY the provided JSON array "allStellarObjectsInStarSystem".
-                
+                Summary field provides general summary of the star system. (number of stars, planets, moons and stations)
                 Examples of good short answers (reference only – do NOT copy literally):
                 - "Yes, '1 b' is landable, rocky body, 0.13 g, CO₂ atmosphere."
                 - "Landable rocky bodies: 1 b, 1 c, 3 d, 2 d a"
                 - "Bodies with bio signals: '1 b' (3 signals)"
+                - "Star system has two stars, three planets, and one moon."
                 - "No bodies with rings in this system."
                 """;
 
@@ -38,19 +38,41 @@ public class AnalyzeStellarObjectsHandler extends BaseQueryAnalyzer implements Q
                 new AiDataStruct(
                         instructions,
                         new DataDto(
-                                allLocations
+                                data.getSummary(),
+                                data.getObjectList()
                         )
                 ),
                 originalUserInput
         );
     }
 
-    private List<LocationData> toLocationList(Map<Long, LocationDto> locations) {
+    private StellarObjectsData<List<LocationData>, String> toLocationList(Map<Long, LocationDto> locations) {
         Collection<LocationDto> values = locations.values();
         ArrayList<LocationData> result = new ArrayList<>();
+        int numberOfMoons = 0;
+        int numberOfPlanets = 0;
+        int numberOfStars = 0;
+        int numberOfStations = 0;
         for (LocationDto location : values) {
             boolean isPlanetaryRing = location.getPlanetName().contains("Ring");
-            LocationDto.LocationType locationType = location.getLocationType();
+            LocationType locationType = location.getLocationType();
+
+            if (LocationType.STAR == locationType || LocationType.PRIMARY_STAR == locationType) {
+                numberOfStars++;
+            }
+
+            if (LocationType.PLANET == locationType){
+                numberOfPlanets++;
+            }
+
+            if(LocationType.MOON == locationType){
+                numberOfMoons++;
+            }
+
+            if(LocationType.STATION == locationType){
+                numberOfStations++;
+            }
+
             result.add(new LocationData(
                     location.getPlanetShortName(),
                     locationType.name(),
@@ -72,7 +94,7 @@ public class AnalyzeStellarObjectsHandler extends BaseQueryAnalyzer implements Q
                     location.getMarket() != null
             ));
         }
-        return result;
+        return new StellarObjectsData<>(result, "Star System contains: " + numberOfStars + " stars " + numberOfPlanets + " planets " + numberOfMoons + " moons, and " + numberOfStations + " stations.");
     }
 
     record LocationData(String stellarObjectName,
@@ -99,10 +121,28 @@ public class AnalyzeStellarObjectsHandler extends BaseQueryAnalyzer implements Q
         }
     }
 
-    record DataDto(List<LocationData> allStellarObjectsInStarSystem) implements ToJsonConvertible {
+    record DataDto(String summary, List<LocationData> allStellarObjectsInStarSystem) implements ToJsonConvertible {
 
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
+        }
+    }
+
+    private static class StellarObjectsData<A, B> {
+        private final A locationData;
+        private final B summary;
+
+        public StellarObjectsData(A list, B string) {
+            locationData = list;
+            summary = string;
+        }
+
+        public A getObjectList() {
+            return locationData;
+        }
+
+        public B getSummary() {
+            return summary;
         }
     }
 }

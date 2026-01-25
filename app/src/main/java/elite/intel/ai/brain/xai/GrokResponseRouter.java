@@ -89,12 +89,11 @@ public class GrokResponseRouter extends ResponseRouter implements AIRouterInterf
 
         try {
             JsonObject dataJson = handler.handle(action, params, userInput);
+            if(dataJson == null) return;
             String responseTextToUse = dataJson.has(AIConstants.PROPERTY_RESPONSE_TEXT)
                     ? dataJson.get(AIConstants.PROPERTY_RESPONSE_TEXT).getAsString()
                     : "";
-            boolean requiresFollowUp = dataJson.has(AIConstants.PROPERTY_EXPECT_FOLLOWUP)
-                    ? dataJson.get(AIConstants.PROPERTY_EXPECT_FOLLOWUP).getAsBoolean()
-                    : false;
+            boolean requiresFollowUp = dataJson.has(AIConstants.PROPERTY_EXPECT_FOLLOWUP) && dataJson.get(AIConstants.PROPERTY_EXPECT_FOLLOWUP).getAsBoolean();
 
             // Override requiresFollowUp from QueryActions to ensure consistency
             for (Queries qa : Queries.values()) {

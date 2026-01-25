@@ -11,6 +11,7 @@ import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.search.spansh.carrierroute.CarrierJump;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.Status;
+import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.ClipboardUtils;
 import elite.intel.util.FleetCarrierRouteCalculator;
 
@@ -25,6 +26,10 @@ public class CarrierJumpCompleteSubscriber {
         String starSystem = event.getStarSystem();
         double[] starPos = event.getStarPos();
         playerSession.setLastKnownCarrierLocation(starSystem);
+
+        if (starPos.length == 3 && starPos[0] == 0.0 && starPos[1] == 0.0 && starPos[2] == 0) {
+            EventBusManager.publish(new AppLogEvent("WARNING: Carrier Jump complete, but star position is reported 0.0.0"));
+        }
 
 
         FleetCarrierRouteManager fleetCarrierRouteManager = FleetCarrierRouteManager.getInstance();

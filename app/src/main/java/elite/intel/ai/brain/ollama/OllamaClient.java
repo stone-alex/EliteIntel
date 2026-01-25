@@ -39,6 +39,7 @@ public class OllamaClient implements Client {
         request.addProperty("num_ctx", 16384);
         request.addProperty("stream", false);
         request.addProperty("think", false);
+        request.addProperty("think", false);
 
         /// OLAMA tricks.
         /// Accuracy / Coherence

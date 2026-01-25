@@ -281,3 +281,5 @@
 "career"="carrier"
 "tech"="check"
 "field scope"="fuel scoop"
+"blending"="landing"
+"part of the weapons"="power to weapons"

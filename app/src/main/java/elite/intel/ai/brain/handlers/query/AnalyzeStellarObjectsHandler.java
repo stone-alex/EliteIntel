@@ -4,6 +4,8 @@ import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.gameapi.journal.events.FSSBodySignalsEvent;
+import elite.intel.gameapi.journal.events.SAASignalsFoundEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
@@ -47,19 +49,21 @@ public class AnalyzeStellarObjectsHandler extends BaseQueryAnalyzer implements Q
         Collection<LocationDto> values = locations.values();
         ArrayList<LocationData> result = new ArrayList<>();
         for (LocationDto location : values) {
+            boolean isPlanetaryRing = location.getPlanetName().contains("Ring");
             result.add(new LocationData(
                     location.getPlanetShortName(),
-                    location.getPlanetClass(),
+                    isPlanetaryRing ? "Planetary Ring" : location.getPlanetClass(),
+                    location.getStarClass(),
+                    location.getStarName(),
                     location.isLandable(),
                     location.isTerraformable(),
                     Math.round(location.getGravity()),
                     Math.round(location.getSurfaceTemperature()),
                     location.getAtmosphere(),
                     location.getVolcanism(),
-                    location.isHasRings(),
+                    isPlanetaryRing,
                     Math.round(location.getDistance()),
                     location.getBioSignals(),
-                    location.getDetectedSignals().isEmpty() ? null : location.getDetectedSignals().size(),
                     location.isOurDiscovery(),
                     location.isWeMappedIt(),
                     location.getMarket() != null
@@ -68,18 +72,19 @@ public class AnalyzeStellarObjectsHandler extends BaseQueryAnalyzer implements Q
         return result;
     }
 
-    record LocationData(String planetShortName,
-                        String planetClass,
+    record LocationData(String stellarObjectName,
+                        String objectClass,
+                        String starClass,
+                        String starName,
                         boolean isLandable,
                         boolean isTerraformable,
                         double gravity,
                         double surfaceTemperature,
                         String atmosphere,
                         String volcanism,
-                        boolean hasRings,
+                        boolean isPlanetaryRing,
                         double distance,
                         int bioSignals,
-                        Integer detectedSignals,
                         boolean ourDiscovery,
                         boolean weMappedIt,
                         boolean hasMarkets

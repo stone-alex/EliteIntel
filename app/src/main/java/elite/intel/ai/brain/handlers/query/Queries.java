@@ -12,6 +12,7 @@ public enum Queries {
     EXOBIOLOGY_SAMPLES                  ("query_organic_samples_this_planet",           AnalyzeBioSamplesPlanetSurfaceHandler.class, true),
     FSS_SIGNALS                         ("query_star_system_for_fss_signals",           AnalyzeFssSignalsHandler.class, true),
     QUERY_STELLAR_OBJETS                ("query_star_system_for_stellar_objects",       AnalyzeStellarObjectsHandler.class, true),
+    QUERY_STELLAR_SIGNALS               ("query_star_system_for_signals",               AnalyzeStellarSignalsHandler.class, true),
     QUERY_GEO_SIGNALS                   ("query_star_system_for_geo_signals",           AnalyzeGeologyInStarSystemHandler.class, true),
     QUERY_STATIONS                      ("query_star_system_for_stations",              AnalyzeStationsHandler.class, true),
     KEY_BINDINGS_ANALYSIS               ("query_key_bindings_analysis",                 AnalyzeMisingKeyBindingHandler.class, true),

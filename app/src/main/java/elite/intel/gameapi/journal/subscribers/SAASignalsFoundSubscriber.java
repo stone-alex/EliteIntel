@@ -92,13 +92,13 @@ public class SAASignalsFoundSubscriber {
                 //Rings are bodies
                 LocationDto ring = new LocationDto(event.getBodyID());
                 ring.setSystemAddress(event.getSystemAddress());
-                ring.setLocationType(PLANETARY_RING);
                 ring.setBodyId(event.getBodyID());
                 ring.setPlanetName(event.getBodyName());
                 ring.setMaterials(toMaterials(event.getSignals()));
                 ring.setLocationType(PLANETARY_RING);
 
                 String parentBodyName = event.getBodyName().substring(0, event.getBodyName().length() - " X Ring".length());
+                ring.setParentBodyName(parentBodyName);
                 LocationDto parent = locationManager.getLocation(playerSession.getPrimaryStarName(), findParentId(parentBodyName));
                 if (parent != null) parent.setHasRings(true);
                 if (event.getSignals() != null) {

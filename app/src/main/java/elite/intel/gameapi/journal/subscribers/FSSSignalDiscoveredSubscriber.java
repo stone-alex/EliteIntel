@@ -28,8 +28,8 @@ public class FSSSignalDiscoveredSubscriber {
     private static final String USS_TYPE_VALUABLE_SALVAGE = "$USS_Type_ValuableSalvage";
     private static final String USS_TYPE_VERY_VALUABLE_SALVAGE = "$USS_Type_VeryValuableSalvage";
 
-    private PirateMissionDataManager pirateMissionDataManager = PirateMissionDataManager.getInstance();
     private final PlayerSession playerSession = PlayerSession.getInstance();
+    private final PirateMissionDataManager pirateMissionDataManager = PirateMissionDataManager.getInstance();
     private final LocationManager locationManager = LocationManager.getInstance();
     private final SystemSession systemSession = SystemSession.getInstance();
     private final EdDnClient edDnClient = EdDnClient.getInstance();

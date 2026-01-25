@@ -10,8 +10,8 @@ public enum Queries {
     HELP                                ("help",                                        HelpHandler.class, true),
     BIO_SAMPLE_IN_STAR_SYSTEM           ("query_organic_samples_star_system",           AnalyzeBioSignalsStarSystemHandler.class, true),
     EXOBIOLOGY_SAMPLES                  ("query_organic_samples_this_planet",           AnalyzeBioSamplesPlanetSurfaceHandler.class, true),
-    FSS_SIGNALS                         ("query_star_system_for_fss_signals",           AnalyzeFssSignalsHandler.class, true),
     QUERY_STELLAR_OBJETS                ("query_star_system_for_stellar_objects",       AnalyzeStellarObjectsHandler.class, true),
+    QUERY_STELLAR_SIGNALS               ("query_star_system_for_signals",               AnalyzeStellarSignalsHandler.class, true),
     QUERY_GEO_SIGNALS                   ("query_star_system_for_geo_signals",           AnalyzeGeologyInStarSystemHandler.class, true),
     QUERY_STATIONS                      ("query_star_system_for_stations",              AnalyzeStationsHandler.class, true),
     KEY_BINDINGS_ANALYSIS               ("query_key_bindings_analysis",                 AnalyzeMisingKeyBindingHandler.class, true),
@@ -32,7 +32,6 @@ public enum Queries {
     DISTANCE_TO_DESTINATION             ("query_distance_to_destination",               AnalyzeDistanceToFinalDestination.class, false),
     CARGO_HOLD_CONTENTS                 ("query_cargo_hold_contents",                   AnalyzeCargoHoldHandler.class, true),
     PLOTTED_ROUTE_ANALYSIS              ("query_plotted_route_analysis",                AnalyzeRouterHandler.class, true),
-    // dup ROUTE_FUEL_CHECK                    ("query_route_fuel_check",                      AnalyzeRouterHandler.class, true),
     CARRIER_ROUTE_ANALYSIS              ("query_carrier_route_analysis",                AnalyzeCarrierRouteHandler.class, true),
     CARRIER_TRITIUM_SUPPLY              ("query_carrier_fuel_supply",                   AnalyzeFleetCarrierFuelSupplyHandler.class, true),
     CARRIER_DESTINATION                 ("query_carrier_destination",                   AnalyzeFleetCarrierFinalDestinationHandler.class, true),
@@ -51,10 +50,10 @@ public enum Queries {
     DISTANCE_TO_BUBBLE                  ("query_distance_to_bubble",                    AnalyzeDistanceFromTheBubble.class, false),
     DISTANCE_TO_LAST_BIO_SAMPLE         ("query_distance_to_last_bio_sample",           AnalyzeDistanceFromLastBioSample.class, true),
     TIME_IN_ZONE                        ("query_what_time_is_it_on_earth",              TimeQueryHandler.class, true),
-    PLANET_BIOME_ANALYSIS               ("query_planet_biome_analysis",                 PlanetBiomeAnalyzerHandler.class, true),
+    PLANET_BIOME_ANALYSIS               ("query_biome_analysis",                        BiomeAnalyzerHandler.class, true),
     REMINDER                            ("query_reminder",                              RemindTargetDestinationHandler.class, false),
     GENERAL_CONVERSATION                ("general_conversation",                        ConversationalQueryHandler.class, false),
-    ANALYZE_MISSIONS                    ("query_analyze_missions",                       AnalyzeMissionHandler.class, true);
+    ANALYZE_MISSIONS                    ("query_analyze_missions",                      AnalyzeMissionHandler.class, true);
     /// ########################################################################################################################################
 
 

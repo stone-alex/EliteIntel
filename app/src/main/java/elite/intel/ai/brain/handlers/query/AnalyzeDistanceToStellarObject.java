@@ -18,7 +18,7 @@ public class AnalyzeDistanceToStellarObject extends BaseQueryAnalyzer implements
         PlayerSession playerSession = PlayerSession.getInstance();
         return process(
                 new AiDataStruct(
-                        "Return 'distance' in light seconds to the stellar object or station requested by the user. User may give planetShortName as stellar object identification. or Phonetic name of a station",
+                        "Return 'distance' in light seconds to the stellar object or station requested by the user. User may give stellarObjectName as stellar object identification. or Phonetic name of a station",
                         new DataDto(playerSession.getLocations())
                 ),
                 originalUserInput

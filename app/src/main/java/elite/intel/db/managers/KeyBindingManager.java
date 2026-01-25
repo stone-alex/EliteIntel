@@ -42,8 +42,8 @@ public class KeyBindingManager {
     }
 
     // Get all bindings
-    public List<KeyBinding> getBindings() {
-        return Database.withDao(KeyBindingDao.class, dao -> dao.listAll());
+    public List<KeyBinding> getMissingBindings() {
+        return Database.withDao(KeyBindingDao.class, KeyBindingDao::listAll);
     }
 
 }

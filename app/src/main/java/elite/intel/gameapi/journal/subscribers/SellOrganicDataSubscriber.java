@@ -18,7 +18,7 @@ public class SellOrganicDataSubscriber {
         if (playerSession.isDiscoveryAnnouncementOn()) {
             String instructions = """
                 We sold organic data and made credits.
-                Provide user with sale summary.
+                Provide user with sale summary. Start with total amount collected, provide breakdown by genus.
             """;
             EventBusManager.publish(new SensorDataEvent("Bio Data Sold: " + event.toJson(),
                     instructions));

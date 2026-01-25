@@ -323,3 +323,5 @@
 "lensing"="landing"
 "run by your analysis"="run biome analysis"
 "career"="carrier"
+"tech"="check"
+"field scope"="fuel scoop"

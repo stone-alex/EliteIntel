@@ -37,17 +37,17 @@ public class DistanceFromShipTracker {
             return;
         }
 
-        Double[] landingCoordinates = currentLocation.getLandingCoordinates();
+        double[] landingCoordinates = currentLocation.getLandingCoordinates();
         if (landingCoordinates == null || landingCoordinates.length != 2) {
             log.debug("Landing coordinates invalid, skipping distance check.");
             return;
         }
 
-        Double latitude = event.getLatitude();
-        Double longitude = event.getLongitude();
-        Double planetRadius = event.getPlanetRadius();
-        Double lzLat = landingCoordinates[0];
-        Double lzLon = landingCoordinates[1];
+        double latitude = event.getLatitude();
+        double longitude = event.getLongitude();
+        double planetRadius = event.getPlanetRadius();
+        double lzLat = landingCoordinates[0];
+        double lzLon = landingCoordinates[1];
 
         // Calculate great-circle distance (in meters)
         Double distance = calculateSurfaceDistance(latitude, longitude, lzLat, lzLon, planetRadius, 0);

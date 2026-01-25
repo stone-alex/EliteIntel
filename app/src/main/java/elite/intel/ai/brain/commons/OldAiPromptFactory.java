@@ -14,17 +14,18 @@ import static elite.intel.ai.brain.handlers.commands.Commands.*;
 import static elite.intel.ai.brain.handlers.query.Queries.*;
 import static elite.intel.util.Abbreviations.generateAbbreviations;
 
-public class CommonAiPromptFactory implements AiPromptFactory {
-    private static final CommonAiPromptFactory INSTANCE = new CommonAiPromptFactory();
+@Deprecated // retired. I am keeping it just in case as a reference. Will be deleted soon. Do not use.
+public class OldAiPromptFactory implements AiPromptFactory {
+    private static final OldAiPromptFactory INSTANCE = new OldAiPromptFactory();
     private static final String JSON_FORMAT =
             "Always output JSON: {\"type\": \"command|query|chat\", \"response_text\": \"TTS output\", \"action\": \"action_name|query_name\", \"params\": {\"key\": \"value\"}, \"expect_followup\": boolean} action must match provided command or query. ";
     private final AiCommandsAndQueries commandsAndQueries = AiCommandsAndQueries.getInstance();
     private final SystemSession systemSession = SystemSession.getInstance();
 
-    private CommonAiPromptFactory() {
+    private OldAiPromptFactory() {
     }
 
-    public static CommonAiPromptFactory getInstance() {
+    public static OldAiPromptFactory getInstance() {
         return INSTANCE;
     }
 

@@ -2,7 +2,9 @@ package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.brain.commons.BiomeAnalyzer;
+import elite.intel.ai.mouth.subscribers.events.DiscoveryAnnouncementEvent;
 import elite.intel.db.managers.LocationManager;
+import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.FSSBodySignalsEvent;
 import elite.intel.gameapi.journal.events.dto.FssSignalDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
@@ -10,7 +12,7 @@ import elite.intel.session.PlayerSession;
 
 import java.util.List;
 
-public class FSSBodySignalsSubscriber extends BiomeAnalyzer {
+public class FSSBodySignalsSubscriber {
 
     private final PlayerSession playerSession = PlayerSession.getInstance();
     private final LocationManager locationManager = LocationManager.getInstance();
@@ -35,7 +37,7 @@ public class FSSBodySignalsSubscriber extends BiomeAnalyzer {
             FssSignalDto signal = new FssSignalDto();
             signal.setSignalName(event.getEventName());
             signal.setSignalType(s.getTypeLocalised());
-            if ("Biological".equalsIgnoreCase(s.getTypeLocalised())) {
+            if ("$SAA_SignalType_Biological;".equalsIgnoreCase(s.getType())) {
                 bioSignals = bioSignals + s.getCount();
             }
             if ("Geological".equalsIgnoreCase(s.getTypeLocalised())) {
@@ -49,6 +51,11 @@ public class FSSBodySignalsSubscriber extends BiomeAnalyzer {
         location.setBioSignals(bioSignals);
         location.setGeoSignals(geoSignals);
         playerSession.saveLocation(location);
+
+        if (playerSession.isDiscoveryAnnouncementOn()) {
+            if (bioSignals > 0) EventBusManager.publish(new DiscoveryAnnouncementEvent(bioSignals + " bio signals discovered"));
+            if (geoSignals > 0) EventBusManager.publish(new DiscoveryAnnouncementEvent(geoSignals + " geo signals discovered"));
+        }
     }
 
 }

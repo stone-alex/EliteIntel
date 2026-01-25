@@ -10,7 +10,7 @@ public enum Queries {
     HELP                                ("help",                                        HelpHandler.class, true),
     BIO_SAMPLE_IN_STAR_SYSTEM           ("query_organic_samples_star_system",           AnalyzeBioSignalsStarSystemHandler.class, true),
     EXOBIOLOGY_SAMPLES                  ("query_organic_samples_this_planet",           AnalyzeBioSamplesPlanetSurfaceHandler.class, true),
-    FSS_SIGNALS                         ("query_star_system_for_fss_signals",           AnalyzeFssSignalsHandler.class, true),
+    //FSS_SIGNALS                         ("query_star_system_for_fss_signals",           AnalyzeFssSignalsHandler.class, true),
     QUERY_STELLAR_OBJETS                ("query_star_system_for_stellar_objects",       AnalyzeStellarObjectsHandler.class, true),
     QUERY_STELLAR_SIGNALS               ("query_star_system_for_signals",               AnalyzeStellarSignalsHandler.class, true),
     QUERY_GEO_SIGNALS                   ("query_star_system_for_geo_signals",           AnalyzeGeologyInStarSystemHandler.class, true),

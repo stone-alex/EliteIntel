@@ -85,6 +85,7 @@ public class LocationDto implements ToJsonConvertible {
     private int bioSignals;
     private int geoSignals;
     private boolean hasRings;
+    private String parentBodyName;
 
     public LocationDto(Long id) {
         setBodyId(id);
@@ -697,7 +698,6 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setLocationType(LocationType locationType) {
-        if (locationType == null) return;
         this.locationType = locationType;
     }
 
@@ -838,6 +838,13 @@ public class LocationDto implements ToJsonConvertible {
         return result;
     }
 
+    public void setParentBodyName(String parentBodyName) {
+        this.parentBodyName = parentBodyName;
+    }
+
+    public String getParentBodyName() {
+        return parentBodyName;
+    }
 
     public enum BioStatus {
         BIO_FORMS_PRESENT,
@@ -848,7 +855,8 @@ public class LocationDto implements ToJsonConvertible {
     public enum LocationType {
         STAR,
         PRIMARY_STAR,
-        PLANET_OR_MOON,
+        PLANET,
+        MOON,
         PLANETARY_RING,
         BLACK_HOLE,
         NEBULA,

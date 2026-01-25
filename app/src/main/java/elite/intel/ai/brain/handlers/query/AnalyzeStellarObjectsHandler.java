@@ -50,8 +50,10 @@ public class AnalyzeStellarObjectsHandler extends BaseQueryAnalyzer implements Q
         ArrayList<LocationData> result = new ArrayList<>();
         for (LocationDto location : values) {
             boolean isPlanetaryRing = location.getPlanetName().contains("Ring");
+            LocationDto.LocationType locationType = location.getLocationType();
             result.add(new LocationData(
                     location.getPlanetShortName(),
+                    locationType.name(),
                     isPlanetaryRing ? "Planetary Ring" : location.getPlanetClass(),
                     location.getStarClass(),
                     location.getStarName(),
@@ -62,6 +64,7 @@ public class AnalyzeStellarObjectsHandler extends BaseQueryAnalyzer implements Q
                     location.getAtmosphere(),
                     location.getVolcanism(),
                     isPlanetaryRing,
+                    location.getParentBodyName(),
                     Math.round(location.getDistance()),
                     location.getBioSignals(),
                     location.isOurDiscovery(),
@@ -74,6 +77,7 @@ public class AnalyzeStellarObjectsHandler extends BaseQueryAnalyzer implements Q
 
     record LocationData(String stellarObjectName,
                         String objectClass,
+                        String objectType,
                         String starClass,
                         String starName,
                         boolean isLandable,
@@ -83,6 +87,7 @@ public class AnalyzeStellarObjectsHandler extends BaseQueryAnalyzer implements Q
                         String atmosphere,
                         String volcanism,
                         boolean isPlanetaryRing,
+                        String parentPlanetName,
                         double distance,
                         int bioSignals,
                         boolean ourDiscovery,

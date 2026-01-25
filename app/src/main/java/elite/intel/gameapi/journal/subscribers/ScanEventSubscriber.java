@@ -162,9 +162,10 @@ public class ScanEventSubscriber extends BiomeAnalyzer {
         }
 
         if (location.getBioSignals() > 0 && playerSession.isDiscoveryAnnouncementOn()) {
-            if (!"Detailed".equals(event.getScanType())) {
+            EventBusManager.publish(new DiscoveryAnnouncementEvent("Life Found in "+location.getPlanetShortName()));
+            //if (!"Detailed".equals(event.getScanType())) {
                 analyzeBiome(location);
-            }
+            //}
         } else {
             announceIfNewDiscovery(event, location);
         }
@@ -178,6 +179,23 @@ public class ScanEventSubscriber extends BiomeAnalyzer {
         boolean isStar = event.getStarType() != null && !event.getStarType().isEmpty() || event.getSurfaceTemperature() > 1000;
         boolean isPrimaryStar = event.getDistanceFromArrivalLS() == 0;
         boolean isBeltCluster = event.getBodyName().contains("Belt Cluster");
+        boolean isPlanet = false;
+        boolean isMoon = false;
+        List<ScanEvent.Parent> parents = event.getParents();
+        for (ScanEvent.Parent parent : parents) {
+            if (parent.getStar() != null && parent.getStar() >= 0) {
+                isPlanet = true;
+                break;
+            }
+            if (parent.getPlanet() != null && parent.getPlanet() > 0) {
+                isMoon =  true;
+                break;
+            }
+            if(parent.getStar() == null && event.getSurfaceTemperature() > 1000){
+                isStar = true;
+                break;
+            }
+        }
 
         if (isPrimaryStar) {
             return PRIMARY_STAR;
@@ -185,8 +203,12 @@ public class ScanEventSubscriber extends BiomeAnalyzer {
             return STAR;
         } else if (isBeltCluster) {
             return BELT_CLUSTER;
+        } else if(isPlanet){
+            return PLANET;
+        } else if(isMoon){
+            return MOON;
         } else {
-            return PLANET_OR_MOON;
+            return UNKNOWN;
         }
     }
 
@@ -200,7 +222,7 @@ public class ScanEventSubscriber extends BiomeAnalyzer {
         boolean isPrimaryStar = event.getDistanceFromArrivalLS() == 0;
         boolean isBeltCluster = event.getBodyName().contains("Belt Cluster");
 
-        if (!wasDiscovered && PLANET_OR_MOON.equals(location.getLocationType())) {
+        if (!wasDiscovered && PLANET.equals(location.getLocationType())) {
             if (event.getTerraformState() != null && !event.getTerraformState().isEmpty()) {
                 EventBusManager.publish(new DiscoveryAnnouncementEvent("New Terraformable planet: " + shortName + ". "));
             } else if (event.getPlanetClass() != null && valuablePlanetClasses.contains(event.getPlanetClass().toLowerCase())) {

@@ -97,7 +97,7 @@ public class OllamaPromptFactory implements AiPromptFactory {
         StringBuilder sb = new StringBuilder();
         sb.append("Instructions:\n");
         sb.append("""
-                You are Amelia — strict data extractor for Elite Dangerous queries.
+                You are Amelia — strict data extractor.
                 
                 Output ONLY this exact JSON structure — nothing else, no explanations, no thinking, no markdown, no extra characters:
                 

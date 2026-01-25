@@ -18,7 +18,7 @@ import java.util.Map;
 public class BiomeAnalyzer extends BaseQueryAnalyzer {
 
     public void analyzeBiome(LocationDto location) {
-        if (location == null || LocationDto.LocationType.PLANET_OR_MOON != location.getLocationType()) {
+        if (location == null || LocationDto.LocationType.PLANET != location.getLocationType()) {
             return;
         }
 

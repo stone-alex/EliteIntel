@@ -624,7 +624,7 @@ public class AppView extends JFrame implements AppViewInterface {
         localLlmModelQueryField = new JTextField();
         localLlmModelQueryField.setPreferredSize(new Dimension(200, 42));
         addField(llmPanel, localLlmModelQueryField, gbc, 1, 0.8);
-        llmPanel.setBorder(new LineBorder(SEL_BG, 2));
+        llmPanel.setBorder(new LineBorder(SEL_BG, 1));
         addNestedPanel(settingsTabPanel, llmPanel);
         /// --------------------------------------------------------------------------------------------------------------------------------------------
         nextRow(gbc);
@@ -691,7 +691,7 @@ public class AppView extends JFrame implements AppViewInterface {
         }));
 
         addLabel(ttsPanel, speechSpeedLabel, gbc);
-        ttsPanel.setBorder(new LineBorder(SEL_BG, 2));
+        ttsPanel.setBorder(new LineBorder(SEL_BG, 1));
 
         addNestedPanel(settingsTabPanel, ttsPanel);
         /// --------------------------------------------------------------------------------------------------------------------------------------------
@@ -710,7 +710,7 @@ public class AppView extends JFrame implements AppViewInterface {
         addField(edsmPanel, edsmKeyField, gbc, 1, 0.8);
         edsmLockedCheck = new JCheckBox("Locked", true);
         addCheck(edsmPanel, edsmLockedCheck, gbc);
-        edsmPanel.setBorder(new LineBorder(SEL_BG, 2));
+        edsmPanel.setBorder(new LineBorder(SEL_BG, 1));
 
         addNestedPanel(settingsTabPanel, edsmPanel);
         /// --------------------------------------------------------------------------------------------------------------------------------------------

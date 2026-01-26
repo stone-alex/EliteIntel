@@ -21,6 +21,7 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -65,11 +66,9 @@ public class AppView extends JFrame implements AppViewInterface {
     private JCheckBox showDetailedLog;
     private JPasswordField ttsApiKeyField;
     private JCheckBox ttsLockedCheck;
-    private JButton saveSystemButton;
     private JToggleButton startStopServicesButton;
     private JButton recalibrateAudioButton;
     private JButton updateAppButton;
-    private JButton restoreDefaultsButton;
     private JCheckBox togglePrivacyModeCheckBox;
     private JPasswordField edsmKeyField;
     private JCheckBox edsmLockedCheck;
@@ -89,9 +88,6 @@ public class AppView extends JFrame implements AppViewInterface {
 
     // ---------- Public API ----------
     private JTextField bindingsDirField;
-    private JButton savePlayerInfoButton;
-    private JButton selectJournalDirButton;
-    private JButton selectBindingsDirButton;
 
     public AppView() {
         super("--");
@@ -104,8 +100,8 @@ public class AppView extends JFrame implements AppViewInterface {
 
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/images/elite-logo.png")));
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setMinimumSize(new Dimension(1200, 1000));
-        setSize(new Dimension(1200, 1000));
+        setMinimumSize(new Dimension(1400, 1200));
+        setSize(new Dimension(1400, 1200));
         setLocationRelativeTo(null);
 
         JPanel root = new JPanel(new BorderLayout());
@@ -122,9 +118,9 @@ public class AppView extends JFrame implements AppViewInterface {
         styleTabbedPane(tabs);
 
 
-        ImageIcon aiIcon = new ImageIcon(new ImageIcon(getClass().getResource(ICON_AI)).getImage().getScaledInstance(24, 24, Image.SCALE_SMOOTH));
-        ImageIcon playerIcon = new ImageIcon(new ImageIcon(getClass().getResource(ICON_PLAYER)).getImage().getScaledInstance(24, 24, Image.SCALE_SMOOTH));
-        ImageIcon settingsIcon = new ImageIcon(new ImageIcon(getClass().getResource(ICON_SETTINGS)).getImage().getScaledInstance(24, 24, Image.SCALE_SMOOTH));
+        ImageIcon aiIcon = new ImageIcon(new ImageIcon(Objects.requireNonNull(getClass().getResource(ICON_AI))).getImage().getScaledInstance(24, 24, Image.SCALE_SMOOTH));
+        ImageIcon playerIcon = new ImageIcon(new ImageIcon(Objects.requireNonNull(getClass().getResource(ICON_PLAYER))).getImage().getScaledInstance(24, 24, Image.SCALE_SMOOTH));
+        ImageIcon settingsIcon = new ImageIcon(new ImageIcon(Objects.requireNonNull(getClass().getResource(ICON_SETTINGS))).getImage().getScaledInstance(24, 24, Image.SCALE_SMOOTH));
 
         tabs.addTab("Ai", aiIcon, buildAiTab());
         tabs.addTab("Player", playerIcon, buildPlayerTab());
@@ -388,7 +384,7 @@ public class AppView extends JFrame implements AppViewInterface {
         GridBagConstraints gbc = baseGbc();
 
         // Row 0: Alternative Name
-        addLabel(panel, "Commander Name:", gbc, 0);
+        addLabel(panel, "Commander Name:", gbc);
         playerAltNameField = new JTextField();
         playerAltNameField.setToolTipText("If you want Elite Intel refer to you by name once in a while.");
         playerAltNameField.setPreferredSize(new Dimension(200, 42));
@@ -396,7 +392,7 @@ public class AppView extends JFrame implements AppViewInterface {
 
         // Row 1: Title
         nextRow(gbc);
-        addLabel(panel, "Title:", gbc, 0);
+        addLabel(panel, "Title:", gbc);
         playerTitleField = new JTextField();
         playerTitleField.setToolTipText("Optional title. AI will occasionally refer to you by your title. If not provided, title will be based on your highest military rank");
         playerTitleField.setPreferredSize(new Dimension(200, 42));
@@ -404,7 +400,7 @@ public class AppView extends JFrame implements AppViewInterface {
 
         // Row 2: Mission Statement (multi-line)
         nextRow(gbc);
-        addLabel(panel, "Session Theme:", gbc, 0);
+        addLabel(panel, "Session Theme:", gbc);
         playerMissionDescription = new JTextField();
         playerMissionDescription.setPreferredSize(new Dimension(200, 42));
         playerMissionDescription.setToolTipText("Session theme description (optional). 'We are bounty hunters' or 'We are deep-space explorers' or 'We are pirates' ");
@@ -413,12 +409,12 @@ public class AppView extends JFrame implements AppViewInterface {
 
         // Row 3: Journal Directory
         nextRow(gbc);
-        addLabel(panel, "Journal Directory:", gbc, 0);
+        addLabel(panel, "Journal Directory:", gbc);
         journalDirField = new JTextField();
         journalDirField.setToolTipText("Custom directory for Elite Dangerous journal files (optional; defaults to standard location if blank)");
         //journalDirField.setText(ConfigManager.getInstance().getJournalPath().toAbsolutePath().toString());
         addField(panel, journalDirField, gbc, 1, 0.8);
-        selectJournalDirButton = new JButton("Select...") {
+        JButton selectJournalDirButton = new JButton("Select...") {
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
@@ -444,7 +440,7 @@ public class AppView extends JFrame implements AppViewInterface {
 
             // Start in the current known folder (or user home if empty)
             String current = playerSession.getJournalPath().toString();
-            if (current != null && !current.isBlank()) {
+            if (!current.isBlank()) {
                 chooser.setCurrentDirectory(new File(current).getParentFile());
             }
 
@@ -461,11 +457,11 @@ public class AppView extends JFrame implements AppViewInterface {
 
         // Row 5: Bindings Directory
         nextRow(gbc);
-        addLabel(panel, "Bindings Directory:", gbc, 0);
+        addLabel(panel, "Bindings Directory:", gbc);
         bindingsDirField = new JTextField();
         bindingsDirField.setToolTipText("Custom directory for Elite Dangerous key bindings files (optional; defaults to standard location if blank)");
         addField(panel, bindingsDirField, gbc, 1, 0.8);
-        selectBindingsDirButton = new JButton("Select...") {
+        JButton selectBindingsDirButton = new JButton("Select...") {
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
@@ -491,7 +487,7 @@ public class AppView extends JFrame implements AppViewInterface {
 
             // Start in the current known folder (or user home if empty)
             String current = playerSession.getBindingsDir().toString();
-            if (current != null && !current.isBlank()) {
+            if (!current.isBlank()) {
                 chooser.setCurrentDirectory(new File(current).getParentFile());
             }
 
@@ -518,21 +514,13 @@ public class AppView extends JFrame implements AppViewInterface {
         checkBoxes.setOpaque(false);
 
         sendMarketData = new JCheckBox("Send Market Data", false);
-        sendMarketData.addActionListener(e -> {
-            EventBusManager.publish(new ToggleSendMarketDataEvent(sendMarketData.isSelected()));
-        });
+        sendMarketData.addActionListener(e -> EventBusManager.publish(new ToggleSendMarketDataEvent(sendMarketData.isSelected())));
         sendShipyardData = new JCheckBox("Send Shipyard Data", false);
-        sendShipyardData.addActionListener(e -> {
-            EventBusManager.publish(new ToggleSendShipyardDataEvent(sendShipyardData.isSelected()));
-        });
+        sendShipyardData.addActionListener(e -> EventBusManager.publish(new ToggleSendShipyardDataEvent(sendShipyardData.isSelected())));
         sendOutfitingData = new JCheckBox("Send Outfitting Data", false);
-        sendOutfitingData.addActionListener(e -> {
-            EventBusManager.publish(new ToggleSendOutfittingDataEvent(sendOutfitingData.isSelected()));
-        });
+        sendOutfitingData.addActionListener(e -> EventBusManager.publish(new ToggleSendOutfittingDataEvent(sendOutfitingData.isSelected())));
         sendExplorationData = new JCheckBox("Send Exploration Data", false);
-        sendExplorationData.addActionListener(e -> {
-            EventBusManager.publish(new ToggleSendExplorationDataEvent(sendExplorationData.isSelected()));
-        });
+        sendExplorationData.addActionListener(e -> EventBusManager.publish(new ToggleSendExplorationDataEvent(sendExplorationData.isSelected())));
 
         checkBoxes.add(new JLabel(" "));
         checkBoxes.add(new JLabel("This app relies in part on crowd sourced data from pilots like you."));
@@ -556,7 +544,7 @@ public class AppView extends JFrame implements AppViewInterface {
         JPanel btns = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
         btns.setOpaque(false);
 
-        savePlayerInfoButton = new JButton("Save Player Configuration") {
+        JButton savePlayerInfoButton = new JButton("Save Player Configuration") {
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
@@ -575,9 +563,7 @@ public class AppView extends JFrame implements AppViewInterface {
             }
         };
         styleButton(savePlayerInfoButton);
-        savePlayerInfoButton.addActionListener(e -> {
-            savePlayerConfig();
-        });
+        savePlayerInfoButton.addActionListener(e -> savePlayerConfig());
         btns.add(savePlayerInfoButton);
         panel.add(btns, gbc);
 
@@ -596,78 +582,94 @@ public class AppView extends JFrame implements AppViewInterface {
 
 
     private JPanel buildSettingsTab() {
-        JPanel settingsTabPanel = new JPanel(new GridBagLayout());
+        JPanel settingsTabPanel = new JPanel();
+        settingsTabPanel.setLayout(new BoxLayout(settingsTabPanel, BoxLayout.PAGE_AXIS));
+        settingsTabPanel.add(new JLabel(" "));
+        
         GridBagConstraints gbc = baseGbc();
         nextRow(gbc);
 
+        /// --------------------------------------------------------------------------------------------------------------------------------------------
+        JPanel llmPanel = new JPanel(new GridBagLayout());
         // LLM key field
-        addLabel(settingsTabPanel, "Cloud LLM Key:", gbc, 0);
+        addLabel(llmPanel, "Cloud LLM Key:", gbc);
         llmApiKeyField = new JPasswordField();
         llmApiKeyField.setPreferredSize(new Dimension(200, 42));
-        addField(settingsTabPanel, llmApiKeyField, gbc, 1, 0.8);
+        addField(llmPanel, llmApiKeyField, gbc, 1, 0.8);
         llmLockedCheck = new JCheckBox("Locked", true);
-        addCheck(settingsTabPanel, llmLockedCheck, gbc, 2, 0.2);
+        addCheck(llmPanel, llmLockedCheck, gbc);
 
         nextRow(gbc);
-        addLabel(settingsTabPanel, "Use cloud LLM key (xAI/Open AI) above or configure Local LLM below", gbc, 1);
+        gbc.gridx = 1;
+        gbc.weightx = 0;
+        gbc.fill = GridBagConstraints.NONE;
+        JLabel label = new JLabel("Use cloud LLM key (xAI/Open AI) above or configure Local LLM below");
+        //label.setPreferredSize(new Dimension(220, 42));
+        llmPanel.add(label, gbc);
 
         nextRow(gbc);
-        addLabel(settingsTabPanel, "Local LLM Address:", gbc, 0);
+        addLabel(llmPanel, "Local LLM Address:", gbc);
         localLlmAddressField = new JTextField();
         localLlmAddressField.setPreferredSize(new Dimension(200, 42));
-        addField(settingsTabPanel, localLlmAddressField, gbc, 1, 0.8);
+        addField(llmPanel, localLlmAddressField, gbc, 1, 0.8);
 
         nextRow(gbc);
-        addLabel(settingsTabPanel, "Local LLM Command:", gbc, 0);
+        addLabel(llmPanel, "Local Command LLM:", gbc);
         localLlmModelCommandField = new JTextField();
         localLlmModelCommandField.setPreferredSize(new Dimension(200, 42));
-        addField(settingsTabPanel, localLlmModelCommandField, gbc, 1, 0.8);
+        addField(llmPanel, localLlmModelCommandField, gbc, 1, 0.8);
 
         nextRow(gbc);
-        addLabel(settingsTabPanel, "Local LLM Query:", gbc, 0);
+        addLabel(llmPanel, "Local Query LLM:", gbc);
         localLlmModelQueryField = new JTextField();
         localLlmModelQueryField.setPreferredSize(new Dimension(200, 42));
-        addField(settingsTabPanel, localLlmModelQueryField, gbc, 1, 0.8);
-
-
+        addField(llmPanel, localLlmModelQueryField, gbc, 1, 0.8);
+        llmPanel.setBorder(new LineBorder(SEL_BG, 2));
+        addNestedPanel(settingsTabPanel, llmPanel);
+        /// --------------------------------------------------------------------------------------------------------------------------------------------
         nextRow(gbc);
-        addLabel(settingsTabPanel, " ", gbc, 0);
+        settingsTabPanel.add(new JLabel(" "));
 
         // Row 1: STT Key
+        JPanel sttPanel = new JPanel(new GridBagLayout());
         nextRow(gbc);
-        addLabel(settingsTabPanel, "Cloud STT Key:", gbc, 0);
+        addLabel(sttPanel, "Cloud STT Key:", gbc);
         sttApiKeyField = new JPasswordField();
         sttApiKeyField.setPreferredSize(new Dimension(200, 42));
-        addField(settingsTabPanel, sttApiKeyField, gbc, 1, 0.8);
+        addField(sttPanel, sttApiKeyField, gbc, 1, 0.8);
         sttLockedCheck = new JCheckBox("Locked", true);
-        addCheck(settingsTabPanel, sttLockedCheck, gbc, 2, 0.2);
+        addCheck(sttPanel, sttLockedCheck, gbc);
+        sttPanel.setBorder(new LineBorder(SEL_BG, 1));
+        addNestedPanel(settingsTabPanel, sttPanel);
+        /// --------------------------------------------------------------------------------------------------------------------------------------------
 
         nextRow(gbc);
-        addLabel(settingsTabPanel, " ", gbc, 0);
+        settingsTabPanel.add(new JLabel(" "));
 
         // Row 2: TTS Key
+        JPanel ttsPanel = new JPanel(new GridBagLayout());
         nextRow(gbc);
-        addLabel(settingsTabPanel, "Cloud TTS Key:", gbc, 0);
+        addLabel(ttsPanel, "Cloud TTS Key:", gbc);
         ttsApiKeyField = new JPasswordField();
         ttsApiKeyField.setPreferredSize(new Dimension(200, 42));
-        addField(settingsTabPanel, ttsApiKeyField, gbc, 1, 0.8);
+        addField(ttsPanel, ttsApiKeyField, gbc, 1, 0.8);
         ttsLockedCheck = new JCheckBox("Locked", true);
-        addCheck(settingsTabPanel, ttsLockedCheck, gbc, 2, 0.2);
+        addCheck(ttsPanel, ttsLockedCheck, gbc);
 
 
         nextRow(gbc);
-        addLabel(settingsTabPanel, "Local TTS Address", gbc, 0);
+        addLabel(ttsPanel, "Local TTS Address", gbc);
         localTtsAddressField = new JTextField();
         localTtsAddressField.setPreferredSize(new Dimension(200, 42));
         localTtsAddressField.setText("http://localhost:5000/");
         localTtsAddressField.setToolTipText("Local TTS Address");
-        addField(settingsTabPanel, localTtsAddressField, gbc, 1, 0.8);
+        addField(ttsPanel, localTtsAddressField, gbc, 1, 0.8);
 
         nextRow(gbc);
-        addLabel(settingsTabPanel, " ", gbc, 0);
+        addLabel(ttsPanel, " ", gbc);
 
         nextRow(gbc);
-        addLabel(settingsTabPanel, "Speech Throttle ", gbc, 0);
+        addLabel(ttsPanel, "Speech Throttle ", gbc);
         speechSpeedSlider = new JSlider();
         speechSpeedSlider.setMinimum(-100);
         speechSpeedSlider.setMaximum(0);
@@ -676,36 +678,43 @@ public class AppView extends JFrame implements AppViewInterface {
         speechSpeedSlider.setInverted(true);
         speechSpeedSlider.setSnapToTicks(true);
         speechSpeedSlider.setValue(-(int) ((1.0f - systemSession.getSpeechSpeed()) * 100));
-        addField(settingsTabPanel, speechSpeedSlider, gbc, 1, 0.8);
+        addField(ttsPanel, speechSpeedSlider, gbc, 1, 0.8);
         speechSpeedLabel = new JLabel("");
         setSpeedDisplayValue();
-        speechSpeedSlider.addChangeListener(e -> {
-            SwingUtilities.invokeLater(() -> {
-                EventBusManager.publish(
-                        new SpeechSpeedChangeEvent(
-                                Math.abs(100 + speechSpeedSlider.getValue()) / 100f
-                        )
-                );
-                setSpeedDisplayValue();
-            });
-        });
+        speechSpeedSlider.addChangeListener(e -> SwingUtilities.invokeLater(() -> {
+            EventBusManager.publish(
+                    new SpeechSpeedChangeEvent(
+                            Math.abs(100 + speechSpeedSlider.getValue()) / 100f
+                    )
+            );
+            setSpeedDisplayValue();
+        }));
 
-        addLabel(settingsTabPanel, speechSpeedLabel, gbc, 2);
+        addLabel(ttsPanel, speechSpeedLabel, gbc);
+        ttsPanel.setBorder(new LineBorder(SEL_BG, 2));
 
+        addNestedPanel(settingsTabPanel, ttsPanel);
+        /// --------------------------------------------------------------------------------------------------------------------------------------------
 
         /// blank
         nextRow(gbc);
-        addLabel(settingsTabPanel, " ", gbc, 0);
+        settingsTabPanel.add(new JLabel(" "));
 
+        JPanel edsmPanel = new JPanel(new GridBagLayout());
         // Row EDSM KEY
         nextRow(gbc);
-        addLabel(settingsTabPanel, "EDSM API Key:", gbc, 0);
+        addLabel(edsmPanel, "EDSM API Key:", gbc);
         edsmKeyField = new JPasswordField();
         edsmKeyField.setPreferredSize(new Dimension(200, 42));
         edsmKeyField.setToolTipText("EDSM API Key");
-        addField(settingsTabPanel, edsmKeyField, gbc, 1, 0.8);
+        addField(edsmPanel, edsmKeyField, gbc, 1, 0.8);
         edsmLockedCheck = new JCheckBox("Locked", true);
-        addCheck(settingsTabPanel, edsmLockedCheck, gbc, 2, 0.2);
+        addCheck(edsmPanel, edsmLockedCheck, gbc);
+        edsmPanel.setBorder(new LineBorder(SEL_BG, 2));
+
+        addNestedPanel(settingsTabPanel, edsmPanel);
+        /// --------------------------------------------------------------------------------------------------------------------------------------------
+
 
         // Row 3: Buttons
         nextRow(gbc);
@@ -715,10 +724,10 @@ public class AppView extends JFrame implements AppViewInterface {
         gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.WEST;
 
-        JPanel buttons = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+        JPanel buttons = new JPanel(new FlowLayout(FlowLayout.CENTER, 8, 0));
         buttons.setOpaque(false);
         // Use inline subclass to custom-paint the dark background (no reassignment issues)
-        saveSystemButton = new JButton("Save Configuration") {
+        JButton saveSystemButton = new JButton("Save Configuration") {
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
@@ -737,9 +746,7 @@ public class AppView extends JFrame implements AppViewInterface {
             }
         };
         styleButton(saveSystemButton);
-        saveSystemButton.addActionListener(e -> {
-            saveSystemConfig();
-        });
+        saveSystemButton.addActionListener(e -> saveSystemConfig());
 
         updateAppButton = new JButton("Update App") {
             @Override
@@ -767,14 +774,12 @@ public class AppView extends JFrame implements AppViewInterface {
             SleepNoThrow.sleep(3000);
             Updater.performUpdateAsync().thenAccept(success -> {
                 if (success) {
-                    SwingUtilities.invokeLater(() -> {
-                        System.exit(0);
-                    });
+                    SwingUtilities.invokeLater(() -> System.exit(0));
                 }
             });
         });
 
-        restoreDefaultsButton = new JButton("Restore Local LLM Defaults") {
+        JButton restoreDefaultsButton = new JButton("Restore Local LLM Defaults") {
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
@@ -796,19 +801,19 @@ public class AppView extends JFrame implements AppViewInterface {
         styleButton(restoreDefaultsButton);
         restoreDefaultsButton.setEnabled(true);
         restoreDefaultsButton.setText("Restore Local LLM Defaults");
-        restoreDefaultsButton.addActionListener(e -> {
-            SwingUtilities.invokeLater(() -> {
-                localLlmAddressField.setText("http://localhost:11434");
-                localLlmModelCommandField.setText("qwen2.5:14b");
-                localLlmModelQueryField.setText("qwen2.5:14b");
-                saveSystemConfig();
-            });
-        });
+        restoreDefaultsButton.addActionListener(e -> SwingUtilities.invokeLater(() -> {
+            localLlmAddressField.setText("http://localhost:11434");
+            localLlmModelCommandField.setText("qwen2.5:14b");
+            localLlmModelQueryField.setText("qwen2.5:14b");
+            saveSystemConfig();
+        }));
 
         buttons.add(saveSystemButton);
         buttons.add(updateAppButton);
         buttons.add(restoreDefaultsButton);
-        settingsTabPanel.add(buttons, gbc);
+
+        settingsTabPanel.add(new JLabel(" "));
+        settingsTabPanel.add(buttons);
 
         // Row 6: Filler area (reserved for future use)
         nextRow(gbc);
@@ -817,7 +822,9 @@ public class AppView extends JFrame implements AppViewInterface {
         gbc.weightx = 1;
         gbc.weighty = 1; // take the rest of the space
         gbc.fill = GridBagConstraints.BOTH;
-        settingsTabPanel.add(Box.createGlue(), gbc);
+        settingsTabPanel.add(Box.createGlue());
+
+
 
         return settingsTabPanel;
     }
@@ -989,18 +996,20 @@ public class AppView extends JFrame implements AppViewInterface {
         return gbc;
     }
 
-    private void addLabel(JPanel panel, JLabel label, GridBagConstraints gbc, int col) {
-        gbc.gridx = col;
+    private void addLabel(JPanel panel, JLabel label, GridBagConstraints gbc) {
+        gbc.gridx = 2;
         gbc.weightx = 0;
         gbc.fill = GridBagConstraints.NONE;
         panel.add(label, gbc);
     }
 
-    private void addLabel(JPanel panel, String text, GridBagConstraints gbc, int col) {
-        gbc.gridx = col;
+    private void addLabel(JPanel panel, String text, GridBagConstraints gbc) {
+        gbc.gridx = 0;
         gbc.weightx = 0;
         gbc.fill = GridBagConstraints.NONE;
-        panel.add(new JLabel(text), gbc);
+        JLabel label = new JLabel(text);
+        label.setPreferredSize(new Dimension(220, 42));
+        panel.add(label, gbc);
     }
 
     private void addField(JPanel panel, JComponent comp, GridBagConstraints gbc, int col, double weightX) {
@@ -1011,12 +1020,17 @@ public class AppView extends JFrame implements AppViewInterface {
         panel.add(comp, gbc);
     }
 
-    private void addCheck(JPanel panel, JCheckBox check, GridBagConstraints gbc, int col, double weightX) {
-        gbc.gridx = col;
-        gbc.weightx = weightX;
+    private void addCheck(JPanel panel, JCheckBox check, GridBagConstraints gbc) {
+        gbc.gridx = 2;
+        gbc.weightx = 0.2;
         gbc.fill = GridBagConstraints.NONE;
         panel.add(check, gbc);
     }
+
+    private void addNestedPanel(JPanel parent, JPanel child) {
+        parent.add(child);
+    }
+
 
     private void nextRow(GridBagConstraints gbc) {
         gbc.gridy++;

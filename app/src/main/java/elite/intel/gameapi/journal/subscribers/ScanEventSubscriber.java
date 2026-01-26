@@ -181,8 +181,9 @@ public class ScanEventSubscriber {
 
         if (location.getBioSignals() > 0 && playerSession.isDiscoveryAnnouncementOn()) {
             EventBusManager.publish(new DiscoveryAnnouncementEvent("Life Found in " + location.getPlanetShortName()));
-            if (!"Detailed".equals(event.getScanType())) {
-                biomeAnalyzer.analyzeBiome(null,
+            //if (!"Detailed".equals(event.getScanType())) {
+/*
+                biomeAnalyzer.analyzeBiome("Run biome analysis on "+location.getPlanetShortName(),
                         new BiomeAnalyzer.LocationData(
                                 location.getPlanetShortName(),
                                 location.getBioSignals(),
@@ -192,7 +193,8 @@ public class ScanEventSubscriber {
                                 location.getAtmosphere(),
                                 String.valueOf(location.getSurfaceTemperature())
                         ));
-            }
+*/
+            //}
         } else {
             announceIfNewDiscovery(event, location);
         }

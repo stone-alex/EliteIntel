@@ -26,6 +26,7 @@ public class BiomeAnalyzerHandler extends BaseQueryAnalyzer implements QueryHand
 
         if (planetName != null) {
             LocationDto firstMatchingLocation = findFirstMatchingLocation(playerSession.getLocations(), planetName);
+            if(firstMatchingLocation == null) return process("No match found for "+planetName);
             biomeAnalyzer.analyzeBiome(
                     originalUserInput,
                     new LocationData(
@@ -49,17 +50,14 @@ public class BiomeAnalyzerHandler extends BaseQueryAnalyzer implements QueryHand
             return null;
         }
 
-        Optional<LocationDto> firstMatch = Optional.empty();
         for (LocationDto locationDto : locations.values()) {
-            String lowerPlanetName = planetName.toLowerCase();
-            String lowerShortName = trimToNull(locationDto.getPlanetShortName().toLowerCase());
-            if (lowerShortName != null && lowerPlanetName.contains(lowerShortName) && planetName.length() > 0) {
-                firstMatch = Optional.of(locationDto);
-                break;
+            String lowerPlanetName = locationDto.getPlanetShortName().toLowerCase().replace("planet", "").replace(" ", "");
+            if (lowerPlanetName.contains(planetName.replace(" ", "")) && !planetName.isEmpty()) {
+                return locationDto;
             }
         }
 
-        return firstMatch.orElse(null);
+        return null;
     }
 
     public LocationData[] findPlanetsWithBioSignals(Map<Long, LocationDto> locations) {

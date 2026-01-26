@@ -18,11 +18,15 @@ public interface GameSessionDao {
             INSERT OR REPLACE INTO game_session (id, aiPersonality,  aiCadence, aiVoice, aiApiKey, ttsApiKey, sttApiKey, 
                                                              edsmApiKey, loggingEnabled, privacyModeOn, rmsThresholdHigh,  
                                                              rmsThresholdLow, encryptedLLMKey, encryptedSTTKey, encryptedTTSKey, 
-                                                             encryptedEDSSMKey, sendMarketData, sendOutfittingData, sendShipyardData, sendExplorationData, speechSpeed)
+                                                             encryptedEDSSMKey, sendMarketData, sendOutfittingData, sendShipyardData, 
+                                                             sendExplorationData, speechSpeed, localLlmCommandModel, localLlmQueryModel
+                                                )
                                   VALUES (1, :aiPersonality, :aiCadence, :aiVoice, :aiApiKey, :ttsApiKey, :sttApiKey, 
                                                       :edsmApiKey, :loggingEnabled, :privacyModeOn, :rmsThresholdHigh, 
                                                       :rmsThresholdLow, :encryptedLLMKey, :encryptedSTTKey, :encryptedTTSKey, 
-                                                      :encryptedEDSSMKey, :sendMarketData, :sendOutfittingData, :sendShipyardData, :sendExplorationData, :speechSpeed)
+                                                      :encryptedEDSSMKey, :sendMarketData, :sendOutfittingData, :sendShipyardData, 
+                                                      :sendExplorationData, :speechSpeed, :localLlmCommandModel, :localLlmQueryModel
+                                          )
             """)
     void save(@BindBean GameSessionDao.GameSession data);
 
@@ -59,6 +63,8 @@ public interface GameSessionDao {
             session.setSendOutfittingData(rs.getBoolean("sendOutfittingData"));
             session.setSendShipyardData(rs.getBoolean("sendShipyardData"));
             session.setSendExplorationData(rs.getBoolean("sendExplorationData"));
+            session.setLocalLlmCommandModel(rs.getString("localLlmCommandModel"));
+            session.setLocalLlmQueryModel(rs.getString("localLlmQueryModel"));
 
             session.setSpeechSpeed(rs.getFloat("speechSpeed"));
             return session;
@@ -91,6 +97,8 @@ public interface GameSessionDao {
         private Boolean sendShipyardData;
         private Boolean sendExplorationData;
         private Float speechSpeed;
+        private String localLlmCommandModel;
+        private String localLlmQueryModel;
 
 
         public String getAiPersonality() {
@@ -252,6 +260,22 @@ public interface GameSessionDao {
 
         public void setSpeechSpeed(Float speechSpeed) {
             this.speechSpeed = speechSpeed;
+        }
+
+        public String getLocalLlmCommandModel() {
+            return localLlmCommandModel;
+        }
+
+        public void setLocalLlmCommandModel(String localLlmCommandModel) {
+            this.localLlmCommandModel = localLlmCommandModel;
+        }
+
+        public String getLocalLlmQueryModel() {
+            return localLlmQueryModel;
+        }
+
+        public void setLocalLlmQueryModel(String localLlmQueryModel) {
+            this.localLlmQueryModel = localLlmQueryModel;
         }
     }
 }

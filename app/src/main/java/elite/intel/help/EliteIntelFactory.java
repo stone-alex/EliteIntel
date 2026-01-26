@@ -28,7 +28,7 @@ public class EliteIntelFactory extends BaseJsonDto implements ToJsonConvertible 
         );
     }
 
-    public record DataDto(Map<String, String> commands, Map<String, String> queries) implements ToJsonConvertible {
+    public record DataDto(String commands, String queries) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }

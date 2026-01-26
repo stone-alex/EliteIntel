@@ -7,16 +7,14 @@
 --- 
 
 ## Linux and Windows are supported.
-If you run into issues, hit us up on GitHub issues or
-Feedback and bug reports are super welcome!
 
-Two ways to get in touch:
-
-🫆 👉[**Discord**](https://discord.gg/3qAqBENsBm).👈 (Corporate, spying, tracking, and profiling) 
-
-💬 👉[**Libera IRC**](https://web.libera.chat/?channel=#EliteIntelDev)👈 **NEW**
-(Private - no corpo spying, no tracking, no ads. no data collection)
-
+**✅ Local off-line private LLMs are now supported**
+- If you do not have the hardware to run your local LLM you can use cloud LLM from xAI or Open AI but that comes with a small fee. (about $6 a month)
+  [**Real life Cloud LLM cost breakdown**](https://github.com/stone-alex/EliteIntel/wiki/LLM-Real-Live-Cost)
+  
+**✅ The off-line TTS. (Linux and Windows)**
+- See [Piper TTS](https://github.com/stone-alex/EliteIntel/wiki/OffLineVoiceProcessor) for instructions.
+---
 
 ## Overview
 
@@ -31,15 +29,7 @@ The app uses Speech-to-Text (STT) and Text-to-Speech (TTS) for **natural voice i
 and LLM for handling commands, queries, and chats. It processes game data from journal 
 and auxiliary files, pulls in info from EDSM when needed, and keeps things responsive.
 
-
-[👉**Real life Cloud LLM cost breakdown**👈](https://github.com/stone-alex/EliteIntel/wiki/LLM-Real-Live-Cost)
-
----
-
-👉 **The off-line TTS. (Linux and Windows) See [Piper TTS](https://github.com/stone-alex/EliteIntel/wiki/OffLineVoiceProcessor) for instructions.** 👈
-
-
----
+___
 
 The project is open-source under a [Creative Commons license CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en),
 so feel free to check out the code and contribute. (see [DEVELOPERS.md](DEVELOPERS.md) for details)
@@ -54,7 +44,14 @@ reflection) and principles like DRY and SRP. All PRs go through review.
 
 Released under Creative Commons license.
 
-👉[**Discord**](https://discord.gg/3qAqBENsBm)👈
+[**Discord**](https://discord.gg/3qAqBENsBm)
 ---
 
+If you run into issues, hit us up on GitHub issues or Feedback and bug reports are super welcome!
+Two ways to get in touch:
+
+🫆 👉[**Discord**](https://discord.gg/3qAqBENsBm).👈 (Corporate, spying, tracking, and profiling)
+
+💬 👉[**Libera IRC**](https://web.libera.chat/?channel=#EliteIntelDev)👈 **NEW**
+(Private - no corpo spying, no tracking, no ads. no data collection)
 © Sudo Krondor (Alex Stone) | 2025 GitHub, Inc. | Open-Source Project

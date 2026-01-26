@@ -835,8 +835,4 @@ public class PlayerSession {
             return Void.class;
         });
     }
-
-    public record GalacticCoordinates(double x, double y, double z) {
-
-    }
 }

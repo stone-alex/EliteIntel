@@ -29,6 +29,11 @@ public class OpenAiClient implements Client {
         return instance;
     }
 
+    // not used
+    @Override public JsonObject createPrompt(int model, float temp) {
+        return null;
+    }
+
     @Override public JsonObject createPrompt(String model, float temp) {
 
         JsonObject jsonObject = new JsonObject();

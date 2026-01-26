@@ -148,7 +148,7 @@ public class AiCommandsAndQueries {
             Map.entry(" queries about carrier route (do not confuse with ship route), how long will it take for carrier to reach final destination ", CARRIER_ROUTE_ANALYSIS.getAction()),
             Map.entry(" queries about carrier destination (do not confuse with ship) ", CARRIER_DESTINATION.getAction()),
             Map.entry(" queries about carrier fuel supply, jump range, fuel reserve, what is our tritium supply, tritium reserve (do not confuse with ship) ", CARRIER_TRITIUM_SUPPLY.getAction()),
-            Map.entry(" queries about carrier stats, range, finances, funded days of operation V ", CARRIER_STATUS.getAction()),
+            Map.entry(" queries about carrier finances, funded days of operation V ", CARRIER_STATUS.getAction()),
             Map.entry(" queries about carrier estimated time of arrival (do not confuse with ship) ", CARRIER_ETA.getAction()),
             Map.entry(" how far are we from the carrier ", DISTANCE_TO_CARRIER.getAction()),
             Map.entry(" what missions do we have, are there any outstanding missions, do we have any active missions ", OUTSTANDING_MISSIONS.getAction()),

@@ -37,14 +37,14 @@ public class PromptFactory implements AiPromptFactory {
         sb.append("""
                 YOU ARE AMELIA — A STRICT COMMAND PARSER.
                 YOU NEVER invent actions, guess intent, combine commands, split sentences, or create new behaviors.
-                Your only job: classify user input as ONE exact command or query from the provided lists — or return no-match.
+                Your only job: classify user input as ONE best matching command or query from the provided lists — or return no-match.
                 
-                Supported COMMANDS patterns and formulations → ACTION_NAME (use ONLY these action names):
+                Supported COMMANDS patterns concepts, and formulations → ACTION_NAME (use ONLY these action names):
                 """);
         sb.append(commandsAndQueries.getCommandMap());
         sb.append("""
                 
-                Supported QUERIES patterns and formulations → ACTION_NAME (use ONLY these action names):
+                Supported QUERIES patterns concepts, and formulations → ACTION_NAME (use ONLY these action names):
                 """);
         sb.append(commandsAndQueries.getQueries());
         sb.append("""

@@ -31,7 +31,7 @@ public enum Queries {
     LOCAL_STATIONS                      ("query_local_stations",                        AnalyzeLocalStations.class, true),
     DISTANCE_TO_DESTINATION             ("query_distance_to_destination",               AnalyzeDistanceToFinalDestination.class, false),
     CARGO_HOLD_CONTENTS                 ("query_cargo_hold_contents",                   AnalyzeCargoHoldHandler.class, true),
-    PLOTTED_ROUTE_ANALYSIS              ("query_plotted_route_analysis",                AnalyzeRouterHandler.class, true),
+    PLOTTED_ROUTE_ANALYSIS              ("query_ship_route_analysis",                AnalyzeRouterHandler.class, true),
     CARRIER_ROUTE_ANALYSIS              ("query_carrier_route_analysis",                AnalyzeCarrierRouteHandler.class, true),
     CARRIER_TRITIUM_SUPPLY              ("query_carrier_fuel_supply",                   AnalyzeFleetCarrierFuelSupplyHandler.class, true),
     CARRIER_DESTINATION                 ("query_carrier_destination",                   AnalyzeFleetCarrierFinalDestinationHandler.class, true),

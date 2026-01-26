@@ -23,9 +23,9 @@ public class CarrierETAHandler extends BaseQueryAnalyzer implements QueryHandler
         String now = TimestampFormatter.formatTimestamp(ZonedDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME), true);
 
         String instructions = """
-                Calculate fleet carrier ETA using arrival and current time.
+                Calculate fleet carrier Estimated Time of Arrival using arrival and current time.
                 Return ETA in minutes. (do not return decimals, whole numbers only)
-                Example: "E.T.A.: 123 minutes"
+                Example: "Estimated Time of Arrival is Y minutes"
                 """;
 
         return process(new AiDataStruct(instructions, new DataDto(carrierDepartureTime, now)), originalUserInput);

@@ -3,8 +3,10 @@ package elite.intel.ai.brain.commons;
 import com.google.gson.*;
 import elite.intel.ai.brain.Client;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.json.GsonFactory;
+import elite.intel.util.json.LlmMetadata;
 import elite.intel.util.json.OllamaMetadata;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,35 +31,13 @@ public abstract class AiEndPoint {
             sanitizedObj.addProperty("role", original.get("role").getAsString());
             JsonElement content = original.get("content");
             if (content != null) {
-                sanitizedObj.addProperty("content", escapeJson(content.getAsString()));
+                sanitizedObj.addProperty("content", content.getAsString());
             }
             sanitized.add(sanitizedObj);
         }
         return sanitized;
     }
 
-    protected String escapeJson(String input) {
-        if (input == null || input.isEmpty()) return "";
-        StringBuilder sb = new StringBuilder();
-        for (char c : input.toCharArray()) {
-            if (c < 32 || c == 127 || c == 0xFEFF) {
-                sb.append(' '); // Replace control characters
-            } else if (c == '"') {
-                sb.append("\\\"");
-            } else if (c == '\\') {
-                sb.append("\\\\");
-            } else if (c == '\n') {
-                sb.append("\\n");
-            } else if (c == '\r') {
-                sb.append("\\r");
-            } else if (c == '\t') {
-                sb.append("\\t");
-            } else {
-                sb.append(c);
-            }
-        }
-        return sb.toString();
-    }
 
     public JsonObject processServerError(HttpURLConnection conn, int responseCode, Client client) throws IOException {
         String errorResponse = "";
@@ -88,7 +68,7 @@ public abstract class AiEndPoint {
             log.info("Stripped BOM from response");
         }
 
-        log.debug("Open AI API response ->:\n{}", GsonFactory.getGson().toJson(response));
+
 
         if (responseCode != 200) {
             return new Response(processServerError(conn, responseCode, client), response);
@@ -96,15 +76,25 @@ public abstract class AiEndPoint {
 
         try {
             JsonObject responseData = JsonParser.parseString(response).getAsJsonObject();
-
-            OllamaMetadata meta = GsonFactory.getGson().fromJson(responseData, OllamaMetadata.class);
-            double evalTime = meta.evalDurationNs() / 1_000_000_000.0;
-            EventBusManager.publish(
-                    new AppLogEvent(
-                            "Eval Duration:" + (Math.round(evalTime * 1000.0) / 1000.0) + " seconds | Completion Tokens:" + meta.completionTokens() + " | Prompt Tokens:" + meta.promptTokens() + " | Total:" + meta.totalTokens()
-                    )
-            );
-            log.info("LLM Stats: " + meta);
+            log.debug("Open AI API response ->:\n{}", GsonFactory.getGson().toJson(responseData));
+            if (SystemSession.getInstance().isRunningLocalLLM()) {
+                OllamaMetadata meta = GsonFactory.getGson().fromJson(responseData, OllamaMetadata.class);
+                double evalTime = meta.evalDurationNs() / 1_000_000_000.0;
+                EventBusManager.publish(
+                        new AppLogEvent(
+                                "Eval Duration:" + (Math.round(evalTime * 1000.0) / 1000.0) + " seconds | Completion Tokens:" + meta.completionTokens() + " | Prompt Tokens:" + meta.promptTokens() + " | Total:" + meta.totalTokens()
+                        )
+                );
+                log.info("Local LLM Stats: " + meta);
+            } else {
+                LlmMetadata meta = GsonFactory.getGson().fromJson(responseData, LlmMetadata.class);
+                EventBusManager.publish(
+                        new AppLogEvent(
+                                "Model: " + meta.model() + "| Tokens > Cached:" + meta.cachedTokens() +"| Reasoning:"+meta.reasoningTokens() +"| Prompt:"+meta.usage().promptTokens() + "| Total:" + meta.totalTokens()
+                        )
+                );
+                log.info("Cloud LLM Stats: " + meta);
+            }
 
             return new Response(responseData, response);
         } catch (JsonSyntaxException e) {

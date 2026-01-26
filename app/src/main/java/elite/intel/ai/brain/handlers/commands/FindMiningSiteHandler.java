@@ -34,7 +34,7 @@ public class FindMiningSiteHandler extends CommandOperator implements CommandHan
             return;
         }
 
-        JsonElement mat = params.get("material");
+        JsonElement mat = params.get("key");
         JsonElement distance = params.get("max_distance");
         if (mat == null) {
             EventBusManager.publish(new AiVoxResponseEvent("Did not catch the material name."));

@@ -106,8 +106,7 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
     }
 
     private void processVoiceCommand(String userInput, float confidence) {
-        // Sanitize input
-        userInput = escapeJson(userInput);
+
         if (userInput == null || userInput.isEmpty()) {
             JsonObject errorResponse = new JsonObject();
             errorResponse.addProperty("type", AIConstants.TYPE_CHAT);

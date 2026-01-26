@@ -68,16 +68,17 @@ public class PromptFactory implements AiPromptFactory {
                 2. "action" MUST be copied verbatim from the list above — no variations, no typos.
                 3. For commands: response_text is usually empty string.
                 4. Params rules (MANDATORY — very strict):
-                   - Key is ALWAYS "key" (for any named value: material, commodity, voice, number, etc.)
-                   - Key is "state" ONLY when value is boolean (on/off, true/false)
+                   - Key is ALWAYS "key" (for any named value: material, commodity, voice, number, etc.) Example: {"key": "low temperature diamonds"}
+                   - IF distance is requested, then key for distance is "max_distance" Example: {"key": "gold", "max_distance":"80"}
+                   - Key is "state" ONLY when value is boolean (on/off, true/false) Example: "lights on"→ {"state": true}
                    - Never invent other key names (no "material", "distance", "planet", etc.)
-                   - Examples:
+                   - More Examples:
                      - "find mining site for LTD"          → {"key": "low temperature diamonds"}
                      - "lights on"                         → {"state": true}
                      - "decrease speed by 12"              → {"key": "-12"}
                      - "set voice to zira"                 → {"key": "zira"}
-                     - "find gold within 80 ly"            → {"key": "gold"}   (distance ignored unless separate command exists)
-                5. EXEPTION TO THE RULE is Coordinates → always decimal: {"latitude": "-12.34", "longitude":"56.78"}
+                     - "find gold within 80 ly"            → {"key": "gold", "max_distance":"80"}
+                5. EXCEPTIONS TO THE RULE: Coordinates → always decimal: {"latitude": "-12.34", "longitude":"56.78"}, Material/commodity withing X light years {"key": "gold", "max_distance":"80"}
                 6. 'here', 'this planet', 'current system' → interpret as current location
                 7. If multiple possible matches → choose the most specific / most exact lexical match
                 8. If still unsure or weak match → return the no-match JSON above — do NOT try to be helpful

@@ -9,6 +9,7 @@
 ## Linux and Windows are supported.
 
 **✅ Local off-line private LLMs are now supported**
+[Installing local LLM](https://github.com/stone-alex/EliteIntel/wiki/Install-Local-LLM)
 - If you do not have the hardware to run your local LLM you can use cloud LLM from xAI or Open AI but that comes with a small fee. (about $6 a month)
   [**Real life Cloud LLM cost breakdown**](https://github.com/stone-alex/EliteIntel/wiki/LLM-Real-Live-Cost)
   

@@ -59,6 +59,8 @@ public class AppView extends JFrame implements AppViewInterface {
     private JCheckBox sttLockedCheck;
     private JPasswordField llmApiKeyField;
     private JTextField localLlmAddressField;
+    private JTextField localLlmModelCommandField;
+    private JTextField localLlmModelQueryField;
     private JCheckBox llmLockedCheck;
     private JCheckBox showDetailedLog;
     private JPasswordField ttsApiKeyField;
@@ -67,6 +69,7 @@ public class AppView extends JFrame implements AppViewInterface {
     private JToggleButton startStopServicesButton;
     private JButton recalibrateAudioButton;
     private JButton updateAppButton;
+    private JButton restoreDefaultsButton;
     private JCheckBox togglePrivacyModeCheckBox;
     private JPasswordField edsmKeyField;
     private JCheckBox edsmLockedCheck;
@@ -593,63 +596,78 @@ public class AppView extends JFrame implements AppViewInterface {
 
 
     private JPanel buildSettingsTab() {
-        JPanel panel = new JPanel(new GridBagLayout());
+        JPanel settingsTabPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = baseGbc();
         nextRow(gbc);
 
         // LLM key field
-        addLabel(panel, "Cloud LLM Key:", gbc, 0);
+        addLabel(settingsTabPanel, "Cloud LLM Key:", gbc, 0);
         llmApiKeyField = new JPasswordField();
         llmApiKeyField.setPreferredSize(new Dimension(200, 42));
-        addField(panel, llmApiKeyField, gbc, 1, 0.8);
+        addField(settingsTabPanel, llmApiKeyField, gbc, 1, 0.8);
         llmLockedCheck = new JCheckBox("Locked", true);
-        addCheck(panel, llmLockedCheck, gbc, 2, 0.2);
-
+        addCheck(settingsTabPanel, llmLockedCheck, gbc, 2, 0.2);
 
         nextRow(gbc);
-        addLabel(panel, "Local LLM Address:", gbc, 0);
+        addLabel(settingsTabPanel, "Use cloud LLM key (xAI/Open AI) above or configure Local LLM below", gbc, 1);
+
+        nextRow(gbc);
+        addLabel(settingsTabPanel, "Local LLM Address:", gbc, 0);
         localLlmAddressField = new JTextField();
         localLlmAddressField.setPreferredSize(new Dimension(200, 42));
-        addField(panel, localLlmAddressField, gbc, 1, 0.8);
+        addField(settingsTabPanel, localLlmAddressField, gbc, 1, 0.8);
 
         nextRow(gbc);
-        addLabel(panel, " ", gbc, 0);
+        addLabel(settingsTabPanel, "Local LLM Command:", gbc, 0);
+        localLlmModelCommandField = new JTextField();
+        localLlmModelCommandField.setPreferredSize(new Dimension(200, 42));
+        addField(settingsTabPanel, localLlmModelCommandField, gbc, 1, 0.8);
+
+        nextRow(gbc);
+        addLabel(settingsTabPanel, "Local LLM Query:", gbc, 0);
+        localLlmModelQueryField = new JTextField();
+        localLlmModelQueryField.setPreferredSize(new Dimension(200, 42));
+        addField(settingsTabPanel, localLlmModelQueryField, gbc, 1, 0.8);
+
+
+        nextRow(gbc);
+        addLabel(settingsTabPanel, " ", gbc, 0);
 
         // Row 1: STT Key
         nextRow(gbc);
-        addLabel(panel, "Cloud STT Key:", gbc, 0);
+        addLabel(settingsTabPanel, "Cloud STT Key:", gbc, 0);
         sttApiKeyField = new JPasswordField();
         sttApiKeyField.setPreferredSize(new Dimension(200, 42));
-        addField(panel, sttApiKeyField, gbc, 1, 0.8);
+        addField(settingsTabPanel, sttApiKeyField, gbc, 1, 0.8);
         sttLockedCheck = new JCheckBox("Locked", true);
-        addCheck(panel, sttLockedCheck, gbc, 2, 0.2);
+        addCheck(settingsTabPanel, sttLockedCheck, gbc, 2, 0.2);
 
         nextRow(gbc);
-        addLabel(panel, " ", gbc, 0);
+        addLabel(settingsTabPanel, " ", gbc, 0);
 
         // Row 2: TTS Key
         nextRow(gbc);
-        addLabel(panel, "Cloud TTS Key:", gbc, 0);
+        addLabel(settingsTabPanel, "Cloud TTS Key:", gbc, 0);
         ttsApiKeyField = new JPasswordField();
         ttsApiKeyField.setPreferredSize(new Dimension(200, 42));
-        addField(panel, ttsApiKeyField, gbc, 1, 0.8);
+        addField(settingsTabPanel, ttsApiKeyField, gbc, 1, 0.8);
         ttsLockedCheck = new JCheckBox("Locked", true);
-        addCheck(panel, ttsLockedCheck, gbc, 2, 0.2);
+        addCheck(settingsTabPanel, ttsLockedCheck, gbc, 2, 0.2);
 
 
         nextRow(gbc);
-        addLabel(panel, "Local TTS Address", gbc, 0);
+        addLabel(settingsTabPanel, "Local TTS Address", gbc, 0);
         localTtsAddressField = new JTextField();
         localTtsAddressField.setPreferredSize(new Dimension(200, 42));
         localTtsAddressField.setText("http://localhost:5000/");
         localTtsAddressField.setToolTipText("Local TTS Address");
-        addField(panel, localTtsAddressField, gbc, 1, 0.8);
+        addField(settingsTabPanel, localTtsAddressField, gbc, 1, 0.8);
 
         nextRow(gbc);
-        addLabel(panel, " ", gbc, 0);
+        addLabel(settingsTabPanel, " ", gbc, 0);
 
         nextRow(gbc);
-        addLabel(panel, "Speech Throttle ", gbc, 0);
+        addLabel(settingsTabPanel, "Speech Throttle ", gbc, 0);
         speechSpeedSlider = new JSlider();
         speechSpeedSlider.setMinimum(-100);
         speechSpeedSlider.setMaximum(0);
@@ -658,7 +676,7 @@ public class AppView extends JFrame implements AppViewInterface {
         speechSpeedSlider.setInverted(true);
         speechSpeedSlider.setSnapToTicks(true);
         speechSpeedSlider.setValue(-(int) ((1.0f - systemSession.getSpeechSpeed()) * 100));
-        addField(panel, speechSpeedSlider, gbc, 1, 0.8);
+        addField(settingsTabPanel, speechSpeedSlider, gbc, 1, 0.8);
         speechSpeedLabel = new JLabel("");
         setSpeedDisplayValue();
         speechSpeedSlider.addChangeListener(e -> {
@@ -672,22 +690,22 @@ public class AppView extends JFrame implements AppViewInterface {
             });
         });
 
-        addLabel(panel, speechSpeedLabel, gbc, 2);
+        addLabel(settingsTabPanel, speechSpeedLabel, gbc, 2);
 
 
         /// blank
         nextRow(gbc);
-        addLabel(panel, " ", gbc, 0);
+        addLabel(settingsTabPanel, " ", gbc, 0);
 
         // Row EDSM KEY
         nextRow(gbc);
-        addLabel(panel, "EDSM API Key:", gbc, 0);
+        addLabel(settingsTabPanel, "EDSM API Key:", gbc, 0);
         edsmKeyField = new JPasswordField();
         edsmKeyField.setPreferredSize(new Dimension(200, 42));
         edsmKeyField.setToolTipText("EDSM API Key");
-        addField(panel, edsmKeyField, gbc, 1, 0.8);
+        addField(settingsTabPanel, edsmKeyField, gbc, 1, 0.8);
         edsmLockedCheck = new JCheckBox("Locked", true);
-        addCheck(panel, edsmLockedCheck, gbc, 2, 0.2);
+        addCheck(settingsTabPanel, edsmLockedCheck, gbc, 2, 0.2);
 
         // Row 3: Buttons
         nextRow(gbc);
@@ -756,9 +774,41 @@ public class AppView extends JFrame implements AppViewInterface {
             });
         });
 
+        restoreDefaultsButton = new JButton("Restore Local LLM Defaults") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                try {
+                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    Color base = BG_PANEL;
+                    ButtonModel m = getModel();
+                    if (m.isPressed()) base = base.darker();
+                    else if (m.isRollover()) base = base.brighter();
+                    g2.setColor(base);
+                    g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
+                } finally {
+                    g2.dispose();
+                }
+                super.paintComponent(g);
+            }
+        };
+
+        styleButton(restoreDefaultsButton);
+        restoreDefaultsButton.setEnabled(true);
+        restoreDefaultsButton.setText("Restore Local LLM Defaults");
+        restoreDefaultsButton.addActionListener(e -> {
+            SwingUtilities.invokeLater(() -> {
+                localLlmAddressField.setText("http://localhost:11434");
+                localLlmModelCommandField.setText("qwen2.5:14b");
+                localLlmModelQueryField.setText("qwen2.5:14b");
+                saveSystemConfig();
+            });
+        });
+
         buttons.add(saveSystemButton);
         buttons.add(updateAppButton);
-        panel.add(buttons, gbc);
+        buttons.add(restoreDefaultsButton);
+        settingsTabPanel.add(buttons, gbc);
 
         // Row 6: Filler area (reserved for future use)
         nextRow(gbc);
@@ -767,9 +817,9 @@ public class AppView extends JFrame implements AppViewInterface {
         gbc.weightx = 1;
         gbc.weighty = 1; // take the rest of the space
         gbc.fill = GridBagConstraints.BOTH;
-        panel.add(Box.createGlue(), gbc);
+        settingsTabPanel.add(Box.createGlue(), gbc);
 
-        return panel;
+        return settingsTabPanel;
     }
 
     private void setSpeedDisplayValue() {
@@ -873,6 +923,8 @@ public class AppView extends JFrame implements AppViewInterface {
         edsmKeyField.setText(systemSession.getEdsmApiKey() != null ? systemSession.getEdsmApiKey() : "");
         localTtsAddressField.setText(playerSession.getLocalTtsAddress() != null ? playerSession.getLocalTtsAddress() : "");
         localLlmAddressField.setText(playerSession.getLocalLlmAddress() != null ? playerSession.getLocalLlmAddress() : "");
+        localLlmModelCommandField.setText(systemSession.getLocalLlmCommandModel() != null ? systemSession.getLocalLlmCommandModel() : "");
+        localLlmModelQueryField.setText(systemSession.getLocalLlmQueryModel() != null ? systemSession.getLocalLlmQueryModel() : "");
 
         // Player tab
         playerAltNameField.setText(playerSession.getAlternativeName() != null ? playerSession.getAlternativeName() : "");
@@ -902,6 +954,8 @@ public class AppView extends JFrame implements AppViewInterface {
         s.setEdsmApiKey(new String(edsmKeyField.getPassword()));
         playerSession.setLocalTtsAddress(localTtsAddressField.getText());
         playerSession.setLocalLlmAddress(localLlmAddressField.getText());
+        systemSession.setLocalLlmCommandModel(localLlmModelCommandField.getText());
+        systemSession.setLocalLlmQueryModel(localLlmModelQueryField.getText());
         EventBusManager.publish(new AppLogEvent("System config saved"));
         initData();
     }

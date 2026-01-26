@@ -47,6 +47,11 @@ public class GrokClient implements Client {
     public static final boolean IS_STREAM = false;
     private static final GrokClient instance = new GrokClient();
 
+    //not used
+    @Override public JsonObject createPrompt(int model, float temp) {
+        return null;
+    }
+
     @Override public JsonObject createPrompt(String model, float temp) {
 
         JsonObject header = new JsonObject();

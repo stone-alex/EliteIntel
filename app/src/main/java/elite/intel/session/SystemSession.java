@@ -422,4 +422,31 @@ public class SystemSession {
     public Float getSpeechSpeed() {
         return Database.withDao(GameSessionDao.class, dao -> dao.get().getSpeechSpeed());
     }
+
+
+    public void setLocalLlmCommandModel(String text) {
+        Database.withDao(GameSessionDao.class, dao ->{
+            GameSessionDao.GameSession session = dao.get();
+            session.setLocalLlmCommandModel(text);
+            dao.save(session);
+            return Void.class;
+        });
+    }
+
+    public void setLocalLlmQueryModel(String text) {
+        Database.withDao(GameSessionDao.class, dao ->{
+            GameSessionDao.GameSession session = dao.get();
+            session.setLocalLlmQueryModel(text);
+            dao.save(session);
+            return Void.class;
+        });
+    }
+
+    public String getLocalLlmCommandModel() {
+        return Database.withDao(GameSessionDao.class, dao -> dao.get().getLocalLlmCommandModel());
+    }
+
+    public String getLocalLlmQueryModel() {
+        return Database.withDao(GameSessionDao.class, dao -> dao.get().getLocalLlmQueryModel());
+    }
 }

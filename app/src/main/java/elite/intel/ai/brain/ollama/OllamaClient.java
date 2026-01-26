@@ -3,6 +3,7 @@ package elite.intel.ai.brain.ollama;
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.Client;
 import elite.intel.session.PlayerSession;
+import elite.intel.session.SystemSession;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -12,11 +13,12 @@ public class OllamaClient implements Client {
     // qwen2.5:14b working but .5 sec on command response.
 
 
-    public static final String MODEL_OLLAMA = "qwen2.5:14b";
-    public static final String MODEL_OLLAMA_SMALL = "qwen2.5:14b";
+    public static final Integer MODEL_OLLAMA_SMALL = 1;
+    public static final Integer MODEL_OLLAMA = 2;
     private static final OllamaClient INSTANCE = new OllamaClient();
 
     private final PlayerSession playerSession = PlayerSession.getInstance();
+    private final SystemSession systemSession = SystemSession.getInstance();
 
     private OllamaClient() {
     }
@@ -30,10 +32,14 @@ public class OllamaClient implements Client {
     }
 
     @Override
-    public JsonObject createPrompt(String model, float temp) {
+    public JsonObject createPrompt(int model, float temp) {
+
+        String localLlmCommandModel = systemSession.getLocalLlmCommandModel();
+        String localLlmQueryModel = systemSession.getLocalLlmQueryModel();
+
         JsonObject request = new JsonObject();
-        request.addProperty("model", model);
-        request.addProperty("temperature", 0.5);
+        request.addProperty("model", model == 1 ? localLlmCommandModel : localLlmQueryModel);
+        request.addProperty("temperature", temp);
         request.addProperty("stream", false);
         request.addProperty("format", "json");
         request.addProperty("num_ctx", 16384);
@@ -56,6 +62,11 @@ public class OllamaClient implements Client {
         request.addProperty("num_thread", 0);           // 0 = auto (good), or set to physical cores if you want to limit CPU
 
         return request;
+    }
+
+    //not used
+    @Override public JsonObject createPrompt(String model, float temp) {
+        return null;
     }
 
     @Override

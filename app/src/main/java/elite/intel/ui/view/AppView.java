@@ -584,7 +584,7 @@ public class AppView extends JFrame implements AppViewInterface {
     private JPanel buildSettingsTab() {
         JPanel settingsTabPanel = new JPanel();
         settingsTabPanel.setLayout(new BoxLayout(settingsTabPanel, BoxLayout.PAGE_AXIS));
-        settingsTabPanel.add(new JLabel(" "));
+        // settingsTabPanel.add(new JLabel(" "));
         
         GridBagConstraints gbc = baseGbc();
         nextRow(gbc);
@@ -628,7 +628,7 @@ public class AppView extends JFrame implements AppViewInterface {
         addNestedPanel(settingsTabPanel, llmPanel);
         /// --------------------------------------------------------------------------------------------------------------------------------------------
         nextRow(gbc);
-        settingsTabPanel.add(new JLabel(" "));
+        // settingsTabPanel.add(new JLabel(" "));
 
         // Row 1: STT Key
         JPanel sttPanel = new JPanel(new GridBagLayout());
@@ -644,7 +644,7 @@ public class AppView extends JFrame implements AppViewInterface {
         /// --------------------------------------------------------------------------------------------------------------------------------------------
 
         nextRow(gbc);
-        settingsTabPanel.add(new JLabel(" "));
+        // settingsTabPanel.add(new JLabel(" "));
 
         // Row 2: TTS Key
         JPanel ttsPanel = new JPanel(new GridBagLayout());
@@ -698,7 +698,7 @@ public class AppView extends JFrame implements AppViewInterface {
 
         /// blank
         nextRow(gbc);
-        settingsTabPanel.add(new JLabel(" "));
+        // settingsTabPanel.add(new JLabel(" "));
 
         JPanel edsmPanel = new JPanel(new GridBagLayout());
         // Row EDSM KEY

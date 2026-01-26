@@ -10,7 +10,7 @@ public class CarrierDataDto implements ToJsonConvertible {
 
 
     private static final int MAX_CARRIER_SINGLE_JUMP_RANGE = 500;
-    private static final int MAX_FUEL_PER_JUMP = 90;
+    private static final int MAX_FUEL_PER_JUMP = 100;
     private String starName;
     private long totalBalance;
     private long reserveBalance;
@@ -38,7 +38,7 @@ public class CarrierDataDto implements ToJsonConvertible {
     private int repairSupplyTax;
     private int fuelSupply=0;
     private double x,y,z;
-    private Map<String, Integer> commodity = new HashMap<>();
+    private final Map<String, Integer> commodity = new HashMap<>();
 
     public long getTotalBalance() {
         return totalBalance;

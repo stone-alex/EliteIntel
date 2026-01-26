@@ -33,28 +33,6 @@ public class EdsmCommoditySearch {
 
 
     public static List<CommoditySearchResult> search(String commodityToFind, String refStarSystem, int maxDistance) {
-
-        /*
-        TradeProfileManager tradeProfileManager = TradeProfileManager.getInstance();
-        TradeRouteSearchCriteria criteria = tradeProfileManager.getCriteria(false);
-        if (criteria.isAllowFleetCarriers()) {
-            ALLOWED_STATION_TYPES.add("Fleet Carrier");
-            ALLOWED_STATION_TYPES.add("Drake-Class Carrier");
-        }
-        if (criteria.isAllowPlanetary()) {
-            ALLOWED_STATION_TYPES.add("Planetary Port");
-            ALLOWED_STATION_TYPES.add("Dockable Planet Station");
-            if(!criteria.isRequiresLargePad()) {
-                ALLOWED_STATION_TYPES.add("Planetary Outpost");
-            }
-            ALLOWED_STATION_TYPES.add("Odyssey Settlement");
-            ALLOWED_STATION_TYPES.add("Surface Settlement");
-        }
-        if (criteria.isRequiresLargePad()) {
-            ALLOWED_STATION_TYPES.add("Outpost");
-        }
-        */
-
         StarSystemClient edsmClient = StarSystemClient.getInstance();
         SystemSearchCriteria spanshCriteria = new SystemSearchCriteria();
         SystemSearchCriteria.Filters filters = new SystemSearchCriteria.Filters();
@@ -80,7 +58,7 @@ public class EdsmCommoditySearch {
         for (StationSearchResult.SystemResult star : starSystems) {
             if(star.getStations() == null || star.getStations().isEmpty()) continue;
             StationsDto data = EdsmApiClient.searchStations(star.getName(), 1000);
-            if (data != null && data.getData() != null) {
+            if (data.getData() != null) {
                 List<Station> list = data.getData().getStations();
                 if (list != null) {
                     for (Station station : list) {

@@ -26,13 +26,13 @@ public class AnalyzeTradeProfileHandler extends BaseQueryAnalyzer implements Que
         return process(
                 new AiDataStruct(
                         instructions,
-                        new DataDto(criteria.getQuery())
+                        new DataDto(criteria.toJsonForAnalysis())
                 ),
                 originalUserInput
         );
     }
 
-    record DataDto(String profileData) implements ToJsonConvertible {
+    record DataDto(String criteria) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }

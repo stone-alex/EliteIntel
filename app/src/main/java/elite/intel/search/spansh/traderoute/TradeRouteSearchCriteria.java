@@ -1,6 +1,7 @@
 package elite.intel.search.spansh.traderoute;
 
 import elite.intel.search.spansh.client.StringQuery;
+import elite.intel.util.json.GsonFactory;
 
 import java.util.StringJoiner;
 
@@ -125,6 +126,10 @@ public class TradeRouteSearchCriteria implements StringQuery {
 
     public void setAllowStrongHold(boolean allowStrongHold) {
         this.allowStrongHold = allowStrongHold;
+    }
+
+    public String toJsonForAnalysis() {
+        return GsonFactory.getGson().toJson(this);
     }
 
     @Override public String getQuery() {

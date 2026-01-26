@@ -100,8 +100,8 @@ public class AppView extends JFrame implements AppViewInterface {
 
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/images/elite-logo.png")));
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setMinimumSize(new Dimension(1400, 1200));
-        setSize(new Dimension(1400, 1200));
+        setMinimumSize(new Dimension(1200, 800));
+        setSize(new Dimension(1200, 800));
         setLocationRelativeTo(null);
 
         JPanel root = new JPanel(new BorderLayout());
@@ -584,92 +584,76 @@ public class AppView extends JFrame implements AppViewInterface {
     private JPanel buildSettingsTab() {
         JPanel settingsTabPanel = new JPanel();
         settingsTabPanel.setLayout(new BoxLayout(settingsTabPanel, BoxLayout.PAGE_AXIS));
-        // settingsTabPanel.add(new JLabel(" "));
-        
         GridBagConstraints gbc = baseGbc();
-        nextRow(gbc);
 
         /// --------------------------------------------------------------------------------------------------------------------------------------------
-        JPanel llmPanel = new JPanel(new GridBagLayout());
-        // LLM key field
-        addLabel(llmPanel, "Cloud LLM Key:", gbc);
+        /// Cloud Fields
+        nextRow(gbc);
+        JPanel cloudFields = new JPanel(new GridBagLayout());
+        addLabel(cloudFields, "Cloud LLM Key:", gbc);
         llmApiKeyField = new JPasswordField();
         llmApiKeyField.setPreferredSize(new Dimension(200, 42));
-        addField(llmPanel, llmApiKeyField, gbc, 1, 0.8);
+        addField(cloudFields, llmApiKeyField, gbc, 1, 0.8);
         llmLockedCheck = new JCheckBox("Locked", true);
-        addCheck(llmPanel, llmLockedCheck, gbc);
+        addCheck(cloudFields, llmLockedCheck, gbc);
 
+        nextRow(gbc);
+        addLabel(cloudFields, "Cloud STT Key:", gbc);
+        sttApiKeyField = new JPasswordField();
+        sttApiKeyField.setPreferredSize(new Dimension(200, 42));
+        addField(cloudFields, sttApiKeyField, gbc, 1, 0.8);
+        sttLockedCheck = new JCheckBox("Locked", true);
+        addCheck(cloudFields, sttLockedCheck, gbc);
+        cloudFields.setBorder(new LineBorder(SEL_BG, 1));
+        addNestedPanel(settingsTabPanel, cloudFields);
+
+        nextRow(gbc);
+        addLabel(cloudFields, "Cloud TTS Key:", gbc);
+        ttsApiKeyField = new JPasswordField();
+        ttsApiKeyField.setPreferredSize(new Dimension(200, 42));
+        addField(cloudFields, ttsApiKeyField, gbc, 1, 0.8);
+        ttsLockedCheck = new JCheckBox("Locked", true);
+        addCheck(cloudFields, ttsLockedCheck, gbc);
+        /// --------------------------------------------------------------------------------------------------------------------------------------------
+
+
+        JPanel localSettingsPanel = new JPanel(new GridBagLayout());
         nextRow(gbc);
         gbc.gridx = 1;
         gbc.weightx = 0;
         gbc.fill = GridBagConstraints.NONE;
-        JLabel label = new JLabel("Use cloud LLM key (xAI/Open AI) above or configure Local LLM below");
-        //label.setPreferredSize(new Dimension(220, 42));
-        llmPanel.add(label, gbc);
 
         nextRow(gbc);
-        addLabel(llmPanel, "Local LLM Address:", gbc);
+        addLabel(localSettingsPanel, "Local LLM Address:", gbc);
         localLlmAddressField = new JTextField();
         localLlmAddressField.setPreferredSize(new Dimension(200, 42));
-        addField(llmPanel, localLlmAddressField, gbc, 1, 0.8);
+        addField(localSettingsPanel, localLlmAddressField, gbc, 1, 0.8);
 
         nextRow(gbc);
-        addLabel(llmPanel, "Local Command LLM:", gbc);
+        addLabel(localSettingsPanel, "Local Command LLM:", gbc);
         localLlmModelCommandField = new JTextField();
         localLlmModelCommandField.setPreferredSize(new Dimension(200, 42));
-        addField(llmPanel, localLlmModelCommandField, gbc, 1, 0.8);
+        addField(localSettingsPanel, localLlmModelCommandField, gbc, 1, 0.8);
 
         nextRow(gbc);
-        addLabel(llmPanel, "Local Query LLM:", gbc);
+        addLabel(localSettingsPanel, "Local Query LLM:", gbc);
         localLlmModelQueryField = new JTextField();
         localLlmModelQueryField.setPreferredSize(new Dimension(200, 42));
-        addField(llmPanel, localLlmModelQueryField, gbc, 1, 0.8);
-        llmPanel.setBorder(new LineBorder(SEL_BG, 1));
-        addNestedPanel(settingsTabPanel, llmPanel);
-        /// --------------------------------------------------------------------------------------------------------------------------------------------
-        nextRow(gbc);
-        // settingsTabPanel.add(new JLabel(" "));
-
-        // Row 1: STT Key
-        JPanel sttPanel = new JPanel(new GridBagLayout());
-        nextRow(gbc);
-        addLabel(sttPanel, "Cloud STT Key:", gbc);
-        sttApiKeyField = new JPasswordField();
-        sttApiKeyField.setPreferredSize(new Dimension(200, 42));
-        addField(sttPanel, sttApiKeyField, gbc, 1, 0.8);
-        sttLockedCheck = new JCheckBox("Locked", true);
-        addCheck(sttPanel, sttLockedCheck, gbc);
-        sttPanel.setBorder(new LineBorder(SEL_BG, 1));
-        addNestedPanel(settingsTabPanel, sttPanel);
+        addField(localSettingsPanel, localLlmModelQueryField, gbc, 1, 0.8);
+        localSettingsPanel.setBorder(new LineBorder(SEL_BG, 1));
+        addNestedPanel(settingsTabPanel, localSettingsPanel);
         /// --------------------------------------------------------------------------------------------------------------------------------------------
 
         nextRow(gbc);
-        // settingsTabPanel.add(new JLabel(" "));
-
-        // Row 2: TTS Key
-        JPanel ttsPanel = new JPanel(new GridBagLayout());
-        nextRow(gbc);
-        addLabel(ttsPanel, "Cloud TTS Key:", gbc);
-        ttsApiKeyField = new JPasswordField();
-        ttsApiKeyField.setPreferredSize(new Dimension(200, 42));
-        addField(ttsPanel, ttsApiKeyField, gbc, 1, 0.8);
-        ttsLockedCheck = new JCheckBox("Locked", true);
-        addCheck(ttsPanel, ttsLockedCheck, gbc);
-
-
-        nextRow(gbc);
-        addLabel(ttsPanel, "Local TTS Address", gbc);
+        addLabel(localSettingsPanel, "Local TTS Address", gbc);
         localTtsAddressField = new JTextField();
         localTtsAddressField.setPreferredSize(new Dimension(200, 42));
         localTtsAddressField.setText("http://localhost:5000/");
         localTtsAddressField.setToolTipText("Local TTS Address");
-        addField(ttsPanel, localTtsAddressField, gbc, 1, 0.8);
+        addField(localSettingsPanel, localTtsAddressField, gbc, 1, 0.8);
 
         nextRow(gbc);
-        addLabel(ttsPanel, " ", gbc);
-
-        nextRow(gbc);
-        addLabel(ttsPanel, "Speech Throttle ", gbc);
+        addLabel(localSettingsPanel, "Speech Throttle ", gbc);
         speechSpeedSlider = new JSlider();
         speechSpeedSlider.setMinimum(-100);
         speechSpeedSlider.setMaximum(0);
@@ -678,7 +662,7 @@ public class AppView extends JFrame implements AppViewInterface {
         speechSpeedSlider.setInverted(true);
         speechSpeedSlider.setSnapToTicks(true);
         speechSpeedSlider.setValue(-(int) ((1.0f - systemSession.getSpeechSpeed()) * 100));
-        addField(ttsPanel, speechSpeedSlider, gbc, 1, 0.8);
+        addField(localSettingsPanel, speechSpeedSlider, gbc, 1, 0.8);
         speechSpeedLabel = new JLabel("");
         setSpeedDisplayValue();
         speechSpeedSlider.addChangeListener(e -> SwingUtilities.invokeLater(() -> {
@@ -690,10 +674,10 @@ public class AppView extends JFrame implements AppViewInterface {
             setSpeedDisplayValue();
         }));
 
-        addLabel(ttsPanel, speechSpeedLabel, gbc);
-        ttsPanel.setBorder(new LineBorder(SEL_BG, 1));
+        addLabel(localSettingsPanel, speechSpeedLabel, gbc);
+        localSettingsPanel.setBorder(new LineBorder(SEL_BG, 1));
 
-        addNestedPanel(settingsTabPanel, ttsPanel);
+        addNestedPanel(settingsTabPanel, localSettingsPanel);
         /// --------------------------------------------------------------------------------------------------------------------------------------------
 
         /// blank
@@ -703,16 +687,16 @@ public class AppView extends JFrame implements AppViewInterface {
         JPanel edsmPanel = new JPanel(new GridBagLayout());
         // Row EDSM KEY
         nextRow(gbc);
-        addLabel(edsmPanel, "EDSM API Key:", gbc);
+        addLabel(localSettingsPanel, "EDSM API Key:", gbc);
         edsmKeyField = new JPasswordField();
         edsmKeyField.setPreferredSize(new Dimension(200, 42));
         edsmKeyField.setToolTipText("EDSM API Key");
-        addField(edsmPanel, edsmKeyField, gbc, 1, 0.8);
+        addField(localSettingsPanel, edsmKeyField, gbc, 1, 0.8);
         edsmLockedCheck = new JCheckBox("Locked", true);
-        addCheck(edsmPanel, edsmLockedCheck, gbc);
-        edsmPanel.setBorder(new LineBorder(SEL_BG, 1));
+        addCheck(localSettingsPanel, edsmLockedCheck, gbc);
+        localSettingsPanel.setBorder(new LineBorder(SEL_BG, 1));
 
-        addNestedPanel(settingsTabPanel, edsmPanel);
+        addNestedPanel(settingsTabPanel, localSettingsPanel);
         /// --------------------------------------------------------------------------------------------------------------------------------------------
 
 

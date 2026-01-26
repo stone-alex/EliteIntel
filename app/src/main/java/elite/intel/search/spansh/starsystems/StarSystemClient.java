@@ -1,19 +1,9 @@
 package elite.intel.search.spansh.starsystems;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.search.spansh.client.SpanshClient;
 import elite.intel.util.json.GsonFactory;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
+import java.util.ArrayList;
 import java.util.List;
 
 public class StarSystemClient extends SpanshClient {
@@ -37,8 +27,7 @@ public class StarSystemClient extends SpanshClient {
 
     public List<StationSearchResult.SystemResult> searchStarSystems(SystemSearchCriteria criteria) {
         StationSearchResult stationSearchResult = GsonFactory.getGson().fromJson(performSearch(criteria), StationSearchResult.class);
-        if (stationSearchResult == null) return null;
-        List<StationSearchResult.SystemResult> results = stationSearchResult.getResults();
-        return results;
+        if (stationSearchResult == null) return new ArrayList<>();
+        return stationSearchResult.getResults();
     }
 }

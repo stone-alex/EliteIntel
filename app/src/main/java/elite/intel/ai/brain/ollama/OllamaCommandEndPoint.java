@@ -62,7 +62,6 @@ public class OllamaCommandEndPoint extends CommandEndPoint implements AiCommandI
     }
 
     private void processVoiceCommand(String userInput, float confidence) {
-        userInput = escapeJson(userInput);
         if (userInput == null || userInput.isEmpty()) {
             getRouter().processAiResponse(createError("Sorry, I couldn't process that."), userInput);
             systemSession.clearChatHistory();

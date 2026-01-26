@@ -129,7 +129,7 @@ public class AiCommandsAndQueries {
             Map.entry(" what planets have geo signals ", QUERY_GEO_SIGNALS.getAction()),
             Map.entry(" queries about stations, ports and settlements ", QUERY_STATIONS.getAction()),
             Map.entry(" queries about system security, traffic, casualties, local controlling factions and major powers  ", SYSTEM_SECURITY_ANALYSIS.getAction()),
-            Map.entry(" queries about trade profile configuration ", TRADE_PROFILE_ANALYSIS.getAction()),
+            Map.entry(" what is our trade profile, summarize trade profile, analyze tade profile", TRADE_PROFILE_ANALYSIS.getAction()),
             Map.entry(" how far is planet <planet name>, how far is station <station name> ", DISTANCE_TO_BODY.getAction()),
             Map.entry(" analyze X we just scanned, tell me about this last scan,  ", LAST_SCAN_ANALYSIS.getAction()),
             Map.entry(" check inventory how much X do we have, do we have any Y in our inventory ", MATERIALS_INVENTORY.getAction()),

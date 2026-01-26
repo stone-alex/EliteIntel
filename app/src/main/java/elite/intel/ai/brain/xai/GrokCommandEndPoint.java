@@ -103,7 +103,6 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
 
     private void processVoiceCommand(String userInput, float confidence) {
 
-        userInput = escapeJson(userInput);
         if (userInput == null || userInput.isEmpty()) {
             JsonObject errorResponse = new JsonObject();
             errorResponse.addProperty("type", AIConstants.TYPE_CHAT);

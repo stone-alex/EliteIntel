@@ -29,35 +29,13 @@ public abstract class AiEndPoint {
             sanitizedObj.addProperty("role", original.get("role").getAsString());
             JsonElement content = original.get("content");
             if (content != null) {
-                sanitizedObj.addProperty("content", escapeJson(content.getAsString()));
+                sanitizedObj.addProperty("content", content.getAsString());
             }
             sanitized.add(sanitizedObj);
         }
         return sanitized;
     }
 
-    protected String escapeJson(String input) {
-        if (input == null || input.isEmpty()) return "";
-        StringBuilder sb = new StringBuilder();
-        for (char c : input.toCharArray()) {
-            if (c < 32 || c == 127 || c == 0xFEFF) {
-                sb.append(' '); // Replace control characters
-            } else if (c == '"') {
-                sb.append("\\\"");
-            } else if (c == '\\') {
-                sb.append("\\\\");
-            } else if (c == '\n') {
-                sb.append("\\n");
-            } else if (c == '\r') {
-                sb.append("\\r");
-            } else if (c == '\t') {
-                sb.append("\\t");
-            } else {
-                sb.append(c);
-            }
-        }
-        return sb.toString();
-    }
 
     public JsonObject processServerError(HttpURLConnection conn, int responseCode, Client client) throws IOException {
         String errorResponse = "";

@@ -658,7 +658,7 @@ public class AppView extends JFrame implements AppViewInterface {
         speechSpeedSlider.setMinimum(-100);
         speechSpeedSlider.setMaximum(0);
         speechSpeedSlider.setMajorTickSpacing(25);
-        speechSpeedSlider.setMinorTickSpacing(5);
+        speechSpeedSlider.setMinorTickSpacing(1);
         speechSpeedSlider.setInverted(true);
         speechSpeedSlider.setSnapToTicks(true);
         speechSpeedSlider.setValue(-(int) ((1.0f - systemSession.getSpeechSpeed()) * 100));
@@ -682,9 +682,6 @@ public class AppView extends JFrame implements AppViewInterface {
 
         /// blank
         nextRow(gbc);
-        // settingsTabPanel.add(new JLabel(" "));
-
-        JPanel edsmPanel = new JPanel(new GridBagLayout());
         // Row EDSM KEY
         nextRow(gbc);
         addLabel(localSettingsPanel, "EDSM API Key:", gbc);

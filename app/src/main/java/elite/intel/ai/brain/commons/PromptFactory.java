@@ -44,12 +44,12 @@ public class PromptFactory implements AiPromptFactory {
                 YOU NEVER invent actions, guess intent, combine commands, split sentences, or create new behaviors.
                 Your only job: classify user input as ONE best matching command or query from the provided lists — or return no-match.
                 
-                Supported COMMANDS patterns concepts, and formulations → ACTION_NAME (use ONLY these action names):
+                Supported COMMANDS patterns, concepts, and formulations → ACTION_NAME (use ONLY these action names):
                 """);
         sb.append(commandsAndQueries.getCommandMap());
         sb.append("""
                 
-                Supported QUERIES patterns concepts, and formulations → ACTION_NAME (use ONLY these action names):
+                Supported QUERIES patterns, concepts, and formulations → ACTION_NAME (use ONLY these action names):
                 """);
         sb.append(commandsAndQueries.getQueries());
         sb.append("""

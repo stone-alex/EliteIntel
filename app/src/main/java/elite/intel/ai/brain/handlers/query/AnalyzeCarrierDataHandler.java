@@ -28,6 +28,7 @@ public class AnalyzeCarrierDataHandler extends BaseQueryAnalyzer implements Quer
                         - fundedOperation: time in weeks the carrier can operate with current funding. 
                     Do not improvise or assume anything.
                     Example: Carrier balance is X credits. Or Carrier max range is X light years. Or We are funded for 19 weeks of ops.
+                    Spell out numerals.
                     If data not available state so.
                     """;
             return process(

@@ -51,6 +51,8 @@ public class AnalyzeCurrentLocationHandler extends BaseQueryAnalyzer implements 
                     - IF Asked about Local Government, Controlling Powers, Controlling Faction, and localPowers/controllingFaction data is not present, the planet is uninhabited - ELSE use this data for your answer. Example: <planetName> is uninhabited. Or <planetName> is controlled by <X> powers and controlling faction is <Y>
                 """;
 
+        double rotationPeriod = Math.round(location.getRotationPeriod() * 100.0) / 100.0;
+        double surfaceTemperatureInKelvin = Math.round(location.getSurfaceTemperature() * 100.0) / 100.0;
         return process(
                 new AiDataStruct(
                         instructions,
@@ -63,10 +65,10 @@ public class AnalyzeCurrentLocationHandler extends BaseQueryAnalyzer implements 
                                 location.getPowers() == null ? null : location.getPowers().toArray(String[]::new),
                                 deathsDto.getData() == null ? null : deathsDto.getData().getDeaths(),
                                 trafficDto.getData() == null ? null : trafficDto.getData().getTraffic(),
-                                location.getRotationPeriod(),
+                                rotationPeriod,
                                 location.getRadius(),
                                 location.isTidalLocked(),
-                                location.getSurfaceTemperature(),
+                                surfaceTemperatureInKelvin,
                                 getFormattedSolarDayLength(location.getRotationPeriod(), location.getOrbitalPeriod(), location.isTidalLocked())
                         )
                 ),

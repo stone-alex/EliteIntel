@@ -20,7 +20,6 @@ import javax.swing.text.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -41,6 +40,7 @@ public class AppView extends JFrame implements AppViewInterface {
     private static final Color FG = new Color(0xE6E6E6); // primary text
     private static final Color FG_MUTED = new Color(0xB0B0B0); // secondary text
     private static final Color ACCENT = new Color(0xFF8C00); // orange
+    private static final Color LIGHT_GREEN = new Color(0x31FF00); // orange
     private static final Color SEL_BG = new Color(0x3A3D41); // selection background
     private static final Color TAB_UNSELECTED = new Color(0x2A2C2F);
     private static final Color TAB_SELECTED = new Color(0x33363A);
@@ -53,6 +53,7 @@ public class AppView extends JFrame implements AppViewInterface {
     // Title
     private final JLabel titleLabel;
     private final AtomicBoolean isServiceRunning = new AtomicBoolean(false);
+    private Font monoFont;
     public JCheckBox toggleStreamingModeCheckBox;
     public JTextArea logArea;
     // System tab components
@@ -177,16 +178,17 @@ public class AppView extends JFrame implements AppViewInterface {
 
     private void loadCustomFont() {
         try {
-            Font font = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("/fonts/Electrolize-Regular.ttf")).deriveFont(20f);
-            GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(font);
-            UIManager.put("defaultFont", font);
+            Font electrolize = Font.createFont(Font.TRUETYPE_FONT, Objects.requireNonNull(getClass().getResourceAsStream("/fonts/Electrolize-Regular.ttf"))).deriveFont(18f);
+            monoFont = Font.createFont(Font.TRUETYPE_FONT, Objects.requireNonNull(getClass().getResourceAsStream("/fonts/UbuntuSansMono-Regular.ttf"))).deriveFont(20f);
+            GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(electrolize);
+            GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(monoFont);
 
-            // Update all component fonts
-            for (Map.Entry<Object, Object> entry : UIManager.getDefaults().entrySet()) {
-                if (entry.getValue() instanceof FontUIResource) {
-                    UIManager.put(entry.getKey(), new FontUIResource(font));
-                }
-            }
+            // Selective UIManager – proportional for UI, mono for code/logs
+            UIManager.put("defaultFont", new FontUIResource(electrolize));
+            UIManager.put("monospaceFont", new FontUIResource(monoFont));
+
+            // Propagate changes
+            SwingUtilities.updateComponentTreeUI(this);
         } catch (FontFormatException | IOException e) {
             log.error("Failed to load custom font: {}", e.getMessage());
         }
@@ -370,9 +372,11 @@ public class AppView extends JFrame implements AppViewInterface {
 
         logArea = new JTextArea();
         logArea.setEditable(false);
-        logArea.setFont(new JTextArea().getFont()); // default mono is optional; keep default look
+        logArea.setFont(monoFont);  // Use stored DejaVu only here!
         logArea.setLineWrap(true);
         logArea.setWrapStyleWord(true);
+        logArea.setBackground(BG);
+        logArea.setForeground(Color.GREEN);
         JScrollPane scroll = new JScrollPane(logArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         panel.add(scroll, gbc);
 
@@ -658,7 +662,7 @@ public class AppView extends JFrame implements AppViewInterface {
         speechSpeedSlider.setMinimum(-100);
         speechSpeedSlider.setMaximum(0);
         speechSpeedSlider.setMajorTickSpacing(25);
-        speechSpeedSlider.setMinorTickSpacing(5);
+        speechSpeedSlider.setMinorTickSpacing(1);
         speechSpeedSlider.setInverted(true);
         speechSpeedSlider.setSnapToTicks(true);
         speechSpeedSlider.setValue(-(int) ((1.0f - systemSession.getSpeechSpeed()) * 100));
@@ -682,9 +686,6 @@ public class AppView extends JFrame implements AppViewInterface {
 
         /// blank
         nextRow(gbc);
-        // settingsTabPanel.add(new JLabel(" "));
-
-        JPanel edsmPanel = new JPanel(new GridBagLayout());
         // Row EDSM KEY
         nextRow(gbc);
         addLabel(localSettingsPanel, "EDSM API Key:", gbc);
@@ -843,7 +844,7 @@ public class AppView extends JFrame implements AppViewInterface {
 
         if (c instanceof JTextArea) {
             c.setBackground(LOG_BG);
-            c.setForeground(ACCENT);
+            c.setForeground(LIGHT_GREEN);
         }
 
         // Text components

@@ -106,7 +106,7 @@ public class Status extends StatusFlags{
     }
 
     public boolean isOnFoot() {
-        return isOnFoot(getStatus().getFlags());
+        return isOnFoot(getStatus().getFlags2());
     }
 
     public boolean isAimDownSight() {

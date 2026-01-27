@@ -13,6 +13,7 @@ import elite.intel.ai.brain.handlers.query.QueryHandler;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.SystemSession;
+import elite.intel.ui.event.AppLogEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -62,7 +63,7 @@ public class OpenAiResponseRouter extends ResponseRouter implements AIRouterInte
                 EventBusManager.publish(new AiVoxResponseEvent(responseText));
                 log.info("Spoke initial response: {}", responseText);
             }
-
+            EventBusManager.publish(new AppLogEvent("AI Action: "+action));
             switch (type) {
                 case AIConstants.TYPE_COMMAND:
                     handleCommand(action, params, responseText);

@@ -13,7 +13,8 @@ public class OpenAiClient implements Client {
 
     private static final String API_URL = "https://api.openai.com/v1/chat/completions";
 
-    public static final String MODEL_GPT_4_1_MINI = "gpt-4.1-mini";
+    //public static final String MODEL_GPT_4_1_MINI = "gpt-4.1-mini";
+    public static final String MODEL_GPT_4_1_MINI = "gpt-5.2";
     //NOTE: Do not use nano LLM. It can't properly map commands or queries.
 
     private static OpenAiClient instance;

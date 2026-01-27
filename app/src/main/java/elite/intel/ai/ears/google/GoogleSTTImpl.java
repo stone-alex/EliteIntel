@@ -42,7 +42,7 @@ public class GoogleSTTImpl implements EarsInterface {
     private final AtomicBoolean isSpeaking = new AtomicBoolean(false);
     private final SystemSession systemSession = SystemSession.getInstance();
     Map<String, String> corrections;
-    private ByteArrayOutputStream audioCollector = new ByteArrayOutputStream();
+    private final ByteArrayOutputStream audioCollector = new ByteArrayOutputStream();
     private Resampler resampler;  // lazy-init when needed
     private int sampleRateHertz;  // Dynamically detected
     private int bufferSize; // Dynamically calculated based on sample rate
@@ -262,7 +262,7 @@ public class GoogleSTTImpl implements EarsInterface {
                         }
 
                         // Check for VAD exit and send accumulated transcript if any
-                        if (wasActive && !isActive && currentTranscript.length() > 0) {
+                        if (wasActive && !isActive && !currentTranscript.isEmpty()) {
                             String fullTranscript = currentTranscript.toString().trim();
                             EventBusManager.publish(new AppLogEvent("STT Heard: [" + fullTranscript + "]."));
                             if (!fullTranscript.isBlank() && fullTranscript.length() >= 3) {

@@ -63,12 +63,6 @@ public class KeyBindingsParser {
                 Element element = (Element) nodes.item(i);
                 String actionName = element.getTagName();
 
-                // Skip blacklisted actions and any Humanoid* actions
-                if (BLACKLISTED_ACTIONS.contains(actionName) || actionName.startsWith("Humanoid")) {
-                    log.debug("Skipping blacklisted or Humanoid action: {}", actionName);
-                    continue;
-                }
-
                 NodeList primaryList = element.getElementsByTagName("Primary");
                 NodeList secondaryList = element.getElementsByTagName("Secondary");
 

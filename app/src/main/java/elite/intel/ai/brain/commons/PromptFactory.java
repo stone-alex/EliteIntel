@@ -1,5 +1,7 @@
 package elite.intel.ai.brain.commons;
 
+import elite.intel.ai.brain.AICadence;
+import elite.intel.ai.brain.AIPersonality;
 import elite.intel.ai.brain.AiCommandsAndQueries;
 import elite.intel.ai.brain.AiPromptFactory;
 import elite.intel.session.PlayerSession;
@@ -10,6 +12,7 @@ import java.util.Objects;
 
 public class PromptFactory implements AiPromptFactory {
 
+    private final SystemSession systemSession = SystemSession.getInstance();
     private static final PromptFactory INSTANCE = new PromptFactory();
     private static final String JSON_FORMAT = """
             Always output JSON:
@@ -33,18 +36,20 @@ public class PromptFactory implements AiPromptFactory {
     @Override
     public String generateSystemPrompt() {
         StringBuilder sb = new StringBuilder();
-
+        AICadence aiCadence = systemSession.getAICadence();
+        AIPersonality aiPersonality = systemSession.getAIPersonality();
+        sb.append("YOU ARE ").append(aiName()).append(" — A STRICT COMMAND PARSER.");
         sb.append("""
-                YOU ARE AMELIA — A STRICT COMMAND PARSER.
                 YOU NEVER invent actions, guess intent, combine commands, split sentences, or create new behaviors.
                 Your only job: classify user input as ONE best matching command or query from the provided lists — or return no-match.
-                
-                Supported COMMANDS patterns concepts, and formulations → ACTION_NAME (use ONLY these action names):
+                    - IF user input is a call to action it is probably a command. Match it to most probable command in the list.
+                    - IF user input is a question it is probably a query. Match it to most probable query in the list.
+                Supported COMMANDS patterns, concepts, and formulations → ACTION_NAME (use ONLY these action names):
                 """);
         sb.append(commandsAndQueries.getCommandMap());
         sb.append("""
                 
-                Supported QUERIES patterns concepts, and formulations → ACTION_NAME (use ONLY these action names):
+                Supported QUERIES patterns, concepts, and formulations → ACTION_NAME (use ONLY these action names):
                 """);
         sb.append(commandsAndQueries.getQueries());
         sb.append("""
@@ -87,6 +92,11 @@ public class PromptFactory implements AiPromptFactory {
                 Only use action names exactly as they appear in the lists.
                 Output pure JSON — no explanations, no markdown, no extra text.
                 """);
+        if(!systemSession.isRunningLocalLLM() && !systemSession.isRunningPiperTts()){
+            sb.append(" Behavior: ");
+            sb.append(aiPersonality.getBehaviorClause());
+            sb.append(aiCadence.getCadenceClause());
+        }
         return sb.toString();
     }
 
@@ -94,12 +104,10 @@ public class PromptFactory implements AiPromptFactory {
     public String generateAnalysisPrompt() {
         StringBuilder sb = new StringBuilder();
         sb.append("Instructions:\n");
+        sb.append("You are ").append(aiName()).append(" — strict data extractor.");
         sb.append("""
-                You are Amelia — strict data extractor.
+                Output ONLY this exact JSON structure {"type":"chat", "response_text": "YOUR ANSWER HERE AS PLAIN TEXT"} — nothing else, no explanations, no thinking, no markdown, no extra characters:
                 
-                Output ONLY this exact JSON structure — nothing else, no explanations, no thinking, no markdown, no extra characters:
-                
-                {"type":"chat", "response_text": "your answer here"}
                 
                 Rules — follow exactly:
                 - "response_text" must be:
@@ -200,8 +208,8 @@ public class PromptFactory implements AiPromptFactory {
     }
 
     private void appendContext(StringBuilder sb, String playerName, String playerMilitaryRank, String playerHonorific, String playerTitle, String missionStatement, String carrierName) {
-        SystemSession systemSession = SystemSession.getInstance();
-        String aiName = systemSession.isRunningPiperTts() ? "Amelia" : systemSession.getAIVoice().getName();
+
+        String aiName = aiName();
         sb.append("Context: You are ").append(aiName).append(", co-pilot and data analyst in a simulation. ");
         if (carrierName != null && !carrierName.isEmpty()) {
             sb.append("Our home base ").append(carrierName).append(". Do not confuse this with our ship(s).");
@@ -213,5 +221,9 @@ public class PromptFactory implements AiPromptFactory {
             sb.append(" Session theme: ").append(missionStatement).append(": ");
         }
         sb.append("\n");
+    }
+
+    private String aiName() {
+        return systemSession.isRunningLocalLLM() ? "Amelia" : systemSession.getAIVoice().getName();
     }
 }

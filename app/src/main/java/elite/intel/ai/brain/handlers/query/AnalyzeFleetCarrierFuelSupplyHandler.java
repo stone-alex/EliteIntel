@@ -19,6 +19,7 @@ public class AnalyzeFleetCarrierFuelSupplyHandler extends BaseQueryAnalyzer impl
                 Fleet Carrier uses Tritium as fuel. It can travel 500 light years per ~100 tons of fuel.
                 Use this data to answer questions about the fleet carrier's fuel supply, including current fuel level, fuel reserve,
                 and estimated ranges based on current and combined fuel supplies. Range provided is in light years, fuel amount is provided in tonns.
+                Spell out numerals.
                 """;
         return process(new AiDataStruct(instructions, new DataDto(fuelSupply, fuelReserve, maxRangeOnCurrentSupply, maxRangeUsingReserve)), originalUserInput);
     }

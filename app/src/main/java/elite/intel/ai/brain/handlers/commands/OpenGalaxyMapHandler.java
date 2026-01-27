@@ -4,8 +4,8 @@ import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
 import elite.intel.session.Status;
 
-import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_GALAXY_MAP;
-import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_GALAXY_MAP_BUGGY;
+import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.*;
+import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_UI_LEFT;
 
 /**
  * The OpenGalaxyMapHandler class is responsible for handling commands related to opening
@@ -47,6 +47,13 @@ public class OpenGalaxyMapHandler extends CommandOperator implements CommandHand
 
         if (status.isInSrv()) {
             operateKeyboard(BINDING_GALAXY_MAP_BUGGY.getGameBinding(), 0);
+        } if(status.isOnFoot()){
+            operateKeyboard(BINDING_ON_FOOT_WHEEL.getGameBinding(), 500);
+            operateKeyboard(BINDING_UI_LEFT.getGameBinding(), 0);
+            operateKeyboard(BINDING_UI_DOWN.getGameBinding(), 0);
+            operateKeyboard(BINDING_ACTIVATE.getGameBinding(), 0);
+            operateKeyboard(BINDING_UI_RIGHT.getGameBinding(), 0);
+            operateKeyboard(BINDING_ACTIVATE.getGameBinding(), 0);
         }
     }
 }

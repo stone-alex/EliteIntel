@@ -262,7 +262,7 @@ public class GoogleSTTImpl implements EarsInterface {
                         }
 
                         // Check for VAD exit and send accumulated transcript if any
-                        if (wasActive && !isActive && currentTranscript.length() > 0) {
+                        if (wasActive && !isActive && !currentTranscript.isEmpty()) {
                             String fullTranscript = currentTranscript.toString().trim();
                             EventBusManager.publish(new AppLogEvent("STT Heard: [" + fullTranscript + "]."));
                             if (!fullTranscript.isBlank() && fullTranscript.length() >= 3) {

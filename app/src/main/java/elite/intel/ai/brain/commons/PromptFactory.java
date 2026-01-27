@@ -38,12 +38,12 @@ public class PromptFactory implements AiPromptFactory {
         StringBuilder sb = new StringBuilder();
         AICadence aiCadence = systemSession.getAICadence();
         AIPersonality aiPersonality = systemSession.getAIPersonality();
-
+        sb.append("YOU ARE ").append(aiName()).append(" — A STRICT COMMAND PARSER.");
         sb.append("""
-                YOU ARE AMELIA — A STRICT COMMAND PARSER.
                 YOU NEVER invent actions, guess intent, combine commands, split sentences, or create new behaviors.
                 Your only job: classify user input as ONE best matching command or query from the provided lists — or return no-match.
-                
+                    - IF user input is a call to action it is probably a command. Match it to most probable command in the list.
+                    - IF user input is a question it is probably a query. Match it to most probable query in the list.
                 Supported COMMANDS patterns, concepts, and formulations → ACTION_NAME (use ONLY these action names):
                 """);
         sb.append(commandsAndQueries.getCommandMap());
@@ -104,12 +104,10 @@ public class PromptFactory implements AiPromptFactory {
     public String generateAnalysisPrompt() {
         StringBuilder sb = new StringBuilder();
         sb.append("Instructions:\n");
+        sb.append("You are ").append(aiName()).append(" — strict data extractor.");
         sb.append("""
-                You are Amelia — strict data extractor.
+                Output ONLY this exact JSON structure {"type":"chat", "response_text": "YOUR ANSWER HERE AS PLAIN TEXT"} — nothing else, no explanations, no thinking, no markdown, no extra characters:
                 
-                Output ONLY this exact JSON structure — nothing else, no explanations, no thinking, no markdown, no extra characters:
-                
-                {"type":"chat", "response_text": "your answer here"}
                 
                 Rules — follow exactly:
                 - "response_text" must be:
@@ -210,8 +208,8 @@ public class PromptFactory implements AiPromptFactory {
     }
 
     private void appendContext(StringBuilder sb, String playerName, String playerMilitaryRank, String playerHonorific, String playerTitle, String missionStatement, String carrierName) {
-        SystemSession systemSession = SystemSession.getInstance();
-        String aiName = systemSession.isRunningPiperTts() ? "Amelia" : systemSession.getAIVoice().getName();
+
+        String aiName = aiName();
         sb.append("Context: You are ").append(aiName).append(", co-pilot and data analyst in a simulation. ");
         if (carrierName != null && !carrierName.isEmpty()) {
             sb.append("Our home base ").append(carrierName).append(". Do not confuse this with our ship(s).");
@@ -223,5 +221,9 @@ public class PromptFactory implements AiPromptFactory {
             sb.append(" Session theme: ").append(missionStatement).append(": ");
         }
         sb.append("\n");
+    }
+
+    private String aiName() {
+        return systemSession.isRunningLocalLLM() ? "Amelia" : systemSession.getAIVoice().getName();
     }
 }

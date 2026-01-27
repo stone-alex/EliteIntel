@@ -1,5 +1,7 @@
 package elite.intel.ai.brain.commons;
 
+import elite.intel.ai.brain.AICadence;
+import elite.intel.ai.brain.AIPersonality;
 import elite.intel.ai.brain.AiCommandsAndQueries;
 import elite.intel.ai.brain.AiPromptFactory;
 import elite.intel.session.PlayerSession;
@@ -10,6 +12,7 @@ import java.util.Objects;
 
 public class PromptFactory implements AiPromptFactory {
 
+    private final SystemSession systemSession = SystemSession.getInstance();
     private static final PromptFactory INSTANCE = new PromptFactory();
     private static final String JSON_FORMAT = """
             Always output JSON:
@@ -33,6 +36,8 @@ public class PromptFactory implements AiPromptFactory {
     @Override
     public String generateSystemPrompt() {
         StringBuilder sb = new StringBuilder();
+        AICadence aiCadence = systemSession.getAICadence();
+        AIPersonality aiPersonality = systemSession.getAIPersonality();
 
         sb.append("""
                 YOU ARE AMELIA — A STRICT COMMAND PARSER.
@@ -87,6 +92,11 @@ public class PromptFactory implements AiPromptFactory {
                 Only use action names exactly as they appear in the lists.
                 Output pure JSON — no explanations, no markdown, no extra text.
                 """);
+        if(!systemSession.isRunningLocalLLM() && !systemSession.isRunningPiperTts()){
+            sb.append(" Behavior: ");
+            sb.append(aiPersonality.getBehaviorClause());
+            sb.append(aiCadence.getCadenceClause());
+        }
         return sb.toString();
     }
 

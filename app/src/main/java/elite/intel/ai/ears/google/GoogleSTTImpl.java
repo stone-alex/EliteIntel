@@ -42,7 +42,7 @@ public class GoogleSTTImpl implements EarsInterface {
     private final AtomicBoolean isSpeaking = new AtomicBoolean(false);
     private final SystemSession systemSession = SystemSession.getInstance();
     Map<String, String> corrections;
-    private ByteArrayOutputStream audioCollector = new ByteArrayOutputStream();
+    private final ByteArrayOutputStream audioCollector = new ByteArrayOutputStream();
     private Resampler resampler;  // lazy-init when needed
     private int sampleRateHertz;  // Dynamically detected
     private int bufferSize; // Dynamically calculated based on sample rate

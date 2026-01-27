@@ -129,8 +129,7 @@ public enum Commands {
     /// Generic simple commands. no parameters, but require binding
     ACTIVATE                                            ("activate", BINDING_ACTIVATE.getGameBinding(), null, GenericGameControlHandler.class),
 
-    NIGHT_VISION_ON                                     ("turn_on_night_vision", BINDING_NIGHT_VISION_TOGGLE.getGameBinding(), "state", GenericGameControlHandler.class),
-    NIGHT_VISION_OFF                                    ("turn_off_night_vision", BINDING_NIGHT_VISION_TOGGLE.getGameBinding(), "state", GenericGameControlHandler.class),
+    NIGHT_VISION_ON_OFF                                     ("toggle_night_vision_on_off", BINDING_NIGHT_VISION_TOGGLE.getGameBinding(), "state", ToggleNightVision.class),
 
     //CYCLE_NEXT_PAGE                                     ("cycle_next_page", BINDING_CYCLE_NEXT_PAGE.getGameBinding(), null, GenericGameControlHandler.class),
     //CYCLE_NEXT_PANEL                                    ("cycle_next_panel", BINDING_CYCLE_NEXT_PANEL.getGameBinding(), null, GenericGameControlHandler.class),
@@ -142,7 +141,7 @@ public enum Commands {
     DRIVE_ASSIST                                        ("drive_assist", BINDING_DRIVE_ASSIST.getGameBinding(), null, GenericGameControlHandler.class),
 
     TARGET_SUB_SYSTEM                                   ("target_subsystem", null, "subsystem", TargetSubSystemHandler.class),
-    RECALL_DISMISS_SHIP                                 ("recall_or_dismiss_ship", BINDING_RECALL_DISMISS_SHIP.getGameBinding(), null, GenericGameControlHandler.class),
+    RECALL_DISMISS_SHIP                                 ("recall_or_dismiss_ship", BINDING_RECALL_DISMISS_SHIP.getGameBinding(), null, DismissShip.class),
 
     REQUEST_DEFENSIVE_BEHAVIOUR                         ("fighter_orders_defend_fighter_order", BINDING_REQUEST_DEFENSIVE_BEHAVIOUR.getGameBinding(), null, GenericGameControlHandler.class),
     REQUEST_FOCUS_TARGET                                ("fighter_orders_attack_my_target_fighter_order", BINDING_REQUEST_DEFENSIVE_BEHAVIOUR.getGameBinding(), null, GenericGameControlHandler.class),

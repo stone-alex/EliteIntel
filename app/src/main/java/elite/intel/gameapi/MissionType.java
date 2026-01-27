@@ -51,26 +51,28 @@ public enum MissionType {
     // OnFoot / Oddesy
     MISSION_ONFOOT_ONSLAUGHT_OFFLINE_002("Mission_OnFoot_Onslaught_Offline_002"),
     MISSION_ONFOOT_SALVAGE_MB("Mission_OnFoot_Salvage_MB"),
+    MISSION_ONFOOT_SALVAGEILLEGAL_MB("Mission_OnFoot_SalvageIllegal_MB"),
     MISSION_HACK_BLOPS_BOOM("Mission_Hack_BLOPS_Boom"),
-    MISSION_ONFOOT_HEIST_POI_001("Mission_OnFoot_Heist_POI_001"),
     MISSION_ONFOOT_ONSLAUGHTILLEGAL("Mission_OnFoot_OnslaughtIllegal"),
+    // todo: fix numbering scheme workaround to avoid duplicate events
+    // The numbering schema seams to represent the faction-number in a system or in relevance to the background mechanics,
+    MISSION_ONFOOT_HEIST_POI_001("Mission_OnFoot_Heist_POI_001"),
+    MISSION_ONFOOT_ASSASSINATION_COVERT_005("Mission_OnFoot_Assassination_Covert_005"),
     MISSION_ONFOOT_ASSASSINATION_HARD_001("Mission_OnFoot_Assassination_Hard_001"),
     MISSION_ONFOOT_ASSASSINATION_COVERT_001("Mission_OnFoot_Assassination_Covert_001"),
     MISSION_ONFOOT_ASSASSINATION_COVERT_002("Mission_OnFoot_Assassination_Covert_002"),
-    MISSION_ONFOOT_ASSASSINATION_COVERT_005("Mission_OnFoot_Assassination_Covert_005"),
     MISSION_ONFOOT_MASSACREILLEGAL_006("Mission_OnFoot_MassacreIllegal_006"),
+    MISSION_ONFOOT_ASSASSINATION_002("Mission_OnFoot_Assassination_002"),
+    MISSION_ONFOOT_DELIVERY_CONTACT_005("Mission_OnFoot_Delivery_Contact_005"),
+    MISSION_ONFOOT_ONSLAUGHT_001("Mission_OnFoot_Onslaught_001"),
+    // todo: verify ranking mission
+    MISSION_COLLECT_RANKEMP("Mission_Collect_RankEmp"),
     MISSION_RESCUE_PLANET("Mission_Rescue_Planet"),
     MISSION_SCAN("Mission_Scan"),
     MISSION_ASSASSINATE_ILLEGAL_BLOPS_CIVILLIBERTY("Mission_assassinate_Illegal_BLOPS_CivilLiberty"),
     MISSION_ASSASSINATE_PLANETARY("Mission_Assassinate_Planetary"),
-    MISSION_COLLECT_RANKEMP("Mission_Collect_RankEmp"), // todo: verify ranking mission
-    MISSION_ONFOOT_ASSASSINATION_002("Mission_OnFoot_Assassination_002"),
-    MISSION_ONFOOT_ONSLAUGHT_001("Mission_OnFoot_Onslaught_001"),
-    MISSION_ONFOOT_DELIVERY_CONTACT_005("Mission_OnFoot_Delivery_Contact_005"),
     MISSION_ONFOOT_ASSASSINATION_MB("Mission_OnFoot_Assassination_MB"),
-    MISSION_ONFOOT_SALVAGEILLEGAL_MB("Mission_OnFoot_SalvageIllegal_MB"),
     MISSION_ONFOOT_COLLECT_MB("Mission_OnFoot_Collect_MB"),
-
 
     UNKNOWN("UnknownType");
 

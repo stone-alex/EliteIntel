@@ -88,6 +88,7 @@ public enum Commands {
     DISPLAY_STATUS_PANEL                                ("display_status_panel", null, null, DisplayStatusPanelHandler.class),
     DISPLAY_RADAR_PANEL                                 ("display_radar_panel", null, null, DisplayRadarPanelHandler.class),
     DISPLAY_LOADOUT_PANEL                               ("display_loadout_panel", null, null, DisplayLoadoutPanelHandler.class),
+    DISPLAY_CARRIER_MANAGEMENT                          ("display_carrier_management", null, null, OpenFleetCarrierManagementHandler.class    ),
     OPEN_CARGO_SCOOP                                    ("open_cargo_scoop", null, null, OpenCargoScoopHandler.class),
     CLOSE_CARGO_SCOOP                                   ("close_cargo_scoop", null, null, CloseCargoScoopHandler.class),
     RETRACT_HARDPOINTS                                  ("retract_hardpoints", null, null, RetractHardpointsHandler.class),

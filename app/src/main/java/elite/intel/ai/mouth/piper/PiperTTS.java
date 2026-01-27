@@ -13,6 +13,7 @@ import elite.intel.util.AudioPlayer;
 import elite.intel.util.json.GsonFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
@@ -164,7 +165,7 @@ public class PiperTTS implements MouthInterface {
         if (input == null || input.isBlank()) return;
 
         //replace em-dash with comma + space
-        String text = input.replaceAll("[^\\x00-\\x7F]", "").replace("—", ", ").replace("*"," ").replace("[","").replace("]", "");
+        String text = sanitize(input);
 
         AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_2);
         EventBusManager.publish(new AppLogEvent("AI: " + text));
@@ -221,5 +222,15 @@ public class PiperTTS implements MouthInterface {
         } else {
             persistentLine.flush();
         }
+    }
+
+    private static @NonNull String sanitize(String input) {
+        return input.replaceAll("[^\\x00-\\x7F]", "")
+                .replace("—", ", ")
+                .replace("*", " ")
+                .replace("[", "")
+                .replace("]", "")
+                .replace("ETA", ". E.T.A.")
+                ;
     }
 }

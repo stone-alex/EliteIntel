@@ -25,7 +25,8 @@ public class AnalyzeCarrierRouteHandler extends BaseQueryAnalyzer implements Que
         Map<Integer, CarrierJump> fleetCarrierRoute = fleetCarrierRouteManager.getFleetCarrierRoute();
         CarrierDataDto carrierData = playerSession.getCarrierData();
         Integer fuelRequired = fleetCarrierRouteManager.getTotalFuelRequired();
-        Integer fuelReserve = fleetCarrierManager.get().getFuelReserve();
+        int fuelReserve = fleetCarrierManager.get().getFuelReserve();
+        int timeToArrivalInMinutes = 0;
 
 
         if (carrierData == null || fleetCarrierRoute == null) {
@@ -33,22 +34,23 @@ public class AnalyzeCarrierRouteHandler extends BaseQueryAnalyzer implements Que
         }
 
         int fuelSupply = carrierData.getFuelLevel() + fuelReserve;
-
+        timeToArrivalInMinutes = fleetCarrierRoute.size() * 20;
         String instructions = """
                 Use the provided route data to answer user questions: reference systemName for locations. 
                 Identify refuel stops as those with hasIcyRing=true.
                 For relevant queries, return number of jumps to final destination, jumps to nearest icy ring stop, and fuel required (1 unit = 1 ton). 
-                Parse jump duration (e.g., '20 minutes') from original user query if mentioned.
                 For ETA, calculate total time as jumps_to_destination * parsed_duration, format appropriately (e.g., 'X minutes' or 'Y hours X minutes'). 
                 Include in response only if asked. 
                 Compare currentFuelSupply to fuelRequired. Return delta if fuelRequried > currentFuelSupply. 
                 Respond only with the specific info requested in a short, consistent manner without broad data dumps.
+                Report time to final destination. Convert timeToFinalDestinationInMinutes to hours and minutes.
+                Separate data segments with commas for TTS.
                 """;
-        return process(new AiDataStruct(instructions, new DataDto(fleetCarrierRoute, fuelSupply, fuelRequired)), originalUserInput);
+        return process(new AiDataStruct(instructions, new DataDto(fleetCarrierRoute, fuelSupply, fuelRequired, timeToArrivalInMinutes)), originalUserInput);
     }
 
 
-    private record DataDto(Map<Integer, CarrierJump> route, int currentFuelSupply, Integer fuelRequired) implements ToJsonConvertible {
+    private record DataDto(Map<Integer, CarrierJump> route, int currentFuelSupply, Integer fuelRequired, int timeToFinalDestinationInMinutes) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }

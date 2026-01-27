@@ -60,6 +60,7 @@ public class AiCommandsAndQueries {
             Map.entry(" display internal panel ", DISPLAY_INTERNAL_PANEL.getAction()),
             Map.entry(" show radar ", DISPLAY_RADAR_PANEL.getAction()),
             Map.entry(" show loadout panel ", DISPLAY_LOADOUT_PANEL.getAction()),
+            Map.entry(" show/display carrier management panel ", DISPLAY_CARRIER_MANAGEMENT.getAction()),
             Map.entry(" open cargo bay, open cargo scoop, open cargo door, open cargo ", OPEN_CARGO_SCOOP.getAction()),
             Map.entry(" close cargo bay, close cargo scoop, close cargo door, close cargo ", CLOSE_CARGO_SCOOP.getAction()),
             Map.entry(" retract hardpoints, stove weapons ", RETRACT_HARDPOINTS.getAction()),

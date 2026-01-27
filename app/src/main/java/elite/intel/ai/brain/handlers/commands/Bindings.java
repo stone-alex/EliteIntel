@@ -133,7 +133,7 @@ public class Bindings {
         BINDING_SELECT_HIGHEST_THREAT("SelectHighestThreat"),
 
         BINDING_TARGET_NEXT_ROUTE_SYSTEM("TargetNextRouteSystem"),
-
+        BINDING_ON_FOOT_WHEEL("HumanoidOpenAccessPanelButton"),
         BINDING_TARGET_WINGMAN0("TargetWingman0"),
         BINDING_TARGET_WINGMAN1("TargetWingman1"),
         BINDING_TARGET_WINGMAN2("TargetWingman2"),

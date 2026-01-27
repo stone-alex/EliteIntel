@@ -334,16 +334,6 @@ public class SystemSession {
         });
     }
 
-    public Map<String, String> asMap() {
-        Map<String, String> result = new HashMap<>();
-        result.put(AI_API_KEY, getAiApiKey());
-        result.put(EDSM_KEY, getEdsmApiKey());
-        result.put(TTS_API_KEY, getTtsApiKey());
-        result.put(STT_API_KEY, getSttApiKey());
-        result.put(DEBUG_SWITCH, String.valueOf(isLoggingEnabled()));
-        return result;
-    }
-
     public void setSendMarketData(boolean enabled) {
         Database.withDao(GameSessionDao.class, dao -> {
             GameSessionDao.GameSession session = dao.get();

@@ -24,8 +24,8 @@ public class AnalyzeStellarObjectsHandler extends BaseQueryAnalyzer implements Q
         StellarObjectsData<List<LocationData>, String> data = toLocationList(playerSession.getLocations());
 
         String instructions = """
-                You are a strict data-only responder. Use ONLY the provided JSON array "allStellarObjectsInStarSystem".
-                Summary field provides general summary of the star system. (number of stars, planets, moons and stations)
+                You are a strict data-only responder. Use ONLY the provided JSON array "allStellarObjectsInStarSystem" and "summary" field.
+                The 'summary' field provides general summary of the star system. (number of stars, planets, moons and stations)
                 Examples of good short answers (reference only – do NOT copy literally):
                 - "Yes, '1 b' is landable, rocky body, 0.13 g, CO₂ atmosphere."
                 - "Landable rocky bodies: 1 b, 1 c, 3 d, 2 d a"

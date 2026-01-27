@@ -129,6 +129,8 @@ public enum Commands {
     /// Generic simple commands. no parameters, but require binding
     ACTIVATE                                            ("activate", BINDING_ACTIVATE.getGameBinding(), null, GenericGameControlHandler.class),
 
+    REQUEST_DOCKING                                     ("request_docking", null, null, RequestDockingHandler.class),
+
     NIGHT_VISION_ON_OFF                                     ("toggle_night_vision_on_off", BINDING_NIGHT_VISION_TOGGLE.getGameBinding(), "state", ToggleNightVision.class),
 
     //CYCLE_NEXT_PAGE                                     ("cycle_next_page", BINDING_CYCLE_NEXT_PAGE.getGameBinding(), null, GenericGameControlHandler.class),

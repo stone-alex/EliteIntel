@@ -1,14 +1,16 @@
 package elite.intel.ai.brain.handlers.commands;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.db.managers.MissionManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.dto.MissionDto;
-import elite.intel.session.PlayerSession;
+
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Optional;
 
 public class PlotRouteToNextMissionDestination extends CommandOperator implements CommandHandler {
@@ -33,6 +35,17 @@ public class PlotRouteToNextMissionDestination extends CommandOperator implement
             EventBusManager.publish(new AiVoxResponseEvent("No missions found."));
         } else {
             MissionDto mission = firstMission.get();
+
+            // Todo: Probably should be its own query/command, need help
+            if (!params.isEmpty() && params.has("missionId")){
+                JsonElement id = params.get("missionId");
+                System.out.println("\n\t---- MissionId : " + id);
+                Optional<MissionDto> targetMission = missions.stream()
+                        .filter(item -> Objects.equals(item.getMissionId(), id.getAsLong()))
+                        .findFirst();
+                mission = targetMission.get();
+            }
+
             EventBusManager.publish(new AiVoxResponseEvent("Head to " + mission.getDestinationSystem() + " system."));
             RoutePlotter plotter = new RoutePlotter(this.controller);
             plotter.plotRoute(mission.getDestinationSystem());

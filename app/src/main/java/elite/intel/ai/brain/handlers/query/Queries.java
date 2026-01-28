@@ -38,7 +38,7 @@ public enum Queries {
     CARRIER_ETA                         ("query_carrier_eta",                           CarrierETAHandler.class, false),
     DISTANCE_TO_CARRIER                 ("query_distance_to_carrier",                   AnalyzeDistanceFromFleetCarrierHandler.class, false),
     // todo: dual usage of analyze pirate_missions, conflicting querying
-    OUTSTANDING_PIRATE_MISSIONS         ("query_outstanding_pirate_missions",           AnalyzePirateMissionHandler.class, true),
+//    OUTSTANDING_PIRATE_MISSIONS         ("query_outstanding_pirate_missions",           AnalyzePirateMissionHandler.class, true),
     PIRATE_MISSION_PROGRESS             ("query_pirate_mission_progress",               AnalyzePirateMissionHandler.class, true),
     PLAYER_PROFILE_ANALYSIS             ("query_player_profile_analysis",               AnalyzePlayerProfile.class, true),
     SHIP_LOADOUT                        ("query_ship_loadout",                          AnalyzeShipLoadoutHandler.class, true),
@@ -52,8 +52,6 @@ public enum Queries {
     PLANET_BIOME_ANALYSIS               ("query_biome_analysis",                        BiomeAnalyzerHandler.class, true),
     REMINDER                            ("query_reminder",                              RemindTargetDestinationHandler.class, false),
     GENERAL_CONVERSATION                ("general_conversation",                        ConversationalQueryHandler.class, false),
-    // todo: dual usage of analyze_missions, conflicting querying
-    OUTSTANDING_MISSIONS                ("query_outstanding_missions",                  AnalyzeMissionHandler.class, true),
     ANALYZE_MISSIONS                    ("query_analyze_missions",                      AnalyzeMissionHandler.class, true);
     /// ########################################################################################################################################
 

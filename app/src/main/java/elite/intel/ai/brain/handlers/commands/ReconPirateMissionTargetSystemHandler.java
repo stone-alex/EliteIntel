@@ -17,7 +17,7 @@ import java.util.List;
 
 public class ReconPirateMissionTargetSystemHandler extends CommandOperator implements CommandHandler {
 
-    private GameController controller;
+    private final GameController controller;
 
     public ReconPirateMissionTargetSystemHandler(GameController controller) {
         super(controller.getMonitor(), controller.getExecutor());
@@ -41,6 +41,13 @@ public class ReconPirateMissionTargetSystemHandler extends CommandOperator imple
         String starSystem = target.getStarSystem();
         RoutePlotter plotter = new RoutePlotter(this.controller);
         plotter.plotRoute(starSystem);
+        EventBusManager.publish(
+                new AiVoxResponseEvent(
+                        "Plotting route to target system: "
+                                + starSystem + ". When you get there scan nav beacon or search for resource sites. " +
+                                "I may not be able to detect them automatically. Confirmaation is required."
+                )
+        );
         DestinationReminderManager.getInstance().setDestination(
                 new DataDto(starSystem).toJson()
         );

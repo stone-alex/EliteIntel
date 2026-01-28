@@ -126,7 +126,7 @@ public class AiCommandsAndQueries {
             Map.entry(" are there any organics in the star system, what planets have bio forms to scan, are there any bio signals in star system ", BIO_SAMPLE_IN_STAR_SYSTEM.getAction()),
             Map.entry(" queries about organics or exobiology for plant scans ", EXOBIOLOGY_SAMPLES.getAction()),
             Map.entry(" star system analysis, stellar objects analysis, are there landable planets/moons, what class is the stellar object ", QUERY_STELLAR_OBJETS.getAction()),
-            Map.entry(" query, system signals, bio signals, geological signals, hostspots, mining sites, resource sites ", QUERY_STELLAR_SIGNALS.getAction()),
+            Map.entry(" query, system signals, bio signals, geological signals, hostspots, mining sites, battle grounds, resource sites ", QUERY_STELLAR_SIGNALS.getAction()),
             Map.entry(" what planets have geo signals ", QUERY_GEO_SIGNALS.getAction()),
             Map.entry(" queries about stations, ports and settlements ", QUERY_STATIONS.getAction()),
             Map.entry(" queries about fleet carriers present in the star system ", QUERY_CARRIERS.getAction()),

@@ -3,6 +3,7 @@ package elite.intel.ai.brain.handlers.commands;
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.dao.PirateFactionDao.PirateFaction;
 import elite.intel.db.dao.PirateMissionProviderDao.MissionProvider;
 import elite.intel.db.managers.DestinationReminderManager;
@@ -12,7 +13,6 @@ import elite.intel.db.managers.PirateMissionDataManager.PirateMissionTuple;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
-import org.conscrypt.OpenSSLCipherRSA;
 
 import java.util.List;
 
@@ -31,9 +31,11 @@ public class ReconMissionProviderSystemHandler extends CommandOperator implement
         List<PirateMissionTuple<PirateFaction, List<MissionProvider>>> huntingGrounds = manager.findInRangeForRecon(locationManager.getGalacticCoordinates(), 100);
 
         MissionProvider provider = null;
+        String targetStarSystemName = "";
         for (PirateMissionTuple<PirateFaction, List<MissionProvider>> pair : huntingGrounds) {
             List<MissionProvider> providers = pair.getMissionProvider();
             provider = providers.stream().filter(p -> p.getMissionProviderFaction() == null).findFirst().orElse(null);
+            targetStarSystemName = pair.getTarget().getStarSystem();
             if (provider != null) break;
         }
 
@@ -42,7 +44,9 @@ public class ReconMissionProviderSystemHandler extends CommandOperator implement
             return;
         }
 
+
         String starSystem = provider.getStarSystem();
+        EventBusManager.publish(new MissionCriticalAnnouncementEvent("Plotting route to " + starSystem + " when you get there look for factions targeting " +targetStarSystemName  + " at local ports."));
         RoutePlotter plotter = new RoutePlotter(controller);
         plotter.plotRoute(starSystem);
         DestinationReminderManager.getInstance().setDestination(

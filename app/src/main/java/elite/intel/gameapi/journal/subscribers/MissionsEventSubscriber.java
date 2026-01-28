@@ -4,10 +4,8 @@ import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.db.managers.MissionManager;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.journal.events.MissionAcceptedEvent;
 import elite.intel.gameapi.journal.events.MissionsEvent;
-import elite.intel.gameapi.journal.events.dto.MissionDto;
-import elite.intel.ui.event.AppLogEvent;
+
 
 import java.util.*;
 
@@ -30,13 +28,13 @@ public class MissionsEventSubscriber {
         List<Long> filtered = new ArrayList<>(accepted);
         filtered.removeAll(databaseMissions);
 
-        // todo: EventBus event used for debuggingz
-        EventBusManager.publish(new AppLogEvent("MissionEvent Registered: accepted: "+event.getActive().size() + ", filtered: " + filtered.size()));
+        if(filtered.isEmpty()) {
+            return;
+        }
         for (MissionsEvent.Mission mission : event.getActive()) {
-            if (filtered.contains(mission.getMissionID())){
-                MissionAcceptedEvent dto = new MissionAcceptedEvent(mission.toJsonObject());
-                System.out.println("\n ----- MissionAcceptedEvent objecet --- " + dto);
-                missionManager.save(new MissionDto(dto));
+            if (filtered.contains(mission.getMissionID())) {
+                EventBusManager.publish(new AiVoxResponseEvent("Hey commander, i detected a mission that i haven't catalogued. "+ mission.getMissionType() + " ."));
+                missionManager.save(mission);
             }
         }
     }

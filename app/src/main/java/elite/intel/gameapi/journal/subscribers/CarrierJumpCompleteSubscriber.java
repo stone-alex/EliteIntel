@@ -1,6 +1,7 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.intel.db.managers.DeferredNotificationManager;
 import elite.intel.db.managers.FleetCarrierRouteManager;
 import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
@@ -19,6 +20,7 @@ import java.util.Objects;
 
 @SuppressWarnings("unused")
 public class CarrierJumpCompleteSubscriber {
+    private static final Long THREE_MINUTES = (long) (1000 * 60 * 3);
     private final PlayerSession playerSession = PlayerSession.getInstance();
 
     @Subscribe
@@ -82,6 +84,9 @@ public class CarrierJumpCompleteSubscriber {
         }
 
         CarrierDataDto postJumpCarrierData = playerSession.getCarrierData();
+        int numJumpsRemaining = fleetCarrierRouteManager.getFleetCarrierRoute().size();
+        int estimatedTimeToFinal = numJumpsRemaining * 20;
+        String remainingRoute = numJumpsRemaining == 0 ? ". Final destination reached!" : ". Remaining " + numJumpsRemaining + " jumps. Estimated time to final " + estimatedTimeToFinal;
 
         String instructions = """
                     Notify user about new carrier location.
@@ -89,10 +94,11 @@ public class CarrierJumpCompleteSubscriber {
                 """;
         EventBusManager.publish(
                 new SensorDataEvent(
-                        "Carrier Location: " + event.getStarSystem() + " fuelSupply " + postJumpCarrierData.getFuelLevel() + " fuelReserve:" + postJumpCarrierData.getFuelReserve(),
+                        "Carrier Location: " + event.getStarSystem() + " fuelSupply " + postJumpCarrierData.getFuelLevel() + " fuelReserve:" + postJumpCarrierData.getFuelReserve() + remainingRoute,
                         instructions
                 )
         );
+        DeferredNotificationManager.getInstance().scheduleNotification("Carrier jump cooldown is complete", THREE_MINUTES);
     }
 
     private LocationDto toLocationDto(CarrierJumpEvent event) {

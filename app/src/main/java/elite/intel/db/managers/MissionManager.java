@@ -3,6 +3,7 @@ package elite.intel.db.managers;
 import elite.intel.db.dao.MissionDao;
 import elite.intel.db.util.Database;
 import elite.intel.gameapi.MissionType;
+import elite.intel.gameapi.journal.events.MissionsEvent;
 import elite.intel.gameapi.journal.events.dto.MissionDto;
 import elite.intel.util.json.GsonFactory;
 
@@ -34,6 +35,18 @@ public class MissionManager {
         MissionDao.Mission data = new MissionDao.Mission();
         data.setKey(mission.getMissionId());
         data.setMission(mission.toJson());
+        data.setMissionType(mission.getMissionType());
+        Database.withDao(MissionDao.class, dao -> {
+                    dao.upsert(data, data.getMissionType().name());
+                    return null;
+                }
+        );
+    }
+
+    public void save(MissionsEvent.Mission mission) {
+        MissionDao.Mission data = new MissionDao.Mission();
+        data.setKey(mission.getMissionID());
+        data.setMission(mission.toJsonObject().toString());
         data.setMissionType(mission.getMissionType());
         Database.withDao(MissionDao.class, dao -> {
                     dao.upsert(data, data.getMissionType().name());

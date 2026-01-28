@@ -593,6 +593,10 @@ public class AppView extends JFrame implements AppViewInterface {
         /// --------------------------------------------------------------------------------------------------------------------------------------------
         /// Cloud Fields
         nextRow(gbc);
+        gbc.gridx = 1;
+        gbc.weightx = 1.0;
+        gbc.weighty = 0.0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         JPanel cloudFields = new JPanel(new GridBagLayout());
         addLabel(cloudFields, "Cloud LLM Key:", gbc);
         llmApiKeyField = new JPasswordField();
@@ -608,8 +612,6 @@ public class AppView extends JFrame implements AppViewInterface {
         addField(cloudFields, sttApiKeyField, gbc, 1, 0.8);
         sttLockedCheck = new JCheckBox("Locked", true);
         addCheck(cloudFields, sttLockedCheck, gbc);
-        cloudFields.setBorder(new LineBorder(SEL_BG, 1));
-        addNestedPanel(settingsTabPanel, cloudFields);
 
         nextRow(gbc);
         addLabel(cloudFields, "Cloud TTS Key:", gbc);
@@ -618,14 +620,18 @@ public class AppView extends JFrame implements AppViewInterface {
         addField(cloudFields, ttsApiKeyField, gbc, 1, 0.8);
         ttsLockedCheck = new JCheckBox("Locked", true);
         addCheck(cloudFields, ttsLockedCheck, gbc);
+        cloudFields.setBorder(new LineBorder(SEL_BG, 1));
+        cloudFields.revalidate();
+        addNestedPanel(settingsTabPanel, cloudFields);
         /// --------------------------------------------------------------------------------------------------------------------------------------------
 
 
         JPanel localSettingsPanel = new JPanel(new GridBagLayout());
         nextRow(gbc);
         gbc.gridx = 1;
-        gbc.weightx = 0;
-        gbc.fill = GridBagConstraints.NONE;
+        gbc.weightx = 1.0;  // Allow horizontal fill if desired
+        gbc.weighty = 0.0;  // CRITICAL: No vertical growth!
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
         nextRow(gbc);
         addLabel(localSettingsPanel, "Local LLM Address:", gbc);
@@ -645,6 +651,7 @@ public class AppView extends JFrame implements AppViewInterface {
         localLlmModelQueryField.setPreferredSize(new Dimension(200, 42));
         addField(localSettingsPanel, localLlmModelQueryField, gbc, 1, 0.8);
         localSettingsPanel.setBorder(new LineBorder(SEL_BG, 1));
+        localSettingsPanel.revalidate();
         addNestedPanel(settingsTabPanel, localSettingsPanel);
         /// --------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -807,7 +814,8 @@ public class AppView extends JFrame implements AppViewInterface {
         gbc.weightx = 1;
         gbc.weighty = 1; // take the rest of the space
         gbc.fill = GridBagConstraints.BOTH;
-        settingsTabPanel.add(Box.createGlue());
+
+        nextRow(gbc);
 
 
 

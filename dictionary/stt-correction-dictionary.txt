@@ -328,3 +328,6 @@
 "blending"="landing"
 "part of the weapons"="power to weapons"
 "start"="star"
+"pretty"="query"
+"what are"="query"
+"Mariah Street"="summarize"

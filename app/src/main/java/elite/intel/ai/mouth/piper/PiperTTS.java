@@ -81,6 +81,8 @@ public class PiperTTS implements MouthInterface {
                             synthesizeAndPlay(event.getText());
                         } catch (Exception e) {
                             log.warn("Failed to synthesize and play: {}", e.getMessage(), e);
+                        }  finally {
+                            EventBusManager.publish(new AppLogEvent("\n"));
                         }
                     });
                 } catch (InterruptedException e) {
@@ -168,7 +170,7 @@ public class PiperTTS implements MouthInterface {
         String text = sanitize(input);
 
         AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_2);
-        EventBusManager.publish(new AppLogEvent("AI: " + text));
+        EventBusManager.publish(new AppLogEvent("AI: " + text+"\n"));
 
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("text", text);

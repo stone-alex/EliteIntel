@@ -7,16 +7,15 @@ import elite.intel.db.managers.DestinationReminderManager;
 import elite.intel.db.managers.MissionManager;
 import elite.intel.db.managers.PirateMissionDataManager;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.MissionType;
 
 import java.util.Optional;
 
 public class PloteRouteToPirateMissionArena extends CommandOperator implements CommandHandler {
 
 
-    private GameController controller;
     private final PirateMissionDataManager missionDataManager = PirateMissionDataManager.getInstance();
     private final MissionManager missionManager = MissionManager.getInstance();
+    private final GameController controller;
 
     public PloteRouteToPirateMissionArena(GameController controller) {
         super(controller.getMonitor(), controller.getExecutor());
@@ -29,8 +28,8 @@ public class PloteRouteToPirateMissionArena extends CommandOperator implements C
                 missionManager.getPirateMissionTypes()
         ).stream().findFirst();
 
-        String factionName = firstFaction.get();
-        if(factionName == null) {
+        String factionName = firstFaction.orElse(null);
+        if (factionName == null) {
             EventBusManager.publish(new AiVoxResponseEvent("No factions found"));
             return;
         }

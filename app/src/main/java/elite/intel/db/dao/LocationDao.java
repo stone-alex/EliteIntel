@@ -55,13 +55,17 @@ public interface LocationDao {
     Coordinates currentCoordinates();
 
     @SqlQuery("select * from location where systemAddress = :systemAddress and json->> '$.planetName' = :planetName")
-    Location findBySystemAddress(long systemAddress, String planetName);
+    Location findPrimaryBySystemAddress(long systemAddress, String planetName);
 
     @SqlQuery("select * from location where systemAddress = :systemAddress and json->> '$.bodyId' = :bodyId")
-    Location findBySystemAddress(long systemAddress, Long bodyId);
+    Location findPrimaryBySystemAddress(long systemAddress, Long bodyId);
+
+    @SqlQuery("select * from location where systemAddress = :systemAddress and json->> '$.locationType' is 'PRIMARY_STAR'")
+    Location findPrimaryBySystemAddress(long systemAddress);
 
     @SqlQuery("select * from location where systemAddress = :systemAddress")
-    Location findBySystemAddress(long systemAddress);
+    List<Location> findAllBySystemAddress(long systemAddress);
+
 
     @SqlQuery("select * from location where json ->> '$.marketID' = :marketID")
     Location findByMarketId(long marketID);

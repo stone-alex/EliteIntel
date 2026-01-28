@@ -108,16 +108,17 @@ public class PromptFactory implements AiPromptFactory {
         sb.append("""
                 Output ONLY this exact JSON structure {"type":"chat", "response_text": "YOUR ANSWER HERE AS PLAIN TEXT"} — nothing else, no explanations, no thinking, no markdown, no extra characters:
                 
-                
                 Rules — follow exactly:
                 - "response_text" must be:
                   - pure ASCII English text
-                  - Respond in Military brief and clear style
+                  - TTS friendly punctuation. (no bullets, no formatting)
+                  - Respond in Military clear style
                   - single clean string (no arrays, no objects, no commas as separators unless part of the natural sentence)
                   - only the final extracted answer
-                - If no matching data exists in the provided JSON → "No Data Available."
-                - Never guess, never calculate, never invent values
+                - If no matching data exists in the provided JSON → let the user know that, do not invent values.
+                - Calculate if asked, but never guess and never invent values
                 - Use ONLY information present in the data you receive
+                - If there is not enough info to answer the question let user know.
                 - Never add formatting, lists, quotes, brackets, or any artifacts inside the string
                 Output pure JSON only.
                 """

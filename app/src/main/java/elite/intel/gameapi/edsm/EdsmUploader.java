@@ -84,7 +84,7 @@ public final class EdsmUploader {
         try {
             HttpResponse<String> postResponse = client.send(req, HttpResponse.BodyHandlers.ofString());
             if (postResponse.statusCode() == 200) {
-                String message = "EDSM: " + batch.size() + " events uploaded";
+                String message = "\tEDSM: " + batch.size() + " events uploaded";
                 EventBusManager.publish(new AppLogEvent(message));
                 log.info("EDSM: {} events uploaded", batch.size());
             } else if (postResponse.statusCode() != 200) {

@@ -169,7 +169,7 @@ public class GoogleTTSImpl implements MouthInterface {
             }
             voiceQueue.put(new VoiceRequest(event.getText(), voiceName, (1f + systemSession.getSpeechSpeed()), event.getOriginType()));
             AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_2);
-            EventBusManager.publish(new AppLogEvent("AI: " + event.getText()));
+            EventBusManager.publish(new AppLogEvent("AI: " + event.getText()+"\n"));
             log.debug("Added VoiceRequest to queue: text='{}', voice='{}'", event.getText(), voiceName);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -209,6 +209,8 @@ public class GoogleTTSImpl implements MouthInterface {
                 return;
             } catch (Exception e) {
                 log.error("Unexpected error in VoiceGenerator", e);
+            }  finally {
+                EventBusManager.publish(new AppLogEvent("\n"));
             }
         }
         closePersistentLine();

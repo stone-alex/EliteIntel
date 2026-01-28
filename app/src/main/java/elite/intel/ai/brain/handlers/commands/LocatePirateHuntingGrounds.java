@@ -19,7 +19,7 @@ public class LocatePirateHuntingGrounds implements CommandHandler {
      * Will query the local database first. If nothing is found will call external API
      */
     @Override public void handle(String action, JsonObject params, String responseText) {
-        Integer range = getIntSafely(params.get("key").getAsString()) == null || params.isEmpty() ? 100 : params.get("key").getAsInt();
+        Integer range = params.get("key") == null || getIntSafely(params.get("key").getAsString()) == null || params.isEmpty() ? 100 : params.get("key").getAsInt();
         PirateMassacreMissionSearch missionSearch = PirateMassacreMissionSearch.getInstance();
         List<PirateMissionTuple<PirateFaction, List<MissionProvider>>> huntingGrounds = missionSearch.findHuntingSpotsInRange(range, false);
         StringBuilder sb = new StringBuilder();

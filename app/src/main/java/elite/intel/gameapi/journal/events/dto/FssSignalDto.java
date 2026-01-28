@@ -3,6 +3,8 @@ package elite.intel.gameapi.journal.events.dto;
 import elite.intel.gameapi.gamestate.dtos.BaseJsonDto;
 import elite.intel.util.json.ToJsonConvertible;
 
+import java.util.Objects;
+
 public class FssSignalDto extends BaseJsonDto implements ToJsonConvertible {
 
     private long systemAddress;
@@ -113,5 +115,28 @@ public class FssSignalDto extends BaseJsonDto implements ToJsonConvertible {
 
     public void setTimeRemaining(double timeRemaining) {
         this.timeRemaining = timeRemaining;
+    }
+
+    @Override public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+
+        FssSignalDto that = (FssSignalDto) o;
+        return getSystemAddress() == that.getSystemAddress() && getThreatLevel() == that.getThreatLevel() && Double.compare(getTimeRemaining(), that.getTimeRemaining()) == 0 && Objects.equals(getSignalName(), that.getSignalName()) && Objects.equals(getSignalNameLocalised(), that.getSignalNameLocalised()) && Objects.equals(getSignalType(), that.getSignalType()) && Objects.equals(getUssType(), that.getUssType()) && Objects.equals(getUssTypeLocalised(), that.getUssTypeLocalised()) && Objects.equals(getSpawningState(), that.getSpawningState()) && Objects.equals(getSpawningStateLocalised(), that.getSpawningStateLocalised()) && Objects.equals(getSpawningFaction(), that.getSpawningFaction()) && Objects.equals(getSpawningFactionLocalised(), that.getSpawningFactionLocalised());
+    }
+
+    @Override public int hashCode() {
+        int result = Long.hashCode(getSystemAddress());
+        result = 31 * result + Objects.hashCode(getSignalName());
+        result = 31 * result + Objects.hashCode(getSignalNameLocalised());
+        result = 31 * result + Objects.hashCode(getSignalType());
+        result = 31 * result + Objects.hashCode(getUssType());
+        result = 31 * result + Objects.hashCode(getUssTypeLocalised());
+        result = 31 * result + Objects.hashCode(getSpawningState());
+        result = 31 * result + Objects.hashCode(getSpawningStateLocalised());
+        result = 31 * result + Objects.hashCode(getSpawningFaction());
+        result = 31 * result + Objects.hashCode(getSpawningFactionLocalised());
+        result = 31 * result + getThreatLevel();
+        result = 31 * result + Double.hashCode(getTimeRemaining());
+        return result;
     }
 }

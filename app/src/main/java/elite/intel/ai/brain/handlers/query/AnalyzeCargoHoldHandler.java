@@ -18,8 +18,12 @@ public class AnalyzeCargoHoldHandler extends BaseQueryAnalyzer implements QueryH
 
         String instructions = """
                 Use this data provide questions regarding cargo and/or ship loadout if relevant.
-                Cargo is listed 1 unit = 1 ton. 
+                Cargo is listed 1 unit = 1 ton.
                     - **Do not** ask follow up questions, just provide information.
+                    - If no cargo return Cargo hold is empty.
+                    - If asked about cargo hold capacity
+                        - return cargo hold capacity
+                        - IF capacity is 0 return Cargo hold capacity is 0.
                 """;
         return process(new AiDataStruct(instructions, new DataDto(playerSession.getShipLoadout().getCargoCapacity(), playerSession.getShipCargo())), originalUserInput);
     }

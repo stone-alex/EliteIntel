@@ -6,6 +6,7 @@ import elite.intel.gameapi.gamestate.dtos.GameEvents;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.util.json.GsonFactory;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,14 +54,14 @@ public class LocationManager {
 
     public LocationDto findBySystemAddress(long systemAddress, String planetName) {
         return Database.withDao(LocationDao.class, dao -> {
-            LocationDao.Location location = dao.findBySystemAddress(systemAddress, planetName);
+            LocationDao.Location location = dao.findPrimaryBySystemAddress(systemAddress, planetName);
             return location == null ? new LocationDto(-1L, systemAddress) : GsonFactory.getGson().fromJson(location.getJson(), LocationDto.class);
         });
     }
 
     public LocationDto findBySystemAddress(long systemAddress) {
         return Database.withDao(LocationDao.class, dao -> {
-            LocationDao.Location location = dao.findBySystemAddress(systemAddress);
+            LocationDao.Location location = dao.findPrimaryBySystemAddress(systemAddress);
             return location == null ? new LocationDto(-1L, systemAddress) : GsonFactory.getGson().fromJson(location.getJson(), LocationDto.class);
         });
     }
@@ -69,7 +70,7 @@ public class LocationManager {
     public LocationDto findBySystemAddress(long systemAddress, Long bodyId) {
         return Database.withDao(LocationDao.class, dao -> {
             LocationDao.Location location;
-            location = dao.findBySystemAddress(systemAddress, bodyId);
+            location = dao.findPrimaryBySystemAddress(systemAddress, bodyId);
             return location == null ? new LocationDto(-1L, systemAddress) : GsonFactory.getGson().fromJson(location.getJson(), LocationDto.class);
         });
     }
@@ -105,6 +106,17 @@ public class LocationManager {
         return Database.withDao(LocationDao.class, dao -> {
             LocationDao.Location location = dao.findBySystemAddresAndInGameId(destination.getSystem(), destination.getBody());
             return location == null ? new LocationDto(-1L) : GsonFactory.getGson().fromJson(location.getJson(), LocationDto.class);
+        });
+    }
+
+    public Collection<LocationDto> findAllBySystemAddress(long systemAddress) {
+        return Database.withDao(LocationDao.class, dao -> {
+            List<LocationDao.Location> bySystemAddress = dao.findAllBySystemAddress(systemAddress);
+            Map<Long, LocationDto> result = new HashMap<>();
+            for (LocationDao.Location entity : bySystemAddress) {
+                result.put(entity.getInGameId(), GsonFactory.getGson().fromJson(entity.getJson(), LocationDto.class));
+            }
+            return result.values();
         });
     }
 }

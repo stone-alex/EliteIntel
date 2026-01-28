@@ -14,6 +14,7 @@ import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.UserInputEvent;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
+import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.StringUtls;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.JsonUtils;
@@ -179,11 +180,8 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
     @Subscribe
     @Override
     public void onSensorDataEvent(SensorDataEvent event) {
-        if (!running.get()) {
-            log.debug("Ignoring onSensorDataEvent: endpoint not running");
-            return;
-        }
-
+        if (!running.get()) return;
+        EventBusManager.publish(new AppLogEvent("\nProcessing Sensor event"));
         JsonArray messages = new JsonArray();
 
         JsonObject systemMessage = new JsonObject();

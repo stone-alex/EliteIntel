@@ -20,7 +20,7 @@ import java.util.Objects;
 
 @SuppressWarnings("unused")
 public class CarrierJumpCompleteSubscriber {
-    private static final Long THREE_MINUTES = (long) (1000 * 60 * 3);
+    private static final Long FOUR_MINUTES = (long) (1000 * 60 * 4);
     private final PlayerSession playerSession = PlayerSession.getInstance();
 
     @Subscribe
@@ -98,7 +98,7 @@ public class CarrierJumpCompleteSubscriber {
                         instructions
                 )
         );
-        DeferredNotificationManager.getInstance().scheduleNotification("Carrier jump cooldown is complete", THREE_MINUTES);
+        DeferredNotificationManager.getInstance().scheduleNotification("Carrier jump cooldown is complete", FOUR_MINUTES);
     }
 
     private LocationDto toLocationDto(CarrierJumpEvent event) {

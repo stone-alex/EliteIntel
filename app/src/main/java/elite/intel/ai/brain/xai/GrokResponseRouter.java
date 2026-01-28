@@ -76,6 +76,8 @@ public class GrokResponseRouter extends ResponseRouter implements AIRouterInterf
         } catch (Exception e) {
             log.error("Failed to process Grok response: {}", e.getMessage(), e);
             EventBusManager.publish(new AiVoxResponseEvent("Error processing response."));
+        } finally {
+            EventBusManager.publish(new AppLogEvent("\n"));
         }
     }
 

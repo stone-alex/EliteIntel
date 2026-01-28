@@ -60,7 +60,7 @@ public class DeferredNotificationMonitor implements Runnable {
             }
             try {
                 //noinspection BusyWait
-                Thread.sleep(15 * 1000);
+                Thread.sleep(5 * 1000);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 break;

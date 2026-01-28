@@ -82,6 +82,8 @@ public class OpenAiResponseRouter extends ResponseRouter implements AIRouterInte
         } catch (Exception e) {
             log.error("Failed to process Open AI response: {}", e.getMessage(), e);
             handleChat("Error processing response.");
+        } finally {
+            EventBusManager.publish(new AppLogEvent("\n"));
         }
     }
 

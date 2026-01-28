@@ -264,7 +264,7 @@ public class GoogleSTTImpl implements EarsInterface {
                         // Check for VAD exit and send accumulated transcript if any
                         if (wasActive && !isActive && !currentTranscript.isEmpty()) {
                             String fullTranscript = currentTranscript.toString().trim();
-                            EventBusManager.publish(new AppLogEvent("STT Heard: [" + fullTranscript + "]."));
+                            EventBusManager.publish(new AppLogEvent("\nSTT Heard: [" + fullTranscript + "]."));
                             if (!fullTranscript.isBlank() && fullTranscript.length() >= 3) {
                                 log.info("Final accumulated transcript: {}", fullTranscript);
                                 String sanitizedTranscript = STTSanitizer.getInstance().correctMistakes(fullTranscript);
@@ -310,9 +310,9 @@ public class GoogleSTTImpl implements EarsInterface {
                     requestObserver.onCompleted();
                 }
                 // Send any pending transcript on stream close
-                if (currentTranscript.length() > 0) {
+                if (!currentTranscript.isEmpty()) {
                     String fullTranscript = currentTranscript.toString().trim();
-                    EventBusManager.publish(new AppLogEvent("STT Heard: [" + fullTranscript + "]."));
+                    EventBusManager.publish(new AppLogEvent("\nSTT Heard: [" + fullTranscript + "]."));
                     if (!fullTranscript.isBlank() && fullTranscript.length() >= 3) {
                         log.info("Final accumulated transcript: {}", fullTranscript);
                         String sanitizedTranscript = STTSanitizer.getInstance().correctMistakes(fullTranscript);

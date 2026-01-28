@@ -18,6 +18,7 @@ public enum MissionType {
     MISSION_COURIER_OUTBREAK("Mission_Courier_Outbreak"),
     MISSION_COURIER_SERVICE("Mission_Courier_Service"),
     MISSION_DELIVERY("Mission_Delivery"),
+    MISSION_COURIER_CIVILWAR("Mission_Courier_CivilWar"),
 
     //  Passenger
     MISSION_PASSENGERBULK("Mission_PassengerBulk"),
@@ -41,6 +42,7 @@ public enum MissionType {
 
     // Salvage
     MISSION_SALVAGE_ILLEGAL("Mission_Salvage_Illegal"),
+    MISSION_RESCUE_PLANET_CIVILWAR("Mission_Rescue_Planet_CivilWar"),
 
     // Collecting
     MISSION_COLLECT_INDUSTRIAL("Mission_Collect_Industrial"),
@@ -86,4 +88,8 @@ public enum MissionType {
         return this.missionType;
     }
 
+    public static MissionType getUnknown() {
+        return UNKNOWN;
     }
+
+}

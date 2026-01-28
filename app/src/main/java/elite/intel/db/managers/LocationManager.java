@@ -2,6 +2,7 @@ package elite.intel.db.managers;
 
 import elite.intel.db.dao.LocationDao;
 import elite.intel.db.util.Database;
+import elite.intel.gameapi.gamestate.dtos.GameEvents;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.util.json.GsonFactory;
 
@@ -36,7 +37,7 @@ public class LocationManager {
     }
 
     public LocationDao.Coordinates getGalacticCoordinates() {
-        return Database.withDao(LocationDao.class, dao -> dao.currentCoordinates());
+        return Database.withDao(LocationDao.class, LocationDao::currentCoordinates);
     }
 
 
@@ -96,6 +97,13 @@ public class LocationManager {
     public LocationDto findByMarketId(long marketID) {
         return Database.withDao(LocationDao.class, dao -> {
             LocationDao.Location location = dao.findByMarketId(marketID);
+            return location == null ? new LocationDto(-1L) : GsonFactory.getGson().fromJson(location.getJson(), LocationDto.class);
+        });
+    }
+
+    public LocationDto findByStatus(GameEvents.StatusEvent.Destination destination) {
+        return Database.withDao(LocationDao.class, dao -> {
+            LocationDao.Location location = dao.findBySystemAddresAndInGameId(destination.getSystem(), destination.getBody());
             return location == null ? new LocationDto(-1L) : GsonFactory.getGson().fromJson(location.getJson(), LocationDto.class);
         });
     }

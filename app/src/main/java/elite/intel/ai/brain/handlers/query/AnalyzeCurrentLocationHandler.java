@@ -37,7 +37,7 @@ public class AnalyzeCurrentLocationHandler extends BaseQueryAnalyzer implements 
         String instructions = """                
                     The user may ask multiple questions at once. Answer each one individually using the matching rule below. Do not combine them into one sentence unless natural. Do not say "Insufficient data" if the field exists for part of the question.
                     - IF asked for summary or broad 'where are we' question return starSystemName, planetName followed by summary of what data provided. Example: Star System <starSystemName>, Planet <planetName>. - <summary>
-                    - IF 'station' is not null, return station name and planet we are orbiting. Example: Docked at <stationName> orbiting <planetName>
+                    - IF planetName is unknown check stationName. Example: Docked at <stationName> in star system <starSystemName>
                     - Extract and answer ALL questions in the user input using ONLY the provided data fields.
                     - For temperature: If temperature is in data (in Kelvin), convert to Celsius and say: "Temperature on <planetName> is <X> degrees Celsius."
                     - For day length: Use dayLength directly and say: "Day on <planetName> lasts <dayLength>"
@@ -90,7 +90,7 @@ public class AnalyzeCurrentLocationHandler extends BaseQueryAnalyzer implements 
         }
 
         double siderealAbs = Math.abs(rotationPeriodSeconds);
-        if (siderealAbs <= 0 || siderealAbs < 60) {
+        if (siderealAbs < 60) {
             return "Unknown";
         }
 

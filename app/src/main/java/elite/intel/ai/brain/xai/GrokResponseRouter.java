@@ -28,10 +28,6 @@ public class GrokResponseRouter extends ResponseRouter implements AIRouterInterf
     private final AiPromptFactory contextFactory;
     private final SystemSession systemSession;
 
-    public static GrokResponseRouter getInstance() {
-        return INSTANCE;
-    }
-
     private GrokResponseRouter() {
         try {
             this.queryInterface = ApiFactory.getInstance().getQueryEndpoint();
@@ -43,6 +39,9 @@ public class GrokResponseRouter extends ResponseRouter implements AIRouterInterf
         }
     }
 
+    public static GrokResponseRouter getInstance() {
+        return INSTANCE;
+    }
 
     @Override public void processAiResponse(JsonObject jsonResponse, @Nullable String userInput) {
         if (jsonResponse == null) {
@@ -59,7 +58,7 @@ public class GrokResponseRouter extends ResponseRouter implements AIRouterInterf
                 EventBusManager.publish(new AiVoxResponseEvent(responseText));
                 log.info("Spoke initial response: {}", responseText);
             }
-            EventBusManager.publish(new AppLogEvent("AI Action: "+action));
+            EventBusManager.publish(new AppLogEvent("\nGROK LLM Action: " + action));
             switch (type) {
                 case AIConstants.TYPE_COMMAND:
                     handleCommand(action, params, responseText);
@@ -90,7 +89,7 @@ public class GrokResponseRouter extends ResponseRouter implements AIRouterInterf
 
         try {
             JsonObject dataJson = handler.handle(action, params, userInput);
-            if(dataJson == null) return;
+            if (dataJson == null) return;
             String responseTextToUse = dataJson.has(AIConstants.PROPERTY_RESPONSE_TEXT)
                     ? dataJson.get(AIConstants.PROPERTY_RESPONSE_TEXT).getAsString()
                     : "";

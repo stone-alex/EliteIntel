@@ -88,6 +88,7 @@ public enum Commands {
     DISPLAY_STATUS_PANEL                                ("display_status_panel", null, null, DisplayStatusPanelHandler.class),
     DISPLAY_RADAR_PANEL                                 ("display_radar_panel", null, null, DisplayRadarPanelHandler.class),
     DISPLAY_LOADOUT_PANEL                               ("display_loadout_panel", null, null, DisplayLoadoutPanelHandler.class),
+    DISPLAY_CARRIER_MANAGEMENT                          ("display_carrier_management", null, null, OpenFleetCarrierManagementHandler.class    ),
     OPEN_CARGO_SCOOP                                    ("open_cargo_scoop", null, null, OpenCargoScoopHandler.class),
     CLOSE_CARGO_SCOOP                                   ("close_cargo_scoop", null, null, CloseCargoScoopHandler.class),
     RETRACT_HARDPOINTS                                  ("retract_hardpoints", null, null, RetractHardpointsHandler.class),
@@ -128,6 +129,8 @@ public enum Commands {
 
     /// Generic simple commands. no parameters, but require binding
     ACTIVATE                                            ("activate", BINDING_ACTIVATE.getGameBinding(), null, GenericGameControlHandler.class),
+
+    REQUEST_DOCKING                                     ("request_docking", null, null, RequestDockingHandler.class),
 
     NIGHT_VISION_ON_OFF                                     ("toggle_night_vision_on_off", BINDING_NIGHT_VISION_TOGGLE.getGameBinding(), "state", ToggleNightVision.class),
 

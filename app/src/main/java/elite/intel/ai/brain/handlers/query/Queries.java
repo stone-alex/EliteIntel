@@ -5,7 +5,6 @@ import elite.intel.ai.brain.handlers.query.struct.AnalyseMaterialsHandler;
 // @formatter:off
 public enum Queries {
 
-
     /// ########################################################################################################################################
     HELP                                ("help",                                        HelpHandler.class, true),
     BIO_SAMPLE_IN_STAR_SYSTEM           ("query_organic_samples_star_system",           AnalyzeBioSignalsStarSystemHandler.class, true),
@@ -31,7 +30,7 @@ public enum Queries {
     LOCAL_STATIONS                      ("query_local_stations",                        AnalyzeLocalStations.class, true),
     DISTANCE_TO_DESTINATION             ("query_distance_to_destination",               AnalyzeDistanceToFinalDestination.class, false),
     CARGO_HOLD_CONTENTS                 ("query_cargo_hold_contents",                   AnalyzeCargoHoldHandler.class, true),
-    PLOTTED_ROUTE_ANALYSIS              ("query_ship_route_analysis",                AnalyzeRouterHandler.class, true),
+    PLOTTED_ROUTE_ANALYSIS              ("query_ship_route_analysis",                   AnalyzeRouterHandler.class, true),
     CARRIER_ROUTE_ANALYSIS              ("query_carrier_route_analysis",                AnalyzeCarrierRouteHandler.class, true),
     CARRIER_TRITIUM_SUPPLY              ("query_carrier_fuel_supply",                   AnalyzeFleetCarrierFuelSupplyHandler.class, true),
     CARRIER_DESTINATION                 ("query_carrier_destination",                   AnalyzeFleetCarrierFinalDestinationHandler.class, true),
@@ -40,7 +39,6 @@ public enum Queries {
     DISTANCE_TO_CARRIER                 ("query_distance_to_carrier",                   AnalyzeDistanceFromFleetCarrierHandler.class, false),
     OUTSTANDING_MISSIONS                ("query_outstanding_missions",                  AnalyzePirateMissionHandler.class, true),
     PIRATE_MISSION_PROGRESS             ("query_pirate_mission_progress",               AnalyzePirateMissionHandler.class, true),
-    //NEXT_SCOOPABLE_STAR                 ("query_next_scoopable_star",                   AnalyzeNextStarForFuelHandler.class, false),
     PLAYER_PROFILE_ANALYSIS             ("query_player_profile_analysis",               AnalyzePlayerProfile.class, true),
     SHIP_LOADOUT                        ("query_ship_loadout",                          AnalyzeShipLoadoutHandler.class, true),
     STATION_DETAILS                     ("query_station_details",                       StationDataHandler.class, true),

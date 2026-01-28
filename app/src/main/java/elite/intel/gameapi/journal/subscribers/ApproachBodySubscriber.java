@@ -38,7 +38,8 @@ public class ApproachBodySubscriber {
         }
 
 
-        sb.append("Entering orbit for ").append(location.getPlanetName()).append(". ");
+        String locationType = location.getLocationType() == null ? "" : location.getLocationType().name();
+        sb.append("Entering orbit for ").append(locationType).append(" ").append(location.getPlanetName()).append(". ");
 
         String currentSystem = event.getStarSystem();
 

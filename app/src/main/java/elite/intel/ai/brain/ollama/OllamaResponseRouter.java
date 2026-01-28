@@ -22,7 +22,7 @@ import javax.annotation.Nullable;
 import static elite.intel.ai.brain.handlers.query.Queries.GENERAL_CONVERSATION;
 
 
-public class OllamaResponseRouter extends ResponseRouter implements AIRouterInterface{
+public class OllamaResponseRouter extends ResponseRouter implements AIRouterInterface {
 
     private static final Logger log = LogManager.getLogger(OllamaResponseRouter.class);
     private static final OllamaResponseRouter INSTANCE = new OllamaResponseRouter();
@@ -30,7 +30,6 @@ public class OllamaResponseRouter extends ResponseRouter implements AIRouterInte
     private final AiPromptFactory contextFactory;
     private final SystemSession systemSession;
 
-    public static OllamaResponseRouter getInstance() { return INSTANCE; }
     private OllamaResponseRouter() {
         try {
             this.queryInterface = ApiFactory.getInstance().getQueryEndpoint();
@@ -42,7 +41,9 @@ public class OllamaResponseRouter extends ResponseRouter implements AIRouterInte
         }
     }
 
-
+    public static OllamaResponseRouter getInstance() {
+        return INSTANCE;
+    }
 
     @Override public void processAiResponse(JsonObject jsonResponse, @Nullable String userInput) {
         if (jsonResponse == null) {
@@ -61,7 +62,7 @@ public class OllamaResponseRouter extends ResponseRouter implements AIRouterInte
                 return;
             }
 
-            EventBusManager.publish(new AppLogEvent("AI Action: "+action));
+            EventBusManager.publish(new AppLogEvent("\nLocal LLM Action: " + action));
             switch (type) {
                 case AIConstants.TYPE_COMMAND:
                     handleCommand(action, params, responseText);
@@ -91,7 +92,7 @@ public class OllamaResponseRouter extends ResponseRouter implements AIRouterInte
 
         try {
             JsonObject dataJson = handler.handle(action, params, userInput);
-            if(dataJson == null) return;
+            if (dataJson == null) return;
             String responseTextToUse = dataJson.has(AIConstants.PROPERTY_RESPONSE_TEXT)
                     ? dataJson.get(AIConstants.PROPERTY_RESPONSE_TEXT).getAsString()
                     : "";

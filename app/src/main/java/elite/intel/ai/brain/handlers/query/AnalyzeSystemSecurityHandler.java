@@ -20,10 +20,35 @@ public class AnalyzeSystemSecurityHandler extends BaseQueryAnalyzer implements Q
         DeathsDto deathsDto = currentLocation.getDeathsDto();
         TrafficDto trafficDto = currentLocation.getTrafficDto();
 
-        return process(new AiDataStruct("Provided security and safety assessment based on this data", new DataDto(currentLocation, deathsDto, trafficDto)), originalUserInput);
+        String instructions = "Provided security and safety assessment based on this data";
+        return process(
+                new AiDataStruct(instructions,
+                        new DataDto(
+                                currentLocation.getSecurity(),
+                                currentLocation.getPowerplayState(),
+                                currentLocation.getControllingPower(),
+                                currentLocation.getPowerplayStateControlProgress(),
+                                currentLocation.getPowerplayStateReinforcement(),
+                                currentLocation.getPowerplayStateUndermining(),
+                                deathsDto,
+                                trafficDto
+                        )
+                ),
+                originalUserInput
+        );
     }
 
-    record DataDto(LocationDto location, DeathsDto deathsData, TrafficDto trafficData) implements ToJsonConvertible {
+    record DataDto(
+                String security,
+                String powerplayState,
+                String controllingPower,
+                double powerplayStateControlProgress,
+                Integer powerplayStateReinforcement,
+                Integer powerplayStateUndermining,
+                DeathsDto deathsDto,
+                TrafficDto trafficDto
+        ) implements ToJsonConvertible {
+
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }

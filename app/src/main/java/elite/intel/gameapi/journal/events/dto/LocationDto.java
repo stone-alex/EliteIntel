@@ -754,7 +754,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setDiscoveredBy(String discoveredBy) {
-        if (this.discoveredBy != null || !this.discoveredOn.isEmpty()) return;
+        if (this.discoveredBy != null) return;
         this.discoveredBy = discoveredBy;
     }
 

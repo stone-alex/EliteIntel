@@ -4,24 +4,22 @@ import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.gameapi.journal.events.FSSBodySignalsEvent;
 import elite.intel.gameapi.journal.events.SAASignalsFoundEvent;
+import elite.intel.gameapi.journal.events.dto.FssSignalDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.StringUtls;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class AnalyzeStellarSignalsHandler extends BaseQueryAnalyzer implements QueryHandler {
     private final PlayerSession playerSession = PlayerSession.getInstance();
-
+    private final HashSet<FssSignalDto> fssSignals = new HashSet<>();
     @Override
     public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        List<SignalEntry> signals = aggregateSignals(playerSession.getLocations());
 
+        List<SignalEntry> signals = aggregateSignals(playerSession.getLocations());
         String instructions = """
                 Data format:
                 - "body": short name (e.g. "4", "2 d", "6z")
@@ -47,6 +45,8 @@ public class AnalyzeStellarSignalsHandler extends BaseQueryAnalyzer implements Q
                 4. General (no type specified by user)
                    Ex: "Signals found. Geological/Biological signals on planets 2 d, 6z. Mining hotspots in ring 2 B: Serendibite times 3."
                 
+                RESOURCE EXTRACTION SITES ARE NOT HOT SPOTS, THEY ARE HUNTING GROUNDS
+                
                 All:
                 - TTS-safe: letters, numbers, spaces, commas, dots, "times"
                 - 1 sentence per ring/planet group
@@ -54,10 +54,11 @@ public class AnalyzeStellarSignalsHandler extends BaseQueryAnalyzer implements Q
                 - "Yes..." if data, end period, no extras.
                 """;
 
+
         return process(
                 new AiDataStruct(
                         instructions,
-                        new DataDto(signals)
+                        new DataDto(signals, fssSignals)
                 ),
                 originalUserInput
         );
@@ -66,6 +67,7 @@ public class AnalyzeStellarSignalsHandler extends BaseQueryAnalyzer implements Q
 
     private List<SignalEntry> aggregateSignals(Map<Long, LocationDto> locations) {
         // body → ringId → type → count
+        List<SignalEntry> result = new ArrayList<>();
         Map<String, Map<String, Map<String, Integer>>> grouping = new LinkedHashMap<>();
         for (LocationDto location : locations.values()) {
             String body = location.getPlanetShortName();
@@ -99,9 +101,10 @@ public class AnalyzeStellarSignalsHandler extends BaseQueryAnalyzer implements Q
                     }
                 }
             }
+            fssSignals.addAll(location.getDetectedSignals());
         }
 
-        List<SignalEntry> result = new ArrayList<>();
+
         for (Map.Entry<String, Map<String, Map<String, Integer>>> bodyEntry : grouping.entrySet()) {
             String body = bodyEntry.getKey();
             for (Map.Entry<String, Map<String, Integer>> entry : bodyEntry.getValue().entrySet()) {
@@ -132,7 +135,7 @@ public class AnalyzeStellarSignalsHandler extends BaseQueryAnalyzer implements Q
         }
     }
 
-    public record DataDto(List<SignalEntry> signals) implements ToJsonConvertible {
+    public record DataDto(List<SignalEntry> stellarObjectSignals, Set<FssSignalDto> fssSignals) implements ToJsonConvertible {
         @Override
         public String toJson() {
             return GsonFactory.getGson().toJson(this);

@@ -35,7 +35,7 @@ public class BaseQueryAnalyzer {
         JsonObject analysis = aiAnalysisInterface.analyzeData(originalUserInput, struct);
 
         if (!analysis.has(AIConstants.PROPERTY_RESPONSE_TEXT)) {
-            analysis = GenericResponse.getInstance().genericResponse("Analysis incomplete");
+            analysis = GenericResponse.getInstance().genericResponse("LLM failed to process this request.");
         }
         SystemSession.getInstance().clearChatHistory();
         return analysis;

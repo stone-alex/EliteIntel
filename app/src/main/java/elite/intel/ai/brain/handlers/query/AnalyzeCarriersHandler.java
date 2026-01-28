@@ -13,7 +13,7 @@ import elite.intel.util.json.ToJsonConvertible;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AnalyzeStationsHandler extends BaseQueryAnalyzer implements QueryHandler {
+public class AnalyzeCarriersHandler extends BaseQueryAnalyzer implements QueryHandler {
 
     private final PlayerSession playerSession = PlayerSession.getInstance();
 
@@ -24,37 +24,35 @@ public class AnalyzeStationsHandler extends BaseQueryAnalyzer implements QueryHa
         StationsData data = stationsDto.getData();
         for (Station station : data.getStations()) {
             /// skip all fleet carriers. (query carriers in another handler to save on tokens)
-            if ("Fleet Carrier".equalsIgnoreCase(station.getType())) continue;
-            stationsData.add(new StationData(
-                    station.getName(),
-                    station.getType(),
-                    station.getAllegiance(),
-                    station.getGovernment(),
-                    station.getCommodities() == null ? null : station.getCommodities().size(),
-                    station.getEconomy(),
-                    station.getOtherServices() == null ? null : station.getOtherServices().size()
-            ));
-
+            if ("Fleet Carrier".equalsIgnoreCase(station.getType())) {
+                stationsData.add(new StationData(
+                        station.getName(),
+                        station.getCommodities() == null ? null : station.getCommodities().size(),
+                        station.getOtherServices() == null ? null : station.getOtherServices().size()
+                ));
+            }
         }
 
 
         String instructions = """
-                    Summarize the stations in the star system by type. Provide information about government and allegiance.
+                    Summarize the fleet carriers in the star system by type. How many present, How many carriers have commodities? How many carriers have services?
+                    Example X carriers present, Y have commodities (IF no commodity - none have commodity), Z have services (IF non have services - non have services).
                 """;
 
         return process(new AiDataStruct(instructions, new DataDto(stationsData)), originalUserInput);
     }
 
-    record StationData(String name, String type, String allegiance, String government, Integer numberOfCommodities, String economy, Integer numberOfServices) implements ToJsonConvertible {
+    record StationData(String name, Integer numberOfCommodities, Integer numberOfServices) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }
     }
 
 
-    record DataDto(List<StationData> stations) implements ToJsonConvertible {
+    record DataDto(List<StationData> carriers) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }
     }
 }
+

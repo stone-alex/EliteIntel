@@ -10,7 +10,7 @@ public class AiCommandsAndQueries {
     private static final AiCommandsAndQueries INSTANCE = new AiCommandsAndQueries();
     private final Map<String, String> commandMap = Map.<String, String>ofEntries(
 
-            Map.entry(" navigate to next mission, plot route to mission location ", NAVIGATE_TO_NEXT_MISSION.getAction()),
+            Map.entry(" navigate to next mission ", NAVIGATE_TO_NEXT_MISSION.getAction()),
             Map.entry(" headlights off, headlights on, turn off the lights, turn on the lights ", LIGHTS_ON_OFF.getAction()),
             Map.entry(" set mining target <material> ", ADD_MINING_TARGET.getAction()),
             Map.entry(" clear mining targets ", CLEAR_MINING_TARGETS.getAction()),
@@ -152,7 +152,7 @@ public class AiCommandsAndQueries {
             Map.entry(" queries about carrier finances, funded days of operation V ", CARRIER_STATUS.getAction()),
             Map.entry(" queries about carrier estimated time of arrival (do not confuse with ship) ", CARRIER_ETA.getAction()),
             Map.entry(" how far are we from the carrier ", DISTANCE_TO_CARRIER.getAction()),
-            Map.entry(" what missions do we have, are there any outstanding missions, do we have any active missions ", OUTSTANDING_MISSIONS.getAction()),
+            //Map.entry(" what missions do we have, are there any outstanding missions, do we have any active missions ", OUTSTANDING_MISSIONS.getAction()),
             Map.entry(" how many kills left on pirate missions, pirate massacre mission progress (these are pirate massacre specific missions only) ", PIRATE_MISSION_PROGRESS.getAction()),
             Map.entry(" queries about player stats, ranks, rank progress etc ", PLAYER_PROFILE_ANALYSIS.getAction()),
             Map.entry(" queries about ship configuration, jump range, loadout, build and capabilities. Do we have fuel scoop equipped, is ship battle worthy, what class of ship is it ", SHIP_LOADOUT.getAction()),
@@ -165,7 +165,7 @@ public class AiCommandsAndQueries {
             Map.entry(" what time is it ", TIME_IN_ZONE.getAction()),
             Map.entry(" run biome analysis, analyze biome for planet/moon X (parameter example: \"key\":\"2a\")", PLANET_BIOME_ANALYSIS.getAction()),
             Map.entry(" remind me about X ", REMINDER.getAction()),
-            Map.entry(" questions about missions that are not pirate related ", ANALYZE_MISSIONS.getAction()),
+            Map.entry(" what missions do we have, are there any outstanding missions, do we have any active missions, questions about missions that are not pirate related, plot route to mission location ", ANALYZE_MISSIONS.getAction()),
             Map.entry(" if nothing else matches use this ", GENERAL_CONVERSATION.getAction())
     );
 

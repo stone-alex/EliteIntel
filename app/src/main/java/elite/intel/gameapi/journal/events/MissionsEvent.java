@@ -37,6 +37,16 @@ public class MissionsEvent extends BaseEvent {
         public long getExpires() {
             return expires;
         }
+
+        public JsonObject toJsonObject() {
+            JsonObject obj = new JsonObject();
+
+            obj.addProperty("MissionID", this.missionID);
+            obj.addProperty("Name", (this.name));
+            obj.addProperty("Expiry", this.expires);
+
+            return obj;
+        }
     }
 
     @SerializedName("Active")
@@ -49,7 +59,7 @@ public class MissionsEvent extends BaseEvent {
     private List<Mission> complete;
 
     public MissionsEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), Duration.ofSeconds(30), "Missions");
+        super(json.get("timestamp").getAsString(), Duration.ofSeconds(60), "Missions");
         MissionsEvent event = GsonFactory.getGson().fromJson(json, MissionsEvent.class);
         this.active = event.active;
         this.failed = event.failed;

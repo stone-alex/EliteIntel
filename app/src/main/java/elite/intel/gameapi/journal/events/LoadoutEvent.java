@@ -46,7 +46,7 @@ public class LoadoutEvent extends BaseEvent {
     private List<Module> modules;
 
     public LoadoutEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), Duration.ofHours(24), "Loadout");
+        super(json.get("timestamp").getAsString(), Duration.ofSeconds(30), "Loadout");
         LoadoutEvent event = GsonFactory.getGson().fromJson(json, LoadoutEvent.class);
         this.ship = event.ship;
         this.shipId = event.shipId;

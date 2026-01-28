@@ -69,7 +69,8 @@ public class MissionDto extends BaseJsonDto {
                 return type;
             }
         }
-        throw new IllegalArgumentException("Unknown mission type: " + name);
+        return MissionType.getUnknown();
+//        throw new IllegalArgumentException("Unknown mission type: " + name);
     }
 
     private MissionTargets toTargetType(String name) {

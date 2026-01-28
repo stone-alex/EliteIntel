@@ -4,38 +4,49 @@ import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.db.managers.MissionManager;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.gameapi.HistoricalMissionScanner;
+import elite.intel.gameapi.journal.events.MissionAcceptedEvent;
 import elite.intel.gameapi.journal.events.MissionsEvent;
+import elite.intel.gameapi.journal.events.dto.MissionDto;
+import elite.intel.session.PlayerSession;
+import elite.intel.util.StringUtls;
 
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @SuppressWarnings("unused")
 public class MissionsEventSubscriber {
+
     private final MissionManager missionManager = MissionManager.getInstance();
+    private final HistoricalMissionScanner missionScanner = HistoricalMissionScanner.getInstance();
 
     @Subscribe
     public void onMissionsEventSubscriber(MissionsEvent event) {
-        if (event.getActive().isEmpty()){
+        if (event.getActive().isEmpty()) {
             EventBusManager.publish(new AiVoxResponseEvent("No active missions!"));
             return;
         }
+
         List<Long> accepted = new ArrayList<>(event.getActive())
                 .stream()
                 .map(MissionsEvent.Mission::getMissionID)
                 .toList();
         List<Long> databaseMissions = new ArrayList<>(missionManager.getMissions().keySet());
 
-        List<Long> filtered = new ArrayList<>(accepted);
-        filtered.removeAll(databaseMissions);
+        Set<Long> filtered = new HashSet<>(accepted);
+        databaseMissions.forEach(filtered::remove);
 
-        if(filtered.isEmpty()) {
-            return;
-        }
-        for (MissionsEvent.Mission mission : event.getActive()) {
-            if (filtered.contains(mission.getMissionID())) {
-                EventBusManager.publish(new AiVoxResponseEvent("Hey commander, i detected a mission that i haven't catalogued. "+ mission.getMissionType() + " ."));
-                missionManager.save(mission);
-            }
+        List<MissionAcceptedEvent> missingMissions = missionScanner.scanForPendingAcceptedEvents(filtered);
+        for (MissionAcceptedEvent mission : missingMissions) {
+            EventBusManager.publish(new AiVoxResponseEvent(
+                    "%s! i detected a %s mission that i haven't catalogued.".formatted(
+                            StringUtls.player(PlayerSession.getInstance()),
+                            mission.getName()
+                    )
+            ));
+            missionManager.save(new MissionDto(mission));
         }
     }
 }

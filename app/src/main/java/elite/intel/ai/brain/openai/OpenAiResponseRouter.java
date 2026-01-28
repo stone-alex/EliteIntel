@@ -30,13 +30,6 @@ public class OpenAiResponseRouter extends ResponseRouter implements AIRouterInte
     private final AiPromptFactory contextFactory;
     private final SystemSession systemSession;
 
-    public static synchronized OpenAiResponseRouter getInstance() {
-        if (instance == null) {
-            instance = new OpenAiResponseRouter();
-        }
-        return instance;
-    }
-
     private OpenAiResponseRouter() {
         try {
             this.queryInterface = ApiFactory.getInstance().getQueryEndpoint();
@@ -46,6 +39,13 @@ public class OpenAiResponseRouter extends ResponseRouter implements AIRouterInte
             log.error("Failed to initialize OpenAiResponseRouter", e);
             throw new RuntimeException("OpenAiResponseRouter initialization failed", e);
         }
+    }
+
+    public static synchronized OpenAiResponseRouter getInstance() {
+        if (instance == null) {
+            instance = new OpenAiResponseRouter();
+        }
+        return instance;
     }
 
     @Override public void processAiResponse(JsonObject jsonResponse, @Nullable String userInput) {
@@ -63,7 +63,7 @@ public class OpenAiResponseRouter extends ResponseRouter implements AIRouterInte
                 EventBusManager.publish(new AiVoxResponseEvent(responseText));
                 log.info("Spoke initial response: {}", responseText);
             }
-            EventBusManager.publish(new AppLogEvent("AI Action: "+action));
+            EventBusManager.publish(new AppLogEvent("\nCHAT GPT LLM Action: " + action));
             switch (type) {
                 case AIConstants.TYPE_COMMAND:
                     handleCommand(action, params, responseText);
@@ -95,7 +95,7 @@ public class OpenAiResponseRouter extends ResponseRouter implements AIRouterInte
 
         try {
             JsonObject dataJson = handler.handle(action, params, userInput);
-            if(dataJson == null) return;
+            if (dataJson == null) return;
             String responseTextToUse = dataJson.has(AIConstants.PROPERTY_RESPONSE_TEXT)
                     ? dataJson.get(AIConstants.PROPERTY_RESPONSE_TEXT).getAsString()
                     : "";

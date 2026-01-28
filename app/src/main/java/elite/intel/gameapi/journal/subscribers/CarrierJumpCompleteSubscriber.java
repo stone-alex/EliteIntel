@@ -81,7 +81,18 @@ public class CarrierJumpCompleteSubscriber {
             playerSession.setCarrierData(carrierData);
         }
 
-        EventBusManager.publish(new SensorDataEvent("Carrier Location: " + event.getStarSystem(), "Notify user about new carrier location. Example: Carrier jump complete!. New location <starSystem>, remaining fuel supply <fuelSupply> tons. Fuel in reserve <fuelReserve> tons."));
+        CarrierDataDto postJumpCarrierData = playerSession.getCarrierData();
+
+        String instructions = """
+                    Notify user about new carrier location.
+                    Example: Carrier jump complete!. New location <starSystem>, remaining fuel supply <fuelSupply> tons. Fuel in reserve <fuelReserve> tons.
+                """;
+        EventBusManager.publish(
+                new SensorDataEvent(
+                        "Carrier Location: " + event.getStarSystem() + " fuelSupply " + postJumpCarrierData.getFuelLevel() + " fuelReserve:" + postJumpCarrierData.getFuelReserve(),
+                        instructions
+                )
+        );
     }
 
     private LocationDto toLocationDto(CarrierJumpEvent event) {

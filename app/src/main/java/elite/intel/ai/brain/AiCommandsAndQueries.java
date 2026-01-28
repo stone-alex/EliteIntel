@@ -10,7 +10,7 @@ public class AiCommandsAndQueries {
     private static final AiCommandsAndQueries INSTANCE = new AiCommandsAndQueries();
     private final Map<String, String> commandMap = Map.<String, String>ofEntries(
 
-            Map.entry(" navigate to next mission ", NAVIGATE_TO_NEXT_MISSION.getAction()),
+            Map.entry(" navigate to next mission (optional keyword <key>) ", NAVIGATE_TO_NEXT_MISSION.getAction()),
             Map.entry(" headlights off, headlights on, turn off the lights, turn on the lights ", LIGHTS_ON_OFF.getAction()),
             Map.entry(" set mining target <material> ", ADD_MINING_TARGET.getAction()),
             Map.entry(" clear mining targets ", CLEAR_MINING_TARGETS.getAction()),

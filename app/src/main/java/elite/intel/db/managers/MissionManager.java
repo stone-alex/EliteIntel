@@ -8,6 +8,7 @@ import elite.intel.gameapi.journal.events.dto.MissionDto;
 import elite.intel.util.json.GsonFactory;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class MissionManager {
     private static MissionManager instance;
@@ -111,4 +112,15 @@ public class MissionManager {
         MissionType[] values = MissionType.values();
         return Arrays.stream(values).filter(type -> type.getMissionType().equalsIgnoreCase(missionTypeName)).findFirst().orElse(MissionType.UNKNOWN);
     }
+
+    public List<MissionDto> findByKeyword(String keyword) {
+        return Database.withDao(MissionDao.class, dao -> {
+            List<MissionDao.Mission> entities = dao.findByKeyword(keyword);
+            return entities.stream().map(mission ->
+                    GsonFactory.getGson().fromJson(mission.getMission(), MissionDto.class)).collect(Collectors.toList()
+            );
+        });
+    }
+
 }
+

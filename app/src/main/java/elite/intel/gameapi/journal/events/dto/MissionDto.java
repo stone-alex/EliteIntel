@@ -5,7 +5,10 @@ import elite.intel.gameapi.MissionTargets;
 import elite.intel.gameapi.MissionType;
 import elite.intel.gameapi.gamestate.dtos.BaseJsonDto;
 import elite.intel.gameapi.journal.events.MissionAcceptedEvent;
+import elite.intel.util.UnknownEnumLogger;
 import elite.intel.util.json.GsonFactory;
+
+import java.util.Locale;
 
 public class MissionDto extends BaseJsonDto {
 
@@ -24,12 +27,10 @@ public class MissionDto extends BaseJsonDto {
     private int killCount;
     private String target;
     private String commodity;
-    private String CommodityName;
+    private String commodityName;
     private long count;
     private String destinationStation;
     private String destinationSettlement;
-    private String newDestinationSystem;
-    private String newDestinationStation;
     private long passengerCount;
     private boolean passengerVIPs;
     private boolean passengerWanted;
@@ -53,7 +54,6 @@ public class MissionDto extends BaseJsonDto {
             setWing(event.isWing());
             setDestinationSystem(event.getDestinationSystem());
             setDestinationSettlement(event.getDestinationSettlement());
-            setMissionTarget(toTargetType(event.getTargetTypeLocalised()));
             setMissionTargetFaction(event.getTargetFaction());
             setKillCount(event.getKillCount());
             setTarget(event.getTarget());
@@ -69,19 +69,21 @@ public class MissionDto extends BaseJsonDto {
                 return type;
             }
         }
-        throw new IllegalArgumentException("Unknown mission type: " + name);
+        UnknownEnumLogger.log("MISSION_TYPE", name);
+        return MissionType.getUnknown();
     }
 
     private MissionTargets toTargetType(String name) {
         if (name == null) return null; // No target type associated
 
-        String converted = name.replaceAll("\\s+", "_"); // underscore word splitting
+        String converted = name.replaceAll("\\s+", "_").toUpperCase(Locale.ROOT); // underscore word splitting
         for (MissionTargets type : MissionTargets.values()) {
             if (type.getTargetType().equalsIgnoreCase(converted)) {
                 return type;
             }
         }
-        throw new IllegalArgumentException("Unknown mission target: " + name);
+        UnknownEnumLogger.log("TARGET_TYPE", name);
+        return MissionTargets.getUnknown();
     }
 
     public void setTarget(String target) {
@@ -89,7 +91,7 @@ public class MissionDto extends BaseJsonDto {
     }
 
     public void setCommodityName(String commodityName) {
-        CommodityName = commodityName;
+        this.commodityName = commodityName;
     }
 
     public void setMissionId(long missionID) {
@@ -142,14 +144,6 @@ public class MissionDto extends BaseJsonDto {
 
     public void setDestinationSettlement(String destinationSettlement) {
         this.destinationSettlement = destinationSettlement;
-    }
-
-    public void setNewDestinationSystem(String newDestinationSystem) {
-        this.newDestinationSystem = newDestinationSystem;
-    }
-
-    public void setNewDestinationStation(String newDestinationStation) {
-        this.newDestinationStation = newDestinationStation;
     }
 
     public void setPassengerCount(long passengerCount) {
@@ -261,14 +255,6 @@ public class MissionDto extends BaseJsonDto {
         return destinationSettlement;
     }
 
-    public String getNewDestinationSystem() {
-        return newDestinationSystem;
-    }
-
-    public String getNewDestinationStation() {
-        return newDestinationStation;
-    }
-
     public long getPassengerCount() {
         return passengerCount;
     }
@@ -290,7 +276,7 @@ public class MissionDto extends BaseJsonDto {
     }
 
     public String getCommodityName() {
-        return CommodityName;
+        return commodityName;
     }
 
     public String getEventType() {

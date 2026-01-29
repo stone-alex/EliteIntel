@@ -15,13 +15,13 @@ import static elite.intel.util.StringUtls.removeNameEnding;
 
 @SuppressWarnings("unused")
 public class MissionCompletedSubscriber {
+    private MissionManager missionManager = MissionManager.getInstance();
+    private PlayerSession playerSession = PlayerSession.getInstance();
 
     @Subscribe
     public void onMissionCompletedEvent(MissionCompletedEvent event) {
-        PlayerSession playerSession = PlayerSession.getInstance();
         MissionDto mission = playerSession.getMission(event.getMissionID());
-        MissionType missionType = MissionManager.getInstance()
-                .getMissionType(removeNameEnding(event.getName()));
+        MissionType missionType = missionManager.getMissionType(removeNameEnding(event.getName()));
 
         if (mission == null) {
             return; // no mission in session storage. just exit.
@@ -29,14 +29,14 @@ public class MissionCompletedSubscriber {
         if (MISSION_PIRATE_MASSACRE.equals(missionType) || MISSION_PIRATE_MASSACRE_WING.equals(missionType)) {
             playerSession.removeMission(event.getMissionID());
             String targetFaction = event.getTargetFaction();
-            EventBusManager.publish(new SensorDataEvent("Notify: Mission against Faction \"" + targetFaction + "\" Completed: " + event, "Notify user of a successful mission completion, provide detailed summary from the data received."));
+            EventBusManager.publish(new SensorDataEvent("Notify: Mission against Faction \"" + targetFaction + "\" Completed: " + event,
+                    "Notify user of a successful mission completion, provide detailed summary from the data received."));
         }
-        if (false) {
-            /*
-                TODO: If user is on a mission with staging.
-                 i.e. a return address when completed, add the return address/details to the database
-                 and delete when the "Missions" event is fired
-             */
+        else {
+            missionManager.remove(event.getMissionID());
+            String missionDetails = event.getLocalisedName();
+            EventBusManager.publish(new SensorDataEvent("Notify: Mission \"" + missionDetails + "\" Completed: " + event,
+                    "Summarize key mission parameters, destination, reward, and fields relevant to the missiontype. Ignore unimportant fields such as timestamps, timeToLive, missionID etc"));
         }
 
     }

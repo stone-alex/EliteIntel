@@ -95,7 +95,6 @@ public class StringUtls {
     }
 
 
-
     /**
      * Converts a version string into a numeric format, preserving up to three version components
      * (e.g., major, minor, patch-build) while padding each component to four digits. The resulting
@@ -166,7 +165,9 @@ public class StringUtls {
     }
 
     public static String removeNameEnding(String missionName) {
-        return missionName.replace("_name","");
+        return missionName
+                .replace("_name", "")       // Remove the _name
+                .replaceAll("_\\d+$", "");  // Remove the _00x
     }
 
 

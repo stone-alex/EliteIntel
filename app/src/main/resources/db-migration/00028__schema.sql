@@ -1,0 +1,1 @@
+alter table missions add column keywords text;

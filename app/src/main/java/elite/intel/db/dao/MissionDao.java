@@ -18,11 +18,12 @@ import java.util.List;
 public interface MissionDao {
 
     @SqlUpdate("""
-            INSERT OR REPLACE INTO missions (key, missionType, mission)
-            VALUES(:key, :missionType, :mission)
+            INSERT OR REPLACE INTO missions (key, missionType, mission, keywords)
+            VALUES(:key, :missionType, :mission, :keywords)
             ON CONFLICT(key) DO UPDATE SET
             mission = excluded.mission,
-            missionType = excluded.missionType
+            missionType = excluded.missionType,
+            keywords=excluded.keywords
             """)
     void upsert(@BindBean Mission mission, @Bind String missionType);
 
@@ -42,6 +43,9 @@ public interface MissionDao {
     @SqlUpdate("DELETE FROM missions WHERE key = :missionId")
     void delete(Long missionId);
 
+    @SqlQuery("SELECT * FROM missions WHERE LOWER(keywords) LIKE '%' || LOWER(:keyword) || '%'")
+    List<Mission> findByKeyword(@Bind("keyword") String keyword);
+
 
     class MissionMapper implements RowMapper<Mission> {
 
@@ -49,6 +53,7 @@ public interface MissionDao {
             Mission mission = new Mission();
             mission.setKey(rs.getLong("key"));
             mission.setMission(rs.getString("mission"));
+            mission.setKeywords(rs.getString("keywords"));
             mission.setMissionType(MissionType.valueOf(rs.getString("missionType")));
             return mission;
         }
@@ -58,6 +63,7 @@ public interface MissionDao {
     class Mission {
         private Long key;
         private String mission;
+        private String keywords;
         private MissionType missionType;
 
         public Mission() {
@@ -85,6 +91,14 @@ public interface MissionDao {
 
         public void setMissionType(MissionType missionType) {
             this.missionType = missionType;
+        }
+
+        public String getKeywords() {
+            return keywords;
+        }
+
+        public void setKeywords(String keywords) {
+            this.keywords = keywords;
         }
     }
 }

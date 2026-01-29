@@ -3,6 +3,7 @@ package elite.intel.ai.brain.xai;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.Client;
+import elite.intel.ai.brain.ollama.BaseAiClient;
 import elite.intel.session.SystemSession;
 
 import java.io.IOException;
@@ -10,23 +11,15 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 
-public class GrokClient implements Client {
+public class GrokClient extends BaseAiClient implements Client {
 
-    private GrokClient() {
-    }
+    /// Grok 3
+    // public static final String MODEL_GROK_NON_REASONING = "grok-3-fast";
 
-    public static GrokClient getInstance() {
-        return instance;
-    }
-
-
-    /// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // WARNING: This is LLM specific implementation. If you naively swap this URL to another LLM expect massive failures.
-    // If you want to use a different LLM, see documentation in README.md. for the elite.intel.ai.brain package
-    // You must provide an implementation that supports current functionality and aligns with the apps' architecture.
-    // See this package for inspiration on how to implement your own LLM client.
-    private static final String API_URL = "https://api.x.ai/v1/chat/completions";
-
+    public static final String MODEL_GROK_NON_REASONING = "grok-3-mini";
+    public static final String MODEL_GROK_REASONING = "grok-3-fast";
+    ///
+    public static final boolean IS_STREAM = false;
 
     /// Grok 4.1
     // public static final String MODEL_GROK_REASONING = "grok-4-1-fast-reasoning";
@@ -35,17 +28,17 @@ public class GrokClient implements Client {
     /// Grok 4
     // public static final String MODEL_GROK_REASONING = "grok-4-fast-reasoning";
     // public static final String MODEL_GROK_NON_REASONING = "grok-4-fast-non-reasoning";
-
-    /// Grok 3
-    // public static final String MODEL_GROK_NON_REASONING = "grok-3-fast";
-    
-    public static final String MODEL_GROK_NON_REASONING = "grok-3-mini";
-    public static final String MODEL_GROK_REASONING = "grok-3-fast";
-
-
-    ///
-    public static final boolean IS_STREAM = false;
+    private static final String API_URL = "https://api.x.ai/v1/chat/completions";
     private static final GrokClient instance = new GrokClient();
+
+
+    private GrokClient() {
+        //
+    }
+
+    public static GrokClient getInstance() {
+        return instance;
+    }
 
     //not used
     @Override public JsonObject createPrompt(int model, float temp) {
@@ -67,14 +60,23 @@ public class GrokClient implements Client {
         return error;
     }
 
-    @Override public HttpURLConnection getHttpURLConnection() throws IOException {
-        URI uri = URI.create(API_URL);
-        URL url = uri.toURL();
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("POST");
-        conn.setRequestProperty("Content-Type", "application/json");
-        conn.setRequestProperty("Authorization", "Bearer " + SystemSession.getInstance().getAiApiKey());
-        conn.setDoOutput(true);
-        return conn;
+    @Override public JsonObject sendJsonRequest(String request) {
+        return super.sendJsonRequest(request, getHttpURLConnection());
+    }
+
+
+    @Override public HttpURLConnection getHttpURLConnection() {
+        try {
+            URI uri = URI.create(API_URL);
+            URL url = uri.toURL();
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setRequestProperty("Authorization", "Bearer " + SystemSession.getInstance().getAiApiKey());
+            conn.setDoOutput(true);
+            return conn;
+        } catch (IOException noConnection) {
+            throw new RuntimeException(noConnection);
+        }
     }
 }

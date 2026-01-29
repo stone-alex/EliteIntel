@@ -12,8 +12,6 @@ import elite.intel.util.json.GsonFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.net.HttpURLConnection;
-
 public class OpenAiChatEndPoint extends AiEndPoint implements AIChatInterface {
     private static final Logger log = LogManager.getLogger(OpenAiChatEndPoint.class);
     private static OpenAiChatEndPoint instance;
@@ -34,34 +32,31 @@ public class OpenAiChatEndPoint extends AiEndPoint implements AIChatInterface {
         try {
             // Sanitize messages
             JsonArray sanitizedMessages = sanitizeJsonArray(messages);
-
             Client client = OpenAiClient.getInstance();
-            HttpURLConnection conn = client.getHttpURLConnection();
-
             JsonObject prompt = client.createPrompt(OpenAiClient.MODEL_GPT_4_1_MINI, 1);
             prompt.add("messages", sanitizedMessages);
 
             jsonString = GsonFactory.getGson().toJson(prompt);
             log.debug("Open AI API chat call:\n\n{}\n\n", jsonString);
 
-            Response response = processAiPrompt(conn, jsonString, client);
+            JsonObject response = processAiPrompt(jsonString, client);
 
             // Extract content safely
-            JsonArray choices = response.responseData().getAsJsonArray("choices");
+            JsonArray choices = response.getAsJsonArray("choices");
             if (choices == null || choices.isEmpty()) {
-                log.error("No choices in API response:\n{}", response.responseMessage());
+                log.error("No choices in API response:\n{}", response);
                 return null;
             }
 
             JsonObject message = choices.get(0).getAsJsonObject().getAsJsonObject("message");
             if (message == null) {
-                log.error("No message in API response choices:\n{}", response.responseMessage());
+                log.error("No message in API response choices:\n{}", response);
                 return null;
             }
 
             String content = message.get("content").getAsString();
             if (content == null) {
-                log.error("No content in API response message:\n{}", response.responseMessage());
+                log.error("No content in API response message:\n{}", response);
                 return null;
             }
 

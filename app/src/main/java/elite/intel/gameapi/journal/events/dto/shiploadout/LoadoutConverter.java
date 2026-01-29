@@ -78,7 +78,7 @@ public class LoadoutConverter {
     private static ModifierDto toModifier(LoadoutEvent.Modifier modifier) {
         ModifierDto dto = new ModifierDto();
         dto.setLabel(toReadableModuleName(modifier.getLabel()));
-        dto.setValue(modifier.getValue());
+        dto.setValue((float) Math.round(modifier.getValue() * 100.0) / 100.0f);
         return dto;
     }
 }

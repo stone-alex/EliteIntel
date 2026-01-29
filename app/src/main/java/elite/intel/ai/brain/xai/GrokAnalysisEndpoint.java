@@ -28,7 +28,6 @@ public class GrokAnalysisEndpoint extends AiEndPoint implements AiAnalysisInterf
     @Override public JsonObject analyzeData(String originalUserInput, AiData struct) {
         try {
             GrokClient client = GrokClient.getInstance();
-            HttpURLConnection conn = client.getHttpURLConnection();
 
             String systemPrompt = apiFactory.getAiPromptFactory().generateAnalysisPrompt();
 
@@ -50,9 +49,9 @@ public class GrokAnalysisEndpoint extends AiEndPoint implements AiAnalysisInterf
 
             String jsonString = gson.toJson(prompt);
 
-            Response response = processAiPrompt(conn, jsonString, client);
+            JsonObject response = processAiPrompt(jsonString, client);
 
-            JsonArray choices = response.responseData().getAsJsonArray("choices");
+            JsonArray choices = response.getAsJsonArray("choices");
             if (choices == null || choices.isEmpty()) {
                 logger.error("No choices in API response:\n{}", response);
                 return client.createErrorResponse("Analysis error.");
@@ -60,13 +59,13 @@ public class GrokAnalysisEndpoint extends AiEndPoint implements AiAnalysisInterf
 
             JsonObject message = choices.get(0).getAsJsonObject().getAsJsonObject("message");
             if (message == null) {
-                logger.error("No message in API response choices:\n{}", response.responseMessage());
+                logger.error("No message in API response choices:\n{}", response);
                 return client.createErrorResponse("Analysis error.");
             }
 
             String content = message.get("content").getAsString();
             if (content == null) {
-                logger.error("No content in API response message:\n{}", response.responseMessage());
+                logger.error("No content in API response message:\n{}", response);
                 return client.createErrorResponse("Analysis error.");
             }
 

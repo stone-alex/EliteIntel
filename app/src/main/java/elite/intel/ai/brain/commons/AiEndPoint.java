@@ -51,74 +51,27 @@ public abstract class AiEndPoint {
     }
 
 
-    public Response processAiPrompt(HttpURLConnection conn, String jsonString, Client client) throws IOException {
+    public JsonObject processAiPrompt(String jsonString, Client client) throws IOException {
         log.debug("xAI API call:\n{}", jsonString);
-        try (var outputStream = conn.getOutputStream()) {
-            outputStream.write(jsonString.getBytes(StandardCharsets.UTF_8));
-        }
-
-        int responseCode = conn.getResponseCode();
-        String response;
-        try (Scanner scanner = new Scanner(conn.getInputStream(), StandardCharsets.UTF_8)) {
-            response = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
-        }
-
-        if (response.startsWith("\uFEFF")) {
-            response = response.substring(1);
-            log.info("Stripped BOM from response");
-        }
-
-
-
-        if (responseCode != 200) {
-            return new Response(processServerError(conn, responseCode, client), response);
-        }
-
-        try {
-            JsonObject responseData = JsonParser.parseString(response).getAsJsonObject();
-            log.debug("Open AI API response ->:\n{}", GsonFactory.getGson().toJson(responseData));
-            if (SystemSession.getInstance().isRunningLocalLLM()) {
-                OllamaMetadata meta = GsonFactory.getGson().fromJson(responseData, OllamaMetadata.class);
-                double evalTime = meta.evalDurationNs() / 1_000_000_000.0;
-                EventBusManager.publish(
-                        new AppLogEvent(
-                                "Eval Duration:" + (Math.round(evalTime * 1000.0) / 1000.0) + " seconds | Completion Tokens:" + meta.completionTokens() + " | Prompt Tokens:" + meta.promptTokens() + " | Total:" + meta.totalTokens()
-                        )
-                );
-                log.info("Local LLM Stats: " + meta);
-            } else {
-                LlmMetadata meta = GsonFactory.getGson().fromJson(responseData, LlmMetadata.class);
-                EventBusManager.publish(
-                        new AppLogEvent(
-                                "Model: " + meta.model() + "| Tokens > Cached:" + meta.cachedTokens() +"| Reasoning:"+meta.reasoningTokens() +"| Prompt:"+meta.usage().promptTokens() + "| Total:" + meta.totalTokens()
-                        )
-                );
-                log.info("Cloud LLM Stats: " + meta);
-            }
-
-            return new Response(responseData, response);
-        } catch (JsonSyntaxException e) {
-            log.error("Failed to parse API response:\n{}", response, e);
-            return new Response(client.createErrorResponse("Failed to parse API response"), response);
-        }
+        return client.sendJsonRequest(jsonString);
     }
 
-    public StracturedResponse checkResponse(Response response) {
-        JsonArray choices = response.responseData().getAsJsonArray("choices");
+    public StracturedResponse checkResponse(JsonObject response) {
+        JsonArray choices = response.getAsJsonArray("choices");
         if (choices == null || choices.isEmpty()) {
-            log.error("No choices in API response:\n{}", response.responseMessage());
+            log.error("No choices in API response:\n{}", response);
             return new StracturedResponse(null, null, null, false);
         }
 
         JsonObject message = choices.get(0).getAsJsonObject().getAsJsonObject("message");
         if (message == null) {
-            log.error("No message in API response choices:\n{}", response.responseMessage());
+            log.error("No message in API response choices:\n{}", response);
             return new StracturedResponse(null, null, null, false);
         }
 
         String content = message.get("content").getAsString();
         if (content == null) {
-            log.error("No content in API response message:\n{}", response.responseMessage());
+            log.error("No content in API response message:\n{}", response);
             return new StracturedResponse(null, null, null, false);
         }
         return new StracturedResponse(choices, message, content, true);

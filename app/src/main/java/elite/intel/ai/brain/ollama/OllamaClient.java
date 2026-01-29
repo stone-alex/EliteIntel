@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class OllamaClient implements Client {
+public class OllamaClient extends BaseAiClient implements Client {
     // qwen2.5:14b working but .5 sec on command response.
 
 
@@ -21,6 +21,7 @@ public class OllamaClient implements Client {
     private final SystemSession systemSession = SystemSession.getInstance();
 
     private OllamaClient() {
+        //
     }
 
     public static OllamaClient getInstance() {
@@ -76,15 +77,23 @@ public class OllamaClient implements Client {
         return err;
     }
 
+    @Override public JsonObject sendJsonRequest(String request) {
+        return super.sendJsonRequest(request, getHttpURLConnection());
+    }
+
     @Override
-    public HttpURLConnection getHttpURLConnection() throws IOException {
-        String url = getBaseUrl() + "/api/chat";
-        HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
-        conn.setRequestMethod("POST");
-        conn.setRequestProperty("Content-Type", "application/json");
-        conn.setDoOutput(true);
-        conn.setConnectTimeout(115_000);
-        conn.setReadTimeout(1_100_000);
-        return conn;
+    public HttpURLConnection getHttpURLConnection() {
+        try {
+            String url = getBaseUrl() + "/api/chat";
+            HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setDoOutput(true);
+            conn.setConnectTimeout(115_000);
+            conn.setReadTimeout(1_100_000);
+            return conn;
+        } catch (IOException noConnection) {
+            throw new RuntimeException(noConnection);
+        }
     }
 }

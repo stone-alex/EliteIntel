@@ -9,5 +9,6 @@ public interface Client {
     JsonObject createPrompt(int model, float temp);
     JsonObject createPrompt(String model, float temp);
     JsonObject createErrorResponse(String message);
+    JsonObject sendJsonRequest(String request);
     HttpURLConnection getHttpURLConnection() throws IOException;
 }

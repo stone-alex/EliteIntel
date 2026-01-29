@@ -45,10 +45,10 @@ public class OpenAiQueryEndPoint extends AiEndPoint implements AiQueryInterface 
 
 
 
-            Response response = processAiPrompt(conn, jsonString, client);
+            JsonObject response = processAiPrompt(jsonString, client);
 
             // Extract content safely
-            JsonArray choices = response.responseData().getAsJsonArray("choices");
+            JsonArray choices = response.getAsJsonArray("choices");
             if (choices == null || choices.isEmpty()) {
                 log.error("No choices in API response:\n{}", response);
                 return null;
@@ -56,13 +56,13 @@ public class OpenAiQueryEndPoint extends AiEndPoint implements AiQueryInterface 
 
             JsonObject message = choices.get(0).getAsJsonObject().getAsJsonObject("message");
             if (message == null) {
-                log.error("No message in API response choices:\n{}", response.responseMessage());
+                log.error("No message in API response choices:\n{}", response);
                 return null;
             }
 
             String content = message.get("content").getAsString();
             if (content == null) {
-                log.error("No content in API response message:\n{}", response.responseMessage());
+                log.error("No content in API response message:\n{}", response);
                 return null;
             }
 

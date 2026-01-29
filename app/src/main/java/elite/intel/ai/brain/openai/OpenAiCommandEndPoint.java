@@ -22,17 +22,20 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandInterface {
     private static final Logger log = LogManager.getLogger(OpenAiCommandEndPoint.class);
-    private ExecutorService executor;
+    private static OpenAiCommandEndPoint instance;
     private final AtomicBoolean running = new AtomicBoolean(false);
     private final SystemSession systemSession;
+    private ExecutorService executor;
 
-    private static OpenAiCommandEndPoint instance;
+    private OpenAiCommandEndPoint() {
+        systemSession = SystemSession.getInstance();
+        EventBusManager.register(this);
+    }
 
     public static OpenAiCommandEndPoint getInstance() {
         if (instance == null) {
@@ -41,9 +44,18 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
         return instance;
     }
 
-    private OpenAiCommandEndPoint() {
-        systemSession = SystemSession.getInstance();
-        EventBusManager.register(this);
+    private static String serverErrorMessage(IOException e) {
+        String aiServerError = "AI Internal server error.";
+        if (e.getMessage().contains("500") || e.getMessage().contains("402") || e.getMessage().contains("401")) {
+            aiServerError = "AI Internal server crash.";
+        }
+        if (e.getMessage().contains("404")) {
+            aiServerError = "AI API URL is invalid";
+        }
+        if (e.getMessage().contains("403")) {
+            aiServerError = "AI API key is invalid, or not authorized for this endpoint.";
+        }
+        return aiServerError;
     }
 
     @Override
@@ -170,7 +182,7 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
             assistantMessage.addProperty("content", responseText);
 
             if (expectFollowup) {
-                systemSession.appendToChatHistory( userMessage, assistantMessage);
+                systemSession.appendToChatHistory(userMessage, assistantMessage);
             } else {
                 systemSession.clearChatHistory();
             }
@@ -232,26 +244,24 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
 
             // Store messages for history
             systemSession.setChatHistory(messages);
-
-            HttpURLConnection conn = client.getHttpURLConnection();
-            Response response = processAiPrompt(conn, jsonString, client);
+            JsonObject response = processAiPrompt(jsonString, client);
 
             // Extract content
-            JsonArray choices = response.responseData().getAsJsonArray("choices");
+            JsonArray choices = response.getAsJsonArray("choices");
             if (choices == null || choices.isEmpty()) {
-                log.error("No choices in API response:\n{}", response.responseMessage());
+                log.error("No choices in API response:\n{}", response);
                 return client.createErrorResponse("No choices in API response");
             }
 
             JsonObject message = choices.get(0).getAsJsonObject().getAsJsonObject("message");
             if (message == null) {
-                log.error("No message in API response choices:\n{}", response.responseMessage());
+                log.error("No message in API response choices:\n{}", response);
                 return client.createErrorResponse("No message in API response");
             }
 
             String content = message.get("content").getAsString();
             if (content == null) {
-                log.error("No content in API response message:\n{}", response.responseMessage());
+                log.error("No content in API response message:\n{}", response);
                 return client.createErrorResponse("No content in API response");
             }
 
@@ -295,19 +305,5 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
         } finally {
             systemSession.clearChatHistory();
         }
-    }
-
-    private static String serverErrorMessage(IOException e) {
-        String aiServerError = "AI Internal server error.";
-        if (e.getMessage().contains("500") || e.getMessage().contains("402") || e.getMessage().contains("401")) {
-            aiServerError = "AI Internal server crash.";
-        }
-        if(e.getMessage().contains("404")){
-            aiServerError = "AI API URL is invalid";
-        }
-        if(e.getMessage().contains("403")){
-            aiServerError = "AI API key is invalid, or not authorized for this endpoint.";
-        }
-        return aiServerError;
     }
 }

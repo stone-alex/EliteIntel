@@ -29,7 +29,6 @@ public class GrokQueryEndPoint extends AiEndPoint implements AiQueryInterface {
             JsonArray sanitizedMessages = sanitizeJsonArray(messages);
 
             GrokClient client = GrokClient.getInstance();
-            HttpURLConnection conn = client.getHttpURLConnection();
 
             JsonObject prompt = client.createPrompt(GrokClient.MODEL_GROK_REASONING, 1);
             prompt.add("messages", sanitizedMessages);
@@ -40,7 +39,7 @@ public class GrokQueryEndPoint extends AiEndPoint implements AiQueryInterface {
             if(bodyString == null) {
                 return new JsonObject();
             }
-            Response response = processAiPrompt(conn, bodyString, client);
+            JsonObject response = processAiPrompt(bodyString, client);
             StracturedResponse stracturedResponse = checkResponse(response);
             if (!stracturedResponse.isSuccessful()) {
                 return new JsonObject();

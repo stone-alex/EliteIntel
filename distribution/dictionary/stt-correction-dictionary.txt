@@ -289,3 +289,4 @@
 "Mariah Street"="summarize"
 "mls"="analyze"
 "app"="map"
+"nikolai's power"="equalize power"

@@ -228,24 +228,24 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
             systemSession.setChatHistory(messages);
 
             HttpURLConnection conn = client.getHttpURLConnection();
-            Response response = processAiPrompt(conn, jsonString, client);
+            JsonObject response = processAiPrompt(jsonString, client);
 
             // Extract content
-            JsonArray choices = response.responseData().getAsJsonArray("choices");
+            JsonArray choices = response.getAsJsonArray("choices");
             if (choices == null || choices.isEmpty()) {
-                log.error("No choices in API response:\n{}", response.responseMessage());
+                log.error("No choices in API response:\n{}", response);
                 return client.createErrorResponse("No choices in API response");
             }
 
             JsonObject message = choices.get(0).getAsJsonObject().getAsJsonObject("message");
             if (message == null) {
-                log.error("No message in API response choices:\n{}", response.responseMessage());
+                log.error("No message in API response choices:\n{}", response);
                 return client.createErrorResponse("No message in API response");
             }
 
             String content = message.get("content").getAsString();
             if (content == null) {
-                log.error("No content in API response message:\n{}", response.responseMessage());
+                log.error("No content in API response message:\n{}", response);
                 return client.createErrorResponse("No content in API response");
             }
 

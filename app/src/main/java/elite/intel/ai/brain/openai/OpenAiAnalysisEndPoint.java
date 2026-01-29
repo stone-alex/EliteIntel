@@ -60,23 +60,23 @@ public class OpenAiAnalysisEndPoint extends AiEndPoint implements AiAnalysisInte
             String jsonString = GsonFactory.getGson().toJson(request);
             log.debug("Analysis call:\n\n{}\n\n", jsonString);
 
-            Response response = processAiPrompt(conn, jsonString, client);
+            JsonObject response = processAiPrompt(jsonString, client);
 
-            JsonElement jsonElement = response.responseData().get("usage");
+            JsonElement jsonElement = response.get("usage");
             if(jsonElement != null) {
                 log.info("API usage:\n{}", ("Prompt Tokens: "+jsonElement.getAsJsonObject().get("prompt_tokens")+"  Total Tokens:"+ jsonElement.getAsJsonObject().get("total_tokens")));
             }
 
-            JsonArray choices = response.responseData().getAsJsonArray("choices");
+            JsonArray choices = response.getAsJsonArray("choices");
 
             if (choices == null || choices.isEmpty()) {
-                log.error("No choices in API response:\n{}", response.responseMessage());
+                log.error("No choices in API response:\n{}", response);
                 return client.createErrorResponse("Analysis error.");
             }
 
             JsonObject message = choices.get(0).getAsJsonObject().getAsJsonObject(PROPERTY_MESSAGE);
             if (message == null) {
-                log.error("No message in API response choices:\n{}", response.responseMessage());
+                log.error("No message in API response choices:\n{}", response);
                 return client.createErrorResponse("Analysis error.");
             }
 
@@ -84,7 +84,7 @@ public class OpenAiAnalysisEndPoint extends AiEndPoint implements AiAnalysisInte
 
             String content = message.get(PROPERTY_CONTENT).getAsString();
             if (content == null) {
-                log.error("No content in API response message:\n{}", response.responseMessage());
+                log.error("No content in API response message:\n{}", response);
                 return client.createErrorResponse("Analysis error.");
             }
 

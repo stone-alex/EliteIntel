@@ -21,11 +21,9 @@ import java.net.HttpURLConnection;
 public class GrokChatEndPoint extends AiEndPoint implements AIChatInterface {
     private static final Logger log = LogManager.getLogger(GrokChatEndPoint.class);
     private static final GrokChatEndPoint INSTANCE = new GrokChatEndPoint();
-    private final SystemSession systemSession;
 
     private GrokChatEndPoint() {
         // Private constructor for singleton
-        systemSession = SystemSession.getInstance();
     }
 
     public static GrokChatEndPoint getInstance() {
@@ -52,10 +50,10 @@ public class GrokChatEndPoint extends AiEndPoint implements AIChatInterface {
             log.debug("xAI API chat call:\n{}", bodyString);
 
 
-            Response response = processAiPrompt(conn, bodyString, client);
+            JsonObject response = processAiPrompt(bodyString, client);
 
             // Extract content safely
-            JsonArray choices = response.responseData().getAsJsonArray("choices");
+            JsonArray choices = response.getAsJsonArray("choices");
             if (choices == null || choices.isEmpty()) {
                 log.error("No choices in API response:\n{}", response);
                 return null;
@@ -63,13 +61,13 @@ public class GrokChatEndPoint extends AiEndPoint implements AIChatInterface {
 
             JsonObject message = choices.get(0).getAsJsonObject().getAsJsonObject("message");
             if (message == null) {
-                log.error("No message in API response choices:\n{}", response.responseMessage());
+                log.error("No message in API response choices:\n{}", response);
                 return null;
             }
 
             String content = message.get("content").getAsString();
             if (content == null) {
-                log.error("No content in API response message:\n{}", response.responseMessage());
+                log.error("No content in API response message:\n{}", response);
                 return null;
             }
 

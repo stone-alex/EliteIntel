@@ -27,8 +27,6 @@ public class OllamaChatEndPoint extends AiEndPoint implements AIChatInterface {
         String bodyString = null;
         try {
             OllamaClient client = OllamaClient.getInstance();
-            HttpURLConnection conn = client.getHttpURLConnection();
-
             JsonObject prompt = client.createPrompt(OllamaClient.MODEL_OLLAMA_SMALL, 0.5f);
 
             JsonArray sanitized = sanitizeJsonArray(messages);
@@ -64,21 +62,11 @@ public class OllamaChatEndPoint extends AiEndPoint implements AIChatInterface {
             options.add("format", format);
             options.addProperty("raw", true);
             prompt.add("options", options);
-/*
-            JsonObject options = new JsonObject();
-            options.add("format", format);
-            options.addProperty("raw", true);
-            options.addProperty("stop", "");
-            options.addProperty("temperature", 0.1);
-            prompt.add("options", options);
-*/
-
 
             bodyString = prompt.toString();
             log.debug("Ollama API call:\n{}", GsonFactory.getGson().toJson(prompt));
 
-            Response response = processAiPrompt(conn, bodyString, client);
-            JsonObject root = response.responseData();
+            JsonObject root = processAiPrompt(bodyString, client);
 
             JsonObject message = root.getAsJsonObject("message");
             if (message == null || !message.has("content")) {

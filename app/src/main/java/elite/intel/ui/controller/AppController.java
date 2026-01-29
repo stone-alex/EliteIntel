@@ -14,6 +14,7 @@ import elite.intel.ai.mouth.MouthInterface;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.gameapi.*;
+import elite.intel.gameapi.journal.MissingMissionMonitor;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.*;
@@ -44,8 +45,9 @@ public class AppController implements Runnable {
     AiCommandInterface brain;
     DeferredNotificationMonitor notificationMonitor;
     JournalParser journalParser = new JournalParser();
-    private Thread controllerThread;
-    private AppView view;
+    MissingMissionMonitor missingMissionMonitor = MissingMissionMonitor.getInstance();
+    private final Thread controllerThread;
+    private final AppView view;
 
     public AppController(AppView view) {
         this.view = view;
@@ -246,6 +248,8 @@ public class AppController implements Runnable {
         notificationMonitor.stop();
         notificationMonitor = null;
 
+        missingMissionMonitor.stop();
+
         systemSession.clearChatHistory();
 
         EventBusManager.publish(new ServicesStateEvent(false));
@@ -352,6 +356,8 @@ public class AppController implements Runnable {
 
         String mission_statement = playerSession.getPlayerMissionStatement();
         playerSession.setPlayerMissionStatement(mission_statement);
+
+        missingMissionMonitor.start();
 
         if (!systemSession.isRunningPiperTts()) {
             appendToLog("Available voices: " + listVoices());

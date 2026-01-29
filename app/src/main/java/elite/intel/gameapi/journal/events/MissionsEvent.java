@@ -68,7 +68,7 @@ public class MissionsEvent extends BaseEvent {
     private List<Mission> complete;
 
     public MissionsEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), Duration.ofMinutes(5), "Missions");
+        super(json.get("timestamp").getAsString(), Duration.ofHours(24), "Missions");
         MissionsEvent event = GsonFactory.getGson().fromJson(json, MissionsEvent.class);
         this.active = event.active;
         this.failed = event.failed;

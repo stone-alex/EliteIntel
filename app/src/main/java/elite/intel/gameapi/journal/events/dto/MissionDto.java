@@ -54,7 +54,6 @@ public class MissionDto extends BaseJsonDto {
             setWing(event.isWing());
             setDestinationSystem(event.getDestinationSystem());
             setDestinationSettlement(event.getDestinationSettlement());
-            setMissionTarget(toTargetType(event.getTargetTypeLocalised()));
             setMissionTargetFaction(event.getTargetFaction());
             setKillCount(event.getKillCount());
             setTarget(event.getTarget());

@@ -9,7 +9,8 @@ import elite.intel.gameapi.journal.events.dto.MissionDto;
 
 @SuppressWarnings("unused")
 public class MissionRedirectedSubscriber {
-    private MissionManager missionManager = MissionManager.getInstance();
+
+    private final MissionManager missionManager = MissionManager.getInstance();
 
     @Subscribe
     public void onMissionRedirectedSubscriber(MissionRedirectedEvent event) {

@@ -37,6 +37,7 @@ public class MissionManager {
         data.setKey(mission.getMissionId());
         data.setMission(mission.toJson());
         data.setMissionType(mission.getMissionType());
+        data.setKeywords(mission.getMissionType().getKeywords());
         Database.withDao(MissionDao.class, dao -> {
                     dao.upsert(data, data.getMissionType().name());
                     return null;
@@ -44,17 +45,6 @@ public class MissionManager {
         );
     }
 
-    public void save(MissionsEvent.Mission mission) {
-        MissionDao.Mission data = new MissionDao.Mission();
-        data.setKey(mission.getMissionID());
-        data.setMission(mission.toJsonObject().toString());
-        data.setMissionType(mission.getMissionType());
-        Database.withDao(MissionDao.class, dao -> {
-                    dao.upsert(data, data.getMissionType().name());
-                    return null;
-                }
-        );
-    }
 
     public MissionDto getMission(long missionId) {
         return Database.withDao(MissionDao.class, dao -> {

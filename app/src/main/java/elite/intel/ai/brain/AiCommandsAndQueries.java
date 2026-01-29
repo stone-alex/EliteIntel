@@ -10,7 +10,7 @@ public class AiCommandsAndQueries {
     private static final AiCommandsAndQueries INSTANCE = new AiCommandsAndQueries();
     private final Map<String, String> commandMap = Map.<String, String>ofEntries(
 
-            Map.entry(" navigate to next mission, set destination for 'MissionType' (MissionType can be Delivery,Assassinate,Salvage,Rescue,Passenger,Tourist,Courier,Piracy), plot route to mission location, let's get after this 'MissioTarget' (MissionTarget is either a persons name, Known Pirate or Known Terrorist), (optional keyword <key>) ", NAVIGATE_TO_NEXT_MISSION.getAction()),
+            Map.entry(" navigate to next mission, set destination for mission type <type>, plot route to mission type <type>. -IF mission type is provided return it in {\"key\":\"mission type\"}", NAVIGATE_TO_NEXT_MISSION.getAction()),
             Map.entry(" headlights off, headlights on, turn off the lights, turn on the lights ", LIGHTS_ON_OFF.getAction()),
             Map.entry(" set mining target <material> ", ADD_MINING_TARGET.getAction()),
             Map.entry(" clear mining targets ", CLEAR_MINING_TARGETS.getAction()),

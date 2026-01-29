@@ -11,9 +11,9 @@ Welcome to developing for Elite Intel, a Java-based QoL app for *Elite Dangerous
 ### How does the app work?
 The app monitors journal and auxiliary files and builds local cache of relevant data stored in json format.
 In addition Elite Intel uses custom API to access EDSM and Spansh data sources for specific features.
-The user speaks in to microphone, this audio is sent to STT for processing, and resulting text is sent to AI for 
+The user speaks in to a microphone, this audio is sent to STT for processing, and the resulting text is sent to AI for 
 analysis and response. The AI figures out intent from the input. The input can be a command, a query or chat. 
-AI will do it's best attempt to map the input to a specific action such as a command or query. If non matches the AI will 
+AI will do its best attempt to map the input to a specific action such as a command or query. If non matches the AI will 
 respond with a chat.
 
 The commands are handled by command handlers and in most cases execute a keystroke, or a short keystroke sequence.

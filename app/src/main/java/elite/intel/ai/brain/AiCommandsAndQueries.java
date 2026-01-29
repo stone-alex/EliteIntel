@@ -156,7 +156,7 @@ public class AiCommandsAndQueries {
             //Map.entry(" what missions do we have, are there any outstanding missions, do we have any active missions ", OUTSTANDING_MISSIONS.getAction()),
             Map.entry(" how many kills left on pirate missions, pirate massacre mission progress (these are pirate massacre specific missions only) ", PIRATE_MISSION_PROGRESS.getAction()),
             Map.entry(" queries about player stats, ranks, rank progress etc ", PLAYER_PROFILE_ANALYSIS.getAction()),
-            Map.entry(" queries about ship configuration, jump range, loadout, build and capabilities. Do we have fuel scoop equipped, is ship battle worthy, what class of ship is it ", SHIP_LOADOUT.getAction()),
+            Map.entry(" ship combat readiness, jump range, loadout, ship capabilities. Do we have fuel scoop equipped, is ship battle worthy, what class of ship is it ", SHIP_LOADOUT.getAction()),
             Map.entry(" what services are available at this station ", STATION_DETAILS.getAction()),
             Map.entry(" what can you do, what are your capabilities ", APP_CAPABILITIES.getAction()),
             Map.entry(" what is your name ", AI_DESIGNATION.getAction()),

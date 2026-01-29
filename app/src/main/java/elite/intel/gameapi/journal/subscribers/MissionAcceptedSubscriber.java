@@ -39,7 +39,8 @@ public class MissionAcceptedSubscriber {
         pirateMissionDataManager.updateProviderFaction(providerStarSystem, factionId, missionProviderFaction);
 
         playerSession.addMission(new MissionDto(event));
-        EventBusManager.publish(new SensorDataEvent("Mission Accepted: " + event.toJson(),  "Provide key mission parameters as a summary. Ignore unimportant fields such as timestamps, timeToLive, missionID etc."));
+        EventBusManager.publish(new SensorDataEvent("Mission Accepted: " + event.toJson(),
+                "Summarize key mission parameters, destination, reward, if relevant to the missiontype kill count and or the target name. Ignore unimportant fields such as timestamps, timeToLive, missionID etc."));
     }
 
     @Subscribe

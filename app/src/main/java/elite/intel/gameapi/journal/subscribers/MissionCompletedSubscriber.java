@@ -36,7 +36,7 @@ public class MissionCompletedSubscriber {
             missionManager.remove(event.getMissionID());
             String missionDetails = event.getLocalisedName();
             EventBusManager.publish(new SensorDataEvent("Notify: Mission \"" + missionDetails + "\" Completed: " + event,
-                    "Notify user of a successful mission completion, provide detailed summary from the data received."));
+                    "Summarize key mission parameters, destination, reward, and fields relevant to the missiontype. Ignore unimportant fields such as timestamps, timeToLive, missionID etc"));
         }
 
     }

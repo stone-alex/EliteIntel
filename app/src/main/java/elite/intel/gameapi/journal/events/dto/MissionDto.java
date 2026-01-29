@@ -7,6 +7,8 @@ import elite.intel.gameapi.gamestate.dtos.BaseJsonDto;
 import elite.intel.gameapi.journal.events.MissionAcceptedEvent;
 import elite.intel.util.json.GsonFactory;
 
+import java.util.Locale;
+
 public class MissionDto extends BaseJsonDto {
 
     private long missionId;
@@ -76,13 +78,14 @@ public class MissionDto extends BaseJsonDto {
     private MissionTargets toTargetType(String name) {
         if (name == null) return null; // No target type associated
 
-        String converted = name.replaceAll("\\s+", "_"); // underscore word splitting
+        String converted = name.replaceAll("\\s+", "_").toUpperCase(Locale.ROOT); // underscore word splitting
         for (MissionTargets type : MissionTargets.values()) {
             if (type.getTargetType().equalsIgnoreCase(converted)) {
                 return type;
             }
         }
-        throw new IllegalArgumentException("Unknown mission target: " + name);
+        return MissionTargets.getUnknown();
+        //throw new IllegalArgumentException("Unknown mission target: " + name);
     }
 
     public void setTarget(String target) {

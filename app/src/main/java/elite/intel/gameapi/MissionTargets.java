@@ -4,7 +4,8 @@ public enum MissionTargets {
 
     KNOWN_TERRORIST("Known Terrorist"),
     KNOWN_PIRATE("Known Pirate"),
-    PIRATES("Pirates");
+    PIRATES("Pirates"),
+    UNKNOWN("Unknown");
 
     private final String targetType;
 
@@ -14,5 +15,9 @@ public enum MissionTargets {
 
     public String getTargetType() {
         return this.targetType;
+    }
+
+    public static MissionTargets getUnknown() {
+        return UNKNOWN;
     }
 }

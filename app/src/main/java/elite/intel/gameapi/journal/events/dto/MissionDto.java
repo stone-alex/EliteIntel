@@ -30,8 +30,6 @@ public class MissionDto extends BaseJsonDto {
     private long count;
     private String destinationStation;
     private String destinationSettlement;
-    private String newDestinationSystem;
-    private String newDestinationStation;
     private long passengerCount;
     private boolean passengerVIPs;
     private boolean passengerWanted;
@@ -148,14 +146,6 @@ public class MissionDto extends BaseJsonDto {
         this.destinationSettlement = destinationSettlement;
     }
 
-    public void setNewDestinationSystem(String newDestinationSystem) {
-        this.newDestinationSystem = newDestinationSystem;
-    }
-
-    public void setNewDestinationStation(String newDestinationStation) {
-        this.newDestinationStation = newDestinationStation;
-    }
-
     public void setPassengerCount(long passengerCount) {
         this.passengerCount = passengerCount;
     }
@@ -263,14 +253,6 @@ public class MissionDto extends BaseJsonDto {
 
     public String getDestinationSettlement() {
         return destinationSettlement;
-    }
-
-    public String getNewDestinationSystem() {
-        return newDestinationSystem;
-    }
-
-    public String getNewDestinationStation() {
-        return newDestinationStation;
     }
 
     public long getPassengerCount() {

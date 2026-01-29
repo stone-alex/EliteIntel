@@ -4,7 +4,9 @@ import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.db.managers.MissionManager;
 import elite.intel.gameapi.MissionType;
+import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.gameapi.journal.events.dto.MissionDto;
+import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 
@@ -30,16 +32,20 @@ public class AnalyzeMissionHandler extends BaseQueryAnalyzer implements QueryHan
                 )
         );
 
+        LocationDto playerLocation = PlayerSession.getInstance().getCurrentLocation(); // Provide the llm with current system
         String instructions = """
-                Use this map of missionType to mission to answer questions about active missions.
-                Group the results by missionType 
-                when specifically prompted about an empty list, respond with 'I have no data for this category'.
-        """;
+                        Use this map of missionType to mission to answer questions about active missions.
+                        If the question is generally open, group the results by missionType.
+                        When specifically prompted about an empty list, respond with 'I have no data for this category'.
+                        Keep the response short, concise and straight to the point.
+                """
+                + "If the user asks about the current system, only use the relevant data for this system: '" + playerLocation.getStarName() + "'";
         return process(new AiDataStruct(instructions, new DataDto(missions)), originalUserInput);
     }
 
     record DataDto(Map<MissionType, Collection<MissionDto>> missions) implements ToJsonConvertible {
-        @Override public String toJson() {
+        @Override
+        public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }
     }

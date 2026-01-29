@@ -44,12 +44,12 @@ public class PromptFactory implements AiPromptFactory {
                 Your only job: classify user input as ONE best matching command or query from the provided lists — or return no-match.
                     - IF user input is a call to action it is probably a command. Match it to most probable command in the list.
                     - IF user input is a question it is probably a query. Match it to most probable query in the list.
-                Supported COMMANDS patterns, concepts, and formulations → ACTION_NAME (use ONLY these action names):
+                Supported COMMANDS: patterns, concepts, and formulations -> ACTION_NAME (use ONLY these action names):
                 """);
         sb.append(commandsAndQueries.getCommandMap());
         sb.append("""
                 
-                Supported QUERIES patterns, concepts, and formulations → ACTION_NAME (use ONLY these action names):
+                Supported QUERIES: patterns, concepts, and formulations -> ACTION_NAME (use ONLY these action names):
                 """);
         sb.append(commandsAndQueries.getQueries());
         sb.append("""

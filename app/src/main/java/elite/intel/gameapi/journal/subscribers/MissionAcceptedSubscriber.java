@@ -19,11 +19,9 @@ public class MissionAcceptedSubscriber {
     private final PlayerSession playerSession = PlayerSession.getInstance();
     private final MissionManager missionManager = MissionManager.getInstance();
 
-    private static void genericMission(MissionAcceptedEvent event, PlayerSession playerSession, MissionManager missionManager) {
+    private static void genericMission(MissionAcceptedEvent event, MissionManager missionManager) {
         if (event != null) {
-            MissionDto dto = new MissionDto(event);
-            missionManager.save(dto);
-            playerSession.addMission(dto);
+            missionManager.save(new MissionDto(event));
             EventBusManager.publish(new SensorDataEvent("Mission Accepted: " + event.toJson(), "Provide key mission parameters as a summary. Ignore unimportant fields such as timestamps, timeToLive, missionID etc."));
         }
     }
@@ -51,9 +49,8 @@ public class MissionAcceptedSubscriber {
         if (MISSION_PIRATE_MASSACRE.equals(missionType) || MISSION_PIRATE_MASSACRE_WING.equals(missionType)) {
             processPirateMission(event, playerSession);
         }
-        // TODO: If other missions need a custom handler, we could handle it here?
         else {
-            genericMission(event, playerSession, missionManager);
+            genericMission(event, missionManager);
         }
     }
 

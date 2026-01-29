@@ -2,11 +2,14 @@ package elite.intel.gameapi.journal.events;
 
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
+import elite.intel.gameapi.MissionType;
 import elite.intel.util.TimestampFormatter;
 import elite.intel.util.json.GsonFactory;
 
 import java.time.Duration;
 import java.util.List;
+
+import static elite.intel.util.StringUtls.removeNameEnding;
 
 public class MissionsEvent extends BaseEvent {
     public static class Mission {
@@ -37,6 +40,22 @@ public class MissionsEvent extends BaseEvent {
         public long getExpires() {
             return expires;
         }
+
+        // todo: Need assistance in creating a propper json or usable MissionDto convertion
+        public JsonObject toJsonObject() {
+            return GsonFactory.toJsonObject(this);
+        }
+
+        public MissionType getMissionType() {
+            String missionType = removeNameEnding(getName());
+            for (MissionType type : MissionType.values()) {
+                if (type.getMissionType().equalsIgnoreCase(missionType)) {
+                    return type;
+                }
+            }
+            return MissionType.getUnknown();
+//        throw new IllegalArgumentException("Unknown mission type: " + name);
+        }
     }
 
     @SerializedName("Active")
@@ -49,7 +68,7 @@ public class MissionsEvent extends BaseEvent {
     private List<Mission> complete;
 
     public MissionsEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), Duration.ofSeconds(30), "Missions");
+        super(json.get("timestamp").getAsString(), Duration.ofHours(24), "Missions");
         MissionsEvent event = GsonFactory.getGson().fromJson(json, MissionsEvent.class);
         this.active = event.active;
         this.failed = event.failed;

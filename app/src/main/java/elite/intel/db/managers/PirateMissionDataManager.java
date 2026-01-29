@@ -136,7 +136,7 @@ public class PirateMissionDataManager {
 
 
 
-    public class PirateMissionTuple<K, V> {
+    public static class PirateMissionTuple<K, V> {
         K target;
         V missionProvider;
 

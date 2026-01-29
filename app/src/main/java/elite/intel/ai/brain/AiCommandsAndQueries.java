@@ -10,7 +10,7 @@ public class AiCommandsAndQueries {
     private static final AiCommandsAndQueries INSTANCE = new AiCommandsAndQueries();
     private final Map<String, String> commandMap = Map.<String, String>ofEntries(
 
-            Map.entry(" navigate to next mission, plot route to mission location ", NAVIGATE_TO_NEXT_MISSION.getAction()),
+            Map.entry(" navigate to next mission (optional keyword <key>) ", NAVIGATE_TO_NEXT_MISSION.getAction()),
             Map.entry(" headlights off, headlights on, turn off the lights, turn on the lights ", LIGHTS_ON_OFF.getAction()),
             Map.entry(" set mining target <material> ", ADD_MINING_TARGET.getAction()),
             Map.entry(" clear mining targets ", CLEAR_MINING_TARGETS.getAction()),
@@ -45,11 +45,11 @@ public class AiCommandsAndQueries {
             Map.entry(" route announcements on/off ", ROUTE_ON_OFF.getAction()),
             Map.entry(" set speed plus X ", INCREASE_SPEED_BY.getAction()),  // Fixed to assumed correct action
             Map.entry(" set speed minus X ", DECREASE_SPEED_BY.getAction()),
-            Map.entry(" power to engines ", INCREASE_ENGINES_POWER.getAction()),
+            Map.entry(" power to engines, engines full power, engines ", INCREASE_ENGINES_POWER.getAction()),
             Map.entry(" navigate to next organic/sample/marker/codex entry ", NAVIGATE_TO_NEXT_BIO_SAMPLE.getAction()),
-            Map.entry(" power to shields, shields up, shields full power ", INCREASE_SHIELDS_POWER.getAction()),
-            Map.entry(" power to systems, full power to engines ", INCREASE_SYSTEMS_POWER.getAction()),
-            Map.entry(" power to weapons, full power to weapons ", INCREASE_WEAPONS_POWER.getAction()),
+            Map.entry(" power to shields, shields, shields up, shields, shields full power, power to systems ", INCREASE_SHIELDS_POWER.getAction()),
+            Map.entry(" power to engines, engines, full power to engines, engines  max power ", INCREASE_ENGINES_POWER.getAction()),
+            Map.entry(" power to weapons, weapons, full power to weapons, max power to weapons ", INCREASE_WEAPONS_POWER.getAction()),
             Map.entry(" equalize power, reset power ", RESET_POWER.getAction()),  // Fixed typo
             Map.entry(" open/show galaxy map ", OPEN_GALAXY_MAP.getAction()),
             Map.entry(" open/show local map ", OPEN_SYSTEM_MAP.getAction()),
@@ -98,7 +98,7 @@ public class AiCommandsAndQueries {
             Map.entry(" request docking, ask for landing permission, docking authorization", REQUEST_DOCKING.getAction()),
             Map.entry(" deploy heat sink ", DEPLOY_HEAT_SINK.getAction()),
             Map.entry(" drive assist on/off ", DRIVE_ASSIST.getAction()),
-            Map.entry(" target subsystem X ", TARGET_SUB_SYSTEM.getAction()),
+            Map.entry(" target power plant, target engines, target subsystem, X ", TARGET_SUB_SYSTEM.getAction()),
             Map.entry(" recall ship / dismiss ship ", RECALL_DISMISS_SHIP.getAction()),
             Map.entry(" defend ship ", REQUEST_DEFENSIVE_BEHAVIOUR.getAction()),
             Map.entry(" focus my target ", REQUEST_FOCUS_TARGET.getAction()),
@@ -153,7 +153,7 @@ public class AiCommandsAndQueries {
             Map.entry(" queries about carrier finances, funded days of operation V ", CARRIER_STATUS.getAction()),
             Map.entry(" queries about carrier estimated time of arrival (do not confuse with ship) ", CARRIER_ETA.getAction()),
             Map.entry(" how far are we from the carrier ", DISTANCE_TO_CARRIER.getAction()),
-            Map.entry(" what missions do we have, are there any outstanding missions, do we have any active missions ", OUTSTANDING_MISSIONS.getAction()),
+            //Map.entry(" what missions do we have, are there any outstanding missions, do we have any active missions ", OUTSTANDING_MISSIONS.getAction()),
             Map.entry(" how many kills left on pirate missions, pirate massacre mission progress (these are pirate massacre specific missions only) ", PIRATE_MISSION_PROGRESS.getAction()),
             Map.entry(" queries about player stats, ranks, rank progress etc ", PLAYER_PROFILE_ANALYSIS.getAction()),
             Map.entry(" queries about ship configuration, jump range, loadout, build and capabilities. Do we have fuel scoop equipped, is ship battle worthy, what class of ship is it ", SHIP_LOADOUT.getAction()),
@@ -166,7 +166,7 @@ public class AiCommandsAndQueries {
             Map.entry(" what time is it ", TIME_IN_ZONE.getAction()),
             Map.entry(" run biome analysis, analyze biome for planet/moon X (parameter example: \"key\":\"2a\")", PLANET_BIOME_ANALYSIS.getAction()),
             Map.entry(" remind me about X ", REMINDER.getAction()),
-            Map.entry(" questions about missions that are not pirate related ", ANALYZE_MISSIONS.getAction()),
+            Map.entry(" what missions do we have, are there any outstanding missions, do we have any active missions, questions about missions that are not pirate related, plot route to mission location ", ANALYZE_MISSIONS.getAction()),
             Map.entry(" if nothing else matches use this ", GENERAL_CONVERSATION.getAction())
     );
 

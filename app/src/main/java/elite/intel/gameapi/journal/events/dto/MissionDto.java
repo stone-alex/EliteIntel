@@ -24,7 +24,7 @@ public class MissionDto extends BaseJsonDto {
     private int killCount;
     private String target;
     private String commodity;
-    private String CommodityName;
+    private String commodityName;
     private long count;
     private String destinationStation;
     private String destinationSettlement;
@@ -69,7 +69,8 @@ public class MissionDto extends BaseJsonDto {
                 return type;
             }
         }
-        throw new IllegalArgumentException("Unknown mission type: " + name);
+        return MissionType.getUnknown();
+//        throw new IllegalArgumentException("Unknown mission type: " + name);
     }
 
     private MissionTargets toTargetType(String name) {
@@ -89,7 +90,7 @@ public class MissionDto extends BaseJsonDto {
     }
 
     public void setCommodityName(String commodityName) {
-        CommodityName = commodityName;
+        this.commodityName = commodityName;
     }
 
     public void setMissionId(long missionID) {
@@ -290,7 +291,7 @@ public class MissionDto extends BaseJsonDto {
     }
 
     public String getCommodityName() {
-        return CommodityName;
+        return commodityName;
     }
 
     public String getEventType() {

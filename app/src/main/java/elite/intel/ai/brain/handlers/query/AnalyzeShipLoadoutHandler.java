@@ -26,6 +26,7 @@ public class AnalyzeShipLoadoutHandler extends BaseQueryAnalyzer implements Quer
                 Provide answers about ship loadout details, health, damage report, suitability for a task, or whatever else user asks.
                 IF damage detected (moduleHealthPercentage < 100) list damaged modules and damage percentage.
                 IF asked about a specific module equiped reply with yes, or no. If yes, list know smodule specification.
+                IF asked about damage report, only provide a summary of the damaged modules and percent damage, if all modules are at full health (100) report no damage detected.
                 Mention if the ship has engeneered modules. (Engineering modules are modules that have been modified, and have special abilities or bonuses)
                 ______________________________________________________________
                 For questions about ship classifications/suitability use this as a general guide line:

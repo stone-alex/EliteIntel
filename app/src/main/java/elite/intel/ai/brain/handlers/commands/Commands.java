@@ -99,7 +99,7 @@ public enum Commands {
     JUMP_TO_HYPERSPACE                                  ("jump_to_hyperspace", null, null, JumpToHyperspaceHandler.class),
     ENTER_SUPER_CRUISE                                  ("enter_super_cruise", null, null, EnterFtlHandler.class),
 
-    EXIT_SUPER_CRUISE                                   ("exit_super_cruise", null, null, ExitFtlHandler.class),
+    EXIT_SUPER_CRUISE                                   ("drop_from_super_cruise", null, null, ExitFtlHandler.class),
     ACTIVATE_ANALYSIS_MODE                              ("swap_to_hud_analysis_mode", null, null, ActivateAnalysisModeHandler.class),
     ACTIVATE_COMBAT_MODE                                ("swap_to_hud_combat_mode", null, null, ActivateCombatModeHandler.class),
     PLOT_ROUTE_TO_CARRIER                               ("plot_route_to_fleet_carrier", null, null, PlotRouteToMyFleetCarrier.class),

@@ -288,3 +288,4 @@
 "what are"="query"
 "Mariah Street"="summarize"
 "mls"="analyze"
+"app"="map"

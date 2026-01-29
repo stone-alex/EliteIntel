@@ -10,7 +10,7 @@ public class AiCommandsAndQueries {
     private static final AiCommandsAndQueries INSTANCE = new AiCommandsAndQueries();
     private final Map<String, String> commandMap = Map.<String, String>ofEntries(
 
-            Map.entry(" navigate to next mission (optional keyword <key>) ", NAVIGATE_TO_NEXT_MISSION.getAction()),
+            Map.entry(" navigate to next mission, set destination for 'MissionType' (MissionType can be Delivery,Assassinate,Salvage,Rescue,Passenger,Tourist,Courier,Piracy), plot route to mission location, let's get after this 'MissioTarget' (MissionTarget is either a persons name, Known Pirate or Known Terrorist), (optional keyword <key>) ", NAVIGATE_TO_NEXT_MISSION.getAction()),
             Map.entry(" headlights off, headlights on, turn off the lights, turn on the lights ", LIGHTS_ON_OFF.getAction()),
             Map.entry(" set mining target <material> ", ADD_MINING_TARGET.getAction()),
             Map.entry(" clear mining targets ", CLEAR_MINING_TARGETS.getAction()),
@@ -166,7 +166,7 @@ public class AiCommandsAndQueries {
             Map.entry(" what time is it ", TIME_IN_ZONE.getAction()),
             Map.entry(" run biome analysis, analyze biome for planet/moon X (parameter example: \"key\":\"2a\")", PLANET_BIOME_ANALYSIS.getAction()),
             Map.entry(" remind me about X ", REMINDER.getAction()),
-            Map.entry(" what missions do we have, are there any outstanding missions, do we have any active missions, questions about missions that are not pirate related, plot route to mission location ", ANALYZE_MISSIONS.getAction()),
+            Map.entry(" what missions do we have, are there any outstanding missions, do we have any active missions, what station are we looking for, questions about missions that are not pirateMassacre related ", ANALYZE_MISSIONS.getAction()),
             Map.entry(" if nothing else matches use this ", GENERAL_CONVERSATION.getAction())
     );
 

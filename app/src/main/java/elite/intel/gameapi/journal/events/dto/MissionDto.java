@@ -5,6 +5,7 @@ import elite.intel.gameapi.MissionTargets;
 import elite.intel.gameapi.MissionType;
 import elite.intel.gameapi.gamestate.dtos.BaseJsonDto;
 import elite.intel.gameapi.journal.events.MissionAcceptedEvent;
+import elite.intel.util.UnknownEnumLogger;
 import elite.intel.util.json.GsonFactory;
 
 import java.util.Locale;
@@ -69,8 +70,8 @@ public class MissionDto extends BaseJsonDto {
                 return type;
             }
         }
+        UnknownEnumLogger.log("MISSION_TYPE", name);
         return MissionType.getUnknown();
-//        throw new IllegalArgumentException("Unknown mission type: " + name);
     }
 
     private MissionTargets toTargetType(String name) {
@@ -82,8 +83,8 @@ public class MissionDto extends BaseJsonDto {
                 return type;
             }
         }
+        UnknownEnumLogger.log("TARGET_TYPE", name);
         return MissionTargets.getUnknown();
-        //throw new IllegalArgumentException("Unknown mission target: " + name);
     }
 
     public void setTarget(String target) {

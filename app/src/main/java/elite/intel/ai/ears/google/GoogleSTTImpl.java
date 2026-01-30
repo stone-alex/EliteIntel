@@ -112,7 +112,7 @@ public class GoogleSTTImpl implements EarsInterface {
         if (processingThread != null) {
             this.processingThread.interrupt();
         }
-        EventBusManager.publish(new AiVoxResponseEvent("AI: Voice input disabled."));
+        EventBusManager.publish(new AiVoxResponseEvent("Voice input disabled."));
     }
 
     @SuppressWarnings("deprecation") private void startStreaming() {

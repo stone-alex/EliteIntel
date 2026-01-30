@@ -50,7 +50,7 @@ public class AppController implements Runnable {
     AiCommandInterface brain;
     DeferredNotificationMonitor notificationMonitor;
     JournalParser journalParser = new JournalParser();
-    MissingMissionMonitor missingMissionMonitor = MissingMissionMonitor.getInstance();
+    MissingMissionMonitor missingMissionMonitor;
 
     public AppController(AppView view) {
         this.view = view;
@@ -189,49 +189,40 @@ public class AppController implements Runnable {
         SwingUtilities.invokeLater(() -> {
             this.view.setVisible(false);
             appendToLog("SYSTEM: Shutting down...");
-            SleepNoThrow.sleep(7000);
             System.exit(0);
         });
     }
 
     @Subscribe void onToggleServiceEvent(ToggleServicesEvent event) {
-        SwingUtilities.invokeLater(() -> {
+        new Thread(() -> {
             if (event.isStartSercice()) {
                 startServices();
             } else {
                 stopServices();
             }
-        });
+        }).start();
     }
 
 
     @Subscribe void onToggleSendMarketDataEvent(ToggleSendMarketDataEvent event) {
-        SwingUtilities.invokeLater(() -> {
-            systemSession.setSendMarketData(event.isEnabled());
-        });
+        SwingUtilities.invokeLater(() -> systemSession.setSendMarketData(event.isEnabled()));
     }
 
     @Subscribe void onToggleSendOutfittingDataEvent(ToggleSendOutfittingDataEvent event) {
-        SwingUtilities.invokeLater(() -> {
-            systemSession.setSendOutfittingData(event.isEnabled());
-        });
+        SwingUtilities.invokeLater(() -> systemSession.setSendOutfittingData(event.isEnabled()));
     }
 
     @Subscribe void onToggleSendShipyardDataEvent(ToggleSendShipyardDataEvent event) {
-        SwingUtilities.invokeLater(() -> {
-            systemSession.setSendShipyardDataEvent(event.isEnabled());
-        });
+        SwingUtilities.invokeLater(() -> systemSession.setSendShipyardDataEvent(event.isEnabled()));
     }
 
     @Subscribe void onToggleSendExplorationData(ToggleSendExplorationDataEvent event) {
-        SwingUtilities.invokeLater(() -> {
-            systemSession.setExplorationData(event.isEnabled());
-        });
+        SwingUtilities.invokeLater(() -> systemSession.setExplorationData(event.isEnabled()));
     }
 
 
     private void stopServices() {
-        EventBusManager.publish(new AiVoxResponseEvent("Systems offline..."));
+        EventBusManager.publish(new AiVoxResponseEvent("Shutting Down..."));
         // Stop services
         if (journalParser != null) journalParser.stop();
         journalParser = null;
@@ -252,14 +243,11 @@ public class AppController implements Runnable {
         notificationMonitor = null;
 
         missingMissionMonitor.stop();
+        missingMissionMonitor = null;
 
         systemSession.clearChatHistory();
-
         EventBusManager.publish(new ServicesStateEvent(false));
         isRunning.set(false);
-        if (controllerThread != null) {
-            controllerThread.interrupt();
-        }
     }
 
 
@@ -360,6 +348,9 @@ public class AppController implements Runnable {
         String mission_statement = playerSession.getPlayerMissionStatement();
         playerSession.setPlayerMissionStatement(mission_statement);
 
+        if (missingMissionMonitor == null) {
+            missingMissionMonitor = MissingMissionMonitor.getInstance();
+        }
         missingMissionMonitor.start();
 
         if (!systemSession.isRunningPiperTts()) {

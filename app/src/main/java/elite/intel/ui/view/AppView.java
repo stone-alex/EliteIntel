@@ -305,29 +305,26 @@ public class AppView extends JFrame implements AppViewInterface {
                 super.paintComponent(g);
             }
         };
-
-        startStopServicesButton.addActionListener(e -> {
-            EventBusManager.publish(new ToggleServicesEvent(!isServiceRunning.get()));
-        });
-
-
         styleButton(startStopServicesButton);
+        startStopServicesButton.addActionListener(
+                e -> EventBusManager.publish(new ToggleServicesEvent(!isServiceRunning.get()))
+        );
 
         showDetailedLog = new JCheckBox("Detailed Log", false);
         showDetailedLog.setVisible(false); // not used at this time
-        showDetailedLog.addActionListener(e -> {
-            EventBusManager.publish(new ToggleDetailedLogEvent(showDetailedLog.isSelected()));
-        });
+        showDetailedLog.addActionListener(
+                e -> EventBusManager.publish(new ToggleDetailedLogEvent(showDetailedLog.isSelected()))
+        );
 
         toggleStreamingModeCheckBox = new JCheckBox(LABEL_STREAMING_MODE, false);
-        toggleStreamingModeCheckBox.addActionListener(e -> {
-            EventBusManager.publish(new ToggleStreamingModeEvent(toggleStreamingModeCheckBox.isSelected()));
-        });
+        toggleStreamingModeCheckBox.addActionListener(
+                e -> EventBusManager.publish(new ToggleStreamingModeEvent(toggleStreamingModeCheckBox.isSelected()))
+        );
 
         togglePrivacyModeCheckBox = new JCheckBox(LABEL_STREAMING_MODE, false);
-        togglePrivacyModeCheckBox.addActionListener(e -> {
-            EventBusManager.publish(new TogglePrivacyModeEvent(togglePrivacyModeCheckBox.isSelected()));
-        });
+        togglePrivacyModeCheckBox.addActionListener(
+                e -> EventBusManager.publish(new TogglePrivacyModeEvent(togglePrivacyModeCheckBox.isSelected()))
+        );
 
 
         recalibrateAudioButton = new JButton("Recalibrate Audio") {

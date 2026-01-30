@@ -43,12 +43,12 @@ public class AnalyzeStellarSignalsHandler extends BaseQueryAnalyzer implements Q
                 
                 IF asked about ring mining hotspots
                 3. Rings/mining/hotspots: ONLY resource rings.
-                   "Signals found. Mining hotspots in ring 2 B: Serendibite times 3, Rhodplumsite times 1. Ring 4 A: Platinum, Gold, Silver." or "No mineable hotspots on record."
+                   "Signals found. Mining hotspots in ring 2 B: Serendibite times 3, Rhodplumsite times 1. Ring 4 A: Platinum, Gold, Silver." or "No mining hotspots on record."
                 
                 IF asked about conflict zones, battle grounds, hunting grounds, resource sites
-                    "Yes, X resource sites found" or "Yes X conflict zones found". List these points of interest.
+                    "X resource sites found" or "X conflict zones found". List these points of interest.
                     IF nothing found return "No conflict zones on record."
-                    
+                
                 ELSE
                 5. General (user is asking broadly about signals in the system)
                    Provide board summary of detected signals.
@@ -59,7 +59,6 @@ public class AnalyzeStellarSignalsHandler extends BaseQueryAnalyzer implements Q
                 - TTS-safe: letters, numbers, spaces, commas, dots, "times"
                 - 1 sentence per ring/planet group
                 - Natural order, no mix
-                - "Yes..." if data, end period, no extras.
                 """;
         List<ToJsonConvertible> signals = aggregateSignals();
         List<ToJsonConvertible> discoveredSignals = toDiscoveredSignals();

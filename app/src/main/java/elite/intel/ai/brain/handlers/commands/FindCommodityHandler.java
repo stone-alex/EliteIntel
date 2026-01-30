@@ -29,7 +29,8 @@ public class FindCommodityHandler extends CommandOperator implements CommandHand
     @Override public void handle(String action, JsonObject params, String responseText) {
 
         JsonElement key = params.get("key");
-        Integer distance = getIntSafely(params.get("max_distance").getAsString());
+        JsonElement maxDistance = params.get("max_distance");
+        Integer distance = maxDistance == null ? null : getIntSafely(maxDistance.getAsString());
         if (distance == null || distance < 1) distance = (int) playerSession.getShipLoadout().getMaxJumpRange() * 2;
         String starName = playerSession.getPrimaryStarName();
 

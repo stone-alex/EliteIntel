@@ -3,6 +3,7 @@ package elite.intel.ai.brain.handlers.commands;
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.db.managers.DestinationReminderManager;
 import elite.intel.db.managers.MissionManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.dto.MissionDto;
@@ -29,6 +30,21 @@ public class PlotRouteToMissionDestination extends CommandOperator implements Co
                 return;
             }
         }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("Head to ");
+        if(mission.getDestinationSystem() != null){
+            sb.append(mission.getDestinationStation());
+            sb.append(" Station ");
+        }
+        if(mission.getDestinationSettlement() != null){
+            sb.append(mission.getDestinationStation());
+            sb.append(" Settlement ");
+        }
+
+        DestinationReminderManager.getInstance().setDestination(
+                sb.toString()
+        );
 
         EventBusManager.publish(new AiVoxResponseEvent("Head to " + mission.getDestinationSystem() + " system."));
         RoutePlotter plotter = new RoutePlotter(this.controller);

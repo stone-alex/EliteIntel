@@ -23,6 +23,13 @@ public class FindGuadrianTechnologyBroker extends CommandOperator implements Com
         EventBusManager.publish(new AiVoxResponseEvent("Searching for " + BrokerType.GUARDIAN.getType() + " technology broker... Stand by..."));
         TradersAndBrokersSearch search = TradersAndBrokersSearch.getInstance();
         RoutePlotter routePlotter = new RoutePlotter(this.gameController);
-        routePlotter.plotRoute(search.location(null, BrokerType.HUMAN, range));
+
+        String location = search.location(null, BrokerType.HUMAN, range);
+        if (location != null) {
+            EventBusManager.publish(new AiVoxResponseEvent("No Guardian tech broker available"));
+        } else {
+            routePlotter.plotRoute(location);
+        }
+        routePlotter.plotRoute(location);
     }
 }

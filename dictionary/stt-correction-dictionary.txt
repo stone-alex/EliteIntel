@@ -335,3 +335,4 @@
 "app"="map"
 "nikolai's power"="equalize power"
 "rain"="Rhenium"
+"infection"="faction"

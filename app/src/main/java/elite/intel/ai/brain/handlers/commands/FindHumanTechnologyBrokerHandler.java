@@ -1,11 +1,11 @@
 package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
-import elite.intel.search.spansh.station.TradersAndBrokersSearch;
 import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
-import elite.intel.search.spansh.station.traderandbroker.BrokerType;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.search.spansh.station.TradersAndBrokersSearch;
+import elite.intel.search.spansh.station.traderandbroker.BrokerType;
 import elite.intel.util.json.GetNumberFromParam;
 
 public class FindHumanTechnologyBrokerHandler extends CommandOperator implements CommandHandler {
@@ -23,6 +23,11 @@ public class FindHumanTechnologyBrokerHandler extends CommandOperator implements
         EventBusManager.publish(new AiVoxResponseEvent("Searching for " + BrokerType.HUMAN.getType() + " technology broker... Stand by..."));
         TradersAndBrokersSearch search = TradersAndBrokersSearch.getInstance();
         RoutePlotter routePlotter = new RoutePlotter(this.gameController);
-        routePlotter.plotRoute(search.location(null, BrokerType.HUMAN, range));
+        String location = search.location(null, BrokerType.HUMAN, range);
+        if (location != null) {
+            EventBusManager.publish(new AiVoxResponseEvent("No Human tech broker available"));
+        } else {
+            routePlotter.plotRoute(location);
+        }
     }
 }

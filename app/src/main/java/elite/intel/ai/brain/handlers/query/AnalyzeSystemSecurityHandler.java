@@ -20,11 +20,19 @@ public class AnalyzeSystemSecurityHandler extends BaseQueryAnalyzer implements Q
         DeathsDto deathsDto = currentLocation.getDeathsDto();
         TrafficDto trafficDto = currentLocation.getTrafficDto();
 
-        String instructions = "Provided security and safety assessment based on this data";
+        String instructions = """
+                Provided security and safety assessment based on this data.
+                Power play state is indicated by powerplayState and powerplayStateControlProgress
+                However even if system does not have major power play it may have controlling faction and local government.
+                """;
         return process(
                 new AiDataStruct(instructions,
                         new DataDto(
                                 currentLocation.getSecurity(),
+                                currentLocation.getStationFaction(),
+                                currentLocation.getPopulation(),
+                                currentLocation.getSecondEconomy(),
+                                currentLocation.getGovernment(),
                                 currentLocation.getPowerplayState(),
                                 currentLocation.getControllingPower(),
                                 currentLocation.getPowerplayStateControlProgress(),
@@ -40,6 +48,10 @@ public class AnalyzeSystemSecurityHandler extends BaseQueryAnalyzer implements Q
 
     record DataDto(
                 String security,
+                String faction,
+                Long population,
+                String economy,
+                String government,
                 String powerplayState,
                 String controllingPower,
                 double powerplayStateControlProgress,

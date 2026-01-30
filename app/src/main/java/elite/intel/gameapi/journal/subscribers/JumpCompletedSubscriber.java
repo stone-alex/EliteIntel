@@ -1,11 +1,9 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.dao.RouteMonetisationDao.MonetisationTransaction;
-import elite.intel.db.managers.LocationManager;
-import elite.intel.db.managers.MonetizeRouteManager;
-import elite.intel.db.managers.ShipRouteManager;
-import elite.intel.db.managers.TradeRouteManager;
+import elite.intel.db.managers.*;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.gamestate.dtos.NavRouteDto;
@@ -38,6 +36,7 @@ public class JumpCompletedSubscriber {
     private final LocationManager locationManager = LocationManager.getInstance();
     private final ShipRouteManager shipRoute = ShipRouteManager.getInstance();
     private final MonetizeRouteManager monetizeRouteManager = MonetizeRouteManager.getInstance();
+    private final DestinationReminderManager destinationReminderManager = DestinationReminderManager.getInstance();
 
 
     @Subscribe
@@ -57,6 +56,11 @@ public class JumpCompletedSubscriber {
             EventBusManager.publish(new SensorDataEvent("Head to " + station.getDestinationStationName() + " sell " + station.getDestinationCommodity(), "Remind User"));
         }
 
+        String reminder = destinationReminderManager.getReminderAsJson();
+        if (reminder != null) {
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent(reminder));
+            destinationReminderManager.clear();
+        }
 
         LocationDto primaryStar = locationManager.findBySystemAddress(event.getSystemAddress(), event.getBodyId());
         primaryStar.setBodyId(event.getBodyId());

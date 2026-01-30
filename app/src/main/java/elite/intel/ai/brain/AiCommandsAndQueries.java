@@ -166,7 +166,7 @@ public class AiCommandsAndQueries {
             Map.entry(" what time is it ", TIME_IN_ZONE.getAction()),
             Map.entry(" run biome analysis, analyze biome for planet/moon X (parameter example: \"key\":\"2a\")", PLANET_BIOME_ANALYSIS.getAction()),
             Map.entry(" remind me about X ", REMINDER.getAction()),
-            Map.entry(" what missions do we have, are there any outstanding missions, do we have any active missions, what station are we looking for, questions about missions that are not pirateMassacre related ", ANALYZE_MISSIONS.getAction()),
+            Map.entry(" what missions do we have, are there any outstanding missions, do we have any active missions", ANALYZE_MISSIONS.getAction()),
             Map.entry(" if nothing else matches use this ", GENERAL_CONVERSATION.getAction())
     );
 

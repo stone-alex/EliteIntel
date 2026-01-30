@@ -3,9 +3,12 @@ package elite.intel.gameapi.journal.subscribers;
 import com.google.common.eventbus.Subscribe;
 import elite.intel.db.dao.MaterialsDao;
 import elite.intel.db.util.Database;
+import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.data.EDMaterialCaps;
 import elite.intel.gameapi.journal.events.MaterialsEvent;
 import elite.intel.search.edsm.dto.MaterialsType;
+import elite.intel.ui.event.AppLogEvent;
+import elite.intel.util.StringUtls;
 
 import java.util.List;
 
@@ -35,7 +38,9 @@ public class MaterialsEventSubscriber {
 
     private void saveMaterial(MaterialsEvent.Material material, MaterialsType type) {
         Database.withDao(MaterialsDao.class, dao -> {
-            dao.upsert(material.getName(), type.getType(), material.getCount(), EDMaterialCaps.getMax(material.getName()));
+            String materialName = StringUtls.capitalizeWords(material.getName());
+            dao.upsert(materialName, type.getType(), material.getCount(), EDMaterialCaps.getMax(material.getName()));
+            EventBusManager.publish(new AppLogEvent("Processed " + materialName + " " + material.getCount() + " units."));
             return Void.class;
         });
     }

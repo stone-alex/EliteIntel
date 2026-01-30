@@ -134,7 +134,7 @@ public class AiCommandsAndQueries {
             Map.entry(" what is our trade profile, summarize trade profile, analyze tade profile", TRADE_PROFILE_ANALYSIS.getAction()),
             Map.entry(" how far is planet <planet name>, how far is station <station name> ", DISTANCE_TO_BODY.getAction()),
             Map.entry(" analyze X we just scanned, tell me about this last scan,  ", LAST_SCAN_ANALYSIS.getAction()),
-            Map.entry(" check inventory how much X do we have, do we have any Y in our inventory ", MATERIALS_INVENTORY.getAction()),
+            Map.entry(" check inventory how much X do we have, do we have any Y in our inventory, do we have any Zirconium ", MATERIALS_INVENTORY.getAction()),
             Map.entry(" geology questions, percentage of material X, name X common materials on this planet, name X most rare materials on this planet ", PLANET_MATERIALS.getAction()),
             Map.entry(" what are potential profits from exploration data ", EXPLORATION_PROFITS.getAction()),
             Map.entry(" queries about current location, where are we, what is the temperature on this planet, how long does the day last here ", CURRENT_LOCATION.getAction()),

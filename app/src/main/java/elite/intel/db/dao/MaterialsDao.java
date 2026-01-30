@@ -35,10 +35,10 @@ public interface MaterialsDao {
     @SqlQuery("SELECT materialName FROM materials WHERE LOWER(materialName) = LOWER(:materialName) LIMIT 1")
     String getOriginalCase(@Bind("materialName") String materialName);
 
-    @SqlQuery("SELECT * FROM materials WHERE materialName = :materialName")
+    @SqlQuery("SELECT * FROM materials WHERE LOWER(materialName) = LOWER(:materialName)")
     Material findByExactName(String materialName);
 
-    @SqlQuery("SELECT * FROM materials WHERE materialName LIKE :pattern")
+    @SqlQuery("SELECT * FROM materials WHERE LOWER(materialName) LIKE LOWER(:pattern)")
     List<Material> search(@Bind("pattern") String pattern);
 
     @SqlQuery("SELECT * FROM materials WHERE materialType = :materialType")

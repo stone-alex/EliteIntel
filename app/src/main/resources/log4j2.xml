@@ -11,13 +11,25 @@
             <PatternLayout pattern="${logPattern}"/>
         </Console>
         <RollingFile name="rollingFile" fileName="${logPath}/${rollingFileName}.log" filePattern="${logPath}/${rollingFileName}_%d{yyyy-MM-dd}.log" immediateFlush="true">
-        <PatternLayout pattern="${logPattern}"/>
+            <PatternLayout pattern="${logPattern}"/>
             <Policies>
                 <OnStartupTriggeringPolicy/>
                 <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
                 <SizeBasedTriggeringPolicy size="1MB"/>
             </Policies>
             <DefaultRolloverStrategy max="7"/>
+        </RollingFile>
+        <RollingFile name="unknownEnumFile"
+                     fileName="${logPath}/unknown-enum.log"
+                     filePattern="${logPath}/unknown-enum_%d{yyyy-MM-dd}.log"
+                     immediateFlush="true">
+            <PatternLayout pattern="${logPattern}"/>
+            <Policies>
+                <OnStartupTriggeringPolicy/>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="1MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="5"/>
         </RollingFile>
     </Appenders>
 
@@ -55,6 +67,12 @@
         <Logger name="elite.intel.db" level="error"/>
         <Logger name="elite.intel.search.spansh.market" level="info"/>
         <Logger name="elite.intel.ai.brain.handlers" level="info"/>
+
+        <Logger name="elite.intel.util.UnknownEnumLogger"
+                level="info"
+                additivity="false">
+            <AppenderRef ref="unknownEnumFile"/>
+        </Logger>
 
         <!-- Root logger -->
         <Root level="debug">

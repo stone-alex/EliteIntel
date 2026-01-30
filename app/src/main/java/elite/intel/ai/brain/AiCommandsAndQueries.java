@@ -64,7 +64,7 @@ public class AiCommandsAndQueries {
             Map.entry(" open cargo bay, open cargo scoop, open cargo door, open cargo ", OPEN_CARGO_SCOOP.getAction()),
             Map.entry(" close cargo bay, close cargo scoop, close cargo door, close cargo ", CLOSE_CARGO_SCOOP.getAction()),
             Map.entry(" retract hardpoints, stove weapons ", RETRACT_HARDPOINTS.getAction()),
-            Map.entry(" deploy hardpoints, weapons hot, deploy weapons ", DEPLOY_HARDPOINTS.getAction()),
+            Map.entry(" deploy hardpoints, hot, deploy weapons ", DEPLOY_HARDPOINTS.getAction()),
             Map.entry(" deploy landing gear, landing gear down ", DEPLOY_LANDING_GEAR.getAction()),
             Map.entry(" retract landing gear, landing gear up ", RETRACT_LANDING_GEAR.getAction()),
             Map.entry(" **lets go**, lets get out of here, take us to hyperspace, enter hyperspace, go to next way point ", JUMP_TO_HYPERSPACE.getAction()),

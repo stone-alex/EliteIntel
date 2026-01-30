@@ -1,6 +1,7 @@
 package elite.intel.ai.brain.ollama;
 
 import com.google.gson.JsonObject;
+import elite.intel.ai.brain.BaseAiClient;
 import elite.intel.ai.brain.Client;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;

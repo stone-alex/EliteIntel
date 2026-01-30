@@ -36,6 +36,7 @@ public class PiperTTS implements MouthInterface {
     private static volatile PiperTTS instance;
     private final PlayerSession playerSession = PlayerSession.getInstance();
     private final AtomicBoolean interruptRequested = new AtomicBoolean(false);
+    private final AtomicBoolean canBeInterrupted = new AtomicBoolean(true);
     private final AtomicReference<SourceDataLine> currentLine = new AtomicReference<>();
     private final HttpClient httpClient = HttpClient.newHttpClient();
     private final BlockingQueue<VocalisationRequestEvent> queue = new LinkedBlockingQueue<>();
@@ -121,6 +122,8 @@ public class PiperTTS implements MouthInterface {
 
     @Override
     public void interruptAndClear() {
+        if(!canBeInterrupted.get()) return;
+
         queue.clear();
         interruptRequested.set(true);
         SourceDataLine line = currentLine.get();
@@ -142,6 +145,7 @@ public class PiperTTS implements MouthInterface {
 
     @Override
     public void onVoiceProcessEvent(VocalisationRequestEvent event) {
+        canBeInterrupted.set(event.canBeInterrupted());
         if (running) {
             queue.offer(event);
         }

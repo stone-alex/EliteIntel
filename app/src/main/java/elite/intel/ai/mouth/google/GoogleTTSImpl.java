@@ -44,6 +44,7 @@ public class GoogleTTSImpl implements MouthInterface {
     private volatile boolean running;
     private SourceDataLine persistentLine; // Add persistent line
     private final SystemSession systemSession = SystemSession.getInstance();
+    private final AtomicBoolean canBeInterrupted = new AtomicBoolean(true);
 
     private GoogleTTSImpl() {
         EventBusManager.register(this);
@@ -132,6 +133,8 @@ public class GoogleTTSImpl implements MouthInterface {
      */
     @Override
     public synchronized void interruptAndClear() {
+        if(!canBeInterrupted.get()) return;
+
         voiceQueue.clear();
         interruptRequested.set(true);
         SourceDataLine line = currentLine.get();
@@ -154,7 +157,7 @@ public class GoogleTTSImpl implements MouthInterface {
     }
 
     @Subscribe @Override public void onVoiceProcessEvent(VocalisationRequestEvent event) {
-
+        canBeInterrupted.set(event.canBeInterrupted());
         log.debug("Received VoiceProcessEvent: text='{}', useRandom={}", event.getText(), event.useRandomVoice());
         if (event.getText() == null || event.getText().isEmpty()) {
             return;
@@ -216,6 +219,7 @@ public class GoogleTTSImpl implements MouthInterface {
         closePersistentLine();
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean openPersistentLine() {
         try {
             AudioFormat format = new AudioFormat(24000, 16, 1, true, false);

@@ -12,52 +12,48 @@ public class VocalisationRouter {
     /// --- always pass through
     @Subscribe
     public void onAiVoxResponseEvent(AiVoxResponseEvent event) {
-        EventBusManager.publish(new VocalisationRequestEvent(event.getText(), AiVoxResponseEvent.class));
+        EventBusManager.publish(new VocalisationRequestEvent(event.getText(), AiVoxResponseEvent.class, true));
     }
 
     @Subscribe
     public void onMissionCriticalAnnouncementEvent(MissionCriticalAnnouncementEvent event) {
-        EventBusManager.publish(new VocalisationRequestEvent(event.getText(), MissionCriticalAnnouncementEvent.class));
+        EventBusManager.publish(new VocalisationRequestEvent(event.getText(), MissionCriticalAnnouncementEvent.class, false));
     }
 
-    @Subscribe
-    public void onYtEvent(YtVoxEvent event) {
-        EventBusManager.publish(new VocalisationRequestEvent(event.getText(), event.useRandomVoice(), true, YtVoxEvent.class));
-    }
 
     /// --- on/off based on user settings
     @Subscribe
     public void onNavigationVocalisationRequest(NavigationVocalisationEvent event) {
         if (playerSession.isNavigationAnnouncementOn()) {
-            EventBusManager.publish(new VocalisationRequestEvent(event.getText(), NavigationVocalisationEvent.class));
+            EventBusManager.publish(new VocalisationRequestEvent(event.getText(), NavigationVocalisationEvent.class, true));
         }
     }
 
     @Subscribe
     public void onDiscoveryAnnouncementEvent(DiscoveryAnnouncementEvent event) {
         if (playerSession.isDiscoveryAnnouncementOn()) {
-            EventBusManager.publish(new VocalisationRequestEvent(event.getText(), DiscoveryAnnouncementEvent.class));
+            EventBusManager.publish(new VocalisationRequestEvent(event.getText(), DiscoveryAnnouncementEvent.class, true));
         }
     }
 
     @Subscribe
     public void onMiningAnnouncementEvent(MiningAnnouncementEvent event) {
         if (playerSession.isMiningAnnouncementOn()) {
-            EventBusManager.publish(new VocalisationRequestEvent(event.getText(), MiningAnnouncementEvent.class));
+            EventBusManager.publish(new VocalisationRequestEvent(event.getText(), MiningAnnouncementEvent.class, true));
         }
     }
 
     @Subscribe
     public void onRouteAnnouncementEvent(RouteAnnouncementEvent event) {
         if (playerSession.isRouteAnnouncementOn()) {
-            EventBusManager.publish(new VocalisationRequestEvent(event.getText(), RouteAnnouncementEvent.class));
+            EventBusManager.publish(new VocalisationRequestEvent(event.getText(), RouteAnnouncementEvent.class, true));
         }
     }
 
     @Subscribe
     public void onRadioTransmissionEvent(RadioTransmissionEvent event) {
         if (playerSession.isRadioTransmissionOn()) {
-            EventBusManager.publish(new VocalisationRequestEvent(event.getText(), RadioTransmissionEvent.class));
+            EventBusManager.publish(new VocalisationRequestEvent(event.getText(), RadioTransmissionEvent.class, true));
         }
     }
 }

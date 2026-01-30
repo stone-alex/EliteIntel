@@ -84,7 +84,6 @@ public class ShipTargetedEventSubscriber {
             if (playerSession.getShipScan(key) == null || playerSession.getShipScan(key).isEmpty()) {
                 //new scan
                 playerSession.putShipScan(key, data);
-                EventBusManager.publish(new TTSInterruptEvent());
                 EventBusManager.publish(new MissionCriticalAnnouncementEvent(info.toString()));
             }
         }

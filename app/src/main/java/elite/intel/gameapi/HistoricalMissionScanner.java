@@ -40,6 +40,7 @@ public class HistoricalMissionScanner {
             journalFiles = Files.list(journalDir) // <- journals are never in resources
                     .filter(p -> p.toString().endsWith(".log"))
                     .sorted(Comparator.comparingLong(p -> p.toFile().lastModified()))  // <- Scan oldest first
+                    .limit(4)
                     .toList();
         } catch (IOException e) {
             log.error("Failed to list journal files", e);

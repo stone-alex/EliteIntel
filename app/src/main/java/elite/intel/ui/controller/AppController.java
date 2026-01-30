@@ -56,7 +56,7 @@ public class AppController implements Runnable {
         this.view = view;
         EventBusManager.register(this);
         this.controllerThread = new Thread(this);
-        this.isRunning.set(true);
+        this.isRunning.set(false);
         this.controllerThread.start();
         startIfWeHaveCredentials();
         checkForUpdates();
@@ -222,6 +222,8 @@ public class AppController implements Runnable {
 
 
     private void stopServices() {
+        if(!isRunning.get()) return;
+
         EventBusManager.publish(new AiVoxResponseEvent("Shutting Down..."));
         // Stop services
         if (journalParser != null) journalParser.stop();
@@ -315,6 +317,10 @@ public class AppController implements Runnable {
 
 
     private void startServices() {
+        if(isRunning.get()) {
+            return;
+        }
+
         systemSession.clearChatHistory();
         if (journalParser == null) {
             journalParser = new JournalParser();
@@ -362,6 +368,7 @@ public class AppController implements Runnable {
             appendToLog("Available profiles:\n" + listCadences());
         }
 
+        isRunning.set(true);
         EventBusManager.publish(new ServicesStateEvent(true));
         KeyBindCheck.getInstance().check();
     }

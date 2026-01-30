@@ -307,7 +307,10 @@ public class AppView extends JFrame implements AppViewInterface {
         };
         styleButton(startStopServicesButton);
         startStopServicesButton.addActionListener(
-                e -> EventBusManager.publish(new ToggleServicesEvent(!isServiceRunning.get()))
+                e -> {
+                    EventBusManager.publish(new ToggleServicesEvent(!isServiceRunning.get()));
+                    startStopServicesButton.setEnabled(false);
+                }
         );
 
         showDetailedLog = new JCheckBox("Detailed Log", false);
@@ -1109,9 +1112,11 @@ public class AppView extends JFrame implements AppViewInterface {
             SleepNoThrow.sleep(1000);
             isServiceRunning.set(event.isRunning());
             startStopServicesButton.setText(event.isRunning() ? "Stop Services" : "Start Services");
+            startStopServicesButton.setEnabled(true);
             recalibrateAudioButton.setEnabled(event.isRunning());
             togglePrivacyModeCheckBox.setEnabled(event.isRunning());
             toggleStreamingModeCheckBox.setEnabled(event.isRunning());
+
         });
     }
 

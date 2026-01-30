@@ -2,19 +2,10 @@ package elite.intel.ai.brain.commons;
 
 import com.google.gson.*;
 import elite.intel.ai.brain.Client;
-import elite.intel.gameapi.EventBusManager;
-import elite.intel.session.SystemSession;
-import elite.intel.ui.event.AppLogEvent;
-import elite.intel.util.json.GsonFactory;
-import elite.intel.util.json.LlmMetadata;
-import elite.intel.util.json.OllamaMetadata;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.nio.charset.StandardCharsets;
-import java.util.Scanner;
 
 public abstract class AiEndPoint {
 
@@ -36,18 +27,6 @@ public abstract class AiEndPoint {
             sanitized.add(sanitizedObj);
         }
         return sanitized;
-    }
-
-
-    public JsonObject processServerError(HttpURLConnection conn, int responseCode, Client client) throws IOException {
-        String errorResponse = "";
-        try (Scanner scanner = new Scanner(conn.getErrorStream(), StandardCharsets.UTF_8)) {
-            errorResponse = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
-        } catch (Exception e) {
-            log.warn("Failed to read error stream: {}", e.getMessage());
-        }
-        log.error("AI API error: {} - {}", responseCode, conn.getResponseMessage() + " " + errorResponse);
-        return client.createErrorResponse("API error: " + responseCode);
     }
 
 

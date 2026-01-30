@@ -29,7 +29,7 @@ public class ShipyardSubscriber {
                 header,
                 message
         );
-        if (event.getPriceList().size() > 0) {
+        if (!event.getPriceList().isEmpty()) {
             EdDnClient.getInstance().upload(payload);
         }
     }

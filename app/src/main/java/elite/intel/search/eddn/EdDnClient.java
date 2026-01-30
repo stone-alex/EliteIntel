@@ -94,7 +94,7 @@ public class EdDnClient {
         context.destroy();
     }
 
-    public <T> boolean upload(EddnPayload<T> payload) {
+    public <T> void upload(EddnPayload<T> payload) {
         try {
             String json = GsonFactory.getGson().toJson(payload);
             HttpRequest request = HttpRequest.newBuilder()
@@ -104,10 +104,9 @@ public class EdDnClient {
                     .build();
 
             HttpResponse<String> resp = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            return resp.statusCode() == 200;
+            resp.statusCode();
         } catch (Exception e) {
-            log.error("Failed to upload payload to EDDN", e);
-            return false;
+            log.warn("Failed to upload payload to EDDN: {}", e.getMessage());
         }
     }
 }

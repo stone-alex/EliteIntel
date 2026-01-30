@@ -4,7 +4,11 @@ package elite.intel.ai.brain.xai;
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.Client;
 import elite.intel.ai.brain.BaseAiClient;
+import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.SystemSession;
+import elite.intel.ui.event.AppLogEvent;
+import elite.intel.util.json.GsonFactory;
+import elite.intel.util.json.LlmMetadata;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -61,7 +65,10 @@ public class GrokClient extends BaseAiClient implements Client {
     }
 
     @Override public JsonObject sendJsonRequest(String request) {
-        return super.sendJsonRequest(request, getHttpURLConnection());
+        JsonObject response = super.sendJsonRequest(request, getHttpURLConnection());
+        LlmMetadata meta = GsonFactory.getGson().fromJson(response, LlmMetadata.class);
+        EventBusManager.publish(new AppLogEvent("LLM: " + meta));
+        return response;
     }
 
 

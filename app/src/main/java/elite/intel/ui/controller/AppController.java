@@ -13,7 +13,10 @@ import elite.intel.ai.mouth.AiVoices;
 import elite.intel.ai.mouth.MouthInterface;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
-import elite.intel.gameapi.*;
+import elite.intel.gameapi.AuxiliaryFilesMonitor;
+import elite.intel.gameapi.DeferredNotificationMonitor;
+import elite.intel.gameapi.EventBusManager;
+import elite.intel.gameapi.JournalParser;
 import elite.intel.gameapi.journal.MissingMissionMonitor;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
@@ -39,6 +42,8 @@ public class AppController implements Runnable {
     private final Timer logTypewriterTimer = new Timer(5, null);
     private final StringBuilder logBuffer = new StringBuilder();
     private final AtomicBoolean typewriterActive = new AtomicBoolean(false);
+    private final Thread controllerThread;
+    private final AppView view;
     AuxiliaryFilesMonitor fileMonitor = new AuxiliaryFilesMonitor();
     EarsInterface ears;
     MouthInterface mouth;
@@ -46,8 +51,6 @@ public class AppController implements Runnable {
     DeferredNotificationMonitor notificationMonitor;
     JournalParser journalParser = new JournalParser();
     MissingMissionMonitor missingMissionMonitor = MissingMissionMonitor.getInstance();
-    private final Thread controllerThread;
-    private final AppView view;
 
     public AppController(AppView view) {
         this.view = view;
@@ -230,7 +233,7 @@ public class AppController implements Runnable {
     private void stopServices() {
         EventBusManager.publish(new AiVoxResponseEvent("Systems offline..."));
         // Stop services
-        journalParser.stop();
+        if (journalParser != null) journalParser.stop();
         journalParser = null;
 
         fileMonitor.stop();
@@ -349,7 +352,7 @@ public class AppController implements Runnable {
         }
         brain.start();
 
-        if(notificationMonitor == null){
+        if (notificationMonitor == null) {
             notificationMonitor = DeferredNotificationMonitor.getInstance();
         }
         notificationMonitor.start();
@@ -360,12 +363,12 @@ public class AppController implements Runnable {
         missingMissionMonitor.start();
 
         if (!systemSession.isRunningPiperTts()) {
-            appendToLog("Available voices: " + listVoices());
+            appendToLog("Available voices:\n" + listVoices());
         }
 
         if (!systemSession.isRunningLocalLLM()) {
-            appendToLog("Available personalities: " + listPersonalities());
-            appendToLog("Available profiles: " + listCadences());
+            appendToLog("Available personalities:\n" + listPersonalities());
+            appendToLog("Available profiles:\n" + listCadences());
         }
 
         EventBusManager.publish(new ServicesStateEvent(true));

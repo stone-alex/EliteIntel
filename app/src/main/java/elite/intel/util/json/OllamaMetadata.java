@@ -2,8 +2,6 @@ package elite.intel.util.json;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.StringJoiner;
-
 public record OllamaMetadata(
         String model,
         @SerializedName("prompt_eval_count") int promptTokens,
@@ -23,12 +21,10 @@ public record OllamaMetadata(
 
     @Override
     public String toString() {
-        return new StringJoiner(", ", OllamaMetadata.class.getSimpleName() + "[", "]")
-                .add("model='" + model + "'")
-                .add("prompt=" + promptTokens)
-                .add("completion=" + completionTokens)
-                .add("total=" + totalTokens())
-                .add("speed≈" + String.format("%.1f", tokensPerSecond()) + " t/s")
-                .toString();
+        return model + " " +
+                " | Prompt Tokens: " + promptTokens +
+                " | Completion: " + completionTokens +
+                " | Total: " + totalTokens() +
+                " | Speed≈" + String.format("%.1f", tokensPerSecond()) + " t/s";
     }
 }

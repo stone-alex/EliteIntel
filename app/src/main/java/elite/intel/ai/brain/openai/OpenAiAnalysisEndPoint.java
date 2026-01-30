@@ -36,7 +36,7 @@ public class OpenAiAnalysisEndPoint extends AiEndPoint implements AiAnalysisInte
             HttpURLConnection conn = client.getHttpURLConnection();
             String systemPrompt = ApiFactory.getInstance().getAiPromptFactory().generateAnalysisPrompt();
 
-            JsonObject request = client.createPrompt(OpenAiClient.MODEL_GPT_4_1_MINI, 1);
+            JsonObject request = client.createPrompt(OpenAiClient.MODEL_GPT, 1);
 
             JsonObject systemMessaage1 = new JsonObject();
             systemMessaage1.addProperty("role", AIConstants.ROLE_SYSTEM);

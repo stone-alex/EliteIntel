@@ -84,12 +84,12 @@ public final class EdsmUploader {
         try {
             HttpResponse<String> postResponse = client.send(req, HttpResponse.BodyHandlers.ofString());
             if (postResponse.statusCode() == 200) {
-                String message = "\tEDSM: " + batch.size() + " events uploaded";
-                EventBusManager.publish(new AppLogEvent(message));
+//                String message = "\tEDSM: " + batch.size() + " events uploaded";
+//                EventBusManager.publish(new AppLogEvent(message));
                 log.info("EDSM: {} events uploaded", batch.size());
             } else if (postResponse.statusCode() != 200) {
-                String message = "EDSM upload failed with status: " + postResponse.statusCode();
-                EventBusManager.publish(new AppLogEvent(message));
+//                String message = "EDSM upload failed with status: " + postResponse.statusCode();
+//                EventBusManager.publish(new AppLogEvent(message));
                 log.warn("POST to EDSM failed with status: {}", postResponse.statusCode());
             }
         } catch (IOException | InterruptedException e) {

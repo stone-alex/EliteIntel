@@ -34,7 +34,7 @@ public class MarketSubscriber {
                 msg
         );
 
-        if (marketEvent.getItems().size() > 0) {
+        if (!marketEvent.getItems().isEmpty()) {
             EdDnClient.getInstance().upload(payload);
         }
     }

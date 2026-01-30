@@ -3,8 +3,12 @@ package elite.intel.ai.brain.ollama;
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.BaseAiClient;
 import elite.intel.ai.brain.Client;
+import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
+import elite.intel.ui.event.AppLogEvent;
+import elite.intel.util.json.GsonFactory;
+import elite.intel.util.json.OllamaMetadata;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -79,7 +83,10 @@ public class OllamaClient extends BaseAiClient implements Client {
     }
 
     @Override public JsonObject sendJsonRequest(String request) {
-        return super.sendJsonRequest(request, getHttpURLConnection());
+        JsonObject response = super.sendJsonRequest(request, getHttpURLConnection());
+        OllamaMetadata metadata = GsonFactory.getGson().fromJson(response, OllamaMetadata.class);
+        EventBusManager.publish(new AppLogEvent("AI: Prompt " + metadata));
+        return response;
     }
 
     @Override

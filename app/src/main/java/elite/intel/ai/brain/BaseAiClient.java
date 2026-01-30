@@ -20,7 +20,7 @@ public class BaseAiClient {
 
     public JsonObject createErrorResponse(String message) {
         JsonObject err = new JsonObject();
-        err.addProperty("response_text", message);
+        err.addProperty(AIConstants.PROPERTY_RESPONSE_TEXT, message);
         return err;
     }
 

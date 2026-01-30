@@ -33,7 +33,7 @@ public class OutfittingSubscriber {
                 message
         );
 
-        if(event != null && event.getItems() != null && event.getItems().size() > 0) {
+        if(event.getItems() != null && !event.getItems().isEmpty()) {
             EdDnClient.getInstance().upload(payload);
         }
 

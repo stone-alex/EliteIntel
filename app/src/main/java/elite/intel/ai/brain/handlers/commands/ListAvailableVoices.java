@@ -24,6 +24,6 @@ public class  ListAvailableVoices implements CommandHandler {
                 voiceNames.add(voice.getName());
             }
         }
-        EventBusManager.publish(new AiVoxResponseEvent("Available voices: " + String.join(", ", voiceNames)));
+        EventBusManager.publish(new AiVoxResponseEvent("Available voices:\n" + String.join(", ", voiceNames)));
     }
 }

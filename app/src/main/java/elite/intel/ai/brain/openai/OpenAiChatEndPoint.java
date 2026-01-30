@@ -33,7 +33,7 @@ public class OpenAiChatEndPoint extends AiEndPoint implements AIChatInterface {
             // Sanitize messages
             JsonArray sanitizedMessages = sanitizeJsonArray(messages);
             Client client = OpenAiClient.getInstance();
-            JsonObject prompt = client.createPrompt(OpenAiClient.MODEL_GPT_4_1_MINI, 1);
+            JsonObject prompt = client.createPrompt(OpenAiClient.MODEL_GPT, 1);
             prompt.add("messages", sanitizedMessages);
 
             jsonString = GsonFactory.getGson().toJson(prompt);

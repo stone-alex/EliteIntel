@@ -37,7 +37,7 @@ public class OpenAiQueryEndPoint extends AiEndPoint implements AiQueryInterface 
             Client client = OpenAiClient.getInstance();
             HttpURLConnection conn = client.getHttpURLConnection();
 
-            JsonObject promp = client.createPrompt(OpenAiClient.MODEL_GPT_4_1_MINI, 1);
+            JsonObject promp = client.createPrompt(OpenAiClient.MODEL_GPT, 1);
             promp.add("messages", sanitizedMessages);
 
             jsonString = GsonFactory.getGson().toJson(promp);

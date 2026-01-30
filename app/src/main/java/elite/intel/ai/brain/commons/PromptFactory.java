@@ -12,13 +12,13 @@ import java.util.Objects;
 
 public class PromptFactory implements AiPromptFactory {
 
-    private final SystemSession systemSession = SystemSession.getInstance();
     private static final PromptFactory INSTANCE = new PromptFactory();
     private static final String JSON_FORMAT = """
             Always output JSON:
             {"type": "command|query", "response_text": "TTS output", "action": "action_name|query_name", "params": {"key": "value"}, "expect_followup": boolean} 
             action must match provided command or query. They key for value is always 'key'. 
             """;
+    private final SystemSession systemSession = SystemSession.getInstance();
     private final AiCommandsAndQueries commandsAndQueries = AiCommandsAndQueries.getInstance();
 
     private PromptFactory() {
@@ -92,7 +92,7 @@ public class PromptFactory implements AiPromptFactory {
                 Only use action names exactly as they appear in the lists.
                 Output pure JSON — no explanations, no markdown, no extra text.
                 """);
-        if(!systemSession.isRunningLocalLLM() && !systemSession.isRunningPiperTts()){
+        if (!systemSession.isRunningLocalLLM() && !systemSession.isRunningPiperTts()) {
             sb.append(" Behavior: ");
             sb.append(aiPersonality.getBehaviorClause());
             sb.append(aiCadence.getCadenceClause());

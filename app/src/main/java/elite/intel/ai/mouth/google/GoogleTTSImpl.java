@@ -83,7 +83,7 @@ public class GoogleTTSImpl implements MouthInterface {
         processingThread.start();
         log.info("VoiceGenerator started");
         if (systemSession.getRmsThresholdHigh() != null) {
-            EventBusManager.publish(new AppLogEvent("Speech enabled."));
+            EventBusManager.publish(new AppLogEvent("AI: Speech enabled."));
         }
     }
 

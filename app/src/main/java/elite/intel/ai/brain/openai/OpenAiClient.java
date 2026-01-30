@@ -3,7 +3,11 @@ package elite.intel.ai.brain.openai;
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.Client;
 import elite.intel.ai.brain.BaseAiClient;
+import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.SystemSession;
+import elite.intel.ui.event.AppLogEvent;
+import elite.intel.util.json.GsonFactory;
+import elite.intel.util.json.LlmMetadata;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -13,7 +17,7 @@ import java.net.URL;
 public class OpenAiClient extends BaseAiClient implements Client {
 
     //public static final String MODEL_GPT_4_1_MINI = "gpt-4.1-mini";
-    public static final String MODEL_GPT_4_1_MINI = "gpt-5.2";
+    public static final String MODEL_GPT = "gpt-5.2";
     private static final String API_URL = "https://api.openai.com/v1/chat/completions";
     //NOTE: Do not use nano LLM. It can't properly map commands or queries.
     private static OpenAiClient instance;
@@ -49,7 +53,10 @@ public class OpenAiClient extends BaseAiClient implements Client {
     }
 
     @Override public JsonObject sendJsonRequest(String request) {
-        return super.sendJsonRequest(request, getHttpURLConnection());
+        JsonObject response = super.sendJsonRequest(request, getHttpURLConnection());
+        LlmMetadata meta = GsonFactory.getGson().fromJson(response, LlmMetadata.class);
+        EventBusManager.publish(new AppLogEvent("LLM: " + meta));
+        return response;
     }
 
     @Override public HttpURLConnection getHttpURLConnection() {

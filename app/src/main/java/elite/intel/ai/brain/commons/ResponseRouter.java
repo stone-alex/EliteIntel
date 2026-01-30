@@ -85,34 +85,4 @@ public abstract class ResponseRouter {
         log.debug("Expected object for key '{}' but got {}", key, el);
         return new JsonObject();
     }
-/*
-
-    private String affirmative() {
-        List<String> result = Arrays.stream(
-                new String[]{"yes", "affirmative", "ay! ay!", "certainly", "of course", "right away"}
-        ).filter(Objects::nonNull).collect(Collectors.toList());
-        if (result.isEmpty()) {
-            return "Commander";
-        }
-
-        return result.get(new Random().nextInt(result.size()));
-    }
-
-    private String player() {
-        String alternativeName = playerSession.getAlternativeName();
-        String playerName = trimToNull(alternativeName) != null ? alternativeName : playerSession.getPlayerName();
-        String playerTitle = trimToNull(playerSession.getPlayerTitle()) != null ? "Commander" : playerSession.getPlayerTitle();
-        String playerMilitaryRank = playerSession.getPlayerHighestMilitaryRank();
-        String playerHonorific = Ranks.getPlayerHonorific();
-
-        List<String> result = Arrays.stream(
-                new String[]{alternativeName, playerHonorific, playerName, playerTitle, playerMilitaryRank}
-        ).filter(Objects::nonNull).collect(Collectors.toList());
-        if (result.isEmpty()) {
-            return "Commander";
-        }
-
-        return result.get(new Random().nextInt(result.size()));
-    }
-*/
 }

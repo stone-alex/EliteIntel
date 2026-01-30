@@ -1,6 +1,8 @@
 package elite.intel.util;
 
+import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.SystemSession;
+import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.OsDetector.OS;
 
 import java.io.IOException;
@@ -42,13 +44,13 @@ public class Updater {
      * Executes an update operation asynchronously by extracting the appropriate
      * platform-specific update script to a temporary directory, running it, and managing the
      * temporary files. The method handles platform-specific commands for Windows and Linux.
-     *
+     * <p>
      * The update operation invokes a script to potentially modify or update local files
      * based on the current application setup.
      *
      * @return a {@code CompletableFuture<Boolean>} that completes with {@code true} if the
-     *         update process starts successfully, or {@code false} if an error occurs during
-     *         the setup or execution of the process.
+     * update process starts successfully, or {@code false} if an error occurs during
+     * the setup or execution of the process.
      */
     public static CompletableFuture<Boolean> performUpdateAsync() {
         return CompletableFuture.supplyAsync(() -> {
@@ -115,30 +117,30 @@ public class Updater {
      * with the remote version fetched from a predefined resource URL.
      *
      * @return a {@code CompletableFuture<Boolean>} that completes with {@code true} if a newer version
-     *         is available, or {@code false} if the local version is up-to-date or an error occurs during the check.
+     * is available, or {@code false} if the local version is up-to-date or an error occurs during the check.
      */
     public static CompletableFuture<Boolean> isUpdateAvailableAsync() {
         return CompletableFuture.supplyAsync(() -> {
             SystemSession.getInstance().readVersionFromResources();
             String local = normalizeVersion(SystemSession.getInstance().readVersionFromResources());
-            if (local == null || local.isBlank()) return false;
+            if (local.isBlank()) return false;
 
-            Long localVersion = StringUtls.getNumericBuild(local);
+            long localVersion = StringUtls.getNumericBuild(local);
 
             try {
                 HttpClient client = HttpClient.newHttpClient();
                 HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create("https://raw.githubusercontent.com/stone-alex/EliteIntel/master/app/src/main/resources/version.txt"))
+                        .uri(URI.create("https://raw.githubusercontent.com/stone-alex/EliteIntel/refs/heads/master/app/src/main/resources/version.txt"))
                         .GET()
                         .build();
                 HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
                 if (response.statusCode() == 200) {
                     String remote = normalizeVersion(response.body().trim());
-                    Long remoteVersion = StringUtls.getNumericBuild(remote);
+                    long remoteVersion = StringUtls.getNumericBuild(remote);
                     return remoteVersion > localVersion;
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                EventBusManager.publish(new AppLogEvent("update check failed: " + e.getMessage()));
             }
             return false;
         });

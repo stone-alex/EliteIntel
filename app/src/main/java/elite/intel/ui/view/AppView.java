@@ -34,16 +34,16 @@ public class AppView extends JFrame implements AppViewInterface {
     public static final String LABEL_STREAMING_MODE = "Streaming Mode";
     public static final String LABEL_PRIVACY_MODE = "Voice Input on/off";
     // ----- COLORS (adjust to taste) -----
-    private static final Color BG = new Color(0x1D1D1D); // base background
+    private static final Color BG = new Color(0x13141E); // base background
     private static final Color LOG_BG = new Color(0x151620); // base background
-    private static final Color BG_PANEL = new Color(0x2B2D30); // panels/inputs background
+    private static final Color BG_PANEL = new Color(0x1F2032); // panels/inputs background
     private static final Color FG = new Color(0xE6E6E6); // primary text
     private static final Color FG_MUTED = new Color(0xB0B0B0); // secondary text
     private static final Color ACCENT = new Color(0xFF8C00); // orange
     private static final Color LIGHT_GREEN = new Color(0x31FF00); // orange
-    private static final Color SEL_BG = new Color(0x3A3D41); // selection background
-    private static final Color TAB_UNSELECTED = new Color(0x2A2C2F);
-    private static final Color TAB_SELECTED = new Color(0x33363A);
+    private static final Color SEL_BG = new Color(0xFF8C00); // selection background
+    private static final Color TAB_UNSELECTED = new Color(0x151620);
+    private static final Color TAB_SELECTED = new Color(0x1F2032);
     private static final String ICON_AI = "/images/ai.png";
     private static final String ICON_PLAYER = "/images/controller.png";
     private static final String ICON_SETTINGS = "/images/settings.png";
@@ -1035,6 +1035,7 @@ public class AppView extends JFrame implements AppViewInterface {
         b.setContentAreaFilled(false);
         b.setFocusPainted(false);
         b.setForeground(FG);
+        b.setBackground(BG);
         b.setBorder(BorderFactory.createCompoundBorder(
                 new LineBorder(ACCENT, 1, true),
                 new EmptyBorder(6, 12, 6, 12)

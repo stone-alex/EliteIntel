@@ -85,7 +85,7 @@ public class OllamaClient extends BaseAiClient implements Client {
     @Override public JsonObject sendJsonRequest(String request) {
         JsonObject response = super.sendJsonRequest(request, getHttpURLConnection());
         OllamaMetadata metadata = GsonFactory.getGson().fromJson(response, OllamaMetadata.class);
-        EventBusManager.publish(new AppLogEvent("AI: Prompt " + metadata));
+        EventBusManager.publish(new AppLogEvent("AI: Prompt" + metadata));
         return response;
     }
 

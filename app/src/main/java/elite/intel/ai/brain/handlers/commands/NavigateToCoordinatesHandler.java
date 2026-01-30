@@ -15,13 +15,13 @@ public class NavigateToCoordinatesHandler implements CommandHandler {
     @Override public void handle(String action, JsonObject params, String responseText) {
         PlayerSession playerSession = PlayerSession.getInstance();
 
-        if(params.get("latitude") == null || params.get("longitude") == null) {
+        if(params.get("lat") == null || params.get("lon") == null) {
             EventBusManager.publish(new AiVoxResponseEvent("Say Again?"));
             return;
         }
 
-        double latitude = params.get("latitude").getAsDouble();
-        double longitude = params.get("longitude").getAsDouble();
+        double latitude = params.get("lat").getAsDouble();
+        double longitude = params.get("lon").getAsDouble();
 
         if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
             log.error("Invalid coordinates: " + latitude + ", " + longitude);

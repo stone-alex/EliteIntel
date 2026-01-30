@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.FuzzySearch;
 import elite.intel.db.managers.DestinationReminderManager;
 import elite.intel.db.managers.LocationManager;
@@ -20,7 +21,7 @@ import static elite.intel.util.StringUtls.capitalizeWords;
 public class FindMiningSiteHandler extends CommandOperator implements CommandHandler {
 
     public static final int MAX_DEFAULT_RANGE = 1000;
-    private GameController controller;
+    private final GameController controller;
 
     public FindMiningSiteHandler(GameController controller) {
         super(controller.getMonitor(), controller.getExecutor());
@@ -38,6 +39,7 @@ public class FindMiningSiteHandler extends CommandOperator implements CommandHan
         JsonElement distance = params.get("max_distance");
         if (mat == null) {
             EventBusManager.publish(new AiVoxResponseEvent("Did not catch the material name."));
+            return;
         }
 
         String material =
@@ -61,9 +63,13 @@ public class FindMiningSiteHandler extends CommandOperator implements CommandHan
         }
 
         Optional<StellarObjectSearchResultDto.Result> result = miningLocations.getResults().stream().findFirst();
-        RoutePlotter routePlotter = new RoutePlotter(this.controller);
-        routePlotter.plotRoute(result.get().getSystemName());
-        DestinationReminderManager.getInstance().setDestination(result.get().toJson());
-        EventBusManager.publish(new AiVoxResponseEvent("Found nearest " + material + " in " + result.get().getSystemName() + " system on planet " + result.get().getBodyName()));
+        if (result.isPresent()) {
+            RoutePlotter routePlotter = new RoutePlotter(this.controller);
+            routePlotter.plotRoute(result.get().getSystemName());
+            DestinationReminderManager.getInstance().setDestination(result.get().toJson());
+            EventBusManager.publish(new AiVoxResponseEvent("Found nearest mining location in " + result.get().getSystemName() + " system head to planet " + result.get().getBodyName()));
+        } else {
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("No mining sites found within range."));
+        }
     }
 }

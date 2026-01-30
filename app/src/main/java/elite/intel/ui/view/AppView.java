@@ -34,16 +34,17 @@ public class AppView extends JFrame implements AppViewInterface {
     public static final String LABEL_STREAMING_MODE = "Streaming Mode";
     public static final String LABEL_PRIVACY_MODE = "Voice Input on/off";
     // ----- COLORS (adjust to taste) -----
-    private static final Color BG = new Color(0x13141E); // base background
-    private static final Color LOG_BG = new Color(0x151620); // base background
+    private static final Color BG = new Color(0x141622); // base background
+    private static final Color LOG_BG = new Color(0x141622); // base background
     private static final Color BG_PANEL = new Color(0x1F2032); // panels/inputs background
     private static final Color FG = new Color(0xE6E6E6); // primary text
     private static final Color FG_MUTED = new Color(0xB0B0B0); // secondary text
     private static final Color ACCENT = new Color(0xFF8C00); // orange
-    private static final Color LIGHT_GREEN = new Color(0x31FF00); // orange
+    private static final Color CONSOLE_FG = new Color(0xE0FFEF); // orange
     private static final Color SEL_BG = new Color(0xFF8C00); // selection background
-    private static final Color TAB_UNSELECTED = new Color(0x151620);
+    private static final Color TAB_UNSELECTED = new Color(0x141622);
     private static final Color TAB_SELECTED = new Color(0x1F2032);
+    private static final Color DISABLED_FG = new Color(0x8B0101);
     private static final String ICON_AI = "/images/ai.png";
     private static final String ICON_PLAYER = "/images/controller.png";
     private static final String ICON_SETTINGS = "/images/settings.png";
@@ -139,12 +140,12 @@ public class AppView extends JFrame implements AppViewInterface {
         toggleStreamingModeCheckBox.setEnabled(false);//enabled when services start
         toggleStreamingModeCheckBox.setToolTipText("Prevent AI from processing unless you prefix your command or query with word 'computer'");
         toggleStreamingModeCheckBox.setText(LABEL_STREAMING_MODE);
-        toggleStreamingModeCheckBox.setForeground(Color.GREEN);
+        toggleStreamingModeCheckBox.setForeground(SEL_BG);
 
         togglePrivacyModeCheckBox.setEnabled(false); // enabled when services start
         togglePrivacyModeCheckBox.setToolTipText("Disable Speech to Text completely");
         togglePrivacyModeCheckBox.setText(LABEL_PRIVACY_MODE);
-        togglePrivacyModeCheckBox.setForeground(Color.GREEN);
+        togglePrivacyModeCheckBox.setForeground(SEL_BG);
 
         journalDirField.setEditable(false);
         journalDirField.setPreferredSize(new Dimension(200, 42));
@@ -349,7 +350,7 @@ public class AppView extends JFrame implements AppViewInterface {
             }
         };
 
-        recalibrateAudioButton.setForeground(Color.RED);
+        recalibrateAudioButton.setForeground(DISABLED_FG);
         recalibrateAudioButton.addActionListener(e -> {
             EventBusManager.publish(new RecalibrateAudioEvent());
         });
@@ -376,7 +377,7 @@ public class AppView extends JFrame implements AppViewInterface {
         logArea.setLineWrap(true);
         logArea.setWrapStyleWord(true);
         logArea.setBackground(BG);
-        logArea.setForeground(Color.GREEN);
+        logArea.setForeground(CONSOLE_FG);
         JScrollPane scroll = new JScrollPane(logArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         panel.add(scroll, gbc);
 
@@ -852,7 +853,7 @@ public class AppView extends JFrame implements AppViewInterface {
 
         if (c instanceof JTextArea) {
             c.setBackground(LOG_BG);
-            c.setForeground(LIGHT_GREEN);
+            c.setForeground(CONSOLE_FG);
         }
 
         // Text components
@@ -942,7 +943,7 @@ public class AppView extends JFrame implements AppViewInterface {
         toggleStreamingModeCheckBox.setSelected(systemSession.isStreamingModeOn());
         setupStreamingCheckBox(systemSession.isStreamingModeOn());
         togglePrivacyModeCheckBox.setSelected(systemSession.isStreamingModeOn());
-        togglePrivacyModeCheckBox.setForeground(systemSession.isStreamingModeOn() ? Color.RED : Color.GREEN);
+        togglePrivacyModeCheckBox.setForeground(systemSession.isStreamingModeOn() ? DISABLED_FG : SEL_BG);
     }
 
 
@@ -1103,7 +1104,7 @@ public class AppView extends JFrame implements AppViewInterface {
 
     private void setupStreamingCheckBox(Boolean streamingModeOn) {
         toggleStreamingModeCheckBox.setSelected(streamingModeOn);
-        toggleStreamingModeCheckBox.setForeground(streamingModeOn ? Color.RED : Color.GREEN);
+        toggleStreamingModeCheckBox.setForeground(streamingModeOn ? DISABLED_FG : SEL_BG);
         toggleStreamingModeCheckBox.setText(streamingModeOn ? "Streaming On" : "Streaming Off");
     }
 

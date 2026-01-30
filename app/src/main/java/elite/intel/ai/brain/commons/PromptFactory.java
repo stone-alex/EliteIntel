@@ -47,6 +47,7 @@ public class PromptFactory implements AiPromptFactory {
                 Supported COMMANDS: patterns, concepts, and formulations -> ACTION_NAME (use ONLY these action names):
                 """);
         sb.append(commandsAndQueries.getCommandMap());
+        sb.append("Commands that can be parameterized have parameter return examples.");
         sb.append("""
                 
                 Supported QUERIES: patterns, concepts, and formulations -> ACTION_NAME (use ONLY these action names):
@@ -77,16 +78,18 @@ public class PromptFactory implements AiPromptFactory {
                    - IF distance is requested, then key for distance is "max_distance" Example: {"key": "gold", "max_distance":"80"}
                    - Key is "state" ONLY when value is boolean (on/off, true/false) Example: "lights on"→ {"state": true}
                    - Never invent other key names (no "material", "distance", "planet", etc.)
-                   - More Examples:
-                     - "find mining site for LTD"          → {"key": "low temperature diamonds"}
-                     - "lights on"                         → {"state": true}
-                     - "decrease speed by 12"              → {"key": "-12"}
-                     - "set voice to zira"                 → {"key": "zira"}
-                     - "find gold within 80 ly"            → {"key": "gold", "max_distance":"80"}
-                5. EXCEPTIONS TO THE RULE: Coordinates → always decimal: {"latitude": "-12.34", "longitude":"56.78"}, Material/commodity withing X light years {"key": "gold", "max_distance":"80"}
-                6. 'here', 'this planet', 'current system' → interpret as current location
-                7. If multiple possible matches → choose the most specific / most exact lexical match
-                8. If still unsure or weak match → return the no-match JSON above — do NOT try to be helpful
+                   - Parametrized user request examples:
+                     - "find mining site for LTD"                                   → {"key": "low temperature diamonds"}
+                     - "lights on"                                                  → {"state": true}
+                     - "set speed 2"                                                → {"key": "2"}
+                     - "set trade profile budget two hundred million"               → {"key": "200000000"}
+                     - "set voice to zira"                                          → {"key": "zira"}
+                     - "find gold within 80 ly"                                     → {"key": "gold", "max_distance":"80"}
+                     - "Navigate to coordinates latitude -12.34, longitude 56.78"   → {"lat": "-12.34", "lon":"56.78"}
+                
+                5. 'here', 'this planet', 'current system' → interpret as current location
+                6. If multiple possible matches → choose the most specific / most exact lexical match
+                7. If still unsure or weak match → return the no-match JSON above — do NOT try to be helpful
                 
                 LAST REMINDER BEFORE OUTPUT:
                 Only use action names exactly as they appear in the lists.

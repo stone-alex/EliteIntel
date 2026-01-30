@@ -9,20 +9,17 @@ import elite.intel.gameapi.journal.events.dto.MissionDto;
 
 @SuppressWarnings("unused")
 public class MissionAbandonedSubscriber {
-    private MissionManager missionManager = MissionManager.getInstance();
+
+    private final MissionManager missionManager = MissionManager.getInstance();
 
     @Subscribe
     public void onMissionAbandonedEvent(MissionAbandonedEvent event) {
         MissionDto mission = missionManager.getMission(event.getMissionID());
 
-        if (mission == null) {
-            return; // no mission in session storage. just exit.
-        }
-        else {
+        if (mission != null) {
             missionManager.remove(event.getMissionID());
             String missionDetails = mission.getMissionDescription();
             EventBusManager.publish(new SensorDataEvent("Notify: Mission \"" + missionDetails + "\" Abandoned: " + mission, "Notify user of mission abandonment, provide short summary from the data received."));
         }
-
     }
 }

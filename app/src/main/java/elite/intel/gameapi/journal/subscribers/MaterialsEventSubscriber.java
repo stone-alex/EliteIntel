@@ -1,16 +1,42 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.intel.db.dao.MaterialsDao;
+import elite.intel.db.util.Database;
+import elite.intel.gameapi.data.EDMaterialCaps;
 import elite.intel.gameapi.journal.events.MaterialsEvent;
-import elite.intel.session.PlayerSession;
+import elite.intel.search.edsm.dto.MaterialsType;
+
+import java.util.List;
+
+import static elite.intel.search.edsm.dto.MaterialsType.*;
 
 @SuppressWarnings("unused")
 public class MaterialsEventSubscriber {
 
     @Subscribe
     public void onMaterialsEvent(MaterialsEvent event) {
-        //this is a single material collection event.
-        //we need a list of all collected materials to do something useful with it.
-        //PlayerSession.getInstance().put(PlayerSession.MATERIAL, event.toJson());
+        List<MaterialsEvent.Material> encodedMaterials = event.getEncoded();
+        List<MaterialsEvent.Material> manufacturedMaterials = event.getManufactured();
+        List<MaterialsEvent.Material> rawMaterials = event.getRaw();
+
+        for (MaterialsEvent.Material material : encodedMaterials) {
+            saveMaterial(material, GAME_ENCODED);
+        }
+
+        for (MaterialsEvent.Material material : manufacturedMaterials) {
+            saveMaterial(material, GAME_MANUFACTURED);
+        }
+
+        for (MaterialsEvent.Material material : rawMaterials) {
+            saveMaterial(material, GAME_RAW);
+        }
+    }
+
+    private void saveMaterial(MaterialsEvent.Material material, MaterialsType type) {
+        Database.withDao(MaterialsDao.class, dao -> {
+            dao.upsert(material.getName(), type.getType(), material.getCount(), EDMaterialCaps.getMax(material.getName()));
+            return Void.class;
+        });
     }
 }

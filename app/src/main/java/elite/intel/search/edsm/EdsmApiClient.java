@@ -29,41 +29,6 @@ public class EdsmApiClient {
         return new StringBuilder(BASE_URL + endpoint + "?");
     }
 
-    public static MaterialsDto getMaterials() {
-        String endpoint = "/api-commander-v1/get-materials";
-        String edsmKey = SystemSession.getInstance().getEdsmApiKey();
-        String inGamePlayerName = PlayerSession.getInstance().getInGameName();
-
-        StringBuilder query = authenticatedUrl(endpoint);
-        query.append("apiKey=").append(edsmKey);
-        query.append("&commanderName=").append(URLEncoder.encode(inGamePlayerName, StandardCharsets.UTF_8));
-        query.append("&type=").append(MaterialsType.EDMS_MATERIAL.getType());
-
-        String response = getResponse(query);
-        if (response == null || response.isEmpty()) {
-            return new MaterialsDto();
-        }
-        return GsonFactory.getGson().fromJson(response, MaterialsDto.class);
-    }
-
-
-    public static EncodedMaterialsDto getEncodedMaterials() {
-        String endpoint = "/api-commander-v1/get-materials";
-        String edsmKey = SystemSession.getInstance().getEdsmApiKey();
-        String inGamePlayerName = PlayerSession.getInstance().getInGameName();
-
-        StringBuilder query = authenticatedUrl(endpoint);
-        query.append("apiKey=").append(edsmKey);
-        query.append("&commanderName=").append(URLEncoder.encode(inGamePlayerName, StandardCharsets.UTF_8));
-        query.append("&type=").append(MaterialsType.EDMS_ENCODED.getType());
-
-        String response = getResponse(query);
-        if (response == null || response.isEmpty()) {
-            return new EncodedMaterialsDto();
-        }
-        return GsonFactory.getGson().fromJson(response, EncodedMaterialsDto.class);
-    }
-
 
     public static StarSystemDto searchStarSystem(String starSystemName, int showInformation) {
         if (starSystemName == null) return new StarSystemDto();

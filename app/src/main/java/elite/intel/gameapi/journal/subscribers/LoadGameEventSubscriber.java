@@ -18,11 +18,9 @@ import java.util.Map;
 public class LoadGameEventSubscriber {
 
     private final ShipRouteManager shipRoute = ShipRouteManager.getInstance();
-    private final MaterialManager materialManager = MaterialManager.getInstance();
 
     @Subscribe
     public void onEvent(LoadGameEvent event) {
-
         PlayerSession playerSession = PlayerSession.getInstance();
         playerSession.setPlayerName(playerSession.getAlternativeName() == null ? event.getCommander() : playerSession.getAlternativeName());
         playerSession.setInGameName(event.getCommander());
@@ -32,26 +30,6 @@ public class LoadGameEventSubscriber {
         playerSession.setGameVersion(event.getGameversion());
         playerSession.setGameBuild(event.getBuild());
         cleanUpRoute(playerSession);
-
-        retrieveMatsFromEDSM();
-    }
-
-
-    private void retrieveMatsFromEDSM() {
-        EncodedMaterialsDto encodedMaterials = EdsmApiClient.getEncodedMaterials();
-        MaterialsDto rawAndManufacturedMaterials = EdsmApiClient.getMaterials();
-
-        materialManager.clear();
-        if(rawAndManufacturedMaterials != null) {
-            for (MaterialsDto.MaterialEntry entry : rawAndManufacturedMaterials.getMaterials()) {
-                materialManager.save(entry.getMaterialName(), MaterialsType.GAME_RAW, entry.getQuantity());
-            }
-        }
-        if(encodedMaterials != null) {
-            for (EncodedMaterialsDto.EncodedMaterialEntry entry : encodedMaterials.getEncoded()) {
-                materialManager.save(entry.getMaterialName(), MaterialsType.GAME_ENCODED, entry.getQuantity());
-            }
-        }
     }
 
     private void cleanUpRoute(PlayerSession playerSession) {

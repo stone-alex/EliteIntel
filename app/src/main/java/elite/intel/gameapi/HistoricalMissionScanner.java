@@ -28,6 +28,15 @@ public class HistoricalMissionScanner {
         return INSTANCE;
     }
 
+    /**
+     * Scans the player's journal files for pending MissionAcceptedEvents matching the specified target mission IDs.
+     * Pending events are those accepted but neither completed nor failed, determined by processing events
+     * chronologically from the oldest journal files. (last 4 file limit)
+     *
+     * @param targetIDs the set of mission IDs to scan for pending accepted events
+     * @return a list of pending MissionAcceptedEvents for the target IDs, or an empty list if no files found,
+     *         no matching events, or an error occurs
+     */
     public List<MissionAcceptedEvent> scanForPendingAcceptedEvents(Set<Long> targetIDs) {
         if (targetIDs.isEmpty()) {
             return Collections.emptyList();

@@ -2,10 +2,9 @@ package elite.intel.ai.mouth;
 
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
+import elite.intel.ui.controller.ManagedService;
 
-public interface MouthInterface {
-    void start();
-    void stop();
+public interface MouthInterface extends ManagedService {
 
     void interruptAndClear();
     /**

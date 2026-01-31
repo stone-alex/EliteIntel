@@ -9,6 +9,7 @@ import elite.intel.gameapi.journal.events.MissionAcceptedEvent;
 import elite.intel.gameapi.journal.events.MissionsEvent;
 import elite.intel.gameapi.journal.events.dto.MissionDto;
 import elite.intel.session.PlayerSession;
+import elite.intel.ui.controller.ManagedService;
 import elite.intel.util.StringUtls;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,7 +23,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class MissingMissionMonitor implements Runnable {
+public class MissingMissionMonitor implements Runnable, ManagedService {
 
     private static volatile MissingMissionMonitor instance;
     private final Logger log = LogManager.getLogger(MissingMissionMonitor.class);

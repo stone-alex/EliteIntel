@@ -4,13 +4,11 @@ import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.ApiFactory;
 import elite.intel.ai.brain.AICadence;
 import elite.intel.ai.brain.AIPersonality;
-import elite.intel.ai.brain.AiCommandInterface;
 import elite.intel.ai.ears.AudioCalibrator;
 import elite.intel.ai.ears.AudioFormatDetector;
 import elite.intel.ai.ears.EarsInterface;
 import elite.intel.ai.hands.KeyBindCheck;
 import elite.intel.ai.mouth.AiVoices;
-import elite.intel.ai.mouth.MouthInterface;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.gameapi.AuxiliaryFilesMonitor;
@@ -22,16 +20,18 @@ import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.*;
 import elite.intel.ui.view.AppView;
-import elite.intel.util.SleepNoThrow;
 import elite.intel.util.Updater;
 
 import javax.swing.*;
+import javax.swing.Timer;
 import javax.swing.text.BadLocationException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Supplier;
 
 import static elite.intel.util.StringUtls.capitalizeWords;
 
@@ -42,22 +42,14 @@ public class AppController implements Runnable {
     private final Timer logTypewriterTimer = new Timer(5, null);
     private final StringBuilder logBuffer = new StringBuilder();
     private final AtomicBoolean typewriterActive = new AtomicBoolean(false);
-    private final Thread controllerThread;
+    private final Map<ServiceType, ServiceHolder> services = new LinkedHashMap<>();
     private final AppView view;
-    AuxiliaryFilesMonitor fileMonitor = new AuxiliaryFilesMonitor();
-    EarsInterface ears;
-    MouthInterface mouth;
-    AiCommandInterface brain;
-    DeferredNotificationMonitor notificationMonitor;
-    JournalParser journalParser = new JournalParser();
-    MissingMissionMonitor missingMissionMonitor;
+
 
     public AppController(AppView view) {
         this.view = view;
         EventBusManager.register(this);
-        this.controllerThread = new Thread(this);
         this.isRunning.set(false);
-        this.controllerThread.start();
         startIfWeHaveCredentials();
         checkForUpdates();
     }
@@ -138,10 +130,13 @@ public class AppController implements Runnable {
     }
 
     @Subscribe public void togglePrivacyMode(TogglePrivacyModeEvent event) {
-        if (event.isEnabled()) {
-            ears.stop();
-        } else {
-            ears.start();
+        EarsInterface ears = services.get(ServiceType.EARS).get();
+        if (ears != null) {
+            if (event.isEnabled()) {
+                ears.stop();
+            } else {
+                ears.start();
+            }
         }
     }
 
@@ -158,7 +153,10 @@ public class AppController implements Runnable {
         SwingUtilities.invokeLater(() -> {
             appendToLog("Starting audio calibration...");
             // Stop normal listening
-            if (ears != null) ears.stop();
+            EarsInterface ears = services.get(ServiceType.EARS).get();
+            if (ears == null) return;
+
+            ears.stop();
 
             new Thread(() -> {
                 try {
@@ -167,7 +165,7 @@ public class AppController implements Runnable {
 
                     // Back to EDT: restart ears + success
                     SwingUtilities.invokeLater(() -> {
-                        if (ears != null) ears.start();
+                        ears.start();
                         EventBusManager.publish(new MissionCriticalAnnouncementEvent("Audio calibration complete"));
                         appendToLog("Calibration complete: HIGH=" +
                                 SystemSession.getInstance().getRmsThresholdHigh() +
@@ -175,7 +173,7 @@ public class AppController implements Runnable {
                     });
                 } catch (Exception ex) {
                     SwingUtilities.invokeLater(() -> {
-                        if (ears != null) ears.start(); // always restart on way out
+                        ears.start(); // always restart on way out
                         appendToLog("Calibration failed: " + ex.getMessage());
                         EventBusManager.publish(new MissionCriticalAnnouncementEvent("Audio calibration failed"));
                     });
@@ -218,38 +216,6 @@ public class AppController implements Runnable {
 
     @Subscribe void onToggleSendExplorationData(ToggleSendExplorationDataEvent event) {
         SwingUtilities.invokeLater(() -> systemSession.setExplorationData(event.isEnabled()));
-    }
-
-
-    private void stopServices() {
-        if(!isRunning.get()) return;
-
-        EventBusManager.publish(new AiVoxResponseEvent("Shutting Down..."));
-        // Stop services
-        if (journalParser != null) journalParser.stop();
-        journalParser = null;
-
-        fileMonitor.stop();
-        fileMonitor = null;
-
-        brain.stop();
-        brain = null;
-
-        ears.stop();
-        ears = null;
-
-        mouth.stop();
-        mouth = null;
-
-        notificationMonitor.stop();
-        notificationMonitor = null;
-
-        missingMissionMonitor.stop();
-        missingMissionMonitor = null;
-
-        systemSession.clearChatHistory();
-        EventBusManager.publish(new ServicesStateEvent(false));
-        isRunning.set(false);
     }
 
 
@@ -315,55 +281,27 @@ public class AppController implements Runnable {
         logTypewriterTimer.start();
     }
 
-
     private void startServices() {
-        if(isRunning.get()) {
-            return;
-        }
+        if (isRunning.get()) return;
+        /// NOTE: User can swap keys. the services MUST be re-initialized before we start them.
+        initServices();
 
         systemSession.clearChatHistory();
-        if (journalParser == null) {
-            journalParser = new JournalParser();
-        }
-        journalParser.start();
-        if (fileMonitor == null) {
-            fileMonitor = new AuxiliaryFilesMonitor();
-        }
-        fileMonitor.start();
 
-        if (mouth == null) {
-            mouth = ApiFactory.getInstance().getMouthImpl();
+        for (ServiceType type : ServiceType.values()) {
+            ServiceHolder service = services.get(type);
+            if (service != null) {
+                service.start();
+            }
         }
-        mouth.start();
-
-        if (ears == null) {
-            ears = ApiFactory.getInstance().getEarsImpl();
-        }
-        ears.start();
-
-        if (brain == null) {
-            brain = ApiFactory.getInstance().getCommandEndpoint();
-        }
-        brain.start();
-
-        if (notificationMonitor == null) {
-            notificationMonitor = DeferredNotificationMonitor.getInstance();
-        }
-        notificationMonitor.start();
 
         String mission_statement = playerSession.getPlayerMissionStatement();
         playerSession.setPlayerMissionStatement(mission_statement);
 
-        if (missingMissionMonitor == null) {
-            missingMissionMonitor = MissingMissionMonitor.getInstance();
-        }
-        missingMissionMonitor.start();
-
         if (!systemSession.isRunningPiperTts()) {
             appendToLog("Available voices:\n" + listVoices());
         }
-
-        if (!systemSession.isRunningLocalLLM()) {
+        if (!systemSession.isRunningLocalLLM() && !systemSession.isRunningPiperTts()) {
             appendToLog("Available personalities:\n" + listPersonalities());
             appendToLog("Available profiles:\n" + listCadences());
         }
@@ -371,5 +309,72 @@ public class AppController implements Runnable {
         isRunning.set(true);
         EventBusManager.publish(new ServicesStateEvent(true));
         KeyBindCheck.getInstance().check();
+    }
+
+    private void stopServices() {
+        if (!isRunning.get()) return;
+
+        EventBusManager.publish(new AiVoxResponseEvent("Shutting Down..."));
+        List<ServiceHolder> services = new ArrayList<>(this.services.values());
+        Collections.reverse(services);
+        for (ServiceHolder service : services) {
+            service.stop();
+        }
+
+        systemSession.clearChatHistory();
+        EventBusManager.publish(new ServicesStateEvent(false));
+        isRunning.set(false);
+        EventBusManager.publish(new AppLogEvent("All services are stopped\n\n"));
+    }
+
+    private void initServices() {
+        services.put(ServiceType.JOURNAL_PARSER, new ServiceHolder(JournalParser::new));
+        services.put(ServiceType.AUXILIARY_FILES_MONITOR, new ServiceHolder(AuxiliaryFilesMonitor::new));
+        services.put(ServiceType.MOUTH, new ServiceHolder(() -> ApiFactory.getInstance().getMouthImpl()));
+        services.put(ServiceType.EARS, new ServiceHolder(() -> ApiFactory.getInstance().getEarsImpl()));
+        services.put(ServiceType.BRAIN, new ServiceHolder(() -> ApiFactory.getInstance().getCommandEndpoint()));
+        services.put(ServiceType.NOTIFICATION_MONITOR, new ServiceHolder(DeferredNotificationMonitor::getInstance));
+        services.put(ServiceType.MISSING_MISSION_MONITOR, new ServiceHolder(MissingMissionMonitor::getInstance));
+    }
+
+    private static class ServiceHolder {
+        private final Supplier<? extends ManagedService> creator;
+        private ManagedService instance;
+
+        ServiceHolder(Supplier<? extends ManagedService> creator) {
+            this.creator = Objects.requireNonNull(creator);
+        }
+
+        void start() {
+            if (instance == null) {
+                instance = creator.get();
+            }
+            if (instance != null) {
+                instance.start();
+            }
+        }
+
+        void stop() {
+            if (instance != null) {
+                instance.stop();
+                instance = null;
+            }
+        }
+
+
+        @SuppressWarnings("unchecked")
+        <T extends ManagedService> T get() {
+            return (T) instance;
+        }
+    }
+
+    private enum ServiceType {
+        JOURNAL_PARSER,
+        AUXILIARY_FILES_MONITOR,
+        MOUTH,
+        EARS,
+        BRAIN,
+        NOTIFICATION_MONITOR,
+        MISSING_MISSION_MONITOR
     }
 }

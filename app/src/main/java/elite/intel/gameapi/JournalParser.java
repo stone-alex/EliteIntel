@@ -6,6 +6,7 @@ import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.journal.EventRegistry;
 import elite.intel.gameapi.journal.events.BaseEvent;
 import elite.intel.session.PlayerSession;
+import elite.intel.ui.controller.ManagedService;
 import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.json.GsonFactory;
 import org.apache.logging.log4j.LogManager;
@@ -43,7 +44,7 @@ import java.util.concurrent.TimeUnit;
  * - Catches and logs exceptions such as I/O issues or unexpected parsing errors.
  * - Publishes error-related events (e.g., AppLogEvent) to notify other components.
  */
-public class JournalParser implements Runnable {
+public class JournalParser implements Runnable, ManagedService {
     private static final Logger log = LogManager.getLogger(JournalParser.class);
     private  Path journalDir;
     private Thread processingThread;

@@ -3,12 +3,13 @@ package elite.intel.gameapi;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.dao.DeferredNotificationDao;
 import elite.intel.db.managers.DeferredNotificationManager;
+import elite.intel.ui.controller.ManagedService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 
-public class DeferredNotificationMonitor implements Runnable {
+public class DeferredNotificationMonitor implements Runnable, ManagedService {
 
 
     private static final Logger log = LogManager.getLogger(DeferredNotificationMonitor.class);

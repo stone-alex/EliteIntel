@@ -7,6 +7,7 @@ import elite.intel.ai.brain.handlers.CommandHandlerFactory;
 import elite.intel.ai.hands.GameController;
 import elite.intel.gameapi.gamestate.dtos.GameEvents;
 import elite.intel.session.PlayerSession;
+import elite.intel.ui.controller.ManagedService;
 import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.json.GsonFactory;
 import org.apache.logging.log4j.Logger;
@@ -26,7 +27,7 @@ import java.util.concurrent.TimeUnit;
  *
  * This class implements the Runnable interface and can run as a separate thread to continuously monitor file changes.
  */
-public class AuxiliaryFilesMonitor implements Runnable {
+public class AuxiliaryFilesMonitor implements Runnable, ManagedService {
     private static final Logger log = LogManager.getLogger(AuxiliaryFilesMonitor.class);
     private static final Gson GSON = GsonFactory.getGson();
 

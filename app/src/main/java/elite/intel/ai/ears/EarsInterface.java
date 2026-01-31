@@ -1,6 +1,6 @@
 package elite.intel.ai.ears;
 
-public interface EarsInterface {
-    void stop();
-    void start();
+import elite.intel.ui.controller.ManagedService;
+
+public interface EarsInterface extends ManagedService {
 }

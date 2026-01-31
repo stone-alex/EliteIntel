@@ -3,6 +3,7 @@ package elite.intel.ai.brain;
 import com.google.common.eventbus.Subscribe;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.UserInputEvent;
+import elite.intel.ui.controller.ManagedService;
 
 /**
  * The AiCommandInterface represents a contract for managing the lifecycle and event handling
@@ -20,9 +21,7 @@ import elite.intel.gameapi.UserInputEvent;
  * - onUserInput(UserInputEvent event): Handles user input events. The implementation should process the sanitized user input and associated confidence score.
  * - onSensorDataEvent(SensorDataEvent event): Processes sensor data events. This provides opportunities to update the system with environmental or contextual data.
  */
-public interface AiCommandInterface {
-    void start();
-    void stop();
+public interface AiCommandInterface extends ManagedService {
     /**
      * Use elite.intel.gameapi.SubscriberRegistration to subscribe to these events
      * or add EventBusManager.register(this); in the constructor if your class is singleton

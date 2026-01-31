@@ -39,7 +39,13 @@ public class MaterialsEventSubscriber {
     private void saveMaterial(MaterialsEvent.Material material, MaterialsType type) {
         Database.withDao(MaterialsDao.class, dao -> {
             String materialName = StringUtls.capitalizeWords(material.getName());
-            dao.upsert(materialName, type.getType(), material.getCount(), EDMaterialCaps.getMax(material.getName()));
+            dao.upsert(
+                    StringUtls.capitalizeWords(materialName.trim()),
+                    type.getType(),
+                    material.getCount(),
+                    EDMaterialCaps.getMax(material.getName()
+                    )
+            );
             EventBusManager.publish(new AppLogEvent("\tProcessed " + materialName + " " + material.getCount() + " units."));
             return Void.class;
         });

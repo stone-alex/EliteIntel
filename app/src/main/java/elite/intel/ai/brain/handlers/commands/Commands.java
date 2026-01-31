@@ -65,8 +65,8 @@ public enum Commands {
     MINING_ON_OFF                                       ("toggle_mining_announcements", null, MiningOnOffHandler.class),
     ROUTE_ON_OFF                                        ("toggle_route_announcements", null, RouteAnnouncementsOnOffHandler.class),
 
-    INCREASE_SPEED_BY                                   ("speed_plus", BINDING_INCREASE_SPEED.getGameBinding(),  SpeedControlHandler.class),
-    DECREASE_SPEED_BY                                   ("speed_minus", BINDING_DECREASE_SPEED.getGameBinding(),  SpeedControlHandler.class),
+    INCREASE_SPEED_BY                                   ("set_speed_plus", BINDING_INCREASE_SPEED.getGameBinding(),  SpeedControlHandler.class),
+    DECREASE_SPEED_BY                                   ("set_speed_minus", BINDING_DECREASE_SPEED.getGameBinding(),  SpeedControlHandler.class),
 
     /// Commands that have a specific handler impl (which uses N bindings inside)
     INCREASE_ENGINES_POWER                              ("transfer_power_to_engines", null,  SetPowerToEnginesHandler.class),

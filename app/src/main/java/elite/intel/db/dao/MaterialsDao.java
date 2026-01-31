@@ -51,17 +51,24 @@ public interface MaterialsDao {
     void clear();
 
 
+    @SqlUpdate("""
+            UPDATE materials
+            SET amount = (SELECT MAX(amount - :amountUsed, 0) FROM materials WHERE materialName = :materialName)
+            WHERE materialName = :materialName
+            """)
+    void updateAmount(@Bind("materialName") String materialName, @Bind("amountUsed") Integer amountUsed );
+
+
     class MaterialMapper implements RowMapper<Material> {
         @Override
         public Material map(ResultSet rs, StatementContext ctx) throws SQLException {
-            Material material = new Material(
+            return new Material(
                     rs.getLong("id"),
                     rs.getString("materialName"),
                     rs.getString("materialType"),
                     rs.getInt("amount"),
                     rs.getInt("maxCapacity")
             );
-            return material;
         }
     }
 

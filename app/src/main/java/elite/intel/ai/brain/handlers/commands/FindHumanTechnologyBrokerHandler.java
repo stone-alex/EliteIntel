@@ -2,7 +2,6 @@ package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
-import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.search.spansh.station.TradersAndBrokersSearch;
@@ -12,7 +11,7 @@ import elite.intel.util.json.GetNumberFromParam;
 public class FindHumanTechnologyBrokerHandler extends CommandOperator implements CommandHandler {
 
     public static final int DEFAULT_RANGE = 250;
-    private GameController gameController;
+    private final GameController gameController;
 
     public FindHumanTechnologyBrokerHandler(GameController gameController) {
         super(gameController.getMonitor(), gameController.getExecutor());
@@ -20,7 +19,7 @@ public class FindHumanTechnologyBrokerHandler extends CommandOperator implements
     }
 
     @Override public void handle(String action, JsonObject params, String responseText) {
-        Number range = GetNumberFromParam.getNumberFromParam(params, DEFAULT_RANGE);
+        Number range = GetNumberFromParam.extractRangeParameter(params, DEFAULT_RANGE);
         EventBusManager.publish(new MissionCriticalAnnouncementEvent("Searching for " + BrokerType.HUMAN.getType() + " technology broker... Stand by..."));
         TradersAndBrokersSearch search = TradersAndBrokersSearch.getInstance();
         RoutePlotter routePlotter = new RoutePlotter(this.gameController);

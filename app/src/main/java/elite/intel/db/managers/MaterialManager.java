@@ -1,11 +1,10 @@
 package elite.intel.db.managers;
 
-import elite.intel.search.edsm.dto.MaterialsType;
 import elite.intel.db.dao.MaterialsDao;
 import elite.intel.db.util.Database;
 import elite.intel.gameapi.data.EDMaterialCaps;
+import elite.intel.search.edsm.dto.MaterialsType;
 import elite.intel.util.StringUtls;
-import org.sqlite.util.StringUtils;
 
 public class MaterialManager {
     private static MaterialManager instance;
@@ -39,9 +38,16 @@ public class MaterialManager {
     }
 
     public void clear() {
-        Database.withDao(MaterialsDao.class, dao ->{
+        Database.withDao(MaterialsDao.class, dao -> {
             dao.clear();
             return null;
+        });
+    }
+
+    public void substract(String materialName, int amountUsed) {
+        Database.withDao(MaterialsDao.class, dao -> {
+            dao.updateAmount(materialName, amountUsed);
+            return Void.class;
         });
     }
 }

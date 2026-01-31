@@ -96,7 +96,7 @@ public class AiCommandsAndQueries {
             Map.entry(" open FSS and scan, scan system, honk, scan ", OPEN_FSS_AND_SCAN.getAction()),  // Fixed typo
             Map.entry(" navigate to LZ/landing zone ", GET_HEADING_TO_LZ.getAction()),
             Map.entry(" deploy srv/surface reconnaissance vehicle ", DEPLOY_SRV.getAction()),
-            Map.entry(" recover srv/surface reconnaissance vehicle, requesting extraction ", RECOVER_SRV.getAction()),
+            Map.entry(" recover srv/surface reconnaissance vehicle, requesting extraction, extract srv ", RECOVER_SRV.getAction()),
             Map.entry(" calculate carrier route ", CALCULATE_FLEET_CARRIER_ROUTE.getAction()),
             Map.entry(" enter carrier destination ", ENTER_NEXT_FLEET_CARRIER_DESTINATION.getAction()),
             Map.entry(" system shut down ", SHUT_DOWN.getAction()),

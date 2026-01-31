@@ -16,7 +16,7 @@ import java.util.List;
 public interface LocationDao {
 
     @SqlUpdate("""
-            INSERT INTO location (inGameId, locationName, primaryStar, systemAddress, json) 
+            INSERT INTO location (inGameId, locationName, primaryStar, systemAddress, json)
             VALUES (:inGameId, :locationName, :primaryStar, :systemAddress, :json)
             ON CONFLICT(locationName) DO UPDATE SET
                 json = excluded.json,

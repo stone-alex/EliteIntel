@@ -2,7 +2,6 @@ package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
-import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.managers.LocationManager;
 import elite.intel.search.spansh.findcarrier.CarrierAccess;
@@ -30,7 +29,7 @@ public class FindNearestFleetCarrierHandler extends CommandOperator implements C
         Status status = Status.getInstance();
         if(status.isInSrv() || status.isInMainShip()) {
 
-            Number range = GetNumberFromParam.getNumberFromParam(params, 500);
+            Number range = GetNumberFromParam.extractRangeParameter(params, 500);
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("Searching for nearest fleet carrier with public access within " + range.intValue() + " light years... Stand by..."));
 
             PlayerSession playerSession = PlayerSession.getInstance();

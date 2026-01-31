@@ -25,7 +25,7 @@ public class RequestDockingHandler extends CommandOperator implements CommandHan
             operateKeyboard(Bindings.GameCommand.BINDING_CYCLE_PREVIOUS_PANEL.getGameBinding(), 0);
             operateKeyboard(Bindings.GameCommand.BINDING_CYCLE_PREVIOUS_PANEL.getGameBinding(), 0);
             operateKeyboard(Bindings.GameCommand.BINDING_UI_DOWN.getGameBinding(), 0);
-            operateKeyboard(Bindings.GameCommand.BINDING_UI_UP.getGameBinding(), 3000); // scroll up to the top (and hope our station is there)
+            operateKeyboard(Bindings.GameCommand.BINDING_UI_UP.getGameBinding(), 1500); // scroll up to the top (and hope our station is there)
             operateKeyboard(Bindings.GameCommand.BINDING_UI_RIGHT.getGameBinding(), 0);
 
             //request docking

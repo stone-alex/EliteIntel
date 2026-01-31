@@ -2,19 +2,15 @@ package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
-import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.dao.LocationDao;
 import elite.intel.db.managers.DestinationReminderManager;
 import elite.intel.db.managers.LocationManager;
 import elite.intel.db.managers.ShipRouteManager;
-import elite.intel.search.spansh.client.SpanshClient;
-import elite.intel.search.spansh.nearest.NearestKnownLocationSearchClient;
 import elite.intel.search.spansh.stellarobjects.ReserveLevel;
 import elite.intel.search.spansh.stellarobjects.StellarObjectSearch;
 import elite.intel.search.spansh.stellarobjects.StellarObjectSearchResultDto;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.session.PlayerSession;
 import elite.intel.session.Status;
 import elite.intel.util.NavigationUtils;
 import elite.intel.util.json.GetNumberFromParam;
@@ -34,8 +30,8 @@ public class FindCarrierFuelMiningSiteHandler extends CommandOperator implements
     @Override public void handle(String action, JsonObject params, String responseText) {
         Status status = Status.getInstance();
         if (status.isInSrv() || status.isInMainShip()) {
-            Number range = GetNumberFromParam.getNumberFromParam(params, 1000);
-            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Searching for Carrier Fuel Mining Site withing " + range.intValue() + " light years... Stand by..."));
+            Number range = GetNumberFromParam.extractRangeParameter(params, 1000);
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Searching for Carrier Fuel Mining Site within " + range.intValue() + " light years... Stand by..."));
 
             ShipRouteManager shipRouteManager = ShipRouteManager.getInstance();
             shipRouteManager.clearRoute();

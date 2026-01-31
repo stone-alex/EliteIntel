@@ -2,7 +2,6 @@ package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
-import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.dao.LocationDao;
 import elite.intel.db.managers.LocationManager;
@@ -11,7 +10,6 @@ import elite.intel.search.spansh.station.vista.VistaGenomicsSearch;
 import elite.intel.search.spansh.station.vista.VistaSearchCriteria;
 import elite.intel.db.managers.DestinationReminderManager;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GetNumberFromParam;
 
 import java.util.Arrays;
@@ -28,15 +26,15 @@ public class FindVistaGenomicsHandler extends CommandOperator implements Command
     }
 
     @Override public void handle(String action, JsonObject params, String responseText) {
-        Number range = GetNumberFromParam.getNumberFromParam(params, 250);
+        Number range = GetNumberFromParam.extractRangeParameter(params, 250);
         EventBusManager.publish(new MissionCriticalAnnouncementEvent("Searching for Vista Genomics... Stand by..."));
 
 
         VistaSearchCriteria criteria = new VistaSearchCriteria();
         VistaSearchCriteria.Filters filters = new VistaSearchCriteria.Filters();
         VistaSearchCriteria.Service service = new VistaSearchCriteria.Service();
-        service.setName(Arrays.asList("Vista Genomics"));
-        filters.setServices(Arrays.asList(service));
+        service.setName(List.of("Vista Genomics"));
+        filters.setServices(List.of(service));
 
         VistaSearchCriteria.Distance distance = new VistaSearchCriteria.Distance();
         distance.setMin(0);

@@ -20,9 +20,7 @@ public class MaterialCollectedSubscriber {
         MaterialsDao.Material material = Database.withDao(MaterialsDao.class, dao -> dao.findByExactName(StringUtls.capitalizeWords(event.getName())));
         EventBusManager.publish(
                 new AiVoxResponseEvent(
-                        "Collected " + event.getCount() + " units of " + event.getName()
-                        // We do not have a good way to sync inventory with the game.
-                                // + (material == null ? "." : ". Total in storage is " + material.getAmount() + " units.")
+                        "Collected " + event.getCount() + " units of " + event.getName() + (material == null ? "." : ". Total in storage is " + material.getAmount() + " units.")
                 )
         );
     }

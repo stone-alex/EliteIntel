@@ -19,7 +19,7 @@ public class AiCommandsAndQueries {
             /// parametrized
             Map.entry(" navigate to next mission, set destination for mission type <type>, plot route to mission type <type>. -IF mission type is provided return it in " + KEY_X, NAVIGATE_TO_NEXT_MISSION.getAction()),
             Map.entry(" headlights off, headlights on, turn off the lights, turn on the lights " + KEY_STATE, LIGHTS_ON_OFF.getAction()),
-            Map.entry(" set mining target <material> " + KEY_X, ADD_MINING_TARGET.getAction()),
+            Map.entry(" set mining target <material>, add <material> to mining targets " + KEY_X, ADD_MINING_TARGET.getAction()),
             Map.entry(" find raw material trader within X light years " + KEY_X, FIND_RAW_MATERIAL_TRADER.getAction()),
             Map.entry(" find encoded material trader within X light years " + KEY_X, FIND_ENCODED_MATERIAL_TRADER.getAction()),
             Map.entry(" find manufactured material trader within X light years  " + KEY_X, FIND_MANUFACTURED_MATERIAL_TRADER.getAction()),

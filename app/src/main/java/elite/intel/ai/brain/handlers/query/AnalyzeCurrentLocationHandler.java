@@ -52,7 +52,8 @@ public class AnalyzeCurrentLocationHandler extends BaseQueryAnalyzer implements 
                     - IF Asked about Length Of The Day: Use dayLength value. Example: Day on <planetName> lasts <X> hours and <Y> minutes
                     - IF Asked about Local Government, Controlling Powers, Controlling Faction, and localPowers/controllingFaction data is not present, the planet is uninhabited - ELSE use this data for your answer. 
                     Example 1: <planetName> is uninhabited. Or <planetName> is controlled by <X> powers and controlling faction is <Y>
-                    Example 2: We are Docked at <station> in <starSystemName> star system. Medium Security. Deaths total X week Y day Z. Traffic total X week Y day Z. Day length is X.
+                    Example 2: We are Docked at <locationName> in <starSystemName> star system. Medium Security. Deaths total X week Y day Z. Traffic total X week Y day Z. Day length is X.
+                    Example 3: We in the planetary ring of <locationName> in <starSystemName> star system. 
                 """;
 
         double rotationPeriod = Math.round(location.getRotationPeriod() * 100.0) / 100.0;
@@ -61,6 +62,7 @@ public class AnalyzeCurrentLocationHandler extends BaseQueryAnalyzer implements 
                 new AiDataStruct(
                         instructions,
                         new DataDto(
+                                status.isDocked(),
                                 location.getStarName(),
                                 location.getPlanetShortName(),
                                 location.getSecurity(),
@@ -138,10 +140,11 @@ public class AnalyzeCurrentLocationHandler extends BaseQueryAnalyzer implements 
     }
 
     record DataDto(
+            boolean isDocked,
             String starSystemName,
             String planetName,
             String securityLevel,
-            String stationName,
+            String locationName,
             String controllingFaction,
             String[] localPowers,
             DeathsStats deathsData,

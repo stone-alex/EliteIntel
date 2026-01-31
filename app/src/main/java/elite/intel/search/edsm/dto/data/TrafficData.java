@@ -17,10 +17,12 @@ public class TrafficData {
     */
     @SerializedName("discovery")
     public DiscoveryData discovery;
+
     @SerializedName("traffic")
     public TrafficStats traffic;
-    @SerializedName("breakdown")
-    public Map<String, Integer> breakdown;
+
+//    @SerializedName("breakdown")
+//    public Map<String, Integer> breakdown;
 
     public int getId() {
         return id;
@@ -48,7 +50,7 @@ public class TrafficData {
         return traffic == null ? new TrafficStats() : traffic;
     }
 
-    public Map<String, Integer> getBreakdown() {
-        return breakdown;
-    }
+//    public Map<String, Integer> getBreakdown() {
+//        return breakdown;
+//    }
 }

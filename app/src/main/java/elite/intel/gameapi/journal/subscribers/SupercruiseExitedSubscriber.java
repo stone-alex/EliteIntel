@@ -5,7 +5,6 @@ import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.journal.events.SupercruiseExitEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
-import org.apache.logging.log4j.core.appender.FailoverAppender;
 
 @SuppressWarnings("unused")
 public class SupercruiseExitedSubscriber {
@@ -17,6 +16,7 @@ public class SupercruiseExitedSubscriber {
     public void onSupercruiseExited(SupercruiseExitEvent event) {
         LocationDto starSystem = locationManager.findPrimaryStar(playerSession.getPrimaryStarName());
         LocationDto here = locationManager.findBySystemAddress(event.getSystemAddress(), event.getBodyId());
+        playerSession.setCurrentLocationId(event.getBodyId(), event.getSystemAddress());
 
         here.setBodyType(event.getBodyType());
         here.setBodyId(event.getBodyId());
@@ -25,10 +25,12 @@ public class SupercruiseExitedSubscriber {
         here.setLandingCoordinates(starSystem.getLandingCoordinates());
 
         LocationDto.LocationType locationType = LocationDto.determineType(event.getBodyType(), false);
-        if(LocationDto.LocationType.STATION == locationType){
+        if (LocationDto.LocationType.STATION == locationType) {
             here.setStationName(event.getBody());
-        } else if(LocationDto.LocationType.PLANET == locationType || LocationDto.LocationType.MOON == locationType ) {
+        } else if (LocationDto.LocationType.PLANET == locationType || LocationDto.LocationType.MOON == locationType) {
             here.setPlanetName(event.getBody());
+        } else if (LocationDto.LocationType.PLANETARY_RING == locationType) {
+            here.setStationName("Planetary Ring of " + here.getPlanetShortName());
         }
 
         if (here.getLocationType() == null || LocationDto.LocationType.UNKNOWN == here.getLocationType()) {
@@ -37,5 +39,4 @@ public class SupercruiseExitedSubscriber {
 
         playerSession.setCurrentLocationId(event.getBodyId(), event.getSystemAddress());
     }
-
 }

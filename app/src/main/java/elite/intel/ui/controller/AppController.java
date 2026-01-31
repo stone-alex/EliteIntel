@@ -42,8 +42,10 @@ public class AppController implements Runnable {
     private final Timer logTypewriterTimer = new Timer(5, null);
     private final StringBuilder logBuffer = new StringBuilder();
     private final AtomicBoolean typewriterActive = new AtomicBoolean(false);
-    private final Map<ServiceType, ServiceHolder> services = new LinkedHashMap<>();
     private final AppView view;
+
+    /// NOTE Order of services is important
+    private final Map<ServiceType, ServiceHolder> services = new LinkedHashMap<>();
 
 
     public AppController(AppView view) {
@@ -328,6 +330,7 @@ public class AppController implements Runnable {
     }
 
     private void initServices() {
+        /// NOTE Order is important.
         services.put(ServiceType.JOURNAL_PARSER, new ServiceHolder(JournalParser::new));
         services.put(ServiceType.AUXILIARY_FILES_MONITOR, new ServiceHolder(AuxiliaryFilesMonitor::new));
         services.put(ServiceType.MOUTH, new ServiceHolder(() -> ApiFactory.getInstance().getMouthImpl()));

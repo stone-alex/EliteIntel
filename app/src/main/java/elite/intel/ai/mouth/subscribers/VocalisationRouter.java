@@ -39,7 +39,7 @@ public class VocalisationRouter {
     @Subscribe
     public void onMiningAnnouncementEvent(MiningAnnouncementEvent event) {
         if (playerSession.isMiningAnnouncementOn()) {
-            EventBusManager.publish(new VocalisationRequestEvent(event.getText(), MiningAnnouncementEvent.class, true));
+            EventBusManager.publish(new VocalisationRequestEvent(event.getText(), MiningAnnouncementEvent.class, false));
         }
     }
 

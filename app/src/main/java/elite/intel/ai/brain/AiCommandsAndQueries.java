@@ -105,7 +105,7 @@ public class AiCommandsAndQueries {
             Map.entry(" what is our trade route profile, describe trade route profile ", LIST_TRADE_ROUTE_PARAMETERS.getAction()),
             Map.entry(" cancel/clear trade route ", CLEAR_TRADE_ROUTE.getAction()),
             Map.entry(" activate, punch it, engage ", ACTIVATE.getAction()),
-            Map.entry(" request docking, ask for landing permission, docking authorization", REQUEST_DOCKING.getAction()),
+            Map.entry(" request docking, ask for landing permission, docking authorization, contact tower request landing.", REQUEST_DOCKING.getAction()),
             Map.entry(" deploy heat sink ", DEPLOY_HEAT_SINK.getAction()),
             Map.entry(" target power plant, target engines, target subsystem, X ", TARGET_SUB_SYSTEM.getAction()),
             Map.entry(" recall ship / dismiss ship ", RECALL_DISMISS_SHIP.getAction()),

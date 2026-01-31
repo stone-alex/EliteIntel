@@ -1,12 +1,17 @@
 package elite.intel.ai.brain.handlers.commands;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.ai.mouth.subscribers.events.MiningAnnouncementEvent;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
+import elite.intel.db.FuzzySearch;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.PlayerSession;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import static elite.intel.util.StringUtls.capitalizeWords;
 
 /**
  * The SetMiningTargetHandler class processes the command to set a mining target for the player session.
@@ -23,12 +28,21 @@ public class AddMiningTargetHandler implements CommandHandler {
     public void handle(String action, JsonObject params, String responseText) {
         PlayerSession session = PlayerSession.getInstance();
         session.setMiningAnnouncementOn(true);
-        String target = params.get("key").getAsString();
+        JsonElement key = params.get("key");
+        if(key == null){
+            EventBusManager.publish(new MiningAnnouncementEvent("Sorry did not catch the material name."));
+            return;
+        }
+        String target = capitalizeWords(
+                        FuzzySearch.fuzzyMaterialNameSearch(
+                                key.getAsString(), 8
+                        )
+                );
 
-        if (target == null && target.isEmpty()) {
-            log.info("no mining target set");
+        if (target == null || target.isEmpty()) {
+            EventBusManager.publish(new MiningAnnouncementEvent("Unable to find this material in the database."));
+            return;
         } else {
-
             session.addMiningTarget(target);
         }
         EventBusManager.publish(new MissionCriticalAnnouncementEvent("Mining target set to " + target + ". Mining announcement enabled."));

@@ -339,3 +339,4 @@
 "an emissions"="any missions"
 "sre"="srv"
 "too many targets"="to mining targets"
+"alcohol"="cargo hold"

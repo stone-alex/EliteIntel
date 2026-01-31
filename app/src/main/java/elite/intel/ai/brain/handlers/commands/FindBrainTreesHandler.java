@@ -39,12 +39,13 @@ public class FindBrainTreesHandler extends CommandOperator implements CommandHan
         JsonElement key = params.get("key");
         if (key == null) {
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("Did not catch the material name."));
+            return;
         }
 
         String material =
                 capitalizeWords(
                         FuzzySearch.fuzzyMaterialNameSearch(
-                                key.getAsString(), 3
+                                key.getAsString(), 8
                         )
                 );
 

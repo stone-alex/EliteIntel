@@ -246,6 +246,9 @@ public class LocationDto implements ToJsonConvertible {
         this.planetName = planetName;
         if (starName != null && planetShortName == null) {
             this.planetShortName = StringUtls.subtractString(planetName, starName);
+            if(this.planetShortName.toLowerCase(Locale.ROOT).contains("ring")){
+                setLocationType(LocationType.PLANETARY_RING);
+            }
         }
     }
 

@@ -126,6 +126,9 @@ public class PromptFactory implements AiPromptFactory {
                 Output pure JSON only.
                 """
         );
+        sb.append(" Spell out numerals for response_text, Example: We have one hundred and thirsty units of gold in cargo hold. ");
+        sb.append(" Use numbers for parameters Example: {\"key\":\"1\"} ");
+
 
         return sb.toString();
     }
@@ -135,12 +138,14 @@ public class PromptFactory implements AiPromptFactory {
         StringBuilder sb = new StringBuilder();
         sb.append(getSessionValues());
         sb.append(appendBehavior());
-        sb.append("Classify as: 'input' (data to analyze) or 'command' (trigger app action or keyboard event). ");
-        sb.append("When processing a 'tool' role message, use the provided data's 'response_text' as the primary response if available, ensuring it matches the context of the query. ");
-        sb.append("Use planetShortName for locations when available.\n");
+        sb.append(" Classify as: 'input' (data to analyze) or 'command' (trigger app action or keyboard event). ");
+        sb.append(" When processing a 'tool' role message, use the provided data's 'response_text' as the primary response if available, ensuring it matches the context of the query. ");
+        sb.append(" Use planetShortName for locations when available.\n");
         sb.append(JSON_FORMAT).append("\n");
-        sb.append("Query Data is provided in JSON. Strictly follow the 'instructions' field in data for analysis and response format.\n");
-        sb.append("For type='chat', set 'expect_followup': true if response poses a question or requires user clarification; otherwise, false.\n");
+        sb.append(" Spell out numerals for response_text, Example: We have one hundred and thirsty units of gold in cargo hold. ");
+        sb.append(" Use numbers for parameters Example: {\"key\":\"1\"} ");
+        sb.append(" Query Data is provided in JSON. Strictly follow the 'instructions' field in data for analysis and response format.\n");
+        sb.append(" For type='chat', set 'expect_followup': true if response poses a question or requires user clarification; otherwise, false.\n");
         return sb.toString();
     }
 
@@ -181,7 +186,7 @@ public class PromptFactory implements AiPromptFactory {
                  - Report only the concrete values and observations that matter.
                  DO NOT INVENT DATA. NEVER use external knowledge, guess, calculate, estimate, or add values not explicitly in the data or instructions.
                  Use ONLY the sensor data provided and the event-specific instructions.
-                
+                 Spell out numerals.
                  Always respond strictly in this JSON format and nothing else:
                  {"type": "chat", "response_text": "your summary here"}
                 

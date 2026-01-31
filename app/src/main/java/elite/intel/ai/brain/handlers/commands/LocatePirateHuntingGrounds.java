@@ -2,6 +2,7 @@ package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.dao.PirateFactionDao.PirateFaction;
 import elite.intel.db.dao.PirateMissionProviderDao.MissionProvider;
 import elite.intel.db.managers.PirateMissionDataManager.PirateMissionTuple;
@@ -32,6 +33,6 @@ public class LocatePirateHuntingGrounds implements CommandHandler {
             boolean reconRequired = huntingGrounds.stream().anyMatch(data -> data.getTarget().getTargetFaction() == null);
             if (reconRequired) sb.append(" Reconnaissance is required.");
         }
-        EventBusManager.publish(new AiVoxResponseEvent(sb.toString()));
+        EventBusManager.publish(new MissionCriticalAnnouncementEvent(sb.toString()));
     }
 }

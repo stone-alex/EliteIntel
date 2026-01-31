@@ -2,7 +2,7 @@ package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
-import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.Status;
@@ -19,18 +19,29 @@ public class PlotRouteToMyFleetCarrier extends CommandOperator implements Comman
     @Override public void handle(String action, JsonObject params, String responseText) {
 
         Status status = Status.getInstance();
-        if(status.isInSrv() || status.isInMainShip()) {
+        if (status.isInSrv() || status.isInMainShip()) {
             PlayerSession playerSession = PlayerSession.getInstance();
-            String carrierLocation = playerSession.getLastKnownCarrierLocation();
+            boolean hasFleetCarrier = playerSession.getCarrierData() != null;
+            boolean hasHomeSystem = playerSession.getHomeSystem() != null;
 
-            if (carrierLocation != null && !carrierLocation.isEmpty()) {
-                RoutePlotter plotter = new RoutePlotter(this.controller);
-                plotter.plotRoute(carrierLocation);
+            String destination;
+            if (hasFleetCarrier) {
+                destination = playerSession.getLastKnownCarrierLocation();
+            } else if (hasHomeSystem) {
+                destination = playerSession.getHomeSystem().getStarName();
             } else {
-                EventBusManager.publish(new AiVoxResponseEvent("Carrier location not available."));
+                EventBusManager.publish(new MissionCriticalAnnouncementEvent("No home system available for route plotting."));
+                return;
+            }
+
+            if (destination != null && !destination.isEmpty()) {
+                RoutePlotter plotter = new RoutePlotter(this.controller);
+                plotter.plotRoute(destination);
+            } else {
+                EventBusManager.publish(new MissionCriticalAnnouncementEvent("Carrier location not available."));
             }
         } else {
-            EventBusManager.publish(new AiVoxResponseEvent("Route can only be plotted in SRV or Main Ship."));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Route can only be plotted in SRV or Main Ship."));
         }
     }
 }

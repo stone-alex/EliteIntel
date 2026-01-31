@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.FuzzySearch;
 import elite.intel.db.managers.DestinationReminderManager;
 import elite.intel.gameapi.EventBusManager;
@@ -35,7 +36,7 @@ public class FindCommodityHandler extends CommandOperator implements CommandHand
         String starName = playerSession.getPrimaryStarName();
 
         if (key == null) {
-            EventBusManager.publish(new AiVoxResponseEvent("Please specify a commodity."));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Please specify a commodity."));
             return;
         }
 
@@ -47,20 +48,20 @@ public class FindCommodityHandler extends CommandOperator implements CommandHand
                 );
 
         if (commodity == null) {
-            EventBusManager.publish(new AiVoxResponseEvent("Sorry, I couldn't find any commodities matching " + key.getAsString()));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Sorry, I couldn't find any commodities matching " + key.getAsString()));
             return;
         }
 
-        EventBusManager.publish(new AiVoxResponseEvent("Searching markets with best price for " + commodity + " within " + distance + " light years."));
+        EventBusManager.publish(new MissionCriticalAnnouncementEvent("Searching markets with best price for " + commodity + " within " + distance + " light years."));
 
         List<CommoditySearchResult> results = EdsmCommoditySearch.search(commodity, starName, distance);
         if (results.isEmpty()) {
-            EventBusManager.publish(new AiVoxResponseEvent("No commodities found."));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("No commodities found."));
             return;
         }
         DestinationReminderManager reminderManager = DestinationReminderManager.getInstance();
         CommoditySearchResult result = results.getFirst();
-        EventBusManager.publish(new AiVoxResponseEvent("Head to " + result.getStarSystem() + " star system, " + result.getStationName() + " " + result.getStationType() + ". Price per unit is " + result.getPrice() + " credits."));
+        EventBusManager.publish(new MissionCriticalAnnouncementEvent("Head to " + result.getStarSystem() + " star system, " + result.getStationName() + " " + result.getStationType() + ". Price per unit is " + result.getPrice() + " credits."));
         reminderManager.setDestination(result.toJson());
         RoutePlotter plotter = new RoutePlotter(this.controller);
         plotter.plotRoute(result.getStarSystem());

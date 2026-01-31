@@ -40,7 +40,7 @@ public class ReconMissionProviderSystemHandler extends CommandOperator implement
         }
 
         if (provider == null) {
-            EventBusManager.publish(new AiVoxResponseEvent("No mission providers found."));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("No mission providers found."));
             return;
         }
 

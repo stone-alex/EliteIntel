@@ -1,9 +1,9 @@
 package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.brain.handlers.query.struct.AiData;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.dto.BioSampleDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
@@ -14,11 +14,14 @@ import elite.intel.util.json.ToJsonConvertible;
 
 public class AnalyzeDistanceFromLastBioSample extends BaseQueryAnalyzer implements QueryHandler {
 
+    private final PlayerSession playerSession = PlayerSession.getInstance();
+    private final LocationManager locationManager = LocationManager.getInstance();
+
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         EventBusManager.publish(new AiVoxResponseEvent("Analyzing exobiology collection data... Stand by..."));
-        PlayerSession playerSession = PlayerSession.getInstance();
+
         Status status = Status.getInstance();
-        LocationDto currentLocation = playerSession.getCurrentLocation();
+        LocationDto currentLocation = locationManager.findByLocationData(playerSession.getLocationData());
 
         String instructions = """
         use userLatitude, userLongitude, bioSample.scanLatitude, bioSample.scanLongitude and planetRadius to calculate distance to the last partial bio-sample.

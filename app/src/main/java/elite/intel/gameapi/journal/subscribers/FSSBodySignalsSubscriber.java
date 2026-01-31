@@ -20,7 +20,7 @@ public class FSSBodySignalsSubscriber {
     @Subscribe
     public void onFssBodySignal(FSSBodySignalsEvent event) {
         LocationDto location = locationManager.findBySystemAddress(event.getSystemAddress(), event.getBodyID());
-        LocationDto primaryStarLocation = playerSession.getPrimaryStarLocation();
+        LocationDto primaryStarLocation = locationManager.findPrimaryStar(playerSession.getPrimaryStarName());
         location.setPlanetName(event.getBodyName());
         location.setBodyId(event.getBodyID());
         location.setStarName(primaryStarLocation.getStarName());
@@ -45,12 +45,12 @@ public class FSSBodySignalsSubscriber {
             }
             signal.setSystemAddress(event.getSystemAddress());
             location.addDetectedSignal(signal);
-            playerSession.saveLocation(location);
+            locationManager.save(location);
         }
 
         location.setBioSignals(bioSignals);
         location.setGeoSignals(geoSignals);
-        playerSession.saveLocation(location);
+        locationManager.save(location);
 
         if (playerSession.isDiscoveryAnnouncementOn()) {
             if (bioSignals > 0) EventBusManager.publish(new DiscoveryAnnouncementEvent(bioSignals + " bio signals discovered"));

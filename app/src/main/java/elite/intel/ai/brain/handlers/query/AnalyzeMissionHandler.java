@@ -2,6 +2,7 @@ package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
+import elite.intel.db.managers.LocationManager;
 import elite.intel.db.managers.MissionManager;
 import elite.intel.gameapi.MissionType;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
@@ -18,6 +19,8 @@ import java.util.stream.Collectors;
 public class AnalyzeMissionHandler extends BaseQueryAnalyzer implements QueryHandler {
 
     private final MissionManager missionManager = MissionManager.getInstance();
+    private final LocationManager locationManager = LocationManager.getInstance();
+    private final PlayerSession playerSession = PlayerSession.getInstance();
 
     @Override
     public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
@@ -32,7 +35,7 @@ public class AnalyzeMissionHandler extends BaseQueryAnalyzer implements QueryHan
                 )
         );
 
-        LocationDto playerLocation = PlayerSession.getInstance().getCurrentLocation(); // Provide the llm with current system
+        LocationDto playerLocation = locationManager.findByLocationData(playerSession.getLocationData());
         String instructions = """
                         Use this data to answer questions about outstanding (incomplete/active) missions.
                 

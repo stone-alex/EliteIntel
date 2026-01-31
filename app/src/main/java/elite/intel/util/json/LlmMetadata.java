@@ -2,12 +2,18 @@ package elite.intel.util.json;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.StringJoiner;
-
-public record LlmMetadata (
+public record LlmMetadata(
         String model,
         @SerializedName("usage") Usage usage
 ) {
+    public String model() {
+        return model;
+    }
+
+    @Override public String toString() {
+        return model + " >" + usage;
+    }
+
     public record Usage(
             @SerializedName("prompt_tokens") int promptTokens,
             @SerializedName("completion_tokens") int completionTokens,
@@ -17,10 +23,10 @@ public record LlmMetadata (
 
     ) {
         @Override public String toString() {
-            return " |Prompt Tokens: " + promptTokens +
-                    " | Completion: " + completionTokens +
-                    " | Cached: " + promptDetails.cachedTokens +
-                    " | Total: " + totalTokens;
+            return " | Prompt Tokens: " + promptTokens +
+                   " | Completion: " + completionTokens +
+                   " | Cached: " + promptDetails.cachedTokens +
+                   " | Total: " + totalTokens;
         }
 
         public record TokenDetails(
@@ -32,11 +38,5 @@ public record LlmMetadata (
         ) {
 
         }
-    }
-
-    public String model() { return model; }
-
-    @Override public String toString() {
-        return model +" >" + usage;
     }
 }

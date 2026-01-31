@@ -3,17 +3,17 @@ package elite.intel.gameapi.journal.subscribers;
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.dao.LocationDao;
-import elite.intel.db.managers.FleetCarrierManager;
 import elite.intel.db.managers.LocationManager;
-import elite.intel.search.edsm.EdsmApiClient;
-import elite.intel.search.edsm.dto.MarketDto;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.DockedEvent;
 import elite.intel.gameapi.journal.events.dto.CarrierDataDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
+import elite.intel.search.edsm.EdsmApiClient;
+import elite.intel.search.edsm.dto.MarketDto;
 import elite.intel.session.PlayerSession;
 
 import java.util.List;
+import java.util.Locale;
 
 import static elite.intel.gameapi.journal.events.dto.LocationDto.LocationType.FLEET_CARRIER;
 import static elite.intel.gameapi.journal.events.dto.LocationDto.LocationType.STATION;
@@ -22,10 +22,17 @@ public class DockedSubscriber {
 
     private final PlayerSession playerSession = PlayerSession.getInstance();
     private final LocationManager locationManager = LocationManager.getInstance();
+
     @Subscribe
     public void onDockedEvent(DockedEvent event) {
 
-        LocationDto location = locationManager.findByMarketId(event.getMarketID());
+        /// this is a workaround
+        /*
+         * Docked Event does not have a system address or body id. However, it has market id and market data.
+         * This means we have to grab the location where we dropped from supercruise and set these numbers here.
+         * */
+        LocationDto location = locationManager.findByLocationData(playerSession.getLocationData());
+        //LocationDto location = locationManager.findByMarketId(event.getMarketID());
 
         location.setMarketID(event.getMarketID());
         location.setStationEconomy(event.getStationEconomyLocalised());
@@ -36,15 +43,16 @@ public class DockedSubscriber {
         location.setStationName(event.getStationName());
         location.setPlanetName(null);
         location.setPlanetShortName(null);
-        MarketDto marketDto = EdsmApiClient.searchMarket(event.getMarketID(), null, null, 0);
-        if(marketDto != null) {
-            location.setMarket(marketDto);
-            location.setStationName(marketDto.getData().getStationName());
-        }
-        if("FleetCarrier".equalsIgnoreCase(event.getStationType())) {
+
+
+        MarketDto edsmMarketDto = EdsmApiClient.searchMarket(event.getMarketID(), null, null, 0);
+        location.setMarket(edsmMarketDto);
+        location.setStationName(edsmMarketDto.getData().getStationName());
+        LocationDto.LocationType locationType = LocationDto.determineType(event.getStationType().toLowerCase(Locale.ROOT), false);
+        if (FLEET_CARRIER == locationType) {
             location.setLocationType(FLEET_CARRIER);
             LocationDao.Coordinates coordinates = LocationManager.getInstance().getGalacticCoordinates();
-            if(coordinates != null) {
+            if (coordinates != null) {
                 CarrierDataDto carrierData = playerSession.getCarrierData();
                 carrierData.setX(coordinates.x());
                 carrierData.setY(coordinates.y());
@@ -56,7 +64,7 @@ public class DockedSubscriber {
             location.setLocationType(STATION);
         }
 
-        if(event.getStationFaction()  != null) location.setStationFaction(event.getStationFaction().getName());
+        if (event.getStationFaction() != null) location.setStationFaction(event.getStationFaction().getName());
 
         StringBuilder sb = new StringBuilder();
         List<String> stationServices = event.getStationServices();
@@ -81,6 +89,6 @@ public class DockedSubscriber {
         if (!availableData.isEmpty()) {
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("Market data available."));
         }
-        playerSession.saveLocation(location);
+        locationManager.save(location);
     }
 }

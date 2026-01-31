@@ -3,6 +3,7 @@ package elite.intel.ai.brain.handlers.commands;
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.Status;
 
@@ -18,14 +19,14 @@ public class RetractLandingGearHandler extends CommandOperator implements Comman
         Status status = Status.getInstance();
 
         if (status.isDocked() || status.isLanded() || status.isOnFoot() || status.isInFighter()) {
-            EventBusManager.publish(new AiVoxResponseEvent("Can not do that right now."));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Can not do that right now."));
             return;
         }
 
         if (status.isInMainShip() && status.isLandingGearDown()) {
             operateKeyboard(BINDING_LANDING_GEAR_TOGGLE.getGameBinding(), 0);
         } else {
-            EventBusManager.publish(new AiVoxResponseEvent("Landing gear already retracted."));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Landing gear already retracted."));
         }
     }
 }

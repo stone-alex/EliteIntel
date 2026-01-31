@@ -2,6 +2,7 @@ package elite.intel.gameapi.gamestate.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.mouth.subscribers.events.NavigationVocalisationEvent;
+import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.gamestate.status_events.PlayerMovedEvent;
 import elite.intel.gameapi.journal.events.DockSRVEvent;
@@ -19,19 +20,23 @@ import static elite.intel.util.NavigationUtils.calculateSurfaceDistance;
 public class DistanceFromShipTracker {
 
     private static final Logger log = LogManager.getLogger(DistanceFromShipTracker.class);
+    private final PlayerSession playerSession = PlayerSession.getInstance();
+    private final LocationManager locationManager = LocationManager.getInstance();
     private boolean shouldAnnounce = true;
     private long lastAnnounceTime = 0;
 
     @Subscribe
     public void onPlayerMovedEvent(PlayerMovedEvent event) {
-        PlayerSession playerSession = PlayerSession.getInstance();
+
         Status status = Status.getInstance();
-        if(status.getStatus()==null){ return;}
-        if(status.getStatus().getFuel() != null && status.getStatus().getFuel().getFuelMain() > 0){
+        if (status.getStatus() == null) {
+            return;
+        }
+        if (status.getStatus().getFuel() != null && status.getStatus().getFuel().getFuelMain() > 0) {
             // we are in the ship
             return;
         }
-        LocationDto currentLocation = playerSession.getCurrentLocation();
+        LocationDto currentLocation = locationManager.findByLocationData(playerSession.getLocationData());
         if (currentLocation == null) {
             log.debug("Current location is null, skipping distance check.");
             return;

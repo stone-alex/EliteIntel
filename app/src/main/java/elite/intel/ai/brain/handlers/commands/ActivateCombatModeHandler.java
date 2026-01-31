@@ -3,6 +3,7 @@ package elite.intel.ai.brain.handlers.commands;
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.Status;
 
@@ -26,7 +27,7 @@ public class ActivateCombatModeHandler extends CommandOperator implements Comman
                 operateKeyboard(BINDING_ACTIVATE_COMBAT_MODE.getGameBinding(), 0);
             }
         } else {
-            EventBusManager.publish(new AiVoxResponseEvent("Combat mode already active."));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Combat mode already active."));
         }
     }
 }

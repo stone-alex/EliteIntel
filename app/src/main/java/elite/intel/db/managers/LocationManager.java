@@ -4,6 +4,7 @@ import elite.intel.db.dao.LocationDao;
 import elite.intel.db.util.Database;
 import elite.intel.gameapi.gamestate.dtos.GameEvents;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
+import elite.intel.session.LocationData;
 import elite.intel.util.json.GsonFactory;
 
 import java.util.Collection;
@@ -71,8 +72,12 @@ public class LocationManager {
         return Database.withDao(LocationDao.class, dao -> {
             LocationDao.Location location;
             location = dao.findPrimaryBySystemAddress(systemAddress, bodyId);
-            return location == null ? new LocationDto(-1L, systemAddress) : GsonFactory.getGson().fromJson(location.getJson(), LocationDto.class);
+            return location == null ? new LocationDto(-1L, -1L) : GsonFactory.getGson().fromJson(location.getJson(), LocationDto.class);
         });
+    }
+
+    public LocationDto findByLocationData(LocationData<Long, Long> locationData) {
+        return findBySystemAddress(locationData.getSystemAddress(), locationData.getInGameId());
     }
 
 
@@ -98,7 +103,7 @@ public class LocationManager {
     public LocationDto findByMarketId(long marketID) {
         return Database.withDao(LocationDao.class, dao -> {
             LocationDao.Location location = dao.findByMarketId(marketID);
-            return location == null ? new LocationDto(-1L) : GsonFactory.getGson().fromJson(location.getJson(), LocationDto.class);
+            return location == null ? new LocationDto(-1L, -1L) : GsonFactory.getGson().fromJson(location.getJson(), LocationDto.class);
         });
     }
 
@@ -117,6 +122,13 @@ public class LocationManager {
                 result.put(entity.getInGameId(), GsonFactory.getGson().fromJson(entity.getJson(), LocationDto.class));
             }
             return result.values();
+        });
+    }
+
+    public LocationDto findByLocationName(String type) {
+        return Database.withDao(LocationDao.class, dao -> {
+            LocationDao.Location location = dao.findByLocationName(type);
+            return location == null ? null : GsonFactory.getGson().fromJson(location.getJson(), LocationDto.class);
         });
     }
 }

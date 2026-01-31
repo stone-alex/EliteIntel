@@ -5,6 +5,7 @@ import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.db.dao.CodexEntryDao;
 import elite.intel.db.managers.BioSamplesManager;
 import elite.intel.db.managers.CodexEntryManager;
+import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.data.BioForms;
 import elite.intel.gameapi.journal.events.dto.BioSampleDto;
@@ -21,13 +22,14 @@ import static elite.intel.util.NavigationUtils.calculateSurfaceDistance;
 public class NavigateToNextCodexEntry implements CommandHandler {
 
     private final PlayerSession playerSession = PlayerSession.getInstance();
+    private final LocationManager locationManager = LocationManager.getInstance();
     private final CodexEntryManager codexEntryManager = CodexEntryManager.getInstance();
     private final BioSamplesManager bioSamplesManager = BioSamplesManager.getInstance();
 
     @Override
     public void handle(String action, JsonObject params, String responseText) {
         Status status = Status.getInstance();
-        LocationDto currentLocation = playerSession.getCurrentLocation();
+        LocationDto currentLocation = locationManager.findByLocationData(playerSession.getLocationData());
 
         if (currentLocation == null || status.getStatus() == null) {
             EventBusManager.publish(new AiVoxResponseEvent("I don't know where you are yet."));

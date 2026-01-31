@@ -1,6 +1,7 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.intel.ai.brain.handlers.commands.PlotRouteToNextTradeStopHandler;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.dao.RouteMonetisationDao.MonetisationTransaction;
 import elite.intel.db.managers.*;
@@ -20,6 +21,7 @@ import elite.intel.search.edsm.dto.data.TrafficStats;
 import elite.intel.search.spansh.station.marketstation.TradeStopDto;
 import elite.intel.search.spansh.traderoute.TradeCommodity;
 import elite.intel.session.PlayerSession;
+import elite.intel.util.json.GsonFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,12 +58,6 @@ public class JumpCompletedSubscriber {
             EventBusManager.publish(new SensorDataEvent("Head to " + station.getDestinationStationName() + " sell " + station.getDestinationCommodity(), "Remind User"));
         }
 
-        String reminder = destinationReminderManager.getReminderAsJson();
-        if (reminder != null) {
-            EventBusManager.publish(new MissionCriticalAnnouncementEvent(reminder));
-            destinationReminderManager.clear();
-        }
-
         LocationDto primaryStar = locationManager.findBySystemAddress(event.getSystemAddress(), event.getBodyId());
         primaryStar.setBodyId(event.getBodyId());
         primaryStar.setSystemAddress(event.getSystemAddress());
@@ -79,7 +75,7 @@ public class JumpCompletedSubscriber {
         primaryStar.setPowerplayStateControlProgress(event.getPowerplayStateControlProgress());
         primaryStar.setPowerplayStateReinforcement(event.getPowerplayStateReinforcement());
         primaryStar.setPowerplayStateUndermining(event.getPowerplayStateUndermining());
-        playerSession.setCurrentLocationId(primaryStar.getBodyId());
+        playerSession.setCurrentLocationId(primaryStar.getBodyId(), event.getSystemAddress());
         playerSession.setCurrentPrimaryStarName(primaryStar.getStarName());
 
 
@@ -120,7 +116,7 @@ public class JumpCompletedSubscriber {
             }
         }
 
-        playerSession.saveLocation(primaryStar);
+        locationManager.save(primaryStar);
 
         if (playerSession.isRouteAnnouncementOn()) {
             EventBusManager.publish(new SensorDataEvent(sb.toString(), "Notify User"));
@@ -186,7 +182,7 @@ public class JumpCompletedSubscriber {
             stellarObject.setGravity(surfaceGravity == null ? 0 : surfaceGravity);
             stellarObject.setSurfaceTemperature(data.getSurfaceTemperature());
             stellarObject.setTidalLocked(data.isRotationalPeriodTidallyLocked());
-            stellarObject.setLocationType(determineType(data));
+            stellarObject.setLocationType(LocationDto.determineType(data.getType(), data.getDistanceToArrival() == 0));
             if (data.getDiscovery() != null) {
                 stellarObject.setOurDiscovery(data.getDiscovery().getCommander() == null);
                 stellarObject.setDiscoveredBy(data.getDiscovery().getCommander());
@@ -197,23 +193,10 @@ public class JumpCompletedSubscriber {
             stellarObject.setRotationPeriod(data.getRotationalPeriod());
             stellarObject.setVolcanism(data.getVolcanismType());
             stellarObject.setPlanetClass(data.getSpectralClass());
-            playerSession.saveLocation(stellarObject);
+            locationManager.save(stellarObject);
         }
     }
 
-    private LocationDto.LocationType determineType(BodyData data) {
-        String type = data.getType().toLowerCase();
-        boolean primaryStar = data.getDistanceToArrival() == 0;
-        if (type.contains("star") && primaryStar) return LocationDto.LocationType.PRIMARY_STAR;
-        if (type.contains("star") && !primaryStar) return LocationDto.LocationType.STAR;
-        if (type.contains("body")) return LocationDto.LocationType.PLANET;
-        if (type.contains("giant")) return LocationDto.LocationType.PLANET;
-        if (type.contains("world")) return LocationDto.LocationType.PLANET;
-        if (type.contains("rogueplanet")) return LocationDto.LocationType.PLANET;
-        if (type.contains("black hole")) return LocationDto.LocationType.BLACK_HOLE;
-        if (type.contains("nebula")) return LocationDto.LocationType.NEBULA;
-        return null;
-    }
 
     private List<MaterialDto> toMaterials(Map<String, Double> materials) {
         if (materials == null) return new ArrayList<>();

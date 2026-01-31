@@ -40,7 +40,7 @@ public class MaterialsEventSubscriber {
         Database.withDao(MaterialsDao.class, dao -> {
             String materialName = StringUtls.capitalizeWords(material.getName());
             dao.upsert(materialName, type.getType(), material.getCount(), EDMaterialCaps.getMax(material.getName()));
-            EventBusManager.publish(new AppLogEvent("Processed " + materialName + " " + material.getCount() + " units."));
+            EventBusManager.publish(new AppLogEvent("\tProcessed " + materialName + " " + material.getCount() + " units."));
             return Void.class;
         });
     }

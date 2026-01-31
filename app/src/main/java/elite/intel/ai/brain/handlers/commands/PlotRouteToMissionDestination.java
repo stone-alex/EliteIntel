@@ -3,6 +3,7 @@ package elite.intel.ai.brain.handlers.commands;
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.managers.DestinationReminderManager;
 import elite.intel.db.managers.MissionManager;
 import elite.intel.gameapi.EventBusManager;
@@ -26,7 +27,7 @@ public class PlotRouteToMissionDestination extends CommandOperator implements Co
         if (mission == null) {
             mission = missionManager.getMissions().values().stream().findFirst().orElse(null);
             if (mission == null) {
-                EventBusManager.publish(new AiVoxResponseEvent("No missions found."));
+                EventBusManager.publish(new MissionCriticalAnnouncementEvent("No missions found."));
                 return;
             }
         }
@@ -46,7 +47,7 @@ public class PlotRouteToMissionDestination extends CommandOperator implements Co
                 sb.toString()
         );
 
-        EventBusManager.publish(new AiVoxResponseEvent("Head to " + mission.getDestinationSystem() + " system."));
+        EventBusManager.publish(new MissionCriticalAnnouncementEvent("Head to " + mission.getDestinationSystem() + " system."));
         RoutePlotter plotter = new RoutePlotter(this.controller);
         plotter.plotRoute(mission.getDestinationSystem());
     }

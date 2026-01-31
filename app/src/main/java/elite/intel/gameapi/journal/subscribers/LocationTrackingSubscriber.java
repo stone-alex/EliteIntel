@@ -122,7 +122,6 @@ public class LocationTrackingSubscriber {
 
         if (navigator.distanceToTarget() == 0 && navigator.altitude() == 0) {
             // we are not on the planet and not in orbit
-            EventBusManager.publish(new AppLogEvent("Not on planet and not in orbit."));
             log.info("Navigation ON, but not on planet and not in orbit. Skipping navigation.");
             return;
         } else {
@@ -130,10 +129,6 @@ public class LocationTrackingSubscriber {
             log.info(navigator.toString());
         }
 
-        long announcementMinInterval = MIN_INTERVAL_MS;
-        if (navigator.getSpeed() >= 15 && navigator.getSpeed() < 150) {
-            announcementMinInterval = 17_000;
-        }
         if (isAboveSurface(event) || isOnSurface(event)) {
             surfaceNavigation(navigator, event);
         } else if (isInOrbit(event)) {

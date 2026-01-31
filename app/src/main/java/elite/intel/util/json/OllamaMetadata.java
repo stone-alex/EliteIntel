@@ -21,7 +21,7 @@ public record OllamaMetadata(
 
     @Override
     public String toString() {
-        return model + " " +
+        return model +
                 " | Prompt Tokens: " + promptTokens +
                 " | Completion: " + completionTokens +
                 " | Total: " + totalTokens() +

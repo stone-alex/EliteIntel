@@ -58,7 +58,7 @@ public class FSSSignalDiscoveredSubscriber {
         }
 
 
-        playerSession.saveLocation(updateLocation(event));
+        locationManager.save(updateLocation(event));
 
         if ("ResourceExtraction".equals(event.getSignalType())) {
             pirateMissionDataManager.confirmTargetReconResourceSite(playerSession.getPrimaryStarName());

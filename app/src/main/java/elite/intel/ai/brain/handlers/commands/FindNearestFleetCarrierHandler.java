@@ -3,6 +3,7 @@ package elite.intel.ai.brain.handlers.commands;
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.managers.LocationManager;
 import elite.intel.search.spansh.findcarrier.CarrierAccess;
 import elite.intel.search.spansh.findcarrier.FleetCarrierSearch;
@@ -30,7 +31,7 @@ public class FindNearestFleetCarrierHandler extends CommandOperator implements C
         if(status.isInSrv() || status.isInMainShip()) {
 
             Number range = GetNumberFromParam.getNumberFromParam(params, 500);
-            EventBusManager.publish(new AiVoxResponseEvent("Searching for nearest fleet carrier with public access within " + range.intValue() + " light years... Stand by..."));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Searching for nearest fleet carrier with public access within " + range.intValue() + " light years... Stand by..."));
 
             PlayerSession playerSession = PlayerSession.getInstance();
             FleetCarrierSearchResultsDto fleetCarriers = FleetCarrierSearch.getInstance()
@@ -55,13 +56,13 @@ public class FindNearestFleetCarrierHandler extends CommandOperator implements C
                                 RoutePlotter routePlotter = new RoutePlotter(this.gameController);
                                 String dateAsString = result.getUpdatedAt();
                                 String timeAgo = TimeUtils.transformToYMDHtimeAgo(dateAsString, TimeUtils.LOCAL_DATE_TIME);
-                                EventBusManager.publish(new AiVoxResponseEvent("Found fleet carrier " + result.getCallSign() + " at " + result.getSystemName() + ". Data last updated " + timeAgo));
+                                EventBusManager.publish(new MissionCriticalAnnouncementEvent("Found fleet carrier " + result.getCallSign() + " at " + result.getSystemName() + ". Data last updated " + timeAgo));
                                 routePlotter.plotRoute(result.getSystemName());
                             },
-                            () -> EventBusManager.publish(new AiVoxResponseEvent("No fleet carriers found within range."))
+                            () -> EventBusManager.publish(new MissionCriticalAnnouncementEvent("No fleet carriers found within range."))
                     );
         } else {
-            EventBusManager.publish(new AiVoxResponseEvent("Route can only be plotted in SRV or Main Ship."));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Route can only be plotted in SRV or Main Ship."));
         }
     }
 }

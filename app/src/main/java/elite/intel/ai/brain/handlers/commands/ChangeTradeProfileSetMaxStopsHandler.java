@@ -2,6 +2,7 @@ package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.managers.TradeProfileManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.util.StringUtls;
@@ -11,13 +12,13 @@ public class ChangeTradeProfileSetMaxStopsHandler implements CommandHandler {
         Integer numberOfStops = StringUtls.getIntSafely(params.get("key").getAsString());
 
         if (numberOfStops == null) {
-            EventBusManager.publish(new AiVoxResponseEvent("Invalid number of stops. Try again."));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Invalid number of stops. Try again."));
             return;
         }
 
         TradeProfileManager profileManager = TradeProfileManager.getInstance();
         if(profileManager.setMaximumStops(numberOfStops)) {
-            EventBusManager.publish(new AiVoxResponseEvent("Maximum stops set to " + numberOfStops));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Maximum stops set to " + numberOfStops));
         }
     }
 }

@@ -1,6 +1,7 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.journal.events.SupercruiseEntryEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
@@ -11,12 +12,13 @@ import java.util.ArrayList;
 
 public class SupercruiseEntryEventSubscriber {
 
-    private static final Logger log = LoggerFactory.getLogger(SupercruiseEntryEventSubscriber.class);
-
+    private final Logger log = LoggerFactory.getLogger(SupercruiseEntryEventSubscriber.class);
+    private final PlayerSession playerSession = PlayerSession.getInstance();
+    private final LocationManager locationManager = LocationManager.getInstance();
     @Subscribe
     public void onSuperCruiseEntryEvent(SupercruiseEntryEvent event) {
-        PlayerSession playerSession = PlayerSession.getInstance();
-        LocationDto currentLocation = playerSession.getCurrentLocation();
+
+        LocationDto currentLocation = locationManager.findByLocationData(playerSession.getLocationData());
         currentLocation.setStationFaction(null);
         currentLocation.setStationName(null);
         currentLocation.setStationServices(new ArrayList<>());
@@ -24,6 +26,6 @@ public class SupercruiseEntryEventSubscriber {
         currentLocation.setStationEconomy(null);
         currentLocation.setStationGovernment(null);
         currentLocation.setStationType(null);
-        playerSession.saveLocation(currentLocation);
+        locationManager.save(currentLocation);
     }
 }

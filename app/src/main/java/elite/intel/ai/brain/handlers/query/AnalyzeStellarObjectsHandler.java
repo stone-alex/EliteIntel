@@ -3,6 +3,7 @@ package elite.intel.ai.brain.handlers.query;
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto.LocationType;
@@ -18,10 +19,12 @@ import java.util.Map;
 public class AnalyzeStellarObjectsHandler extends BaseQueryAnalyzer implements QueryHandler {
 
     private final PlayerSession playerSession = PlayerSession.getInstance();
+    private final LocationManager locationManager = LocationManager.getInstance();
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         EventBusManager.publish(new AiVoxResponseEvent("Analyzing stelar objects data... Stand by..."));
-        StellarObjectsData<List<LocationData>, String> data = toLocationList(playerSession.getLocations());
+
+        StellarObjectsData<List<LocationData>, String> data = toLocationList(locationManager.findAllBySystemAddress(playerSession.getLocationData().getSystemAddress()));
 
         String instructions = """
                 You are a strict data-only responder. Use ONLY the provided JSON array "allStellarObjectsInStarSystem" and "summary" field.
@@ -46,14 +49,14 @@ public class AnalyzeStellarObjectsHandler extends BaseQueryAnalyzer implements Q
         );
     }
 
-    private StellarObjectsData<List<LocationData>, String> toLocationList(Map<Long, LocationDto> locations) {
-        Collection<LocationDto> values = locations.values();
+    private StellarObjectsData<List<LocationData>, String> toLocationList(Collection<LocationDto> locations) {
+
         ArrayList<LocationData> result = new ArrayList<>();
         int numberOfMoons = 0;
         int numberOfPlanets = 0;
         int numberOfStars = 0;
         int numberOfStations = 0;
-        for (LocationDto location : values) {
+        for (LocationDto location : locations) {
             boolean isPlanetaryRing = location.getPlanetName().contains("Ring");
             LocationType locationType = location.getLocationType();
 

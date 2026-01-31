@@ -3,6 +3,7 @@ package elite.intel.ai.brain.handlers.commands;
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.managers.DestinationReminderManager;
 import elite.intel.db.managers.MissionManager;
 import elite.intel.db.managers.PirateMissionDataManager;
@@ -30,12 +31,12 @@ public class PloteRouteToPirateMissionArena extends CommandOperator implements C
 
         String factionName = firstFaction.orElse(null);
         if (factionName == null) {
-            EventBusManager.publish(new AiVoxResponseEvent("No factions found"));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("No factions found"));
             return;
         }
         String starSystemForFactionName = missionDataManager.findStarSystemForFactionName(factionName);
 
-        EventBusManager.publish(new AiVoxResponseEvent("Plotting route to " + starSystemForFactionName));
+        EventBusManager.publish(new MissionCriticalAnnouncementEvent("Plotting route to " + starSystemForFactionName));
 
         RoutePlotter plotter = new RoutePlotter(this.controller);
         plotter.plotRoute(starSystemForFactionName);

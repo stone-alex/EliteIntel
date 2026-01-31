@@ -5,6 +5,7 @@ import elite.intel.ai.brain.AIConstants;
 import elite.intel.ai.brain.handlers.query.BaseQueryAnalyzer;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.ai.mouth.subscribers.events.DiscoveryAnnouncementEvent;
+import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.data.BioForms;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
@@ -20,6 +21,11 @@ import java.util.Map;
 public class BiomeAnalyzer extends BaseQueryAnalyzer {
 
     private static BiomeAnalyzer instance;
+    private final PlayerSession playerSession = PlayerSession.getInstance();
+    private final LocationManager locationManager = LocationManager.getInstance();
+
+    private BiomeAnalyzer() {
+    }
 
     public static BiomeAnalyzer getInstance() {
         if (instance == null) {
@@ -28,15 +34,12 @@ public class BiomeAnalyzer extends BaseQueryAnalyzer {
         return instance;
     }
 
-    private BiomeAnalyzer() {
-    }
-
-    public void analyzeBiome(@Nullable String originalUserInput, LocationData ... locations) {
+    public void analyzeBiome(@Nullable String originalUserInput, LocationData... locations) {
         if (locations == null) {
             return;
         }
 
-        PlayerSession playerSession = PlayerSession.getInstance();
+
         String instructions = """
                 You are a strict classifier. IGNORE all planet properties except planetShortName, planetClass, atmosphere, temperature, volcanism (if relevant) — but ONLY to match against genusToBiome map.
                 
@@ -56,7 +59,8 @@ public class BiomeAnalyzer extends BaseQueryAnalyzer {
                 """;
 
         List<LocationData> list = List.of(locations);
-        JsonObject jsonObject = process(new AiDataStruct(instructions, new DataDto2(BioForms.getGenusToBiome(), list, starSystemCharacteristics(playerSession.getLocations().values()))), originalUserInput);
+        Map<Long, LocationDto> byPrimaryStar = locationManager.findByPrimaryStar(playerSession.getPrimaryStarName());
+        JsonObject jsonObject = process(new AiDataStruct(instructions, new DataDto2(BioForms.getGenusToBiome(), list, starSystemCharacteristics(byPrimaryStar.values()))), originalUserInput);
 
         String responseTextToUse = jsonObject.has(AIConstants.PROPERTY_RESPONSE_TEXT)
                 ? jsonObject.get(AIConstants.PROPERTY_RESPONSE_TEXT).getAsString()

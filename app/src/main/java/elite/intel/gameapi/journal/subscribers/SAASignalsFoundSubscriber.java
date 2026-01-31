@@ -35,7 +35,7 @@ public class SAASignalsFoundSubscriber {
     public void onSAASignalsFound(SAASignalsFoundEvent event) {
         StringBuilder sb = new StringBuilder();
         LocationDto location = LocationManager.getInstance().findBySystemAddress(event.getSystemAddress(), event.getBodyID());
-        LocationDto primaryStarLocation = playerSession.getPrimaryStarLocation();
+        LocationDto primaryStarLocation = locationManager.findPrimaryStar(playerSession.getPrimaryStarName());
         location.setPlanetName(event.getBodyName());
         location.setBodyId(event.getBodyID());
         location.setStarName(primaryStarLocation.getStarName());
@@ -44,7 +44,7 @@ public class SAASignalsFoundSubscriber {
         location.setZ(primaryStarLocation.getZ());
 
         location.addSaaSignals(event.getSignals());
-        playerSession.saveLocation(location);
+        locationManager.save(location);
 
         List<SAASignalsFoundEvent.Signal> signals = event.getSignals();
         int signalsFound = signals != null ? signals.size() : 0;
@@ -99,15 +99,22 @@ public class SAASignalsFoundSubscriber {
 
                 String parentBodyName = event.getBodyName().substring(0, event.getBodyName().length() - " X Ring".length());
                 ring.setParentBodyName(parentBodyName);
-                LocationDto parent = locationManager.getLocation(playerSession.getPrimaryStarName(), findParentId(parentBodyName));
+                LocationDto parent = locationManager.getLocation(
+                        playerSession.getPrimaryStarName(),
+                        findParentId(
+                                parentBodyName,
+                                locationManager.findAllBySystemAddress(event.getSystemAddress()
+                                )
+                        )
+                );
                 if (parent != null) parent.setHasRings(true);
                 if (event.getSignals() != null) {
                     ring.setSaaSignals(event.getSignals());
                     ring.setGeoSignals(event.getSignals().size());
                     if (parent != null) parent.setSaaSignals(event.getSignals());
                 }
-                playerSession.saveLocation(ring);
-                if (parent != null) playerSession.saveLocation(parent);
+                locationManager.save(ring);
+                if (parent != null) locationManager.save(parent);
             }
 
             if (playerSession.isDiscoveryAnnouncementOn()) {
@@ -119,12 +126,11 @@ public class SAASignalsFoundSubscriber {
             }
         }
 
-        playerSession.saveLocation(location);
+        locationManager.save(location);
     }
 
-    private long findParentId(String parentBodyName) {
-        Collection<LocationDto> values = playerSession.getLocations().values();
-        for (LocationDto dto : values) {
+    private long findParentId(String parentBodyName, Collection<LocationDto> allLocationsInStarSystem) {
+        for (LocationDto dto : allLocationsInStarSystem) {
             if (dto.getPlanetName().equalsIgnoreCase(parentBodyName)) {
                 return dto.getBodyId();
             }

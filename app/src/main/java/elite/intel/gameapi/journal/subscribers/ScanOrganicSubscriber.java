@@ -52,7 +52,7 @@ public class ScanOrganicSubscriber {
         String genus = event.getGenusLocalised();
         String species = subtractString(event.getSpeciesLocalised(), genus);
         LocationDto currentLocation = locationManager.findBySystemAddress(event.getSystemAddress(), event.getBody());
-        playerSession.setCurrentLocationId(event.getBody());
+        playerSession.setCurrentLocationId(event.getBody(), event.getSystemAddress());
 
         boolean isOurDiscovery = currentLocation.isOurDiscovery();
         BioForms.ProjectedPayment paymentData = BioForms.getProjectedPayment(genus, species);
@@ -110,24 +110,21 @@ public class ScanOrganicSubscriber {
             bioSampleDto.setOurDiscovery(currentLocation.isOurDiscovery());
             playerSession.addBioSample(bioSampleDto);
             currentLocation.deletePartialBioSamples();
-            removeCodexEntry(event.getVariantLocalised());
+            removeCodexEntry(event.getVariantLocalised(), event.getSystemAddress(), event.getBody());
             playerSession.clearGenusPaymentAnnounced();
         }
 
-        playerSession.saveLocation(currentLocation);
+        locationManager.save(currentLocation);
     }
 
-    private void removeCodexEntry(String variantLocalised) {
-        codexEntryManager.clearCompleted(
-                playerSession.getCurrentLocation().getStarName(),
-                playerSession.getCurrentLocation().getBodyId(),
-                variantLocalised
-        );
+    private void removeCodexEntry(String variantLocalised, Long systemAddress, Long bodyId) {
+        LocationDto address = locationManager.findBySystemAddress(systemAddress, bodyId);
+        codexEntryManager.clearCompleted(address.getStarName(),address.getBodyId(),variantLocalised);
     }
 
     private BioSampleDto createBioSampleDto(String genus, String species, boolean isOurDiscovery) {
 
-        LocationDto currentLocation = playerSession.getCurrentLocation();
+        LocationDto currentLocation = locationManager.findByLocationData(playerSession.getLocationData());
         BioSampleDto bioSampleDto = new BioSampleDto();
         bioSampleDto.setPrimaryStar(playerSession.getPrimaryStarName());
         bioSampleDto.setPlanetName(currentLocation.getPlanetName());

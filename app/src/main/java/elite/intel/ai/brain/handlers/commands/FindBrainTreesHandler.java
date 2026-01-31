@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.FuzzySearch;
 import elite.intel.db.dao.LocationDao;
 import elite.intel.db.managers.BrainTreeManager;
@@ -18,7 +19,7 @@ import static elite.intel.util.StringUtls.capitalizeWords;
 
 public class FindBrainTreesHandler extends CommandOperator implements CommandHandler {
 
-    private GameController controller;
+    private final GameController controller;
     private final BrainTreeManager brainTreeManager = BrainTreeManager.getInstance();
     private final LocationManager locationManager = LocationManager.getInstance();
 
@@ -37,7 +38,7 @@ public class FindBrainTreesHandler extends CommandOperator implements CommandHan
 
         JsonElement key = params.get("key");
         if (key == null) {
-            EventBusManager.publish(new AiVoxResponseEvent("Did not catch the material name."));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Did not catch the material name."));
         }
 
         String material =
@@ -50,10 +51,10 @@ public class FindBrainTreesHandler extends CommandOperator implements CommandHan
         LocationDao.Coordinates coordinates = locationManager.getGalacticCoordinates();
         StellarObjectSearchResultDto.Result result = brainTreeManager.findNearestWithMaterial(material, coordinates.x(), coordinates.y(), coordinates.z());
         if (result == null) {
-            EventBusManager.publish(new AiVoxResponseEvent("No Brain Tree locations found."));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("No Brain Tree locations found."));
         } else {
             EventBusManager.publish(
-                    new AiVoxResponseEvent(
+                    new MissionCriticalAnnouncementEvent(
                             "Found nearest Brain Tree at " + result.getSystemName()
                                     + ". Located " + result.getDistance() + " light years away."
                                     + " Head to planet " + result.getBodyName()

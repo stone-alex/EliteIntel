@@ -1,23 +1,24 @@
 package elite.intel.gameapi.journal.subscribers;
 
+import elite.intel.db.managers.LocationManager;
+import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.search.edsm.EdsmApiClient;
 import elite.intel.search.edsm.dto.MarketDto;
 import elite.intel.search.edsm.dto.OutfittingDto;
 import elite.intel.search.edsm.dto.ShipyardDto;
-import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 
 public class LocalServicesData {
 
     public static String setLocalServicesData(long marketId) {
-        StringBuilder sb = new StringBuilder();
-        MarketDto marketDto = EdsmApiClient.searchMarket(marketId, null, null, 0);
-        OutfittingDto outfittingDto = EdsmApiClient.searchOutfitting(marketId, null, null);
-        ShipyardDto shipyardDto = EdsmApiClient.searchShipyard(marketId, null, null);
+        final StringBuilder sb = new StringBuilder();
+        final MarketDto marketDto = EdsmApiClient.searchMarket(marketId, null, null, 0);
+        final OutfittingDto outfittingDto = EdsmApiClient.searchOutfitting(marketId, null, null);
+        final ShipyardDto shipyardDto = EdsmApiClient.searchShipyard(marketId, null, null);
+        final PlayerSession playerSession = PlayerSession.getInstance();
+        final LocationManager locationManager = LocationManager.getInstance();
 
-        PlayerSession playerSession = PlayerSession.getInstance();
-
-        LocationDto currentLocation = playerSession.getCurrentLocation();
+        LocationDto currentLocation = locationManager.findByLocationData(playerSession.getLocationData());
         if (marketDto.getData() != null && marketDto.getData().getCommodities() != null) {
             sb.append(" Market ");
             sb.append(marketDto.getData().getName());
@@ -34,7 +35,7 @@ public class LocalServicesData {
             sb.append(" Shipyard, ");
             currentLocation.setShipyard(shipyardDto);
         }
-        playerSession.saveLocation(currentLocation);
+        locationManager.save(currentLocation);
         return sb.toString().trim();
     }
 }

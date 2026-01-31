@@ -4,6 +4,7 @@ import elite.intel.ai.hands.BindingsMonitor;
 import elite.intel.ai.hands.KeyBindingExecutor;
 import elite.intel.ai.hands.KeyBindingsParser;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.gameapi.EventBusManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,7 +36,7 @@ public class CommandOperator {
             executor.executeBindingWithHold(binding, holdTime);
         } else {
             log.warn("No binding found for action: {}", bindingIdentifier);
-            EventBusManager.publish(new AiVoxResponseEvent("Custom command operator. No key binding found for " + bindingIdentifier));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Custom command operator. No key binding found for " + bindingIdentifier));
         }
     }
 }

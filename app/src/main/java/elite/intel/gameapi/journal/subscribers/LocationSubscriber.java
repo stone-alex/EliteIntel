@@ -5,13 +5,12 @@ import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.journal.events.LocationEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.search.edsm.EdsmApiClient;
-import elite.intel.session.PlayerSession;
 
-import java.util.Map;
+import java.util.Locale;
 
 public class LocationSubscriber {
 
-    PlayerSession playerSession = PlayerSession.getInstance();
+    private final LocationManager locationManager = LocationManager.getInstance();
 
     @Subscribe
     public void onLocationEvent(LocationEvent event) {
@@ -38,6 +37,7 @@ public class LocationSubscriber {
         dto.setDistance(event.getDistFromStarLS());
         dto.setEconomy(event.getSystemEconomyLocalised());
         dto.setSecondEconomy(event.getSystemSecondEconomyLocalised());
+        dto.setLocationType(LocationDto.determineType(event.getBodyType().toLowerCase(Locale.ROOT), event.getDistFromStarLS() > 0));
 
         //TODO: Need a util to figure what type of location this is.
         dto.setStationType(event.getStationType());
@@ -58,10 +58,10 @@ public class LocationSubscriber {
         dto.setTrafficDto(EdsmApiClient.searchTraffic(event.getStarSystem()));
         dto.setDeathsDto(EdsmApiClient.searchDeaths(event.getStarSystem()));
 
-        if (dto.getStarName() != null && dto.getStarName().length() > 0) {
+        if (dto.getStarName() != null && !dto.getStarName().isEmpty()) {
             //have to check for star name (primary star of the system). Sometimes the star name is empty.
             //do not save locations without star name.
-            playerSession.saveLocation(dto);
+            locationManager.save(dto);
         }
     }
 

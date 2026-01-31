@@ -2,24 +2,24 @@ package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
+import elite.intel.db.managers.LocationManager;
+import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.search.edsm.EdsmApiClient;
 import elite.intel.search.edsm.dto.DeathsDto;
 import elite.intel.search.edsm.dto.StarSystemDto;
 import elite.intel.search.edsm.dto.TrafficDto;
-import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 
 public class AnalyzeLocalSystemHandler extends BaseQueryAnalyzer implements QueryHandler {
 
+    private final PlayerSession playerSession = PlayerSession.getInstance();
+    private final LocationManager locationManager = LocationManager.getInstance();
+
     @Override
     public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        PlayerSession playerSession = PlayerSession.getInstance();
-
-        LocationDto location = playerSession.getPrimaryStarLocation();
-
-        location = playerSession.getPrimaryStarLocation();
+        LocationDto location = locationManager.findPrimaryStar(playerSession.getPrimaryStarName());
         if (location.getBodyId() < 0) return process("No data available");
 
         StarSystemDto edsmData = EdsmApiClient.searchStarSystem(location.getStarName(), 1);

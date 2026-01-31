@@ -3,6 +3,7 @@ package elite.intel.ai.brain.handlers.commands;
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.Status;
 
@@ -23,7 +24,7 @@ public class CloseCargoScoopHandler extends CommandOperator implements CommandHa
             if (status.isCargoScoopDeployed()) {
                 operateKeyboard(BINDING_TOGGLE_CARGO_SCOOP.getGameBinding(), 0);
             } else {
-                EventBusManager.publish(new AiVoxResponseEvent("Cargo scoop already retracted."));
+                EventBusManager.publish(new MissionCriticalAnnouncementEvent("Cargo scoop already retracted."));
             }
         }
 
@@ -31,7 +32,7 @@ public class CloseCargoScoopHandler extends CommandOperator implements CommandHa
             if (status.isCargoScoopDeployed()) {
                 operateKeyboard(BINDING_TOGGLE_CARGO_SCOOP_BUGGY.getGameBinding(), 0);
             } else {
-                EventBusManager.publish(new AiVoxResponseEvent("Cargo scoop already retracted."));
+                EventBusManager.publish(new MissionCriticalAnnouncementEvent("Cargo scoop already retracted."));
             }
         }
     }

@@ -2,6 +2,7 @@ package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.PlayerSession;
 
@@ -13,6 +14,6 @@ public class MiningOnOffHandler implements CommandHandler {
 
         PlayerSession playerSession = PlayerSession.getInstance();
         playerSession.setMiningAnnouncementOn(isOn);
-        EventBusManager.publish(new AiVoxResponseEvent("Mining Announcements: " + (isOn ? "On" : "Off")));
+        EventBusManager.publish(new MissionCriticalAnnouncementEvent("Mining Announcements: " + (isOn ? "On" : "Off")));
     }
 }

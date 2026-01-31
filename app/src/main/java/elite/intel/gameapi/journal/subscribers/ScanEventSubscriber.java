@@ -90,7 +90,8 @@ public class ScanEventSubscriber {
 
         LocationDto location = locationManager.findBySystemAddress(event.getSystemAddress(), event.getBodyID());
         LocationDto.LocationType locationType = determineLocationType(event);
-        LocationDto primaryStarLocation = playerSession.getPrimaryStarLocation();
+        locationManager.findBySystemAddress(event.getSystemAddress(), event.getBodyID());
+        LocationDto primaryStarLocation = locationManager.findPrimaryStar(event.getStarSystem());
         location.setBodyId(event.getBodyID());
         location.setStarName(primaryStarLocation.getStarName());
         location.setX(primaryStarLocation.getX());
@@ -199,7 +200,7 @@ public class ScanEventSubscriber {
             announceIfNewDiscovery(event, location);
         }
 
-        playerSession.saveLocation(location);
+        locationManager.save(location);
         playerSession.setLastScan(location);
 
     }

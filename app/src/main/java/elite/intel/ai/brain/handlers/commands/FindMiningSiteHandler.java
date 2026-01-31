@@ -31,14 +31,14 @@ public class FindMiningSiteHandler extends CommandOperator implements CommandHan
     @Override public void handle(String action, JsonObject params, String responseText) {
         Status status = Status.getInstance();
         if (!status.isInMainShip()) {
-            EventBusManager.publish(new AiVoxResponseEvent("Please board your ship."));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Please board your ship."));
             return;
         }
 
         JsonElement mat = params.get("key");
         JsonElement distance = params.get("max_distance");
         if (mat == null) {
-            EventBusManager.publish(new AiVoxResponseEvent("Did not catch the material name."));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Did not catch the material name."));
             return;
         }
 
@@ -58,7 +58,7 @@ public class FindMiningSiteHandler extends CommandOperator implements CommandHan
                 );
 
         if (miningLocations == null || miningLocations.getResults().isEmpty()) {
-            EventBusManager.publish(new AiVoxResponseEvent("No Mining sites found."));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("No Mining sites found."));
             return;
         }
 

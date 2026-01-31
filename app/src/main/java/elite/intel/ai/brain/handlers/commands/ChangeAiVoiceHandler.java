@@ -3,6 +3,7 @@ package elite.intel.ai.brain.handlers.commands;
 import com.google.gson.JsonObject;
 import elite.intel.ai.mouth.AiVoices;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.SystemSession;
 
@@ -21,14 +22,14 @@ public class ChangeAiVoiceHandler implements CommandHandler {
 
 
         if(systemSession.isRunningPiperTts()){
-            EventBusManager.publish(new AiVoxResponseEvent("Running Piper TTS. Voice switching is not available. Please re-configure your Piper TTS server for alternative vocalisation."));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Running Piper TTS. Voice switching is not available. Please re-configure your Piper TTS server for alternative vocalisation."));
             return;
         }
 
 
         String voiceName = params.get("key").getAsString();
         if (voiceName == null || voiceName.isEmpty()) {
-            EventBusManager.publish(new AiVoxResponseEvent("Sorry, the value returned was null or empty. I am unable to process your request."));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Sorry, the value returned was null or empty. I am unable to process your request."));
             return;
         }
         setVoice(voiceName);
@@ -37,9 +38,9 @@ public class ChangeAiVoiceHandler implements CommandHandler {
     private void setVoice(String voiceName) {
         try {
             systemSession.setAIVoice(AiVoices.valueOf(voiceName.toUpperCase()));
-            EventBusManager.publish(new AiVoxResponseEvent("Voice set to " + voiceName.toUpperCase()));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Voice set to " + voiceName.toUpperCase()));
         } catch (IllegalArgumentException e) {
-            EventBusManager.publish(new AiVoxResponseEvent("Sorry, I don't understand voice name: " + voiceName.toUpperCase() + ". Error: " + e.getMessage()));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Sorry, I don't understand voice name: " + voiceName.toUpperCase() + ". Error: " + e.getMessage()));
         }
     }
 }

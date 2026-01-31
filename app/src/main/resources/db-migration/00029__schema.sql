@@ -1,0 +1,1 @@
+alter table player add column systemAddress big int not null default 0;

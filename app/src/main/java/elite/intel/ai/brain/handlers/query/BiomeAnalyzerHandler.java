@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import elite.intel.ai.brain.commons.BiomeAnalyzer;
 import elite.intel.ai.brain.commons.BiomeAnalyzer.LocationData;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.dto.FssSignalDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
@@ -16,16 +17,21 @@ import static org.apache.commons.lang3.StringUtils.trimToNull;
 
 public class BiomeAnalyzerHandler extends BaseQueryAnalyzer implements QueryHandler {
 
+    private final PlayerSession playerSession = PlayerSession.getInstance();
+    private final BiomeAnalyzer biomeAnalyzer = BiomeAnalyzer.getInstance();
+    private final LocationManager locationManager = LocationManager.getInstance();
+
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         EventBusManager.publish(new AiVoxResponseEvent("Analyzing planetary and biome data... Stand by..."));
-        PlayerSession playerSession = PlayerSession.getInstance();
-        BiomeAnalyzer biomeAnalyzer = BiomeAnalyzer.getInstance();
 
         JsonElement key = params.get("key");
         String planetName = key == null ? null : key.getAsString().replace(" ", "");
+        Collection<LocationDto> allStellarObjectsInStarSystem = locationManager.findAllBySystemAddress(
+                playerSession.getLocationData().getSystemAddress()
+        );
 
         if (planetName != null) {
-            LocationDto firstMatchingLocation = findFirstMatchingLocation(playerSession.getLocations(), planetName);
+            LocationDto firstMatchingLocation = findFirstMatchingLocation(allStellarObjectsInStarSystem, planetName);
             if(firstMatchingLocation == null) return process("No match found for "+planetName);
             biomeAnalyzer.analyzeBiome(
                     originalUserInput,
@@ -40,17 +46,17 @@ public class BiomeAnalyzerHandler extends BaseQueryAnalyzer implements QueryHand
                     )
             );
         } else {
-            biomeAnalyzer.analyzeBiome(originalUserInput, findPlanetsWithBioSignals(playerSession.getLocations()));
+            biomeAnalyzer.analyzeBiome(originalUserInput, findPlanetsWithBioSignals(allStellarObjectsInStarSystem));
         }
         return null;
     }
 
-    public LocationDto findFirstMatchingLocation(Map<Long, LocationDto> locations, String planetName) {
+    public LocationDto findFirstMatchingLocation(Collection<LocationDto> locations, String planetName) {
         if (planetName == null || planetName.trim().isEmpty()) {
             return null;
         }
 
-        for (LocationDto locationDto : locations.values()) {
+        for (LocationDto locationDto : locations) {
             String lowerPlanetName = locationDto.getPlanetShortName().toLowerCase().replace("planet", "").replace(" ", "");
             if (lowerPlanetName.contains(planetName.replace(" ", "")) && !planetName.isEmpty()) {
                 return locationDto;
@@ -60,9 +66,9 @@ public class BiomeAnalyzerHandler extends BaseQueryAnalyzer implements QueryHand
         return null;
     }
 
-    public LocationData[] findPlanetsWithBioSignals(Map<Long, LocationDto> locations) {
+    public LocationData[] findPlanetsWithBioSignals(Collection<LocationDto> locations) {
         List<LocationData> result = new ArrayList<>();
-        for (LocationDto v : locations.values()) {
+        for (LocationDto v : locations) {
             Set<FssSignalDto> detectedSignals = v.getDetectedSignals();
             int bioSignalCounter = 0;
             for (FssSignalDto signal : detectedSignals) {

@@ -3,6 +3,7 @@ package elite.intel.ai.brain.handlers.commands;
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.Status;
 
@@ -18,7 +19,7 @@ public class DeployLandingGearHandler extends CommandOperator implements Command
         Status status = Status.getInstance();
 
         if (status.isLandingGearDown()) {
-            EventBusManager.publish(new AiVoxResponseEvent("Landing gear already deployed."));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Landing gear already deployed."));
         } else {
             operateKeyboard(BINDING_LANDING_GEAR_TOGGLE.getGameBinding(), 0);
         }

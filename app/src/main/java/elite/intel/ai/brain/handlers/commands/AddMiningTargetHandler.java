@@ -2,6 +2,7 @@ package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.PlayerSession;
 import org.apache.logging.log4j.LogManager;
@@ -30,6 +31,6 @@ public class AddMiningTargetHandler implements CommandHandler {
 
             session.addMiningTarget(target);
         }
-        EventBusManager.publish(new AiVoxResponseEvent("Mining target set to " + target + ". Mining announcement enabled."));
+        EventBusManager.publish(new MissionCriticalAnnouncementEvent("Mining target set to " + target + ". Mining announcement enabled."));
     }
 }

@@ -2,6 +2,7 @@ package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.dto.TargetLocation;
 import elite.intel.session.PlayerSession;
@@ -16,7 +17,7 @@ public class NavigateToCoordinatesHandler implements CommandHandler {
         PlayerSession playerSession = PlayerSession.getInstance();
 
         if(params.get("lat") == null || params.get("lon") == null) {
-            EventBusManager.publish(new AiVoxResponseEvent("Say Again?"));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Say Again?"));
             return;
         }
 
@@ -25,7 +26,7 @@ public class NavigateToCoordinatesHandler implements CommandHandler {
 
         if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
             log.error("Invalid coordinates: " + latitude + ", " + longitude);
-            EventBusManager.publish(new AiVoxResponseEvent("Coordinates must be between -90 and 90 and -180 and 180"));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Coordinates must be between -90 and 90 and -180 and 180"));
         } else {
             TargetLocation tracking = playerSession.getTracking();
             tracking.setEnabled(true);
@@ -34,7 +35,7 @@ public class NavigateToCoordinatesHandler implements CommandHandler {
             tracking.setRequestedTime(System.currentTimeMillis());
             playerSession.setTracking(tracking);
             log.info("Starting navigation to coordinates: " + latitude + ", " + longitude);
-            EventBusManager.publish(new AiVoxResponseEvent("Starting navigation to latitude: " + latitude + ", longitude: " + longitude + "."));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Starting navigation to latitude: " + latitude + ", longitude: " + longitude + "."));
         }
     }
 }

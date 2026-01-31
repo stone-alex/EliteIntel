@@ -9,12 +9,11 @@ import elite.intel.session.PlayerSession;
 public class ScanBaryCentreSubscriber {
 
     private final LocationManager locationManager = LocationManager.getInstance();
-    private final PlayerSession playerSession = PlayerSession.getInstance();
 
     @Subscribe
     public void onScanBaryCentreEvent(ScanBaryCentreEvent event) {
         LocationDto location = locationManager.findBySystemAddress(event.getSystemAddress(), event.getBodyID());
-        LocationDto primaryStarLocation = playerSession.getPrimaryStarLocation();
+        LocationDto primaryStarLocation = locationManager.findPrimaryStar(event.getStarSystem());
         location.setBodyId(event.getBodyID());
         location.setStarName(primaryStarLocation.getStarName());
         location.setX(primaryStarLocation.getX());

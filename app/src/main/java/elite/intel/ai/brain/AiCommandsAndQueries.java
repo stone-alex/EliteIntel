@@ -90,7 +90,7 @@ public class AiCommandsAndQueries {
             Map.entry(" disengage FSD, drop from supercruise, drop ", EXIT_SUPER_CRUISE.getAction()),
             Map.entry(" analysis mode, hud to analysis ", ACTIVATE_ANALYSIS_MODE.getAction()),
             Map.entry(" combat mode, hud to combat ", ACTIVATE_COMBAT_MODE.getAction()),
-            Map.entry(" plot route to carrier ", PLOT_ROUTE_TO_CARRIER.getAction()),
+            Map.entry(" plot route to carrier, plot route to home base, return to base ", PLOT_ROUTE_TO_CARRIER.getAction()),
             Map.entry(" plot route to home system ", TAKE_ME_HOME.getAction()),
             Map.entry(" set optimal speed, optimize speed, approaching planet ", SET_OPTIMAL_SPEED.getAction()),  // Kept here
             Map.entry(" open FSS and scan, scan system, honk, scan ", OPEN_FSS_AND_SCAN.getAction()),  // Fixed typo
@@ -112,7 +112,7 @@ public class AiCommandsAndQueries {
             Map.entry(" defend ship ", REQUEST_DEFENSIVE_BEHAVIOUR.getAction()),
             Map.entry(" focus my target ", REQUEST_FOCUS_TARGET.getAction()),
             Map.entry(" hold fire ", REQUEST_HOLD_FIRE.getAction()),
-            Map.entry(" fighter to base, return to base ", REQUEST_REQUEST_DOCK.getAction()),
+            Map.entry(" fighter to base, recall fighter ", REQUEST_REQUEST_DOCK.getAction()),
             Map.entry(" stop, engine stop, full stop, taxi, set speed zero ", STOP.getAction()),
             Map.entry(" quarter throttle, quarter speed, speed 25 ", SET_SPEED25.getAction()),
             Map.entry(" half throttle, half speed, speed 50 ", SET_SPEED50.getAction()),

@@ -3,6 +3,7 @@ package elite.intel.ai.brain.handlers.commands;
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.dao.LocationDao;
 import elite.intel.db.managers.LocationManager;
 import elite.intel.search.spansh.station.vista.VistaGenomicsLocationDto;
@@ -28,7 +29,7 @@ public class FindVistaGenomicsHandler extends CommandOperator implements Command
 
     @Override public void handle(String action, JsonObject params, String responseText) {
         Number range = GetNumberFromParam.getNumberFromParam(params, 250);
-        EventBusManager.publish(new AiVoxResponseEvent("Searching for Vista Genomics... Stand by..."));
+        EventBusManager.publish(new MissionCriticalAnnouncementEvent("Searching for Vista Genomics... Stand by..."));
 
 
         VistaSearchCriteria criteria = new VistaSearchCriteria();
@@ -53,7 +54,7 @@ public class FindVistaGenomicsHandler extends CommandOperator implements Command
 
         List<VistaGenomicsLocationDto.Result> results = VistaGenomicsSearch.findVistaGenomics(criteria);
         if (results == null || results.isEmpty()) {
-            EventBusManager.publish(new AiVoxResponseEvent("No Vista Genomics found."));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("No Vista Genomics found."));
             return;
         }
 
@@ -61,7 +62,7 @@ public class FindVistaGenomicsHandler extends CommandOperator implements Command
         RoutePlotter routePlotter = new RoutePlotter(this.controller);
         VistaGenomicsLocationDto.Result result = first.get();
         DestinationReminderManager.getInstance().setDestination(result.toJson());
-        EventBusManager.publish(new AiVoxResponseEvent("Head to " + result.getSystemName() + " star system. When you get there looks for" + result.getStationName()));
+        EventBusManager.publish(new MissionCriticalAnnouncementEvent("Head to " + result.getSystemName() + " star system. When you get there looks for" + result.getStationName()));
         routePlotter.plotRoute(result.getSystemName());
     }
 }

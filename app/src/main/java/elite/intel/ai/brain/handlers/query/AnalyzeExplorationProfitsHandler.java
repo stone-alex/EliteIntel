@@ -5,6 +5,7 @@ import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.db.dao.CodexEntryDao;
 import elite.intel.db.managers.CodexEntryManager;
+import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.dto.BioSampleDto;
 import elite.intel.gameapi.journal.events.dto.GenusDto;
@@ -19,6 +20,7 @@ import java.util.List;
 public class AnalyzeExplorationProfitsHandler extends BaseQueryAnalyzer implements QueryHandler {
 
     private final PlayerSession playerSession = PlayerSession.getInstance();
+    private final LocationManager locationManager = LocationManager.getInstance();
     private final CodexEntryManager codexEntryManager = CodexEntryManager.getInstance();
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
@@ -51,7 +53,7 @@ public class AnalyzeExplorationProfitsHandler extends BaseQueryAnalyzer implemen
     }
 
     private long calculatePotentialProfit() {
-        Collection<LocationDto> stellarObjects = playerSession.getLocations().values();
+        Collection<LocationDto> stellarObjects = locationManager.findAllBySystemAddress(playerSession.getLocationData().getSystemAddress());
         long result = 0;
         for (LocationDto dto : stellarObjects) {
             List<GenusDto> genus = dto.getGenus();

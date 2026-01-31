@@ -32,9 +32,11 @@ public class NavigateToPirateMassacreMissionTargetHandler extends CommandOperato
             return;
         }
 
-        MissionDto mission = missionManager.getMissions(missionTypes).values().stream().filter(
-                v -> v.getMissionType().equals("PirateMassacre")
-        ).findFirst().orElse(null);
+        MissionDto mission = missionManager.getMissions(missionTypes)
+                .values()
+                .stream().filter(v -> v.getMissionType().equals(MissionType.MISSION_PIRATE_MASSACRE)).findFirst().orElse(null);
+
+        if(mission == null) return;
 
         RoutePlotter plotter = new RoutePlotter(this.controller);
         plotter.plotRoute(mission.getDestinationSystem());

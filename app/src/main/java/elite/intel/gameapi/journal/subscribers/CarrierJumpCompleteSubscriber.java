@@ -22,6 +22,7 @@ import java.util.Objects;
 public class CarrierJumpCompleteSubscriber {
     private static final Long FOUR_MINUTES = (long) (1000 * 60 * 4);
     private final PlayerSession playerSession = PlayerSession.getInstance();
+    private final LocationManager locationManager = LocationManager.getInstance();
 
     @Subscribe
     public void onCarrierJumpCompleteEvent(CarrierJumpEvent event) {
@@ -58,21 +59,16 @@ public class CarrierJumpCompleteSubscriber {
         playerSession.setCarrierDepartureTime(null);
 
         Status status = Status.getInstance();
-        String stationName = playerSession.getCurrentLocation().getStationName();
         CarrierDataDto carrierInfo = playerSession.getCarrierData();
 
         LocationDto location = toLocationDto(event);
         if (status.isDocked()) {
-            // NOTE: Assumption: we are docked at the carrier on arrival, not at some other station.
-            // NOTE: This will cause problems if we jump carrier while sitting on another station, until player jumps to another system
-
-            location.setStationName(stationName);
             location.setX(starPos[0]);
             location.setY(starPos[1]);
             location.setZ(starPos[2]);
-            playerSession.setCurrentLocationId(location.getBodyId());
+            playerSession.setCurrentLocationId(location.getBodyId(), location.getSystemAddress());
             playerSession.setCurrentPrimaryStarName(starSystem);
-            playerSession.saveLocation(location);
+            locationManager.save(location);
         }
 
         if (starPos[0] > 0) {

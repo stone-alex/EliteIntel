@@ -41,7 +41,8 @@ public class AppView extends JFrame implements AppViewInterface {
     private static final Color FG_MUTED = new Color(0xB0B0B0); // secondary text
     private static final Color ACCENT = new Color(0xFF8C00); // orange
     private static final Color CONSOLE_FG = new Color(0xE0FFEF); // orange
-    private static final Color SEL_BG = new Color(0xFF8C00); // selection background
+    private static final Color SEL_BG = new Color(0xE0FFEF); // selection background
+    private static final Color SEL_FG = new Color(0x13181D); // selection background
     private static final Color TAB_UNSELECTED = new Color(0x141622);
     private static final Color TAB_SELECTED = new Color(0x1F2032);
     private static final Color DISABLED_FG = new Color(0x8B0101);
@@ -140,12 +141,12 @@ public class AppView extends JFrame implements AppViewInterface {
         toggleStreamingModeCheckBox.setEnabled(false);//enabled when services start
         toggleStreamingModeCheckBox.setToolTipText("Prevent AI from processing unless you prefix your command or query with word 'computer'");
         toggleStreamingModeCheckBox.setText(LABEL_STREAMING_MODE);
-        toggleStreamingModeCheckBox.setForeground(SEL_BG);
+        toggleStreamingModeCheckBox.setForeground(ACCENT);
 
         togglePrivacyModeCheckBox.setEnabled(false); // enabled when services start
         togglePrivacyModeCheckBox.setToolTipText("Disable Speech to Text completely");
         togglePrivacyModeCheckBox.setText(LABEL_PRIVACY_MODE);
-        togglePrivacyModeCheckBox.setForeground(SEL_BG);
+        togglePrivacyModeCheckBox.setForeground(ACCENT);
 
         journalDirField.setEditable(false);
         journalDirField.setPreferredSize(new Dimension(200, 42));
@@ -621,7 +622,7 @@ public class AppView extends JFrame implements AppViewInterface {
         addField(cloudFields, ttsApiKeyField, gbc, 1, 0.8);
         ttsLockedCheck = new JCheckBox("Locked", true);
         addCheck(cloudFields, ttsLockedCheck, gbc);
-        cloudFields.setBorder(new LineBorder(SEL_BG, 1));
+        cloudFields.setBorder(new LineBorder(ACCENT, 1));
         cloudFields.revalidate();
         addNestedPanel(settingsTabPanel, cloudFields);
         /// --------------------------------------------------------------------------------------------------------------------------------------------
@@ -651,7 +652,7 @@ public class AppView extends JFrame implements AppViewInterface {
         localLlmModelQueryField = new JTextField();
         localLlmModelQueryField.setPreferredSize(new Dimension(200, 42));
         addField(localSettingsPanel, localLlmModelQueryField, gbc, 1, 0.8);
-        localSettingsPanel.setBorder(new LineBorder(SEL_BG, 1));
+        localSettingsPanel.setBorder(new LineBorder(ACCENT, 1));
         localSettingsPanel.revalidate();
         addNestedPanel(settingsTabPanel, localSettingsPanel);
         /// --------------------------------------------------------------------------------------------------------------------------------------------
@@ -687,7 +688,7 @@ public class AppView extends JFrame implements AppViewInterface {
         }));
 
         addLabel(localSettingsPanel, speechSpeedLabel, gbc);
-        localSettingsPanel.setBorder(new LineBorder(SEL_BG, 1));
+        localSettingsPanel.setBorder(new LineBorder(ACCENT, 1));
 
         addNestedPanel(settingsTabPanel, localSettingsPanel);
         /// --------------------------------------------------------------------------------------------------------------------------------------------
@@ -703,7 +704,7 @@ public class AppView extends JFrame implements AppViewInterface {
         addField(localSettingsPanel, edsmKeyField, gbc, 1, 0.8);
         edsmLockedCheck = new JCheckBox("Locked", true);
         addCheck(localSettingsPanel, edsmLockedCheck, gbc);
-        localSettingsPanel.setBorder(new LineBorder(SEL_BG, 1));
+        localSettingsPanel.setBorder(new LineBorder(ACCENT, 1));
 
         addNestedPanel(settingsTabPanel, localSettingsPanel);
         /// --------------------------------------------------------------------------------------------------------------------------------------------
@@ -860,7 +861,7 @@ public class AppView extends JFrame implements AppViewInterface {
         if (c instanceof JTextComponent tc) {
             tc.setCaretColor(FG);
             tc.setSelectionColor(SEL_BG);
-            tc.setSelectedTextColor(FG);
+            tc.setSelectedTextColor(SEL_FG);
             tc.setBorder(BorderFactory.createCompoundBorder(
                     new LineBorder(ACCENT, 1, true),
                     new EmptyBorder(6, 8, 6, 8)
@@ -943,7 +944,7 @@ public class AppView extends JFrame implements AppViewInterface {
         toggleStreamingModeCheckBox.setSelected(systemSession.isStreamingModeOn());
         setupStreamingCheckBox(systemSession.isStreamingModeOn());
         togglePrivacyModeCheckBox.setSelected(systemSession.isStreamingModeOn());
-        togglePrivacyModeCheckBox.setForeground(systemSession.isStreamingModeOn() ? DISABLED_FG : SEL_BG);
+        togglePrivacyModeCheckBox.setForeground(systemSession.isStreamingModeOn() ? DISABLED_FG : ACCENT);
     }
 
 
@@ -1104,7 +1105,7 @@ public class AppView extends JFrame implements AppViewInterface {
 
     private void setupStreamingCheckBox(Boolean streamingModeOn) {
         toggleStreamingModeCheckBox.setSelected(streamingModeOn);
-        toggleStreamingModeCheckBox.setForeground(streamingModeOn ? DISABLED_FG : SEL_BG);
+        toggleStreamingModeCheckBox.setForeground(streamingModeOn ? DISABLED_FG : ACCENT);
         toggleStreamingModeCheckBox.setText(streamingModeOn ? "Streaming On" : "Streaming Off");
     }
 

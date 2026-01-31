@@ -3,6 +3,7 @@ package elite.intel.ai.brain.handlers.query;
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.LoadoutEvent;
 import elite.intel.gameapi.journal.events.dto.CarrierDataDto;
@@ -15,9 +16,12 @@ import elite.intel.util.json.ToJsonConvertible;
 
 public class AnalyzeDistanceFromFleetCarrierHandler extends BaseQueryAnalyzer implements QueryHandler {
 
+    private final PlayerSession playerSession = PlayerSession.getInstance();
+    private final LocationManager locationManager = LocationManager.getInstance();
+
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         EventBusManager.publish(new AiVoxResponseEvent("Analyzing travel telemetry... Stand by..."));
-        PlayerSession playerSession = PlayerSession.getInstance();
+
         CarrierDataDto carrierData = playerSession.getCarrierData();
         if (carrierData == null) return process("No data available");
         String carrierLocation = playerSession.getLastKnownCarrierLocation();
@@ -30,7 +34,7 @@ public class AnalyzeDistanceFromFleetCarrierHandler extends BaseQueryAnalyzer im
         }
 
         double x = 0, y = 0, z = 0;
-        LocationDto primarySystem = playerSession.getPrimaryStarLocation();
+        LocationDto primarySystem = locationManager.findPrimaryStar(playerSession.getPrimaryStarName());
         x = primarySystem.getX();
         y = primarySystem.getY();
         z = primarySystem.getZ();

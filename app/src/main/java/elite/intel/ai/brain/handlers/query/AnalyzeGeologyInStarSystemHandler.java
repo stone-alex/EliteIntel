@@ -3,6 +3,7 @@ package elite.intel.ai.brain.handlers.query;
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.FSSBodySignalsEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
@@ -10,6 +11,7 @@ import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +19,7 @@ import java.util.Map;
 public class AnalyzeGeologyInStarSystemHandler extends BaseQueryAnalyzer implements QueryHandler {
 
     private final PlayerSession playerSession = PlayerSession.getInstance();
+    private final LocationManager locationManager = LocationManager.getInstance();
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         EventBusManager.publish(new AiVoxResponseEvent("Searching for planets with geological signals..."));
@@ -31,8 +34,8 @@ public class AnalyzeGeologyInStarSystemHandler extends BaseQueryAnalyzer impleme
 
     private Map<String, Integer> planetsWithGeoSignals() {
         Map<String, Integer> result = new HashMap<>();
-        Map<Long, LocationDto> locations = playerSession.getLocations();
-        for (LocationDto location : locations.values()) {
+        Collection<LocationDto> locations = locationManager.findAllBySystemAddress(playerSession.getLocationData().getSystemAddress());
+        for (LocationDto location : locations) {
             if (location.getGeoSignals() > 0) {
                 result.put(location.getPlanetShortName(), location.getGeoSignals());
             }

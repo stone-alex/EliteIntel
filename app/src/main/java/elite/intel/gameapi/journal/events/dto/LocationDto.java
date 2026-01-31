@@ -87,12 +87,12 @@ public class LocationDto implements ToJsonConvertible {
     private boolean hasRings;
     private String parentBodyName;
 
-    public LocationDto(long id) {
-        setBodyId(id);
+    public LocationDto(long bodiId) {
+        setBodyId(bodiId);
     }
 
-    public LocationDto(long id, long systemAddress) {
-        setBodyId(id);
+    public LocationDto(long bodyId, long systemAddress) {
+        setBodyId(bodyId);
         setSystemAddress(systemAddress);
     }
 
@@ -108,6 +108,21 @@ public class LocationDto implements ToJsonConvertible {
 
     public LocationDto(LocationType locationType) {
         setLocationType(locationType);
+    }
+
+    public static LocationType determineType(String data, boolean isPrimaryStar) {
+        String type = data.toLowerCase(Locale.ROOT);
+        if (type.contains("star") && isPrimaryStar) return LocationDto.LocationType.PRIMARY_STAR;
+        if (type.contains("star") && !isPrimaryStar) return LocationDto.LocationType.STAR;
+        if (type.contains("body")) return LocationDto.LocationType.PLANET;
+        if (type.contains("giant")) return LocationDto.LocationType.PLANET;
+        if (type.contains("world")) return LocationDto.LocationType.PLANET;
+        if (type.contains("rogueplanet")) return LocationDto.LocationType.PLANET;
+        if (type.contains("black hole")) return LocationDto.LocationType.BLACK_HOLE;
+        if (type.contains("nebula")) return LocationDto.LocationType.NEBULA;
+        if (type.contains("station")) return LocationDto.LocationType.STATION;
+        if (type.contains("fleetcarrier")) return LocationDto.LocationType.FLEET_CARRIER;
+        return null;
     }
 
     public long getSystemAddress() {
@@ -855,11 +870,13 @@ public class LocationDto implements ToJsonConvertible {
         return parentBodyName;
     }
 
+
     public enum BioStatus {
         BIO_FORMS_PRESENT,
         NO_BIO_FORMS,
         SCAN_REQUIRED;
     }
+
 
     public enum LocationType {
         STAR,

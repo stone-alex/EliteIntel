@@ -3,6 +3,7 @@ package elite.intel.ai.brain.handlers.query;
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.dto.BioSampleDto;
 import elite.intel.gameapi.journal.events.dto.GenusDto;
@@ -18,18 +19,20 @@ import static elite.intel.util.ExoBio.completedScansForPlanet;
 
 public class AnalyzeBioSamplesPlanetSurfaceHandler extends BaseQueryAnalyzer implements QueryHandler {
 
+    private final PlayerSession playerSession = PlayerSession.getInstance();
+    private final LocationManager locationManager = LocationManager.getInstance();
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         EventBusManager.publish(new AiVoxResponseEvent("Analyzing exobiology data... Stand by..."));
 
-        PlayerSession playerSession = PlayerSession.getInstance();
-        LocationDto currentLocation = playerSession.getCurrentLocation();
+
+        LocationDto currentLocation = locationManager.findByLocationData(playerSession.getLocationData());
         if (currentLocation.getBodyId() < 0) {
             return process("Current location data is not available");
         }
         List<BioSampleDto> partialScans = currentLocation.getPartialBioSamples();
         List<GenusDto> genusListForCurrentLocation = currentLocation.getGenus();
-        List<ExoBio.DataDto> completedScansForPlanet = completedScansForPlanet(playerSession);
+        List<ExoBio.DataDto> completedScansForPlanet = completedScansForPlanet(playerSession.getBioCompletedSamples(), currentLocation.getPlanetName());
         List<GenusDto> genusListNotScannedForCurrentLocation = calculateGenusNotYetScanned(completedScansForPlanet, genusListForCurrentLocation);
 
         String instructions = """

@@ -1,6 +1,7 @@
 package elite.intel.gameapi.gamestate.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.gamestate.status_events.PlayerMovedEvent;
@@ -16,11 +17,12 @@ import java.util.List;
 public class BioSampleTrackingSubscriber {
 
     private final PlayerSession playerSession = PlayerSession.getInstance();
+    private final LocationManager locationManager = LocationManager.getInstance();
     private final Status status = Status.getInstance();
 
     @Subscribe
     public void onPlayerMovedEvent(PlayerMovedEvent event) {
-        LocationDto currentLocation = playerSession.getCurrentLocation();
+        LocationDto currentLocation = locationManager.findByLocationData(playerSession.getLocationData());
         List<BioSampleDto> bioSamples = currentLocation.getPartialBioSamples();
 
         // If no samples are being tracked, don't announce.
@@ -54,7 +56,7 @@ public class BioSampleTrackingSubscriber {
         }
 
         currentLocation.setPartialBioSamples(temp);
-        playerSession.saveLocation(currentLocation);
+        locationManager.save(currentLocation);
 
         // Announce only on state transition
         if (wasFarEnough != isFarEnough) {

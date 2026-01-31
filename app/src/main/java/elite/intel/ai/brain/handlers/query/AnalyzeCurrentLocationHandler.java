@@ -3,6 +3,7 @@ package elite.intel.ai.brain.handlers.query;
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.search.edsm.EdsmApiClient;
@@ -18,16 +19,16 @@ import elite.intel.util.json.ToJsonConvertible;
 public class AnalyzeCurrentLocationHandler extends BaseQueryAnalyzer implements QueryHandler {
 
     public static final double DAY = 86400.0;
+    private final PlayerSession playerSession = PlayerSession.getInstance();
+    private final LocationManager locationManager = LocationManager.getInstance();
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         EventBusManager.publish(new AiVoxResponseEvent("Analyzing current location data... Stand by..."));
         Status status = Status.getInstance();
-        PlayerSession playerSession = PlayerSession.getInstance();
 
-
-        LocationDto location = playerSession.getCurrentLocation();
-        DeathsDto deathsDto = EdsmApiClient.searchDeaths(playerSession.getPrimaryStarLocation().getStarName());
-        TrafficDto trafficDto = EdsmApiClient.searchTraffic(playerSession.getPrimaryStarLocation().getStarName());
+        LocationDto location = locationManager.findByLocationData(playerSession.getLocationData());
+        DeathsDto deathsDto = EdsmApiClient.searchDeaths(location.getStarName());
+        TrafficDto trafficDto = EdsmApiClient.searchTraffic(location.getStarName());
 
         String station = "Station";
         if (status.isDocked() && location.getStationName() != null || location.getStationName() != null) {

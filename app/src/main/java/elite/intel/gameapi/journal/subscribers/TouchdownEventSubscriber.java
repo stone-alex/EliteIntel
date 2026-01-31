@@ -2,16 +2,19 @@ package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
+import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
-import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
-import elite.intel.gameapi.journal.events.MissionCompletedEvent;
 import elite.intel.gameapi.journal.events.TouchdownEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 
 @SuppressWarnings("unused")
 public class TouchdownEventSubscriber {
+
+    private final PlayerSession playerSession = PlayerSession.getInstance();
+    private final LocationManager locationManager = LocationManager.getInstance();
+
 
     @Subscribe
     public void onTouchdownEvent(TouchdownEvent event) {
@@ -46,13 +49,8 @@ public class TouchdownEventSubscriber {
         sb.append("Point of Interest: ");
         sb.append(pointOfInterest);
 
-        PlayerSession playerSession = PlayerSession.getInstance();
-        LocationDto currentLocation = playerSession.getCurrentLocation();
-        if(currentLocation != null) {
-            // only set LZ coordinates on touchdown. Event if ship departs, we can go back to where it can land again.
-            currentLocation.setLandingCoordinates(new double[]{ latitude, longitude});
-            playerSession.saveLocation(currentLocation);
-        }
+
+        LocationDto currentLocation = locationManager.findByLocationData(playerSession.getLocationData());
 
         if (pointOfInterest != null && !pointOfInterest.isEmpty()) {
             EventBusManager.publish(new SensorDataEvent(sb.toString(), "We have landed successfully. Notify user"));

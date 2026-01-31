@@ -28,7 +28,7 @@ public class CodexEntryEventSubscriber {
         final Status status = Status.getInstance();
 
         LocationDto currentLocation = locationManager.findBySystemAddress(event.getSystemAddress(), event.getBodyID());
-        playerSession.setCurrentLocationId(event.getBodyID());
+        playerSession.setCurrentLocationId(event.getBodyID(), event.getSystemAddress());
         StringBuilder sb = new StringBuilder();
 
         String firstWordOfEntryName = event.getNameLocalised().split(" ")[0];
@@ -95,6 +95,6 @@ public class CodexEntryEventSubscriber {
         if("$Codex_SubCategory_Organic_Structures;".equalsIgnoreCase(event.getSubCategory())) {
             codexEntryManager.save(event);
         }
-        playerSession.saveLocation(currentLocation);
+        locationManager.save(currentLocation);
     }
 }

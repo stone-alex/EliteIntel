@@ -73,7 +73,7 @@ public class AnalyzeStellarSignalsHandler extends BaseQueryAnalyzer implements Q
 
 
     private List<ToJsonConvertible> aggregateSignals() {
-        long systemAddress = playerSession.getCurrentLocation().getSystemAddress();
+        long systemAddress = playerSession.getLocationData().getSystemAddress();
         Collection<LocationDto> locations = locationManager.findAllBySystemAddress(systemAddress);
         // body → ringId → type → count
         List<ToJsonConvertible> result = new ArrayList<>();
@@ -131,7 +131,7 @@ public class AnalyzeStellarSignalsHandler extends BaseQueryAnalyzer implements Q
 
     private List<ToJsonConvertible> toDiscoveredSignals() {
         List<ToJsonConvertible> discoveredSignals;
-        Collection<LocationDto> locations = playerSession.getLocations().values();
+        Collection<LocationDto> locations = locationManager.findAllBySystemAddress(playerSession.getLocationData().getSystemAddress());
         List<ToJsonConvertible> list = new ArrayList<>();
         locations.forEach(location -> {
             Set<FssSignalDto> detectedSignals = location.getDetectedSignals();

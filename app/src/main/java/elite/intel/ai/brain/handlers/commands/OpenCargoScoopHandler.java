@@ -3,6 +3,7 @@ package elite.intel.ai.brain.handlers.commands;
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.Status;
 
@@ -21,7 +22,7 @@ public class OpenCargoScoopHandler extends CommandOperator implements CommandHan
 
         if (status.isInMainShip()) {
             if (status.isCargoScoopDeployed()) {
-                EventBusManager.publish(new AiVoxResponseEvent("Cargo scoop already deployed."));
+                EventBusManager.publish(new MissionCriticalAnnouncementEvent("Cargo scoop already deployed."));
             } else {
                 operateKeyboard(BINDING_TOGGLE_CARGO_SCOOP.getGameBinding(), 0);
             }
@@ -29,7 +30,7 @@ public class OpenCargoScoopHandler extends CommandOperator implements CommandHan
 
         if (status.isInSrv()) {
             if (status.isCargoScoopDeployed()) {
-                EventBusManager.publish(new AiVoxResponseEvent("Cargo scoop already deployed."));
+                EventBusManager.publish(new MissionCriticalAnnouncementEvent("Cargo scoop already deployed."));
             } else {
                 operateKeyboard(BINDING_TOGGLE_CARGO_SCOOP_BUGGY.getGameBinding(), 0);
             }

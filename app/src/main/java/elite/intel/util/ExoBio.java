@@ -10,12 +10,10 @@ import java.util.List;
 
 public class ExoBio {
 
-    public static List<DataDto> completedScansForPlanet(PlayerSession playerSession) {
-        List<BioSampleDto> allBioSamples = playerSession.getBioCompletedSamples();
-        List<BioSampleDto> completedForThisPlanet = new ArrayList<>();
+    public static List<DataDto> completedScansForPlanet(List<BioSampleDto> allBioSamples, String planetName) {
         ArrayList<DataDto> result = new ArrayList<>();
         for(BioSampleDto bioSample : allBioSamples) {
-            if(bioSample.getPlanetName().equalsIgnoreCase(playerSession.getCurrentLocation().getPlanetName())) {
+            if(bioSample.getPlanetName().equalsIgnoreCase(planetName)) {
                 result.add(new DataDto(bioSample.getGenus(), bioSample.getSpecies(), bioSample.getScanXof3()));
             }
         }

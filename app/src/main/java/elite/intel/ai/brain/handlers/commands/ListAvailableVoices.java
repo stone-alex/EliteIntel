@@ -3,6 +3,7 @@ package elite.intel.ai.brain.handlers.commands;
 import com.google.gson.JsonObject;
 import elite.intel.ai.mouth.AiVoices;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
@@ -24,6 +25,6 @@ public class  ListAvailableVoices implements CommandHandler {
                 voiceNames.add(voice.getName());
             }
         }
-        EventBusManager.publish(new AiVoxResponseEvent("Available voices:\n" + String.join(", ", voiceNames)));
+        EventBusManager.publish(new MissionCriticalAnnouncementEvent("Available voices:\n" + String.join(", ", voiceNames)));
     }
 }

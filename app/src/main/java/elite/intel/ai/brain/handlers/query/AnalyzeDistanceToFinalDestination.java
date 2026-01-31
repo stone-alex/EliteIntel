@@ -3,6 +3,7 @@ package elite.intel.ai.brain.handlers.query;
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.gamestate.dtos.NavRouteDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
@@ -17,12 +18,15 @@ import static elite.intel.util.NavigationUtils.calculateGalacticDistance;
 
 public class AnalyzeDistanceToFinalDestination extends BaseQueryAnalyzer implements QueryHandler {
 
+    private final PlayerSession playerSession = PlayerSession.getInstance();
+    private final ShipRouteManager shipRoute = ShipRouteManager.getInstance();
+    private final LocationManager locationManager = LocationManager.getInstance();
+
     @Override
     public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         EventBusManager.publish(new AiVoxResponseEvent("Analyzing travel telemetry... Stand by..."));
-        PlayerSession playerSession = PlayerSession.getInstance();
-        ShipRouteManager shipRoute = ShipRouteManager.getInstance();
-        LocationDto here = playerSession.getCurrentLocation();
+
+        LocationDto here = locationManager.findByLocationData(playerSession.getLocationData());
         List<NavRouteDto> orderedRoute = shipRoute.getOrderedRoute();
 
         if (here == null) {

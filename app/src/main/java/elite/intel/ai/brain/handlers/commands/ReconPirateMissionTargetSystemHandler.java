@@ -3,6 +3,7 @@ package elite.intel.ai.brain.handlers.commands;
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.dao.PirateFactionDao.PirateFaction;
 import elite.intel.db.dao.PirateMissionProviderDao.MissionProvider;
 import elite.intel.db.managers.DestinationReminderManager;
@@ -34,7 +35,7 @@ public class ReconPirateMissionTargetSystemHandler extends CommandOperator imple
         ).findFirst().map(PirateMissionTuple::getTarget).orElse(null);
 
         if (target == null) {
-            EventBusManager.publish(new AiVoxResponseEvent("No target systems found."));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("No target systems found."));
             return;
         }
 
@@ -42,7 +43,7 @@ public class ReconPirateMissionTargetSystemHandler extends CommandOperator imple
         RoutePlotter plotter = new RoutePlotter(this.controller);
         plotter.plotRoute(starSystem);
         EventBusManager.publish(
-                new AiVoxResponseEvent(
+                new MissionCriticalAnnouncementEvent(
                         "Plotting route to target system: "
                                 + starSystem + ". When you get there scan nav beacon or search for resource sites. " +
                                 "I may not be able to detect them automatically. Confirmaation is required."

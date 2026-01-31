@@ -39,7 +39,6 @@ public class PlayerSession {
     public static final String BINDINGS_DIR = "bindings_dir";
     private static volatile PlayerSession instance;
     /// Data managers.
-    private LocationManager locationManager = LocationManager.getInstance();
     private ShipScansManager shipScans = ShipScansManager.getInstance();
     private MissionManager missions = MissionManager.getInstance();
     private BountyManager bounties = BountyManager.getInstance();
@@ -138,16 +137,18 @@ public class PlayerSession {
     }
 
 
+/*
     public void saveLocation(LocationDto location) {
         if (location.getBodyId() == -1) {
             return;
         }
         locationManager.save(location);
     }
+*/
 
-    public Map<Long, LocationDto> getLocations() {
+/*    public Map<Long, LocationDto> getLocations() {
         return locationManager.findByPrimaryStar(getPrimaryStarName());
-    }
+    }*/
 
     public String getPrimaryStarName() {
         return Database.withDao(PlayerDao.class, dao -> dao.get().getCurrentPrimaryStar());
@@ -179,6 +180,7 @@ public class PlayerSession {
         });
     }
 
+/*
     public LocationDto getCurrentLocation() {
         return Database.withDao(PlayerDao.class, dao -> {
             PlayerDao.Player player = dao.get();
@@ -186,15 +188,27 @@ public class PlayerSession {
             return currentLocationId == null ? new LocationDto(-1L) : locationManager.getLocation(player.getCurrentPrimaryStar(), currentLocationId);
         });
     }
+*/
 
-    public void setCurrentLocationId(long id) {
+    public void setCurrentLocationId(long bodyId, long systemAddress) {
         Database.withDao(PlayerDao.class, dao -> {
             PlayerDao.Player player = dao.get();
-            player.setCurrentLocationId(id);
+            player.setCurrentLocationId(bodyId);
+            player.setSystemAddress(systemAddress);
             dao.save(player);
             return Void.class;
         });
     }
+
+    public LocationData<Long, Long> getLocationData() {
+        return Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            Long currentLocationId = player.getCurrentLocationId();
+            Long systemAddress = player.getSystemAddress();
+            return new LocationData<>(systemAddress, currentLocationId);
+        });
+    }
+
 
     public CarrierDataDto getCarrierData() {
         return fleetCarriers.get();
@@ -216,8 +230,8 @@ public class PlayerSession {
         miningTargets.clear();
     }
 
-    public GameEvents.MarketEvent getMarket() {
-        return markets.findForStation(getCurrentLocation().getStationName());
+    public GameEvents.MarketEvent getMarket(String stationName) {
+        return markets.findForStation(stationName);
     }
 
     public void saveMarket(GameEvents.MarketEvent data) {
@@ -289,7 +303,7 @@ public class PlayerSession {
     public LocationDto getLastScan() {
         return Database.withDao(PlayerDao.class, dao -> {
             PlayerDao.Player player = dao.get();
-            return locationManager.getLocation(player.getCurrentPrimaryStar(), player.getLastScanId());
+            return LocationManager.getInstance().getLocation(player.getCurrentPrimaryStar(), player.getLastScanId());
         });
     }
 
@@ -382,8 +396,7 @@ public class PlayerSession {
         return Database.withDao(PlayerDao.class, dao -> dao.get().getPlayerMissionStatement());
     }
 
-    public void setHomeSystem() {
-        LocationDto location = getCurrentLocation();
+    public void setHomeSystem(LocationDto location) {
         Database.withDao(PlayerDao.class, dao -> {
             PlayerDao.Player player = dao.get();
             player.setHomeSystemId(location.getSystemAddress());
@@ -394,7 +407,7 @@ public class PlayerSession {
 
     public LocationDto getHomeSystem() {
         Long homeSystemId = Database.withDao(PlayerDao.class, dao -> dao.get().getHomeSystemId());
-        return locationManager.findBySystemAddress(homeSystemId);
+        return LocationManager.getInstance().findBySystemAddress(homeSystemId);
     }
 
     public void setPlayerMissionStatement(String playerMissionStatement) {
@@ -711,9 +724,9 @@ public class PlayerSession {
     public Path getJournalPath() {
         return Database.withDao(PlayerDao.class, dao -> {
             String directory = trimToNull(dao.get().getJournalDirectory());
-            if(OsDetector.getOs() == OsDetector.OS.WINDOWS) {
+            if (OsDetector.getOs() == OsDetector.OS.WINDOWS) {
                 return directory == null ? Paths.get(System.getProperty("user.home"), "Saved Games", "Frontier Developments", "Elite Dangerous") : Paths.get(directory);
-            } else if(OsDetector.getOs() == OsDetector.OS.LINUX) {
+            } else if (OsDetector.getOs() == OsDetector.OS.LINUX) {
                 return directory == null ? Paths.get(System.getProperty("user.home"), ".var", "app", "elite.intel.app", "ed-journal") : Paths.get(directory);
             } else {
                 return directory == null ? Paths.get(System.getProperty("user.home"), "Library", "Application Support", "Frontier Developments", "Elite Dangerous") : Paths.get(directory);
@@ -733,9 +746,9 @@ public class PlayerSession {
     public Path getBindingsDir() {
         return Database.withDao(PlayerDao.class, dao -> {
             String directory = trimToNull(dao.get().getBindingsDirectory());
-            if(OsDetector.getOs() == OsDetector.OS.WINDOWS) {
+            if (OsDetector.getOs() == OsDetector.OS.WINDOWS) {
                 return directory == null ? Paths.get(System.getProperty("user.home"), "AppData", "Local", "Frontier Developments", "Elite Dangerous", "Options", "Bindings") : Paths.get(directory);
-            } else if(OsDetector.getOs() == OsDetector.OS.LINUX){
+            } else if (OsDetector.getOs() == OsDetector.OS.LINUX) {
                 return directory == null ? Paths.get(System.getProperty("user.home"), ".var", "app", "elite.intel.app", "ed-bindings") : Paths.get(directory);
             } else {
                 return directory == null ? Paths.get(System.getProperty("user.home"), "Library", "Application Support", "Frontier Developments", "Elite Dangerous", "Options", "Bindings") : Paths.get(directory);
@@ -756,9 +769,11 @@ public class PlayerSession {
         return Database.withDao(PlayerDao.class, dao -> dao.get().getAlternativeName());
     }
 
+/*
     public LocationDto getPrimaryStarLocation() {
         return locationManager.findPrimaryStar(getPrimaryStarName());
     }
+*/
 
     public void clearShipScans() {
         shipScans.clear();
@@ -814,8 +829,8 @@ public class PlayerSession {
         return Database.withDao(PlayerDao.class, playerDao -> playerDao.get().getLocalTtsServer());
     }
 
-    public void setLocalLlmAddress(String address){
-        Database.withDao(PlayerDao.class, dao ->{
+    public void setLocalLlmAddress(String address) {
+        Database.withDao(PlayerDao.class, dao -> {
             PlayerDao.Player player = dao.get();
             player.setLocalLlmAddress(address);
             dao.save(player);
@@ -836,3 +851,4 @@ public class PlayerSession {
         });
     }
 }
+

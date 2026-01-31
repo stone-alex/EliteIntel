@@ -70,6 +70,9 @@ public interface LocationDao {
     @SqlQuery("select * from location where json ->> '$.marketID' = :marketID")
     Location findByMarketId(long marketID);
 
+    @SqlQuery("select * from location where locationName = :locationName")
+    Location findByLocationName(@Bind("locationName") String locationName);
+
 
     class LocationMapper implements RowMapper<LocationDao.Location> {
         @Override

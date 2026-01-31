@@ -3,6 +3,7 @@ package elite.intel.ai.brain.handlers.query;
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.FSSBodySignalsEvent;
 import elite.intel.gameapi.journal.events.dto.BioSampleDto;
@@ -12,12 +13,14 @@ import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 public class AnalyzeBioSignalsStarSystemHandler extends BaseQueryAnalyzer implements QueryHandler {
 
     private final PlayerSession playerSession = PlayerSession.getInstance();
+    private final LocationManager locationManager = LocationManager.getInstance();
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         EventBusManager.publish(new AiVoxResponseEvent("Analyzing bio data for star system."));
@@ -50,9 +53,9 @@ public class AnalyzeBioSignalsStarSystemHandler extends BaseQueryAnalyzer implem
 
     private List<PlanetsToScan> planetsWithBioFormsNotYetScanned() {
         List<PlanetsToScan> result = new ArrayList<>();
-        Map<Long, LocationDto> locations = playerSession.getLocations();
+        Collection<LocationDto> locations = locationManager.findAllBySystemAddress(playerSession.getLocationData().getSystemAddress());
 
-        for (LocationDto location : locations.values()) {
+        for (LocationDto location : locations) {
             int numCompletedSamples = getCompletedSamples(location.getPlanetName());
             List<FSSBodySignalsEvent.Signal> fssSignals = location.getFssSignals();
             int bioSignalCounter = 0;

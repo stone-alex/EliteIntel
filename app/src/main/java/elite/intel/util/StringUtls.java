@@ -66,7 +66,7 @@ public class StringUtls {
             return "";
         }
         boolean isFuelStar = "KGBFOAM".contains(starClass);
-        return isFuelStar ? ". a Fuel Available. " : " Warning! - Not a Fuel Star! ";
+        return isFuelStar ? ", Fuel Available. " : " Warning! - No fuel Available at next stop. ";
     }
 
     private static int getHourOfDay() {

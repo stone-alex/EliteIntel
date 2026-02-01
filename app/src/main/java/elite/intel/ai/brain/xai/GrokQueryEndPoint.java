@@ -9,8 +9,6 @@ import elite.intel.ai.brain.commons.AiEndPoint;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.net.HttpURLConnection;
-
 public class GrokQueryEndPoint extends AiEndPoint implements AiQueryInterface {
     private static final Logger log = LogManager.getLogger(GrokQueryEndPoint.class);
     private static final GrokQueryEndPoint INSTANCE = new GrokQueryEndPoint();
@@ -40,7 +38,7 @@ public class GrokQueryEndPoint extends AiEndPoint implements AiQueryInterface {
                 return new JsonObject();
             }
             JsonObject response = processAiPrompt(bodyString, client);
-            StracturedResponse stracturedResponse = checkResponse(response);
+            StructuredResponse stracturedResponse = checkResponse(response);
             if (!stracturedResponse.isSuccessful()) {
                 return new JsonObject();
             }

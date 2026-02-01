@@ -35,31 +35,28 @@ public abstract class AiEndPoint {
         return client.sendJsonRequest(jsonString);
     }
 
-    public StracturedResponse checkResponse(JsonObject response) {
+    public StructuredResponse checkResponse(JsonObject response) {
         JsonArray choices = response.getAsJsonArray("choices");
         if (choices == null || choices.isEmpty()) {
             log.error("No choices in API response:\n{}", response);
-            return new StracturedResponse(null, null, null, false);
+            return new StructuredResponse(null, null, null, false);
         }
 
         JsonObject message = choices.get(0).getAsJsonObject().getAsJsonObject("message");
         if (message == null) {
             log.error("No message in API response choices:\n{}", response);
-            return new StracturedResponse(null, null, null, false);
+            return new StructuredResponse(null, null, null, false);
         }
 
         String content = message.get("content").getAsString();
         if (content == null) {
             log.error("No content in API response message:\n{}", response);
-            return new StracturedResponse(null, null, null, false);
+            return new StructuredResponse(null, null, null, false);
         }
-        return new StracturedResponse(choices, message, content, true);
+        return new StructuredResponse(choices, message, content, true);
     }
 
-    public record Response(JsonObject responseData, String responseMessage) {
-    }
-
-    public record StracturedResponse(JsonArray choices, JsonObject message, String content, boolean isSuccessful) {
+    public record StructuredResponse(JsonArray choices, JsonObject message, String content, boolean isSuccessful) {
     }
 
 }

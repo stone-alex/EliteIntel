@@ -38,7 +38,19 @@ public class StartJumpSubscriber {
             PlayerSession playerSession = PlayerSession.getInstance();
             playerSession.clearGenusPaymentAnnounced();
             if (playerSession.isRouteAnnouncementOn()) {
-                EventBusManager.publish(new SensorDataEvent(sb.toString(), "Notify User"));
+                String instructions = """
+                Notify User about the star system we are traveling to.
+                    - IMPORTANT: Mention star class and if the star is scoopable for hydrogen fuel or not.
+                Example 1: In route to X star class Y, scoopable for fuel.
+                Example 2: In route to X star class Y, WARNING! No fuel available.
+                
+                Data may include traffic and fatalities.
+                Traffic total,weekly and daily indicates number of ships traveled through this system. Deaths data indicates number of ships lost in this system.
+                Example: Traffic: total X, weekly Y, daily Z. Deaths: total A, weekly B, daily C.
+                    - IF no traffic data is available, omit mentioning traffic info.
+                    - IF no deaths data is available, omit mentioning fatalities.
+                """;
+                EventBusManager.publish(new SensorDataEvent(sb.toString(), instructions));
             }
         }
     }

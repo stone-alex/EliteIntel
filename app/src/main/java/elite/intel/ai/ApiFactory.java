@@ -51,7 +51,7 @@ public class ApiFactory {
         return switch (provider) {
             case GROK -> GrokChatEndPoint.getInstance();
             case OPENAI -> OpenAiChatEndPoint.getInstance();
-            default -> OllamaChatEndPoint.getInstance();
+            default -> OllamaCommandEndPoint.getInstance();
         };
     }
 
@@ -72,7 +72,7 @@ public class ApiFactory {
         return switch (provider) {
             case GROK -> GrokCommandEndPoint.getInstance();
             case OPENAI -> OpenAiCommandEndPoint.getInstance();
-            default -> OllamaCommandEndPoint.getInstance();
+            default -> OllamaUserInputProcessor.getInstance();
         };
     }
 

@@ -27,13 +27,13 @@ public class OpenAiChatEndPoint extends AiEndPoint implements AIChatInterface {
     }
 
     @Override
-    public JsonObject processAiPrompt(JsonArray messages) {
+    public JsonObject processAiPrompt(JsonArray messages, float temp) {
         String jsonString = null;
         try {
             // Sanitize messages
             JsonArray sanitizedMessages = sanitizeJsonArray(messages);
             Client client = OpenAiClient.getInstance();
-            JsonObject prompt = client.createPrompt(OpenAiClient.MODEL_GPT, 1);
+            JsonObject prompt = client.createPrompt(OpenAiClient.MODEL_GPT, temp);
             prompt.add("messages", sanitizedMessages);
 
             jsonString = GsonFactory.getGson().toJson(prompt);

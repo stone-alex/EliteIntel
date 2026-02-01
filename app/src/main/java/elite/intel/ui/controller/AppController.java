@@ -333,9 +333,9 @@ public class AppController implements Runnable {
         /// NOTE Order is important.
         services.put(ServiceType.JOURNAL_PARSER, new ServiceHolder(JournalParser::new));
         services.put(ServiceType.AUXILIARY_FILES_MONITOR, new ServiceHolder(AuxiliaryFilesMonitor::new));
-        services.put(ServiceType.MOUTH, new ServiceHolder(() -> ApiFactory.getInstance().getMouthImpl()));
-        services.put(ServiceType.EARS, new ServiceHolder(() -> ApiFactory.getInstance().getEarsImpl()));
-        services.put(ServiceType.BRAIN, new ServiceHolder(() -> ApiFactory.getInstance().getCommandEndpoint()));
+        services.put(ServiceType.MOUTH, new ServiceHolder(ApiFactory.getInstance()::getMouthImpl));
+        services.put(ServiceType.EARS, new ServiceHolder(ApiFactory.getInstance()::getEarsImpl));
+        services.put(ServiceType.BRAIN, new ServiceHolder(ApiFactory.getInstance()::getCommandEndpoint));
         services.put(ServiceType.NOTIFICATION_MONITOR, new ServiceHolder(DeferredNotificationMonitor::getInstance));
         services.put(ServiceType.MISSING_MISSION_MONITOR, new ServiceHolder(MissingMissionMonitor::getInstance));
     }

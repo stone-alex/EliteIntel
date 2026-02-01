@@ -48,7 +48,8 @@ public class OllamaClient extends BaseAiClient implements Client {
         request.addProperty("temperature", temp);
         request.addProperty("stream", false);
         request.addProperty("format", "json");
-        request.addProperty("num_ctx", 16384);
+        //request.addProperty("num_ctx", 16384);
+        request.addProperty("num_ctx", 32768);
         request.addProperty("stream", false);
         request.addProperty("think", false);
         request.addProperty("think", false);

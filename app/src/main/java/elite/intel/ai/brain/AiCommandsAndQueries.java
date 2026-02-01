@@ -54,7 +54,7 @@ public class AiCommandsAndQueries {
             Map.entry(" night vision toggle on/off "+KEY_STATE, NIGHT_VISION_ON_OFF.getAction()),
 
             /// non parametrized
-            Map.entry(" recon target system, plot route to recon mission location ", RECON_TARGET_SYSTEM.getAction()),
+            Map.entry(" recon target system, plot route to recon mission location, plot route to hunting ground ", RECON_TARGET_SYSTEM.getAction()),
             Map.entry(" clear mining targets ", CLEAR_MINING_TARGETS.getAction()),
             Map.entry(" interrupt text to speech, silence, cancel, belay that, shut up ", INTERRUPT_TTS.getAction()),
             Map.entry(" plot route to pirate mission provider ", RECON_PROVIDER_SYSTEM.getAction()),
@@ -69,8 +69,8 @@ public class AiCommandsAndQueries {
             Map.entry(" power to engines, max engines, full power to engines, engines maximum power ", INCREASE_ENGINES_POWER.getAction()),
             Map.entry(" power to weapons, max weapons, full power to weapons, maximum power to weapons ", INCREASE_WEAPONS_POWER.getAction()),
             Map.entry(" equalize power, reset power, power balance ", RESET_POWER.getAction()),  // Fixed typo
-            Map.entry(" open/show galaxy map ", OPEN_GALAXY_MAP.getAction()),
-            Map.entry(" open/show local map ", OPEN_SYSTEM_MAP.getAction()),
+            Map.entry(" galaxy map, open/show galaxy map ", OPEN_GALAXY_MAP.getAction()),
+            Map.entry(" local map, open/show local map, show local map, open local map ", OPEN_SYSTEM_MAP.getAction()),
             Map.entry(" close map ", CLOSE_ANY_MAP.getAction()),
             Map.entry(" exit, exit to HUD ", EXIT_TO_HUD.getAction()),
             Map.entry(" display communications panel, show comms panel, show comms ", DISPLAY_COMMS_PANEL.getAction()),
@@ -92,7 +92,7 @@ public class AiCommandsAndQueries {
             Map.entry(" combat mode, hud to combat ", ACTIVATE_COMBAT_MODE.getAction()),
             Map.entry(" plot route to carrier, plot route to home base, return to base ", PLOT_ROUTE_TO_CARRIER.getAction()),
             Map.entry(" plot route to home system ", TAKE_ME_HOME.getAction()),
-            Map.entry(" set optimal speed, optimize speed, approaching planet ", SET_OPTIMAL_SPEED.getAction()),  // Kept here
+            Map.entry(" set optimal speed, optimize speed, approaching planet, optimal approach speed, approach speed. ", SET_OPTIMAL_SPEED.getAction()),  // Kept here
             Map.entry(" open FSS and scan, scan system, honk, scan ", OPEN_FSS_AND_SCAN.getAction()),  // Fixed typo
             Map.entry(" navigate to LZ/landing zone ", GET_HEADING_TO_LZ.getAction()),
             Map.entry(" deploy srv/surface reconnaissance vehicle ", DEPLOY_SRV.getAction()),
@@ -105,7 +105,7 @@ public class AiCommandsAndQueries {
             Map.entry(" what is our trade route profile, describe trade route profile ", LIST_TRADE_ROUTE_PARAMETERS.getAction()),
             Map.entry(" cancel/clear trade route ", CLEAR_TRADE_ROUTE.getAction()),
             Map.entry(" activate, punch it, engage ", ACTIVATE.getAction()),
-            Map.entry(" request docking, ask for landing permission, docking authorization, contact tower request landing.", REQUEST_DOCKING.getAction()),
+            Map.entry(" request docking, ask for landing permission, docking authorization, contact tower request landing, get a parking spot.", REQUEST_DOCKING.getAction()),
             Map.entry(" deploy heat sink ", DEPLOY_HEAT_SINK.getAction()),
             Map.entry(" target power plant, target engines, target subsystem, X ", TARGET_SUB_SYSTEM.getAction()),
             Map.entry(" recall ship / dismiss ship ", RECALL_DISMISS_SHIP.getAction()),
@@ -149,12 +149,12 @@ public class AiCommandsAndQueries {
             Map.entry(" queries about current location, where are we, what is the temperature on this planet, how long does the day last here ", CURRENT_LOCATION.getAction()),
             Map.entry(" how much fuel does our ship has, (do not confuse with carrier) ", SHIP_FUEL_STATUS.getAction()),
             Map.entry(" what information do you have on this target, analyze selected target ", FSD_TARGET_ANALYSIS.getAction()),
-            Map.entry(" tell me about our trade route, analyze trade route ", TRADE_ROUTE_ANALYSIS.getAction()),
+            Map.entry(" tell me about our trade route, analyze trade route, check trade route ", TRADE_ROUTE_ANALYSIS.getAction()),
             Map.entry(" queries about outfitting available at the station ", LOCAL_OUTFITTING.getAction()),
             Map.entry(" queries about ships available for sale at the station ", LOCAL_SHIPYARD.getAction()),
             //Map.entry(" query stations in this star system, are there any shipyards around, are there any markets around ", LOCAL_STATIONS.getAction()),
             Map.entry(" distance to the ship destination, how many stops left, how far to final destination ", DISTANCE_TO_DESTINATION.getAction()),
-            Map.entry(" queries about cargo hold contents, commodities on board. what do we have in cargo, do we have any booz on board, what do we have on board, how much free spacec we have ", CARGO_HOLD_CONTENTS.getAction()),
+            Map.entry(" queries about cargo hold contents, commodities on board. what do we have in cargo, what do we have on board, how much free spacec we have ", CARGO_HOLD_CONTENTS.getAction()),
             Map.entry(" queries about ship route, can we get fuel at next star/stop/waypoint, what class is the next star, are there any traffic or casualties on route ", PLOTTED_ROUTE_ANALYSIS.getAction()),
             Map.entry(" queries about carrier route (do not confuse with ship route), how long will it take for carrier to reach final destination ", CARRIER_ROUTE_ANALYSIS.getAction()),
             Map.entry(" queries about carrier destination (do not confuse with ship) ", CARRIER_DESTINATION.getAction()),
@@ -174,7 +174,7 @@ public class AiCommandsAndQueries {
             Map.entry(" how far are we from last organic, bio sample, previous bioscan ", DISTANCE_TO_LAST_BIO_SAMPLE.getAction()),
             Map.entry(" what time is it ", TIME_IN_ZONE.getAction()),
             Map.entry(" run biome analysis, analyze biome for planet/moon X (parameter example: \"key\":\"2a\")", PLANET_BIOME_ANALYSIS.getAction()),
-            Map.entry(" remind me about X ", REMINDER.getAction()),
+            Map.entry(" remind me about X, destination reminder, remind what are we selling, buying, duing. ", REMINDER.getAction()),
             Map.entry(" what missions do we have, are there any outstanding missions, do we have any active missions", ANALYZE_MISSIONS.getAction()),
             Map.entry(" if nothing else matches use this ", GENERAL_CONVERSATION.getAction())
     );

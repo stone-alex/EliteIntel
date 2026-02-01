@@ -42,8 +42,9 @@ public class PromptFactory implements AiPromptFactory {
         sb.append("""
                 YOU NEVER invent actions, guess intent, combine commands, split sentences, or create new behaviors.
                 Your only job: classify user input as ONE best matching command or query from the provided lists — or return no-match.
-                    - IF user input is a call to action it is probably a command. Match it to most probable command in the list.
+                    - IF user input is a call to action it is a command. (local map! or optimize speed!) Match it to most probable command in the list.
                     - IF user input is a question it is probably a query. Match it to most probable query in the list.
+                
                 Supported COMMANDS: patterns, concepts, and formulations -> ACTION_NAME (use ONLY these action names):
                 """);
         sb.append(commandsAndQueries.getCommandMap());
@@ -54,6 +55,8 @@ public class PromptFactory implements AiPromptFactory {
                 """);
         sb.append(commandsAndQueries.getQueries());
         sb.append("""
+                IF NOT MATCH FOUND inform the user: no matting command or query.
+                
                 OUTPUT FORMAT — MUST BE EXACTLY THIS JSON — NOTHING ELSE:
                 
                 {
@@ -72,7 +75,7 @@ public class PromptFactory implements AiPromptFactory {
                 
                 1. Allowed "type" values: only "command" or "query" — never "chat", never anything else.
                 2. "action" MUST be copied verbatim from the list above — no variations, no typos.
-                3. For commands: response_text is usually empty string.
+                3. For commands: response_text is ALWAYS empty string.
                 4. Params rules (MANDATORY — very strict):
                    - Key is ALWAYS "key" (for any named value: material, commodity, voice, number, etc.) Example: {"key": "low temperature diamonds"}
                    - IF distance is requested, then key for distance is "max_distance" Example: {"key": "gold", "max_distance":"80"}

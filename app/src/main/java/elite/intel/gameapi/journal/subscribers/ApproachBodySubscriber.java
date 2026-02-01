@@ -77,7 +77,13 @@ public class ApproachBodySubscriber {
         }
 
         locationManager.save(location);
-        EventBusManager.publish(new SensorDataEvent(sb.toString(), "Warn user about planetary approach with these data. Temperature data is provided in K (Kelven) convert it to Celsius."));
+        String instructions = """
+            We are approching planet/moon. Warn/Notify user with this data.
+            Temperature data is provided in K (Kelven) convert to C (Celsius) and announce temp in Celsius.
+            Do not mention temperature value in Kelvin.
+            Gravity around equal to or less than 1G is safe. Issue a gravity warning if gravity is higher than 1G.
+        """;
+        EventBusManager.publish(new SensorDataEvent(sb.toString(), instructions));
     }
 
 

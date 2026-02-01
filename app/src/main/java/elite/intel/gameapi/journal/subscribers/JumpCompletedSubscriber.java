@@ -3,6 +3,7 @@ package elite.intel.gameapi.journal.subscribers;
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.brain.handlers.commands.PlotRouteToNextTradeStopHandler;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
+import elite.intel.ai.mouth.subscribers.events.RouteAnnouncementEvent;
 import elite.intel.db.dao.RouteMonetisationDao.MonetisationTransaction;
 import elite.intel.db.managers.*;
 import elite.intel.gameapi.EventBusManager;
@@ -50,14 +51,6 @@ public class JumpCompletedSubscriber {
         boolean isBuyerSystem = monetizeRouteManager.isBuyer(event.getStarSystem());
         MonetisationTransaction station = monetizeRouteManager.getTransaction();
 
-        if (isSellerSystem && station != null) {
-            EventBusManager.publish(new SensorDataEvent("Head to " + station.getSourceStationName() + " buy " + station.getSourceCommodity(), "Remind User"));
-        }
-
-        if (isBuyerSystem && station != null) {
-            EventBusManager.publish(new SensorDataEvent("Head to " + station.getDestinationStationName() + " sell " + station.getDestinationCommodity(), "Remind User"));
-        }
-
         LocationDto primaryStar = locationManager.findBySystemAddress(event.getSystemAddress(), event.getBodyId());
         primaryStar.setBodyId(event.getBodyId());
         primaryStar.setSystemAddress(event.getSystemAddress());
@@ -99,6 +92,7 @@ public class JumpCompletedSubscriber {
             primaryStar.setTrafficDto(trafficDto);
             primaryStar.setDeathsDto(deathsDto);
         } else if (roueSet) {
+            sb.append("Arrived at ").append(event.getStarSystem());
             List<NavRouteDto> adjustedRoute = shipRoute.removeLeg(event.getStarSystem());
             int remainingJump = adjustedRoute.size();
             if (remainingJump > 0) {
@@ -109,55 +103,62 @@ public class JumpCompletedSubscriber {
                                 .append(". ")
                                 .append(" Star Class: ")
                                 .append(nextStop.getStarClass())
-                                .append(", ")
+                                .append(" ")
                                 .append(isFuelStarClause(nextStop.getStarClass()))
                 );
-                sb.append("We have ").append(remainingJump).append(" jumps left to destination.");
+                sb.append(" We have ").append(remainingJump).append(" jumps left to destination.");
             }
         }
 
         locationManager.save(primaryStar);
 
         if (playerSession.isRouteAnnouncementOn()) {
-            EventBusManager.publish(new SensorDataEvent(sb.toString(), "Notify User"));
+            EventBusManager.publish(new RouteAnnouncementEvent(sb.toString()));
+        }
+        if (isSellerSystem && station != null) {
+            EventBusManager.publish(new SensorDataEvent("Head to " + station.getSourceStationName() + " buy " + station.getSourceCommodity(), "Remind User"));
         }
 
-        TradeRouteManager tradeRouteManager = TradeRouteManager.getInstance();
-        TradeRouteManager.TradeRouteLegTuple<Integer, TradeStopDto> stop = tradeRouteManager.getNextStop();
-        if (stop != null) {
-            String destinationStation = stop.getTradeStopDto().getDestinationStation();
-            String destinationSystem = stop.getTradeStopDto().getDestinationSystem();
-            String sourceStation = stop.getTradeStopDto().getSourceStation();
-            String sourceSystem = stop.getTradeStopDto().getSourceSystem();
-
-            if (event.getStarSystem().equalsIgnoreCase(destinationSystem)) {
-                EventBusManager.publish(
-                        new SensorDataEvent(
-                                "Head to " + destinationStation
-                                        + " to sell "
-                                        + stop.getTradeStopDto()
-                                        .getCommodities()
-                                        .stream()
-                                        .map(TradeCommodity::getName).collect(Collectors.joining(", ")),
-                                "Remind User"
-                        )
-                );
-            }
-
-            if (event.getStarSystem().equalsIgnoreCase(sourceSystem)) {
-                EventBusManager.publish(
-                        new SensorDataEvent(
-                                "Head to " + sourceStation
-                                        + " to buy "
-                                        + stop.getTradeStopDto()
-                                        .getCommodities()
-                                        .stream()
-                                        .map(TradeCommodity::getName).collect(Collectors.joining(", ")),
-                                "Remind user"
-                        )
-                );
-            }
+        if (isBuyerSystem && station != null) {
+            EventBusManager.publish(new SensorDataEvent("Head to " + station.getDestinationStationName() + " sell " + station.getDestinationCommodity(), "Remind User"));
         }
+
+//        TradeRouteManager tradeRouteManager = TradeRouteManager.getInstance();
+//        TradeRouteManager.TradeRouteLegTuple<Integer, TradeStopDto> stop = tradeRouteManager.getNextStop();
+//        if (stop != null) {
+//            String destinationStation = stop.getTradeStopDto().getDestinationStation();
+//            String destinationSystem = stop.getTradeStopDto().getDestinationSystem();
+//            String sourceStation = stop.getTradeStopDto().getSourceStation();
+//            String sourceSystem = stop.getTradeStopDto().getSourceSystem();
+//
+//            if (event.getStarSystem().equalsIgnoreCase(destinationSystem)) {
+//                EventBusManager.publish(
+//                        new SensorDataEvent(
+//                                "Head to " + destinationStation
+//                                        + " to sell "
+//                                        + stop.getTradeStopDto()
+//                                        .getCommodities()
+//                                        .stream()
+//                                        .map(TradeCommodity::getName).collect(Collectors.joining(", ")),
+//                                "Remind User"
+//                        )
+//                );
+//            }
+//
+//            if (event.getStarSystem().equalsIgnoreCase(sourceSystem)) {
+//                EventBusManager.publish(
+//                        new SensorDataEvent(
+//                                "Head to " + sourceStation
+//                                        + " to buy "
+//                                        + stop.getTradeStopDto()
+//                                        .getCommodities()
+//                                        .stream()
+//                                        .map(TradeCommodity::getName).collect(Collectors.joining(", ")),
+//                                "Remind user"
+//                        )
+//                );
+//            }
+//        }
     }
 
     private void processEdsmData(SystemBodiesDto systemBodiesDto, long systemAddress) {

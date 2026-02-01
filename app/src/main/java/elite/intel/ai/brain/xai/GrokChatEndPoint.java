@@ -35,12 +35,12 @@ public class GrokChatEndPoint extends AiEndPoint implements AIChatInterface {
      * The first message should be the system prompt (role: system).
      * Returns the parsed JSON response content or null on error.
      */
-    @Override public JsonObject processAiPrompt(JsonArray messages) {
+    @Override public JsonObject processAiPrompt(JsonArray messages, float temp) {
         String bodyString = null;
         try {
             GrokClient client = GrokClient.getInstance();
             HttpURLConnection conn = client.getHttpURLConnection();
-            JsonObject prompt = client.createPrompt(GrokClient.MODEL_GROK_REASONING, 1);
+            JsonObject prompt = client.createPrompt(GrokClient.MODEL_GROK_REASONING, temp);
 
             // Sanitize messages
             JsonArray sanitizedMessages = sanitizeJsonArray(messages);

@@ -37,6 +37,9 @@ public class FSSSignalDiscoveredSubscriber {
     @Subscribe
     public void onFSSSignalDiscovered(FSSSignalDiscoveredEvent event) {
 
+        /// TODO: if resource site is discovered, and we have a recon location, update the recon.
+
+
         if(systemSession.isExplorationData()) {
             ScanFssSignalDiscoveredMessage msg = ScanFssSignalDiscoveredMapper.map(
                     event,

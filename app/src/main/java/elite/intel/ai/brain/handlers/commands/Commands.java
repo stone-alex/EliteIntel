@@ -76,8 +76,8 @@ public enum Commands {
     INCREASE_WEAPONS_POWER                              ("transfer_power_to_weapons", null,  SetPowerToWeaponsHandler.class),
     RESET_POWER                                         ("equalize_power_settings", null,  ResetPowerSettings.class),
 
-    OPEN_GALAXY_MAP                                     ("open_galaxy_star_map", null,  OpenGalaxyMapHandler.class),
-    OPEN_SYSTEM_MAP                                     ("open_local_system_map", null,  OpenSystemMapHandler.class),
+    OPEN_GALAXY_MAP                                     ("show_open_galaxy_star_map", null,  OpenGalaxyMapHandler.class),
+    OPEN_SYSTEM_MAP                                     ("show_open_local_system_map", null,  OpenSystemMapHandler.class),
     CLOSE_ANY_MAP                                       ("close_map", null,  ExitToHud.class),
     EXIT_TO_HUD                                         ("display_hud", null,  ExitToHud.class),
     EXIT                                                ("exit", null,  ExitToHud.class),
@@ -103,7 +103,7 @@ public enum Commands {
     ACTIVATE_ANALYSIS_MODE                              ("swap_to_hud_analysis_mode", null,  ActivateAnalysisModeHandler.class),
     ACTIVATE_COMBAT_MODE                                ("swap_to_hud_combat_mode", null,  ActivateCombatModeHandler.class),
     PLOT_ROUTE_TO_CARRIER                               ("plot_route_to_fleet_carrier", null,  PlotRouteToMyFleetCarrier.class),
-    SET_OPTIMAL_SPEED                                   ("set_optimal_speed", null,  SetOptimalSpeedHandler.class),
+    SET_OPTIMAL_SPEED                                   ("set_optimal_approach_speed", null,  SetOptimalSpeedHandler.class),
     TAKE_ME_HOME                                        ("plot_route_to_home_star", null,  PlotRouteToHomeHandler.class),
     OPEN_FSS_AND_SCAN                                   ("open_fss_to_scan_or_honk_star_system", null,  DisplayFssAndScanHandler.class),
 

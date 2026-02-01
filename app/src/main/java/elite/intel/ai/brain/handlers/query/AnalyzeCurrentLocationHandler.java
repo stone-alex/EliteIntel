@@ -46,14 +46,15 @@ public class AnalyzeCurrentLocationHandler extends BaseQueryAnalyzer implements 
                     - If any requested info is missing or not in data, omit that part only.
                 
                     Use this data to provide answers for our location.
+                    Follow these rules:
                     - IF asked 'where are we?' Use planetShortName for location name unless we are on the station in which case return stationName.
                     - IF Asked about Temperature: Temperature data is provided in surfaceTemperatureInKelvin (Kelvin), covert to Celsius and announce Celsius. Example: Temperature on <planetName> is <X> degrees Celsius.
                     - IF temperature is higher than 1000, current location is star system, the temp is of that of the local star. Do not mention temperature in this case.
                     - IF Asked about Length Of The Day: Use dayLength value. Example: Day on <planetName> lasts <X> hours and <Y> minutes
                     - IF Asked about Local Government, Controlling Powers, Controlling Faction, and localPowers/controllingFaction data is not present, the planet is uninhabited - ELSE use this data for your answer. 
-                    Example 1: <planetName> is uninhabited. Or <planetName> is controlled by <X> powers and controlling faction is <Y>
-                    Example 2: We are Docked at <locationName> in <starSystemName> star system. Medium Security. Deaths total X week Y day Z. Traffic total X week Y day Z. Day length is X.
-                    Example 3: We in the planetary ring of <locationName> in <starSystemName> star system. 
+                    - IF docked = false, and location type planet or moon: Example 1: <planetName> is uninhabited. Or <planetName> is controlled by <X> powers and controlling faction is <Y>
+                    - IF docked = true -> Example: We are Docked at <locationName> in <starSystemName> star system. Medium Security. Deaths total X week Y day Z. Traffic total X week Y day Z. Day length is X.
+                    - IF location type is planetary ring -> Example: We in the planetary ring of <locationName> in <starSystemName> star system. 
                 """;
 
         double rotationPeriod = Math.round(location.getRotationPeriod() * 100.0) / 100.0;

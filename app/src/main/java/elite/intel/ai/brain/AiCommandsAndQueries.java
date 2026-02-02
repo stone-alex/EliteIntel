@@ -94,7 +94,7 @@ public class AiCommandsAndQueries {
             commandMap.put(" half throttle, half speed, speed 50 ", SET_SPEED50.getAction());
             commandMap.put(" throttle 75, three quarters throttle, set speed 75 ", SET_SPEED75.getAction());  // Removed duplicates
             commandMap.put(" max speed, full speed ", SET_SPEED100.getAction());
-            commandMap.put(" set fuel reserve X ", SET_CARRIER_FUEL_RESERVE.getAction());
+            commandMap.put(" set fuel reserve X "+KEY_X, SET_CARRIER_FUEL_RESERVE.getAction());
             commandMap.put(" select/target next system in route ", TARGET_NEXT_ROUTE_SYSTEM.getAction());
             commandMap.put(" target wingman 1 ", TARGET_WINGMAN0.getAction());
             commandMap.put(" target wingman 2 ", TARGET_WINGMAN1.getAction());
@@ -179,7 +179,7 @@ public class AiCommandsAndQueries {
         queryMap.put(" help with, how can I..., explain how to... ", HELP.getAction());
         queryMap.put(" are there any organics in the star system, what planets have bio forms to scan, are there any bio signals in star system ", BIO_SAMPLE_IN_STAR_SYSTEM.getAction());
         queryMap.put(" lookup organics or exobiology for plant scans ", EXOBIOLOGY_SAMPLES.getAction());
-        queryMap.put(" star system analysis, stellar objects analysis, are there landable planets/moons, what class is the stellar object ", QUERY_STELLAR_OBJETS.getAction());
+        queryMap.put(" lookup star system data, stellar objects analysis, landable planets/moons, classes of stellar objects ", QUERY_STELLAR_OBJETS.getAction());
         queryMap.put(" query, system signals, bio signals, geological signals, hostspots, mining sites, battle grounds, resource sites ", QUERY_STELLAR_SIGNALS.getAction());
         queryMap.put(" what planets have geo signals ", QUERY_GEO_SIGNALS.getAction());
         queryMap.put(" lookup stations, ports and settlements ", QUERY_STATIONS.getAction());
@@ -200,7 +200,7 @@ public class AiCommandsAndQueries {
         //queryMap.put(" query stations in this star system, are there any shipyards around, are there any markets around ", LOCAL_STATIONS.getAction());
         queryMap.put(" distance to the ship destination, how many stops left, how far to final destination ", DISTANCE_TO_DESTINATION.getAction());
         queryMap.put(" lookup cargo hold contents, commodities on board. what do we have in cargo, what do we have on board, how much free spacec we have ", CARGO_HOLD_CONTENTS.getAction());
-        queryMap.put(" lookup ship route, can we get fuel at next star/stop/waypoint, what class is the next star, are there any traffic or casualties on route ", PLOTTED_ROUTE_ANALYSIS.getAction());
+        queryMap.put(" lookup ship route, information about next jump/stop/waypoint, what class is the next star, are there any traffic or casualties on route ", PLOTTED_ROUTE_ANALYSIS.getAction());
         queryMap.put(" lookup carrier route (do not confuse with ship route), how long will it take for carrier to reach final destination ", CARRIER_ROUTE_ANALYSIS.getAction());
         queryMap.put(" lookup carrier destination (do not confuse with ship) ", CARRIER_DESTINATION.getAction());
         queryMap.put(" lookup carrier fuel supply, jump range, fuel reserve, what is our tritium supply, tritium reserve (do not confuse with ship) ", CARRIER_TRITIUM_SUPPLY.getAction());

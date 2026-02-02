@@ -73,7 +73,7 @@ public class LocationDto implements ToJsonConvertible {
     private MarketDto market;
     private OutfittingDto outfitting;
     private ShipyardDto shipyard;
-    private LocationType locationType = LocationType.UNKNOWN;
+    private LocationType locationType = LocationType.UNCLASSIFIED;
     private long bodyId;
     private boolean isLandable;
     private String planetClass;
@@ -895,6 +895,6 @@ public class LocationDto implements ToJsonConvertible {
         FACILITY,
         MARKET,
         BELT_CLUSTER,
-        UNKNOWN
+        UNCLASSIFIED
     }
 }

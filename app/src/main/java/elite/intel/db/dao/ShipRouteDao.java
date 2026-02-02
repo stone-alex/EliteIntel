@@ -30,7 +30,7 @@ public interface ShipRouteDao {
             """)
     void upsert(@BindBean ShipRouteDao.Route leg);
 
-    @SqlQuery("SELECT * FROM ship_route")
+    @SqlQuery("SELECT * FROM ship_route order by leg")
     List<ShipRouteDao.Route> getAll();
 
     @SqlUpdate("DELETE FROM ship_route where systemName = :starSystem")

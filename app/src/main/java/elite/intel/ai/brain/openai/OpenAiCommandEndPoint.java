@@ -151,8 +151,8 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
         // Add current user message
         JsonObject userMessage = new JsonObject();
         userMessage.addProperty("role", AIConstants.ROLE_USER);
-        String userContent = buildVoiceUserPromptRequest(userInput);
-        userMessage.addProperty("content", userContent);
+
+        userMessage.addProperty("content", userInput);
         messages.add(userMessage);
 
         // Send to Open AI

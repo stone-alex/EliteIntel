@@ -182,20 +182,6 @@ public class ScanEventSubscriber {
 
         if (location.getBioSignals() > 0 && playerSession.isDiscoveryAnnouncementOn()) {
             EventBusManager.publish(new DiscoveryAnnouncementEvent("Life Found in " + location.getPlanetShortName()));
-            //if (!"Detailed".equals(event.getScanType())) {
-/*
-                biomeAnalyzer.analyzeBiome("Run biome analysis on "+location.getPlanetShortName(),
-                        new BiomeAnalyzer.LocationData(
-                                location.getPlanetShortName(),
-                                location.getBioSignals(),
-                                location.getPlanetClass(),
-                                String.valueOf(location.getDistance()),
-                                location.getVolcanism(),
-                                location.getAtmosphere(),
-                                String.valueOf(location.getSurfaceTemperature())
-                        ));
-*/
-            //}
         } else {
             announceIfNewDiscovery(event, location);
         }
@@ -212,18 +198,20 @@ public class ScanEventSubscriber {
         boolean isPlanet = false;
         boolean isMoon = false;
         List<ScanEvent.Parent> parents = event.getParents();
-        for (ScanEvent.Parent parent : parents) {
-            if (parent.getStar() != null && parent.getStar() >= 0) {
-                isPlanet = true;
-                break;
-            }
-            if (parent.getPlanet() != null && parent.getPlanet() > 0) {
-                isMoon = true;
-                break;
-            }
-            if (parent.getStar() == null && event.getSurfaceTemperature() > 1000) {
-                isStar = true;
-                break;
+        if (parents != null) {
+            for (ScanEvent.Parent parent : parents) {
+                if (parent.getStar() != null && parent.getStar() >= 0) {
+                    isPlanet = true;
+                    break;
+                }
+                if (parent.getPlanet() != null && parent.getPlanet() > 0) {
+                    isMoon = true;
+                    break;
+                }
+                if (parent.getStar() == null && event.getSurfaceTemperature() > 1000) {
+                    isStar = true;
+                    break;
+                }
             }
         }
 
@@ -238,7 +226,7 @@ public class ScanEventSubscriber {
         } else if (isMoon) {
             return MOON;
         } else {
-            return UNKNOWN;
+            return UNCLASSIFIED;
         }
     }
 

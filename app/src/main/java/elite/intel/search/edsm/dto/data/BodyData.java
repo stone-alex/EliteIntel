@@ -13,7 +13,7 @@ public class BodyData extends BaseJsonDto implements ToJsonConvertible {
     @SerializedName("id64")
     public long id64;
     @SerializedName("bodyId")
-    public Long bodyId;
+    public long bodyId;
     @SerializedName("name")
     public String name;
     @SerializedName("discovery")
@@ -43,17 +43,17 @@ public class BodyData extends BaseJsonDto implements ToJsonConvertible {
     @SerializedName("solarRadius")
     public double solarRadius;
     @SerializedName("surfaceTemperature")
-    public Double surfaceTemperature;
+    public double surfaceTemperature;
     @SerializedName("orbitalPeriod")
-    public Double orbitalPeriod;
+    public double orbitalPeriod;
     @SerializedName("semiMajorAxis")
-    public Double semiMajorAxis;
+    public double semiMajorAxis;
     @SerializedName("orbitalEccentricity")
-    public Double orbitalEccentricity;
+    public double orbitalEccentricity;
     @SerializedName("orbitalInclination")
-    public Double orbitalInclination;
+    public double orbitalInclination;
     @SerializedName("argOfPeriapsis")
-    public Double argOfPeriapsis;
+    public double argOfPeriapsis;
     @SerializedName("rotationalPeriod")
     public double rotationalPeriod;
     @SerializedName("rotationalPeriodTidallyLocked")
@@ -77,7 +77,7 @@ public class BodyData extends BaseJsonDto implements ToJsonConvertible {
     @SerializedName("radius")
     public double radius;
     @SerializedName("surfacePressure")
-    public Double surfacePressure;
+    public double surfacePressure;
     @SerializedName("volcanismType")
     public String volcanismType;
     @SerializedName("atmosphereType")
@@ -97,7 +97,7 @@ public class BodyData extends BaseJsonDto implements ToJsonConvertible {
         return id64;
     }
 
-    public Long getBodyId() {
+    public long getBodyId() {
         return bodyId;
     }
 
@@ -157,27 +157,27 @@ public class BodyData extends BaseJsonDto implements ToJsonConvertible {
         return solarRadius;
     }
 
-    public Double getSurfaceTemperature() {
+    public double getSurfaceTemperature() {
         return surfaceTemperature;
     }
 
-    public Double getOrbitalPeriod() {
+    public double getOrbitalPeriod() {
         return orbitalPeriod;
     }
 
-    public Double getSemiMajorAxis() {
+    public double getSemiMajorAxis() {
         return semiMajorAxis;
     }
 
-    public Double getOrbitalEccentricity() {
+    public double getOrbitalEccentricity() {
         return orbitalEccentricity;
     }
 
-    public Double getOrbitalInclination() {
+    public double getOrbitalInclination() {
         return orbitalInclination;
     }
 
-    public Double getArgOfPeriapsis() {
+    public double getArgOfPeriapsis() {
         return argOfPeriapsis;
     }
 
@@ -225,7 +225,7 @@ public class BodyData extends BaseJsonDto implements ToJsonConvertible {
         return radius;
     }
 
-    public Double getSurfacePressure() {
+    public double getSurfacePressure() {
         return surfacePressure;
     }
 

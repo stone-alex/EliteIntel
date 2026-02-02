@@ -27,21 +27,19 @@ public class AnalyzeStellarObjectsHandler extends BaseQueryAnalyzer implements Q
         StellarObjectsData<List<LocationData>, String> data = toLocationList(locationManager.findAllBySystemAddress(playerSession.getLocationData().getSystemAddress()));
 
         String instructions = """
-                You are a strict data-only responder. Use ONLY the provided JSON array "allStellarObjectsInStarSystem" and "summary" field.
-                The 'summary' field provides general summary of the star system. (number of stars, planets, moons and stations)
-                Examples of good short answers (reference only – do NOT copy literally):
-                - "Yes, '1 b' is landable, rocky body, 0.13 g, CO₂ atmosphere."
-                - "Landable rocky bodies: 1 b, 1 c, 3 d, 2 d a"
-                - "Bodies with bio signals: '1 b' (3 signals)"
-                - "Star system has two stars, three planets, and one moon."
-                - "No bodies with rings in this system."
+                Answer user question using this data.
+                Provide answers based on this data only, do not invent information. Info no matching data = INSTANT FAIL.
+                You are a strict data-only responder. Use ONLY the provided JSON array "allStellarObjectsInStarSystem"
+                    - objectType: Type of object such as planet, moon, ring, station, star.
+                    - isLandable: true/false landable or not.
+                    - distanceFromStar: distance from primary star in light seconds.
+                    - starClass: star class (M, K, G, F, A, B, O are fuel stars).
                 """;
 
         return process(
                 new AiDataStruct(
                         instructions,
                         new DataDto(
-                                data.getSummary(),
                                 data.getObjectList()
                         )
                 ),
@@ -78,7 +76,7 @@ public class AnalyzeStellarObjectsHandler extends BaseQueryAnalyzer implements Q
 
             result.add(new LocationData(
                     location.getPlanetShortName(),
-                    locationType.name(),
+                    "UNKNOWN".equals(locationType.name()) ? "" : locationType.name(),
                     isPlanetaryRing ? "Planetary Ring" : location.getPlanetClass(),
                     location.getStarClass(),
                     location.getStarName(),
@@ -87,8 +85,6 @@ public class AnalyzeStellarObjectsHandler extends BaseQueryAnalyzer implements Q
                     Math.round(location.getGravity()),
                     Math.round(location.getSurfaceTemperature()),
                     location.getAtmosphere(),
-                    location.getVolcanism(),
-                    isPlanetaryRing,
                     location.getParentBodyName(),
                     Math.round(location.getDistance()),
                     location.getBioSignals(),
@@ -110,10 +106,8 @@ public class AnalyzeStellarObjectsHandler extends BaseQueryAnalyzer implements Q
                         double gravity,
                         double surfaceTemperature,
                         String atmosphere,
-                        String volcanism,
-                        boolean isPlanetaryRing,
                         String parentPlanetName,
-                        double distance,
+                        double distanceFromStar,
                         int bioSignals,
                         boolean ourDiscovery,
                         boolean weMappedIt,
@@ -124,7 +118,7 @@ public class AnalyzeStellarObjectsHandler extends BaseQueryAnalyzer implements Q
         }
     }
 
-    record DataDto(String summary, List<LocationData> allStellarObjectsInStarSystem) implements ToJsonConvertible {
+    record DataDto(List<LocationData> allStellarObjectsInStarSystem) implements ToJsonConvertible {
 
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);

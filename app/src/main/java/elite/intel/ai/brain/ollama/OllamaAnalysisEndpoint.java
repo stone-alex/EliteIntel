@@ -19,6 +19,7 @@ public class OllamaAnalysisEndpoint extends AiEndPoint implements AiAnalysisInte
     private static final Logger log = LogManager.getLogger(OllamaAnalysisEndpoint.class);
     private static final OllamaAnalysisEndpoint INSTANCE = new OllamaAnalysisEndpoint();
     private final Gson gson = GsonFactory.getGson();
+    private final ApiFactory apiFactory = ApiFactory.getInstance();
 
     private OllamaAnalysisEndpoint() {
     }
@@ -32,15 +33,11 @@ public class OllamaAnalysisEndpoint extends AiEndPoint implements AiAnalysisInte
         try {
             OllamaClient client = OllamaClient.getInstance();
 
-            String systemPrompt = ApiFactory.getInstance()
-                    .getAiPromptFactory()
-                    .generateAnalysisPrompt();
-
             JsonObject prompt = client.createPrompt(OllamaClient.MODEL_OLLAMA, 1.0f);
 
             JsonObject systemMsg1 = new JsonObject();
             systemMsg1.addProperty("role", AIConstants.ROLE_SYSTEM);
-            systemMsg1.addProperty("content", systemPrompt);
+            systemMsg1.addProperty("content", apiFactory.getAiPromptFactory().generateAnalysisPrompt());
 
             JsonObject systemMsg2 = new JsonObject();
             systemMsg2.addProperty("role", AIConstants.ROLE_SYSTEM);

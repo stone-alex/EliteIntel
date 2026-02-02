@@ -33,7 +33,7 @@ public class SupercruiseExitedSubscriber {
             here.setStationName("Planetary Ring of " + here.getPlanetShortName());
         }
 
-        if (here.getLocationType() == null || LocationDto.LocationType.UNKNOWN == here.getLocationType()) {
+        if (here.getLocationType() == null || LocationDto.LocationType.UNCLASSIFIED == here.getLocationType()) {
             here.setLocationType(locationType);
         }
 

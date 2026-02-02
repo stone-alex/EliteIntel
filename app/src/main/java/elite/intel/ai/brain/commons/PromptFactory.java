@@ -29,61 +29,51 @@ public class PromptFactory implements AiPromptFactory {
     }
 
     @Override
-    public String generateUserPrompt(String playerVoiceInput) {
-        return "User Input: " + playerVoiceInput;
-    }
-
-    @Override
     public String generateVoiceInputSystemPrompt() {
         StringBuilder sb = new StringBuilder();
         AICadence aiCadence = systemSession.getAICadence();
         AIPersonality aiPersonality = systemSession.getAIPersonality();
-        sb.append("YOU ARE ").append(aiName()).append(" — A STRICT COMMAND PARSER.");
+        sb.append("YOU ARE ").append(aiName()).append(" — A COMMAND PARSER IN A SCI-FI SIMULATION.");
+        sb.append("""
+                        **YOUR ONLY JOB IS TO SELECT EXACTLY ONE MOST PROBABLE ACTION FROM THE LISTS BELOW OR SAY NO MATCH.
+                        YOU ARE PHYSICALLY INCAPABLE OF INVENTING, MODIFYING, COMBINING, GENERALIZING, OR GUESSING ANY ACTION NAME.
+                        Infer meaning from user input and match to either command action or query action choosing one from the mapping below.
+                        Any invented, altered, or non-listed action name = IMMIDIATE FAILURE. Return 'no matching action found' instead. Do NOT try to be helpful by guessing.***
+                        If the input does not match one listed ACTION_NAME exactly, YOU MUST return the 'no matching action found' in response_text in JSON — no exceptions.
+                """);
+        sb.append(" JSON FORMAT:").append(JSON_FORMAT);
         sb.append(" Match 'User Input' to action using instructions below.");
         sb.append("""
-                YOU NEVER invent actions, guess intent, combine commands, split sentences, or create new behaviors.
                 Your only job: classify user input as ONE best matching command or query from the provided lists — or return no-match.
+                Do not invent or construct action parameter.
+                Adhere strictly to provided lists.
                     - IF user input is a call to action (get, set, plot, locate, find, toggle etc.) it is a command.
                     - IF user input is a question (where, analyse, check, lookup) it is a query.
-                    DO NOT LIE! If no command or query match found say so. {"type":"query", "response_text":"No matching command or query found.", "action":"", "params":{}, "expect_followup":false}
-                
                 Supported COMMANDS: patterns, concepts, and formulations -> ACTION_NAME (use ONLY these action names):
                 """);
         sb.append(commandsAndQueries.getCommandMap());
         sb.append("Commands that can be parameterized have parameter return examples.");
         sb.append("""
-                
                 Supported QUERIES: patterns, concepts, and formulations -> ACTION_NAME (use ONLY these action names):
                 """);
         sb.append(commandsAndQueries.getQueries());
         sb.append("""                
-                OUTPUT FORMAT **MUST BE EXACTLY THIS JSON** NOTHING ELSE:
+                OUTPUT FORMAT — MUST BE EXACTLY THIS JSON — NOTHING ELSE:
                 {
                   "type": "command" | "query",
-                  "response_text": "empty string for commands or query response",
+                  "response_text": "only in case no matching command or query found.",
                   "action": "EXACT_ACTION_NAME_FROM_LIST_ABOVE",
-                  "params": {} | {"key": "value"} | {"state": true|false} | {"key": "value", ...},
-                  "expect_followup": true | false
+                  "params": {} | {"key": "value"} | {"state": true|false} | {"key": "value", ...}
                 }
-
-                STRICT RULES TO OBEY:
-                1. Allowed "type" values: only "command" or "query"
-                2. "action" MUST be copied from the list above — no variations. For command actions the response_text is ALWAYS empty string.
-                3. Params rules (MANDATORY — very strict):
-                   - Key/value template is provided with command. Match it. Example 1: {"key": "gold", "max_distance":"80"} Example 2: "lights on"-> {"state": true}
-                   - Never invent other key names. Always use provided template only.
-                   - Parametrized user request examples:
-                     - "find mining site for LTD"                                   -> {"key": "low temperature diamonds"}
-                     - "lights on"                                                  -> {"state": true}
-                     - "set speed 2"                                                -> {"key": "2"}
-                     - "set trade profile budget two hundred million"               -> {"key": "200000000"}
-                     - "set voice to zira"                                          -> {"key": "zira"}
-                     - "find gold within 80 ly"                                     -> {"key": "gold", "max_distance":"80"}
-                     - "Navigate to coordinates latitude -12.34, longitude 56.78"   -> {"lat": "-12.34", "lon":"56.78"}
                 
-                4. 'here', 'this planet', 'current system' -> interpret as current location
-                5. If multiple possible matches -> choose the most specific / most exact lexical match
-                6. If no match found -> return the no-match found.
+                PARAMS RULES — DO NOT DEVIATE:
+                • Use ONLY the exact key names and types shown in the command's template
+                • If no template → return empty {}
+                • Never invent new keys or values
+                • Examples (follow the pattern exactly):
+                  - "find mining site for LTD"          → {"key": "low temperature diamonds"}
+                  - "lights on"                         → {"state": true}
+                  - "find gold within 80 ly"            → {"key": "gold", "max_distance":"80"}
                 """);
         if (!systemSession.isRunningLocalLLM() && !systemSession.isRunningPiperTts()) {
             sb.append(" Behavior: ");
@@ -98,6 +88,8 @@ public class PromptFactory implements AiPromptFactory {
         StringBuilder sb = new StringBuilder();
         sb.append("Instructions:\n");
         sb.append("You are ").append(aiName()).append(" — strict data extractor.");
+        sb.append(getSessionValues());
+        sb.append(appendBehavior());
         sb.append("""
                 Output ONLY this exact JSON structure {"type":"chat", "response_text": "YOUR ANSWER HERE AS PLAIN TEXT"} — nothing else, no explanations, no thinking, no markdown, no extra characters:
                 
@@ -118,24 +110,6 @@ public class PromptFactory implements AiPromptFactory {
         );
         sb.append(" Spell out numerals for response_text, Example: We have one hundred and thirsty units of gold in cargo hold. ");
         sb.append(" Use numbers for parameters Example: {\"key\":\"1\"} ");
-
-
-        return sb.toString();
-    }
-
-    @Override
-    public String generateQueryPrompt() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(getSessionValues());
-        sb.append(appendBehavior());
-        sb.append(" Classify as: 'input' (data to analyze) or 'command' (trigger app action or keyboard event). ");
-        sb.append(" When processing a 'tool' role message, use the provided data's 'response_text' as the primary response if available, ensuring it matches the context of the query. ");
-        sb.append(" Use planetShortName for locations when available.\n");
-        sb.append(JSON_FORMAT).append("\n");
-        sb.append(" Spell out numerals for response_text, Example: We have one hundred and thirsty units of gold in cargo hold. ");
-        sb.append(" Use numbers for parameters Example: {\"key\":\"1\"} ");
-        sb.append(" Query Data is provided in JSON. Strictly follow the 'instructions' field in data for analysis and response format.\n");
-        sb.append(" For type='chat', set 'expect_followup': true if response poses a question or requires user clarification; otherwise, false.\n");
         return sb.toString();
     }
 

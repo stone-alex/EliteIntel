@@ -32,8 +32,4 @@ public abstract class CommandEndPoint extends AiEndPoint {
     public AIChatInterface getChatInterface() {
         return chatInterface;
     }
-
-    protected String buildVoiceUserPromptRequest(String transcribedText) {
-        return contextFactory.generateUserPrompt(String.valueOf(transcribedText));
-    }
 }

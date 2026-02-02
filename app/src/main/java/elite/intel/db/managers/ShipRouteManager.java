@@ -74,7 +74,7 @@ public class ShipRouteManager {
             for (ShipRouteDao.Route leg : list) {
                 result.add(routeLegToDto(leg));
             }
-            result.sort(Comparator.comparingInt(NavRouteDto::getLeg));
+            //result.sort(Comparator.comparingInt(NavRouteDto::getLeg));
             return result;
         });
     }

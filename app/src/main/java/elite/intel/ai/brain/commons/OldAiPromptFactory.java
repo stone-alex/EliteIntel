@@ -30,11 +30,6 @@ public class OldAiPromptFactory implements AiPromptFactory {
     }
 
     @Override
-    public String generateUserPrompt(String playerVoiceInput) {
-        return "Interpret this input: " + playerVoiceInput + "\n\n";
-    }
-
-    @Override
     public String generateVoiceInputSystemPrompt() {
         StringBuilder sb = new StringBuilder();
 
@@ -138,6 +133,8 @@ public class OldAiPromptFactory implements AiPromptFactory {
         StringBuilder sb = new StringBuilder();
         sb.append("Instructions:\n");
         sb.append("You are " + aiName + ", on board AI, a strict data extractor. NEVER use external knowledge, NEVER guess, NEVER calculate, NEVER estimate, NEVER add or invent values.");
+        sb.append(getSessionValues());
+        sb.append(appendBehavior());
         sb.append("""                
                 CRITICAL RULES – MUST FOLLOW EXACTLY:
                 - Use ONLY the fields from the provided JSON data.
@@ -145,18 +142,16 @@ public class OldAiPromptFactory implements AiPromptFactory {
                 - If not directly present, say "Insufficient data"
                 - Respond ONLY with this exact JSON and nothing else: {"type":"chat", "response_text": "Insert Your Answer"} and nothing else.
                 - NO explanations, NO reasoning, NO extra text.
-                Return minimalistic brief and concise answer. 
+                Return minimalistic brief and concise answer.
                 """
         );
-        sb.append(appendBehavior());
+
         return sb.toString();
     }
 
-    @Override
-    public String generateQueryPrompt() {
+    /*@Override
+    public String generateFollowupPrompt() {
         StringBuilder sb = new StringBuilder();
-        sb.append(getSessionValues());
-        sb.append(appendBehavior());
         sb.append("Classify as: 'input' (data to analyze) or 'command' (trigger app action or keyboard event). ");
         sb.append("When processing a 'tool' role message, use the provided data's 'response_text' as the primary response if available, ensuring it matches the context of the query. ");
         sb.append("Provide extremely brief and concise answers. Use planetShortName for locations when available.\n");
@@ -167,7 +162,7 @@ public class OldAiPromptFactory implements AiPromptFactory {
         sb.append("For type='chat', set 'expect_followup': true if response poses a question or requires user clarification; otherwise, false.\n");
         return sb.toString();
     }
-
+*/
     @Override
     public String appendBehavior() {
         StringBuilder sb = new StringBuilder();

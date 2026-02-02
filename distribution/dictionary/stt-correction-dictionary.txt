@@ -297,3 +297,4 @@
 "too many targets"="to mining targets"
 "alcohol"="cargo hold"
 "play"="deploy"
+"feller"="stellar"

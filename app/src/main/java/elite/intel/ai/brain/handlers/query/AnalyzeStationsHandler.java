@@ -22,19 +22,20 @@ public class AnalyzeStationsHandler extends BaseQueryAnalyzer implements QueryHa
         StationsDto stationsDto = EdsmApiClient.searchStations(primaryStarName, 0);
         ArrayList<StationData> stationsData = new ArrayList<>();
         StationsData data = stationsDto.getData();
-        for (Station station : data.getStations()) {
-            /// skip all fleet carriers. (query carriers in another handler to save on tokens)
-            if ("Fleet Carrier".equalsIgnoreCase(station.getType())) continue;
-            stationsData.add(new StationData(
-                    station.getName(),
-                    station.getType(),
-                    station.getAllegiance(),
-                    station.getGovernment(),
-                    station.getCommodities() == null ? null : station.getCommodities().size(),
-                    station.getEconomy(),
-                    station.getOtherServices() == null ? null : station.getOtherServices().size()
-            ));
-
+        if (data != null && !data.getStations().isEmpty()) {
+            for (Station station : data.getStations()) {
+                /// skip all fleet carriers. (query carriers in another handler to save on tokens)
+                if ("Fleet Carrier".equalsIgnoreCase(station.getType())) continue;
+                stationsData.add(new StationData(
+                        station.getName(),
+                        station.getType(),
+                        station.getAllegiance(),
+                        station.getGovernment(),
+                        station.getCommodities() == null ? null : station.getCommodities().size(),
+                        station.getEconomy(),
+                        station.getOtherServices() == null ? null : station.getOtherServices().size()
+                ));
+            }
         }
 
 

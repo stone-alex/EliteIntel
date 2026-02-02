@@ -78,7 +78,7 @@ public class OllamaUserInputProcessor extends CommandEndPoint implements AiComma
         request.add(system);
         JsonObject userMsg = new JsonObject();
         userMsg.addProperty("role", AIConstants.ROLE_USER);
-        userMsg.addProperty("content", buildVoiceUserPromptRequest(userInput));
+        userMsg.addProperty("content", userInput);
         request.add(userMsg);
 
         JsonObject response = OllamaCommandEndPoint.getInstance().processAiPrompt(request, 0.01f);

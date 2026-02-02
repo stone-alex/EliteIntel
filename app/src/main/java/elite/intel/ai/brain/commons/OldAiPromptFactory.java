@@ -35,7 +35,7 @@ public class OldAiPromptFactory implements AiPromptFactory {
     }
 
     @Override
-    public String generateSystemPrompt() {
+    public String generateVoiceInputSystemPrompt() {
         StringBuilder sb = new StringBuilder();
 
         sb.append("Instructions:\n\n")

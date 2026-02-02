@@ -33,11 +33,7 @@ public abstract class CommandEndPoint extends AiEndPoint {
         return chatInterface;
     }
 
-    protected String buildVoiceRequest(String transcribedText) {
+    protected String buildVoiceUserPromptRequest(String transcribedText) {
         return contextFactory.generateUserPrompt(String.valueOf(transcribedText));
     }
-
-/*    protected String buildSystemRequest(String systemInput) {
-        return contextFactory.generateSystemInstructions(systemInput);
-    }*/
 }

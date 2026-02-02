@@ -11,6 +11,7 @@ import elite.intel.util.TimeUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class TradersAndBrokersSearch {
@@ -55,7 +56,7 @@ public class TradersAndBrokersSearch {
         if (traderType != null) {
             TraderAndBrokerSearchCriteria.MaterialTrader trader = new TraderAndBrokerSearchCriteria.MaterialTrader();
             trader.setValue(
-                    Arrays.asList(
+                    Collections.singletonList(
                             traderType.getType()
                     )
             );
@@ -63,7 +64,7 @@ public class TradersAndBrokersSearch {
         } else if (brokerType != null) {
             TraderAndBrokerSearchCriteria.TechnologyBroker broker = new TraderAndBrokerSearchCriteria.TechnologyBroker();
             broker.setValue(
-                    Arrays.asList(
+                    Collections.singletonList(
                             brokerType.getType()
                     )
             );

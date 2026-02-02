@@ -74,14 +74,14 @@ public class OllamaUserInputProcessor extends CommandEndPoint implements AiComma
         JsonArray request = new JsonArray();
         JsonObject system = new JsonObject();
         system.addProperty("role", AIConstants.ROLE_SYSTEM);
-        system.addProperty("content", getContextFactory().generateSystemPrompt());
+        system.addProperty("content", getContextFactory().generateVoiceInputSystemPrompt());
         request.add(system);
         JsonObject userMsg = new JsonObject();
         userMsg.addProperty("role", AIConstants.ROLE_USER);
-        userMsg.addProperty("content", buildVoiceRequest(userInput));
+        userMsg.addProperty("content", buildVoiceUserPromptRequest(userInput));
         request.add(userMsg);
 
-        JsonObject response = OllamaCommandEndPoint.getInstance().processAiPrompt(request, 0.02f);
+        JsonObject response = OllamaCommandEndPoint.getInstance().processAiPrompt(request, 0.01f);
         if (response == null) {
             getRouter().processAiResponse(createError("Sorry, I couldn't reach Ollama."), userInput);
             systemSession.clearChatHistory();
@@ -127,7 +127,7 @@ public class OllamaUserInputProcessor extends CommandEndPoint implements AiComma
         messages.add(userMsg);
 
         executor.submit(() -> {
-            JsonObject response = OllamaCommandEndPoint.getInstance().processAiPrompt(messages, 0.3f);
+            JsonObject response = OllamaCommandEndPoint.getInstance().processAiPrompt(messages, 0.1f);
             if (response != null) getRouter().processAiResponse(response, null);
         });
     }

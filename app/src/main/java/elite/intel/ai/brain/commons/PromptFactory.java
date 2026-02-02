@@ -30,20 +30,22 @@ public class PromptFactory implements AiPromptFactory {
 
     @Override
     public String generateUserPrompt(String playerVoiceInput) {
-        return "Interpret this input: " + playerVoiceInput + "\n\n";
+        return "User Input: " + playerVoiceInput;
     }
 
     @Override
-    public String generateSystemPrompt() {
+    public String generateVoiceInputSystemPrompt() {
         StringBuilder sb = new StringBuilder();
         AICadence aiCadence = systemSession.getAICadence();
         AIPersonality aiPersonality = systemSession.getAIPersonality();
         sb.append("YOU ARE ").append(aiName()).append(" — A STRICT COMMAND PARSER.");
+        sb.append(" Match 'User Input' to action using instructions below.");
         sb.append("""
                 YOU NEVER invent actions, guess intent, combine commands, split sentences, or create new behaviors.
                 Your only job: classify user input as ONE best matching command or query from the provided lists — or return no-match.
-                    - IF user input is a call to action it is a command. (local map! or optimize speed!) Match it to most probable command in the list.
-                    - IF user input is a question it is probably a query. Match it to most probable query in the list.
+                    - IF user input is a call to action (get, set, plot, locate, find, toggle etc.) it is a command.
+                    - IF user input is a question (where, analyse, check, lookup) it is a query.
+                    DO NOT LIE! If no command or query match found say so. {"type":"query", "response_text":"No matching command or query found.", "action":"", "params":{}, "expect_followup":false}
                 
                 Supported COMMANDS: patterns, concepts, and formulations -> ACTION_NAME (use ONLY these action names):
                 """);
@@ -54,49 +56,34 @@ public class PromptFactory implements AiPromptFactory {
                 Supported QUERIES: patterns, concepts, and formulations -> ACTION_NAME (use ONLY these action names):
                 """);
         sb.append(commandsAndQueries.getQueries());
-        sb.append("""
-                IF NOT MATCH FOUND inform the user: no matting command or query.
-                
-                OUTPUT FORMAT — MUST BE EXACTLY THIS JSON — NOTHING ELSE:
-                
+        sb.append("""                
+                OUTPUT FORMAT **MUST BE EXACTLY THIS JSON** NOTHING ELSE:
                 {
                   "type": "command" | "query",
-                  "response_text": "short TTS text or empty string",
+                  "response_text": "empty string for commands or query response",
                   "action": "EXACT_ACTION_NAME_FROM_LIST_ABOVE",
                   "params": {} | {"key": "value"} | {"state": true|false} | {"key": "value", ...},
                   "expect_followup": true | false
                 }
-                
-                If input does NOT clearly match EXACTLY ONE entry from the lists above → return:
-                
-                {"type":"query", "response_text":"No matching command or query found.", "action":"none", "params":{}, "expect_followup":false}
-                
-                RULES — READ ONCE AND OBEY:
-                
-                1. Allowed "type" values: only "command" or "query" — never "chat", never anything else.
-                2. "action" MUST be copied verbatim from the list above — no variations, no typos.
-                3. For commands: response_text is ALWAYS empty string.
-                4. Params rules (MANDATORY — very strict):
-                   - Key is ALWAYS "key" (for any named value: material, commodity, voice, number, etc.) Example: {"key": "low temperature diamonds"}
-                   - IF distance is requested, then key for distance is "max_distance" Example: {"key": "gold", "max_distance":"80"}
-                   - Key is "state" ONLY when value is boolean (on/off, true/false) Example: "lights on"→ {"state": true}
-                   - Never invent other key names (no "material", "distance", "planet", etc.)
+
+                STRICT RULES TO OBEY:
+                1. Allowed "type" values: only "command" or "query"
+                2. "action" MUST be copied from the list above — no variations. For command actions the response_text is ALWAYS empty string.
+                3. Params rules (MANDATORY — very strict):
+                   - Key/value template is provided with command. Match it. Example 1: {"key": "gold", "max_distance":"80"} Example 2: "lights on"-> {"state": true}
+                   - Never invent other key names. Always use provided template only.
                    - Parametrized user request examples:
-                     - "find mining site for LTD"                                   → {"key": "low temperature diamonds"}
-                     - "lights on"                                                  → {"state": true}
-                     - "set speed 2"                                                → {"key": "2"}
-                     - "set trade profile budget two hundred million"               → {"key": "200000000"}
-                     - "set voice to zira"                                          → {"key": "zira"}
-                     - "find gold within 80 ly"                                     → {"key": "gold", "max_distance":"80"}
-                     - "Navigate to coordinates latitude -12.34, longitude 56.78"   → {"lat": "-12.34", "lon":"56.78"}
+                     - "find mining site for LTD"                                   -> {"key": "low temperature diamonds"}
+                     - "lights on"                                                  -> {"state": true}
+                     - "set speed 2"                                                -> {"key": "2"}
+                     - "set trade profile budget two hundred million"               -> {"key": "200000000"}
+                     - "set voice to zira"                                          -> {"key": "zira"}
+                     - "find gold within 80 ly"                                     -> {"key": "gold", "max_distance":"80"}
+                     - "Navigate to coordinates latitude -12.34, longitude 56.78"   -> {"lat": "-12.34", "lon":"56.78"}
                 
-                5. 'here', 'this planet', 'current system' → interpret as current location
-                6. If multiple possible matches → choose the most specific / most exact lexical match
-                7. If still unsure or weak match → return the no-match JSON above — do NOT try to be helpful
-                
-                LAST REMINDER BEFORE OUTPUT:
-                Only use action names exactly as they appear in the lists.
-                Output pure JSON — no explanations, no markdown, no extra text.
+                4. 'here', 'this planet', 'current system' -> interpret as current location
+                5. If multiple possible matches -> choose the most specific / most exact lexical match
+                6. If no match found -> return the no-match found.
                 """);
         if (!systemSession.isRunningLocalLLM() && !systemSession.isRunningPiperTts()) {
             sb.append(" Behavior: ");
@@ -121,7 +108,7 @@ public class PromptFactory implements AiPromptFactory {
                   - Respond in Military clear style
                   - single clean string (no arrays, no objects, no commas as separators unless part of the natural sentence)
                   - only the final extracted answer
-                - If no matching data exists in the provided JSON → let the user know that, do not invent values.
+                - If no matching data exists in the provided JSON -> let the user know that, do not invent values.
                 - Calculate if asked, but never guess and never invent values
                 - Use ONLY information present in the data you receive
                 - If there is not enough info to answer the question let user know.

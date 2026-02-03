@@ -50,7 +50,7 @@ public class OllamaClient extends BaseAiClient implements Client {
         request.addProperty("format", "json");
         request.addProperty("stream", false);
         request.addProperty("think", false);
-        request.addProperty("num_ctx", 16384);
+        request.addProperty("num_ctx", 128000);
 
         /// OLAMA tricks.
         /// Accuracy / Coherence

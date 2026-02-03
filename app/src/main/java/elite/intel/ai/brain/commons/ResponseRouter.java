@@ -8,6 +8,7 @@ import elite.intel.ai.brain.handlers.QueryHandlerFactory;
 import elite.intel.ai.brain.handlers.commands.CommandHandler;
 import elite.intel.ai.brain.handlers.query.QueryHandler;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
@@ -90,6 +91,11 @@ public class ResponseRouter implements AIRouterInterface {
 
     private void handleQuery(String action, JsonObject params, String userInput) {
         QueryHandler handler = getQueryHandlers().get(action);
+        if (handler == null) {
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("command not found"));
+            return;
+        }
+
         EventBusManager.publish(new AppLogEvent("DEBUG: Query handler: " + handler.getClass().getSimpleName()));
         if (action == null || action.isEmpty()) {
             handler = getQueryHandlers().get(GENERAL_CONVERSATION.getAction());
@@ -134,14 +140,16 @@ public class ResponseRouter implements AIRouterInterface {
     protected void handleCommand(String action, JsonObject params, String responseText) {
         EventBusManager.publish(new AppLogEvent("DEBUG: Processing action: " + action + " with params: " + params.toString()));
         EventBusManager.publish(new AiVoxResponseEvent("%s, %s ".formatted(StringUtls.affirmative(), StringUtls.player(playerSession))));
-
         CommandHandler handler = getCommandHandlers().get(action);
-        if (handler != null) {
-            EventBusManager.publish(new AppLogEvent("DEBUG: Command handler: " + handler.getClass().getSimpleName()));
-            new Thread(() -> handler.handle(action, params, responseText)).start();
-            log.debug("Handled command action: {}", action);
-            systemSession.clearChatHistory();
+        if (handler == null) {
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("command not found"));
+            return;
         }
+
+        EventBusManager.publish(new AppLogEvent("DEBUG: Command handler: " + handler.getClass().getSimpleName()));
+        new Thread(() -> handler.handle(action, params, responseText)).start();
+        log.debug("Handled command action: {}", action);
+        systemSession.clearChatHistory();
     }
 
 

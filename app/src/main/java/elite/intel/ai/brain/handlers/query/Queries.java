@@ -28,8 +28,6 @@ public enum Queries {
     TRADE_ROUTE_ANALYSIS                ("query_trade_route_analysis",                  AnalyzeTradeRouteHandler.class),
     LOCAL_OUTFITTING                    ("query_local_outfitting",                      AnalyzeLocalOutfittingHandler.class),
     LOCAL_SHIPYARD                      ("query_local_shipyard",                        AnalyzeShipyardHandler.class),
-    //LOCAL_STATIONS                      ("query_local_stations",                        AnalyzeLocalStations.class),
-    DISTANCE_TO_DESTINATION             ("query_distance_to_destination",               AnalyzeDistanceToFinalDestination.class),
     CARGO_HOLD_CONTENTS                 ("query_cargo_hold_contents",                   AnalyzeCargoHoldHandler.class),
     PLOTTED_ROUTE_ANALYSIS              ("query_ship_route_analysis",                   AnalyzeRouterHandler.class),
     CARRIER_ROUTE_ANALYSIS              ("query_carrier_route_analysis",                AnalyzeCarrierRouteHandler.class),
@@ -38,8 +36,6 @@ public enum Queries {
     CARRIER_STATUS                      ("query_carrier_statistics",                    AnalyzeCarrierDataHandler.class),
     CARRIER_ETA                         ("query_carrier_eta",                           CarrierETAHandler.class),
     DISTANCE_TO_CARRIER                 ("query_distance_to_carrier",                   AnalyzeDistanceFromFleetCarrierHandler.class),
-    // todo: dual usage of analyze pirate_missions, conflicting querying
-//    OUTSTANDING_PIRATE_MISSIONS         ("query_outstanding_pirate_missions",           AnalyzePirateMissionHandler.class),
     PIRATE_MISSION_PROGRESS             ("query_pirate_mission_progress",               AnalyzePirateMissionHandler.class),
     PLAYER_PROFILE_ANALYSIS             ("query_player_profile_analysis",               AnalyzePlayerProfile.class),
     SHIP_LOADOUT                        ("query_ship_loadout",                          AnalyzeShipLoadoutHandler.class),

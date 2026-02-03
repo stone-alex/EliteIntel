@@ -84,7 +84,7 @@ public class AiCommandsAndQueries {
             commandMap.put(" calculate carrier route ", CALCULATE_FLEET_CARRIER_ROUTE.getAction());
             commandMap.put(" enter carrier destination ", ENTER_NEXT_FLEET_CARRIER_DESTINATION.getAction());
             commandMap.put(" calculate trade route, get us a trade route ", CALCULATE_TRADE_ROUTE.getAction());
-            commandMap.put(" **plot route** to next trade stop/station/port ", PLOT_ROUTE_TO_NEXT_TRADE_STOP.getAction());
+            commandMap.put(" **plot route** to trade stop/station/port ", PLOT_ROUTE_TO_NEXT_TRADE_STOP.getAction());
             commandMap.put(" what is our trade route profile, describe trade route profile ", LIST_TRADE_ROUTE_PARAMETERS.getAction());
             commandMap.put(" cancel/clear trade route ", CLEAR_TRADE_ROUTE.getAction());
 
@@ -195,20 +195,17 @@ public class AiCommandsAndQueries {
         queryMap.put(" lookup current location, where are we, what is the temperature on this planet, how long does the day last here ", CURRENT_LOCATION.getAction());
         queryMap.put(" how much fuel does our ship has, (do not confuse with carrier) ", SHIP_FUEL_STATUS.getAction());
         queryMap.put(" what information do you have on this target, analyze selected target ", FSD_TARGET_ANALYSIS.getAction());
-        queryMap.put(" tell me about our trade route, analyze trade route, check trade route ", TRADE_ROUTE_ANALYSIS.getAction());
+        queryMap.put(" lookup ship-route, information about next jump/stop/waypoint, what class is the next star, are there any traffic or casualties on route ", PLOTTED_ROUTE_ANALYSIS.getAction());
+        queryMap.put(" Economic profit path, trade route analysis, analyze trade route, check trade route. NEVER USE FOR QUESTIONS ABOUT FINAL DESTINATION ", TRADE_ROUTE_ANALYSIS.getAction());
+        queryMap.put(" Fleet Carrier movement. fleet carrier route analysis ", CARRIER_ROUTE_ANALYSIS.getAction());
         queryMap.put(" lookup outfitting available at the station ", LOCAL_OUTFITTING.getAction());
         queryMap.put(" lookup ships available for sale at the station ", LOCAL_SHIPYARD.getAction());
-        //queryMap.put(" query stations in this star system, are there any shipyards around, are there any markets around ", LOCAL_STATIONS.getAction());
-        queryMap.put(" distance to the ship destination, how many stops left, how far to final destination ", DISTANCE_TO_DESTINATION.getAction());
         queryMap.put(" lookup cargo hold contents, commodities on board. what do we have in cargo, what do we have on board, how much free spacec we have ", CARGO_HOLD_CONTENTS.getAction());
-        queryMap.put(" lookup ship route, information about next jump/stop/waypoint, what class is the next star, are there any traffic or casualties on route ", PLOTTED_ROUTE_ANALYSIS.getAction());
-        queryMap.put(" lookup carrier route (do not confuse with ship route), how long will it take for carrier to reach final destination ", CARRIER_ROUTE_ANALYSIS.getAction());
         queryMap.put(" lookup carrier destination (do not confuse with ship) ", CARRIER_DESTINATION.getAction());
         queryMap.put(" lookup carrier fuel supply, jump range, fuel reserve, what is our tritium supply, tritium reserve (do not confuse with ship) ", CARRIER_TRITIUM_SUPPLY.getAction());
         queryMap.put(" lookup carrier finances, funded days of operation V ", CARRIER_STATUS.getAction());
         queryMap.put(" lookup carrier estimated time of arrival (do not confuse with ship) ", CARRIER_ETA.getAction());
         queryMap.put(" how far are we from the carrier ", DISTANCE_TO_CARRIER.getAction());
-        //queryMap.put(" what missions do we have, are there any outstanding missions, do we have any active missions ", OUTSTANDING_MISSIONS.getAction());
         queryMap.put(" how many kills left on pirate missions, pirate massacre mission progress (these are pirate massacre specific missions only) ", PIRATE_MISSION_PROGRESS.getAction());
         queryMap.put(" lookup player stats, ranks, rank progress etc ", PLAYER_PROFILE_ANALYSIS.getAction());
         queryMap.put(" ship combat readiness, damage report, jump range, loadout, ship capabilities. Do we have fuel scoop equipped, is ship battle worthy, what class of ship is it ", SHIP_LOADOUT.getAction());

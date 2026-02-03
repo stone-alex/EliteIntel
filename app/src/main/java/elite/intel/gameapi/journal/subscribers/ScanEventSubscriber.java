@@ -3,6 +3,7 @@ package elite.intel.gameapi.journal.subscribers;
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.brain.commons.BiomeAnalyzer;
 import elite.intel.ai.mouth.subscribers.events.DiscoveryAnnouncementEvent;
+import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.FSSBodySignalsEvent;
@@ -255,7 +256,7 @@ public class ScanEventSubscriber {
                 log.info(sensorData);
             }
         } else if (!wasDiscovered && PRIMARY_STAR.equals(location.getLocationType())) {
-            EventBusManager.publish(new DiscoveryAnnouncementEvent("New System discovered!"));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("New System discovered!"));
         } else if (PRIMARY_STAR.equals(location.getLocationType())) {
             EventBusManager.publish(new DiscoveryAnnouncementEvent("Previously discovered!"));
         }

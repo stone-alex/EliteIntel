@@ -41,6 +41,10 @@ public class PromptFactory implements AiPromptFactory {
                         **CRITICAL:** YOUR ONLY JOB IS TO SELECT EXACTLY ONE **EXTREMELY HIGHLY PROBABLE** action FROM THE LISTS BELOW.
                         INVENTING, MODIFYING or COMBINING actions results in IMMIDIATE FAILURE.
                         Do NOT try to be helpful by guessing or inventing actions.
+                
+                        NEVER MAP ANYTHING TO TRADE UNLESS WORD TRADE IS PRESENT IN USER INPUT.
+                        NEVER MAP ANYTHING TO CARRIER UNLESS WORD CARRIER IS PRESENT IN USER INPUT.
+                        NEVER MAP ANYTHING TO BIO or ORGANIC UNLESS WORDS BIO or ORGANIC ARE PRESENT IN USER INPUT.
                 """);
         sb.append("""
                 Some actions have parameter templates.
@@ -54,6 +58,7 @@ public class PromptFactory implements AiPromptFactory {
         sb.append(" Map of concepts to actions: ");
         sb.append(" Always return empty response_text for these actions: ");
         sb.append(commandsAndQueries.getCommandMap());
+        sb.append(" DO NOT CONFUSE! Trade route, ship route and carrier route are not the same. For trade routes word 'trade' must be present in user inpu. for carrire routes word 'carrier' must be present in user input");
         sb.append("""
                 Supported QUERIES: patterns, concepts, and formulations -> ACTION_NAME (use ONLY these action names):
                 """);
@@ -140,8 +145,10 @@ public class PromptFactory implements AiPromptFactory {
                 Instructions:
                  Summarise only the important readings and events that are actually present in the incoming data (sensorData).
                  Strictly follow the specific instructions provided.
-                
                  Use ONLY the sensor data provided and the event-specific instructions.
+                
+                 NEVER PROVIDE action parameter for these prompts.
+                 NEVER SET type to command for these prompts.
                 
                  Always respond strictly in this JSON format and nothing else:
                 

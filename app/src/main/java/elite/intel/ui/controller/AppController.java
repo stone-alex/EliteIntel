@@ -284,7 +284,7 @@ public class AppController implements Runnable {
     }
 
     private void startServices() {
-        if (isRunning.get()) return;
+        //if (isRunning.get()) return;
         /// NOTE: User can swap keys. the services MUST be re-initialized before we start them.
         initServices();
 
@@ -308,13 +308,13 @@ public class AppController implements Runnable {
             appendToLog("Available profiles:\n" + listCadences());
         }
 
-        isRunning.set(true);
+        //isRunning.set(true);
         EventBusManager.publish(new ServicesStateEvent(true));
         KeyBindCheck.getInstance().check();
     }
 
     private void stopServices() {
-        if (!isRunning.get()) return;
+        //if (!isRunning.get()) return;
 
         EventBusManager.publish(new AiVoxResponseEvent("Shutting Down..."));
         List<ServiceHolder> services = new ArrayList<>(this.services.values());
@@ -325,7 +325,7 @@ public class AppController implements Runnable {
 
         systemSession.clearChatHistory();
         EventBusManager.publish(new ServicesStateEvent(false));
-        isRunning.set(false);
+        //isRunning.set(false);
         EventBusManager.publish(new AppLogEvent("All services are stopped\n\n"));
     }
 

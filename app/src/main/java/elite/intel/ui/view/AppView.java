@@ -797,7 +797,7 @@ public class AppView extends JFrame implements AppViewInterface {
         restoreDefaultsButton.setText("Restore Local LLM Defaults");
         restoreDefaultsButton.addActionListener(e -> SwingUtilities.invokeLater(() -> {
             localLlmAddressField.setText("http://localhost:11434");
-            localLlmModelCommandField.setText("qwen2.5:7b");
+            localLlmModelCommandField.setText("qwen2.5:14b");
             localLlmModelQueryField.setText("qwen2.5:14b");
             saveSystemConfig();
         }));

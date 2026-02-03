@@ -1,5 +1,6 @@
 package elite.intel.ai.brain.handlers.query;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.db.dao.HelpDao;
@@ -15,7 +16,8 @@ public class HelpHandler extends BaseQueryAnalyzer implements QueryHandler {
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) {
 
-        String topic = params.get("key").getAsString();
+        JsonElement key = params.get("key");
+        String topic = key == null ? null : key.getAsString();
         if (topic == null) {
             return process("No help topic provided");
         }

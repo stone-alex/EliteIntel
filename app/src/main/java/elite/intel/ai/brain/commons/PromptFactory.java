@@ -58,7 +58,7 @@ public class PromptFactory implements AiPromptFactory {
         sb.append(" Map of concepts to actions: ");
         sb.append(" Always return empty response_text for these actions: ");
         sb.append(commandsAndQueries.getCommandMap());
-        sb.append(" DO NOT CONFUSE! Trade route, ship route and carrier route are not the same. For trade routes word 'trade' must be present in user inpu. for carrire routes word 'carrier' must be present in user input");
+        sb.append(" DO NOT CONFUSE! Trade route, ship route and carrier route are not the same. For trade routes word 'trade' must be present in user input. for carrier routes word 'carrier' must be present in user input");
         sb.append("""
                 Supported QUERIES: patterns, concepts, and formulations -> ACTION_NAME (use ONLY these action names):
                 """);

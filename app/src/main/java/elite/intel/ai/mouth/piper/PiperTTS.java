@@ -46,7 +46,7 @@ public class PiperTTS implements MouthInterface {
     private ExecutorService callbackExecutor = null;
 
     private PiperTTS() {
-        EventBusManager.register(this);
+
     }
 
     public static PiperTTS getInstance() {
@@ -63,7 +63,7 @@ public class PiperTTS implements MouthInterface {
     @Override
     public void start() {
         if (running) return;
-
+        EventBusManager.register(this);
         running = true;
         queue.clear();
 
@@ -92,12 +92,13 @@ public class PiperTTS implements MouthInterface {
                 }
             }
         }, "PiperTTS-Worker");
-        workerThread.setDaemon(true);
+        workerThread.setDaemon(false);
         workerThread.start();
     }
 
     @Override
     public void stop() {
+        EventBusManager.unregister(this);
         queue.clear();
         interruptRequested.set(true);
         SourceDataLine line = currentLine.get();

@@ -14,8 +14,8 @@ public class EventBusManager {
         bus.post(event);
     }
 
-    public static void register(Object subscriber) {
-        bus.register(subscriber);
+    public static void register(Object o) {
+        bus.register(o);
     }
 
     public static void unregister(Object o) {

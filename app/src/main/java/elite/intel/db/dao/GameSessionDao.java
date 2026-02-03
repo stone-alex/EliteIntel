@@ -19,13 +19,15 @@ public interface GameSessionDao {
                                                              edsmApiKey, loggingEnabled, privacyModeOn, rmsThresholdHigh,  
                                                              rmsThresholdLow, encryptedLLMKey, encryptedSTTKey, encryptedTTSKey, 
                                                              encryptedEDSSMKey, sendMarketData, sendOutfittingData, sendShipyardData, 
-                                                             sendExplorationData, speechSpeed, localLlmCommandModel, localLlmQueryModel
+                                                             sendExplorationData, speechSpeed, localLlmCommandModel, localLlmQueryModel,
+                                                             useLocalCommandLlm, useLocalQueryLlm, useLocalTTS
                                                 )
                                   VALUES (1, :aiPersonality, :aiCadence, :aiVoice, :aiApiKey, :ttsApiKey, :sttApiKey, 
                                                       :edsmApiKey, :loggingEnabled, :privacyModeOn, :rmsThresholdHigh, 
                                                       :rmsThresholdLow, :encryptedLLMKey, :encryptedSTTKey, :encryptedTTSKey, 
                                                       :encryptedEDSSMKey, :sendMarketData, :sendOutfittingData, :sendShipyardData, 
-                                                      :sendExplorationData, :speechSpeed, :localLlmCommandModel, :localLlmQueryModel
+                                                      :sendExplorationData, :speechSpeed, :localLlmCommandModel, :localLlmQueryModel,
+                                                      :useLocalCommandLlm, :useLocalQueryLlm, :useLocalTTS
                                           )
             """)
     void save(@BindBean GameSessionDao.GameSession data);
@@ -65,8 +67,11 @@ public interface GameSessionDao {
             session.setSendExplorationData(rs.getBoolean("sendExplorationData"));
             session.setLocalLlmCommandModel(rs.getString("localLlmCommandModel"));
             session.setLocalLlmQueryModel(rs.getString("localLlmQueryModel"));
-
             session.setSpeechSpeed(rs.getFloat("speechSpeed"));
+
+            session.setUseLocalCommandLlm(rs.getBoolean("useLocalCommandLlm"));
+            session.setUseLocalQueryLlm(rs.getBoolean("useLocalQueryLlm"));
+            session.setUseLocalTTS(rs.getBoolean("useLocalTTS"));
             return session;
         }
     }
@@ -99,6 +104,10 @@ public interface GameSessionDao {
         private Float speechSpeed;
         private String localLlmCommandModel;
         private String localLlmQueryModel;
+
+        private boolean useLocalCommandLlm;
+        private boolean useLocalQueryLlm;
+        private boolean useLocalTTS;
 
 
         public String getAiPersonality() {
@@ -276,6 +285,31 @@ public interface GameSessionDao {
 
         public void setLocalLlmQueryModel(String localLlmQueryModel) {
             this.localLlmQueryModel = localLlmQueryModel;
+        }
+
+
+        public boolean isUseLocalCommandLlm() {
+            return useLocalCommandLlm;
+        }
+
+        public void setUseLocalCommandLlm(boolean useLocalCommandLlm) {
+            this.useLocalCommandLlm = useLocalCommandLlm;
+        }
+
+        public boolean isUseLocalQueryLlm() {
+            return useLocalQueryLlm;
+        }
+
+        public void setUseLocalQueryLlm(boolean useLocalQueryLlm) {
+            this.useLocalQueryLlm = useLocalQueryLlm;
+        }
+
+        public boolean isUseLocalTTS() {
+            return useLocalTTS;
+        }
+
+        public void setUseLocalTTS(boolean useLocalTTS) {
+            this.useLocalTTS = useLocalTTS;
         }
     }
 }

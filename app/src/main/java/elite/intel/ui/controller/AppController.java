@@ -241,7 +241,6 @@ public class AppController implements Runnable {
         }
     }
 
-
     @Subscribe
     public void onAppLogEvent(AppLogEvent event) {
         String line = "\n" + event.getData();
@@ -284,7 +283,8 @@ public class AppController implements Runnable {
     }
 
     private void startServices() {
-        //if (isRunning.get()) return;
+        if (isRunning.get()) return;
+        EventBusManager.publish(new ClearConsoleEvent());
         /// NOTE: User can swap keys. the services MUST be re-initialized before we start them.
         initServices();
 
@@ -308,29 +308,40 @@ public class AppController implements Runnable {
             appendToLog("Available profiles:\n" + listCadences());
         }
 
-        //isRunning.set(true);
+        isRunning.set(true);
         EventBusManager.publish(new ServicesStateEvent(true));
         KeyBindCheck.getInstance().check();
     }
 
     private void stopServices() {
-        //if (!isRunning.get()) return;
+        if (!isRunning.get()) return;
 
         EventBusManager.publish(new AiVoxResponseEvent("Shutting Down..."));
-        List<ServiceHolder> services = new ArrayList<>(this.services.values());
-        Collections.reverse(services);
-        for (ServiceHolder service : services) {
-            service.stop();
+
+        // Stop in reverse dependency order
+        List<ServiceType> reverseOrder = new ArrayList<>(services.keySet());
+        Collections.reverse(reverseOrder);
+
+        for (ServiceType type : reverseOrder) {
+            ServiceHolder holder = services.get(type);
+            if (holder != null) {
+                holder.stop();
+                services.remove(type);
+            }
         }
+        this.services.clear();
 
         systemSession.clearChatHistory();
         EventBusManager.publish(new ServicesStateEvent(false));
-        //isRunning.set(false);
+        isRunning.set(false);
+        EventBusManager.publish(new ClearConsoleEvent());
         EventBusManager.publish(new AppLogEvent("All services are stopped\n\n"));
     }
 
     private void initServices() {
         /// NOTE Order is important.
+        stopServices();
+        this.services.clear();
         services.put(ServiceType.JOURNAL_PARSER, new ServiceHolder(JournalParser::new));
         services.put(ServiceType.AUXILIARY_FILES_MONITOR, new ServiceHolder(AuxiliaryFilesMonitor::new));
         services.put(ServiceType.MOUTH, new ServiceHolder(ApiFactory.getInstance()::getMouthImpl));

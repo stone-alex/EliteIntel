@@ -19,16 +19,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SystemSession {
-
-    // Config keys
-    public static final String AI_API_KEY = "ai_api_key";
-    public static final String EDSM_KEY = "edsm_api_key";
-    public static final String TTS_API_KEY = "tts_api_key"; // New key for Google API
-    public static final String STT_API_KEY = "stt_api_key";
-
-    public static final String DEBUG_SWITCH = "logging_enabled";
-
-
     private static volatile SystemSession instance;
 
     private SystemSession() {
@@ -431,6 +421,50 @@ public class SystemSession {
             return Void.class;
         });
     }
+
+
+    public void setUseLocalCommandLlm(boolean b){
+        Database.withDao(GameSessionDao.class, dao ->{
+            GameSessionDao.GameSession session = dao.get();
+            session.setUseLocalCommandLlm(b);
+            dao.save(session);
+            return Void.class;
+        });
+    }
+
+    public void setUseLocalQueryLlm(boolean b){
+        Database.withDao(GameSessionDao.class, dao -> {
+            GameSessionDao.GameSession session = dao.get();
+            session.setUseLocalQueryLlm(b);
+            dao.save(session);
+            return Void.class;
+        });
+    }
+
+    public void setUseLocalTTS(boolean b ){
+        Database.withDao(GameSessionDao.class, dao -> {
+            GameSessionDao.GameSession session = dao.get();
+            session.setUseLocalTTS(b);
+            dao.save(session);
+            return Void.class;
+        });
+    }
+
+
+    public boolean useLocalCommandLlm(){
+        return Database.withDao(GameSessionDao.class, dao -> dao.get().isUseLocalCommandLlm());
+    }
+
+
+    public boolean useLocalQueryLlm(){
+        return Database.withDao(GameSessionDao.class, dao -> dao.get().isUseLocalQueryLlm());
+    }
+
+    public boolean useLocalTTS(){
+        return Database.withDao(GameSessionDao.class, dao -> dao.get().isUseLocalTTS());
+    }
+
+
 
     public String getLocalLlmCommandModel() {
         return Database.withDao(GameSessionDao.class, dao -> dao.get().getLocalLlmCommandModel());

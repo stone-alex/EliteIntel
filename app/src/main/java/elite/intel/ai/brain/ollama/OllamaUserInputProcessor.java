@@ -30,18 +30,20 @@ public class OllamaUserInputProcessor extends CommandEndPoint implements AiComma
     private final SystemSession systemSession = SystemSession.getInstance();
 
     private OllamaUserInputProcessor() {
-        EventBusManager.register(this);
+        //
     }
 
     public static OllamaUserInputProcessor getInstance() { return INSTANCE; }
 
     @Override public void start() {
+        EventBusManager.register(this);
         if (running.compareAndSet(false, true)) {
             this.executor = java.util.concurrent.Executors.newSingleThreadExecutor(
                     r -> { Thread t = new Thread(r, "OllamaCommand-Worker"); t.setDaemon(true); return t; });
             log.info("OllamaCommandEndPoint started");
             EventBusManager.publish(new AiVoxResponseEvent(
-                    StringUtls.greeting(PlayerSession.getInstance().getPlayerName())));
+                    StringUtls.greeting(PlayerSession.getInstance().getPlayerName()))
+            );
         }
     }
 

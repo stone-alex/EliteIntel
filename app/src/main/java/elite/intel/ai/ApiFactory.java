@@ -1,11 +1,17 @@
 package elite.intel.ai;
 
 import elite.intel.ai.brain.*;
-import elite.intel.ai.brain.commons.ResponseRouter;
 import elite.intel.ai.brain.commons.PromptFactory;
-import elite.intel.ai.brain.ollama.*;
-import elite.intel.ai.brain.openai.*;
-import elite.intel.ai.brain.xai.*;
+import elite.intel.ai.brain.commons.ResponseRouter;
+import elite.intel.ai.brain.ollama.OllamaAnalysisEndpoint;
+import elite.intel.ai.brain.ollama.OllamaCommandEndPoint;
+import elite.intel.ai.brain.ollama.OllamaUserInputProcessor;
+import elite.intel.ai.brain.openai.OpenAiAnalysisEndPoint;
+import elite.intel.ai.brain.openai.OpenAiChatEndPoint;
+import elite.intel.ai.brain.openai.OpenAiCommandEndPoint;
+import elite.intel.ai.brain.xai.GrokAnalysisEndpoint;
+import elite.intel.ai.brain.xai.GrokChatEndPoint;
+import elite.intel.ai.brain.xai.GrokCommandEndPoint;
 import elite.intel.ai.ears.EarsInterface;
 import elite.intel.ai.ears.google.GoogleSTTImpl;
 import elite.intel.ai.mouth.MouthInterface;
@@ -23,19 +29,24 @@ import elite.intel.ui.event.AppLogEvent;
  */
 public class ApiFactory {
     private static ApiFactory instance;
+    private final SystemSession systemSession;
 
-    /**
-     * Provides LLM/STT/TTS endpoint instances based on the API key provided in the config file.
-     */
     private ApiFactory() {
         // Prevent instantiation.
+        this.systemSession = SystemSession.getInstance();
     }
 
     public static synchronized ApiFactory getInstance() {
-        if (instance == null) instance = new ApiFactory();
+        if (instance == null) {
+            instance = new ApiFactory();
+        }
         return instance;
     }
+
     public AiAnalysisInterface getAnalysisEndpoint() {
+        if(systemSession.useLocalQueryLlm()){
+            return OllamaAnalysisEndpoint.getInstance();
+        }
         String apiKey = SystemSession.getInstance().getAiApiKey();
         ProviderEnum provider = KeyDetector.detectProvider(apiKey, "LLM");
         return switch (provider) {
@@ -47,6 +58,11 @@ public class ApiFactory {
     }
 
     public AIChatInterface getChatEndpoint() {
+
+        if(systemSession.useLocalQueryLlm()){
+            return OllamaCommandEndPoint.getInstance();
+        }
+
         String apiKey = SystemSession.getInstance().getAiApiKey();
         ProviderEnum provider = KeyDetector.detectProvider(apiKey, "LLM");
         return switch (provider) {
@@ -57,17 +73,26 @@ public class ApiFactory {
     }
 
     public AiPromptFactory getAiPromptFactory() {
-        String apiKey = SystemSession.getInstance().getAiApiKey();
+        return PromptFactory.getInstance();
+
+        ///NOTE: there is the same prompt for all supported LLMs at the moment.
+        ///NOTE: if that changes use the code below
+
+/*        String apiKey = SystemSession.getInstance().getAiApiKey();
         ProviderEnum provider = KeyDetector.detectProvider(apiKey, "LLM");
         return switch (provider) {
             // testing ollama prompts with cloud llms. If good, that will be the default
             case GROK -> PromptFactory.getInstance();
             case OPENAI -> PromptFactory.getInstance();
             default -> PromptFactory.getInstance();
-        };
+        };*/
     }
 
     public AiCommandInterface getCommandEndpoint() {
+        if(systemSession.useLocalCommandLlm()){
+            return OllamaUserInputProcessor.getInstance();
+        }
+
         String apiKey = SystemSession.getInstance().getAiApiKey();
         ProviderEnum provider = KeyDetector.detectProvider(apiKey, "LLM");
         return switch (provider) {
@@ -83,6 +108,10 @@ public class ApiFactory {
 
     ///
     public MouthInterface getMouthImpl() {
+        if(systemSession.useLocalTTS()){
+            return PiperTTS.getInstance();
+        }
+
         String apiKey = SystemSession.getInstance().getTtsApiKey();
         ProviderEnum provider = KeyDetector.detectProvider(apiKey, "TTS");
         switch (provider) {
@@ -96,7 +125,7 @@ public class ApiFactory {
 
     ///
     public EarsInterface getEarsImpl() {
-        String apiKey =  SystemSession.getInstance().getSttApiKey();
+        String apiKey = SystemSession.getInstance().getSttApiKey();
         ProviderEnum provider = KeyDetector.detectProvider(apiKey, "STT"); // Fixed category
         switch (provider) {
             case GOOGLE_STT:

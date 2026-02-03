@@ -47,7 +47,6 @@ public class GoogleTTSImpl implements MouthInterface {
     private final AtomicBoolean canBeInterrupted = new AtomicBoolean(true);
 
     private GoogleTTSImpl() {
-        EventBusManager.register(this);
         this.voiceQueue = new LinkedBlockingQueue<>();
         googleVoiceProvider = GoogleVoiceProvider.getInstance();
     }
@@ -58,6 +57,7 @@ public class GoogleTTSImpl implements MouthInterface {
 
     @Override
     public synchronized void start() {
+        EventBusManager.register(this);
         if (processingThread != null && processingThread.isAlive()) {
             log.warn("VoiceGenerator is already running");
             return;
@@ -89,6 +89,7 @@ public class GoogleTTSImpl implements MouthInterface {
 
     @Override
     public synchronized void stop() {
+        EventBusManager.unregister(this);
         if (processingThread == null || !processingThread.isAlive()) {
             log.warn("VoiceGenerator is not running");
             return;

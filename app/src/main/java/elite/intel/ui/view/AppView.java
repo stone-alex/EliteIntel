@@ -55,9 +55,9 @@ public class AppView extends JFrame implements AppViewInterface {
     // Title
     private final JLabel titleLabel;
     private final AtomicBoolean isServiceRunning = new AtomicBoolean(false);
-    private Font monoFont;
     public JCheckBox toggleStreamingModeCheckBox;
     public JTextArea logArea;
+    private Font monoFont;
     // System tab components
     private JPasswordField sttApiKeyField;
     private JCheckBox sttLockedCheck;
@@ -69,6 +69,9 @@ public class AppView extends JFrame implements AppViewInterface {
     private JCheckBox showDetailedLog;
     private JPasswordField ttsApiKeyField;
     private JCheckBox ttsLockedCheck;
+    private JCheckBox useLocalCommandLLMCheck;
+    private JCheckBox useLocalQueryLLMCheck;
+    private JCheckBox useLocalTTSCheck;
     private JToggleButton startStopServicesButton;
     private JButton recalibrateAudioButton;
     private JButton updateAppButton;
@@ -646,14 +649,33 @@ public class AppView extends JFrame implements AppViewInterface {
         localLlmModelCommandField = new JTextField();
         localLlmModelCommandField.setPreferredSize(new Dimension(200, 42));
         addField(localSettingsPanel, localLlmModelCommandField, gbc, 1, 0.8);
+        useLocalCommandLLMCheck = new JCheckBox("Use", false);
+        useLocalCommandLLMCheck.addActionListener(a -> {
+            SwingUtilities.invokeLater(() -> {
+                saveSystemConfig();
+                //EventBusManager.publish(new RestartServicesEvent());
+            });
+        });
+        addCheck(localSettingsPanel, useLocalCommandLLMCheck, gbc);
 
         nextRow(gbc);
         addLabel(localSettingsPanel, "Local Query LLM:", gbc);
         localLlmModelQueryField = new JTextField();
         localLlmModelQueryField.setPreferredSize(new Dimension(200, 42));
-        addField(localSettingsPanel, localLlmModelQueryField, gbc, 1, 0.8);
         localSettingsPanel.setBorder(new LineBorder(ACCENT, 1));
         localSettingsPanel.revalidate();
+        useLocalQueryLLMCheck = new JCheckBox("Use", false);
+        useLocalQueryLLMCheck.addActionListener(a -> {
+            SwingUtilities.invokeLater(() -> {
+                saveSystemConfig();
+                //EventBusManager.publish(new RestartServicesEvent());
+            });
+        });
+
+        addField(localSettingsPanel, localLlmModelQueryField, gbc, 1, 0.8);
+        addCheck(localSettingsPanel, useLocalQueryLLMCheck, gbc);
+
+
         addNestedPanel(settingsTabPanel, localSettingsPanel);
         /// --------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -663,7 +685,16 @@ public class AppView extends JFrame implements AppViewInterface {
         localTtsAddressField.setPreferredSize(new Dimension(200, 42));
         localTtsAddressField.setText("http://localhost:5000/");
         localTtsAddressField.setToolTipText("Local TTS Address");
+        useLocalTTSCheck = new JCheckBox("Use", false);
+        useLocalTTSCheck.addActionListener(a -> {
+            SwingUtilities.invokeLater(() -> {
+                saveSystemConfig();
+                //EventBusManager.publish(new RestartServicesEvent());
+            });
+        });
+
         addField(localSettingsPanel, localTtsAddressField, gbc, 1, 0.8);
+        addCheck(localSettingsPanel, useLocalTTSCheck, gbc);
 
         nextRow(gbc);
         addLabel(localSettingsPanel, "Speech Throttle ", gbc);
@@ -820,7 +851,6 @@ public class AppView extends JFrame implements AppViewInterface {
         nextRow(gbc);
 
 
-
         return settingsTabPanel;
     }
 
@@ -923,10 +953,15 @@ public class AppView extends JFrame implements AppViewInterface {
         llmApiKeyField.setText(systemSession.getAiApiKey() != null ? systemSession.getAiApiKey() : "");
         ttsApiKeyField.setText(systemSession.getTtsApiKey() != null ? systemSession.getTtsApiKey() : "");
         edsmKeyField.setText(systemSession.getEdsmApiKey() != null ? systemSession.getEdsmApiKey() : "");
+
         localTtsAddressField.setText(playerSession.getLocalTtsAddress() != null ? playerSession.getLocalTtsAddress() : "");
         localLlmAddressField.setText(playerSession.getLocalLlmAddress() != null ? playerSession.getLocalLlmAddress() : "");
         localLlmModelCommandField.setText(systemSession.getLocalLlmCommandModel() != null ? systemSession.getLocalLlmCommandModel() : "");
         localLlmModelQueryField.setText(systemSession.getLocalLlmQueryModel() != null ? systemSession.getLocalLlmQueryModel() : "");
+
+        useLocalCommandLLMCheck.setSelected(systemSession.useLocalCommandLlm());
+        useLocalQueryLLMCheck.setSelected(systemSession.useLocalQueryLlm());
+        useLocalTTSCheck.setSelected(systemSession.useLocalTTS());
 
         // Player tab
         playerAltNameField.setText(playerSession.getAlternativeName() != null ? playerSession.getAlternativeName() : "");
@@ -958,6 +993,9 @@ public class AppView extends JFrame implements AppViewInterface {
         playerSession.setLocalLlmAddress(localLlmAddressField.getText());
         systemSession.setLocalLlmCommandModel(localLlmModelCommandField.getText());
         systemSession.setLocalLlmQueryModel(localLlmModelQueryField.getText());
+        systemSession.setUseLocalCommandLlm(useLocalCommandLLMCheck.isSelected());
+        systemSession.setUseLocalQueryLlm(useLocalQueryLLMCheck.isSelected());
+        systemSession.setUseLocalTTS(useLocalTTSCheck.isSelected());
         EventBusManager.publish(new AppLogEvent("System config saved"));
         initData();
     }
@@ -1130,4 +1168,10 @@ public class AppView extends JFrame implements AppViewInterface {
             this.setTitle("New version available.");
         });
     }
+
+
+    @Subscribe void onClearConsoleEvent(ClearConsoleEvent event){
+        logArea.setText("");
+    }
+
 }

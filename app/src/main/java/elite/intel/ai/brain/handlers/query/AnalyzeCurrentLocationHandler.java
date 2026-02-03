@@ -36,25 +36,16 @@ public class AnalyzeCurrentLocationHandler extends BaseQueryAnalyzer implements 
         }
 
         String instructions = """                
-                    The user may ask multiple questions at once. Answer each one individually using the matching rule below. Do not combine them into one sentence unless natural. Do not say "Insufficient data" if the field exists for part of the question.
-                    - IF asked for summary or broad 'where are we' question return starSystemName, planetName followed by summary of what data provided. Example: Star System <starSystemName>, Planet <planetName>. - <summary>
+                    The user may ask multiple questions at once. Answer each one individually using the matching rule below. Do not combine them into one sentence unless natural.
+                    - If any requested info is missing or not in data, tell the user that you do not have enough information to determine the correct answer.
+                    - IF asked for summary or broad 'where are we' question return starSystemName, planetName followed by summary of what data provided. Example: Star System <X>, Planet <Y>. - <your summary>
                     - IF planetName is unknown check stationName. Example: Docked at <stationName> in star system <starSystemName>
                     - Extract and answer ALL questions in the user input using ONLY the provided data fields.
-                    - For temperature: If temperature is in data (in Kelvin), convert to Celsius and say: "Temperature on <planetName> is <X> degrees Celsius."
+                    - For temperature: If temperature is in data (in Kelvin), convert to Celsius and say: "Temperature on <X> is <Y> degrees Celsius."
                     - For day length: Use dayLength directly and say: "Day on <planetName> lasts <dayLength>"
                     - Answer each requested piece of information separately and clearly.
-                    - If any requested info is missing or not in data, omit that part only.
                 
                     Use this data to provide answers for our location.
-                    Follow these rules:
-                    - IF asked 'where are we?' Use planetShortName for location name unless we are on the station in which case return stationName.
-                    - IF Asked about Temperature: Temperature data is provided in surfaceTemperatureInKelvin (Kelvin), covert to Celsius and announce Celsius. Example: Temperature on <planetName> is <X> degrees Celsius.
-                    - IF temperature is higher than 1000, current location is star system, the temp is of that of the local star. Do not mention temperature in this case.
-                    - IF Asked about Length Of The Day: Use dayLength value. Example: Day on <planetName> lasts <X> hours and <Y> minutes
-                    - IF Asked about Local Government, Controlling Powers, Controlling Faction, and localPowers/controllingFaction data is not present, the planet is uninhabited - ELSE use this data for your answer. 
-                    - IF docked = false, and location type planet or moon: Example 1: <planetName> is uninhabited. Or <planetName> is controlled by <X> powers and controlling faction is <Y>
-                    - IF docked = true -> Example: We are Docked at <locationName> in <starSystemName> star system. Medium Security. Deaths total X week Y day Z. Traffic total X week Y day Z. Day length is X.
-                    - IF location type is planetary ring -> Example: We in the planetary ring of <locationName> in <starSystemName> star system. 
                 """;
 
         double rotationPeriod = Math.round(location.getRotationPeriod() * 100.0) / 100.0;
@@ -64,7 +55,7 @@ public class AnalyzeCurrentLocationHandler extends BaseQueryAnalyzer implements 
                         instructions,
                         new DataDto(
                                 status.isDocked(),
-                                location.getStarName(),
+                                playerSession.getPrimaryStarName(),
                                 location.getPlanetShortName(),
                                 location.getSecurity(),
                                 station,

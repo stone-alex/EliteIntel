@@ -15,7 +15,7 @@ public class PromptFactory implements AiPromptFactory {
     private static final PromptFactory INSTANCE = new PromptFactory();
     private static final String JSON_FORMAT = """
             Always output JSON:
-            {"type": "command|query", "response_text": "TTS output", "action": "action_name|query_name", "params": {"key": "value"}, "expect_followup": boolean} 
+            {"type": "command|query", "response_text": "TTS output", "action": "action_name|query_name", "params": {"key": "value"}, "expect_followup": boolean}
             action must match provided command or query. They key for value is always 'key'. 
             """;
     private final SystemSession systemSession = SystemSession.getInstance();
@@ -33,32 +33,33 @@ public class PromptFactory implements AiPromptFactory {
         StringBuilder sb = new StringBuilder();
         AICadence aiCadence = systemSession.getAICadence();
         AIPersonality aiPersonality = systemSession.getAIPersonality();
-        sb.append("YOU ARE ").append(aiName()).append(" — A COMMAND PARSER IN A SCI-FI SIMULATION.");
+        sb.append("YOU ARE ").append(aiName()).append(" - A COMMAND PARSER IN A SCI-FI SIMULATION.");
         sb.append("""
-                        **YOUR ONLY JOB IS TO SELECT EXACTLY ONE MOST PROBABLE ACTION FROM THE LISTS BELOW OR SAY NO MATCH.
-                        YOU ARE PHYSICALLY INCAPABLE OF INVENTING, MODIFYING, COMBINING, GENERALIZING, OR GUESSING ANY ACTION NAME.
+                        You are provided with limited map of concepts mapped to commands and queries presented to you as actions.
                         Infer meaning from user input and match to either command action or query action choosing one from the mapping below.
-                        Any invented, altered, or non-listed action name = IMMIDIATE FAILURE. Return 'no matching action found' instead. Do NOT try to be helpful by guessing.***
-                        If the input does not match one listed ACTION_NAME exactly, YOU MUST return the 'no matching action found' in response_text in JSON — no exceptions.
+                
+                        **CRITICAL:** YOUR ONLY JOB IS TO SELECT EXACTLY ONE **EXTREMELY HIGHLY PROBABLE** action FROM THE LISTS BELOW.
+                        INVENTING, MODIFYING or COMBINING actions results in IMMIDIATE FAILURE.
+                        Do NOT try to be helpful by guessing or inventing actions.
                 """);
-        sb.append(" JSON FORMAT:").append(JSON_FORMAT);
-        sb.append(" Match 'User Input' to action using instructions below.");
         sb.append("""
-                Your only job: classify user input as ONE best matching command or query from the provided lists — or return no-match.
-                Do not invent or construct action parameter.
+                Some actions have parameter templates.
+                Do not invent or construct new action parameter. Use templates
                 Adhere strictly to provided lists.
                     - IF user input is a call to action (get, set, plot, locate, find, toggle etc.) it is a command.
                     - IF user input is a question (where, analyse, check, lookup) it is a query.
                 Supported COMMANDS: patterns, concepts, and formulations -> ACTION_NAME (use ONLY these action names):
                 """);
+        sb.append(" Output using the following JSON FORMAT: ").append(JSON_FORMAT);
+        sb.append(" Map of concepts to actions: ");
+        sb.append(" Always return empty response_text for these actions: ");
         sb.append(commandsAndQueries.getCommandMap());
-        sb.append("Commands that can be parameterized have parameter return examples.");
         sb.append("""
                 Supported QUERIES: patterns, concepts, and formulations -> ACTION_NAME (use ONLY these action names):
                 """);
         sb.append(commandsAndQueries.getQueries());
         sb.append("""                
-                OUTPUT FORMAT — MUST BE EXACTLY THIS JSON — NOTHING ELSE:
+                OUTPUT FORMAT - MUST BE EXACTLY THIS JSON - NOTHING ELSE:
                 {
                   "type": "command" | "query",
                   "response_text": "only in case no matching command or query found.",
@@ -66,7 +67,7 @@ public class PromptFactory implements AiPromptFactory {
                   "params": {} | {"key": "value"} | {"state": true|false} | {"key": "value", ...}
                 }
                 
-                PARAMS RULES — DO NOT DEVIATE:
+                PARAMS RULES - DO NOT DEVIATE:
                 • Use ONLY the exact key names and types shown in the command's template
                 • If no template → return empty {}
                 • Never invent new keys or values
@@ -87,13 +88,13 @@ public class PromptFactory implements AiPromptFactory {
     public String generateAnalysisPrompt() {
         StringBuilder sb = new StringBuilder();
         sb.append("Instructions:\n");
-        sb.append("You are ").append(aiName()).append(" — strict data extractor.");
+        sb.append("You are ").append(aiName()).append(" - strict data extractor.");
         sb.append(getSessionValues());
         sb.append(appendBehavior());
         sb.append("""
-                Output ONLY this exact JSON structure {"type":"chat", "response_text": "YOUR ANSWER HERE AS PLAIN TEXT"} — nothing else, no explanations, no thinking, no markdown, no extra characters:
+                Output ONLY this exact JSON structure {"type":"chat", "response_text": "YOUR ANSWER HERE AS PLAIN TEXT"} - nothing else, no explanations, no thinking, no markdown, no extra characters:
                 
-                Rules — follow exactly:
+                Rules - follow exactly:
                 - "response_text" must be:
                   - pure ASCII English text
                   - TTS friendly punctuation. (no bullets, no formatting)
@@ -134,9 +135,9 @@ public class PromptFactory implements AiPromptFactory {
     @Override
     public String generateSensorPrompt() {
         StringBuilder sb = new StringBuilder();
+        sb.append("You are ").append(aiName()).append(" - AI assistance in a simulation.");
         sb.append("""
                 Instructions:
-                 You are Amelia, AI assistance in a simulation.
                  Summarise only the important readings and events that are actually present in the incoming data (sensorData).
                  Strictly follow the specific instructions provided.
                 
@@ -145,7 +146,7 @@ public class PromptFactory implements AiPromptFactory {
                  Always respond strictly in this JSON format and nothing else:
                 
                  Output EXACTLY:
-                     {"type": "chat", "response_text": "your natural rephrase", "action": "none", "params": {}, "expect_followup": false}
+                     {"type": "chat", "response_text": "your natural rephrase"}
                      - Ignore timestamps, eventName, endOfLife, metadata, status flags, and any other non-essential fields.
                  - Report only the concrete values and observations that matter.
                  DO NOT INVENT DATA. NEVER use external knowledge, guess, calculate, estimate, or add values not explicitly in the data or instructions.

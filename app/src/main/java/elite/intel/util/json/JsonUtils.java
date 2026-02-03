@@ -2,7 +2,7 @@ package elite.intel.util.json;
 
 import com.google.gson.JsonObject;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager; 
+import org.apache.logging.log4j.LogManager;
 
 /**
  * A utility class for handling JSON operations with safety and default values.
@@ -37,7 +37,7 @@ public final class JsonUtils {
         return "";
     }
 
-    public static JsonObject getAsObjectOrEmpty(JsonObject obj, String key) {
+    public static JsonObject nullSaveJsonObject(JsonObject obj, String key, Logger log) {
         if (obj == null || key == null) return new JsonObject();
         if (!obj.has(key)) return new JsonObject();
         var el = obj.get(key);
@@ -46,4 +46,5 @@ public final class JsonUtils {
         log.debug("Expected object for key '{}' but got {}", key, el);
         return new JsonObject();
     }
+
 }

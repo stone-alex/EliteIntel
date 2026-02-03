@@ -1,6 +1,8 @@
 package elite.intel.ai.brain.commons;
 
 import com.google.gson.JsonObject;
+import elite.intel.ai.brain.AIConstants;
+import elite.intel.ai.brain.AIRouterInterface;
 import elite.intel.ai.brain.handlers.CommandHandlerFactory;
 import elite.intel.ai.brain.handlers.QueryHandlerFactory;
 import elite.intel.ai.brain.handlers.commands.CommandHandler;
@@ -14,21 +16,104 @@ import elite.intel.util.StringUtls;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 
-public abstract class ResponseRouter {
+import static elite.intel.ai.brain.handlers.query.Queries.GENERAL_CONVERSATION;
+import static elite.intel.util.json.JsonUtils.nullSaveJsonObject;
+
+
+public class ResponseRouter implements AIRouterInterface {
 
     private static final Logger log = LogManager.getLogger(ResponseRouter.class);
-    private final SystemSession systemSession = SystemSession.getInstance();
-    private final PlayerSession playerSession = PlayerSession.getInstance();
+    private static final ResponseRouter INSTANCE = new ResponseRouter();
     private final Map<String, CommandHandler> commandHandlers;
     private final Map<String, QueryHandler> queryHandlers;
+    private final SystemSession systemSession;
+    private final PlayerSession playerSession;
 
-    protected ResponseRouter() {
-        commandHandlers = CommandHandlerFactory.getInstance().registerCommandHandlers();
-        queryHandlers = QueryHandlerFactory.getInstance().registerQueryHandlers();
-        ;
+    private ResponseRouter() {
+        try {
+            commandHandlers = CommandHandlerFactory.getInstance().registerCommandHandlers();
+            queryHandlers = QueryHandlerFactory.getInstance().registerQueryHandlers();
+            this.systemSession = SystemSession.getInstance();
+            this.playerSession = PlayerSession.getInstance();
+        } catch (Exception e) {
+            log.error("Failed to initialize GrokResponseRouter", e);
+            throw new RuntimeException("GrokResponseRouter initialization failed", e);
+        }
     }
+
+    public static ResponseRouter getInstance() {
+        return INSTANCE;
+    }
+
+    @Override public void processAiResponse(JsonObject jsonResponse, @Nullable String userInput) {
+        if (jsonResponse == null) {
+            log.error("Null Grok response received");
+            return;
+        }
+        try {
+            String type = getAsStringOrEmpty(jsonResponse, "type").toLowerCase();
+            String responseText = getAsStringOrEmpty(jsonResponse, AIConstants.PROPERTY_RESPONSE_TEXT);
+            String action = getAsStringOrEmpty(jsonResponse, AIConstants.TYPE_ACTION);
+            JsonObject params = getAsObjectOrEmpty(jsonResponse);
+
+            if (action == null) {
+                type = AIConstants.TYPE_CHAT;
+            }
+
+            if (!responseText.isEmpty() && type.equals(AIConstants.TYPE_CHAT)) {
+                EventBusManager.publish(new AiVoxResponseEvent(responseText));
+                log.info("Spoke initial response: {}", responseText);
+                return;
+            }
+
+            EventBusManager.publish(new AppLogEvent("\nLocal LLM Action: " + action));
+            switch (type) {
+                case AIConstants.TYPE_COMMAND:
+                    handleCommand(action, params, responseText);
+                    break;
+                case AIConstants.TYPE_QUERY:
+                    handleQuery(action, params, userInput);
+                    break;
+                default:
+                    handleChat(responseText);
+            }
+        } catch (Exception e) {
+            log.error("Failed to process Grok response: {}", e.getMessage(), e);
+            EventBusManager.publish(new AiVoxResponseEvent("Error processing response."));
+        } finally {
+            EventBusManager.publish(new AppLogEvent("\n"));
+        }
+    }
+
+    private void handleQuery(String action, JsonObject params, String userInput) {
+        QueryHandler handler = getQueryHandlers().get(action);
+        EventBusManager.publish(new AppLogEvent("DEBUG: Query handler: " + handler.getClass().getSimpleName()));
+        if (action == null || action.isEmpty()) {
+            handler = getQueryHandlers().get(GENERAL_CONVERSATION.getAction());
+            action = GENERAL_CONVERSATION.getAction();
+            log.info("No specific query handler found, routing to general_conversation");
+        }
+
+        try {
+            JsonObject dataJson = handler.handle(action, params, userInput);
+            if (dataJson == null) return;
+            String responseTextToUse = dataJson.has(AIConstants.PROPERTY_RESPONSE_TEXT) ? dataJson.get(AIConstants.PROPERTY_RESPONSE_TEXT).getAsString() : "";
+            if (responseTextToUse != null && !responseTextToUse.isEmpty()) {
+                EventBusManager.publish(new AiVoxResponseEvent(responseTextToUse));
+                systemSession.clearChatHistory();
+                log.info("Spoke final query response (action: {}): {}", action, responseTextToUse);
+            }
+        } catch (Exception e) {
+            log.error("Query handling failed for action {}: {}", action, e.getMessage(), e);
+            handleChat("Error accessing data banks: " + e.getMessage());
+        } finally {
+            systemSession.clearChatHistory();
+        }
+    }
+
 
     protected Map<String, CommandHandler> getCommandHandlers() {
         return commandHandlers;
@@ -76,13 +161,8 @@ public abstract class ResponseRouter {
         return "";
     }
 
-    protected JsonObject getAsObjectOrEmpty(JsonObject obj, String key) {
-        if (obj == null || key == null) return new JsonObject();
-        if (!obj.has(key)) return new JsonObject();
-        var el = obj.get(key);
-        if (el == null || el.isJsonNull()) return new JsonObject();
-        if (el.isJsonObject()) return el.getAsJsonObject();
-        log.debug("Expected object for key '{}' but got {}", key, el);
-        return new JsonObject();
+    protected JsonObject getAsObjectOrEmpty(JsonObject obj) {
+        return nullSaveJsonObject(obj, AIConstants.PARAMS, log);
     }
+
 }

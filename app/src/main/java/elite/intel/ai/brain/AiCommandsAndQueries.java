@@ -87,14 +87,14 @@ public class AiCommandsAndQueries {
             commandMap.put(" **plot route** to next trade stop/station/port ", PLOT_ROUTE_TO_NEXT_TRADE_STOP.getAction());
             commandMap.put(" what is our trade route profile, describe trade route profile ", LIST_TRADE_ROUTE_PARAMETERS.getAction());
             commandMap.put(" cancel/clear trade route ", CLEAR_TRADE_ROUTE.getAction());
-            commandMap.put(" activate, punch it, engage ", ACTIVATE.getAction());
+
             commandMap.put(" deploy heat sink ", DEPLOY_HEAT_SINK.getAction());
             commandMap.put(" stop, engine stop, full stop, taxi, set speed zero ", STOP.getAction());
             commandMap.put(" quarter throttle, quarter speed, speed 25 ", SET_SPEED25.getAction());
             commandMap.put(" half throttle, half speed, speed 50 ", SET_SPEED50.getAction());
             commandMap.put(" throttle 75, three quarters throttle, set speed 75 ", SET_SPEED75.getAction());  // Removed duplicates
             commandMap.put(" max speed, full speed ", SET_SPEED100.getAction());
-            commandMap.put(" set fuel reserve X "+KEY_X, SET_CARRIER_FUEL_RESERVE.getAction());
+            commandMap.put(" set fuel reserve X " + KEY_X, SET_CARRIER_FUEL_RESERVE.getAction());
             commandMap.put(" select/target next system in route ", TARGET_NEXT_ROUTE_SYSTEM.getAction());
             commandMap.put(" target wingman 1 ", TARGET_WINGMAN0.getAction());
             commandMap.put(" target wingman 2 ", TARGET_WINGMAN1.getAction());
@@ -145,6 +145,7 @@ public class AiCommandsAndQueries {
         }
 
         /// any status
+        commandMap.put(" activate, punch it, engage ", ACTIVATE.getAction());
         commandMap.put(" system shut down ", SHUT_DOWN.getAction());
         commandMap.put(" set streaming mode on/off " + KEY_STATE, SET_STREAMING_MODE.getAction());
         commandMap.put(" show/display carrier management panel ", DISPLAY_CARRIER_MANAGEMENT.getAction());
@@ -212,16 +213,17 @@ public class AiCommandsAndQueries {
         queryMap.put(" lookup player stats, ranks, rank progress etc ", PLAYER_PROFILE_ANALYSIS.getAction());
         queryMap.put(" ship combat readiness, damage report, jump range, loadout, ship capabilities. Do we have fuel scoop equipped, is ship battle worthy, what class of ship is it ", SHIP_LOADOUT.getAction());
         queryMap.put(" what services are available at this station ", STATION_DETAILS.getAction());
-        queryMap.put(" what can you do, what are your capabilities ", APP_CAPABILITIES.getAction());
+        queryMap.put(" list your capabilities ", APP_CAPABILITIES.getAction());
         queryMap.put(" what is your name ", AI_DESIGNATION.getAction());
         queryMap.put(" how much do we have in bounties, how many bounties we have collected (in credits) ", TOTAL_BOUNTIES.getAction());
-        queryMap.put(" how far are we from the bubble, how long will it take to get to the bubble ", DISTANCE_TO_BUBBLE.getAction());
+        queryMap.put(" how far are we from the bubble, how far are we from earth, how long will it take to get to the bubble ", DISTANCE_TO_BUBBLE.getAction());
         queryMap.put(" how far are we from last organic, bio sample, previous bioscan ", DISTANCE_TO_LAST_BIO_SAMPLE.getAction());
         queryMap.put(" what time is it ", TIME_IN_ZONE.getAction());
         queryMap.put(" run biome analysis, analyze biome for planet/moon X (parameter example: \"key\":\"2a\")", PLANET_BIOME_ANALYSIS.getAction());
         queryMap.put(" remind me about X, destination reminder, remind what are we selling, buying, duing. ", REMINDER.getAction());
         queryMap.put(" what missions do we have, are there any outstanding missions, do we have any active missions", ANALYZE_MISSIONS.getAction());
-        queryMap.put(" if nothing else matches use this ", GENERAL_CONVERSATION.getAction());
+        queryMap.put(" -IF no match found fall back to general conversation ", GENERAL_CONVERSATION.getAction());
+
         return queryMap;
     }
 
@@ -229,7 +231,7 @@ public class AiCommandsAndQueries {
     public String getCommandMap() {
         StringBuilder sb = new StringBuilder();
         buildCommandMap().forEach((s, s2) -> {
-            sb.append("|").append(s).append(" -> ").append(s2).append(" \n");
+            sb.append("|").append(s).append(" map to -> ").append(s2).append(" \n");
         });
         return sb.toString();
     }
@@ -237,7 +239,7 @@ public class AiCommandsAndQueries {
     public String getQueries() {
         StringBuilder sb = new StringBuilder();
         buildQueryMap().forEach((s, s2) -> {
-            sb.append("|").append(s).append(" -> ").append(s2).append(" \n");
+            sb.append("|").append(s).append(" map to -> ").append(s2).append(" \n");
         });
         return sb.toString();
     }

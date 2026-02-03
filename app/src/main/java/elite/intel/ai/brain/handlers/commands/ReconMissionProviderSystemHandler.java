@@ -2,7 +2,6 @@ package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
-import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.dao.PirateFactionDao.PirateFaction;
 import elite.intel.db.dao.PirateMissionProviderDao.MissionProvider;
@@ -45,16 +44,25 @@ public class ReconMissionProviderSystemHandler extends CommandOperator implement
         }
 
 
+        PirateFaction target = huntingGrounds.stream().filter(
+                data -> data.getTarget().getTargetFaction() == null
+        ).findFirst().map(PirateMissionTuple::getTarget).orElse(null);
+
+
         String starSystem = provider.getStarSystem();
-        EventBusManager.publish(new MissionCriticalAnnouncementEvent("Plotting route to " + starSystem + " when you get there look for factions targeting " +targetStarSystemName  + " at local ports."));
+        EventBusManager.publish(new MissionCriticalAnnouncementEvent("Plotting route to " + starSystem + " when you get there look for factions targeting " + targetStarSystemName + " at local ports."));
         RoutePlotter plotter = new RoutePlotter(controller);
         plotter.plotRoute(starSystem);
         DestinationReminderManager.getInstance().setDestination(
-                new DataDto(starSystem).toJson()
+                new DataDto(
+                        starSystem,
+                        target == null
+                                ? " Seek mission providers in local ports with pirate massacre missions against " + targetStarSystemName + " system."
+                                : " Target Faction: " + target.getTargetFaction()).toJson()
         );
     }
 
-    record DataDto(String starSystem) implements ToJsonConvertible {
+    record DataDto(String starSystem, String targetFaction) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }

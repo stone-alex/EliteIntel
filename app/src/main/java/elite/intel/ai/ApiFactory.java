@@ -1,6 +1,7 @@
 package elite.intel.ai;
 
 import elite.intel.ai.brain.*;
+import elite.intel.ai.brain.commons.ResponseRouter;
 import elite.intel.ai.brain.commons.PromptFactory;
 import elite.intel.ai.brain.ollama.*;
 import elite.intel.ai.brain.openai.*;
@@ -76,28 +77,11 @@ public class ApiFactory {
         };
     }
 
-    public AiQueryInterface getQueryEndpoint() {
-        String apiKey = SystemSession.getInstance().getAiApiKey();
-        ProviderEnum provider = KeyDetector.detectProvider(apiKey, "LLM");
-        return switch (provider) {
-            case GROK -> GrokQueryEndPoint.getInstance();
-            case OPENAI -> OpenAiQueryEndPoint.getInstance();
-            default -> OllamaQueryEndPoint.getInstance();
-        };
-    }
-
     public AIRouterInterface getAiRouter() {
-        String apiKey = SystemSession.getInstance().getAiApiKey();
-        ProviderEnum provider = KeyDetector.detectProvider(apiKey, "LLM");
-        return switch (provider) {
-            case GROK -> GrokResponseRouter.getInstance();
-            case OPENAI -> OpenAiResponseRouter.getInstance();
-            default -> OllamaResponseRouter.getInstance();
-        };
+        return ResponseRouter.getInstance();
     }
 
     ///
-
     public MouthInterface getMouthImpl() {
         String apiKey = SystemSession.getInstance().getTtsApiKey();
         ProviderEnum provider = KeyDetector.detectProvider(apiKey, "TTS");

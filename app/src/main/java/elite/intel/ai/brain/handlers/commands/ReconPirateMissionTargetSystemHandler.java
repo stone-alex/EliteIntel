@@ -50,11 +50,11 @@ public class ReconPirateMissionTargetSystemHandler extends CommandOperator imple
                 )
         );
         DestinationReminderManager.getInstance().setDestination(
-                new DataDto(starSystem).toJson()
+                new DataDto(starSystem, target.getTargetFaction()).toJson()
         );
     }
 
-    record DataDto(String starSystem) implements ToJsonConvertible {
+    record DataDto(String starSystem, String targetFaction) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }

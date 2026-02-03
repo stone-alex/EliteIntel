@@ -33,7 +33,7 @@ public class BiomeAnalyzerHandler extends BaseQueryAnalyzer implements QueryHand
         if (planetName != null) {
             LocationDto firstMatchingLocation = findFirstMatchingLocation(allStellarObjectsInStarSystem, planetName);
             if(firstMatchingLocation == null) return process("No match found for "+planetName);
-            biomeAnalyzer.analyzeBiome(
+            return biomeAnalyzer.analyzeBiome(
                     originalUserInput,
                     new LocationData(
                             firstMatchingLocation.getPlanetShortName(),
@@ -46,9 +46,8 @@ public class BiomeAnalyzerHandler extends BaseQueryAnalyzer implements QueryHand
                     )
             );
         } else {
-            biomeAnalyzer.analyzeBiome(originalUserInput, findPlanetsWithBioSignals(allStellarObjectsInStarSystem));
+            return biomeAnalyzer.analyzeBiome(originalUserInput, findPlanetsWithBioSignals(allStellarObjectsInStarSystem));
         }
-        return null;
     }
 
     public LocationDto findFirstMatchingLocation(Collection<LocationDto> locations, String planetName) {

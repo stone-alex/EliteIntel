@@ -689,7 +689,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setBioSignals(int bioSignals) {
-        if (bioSignals < this.bioSignals) { // do not override to 0 on bad data.
+        if (this.bioSignals > 0) { // do not override to 0 on bad data.
             this.bioSignals = bioSignals;
         }
     }

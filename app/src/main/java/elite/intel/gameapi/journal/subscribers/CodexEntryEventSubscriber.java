@@ -93,11 +93,6 @@ public class CodexEntryEventSubscriber {
             String instructions = """
             Codex entry added to database. Notify User.
             DO NOT INVENT ANY DATA.
-            
-            If the entry is biological, check if it is too proximate to previous sample of same genus. Use the maximum distance between samples.
-            Biological entities require scan or three colonies to complete a sample. Notify user about Vista Genomics Reward for complete set of three samples.
-            F.Y.I: User collects the codex entries, and later performs scans. This data does not indicate number of scans taken. Vista Genomics Reward only present on first scan per planet. If not indicated, assume reward has already been announced.
-            Geological entities do not require samples.
             Spell out numerals. Round rewards in credits to nearest million.
             """;
             EventBusManager.publish(new SensorDataEvent(sb.toString(), instructions));

@@ -34,9 +34,11 @@ public class BiomeAnalyzer extends BaseQueryAnalyzer {
         return instance;
     }
 
-    public void analyzeBiome(@Nullable String originalUserInput, LocationData... locations) {
+    public JsonObject analyzeBiome(@Nullable String originalUserInput, LocationData... locations) {
         if (locations == null) {
-            return;
+            JsonObject object = new JsonObject();
+            object.addProperty("data", "No locations provided");
+            return object;
         }
 
 
@@ -60,14 +62,7 @@ public class BiomeAnalyzer extends BaseQueryAnalyzer {
 
         List<LocationData> list = List.of(locations);
         Map<Long, LocationDto> byPrimaryStar = locationManager.findByPrimaryStar(playerSession.getPrimaryStarName());
-        JsonObject jsonObject = process(new AiDataStruct(instructions, new DataDto2(BioForms.getGenusToBiome(), list, starSystemCharacteristics(byPrimaryStar.values()))), originalUserInput);
-
-        String responseTextToUse = jsonObject.has(AIConstants.PROPERTY_RESPONSE_TEXT)
-                ? jsonObject.get(AIConstants.PROPERTY_RESPONSE_TEXT).getAsString()
-                : null;
-        if (responseTextToUse != null && !responseTextToUse.isEmpty()) {
-            EventBusManager.publish(new DiscoveryAnnouncementEvent(responseTextToUse));
-        }
+        return process(new AiDataStruct(instructions, new DataDto2(BioForms.getGenusToBiome(), list, starSystemCharacteristics(byPrimaryStar.values()))), originalUserInput);
     }
 
     private String starSystemCharacteristics(Collection<LocationDto> starSystem) {

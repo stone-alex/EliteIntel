@@ -34,6 +34,8 @@ public class AnalyzeStellarObjectsHandler extends BaseQueryAnalyzer implements Q
                     - isLandable: true/false landable or not.
                     - distanceFromStar: distance from primary star in light seconds.
                     - starClass: star class (M, K, G, F, A, B, O are fuel stars).
+                    - "atmosphere": "None" (no atmosphere) | else see atmosphere type in "atmosphere"
+                    - "gravity": 0.0 means we have no data on gravity for this object
                 """;
 
         return process(

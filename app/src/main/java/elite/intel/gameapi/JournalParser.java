@@ -7,6 +7,7 @@ import elite.intel.gameapi.journal.EventRegistry;
 import elite.intel.gameapi.journal.events.BaseEvent;
 import elite.intel.session.PlayerSession;
 import elite.intel.ui.controller.ManagedService;
+import elite.intel.ui.event.AppLogDebugEvent;
 import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.json.GsonFactory;
 import org.apache.logging.log4j.LogManager;
@@ -163,7 +164,7 @@ public class JournalParser implements Runnable, ManagedService {
                                 BaseEvent event = EventRegistry.createEvent(eventType, eventJson);
                                 if (event != null && !event.isExpired()) {
                                     EventBusManager.publish(event);
-                                    EventBusManager.publish(new AppLogEvent("\tProcessing Event: " + eventType));
+                                    EventBusManager.publish(new AppLogDebugEvent("\tProcessing Event: " + eventType));
                                     log.info("Processing Journal Event: {} {}", eventType, event.toJsonObject());
                                 } else if (event != null && event.isExpired()) {
                                     log.warn("Skipping event: {}, reason {}", eventType, "Event expired");

@@ -7,7 +7,7 @@ import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.data.EDMaterialCaps;
 import elite.intel.gameapi.journal.events.MaterialsEvent;
 import elite.intel.search.edsm.dto.MaterialsType;
-import elite.intel.ui.event.AppLogEvent;
+import elite.intel.ui.event.AppLogDebugEvent;
 import elite.intel.util.StringUtls;
 
 import java.util.List;
@@ -46,7 +46,7 @@ public class MaterialsEventSubscriber {
                     EDMaterialCaps.getMax(material.getName()
                     )
             );
-            EventBusManager.publish(new AppLogEvent("\tProcessed " + materialName + " " + material.getCount() + " units."));
+            EventBusManager.publish(new AppLogDebugEvent("\tProcessed " + materialName + " " + material.getCount() + " units."));
             return Void.class;
         });
     }

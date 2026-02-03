@@ -59,11 +59,13 @@ public class BioSampleTrackingSubscriber {
         locationManager.save(currentLocation);
 
         // Announce only on state transition
-        if (wasFarEnough != isFarEnough) {
-            if (isFarEnough) {
-                EventBusManager.publish(new SensorDataEvent("You Are now far enough to take the new sample.", "Notify User: distance from previous colony is sufficient to take next sample"));
-            } else {
-                EventBusManager.publish(new SensorDataEvent("You Are moved too close to previous colony to take new sample.", "Warn User. moved too close to previous bio from colony. we can't take bio samples here."));
+        if (!status.isInSupercruise()) {
+            if (wasFarEnough != isFarEnough) {
+                if (isFarEnough) {
+                    EventBusManager.publish(new SensorDataEvent("You Are now far enough to take the new sample.", "Notify User: distance from previous colony is sufficient to take next sample"));
+                } else {
+                    EventBusManager.publish(new SensorDataEvent("You Are moved too close to previous colony to take new sample.", "Warn User. moved too close to previous bio from colony. we can't take bio samples here."));
+                }
             }
         }
     }

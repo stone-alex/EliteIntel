@@ -14,10 +14,7 @@ import elite.intel.util.json.ToJsonConvertible;
 import elite.intel.util.yaml.ToYamlConvertable;
 import elite.intel.util.yaml.YamlFactory;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class AnalyzeBioSignalsStarSystemHandler extends BaseQueryAnalyzer implements QueryHandler {
 
@@ -47,10 +44,18 @@ public class AnalyzeBioSignalsStarSystemHandler extends BaseQueryAnalyzer implem
                 Example of good short answers (for reference only — do NOT copy these literally):
                 - "Yes, planet 'ABC 1 b' still needs 2 bio scans. (name genus if available)"
                 - "No organics left to scan — all detected samples completed."
-                - "No biological signals detected."       
+                - "No biological signals detected."
                 """;
 
-        return process(new AiDataStruct(instructions, new DataDto(allCompletedBioScans, planetsRequireBioScans)), originalUserInput);
+        return process(new AiDataStruct(instructions, new DataDto(toBioSameplDataList(allCompletedBioScans), planetsRequireBioScans)), originalUserInput);
+    }
+
+    private List<BioSampleData> toBioSameplDataList(List<BioSampleDto> allCompletedBioScans) {
+        LinkedList<BioSampleData> result = new LinkedList<>();
+        for(BioSampleDto data: allCompletedBioScans){
+            result.add(new BioSampleData(data.getPlanetShortName(), data.getGenus(), data.getSpecies(), data.getScanXof3(), data.isBioSampleCompleted(), data.isOurDiscovery()));
+        }
+        return result;
     }
 
     private List<PlanetsToScan> planetsWithBioFormsNotYetScanned() {
@@ -89,7 +94,13 @@ public class AnalyzeBioSignalsStarSystemHandler extends BaseQueryAnalyzer implem
         return result;
     }
 
-    record DataDto(List<BioSampleDto> allCompletedBioScans, List<PlanetsToScan> planetsRequireBioScans) implements ToYamlConvertable {
+    record DataDto(List<BioSampleData> allCompletedBioScans, List<PlanetsToScan> planetsRequireBioScans) implements ToYamlConvertable {
+        @Override public String toYaml() {
+            return YamlFactory.toYaml(this);
+        }
+    }
+
+    record BioSampleData(String planetShortName, String genus,  String species, String scanXof3, boolean bioSampleCompleted, boolean ourDiscovery) implements ToYamlConvertable {
         @Override public String toYaml() {
             return YamlFactory.toYaml(this);
         }

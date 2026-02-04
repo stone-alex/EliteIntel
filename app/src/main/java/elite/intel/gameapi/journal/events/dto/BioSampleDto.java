@@ -1,5 +1,6 @@
 package elite.intel.gameapi.journal.events.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import elite.intel.gameapi.gamestate.dtos.BaseJsonDto;
 import elite.intel.util.Md5Utils;
 import elite.intel.util.json.ToJsonConvertible;
@@ -8,7 +9,6 @@ import elite.intel.util.yaml.YamlFactory;
 
 public class BioSampleDto extends BaseJsonDto implements ToJsonConvertible, ToYamlConvertable {
 
-    int planetNumber;
     long payout;
     long fistDiscoveryBonus;
     boolean ourDiscovery;
@@ -40,6 +40,7 @@ public class BioSampleDto extends BaseJsonDto implements ToJsonConvertible, ToYa
     public void setGenus(String genus) {
         this.genus = genus;
     }
+
 
     public double getScanLatitude() {
         return scanLatitude;
@@ -87,14 +88,6 @@ public class BioSampleDto extends BaseJsonDto implements ToJsonConvertible, ToYa
 
     public String getSpecies() {
         return species;
-    }
-
-    public int getPlanetNumber() {
-        return planetNumber;
-    }
-
-    public void setPlanetNumber(int planetNumber) {
-        this.planetNumber = planetNumber;
     }
 
     public long getPayout() {

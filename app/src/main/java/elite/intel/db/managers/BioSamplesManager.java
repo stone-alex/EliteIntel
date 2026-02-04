@@ -29,18 +29,6 @@ public class BioSamplesManager {
         });
     }
 
-    public void addInBulk(List<BioSampleDto> data) {
-        Database.withDao(BioSampleDao.class, dao ->{
-            for (BioSampleDto sample : data) {
-                BioSampleDao.BioSample entity = new BioSampleDao.BioSample();
-                entity.setJson(sample.toJson());
-                entity.setKey(sample.getKey());
-                dao.upsert(entity);
-            }
-            return null;
-        });
-    }
-
     public void add(BioSampleDto bioSampleDto) {
         Database.withDao(BioSampleDao.class, dao ->{
             BioSampleDao.BioSample entity = new BioSampleDao.BioSample();

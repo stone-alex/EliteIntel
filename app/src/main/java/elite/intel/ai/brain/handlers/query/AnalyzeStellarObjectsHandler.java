@@ -44,6 +44,7 @@ public class AnalyzeStellarObjectsHandler extends BaseQueryAnalyzer implements Q
                 new AiDataStruct(
                         instructions,
                         new DataDto(
+                                data.getSummary(),
                                 data.getObjectList()
                         )
                 ),
@@ -122,7 +123,7 @@ public class AnalyzeStellarObjectsHandler extends BaseQueryAnalyzer implements Q
         }
     }
 
-    record DataDto(List<LocationData> allStellarObjectsInStarSystem) implements ToYamlConvertable {
+    record DataDto(String summary, List<LocationData> detailedStellarObjectList) implements ToYamlConvertable {
         @Override public String toYaml() {
             return YamlFactory.toYaml(this);
         }

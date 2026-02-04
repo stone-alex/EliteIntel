@@ -246,10 +246,6 @@ public class PlayerSession {
         return bioSamples.listAll();
     }
 
-    public void setBioSamples(List<BioSampleDto> data) {
-        bioSamples.addInBulk(data);
-    }
-
     public void addBioSample(BioSampleDto bioSampleDto) {
         bioSamples.add(bioSampleDto);
     }

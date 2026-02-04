@@ -101,13 +101,6 @@ public class PiperTTS implements MouthInterface {
         EventBusManager.unregister(this);
         queue.clear();
         interruptRequested.set(true);
-        SourceDataLine line = currentLine.get();
-        if (line != null && line.isOpen()) {
-            line.stop();
-            line.flush();
-            line.start();
-            currentLine.set(line);
-        }
         running = false;
 
         if (workerThread != null) {

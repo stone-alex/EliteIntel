@@ -40,8 +40,8 @@ public class ResponseRouter implements AIRouterInterface {
             this.systemSession = SystemSession.getInstance();
             this.playerSession = PlayerSession.getInstance();
         } catch (Exception e) {
-            log.error("Failed to initialize GrokResponseRouter", e);
-            throw new RuntimeException("GrokResponseRouter initialization failed", e);
+            log.error("Failed to initialize ResponseRouter", e);
+            throw new RuntimeException("ResponseRouter initialization failed", e);
         }
     }
 
@@ -51,7 +51,7 @@ public class ResponseRouter implements AIRouterInterface {
 
     @Override public void processAiResponse(JsonObject jsonResponse, @Nullable String userInput) {
         if (jsonResponse == null) {
-            log.error("Null Grok response received");
+            log.error("Null LLM response received");
             return;
         }
         try {
@@ -70,7 +70,12 @@ public class ResponseRouter implements AIRouterInterface {
                 return;
             }
 
-            EventBusManager.publish(new AppLogEvent("\nLocal LLM Action: " + action));
+            if(systemSession.useLocalCommandLlm()){
+                EventBusManager.publish(new AppLogEvent("\nLocal LLM Action: " + action));
+            } else {
+                EventBusManager.publish(new AppLogEvent("\nCloud LLM Action: " + action));
+            }
+
             switch (type) {
                 case AIConstants.TYPE_COMMAND:
                     handleCommand(action, params, responseText);
@@ -82,7 +87,7 @@ public class ResponseRouter implements AIRouterInterface {
                     handleChat(responseText);
             }
         } catch (Exception e) {
-            log.error("Failed to process Grok response: {}", e.getMessage(), e);
+            log.error("Failed to process LLM response: {}", e.getMessage(), e);
             EventBusManager.publish(new AiVoxResponseEvent("Error processing response."));
         } finally {
             EventBusManager.publish(new AppLogEvent("\n"));

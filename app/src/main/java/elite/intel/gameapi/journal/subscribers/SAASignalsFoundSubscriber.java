@@ -59,7 +59,7 @@ public class SAASignalsFoundSubscriber {
                 }
             }
 
-            if (liveSignals > 0 && location.getBioSignals() != liveSignals) {
+            if (liveSignals > 0) {
                 location.setBioSignals(liveSignals);
                 location.setGenus(toGenusDto(event.getGenuses(), location.isOurDiscovery()));
                 boolean hasBeenScanned = scanBioCompleted(event, playerSession);
@@ -160,9 +160,9 @@ public class SAASignalsFoundSubscriber {
         return materialDtos;
     }
 
-    private List<GenusDto> toGenusDto(List<SAASignalsFoundEvent.Genus> genuses, boolean isOurDiscovery) {
+    private List<GenusDto> toGenusDto(List<SAASignalsFoundEvent.Genus> organics, boolean isOurDiscovery) {
         ArrayList<GenusDto> result = new ArrayList<>();
-        for (SAASignalsFoundEvent.Genus genus : genuses) {
+        for (SAASignalsFoundEvent.Genus genus : organics) {
             GenusDto dto = new GenusDto();
             dto.setSpecies(genus.getGenusLocalised());
             BioForms.ProjectedPayment projectedPayment = BioForms.getAverageProjectedPayment(genus.getGenusLocalised());

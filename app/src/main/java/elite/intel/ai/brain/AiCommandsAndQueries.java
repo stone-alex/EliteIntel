@@ -127,8 +127,8 @@ public class AiCommandsAndQueries {
             commandMap.put(" supercruise, enter super cruise, engage FSD ", ENTER_SUPER_CRUISE.getAction());
             commandMap.put(" retract hardpoints, stove weapons ", RETRACT_HARDPOINTS.getAction());
             commandMap.put(" deploy hardpoints, hot, deploy weapons ", DEPLOY_HARDPOINTS.getAction());
-            commandMap.put(" gear down, deploy landing gear, landing gear DOWN ", DEPLOY_LANDING_GEAR.getAction());
-            commandMap.put(" gear up, retract landing gear, landing gear UP ", RETRACT_LANDING_GEAR.getAction());
+            commandMap.put(" gear-down, deploy landing gear, landing gear DOWN ", DEPLOY_LANDING_GEAR.getAction());
+            commandMap.put(" gear-up, retract landing gear, landing gear UP ", RETRACT_LANDING_GEAR.getAction());
             commandMap.put(" request docking, ask for landing permission, docking authorization, contact tower request landing, get a parking spot.", REQUEST_DOCKING.getAction());
             commandMap.put(" select/target highest threat ", SELECT_HIGHEST_THREAT.getAction());
         }
@@ -146,7 +146,7 @@ public class AiCommandsAndQueries {
 
         /// any status
         commandMap.put(" activate, punch it, engage ", ACTIVATE.getAction());
-        commandMap.put(" system shut down ", SHUT_DOWN.getAction());
+        commandMap.put(" system shut-down ", SHUT_DOWN.getAction());
         commandMap.put(" set streaming mode on/off " + KEY_STATE, SET_STREAMING_MODE.getAction());
         commandMap.put(" show/display carrier management panel ", DISPLAY_CARRIER_MANAGEMENT.getAction());
         commandMap.put(" change trade profile, set starting budget to X " + KEY_X, CHANGE_TRADE_PROFILE_SET_STARTING_BUDGET.getAction());

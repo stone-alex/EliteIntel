@@ -77,8 +77,8 @@ public enum Commands {
     CLOSE_CARGO_SCOOP                                   ("close_cargo_scoop", null,  CloseCargoScoopHandler.class),
     RETRACT_HARDPOINTS                                  ("retract_hardpoints", null,  RetractHardpointsHandler.class),
     DEPLOY_HARDPOINTS                                   ("deploy_hardpoints", null,  DeployHardpointsHandler.class),
-    DEPLOY_LANDING_GEAR                                 ("landing_gear_down_deploy_extend", null,  DeployLandingGearHandler.class),
-    RETRACT_LANDING_GEAR                                ("landing_gear_up_retract_stove", null,  RetractLandingGearHandler.class),
+    DEPLOY_LANDING_GEAR                                 ("gear_down", null,  DeployLandingGearHandler.class),
+    RETRACT_LANDING_GEAR                                ("gear_up", null,  RetractLandingGearHandler.class),
 
     JUMP_TO_HYPERSPACE                                  ("jump_to_hyperspace", null,  JumpToHyperspaceHandler.class),
     ENTER_SUPER_CRUISE                                  ("enter_super_cruise", null,  EnterFtlHandler.class),

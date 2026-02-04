@@ -19,10 +19,11 @@ public class FSSBodySignalsSubscriber {
 
     @Subscribe
     public void onFssBodySignal(FSSBodySignalsEvent event) {
-        LocationDto location = locationManager.findBySystemAddress(event.getSystemAddress(), event.getBodyID());
         LocationDto primaryStarLocation = locationManager.findPrimaryStar(playerSession.getPrimaryStarName());
+
+        LocationDto location = locationManager.findBySystemAddress(event.getSystemAddress(), event.getBodyID());
+
         location.setPlanetName(event.getBodyName());
-        location.setBodyId(event.getBodyID());
         location.setStarName(primaryStarLocation.getStarName());
         location.setX(primaryStarLocation.getX());
         location.setY(primaryStarLocation.getY());

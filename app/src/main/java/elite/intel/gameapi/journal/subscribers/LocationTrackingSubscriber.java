@@ -324,7 +324,7 @@ public class LocationTrackingSubscriber {
         if (isAboveAnnouncementThreshold(highPriority)) {
             StringBuilder sb = new StringBuilder();
             if (text != null) sb.append(text).append(". ");
-            if (distance > 0) sb.append(" - ").append(formatDistance(distance)).append(". ");
+            if (distance > 0) sb.append(formatDistance(distance)).append(". ");
             if (bearing > 0) sb.append("Bearing: ").append((int) bearing).append(" degrees").append(". ");
             log.info(sb.toString());
             EventBusManager.publish(new NavigationVocalisationEvent(sb.toString()));

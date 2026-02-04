@@ -72,7 +72,7 @@ public class LocationManager {
         return Database.withDao(LocationDao.class, dao -> {
             LocationDao.Location location;
             location = dao.findPrimaryBySystemAddress(systemAddress, bodyId);
-            return location == null ? new LocationDto(-1L, -1L) : GsonFactory.getGson().fromJson(location.getJson(), LocationDto.class);
+            return location == null ? new LocationDto(bodyId, systemAddress) : GsonFactory.getGson().fromJson(location.getJson(), LocationDto.class);
         });
     }
 

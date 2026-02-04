@@ -348,3 +348,6 @@
 "by your"="biome"
 "perform by analysis"="perform biome analysis"
 "performed by human analysis"="perform biome analysis"
+"builds up"="shields up"
+"deploy accessory"="deploy SRV"
+"Bayou"="bio"

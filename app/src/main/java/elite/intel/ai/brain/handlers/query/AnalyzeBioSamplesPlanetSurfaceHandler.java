@@ -36,11 +36,12 @@ public class AnalyzeBioSamplesPlanetSurfaceHandler extends BaseQueryAnalyzer imp
         List<GenusDto> genusListNotScannedForCurrentLocation = calculateGenusNotYetScanned(completedScansForPlanet, genusListForCurrentLocation);
 
         String instructions = """
-                Data contains:
-                    - partialBioFormScans contains list of partially scanned genus. (3 scans require to complete a sample). 
-                    - allBioFormsOnPlanet contains list genus of all organic bio forms present on the current planet.
-                    - completedScansForPlanet contains list of genus that still require scan on the current planet.
-                    = genusListNotScannedForCurrentLocation contains list of genus we still have to scan on current planet
+                Answer user question about genus/organics presented in data set.
+                Data set contains:
+                    - partialBioFormScans contains list of partially scanned genus/organics. (3 scans require to complete a sample).
+                    - allBioFormsOnPlanet contains list genus/organics of all organic bio forms present.
+                    - completedScansForPlanet contains list of genus/organics that still require scan.
+                    = genusListNotScannedForCurrentLocation contains list of genus/organics we still have to scan.
                     return genus names matching user question.
                 """;
 

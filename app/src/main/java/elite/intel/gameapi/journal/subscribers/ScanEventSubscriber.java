@@ -70,6 +70,11 @@ public class ScanEventSubscriber {
 
     @Subscribe
     public void onScanEvent(ScanEvent event) {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            // Ignore interrupted exception
+        }
 
         if (systemSession.isExplorationData()) {
             ScanEventJournalMessage msg = ScanEventJournalMapper.map(event);

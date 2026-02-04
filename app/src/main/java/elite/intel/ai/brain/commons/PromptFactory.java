@@ -41,7 +41,8 @@ public class PromptFactory implements AiPromptFactory {
                         **CRITICAL:** YOUR ONLY JOB IS TO SELECT EXACTLY ONE **EXTREMELY HIGHLY PROBABLE** action FROM THE LISTS BELOW.
                         INVENTING, MODIFYING or COMBINING actions results in IMMIDIATE FAILURE.
                         Do NOT try to be helpful by guessing or inventing actions.
-                
+                        - IF no probable match is found use general_conversation
+
                         NEVER MAP ANYTHING TO TRADE UNLESS WORD TRADE IS PRESENT IN USER INPUT.
                         NEVER MAP ANYTHING TO CARRIER UNLESS WORD CARRIER IS PRESENT IN USER INPUT.
                         NEVER MAP ANYTHING TO BIO or ORGANIC UNLESS WORDS BIO or ORGANIC ARE PRESENT IN USER INPUT.
@@ -52,13 +53,13 @@ public class PromptFactory implements AiPromptFactory {
                 Adhere strictly to provided lists.
                     - IF user input is a call to action (get, set, plot, locate, find, toggle etc.) it is a command.
                     - IF user input is a question (where, analyse, check, lookup) it is a query.
+                IF NOT MATHC FOUND MAP action to general_conversation
                 Supported COMMANDS: patterns, concepts, and formulations -> ACTION_NAME (use ONLY these action names):
                 """);
         sb.append(" Output using the following JSON FORMAT: ").append(JSON_FORMAT);
         sb.append(" Map of concepts to actions: ");
         sb.append(" Always return empty response_text for these actions: ");
         sb.append(commandsAndQueries.getCommandMap());
-        sb.append(" DO NOT CONFUSE! Trade route, ship route and carrier route are not the same. For trade routes word 'trade' must be present in user input. for carrier routes word 'carrier' must be present in user input");
         sb.append("""
                 Supported QUERIES: patterns, concepts, and formulations -> ACTION_NAME (use ONLY these action names):
                 """);
@@ -81,7 +82,7 @@ public class PromptFactory implements AiPromptFactory {
                   - "lights on"                         → {"state": true}
                   - "find gold within 80 ly"            → {"key": "gold", "max_distance":"80"}
                 """);
-        if (!systemSession.isRunningLocalLLM() && !systemSession.isRunningPiperTts()) {
+        if (!systemSession.useLocalQueryLlm() && !systemSession.isRunningPiperTts()) {
             sb.append(" Behavior: ");
             sb.append(aiPersonality.getBehaviorClause());
             sb.append(aiCadence.getCadenceClause());

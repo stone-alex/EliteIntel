@@ -252,9 +252,9 @@ public class LocationTrackingSubscriber {
                 playerSession.setTracking(t);
                 resetTrackingState();
             } else if (headingDeviation) {
-                vocalize(movingAway ? "Moving Away." : "Getting Closer. ", navigator.distanceToTarget(), navigator.bearingToTarget(), false);
+                vocalize(movingAway ? "Diverging." : "Converging. ", navigator.distanceToTarget(), navigator.bearingToTarget(), false);
             } else {
-                announceBearingAndDistances(navigator, movingAway ? "Moving Away." : "Getting Closer");
+                announceBearingAndDistances(navigator, movingAway ? "Diverging." : "Converging");
             }
         } else {
             //FLYING in normal space above surface
@@ -262,7 +262,7 @@ public class LocationTrackingSubscriber {
                 lookForLandingSpotAnnounced = true;
                 vocalize("Within 1000 meters from target. Look for landing spot", 0, 0, true);
                 if (movingAway) {
-                    vocalize("Moving Away.", 0, 0, false);
+                    vocalize("Diverging.", 0, 0, false);
                 }
             } else {
                 if (navigator.distanceToTarget() > 1500) {
@@ -270,11 +270,11 @@ public class LocationTrackingSubscriber {
                 }
 
                 if (headingDeviation) {
-                    vocalize(movingAway ? "Moving Away." : "Getting Closer. ", navigator.distanceToTarget(), navigator.bearingToTarget(), movingAway);
+                    vocalize(movingAway ? "Diverging." : "Converging. ", navigator.distanceToTarget(), navigator.bearingToTarget(), movingAway);
                 } else if (event.getAltitude() > 3_000 && glideAngleOk) {
-                    announceBearingAndDistances(navigator, movingAway ? "Moving Away." : "Getting Closer. Glide Angle " + glideAngle + " degrees.");
+                    announceBearingAndDistances(navigator, movingAway ? "Diverging." : "Converging. Glide Angle " + glideAngle + " degrees.");
                 } else {
-                    announceBearingAndDistances(navigator, movingAway ? "Moving Away." : "Getting Closer. ");
+                    announceBearingAndDistances(navigator, movingAway ? "Diverging." : "Converging. ");
                 }
             }
         }
@@ -324,7 +324,7 @@ public class LocationTrackingSubscriber {
         if (isAboveAnnouncementThreshold(highPriority)) {
             StringBuilder sb = new StringBuilder();
             if (text != null) sb.append(text).append(". ");
-            if (distance > 0) sb.append("Distance: ").append(formatDistance(distance)).append(". ");
+            if (distance > 0) sb.append(" - ").append(formatDistance(distance)).append(". ");
             if (bearing > 0) sb.append("Bearing: ").append((int) bearing).append(" degrees").append(". ");
             log.info(sb.toString());
             EventBusManager.publish(new NavigationVocalisationEvent(sb.toString()));

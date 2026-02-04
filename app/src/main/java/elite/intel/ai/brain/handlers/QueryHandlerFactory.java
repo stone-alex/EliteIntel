@@ -2,17 +2,13 @@ package elite.intel.ai.brain.handlers;
 
 import elite.intel.ai.brain.handlers.query.Queries;
 import elite.intel.ai.brain.handlers.query.QueryHandler;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager; 
 
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * A factory class for managing the registration and instantiation of {@link QueryHandler} instances.
- * Implements the singleton design pattern to ensure a single instance is used across the application.
- */
 public class QueryHandlerFactory {
 
     private static final Logger log = LogManager.getLogger(QueryHandlerFactory.class);
@@ -31,18 +27,6 @@ public class QueryHandlerFactory {
     }
 
 
-    /**
-     * Registers query handlers for all defined actions in the {@code QueryActions} enum.
-     * Each handler is instantiated using its defined handler class and stored in the internal map
-     * with the corresponding action as the key.
-     * <p>
-     * In the event of an instantiation failure for a specific handler, a runtime exception is thrown
-     * and the registration process for that action is halted.
-     *
-     * @return A map containing registered query handlers, where the keys are action strings and the values
-     * are instances of {@link QueryHandler}.
-     * @throws RuntimeException if a handler cannot be instantiated or registered for any action.
-     */
     public Map<String, QueryHandler> registerQueryHandlers() {
         for (Queries action : Queries.values()) {
             try {
@@ -57,7 +41,7 @@ public class QueryHandlerFactory {
         return queryHandlers;
     }
 
-    private <T> T instantiateHandler(Class<? extends T> handlerClass, Class<T> expectedType) {
+    private <T> T instantiateHandler(Class<? extends T> handlerClass, @SuppressWarnings("SameParameterValue") Class<T> expectedType) {
         try {
             Constructor<? extends T> constructor = handlerClass.getDeclaredConstructor();
             constructor.setAccessible(true);

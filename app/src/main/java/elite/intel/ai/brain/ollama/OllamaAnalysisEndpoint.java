@@ -41,7 +41,7 @@ public class OllamaAnalysisEndpoint extends AiEndPoint implements AiAnalysisInte
 
             JsonObject systemMsg2 = new JsonObject();
             systemMsg2.addProperty("role", AIConstants.ROLE_SYSTEM);
-            systemMsg2.addProperty("content", "ADDITIONAL QUERY-SPECIFIC INSTRUCTIONS: User Asks question: \"" + originalUserInput +"\". Instructions for the data: "+ struct.getInstructions());
+            systemMsg2.addProperty("content", "INSTRUCTIONS: " + struct.getInstructions());
 
             JsonObject userMsg = new JsonObject();
             userMsg.addProperty("role", AIConstants.ROLE_USER);
@@ -55,7 +55,7 @@ public class OllamaAnalysisEndpoint extends AiEndPoint implements AiAnalysisInte
 
             log.debug("Ollama analysis call:\n{}", gson.toJson(prompt));
 
-            JsonObject root  = processAiPrompt(gson.toJson(prompt), client);
+            JsonObject root = processAiPrompt(gson.toJson(prompt), client);
             log.debug("Ollama analysis raw response:\n{}", gson.toJson(root));
             return JsonParser.parseString(root.getAsJsonObject("message").get("content").getAsString()).getAsJsonObject();
 

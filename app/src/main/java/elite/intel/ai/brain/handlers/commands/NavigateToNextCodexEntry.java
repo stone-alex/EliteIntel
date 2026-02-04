@@ -39,7 +39,7 @@ public class NavigateToNextCodexEntry implements CommandHandler {
 
         List<CodexEntryDao.CodexEntry> codexEntries = getCodexEntries(currentLocation);
         if (codexEntries == null || codexEntries.isEmpty()) {
-            EventBusManager.publish(new AiVoxResponseEvent("No codex data on this body."));
+            EventBusManager.publish(new AiVoxResponseEvent("No codex entries found."));
             return;
         }
 
@@ -51,7 +51,7 @@ public class NavigateToNextCodexEntry implements CommandHandler {
                 playerLat, playerLon, planetRadius);
 
         if (target == null) {
-            EventBusManager.publish(new AiVoxResponseEvent("Nothing biological left to scan here."));
+            EventBusManager.publish(new AiVoxResponseEvent("No Codex entries Found"));
             return;
         }
 

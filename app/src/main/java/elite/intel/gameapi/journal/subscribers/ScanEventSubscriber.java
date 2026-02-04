@@ -169,8 +169,8 @@ public class ScanEventSubscriber {
             }
         }
 
-        location.setBioSignals(countBioSignals);
-        location.setGeoSignals(countGeological);
+        if(countBioSignals > 0) location.setBioSignals(countBioSignals);
+        if(countGeological > 0) location.setGeoSignals(countGeological);
 
 
         List<MaterialDto> materials = new ArrayList<>();

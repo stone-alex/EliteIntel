@@ -25,7 +25,7 @@ public class VocalisationRouter {
     @Subscribe
     public void onNavigationVocalisationRequest(NavigationVocalisationEvent event) {
         if (playerSession.isNavigationAnnouncementOn()) {
-            EventBusManager.publish(new VocalisationRequestEvent(event.getText(), NavigationVocalisationEvent.class, true));
+            EventBusManager.publish(new VocalisationRequestEvent(event.getText(), NavigationVocalisationEvent.class, false));
         }
     }
 

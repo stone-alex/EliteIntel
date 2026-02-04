@@ -43,7 +43,7 @@ public class BiomeAnalyzer extends BaseQueryAnalyzer {
 
 
         String instructions = """
-                You are a strict classifier. IGNORE all planet properties except planetShortName, planetClass, atmosphere, temperature, volcanism (if relevant) — but ONLY to match against genusToBiome map.
+                You are a classifier. IGNORE all planet properties except planetShortName, planetClass, atmosphere, temperature, volcanism (if relevant) — but ONLY to match against PROBABLE genusToBiome map.
                 
                 ONLY source: the provided genusToBiome map.
                 
@@ -52,12 +52,11 @@ public class BiomeAnalyzer extends BaseQueryAnalyzer {
                 - Output: "Planet <planetName>: " followed by comma-separated list (no trailing comma).
                 - Number of genera listed MUST be equal or greater than numBioSignals.
                 - If ZERO plausible matches but numBioSignals > 0 → list "Bacterium"
-                - If no matches and numBioSignals = 0 → "Planet <shortName>: no matching genus found"
+                - If no POSSIBLE/PROBABLE matches and numBioSignals = 0 → "Planet <shortName>: no matching genus found"
                 - Pure text only. No explanations, no stats, no other words.
+                - numBioSignals indicates number of detected bio signals. There should be at least that many different matches
                 
-                Output format: { "type":"chat", "response_text": "Planet X: Genus1, Genus2. Planet Y: GenusA" }
-                
-                Example for 2 signals with good matches: Planet B 3: X, Y (wher X and Y are genus)
+                Output format: { "type":"chat", "response_text": "Planet X: probabl egenus are Genus1, Genus2. Planet Y: GenusA" }
                 """;
 
         List<LocationData> list = List.of(locations);

@@ -37,6 +37,7 @@ import static elite.intel.util.StringUtls.capitalizeWords;
 
 public class AppController implements Runnable {
     private final AtomicBoolean isRunning = new AtomicBoolean(false);
+    private final AtomicBoolean showDetailedLog = new AtomicBoolean(false);
     private final PlayerSession playerSession = PlayerSession.getInstance();
     private final SystemSession systemSession = SystemSession.getInstance();
     private final Timer logTypewriterTimer = new Timer(5, null);
@@ -237,6 +238,25 @@ public class AppController implements Runnable {
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 break;
+            }
+        }
+    }
+
+    @Subscribe public void onToggleDetailedLogEvent(ToggleDetailedLogEvent event) {
+        showDetailedLog.set(event.isDetailed());
+    }
+
+    @Subscribe public void onAppLogDebugEvent(AppLogDebugEvent event) {
+        if (showDetailedLog.get()) {
+            String line = "\n" + event.getData();
+            if (line.isBlank() || this.view.logArea == null) return;
+
+            synchronized (logBuffer) {
+                logBuffer.append(line);
+            }
+
+            if (typewriterActive.compareAndSet(false, true)) {
+                SwingUtilities.invokeLater(this::startTypewriter);
             }
         }
     }

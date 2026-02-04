@@ -76,7 +76,7 @@ public class MonetizeRouteManager {
     }
 
     public MonetisationTransaction getTransaction() {
-        return Database.withDao(RouteMonetisationDao.class, dao-> dao.get());
+        return Database.withDao(RouteMonetisationDao.class, RouteMonetisationDao::get);
     }
 
     public void clear() {

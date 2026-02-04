@@ -13,13 +13,14 @@ public class ConversationalQueryHandler extends BaseQueryAnalyzer implements Que
         return process(
                 new AiDataStruct(
                         "General Chat. Use your own knowledge to chat with user. ",
-                        new DataDto(originalUserInput)
+                        new DataDto()
                 ),
-                ""
+                originalUserInput
         );
     }
 
-    record DataDto(String userSay) implements ToJsonConvertible {
+    record DataDto() implements ToJsonConvertible {
+        /// blank
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }

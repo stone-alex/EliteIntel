@@ -78,7 +78,7 @@ public class AiCommandsAndQueries {
             commandMap.put(" plot route to carrier, plot route to home base, return to base ", PLOT_ROUTE_TO_CARRIER.getAction());
             commandMap.put(" plot route to home system ", TAKE_ME_HOME.getAction());
             commandMap.put(" set optimal speed, optimize speed, approaching planet, optimal approach speed, approach speed. ", SET_OPTIMAL_SPEED.getAction());  // Kept here
-            commandMap.put(" open FSS and scan, scan system, honk, scan ", OPEN_FSS_AND_SCAN.getAction());  // Fixed typo
+            commandMap.put(" scan this system, perform scan, open FSS and scan, scan system, honk, scan ", OPEN_FSS_AND_SCAN.getAction());  // Fixed typo
             commandMap.put(" navigate to LZ/landing zone ", GET_HEADING_TO_LZ.getAction());
             commandMap.put(" deploy srv/surface reconnaissance vehicle ", DEPLOY_SRV.getAction());
             commandMap.put(" calculate carrier route ", CALCULATE_FLEET_CARRIER_ROUTE.getAction());
@@ -127,8 +127,8 @@ public class AiCommandsAndQueries {
             commandMap.put(" supercruise, enter super cruise, engage FSD ", ENTER_SUPER_CRUISE.getAction());
             commandMap.put(" retract hardpoints, stove weapons ", RETRACT_HARDPOINTS.getAction());
             commandMap.put(" deploy hardpoints, hot, deploy weapons ", DEPLOY_HARDPOINTS.getAction());
-            commandMap.put(" deploy landing gear, landing gear down ", DEPLOY_LANDING_GEAR.getAction());
-            commandMap.put(" retract landing gear, landing gear up ", RETRACT_LANDING_GEAR.getAction());
+            commandMap.put(" gear down, deploy landing gear, landing gear DOWN ", DEPLOY_LANDING_GEAR.getAction());
+            commandMap.put(" gear up, retract landing gear, landing gear UP ", RETRACT_LANDING_GEAR.getAction());
             commandMap.put(" request docking, ask for landing permission, docking authorization, contact tower request landing, get a parking spot.", REQUEST_DOCKING.getAction());
             commandMap.put(" select/target highest threat ", SELECT_HIGHEST_THREAT.getAction());
         }
@@ -216,7 +216,7 @@ public class AiCommandsAndQueries {
         queryMap.put(" how far are we from the bubble, how far are we from earth, how long will it take to get to the bubble ", DISTANCE_TO_BUBBLE.getAction());
         queryMap.put(" how far are we from last organic, bio sample, previous bioscan ", DISTANCE_TO_LAST_BIO_SAMPLE.getAction());
         queryMap.put(" what time is it ", TIME_IN_ZONE.getAction());
-        queryMap.put(" run biome analysis, analyze biome for planet/moon X (parameter example: \"key\":\"2a\")", PLANET_BIOME_ANALYSIS.getAction());
+        queryMap.put(" run biome analysis, what POTENTIAL organics are here, analyze biome for planet/moon X (parameter example: \"key\":\"2a\")", PLANET_BIOME_ANALYSIS.getAction());
         queryMap.put(" remind me about X, destination reminder, remind what are we selling, buying, duing. ", REMINDER.getAction());
         queryMap.put(" what missions do we have, are there any outstanding missions, do we have any active missions", ANALYZE_MISSIONS.getAction());
         queryMap.put(" -IF no match found fall back to general conversation ", GENERAL_CONVERSATION.getAction());

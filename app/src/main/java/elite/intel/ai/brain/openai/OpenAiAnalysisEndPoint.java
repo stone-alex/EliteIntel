@@ -44,7 +44,7 @@ public class OpenAiAnalysisEndPoint extends AiEndPoint implements AiAnalysisInte
 
             JsonObject systemMessaage2 = new JsonObject();
             systemMessaage2.addProperty("role", AIConstants.ROLE_SYSTEM);
-            systemMessaage2.addProperty("content", "ADDITIONAL QUERY-SPECIFIC INSTRUCTIONS: " + struct.getInstructions());
+            systemMessaage2.addProperty("content", "INSTRUCTIONS: " + struct.getInstructions());
 
 
             JsonObject messageUser = new JsonObject();

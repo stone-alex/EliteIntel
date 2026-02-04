@@ -39,7 +39,7 @@ public class GrokAnalysisEndpoint extends AiEndPoint implements AiAnalysisInterf
 
             JsonObject systemMessage2 = new JsonObject();
             systemMessage2.addProperty("role", AIConstants.ROLE_SYSTEM);
-            systemMessage2.addProperty("content", "ADDITIONAL QUERY-SPECIFIC INSTRUCTIONS: " +struct.getInstructions());
+            systemMessage2.addProperty("content", "INSTRUCTIONS: " +struct.getInstructions());
 
             JsonObject messageUser = new JsonObject();
             messageUser.addProperty("role", AIConstants.ROLE_USER);

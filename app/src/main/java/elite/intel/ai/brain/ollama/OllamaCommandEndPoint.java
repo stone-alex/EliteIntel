@@ -45,13 +45,8 @@ public class OllamaCommandEndPoint extends AiEndPoint implements AIChatInterface
             paramsProp.addProperty("type", "object");
             properties.add("params", paramsProp);
 
-            JsonObject expectProp = new JsonObject();
-            expectProp.addProperty("type", "boolean");
-            properties.add("expect_followup", expectProp);
-
             JsonArray required = new JsonArray();
             required.add("type"); required.add("response_text"); required.add("action");
-            required.add("params"); required.add("expect_followup");
             format.add("required", required);
             format.addProperty("additionalProperties", false);
             format.addProperty("type", "object");

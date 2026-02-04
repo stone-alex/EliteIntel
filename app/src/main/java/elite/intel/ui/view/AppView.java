@@ -145,6 +145,7 @@ public class AppView extends JFrame implements AppViewInterface {
         toggleStreamingModeCheckBox.setToolTipText("Prevent AI from processing unless you prefix your command or query with word 'computer'");
         toggleStreamingModeCheckBox.setText(LABEL_STREAMING_MODE);
         toggleStreamingModeCheckBox.setForeground(ACCENT);
+        showDetailedLog.setForeground(ACCENT);
 
         togglePrivacyModeCheckBox.setEnabled(false); // enabled when services start
         togglePrivacyModeCheckBox.setToolTipText("Disable Speech to Text completely");
@@ -319,7 +320,6 @@ public class AppView extends JFrame implements AppViewInterface {
         );
 
         showDetailedLog = new JCheckBox("Detailed Log", false);
-        showDetailedLog.setVisible(false); // not used at this time
         showDetailedLog.addActionListener(
                 e -> EventBusManager.publish(new ToggleDetailedLogEvent(showDetailedLog.isSelected()))
         );
@@ -360,10 +360,10 @@ public class AppView extends JFrame implements AppViewInterface {
         });
         styleButton(recalibrateAudioButton);
         buttons.add(startStopServicesButton);
-        buttons.add(showDetailedLog);
         buttons.add(toggleStreamingModeCheckBox);
         buttons.add(togglePrivacyModeCheckBox);
         buttons.add(recalibrateAudioButton);
+        buttons.add(showDetailedLog);
         panel.add(new JLabel(" ")); //<-- placeholder
         panel.add(buttons, gbc);
 
@@ -651,10 +651,7 @@ public class AppView extends JFrame implements AppViewInterface {
         addField(localSettingsPanel, localLlmModelCommandField, gbc, 1, 0.8);
         useLocalCommandLLMCheck = new JCheckBox("Use", false);
         useLocalCommandLLMCheck.addActionListener(a -> {
-            SwingUtilities.invokeLater(() -> {
-                saveSystemConfig();
-                //EventBusManager.publish(new RestartServicesEvent());
-            });
+            SwingUtilities.invokeLater(this::saveSystemConfig);
         });
         addCheck(localSettingsPanel, useLocalCommandLLMCheck, gbc);
 
@@ -979,7 +976,6 @@ public class AppView extends JFrame implements AppViewInterface {
         toggleStreamingModeCheckBox.setSelected(systemSession.isStreamingModeOn());
         setupStreamingCheckBox(systemSession.isStreamingModeOn());
         togglePrivacyModeCheckBox.setSelected(systemSession.isStreamingModeOn());
-        togglePrivacyModeCheckBox.setForeground(systemSession.isStreamingModeOn() ? DISABLED_FG : ACCENT);
     }
 
 
@@ -1143,7 +1139,6 @@ public class AppView extends JFrame implements AppViewInterface {
 
     private void setupStreamingCheckBox(Boolean streamingModeOn) {
         toggleStreamingModeCheckBox.setSelected(streamingModeOn);
-        toggleStreamingModeCheckBox.setForeground(streamingModeOn ? DISABLED_FG : ACCENT);
         toggleStreamingModeCheckBox.setText(streamingModeOn ? "Streaming On" : "Streaming Off");
     }
 

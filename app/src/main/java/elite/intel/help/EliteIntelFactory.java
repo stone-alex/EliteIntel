@@ -6,8 +6,6 @@ import elite.intel.help.dto.AICapabilitiesDto;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 
-import java.util.Map;
-
 public class EliteIntelFactory extends BaseJsonDto implements ToJsonConvertible {
 
     private static final EliteIntelFactory instance = new EliteIntelFactory();

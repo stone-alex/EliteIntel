@@ -2,22 +2,6 @@ package elite.intel.ai.brain.handlers.commands;
 
 import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.*;
 
-/**
- * CommandActionsCustom represents an enumeration of customizable command actions,
- * each associated with specific functionality in the system. This enum facilitates
- * the mapping of commands to their corresponding handlers, placeholders, and parameter keys.
- * <p>
- * Each command action consists of:
- * - A string representing the action keyword.
- * - An optional placeholder for parameters within the command.
- * - A parameter key used to store or retrieve the parameter value from a session.
- * - A handler class responsible for processing the command's execution logic.
- * <p>
- * CommandActionsCustom is used to centralize and define the behavior for a variety
- * of commands, ensuring a consistent mechanism for handling user input and executing
- * corresponding actions.
- */
-
 // @formatter:off
 public enum Commands {
 
@@ -93,8 +77,8 @@ public enum Commands {
     CLOSE_CARGO_SCOOP                                   ("close_cargo_scoop", null,  CloseCargoScoopHandler.class),
     RETRACT_HARDPOINTS                                  ("retract_hardpoints", null,  RetractHardpointsHandler.class),
     DEPLOY_HARDPOINTS                                   ("deploy_hardpoints", null,  DeployHardpointsHandler.class),
-    DEPLOY_LANDING_GEAR                                 ("deploy_landing_gear_down", null,  DeployLandingGearHandler.class),
-    RETRACT_LANDING_GEAR                                ("retract_landing_gear_up", null,  RetractLandingGearHandler.class),
+    DEPLOY_LANDING_GEAR                                 ("landing_gear_down_deploy_extend", null,  DeployLandingGearHandler.class),
+    RETRACT_LANDING_GEAR                                ("landing_gear_up_retract_stove", null,  RetractLandingGearHandler.class),
 
     JUMP_TO_HYPERSPACE                                  ("jump_to_hyperspace", null,  JumpToHyperspaceHandler.class),
     ENTER_SUPER_CRUISE                                  ("enter_super_cruise", null,  EnterFtlHandler.class),
@@ -131,15 +115,15 @@ public enum Commands {
     ACTIVATE                                            ("activate", BINDING_ACTIVATE.getGameBinding(), GenericGameControlHandler.class),
 
     REQUEST_DOCKING                                     ("request_docking", null,  RequestDockingHandler.class),
+    NIGHT_VISION_ON_OFF                                 ("toggle_night_vision_on_off", BINDING_NIGHT_VISION_TOGGLE.getGameBinding(), ToggleNightVision.class),
 
-    NIGHT_VISION_ON_OFF                                     ("toggle_night_vision_on_off", BINDING_NIGHT_VISION_TOGGLE.getGameBinding(), ToggleNightVision.class),
+    CYCLE_NEXT_PAGE                                     ("cycle_next_page", BINDING_CYCLE_NEXT_PAGE.getGameBinding(), GenericGameControlHandler.class),
+    CYCLE_NEXT_PANEL                                    ("cycle_next_panel", BINDING_CYCLE_NEXT_PANEL.getGameBinding(), GenericGameControlHandler.class),
+    CYCLE_PREVIOUS_PAGE                                 ("cycle_previous_page", BINDING_CYCLE_PREVIOUS_PAGE.getGameBinding(), GenericGameControlHandler.class),
+    CYCLE_PREVIOUS_PANEL                                ("cycle_previous_panel", BINDING_CYCLE_PREVIOUS_PANEL.getGameBinding(), GenericGameControlHandler.class),
+    CYCLE_NEXT_SUBSYSTEM                                ("cycle_next_subsystem", BINDING_CYCLE_NEXT_SUBSYSTEM.getGameBinding(), GenericGameControlHandler.class),
+    CYCLE_PREVIOUS_SUBSYSTEM                            ("cycle_previous_subsystem", BINDING_CYCLE_PREVIOUS_SUBSYSTEM.getGameBinding(), GenericGameControlHandler.class),
 
-    //CYCLE_NEXT_PAGE                                     ("cycle_next_page", BINDING_CYCLE_NEXT_PAGE.getGameBinding(), GenericGameControlHandler.class),
-    //CYCLE_NEXT_PANEL                                    ("cycle_next_panel", BINDING_CYCLE_NEXT_PANEL.getGameBinding(), GenericGameControlHandler.class),
-    //CYCLE_PREVIOUS_PAGE                                 ("cycle_previous_page", BINDING_CYCLE_PREVIOUS_PAGE.getGameBinding(), GenericGameControlHandler.class),
-    //CYCLE_PREVIOUS_PANEL                                ("cycle_previous_panel", BINDING_CYCLE_PREVIOUS_PANEL.getGameBinding(), GenericGameControlHandler.class),
-    //CYCLE_NEXT_SUBSYSTEM                                ("cycle_next_subsystem", BINDING_CYCLE_NEXT_SUBSYSTEM.getGameBinding(), GenericGameControlHandler.class),
-    //CYCLE_PREVIOUS_SUBSYSTEM                            ("cycle_previous_subsystem", BINDING_CYCLE_PREVIOUS_SUBSYSTEM.getGameBinding(), GenericGameControlHandler.class),
     DEPLOY_HEAT_SINK                                    ("deploy_heat_sink", BINDING_DEPLOY_HEAT_SINK.getGameBinding(), GenericGameControlHandler.class),
     DRIVE_ASSIST                                        ("drive_assist", BINDING_DRIVE_ASSIST.getGameBinding(), GenericGameControlHandler.class),
 
@@ -167,6 +151,7 @@ public enum Commands {
     TARGET_WINGMAN2                                     ("target_wingman_3", BINDING_TARGET_WINGMAN2.getGameBinding(), GenericGameControlHandler.class),
     WING_NAV_LOCK                                       ("lock_on_wingman", BINDING_WING_NAV_LOCK.getGameBinding(), GenericGameControlHandler.class),
     LIST_AVAILABLE_VOICES                               ("list_available_voices", null,  ListAvailableVoices.class),
+    CLEAR_REMINDERS                                     ("clear_reminders", null, CleareReminderHandler.class),
     ;
 
     ///
@@ -178,14 +163,6 @@ public enum Commands {
         this.action = action;
         this.binding = binding;
         this.handlerClass = handlerClass;
-    }
-
-    public static String[] getCommands() {
-        String[] result = new String[Commands.values().length];
-        for (int i = 0; i < Commands.values().length; i++) {
-            result[i] = Commands.values()[i].getAction();
-        }
-        return result;
     }
 
     public static String getGameBinding(String action) {

@@ -96,7 +96,7 @@ public class ResponseRouter implements AIRouterInterface {
             return;
         }
 
-        EventBusManager.publish(new AppLogEvent("DEBUG: Query handler: " + handler.getClass().getSimpleName()));
+        EventBusManager.publish(new AppLogEvent("Query handler: " + handler.getClass().getSimpleName()));
         if (action == null || action.isEmpty()) {
             handler = getQueryHandlers().get(GENERAL_CONVERSATION.getAction());
             action = GENERAL_CONVERSATION.getAction();
@@ -114,7 +114,7 @@ public class ResponseRouter implements AIRouterInterface {
             }
         } catch (Exception e) {
             log.error("Query handling failed for action {}: {}", action, e.getMessage(), e);
-            handleChat("Error accessing data banks: " + e.getMessage());
+            handleChat("Error processing request");
         } finally {
             systemSession.clearChatHistory();
         }
@@ -138,7 +138,7 @@ public class ResponseRouter implements AIRouterInterface {
     }
 
     protected void handleCommand(String action, JsonObject params, String responseText) {
-        EventBusManager.publish(new AppLogEvent("DEBUG: Processing action: " + action + " with params: " + params.toString()));
+        EventBusManager.publish(new AppLogEvent("Processing action: " + action + " with params: " + params.toString()));
         EventBusManager.publish(new AiVoxResponseEvent("%s, %s ".formatted(StringUtls.affirmative(), StringUtls.player(playerSession))));
         CommandHandler handler = getCommandHandlers().get(action);
         if (handler == null) {
@@ -146,7 +146,7 @@ public class ResponseRouter implements AIRouterInterface {
             return;
         }
 
-        EventBusManager.publish(new AppLogEvent("DEBUG: Command handler: " + handler.getClass().getSimpleName()));
+        EventBusManager.publish(new AppLogEvent("Command handler: " + handler.getClass().getSimpleName()));
         new Thread(() -> handler.handle(action, params, responseText)).start();
         log.debug("Handled command action: {}", action);
         systemSession.clearChatHistory();

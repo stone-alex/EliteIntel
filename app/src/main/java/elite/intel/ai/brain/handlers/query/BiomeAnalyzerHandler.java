@@ -30,7 +30,7 @@ public class BiomeAnalyzerHandler extends BaseQueryAnalyzer implements QueryHand
                 playerSession.getLocationData().getSystemAddress()
         );
 
-        if (planetName != null) {
+        if (planetName != null && !planetName.isBlank()) {
             LocationDto firstMatchingLocation = findFirstMatchingLocation(allStellarObjectsInStarSystem, planetName);
             if(firstMatchingLocation == null) return process("No match found for "+planetName);
             return biomeAnalyzer.analyzeBiome(

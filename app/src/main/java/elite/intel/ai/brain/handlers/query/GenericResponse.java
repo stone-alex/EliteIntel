@@ -22,7 +22,7 @@ public class GenericResponse {
     public JsonObject genericResponse(String text) {
         String playerName = session.getPlayerName();
         JsonObject response = new JsonObject();
-        response.addProperty(AIConstants.PROPERTY_RESPONSE_TEXT, text + " " + playerName);
+        response.addProperty(AIConstants.PROPERTY_RESPONSE_TEXT, text + ", " + playerName);
         return response;
     }
 }

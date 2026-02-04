@@ -58,7 +58,7 @@ public class BiomeAnalyzer extends BaseQueryAnalyzer {
                 - Pure text only. No explanations, no stats, no other words.
                 - numBioSignals indicates number of detected bio signals. There should be at least that many different matches
                 
-                Output format: { "type":"chat", "response_text": "Planet X: probabl egenus are Genus1, Genus2. Planet Y: GenusA" }
+                Output format: { "type":"chat", "response_text": "Planet X: probable genus are Genus1, Genus2, ... Genus5 Planet Y: Genus1, Genus2, ..., Genus5" }
                 """;
 
         List<LocationData> list = List.of(locations);
@@ -81,9 +81,9 @@ public class BiomeAnalyzer extends BaseQueryAnalyzer {
         return sb.toString();
     }
 
-    public record LocationData(String planetName, int numBioSignals, String planetClass, String distance, String vulcanism, String atmosphere, String temperature) implements ToJsonConvertible {
-        @Override public String toJson() {
-            return GsonFactory.getGson().toJson(this);
+    public record LocationData(String planetName, int numBioSignals, String planetClass, String distance, String vulcanism, String atmosphere, String temperature) implements ToYamlConvertable {
+        @Override public String toYaml() {
+            return YamlFactory.toYaml(this);
         }
     }
 

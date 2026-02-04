@@ -185,7 +185,7 @@ public class AnalyzePirateMissionHandler extends BaseQueryAnalyzer implements Qu
 
         long bountyReward = 0;
         for (BountyDto bounty : bounties) {
-            bountyReward += bounty.getRewards().stream().mapToLong(r -> r.getReward()).sum();
+            bountyReward += bounty.getRewards().stream().mapToLong(BountyDto.Reward::getReward).sum();
         }
         return "Total mission profit:" + (missionReward + bountyReward);
     }

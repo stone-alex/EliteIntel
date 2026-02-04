@@ -11,10 +11,10 @@ import static elite.intel.ai.brain.handlers.query.Queries.*;
 
 public class AiCommandsAndQueries {
 
-    private final static String KEY_X = "{\"key\": X}";
-    private final static String KEY_X_WITH_DISTANCE = "{\"key\": X, \"max_distance\": Y}";
+    private final static String KEY_X = "{\"key\": X} or empty X";
+    private final static String KEY_X_WITH_DISTANCE = "{\"key\": X, \"max_distance\": Y}  or empty X Y";
     private final static String KEY_STATE = "{\"state\": true/false}";
-    private final static String KEY_LAT_LON = "{\"lat\": X, \"lon\": Y}";
+    private final static String KEY_LAT_LON = "{\"lat\": X, \"lon\": Y}y";
 
 
     private static final AiCommandsAndQueries INSTANCE = new AiCommandsAndQueries();
@@ -216,8 +216,8 @@ public class AiCommandsAndQueries {
         queryMap.put(" how far are we from the bubble, how far are we from earth, how long will it take to get to the bubble ", DISTANCE_TO_BUBBLE.getAction());
         queryMap.put(" how far are we from last organic, bio sample, previous bioscan ", DISTANCE_TO_LAST_BIO_SAMPLE.getAction());
         queryMap.put(" what time is it ", TIME_IN_ZONE.getAction());
-        queryMap.put(" run biome analysis, what POTENTIAL organics are here, analyze biome for planet/moon X (parameter example: \"key\":\"2a\")", PLANET_BIOME_ANALYSIS.getAction());
-        queryMap.put(" remind me about X, destination reminder, remind what are we selling, buying, duing. ", REMINDER.getAction());
+        queryMap.put(" run biome analysis, what POTENTIAL organics are here, analyze biome for planet/moon X " + KEY_X, PLANET_BIOME_ANALYSIS.getAction());
+        queryMap.put(" remind me about X, destination reminder, remind what are we selling, buying, doing. ", REMINDER.getAction());
         queryMap.put(" what missions do we have, are there any outstanding missions, do we have any active missions", ANALYZE_MISSIONS.getAction());
         queryMap.put(" -IF no match found fall back to general conversation ", GENERAL_CONVERSATION.getAction());
 

@@ -1,8 +1,10 @@
 package elite.intel.search.edsm.dto.data;
 
 import com.google.gson.annotations.SerializedName;
+import elite.intel.util.yaml.ToYamlConvertable;
+import elite.intel.util.yaml.YamlFactory;
 
-public class ShipyardData {
+public class ShipyardData implements ToYamlConvertable {
     @SerializedName("id")
     public int id;
     @SerializedName("id64")
@@ -44,5 +46,9 @@ public class ShipyardData {
 
     public Object getShips() {
         return ships;
+    }
+
+    @Override public String toYaml() {
+        return YamlFactory.toYaml(this);
     }
 }

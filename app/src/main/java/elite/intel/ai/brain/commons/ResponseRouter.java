@@ -70,10 +70,11 @@ public class ResponseRouter implements AIRouterInterface {
                 return;
             }
 
-            if(systemSession.useLocalCommandLlm()){
-                EventBusManager.publish(new AppLogEvent("\nLocal LLM Action: " + action));
+            String paramsForLogging = action + (params == null ? "" : " params " + params);
+            if (systemSession.useLocalCommandLlm()) {
+                EventBusManager.publish(new AppLogEvent("\nLocal LLM Action: " + paramsForLogging));
             } else {
-                EventBusManager.publish(new AppLogEvent("\nCloud LLM Action: " + action));
+                EventBusManager.publish(new AppLogEvent("\nCloud LLM Action: " + paramsForLogging));
             }
 
             switch (type) {

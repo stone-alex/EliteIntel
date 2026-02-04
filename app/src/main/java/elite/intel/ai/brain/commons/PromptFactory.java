@@ -41,7 +41,8 @@ public class PromptFactory implements AiPromptFactory {
                         **CRITICAL:** YOUR ONLY JOB IS TO SELECT EXACTLY ONE **EXTREMELY HIGHLY PROBABLE** action FROM THE LISTS BELOW.
                         INVENTING, MODIFYING or COMBINING actions results in IMMIDIATE FAILURE.
                         Do NOT try to be helpful by guessing or inventing actions.
-                        - IF no probable match is found use general_conversation
+                
+                        - IF no good probable match is found map to action -> general_conversation
 
                         NEVER MAP ANYTHING TO TRADE UNLESS WORD TRADE IS PRESENT IN USER INPUT.
                         NEVER MAP ANYTHING TO CARRIER UNLESS WORD CARRIER IS PRESENT IN USER INPUT.
@@ -208,6 +209,6 @@ public class PromptFactory implements AiPromptFactory {
     }
 
     private String aiName() {
-        return systemSession.isRunningLocalLLM() ? "Amelia" : systemSession.getAIVoice().getName();
+        return systemSession.useLocalTTS() ? "Amelia" : systemSession.getAIVoice().getName();
     }
 }

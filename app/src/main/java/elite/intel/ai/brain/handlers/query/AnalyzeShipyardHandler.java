@@ -26,10 +26,15 @@ public class AnalyzeShipyardHandler extends BaseQueryAnalyzer implements QueryHa
         LocationDto currentLocation = locationManager.findByLocationData(playerSession.getLocationData());
         ShipyardDto shipyard = currentLocation.getShipyard();
 
-        return process(new AiDataStruct("Answer questions about shipyard contents", new DataDto(shipyard)), originalUserInput);
+        String instructions = """
+            Answer questions about shipyard contents.
+            If no data available return no data available
+        """;
+
+        return process(new AiDataStruct(instructions, new DataDto(shipyard)), originalUserInput);
     }
 
-    private record DataDto(ToJsonConvertible shipyard) implements ToYamlConvertable {
+    private record DataDto(ToYamlConvertable shipyard) implements ToYamlConvertable {
         @Override public String toYaml() {
             return YamlFactory.toYaml(this);
         }

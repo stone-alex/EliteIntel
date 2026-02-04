@@ -4,8 +4,10 @@ import com.google.gson.annotations.SerializedName;
 import elite.intel.search.edsm.dto.data.ShipyardData;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
+import elite.intel.util.yaml.ToYamlConvertable;
+import elite.intel.util.yaml.YamlFactory;
 
-public class ShipyardDto implements ToJsonConvertible {
+public class ShipyardDto implements ToJsonConvertible, ToYamlConvertable {
     @SerializedName("data")
     public ShipyardData data;
     @SerializedName("timestamp")
@@ -22,6 +24,10 @@ public class ShipyardDto implements ToJsonConvertible {
     @Override
     public String toJson() {
         return GsonFactory.getGson().toJson(this);
+    }
+
+    @Override public String toYaml() {
+        return YamlFactory.toYaml(this);
     }
 }
 

@@ -24,7 +24,7 @@ public class AnalyzeStationsHandler extends BaseQueryAnalyzer implements QueryHa
         StationsDto stationsDto = EdsmApiClient.searchStations(primaryStarName, 0);
         ArrayList<StationData> stationsData = new ArrayList<>();
         StationsData data = stationsDto.getData();
-        if (data != null && !data.getStations().isEmpty()) {
+        if (data != null && data.getStations() != null && !data.getStations().isEmpty()) {
             for (Station station : data.getStations()) {
                 /// skip all fleet carriers. (query carriers in another handler to save on tokens)
                 if ("Fleet Carrier".equalsIgnoreCase(station.getType())) continue;
@@ -43,6 +43,7 @@ public class AnalyzeStationsHandler extends BaseQueryAnalyzer implements QueryHa
 
         String instructions = """
                     Summarize the stations in the star system by type. Provide information about government and allegiance.
+                    If not data avialble, return no data available.
                 """;
 
         return process(new AiDataStruct(instructions, new DataDto(stationsData)), originalUserInput);

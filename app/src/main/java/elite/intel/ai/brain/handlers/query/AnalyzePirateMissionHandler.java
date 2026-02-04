@@ -11,6 +11,8 @@ import elite.intel.gameapi.journal.events.dto.MissionDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
+import elite.intel.util.yaml.ToYamlConvertable;
+import elite.intel.util.yaml.YamlFactory;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -188,9 +190,9 @@ public class AnalyzePirateMissionHandler extends BaseQueryAnalyzer implements Qu
         return "Total mission profit:" + (missionReward + bountyReward);
     }
 
-    record DataDto(String totalMissionKillsLeft, String totalMissionProfit) implements ToJsonConvertible {
-        @Override public String toJson() {
-            return GsonFactory.getGson().toJson(this);
+    record DataDto(String totalMissionKillsLeft, String totalMissionProfit) implements ToYamlConvertable {
+        @Override public String toYaml() {
+            return YamlFactory.toYaml(this);
         }
     }
 }

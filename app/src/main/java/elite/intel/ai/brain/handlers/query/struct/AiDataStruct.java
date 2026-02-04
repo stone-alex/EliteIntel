@@ -1,14 +1,14 @@
 package elite.intel.ai.brain.handlers.query.struct;
 
-import elite.intel.util.json.GsonFactory;
-import elite.intel.util.json.ToJsonConvertible;
+import elite.intel.util.yaml.ToYamlConvertable;
+import elite.intel.util.yaml.YamlFactory;
 
 public class AiDataStruct implements AiData {
 
-    private String instructions;
-    private ToJsonConvertible data;
+    private final String instructions;
+    private final ToYamlConvertable data;
 
-    public AiDataStruct(String instructions, ToJsonConvertible data) {
+    public AiDataStruct(String instructions, ToYamlConvertable data) {
         this.instructions = instructions;
         this.data = data;
     }
@@ -17,11 +17,11 @@ public class AiDataStruct implements AiData {
         return instructions;
     }
 
-    @Override public ToJsonConvertible getData() {
+    @Override public ToYamlConvertable getData() {
         return data;
     }
 
-    @Override public String toJson() {
-        return GsonFactory.getGson().toJson(this);
+    @Override public String toYaml() {
+        return YamlFactory.toYaml(this);
     }
 }

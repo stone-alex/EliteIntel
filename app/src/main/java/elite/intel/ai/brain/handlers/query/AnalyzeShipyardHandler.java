@@ -10,6 +10,8 @@ import elite.intel.search.edsm.dto.ShipyardDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
+import elite.intel.util.yaml.ToYamlConvertable;
+import elite.intel.util.yaml.YamlFactory;
 
 
 public class AnalyzeShipyardHandler extends BaseQueryAnalyzer implements QueryHandler {
@@ -27,9 +29,9 @@ public class AnalyzeShipyardHandler extends BaseQueryAnalyzer implements QueryHa
         return process(new AiDataStruct("Answer questions about shipyard contents", new DataDto(shipyard)), originalUserInput);
     }
 
-    private record DataDto(ToJsonConvertible shipyard) implements ToJsonConvertible {
-        @Override public String toJson() {
-            return GsonFactory.getGson().toJson(this);
+    private record DataDto(ToJsonConvertible shipyard) implements ToYamlConvertable {
+        @Override public String toYaml() {
+            return YamlFactory.toYaml(this);
         }
     }
 }

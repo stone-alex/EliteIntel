@@ -4,6 +4,8 @@ import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
+import elite.intel.util.yaml.ToYamlConvertable;
+import elite.intel.util.yaml.YamlFactory;
 
 public class ConversationalQueryHandler extends BaseQueryAnalyzer implements QueryHandler {
 
@@ -19,10 +21,10 @@ public class ConversationalQueryHandler extends BaseQueryAnalyzer implements Que
         );
     }
 
-    record DataDto() implements ToJsonConvertible {
+    record DataDto() implements ToYamlConvertable {
         /// blank
-        @Override public String toJson() {
-            return GsonFactory.getGson().toJson(this);
+        @Override public String toYaml() {
+            return YamlFactory.toYaml(this);
         }
     }
 }

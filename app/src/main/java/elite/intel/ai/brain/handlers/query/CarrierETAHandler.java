@@ -8,6 +8,8 @@ import elite.intel.session.PlayerSession;
 import elite.intel.util.TimestampFormatter;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
+import elite.intel.util.yaml.ToYamlConvertable;
+import elite.intel.util.yaml.YamlFactory;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -32,9 +34,9 @@ public class CarrierETAHandler extends BaseQueryAnalyzer implements QueryHandler
     }
 
 
-    record DataDto(String arrivalTime, String now) implements ToJsonConvertible {
-        @Override public String toJson() {
-            return GsonFactory.getGson().toJson(this);
+    record DataDto(String arrivalTime, String now) implements ToYamlConvertable {
+        @Override public String toYaml() {
+            return YamlFactory.toYaml(this);
         }
     }
 }

@@ -7,6 +7,8 @@ import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
+import elite.intel.util.yaml.ToYamlConvertable;
+import elite.intel.util.yaml.YamlFactory;
 
 public class AnalyzeFsdTargetHandler extends BaseQueryAnalyzer implements QueryHandler {
 
@@ -19,9 +21,9 @@ public class AnalyzeFsdTargetHandler extends BaseQueryAnalyzer implements QueryH
         return process(new AiDataStruct("Use this data to provide answers for the currently selected FSD target", new DataDto(fsdTarget)), originalUserInput);
     }
 
-    record DataDto(ToJsonConvertible data) implements ToJsonConvertible {
-        @Override public String toJson() {
-            return GsonFactory.getGson().toJson(this);
+    record DataDto(ToJsonConvertible data) implements ToYamlConvertable {
+        @Override public String toYaml() {
+            return YamlFactory.toYaml(this);
         }
     }
 

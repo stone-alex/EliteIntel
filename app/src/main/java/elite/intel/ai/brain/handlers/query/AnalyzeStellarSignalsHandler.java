@@ -11,6 +11,8 @@ import elite.intel.session.PlayerSession;
 import elite.intel.util.StringUtls;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
+import elite.intel.util.yaml.ToYamlConvertable;
+import elite.intel.util.yaml.YamlFactory;
 
 import java.util.*;
 
@@ -164,10 +166,9 @@ public class AnalyzeStellarSignalsHandler extends BaseQueryAnalyzer implements Q
         }
     }
 
-    private record DataDto(List<ToJsonConvertible> stellarObjectSignals, List<ToJsonConvertible> discoveredSignals) implements ToJsonConvertible {
-        @Override
-        public String toJson() {
-            return GsonFactory.getGson().toJson(this);
+    private record DataDto(List<ToJsonConvertible> stellarObjectSignals, List<ToJsonConvertible> discoveredSignals) implements ToYamlConvertable {
+        @Override public String toYaml() {
+            return YamlFactory.toYaml(this);
         }
     }
 }

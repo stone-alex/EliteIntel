@@ -7,6 +7,8 @@ import elite.intel.db.managers.DestinationReminderManager;
 import elite.intel.db.managers.MonetizeRouteManager;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
+import elite.intel.util.yaml.ToYamlConvertable;
+import elite.intel.util.yaml.YamlFactory;
 
 
 public class RemindTargetDestinationHandler extends BaseQueryAnalyzer implements QueryHandler {
@@ -40,9 +42,9 @@ public class RemindTargetDestinationHandler extends BaseQueryAnalyzer implements
         }
     }
 
-    record MonetizeRouteReminder(String pickupAtStation, String commodity, String dropOffLocation) implements ToJsonConvertible {
-        @Override public String toJson() {
-            return GsonFactory.getGson().toJson(this);
+    record MonetizeRouteReminder(String pickupAtStation, String commodity, String dropOffLocation) implements ToYamlConvertable {
+        @Override public String toYaml() {
+            return YamlFactory.toYaml(this);
         }
     }
 }

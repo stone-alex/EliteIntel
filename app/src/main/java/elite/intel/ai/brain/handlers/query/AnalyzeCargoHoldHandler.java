@@ -9,6 +9,8 @@ import elite.intel.gameapi.journal.events.dto.shiploadout.ShipLoadOutDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
+import elite.intel.util.yaml.ToYamlConvertable;
+import elite.intel.util.yaml.YamlFactory;
 
 public class AnalyzeCargoHoldHandler extends BaseQueryAnalyzer implements QueryHandler {
 
@@ -28,9 +30,9 @@ public class AnalyzeCargoHoldHandler extends BaseQueryAnalyzer implements QueryH
         return process(new AiDataStruct(instructions, new DataDto(playerSession.getShipLoadout().getCargoCapacity(), playerSession.getShipCargo())), originalUserInput);
     }
 
-    record DataDto(int cargoCapacity, GameEvents.CargoEvent cargo) implements ToJsonConvertible {
-        @Override public String toJson() {
-            return GsonFactory.getGson().toJson(this);
+    record DataDto(int cargoCapacity, GameEvents.CargoEvent cargo) implements ToYamlConvertable {
+        @Override public String toYaml() {
+            return YamlFactory.toYaml(this);
         }
     }
 }

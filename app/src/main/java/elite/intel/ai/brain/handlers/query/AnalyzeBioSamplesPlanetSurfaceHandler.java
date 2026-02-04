@@ -10,10 +10,11 @@ import elite.intel.gameapi.journal.events.dto.GenusDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.ExoBio;
-import elite.intel.util.json.GsonFactory;
-import elite.intel.util.json.ToJsonConvertible;
+import elite.intel.util.yaml.ToYamlConvertable;
+import elite.intel.util.yaml.YamlFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static elite.intel.util.ExoBio.completedScansForPlanet;
 
@@ -73,15 +74,14 @@ public class AnalyzeBioSamplesPlanetSurfaceHandler extends BaseQueryAnalyzer imp
     }
 
     record DataDto(
-                   List<BioSampleDto> partialBioFormScans,
-                   List<GenusDto> allBioFormsOnPlanet,
-                   List<ExoBio.DataDto> completedScansForPlanet,
-                   List<GenusDto> genusListNotScannedForCurrentLocation
+            List<BioSampleDto> partialBioFormScans,
+            List<GenusDto> allBioFormsOnPlanet,
+            List<ExoBio.DataDto> completedScansForPlanet,
+            List<GenusDto> genusListNotScannedForCurrentLocation
 
-    ) implements ToJsonConvertible {
-        @Override public String toJson() {
-            return GsonFactory.getGson().toJson(this);
+    ) implements ToYamlConvertable {
+        @Override public String toYaml() {
+            return YamlFactory.toYaml(this);
         }
-
     }
 }

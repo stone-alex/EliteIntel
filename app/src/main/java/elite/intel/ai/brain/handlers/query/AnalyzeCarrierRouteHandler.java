@@ -11,6 +11,8 @@ import elite.intel.search.spansh.carrierroute.CarrierJump;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
+import elite.intel.util.yaml.ToYamlConvertable;
+import elite.intel.util.yaml.YamlFactory;
 
 import java.util.Map;
 
@@ -50,9 +52,9 @@ public class AnalyzeCarrierRouteHandler extends BaseQueryAnalyzer implements Que
     }
 
 
-    private record DataDto(Map<Integer, CarrierJump> route, int currentFuelSupply, Integer fuelRequired, int timeToFinalDestinationInMinutes) implements ToJsonConvertible {
-        @Override public String toJson() {
-            return GsonFactory.getGson().toJson(this);
+    private record DataDto(Map<Integer, CarrierJump> route, int currentFuelSupply, Integer fuelRequired, int timeToFinalDestinationInMinutes) implements ToYamlConvertable {
+        @Override public String toYaml() {
+            return YamlFactory.toYaml(this);
         }
     }
 }

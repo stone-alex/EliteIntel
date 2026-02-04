@@ -15,6 +15,8 @@ import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.JsonDataFactory;
 import elite.intel.util.json.ToJsonConvertible;
+import elite.intel.util.yaml.ToYamlConvertable;
+import elite.intel.util.yaml.YamlFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -140,9 +142,9 @@ public class AnalyzeRouterHandler extends BaseQueryAnalyzer implements QueryHand
         }
     }
     
-    record DataDto(List<StopData> data, int jumpsRemaining, String distanceToFinal) implements ToJsonConvertible {
-        @Override public String toJson() {
-            return GsonFactory.getGson().toJson(this);
+    record DataDto(List<StopData> data, int jumpsRemaining, String distanceToFinal) implements ToYamlConvertable {
+        @Override public String toYaml() {
+            return YamlFactory.toYaml(this);
         }
     }
 }

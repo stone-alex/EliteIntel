@@ -4,16 +4,12 @@ import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.db.managers.LocationManager;
-import elite.intel.gameapi.gamestate.dtos.GameEvents;
+import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.search.edsm.dto.MarketDto;
-import elite.intel.search.spansh.market.StationMarketDto;
-import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.PlayerSession;
-import elite.intel.util.json.GsonFactory;
-import elite.intel.util.json.ToJsonConvertible;
-
-import java.util.List;
+import elite.intel.util.yaml.ToYamlConvertable;
+import elite.intel.util.yaml.YamlFactory;
 
 public class AnalyzeLocalMarketsHandler extends BaseQueryAnalyzer implements QueryHandler {
 
@@ -28,9 +24,9 @@ public class AnalyzeLocalMarketsHandler extends BaseQueryAnalyzer implements Que
         return process(new AiDataStruct("Use markets data to provide answers.", new DataDto(market)), originalUserInput);
     }
 
-    private record DataDto(        MarketDto market) implements ToJsonConvertible {
-        @Override public String toJson() {
-            return GsonFactory.getGson().toJson(this);
+    private record DataDto(MarketDto market) implements ToYamlConvertable {
+        @Override public String toYaml() {
+            return YamlFactory.toYaml(this);
         }
     }
 }

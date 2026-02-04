@@ -11,6 +11,8 @@ import elite.intel.search.edsm.dto.TrafficDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
+import elite.intel.util.yaml.ToYamlConvertable;
+import elite.intel.util.yaml.YamlFactory;
 
 public class AnalyzeLocalSystemHandler extends BaseQueryAnalyzer implements QueryHandler {
 
@@ -33,9 +35,9 @@ public class AnalyzeLocalSystemHandler extends BaseQueryAnalyzer implements Quer
         }
     }
 
-    record DataDto(ToJsonConvertible currentStarSystem, ToJsonConvertible edsmData, TrafficDto trafficData, DeathsDto deathsData) implements ToJsonConvertible {
-        @Override public String toJson() {
-            return GsonFactory.getGson().toJson(this);
+    record DataDto(ToJsonConvertible currentStarSystem, ToJsonConvertible edsmData, TrafficDto trafficData, DeathsDto deathsData) implements ToYamlConvertable {
+        @Override public String toYaml() {
+            return YamlFactory.toYaml(this);
         }
     }
 }

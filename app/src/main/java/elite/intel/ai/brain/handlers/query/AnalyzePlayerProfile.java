@@ -8,6 +8,8 @@ import elite.intel.gameapi.journal.events.dto.RankAndProgressDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
+import elite.intel.util.yaml.ToYamlConvertable;
+import elite.intel.util.yaml.YamlFactory;
 
 public class AnalyzePlayerProfile extends BaseQueryAnalyzer implements QueryHandler {
 
@@ -72,9 +74,9 @@ public class AnalyzePlayerProfile extends BaseQueryAnalyzer implements QueryHand
             long totalSystemsVisited,
             long totalExobiologyProfits,
             long totalProfitsFromExploration
-    ) implements ToJsonConvertible {
-        @Override public String toJson() {
-            return GsonFactory.getGson().toJson(this);
+    ) implements ToYamlConvertable {
+        @Override public String toYaml() {
+            return YamlFactory.toYaml(this);
         }
     }
 }

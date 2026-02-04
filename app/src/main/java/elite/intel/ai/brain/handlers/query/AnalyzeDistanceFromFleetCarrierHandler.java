@@ -13,6 +13,8 @@ import elite.intel.session.PlayerSession;
 import elite.intel.util.NavigationUtils;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
+import elite.intel.util.yaml.ToYamlConvertable;
+import elite.intel.util.yaml.YamlFactory;
 
 public class AnalyzeDistanceFromFleetCarrierHandler extends BaseQueryAnalyzer implements QueryHandler {
 
@@ -57,9 +59,9 @@ public class AnalyzeDistanceFromFleetCarrierHandler extends BaseQueryAnalyzer im
         return process(new AiDataStruct(instruction, new DataDto(distance, jumpRange, carrierLocation)), originalUserInput);
     }
 
-    record DataDto(double distance, double jumpRange, String fleetCarrierIsLocatedAt) implements ToJsonConvertible {
-        @Override public String toJson() {
-            return GsonFactory.getGson().toJson(this);
+    record DataDto(double distance, double jumpRange, String fleetCarrierIsLocatedAt) implements ToYamlConvertable {
+        @Override public String toYaml() {
+            return YamlFactory.toYaml(this);
         }
     }
 }

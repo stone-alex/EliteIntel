@@ -5,6 +5,8 @@ import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.db.managers.FleetCarrierManager;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
+import elite.intel.util.yaml.ToYamlConvertable;
+import elite.intel.util.yaml.YamlFactory;
 
 public class AnalyzeFleetCarrierFuelSupplyHandler extends BaseQueryAnalyzer implements QueryHandler {
 
@@ -24,10 +26,9 @@ public class AnalyzeFleetCarrierFuelSupplyHandler extends BaseQueryAnalyzer impl
         return process(new AiDataStruct(instructions, new DataDto(fuelSupply, fuelReserve, maxRangeOnCurrentSupply, maxRangeUsingReserve)), originalUserInput);
     }
 
-    record DataDto(int fuelSupply, int fuelReserve, int maxRangeOnCurrentSupply, int maxRangeUsingReserve) implements ToJsonConvertible {
-
-        @Override public String toJson() {
-            return GsonFactory.getGson().toJson(this);
+    record DataDto(int fuelSupply, int fuelReserve, int maxRangeOnCurrentSupply, int maxRangeUsingReserve) implements ToYamlConvertable {
+        @Override public String toYaml() {
+            return YamlFactory.toYaml(this);
         }
     }
 }

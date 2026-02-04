@@ -12,6 +12,8 @@ import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
+import elite.intel.util.yaml.ToYamlConvertable;
+import elite.intel.util.yaml.YamlFactory;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -85,9 +87,9 @@ public class BiomeAnalyzer extends BaseQueryAnalyzer {
         }
     }
 
-    record DataDto2(Map<String, String> genusToBiome, Collection<LocationData> locations, String starSystemCharacteristics) implements ToJsonConvertible {
-        @Override public String toJson() {
-            return GsonFactory.getGson().toJson(this);
+    record DataDto2(Map<String, String> genusToBiome, Collection<LocationData> locations, String starSystemCharacteristics) implements ToYamlConvertable {
+        @Override public String toYaml() {
+            return YamlFactory.toYaml(this);
         }
     }
 

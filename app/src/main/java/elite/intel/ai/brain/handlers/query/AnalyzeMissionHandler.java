@@ -10,6 +10,8 @@ import elite.intel.gameapi.journal.events.dto.MissionDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
+import elite.intel.util.yaml.ToYamlConvertable;
+import elite.intel.util.yaml.YamlFactory;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -54,10 +56,9 @@ public class AnalyzeMissionHandler extends BaseQueryAnalyzer implements QueryHan
         return process(new AiDataStruct(instructions, new DataDto(missions, playerLocation.getStarName())), originalUserInput);
     }
 
-    record DataDto(Map<MissionType, Collection<MissionDto>> missions, String currentStarSystem) implements ToJsonConvertible {
-        @Override
-        public String toJson() {
-            return GsonFactory.getGson().toJson(this);
+    record DataDto(Map<MissionType, Collection<MissionDto>> missions, String currentStarSystem) implements ToYamlConvertable {
+        @Override public String toYaml() {
+            return YamlFactory.toYaml(this);
         }
     }
 }

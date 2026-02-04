@@ -7,6 +7,8 @@ import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.SystemSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
+import elite.intel.util.yaml.ToYamlConvertable;
+import elite.intel.util.yaml.YamlFactory;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -36,9 +38,9 @@ public class TimeQueryHandler extends BaseQueryAnalyzer implements QueryHandler 
     }
 
 
-    record DataDto(String utcTime) implements ToJsonConvertible {
-        @Override public String toJson() {
-            return GsonFactory.getGson().toJson(this);
+    record DataDto(String utcTime) implements ToYamlConvertable {
+        @Override public String toYaml() {
+            return YamlFactory.toYaml(this);
         }
     }
 }

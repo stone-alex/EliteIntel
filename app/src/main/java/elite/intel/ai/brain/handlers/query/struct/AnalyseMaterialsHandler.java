@@ -10,6 +10,8 @@ import elite.intel.db.util.Database;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
+import elite.intel.util.yaml.ToYamlConvertable;
+import elite.intel.util.yaml.YamlFactory;
 
 import static elite.intel.util.StringUtls.capitalizeWords;
 
@@ -37,9 +39,9 @@ public class AnalyseMaterialsHandler extends BaseQueryAnalyzer implements QueryH
         return process(new AiDataStruct(instructions, new DataDto(data)), originalUserInput);
     }
 
-    record DataDto(MaterialsDao.Material materials) implements ToJsonConvertible {
-        @Override public String toJson() {
-            return GsonFactory.getGson().toJson(this);
+    record DataDto(MaterialsDao.Material materials) implements ToYamlConvertable {
+        @Override public String toYaml() {
+            return YamlFactory.toYaml(this);
         }
     }
 }

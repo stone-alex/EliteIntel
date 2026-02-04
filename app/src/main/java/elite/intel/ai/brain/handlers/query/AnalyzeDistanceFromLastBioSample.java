@@ -11,6 +11,8 @@ import elite.intel.session.PlayerSession;
 import elite.intel.session.Status;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
+import elite.intel.util.yaml.ToYamlConvertable;
+import elite.intel.util.yaml.YamlFactory;
 
 public class AnalyzeDistanceFromLastBioSample extends BaseQueryAnalyzer implements QueryHandler {
 
@@ -47,9 +49,9 @@ public class AnalyzeDistanceFromLastBioSample extends BaseQueryAnalyzer implemen
         return process(new AiDataStruct(instructions, new DataDto(latitude, longitude, planetRadius, bioSample)), originalUserInput);
     }
 
-    record DataDto(double userLatitude, double userLongitude, double planetRadius, BioSampleDto bioSample) implements ToJsonConvertible {
-        @Override public String toJson() {
-            return GsonFactory.getGson().toJson(this);
+    record DataDto(double userLatitude, double userLongitude, double planetRadius, BioSampleDto bioSample) implements ToYamlConvertable {
+        @Override public String toYaml() {
+            return YamlFactory.toYaml(this);
         }
     }
 }

@@ -9,6 +9,8 @@ import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
+import elite.intel.util.yaml.ToYamlConvertable;
+import elite.intel.util.yaml.YamlFactory;
 
 import java.util.Collection;
 
@@ -38,9 +40,9 @@ public class AnalyzeDistanceToStellarObject extends BaseQueryAnalyzer implements
         );
     }
 
-    record DataDto(Collection<LocationDto> locations) implements ToJsonConvertible {
-        @Override public String toJson() {
-            return GsonFactory.getGson().toJson(this);
+    record DataDto(Collection<LocationDto> locations) implements ToYamlConvertable {
+        @Override public String toYaml() {
+            return YamlFactory.toYaml(this);
         }
     }
 }

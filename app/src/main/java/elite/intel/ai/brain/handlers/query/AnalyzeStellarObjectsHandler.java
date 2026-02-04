@@ -10,6 +10,8 @@ import elite.intel.gameapi.journal.events.dto.LocationDto.LocationType;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
+import elite.intel.util.yaml.ToYamlConvertable;
+import elite.intel.util.yaml.YamlFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -120,10 +122,9 @@ public class AnalyzeStellarObjectsHandler extends BaseQueryAnalyzer implements Q
         }
     }
 
-    record DataDto(List<LocationData> allStellarObjectsInStarSystem) implements ToJsonConvertible {
-
-        @Override public String toJson() {
-            return GsonFactory.getGson().toJson(this);
+    record DataDto(List<LocationData> allStellarObjectsInStarSystem) implements ToYamlConvertable {
+        @Override public String toYaml() {
+            return YamlFactory.toYaml(this);
         }
     }
 

@@ -8,6 +8,8 @@ import elite.intel.gameapi.EventBusManager;
 import elite.intel.search.spansh.traderoute.TradeRouteSearchCriteria;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
+import elite.intel.util.yaml.ToYamlConvertable;
+import elite.intel.util.yaml.YamlFactory;
 
 public class AnalyzeTradeProfileHandler extends BaseQueryAnalyzer implements QueryHandler {
 
@@ -32,9 +34,9 @@ public class AnalyzeTradeProfileHandler extends BaseQueryAnalyzer implements Que
         );
     }
 
-    record DataDto(String criteria) implements ToJsonConvertible {
-        @Override public String toJson() {
-            return GsonFactory.getGson().toJson(this);
+    record DataDto(String criteria) implements ToYamlConvertable {
+        @Override public String toYaml() {
+            return YamlFactory.toYaml(this);
         }
     }
 }

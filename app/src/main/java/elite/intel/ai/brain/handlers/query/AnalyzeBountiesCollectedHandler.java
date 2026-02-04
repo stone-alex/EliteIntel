@@ -5,6 +5,8 @@ import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
+import elite.intel.util.yaml.ToYamlConvertable;
+import elite.intel.util.yaml.YamlFactory;
 
 public class AnalyzeBountiesCollectedHandler extends BaseQueryAnalyzer implements QueryHandler {
 
@@ -19,9 +21,9 @@ public class AnalyzeBountiesCollectedHandler extends BaseQueryAnalyzer implement
         return process(new AiDataStruct(instructions, new DataDto(totalBounties)), originalUserInput);
     }
 
-    record DataDto(long totalBounties) implements ToJsonConvertible {
-        @Override public String toJson() {
-            return GsonFactory.getGson().toJson(this);
+    record DataDto(long totalBounties) implements ToYamlConvertable {
+        @Override public String toYaml() {
+            return YamlFactory.toYaml(this);
         }
     }
 }

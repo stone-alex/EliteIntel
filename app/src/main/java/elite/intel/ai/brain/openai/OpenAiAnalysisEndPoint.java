@@ -49,7 +49,7 @@ public class OpenAiAnalysisEndPoint extends AiEndPoint implements AiAnalysisInte
 
             JsonObject messageUser = new JsonObject();
             messageUser.addProperty("role", AIConstants.ROLE_USER);
-            messageUser.addProperty("content", "User Input: " + originalUserInput + ". Data: " + struct.getData().toJson()+". ");
+            messageUser.addProperty("content", "User Input: " + originalUserInput + ". Data: " + struct.getData().toYaml()+". ");
 
             JsonArray messages = new JsonArray();
             messages.add(systemMessaage1);

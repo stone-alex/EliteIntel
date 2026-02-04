@@ -8,6 +8,8 @@ import elite.intel.gameapi.journal.events.dto.CarrierDataDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
+import elite.intel.util.yaml.ToYamlConvertable;
+import elite.intel.util.yaml.YamlFactory;
 
 public class AnalyzeCarrierDataHandler extends BaseQueryAnalyzer implements QueryHandler {
 
@@ -60,10 +62,9 @@ public class AnalyzeCarrierDataHandler extends BaseQueryAnalyzer implements Quer
             int totalFuelAvailable,
             int maxRange,
             int fundedOperation
-    ) implements ToJsonConvertible {
-        @Override public String toJson() {
-            return GsonFactory.getGson().toJson(this);
+    ) implements ToYamlConvertable {
+        @Override public String toYaml() {
+            return YamlFactory.toYaml(this);
         }
-
     }
 }

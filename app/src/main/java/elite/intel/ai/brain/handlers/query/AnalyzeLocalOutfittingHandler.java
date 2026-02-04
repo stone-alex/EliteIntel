@@ -10,6 +10,8 @@ import elite.intel.search.edsm.dto.OutfittingDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
+import elite.intel.util.yaml.ToYamlConvertable;
+import elite.intel.util.yaml.YamlFactory;
 
 public class AnalyzeLocalOutfittingHandler extends BaseQueryAnalyzer implements QueryHandler {
 
@@ -25,9 +27,9 @@ public class AnalyzeLocalOutfittingHandler extends BaseQueryAnalyzer implements 
         return process(new AiDataStruct("Answer questions about available outfitting options", new DataDto(outfitting)), originalUserInput);
     }
 
-    private record DataDto(OutfittingDto outfitting) implements ToJsonConvertible {
-        @Override public String toJson() {
-            return GsonFactory.getGson().toJson(this);
+    private record DataDto(OutfittingDto outfitting) implements ToYamlConvertable {
+        @Override public String toYaml() {
+            return YamlFactory.toYaml(this);
         }
     }
 }

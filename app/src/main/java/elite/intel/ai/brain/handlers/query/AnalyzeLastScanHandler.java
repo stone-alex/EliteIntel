@@ -8,6 +8,8 @@ import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
+import elite.intel.util.yaml.ToYamlConvertable;
+import elite.intel.util.yaml.YamlFactory;
 
 public class AnalyzeLastScanHandler extends BaseQueryAnalyzer implements QueryHandler {
 
@@ -23,10 +25,9 @@ public class AnalyzeLastScanHandler extends BaseQueryAnalyzer implements QueryHa
         return process(new AiDataStruct(instructions, new DataDto(lastScan)), originalUserInput);
     }
 
-    record DataDto(LocationDto lastScan) implements ToJsonConvertible {
-
-        @Override public String toJson() {
-            return GsonFactory.getGson().toJson(this);
+    record DataDto(LocationDto lastScan) implements ToYamlConvertable {
+        @Override public String toYaml() {
+            return YamlFactory.toYaml(this);
         }
     }
 }

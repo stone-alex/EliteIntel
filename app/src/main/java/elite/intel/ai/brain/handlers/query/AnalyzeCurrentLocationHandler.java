@@ -15,6 +15,8 @@ import elite.intel.session.PlayerSession;
 import elite.intel.session.Status;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
+import elite.intel.util.yaml.ToYamlConvertable;
+import elite.intel.util.yaml.YamlFactory;
 
 public class AnalyzeCurrentLocationHandler extends BaseQueryAnalyzer implements QueryHandler {
 
@@ -147,9 +149,9 @@ public class AnalyzeCurrentLocationHandler extends BaseQueryAnalyzer implements 
             double surfaceTemperatureInKelvin,
             String dayLength
 
-    ) implements ToJsonConvertible {
-        @Override public String toJson() {
-            return GsonFactory.getGson().toJson(this);
+    ) implements ToYamlConvertable {
+        @Override public String toYaml() {
+            return YamlFactory.toYaml(this);
         }
     }
 }

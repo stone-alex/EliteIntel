@@ -11,6 +11,8 @@ import elite.intel.search.edsm.dto.TrafficDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
+import elite.intel.util.yaml.ToYamlConvertable;
+import elite.intel.util.yaml.YamlFactory;
 
 public class AnalyzeSystemSecurityHandler extends BaseQueryAnalyzer implements QueryHandler {
 
@@ -63,10 +65,9 @@ public class AnalyzeSystemSecurityHandler extends BaseQueryAnalyzer implements Q
                 Integer powerplayStateUndermining,
                 DeathsDto deathsDto,
                 TrafficDto trafficDto
-        ) implements ToJsonConvertible {
-
-        @Override public String toJson() {
-            return GsonFactory.getGson().toJson(this);
+        ) implements ToYamlConvertable {
+        @Override public String toYaml() {
+            return YamlFactory.toYaml(this);
         }
     }
 }

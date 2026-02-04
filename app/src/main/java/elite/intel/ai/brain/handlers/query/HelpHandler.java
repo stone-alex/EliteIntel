@@ -7,6 +7,8 @@ import elite.intel.db.dao.HelpDao;
 import elite.intel.db.util.Database;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
+import elite.intel.util.yaml.ToYamlConvertable;
+import elite.intel.util.yaml.YamlFactory;
 
 import java.util.HashMap;
 import java.util.List;
@@ -38,9 +40,9 @@ public class HelpHandler extends BaseQueryAnalyzer implements QueryHandler {
 
     }
 
-    record DataDto(Map<String, String> data) implements ToJsonConvertible {
-        @Override public String toJson() {
-            return GsonFactory.getGson().toJson(this);
+    record DataDto(Map<String, String> data) implements ToYamlConvertable {
+        @Override public String toYaml() {
+            return YamlFactory.toYaml(this);
         }
     }
 }

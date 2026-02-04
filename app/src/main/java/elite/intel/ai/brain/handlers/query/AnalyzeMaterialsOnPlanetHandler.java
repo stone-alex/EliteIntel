@@ -11,6 +11,8 @@ import elite.intel.gameapi.journal.events.dto.MaterialDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
+import elite.intel.util.yaml.ToYamlConvertable;
+import elite.intel.util.yaml.YamlFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,9 +73,9 @@ public class AnalyzeMaterialsOnPlanetHandler extends BaseQueryAnalyzer implement
         }
     }
 
-    record DataDto(List<MaterialData> materials) implements ToJsonConvertible {
-        @Override public String toJson() {
-            return GsonFactory.getGson().toJson(this);
+    record DataDto(List<MaterialData> materials) implements ToYamlConvertable {
+        @Override public String toYaml() {
+            return YamlFactory.toYaml(this);
         }
     }
 }

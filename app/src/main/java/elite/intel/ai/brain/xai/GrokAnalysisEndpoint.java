@@ -43,7 +43,7 @@ public class GrokAnalysisEndpoint extends AiEndPoint implements AiAnalysisInterf
 
             JsonObject messageUser = new JsonObject();
             messageUser.addProperty("role", AIConstants.ROLE_USER);
-            messageUser.addProperty("content", "User intent: " + originalUserInput + "\nData: " + struct.getData().toJson());
+            messageUser.addProperty("content", "User intent: " + originalUserInput + "\nData: " + struct.getData().toYaml());
 
             prompt.add("messages", gson.toJsonTree(new Object[]{systemMessage1, systemMessage2, messageUser}));
 

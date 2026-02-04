@@ -8,6 +8,8 @@ import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.search.edsm.dto.MarketDto;
 import elite.intel.session.PlayerSession;
+import elite.intel.util.json.GsonFactory;
+import elite.intel.util.json.ToJsonConvertible;
 import elite.intel.util.yaml.ToYamlConvertable;
 import elite.intel.util.yaml.YamlFactory;
 
@@ -24,7 +26,7 @@ public class AnalyzeLocalMarketsHandler extends BaseQueryAnalyzer implements Que
         return process(new AiDataStruct("Use markets data to provide answers.", new DataDto(market)), originalUserInput);
     }
 
-    private record DataDto(MarketDto market) implements ToYamlConvertable {
+    private record DataDto(MarketDto market) implements ToYamlConvertable{
         @Override public String toYaml() {
             return YamlFactory.toYaml(this);
         }

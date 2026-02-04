@@ -144,6 +144,8 @@ public class PromptFactory implements AiPromptFactory {
         sb.append("You are ").append(aiName()).append(" - AI assistance in a simulation.");
         sb.append("""
                 Instructions:
+                Data provided to you is in YAML
+                
                  Summarise only the important readings and events that are actually present in the incoming data (sensorData).
                  Strictly follow the specific instructions provided.
                  Use ONLY the sensor data provided and the event-specific instructions.

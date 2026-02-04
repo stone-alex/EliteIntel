@@ -136,9 +136,9 @@ public class AnalyzeRouterHandler extends BaseQueryAnalyzer implements QueryHand
         return sb.toString();
     }
 
-    record StopData(int legNumber, int remainingJumps, String starClass, String starName, boolean isScoopable) implements ToJsonConvertible {
-        @Override public String toJson() {
-            return GsonFactory.getGson().toJson(this);
+    record StopData(int legNumber, int remainingJumps, String starClass, String starName, boolean isScoopable) implements ToYamlConvertable {
+        @Override public String toYaml() {
+            return YamlFactory.toYaml(this);
         }
     }
     

@@ -37,9 +37,9 @@ public class AnalyzeLocalStations extends BaseQueryAnalyzer implements QueryHand
         return process(new AiDataStruct("Answer questions about local stations", new DataDto(data)), originalUserInput);
     }
 
-    record DataElement(String stationName, OutfittingDto outfitting, ShipyardDto shipyard) implements ToJsonConvertible {
-        @Override public String toJson() {
-            return GsonFactory.getGson().toJson(this);
+    record DataElement(String stationName, OutfittingDto outfitting, ShipyardDto shipyard) implements ToYamlConvertable {
+        @Override public String toYaml() {
+            return YamlFactory.toYaml(this);
         }
     }
 

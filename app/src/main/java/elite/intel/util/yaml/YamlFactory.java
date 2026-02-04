@@ -25,6 +25,7 @@ public final class YamlFactory {
 
         // ensure string format, not epoch millis
         mapper.disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        // skip all empty lists and fields to save tokens.
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
         return mapper;

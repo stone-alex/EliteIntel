@@ -35,12 +35,4 @@ public class BaseQueryAnalyzer {
         object.addProperty(AIConstants.PROPERTY_EXPECT_FOLLOWUP, false);
         return object;
     }
-
-    protected Gson getGson() {
-        return GsonFactory.getGson();
-    }
-
-    protected String toJson(Object obj) {
-        return getGson().toJson(obj);
-    }
 }

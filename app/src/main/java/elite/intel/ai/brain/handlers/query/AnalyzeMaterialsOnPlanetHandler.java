@@ -67,9 +67,9 @@ public class AnalyzeMaterialsOnPlanetHandler extends BaseQueryAnalyzer implement
         return data;
     }
 
-    record MaterialData(String material, double rarity) implements ToJsonConvertible {
-        @Override public String toJson() {
-            return GsonFactory.getGson().toJson(this);
+    record MaterialData(String material, double rarity) implements ToYamlConvertable {
+        @Override public String toYaml() {
+            return YamlFactory.toYaml(this);
         }
     }
 

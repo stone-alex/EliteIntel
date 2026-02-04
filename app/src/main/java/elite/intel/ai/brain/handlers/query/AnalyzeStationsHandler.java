@@ -48,9 +48,9 @@ public class AnalyzeStationsHandler extends BaseQueryAnalyzer implements QueryHa
         return process(new AiDataStruct(instructions, new DataDto(stationsData)), originalUserInput);
     }
 
-    record StationData(String name, String type, String allegiance, String government, Integer numberOfCommodities, String economy, Integer numberOfServices) implements ToJsonConvertible {
-        @Override public String toJson() {
-            return GsonFactory.getGson().toJson(this);
+    record StationData(String name, String type, String allegiance, String government, Integer numberOfCommodities, String economy, Integer numberOfServices) implements ToYamlConvertable {
+        @Override public String toYaml() {
+            return YamlFactory.toYaml(this);
         }
     }
 

@@ -116,9 +116,9 @@ public class AnalyzeStellarObjectsHandler extends BaseQueryAnalyzer implements Q
                         boolean ourDiscovery,
                         boolean weMappedIt,
                         boolean hasMarkets
-    ) implements ToJsonConvertible {
-        @Override public String toJson() {
-            return GsonFactory.getGson().toJson(this);
+    ) implements ToYamlConvertable {
+        @Override public String toYaml() {
+            return YamlFactory.toYaml(this);
         }
     }
 

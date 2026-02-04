@@ -62,8 +62,8 @@ public class AnalyzeStellarSignalsHandler extends BaseQueryAnalyzer implements Q
                 - 1 sentence per ring/planet group
                 - Natural order, no mix
                 """;
-        List<ToJsonConvertible> signals = aggregateSignals();
-        List<ToJsonConvertible> discoveredSignals = toDiscoveredSignals();
+        List<ToYamlConvertable> signals = aggregateSignals();
+        List<ToYamlConvertable> discoveredSignals = toDiscoveredSignals();
         return process(
                 new AiDataStruct(
                         instructions,
@@ -74,11 +74,11 @@ public class AnalyzeStellarSignalsHandler extends BaseQueryAnalyzer implements Q
     }
 
 
-    private List<ToJsonConvertible> aggregateSignals() {
+    private List<ToYamlConvertable> aggregateSignals() {
         long systemAddress = playerSession.getLocationData().getSystemAddress();
         Collection<LocationDto> locations = locationManager.findAllBySystemAddress(systemAddress);
         // body → ringId → type → count
-        List<ToJsonConvertible> result = new ArrayList<>();
+        List<ToYamlConvertable> result = new ArrayList<>();
         Map<String, Map<String, Map<String, Integer>>> grouping = new LinkedHashMap<>();
         for (LocationDto location : locations) {
             String body = location.getPlanetShortName();
@@ -131,10 +131,10 @@ public class AnalyzeStellarSignalsHandler extends BaseQueryAnalyzer implements Q
         return result;
     }
 
-    private List<ToJsonConvertible> toDiscoveredSignals() {
-        List<ToJsonConvertible> discoveredSignals;
+    private List<ToYamlConvertable> toDiscoveredSignals() {
+        List<ToYamlConvertable> discoveredSignals;
         Collection<LocationDto> locations = locationManager.findAllBySystemAddress(playerSession.getLocationData().getSystemAddress());
-        List<ToJsonConvertible> list = new ArrayList<>();
+        List<ToYamlConvertable> list = new ArrayList<>();
         locations.forEach(location -> {
             Set<FssSignalDto> detectedSignals = location.getDetectedSignals();
             detectedSignals.stream().map(signal -> new DiscoveredSignal(
@@ -146,10 +146,9 @@ public class AnalyzeStellarSignalsHandler extends BaseQueryAnalyzer implements Q
         return discoveredSignals;
     }
 
-    private record DiscoveredSignal(String locationName, String signalName, String signalType) implements ToJsonConvertible {
-        @Override
-        public String toJson() {
-            return GsonFactory.getGson().toJson(this);
+    private record DiscoveredSignal(String locationName, String signalName, String signalType) implements ToYamlConvertable {
+        @Override public String toYaml() {
+            return YamlFactory.toYaml(this);
         }
     }
 
@@ -159,14 +158,13 @@ public class AnalyzeStellarSignalsHandler extends BaseQueryAnalyzer implements Q
             String signalType,
             String ringName,
             Map<String, Integer> hotspotsAndSignals
-    ) implements ToJsonConvertible {
-        @Override
-        public String toJson() {
-            return GsonFactory.getGson().toJson(this);
+    ) implements ToYamlConvertable {
+        @Override public String toYaml() {
+            return YamlFactory.toYaml(this);
         }
     }
 
-    private record DataDto(List<ToJsonConvertible> stellarObjectSignals, List<ToJsonConvertible> discoveredSignals) implements ToYamlConvertable {
+    private record DataDto(List<ToYamlConvertable> stellarObjectSignals, List<ToYamlConvertable> discoveredSignals) implements ToYamlConvertable {
         @Override public String toYaml() {
             return YamlFactory.toYaml(this);
         }

@@ -82,9 +82,10 @@ public class AnalyzeShipLoadoutHandler extends BaseQueryAnalyzer implements Quer
         }
     }
 
-    record ShipModule(String moduleName, double moduleHealthPercentage, String engineering) implements ToJsonConvertible {
-        @Override public String toJson() {
-            return GsonFactory.getGson().toJson(this);
+    record ShipModule(String moduleName, double moduleHealthPercentage, String engineering) implements ToYamlConvertable {
+
+        @Override public String toYaml() {
+            return YamlFactory.toYaml(this);
         }
     }
 }

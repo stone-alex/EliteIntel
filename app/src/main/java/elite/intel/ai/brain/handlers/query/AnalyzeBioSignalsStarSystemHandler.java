@@ -95,9 +95,9 @@ public class AnalyzeBioSignalsStarSystemHandler extends BaseQueryAnalyzer implem
         }
     }
 
-    record PlanetsToScan(String planetName, int remainingOrganicsToScan) implements ToJsonConvertible {
-        @Override public String toJson() {
-            return GsonFactory.getGson().toJson(this);
+    record PlanetsToScan(String planetName, int remainingOrganicsToScan) implements ToYamlConvertable {
+        @Override public String toYaml() {
+            return YamlFactory.toYaml(this);
         }
     }
 }

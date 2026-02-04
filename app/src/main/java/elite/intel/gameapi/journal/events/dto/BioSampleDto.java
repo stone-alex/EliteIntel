@@ -3,8 +3,10 @@ package elite.intel.gameapi.journal.events.dto;
 import elite.intel.gameapi.gamestate.dtos.BaseJsonDto;
 import elite.intel.util.Md5Utils;
 import elite.intel.util.json.ToJsonConvertible;
+import elite.intel.util.yaml.ToYamlConvertable;
+import elite.intel.util.yaml.YamlFactory;
 
-public class BioSampleDto extends BaseJsonDto implements ToJsonConvertible {
+public class BioSampleDto extends BaseJsonDto implements ToJsonConvertible, ToYamlConvertable {
 
     int planetNumber;
     long payout;
@@ -153,5 +155,9 @@ public class BioSampleDto extends BaseJsonDto implements ToJsonConvertible {
 
     public String getKey() {
         return Md5Utils.generateMd5(bodyId + planetName + genus + species);
+    }
+
+    @Override public String toYaml() {
+        return YamlFactory.toYaml(this);
     }
 }

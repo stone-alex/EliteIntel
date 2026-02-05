@@ -53,13 +53,14 @@ public class OllamaClient extends BaseAiClient implements Client {
         request.addProperty("num_ctx", 128000);
 
         /// OLAMA tricks.
-        /// Accuracy / Coherence
-//        request.addProperty("top_k", 5);            // default ~40–50, lower = more focused (try 20–30)
-//        request.addProperty("mirostat", 0);             // 0=off, 1=mirostat, 2=mirostat 2.0 (best for stable JSON output)
-//        request.addProperty("mirostat_tau", 0.0f);      // target perplexity (3.0–6.0, higher = more creative)
-//        request.addProperty("mirostat_eta", 0.1f);      // learning rate (default 0.1 is fine)
-//        request.addProperty("top_p", 0.9);                // default 0.9, lower = less random (0.7–0.9 sweet spot)
-//        request.addProperty("repeat_penalty", 1.1f);    // 1.05–1.2 discourages loops/repetition
+        /// Strongest "follow instructions + output clean JSON" preset for ~8–13B models
+        request.addProperty("mirostat", 2);           // mirostat 2.0 - best for controlled output
+        request.addProperty("mirostat_tau", 3.5f);    // 3.0–4.5 range usually best; 3.5 is a common sweet spot
+        request.addProperty("mirostat_eta", 0.1f);    // usually leave at default
+
+        request.addProperty("top_p", 0.85f);          // 0.8–0.9 → lower = more deterministic
+        request.addProperty("top_k", 20);             // 15–30 → very low values help JSON a lot
+        request.addProperty("repeat_penalty", 1.12f); // 1.08–1.15 → prevents repeating keys or structure
 
         /// Speed / VRAM / Performance
         request.addProperty("num_predict", -1);         // max tokens to generate (default -1 = unlimited, set 256–1024)

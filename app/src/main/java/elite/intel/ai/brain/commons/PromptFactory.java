@@ -37,6 +37,10 @@ public class PromptFactory implements AiPromptFactory {
         sb.append("""
                 - STRICT COMMAND PARSER. YOUR ONLY JOB IS TO PICK EXACTLY ONE ACTION FROM THE LIST BELOW. NOTHING ELSE.
                 
+                Most things the player says are commands (do something, change something, go somewhere, toggle something).
+                
+                Only when the sentence is clearly a QUESTION (starts with what/find/where/how/which/why/is/are/does/…) → classify as query.
+                
                 CRITICAL RULES - BREAKING ANY = TOTAL FAILURE:
                 - NEVER invent, modify, combine, or create new actions or parameters.
                 - NEVER be "helpful" by guessing.
@@ -47,12 +51,13 @@ public class PromptFactory implements AiPromptFactory {
                 Map of allowed actions:
                 """);
 
+        sb.append("Classify as {\"type\": \"command\", \"response_text\": \"\", \"action\": \"action_name\", \"params\": {\"key\": \"value\"}}");
         sb.append(commandsAndQueries.getCommandMap());
         sb.append("""
                 Supported QUERIES: patterns, concepts, and formulations -> ACTION_NAME (use ONLY these action names):
                 """);
+        sb.append("Classify as {\"type\": \"query\", \"response_text\": \"Your Response\", \"action\": \"action_name\", \"params\": {\"key\": \"value\"}}");
         sb.append(commandsAndQueries.getQueries());
-        sb.append(" output in the following format ").append(JSON_FORMAT);
         sb.append("""
                 PARAMS RULES - DO NOT DEVIATE:
                 • Use ONLY the exact key names and types shown in the command's template

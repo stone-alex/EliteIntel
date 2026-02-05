@@ -48,6 +48,7 @@ public class PromptFactory implements AiPromptFactory {
                 - ONLY use action names EXACTLY as written in the lists below.
                 - ONLY use parameter keys/values that appear in the command/query template.
                 
+                Classify "Verify LLM Connection" as a command with action verify_llm_connection_command
                 Map of allowed actions:
                 """);
 

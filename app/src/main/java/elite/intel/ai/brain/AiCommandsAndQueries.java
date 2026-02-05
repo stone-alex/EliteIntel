@@ -31,7 +31,7 @@ public class AiCommandsAndQueries {
 
     private Map<String, String> buildCommandMap() {
         Map<String, String> commandMap = new HashMap<>();
-        commandMap.put(" Verify LLM Connection ", CONNECTION_CHECK.getAction());
+        commandMap.put(" command Verify LLM Connection ", CONNECTION_CHECK.getAction());
         /// parametrized
         /// ship
         if (status.isInMainShip()) {

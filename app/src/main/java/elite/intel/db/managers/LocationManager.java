@@ -68,10 +68,9 @@ public class LocationManager {
     }
 
 
-    public LocationDto findBySystemAddress(long systemAddress, Long bodyId) {
+    public LocationDto findBySystemAddress(Long systemAddress, Long bodyId) {
         return Database.withDao(LocationDao.class, dao -> {
-            LocationDao.Location location;
-            location = dao.findPrimaryBySystemAddress(systemAddress, bodyId);
+            LocationDao.Location location = dao.findPrimaryBySystemAddress(systemAddress, bodyId);
             return location == null ? new LocationDto(bodyId, systemAddress) : GsonFactory.getGson().fromJson(location.getJson(), LocationDto.class);
         });
     }

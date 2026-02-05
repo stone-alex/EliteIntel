@@ -91,9 +91,9 @@ public class LocationDto implements ToJsonConvertible {
         setBodyId(bodiId);
     }
 
-    public LocationDto(long bodyId, long systemAddress) {
-        setBodyId(bodyId);
-        setSystemAddress(systemAddress);
+    public LocationDto(Long bodyId, Long systemAddress) {
+        setBodyId(bodyId == null ? -1L: bodyId);
+        setSystemAddress(systemAddress == null ? -1L : systemAddress);
     }
 
 

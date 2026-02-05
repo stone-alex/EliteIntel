@@ -74,7 +74,6 @@ public class AiCommandsAndQueries {
             commandMap.put(" command show loadout panel ", DISPLAY_LOADOUT_PANEL.getAction());
             commandMap.put(" command **lets go**, lets get out of here, take us to hyperspace, enter hyperspace, go to next way point ", JUMP_TO_HYPERSPACE.getAction());
             commandMap.put(" command drop, disengage FSD, drop from supercruise", EXIT_SUPER_CRUISE.getAction());
-            commandMap.put(" command combat mode, hud to combat ", ACTIVATE_COMBAT_MODE.getAction());
             commandMap.put(" command plot route to carrier, plot route to base, return to base ", PLOT_ROUTE_TO_CARRIER.getAction());
             commandMap.put(" command plot route to home system ", TAKE_ME_HOME.getAction());
             commandMap.put(" command set optimal speed ", SET_OPTIMAL_SPEED.getAction());  // Kept here
@@ -105,7 +104,8 @@ public class AiCommandsAndQueries {
         /// ship or SRV
         if (status.isInMainShip() || status.isInSrv()) {
             commandMap.put(" command night vision toggle on/off " + KEY_STATE, NIGHT_VISION_ON_OFF.getAction());
-            commandMap.put(" command analysis mode, hud to analysis ", ACTIVATE_ANALYSIS_MODE.getAction());
+            commandMap.put(" command change mode to combat, hud to combat ", ACTIVATE_COMBAT_MODE.getAction());
+            commandMap.put(" command change mode to analysis, hud to analysis ", ACTIVATE_ANALYSIS_MODE.getAction());
             commandMap.put(" command max shields, shields up, shields ", INCREASE_SHIELDS_POWER.getAction());
             commandMap.put(" command max engines, full power to engines ", INCREASE_ENGINES_POWER.getAction());
             commandMap.put(" command max weapons, full power to weapons ", INCREASE_WEAPONS_POWER.getAction());
@@ -120,10 +120,10 @@ public class AiCommandsAndQueries {
         if (!status.isInSupercruise()) {
             commandMap.put(" command target power plant, target subsystem, X ", TARGET_SUB_SYSTEM.getAction());
             commandMap.put(" command recall ship / dismiss ship ", RECALL_DISMISS_SHIP.getAction());
-            commandMap.put(" command defend ship ", REQUEST_DEFENSIVE_BEHAVIOUR.getAction());
-            commandMap.put(" command focus my target ", REQUEST_FOCUS_TARGET.getAction());
-            commandMap.put(" command hold fire ", REQUEST_HOLD_FIRE.getAction());
-            commandMap.put(" command recall fighter ", REQUEST_REQUEST_DOCK.getAction());
+            commandMap.put(" command order fighter to defend ship ", REQUEST_DEFENSIVE_BEHAVIOUR.getAction());
+            commandMap.put(" command order fighter focus my target ", REQUEST_FOCUS_TARGET.getAction());
+            commandMap.put(" command order fighter to hold fire ", REQUEST_HOLD_FIRE.getAction());
+            commandMap.put(" command order fighter return to mother ship ", REQUEST_REQUEST_DOCK.getAction());
             commandMap.put(" command supercruise, enter super cruise, engage FSD ", ENTER_SUPER_CRUISE.getAction());
             commandMap.put(" command retract hardpoints, stove weapons ", RETRACT_HARDPOINTS.getAction());
             commandMap.put(" command deploy hardpoints, weapons hot, deploy weapons ", DEPLOY_HARDPOINTS.getAction());

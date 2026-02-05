@@ -9,8 +9,7 @@ import elite.intel.gameapi.journal.events.dto.BioSampleDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.Status;
-import elite.intel.util.json.GsonFactory;
-import elite.intel.util.json.ToJsonConvertible;
+import elite.intel.util.NavigationUtils;
 import elite.intel.util.yaml.ToYamlConvertable;
 import elite.intel.util.yaml.YamlFactory;
 
@@ -26,8 +25,8 @@ public class AnalyzeDistanceFromLastBioSample extends BaseQueryAnalyzer implemen
         LocationDto currentLocation = locationManager.findByLocationData(playerSession.getLocationData());
 
         String instructions = """
-        use userLatitude, userLongitude, bioSample.scanLatitude, bioSample.scanLongitude and planetRadius to calculate distance to the last partial bio-sample.
-        """;
+                use userLatitude, userLongitude, bioSample.scanLatitude, bioSample.scanLongitude and planetRadius to calculate distance to the last partial bio-sample.
+                """;
 
         if (status.getStatus() == null) {
             return process("No planet data available");
@@ -41,15 +40,25 @@ public class AnalyzeDistanceFromLastBioSample extends BaseQueryAnalyzer implemen
             return process("Your current position is not available.");
         }
 
-        if(currentLocation.getPartialBioSamples().isEmpty()){
+        if (currentLocation.getPartialBioSamples().isEmpty()) {
             return process("No partial bio scans data.");
         }
 
         BioSampleDto bioSample = currentLocation.getPartialBioSamples().getLast();
-        return process(new AiDataStruct(instructions, new DataDto(latitude, longitude, planetRadius, bioSample)), originalUserInput);
+        double distance = NavigationUtils.calculateSurfaceDistance(
+                bioSample.getScanLatitude(),
+                bioSample.getScanLongitude(),
+                status.getStatus().getLatitude(),
+                status.getStatus().getLongitude(),
+                planetRadius,
+                status.getStatus().getAltitude()
+        );
+
+
+        return process(new AiDataStruct(instructions, new DataDto((int) distance, bioSample.getGenus())), originalUserInput);
     }
 
-    record DataDto(double userLatitude, double userLongitude, double planetRadius, BioSampleDto bioSample) implements ToYamlConvertable {
+    record DataDto(int distanceInMeters, String genusName) implements ToYamlConvertable {
         @Override public String toYaml() {
             return YamlFactory.toYaml(this);
         }

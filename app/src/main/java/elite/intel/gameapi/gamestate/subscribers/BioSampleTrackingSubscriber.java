@@ -60,11 +60,18 @@ public class BioSampleTrackingSubscriber {
 
         // Announce only on state transition
         if (!status.isInSupercruise()) {
+            boolean inMainShip = status.isInMainShip();
+            boolean onFoot = status.isOnFoot();
+            boolean inSrv = status.isInSrv();
+            String shipname  = playerSession.getShipLoadout().getShipName();
+            String vehicle = inSrv ? "Surfece Reconginsense Vehicle" : (onFoot ? "You Are" : shipname);
+
+
             if (wasFarEnough != isFarEnough) {
                 if (isFarEnough) {
-                    EventBusManager.publish(new SensorDataEvent("You Are now far enough to take the new sample.", "Notify User: distance from previous colony is sufficient to take next sample"));
+                    EventBusManager.publish(new SensorDataEvent(vehicle+" is now far enough to take the new sample.", "Notify User: distance from previous colony is sufficient to take next sample"));
                 } else {
-                    EventBusManager.publish(new SensorDataEvent("You Are moved too close to previous colony to take new sample.", "Warn User. moved too close to previous bio from colony. we can't take bio samples here."));
+                    EventBusManager.publish(new SensorDataEvent(vehicle+" is moved too close to previous colony to take new sample. insufficient bio divercity.", "Warn User. moved too close to previous bio from colony. insufficient bio divercity."));
                 }
             }
         }

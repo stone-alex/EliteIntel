@@ -40,12 +40,15 @@ public class CodexEntryEventSubscriber {
 
 
         if (!alreadyHaveThisEntry && event.isNewEntry()) {
-            sb.append("New Codex Entry: ");
+            sb.append(" New Codex Entry: ");
         } else {
-            sb.append("Codex Entry: ");
+            sb.append(" Codex Entry: ");
         }
-        sb.append("Name: ");
-        sb.append(event.getNameLocalised());
+        sb.append(" Name: ");
+        String[] split = event.getNameLocalised().split("-");
+        sb.append(split[0]).append(", variant ").append(split[1]).append(", ");
+        sb.append(" Category: ");
+        sb.append(event.getSubCategoryLocalised()).append(". ");
 
         if (bioSampleDistance > 0 && !alreadyHaveThisEntry) {
             sb.append(" Minimum distance between samples for collection: ").append(bioSampleDistance).append(" meters. ");
@@ -83,7 +86,7 @@ public class CodexEntryEventSubscriber {
                         0
                 );
                 if (genus != null && isNameMatched && distanceFromPreviousSample < bioSampleDistance) {
-                    sb.append(" WARNING: Codex entry too proximate to previous sample of same genus (insufficient separation)!");
+                    sb.append(" WARNING: Codex entry too proximate to previous sample of same genus- insufficient separation for sample diversity!");
                     break;
                 }
             }
@@ -92,7 +95,7 @@ public class CodexEntryEventSubscriber {
         if(playerSession.isDiscoveryAnnouncementOn()) {
             String instructions = """
             Codex entry added to database. Notify User.
-            DO NOT INVENT ANY DATA.
+            Do not append any extra data. Be breaf. Only facts, no speculation.
             Spell out numerals. Round rewards in credits to nearest million.
             """;
             EventBusManager.publish(new SensorDataEvent(sb.toString(), instructions));

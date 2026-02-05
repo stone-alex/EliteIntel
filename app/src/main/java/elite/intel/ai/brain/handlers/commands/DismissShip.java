@@ -22,6 +22,7 @@ public class DismissShip extends CommandOperator implements CommandHandler {
             operateKeyboard(BINDING_UI_LEFT.getGameBinding(), 0);
             operateKeyboard(BINDING_UI_UP.getGameBinding(), 0);
             operateKeyboard(BINDING_ACTIVATE.getGameBinding(), 0);
+            operateKeyboard(BINDING_EXIT_KEY.getGameBinding(), 0);
         } else {
             EventBusManager.publish("Unable to comply.");
         }

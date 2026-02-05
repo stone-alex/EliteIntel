@@ -39,6 +39,7 @@ public class AnalyzePlayerProfile extends BaseQueryAnalyzer implements QueryHand
                 If no question is asked, provide a summary of the player's progression.
                     - timePledge provided in seconds, convert it to hours and minutes.
                     - powerRank is just a numeric value
+                    - distances in light years
                     - all other ranks are provided in percentage, 0 means no progress, 99 means 99% to next rank.
                 """;
         return process(

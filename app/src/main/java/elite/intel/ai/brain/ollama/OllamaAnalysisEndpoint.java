@@ -45,7 +45,7 @@ public class OllamaAnalysisEndpoint extends AiEndPoint implements AiAnalysisInte
 
             JsonObject userMsg = new JsonObject();
             userMsg.addProperty("role", AIConstants.ROLE_USER);
-            userMsg.addProperty("content", struct.getData().toYaml());
+            userMsg.addProperty("content", originalUserInput+" here is the data: "+struct.getData().toYaml());
 
             JsonArray messages = new JsonArray();
             messages.add(systemMsg1);

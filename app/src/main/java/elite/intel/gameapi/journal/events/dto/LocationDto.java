@@ -689,7 +689,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setBioSignals(int bioSignals) {
-        if (this.bioSignals > 0) { // do not override to 0 on bad data.
+        if (bioSignals > 0) { // do not override to 0 on bad data.
             this.bioSignals = bioSignals;
         }
     }
@@ -699,7 +699,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setGeoSignals(int geoSignals) {
-        if (this.geoSignals > 0) return; //do not overridde
+        if (geoSignals > 0) return; //do not overridde
         this.geoSignals = geoSignals;
     }
 

@@ -24,7 +24,7 @@ public enum Queries {
     EXPLORATION_PROFITS                 ("query_expobiology_and_exploration_profits",   AnalyzeExplorationProfitsHandler.class),
     CURRENT_LOCATION                    ("query_current_location_analysis",             AnalyzeCurrentLocationHandler.class),
     SHIP_FUEL_STATUS                    ("query_ship_fuel_status",                      AnalyzeFuelStatusHandler.class),
-    FSD_TARGET_ANALYSIS                 ("query_analyse_selected_target",               AnalyzeFsdTargetHandler.class),
+    FSD_TARGET_ANALYSIS                 ("query_analyse_selected_jump_destination",     AnalyzeFsdTargetHandler.class),
     TRADE_ROUTE_ANALYSIS                ("query_trade_route_analysis",                  AnalyzeTradeRouteHandler.class),
     LOCAL_OUTFITTING                    ("query_local_outfitting",                      AnalyzeLocalOutfittingHandler.class),
     LOCAL_SHIPYARD                      ("query_local_shipyard",                        AnalyzeShipyardHandler.class),

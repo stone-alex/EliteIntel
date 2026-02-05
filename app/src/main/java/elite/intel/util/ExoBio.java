@@ -21,7 +21,7 @@ public class ExoBio {
         return result;
     }
 
-    public record DataDto(String genus, String species, String scanXof3) implements ToJsonConvertible {
+    public record DataDto(String genus, String species, Integer scanXof3) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }

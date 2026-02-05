@@ -9,12 +9,15 @@ import elite.intel.gameapi.journal.events.FSSBodySignalsEvent;
 import elite.intel.gameapi.journal.events.dto.BioSampleDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
-import elite.intel.util.json.GsonFactory;
-import elite.intel.util.json.ToJsonConvertible;
 import elite.intel.util.yaml.ToYamlConvertable;
 import elite.intel.util.yaml.YamlFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+
+import static elite.intel.util.StringUtls.getIntSafely;
 
 public class AnalyzeBioSignalsStarSystemHandler extends BaseQueryAnalyzer implements QueryHandler {
 
@@ -28,32 +31,21 @@ public class AnalyzeBioSignalsStarSystemHandler extends BaseQueryAnalyzer implem
 
         String instructions = """
                 You are a strict data-only responder for this query.
-                Follow these rules in exact order:
-                
-                1. Look ONLY at the two fields in the provided JSON:
+                Answer only what is user asking using this data. Do not read back the entire data set.
+                   - planetsRequireBioScans (object): shows bodies that STILL NEED bio scans (key = planet name, value = number of remaining scans needed).
                    - allCompletedBioScans (array): shows bodies where bio samples are already fully scanned
-                   - planetsRequireBioScans (object): shows bodies that STILL NEED bio scans (key = planet name, value = number of remaining scans needed)
-                
-                2. Decision logic — apply exactly:
-                   - If planetsRequireBioScans has any entry with value ≥ 1 → Answer YES, there are organics still needing scans. Name each planet and the remaining number.
-                   - Else if allCompletedBioScans is non-empty but planetsRequireBioScans is empty → Answer NO active unscanned organics remain (only completed scans exist).
-                   - Else (both empty) → Answer NO biological/organic signals detected in this system.
-                
-                3. Keep response_text extremely short (1 sentence max), factual, no enthusiasm, no extra commentary.
-                
-                Example of good short answers (for reference only — do NOT copy these literally):
-                - "Yes, planet 'ABC 1 b' still needs 2 bio scans. (name genus if available)"
-                - "No organics left to scan — all detected samples completed."
-                - "No biological signals detected."
                 """;
 
-        return process(new AiDataStruct(instructions, new DataDto(toBioSameplDataList(allCompletedBioScans), planetsRequireBioScans)), originalUserInput);
+        return process(new AiDataStruct(instructions, new DataDto(planetsRequireBioScans, toBioSameplDataList(allCompletedBioScans))), originalUserInput);
     }
 
     private List<BioSampleData> toBioSameplDataList(List<BioSampleDto> allCompletedBioScans) {
         LinkedList<BioSampleData> result = new LinkedList<>();
-        for(BioSampleDto data: allCompletedBioScans){
-            result.add(new BioSampleData(data.getPlanetShortName(), data.getGenus(), data.getSpecies(), data.getScanXof3(), data.isBioSampleCompleted(), data.isOurDiscovery()));
+        for (BioSampleDto data : allCompletedBioScans) {
+            Integer numScans = data.getScanXof3();
+            if (numScans != null && numScans < 3) {
+                result.add(new BioSampleData(data.getPlanetShortName(), data.getGenus(), data.getSpecies(), 3 - numScans));
+            }
         }
         return result;
     }
@@ -74,9 +66,9 @@ public class AnalyzeBioSignalsStarSystemHandler extends BaseQueryAnalyzer implem
                 }
             }
             if (bioSignalCounter > 0) {
-                result.add(new PlanetsToScan(location.getPlanetName(), bioSignalCounter - numCompletedSamples));
+                result.add(new PlanetsToScan(location.getPlanetShortName(), bioSignalCounter - numCompletedSamples));
             } else if (location.getBioSignals() != numCompletedSamples) {
-                result.add(new PlanetsToScan(location.getPlanetName(), location.getBioSignals() - numCompletedSamples));
+                result.add(new PlanetsToScan(location.getPlanetShortName(), location.getBioSignals() - numCompletedSamples));
             }
 
         }
@@ -94,13 +86,13 @@ public class AnalyzeBioSignalsStarSystemHandler extends BaseQueryAnalyzer implem
         return result;
     }
 
-    record DataDto(List<BioSampleData> allCompletedBioScans, List<PlanetsToScan> planetsRequireBioScans) implements ToYamlConvertable {
+    record DataDto(List<PlanetsToScan> planetsRequireBioScans, List<BioSampleData> allCompletedBioScans) implements ToYamlConvertable {
         @Override public String toYaml() {
             return YamlFactory.toYaml(this);
         }
     }
 
-    record BioSampleData(String planetShortName, String genus,  String species, String scanXof3, boolean bioSampleCompleted, boolean ourDiscovery) implements ToYamlConvertable {
+    record BioSampleData(String planetShortName, String genus, String species, Integer samplesRequired) implements ToYamlConvertable {
         @Override public String toYaml() {
             return YamlFactory.toYaml(this);
         }

@@ -23,7 +23,7 @@ public class BioSampleDto extends BaseJsonDto implements ToJsonConvertible, ToYa
     private boolean playerFarEnough;
     private boolean bioSampleCompleted;
     private String species;
-    private String scanXof3;
+    private Integer scanXof3;
 
     public long getBodyId() {
         return bodyId;
@@ -98,11 +98,11 @@ public class BioSampleDto extends BaseJsonDto implements ToJsonConvertible, ToYa
         this.payout = payout;
     }
 
-    public String getScanXof3() {
+    public Integer getScanXof3() {
         return scanXof3;
     }
 
-    public void setScanXof3(String scanXof3) {
+    public void setScanXof3(Integer scanXof3) {
         this.scanXof3 = scanXof3;
     }
 

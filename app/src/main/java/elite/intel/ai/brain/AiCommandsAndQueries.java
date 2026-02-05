@@ -180,7 +180,7 @@ public class AiCommandsAndQueries {
         Map<String, String> queryMap = new HashMap<>();
         queryMap.put(" query check missing bindings", KEY_BINDINGS_ANALYSIS.getAction());
         queryMap.put(" query help with, how can I..., explain how to... ", HELP.getAction());
-        queryMap.put(" query organics/biology in star system ", BIO_SAMPLE_IN_STAR_SYSTEM.getAction());
+        queryMap.put(" query stellar objects that bio/organic scans required/completed ", BIO_SAMPLE_IN_STAR_SYSTEM.getAction());
         queryMap.put(" query orgranics/biology this planet/moon/location ", EXOBIOLOGY_SAMPLES.getAction());
         queryMap.put(" query stellar objects analysis, landable planets/moons", QUERY_STELLAR_OBJETS.getAction());
         queryMap.put(" query, signals ", QUERY_STELLAR_SIGNALS.getAction());
@@ -196,7 +196,7 @@ public class AiCommandsAndQueries {
         queryMap.put(" query exploration profits ", EXPLORATION_PROFITS.getAction());
         queryMap.put(" query current location data ", CURRENT_LOCATION.getAction());
         queryMap.put(" query ship fuel level ", SHIP_FUEL_STATUS.getAction());
-        queryMap.put(" query analyze selected target ", FSD_TARGET_ANALYSIS.getAction());
+        queryMap.put(" query analyze selected destination ", FSD_TARGET_ANALYSIS.getAction());
         queryMap.put(" query ship plotted route", PLOTTED_ROUTE_ANALYSIS.getAction());
         queryMap.put(" query fleet carrier plotted route ", CARRIER_ROUTE_ANALYSIS.getAction());
         queryMap.put(" query trade schedule", TRADE_ROUTE_ANALYSIS.getAction());

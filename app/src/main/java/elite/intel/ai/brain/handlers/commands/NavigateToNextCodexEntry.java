@@ -47,8 +47,7 @@ public class NavigateToNextCodexEntry implements CommandHandler {
         double playerLat = status.getStatus().getLatitude();
         double playerLon = status.getStatus().getLongitude();
 
-        CodexEntryDao.CodexEntry target = findBestBioTarget(codexEntries, currentLocation.getPartialBioSamples(),
-                playerLat, playerLon, planetRadius);
+        CodexEntryDao.CodexEntry target = findBestBioTarget(codexEntries, currentLocation.getPartialBioSamples(), playerLat, playerLon, planetRadius);
 
         if (target == null) {
             EventBusManager.publish(new AiVoxResponseEvent("No Codex entries Found"));
@@ -102,14 +101,20 @@ public class NavigateToNextCodexEntry implements CommandHandler {
             String genus = entry.getEntryName().split(" ")[0];
             double distToPlayer = calculateSurfaceDistance(playerLat, playerLon, entry.getLatitude(), entry.getLongitude(), planetRadius, 0);
 
-            if (hasPartials && !genus.equalsIgnoreCase(partials.getFirst().getGenus())) {
+
+            // Check distance (no partials or not too close to any partial of the same genus)
+            boolean valid = !hasPartials || !isTooCloseToAnyPartialOfSameGenus(entry, genus, partials, planetRadius);
+            if (!valid) continue;
+
+
+            BioSampleDto partialMatch = findForGenus(genus, partials);
+            Integer scanXof3 = partialMatch == null ? null : partialMatch.getScanXof3();
+
+            if (hasPartials && scanXof3 != null && scanXof3 > 2) {
+                // scans completed, skip
                 continue;
             }
 
-            // Check if this entry is valid (not too close to any partial of same genus)
-            boolean valid = !hasPartials || !isTooCloseToAnyPartialOfSameGenus(entry, genus, partials, planetRadius);
-
-            if (!valid) continue;
 
             // If we have partials and this matches one of their genera → priority track
             if (hasPartials && partials.stream().anyMatch(p -> genus.equalsIgnoreCase(p.getGenus()))) {
@@ -130,8 +135,15 @@ public class NavigateToNextCodexEntry implements CommandHandler {
         return bestPartialMatch != null ? bestPartialMatch : bestAny;
     }
 
-    private boolean isTooCloseToAnyPartialOfSameGenus(CodexEntryDao.CodexEntry entry, String genus,
-                                                      List<BioSampleDto> partials, double planetRadius) {
+    private BioSampleDto findForGenus(String genus, List<BioSampleDto> partials) {
+        if (partials == null || partials.isEmpty()) return null;
+        return partials.stream()
+                .filter(p -> genus.equalsIgnoreCase(p.getGenus()))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private boolean isTooCloseToAnyPartialOfSameGenus(CodexEntryDao.CodexEntry entry, String genus, List<BioSampleDto> partials, double planetRadius) {
         double minAllowed = BioForms.getDistance(genus); // genus-specific min distance
 
         for (BioSampleDto partial : partials) {

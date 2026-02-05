@@ -85,14 +85,14 @@ public class ScanOrganicSubscriber {
             }
 
             BioSampleDto bioSampleDto = createBioSampleDto(genus, species, isOurDiscovery);
-            bioSampleDto.setScanXof3("1");
+            bioSampleDto.setScanXof3(1);
             currentLocation.addBioScan(bioSampleDto);
             announce(sb.toString());
 
         } else if (scan2.equalsIgnoreCase(scanType)) {
             BioSampleDto bioSampleDto = createBioSampleDto(genus, species, isOurDiscovery);
             currentLocation.addBioScan(bioSampleDto);
-            bioSampleDto.setScanXof3("2");
+            bioSampleDto.setScanXof3(2);
             announce("Scan for genus \"" + genus + "\" logged. ");
         } else if (scan3.equalsIgnoreCase(scanType)) {
             sb = new StringBuilder();
@@ -105,7 +105,7 @@ public class ScanOrganicSubscriber {
 
             bioSampleDto.setPayout(payment);
             bioSampleDto.setFistDiscoveryBonus(firstDiscoveryBonus);
-            bioSampleDto.setScanXof3("3");
+            bioSampleDto.setScanXof3(3);
             bioSampleDto.setBioSampleCompleted(true);
             bioSampleDto.setOurDiscovery(currentLocation.isOurDiscovery());
             playerSession.addBioSample(bioSampleDto);

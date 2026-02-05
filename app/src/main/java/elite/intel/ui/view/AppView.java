@@ -38,13 +38,14 @@ public class AppView extends JFrame implements AppViewInterface {
     private static final Color LOG_BG = new Color(0x141622); // base background
     private static final Color BG_PANEL = new Color(0x1F2032); // panels/inputs background
     private static final Color FG = new Color(0xE6E6E6); // primary text
+    private static final Color BUTTON_FG = new Color(0x489FF6); // primary text
     private static final Color FG_MUTED = new Color(0xB0B0B0); // secondary text
     private static final Color ACCENT = new Color(0xFF8C00); // orange
     private static final Color CONSOLE_FG = new Color(0xE0FFEF); // orange
     private static final Color SEL_BG = new Color(0xE0FFEF); // selection background
     private static final Color SEL_FG = new Color(0x13181D); // selection background
     private static final Color TAB_UNSELECTED = new Color(0x141622);
-    private static final Color TAB_SELECTED = new Color(0x1F2032);
+    private static final Color TAB_SELECTED = new Color(0x141622);
     private static final Color DISABLED_FG = new Color(0x8B0101);
     private static final String ICON_AI = "/images/ai.png";
     private static final String ICON_PLAYER = "/images/controller.png";
@@ -209,8 +210,8 @@ public class AppView extends JFrame implements AppViewInterface {
         UIManager.put("TabbedPane.contentAreaColor", BG);
         UIManager.put("Label.foreground", FG);
         UIManager.put("CheckBox.foreground", FG);
-        UIManager.put("RadioButton.foreground", FG);
-        UIManager.put("Button.foreground", FG);
+        UIManager.put("RadioButton.foreground", BUTTON_FG);
+        UIManager.put("Button.foreground", BUTTON_FG);
         UIManager.put("Button.background", BG_PANEL);
         UIManager.put("ScrollPane.background", BG);
         UIManager.put("Viewport.background", BG);
@@ -898,10 +899,10 @@ public class AppView extends JFrame implements AppViewInterface {
         // Buttons
         if (c instanceof JButton b) {
             b.setBackground(BG_PANEL);
-            b.setForeground(FG);
+            b.setForeground(BUTTON_FG);
             b.setFocusPainted(false);
             b.setBorder(BorderFactory.createCompoundBorder(
-                    new LineBorder(ACCENT, 1, true),
+                    new LineBorder(BUTTON_FG, 1, true),
                     new EmptyBorder(6, 10, 6, 10)
             ));
         }
@@ -1070,10 +1071,10 @@ public class AppView extends JFrame implements AppViewInterface {
         b.setOpaque(false);
         b.setContentAreaFilled(false);
         b.setFocusPainted(false);
-        b.setForeground(FG);
+        b.setForeground(BUTTON_FG);
         b.setBackground(BG);
         b.setBorder(BorderFactory.createCompoundBorder(
-                new LineBorder(ACCENT, 1, true),
+                new LineBorder(BUTTON_FG, 1, true),
                 new EmptyBorder(6, 12, 6, 12)
         ));
     }
@@ -1109,10 +1110,9 @@ public class AppView extends JFrame implements AppViewInterface {
             }
 
             @Override
-            protected void paintTabBorder(Graphics g, int tabPlacement, int tabIndex,
-                                          int x, int y, int w, int h, boolean isSelected) {
+            protected void paintTabBorder(Graphics g, int tabPlacement, int tabIndex, int x, int y, int w, int h, boolean isSelected) {
                 if (isSelected) {
-                    g.setColor(ACCENT);
+                    g.setColor(BUTTON_FG);
                     g.fillRect(x, y + h - 3, w, 3); // accent underline
                 }
             }
@@ -1148,6 +1148,7 @@ public class AppView extends JFrame implements AppViewInterface {
             SleepNoThrow.sleep(1000);
             isServiceRunning.set(event.isRunning());
             startStopServicesButton.setText(event.isRunning() ? "Stop Services" : "Start Services");
+            startStopServicesButton.setForeground(BUTTON_FG);
             startStopServicesButton.setEnabled(true);
             recalibrateAudioButton.setEnabled(event.isRunning());
             togglePrivacyModeCheckBox.setEnabled(event.isRunning());

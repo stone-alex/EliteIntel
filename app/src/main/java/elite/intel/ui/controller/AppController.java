@@ -11,10 +11,7 @@ import elite.intel.ai.hands.KeyBindCheck;
 import elite.intel.ai.mouth.AiVoices;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
-import elite.intel.gameapi.AuxiliaryFilesMonitor;
-import elite.intel.gameapi.DeferredNotificationMonitor;
-import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.JournalParser;
+import elite.intel.gameapi.*;
 import elite.intel.gameapi.journal.MissingMissionMonitor;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
@@ -320,16 +317,25 @@ public class AppController implements Runnable {
         String mission_statement = playerSession.getPlayerMissionStatement();
         playerSession.setPlayerMissionStatement(mission_statement);
 
-        if (!systemSession.isRunningPiperTts()) {
+        if (!systemSession.useLocalTTS()) {
             appendToLog("Available voices:\n" + listVoices());
         }
-        if (!systemSession.isRunningLocalLLM() && !systemSession.isRunningPiperTts()) {
+        if (!systemSession.useLocalQueryLlm() && !systemSession.isRunningPiperTts()) {
             appendToLog("Available personalities:\n" + listPersonalities());
             appendToLog("Available profiles:\n" + listCadences());
         }
 
         isRunning.set(true);
         EventBusManager.publish(new ServicesStateEvent(true));
+
+        Timer connectionCheckTimer = new Timer(2000, e -> {
+            EventBusManager.publish(new AiVoxResponseEvent("Checking LLM Connection..."));
+            EventBusManager.publish(new UserInputEvent("Verify LLM Connection", 100f));
+        });
+        connectionCheckTimer.setRepeats(false);
+        connectionCheckTimer.start();
+        
+        
         KeyBindCheck.getInstance().check();
     }
 

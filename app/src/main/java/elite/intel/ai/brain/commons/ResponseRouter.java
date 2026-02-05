@@ -145,7 +145,10 @@ public class ResponseRouter implements AIRouterInterface {
 
     protected void handleCommand(String action, JsonObject params, String responseText) {
         EventBusManager.publish(new AppLogEvent("Processing action: " + action + " with params: " + params.toString()));
-        EventBusManager.publish(new AiVoxResponseEvent("%s, %s ".formatted(StringUtls.affirmative(), StringUtls.player(playerSession))));
+        if(!"verify_llm_connection_command".equalsIgnoreCase(action)){
+            EventBusManager.publish(new AiVoxResponseEvent("%s, %s ".formatted(StringUtls.affirmative(), StringUtls.player(playerSession))));
+        }
+
         CommandHandler handler = getCommandHandlers().get(action);
         if (handler == null) {
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("command not found"));

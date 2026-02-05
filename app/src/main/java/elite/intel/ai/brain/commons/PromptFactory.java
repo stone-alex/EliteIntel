@@ -33,47 +33,27 @@ public class PromptFactory implements AiPromptFactory {
         StringBuilder sb = new StringBuilder();
         AICadence aiCadence = systemSession.getAICadence();
         AIPersonality aiPersonality = systemSession.getAIPersonality();
-        sb.append("YOU ARE ").append(aiName()).append(" - A COMMAND PARSER IN A SCI-FI SIMULATION.");
+        sb.append("YOU ARE ").append(aiName());
         sb.append("""
-                        You are provided with limited map of concepts mapped to commands and queries presented to you as actions.
-                        Infer meaning from user input and match to either command action or query action choosing one from the mapping below.
+                - STRICT COMMAND PARSER. YOUR ONLY JOB IS TO PICK EXACTLY ONE ACTION FROM THE LIST BELOW. NOTHING ELSE.
                 
-                        **CRITICAL:** YOUR ONLY JOB IS TO SELECT EXACTLY ONE **EXTREMELY HIGHLY PROBABLE** action FROM THE LISTS BELOW.
-                        INVENTING, MODIFYING or COMBINING actions results in IMMIDIATE FAILURE.
-                        Do NOT try to be helpful by guessing or inventing actions.
+                CRITICAL RULES - BREAKING ANY = TOTAL FAILURE:
+                - NEVER invent, modify, combine, or create new actions or parameters.
+                - NEVER be "helpful" by guessing.
+                - If ZERO good match → action = "general_conversation" and type = "query"
+                - ONLY use action names EXACTLY as written in the lists below.
+                - ONLY use parameter keys/values that appear in the command/query template.
                 
-                        - IF no good probable match is found map to action -> general_conversation
+                Map of allowed actions:
+                """);
 
-                        NEVER MAP ANYTHING TO TRADE UNLESS WORD TRADE IS PRESENT IN USER INPUT.
-                        NEVER MAP ANYTHING TO CARRIER UNLESS WORD CARRIER IS PRESENT IN USER INPUT.
-                        NEVER MAP ANYTHING TO BIO or ORGANIC UNLESS WORDS BIO or ORGANIC ARE PRESENT IN USER INPUT.
-                """);
-        sb.append("""
-                Some actions have parameter templates.
-                Do not invent or construct new action parameter. Use templates
-                Adhere strictly to provided lists.
-                    - IF user input is a call to action (get, set, plot, locate, find, toggle etc.) it is a command.
-                    - IF user input is a question (where, analyse, check, lookup) it is a query.
-                IF NOT MATHC FOUND MAP action to general_conversation
-                Supported COMMANDS: patterns, concepts, and formulations -> ACTION_NAME (use ONLY these action names):
-                """);
-        sb.append(" Output using the following JSON FORMAT: ").append(JSON_FORMAT);
-        sb.append(" Map of concepts to actions: ");
-        sb.append(" Always return empty response_text for these actions: ");
         sb.append(commandsAndQueries.getCommandMap());
         sb.append("""
                 Supported QUERIES: patterns, concepts, and formulations -> ACTION_NAME (use ONLY these action names):
                 """);
         sb.append(commandsAndQueries.getQueries());
-        sb.append("""                
-                OUTPUT FORMAT - MUST BE EXACTLY THIS JSON - NOTHING ELSE:
-                {
-                  "type": "command" | "query",
-                  "response_text": "only in case no matching command or query found.",
-                  "action": "EXACT_ACTION_NAME_FROM_LIST_ABOVE",
-                  "params": {} | {"key": "value"} | {"state": true|false} | {"key": "value", ...}
-                }
-                
+        sb.append(" output in the following format ").append(JSON_FORMAT);
+        sb.append("""
                 PARAMS RULES - DO NOT DEVIATE:
                 • Use ONLY the exact key names and types shown in the command's template
                 • If no template → return empty {}
@@ -83,6 +63,8 @@ public class PromptFactory implements AiPromptFactory {
                   - "lights on"                         → {"state": true}
                   - "find gold within 80 ly"            → {"key": "gold", "max_distance":"80"}
                 """);
+
+
         if (!systemSession.useLocalQueryLlm() && !systemSession.isRunningPiperTts()) {
             sb.append(" Behavior: ");
             sb.append(aiPersonality.getBehaviorClause());

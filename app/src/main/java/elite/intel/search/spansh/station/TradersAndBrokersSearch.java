@@ -75,7 +75,7 @@ public class TradersAndBrokersSearch {
         List<TraderAndBrokerSearchDto.Result> results = SearchForMaterialBrokerOrTrader.findMaterialTrader(criteria);
 
         if (results == null || results.isEmpty()) {
-            EventBusManager.publish(new AiVoxResponseEvent("No raw material traders found."));
+            EventBusManager.publish(new AiVoxResponseEvent("Suitable match found."));
             return null;
         }
 

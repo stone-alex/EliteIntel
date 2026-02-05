@@ -152,6 +152,7 @@ public enum Commands {
     WING_NAV_LOCK                                       ("lock_on_wingman", BINDING_WING_NAV_LOCK.getGameBinding(), GenericGameControlHandler.class),
     LIST_AVAILABLE_VOICES                               ("list_available_voices", null,  ListAvailableVoices.class),
     CLEAR_REMINDERS                                     ("clear_reminders", null, CleareReminderHandler.class),
+    CONNECTION_CHECK                                    ("verify_llm_connection_command", null, ConnectionCheck.class),
     ;
 
     ///

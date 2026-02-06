@@ -18,6 +18,7 @@ public class PromptFactory implements AiPromptFactory {
             {"type": "command|query", "response_text": "TTS output", "action": "action_name|query_name", "params": {"key": "value"}, "expect_followup": boolean}
             action must match provided command or query. They key for value is always 'key'. 
             """;
+    public static final String AMY = "Amy";
     private final SystemSession systemSession = SystemSession.getInstance();
     private final AiCommandsAndQueries commandsAndQueries = AiCommandsAndQueries.getInstance();
 
@@ -197,6 +198,6 @@ public class PromptFactory implements AiPromptFactory {
     }
 
     private String aiName() {
-        return systemSession.useLocalTTS() ? "Amelia" : systemSession.getAIVoice().getName();
+        return systemSession.useLocalTTS() ? AMY : systemSession.getAIVoice().getName();
     }
 }

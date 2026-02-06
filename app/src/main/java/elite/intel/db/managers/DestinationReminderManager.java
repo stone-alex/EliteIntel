@@ -23,7 +23,7 @@ public final class DestinationReminderManager {
     }
 
 
-    public String getReminderAsJson() {
+    public String getReminderText() {
         return Database.withDao(DestinationReminderDao.class, dao -> {
             DestinationReminderDao.Destination destination = dao.get();
             if (destination == null) return null;
@@ -31,10 +31,10 @@ public final class DestinationReminderManager {
         });
     }
 
-    public void setDestination(String json) {
+    public void setDestination(String text) {
         Database.withDao(DestinationReminderDao.class, dao -> {
             DestinationReminderDao.Destination data = new DestinationReminderDao.Destination();
-            data.setJson(json);
+            data.setJson(text);
             dao.save(data);
             return null;
         });

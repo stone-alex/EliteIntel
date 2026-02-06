@@ -66,8 +66,9 @@ public class FindMiningSiteHandler extends CommandOperator implements CommandHan
         if (result.isPresent()) {
             RoutePlotter routePlotter = new RoutePlotter(this.controller);
             routePlotter.plotRoute(result.get().getSystemName());
-            DestinationReminderManager.getInstance().setDestination(result.get().toJson());
-            EventBusManager.publish(new AiVoxResponseEvent("Found nearest mining location in " + result.get().getSystemName() + " system head to planet " + result.get().getBodyName()));
+            String reminder = "Found nearest mining location in " + result.get().getSystemName() + " system head to planet " + result.get().getBodyName();
+            DestinationReminderManager.getInstance().setDestination(reminder);
+            EventBusManager.publish(new AiVoxResponseEvent(reminder));
         } else {
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("No mining sites found within range."));
         }

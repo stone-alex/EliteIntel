@@ -92,7 +92,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public LocationDto(Long bodyId, Long systemAddress) {
-        setBodyId(bodyId == null ? -1L: bodyId);
+        setBodyId(bodyId == null ? -1L : bodyId);
         setSystemAddress(systemAddress == null ? -1L : systemAddress);
     }
 
@@ -246,7 +246,7 @@ public class LocationDto implements ToJsonConvertible {
         this.planetName = planetName;
         if (starName != null && planetShortName == null) {
             this.planetShortName = StringUtls.subtractString(planetName, starName);
-            if(this.planetShortName.toLowerCase(Locale.ROOT).contains("ring")){
+            if (this.planetShortName.toLowerCase(Locale.ROOT).contains("ring")) {
                 setLocationType(LocationType.PLANETARY_RING);
             }
         }
@@ -266,7 +266,11 @@ public class LocationDto implements ToJsonConvertible {
         if (this.saaSignals == null) {
             signals = new ArrayList<>();
         }
-        this.saaSignals.addAll(signals);
+        if (this.saaSignals != null) {
+            this.saaSignals.addAll(signals);
+        } else {
+            this.saaSignals = signals;
+        }
     }
 
     public List<GenusDto> getGenus() {

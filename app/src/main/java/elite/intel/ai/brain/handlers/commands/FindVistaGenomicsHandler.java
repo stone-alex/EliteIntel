@@ -59,8 +59,10 @@ public class FindVistaGenomicsHandler extends CommandOperator implements Command
         Optional<VistaGenomicsLocationDto.Result> first = results.stream().findFirst();
         RoutePlotter routePlotter = new RoutePlotter(this.controller);
         VistaGenomicsLocationDto.Result result = first.get();
-        DestinationReminderManager.getInstance().setDestination(result.toJson());
-        EventBusManager.publish(new MissionCriticalAnnouncementEvent("Head to " + result.getSystemName() + " star system. When you get there looks for" + result.getStationName()));
+
+        String reminder = "Head to " + result.getSystemName() + " star system. When you get there looks for" + result.getStationName();
+        DestinationReminderManager.getInstance().setDestination(reminder);
+        EventBusManager.publish(new MissionCriticalAnnouncementEvent(reminder));
         routePlotter.plotRoute(result.getSystemName());
     }
 }

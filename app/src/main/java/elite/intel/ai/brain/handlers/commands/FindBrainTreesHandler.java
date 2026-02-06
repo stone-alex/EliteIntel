@@ -3,7 +3,6 @@ package elite.intel.ai.brain.handlers.commands;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
-import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.FuzzySearch;
 import elite.intel.db.dao.LocationDao;
@@ -65,7 +64,7 @@ public class FindBrainTreesHandler extends CommandOperator implements CommandHan
             plotter.plotRoute(result.getSystemName());
             DestinationReminderManager.getInstance()
                     .setDestination(
-                            new DataDto(result.getSystemName(), result.getBodyName()).toJson()
+                            "Head to " + result.getSystemName() + " planet " + result.getBodyName()
                     );
         }
     }

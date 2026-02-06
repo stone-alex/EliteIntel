@@ -11,8 +11,6 @@ import elite.intel.gameapi.journal.events.dto.BioSampleDto;
 import elite.intel.gameapi.journal.events.dto.GenusDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
-import elite.intel.util.json.GsonFactory;
-import elite.intel.util.json.ToJsonConvertible;
 import elite.intel.util.yaml.ToYamlConvertable;
 import elite.intel.util.yaml.YamlFactory;
 
@@ -29,9 +27,9 @@ public class AnalyzeExplorationProfitsHandler extends BaseQueryAnalyzer implemen
         EventBusManager.publish(new AiVoxResponseEvent("Analyzing exploration data... Stand by..."));
 
         String instructions = """
-                Use this data to provide answers on potential exo-biology exploration profits.
-                potentialProfit is a sum of payments user can receive this session (could have)
-                acquiredProfit is a sum of all payments user actually acquired this session. (will have)
+                Use this data to provide answers on potential exo-biology exploration profits in credits.
+                potentialProfit is a sum of credits user can receive this session (could have)
+                acquiredProfit is a sum of all credits user actually acquired this session. (will have)
                 """;
         return process(
                 new AiDataStruct(
@@ -60,7 +58,7 @@ public class AnalyzeExplorationProfitsHandler extends BaseQueryAnalyzer implemen
         for (LocationDto dto : stellarObjects) {
             List<GenusDto> genus = dto.getGenus();
             for (GenusDto g : genus) {
-                result = result + g.getRewardInCredits() + g.getBonusForFirstDiscovery();
+                result = result + g.getRewardInCredits() + g.getBonusCreditsForFirstDiscovery();
             }
         }
         return result;

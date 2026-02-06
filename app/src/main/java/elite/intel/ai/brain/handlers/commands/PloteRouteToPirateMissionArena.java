@@ -2,14 +2,11 @@ package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
-import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.managers.DestinationReminderManager;
 import elite.intel.db.managers.MissionManager;
 import elite.intel.db.managers.PirateMissionDataManager;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.util.json.GsonFactory;
-import elite.intel.util.json.ToJsonConvertible;
 
 import java.util.Optional;
 
@@ -42,14 +39,9 @@ public class PloteRouteToPirateMissionArena extends CommandOperator implements C
 
         RoutePlotter plotter = new RoutePlotter(this.controller);
         plotter.plotRoute(starSystemForFactionName);
-        DestinationReminderManager.getInstance().setDestination(
-                new DataDto(starSystemForFactionName).toJson()
-        );
-    }
 
-    record DataDto(String starSystem) implements ToJsonConvertible{
-        @Override public String toJson() {
-            return GsonFactory.getGson().toJson(this);
-        }
+        DestinationReminderManager.getInstance().setDestination(
+                starSystemForFactionName
+        );
     }
 }

@@ -45,12 +45,22 @@ public class MarketSellEventSubscriber {
                 sb.append(" Sell at ").append(destinationSystem).append(", ").append(destinationStation).append(" port.");
             }
 
+            StringBuilder reminder = new StringBuilder();
+            reminder.append("We are on leg ")
+                    .append(nextStop.getLegNumber())
+                    .append(", heading to ")
+                    .append(nextStop.getTradeStopDto().getDestinationSystem()).append(", ")
+                    .append(nextStop.getTradeStopDto().getDestinationStation())
+                    .append(", to trade ")
+                    .append(nextStop.getTradeStopDto()
+                            .getCommodities().size())
+                    .append(" commodities.");
 
-            EventBusManager.publish(new AiVoxResponseEvent(sb.toString()));
+
+
+            EventBusManager.publish(new AiVoxResponseEvent(reminder.toString()));
             reminderManager.setDestination(
-                    new MarketSellEventSubscriber.Reminder(
-                            nextStop.getLegNumber(), nextStop.getTradeStopDto(), nextStop.getTradeStopDto().getCommodities()
-                    ).toJson()
+                    reminder.toString()
             );
         } else {
             reminderManager.clear();

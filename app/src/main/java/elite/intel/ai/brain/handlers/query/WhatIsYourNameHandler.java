@@ -12,6 +12,6 @@ public class WhatIsYourNameHandler implements QueryHandler {
     }
 
     private String aiName() {
-        return systemSession.useLocalTTS() ? "Amelia" : systemSession.getAIVoice().getName();
+        return systemSession.useLocalTTS() ? "Amy" : systemSession.getAIVoice().getName();
     }
 }

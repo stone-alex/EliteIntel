@@ -48,7 +48,7 @@ public class AiCommandsAndQueries {
             commandMap.put(" command find where we can mine tritium " + KEY_X_WITH_DISTANCE, FIND_FLEET_CARRIER_FUEL_MINING_SITE.getAction());
             commandMap.put(" command find where we where can we buy X, within Y ly " + KEY_X_WITH_DISTANCE, FIND_COMMODITY.getAction());
             commandMap.put(" command set as home system ", SET_HOME_SYSTEM.getAction());
-            commandMap.put(" command togle radio on/off " + KEY_STATE, SET_RADIO_TRANSMISSION_MODE.getAction());
+            commandMap.put(" command toggle radio on/off " + KEY_STATE, SET_RADIO_TRANSMISSION_MODE.getAction());
             commandMap.put(" command navigate to coordinates lat/lon " + KEY_LAT_LON, NAVIGATE_TO_TARGET.getAction());
             commandMap.put(" command discovery announcements on/off " + KEY_STATE, DISCOVERY_ON_OFF.getAction());
             commandMap.put(" command mining announcements on/off " + KEY_STATE, MINING_ON_OFF.getAction());
@@ -219,7 +219,7 @@ public class AiCommandsAndQueries {
         queryMap.put(" query distance to organic, bio sample, previous bioscan ", DISTANCE_TO_LAST_BIO_SAMPLE.getAction());
         queryMap.put(" query what time is it ", TIME_IN_ZONE.getAction());
         queryMap.put(" query biome analysis for star system/planet/moon X " + KEY_X, PLANET_BIOME_ANALYSIS.getAction());
-        queryMap.put(" query reminder data ", REMINDER.getAction());
+        queryMap.put(" query access reminder data, where going, what are we doing. ", REMINDER.getAction());
         queryMap.put(" query active missions ", ANALYZE_MISSIONS.getAction());
         queryMap.put(" IF NOTHING MATCHES USE THIS ", GENERAL_CONVERSATION.getAction());
 

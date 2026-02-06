@@ -352,3 +352,4 @@
 "deploy accessory"="deploy SRV"
 "Bayou"="bio"
 "tilt up"="shields up"
+"both organics"="what organics"

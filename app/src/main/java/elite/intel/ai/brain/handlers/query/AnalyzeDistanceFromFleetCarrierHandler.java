@@ -1,18 +1,14 @@
 package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.journal.events.LoadoutEvent;
 import elite.intel.gameapi.journal.events.dto.CarrierDataDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.gameapi.journal.events.dto.shiploadout.ShipLoadOutDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.NavigationUtils;
-import elite.intel.util.json.GsonFactory;
-import elite.intel.util.json.ToJsonConvertible;
 import elite.intel.util.yaml.ToYamlConvertable;
 import elite.intel.util.yaml.YamlFactory;
 
@@ -49,19 +45,7 @@ public class AnalyzeDistanceFromFleetCarrierHandler extends BaseQueryAnalyzer im
         double jumpRange = shipLoadout == null ? -1 : shipLoadout.getMaxJumpRange();
         double distance = NavigationUtils.calculateGalacticDistance(x, y, z, carrierLocationX, carrierLocationY, carrierDataZ);
 
-        String instruction = """
-            Distance is in Light Years. 
-            If jump range is > 0 also calculate number of jumps required to reach the carrier. 
-            Jump range is in light years. 
-            Return answer like 'Distance X light ears, will take Y jumps to get there' where Y is number of jumps (not half jumps. so 1.5 jumps will be 2 jumps. always round up).
-        """;
-
-        return process(new AiDataStruct(instruction, new DataDto(distance, jumpRange, carrierLocation)), originalUserInput);
-    }
-
-    record DataDto(double distance, double jumpRange, String fleetCarrierIsLocatedAt) implements ToYamlConvertable {
-        @Override public String toYaml() {
-            return YamlFactory.toYaml(this);
-        }
+        int numberOfJumps = (int) (distance / jumpRange);
+        return process("Distance is " + (int) distance + " it will take " + numberOfJumps + " Jumps to get there.");
     }
 }

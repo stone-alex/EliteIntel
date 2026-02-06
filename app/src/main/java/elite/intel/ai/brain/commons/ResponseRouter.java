@@ -98,7 +98,7 @@ public class ResponseRouter implements AIRouterInterface {
     private void handleQuery(String action, JsonObject params, String userInput) {
         QueryHandler handler = getQueryHandlers().get(action);
         if (handler == null) {
-            EventBusManager.publish(new MissionCriticalAnnouncementEvent("command not found"));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Failed to infer action"));
             return;
         }
 

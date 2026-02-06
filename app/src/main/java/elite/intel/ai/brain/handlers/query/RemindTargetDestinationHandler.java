@@ -5,8 +5,6 @@ import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.db.dao.RouteMonetisationDao;
 import elite.intel.db.managers.DestinationReminderManager;
 import elite.intel.db.managers.MonetizeRouteManager;
-import elite.intel.util.json.GsonFactory;
-import elite.intel.util.json.ToJsonConvertible;
 import elite.intel.util.yaml.ToYamlConvertable;
 import elite.intel.util.yaml.YamlFactory;
 
@@ -18,9 +16,14 @@ public class RemindTargetDestinationHandler extends BaseQueryAnalyzer implements
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
 
-        String reminder = destinationReminder.getReminderAsJson();
+        String reminder = destinationReminder.getReminderText();
         if(reminder != null){
-            return process(reminder);
+            String instructions = """ 
+                    Use this data to remind the user where we are going, what commodity we are buying, at what port and what star system.
+                    """;
+            return process(new AiDataStruct(instructions, new  ReminderData(reminder)), originalUserInput);
+
+
         }
 
         RouteMonetisationDao.MonetisationTransaction monetizeRouteReminder = monetizeRouteManager.getTransaction();
@@ -41,6 +44,13 @@ public class RemindTargetDestinationHandler extends BaseQueryAnalyzer implements
             return process("No reminder set.");
         }
     }
+
+    record ReminderData( String data) implements ToYamlConvertable {
+        @Override public String toYaml() {
+            return YamlFactory.toYaml(this);
+        }
+    }
+
 
     record MonetizeRouteReminder(String pickupAtStation, String commodity, String dropOffLocation) implements ToYamlConvertable {
         @Override public String toYaml() {

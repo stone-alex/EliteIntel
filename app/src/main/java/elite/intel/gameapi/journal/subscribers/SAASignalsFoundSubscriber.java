@@ -61,7 +61,7 @@ public class SAASignalsFoundSubscriber {
 
             if (liveSignals > 0) {
                 location.setBioSignals(liveSignals);
-                location.setGenus(toGenusDto(event.getGenuses(), location.isOurDiscovery()));
+                location.setGenus(toGenusDto(event.getGenuses(), location.isOurDiscovery(), location.getPlanetName()));
                 boolean hasBeenScanned = scanBioCompleted(event, playerSession);
 
                 if (!hasBeenScanned) sb.append(" Exobiology signal(s) found ").append(liveSignals).append(": ");
@@ -160,16 +160,17 @@ public class SAASignalsFoundSubscriber {
         return materialDtos;
     }
 
-    private List<GenusDto> toGenusDto(List<SAASignalsFoundEvent.Genus> organics, boolean isOurDiscovery) {
+    private List<GenusDto> toGenusDto(List<SAASignalsFoundEvent.Genus> organics, boolean isOurDiscovery, String planetName) {
         ArrayList<GenusDto> result = new ArrayList<>();
         for (SAASignalsFoundEvent.Genus genus : organics) {
             GenusDto dto = new GenusDto();
             dto.setSpecies(genus.getGenusLocalised());
+            dto.setPlanetName(planetName);
             BioForms.ProjectedPayment projectedPayment = BioForms.getAverageProjectedPayment(genus.getGenusLocalised());
             if (projectedPayment != null && projectedPayment.payment() != null) {
                 dto.setRewardInCredits(projectedPayment.payment());
                 if (isOurDiscovery) {
-                    dto.setBonusForFirstDiscovery(projectedPayment.firstDiscoveryBonus());
+                    dto.setBonusCreditsForFirstDiscovery(projectedPayment.firstDiscoveryBonus());
                 }
             }
             result.add(dto);

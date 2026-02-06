@@ -33,7 +33,7 @@ public class ConnectionCheck implements CommandHandler {
         EventBusManager.publish(
                 new SensorDataEvent(
                         sb.toString(),
-                        "Acknowledge connection status"
+                        "Acknowledge connection successful. LLM Type and models (modelName:numberOfParametersInBillions)"
                 )
         );
     }

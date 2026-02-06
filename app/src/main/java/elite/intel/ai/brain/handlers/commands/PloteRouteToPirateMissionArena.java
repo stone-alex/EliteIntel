@@ -5,7 +5,7 @@ import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.managers.ReminderManager;
 import elite.intel.db.managers.MissionManager;
-import elite.intel.db.managers.PirateMissionDataManager;
+import elite.intel.db.managers.HuntingGroundManager;
 import elite.intel.gameapi.EventBusManager;
 
 import java.util.Optional;
@@ -13,7 +13,7 @@ import java.util.Optional;
 public class PloteRouteToPirateMissionArena extends CommandOperator implements CommandHandler {
 
 
-    private final PirateMissionDataManager missionDataManager = PirateMissionDataManager.getInstance();
+    private final HuntingGroundManager missionDataManager = HuntingGroundManager.getInstance();
     private final MissionManager missionManager = MissionManager.getInstance();
     private final GameController controller;
 

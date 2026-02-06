@@ -18,9 +18,11 @@ public enum Commands {
     FIND_ENCODED_MATERIAL_TRADER                        ("find_encoded_material_trader", null, FindEncodedMaterialTraderHandler.class),
     FIND_MANUFACTURED_MATERIAL_TRADER                   ("find_manufactured_material_trader", null, FindManufacturedMaterialTraderHandler.class),
 
-    FIND_HUNTING_GROUNDS                                ("find_hunting_grounds_for_pirate_massacre_missions", null,  LocatePirateHuntingGrounds.class),
+    FIND_HUNTING_GROUNDS                                ("search_for_hunting_grounds_for_pirate_massacre_missions", null,  LocatePirateHuntingGrounds.class),
     RECON_TARGET_SYSTEM                                 ("navigate_plot_reconnaissance_route_to_hunting_grounds_target_star_system", null,  ReconPirateMissionTargetSystemHandler.class),
     RECON_PROVIDER_SYSTEM                               ("navigate_plot_reconnaissance_route_to_mission_provider_system", null,  ReconMissionProviderSystemHandler.class),
+    IGNORE_HUNTING_GROUND                               ("ignore_hunting_ground", null, IgnoreHuntingGroundHandler.class),
+    CONFIRM_HUNTING_GROUND                              ("confirm_hunting_ground", null, ConfirmHuntingGroundHandler.class),
     NAVIGATE_TO_PIRATE_MISSION_TARGET_SYSTEM            ("plot_route_to_pirate_massacre_mission_target_system", null,  NavigateToPirateMassacreMissionTargetHandler.class),
 
     NAVIGATE_TO_MISSION_BATTLE_GROUND                   ("navigate_to_mission_battle_ground", null,  PloteRouteToPirateMissionArena.class),
@@ -154,6 +156,7 @@ public enum Commands {
     WING_NAV_LOCK                                       ("lock_on_wingman", BINDING_WING_NAV_LOCK.getGameBinding(), GenericGameControlHandler.class),
     LIST_AVAILABLE_VOICES                               ("list_available_voices", null,  ListAvailableVoices.class),
     CLEAR_REMINDERS                                     ("clear_reminders", null, CleareReminderHandler.class),
+    CLEAR_HUNTING_GROUNDS                               ("clear_pirate_hunting_grounds", null, ClearHuntingGroundsHandler.class),
     SET_REMINDER                                        ("set_reminder", null, SetReminderHandler.class),
     ;
 

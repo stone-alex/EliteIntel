@@ -38,7 +38,8 @@ public class AppView extends JFrame implements AppViewInterface {
     private static final Color LOG_BG = new Color(0x141622); // base background
     private static final Color BG_PANEL = new Color(0x1F2032); // panels/inputs background
     private static final Color FG = new Color(0xE6E6E6); // primary text
-    private static final Color BUTTON_FG = new Color(0x489FF6); // primary text
+    private static final Color BUTTON_FG = new Color(0xFFFFFF); // primary text
+    private static final Color BUTTON_BG = new Color(0x03529F); // primary text
     private static final Color FG_MUTED = new Color(0xB0B0B0); // secondary text
     private static final Color ACCENT = new Color(0xFF8C00); // orange
     private static final Color CONSOLE_FG = new Color(0xE0FFEF); // orange
@@ -210,9 +211,9 @@ public class AppView extends JFrame implements AppViewInterface {
         UIManager.put("TabbedPane.contentAreaColor", BG);
         UIManager.put("Label.foreground", FG);
         UIManager.put("CheckBox.foreground", FG);
-        UIManager.put("RadioButton.foreground", BUTTON_FG);
+        UIManager.put("RadioButton.foreground", BUTTON_BG);
         UIManager.put("Button.foreground", BUTTON_FG);
-        UIManager.put("Button.background", BG_PANEL);
+        UIManager.put("Button.background", BUTTON_BG);
         UIManager.put("ScrollPane.background", BG);
         UIManager.put("Viewport.background", BG);
         UIManager.put("TextField.background", BG_PANEL);
@@ -300,7 +301,7 @@ public class AppView extends JFrame implements AppViewInterface {
                 Graphics2D g2 = (Graphics2D) g.create();
                 try {
                     g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    Color base = BG_PANEL;
+                    Color base = BUTTON_BG;
                     ButtonModel m = getModel();
                     if (m.isPressed()) base = base.darker();
                     else if (m.isRollover()) base = base.brighter();
@@ -342,7 +343,7 @@ public class AppView extends JFrame implements AppViewInterface {
                 Graphics2D g2 = (Graphics2D) g.create();
                 try {
                     g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    Color base = BG_PANEL;
+                    Color base = BUTTON_BG;
                     ButtonModel m = getModel();
                     if (m.isPressed()) base = base.darker();
                     else if (m.isRollover()) base = base.brighter();
@@ -430,7 +431,7 @@ public class AppView extends JFrame implements AppViewInterface {
                 Graphics2D g2 = (Graphics2D) g.create();
                 try {
                     g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    Color base = BG_PANEL;
+                    Color base = BUTTON_BG;
                     ButtonModel m = getModel();
                     if (m.isPressed()) base = base.darker();
                     else if (m.isRollover()) base = base.brighter();
@@ -477,7 +478,7 @@ public class AppView extends JFrame implements AppViewInterface {
                 Graphics2D g2 = (Graphics2D) g.create();
                 try {
                     g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    Color base = BG_PANEL;
+                    Color base = BUTTON_BG;
                     ButtonModel m = getModel();
                     if (m.isPressed()) base = base.darker();
                     else if (m.isRollover()) base = base.brighter();
@@ -560,7 +561,7 @@ public class AppView extends JFrame implements AppViewInterface {
                 Graphics2D g2 = (Graphics2D) g.create();
                 try {
                     g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    Color base = BG_PANEL;
+                    Color base = BUTTON_BG;
                     ButtonModel m = getModel();
                     if (m.isPressed()) base = base.darker();
                     else if (m.isRollover()) base = base.brighter();
@@ -756,7 +757,7 @@ public class AppView extends JFrame implements AppViewInterface {
                 Graphics2D g2 = (Graphics2D) g.create();
                 try {
                     g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    Color base = BG_PANEL;
+                    Color base = BUTTON_BG;
                     ButtonModel m = getModel();
                     if (m.isPressed()) base = base.darker();
                     else if (m.isRollover()) base = base.brighter();
@@ -808,7 +809,7 @@ public class AppView extends JFrame implements AppViewInterface {
                 Graphics2D g2 = (Graphics2D) g.create();
                 try {
                     g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    Color base = BG_PANEL;
+                    Color base = BUTTON_BG;
                     ButtonModel m = getModel();
                     if (m.isPressed()) base = base.darker();
                     else if (m.isRollover()) base = base.brighter();
@@ -898,11 +899,11 @@ public class AppView extends JFrame implements AppViewInterface {
 
         // Buttons
         if (c instanceof JButton b) {
-            b.setBackground(BG_PANEL);
+            b.setBackground(BUTTON_BG);
             b.setForeground(BUTTON_FG);
             b.setFocusPainted(false);
             b.setBorder(BorderFactory.createCompoundBorder(
-                    new LineBorder(BUTTON_FG, 1, true),
+                    new LineBorder(BUTTON_BG, 1, true),
                     new EmptyBorder(6, 10, 6, 10)
             ));
         }
@@ -1071,10 +1072,10 @@ public class AppView extends JFrame implements AppViewInterface {
         b.setOpaque(false);
         b.setContentAreaFilled(false);
         b.setFocusPainted(false);
-        b.setForeground(BUTTON_FG);
-        b.setBackground(BG);
+        b.setForeground(FG);
+        b.setBackground(BUTTON_BG);
         b.setBorder(BorderFactory.createCompoundBorder(
-                new LineBorder(BUTTON_FG, 1, true),
+                new LineBorder(BUTTON_BG, 1, true),
                 new EmptyBorder(6, 12, 6, 12)
         ));
     }
@@ -1112,7 +1113,7 @@ public class AppView extends JFrame implements AppViewInterface {
             @Override
             protected void paintTabBorder(Graphics g, int tabPlacement, int tabIndex, int x, int y, int w, int h, boolean isSelected) {
                 if (isSelected) {
-                    g.setColor(BUTTON_FG);
+                    g.setColor(BUTTON_BG);
                     g.fillRect(x, y + h - 3, w, 3); // accent underline
                 }
             }
@@ -1149,6 +1150,7 @@ public class AppView extends JFrame implements AppViewInterface {
             isServiceRunning.set(event.isRunning());
             startStopServicesButton.setText(event.isRunning() ? "Stop Services" : "Start Services");
             startStopServicesButton.setForeground(BUTTON_FG);
+            startStopServicesButton.setBackground(BUTTON_BG);
             startStopServicesButton.setEnabled(true);
             recalibrateAudioButton.setEnabled(event.isRunning());
             togglePrivacyModeCheckBox.setEnabled(event.isRunning());

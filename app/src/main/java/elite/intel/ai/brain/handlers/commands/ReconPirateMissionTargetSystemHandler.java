@@ -3,12 +3,12 @@ package elite.intel.ai.brain.handlers.commands;
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
-import elite.intel.db.dao.PirateFactionDao.PirateFaction;
+import elite.intel.db.dao.PirateHuntingGroundsDao.HuntingGround;
 import elite.intel.db.dao.PirateMissionProviderDao.MissionProvider;
 import elite.intel.db.managers.ReminderManager;
 import elite.intel.db.managers.LocationManager;
-import elite.intel.db.managers.PirateMissionDataManager;
-import elite.intel.db.managers.PirateMissionDataManager.PirateMissionTuple;
+import elite.intel.db.managers.HuntingGroundManager;
+import elite.intel.db.managers.HuntingGroundManager.PirateMissionTuple;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
@@ -25,12 +25,12 @@ public class ReconPirateMissionTargetSystemHandler extends CommandOperator imple
     }
 
     @Override public void handle(String action, JsonObject params, String responseText) {
-        PirateMissionDataManager manager = PirateMissionDataManager.getInstance();
+        HuntingGroundManager manager = HuntingGroundManager.getInstance();
         LocationManager locationManager = LocationManager.getInstance();
-        List<PirateMissionTuple<PirateFaction, List<MissionProvider>>> huntingGrounds = manager.findInRangeForRecon(locationManager.getGalacticCoordinates(), 100);
+        List<PirateMissionTuple<HuntingGround, List<MissionProvider>>> huntingGrounds = manager.findTargetSystemInRangeForRecon(locationManager.getGalacticCoordinates());
 
-        PirateFaction target = huntingGrounds.stream().filter(
-                data -> data.getTarget().getTargetFaction() == null
+        HuntingGround target = huntingGrounds.stream().filter(
+                data -> data.getTarget().getTargetFaction() == null && !data.getTarget().isHasResSite()
         ).findFirst().map(PirateMissionTuple::getTarget).orElse(null);
 
         if (target == null) {
@@ -39,18 +39,20 @@ public class ReconPirateMissionTargetSystemHandler extends CommandOperator imple
         }
 
         String starSystem = target.getStarSystem();
-        RoutePlotter plotter = new RoutePlotter(this.controller);
-        plotter.plotRoute(starSystem);
+
         EventBusManager.publish(
                 new MissionCriticalAnnouncementEvent(
                         "Plotting route to target system: "
                                 + starSystem + ". When you get there scan nav beacon or search for resource sites. " +
-                                "I may not be able to detect them automatically. Confirmaation is required."
+                                "I may not be able to detect them automatically. Confirmation is required."
                 )
         );
         ReminderManager.getInstance().setDestination(
                 new DataDto(starSystem, target.getTargetFaction()).toJson()
         );
+
+        RoutePlotter plotter = new RoutePlotter(this.controller);
+        plotter.plotRoute(starSystem);
     }
 
     record DataDto(String starSystem, String targetFaction) implements ToJsonConvertible {

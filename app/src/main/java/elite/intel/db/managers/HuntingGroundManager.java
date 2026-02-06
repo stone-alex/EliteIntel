@@ -2,8 +2,8 @@ package elite.intel.db.managers;
 
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.dao.LocationDao;
-import elite.intel.db.dao.PirateFactionDao;
-import elite.intel.db.dao.PirateFactionDao.PirateFaction;
+import elite.intel.db.dao.PirateHuntingGroundsDao;
+import elite.intel.db.dao.PirateHuntingGroundsDao.HuntingGround;
 import elite.intel.db.dao.PirateMissionProviderDao;
 import elite.intel.db.dao.PirateMissionProviderDao.MissionProvider;
 import elite.intel.db.util.Database;
@@ -14,19 +14,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class PirateMissionDataManager {
+public class HuntingGroundManager {
 
-    private static volatile PirateMissionDataManager instance;
+    private static volatile HuntingGroundManager instance;
 
-    private PirateMissionDataManager() {
+    private HuntingGroundManager() {
         // Private constructor to prevent instantiation
     }
 
-    public static PirateMissionDataManager getInstance() {
+    public static HuntingGroundManager getInstance() {
         if (instance == null) {
-            synchronized (PirateMissionDataManager.class) {
+            synchronized (HuntingGroundManager.class) {
                 if (instance == null) {
-                    instance = new PirateMissionDataManager();
+                    instance = new HuntingGroundManager();
                 }
             }
         }
@@ -35,11 +35,11 @@ public class PirateMissionDataManager {
 
 
     /// Saves partial we do not have faction names from INTRA data.
-    public PirateMissionTuple<PirateFaction, List<MissionProvider>>
+    public PirateMissionTuple<HuntingGround, List<MissionProvider>>
     savePartialPair(StarSystemResult.SystemRecord provider, StarSystemResult.SystemRecord target) {
 
-        PirateFaction pirateFaction = Database.withDao(PirateFactionDao.class, dao -> {
-            PirateFaction targetEntity = new PirateFaction();
+        HuntingGround pirateFaction = Database.withDao(PirateHuntingGroundsDao.class, dao -> {
+            HuntingGround targetEntity = new HuntingGround();
             targetEntity.setStarSystem(target.getName());
             targetEntity.setX(target.getX());
             targetEntity.setY(target.getY());
@@ -62,9 +62,9 @@ public class PirateMissionDataManager {
         return new PirateMissionTuple<>(pirateFaction, providers);
     }
 
-    public List<PirateMissionTuple<PirateFaction, List<MissionProvider>>> findInRange(LocationDao.Coordinates coordinates, int range) {
-        PirateFaction targetEntity = Database.withDao(
-                PirateFactionDao.class, dao -> dao.findNearest(coordinates.x(), coordinates.y(), coordinates.z(), range)
+    public List<PirateMissionTuple<HuntingGround, List<MissionProvider>>> findInProviderForTargetStarSystem(String targetStarSystem) {
+        HuntingGround targetEntity = Database.withDao(
+                PirateHuntingGroundsDao.class, dao -> dao.findByStarSystem(targetStarSystem)
         );
 
         // nothing found, return empty list, and fall back to net search
@@ -75,9 +75,9 @@ public class PirateMissionDataManager {
     }
 
 
-    public List<PirateMissionTuple<PirateFaction, List<MissionProvider>>> findInRangeForRecon(LocationDao.Coordinates coordinates, int range) {
-        PirateFaction targetEntity = Database.withDao(
-                PirateFactionDao.class, dao -> dao.findNearestRecon(coordinates.x(), coordinates.y(), coordinates.z(), range)
+    public List<PirateMissionTuple<HuntingGround, List<MissionProvider>>> findTargetSystemInRangeForRecon(LocationDao.Coordinates coordinates) {
+        HuntingGround targetEntity = Database.withDao(
+                PirateHuntingGroundsDao.class, dao -> dao.findNearestRecon(coordinates.x(), coordinates.y(), coordinates.z())
         );
 
         // nothing found, return empty list, and fall back to net search
@@ -88,8 +88,9 @@ public class PirateMissionDataManager {
     }
 
 
-    private List<MissionProvider> getMissionProviders(PirateFaction targetEntity) {
-        if(targetEntity == null) return new ArrayList<>();
+
+    private List<MissionProvider> getMissionProviders(HuntingGround targetEntity) {
+        if (targetEntity == null) return new ArrayList<>();
         List<MissionProvider> providers = Database.withDao(
                 PirateMissionProviderDao.class, dao -> dao.findMissionProviderForTargetFaction(targetEntity.getId())
         );
@@ -97,22 +98,22 @@ public class PirateMissionDataManager {
     }
 
     public int updateTargetFaction(String destinationSystem, String targetFaction) {
-        if(targetFaction == null || destinationSystem == null) return 0;
+        if (targetFaction == null || destinationSystem == null) return 0;
 
-        Database.withDao(PirateFactionDao.class, dao -> {
+        Database.withDao(PirateHuntingGroundsDao.class, dao -> {
             dao.updateTargetFaction(destinationSystem, targetFaction);
             return Void.class;
         });
 
-        return Database.withDao(PirateFactionDao.class, dao -> dao.findByFactionName(targetFaction, destinationSystem).getId());
+        return Database.withDao(PirateHuntingGroundsDao.class, dao -> dao.findByFactionName(targetFaction, destinationSystem).getId());
     }
 
     public void updateProviderFaction(String providerStarSystem, int targetFactionId, String providerFaction) {
-        if(providerStarSystem == null || targetFactionId == 0 || providerFaction == null) return;
+        if (providerStarSystem == null || targetFactionId == 0 || providerFaction == null) return;
 
         Database.withDao(PirateMissionProviderDao.class, dao -> {
             MissionProvider provider = dao.findNullForTarget(providerStarSystem, targetFactionId);
-            if(provider == null) return Void.class;
+            if (provider == null) return Void.class;
             dao.updateFaction(provider.getId(), providerFaction);
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("Mission provider faction updated. " + providerFaction));
             return Void.class;
@@ -120,13 +121,20 @@ public class PirateMissionDataManager {
     }
 
     public String findStarSystemForFactionName(String targetFaction) {
-        return Database.withDao(PirateFactionDao.class, dao -> dao.findByFactionName(targetFaction));
+        return Database.withDao(PirateHuntingGroundsDao.class, dao -> dao.findByFactionName(targetFaction));
+    }
+
+    public void ignoreHuntingGround(String starSystemName) {
+        Database.withDao(PirateHuntingGroundsDao.class, dao -> {
+            dao.ignoreHuntingGround(starSystemName);
+            return Void.TYPE;
+        });
     }
 
     public void confirmTargetReconResourceSite(String primaryStarName) {
-        Database.withDao(PirateFactionDao.class, dao -> {
-            PirateFaction system = dao.findByStarSystem(primaryStarName);
-            if (system != null &&  !system.isHasResSite()) {
+        Database.withDao(PirateHuntingGroundsDao.class, dao -> {
+            HuntingGround system = dao.findByStarSystem(primaryStarName);
+            if (system != null && !system.isHasResSite()) {
                 dao.confirm(primaryStarName);
                 EventBusManager.publish(new MissionCriticalAnnouncementEvent("Recon confirmed for " + primaryStarName + ". Resource Sites Found"));
             }
@@ -134,6 +142,12 @@ public class PirateMissionDataManager {
         });
     }
 
+    public void clear() {
+        Database.withDao(PirateHuntingGroundsDao.class, dao -> {
+            dao.clear();
+            return Void.TYPE;
+        });
+    }
 
 
     public static class PirateMissionTuple<K, V> {

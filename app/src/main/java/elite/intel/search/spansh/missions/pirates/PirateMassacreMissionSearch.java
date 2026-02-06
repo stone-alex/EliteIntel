@@ -1,15 +1,14 @@
 package elite.intel.search.spansh.missions.pirates;
 
 import elite.intel.db.dao.LocationDao;
-import elite.intel.db.dao.PirateFactionDao.PirateFaction;
+import elite.intel.db.dao.PirateHuntingGroundsDao.HuntingGround;
 import elite.intel.db.dao.PirateMissionProviderDao.MissionProvider;
 import elite.intel.db.managers.LocationManager;
-import elite.intel.db.managers.PirateMissionDataManager;
-import elite.intel.db.managers.PirateMissionDataManager.PirateMissionTuple;
+import elite.intel.db.managers.HuntingGroundManager;
+import elite.intel.db.managers.HuntingGroundManager.PirateMissionTuple;
 import elite.intel.search.intra.IntraClient;
 import elite.intel.search.intra.IntraRequest;
 import elite.intel.search.intra.IntraResponse;
-import elite.intel.search.spansh.starsystems.StarSystemClient;
 import elite.intel.search.spansh.starsystems.StarSystemResult;
 import elite.intel.search.spansh.starsystems.StationClient;
 import elite.intel.search.spansh.starsystems.SystemSearchCriteria;
@@ -23,11 +22,11 @@ import static elite.intel.search.edsm.utils.StrongHoldFilter.skipEnemyStrongHold
 public class PirateMassacreMissionSearch {
 
     private static volatile PirateMassacreMissionSearch instance;
-    private StationClient starSystemSearchClient = StationClient.getInstance();
-    private IntraClient missionSearchClient = IntraClient.getInstance();
-    private LocationManager locationManager = LocationManager.getInstance();
-    private PlayerSession playerSession = PlayerSession.getInstance();
-    private PirateMissionDataManager missionDataManager = PirateMissionDataManager.getInstance();
+    private final StationClient starSystemSearchClient = StationClient.getInstance();
+    private final IntraClient missionSearchClient = IntraClient.getInstance();
+    private final LocationManager locationManager = LocationManager.getInstance();
+    private final PlayerSession playerSession = PlayerSession.getInstance();
+    private final HuntingGroundManager missionDataManager = HuntingGroundManager.getInstance();
 
     private PirateMassacreMissionSearch() {
     }
@@ -48,24 +47,12 @@ public class PirateMassacreMissionSearch {
      * If no missions are found, it attempts to query an external pirate massacre mission API for additional results.
      *
      * @param range the maximum distance from the player's current coordinates to look for hunting spots
-     * @param recon a flag indicating whether to filter missions specifically for reconnaissance purposes
      * @return a list of {@code PirateMissionTuple} objects, where each tuple contains a {@code PirateFaction}
      *         representing the target faction and a list of {@code MissionProvider}s offering relevant missions
      */
-    public List<PirateMissionTuple<PirateFaction, List<MissionProvider>>> findHuntingSpotsInRange(int range, boolean recon) {
+    public List<PirateMissionTuple<HuntingGround, List<MissionProvider>>> findHuntingSpotsInRange(int range) {
         LocationDao.Coordinates coordinates = locationManager.getGalacticCoordinates();
-        List<PirateMissionTuple<PirateFaction, List<MissionProvider>>> missions = new ArrayList<>();
-
-        if (recon) {
-            missions.addAll(missionDataManager.findInRangeForRecon(coordinates, range));
-        } else {
-            missions.addAll(missionDataManager.findInRange(coordinates, range));
-        }
-
-        if (missions.isEmpty()) {
-            missions = PirateMassacreMissionSearch.getInstance().queryApi(coordinates, 50);
-        }
-        return missions;
+        return PirateMassacreMissionSearch.getInstance().queryApi(coordinates, range);
     }
 
 
@@ -79,7 +66,7 @@ public class PirateMassacreMissionSearch {
      * @return a list of pirate mission tuples, where each tuple contains a target pirate faction
      * and a list of corresponding mission providers; may return null if no valid data is retrieved
      */
-    private List<PirateMissionTuple<PirateFaction, List<MissionProvider>>> queryApi(LocationDao.Coordinates coordinates, int range) {
+    private List<PirateMissionTuple<HuntingGround, List<MissionProvider>>> queryApi(LocationDao.Coordinates coordinates, int range) {
         String pledgedPower = playerSession.getRankAndProgressDto().getPledgedToPower();
         boolean pledgedToPower = (pledgedPower != null && !pledgedPower.isEmpty());
 
@@ -95,7 +82,7 @@ public class PirateMassacreMissionSearch {
         if (response.getBody().isEmpty()) return null;
 
         List<IntraResponse.Pair> responseBody = response.getBody();
-        List<PirateMissionTuple<PirateFaction, List<MissionProvider>>> result = new ArrayList<>();
+        List<PirateMissionTuple<HuntingGround, List<MissionProvider>>> result = new ArrayList<>();
 
         for (IntraResponse.Pair pair : responseBody) {
 

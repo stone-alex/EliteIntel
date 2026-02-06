@@ -40,7 +40,7 @@ public class AiCommandsAndQueries {
             commandMap.put(" command find raw material trader" + KEY_X, FIND_RAW_MATERIAL_TRADER.getAction());
             commandMap.put(" command find encoded material trader" + KEY_X, FIND_ENCODED_MATERIAL_TRADER.getAction());
             commandMap.put(" command find manufactured material trader " + KEY_X, FIND_MANUFACTURED_MATERIAL_TRADER.getAction());
-            commandMap.put(" command find hunting grounds " + KEY_X, FIND_HUNTING_GROUNDS.getAction());  // Fixed typo
+            commandMap.put(" command find search for hunting grounds " + KEY_X, FIND_HUNTING_GROUNDS.getAction());  // Fixed typo
             commandMap.put(" command find human tech broker" + KEY_X, FIND_HUMAN_TECHNOLOGY_BROKER.getAction());
             commandMap.put(" command find guardian tech broker " + KEY_X, FIND_GUARDIAN_TECHNOLOGY_BROKER.getAction());
             commandMap.put(" command find brain trees " + KEY_X_WITH_DISTANCE, FIND_BRAIN_TREES.getAction());
@@ -59,10 +59,13 @@ public class AiCommandsAndQueries {
 
             /// non parametrized
             commandMap.put(" command clear mining targets ", CLEAR_MINING_TARGETS.getAction());
-            commandMap.put(" command recon target system ", RECON_TARGET_SYSTEM.getAction());
+            commandMap.put(" command recon navigate plot route to hunting ground ", RECON_TARGET_SYSTEM.getAction());
+            commandMap.put(" command recon navigate plot route to mission provider ", RECON_PROVIDER_SYSTEM.getAction());
+            commandMap.put(" command ignore hunting ground ", IGNORE_HUNTING_GROUND.getAction());
+            commandMap.put(" command confirm hunting ground ", CONFIRM_HUNTING_GROUND.getAction());
             commandMap.put(" command interrupt, silence, cancel", INTERRUPT_TTS.getAction());
-            commandMap.put(" command plot route to pirate mission provider ", RECON_PROVIDER_SYSTEM.getAction());
-            commandMap.put(" command plot route to pirate mission battle ground ", NAVIGATE_TO_PIRATE_MISSION_TARGET_SYSTEM.getAction());
+
+            //commandMap.put(" command navigate to pirate mission hunting ground ", NAVIGATE_TO_PIRATE_MISSION_TARGET_SYSTEM.getAction());
             commandMap.put(" command monetize route", MONETIZE_ROUTE.getAction());
             commandMap.put(" command locate/find nearest vista genomics ", FIND_VISTA_GENOMICS.getAction());
             commandMap.put(" command locate/find nearest fleet carrier ", FIND_NEAREST_FLEET_CARRIER.getAction());
@@ -164,6 +167,7 @@ public class AiCommandsAndQueries {
         commandMap.put(" command clear codex entries ", CLEAR_CODEX_ENTRIES.getAction());
         commandMap.put(" command clear cache ", CLEAR_CACHE.getAction());
         commandMap.put(" command Clear Reminders", CLEAR_REMINDERS.getAction());
+        commandMap.put(" command clear pirate hunting grounds", CLEAR_HUNTING_GROUNDS.getAction());
         commandMap.put(" command set reminder "+KEY_X, SET_REMINDER.getAction());
 
 

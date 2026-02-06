@@ -13,7 +13,7 @@ import java.util.Set;
 
 public class NavigateToPirateMassacreMissionTargetHandler extends CommandOperator implements CommandHandler {
 
-    private GameController controller;
+    private final GameController controller;
 
     public NavigateToPirateMassacreMissionTargetHandler(GameController controller) {
         super(controller.getMonitor(), controller.getExecutor());

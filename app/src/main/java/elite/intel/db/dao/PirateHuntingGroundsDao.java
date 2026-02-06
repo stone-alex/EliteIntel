@@ -11,59 +11,68 @@ import org.jdbi.v3.sqlobject.statement.SqlUpdate;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-@RegisterRowMapper(PirateFactionDao.PirateFactionMapper.class)
-public interface PirateFactionDao {
+@RegisterRowMapper(PirateHuntingGroundsDao.HuntingGroundMapper.class)
+public interface PirateHuntingGroundsDao {
 
     @SqlUpdate("""
-            INSERT OR IGNORE INTO pirate_factions (starSystem, x, y, z, targetFaction, hasResSite) 
-                VALUES (:starSystem, :x, :y, :z, :targetFaction, :hasResSite)  
+            INSERT OR IGNORE INTO pirate_hunting_grounds (starSystem, x, y, z, targetFaction, hasResSite,  ignored)
+                VALUES (:starSystem, :x, :y, :z, :targetFaction, :hasResSite, :ignored)
             """)
-    void save(@BindBean PirateFaction data);
+    void save(@BindBean HuntingGround data);
 
     @SqlUpdate("""
-            UPDATE pirate_factions SET targetFaction = :targetFaction 
+            UPDATE pirate_hunting_grounds SET targetFaction = :targetFaction
                 WHERE starSystem = :starSystem
             """)
     void updateTargetFaction(@Bind("starSystem") String starSystem, @Bind("targetFaction") String targetFaction);
 
     @SqlQuery("""
-            select * from pirate_factions
+            select * from pirate_hunting_grounds where ignored = false
             ORDER BY
-                ((x - :x)*(x - :x) + (y - :y)*(y - :y) + (z - :z)*(z - :z)) ASC
+                ((x - :x)*(x - :x) + (y - :y)*(y - :y) + (z - :z)*(z - :z))
             LIMIT :limit;
             """)
-    PirateFactionDao.PirateFaction findNearest(@Bind("x") double x, @Bind("y") double y, @Bind("z") double z, @Bind("limit") int limit);
+    HuntingGround findNearest(@Bind("x") double x, @Bind("y") double y, @Bind("z") double z, @Bind("limit") int limit);
 
     @SqlQuery("""
-            select * from pirate_factions where targetFaction is null
+            select * from pirate_hunting_grounds where targetFaction is null and hasResSite = false and ignored = false
             ORDER BY
-                ((x - :x)*(x - :x) + (y - :y)*(y - :y) + (z - :z)*(z - :z)) ASC
-            LIMIT :limit;
+                ((x - :x)*(x - :x) + (y - :y)*(y - :y) + (z - :z)*(z - :z));
             """)
-    PirateFactionDao.PirateFaction findNearestRecon(@Bind("x") double x, @Bind("y") double y, @Bind("z") double z, @Bind("limit") int limit);
+    HuntingGround findNearestRecon(@Bind("x") double x, @Bind("y") double y, @Bind("z") double z);
 
     @SqlQuery("""
-            SELECT * FROM pirate_factions 
+            SELECT * FROM pirate_hunting_grounds
                 WHERE starSystem = :starSystem
             """)
-    PirateFactionDao.PirateFaction findByStarSystem(@Bind("starSystem") String starSystem);
+    HuntingGround findByStarSystem(@Bind("starSystem") String starSystem);
 
-    @SqlQuery("select * from pirate_factions where targetFaction=:targetFaction and starSystem = :starSystem limit 1")
-    PirateFaction findByFactionName(@Bind("targetFaction") String targetFaction, @Bind("starSystem") String targetSystem);
+
+    @SqlUpdate("""
+            update pirate_hunting_grounds set ignored = true
+                WHERE starSystem = :starSystem
+            """)
+    void ignoreHuntingGround(@Bind("starSystem") String starSystem);
+
+    @SqlQuery("select * from pirate_hunting_grounds where targetFaction=:targetFaction and starSystem = :starSystem limit 1")
+    HuntingGround findByFactionName(@Bind("targetFaction") String targetFaction, @Bind("starSystem") String targetSystem);
 
     @SqlQuery("""
-        select starSystem from pirate_factions where targetFaction=:targetFaction limit 1
+        select starSystem from pirate_hunting_grounds where targetFaction=:targetFaction limit 1
     """)
     String findByFactionName(@Bind("targetFaction") String targetFaction);
 
-    @SqlUpdate("update pirate_factions set hasResSite = true where starSystem = :starSystem ")
+    @SqlUpdate("update pirate_hunting_grounds set hasResSite = true where starSystem = :starSystem ")
     void confirm(@Bind("starSystem") String primaryStarName);
 
 
-    class PirateFactionMapper implements RowMapper<PirateFaction> {
+    @SqlUpdate("DELETE FROM pirate_hunting_grounds")
+    void clear();
 
-        @Override public PirateFaction map(ResultSet rs, StatementContext ctx) throws SQLException {
-            PirateFaction entity = new PirateFaction();
+    class HuntingGroundMapper implements RowMapper<HuntingGround> {
+
+        @Override public HuntingGround map(ResultSet rs, StatementContext ctx) throws SQLException {
+            HuntingGround entity = new HuntingGround();
             entity.setId(rs.getInt("id"));
             entity.setStarSystem(rs.getString("starSystem"));
             entity.setX(rs.getDouble("x"));
@@ -76,12 +85,13 @@ public interface PirateFactionDao {
     }
 
 
-    class PirateFaction {
+    class HuntingGround {
         private int id;
         private String starSystem;
         private double x, y, z;
         private String targetFaction;
         private boolean hasResSite;
+        private boolean ignored;
 
 
         public int getId() {
@@ -138,6 +148,14 @@ public interface PirateFactionDao {
 
         public void setHasResSite(boolean hasResSite) {
             this.hasResSite = hasResSite;
+        }
+
+        public boolean isIgnored() {
+            return ignored;
+        }
+
+        public void setIgnored(boolean ignored) {
+            this.ignored = ignored;
         }
     }
 }

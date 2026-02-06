@@ -3,13 +3,15 @@ package elite.intel.ai.brain.handlers.commands;
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
-import elite.intel.db.dao.PirateFactionDao.PirateFaction;
+import elite.intel.db.dao.PirateHuntingGroundsDao.HuntingGround;
 import elite.intel.db.dao.PirateMissionProviderDao.MissionProvider;
 import elite.intel.db.managers.ReminderManager;
 import elite.intel.db.managers.LocationManager;
-import elite.intel.db.managers.PirateMissionDataManager;
-import elite.intel.db.managers.PirateMissionDataManager.PirateMissionTuple;
+import elite.intel.db.managers.HuntingGroundManager;
+import elite.intel.db.managers.HuntingGroundManager.PirateMissionTuple;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.gameapi.journal.events.dto.LocationDto;
+import elite.intel.session.PlayerSession;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 
@@ -17,7 +19,10 @@ import java.util.List;
 
 public class ReconMissionProviderSystemHandler extends CommandOperator implements CommandHandler {
 
-    private GameController controller;
+    private final GameController controller;
+    private final HuntingGroundManager huntingGroundManager = HuntingGroundManager.getInstance();
+    private final LocationManager locationManager = LocationManager.getInstance();
+    private final PlayerSession playerSession = PlayerSession.getInstance();
 
     public ReconMissionProviderSystemHandler(GameController controller) {
         super(controller.getMonitor(), controller.getExecutor());
@@ -25,13 +30,13 @@ public class ReconMissionProviderSystemHandler extends CommandOperator implement
     }
 
     @Override public void handle(String action, JsonObject params, String responseText) {
-        PirateMissionDataManager manager = PirateMissionDataManager.getInstance();
-        LocationManager locationManager = LocationManager.getInstance();
-        List<PirateMissionTuple<PirateFaction, List<MissionProvider>>> huntingGrounds = manager.findInRangeForRecon(locationManager.getGalacticCoordinates(), 100);
 
+        LocationDto currentLocation = locationManager.findByLocationData(playerSession.getLocationData());
+
+        List<PirateMissionTuple<HuntingGround, List<MissionProvider>>> huntingGrounds = huntingGroundManager.findInProviderForTargetStarSystem(currentLocation.getStarName());
         MissionProvider provider = null;
         String targetStarSystemName = "";
-        for (PirateMissionTuple<PirateFaction, List<MissionProvider>> pair : huntingGrounds) {
+        for (PirateMissionTuple<HuntingGround, List<MissionProvider>> pair : huntingGrounds) {
             List<MissionProvider> providers = pair.getMissionProvider();
             provider = providers.stream().filter(p -> p.getMissionProviderFaction() == null).findFirst().orElse(null);
             targetStarSystemName = pair.getTarget().getStarSystem();
@@ -44,7 +49,7 @@ public class ReconMissionProviderSystemHandler extends CommandOperator implement
         }
 
 
-        PirateFaction target = huntingGrounds.stream().filter(
+        HuntingGround target = huntingGrounds.stream().filter(
                 data -> data.getTarget().getTargetFaction() == null
         ).findFirst().map(PirateMissionTuple::getTarget).orElse(null);
 

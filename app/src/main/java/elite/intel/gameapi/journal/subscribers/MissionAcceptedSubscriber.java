@@ -2,7 +2,7 @@ package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import elite.intel.db.managers.MissionManager;
-import elite.intel.db.managers.PirateMissionDataManager;
+import elite.intel.db.managers.HuntingGroundManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.MissionType;
 import elite.intel.gameapi.SensorDataEvent;
@@ -27,7 +27,7 @@ public class MissionAcceptedSubscriber {
     }
 
     private static void processPirateMission(MissionAcceptedEvent event, PlayerSession playerSession) {
-        PirateMissionDataManager pirateMissionDataManager = PirateMissionDataManager.getInstance();
+        HuntingGroundManager pirateMissionDataManager = HuntingGroundManager.getInstance();
 
         String destinationSystem = event.getDestinationSystem();
         String targetFaction = event.getTargetFaction();

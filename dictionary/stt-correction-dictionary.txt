@@ -355,3 +355,4 @@
 "both organics"="what organics"
 "don't have a reminder"="do I have a reminder?"
 "don't have any"="do I have any"
+"glitter"="clear"

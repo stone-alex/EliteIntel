@@ -4,13 +4,11 @@ import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.db.dao.LocationDao;
 import elite.intel.db.managers.LocationManager;
 import elite.intel.search.spansh.station.traderandbroker.*;
-import elite.intel.db.managers.DestinationReminderManager;
+import elite.intel.db.managers.ReminderManager;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.session.PlayerSession;
 import elite.intel.util.TimeUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -85,7 +83,7 @@ public class TradersAndBrokersSearch {
                         +". Data was last updated: "+ TimeUtils.transformToYMDHtimeAgo(result.getUpdatedAt(), TimeUtils.LOCAL_DATE_TIME)
                 )
         );
-        DestinationReminderManager.getInstance().setDestination(result.toJson());
+        ReminderManager.getInstance().setDestination(result.toJson());
         return result.getSystemName();
     }
 }

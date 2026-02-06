@@ -3,7 +3,7 @@ package elite.intel.ai.brain.handlers.commands;
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
-import elite.intel.db.managers.DestinationReminderManager;
+import elite.intel.db.managers.ReminderManager;
 import elite.intel.db.managers.TradeRouteManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.gamestate.dtos.GameEvents;
@@ -26,7 +26,7 @@ public class PlotRouteToNextTradeStopHandler extends CommandOperator implements 
     @Override public void handle(String action, JsonObject params, String responseText) {
         final RoutePlotter routePlotter = new RoutePlotter(gameController);
         final TradeRouteManager tradeRouteManager = TradeRouteManager.getInstance();
-        final DestinationReminderManager reminderManager = DestinationReminderManager.getInstance();
+        final ReminderManager reminderManager = ReminderManager.getInstance();
 
         if (!tradeRouteManager.hasRoute()) {
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("No trade route found."));

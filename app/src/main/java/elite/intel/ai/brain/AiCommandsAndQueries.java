@@ -164,6 +164,7 @@ public class AiCommandsAndQueries {
         commandMap.put(" command clear codex entries ", CLEAR_CODEX_ENTRIES.getAction());
         commandMap.put(" command clear cache ", CLEAR_CACHE.getAction());
         commandMap.put(" command Clear Reminders", CLEAR_REMINDERS.getAction());
+        commandMap.put(" command set reminder "+KEY_X, SET_REMINDER.getAction());
 
 
         if (!systemSession.isRunningLocalLLM()) {
@@ -219,7 +220,7 @@ public class AiCommandsAndQueries {
         queryMap.put(" query distance to organic, bio sample, previous bioscan ", DISTANCE_TO_LAST_BIO_SAMPLE.getAction());
         queryMap.put(" query what time is it ", TIME_IN_ZONE.getAction());
         queryMap.put(" query biome analysis for star system/planet/moon X " + KEY_X, PLANET_BIOME_ANALYSIS.getAction());
-        queryMap.put(" query access reminder data, where going, what are we doing. ", REMINDER.getAction());
+        queryMap.put(" query reminder, remind me, reminder data, where going, what are we doing, what are we buying, what are we selling. ", REMINDER.getAction());
         queryMap.put(" query active missions ", ANALYZE_MISSIONS.getAction());
         queryMap.put(" IF NOTHING MATCHES USE THIS ", GENERAL_CONVERSATION.getAction());
 

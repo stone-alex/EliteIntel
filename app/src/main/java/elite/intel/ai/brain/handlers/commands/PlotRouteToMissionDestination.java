@@ -2,9 +2,8 @@ package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
-import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
-import elite.intel.db.managers.DestinationReminderManager;
+import elite.intel.db.managers.ReminderManager;
 import elite.intel.db.managers.MissionManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.dto.MissionDto;
@@ -43,7 +42,7 @@ public class PlotRouteToMissionDestination extends CommandOperator implements Co
             sb.append(" Settlement ");
         }
 
-        DestinationReminderManager.getInstance().setDestination(
+        ReminderManager.getInstance().setDestination(
                 sb.toString()
         );
 

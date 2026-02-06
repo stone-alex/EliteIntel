@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.dao.LocationDao;
-import elite.intel.db.managers.DestinationReminderManager;
+import elite.intel.db.managers.ReminderManager;
 import elite.intel.db.managers.LocationManager;
 import elite.intel.db.managers.ShipRouteManager;
 import elite.intel.search.spansh.stellarobjects.ReserveLevel;
@@ -59,7 +59,7 @@ public class FindCarrierFuelMiningSiteHandler extends CommandOperator implements
 
             String reminder = "Head to " + result.get().getSystemName() + " star system.";
             EventBusManager.publish(new MissionCriticalAnnouncementEvent(reminder));
-            DestinationReminderManager reminderManager = DestinationReminderManager.getInstance();
+            ReminderManager reminderManager = ReminderManager.getInstance();
             reminderManager.setDestination(reminder);
             RoutePlotter routePlotter = new RoutePlotter(this.gameController);
             routePlotter.plotRoute(result.get().getSystemName());

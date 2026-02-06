@@ -6,7 +6,7 @@ import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.FuzzySearch;
-import elite.intel.db.managers.DestinationReminderManager;
+import elite.intel.db.managers.ReminderManager;
 import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.search.spansh.stellarobjects.ReserveLevel;
@@ -67,7 +67,7 @@ public class FindMiningSiteHandler extends CommandOperator implements CommandHan
             RoutePlotter routePlotter = new RoutePlotter(this.controller);
             routePlotter.plotRoute(result.get().getSystemName());
             String reminder = "Found nearest mining location in " + result.get().getSystemName() + " system head to planet " + result.get().getBodyName();
-            DestinationReminderManager.getInstance().setDestination(reminder);
+            ReminderManager.getInstance().setDestination(reminder);
             EventBusManager.publish(new AiVoxResponseEvent(reminder));
         } else {
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("No mining sites found within range."));

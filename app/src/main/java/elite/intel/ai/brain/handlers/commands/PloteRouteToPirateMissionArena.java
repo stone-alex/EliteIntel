@@ -3,7 +3,7 @@ package elite.intel.ai.brain.handlers.commands;
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
-import elite.intel.db.managers.DestinationReminderManager;
+import elite.intel.db.managers.ReminderManager;
 import elite.intel.db.managers.MissionManager;
 import elite.intel.db.managers.PirateMissionDataManager;
 import elite.intel.gameapi.EventBusManager;
@@ -40,7 +40,7 @@ public class PloteRouteToPirateMissionArena extends CommandOperator implements C
         RoutePlotter plotter = new RoutePlotter(this.controller);
         plotter.plotRoute(starSystemForFactionName);
 
-        DestinationReminderManager.getInstance().setDestination(
+        ReminderManager.getInstance().setDestination(
                 starSystemForFactionName
         );
     }

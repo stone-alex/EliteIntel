@@ -1,12 +1,19 @@
 package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
+import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.db.managers.TradeRouteManager;
 import elite.intel.search.spansh.station.marketstation.TradeStopDto;
+import elite.intel.util.yaml.ToYamlConvertable;
+import elite.intel.util.yaml.YamlFactory;
 
 import java.util.List;
 
 public class AnalyzeTradeRouteHandler extends BaseQueryAnalyzer implements QueryHandler {
+
+    public static final String INSTRUCTIONS = """ 
+            Use this data to answer users' queries
+            """;
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         TradeRouteManager tradeRouteManager = TradeRouteManager.getInstance();
@@ -28,6 +35,16 @@ public class AnalyzeTradeRouteHandler extends BaseQueryAnalyzer implements Query
                     .append(tuple.getTradeStopDto().getDestinationStation())
                     .append("\n");
         }
-        return process(sb.toString());
+        if(allStops.isEmpty()){
+            return process("No trade route legs found");
+        }
+        return process(new AiDataStruct(INSTRUCTIONS, new DataDto(sb.toString())), originalUserInput);
+    }
+
+    record DataDto(String data) implements ToYamlConvertable {
+
+        @Override public String toYaml() {
+            return YamlFactory.toYaml(this);
+        }
     }
 }

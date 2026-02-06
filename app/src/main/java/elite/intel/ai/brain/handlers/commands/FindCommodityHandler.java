@@ -3,10 +3,9 @@ package elite.intel.ai.brain.handlers.commands;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
-import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.FuzzySearch;
-import elite.intel.db.managers.DestinationReminderManager;
+import elite.intel.db.managers.ReminderManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.search.edsm.commodity.CommoditySearchResult;
 import elite.intel.search.edsm.commodity.EdsmCommoditySearch;
@@ -59,7 +58,7 @@ public class FindCommodityHandler extends CommandOperator implements CommandHand
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("No commodities found."));
             return;
         }
-        DestinationReminderManager reminderManager = DestinationReminderManager.getInstance();
+        ReminderManager reminderManager = ReminderManager.getInstance();
         CommoditySearchResult result = results.getFirst();
         String reminder = "Head to " + result.getStarSystem() + " star system, " + result.getStationName() + " " + result.getStationType() + ". Price per unit is " + result.getPrice() + " credits.";
         EventBusManager.publish(new MissionCriticalAnnouncementEvent(reminder));

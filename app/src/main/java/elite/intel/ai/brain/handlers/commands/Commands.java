@@ -7,7 +7,6 @@ public enum Commands {
 
     CONNECTION_CHECK                                    ("verify_llm_connection_command", null, ConnectionCheck.class),
 
-
     NAVIGATE_TO_NEXT_MISSION                            ("plot_route_to_mission_location",null, PlotRouteToMissionDestination.class),
     LIGHTS_ON_OFF                                       ("toggle_lights_on_off", null, LightsOnOffHandler.class),
     ADD_MINING_TARGET                                   ("add_mining_target", null, AddMiningTargetHandler.class),
@@ -155,7 +154,7 @@ public enum Commands {
     WING_NAV_LOCK                                       ("lock_on_wingman", BINDING_WING_NAV_LOCK.getGameBinding(), GenericGameControlHandler.class),
     LIST_AVAILABLE_VOICES                               ("list_available_voices", null,  ListAvailableVoices.class),
     CLEAR_REMINDERS                                     ("clear_reminders", null, CleareReminderHandler.class),
-
+    SET_REMINDER                                        ("set_reminder", null, SetReminderHandler.class),
     ;
 
     ///

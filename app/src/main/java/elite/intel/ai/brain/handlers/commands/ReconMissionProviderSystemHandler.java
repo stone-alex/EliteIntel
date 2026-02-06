@@ -5,7 +5,7 @@ import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.dao.PirateFactionDao.PirateFaction;
 import elite.intel.db.dao.PirateMissionProviderDao.MissionProvider;
-import elite.intel.db.managers.DestinationReminderManager;
+import elite.intel.db.managers.ReminderManager;
 import elite.intel.db.managers.LocationManager;
 import elite.intel.db.managers.PirateMissionDataManager;
 import elite.intel.db.managers.PirateMissionDataManager.PirateMissionTuple;
@@ -53,7 +53,7 @@ public class ReconMissionProviderSystemHandler extends CommandOperator implement
         EventBusManager.publish(new MissionCriticalAnnouncementEvent("Plotting route to " + starSystem + " when you get there look for factions targeting " + targetStarSystemName + " at local ports."));
         RoutePlotter plotter = new RoutePlotter(controller);
         plotter.plotRoute(starSystem);
-        DestinationReminderManager.getInstance().setDestination(
+        ReminderManager.getInstance().setDestination(
                 new DataDto(
                         starSystem,
                         target == null

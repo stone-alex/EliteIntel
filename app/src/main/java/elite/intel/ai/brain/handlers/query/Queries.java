@@ -47,7 +47,7 @@ public enum Queries {
     DISTANCE_TO_LAST_BIO_SAMPLE         ("query_distance_to_last_bio_sample",           AnalyzeDistanceFromLastBioSample.class),
     TIME_IN_ZONE                        ("query_what_time_is_it_on_earth",              TimeQueryHandler.class),
     PLANET_BIOME_ANALYSIS               ("query_biome_analysis",                        BiomeAnalyzerHandler.class),
-    REMINDER                            ("query_reminder",                              RemindTargetDestinationHandler.class),
+    REMINDER                            ("query_reminder_remind_me",                              RemindTargetDestinationHandler.class),
     ANALYZE_MISSIONS                    ("query_analyze_missions",                      AnalyzeMissionHandler.class),
     GENERAL_CONVERSATION                ("general_conversation",                        ConversationalQueryHandler.class);
     /// ########################################################################################################################################

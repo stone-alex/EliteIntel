@@ -1,9 +1,8 @@
 package elite.intel.gameapi.journal.subscribers;
 
-import com.google.cloud.speech.v1.DeletePhraseSetRequest;
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
-import elite.intel.db.managers.DestinationReminderManager;
+import elite.intel.db.managers.ReminderManager;
 import elite.intel.db.managers.MonetizeRouteManager;
 import elite.intel.db.managers.TradeRouteManager;
 import elite.intel.gameapi.EventBusManager;
@@ -21,15 +20,15 @@ public class MarketSellEventSubscriber {
     @Subscribe public void onMarketSellEvent(MarketSellEvent event) {
         final TradeRouteManager tradeRouteManager = TradeRouteManager.getInstance();
         final PlayerSession playerSession = PlayerSession.getInstance();
-        final DestinationReminderManager reminderManager = DestinationReminderManager.getInstance();
+        final ReminderManager reminderManager = ReminderManager.getInstance();
 
         tradeRouteManager.deleteForMarketId(event.getMarketID());
         EventBusManager.publish(new AiVoxResponseEvent("Sold " + event.getCount() + " units of " + event.getType() + " for " + event.getTotalSale() + " credits."));
 
         TradeRouteManager.TradeRouteLegTuple<Integer, TradeStopDto> nextStop = tradeRouteManager.getNextStop();
 
+        StringBuilder sb = new StringBuilder();
         if (nextStop != null) {
-            StringBuilder sb = new StringBuilder();
             String sourceSystem = nextStop.getTradeStopDto().getSourceSystem();
             String sourceStation = nextStop.getTradeStopDto().getSourceStation();
             String destinationSystem = nextStop.getTradeStopDto().getDestinationSystem();
@@ -45,22 +44,11 @@ public class MarketSellEventSubscriber {
                 sb.append(" Sell at ").append(destinationSystem).append(", ").append(destinationStation).append(" port.");
             }
 
-            StringBuilder reminder = new StringBuilder();
-            reminder.append("We are on leg ")
-                    .append(nextStop.getLegNumber())
-                    .append(", heading to ")
-                    .append(nextStop.getTradeStopDto().getDestinationSystem()).append(", ")
-                    .append(nextStop.getTradeStopDto().getDestinationStation())
-                    .append(", to trade ")
-                    .append(nextStop.getTradeStopDto()
-                            .getCommodities().size())
-                    .append(" commodities.");
 
 
-
-            EventBusManager.publish(new AiVoxResponseEvent(reminder.toString()));
+            EventBusManager.publish(new AiVoxResponseEvent(sb.toString()));
             reminderManager.setDestination(
-                    reminder.toString()
+                    sb.toString()
             );
         } else {
             reminderManager.clear();

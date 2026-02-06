@@ -8,11 +8,10 @@ import elite.intel.db.managers.LocationManager;
 import elite.intel.search.spansh.station.vista.VistaGenomicsLocationDto;
 import elite.intel.search.spansh.station.vista.VistaGenomicsSearch;
 import elite.intel.search.spansh.station.vista.VistaSearchCriteria;
-import elite.intel.db.managers.DestinationReminderManager;
+import elite.intel.db.managers.ReminderManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.util.json.GetNumberFromParam;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -61,7 +60,7 @@ public class FindVistaGenomicsHandler extends CommandOperator implements Command
         VistaGenomicsLocationDto.Result result = first.get();
 
         String reminder = "Head to " + result.getSystemName() + " star system. When you get there looks for" + result.getStationName();
-        DestinationReminderManager.getInstance().setDestination(reminder);
+        ReminderManager.getInstance().setDestination(reminder);
         EventBusManager.publish(new MissionCriticalAnnouncementEvent(reminder));
         routePlotter.plotRoute(result.getSystemName());
     }

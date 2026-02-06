@@ -26,14 +26,14 @@ public class ConnectionCheck implements CommandHandler {
             sb.append(" Command llm: ").append(commandModel);
             sb.append(" Query Model: ").append(queryModel);
         } else {
-            sb.append(" LLM Cloud " );
+            sb.append(" Cloud LLM " );
         }
 
 
         EventBusManager.publish(
                 new SensorDataEvent(
                         sb.toString(),
-                        "Let user know we are connected"
+                        "Acknowledge connection status"
                 )
         );
     }

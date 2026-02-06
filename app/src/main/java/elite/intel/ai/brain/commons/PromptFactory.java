@@ -53,12 +53,12 @@ public class PromptFactory implements AiPromptFactory {
                 Map of allowed actions:
                 """);
 
-        sb.append("Classify as {\"type\": \"command\", \"response_text\": \"\", \"action\": \"action_name\", \"params\": {\"key\": \"value\"}}");
+        sb.append("Classify as {\"type\": \"command\", \"action\": \"action_name\", \"params\": {\"key\": \"value\"}}");
         sb.append(commandsAndQueries.getCommandMap());
         sb.append("""
                 Supported QUERIES: patterns, concepts, and formulations -> ACTION_NAME (use ONLY these action names):
                 """);
-        sb.append("Classify as {\"type\": \"query\", \"response_text\": \"Your Response\", \"action\": \"action_name\", \"params\": {\"key\": \"value\"}}");
+        sb.append("Classify as {\"type\": \"query\", \"action\": \"action_name\", \"params\": {\"key\": \"value\"}}");
         sb.append(commandsAndQueries.getQueries());
         sb.append("""
                 PARAMS RULES - DO NOT DEVIATE:

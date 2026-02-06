@@ -1,11 +1,13 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.intel.ai.brain.handlers.commands.PlotRouteToNextTradeStopHandler;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.ai.mouth.subscribers.events.RouteAnnouncementEvent;
 import elite.intel.db.dao.RouteMonetisationDao.MonetisationTransaction;
-import elite.intel.db.managers.*;
+import elite.intel.db.managers.ReminderManager;
+import elite.intel.db.managers.LocationManager;
+import elite.intel.db.managers.MonetizeRouteManager;
+import elite.intel.db.managers.ShipRouteManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.gamestate.dtos.NavRouteDto;
@@ -19,15 +21,11 @@ import elite.intel.search.edsm.dto.TrafficDto;
 import elite.intel.search.edsm.dto.data.BodyData;
 import elite.intel.search.edsm.dto.data.DeathsStats;
 import elite.intel.search.edsm.dto.data.TrafficStats;
-import elite.intel.search.spansh.station.marketstation.TradeStopDto;
-import elite.intel.search.spansh.traderoute.TradeCommodity;
 import elite.intel.session.PlayerSession;
-import elite.intel.util.json.GsonFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static elite.intel.util.GravityCalculator.calculateSurfaceGravity;
 import static elite.intel.util.StringUtls.isFuelStarClause;
@@ -39,7 +37,7 @@ public class JumpCompletedSubscriber {
     private final LocationManager locationManager = LocationManager.getInstance();
     private final ShipRouteManager shipRoute = ShipRouteManager.getInstance();
     private final MonetizeRouteManager monetizeRouteManager = MonetizeRouteManager.getInstance();
-    private final DestinationReminderManager destinationReminderManager = DestinationReminderManager.getInstance();
+    private final ReminderManager destinationReminderManager = ReminderManager.getInstance();
 
 
     @Subscribe
@@ -91,6 +89,10 @@ public class JumpCompletedSubscriber {
             }
             primaryStar.setTrafficDto(trafficDto);
             primaryStar.setDeathsDto(deathsDto);
+            String reminderText = destinationReminderManager.getReminderText();
+            if (reminderText != null && !reminderText.isBlank()) {
+                EventBusManager.publish(new MissionCriticalAnnouncementEvent("Reminder " + reminderText));
+            }
         } else if (roueSet) {
             sb.append("Arrived at ").append(event.getStarSystem());
             List<NavRouteDto> adjustedRoute = shipRoute.removeLeg(event.getStarSystem());

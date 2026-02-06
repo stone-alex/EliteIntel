@@ -3,19 +3,19 @@ package elite.intel.db.managers;
 import elite.intel.db.dao.DestinationReminderDao;
 import elite.intel.db.util.Database;
 
-public final class DestinationReminderManager {
-    private static volatile DestinationReminderManager instance;
+public final class ReminderManager {
+    private static volatile ReminderManager instance;
 
-    private DestinationReminderManager() {
+    private ReminderManager() {
     }
 
-    public static DestinationReminderManager getInstance() {
-        DestinationReminderManager result = instance;
+    public static ReminderManager getInstance() {
+        ReminderManager result = instance;
         if (result == null) {
-            synchronized (DestinationReminderManager.class) {
+            synchronized (ReminderManager.class) {
                 result = instance;
                 if (result == null) {
-                    instance = result = new DestinationReminderManager();
+                    instance = result = new ReminderManager();
                 }
             }
         }

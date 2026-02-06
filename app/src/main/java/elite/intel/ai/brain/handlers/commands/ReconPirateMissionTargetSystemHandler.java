@@ -2,11 +2,10 @@ package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
-import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.dao.PirateFactionDao.PirateFaction;
 import elite.intel.db.dao.PirateMissionProviderDao.MissionProvider;
-import elite.intel.db.managers.DestinationReminderManager;
+import elite.intel.db.managers.ReminderManager;
 import elite.intel.db.managers.LocationManager;
 import elite.intel.db.managers.PirateMissionDataManager;
 import elite.intel.db.managers.PirateMissionDataManager.PirateMissionTuple;
@@ -49,7 +48,7 @@ public class ReconPirateMissionTargetSystemHandler extends CommandOperator imple
                                 "I may not be able to detect them automatically. Confirmaation is required."
                 )
         );
-        DestinationReminderManager.getInstance().setDestination(
+        ReminderManager.getInstance().setDestination(
                 new DataDto(starSystem, target.getTargetFaction()).toJson()
         );
     }

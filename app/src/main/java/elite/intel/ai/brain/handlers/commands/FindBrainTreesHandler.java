@@ -7,7 +7,7 @@ import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.FuzzySearch;
 import elite.intel.db.dao.LocationDao;
 import elite.intel.db.managers.BrainTreeManager;
-import elite.intel.db.managers.DestinationReminderManager;
+import elite.intel.db.managers.ReminderManager;
 import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.search.spansh.stellarobjects.StellarObjectSearchResultDto;
@@ -62,7 +62,7 @@ public class FindBrainTreesHandler extends CommandOperator implements CommandHan
             );
             RoutePlotter plotter = new RoutePlotter(this.controller);
             plotter.plotRoute(result.getSystemName());
-            DestinationReminderManager.getInstance()
+            ReminderManager.getInstance()
                     .setDestination(
                             "Head to " + result.getSystemName() + " planet " + result.getBodyName()
                     );

@@ -27,14 +27,6 @@ public interface PirateHuntingGroundsDao {
     void updateTargetFaction(@Bind("starSystem") String starSystem, @Bind("targetFaction") String targetFaction);
 
     @SqlQuery("""
-            select * from pirate_hunting_grounds where ignored = false
-            ORDER BY
-                ((x - :x)*(x - :x) + (y - :y)*(y - :y) + (z - :z)*(z - :z))
-            LIMIT :limit;
-            """)
-    HuntingGround findNearest(@Bind("x") double x, @Bind("y") double y, @Bind("z") double z, @Bind("limit") int limit);
-
-    @SqlQuery("""
             select * from pirate_hunting_grounds where targetFaction is null and hasResSite = false and ignored = false
             ORDER BY
                 ((x - :x)*(x - :x) + (y - :y)*(y - :y) + (z - :z)*(z - :z));
@@ -58,15 +50,17 @@ public interface PirateHuntingGroundsDao {
     HuntingGround findByFactionName(@Bind("targetFaction") String targetFaction, @Bind("starSystem") String targetSystem);
 
     @SqlQuery("""
-        select starSystem from pirate_hunting_grounds where targetFaction=:targetFaction limit 1
-    """)
+                select starSystem from pirate_hunting_grounds where targetFaction=:targetFaction limit 1
+            """)
     String findByFactionName(@Bind("targetFaction") String targetFaction);
 
-    @SqlUpdate("update pirate_hunting_grounds set hasResSite = true where starSystem = :starSystem ")
+    @SqlUpdate("""
+            update pirate_hunting_grounds set hasResSite = true, ignored = false where starSystem = :starSystem
+            """)
     void confirm(@Bind("starSystem") String primaryStarName);
 
 
-    @SqlUpdate("DELETE FROM pirate_hunting_grounds")
+    @SqlUpdate("DELETE FROM pirate_hunting_grounds where id > 0")
     void clear();
 
     class HuntingGroundMapper implements RowMapper<HuntingGround> {

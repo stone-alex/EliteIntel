@@ -4,9 +4,9 @@ import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.ai.mouth.subscribers.events.RouteAnnouncementEvent;
 import elite.intel.db.dao.RouteMonetisationDao.MonetisationTransaction;
-import elite.intel.db.managers.ReminderManager;
 import elite.intel.db.managers.LocationManager;
 import elite.intel.db.managers.MonetizeRouteManager;
+import elite.intel.db.managers.ReminderManager;
 import elite.intel.db.managers.ShipRouteManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
@@ -78,7 +78,12 @@ public class JumpCompletedSubscriber {
 
         if (finalDestination != null && finalDestination.equalsIgnoreCase(event.getStarSystem())) {
             shipRoute.clearRoute();
-            sb.append(" Arrived at final destination: ").append(finalDestination);
+            String reminderText = destinationReminderManager.getReminderText();
+            if (reminderText != null && !reminderText.isBlank()) {
+                EventBusManager.publish(new MissionCriticalAnnouncementEvent("Reminder " + reminderText));
+            } else {
+                sb.append(" Arrived at final destination: ").append(finalDestination);
+            }
             TrafficDto trafficDto = EdsmApiClient.searchTraffic(finalDestination);
             if (trafficDto.getData() != null && trafficDto.getData().getTraffic() != null) {
                 TrafficStats trafficStats = trafficDto.getData().getTraffic();
@@ -89,10 +94,7 @@ public class JumpCompletedSubscriber {
             }
             primaryStar.setTrafficDto(trafficDto);
             primaryStar.setDeathsDto(deathsDto);
-            String reminderText = destinationReminderManager.getReminderText();
-            if (reminderText != null && !reminderText.isBlank()) {
-                EventBusManager.publish(new MissionCriticalAnnouncementEvent("Reminder " + reminderText));
-            }
+
         } else if (roueSet) {
             sb.append("Arrived at ").append(event.getStarSystem());
             List<NavRouteDto> adjustedRoute = shipRoute.removeLeg(event.getStarSystem());
@@ -108,7 +110,9 @@ public class JumpCompletedSubscriber {
                                 .append(" ")
                                 .append(isFuelStarClause(nextStop.getStarClass()))
                 );
-                sb.append(". We have ").append(remainingJump).append(" jumps left to destination.");
+                sb.append(". We have ").append(remainingJump).append(" jump");
+                if (remainingJump > 1) sb.append("s");
+                sb.append(" left to destination.");
             }
         }
 

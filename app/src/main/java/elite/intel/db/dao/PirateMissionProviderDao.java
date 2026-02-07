@@ -16,22 +16,35 @@ import java.util.List;
 public interface PirateMissionProviderDao {
 
     @SqlUpdate("""
-            INSERT OR IGNORE INTO mission_provider (starSystem, x, y, z, missionProviderFaction, targetFactionID) 
-            VALUES (:starSystem, :x, :y, :z, :missionProviderFaction, :targetFactionID)  
+            INSERT OR IGNORE INTO mission_provider (starSystem, targetSystem, x, y, z, missionProviderFaction, targetFactionID)
+            VALUES (:starSystem, :targetSystem, :x, :y, :z, :missionProviderFaction, :targetFactionID)
             """)
     void upsert(@BindBean PirateMissionProviderDao.MissionProvider entity);
 
 
     @SqlQuery("""
-        select * from mission_provider where targetFactionID = :targetFactionId
-    """)
-    List<PirateMissionProviderDao.MissionProvider> findMissionProviderForTargetFaction(@Bind("targetFactionId") int targetFactionId);
-
+            select * from mission_provider where targetSystem = :targetSystem and starSystem != :starSystem
+            """)
+    List<PirateMissionProviderDao.MissionProvider> findMissionProviderForTargetStarSystem(@Bind("targetSystem") String targetSystem, @Bind("starSystem") String starSystem);
 
     @SqlQuery("""
-            SELECT * FROM mission_provider 
-                WHERE starSystem = :starSystem 
-                    AND targetFactionID = :targetFactionID 
+            SELECT mp.*
+            FROM mission_provider mp
+                     INNER JOIN (
+                SELECT targetSystem, COUNT(*) AS cnt
+                FROM mission_provider
+                GROUP BY targetSystem
+                ORDER BY cnt DESC
+                LIMIT 1
+            ) top ON mp.targetSystem = top.targetSystem
+            ORDER BY mp.targetSystem, mp.id;
+            """)
+    List<PirateMissionProviderDao.MissionProvider> findProvidersWithMostTargetSystems();
+
+    @SqlQuery("""
+            SELECT * FROM mission_provider
+                WHERE starSystem = :starSystem
+                    AND targetFactionID = :targetFactionID
                     AND missionProviderFaction IS NULL LIMIT 1
             """)
     MissionProvider findNullForTarget(@Bind("starSystem") String starSystem, @Bind("targetFactionID") int targetFactionID);
@@ -40,6 +53,9 @@ public interface PirateMissionProviderDao {
     @SqlUpdate("UPDATE mission_provider SET missionProviderFaction = :faction WHERE id = :id")
     void updateFaction(@Bind("id") int id, @Bind("faction") String faction);
 
+    @SqlUpdate("delete from mission_provider where id > 0")
+    void clear();
+
 
     class MissionProviderMapper implements RowMapper<MissionProvider> {
 
@@ -47,6 +63,7 @@ public interface PirateMissionProviderDao {
             MissionProvider entity = new MissionProvider();
             entity.setId(rs.getInt("id"));
             entity.setStarSystem(rs.getString("starSystem"));
+            entity.setTargetSystem(rs.getString("targetSystem"));
             entity.setX(rs.getDouble("x"));
             entity.setY(rs.getDouble("y"));
             entity.setZ(rs.getDouble("z"));
@@ -60,6 +77,7 @@ public interface PirateMissionProviderDao {
     class MissionProvider {
         private int id;
         private String starSystem;
+        private String targetSystem;
         private double x, y, z;
         private String missionProviderFaction;
         private int targetFactionID;
@@ -118,6 +136,14 @@ public interface PirateMissionProviderDao {
 
         public void setTargetFactionID(int targetFactionID) {
             this.targetFactionID = targetFactionID;
+        }
+
+        public String getTargetSystem() {
+            return targetSystem;
+        }
+
+        public void setTargetSystem(String targetSystem) {
+            this.targetSystem = targetSystem;
         }
     }
 }

@@ -2,6 +2,7 @@ package elite.intel.db.managers;
 
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.dao.LocationDao;
+import elite.intel.db.dao.LocationDao.Coordinates;
 import elite.intel.db.dao.PirateHuntingGroundsDao;
 import elite.intel.db.dao.PirateHuntingGroundsDao.HuntingGround;
 import elite.intel.db.dao.PirateMissionProviderDao;
@@ -10,6 +11,8 @@ import elite.intel.db.util.Database;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.search.spansh.starsystems.StarSystemResult;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -55,14 +58,17 @@ public class HuntingGroundManager {
             entity.setX(provider.getX());
             entity.setY(provider.getY());
             entity.setZ(provider.getZ());
+            entity.setTargetSystem(target.getName());
             dao.upsert(entity);
-            return dao.findMissionProviderForTargetFaction(pirateFaction.getId());
+            return dao.findMissionProviderForTargetStarSystem(target.getName(), "any");
         });
 
         return new PirateMissionTuple<>(pirateFaction, providers);
     }
 
-    public List<PirateMissionTuple<HuntingGround, List<MissionProvider>>> findInProviderForTargetStarSystem(String targetStarSystem) {
+    public List<PirateMissionTuple<HuntingGround, List<MissionProvider>>> findInProviderForTargetStarSystem(
+            @Nonnull String targetStarSystem, @Nullable String currentStarSystemOrNull
+    ) {
         HuntingGround targetEntity = Database.withDao(
                 PirateHuntingGroundsDao.class, dao -> dao.findByStarSystem(targetStarSystem)
         );
@@ -70,31 +76,49 @@ public class HuntingGroundManager {
         // nothing found, return empty list, and fall back to net search
         if (targetEntity == null) return new ArrayList<>();
 
-        List<MissionProvider> providers = getMissionProviders(targetEntity);
+        List<MissionProvider> providers = getMissionProviders(targetEntity, currentStarSystemOrNull);
         return Collections.singletonList(new PirateMissionTuple<>(targetEntity, providers));
     }
 
 
-    public List<PirateMissionTuple<HuntingGround, List<MissionProvider>>> findTargetSystemInRangeForRecon(LocationDao.Coordinates coordinates) {
+    public List<PirateMissionTuple<HuntingGround, List<MissionProvider>>> findTargetSystemInRangeForRecon(Coordinates coordinates) {
         HuntingGround targetEntity = Database.withDao(
                 PirateHuntingGroundsDao.class, dao -> dao.findNearestRecon(coordinates.x(), coordinates.y(), coordinates.z())
         );
-
-        // nothing found, return empty list, and fall back to net search
+        /// nothing found, return empty list, and fall back to net search
         if (targetEntity == null) return new ArrayList<>();
 
-        List<MissionProvider> providers = getMissionProviders(targetEntity);
+        /// Try hunting ground with most mission providers
+        List<MissionProvider> mostProvidersAgainstSameStarSystem = Database.withDao(
+                PirateMissionProviderDao.class,
+                PirateMissionProviderDao::findProvidersWithMostTargetSystems
+        );
+
+        /// if we have mission providers targeting a same star system, return the list
+        if (mostProvidersAgainstSameStarSystem != null && mostProvidersAgainstSameStarSystem.size() > 1) {
+            @SuppressWarnings("OptionalGetWithoutIsPresent") /// guaranteed by the check above
+            List<MissionProvider> missionProviders = Database.withDao(PirateMissionProviderDao.class,
+                    dao -> dao.findMissionProviderForTargetStarSystem(
+                            mostProvidersAgainstSameStarSystem.stream().findFirst().get().getTargetSystem(),
+                            null
+                    )
+            );
+            return Collections.singletonList(new PirateMissionTuple<>(targetEntity, missionProviders));
+        }
+
+        ///
+        List<MissionProvider> providers = getMissionProviders(targetEntity, null);
         return Collections.singletonList(new PirateMissionTuple<>(targetEntity, providers));
     }
 
 
-
-    private List<MissionProvider> getMissionProviders(HuntingGround targetEntity) {
+    private List<MissionProvider> getMissionProviders(HuntingGround targetEntity, String currentStarSystem) {
         if (targetEntity == null) return new ArrayList<>();
-        List<MissionProvider> providers = Database.withDao(
-                PirateMissionProviderDao.class, dao -> dao.findMissionProviderForTargetFaction(targetEntity.getId())
+        return Database.withDao(
+                PirateMissionProviderDao.class, dao -> dao.findMissionProviderForTargetStarSystem(
+                        targetEntity.getStarSystem(), currentStarSystem == null ? "any" : currentStarSystem
+                )
         );
-        return providers;
     }
 
     public int updateTargetFaction(String destinationSystem, String targetFaction) {
@@ -144,6 +168,10 @@ public class HuntingGroundManager {
 
     public void clear() {
         Database.withDao(PirateHuntingGroundsDao.class, dao -> {
+            dao.clear();
+            return Void.TYPE;
+        });
+        Database.withDao(PirateMissionProviderDao.class, dao -> {
             dao.clear();
             return Void.TYPE;
         });

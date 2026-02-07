@@ -312,3 +312,6 @@
 "don't have a reminder"="do I have a reminder?"
 "don't have any"="do I have any"
 "glitter"="clear"
+"blood throughout"="plot route"
+"not allowed"=="plot route"
+"emissions"="missions"

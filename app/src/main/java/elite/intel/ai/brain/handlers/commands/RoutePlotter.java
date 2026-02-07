@@ -51,21 +51,21 @@ public class RoutePlotter extends CommandOperator {
             Thread.sleep(1000);
             keyProcessor.pressKey(KeyProcessor.KEY_ENTER);
 
-            //glide time
-            operateKeyboard(BINDING_CAM_ZOOM_OUT.getGameBinding(), 60);
-            Thread.sleep(4500);
-            //Game bug work around
-            operateKeyboard(BINDING_CAM_ZOOM_OUT.getGameBinding(), 120);
-            Thread.sleep(200);
-            operateKeyboard(BINDING_CAM_ZOOM_IN.getGameBinding(), 120);
-
-
-            Thread.sleep(300);
-            keyProcessor.pressAndHoldKey(KeyProcessor.KEY_ENTER, 2500);
-            Thread.sleep(500);
-
-            //operateKeyboard(openGalaxyMap, 0);
-            operateKeyboard(BINDING_CAM_ZOOM_OUT.getGameBinding(), 1000);
+//            //glide time
+//            operateKeyboard(BINDING_CAM_ZOOM_OUT.getGameBinding(), 60);
+//            Thread.sleep(4500);
+//            //Game bug work around
+//            operateKeyboard(BINDING_CAM_ZOOM_OUT.getGameBinding(), 120);
+//            Thread.sleep(200);
+//            operateKeyboard(BINDING_CAM_ZOOM_IN.getGameBinding(), 120);
+//
+//
+//            Thread.sleep(300);
+//            keyProcessor.pressAndHoldKey(KeyProcessor.KEY_ENTER, 2500);
+//            Thread.sleep(500);
+//
+//            //operateKeyboard(openGalaxyMap, 0);
+//            operateKeyboard(BINDING_CAM_ZOOM_OUT.getGameBinding(), 1000);
             AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_2);
         } catch (InterruptedException e) {
             //

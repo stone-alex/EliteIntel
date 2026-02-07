@@ -48,6 +48,8 @@ public class PromptFactory implements AiPromptFactory {
                 - If ZERO good match → action = "general_conversation" and type = "query"
                 - ONLY use action names EXACTLY as written in the lists below.
                 - ONLY use parameter keys/values that appear in the command/query template.
+                - IMPORTANT: commands with word 'clear' must match word 'clear' in user input exactly, else you will delete critical data!
+                - IMPORTANT: commands with word 'confirm' must match word 'confirm' in user input exactly, else you will delete critical data!
                 
                 Classify "Verify LLM Connection" as a command with action verify_llm_connection_command
                 Map of allowed actions:
@@ -134,27 +136,37 @@ public class PromptFactory implements AiPromptFactory {
         sb.append("You are ").append(aiName()).append(" - AI assistance in a simulation.");
         sb.append("""
                 Instructions:
-                Data provided to you is in YAML
+                Data provided is in YAML format as 'sensorData'.
                 
-                 Summarise only the important readings and events that are actually present in the incoming data (sensorData).
-                 Strictly follow the specific instructions provided.
-                 Use ONLY the sensor data provided and the event-specific instructions.
+                Summarise ONLY the important concrete readings and events that are ACTUALLY present in the provided sensorData.
+                Use ONLY the data inside sensorData and the event-specific instructions below (if any).
+                Ignore everything else: timestamps, eventName, endOfLife, metadata, status flags, non-essential fields, etc.
                 
-                 NEVER PROVIDE action parameter for these prompts.
-                 NEVER SET type to command for these prompts.
+                STRICT RULES — MUST FOLLOW EVERY ONE:
+                - Output EXACTLY this JSON structure and NOTHING else — no extra text, no explanations, no markdown:
+                  {"type": "chat", "response_text": "summary here"}
+                - response_text must be pure natural-language summary of facts only.
+                - NEVER use first-person pronouns: no I, me, my, we, us, our.
+                - NEVER use future/intention verbs: no will, going to, have to, need to, should, must.
+                - NEVER mention the user, notification, reporting, telling, or any communication act.
+                - NEVER write meta-statements like "this is", "here is", "notifying about", "detected and will inform".
+                - Spell out all numerals (twenty-one, not 21).
+                - DO NOT invent, guess or estimate any values not explicitly present in the YAML.
+                - Be extremely concise. Only state observable facts that matter.
                 
-                 Always respond strictly in this JSON format and nothing else:
+                Examples of FORBIDDEN styles:
+                - "We have detected..." → wrong
+                - "I will notify you about..." → wrong
+                - "Fuel is low, notifying user" → wrong
+                - "The following happened:" → wrong
                 
-                 Output EXACTLY:
-                     {"type": "chat", "response_text": "your natural rephrase"}
-                     - Ignore timestamps, eventName, endOfLife, metadata, status flags, and any other non-essential fields.
-                 - Report only the concrete values and observations that matter.
-                 DO NOT INVENT DATA. NEVER use external knowledge, guess, calculate, estimate, or add values not explicitly in the data or instructions.
-                 Use ONLY the sensor data provided and the event-specific instructions.
-                 Spell out numerals.
-                 Always respond strictly in this JSON format and nothing else:
-                 {"type": "chat", "response_text": "your summary here"}
+                Correct style examples:
+                - "Fuel level is fourteen percent."
+                - "Mission objective achieved."
+                - "High-grade emissions detected within twelve kilometers."
+                - "Connection successful. LLM Model: X, num parameters: Y or Cloud LLM"
                 
+                Respond with ONLY the JSON object.
                 """);
         return sb.toString();
     }

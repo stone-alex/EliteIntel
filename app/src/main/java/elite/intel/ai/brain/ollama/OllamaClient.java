@@ -50,7 +50,7 @@ public class OllamaClient extends BaseAiClient implements Client {
         request.addProperty("format", "json");
         request.addProperty("stream", false);
         request.addProperty("think", false);
-        request.addProperty("num_ctx", 128000);
+        request.addProperty("num_ctx", 8192);
 
         /// OLAMA tricks.
         /// Strongest "follow instructions + output clean JSON" preset for ~8–13B models
@@ -63,9 +63,9 @@ public class OllamaClient extends BaseAiClient implements Client {
         request.addProperty("repeat_penalty", 1.12f); // 1.08–1.15 → prevents repeating keys or structure
 
         /// Speed / VRAM / Performance
-        request.addProperty("num_predict", -1);         // max tokens to generate (default -1 = unlimited, set 256–1024)
-        request.addProperty("num_keep", 4000);             // tokens from prompt to keep in KV cache (0 = default, usually all)
-        request.addProperty("num_thread", 0);           // 0 = auto (good), or set to physical cores if you want to limit CPU
+        request.addProperty("num_predict", 4098);         // max tokens to generate (default -1 = unlimited, set 256–1024)
+        request.addProperty("num_keep", 4098);             // tokens from prompt to keep in KV cache (0 = default, usually all)
+        request.addProperty("num_thread", 2);           // 0 = auto (good), or set to physical cores if you want to limit CPU
 
         return request;
     }

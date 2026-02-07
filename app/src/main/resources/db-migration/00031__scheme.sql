@@ -10,3 +10,5 @@ create table if not exists pirate_hunting_grounds (
     ignored       boolean          not null default false,
     targetFaction TEXT
 );
+
+alter table mission_provider add column targetSystem default null;

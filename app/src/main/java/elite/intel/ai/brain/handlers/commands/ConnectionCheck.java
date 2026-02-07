@@ -21,9 +21,9 @@ public class ConnectionCheck implements CommandHandler {
         StringBuilder sb = new StringBuilder();
         sb.append(" ping ");
         if (usingLocalLlmForCommandsAndQueries && usingSameLllmForCommandsAndQueries) {
-            sb.append(" LLM: ").append(commandModel);
+            sb.append(" Model: ").append(commandModel);
         } else if(usingLocalLlmForCommandsAndQueries) {
-            sb.append(" Command llm: ").append(commandModel);
+            sb.append(" Command Model: ").append(commandModel);
             sb.append(" Query Model: ").append(queryModel);
         } else {
             sb.append(" Cloud LLM " );

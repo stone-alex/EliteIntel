@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Singleton class for managing locations.
@@ -128,6 +129,13 @@ public class LocationManager {
         return Database.withDao(LocationDao.class, dao -> {
             LocationDao.Location location = dao.findByLocationName(type);
             return location == null ? null : GsonFactory.getGson().fromJson(location.getJson(), LocationDto.class);
+        });
+    }
+
+    public List<LocationDto> findStationsInCurrentStarSystem(long systemAddress) {
+        return Database.withDao(LocationDao.class, dao -> {
+            List<LocationDao.Location> stations = dao.findStationsInCurrentStarSystem(systemAddress);
+            return stations.stream().map(entity -> GsonFactory.getGson().fromJson(entity.getJson(), LocationDto.class)).collect(Collectors.toList());
         });
     }
 }

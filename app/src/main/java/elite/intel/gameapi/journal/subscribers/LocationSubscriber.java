@@ -32,7 +32,7 @@ public class LocationSubscriber {
         dto.setStationEconomy(event.getStationEconomyLocalised());
         dto.setStationGovernment(event.getStationGovernmentLocalised());
         dto.setStationServices(event.getStationServices());
-        dto.setStarName(event.getStationName());
+        dto.setStarName(event.getStarSystem());
         dto.setStationType(event.getStationType());
         dto.setDistance(event.getDistFromStarLS());
         dto.setEconomy(event.getSystemEconomyLocalised());

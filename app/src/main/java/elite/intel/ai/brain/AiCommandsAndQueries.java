@@ -208,7 +208,7 @@ public class AiCommandsAndQueries {
         queryMap.put(" query biome analysis for star system/planet/moon" + KEY_X, PLANET_BIOME_ANALYSIS.getAction());
         queryMap.put(" query reminder, remind me, reminder data, where going, what are we doing, what are we buying, what are we selling. ", REMINDER.getAction());
         queryMap.put(" query active missions ", ANALYZE_MISSIONS.getAction());
-        queryMap.put(" IF NOTHING MATCHES USE THIS ", GENERAL_CONVERSATION.getAction());
+        //queryMap.put(" IF NOTHING MATCHES USE THIS ", GENERAL_CONVERSATION.getAction());
 
         return queryMap;
     }

@@ -330,7 +330,7 @@ public class AppController implements Runnable {
         EventBusManager.publish(new ServicesStateEvent(true));
 
         Timer connectionCheckTimer = new Timer(2000, e -> {
-            EventBusManager.publish(new AiVoxResponseEvent("Checking LLM Connection..."));
+            EventBusManager.publish(new AiVoxResponseEvent("Connecting to LLM..."));
             EventBusManager.publish(new UserInputEvent("Verify LLM Connection", 100f));
         });
         connectionCheckTimer.setRepeats(false);

@@ -73,6 +73,11 @@ public interface LocationDao {
     @SqlQuery("select * from location where locationName = :locationName")
     Location findByLocationName(@Bind("locationName") String locationName);
 
+    @SqlQuery(""" 
+            select * from location where json like '%"locationType": "STATION"%' and json like '%"massEM": 0.0%' and json not like '%planetClass%' and systemAddress= :systemAddress;
+            """)
+    List<Location> findStationsInCurrentStarSystem(@Bind("systemAddress") long systemAddress);
+
 
     class LocationMapper implements RowMapper<LocationDao.Location> {
         @Override

@@ -37,7 +37,7 @@ public class ConnectionCheck implements CommandHandler {
                                 ?
                         """
                         Acknowledge connection successful.
-                        - LLM Type and models (modelName:numberOfParametersInBillions)
+                        Acknowledge LLM Type and models (modelName:numberOfParametersInBillions)
                         """
                                 :
                         """

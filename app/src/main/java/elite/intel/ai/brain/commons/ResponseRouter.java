@@ -20,7 +20,7 @@ import org.apache.logging.log4j.Logger;
 import javax.annotation.Nullable;
 import java.util.Map;
 
-import static elite.intel.ai.brain.handlers.query.Queries.GENERAL_CONVERSATION;
+
 import static elite.intel.util.json.JsonUtils.nullSaveJsonObject;
 
 
@@ -104,9 +104,7 @@ public class ResponseRouter implements AIRouterInterface {
 
         EventBusManager.publish(new AppLogEvent("Query handler: " + handler.getClass().getSimpleName()));
         if (action == null || action.isEmpty()) {
-            handler = getQueryHandlers().get(GENERAL_CONVERSATION.getAction());
-            action = GENERAL_CONVERSATION.getAction();
-            log.info("No specific query handler found, routing to general_conversation");
+            EventBusManager.publish(new AiVoxResponseEvent("No query action found"));
         }
 
         try {

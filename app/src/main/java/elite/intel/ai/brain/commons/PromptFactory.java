@@ -45,7 +45,7 @@ public class PromptFactory implements AiPromptFactory {
                 CRITICAL RULES - BREAKING ANY = TOTAL FAILURE:
                 - NEVER invent, modify, combine, or create new actions or parameters.
                 - NEVER be "helpful" by guessing.
-                - If ZERO good match → action = "general_conversation" and type = "query"
+                - If ZERO good match → type=chat response_text=No Matching Action
                 - ONLY use action names EXACTLY as written in the lists below.
                 - ONLY use parameter keys/values that appear in the command/query template.
                 - IMPORTANT: commands with word 'clear' must match word 'clear' in user input exactly, else you will delete critical data!
@@ -74,11 +74,11 @@ public class PromptFactory implements AiPromptFactory {
                 """);
 
 
-        if (!systemSession.useLocalQueryLlm() && !systemSession.isRunningPiperTts()) {
+/*        if (!systemSession.useLocalQueryLlm() && !systemSession.isRunningPiperTts()) {
             sb.append(" Behavior: ");
             sb.append(aiPersonality.getBehaviorClause());
             sb.append(aiCadence.getCadenceClause());
-        }
+        }*/
         return sb.toString();
     }
 

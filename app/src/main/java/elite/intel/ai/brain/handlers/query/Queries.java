@@ -48,8 +48,7 @@ public enum Queries {
     TIME_IN_ZONE                        ("query_what_time_is_it_on_earth",              TimeQueryHandler.class),
     PLANET_BIOME_ANALYSIS               ("query_biome_analysis",                        BiomeAnalyzerHandler.class),
     REMINDER                            ("query_reminder_remind_me",                    RemindTargetDestinationHandler.class),
-    ANALYZE_MISSIONS                    ("query_analyze_missions",                      AnalyzeMissionHandler.class),
-    GENERAL_CONVERSATION                ("general_conversation",                        ConversationalQueryHandler.class);
+    ANALYZE_MISSIONS                    ("query_analyze_missions",                      AnalyzeMissionHandler.class);
     /// ########################################################################################################################################
 
 

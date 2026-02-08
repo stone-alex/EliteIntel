@@ -150,7 +150,7 @@ public class SpanshClient {
             if (resp.statusCode() == 202 || resp.statusCode() == 204) {
                 // still processing
                 delay = delay + (long) (Math.random() * 1_000);     // +0–1s jitter
-                log.debug("Search {} in progress ({}), retry in {} ms", searchRefId, resp.statusCode(), delay);
+                log.debug("Search {} in progress ({}), retry in {} ms. \n\n Body {}", searchRefId, resp.statusCode(), delay, resp.body());
                 Thread.sleep(delay);
                 continue;
             }

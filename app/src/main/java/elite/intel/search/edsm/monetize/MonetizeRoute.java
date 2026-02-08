@@ -24,23 +24,24 @@ public class MonetizeRoute {
 
         TradeProfileManager tradeProfileManager = TradeProfileManager.getInstance();
         TradeRouteSearchCriteria criteria = tradeProfileManager.getCriteria(false);
+        List<String> allowedStations = new ArrayList<>(ALLOWED_STATION_TYPES);
 
         if (criteria.isAllowFleetCarriers()) {
-            ALLOWED_STATION_TYPES.add("fleet carrier");
+            allowedStations.add("fleet carrier");
         }
         if (criteria.isAllowPlanetary()) {
-            ALLOWED_STATION_TYPES.add("planetary port");
-            ALLOWED_STATION_TYPES.add("odyssey settlement");
+            allowedStations.add("planetary port");
+            allowedStations.add("odyssey settlement");
         }
         if (!criteria.isRequiresLargePad()) {
-            ALLOWED_STATION_TYPES.remove("outpost");
+            allowedStations.remove("outpost");
         }
 
         NavRouteDto destination = stops.getLast();
-        List<Station> destinations = toStationWithMarket(destination.getName());
+        List<Station> destinations = toStationWithMarket(destination.getName(), allowedStations);
         List<Station> sources = new ArrayList<>();
         for (NavRouteDto stop : stops) {
-            sources.addAll(toStationWithMarket(stop.getName()));
+            sources.addAll(toStationWithMarket(stop.getName(), allowedStations));
         }
         return MonetizeRoute.findTrade(sources, destinations);
     }

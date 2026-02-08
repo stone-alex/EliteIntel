@@ -63,7 +63,7 @@ public class FindBrainTreesHandler extends CommandOperator implements CommandHan
             RoutePlotter plotter = new RoutePlotter(this.controller);
             plotter.plotRoute(result.getSystemName());
             ReminderManager.getInstance()
-                    .setDestination(
+                    .setReminder(
                             "Head to " + result.getSystemName() + " planet " + result.getBodyName()
                     );
         }

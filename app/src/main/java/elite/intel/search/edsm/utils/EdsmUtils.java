@@ -13,14 +13,14 @@ public class EdsmUtils {
 
     public final static List<String> ALLOWED_STATION_TYPES = Arrays.asList("asteroid base", "coriolis starport", "ocellus starport", "orbis starport");
 
-    public static List<Station> toStationWithMarket(String starSystemName) {
+    public static List<Station> toStationWithMarket(String starSystemName, List<String> allowedStationTypes) {
         StationsDto stationsData = EdsmApiClient.searchStations(starSystemName, 0);
-        if (stationsData == null || stationsData.getData() == null || stationsData.getData().getStations() == null) return new ArrayList<>();
+        if (stationsData.getData() == null || stationsData.getData().getStations() == null) return new ArrayList<>();
 
         List<Station> stations = stationsData.getData().getStations();
         for (Station station : stations) {
             if(station.getType() == null) continue;
-            if (!ALLOWED_STATION_TYPES.contains(station.getType().toLowerCase())) continue;
+            if (!allowedStationTypes.contains(station.getType().toLowerCase())) continue;
             station.setStarSystemName(starSystemName);
             MarketDto market = EdsmApiClient.searchMarket(station.getMarketId(), station.getName(), null, 1000);
             station.setCommodities(market.getData().getCommodities());

@@ -59,6 +59,6 @@ public class PlotRouteToNextTradeStopHandler extends CommandOperator implements 
             routePlotter.plotRoute(destinationSystem);
         }
 
-        reminderManager.setDestination(sb.toString());
+        reminderManager.setReminder(sb.toString());
     }
 }

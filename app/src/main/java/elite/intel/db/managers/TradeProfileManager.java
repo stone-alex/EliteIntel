@@ -21,7 +21,7 @@ import java.util.Arrays;
 
 public class TradeProfileManager {
 
-    public static final int MAX_DISTANCE_TO_INITIAL_STATION = 100;
+    public static final int MAX_DISTANCE_TO_INITIAL_STATION = 500;
     private static final Logger log = LogManager.getLogger(TradeProfileManager.class);
     private static TradeProfileManager instance;
     private final ShipManager shipManager = ShipManager.getInstance();
@@ -80,7 +80,7 @@ public class TradeProfileManager {
 
 
             TradeStationSearchCriteria.Filters filters = new TradeStationSearchCriteria.Filters();
-            filters.setDistanceToArrival(new TradeStationSearchCriteria.RangeFilter(0, 6000));
+            filters.setDistanceToArrival(new TradeStationSearchCriteria.RangeFilter(0, 12000));
             TradeStationSearchCriteria.StationType stationType = new TradeStationSearchCriteria.StationType();
             stationType.setTypes(Arrays.asList("Asteroid base", "Coriolis Starport", "Mega ship", "Ocellus Starport", "Orbis Starport"));
             filters.setStationType(stationType);

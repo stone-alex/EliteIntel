@@ -40,7 +40,7 @@ public class PlotRouteToMissionDestination extends CommandOperator implements Co
             sb.append(mission.getDestinationStation());
         }
 
-        ReminderManager.getInstance().setDestination(
+        ReminderManager.getInstance().setReminder(
                 sb.toString()
         );
 

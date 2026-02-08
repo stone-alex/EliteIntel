@@ -31,7 +31,7 @@ public final class ReminderManager {
         });
     }
 
-    public void setDestination(String text) {
+    public void setReminder(String text) {
         Database.withDao(DestinationReminderDao.class, dao -> {
             DestinationReminderDao.Destination data = new DestinationReminderDao.Destination();
             data.setJson(text);

@@ -47,7 +47,7 @@ public class MarketSellEventSubscriber {
 
 
             EventBusManager.publish(new AiVoxResponseEvent(sb.toString()));
-            reminderManager.setDestination(
+            reminderManager.setReminder(
                     sb.toString()
             );
         } else {

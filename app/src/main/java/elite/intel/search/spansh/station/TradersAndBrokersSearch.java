@@ -83,7 +83,7 @@ public class TradersAndBrokersSearch {
                         +". Data was last updated: "+ TimeUtils.transformToYMDHtimeAgo(result.getUpdatedAt(), TimeUtils.LOCAL_DATE_TIME)
                 )
         );
-        ReminderManager.getInstance().setDestination(result.toJson());
+        ReminderManager.getInstance().setReminder(result.toJson());
         return result.getSystemName();
     }
 }

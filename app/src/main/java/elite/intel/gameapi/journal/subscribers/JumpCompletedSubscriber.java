@@ -25,6 +25,7 @@ import elite.intel.session.PlayerSession;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import static elite.intel.util.GravityCalculator.calculateSurfaceGravity;
@@ -75,10 +76,10 @@ public class JumpCompletedSubscriber {
         StringBuilder sb = new StringBuilder();
         List<NavRouteDto> orderedRoute = shipRoute.getOrderedRoute();
         boolean roueSet = !orderedRoute.isEmpty();
+        String reminderText = destinationReminderManager.getReminderText();
 
         if (finalDestination != null && finalDestination.equalsIgnoreCase(event.getStarSystem())) {
             shipRoute.clearRoute();
-            String reminderText = destinationReminderManager.getReminderText();
             if (reminderText != null && !reminderText.isBlank()) {
                 EventBusManager.publish(new MissionCriticalAnnouncementEvent("Reminder " + reminderText));
             } else {
@@ -96,6 +97,10 @@ public class JumpCompletedSubscriber {
             primaryStar.setDeathsDto(deathsDto);
 
         } else if (roueSet) {
+            if (reminderText.toLowerCase().contains(event.getStarSystem().toLowerCase(Locale.ROOT))) {
+                EventBusManager.publish(new MissionCriticalAnnouncementEvent("Reminder " + reminderText));
+            }
+
             sb.append("Arrived at ").append(event.getStarSystem());
             List<NavRouteDto> adjustedRoute = shipRoute.removeLeg(event.getStarSystem());
             int remainingJump = adjustedRoute.size();

@@ -62,7 +62,7 @@ public class FindCommodityHandler extends CommandOperator implements CommandHand
         CommoditySearchResult result = results.getFirst();
         String reminder = "Head to " + result.getStarSystem() + " star system, " + result.getStationName() + " " + result.getStationType() + ". Price per unit is " + result.getPrice() + " credits.";
         EventBusManager.publish(new MissionCriticalAnnouncementEvent(reminder));
-        reminderManager.setDestination(reminder);
+        reminderManager.setReminder(reminder);
 
         RoutePlotter plotter = new RoutePlotter(this.controller);
         plotter.plotRoute(result.getStarSystem());

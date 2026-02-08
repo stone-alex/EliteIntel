@@ -60,7 +60,7 @@ public class FindVistaGenomicsHandler extends CommandOperator implements Command
         VistaGenomicsLocationDto.Result result = first.get();
 
         String reminder = "Head to " + result.getSystemName() + " star system. When you get there looks for" + result.getStationName();
-        ReminderManager.getInstance().setDestination(reminder);
+        ReminderManager.getInstance().setReminder(reminder);
         EventBusManager.publish(new MissionCriticalAnnouncementEvent(reminder));
         routePlotter.plotRoute(result.getSystemName());
     }

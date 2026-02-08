@@ -57,7 +57,7 @@ public class ReconPirateMissionTargetSystemHandler extends CommandOperator imple
                                 """.formatted(starSystem)
                 )
         );
-        ReminderManager.getInstance().setDestination(
+        ReminderManager.getInstance().setReminder(
                 new DataDto(starSystem, target.getTargetFaction()).toJson()
         );
 

@@ -90,7 +90,7 @@ public class ReconMissionProviderSystemHandler extends CommandOperator implement
 
         RoutePlotter plotter = new RoutePlotter(controller);
         plotter.plotRoute(starSystem);
-        ReminderManager.getInstance().setDestination(
+        ReminderManager.getInstance().setReminder(
                 new DataDto(
                         starSystem,
                         " Seek mission providers in local ports with pirate massacre missions against " + targetStarSystemName + " system."

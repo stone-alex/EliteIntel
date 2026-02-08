@@ -51,7 +51,6 @@ public class AppController implements Runnable {
         EventBusManager.register(this);
         this.isRunning.set(false);
         startIfWeHaveCredentials();
-        checkForUpdates();
     }
 
     private void checkForUpdates() {

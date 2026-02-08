@@ -12,6 +12,7 @@ import elite.intel.search.edsm.dto.SystemBodiesDto;
 import elite.intel.search.edsm.dto.data.BodyData;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.Status;
+import elite.intel.util.LocationUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -36,7 +37,6 @@ public class ApproachBodySubscriber {
             location.setPlanetName(event.getBody());
             location.setPlanetShortName(event.getBody());
         }
-
 
         String locationType = location.getLocationType() == null ? "" : location.getLocationType().name();
         sb.append("Entering orbit for ").append(locationType).append(" ").append(location.getPlanetName()).append(". ");
@@ -78,11 +78,10 @@ public class ApproachBodySubscriber {
 
         locationManager.save(location);
         String instructions = """
-            We are approching planet/moon. Warn/Notify user with this data.
-            Temperature data is provided in K (Kelven) convert to C (Celsius) and announce temp in Celsius.
-            Do not mention temperature value in Kelvin.
-            Gravity around equal to or less than 1G is safe. Issue a gravity warning if gravity is higher than 1G.
-        """;
+                    We are approching planet/moon. Warn/Notify user with this data.
+                    Temperature data is provided in K (Kelven) convert to C (Celsius) before announcing. Do not announce Kelvin temp.
+                    Gravity around equal to or less than 1G is safe. Issue a gravity warning if gravity is higher than 1G.
+                """;
         EventBusManager.publish(new SensorDataEvent(sb.toString(), instructions));
     }
 
@@ -90,10 +89,19 @@ public class ApproachBodySubscriber {
     private void useOurData(LocationDto location, StringBuilder sb) {
         double surfaceGravity = formatDouble(location.getGravity());
 
-        sb.append(" Surface Gravity: ").append(surfaceGravity).append("G. ");
-        if (surfaceGravity > 1) {
-            sb.append(" Gravity Warning!!! ");
+        if (surfaceGravity > 1000) {
+            sb.append(" Warning! anomalous gravity reading received!");
+            /// 9.80665 * massEM / Math.pow(radiusKm / 6371.0, 2);
+            double g = LocationUtils.gravityFix(location.getMassEM(), location.getRadius());
+            sb.append(" Calculated gravity: ").append(formatDouble(g)).append("G. ");
+        } else {
+            sb.append(" Surface Gravity: ").append(surfaceGravity).append("G. ");
+            if (surfaceGravity > 1) {
+                sb.append(" Gravity Warning!!! ");
+            }
         }
+
+
         if (!"None".equalsIgnoreCase(location.getAtmosphere())) {
             sb.append(" Atmosphere: ").append(location.getAtmosphere());
             sb.append(". ");
@@ -105,6 +113,7 @@ public class ApproachBodySubscriber {
         sb.append(".");
         double surfaceTemperature = location.getSurfaceTemperature();
         location.setSurfaceTemperature(surfaceTemperature);
+
         sb.append(" Surface Temperature: ").append(surfaceTemperature).append(" K. ");
         if (location.isTidalLocked()) sb.append(" The planet is tidally locked. ");
     }

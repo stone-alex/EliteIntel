@@ -7,7 +7,7 @@ public enum Commands {
 
     CONNECTION_CHECK                                    ("verify_llm_connection_command", null, ConnectionCheck.class),
 
-    NAVIGATE_TO_NEXT_MISSION                            ("plot_route_to_mission_location",null, PlotRouteToMissionDestination.class),
+    NAVIGATE_TO_NEXT_MISSION                            ("navigate_to_active_mission_location",null, PlotRouteToMissionDestination.class),
     LIGHTS_ON_OFF                                       ("toggle_lights_on_off", null, LightsOnOffHandler.class),
     ADD_MINING_TARGET                                   ("add_mining_target", null, AddMiningTargetHandler.class),
     CLEAR_MINING_TARGETS                                ("clear_mining_targets", null, ClearMiningTargetsHandler.class),
@@ -20,12 +20,11 @@ public enum Commands {
 
     FIND_HUNTING_GROUNDS                                ("search_for_hunting_grounds_for_pirate_massacre_missions", null,  LocatePirateHuntingGrounds.class),
     RECON_TARGET_SYSTEM                                 ("navigate_plot_reconnaissance_route_to_hunting_grounds_target_star_system", null,  ReconPirateMissionTargetSystemHandler.class),
-    RECON_PROVIDER_SYSTEM                               ("navigate_plot_reconnaissance_route_to_mission_provider_system", null,  ReconMissionProviderSystemHandler.class),
+    RECON_PROVIDER_SYSTEM                               ("navigate_to_system_with_matching_mission_provider", null,  ReconMissionProviderSystemHandler.class),
     IGNORE_HUNTING_GROUND                               ("ignore_hunting_ground", null, IgnoreHuntingGroundHandler.class),
     CONFIRM_HUNTING_GROUND                              ("confirm_hunting_ground", null, ConfirmHuntingGroundHandler.class),
-    NAVIGATE_TO_PIRATE_MISSION_TARGET_SYSTEM            ("plot_route_to_pirate_massacre_mission_target_system", null,  NavigateToPirateMassacreMissionTargetHandler.class),
-
-    NAVIGATE_TO_MISSION_BATTLE_GROUND                   ("navigate_to_mission_battle_ground", null,  PloteRouteToPirateMissionArena.class),
+    NAVIGATE_TO_PIRATE_MISSION_TARGET_SYSTEM            ("navigate_to_pirate_massacre_mission_target_system", null,  NavigateToPirateMassacreMissionTargetHandler.class),
+    NAVIGATE_TO_PIRATE_MISSION_PROVIDER                 ("navigate_to_known_pirate_massacre_mission_provider", null,  PlotRouteToKnownPirateMassacreMissionProvider.class),
 
     MONETIZE_ROUTE                                      ("monetize_route", null,  MonetizeRouteHandler.class),
 
@@ -90,9 +89,9 @@ public enum Commands {
     EXIT_SUPER_CRUISE                                   ("drop_from_super_cruise", null,  ExitFtlHandler.class),
     ACTIVATE_ANALYSIS_MODE                              ("swap_to_hud_analysis_mode", null,  ActivateAnalysisModeHandler.class),
     ACTIVATE_COMBAT_MODE                                ("swap_to_hud_combat_mode", null,  ActivateCombatModeHandler.class),
-    PLOT_ROUTE_TO_CARRIER                               ("plot_route_to_fleet_carrier", null,  PlotRouteToMyFleetCarrier.class),
+    NAVIGATE_TO_CARRIER                               ("navigate_to_fleet_carrier", null,  PlotRouteToMyFleetCarrier.class),
     SET_OPTIMAL_SPEED                                   ("set_optimal_approach_speed", null,  SetOptimalSpeedHandler.class),
-    TAKE_ME_HOME                                        ("plot_route_to_home_star", null,  PlotRouteToHomeHandler.class),
+    TAKE_ME_HOME                                        ("navigate_to_home_star", null,  PlotRouteToHomeHandler.class),
     OPEN_FSS_AND_SCAN                                   ("open_fss_to_scan_or_honk_star_system", null,  DisplayFssAndScanHandler.class),
 
     GET_HEADING_TO_LZ                                   ("navigate_bearing_direction_to_landing_zone", null,  NavigateToLandingZone.class),
@@ -104,7 +103,7 @@ public enum Commands {
     SHUT_DOWN                                           ("system_shut_down", null,  SystemShutDownRequestHandler.class),
 
     CALCULATE_TRADE_ROUTE                               ("calculate_trade_route", null,  CalculateTradeRouteHandler.class),
-    PLOT_ROUTE_TO_NEXT_TRADE_STOP                       ("navigate_to_trade_stop_port_or_station", null,  PlotRouteToNextTradeStopHandler.class),
+    NAVIGATE_TO_NEXT_TRADE_STOP                       ("navigate_to_trade_stop_port_or_station", null,  PlotRouteToNextTradeStopHandler.class),
     CHANGE_TRADE_PROFILE_SET_STARTING_BUDGET            ("alter_trade_profile_set_starting_budget", null,  ChangeTradeProfileSetStartingBudgetHander.class),
     CHANGE_TRADE_PROFILE_SET_MAX_NUMBER_OF_STOPS        ("alter_trade_profile_set_maximum_number_of_stops", null,  ChangeTradeProfileSetMaxStopsHandler.class),
     CHANGE_TRADE_PROFILE_SET_MAX_DISTANCE_FROM_ENTRY    ("alter_trade_profile_set_maximum_distance_from_entry", null,  ChangeTradeProfileSetMaxDistanceFromEntryHandler.class),

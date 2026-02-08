@@ -26,14 +26,23 @@ public class ConnectionCheck implements CommandHandler {
             sb.append(" Command Model: ").append(commandModel);
             sb.append(" Query Model: ").append(queryModel);
         } else {
-            sb.append(" Cloud LLM " );
+            sb.append(" Cloud " );
         }
 
 
         EventBusManager.publish(
                 new SensorDataEvent(
                         sb.toString(),
-                        "Acknowledge connection successful. LLM Type and models (modelName:numberOfParametersInBillions)"
+                        usingLocalLlmForCommandsAndQueries
+                                ?
+                        """
+                        Acknowledge connection successful.
+                        - LLM Type and models (modelName:numberOfParametersInBillions)
+                        """
+                                :
+                        """
+                        Acknowledge connection successful.
+                        """
                 )
         );
     }

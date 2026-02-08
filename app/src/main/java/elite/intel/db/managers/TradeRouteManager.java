@@ -1,9 +1,7 @@
 package elite.intel.db.managers;
 
-import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.dao.TradeRouteDao;
 import elite.intel.db.util.Database;
-import elite.intel.gameapi.EventBusManager;
 import elite.intel.search.spansh.station.marketstation.TradeStopDto;
 import elite.intel.search.spansh.traderoute.*;
 import elite.intel.util.json.GsonFactory;
@@ -41,18 +39,6 @@ public class TradeRouteManager {
                 TradeRouteDao.class, dao -> {
                     TradeRouteDao.TradeRoute stop = dao.getNextStop();
                     if(stop == null) return null;
-                    return new TradeRouteLegTuple<>(
-                            stop.getLegNumber(),
-                            GsonFactory.getGson().fromJson(stop.getJson(), TradeStopDto.class)
-                    );
-                }
-        );
-    }
-
-    public TradeRouteLegTuple<Integer, TradeStopDto> findForStarSystem(String starSystem) {
-        return Database.withDao(
-                TradeRouteDao.class, dao -> {
-                    TradeRouteDao.TradeRoute stop = dao.findForStarSystem(starSystem);
                     return new TradeRouteLegTuple<>(
                             stop.getLegNumber(),
                             GsonFactory.getGson().fromJson(stop.getJson(), TradeStopDto.class)

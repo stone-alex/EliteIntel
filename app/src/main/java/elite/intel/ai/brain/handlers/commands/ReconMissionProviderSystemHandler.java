@@ -35,7 +35,6 @@ public class ReconMissionProviderSystemHandler extends CommandOperator implement
     @Override public void handle(String action, JsonObject params, String responseText) {
 
         LocationDto currentLocation = locationManager.findByLocationData(playerSession.getLocationData());
-
         List<PirateMissionTuple<HuntingGround, List<MissionProvider>>> huntingGrounds = huntingGroundManager.findInProviderForTargetStarSystem(currentLocation.getStarName(), null);
 
         /// if huntingGrounds is empty (we are not in a target system) try looking for matching target faction.
@@ -78,9 +77,9 @@ public class ReconMissionProviderSystemHandler extends CommandOperator implement
             return;
         }
 
-        HuntingGround target = huntingGrounds.stream().filter(
+        huntingGrounds.stream().filter(
                 data -> data.getTarget().getTargetFaction() == null
-        ).findFirst().map(PirateMissionTuple::getTarget).orElse(null);
+        ).findFirst().map(PirateMissionTuple::getTarget);
 
         String starSystem = provider.getStarSystem();
         EventBusManager.publish(
@@ -94,13 +93,12 @@ public class ReconMissionProviderSystemHandler extends CommandOperator implement
         ReminderManager.getInstance().setDestination(
                 new DataDto(
                         starSystem,
-                        target == null
-                                ? " Seek mission providers in local ports with pirate massacre missions against " + targetStarSystemName + " system."
-                                : " Target Faction: " + target.getTargetFaction()).toYaml()
+                        " Seek mission providers in local ports with pirate massacre missions against " + targetStarSystemName + " system."
+                ).toYaml()
         );
     }
 
-    record DataDto(String starSystem, String targetFaction) implements ToYamlConvertable {
+    record DataDto(String starSystem, String assignment) implements ToYamlConvertable {
 
         @Override public String toYaml() {
             return YamlFactory.toYaml(this);

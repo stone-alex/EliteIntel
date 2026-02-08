@@ -47,7 +47,14 @@ public interface PirateMissionProviderDao {
                     AND targetFactionID = :targetFactionID
                     AND missionProviderFaction IS NULL LIMIT 1
             """)
-    MissionProvider findNullForTarget(@Bind("starSystem") String starSystem, @Bind("targetFactionID") int targetFactionID);
+    MissionProvider findMissionProviderForTargetFaction(@Bind("starSystem") String starSystem, @Bind("targetFactionID") int targetFactionID);
+
+    @SqlQuery("""
+            SELECT * FROM mission_provider
+                WHERE starSystem = :starSystem
+                    AND targetSystem = :targetSystem
+            """)
+    List<MissionProvider> findMissionProviderForTargetSystem(@Bind("starSystem") String starSystem, @Bind("targetSystem") String targetSystem);
 
 
     @SqlUpdate("UPDATE mission_provider SET missionProviderFaction = :faction WHERE id = :id")

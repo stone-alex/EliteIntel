@@ -1,7 +1,6 @@
 package elite.intel.db.managers;
 
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
-import elite.intel.db.dao.LocationDao;
 import elite.intel.db.dao.LocationDao.Coordinates;
 import elite.intel.db.dao.PirateHuntingGroundsDao;
 import elite.intel.db.dao.PirateHuntingGroundsDao.HuntingGround;
@@ -52,6 +51,9 @@ public class HuntingGroundManager {
         });
 
         List<MissionProvider> providers = Database.withDao(PirateMissionProviderDao.class, dao -> {
+            List<MissionProvider> list = dao.findMissionProviderForTargetSystem(provider.getName(), target.getName());
+            if (list != null && !list.isEmpty()) return list;
+
             MissionProvider entity = new MissionProvider();
             entity.setTargetFactionID(pirateFaction.getId());
             entity.setStarSystem(provider.getName());
@@ -81,6 +83,14 @@ public class HuntingGroundManager {
     }
 
 
+    public List<MissionProvider> findConfirmedMissionProviders() {
+        return Database.withDao(
+                PirateMissionProviderDao.class,
+                PirateMissionProviderDao::findProvidersWithMostTargetSystems
+        );
+    }
+
+
     public List<PirateMissionTuple<HuntingGround, List<MissionProvider>>> findTargetSystemInRangeForRecon(Coordinates coordinates) {
         HuntingGround targetEntity = Database.withDao(
                 PirateHuntingGroundsDao.class, dao -> dao.findNearestRecon(coordinates.x(), coordinates.y(), coordinates.z())
@@ -97,7 +107,7 @@ public class HuntingGroundManager {
         /// if we have mission providers targeting a same star system, return the list
         if (mostProvidersAgainstSameStarSystem != null && mostProvidersAgainstSameStarSystem.size() > 1) {
             @SuppressWarnings("OptionalGetWithoutIsPresent") /// guaranteed by the check above
-            List<MissionProvider> missionProviders = Database.withDao(PirateMissionProviderDao.class,
+                    List<MissionProvider> missionProviders = Database.withDao(PirateMissionProviderDao.class,
                     dao -> dao.findMissionProviderForTargetStarSystem(
                             mostProvidersAgainstSameStarSystem.stream().findFirst().get().getTargetSystem(),
                             null
@@ -136,7 +146,7 @@ public class HuntingGroundManager {
         if (providerStarSystem == null || targetFactionId == 0 || providerFaction == null) return;
 
         Database.withDao(PirateMissionProviderDao.class, dao -> {
-            MissionProvider provider = dao.findNullForTarget(providerStarSystem, targetFactionId);
+            MissionProvider provider = dao.findMissionProviderForTargetFaction(providerStarSystem, targetFactionId);
             if (provider == null) return Void.class;
             dao.updateFaction(provider.getId(), providerFaction);
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("Mission provider faction updated. " + providerFaction));

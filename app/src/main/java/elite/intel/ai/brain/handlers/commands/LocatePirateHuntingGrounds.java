@@ -34,7 +34,7 @@ public class LocatePirateHuntingGrounds implements CommandHandler {
             sb.append("Found ").append(huntingGrounds.size()).append(" mission provider");
             if(huntingGrounds.size() > 1) sb.append("s");
             sb.append(". ");
-            boolean reconRequired = huntingGrounds.stream().anyMatch(data -> data.getTarget().getTargetFaction() == null);
+            boolean reconRequired = huntingGrounds.stream().anyMatch(data -> !data.getTarget().isHasResSite());
             if (reconRequired) {
                 sb.append(" Ask me to plot route to target system. ");
                 sb.append(" Reconnaissance is required.");

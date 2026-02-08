@@ -17,8 +17,8 @@ public class TradeRouteFilter {
 
     private static TradeRouteFilter instance;
 
-    private StationClient client = StationClient.getInstance();
-    private PlayerSession playerSession = PlayerSession.getInstance();
+    private final StationClient client = StationClient.getInstance();
+    private final PlayerSession playerSession = PlayerSession.getInstance();
 
     private TradeRouteFilter() {
     }

@@ -34,7 +34,7 @@ public class CalculateTradeRouteHandler implements CommandHandler {
         if (criteria.getStartingCapital() == 0) {
             String shipName = playerSession.getShipLoadout().getShipName();
             StringBuilder sb = new StringBuilder();
-            sb.append(" There is no trading profile for " + shipName + " You will have to set one up once per cargo ship you own.");
+            sb.append(" There is no trading profile for ").append(shipName).append(" You will have to set one up once per cargo ship you own.");
             sb.append(" To set a trading profile, say: Change trading profile, followed by profile parameter.");
             sb.append(" Required parameters are -");
             sb.append(" Starting Capital, Distance from entry, Maximum stops.");

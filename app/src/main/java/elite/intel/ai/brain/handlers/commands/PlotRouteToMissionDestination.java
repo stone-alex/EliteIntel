@@ -20,8 +20,8 @@ public class PlotRouteToMissionDestination extends CommandOperator implements Co
 
     @Override
     public void handle(String action, JsonObject params, String responseText) {
-
         String keyword = params.get("key") == null ? null : params.get("key").getAsString();
+
         MissionDto mission = missionManager.findByKeyword(keyword).stream().findFirst().orElse(null);
         if (mission == null) {
             mission = missionManager.getMissions().values().stream().findFirst().orElse(null);
@@ -35,11 +35,9 @@ public class PlotRouteToMissionDestination extends CommandOperator implements Co
         sb.append("Head to ");
         if(mission.getDestinationSystem() != null){
             sb.append(mission.getDestinationStation());
-            sb.append(" Station ");
         }
         if(mission.getDestinationSettlement() != null){
             sb.append(mission.getDestinationStation());
-            sb.append(" Settlement ");
         }
 
         ReminderManager.getInstance().setDestination(

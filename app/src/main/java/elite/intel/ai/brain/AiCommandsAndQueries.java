@@ -51,8 +51,11 @@ public class AiCommandsAndQueries {
 
         /// non parametrized
         /// Missions
-        commandMap.put(" command recon navigate plot route to hunting ground ", RECON_TARGET_SYSTEM.getAction());
-        commandMap.put(" command recon navigate plot route to mission provider ", RECON_PROVIDER_SYSTEM.getAction());
+        commandMap.put(" command navigate plot reconnaissance route to hunting ground ", RECON_TARGET_SYSTEM.getAction());
+
+        commandMap.put(" command navigate to system with matching mission provider ", RECON_PROVIDER_SYSTEM.getAction());
+        commandMap.put(" command navigate to a known / confirmed pirate massacre mission provider", NAVIGATE_TO_PIRATE_MISSION_PROVIDER.getAction());
+
         commandMap.put(" command find hunting grounds " + KEY_X, FIND_HUNTING_GROUNDS.getAction());
         commandMap.put(" command navigate to active mission" + KEY_X, NAVIGATE_TO_NEXT_MISSION.getAction());
         commandMap.put(" command ignore hunting ground ", IGNORE_HUNTING_GROUND.getAction());
@@ -71,8 +74,8 @@ public class AiCommandsAndQueries {
         commandMap.put(" command show loadout panel ", DISPLAY_LOADOUT_PANEL.getAction());
         commandMap.put(" command **lets go**, lets get out of here, take us to hyperspace, enter hyperspace, go to next way point ", JUMP_TO_HYPERSPACE.getAction());
         commandMap.put(" command drop, disengage FSD, drop from supercruise", EXIT_SUPER_CRUISE.getAction());
-        commandMap.put(" command plot route to carrier, plot route to base, return to base ", PLOT_ROUTE_TO_CARRIER.getAction());
-        commandMap.put(" command plot route to home system ", TAKE_ME_HOME.getAction());
+        commandMap.put(" command navigate to carrier, navigate to base, return to base ", NAVIGATE_TO_CARRIER.getAction());
+        commandMap.put(" command navigate to home system ", TAKE_ME_HOME.getAction());
         commandMap.put(" command set optimal speed ", SET_OPTIMAL_SPEED.getAction());  // Kept here
         commandMap.put(" command scan this system, perform scan, open FSS and scan, scan system, honk, scan ", OPEN_FSS_AND_SCAN.getAction());  // Fixed typo
         commandMap.put(" command navigate to LZ/landing zone ", GET_HEADING_TO_LZ.getAction());
@@ -80,7 +83,7 @@ public class AiCommandsAndQueries {
         commandMap.put(" command calculate carrier route ", CALCULATE_FLEET_CARRIER_ROUTE.getAction());
         commandMap.put(" command enter carrier destination ", ENTER_NEXT_FLEET_CARRIER_DESTINATION.getAction());
         commandMap.put(" command calculate trade route, get us a trade route ", CALCULATE_TRADE_ROUTE.getAction());
-        commandMap.put(" command **plot route** to trade stop/station/port ", PLOT_ROUTE_TO_NEXT_TRADE_STOP.getAction());
+        commandMap.put(" command **navigate** to trade stop/station/port ", NAVIGATE_TO_NEXT_TRADE_STOP.getAction());
         commandMap.put(" command describe trade profile ", LIST_TRADE_ROUTE_PARAMETERS.getAction());
         commandMap.put(" command cancel/clear trade route ", CLEAR_TRADE_ROUTE.getAction());
 

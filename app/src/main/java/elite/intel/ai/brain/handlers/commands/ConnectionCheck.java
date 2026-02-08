@@ -37,7 +37,8 @@ public class ConnectionCheck implements CommandHandler {
                                 ?
                         """
                         Acknowledge connection successful.
-                        Acknowledge LLM Type and models (modelName:numberOfParametersInBillions)
+                        Acknowledge LLM Model and number of parameters. Data is presented to you as (LLMName:120b)
+                        Example: Connection successful. LLM Model <llmname>, 120 billion parameters.
                         """
                                 :
                         """

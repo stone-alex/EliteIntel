@@ -74,7 +74,7 @@ public interface LocationDao {
     Location findByLocationName(@Bind("locationName") String locationName);
 
     @SqlQuery(""" 
-            select * from location where json like '%"locationType": "STATION"%' and json like '%"massEM": 0.0%' and json not like '%planetClass%' and systemAddress= :systemAddress;
+            select * from location  where json like '%"locationType": "STATION"%' and locationName != '' and systemAddress= :systemAddress;
             """)
     List<Location> findStationsInCurrentStarSystem(@Bind("systemAddress") long systemAddress);
 

@@ -65,7 +65,7 @@ public class OllamaClient extends BaseAiClient implements Client {
         /// Speed / VRAM / Performance
         request.addProperty("num_predict", 4098);         // max tokens to generate (default -1 = unlimited, set 256–1024)
         request.addProperty("num_keep", 4098);             // tokens from prompt to keep in KV cache (0 = default, usually all)
-        request.addProperty("num_thread", 2);           // 0 = auto (good), or set to physical cores if you want to limit CPU
+        request.addProperty("num_thread", 1);           // 0 = auto (good), or set to physical cores if you want to limit CPU
 
         return request;
     }

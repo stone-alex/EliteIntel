@@ -60,6 +60,7 @@ public class AppController implements Runnable {
             try {
                 Boolean updateAvailable = checkAsync.get();
                 if (updateAvailable) {
+                    EventBusManager.publish(new AiVoxResponseEvent("Newer version available"));
                     EventBusManager.publish(new UpdateAvailableEvent());
                 }
             } catch (Exception e) {
@@ -300,6 +301,7 @@ public class AppController implements Runnable {
     }
 
     private void startServices() {
+        checkForUpdates();
         if (isRunning.get()) return;
         EventBusManager.publish(new ClearConsoleEvent());
         /// NOTE: User can swap keys. the services MUST be re-initialized before we start them.

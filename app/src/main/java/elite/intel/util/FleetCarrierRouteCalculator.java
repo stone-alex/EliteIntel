@@ -61,7 +61,7 @@ public class FleetCarrierRouteCalculator {
         int numJumps = route.size();
 
         if (numJumps == 0) {
-            EventBusManager.publish(new AiVoxResponseEvent("Unable to plot route to " + destination + ". Data is not available in Spansh. Try another star system near by."));
+            EventBusManager.publish(new AiVoxResponseEvent("Unable to navigate to " + destination + ". Data is not available in Spansh. Try another star system near by."));
         } else {
             EventBusManager.publish(new AiVoxResponseEvent(
                     "Calculated Fleet Carrier route to " + destination + ". " +

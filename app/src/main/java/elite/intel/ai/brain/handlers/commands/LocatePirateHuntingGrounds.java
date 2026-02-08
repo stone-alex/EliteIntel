@@ -36,10 +36,10 @@ public class LocatePirateHuntingGrounds implements CommandHandler {
             sb.append(". ");
             boolean reconRequired = huntingGrounds.stream().anyMatch(data -> !data.getTarget().isHasResSite());
             if (reconRequired) {
-                sb.append(" Ask me to plot route to target system. ");
+                sb.append(" Ask me to navigate to target system. ");
                 sb.append(" Reconnaissance is required.");
             } else {
-                sb.append(" Ask me to plot route to mission provider. ");
+                sb.append(" Ask me to navigate to mission provider. ");
             }
         }
         EventBusManager.publish(new MissionCriticalAnnouncementEvent(sb.toString()));

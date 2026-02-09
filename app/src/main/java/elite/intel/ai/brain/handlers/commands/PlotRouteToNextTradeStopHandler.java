@@ -45,12 +45,14 @@ public class PlotRouteToNextTradeStopHandler extends CommandOperator implements 
             return;
         }
 
+        String sourceSystem = nextStop.getTradeStopDto().getSourceSystem();
+        String sourceStation = nextStop.getTradeStopDto().getSourceStation();
+        String destinationSystem = nextStop.getTradeStopDto().getDestinationSystem();
+        String destinationStation = nextStop.getTradeStopDto().getDestinationStation();
+
         StringBuilder sb = new StringBuilder();
         List<TradeCommodity> commodities = nextStop.getTradeStopDto().getCommodities();
         if (!cargoLoaded) {
-            String sourceSystem = nextStop.getTradeStopDto().getSourceSystem();
-            String sourceStation = nextStop.getTradeStopDto().getSourceStation();
-
             boolean notInSourceSystem = !location.getStarName().equalsIgnoreCase(sourceSystem);
             boolean notAtTheSourceStation = !location.getStationName().equalsIgnoreCase(sourceStation);
 
@@ -61,17 +63,16 @@ public class PlotRouteToNextTradeStopHandler extends CommandOperator implements 
                 sb.append(" In this star system visit ");
                 sb.append(sourceStation).append(" and pick up ");
             } else {
-                sb.append(" At this station ");
+                sb.append(" At this station buy ");
             }
             commodities.forEach(commodity -> sb.append(commodity.getName()).append(", "));
+            sb.append(" and sell at ").append(destinationSystem).append(" star system, ").append(destinationStation).append(" port.");
 
             if (notInSourceSystem) {
                 routePlotter.plotRoute(sourceSystem);
             }
             EventBusManager.publish(new MissionCriticalAnnouncementEvent(sb.toString()));
         } else {
-            String destinationSystem = nextStop.getTradeStopDto().getDestinationSystem();
-            String destinationStation = nextStop.getTradeStopDto().getDestinationStation();
 
             boolean notInDestinationSystem = !location.getStarName().equalsIgnoreCase(destinationSystem);
             boolean notAtTheDestinationStation = !location.getStationName().equalsIgnoreCase(destinationStation);
@@ -82,7 +83,7 @@ public class PlotRouteToNextTradeStopHandler extends CommandOperator implements 
             } else if( notAtTheDestinationStation) {
                 sb.append(" Head to ").append(destinationStation).append(" to sell the freight.");
             } else {
-                sb.append(" Sell freigh here. ");
+                sb.append(" Sell freight here. ");
             }
             EventBusManager.publish(new MissionCriticalAnnouncementEvent(sb.toString()));
         }

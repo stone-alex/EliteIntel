@@ -4,13 +4,14 @@ package elite.intel.gameapi.journal.events;
 import com.google.gson.JsonObject;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
+import elite.intel.util.yaml.ToYamlConvertable;
+import elite.intel.util.yaml.YamlFactory;
 
 import java.time.Duration;
 import java.time.Instant;
 
-public abstract class BaseEvent implements ToJsonConvertible {
+public abstract class BaseEvent implements ToJsonConvertible, ToYamlConvertable {
 
-    //@SerializedName("timestamp")
     public String timestamp;
     public String eventName;
     public Instant endOfLife;
@@ -47,6 +48,13 @@ public abstract class BaseEvent implements ToJsonConvertible {
 
     public String toJson() {
         return GsonFactory.getGson().toJson(this);
+    }
+
+    public String toYaml() {
+        this.timestamp = null;
+        this.endOfLife = null;
+        this.eventName = null;
+        return YamlFactory.toYaml(this);
     }
 
     public abstract JsonObject toJsonObject();

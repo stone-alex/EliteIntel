@@ -114,7 +114,7 @@ public class ApproachBodySubscriber {
         double surfaceTemperature = location.getSurfaceTemperature();
         location.setSurfaceTemperature(surfaceTemperature);
 
-        sb.append(" Surface Temperature: ").append(surfaceTemperature).append(" K. ");
+        sb.append(" Surface Temperature: ").append(surfaceTemperature).append(" Celsius. ");
         if (location.isTidalLocked()) sb.append(" The planet is tidally locked. ");
     }
 

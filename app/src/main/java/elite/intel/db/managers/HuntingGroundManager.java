@@ -142,12 +142,19 @@ public class HuntingGroundManager {
         return Database.withDao(PirateHuntingGroundsDao.class, dao -> dao.findByFactionName(targetFaction, destinationSystem).getId());
     }
 
-    public void updateProviderFaction(String providerStarSystem, int targetFactionId, String providerFaction) {
+    public void updateProviderFaction(String providerStarSystem, int targetFactionId, String providerFaction, String targetSystem) {
         if (providerStarSystem == null || targetFactionId == 0 || providerFaction == null) return;
 
         Database.withDao(PirateMissionProviderDao.class, dao -> {
             MissionProvider provider = dao.findMissionProviderForTargetFaction(providerStarSystem, targetFactionId);
-            if (provider == null) return Void.class;
+            if (provider == null) {
+                provider = new MissionProvider();
+                provider.setStarSystem(providerStarSystem);
+                provider.setTargetFactionID(targetFactionId);
+                provider.setMissionProviderFaction(providerFaction);
+                provider.setTargetSystem(targetSystem);
+                dao.upsert(provider);
+            }
             dao.updateFaction(provider.getId(), providerFaction);
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("Mission provider faction updated. " + providerFaction));
             return Void.class;

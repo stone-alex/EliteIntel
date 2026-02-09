@@ -12,13 +12,13 @@ import java.util.Objects;
 
 public class PromptFactory implements AiPromptFactory {
 
+    public static final String AMY = "Amy";
     private static final PromptFactory INSTANCE = new PromptFactory();
     private static final String JSON_FORMAT = """
             Always output JSON:
             {"type": "command|query", "response_text": "TTS output", "action": "action_name|query_name", "params": {"key": "value"}, "expect_followup": boolean}
             action must match provided command or query. They key for value is always 'key'. 
             """;
-    public static final String AMY = "Amy";
     private final SystemSession systemSession = SystemSession.getInstance();
     private final AiCommandsAndQueries commandsAndQueries = AiCommandsAndQueries.getInstance();
 
@@ -43,7 +43,13 @@ public class PromptFactory implements AiPromptFactory {
                 CRITICAL RULES - BREAKING ANY = TOTAL FAILURE:
                 - NEVER invent, modify, combine, or create new actions or parameters.
                 - NEVER be "helpful" by guessing.
-                - If ZERO good match → type=chat response_text=No Matching Action
+                """);
+        if (systemSession.useLocalCommandLlm() || systemSession.useLocalQueryLlm()) {
+            sb.append("- If ZERO good match → type=chat response_text=No Matching Action");
+        } else {
+            sb.append("- If ZERO good match use query → general_conversation");
+        }
+        sb.append("""
                 - ONLY use action names EXACTLY as written in the lists below.
                 - ONLY use parameter keys/values that appear in the command/query template.
                 - IMPORTANT: commands with word 'clear' must match word 'clear' in user input exactly, else you will delete critical data!

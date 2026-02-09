@@ -337,9 +337,9 @@ public class GoogleTTSImpl implements MouthInterface {
 
     private void processVocalizationQueue(){
         while(running){
-            VocalizationRequest requert = vocalizationQueue.poll();
-            if(requert == null) continue;
-            vocalize(requert.text(), requert.voiceName(), requert.originType(), requert.audioData());
+            VocalizationRequest request = vocalizationQueue.poll();
+            if(request == null) continue;
+            vocalize(request.text(), request.voiceName(), request.originType(), request.audioData());
         }
     }
 

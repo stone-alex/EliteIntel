@@ -326,7 +326,7 @@ public class GoogleSTTImpl implements EarsInterface {
                         if (avgConfidence > MIN_CONFIDENCE_LEVEL) {
                             if (isStreamingModeOn) {
                                 String voiceName = systemSession.getAIVoice().getName();
-                                if (systemSession.isRunningLocalLLM()) {
+                                if (systemSession.useLocalCommandLlm() || systemSession.useLocalQueryLlm()) {
                                     voiceName = PromptFactory.AMY;
                                 }
                                 if (sanitizedTranscript.toLowerCase().startsWith("computer") || sanitizedTranscript.toLowerCase().startsWith(voiceName.toLowerCase())) {

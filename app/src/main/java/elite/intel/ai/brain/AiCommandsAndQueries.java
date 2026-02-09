@@ -156,9 +156,9 @@ public class AiCommandsAndQueries {
         commandMap.put(" command set reminder " + KEY_X, SET_REMINDER.getAction());
 
         /// Cloud LLM only
-        if (systemSession.useLocalCommandLlm()) {
-            commandMap.put(" command change personality to" + KEY_X, SET_PERSONALITY.getAction());
-            commandMap.put(" command change profile to" + KEY_X, SET_PROFILE.getAction());
+        if (!systemSession.useLocalCommandLlm() && !systemSession.useLocalQueryLlm() && !systemSession.isRunningPiperTts()) {
+            commandMap.put(" command change personality to " + KEY_X, SET_PERSONALITY.getAction());
+            commandMap.put(" command change profile to " + KEY_X, SET_PROFILE.getAction());
         }
         return commandMap;
     }
@@ -208,7 +208,10 @@ public class AiCommandsAndQueries {
         queryMap.put(" query biome analysis for star system/planet/moon" + KEY_X, PLANET_BIOME_ANALYSIS.getAction());
         queryMap.put(" query reminder, remind me, reminder data, remind ", REMINDER.getAction());
         queryMap.put(" query active missions ", ANALYZE_MISSIONS.getAction());
-        //queryMap.put(" IF NOTHING MATCHES USE THIS ", GENERAL_CONVERSATION.getAction());
+
+        if (!systemSession.useLocalCommandLlm() && !systemSession.useLocalQueryLlm() && !systemSession.isRunningPiperTts()) {
+            queryMap.put(" IF NOTHING MATCHES USE general conversation", GENERAL_CONVERSATION.getAction());
+        }
 
         return queryMap;
     }

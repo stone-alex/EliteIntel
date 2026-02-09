@@ -32,8 +32,6 @@ public class PromptFactory implements AiPromptFactory {
     @Override
     public String generateVoiceInputSystemPrompt() {
         StringBuilder sb = new StringBuilder();
-        AICadence aiCadence = systemSession.getAICadence();
-        AIPersonality aiPersonality = systemSession.getAIPersonality();
         sb.append("YOU ARE ").append(aiName());
         sb.append("""
                 - STRICT COMMAND PARSER. YOUR ONLY JOB IS TO PICK EXACTLY ONE ACTION FROM THE LIST BELOW. NOTHING ELSE.
@@ -74,7 +72,7 @@ public class PromptFactory implements AiPromptFactory {
                 """);
 
 
-/*        if (!systemSession.useLocalQueryLlm() && !systemSession.isRunningPiperTts()) {
+/*        if (!systemSession.useLocalCommandLlm() && !systemSession.useLocalQueryLlm() && !systemSession.isRunningPiperTts()) {
             sb.append(" Behavior: ");
             sb.append(aiPersonality.getBehaviorClause());
             sb.append(aiCadence.getCadenceClause());
@@ -109,6 +107,16 @@ public class PromptFactory implements AiPromptFactory {
         );
         sb.append(" Spell out numerals for response_text, Example: We have one hundred and thirsty units of gold in cargo hold. ");
         sb.append(" Use numbers for parameters Example: {\"key\":\"1\"} ");
+
+        AICadence aiCadence = systemSession.getAICadence();
+        AIPersonality aiPersonality = systemSession.getAIPersonality();
+
+        if (!systemSession.useLocalCommandLlm() && !systemSession.useLocalQueryLlm() && !systemSession.isRunningPiperTts()) {
+            sb.append(" Behavior: ");
+            sb.append(aiPersonality.getBehaviorClause());
+            sb.append(aiCadence.getCadenceClause());
+        }
+
         return sb.toString();
     }
 

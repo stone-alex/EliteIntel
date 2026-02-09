@@ -186,7 +186,6 @@ public class AppController implements Runnable {
     public void onSystemShutdownEvent(SystemShutDownEvent event) {
         SwingUtilities.invokeLater(() -> {
             this.view.setVisible(false);
-            appendToLog("SYSTEM: Shutting down...");
             System.exit(0);
         });
     }
@@ -342,8 +341,6 @@ public class AppController implements Runnable {
 
     private void stopServices() {
         if (!isRunning.get()) return;
-
-        EventBusManager.publish(new AiVoxResponseEvent("Shutting Down..."));
 
         // Stop in reverse dependency order
         List<ServiceType> reverseOrder = new ArrayList<>(services.keySet());

@@ -19,7 +19,7 @@ public enum AIPersonality {
     CASUAL("Respond extremely briefly and concisely in a casual tone like a colleague. Use occasional slang matching cadence."),
     FRIENDLY("Respond extremely briefly and concisely in a friendly, casual tone like a close friend. Use slang matching cadence."),
     UNHINGED("Respond extremely briefly  and concisely with playful, cheeky energy, emphasizing humor and light sarcasm. Use jargon and slang that matches cadence."),
-    ROGUE("Respond extremely briefly and concisely with bold, in-your-face energy, using heavy jargon but staying sharp and witty within the selected cadence.");
+    ROGUE("Respond extremely briefly and concisely with bold, in-your-face energy, using heavy jargon and slang but staying sharp and witty within the selected cadence.");
 
     private final String behaviorClause;
 

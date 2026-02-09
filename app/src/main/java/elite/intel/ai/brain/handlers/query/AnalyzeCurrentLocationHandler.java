@@ -13,8 +13,6 @@ import elite.intel.search.edsm.dto.data.DeathsStats;
 import elite.intel.search.edsm.dto.data.TrafficStats;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.Status;
-import elite.intel.util.json.GsonFactory;
-import elite.intel.util.json.ToJsonConvertible;
 import elite.intel.util.yaml.ToYamlConvertable;
 import elite.intel.util.yaml.YamlFactory;
 
@@ -146,7 +144,7 @@ public class AnalyzeCurrentLocationHandler extends BaseQueryAnalyzer implements 
             double rotationPeriod,
             double planetRadius,
             boolean isTidallyLocked,
-            double surfaceTemperatureInKelvin,
+            double surfaceTemperatureInCelsius,
             String dayLength
 
     ) implements ToYamlConvertable {

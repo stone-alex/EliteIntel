@@ -1,8 +1,10 @@
 package elite.intel.search.edsm.dto.data;
 
 import com.google.gson.annotations.SerializedName;
+import elite.intel.util.yaml.ToYamlConvertable;
+import elite.intel.util.yaml.YamlFactory;
 
-public class DiscoveryData {
+public class DiscoveryData implements ToYamlConvertable {
     @SerializedName("commander")
     public String commander;
     @SerializedName("date")
@@ -14,5 +16,9 @@ public class DiscoveryData {
 
     public String getDate() {
         return date;
+    }
+
+    @Override public String toYaml() {
+        return YamlFactory.toYaml(this);
     }
 }

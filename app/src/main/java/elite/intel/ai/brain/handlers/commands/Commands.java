@@ -89,7 +89,7 @@ public enum Commands {
     EXIT_SUPER_CRUISE                                   ("drop_from_super_cruise", null,  ExitFtlHandler.class),
     ACTIVATE_ANALYSIS_MODE                              ("swap_to_hud_analysis_mode", null,  ActivateAnalysisModeHandler.class),
     ACTIVATE_COMBAT_MODE                                ("swap_to_hud_combat_mode", null,  ActivateCombatModeHandler.class),
-    NAVIGATE_TO_CARRIER                               ("navigate_to_fleet_carrier", null,  PlotRouteToMyFleetCarrier.class),
+    NAVIGATE_TO_CARRIER                                 ("navigate_to_fleet_carrier", null,  PlotRouteToMyFleetCarrier.class),
     SET_OPTIMAL_SPEED                                   ("set_optimal_approach_speed", null,  SetOptimalSpeedHandler.class),
     TAKE_ME_HOME                                        ("navigate_to_home_star", null,  PlotRouteToHomeHandler.class),
     OPEN_FSS_AND_SCAN                                   ("open_fss_to_scan_or_honk_star_system", null,  DisplayFssAndScanHandler.class),

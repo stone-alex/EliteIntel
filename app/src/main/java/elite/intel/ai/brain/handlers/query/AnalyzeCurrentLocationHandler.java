@@ -43,7 +43,7 @@ public class AnalyzeCurrentLocationHandler extends BaseQueryAnalyzer implements 
                     - IF asked for summary or broad 'where are we' question return starSystemName, planetName followed by summary of what data provided. Example: Star System <X>, Planet <Y>. - <your summary>
                     - IF planetName is unknown check stationName. Example: Docked at <stationName> in star system <starSystemName>
                     - Extract and answer ALL questions in the user input using ONLY the provided data fields.
-                    - For temperature: If temperature is in data (in Kelvin), convert to Celsius and say: "Temperature on <X> is <Y> degrees Celsius."
+                    - For temperature: If temperature is in Celsius and say: "Temperature on <X> is <Y> degrees Celsius."
                     - For day length: Use dayLength directly and say: "Day on <planetName> lasts <dayLength>"
                     - Answer each requested piece of information separately and clearly.
                 
@@ -68,7 +68,7 @@ public class AnalyzeCurrentLocationHandler extends BaseQueryAnalyzer implements 
                                 rotationPeriod,
                                 location.getRadius(),
                                 location.isTidalLocked(),
-                                surfaceTemperatureInKelvin,
+                                (surfaceTemperatureInKelvin - 273), // Convert Kelvin to Celsius
                                 getFormattedSolarDayLength(location.getRotationPeriod(), location.getOrbitalPeriod(), location.isTidalLocked())
                         )
                 ),

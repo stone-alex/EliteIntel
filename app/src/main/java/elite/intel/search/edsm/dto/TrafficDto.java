@@ -4,8 +4,10 @@ import com.google.gson.annotations.SerializedName;
 import elite.intel.search.edsm.dto.data.TrafficData;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
+import elite.intel.util.yaml.ToYamlConvertable;
+import elite.intel.util.yaml.YamlFactory;
 
-public class TrafficDto implements ToJsonConvertible {
+public class TrafficDto implements ToJsonConvertible, ToYamlConvertable {
     @SerializedName("data")
     public TrafficData data;
     @SerializedName("timestamp")
@@ -22,6 +24,10 @@ public class TrafficDto implements ToJsonConvertible {
     @Override
     public String toJson() {
         return GsonFactory.getGson().toJson(this);
+    }
+
+    @Override public String toYaml() {
+        return YamlFactory.toYaml(this);
     }
 }
 

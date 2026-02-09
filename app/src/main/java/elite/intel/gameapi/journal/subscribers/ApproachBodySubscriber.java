@@ -78,8 +78,8 @@ public class ApproachBodySubscriber {
 
         locationManager.save(location);
         String instructions = """
-                    We are approching planet/moon. Warn/Notify user with this data.
-                    Temperature data is provided in K (Kelven) convert to C (Celsius) before announcing. Do not announce Kelvin temp.
+                    We are approaching planet/moon. Warn/Notify user with this data.
+                    Temperature data is provided in C (Celsius)
                     Gravity around equal to or less than 1G is safe. Issue a gravity warning if gravity is higher than 1G.
                 """;
         EventBusManager.publish(new SensorDataEvent(sb.toString(), instructions));
@@ -126,9 +126,9 @@ public class ApproachBodySubscriber {
         if (gravity > 1) {
             sb.append(" Gravity Warning!!! ");
         }
-        Double surfaceTemperatureKelvin = bodyData.getSurfaceTemperature();
+        double surfaceTemperatureKelvin = bodyData.getSurfaceTemperature();
         location.setSurfaceTemperature(surfaceTemperatureKelvin);
-        sb.append(" Surface Temperature: ").append(surfaceTemperatureKelvin).append(" K.");
+        sb.append(" Surface Temperature: ").append((surfaceTemperatureKelvin - 273)).append(" Celsius.");
         if (bodyData.getAtmosphereType() != null && !bodyData.getAtmosphereType().isEmpty()) {
             sb.append(" Atmosphere: ").append(bodyData.getAtmosphereType());
             sb.append(". ");

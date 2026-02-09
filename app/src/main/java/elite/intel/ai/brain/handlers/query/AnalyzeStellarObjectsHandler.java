@@ -88,7 +88,7 @@ public class AnalyzeStellarObjectsHandler extends BaseQueryAnalyzer implements Q
                     location.isLandable(),
                     location.isTerraformable(),
                     Math.round(location.getGravity()),
-                    Math.round(location.getSurfaceTemperature()),
+                    Math.round(( location.getSurfaceTemperature() - 273 ) ), // Convert Kelvin to Celsius
                     location.getAtmosphere(),
                     location.getParentBodyName(),
                     Math.round(location.getDistance()),

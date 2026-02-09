@@ -1,35 +1,41 @@
 package elite.intel.search.edsm.dto.data;
 
 import com.google.gson.annotations.SerializedName;
+import elite.intel.util.yaml.ToYamlConvertable;
+import elite.intel.util.yaml.YamlFactory;
 
 import java.util.StringJoiner;
 
-public class TrafficStats {
+public class TrafficStats implements ToYamlConvertable {
     @SerializedName("total")
     public int total;
     @SerializedName("week")
-    public int week;
+    public int thisWeek;
     @SerializedName("day")
-    public int day;
+    public int today;
 
     public int getTotal() {
         return total;
     }
 
-    public int getWeek() {
-        return week;
+    public int getThisWeek() {
+        return thisWeek;
     }
 
     public int getDay() {
-        return day;
+        return today;
     }
 
     @Override
     public String toString() {
         return new StringJoiner(", ", TrafficStats.class.getSimpleName() + "[", "]")
                 .add("total=" + total)
-                .add("week=" + week)
-                .add("day=" + day)
+                .add("thiwWeek=" + thisWeek)
+                .add("today=" + today)
                 .toString();
+    }
+
+    @Override public String toYaml() {
+        return YamlFactory.toYaml(this);
     }
 }

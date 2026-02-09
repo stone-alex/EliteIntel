@@ -62,13 +62,13 @@ public class CalculateTradeRouteHandler implements CommandHandler {
 
         TradeRouteResponse route = tradeRouteManager.calculateTradeRoute(criteria);
         if (route == null || route.getResult() == null || route.getResult().isEmpty()) {
-            EventBusManager.publish(new MissionCriticalAnnouncementEvent("No trade route found."));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("No trade route found. Try landing at a station. I might have better luck finding a trade route."));
             return;
         }
         long totalProfit = route.getResult().stream()
                 .mapToLong(TradeRouteTransaction::getTotalProfit)
                 .sum();
 
-        EventBusManager.publish(new MissionCriticalAnnouncementEvent("Calculated route with profit of " + totalProfit + " credits. Ask me to plot the route to next trade station."));
+        EventBusManager.publish(new MissionCriticalAnnouncementEvent("Calculated route with profit of " + totalProfit + " credits. Ask me to navigate to next trade station."));
     }
 }

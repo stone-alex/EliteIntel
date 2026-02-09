@@ -29,10 +29,10 @@ public class StartJumpSubscriber {
             sb.append(isFuelStarClause(event.getStarClass()));
             sb.append(". ");
             if (trafficDto.getData() != null && trafficDto.getData().getTraffic().getTotal() > 0) {
-                sb.append(" Traffic data: " + trafficDto.toJson());
+                sb.append(" Traffic data: " + trafficDto.getData().getTraffic().toYaml());
             }
             if (deathsDto.getData() != null && deathsDto.getData().getDeaths().getTotal() > 0) {
-                sb.append(" Deaths data: " + deathsDto.toJson());
+                sb.append(" Deaths data: " + deathsDto.getData().getDeaths().toYaml());
             }
 
             PlayerSession playerSession = PlayerSession.getInstance();

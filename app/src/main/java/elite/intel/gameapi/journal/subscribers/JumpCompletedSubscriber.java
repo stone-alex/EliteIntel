@@ -155,7 +155,7 @@ public class JumpCompletedSubscriber {
             stellarObject.setRadius(data.getRadius());
             Double surfaceGravity = calculateSurfaceGravity(data.getEarthMasses(), data.getRadius());
             stellarObject.setGravity(surfaceGravity == null ? 0 : surfaceGravity);
-            stellarObject.setSurfaceTemperature(data.getSurfaceTemperature());
+            stellarObject.setSurfaceTemperature(data.getSurfaceTemperature()); // Keep Kelvin
             stellarObject.setTidalLocked(data.isRotationalPeriodTidallyLocked());
             stellarObject.setLocationType(LocationDto.determineType(data.getType(), data.getDistanceToArrival() == 0));
             if (data.getDiscovery() != null) {

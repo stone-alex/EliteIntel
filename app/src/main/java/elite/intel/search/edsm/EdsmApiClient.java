@@ -260,7 +260,6 @@ public class EdsmApiClient {
         }
         DeathsDto dto = new DeathsDto();
         dto.data = data;
-        dto.timestamp = timestamp;
         return dto;
     }
 

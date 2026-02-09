@@ -9,8 +9,6 @@ import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.search.edsm.dto.DeathsDto;
 import elite.intel.search.edsm.dto.TrafficDto;
 import elite.intel.session.PlayerSession;
-import elite.intel.util.json.GsonFactory;
-import elite.intel.util.json.ToJsonConvertible;
 import elite.intel.util.yaml.ToYamlConvertable;
 import elite.intel.util.yaml.YamlFactory;
 
@@ -28,12 +26,16 @@ public class AnalyzeSystemSecurityHandler extends BaseQueryAnalyzer implements Q
 
         String instructions = """
                 Provided security and safety assessment based on this data.
-                Power play state is indicated by powerplayState and powerplayStateControlProgress
+                Power play state is indicated by powerPlayState and powerPlayStateControlProgress
                 However even if system does not have major power play it may have controlling faction and local government.
                 """;
+        double pscp = currentLocation.getPowerplayStateControlProgress();
+        String powerPlayStateControlProgress = pscp == 0 ? "none" : String.valueOf(pscp);
         return process(
                 new AiDataStruct(instructions,
                         new DataDto(
+                                currentLocation.getStarName(),
+                                trafficDto == null ? null : trafficDto.getData().getDiscovery(),
                                 currentLocation.getSecurity(),
                                 currentLocation.getStationFaction(),
                                 currentLocation.getPopulation(),
@@ -41,11 +43,11 @@ public class AnalyzeSystemSecurityHandler extends BaseQueryAnalyzer implements Q
                                 currentLocation.getGovernment(),
                                 currentLocation.getPowerplayState(),
                                 currentLocation.getControllingPower(),
-                                currentLocation.getPowerplayStateControlProgress(),
+                                powerPlayStateControlProgress,
                                 currentLocation.getPowerplayStateReinforcement(),
                                 currentLocation.getPowerplayStateUndermining(),
-                                deathsDto,
-                                trafficDto
+                                deathsDto == null ? null : deathsDto.getData().getDeaths(),
+                                trafficDto == null ? null : trafficDto.getData().getTraffic()
                         )
                 ),
                 originalUserInput
@@ -53,19 +55,21 @@ public class AnalyzeSystemSecurityHandler extends BaseQueryAnalyzer implements Q
     }
 
     record DataDto(
-                String security,
-                String faction,
-                Long population,
-                String economy,
-                String government,
-                String powerplayState,
-                String controllingPower,
-                double powerplayStateControlProgress,
-                Integer powerplayStateReinforcement,
-                Integer powerplayStateUndermining,
-                DeathsDto deathsDto,
-                TrafficDto trafficDto
-        ) implements ToYamlConvertable {
+            String starSystem,
+            ToYamlConvertable discoveredBy,
+            String security,
+            String faction,
+            Long population,
+            String economy,
+            String government,
+            String powerPlayState,
+            String controllingPower,
+            String powerplayStateControlProgress,
+            Integer powerplayStateReinforcement,
+            Integer powerplayStateUndermining,
+            ToYamlConvertable deathsDto,
+            ToYamlConvertable trafficDto
+    ) implements ToYamlConvertable {
         @Override public String toYaml() {
             return YamlFactory.toYaml(this);
         }

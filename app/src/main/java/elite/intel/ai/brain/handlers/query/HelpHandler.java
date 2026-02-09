@@ -26,7 +26,10 @@ public class HelpHandler extends BaseQueryAnalyzer implements QueryHandler {
 
         Map<String, String> data = Database.withDao(HelpDao.class, dao -> {
             Map<String, String> map = new HashMap<>();
-            String[] queries = topic.split(" ");
+            String[] queries = topic
+                    .replaceAll("the", "")
+                    .split(" ");
+
             for (String q : queries) {
                 List<HelpDao.HelpEntity> help = dao.getHelp(q, q);
                 for (HelpDao.HelpEntity h : help) {
@@ -36,7 +39,10 @@ public class HelpHandler extends BaseQueryAnalyzer implements QueryHandler {
             return map;
         });
 
-        return process(new AiDataStruct("Use this data to explain to the user how you can assist with a given task. Provide response in text format.", new DataDto(data)), originalUserInput);
+        String instructions = """
+            Use this information to guide the user through the steps they can take to get better help from you.
+        """;
+        return process(new AiDataStruct(instructions, new DataDto(data)), originalUserInput);
 
     }
 

@@ -7,8 +7,6 @@ import elite.intel.search.edsm.dto.StationsDto;
 import elite.intel.search.edsm.dto.data.Station;
 import elite.intel.search.edsm.dto.data.StationsData;
 import elite.intel.session.PlayerSession;
-import elite.intel.util.json.GsonFactory;
-import elite.intel.util.json.ToJsonConvertible;
 import elite.intel.util.yaml.ToYamlConvertable;
 import elite.intel.util.yaml.YamlFactory;
 
@@ -35,7 +33,7 @@ public class AnalyzeStationsHandler extends BaseQueryAnalyzer implements QueryHa
                         station.getGovernment(),
                         station.getCommodities() == null ? null : station.getCommodities().size(),
                         station.getEconomy(),
-                        station.getOtherServices() == null ? null : station.getOtherServices().size()
+                        station.getAvailableServices() == null ? null : station.getAvailableServices().size()
                 ));
             }
         }

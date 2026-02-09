@@ -1,12 +1,12 @@
 package elite.intel.search.edsm.dto.data;
 
 import com.google.gson.annotations.SerializedName;
+import elite.intel.util.yaml.ToYamlConvertable;
+import elite.intel.util.yaml.YamlFactory;
 
 import java.util.List;
 
-public class Station {
-    @SerializedName("id")
-    public int id;
+public class Station implements ToYamlConvertable {
     @SerializedName("marketId")
     public long marketId;
     @SerializedName("type")
@@ -16,7 +16,7 @@ public class Station {
     @SerializedName("body")
     public StationBody body;
     @SerializedName("distanceToArrival")
-    public double distanceToArrival;
+    public double distanceToArrivalInLightSeconds;
     @SerializedName("allegiance")
     public String allegiance;
     @SerializedName("government")
@@ -32,7 +32,7 @@ public class Station {
     @SerializedName("haveOutfitting")
     public boolean haveOutfitting;
     @SerializedName("otherServices")
-    public List<String> otherServices;
+    public List<String> availableServices;
     @SerializedName("controllingFaction")
     public ControllingFaction controllingFaction;
     @SerializedName("updateTime")
@@ -60,10 +60,6 @@ public class Station {
         this.starSystemName = starSystemName;
     }
 
-    public int getId() {
-        return id;
-    }
-
     public long getMarketId() {
         return marketId;
     }
@@ -80,8 +76,8 @@ public class Station {
         return body;
     }
 
-    public double getDistanceToArrival() {
-        return distanceToArrival;
+    public double getDistanceToArrivalInLightSeconds() {
+        return distanceToArrivalInLightSeconds;
     }
 
     public String getAllegiance() {
@@ -112,8 +108,8 @@ public class Station {
         return haveOutfitting;
     }
 
-    public List<String> getOtherServices() {
-        return otherServices;
+    public List<String> getAvailableServices() {
+        return availableServices;
     }
 
     public ControllingFaction getControllingFaction() {
@@ -122,5 +118,9 @@ public class Station {
 
     public StationUpdateTime getUpdateTime() {
         return updateTime;
+    }
+
+    @Override public String toYaml() {
+        return YamlFactory.toYaml(this);
     }
 }

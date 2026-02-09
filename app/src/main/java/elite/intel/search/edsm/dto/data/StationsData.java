@@ -1,6 +1,7 @@
 package elite.intel.search.edsm.dto.data;
 
 import com.google.gson.annotations.SerializedName;
+import elite.intel.util.yaml.ToYamlConvertable;
 
 import java.util.List;
 

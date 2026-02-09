@@ -207,6 +207,7 @@ public class AiCommandsAndQueries {
         queryMap.put(" query what time is it ", TIME_IN_ZONE.getAction());
         queryMap.put(" query biome analysis for star system/planet/moon" + KEY_X, PLANET_BIOME_ANALYSIS.getAction());
         queryMap.put(" query reminder, remind me, reminder data, remind ", REMINDER.getAction());
+        queryMap.put(" query data for stations ports and settlements", ANALYZE_LOCAL_STATIONS.getAction());
         queryMap.put(" query active missions ", ANALYZE_MISSIONS.getAction());
 
         if (!systemSession.useLocalCommandLlm() && !systemSession.useLocalQueryLlm() && !systemSession.isRunningPiperTts()) {

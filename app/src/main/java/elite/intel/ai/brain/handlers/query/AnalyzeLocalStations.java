@@ -5,16 +5,13 @@ import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.search.edsm.EdsmApiClient;
-import elite.intel.search.edsm.dto.OutfittingDto;
-import elite.intel.search.edsm.dto.ShipyardDto;
 import elite.intel.search.edsm.dto.StationsDto;
+import elite.intel.search.edsm.dto.data.Station;
 import elite.intel.session.PlayerSession;
-import elite.intel.util.json.GsonFactory;
-import elite.intel.util.json.ToJsonConvertible;
 import elite.intel.util.yaml.ToYamlConvertable;
 import elite.intel.util.yaml.YamlFactory;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class AnalyzeLocalStations extends BaseQueryAnalyzer implements QueryHandler {
@@ -24,26 +21,61 @@ public class AnalyzeLocalStations extends BaseQueryAnalyzer implements QueryHand
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         EventBusManager.publish(new AiVoxResponseEvent("Analyzing stations data... Stand by..."));
 
-        StationsDto stationsDto = EdsmApiClient.searchStations(playerSession.getPrimaryStarName(), 0);
-        List<DataElement> data = new ArrayList<>();
-        if (stationsDto.getData() != null && stationsDto.getData().getStations() != null) {
-            stationsDto.getData().getStations().forEach(station -> {
-                OutfittingDto outfitting = EdsmApiClient.searchOutfitting(station.getMarketId(), null, null);
-                ShipyardDto shipyard = EdsmApiClient.searchShipyard(station.getMarketId(), null, null);
-                data.add(new DataElement(station.getName(), outfitting, shipyard));
-            });
+        String starName = playerSession.getPrimaryStarName();
+        StationsDto stationsDto = EdsmApiClient.searchStations(starName, 0);
+        List<Station> stations = stationsDto.getData().getStations();
+        if (stations == null || stations.isEmpty()) {
+            return process("no data available");
         }
 
-        return process(new AiDataStruct("Answer questions about local stations", new DataDto(data)), originalUserInput);
+        List<StationData> stationData = new LinkedList<>();
+        stations.forEach(s -> stationData.add(
+                new StationData(
+                        s.getType(),
+                        s.getName(),
+                        s.getBody() == null ? null : s.getBody().getName(),
+                        s.getDistanceToArrivalInLightSeconds(),
+                        s.getAllegiance(),
+                        s.getGovernment(),
+                        s.getEconomy(),
+                        s.isHaveMarket(),
+                        s.isHaveShipyard(),
+                        s.isHaveOutfitting(),
+                        s.getControllingFaction() == null ? null : s.getControllingFaction().getName()
+                )
+        ));
+
+        String instructions = """
+                Answer questions about local stations.
+                """;
+
+        return process(
+                new AiDataStruct(instructions,
+                        new DataDto(starName, stationData)
+                ), originalUserInput
+        );
     }
 
-    record DataElement(String stationName, OutfittingDto outfitting, ShipyardDto shipyard) implements ToYamlConvertable {
+    record DataDto(String starSystemName, List<StationData> stations) implements ToYamlConvertable {
         @Override public String toYaml() {
             return YamlFactory.toYaml(this);
         }
     }
 
-    record DataDto(List<DataElement> data) implements ToYamlConvertable {
+    record StationData(
+            String stationType,
+            String stationName,
+            String orbitingAround,
+            double distanceToArrivalInLightSeconds,
+            String allegiance,
+            String government,
+            String economy,
+            boolean haveMarket,
+            boolean haveShipyard,
+            boolean haveOutfitting,
+            String controllingFaction
+
+    ) implements ToYamlConvertable {
         @Override public String toYaml() {
             return YamlFactory.toYaml(this);
         }

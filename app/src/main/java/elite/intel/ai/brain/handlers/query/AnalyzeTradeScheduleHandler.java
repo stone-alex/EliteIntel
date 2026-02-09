@@ -9,7 +9,7 @@ import elite.intel.util.yaml.YamlFactory;
 
 import java.util.List;
 
-public class AnalyzeTradeRouteHandler extends BaseQueryAnalyzer implements QueryHandler {
+public class AnalyzeTradeScheduleHandler extends BaseQueryAnalyzer implements QueryHandler {
 
     public static final String INSTRUCTIONS = """ 
             Use this data to answer users' queries
@@ -37,7 +37,7 @@ public class AnalyzeTradeRouteHandler extends BaseQueryAnalyzer implements Query
                     .append("\n");
         }
         if(allStops.isEmpty()){
-            return process("No trade route legs found");
+            return process("No trade schedule set.");
         }
         return process(new AiDataStruct(INSTRUCTIONS, new DataDto(sb.toString())), originalUserInput);
     }

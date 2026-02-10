@@ -55,7 +55,7 @@ public class FindCommodityHandler extends CommandOperator implements CommandHand
 
         List<CommoditySearchResult> results = EdsmCommoditySearch.search(commodity, starName, distance);
         if (results.isEmpty()) {
-            EventBusManager.publish(new MissionCriticalAnnouncementEvent("No commodities found."));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("No match found."));
             return;
         }
         ReminderManager reminderManager = ReminderManager.getInstance();

@@ -37,7 +37,7 @@ public class PromotionSubscriber {
         }
         if (combatRank != null) {
             String string = Ranks.getCombatRankMap().get(combatRank);
-            EventBusManager.publish(new SensorDataEvent("Pilate Federation promotion to combat rank of: " + string, "Congratulate User"));
+            EventBusManager.publish(new SensorDataEvent("Pilot Federation promotion to combat rank of: " + string, "Congratulate User"));
             rankAndProgressDto.setCombatRank(string);
             session.setRankAndProgressDto(rankAndProgressDto);
         }
@@ -45,19 +45,19 @@ public class PromotionSubscriber {
         //other ranks are not used for honorifics etc. the data will update on next game session load.
         if (tradeRank != null) {
             String string = Ranks.getTradeRankMap().get(tradeRank);
-            EventBusManager.publish(new SensorDataEvent("Pilate Federation promotion to trade rank of: " + string, "Congratulate User"));
+            EventBusManager.publish(new SensorDataEvent("Pilot Federation promotion to trade rank of: " + string, "Congratulate User"));
         }
         if (exploreRank != null) {
             String string = Ranks.getExplorationRankMap().get(exploreRank);
-            EventBusManager.publish(new SensorDataEvent("Pilate Federation promotion to exploration rank of: " + string, "Congratulate User"));
+            EventBusManager.publish(new SensorDataEvent("Pilot Federation promotion to exploration rank of: " + string, "Congratulate User"));
         }
         if (exobiologyRank != null) {
             String string = Ranks.getExobiologyRankMap().get(exobiologyRank);
-            EventBusManager.publish(new SensorDataEvent("Pilate Federation promotion to exobiology rank of: " + string, "Congratulate User"));
+            EventBusManager.publish(new SensorDataEvent("Pilot Federation promotion to exobiology rank of: " + string, "Congratulate User"));
         }
         if (soldier != null) {
             String string = Ranks.getMercenaryRankMap().get(soldier);
-            EventBusManager.publish(new SensorDataEvent("Pilate Federation promotion to soldier count of: " + string, "Congratulate User"));
+            EventBusManager.publish(new SensorDataEvent("Pilot Federation promotion to soldier count of: " + string, "Congratulate User"));
         }
     }
 }

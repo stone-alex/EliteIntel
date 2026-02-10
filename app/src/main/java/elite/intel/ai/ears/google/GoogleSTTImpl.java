@@ -48,7 +48,6 @@ public class GoogleSTTImpl implements EarsInterface {
     private int sampleRateHertz;  // Dynamically detected
     private int bufferSize; // Dynamically calculated based on sample rate
     private double RMS_THRESHOLD_HIGH; // Dynamically calibrated
-    private double RMS_THRESHOLD_LOW; // Dynamically calibrated
     private SpeechClient speechClient;
     private long lastAudioSentTime = System.currentTimeMillis();
     private Thread processingThread;
@@ -74,15 +73,14 @@ public class GoogleSTTImpl implements EarsInterface {
         Double rms_threshold_high = systemSession.getRmsThresholdHigh();
         Double rms_threshold_low = systemSession.getRmsThresholdLow();
 
+        // Dynamically calibrated
         if (rms_threshold_high == 0 || rms_threshold_low == 0) {
             EventBusManager.publish(new AppLogEvent("Calibrating audio..."));
             RmsTupple<Double, Double> rmsThresholds = AudioCalibrator.calibrateRMS(sampleRateHertz, bufferSize);
             this.RMS_THRESHOLD_HIGH = rmsThresholds.getRmsHigh();
-            this.RMS_THRESHOLD_LOW = rmsThresholds.getRmsLow();
         } else {
             this.RMS_THRESHOLD_HIGH = rms_threshold_high;
-            this.RMS_THRESHOLD_LOW = rms_threshold_low;
-            log.info("RMS thresholds already calibrated: High: {}, Low: {}", this.RMS_THRESHOLD_HIGH, this.RMS_THRESHOLD_LOW);
+            log.info("RMS thresholds already calibrated: High: {}", this.RMS_THRESHOLD_HIGH);
         }
 
         // Initialize SpeechClient

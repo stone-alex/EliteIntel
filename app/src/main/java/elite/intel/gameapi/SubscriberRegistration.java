@@ -58,7 +58,6 @@ public class SubscriberRegistration {
                 EventBusManager.register(subscriberInstance);
             } catch (Exception e) {
                 System.err.println("Failed to instantiate subscriber: " + subscriberClass.getName());
-                e.printStackTrace();
             }
         }
     }

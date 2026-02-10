@@ -26,8 +26,6 @@ public class ActivateCombatModeHandler extends CommandOperator implements Comman
             if (status.isInSrv()) {
                 operateKeyboard(BINDING_ACTIVATE_COMBAT_MODE.getGameBinding(), 0);
             }
-        } else {
-            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Combat mode already active."));
         }
     }
 }

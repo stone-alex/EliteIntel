@@ -1,22 +1,23 @@
 package elite.intel.gameapi.gamestate.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.UserInputEvent;
+import elite.intel.ai.brain.handlers.CommandHandlerFactory;
+import elite.intel.ai.brain.handlers.commands.CommandHandler;
 import elite.intel.gameapi.gamestate.status_events.BeingInterdictedEvent;
-import elite.intel.session.Status;
+
+import static elite.intel.ai.brain.handlers.commands.Commands.ACTIVATE_COMBAT_MODE;
+import static elite.intel.ai.brain.handlers.commands.Commands.SELECT_HIGHEST_THREAT;
 
 public class InterdictionHandler {
 
-
-    private final Status status = Status.getInstance();
+    private final CommandHandlerFactory commandHandlerFactory = CommandHandlerFactory.getInstance();
 
     @Subscribe
     public void onInterdictedEvent(BeingInterdictedEvent event) {
-        boolean analysisMode = status.isAnalysisMode();
-        if (analysisMode) {
-            EventBusManager.publish(new UserInputEvent("activate combat mode", 100));
-            EventBusManager.publish(new UserInputEvent("target highest threat", 100));
-        }
+        CommandHandler activateCombatMode = commandHandlerFactory.getCommandHandlers().get(ACTIVATE_COMBAT_MODE.getAction());
+        new Thread(() -> activateCombatMode.handle(ACTIVATE_COMBAT_MODE.getAction(), null, "")).start();
+
+        CommandHandler handler = commandHandlerFactory.getCommandHandlers().get(SELECT_HIGHEST_THREAT.getAction());
+        new Thread(() -> handler.handle(SELECT_HIGHEST_THREAT.getAction(), null, "")).start();
     }
 }

@@ -26,8 +26,6 @@ public class ActivateAnalysisModeHandler extends CommandOperator implements Comm
             if (status.isInSrv()) {
                 operateKeyboard(BINDING_ACTIVATE_ANALYSIS_MODE_BUGGY.getGameBinding(), 0);
             }
-        } else {
-            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Analysis mode already active."));
         }
     }
 }

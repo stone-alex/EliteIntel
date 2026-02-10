@@ -15,12 +15,12 @@ public class CommandHandlerFactory {
     private static final Logger log = LogManager.getLogger(CommandHandlerFactory.class);
     private final Map<String, CommandHandler> commandHandlers = new HashMap<>();
     private static CommandHandlerFactory instance;
-    private final GameController gameHandler;
+    private final GameController gameController;
 
     private CommandHandlerFactory() {
         // Private constructor for singleton
         try {
-            this.gameHandler = new GameController();
+            this.gameController = new GameController();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -34,7 +34,7 @@ public class CommandHandlerFactory {
     }
 
     public GameController getGameCommandHandler() {
-        return gameHandler;
+        return gameController;
     }
 
 
@@ -53,12 +53,20 @@ public class CommandHandlerFactory {
         return commandHandlers;
     }
 
+    public Map<String, CommandHandler> getCommandHandlers() {
+        return commandHandlers;
+    }
+
+    public GameController getGameController() {
+        return gameController;
+    }
+
     private CommandHandler instantiateCommandHandler(Class<? extends CommandHandler> handlerClass, String action) {
         try {
             try {
                 Constructor<? extends CommandHandler> constructor = handlerClass.getDeclaredConstructor(GameController.class);
                 constructor.setAccessible(true);
-                return constructor.newInstance(gameHandler);
+                return constructor.newInstance(gameController);
             } catch (NoSuchMethodException e) {
                 Constructor<? extends CommandHandler> constructor = handlerClass.getDeclaredConstructor();
                 constructor.setAccessible(true);

@@ -310,8 +310,6 @@ public class AppController implements Runnable {
         /// NOTE: User can swap keys. the services MUST be re-initialized before we start them.
         initServices();
 
-        systemSession.clearChatHistory();
-
         for (ServiceType type : ServiceType.values()) {
             ServiceHolder service = services.get(type);
             if (service != null) {
@@ -360,7 +358,6 @@ public class AppController implements Runnable {
         }
         this.services.clear();
 
-        systemSession.clearChatHistory();
         EventBusManager.publish(new ServicesStateEvent(false));
         isRunning.set(false);
         EventBusManager.publish(new ClearConsoleEvent());

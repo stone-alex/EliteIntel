@@ -14,11 +14,6 @@ public class PromptFactory implements AiPromptFactory {
 
     public static final String AMY = "Amy";
     private static final PromptFactory INSTANCE = new PromptFactory();
-    private static final String JSON_FORMAT = """
-            Always output JSON:
-            {"type": "command|query", "response_text": "TTS output", "action": "action_name|query_name", "params": {"key": "value"}, "expect_followup": boolean}
-            action must match provided command or query. They key for value is always 'key'. 
-            """;
     private final SystemSession systemSession = SystemSession.getInstance();
     private final AiCommandsAndQueries commandsAndQueries = AiCommandsAndQueries.getInstance();
 
@@ -77,13 +72,6 @@ public class PromptFactory implements AiPromptFactory {
                   - "lights on"                         → {"state": true}
                   - "find gold within 80 ly"            → {"key": "gold", "max_distance":"80"}
                 """);
-
-
-/*        if (!systemSession.useLocalCommandLlm() && !systemSession.useLocalQueryLlm() && !systemSession.isRunningPiperTts()) {
-            sb.append(" Behavior: ");
-            sb.append(aiPersonality.getBehaviorClause());
-            sb.append(aiCadence.getCadenceClause());
-        }*/
         return sb.toString();
     }
 
@@ -118,11 +106,11 @@ public class PromptFactory implements AiPromptFactory {
         AICadence aiCadence = systemSession.getAICadence();
         AIPersonality aiPersonality = systemSession.getAIPersonality();
 
-        if (!systemSession.useLocalCommandLlm() && !systemSession.useLocalQueryLlm() && !systemSession.isRunningPiperTts()) {
-            sb.append(" Behavior: ");
-            sb.append(aiPersonality.getBehaviorClause());
-            sb.append(aiCadence.getCadenceClause());
-        }
+        //if (!systemSession.useLocalCommandLlm() && !systemSession.useLocalQueryLlm() && !systemSession.isRunningPiperTts()) {
+        sb.append(" Cadence and Personality: ");
+        sb.append(aiCadence.getCadenceClause());
+        sb.append(aiPersonality.getPersonalityClause());
+        //}
 
         return sb.toString();
     }

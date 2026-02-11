@@ -74,7 +74,7 @@ public enum Commands {
     DISPLAY_INTERNAL_PANEL                              ("display_internal_panel", null,  DisplayInternalPanelHandler.class),
     DISPLAY_STATUS_PANEL                                ("display_status_panel", null,  DisplayStatusPanelHandler.class),
     DISPLAY_RADAR_PANEL                                 ("display_radar_panel", null,  DisplayRadarPanelHandler.class),
-    DISPLAY_LOADOUT_PANEL                               ("display_loadout_panel", null,  DisplayLoadoutPanelHandler.class),
+    DISPLAY_CENTRAL_PANEL                               ("display_central_panel", null,  DisplayLoadoutPanelHandler.class),
     DISPLAY_CARRIER_MANAGEMENT                          ("display_carrier_management", null,  OpenFleetCarrierManagementHandler.class    ),
     OPEN_CARGO_SCOOP                                    ("open_cargo_scoop", null,  OpenCargoScoopHandler.class),
     CLOSE_CARGO_SCOOP                                   ("close_cargo_scoop", null,  CloseCargoScoopHandler.class),

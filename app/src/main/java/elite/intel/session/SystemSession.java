@@ -1,6 +1,5 @@
 package elite.intel.session;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.AICadence;
 import elite.intel.ai.brain.AIPersonality;
@@ -15,8 +14,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.Map;
 
 public class SystemSession {
     private static volatile SystemSession instance;
@@ -97,45 +94,22 @@ public class SystemSession {
         });
     }
 
-    public JsonArray getChatHistory() {
+    public ChatHistory getChatHistory() {
         return Database.withDao(ChatHistoryDao.class, dao -> {
-            ChatHistoryDao.ChatHistory[] chats = dao.listAll();
-            JsonArray result = new JsonArray();
+            ChatHistoryDao.ChatHistory chats = dao.lastChat();
             if (chats == null) {
-                return result;
+                return new ChatHistory();
             }
-            for (ChatHistoryDao.ChatHistory chat : chats) {
-                String json = chat.getJson();
-                result.add(GsonFactory.getGson().fromJson(json, JsonObject.class));
-            }
-            return result;
+            return GsonFactory.getGson().fromJson(chats.getJson(), ChatHistory.class);
         });
     }
 
-    public void setChatHistory(JsonArray chatHistory) {
-        Database.withDao(ChatHistoryDao.class, dao -> {
-            ChatHistoryDao.ChatHistory data = new ChatHistoryDao.ChatHistory();
-            data.setJson(chatHistory.toString());
-            dao.save(data);
-            return null;
-        });
-    }
-
-    public void appendToChatHistory(JsonObject userMessage, JsonObject assistantMessage) {
-        Database.withDao(ChatHistoryDao.class, dao -> {
-            ChatHistoryDao.ChatHistory userChat = new ChatHistoryDao.ChatHistory();
-            userChat.setJson(userMessage.toString());
-            ChatHistoryDao.ChatHistory assistantChat = new ChatHistoryDao.ChatHistory();
-            assistantChat.setJson(assistantMessage.toString());
-            dao.save(userChat);
-            dao.save(assistantChat);
-            return null;
-        });
-    }
-
-    public void clearChatHistory() {
+    public void setChatHistory(ChatHistory chatHistory) {
         Database.withDao(ChatHistoryDao.class, dao -> {
             dao.clear();
+            ChatHistoryDao.ChatHistory data = new ChatHistoryDao.ChatHistory();
+            data.setJson(chatHistory.toJson());
+            dao.save(data);
             return null;
         });
     }
@@ -219,7 +193,7 @@ public class SystemSession {
         return ttsApiKey == null || ttsApiKey.isEmpty();
     }
 
-    public boolean isRunningLocalLLM(){
+    public boolean isRunningLocalLLM() {
         return getAiApiKey() == null || getAiApiKey().isEmpty();
     }
 
@@ -352,7 +326,7 @@ public class SystemSession {
     }
 
     public void setExplorationData(boolean enabled) {
-        Database.withDao(GameSessionDao.class, dao ->{
+        Database.withDao(GameSessionDao.class, dao -> {
             GameSessionDao.GameSession gameSession = dao.get();
             gameSession.setSendExplorationData(enabled);
             dao.save(gameSession);
@@ -405,7 +379,7 @@ public class SystemSession {
 
 
     public void setLocalLlmCommandModel(String text) {
-        Database.withDao(GameSessionDao.class, dao ->{
+        Database.withDao(GameSessionDao.class, dao -> {
             GameSessionDao.GameSession session = dao.get();
             session.setLocalLlmCommandModel(text);
             dao.save(session);
@@ -414,7 +388,7 @@ public class SystemSession {
     }
 
     public void setLocalLlmQueryModel(String text) {
-        Database.withDao(GameSessionDao.class, dao ->{
+        Database.withDao(GameSessionDao.class, dao -> {
             GameSessionDao.GameSession session = dao.get();
             session.setLocalLlmQueryModel(text);
             dao.save(session);
@@ -423,8 +397,8 @@ public class SystemSession {
     }
 
 
-    public void setUseLocalCommandLlm(boolean b){
-        Database.withDao(GameSessionDao.class, dao ->{
+    public void setUseLocalCommandLlm(boolean b) {
+        Database.withDao(GameSessionDao.class, dao -> {
             GameSessionDao.GameSession session = dao.get();
             session.setUseLocalCommandLlm(b);
             dao.save(session);
@@ -432,7 +406,7 @@ public class SystemSession {
         });
     }
 
-    public void setUseLocalQueryLlm(boolean b){
+    public void setUseLocalQueryLlm(boolean b) {
         Database.withDao(GameSessionDao.class, dao -> {
             GameSessionDao.GameSession session = dao.get();
             session.setUseLocalQueryLlm(b);
@@ -441,7 +415,7 @@ public class SystemSession {
         });
     }
 
-    public void setUseLocalTTS(boolean b ){
+    public void setUseLocalTTS(boolean b) {
         Database.withDao(GameSessionDao.class, dao -> {
             GameSessionDao.GameSession session = dao.get();
             session.setUseLocalTTS(b);
@@ -451,19 +425,18 @@ public class SystemSession {
     }
 
 
-    public boolean useLocalCommandLlm(){
+    public boolean useLocalCommandLlm() {
         return Database.withDao(GameSessionDao.class, dao -> dao.get().isUseLocalCommandLlm());
     }
 
 
-    public boolean useLocalQueryLlm(){
+    public boolean useLocalQueryLlm() {
         return Database.withDao(GameSessionDao.class, dao -> dao.get().isUseLocalQueryLlm());
     }
 
-    public boolean useLocalTTS(){
+    public boolean useLocalTTS() {
         return Database.withDao(GameSessionDao.class, dao -> dao.get().isUseLocalTTS());
     }
-
 
 
     public String getLocalLlmCommandModel() {

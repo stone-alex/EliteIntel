@@ -9,6 +9,7 @@ import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.UserInputEvent;
+import elite.intel.session.ChatHistory;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
@@ -27,10 +28,15 @@ import static elite.intel.util.json.JsonUtils.getAsStringOrEmpty;
 
 public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInterface {
     private static final Logger log = LogManager.getLogger(GrokCommandEndPoint.class);
-    private ExecutorService executor;
-    private final AtomicBoolean running = new AtomicBoolean(false);
     private static GrokCommandEndPoint instance;
+    private final AtomicBoolean running = new AtomicBoolean(false);
+    private ExecutorService executor;
     private SystemSession systemSession;
+
+    private GrokCommandEndPoint() {
+        systemSession = SystemSession.getInstance();
+
+    }
 
     public static GrokCommandEndPoint getInstance() {
         if (instance == null) {
@@ -38,12 +44,6 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
         }
         return instance;
     }
-
-    private GrokCommandEndPoint() {
-        systemSession = SystemSession.getInstance();
-
-    }
-
 
     @Override public void start() {
         if (running.compareAndSet(false, true)) {
@@ -112,7 +112,6 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
             errorResponse.add("params", new JsonObject());
             errorResponse.addProperty(AIConstants.PROPERTY_EXPECT_FOLLOWUP, true);
             getRouter().processAiResponse(errorResponse, userInput);
-            systemSession.clearChatHistory();
             return;
         }
 
@@ -124,11 +123,6 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
         String systemPrompt = getContextFactory().generateVoiceInputSystemPrompt();
         systemMessage.addProperty("content", systemPrompt);
         messages.add(systemMessage);
-
-        JsonArray history = SystemSession.getInstance().getChatHistory();
-        for (int i = 0; i < history.size(); i++) {
-            messages.add(history.get(i));
-        }
 
         JsonObject userMessage = new JsonObject();
         userMessage.addProperty("role", AIConstants.ROLE_USER);
@@ -145,7 +139,6 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
             errorResponse.add("params", new JsonObject());
             errorResponse.addProperty(AIConstants.PROPERTY_EXPECT_FOLLOWUP, true);
             getRouter().processAiResponse(errorResponse, userInput);
-            systemSession.clearChatHistory();
             return;
         } else {
             String type = JsonUtils.getAsStringOrEmpty(apiResponse, "type").toLowerCase();
@@ -158,16 +151,10 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
         String type = getAsStringOrEmpty(apiResponse, "type").toLowerCase();
         String responseText = getAsStringOrEmpty(apiResponse, AIConstants.PROPERTY_RESPONSE_TEXT);
         if ("chat".equals(type)) {
-            boolean expectFollowup = apiResponse.has(AIConstants.PROPERTY_EXPECT_FOLLOWUP) && apiResponse.get(AIConstants.PROPERTY_EXPECT_FOLLOWUP).getAsBoolean();
             JsonObject assistantMessage = new JsonObject();
             assistantMessage.addProperty("role", AIConstants.ROLE_ASSISTANT);
             assistantMessage.addProperty("content", responseText);
-
-            if (expectFollowup) {
-                systemSession.appendToChatHistory(userMessage, assistantMessage);
-            } else {
-                systemSession.clearChatHistory();
-            }
+            systemSession.setChatHistory(new ChatHistory(userInput, responseText));
         }
     }
 
@@ -224,7 +211,7 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
             //log.debug("X AI API call:\n{}", jsonString);
 
             // Store messages for history
-            systemSession.setChatHistory(messages);
+            //systemSession.setChatHistory(messages);
 
             HttpURLConnection conn = client.getHttpURLConnection();
             JsonObject response = processAiPrompt(jsonString, client);
@@ -285,10 +272,7 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
             log.error("X AI API call failed: {}", e.getMessage(), e);
             String aiServerError = serverErrorMessage(e);
             return GrokClient.getInstance().createErrorResponse("API call failed: " + aiServerError);
-        } finally {
-            systemSession.clearChatHistory();
         }
-
     }
 
     private String serverErrorMessage(Exception e) {
@@ -296,10 +280,10 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
         if (e.getMessage().contains("500") || e.getMessage().contains("402") || e.getMessage().contains("401")) {
             aiServerError = "AI Internal server crash.";
         }
-        if(e.getMessage().contains("404")){
+        if (e.getMessage().contains("404")) {
             aiServerError = "AI API URL is invalid";
         }
-        if(e.getMessage().contains("403")){
+        if (e.getMessage().contains("403")) {
             aiServerError = "AI API key is invalid, or not authorized for this endpoint.";
         }
         return aiServerError;

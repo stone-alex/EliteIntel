@@ -10,6 +10,7 @@ import elite.intel.ai.brain.handlers.query.QueryHandler;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.session.ChatHistory;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
@@ -19,7 +20,6 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import java.util.Map;
-
 
 import static elite.intel.util.json.JsonUtils.nullSaveJsonObject;
 
@@ -65,6 +65,7 @@ public class ResponseRouter implements AIRouterInterface {
             }
 
             if (!responseText.isEmpty() && type.equals(AIConstants.TYPE_CHAT)) {
+                systemSession.setChatHistory(new ChatHistory(userInput, responseText));
                 EventBusManager.publish(new AiVoxResponseEvent(responseText));
                 log.info("Spoke initial response: {}", responseText);
                 return;
@@ -113,14 +114,12 @@ public class ResponseRouter implements AIRouterInterface {
             String responseTextToUse = dataJson.has(AIConstants.PROPERTY_RESPONSE_TEXT) ? dataJson.get(AIConstants.PROPERTY_RESPONSE_TEXT).getAsString() : "";
             if (responseTextToUse != null && !responseTextToUse.isEmpty()) {
                 EventBusManager.publish(new AiVoxResponseEvent(responseTextToUse));
-                systemSession.clearChatHistory();
+                systemSession.setChatHistory(new ChatHistory(userInput, responseTextToUse));
                 log.info("Spoke final query response (action: {}): {}", action, responseTextToUse);
             }
         } catch (Exception e) {
             log.error("Query handling failed for action {}: {}", action, e.getMessage(), e);
             handleChat("Error processing request");
-        } finally {
-            systemSession.clearChatHistory();
         }
     }
 
@@ -137,13 +136,14 @@ public class ResponseRouter implements AIRouterInterface {
     protected void handleChat(String responseText) {
         if (!responseText.isEmpty()) {
             EventBusManager.publish(new AiVoxResponseEvent(responseText));
+            systemSession.setChatHistory(new ChatHistory(null, responseText));
             log.info("Sent to VoiceGenerator: {}", responseText);
         }
     }
 
     protected void handleCommand(String action, JsonObject params, String responseText) {
         EventBusManager.publish(new AppLogEvent("Processing action: " + action + " with params: " + params.toString()));
-        if(!"verify_llm_connection_command".equalsIgnoreCase(action)){
+        if (!"verify_llm_connection_command".equalsIgnoreCase(action)) {
             EventBusManager.publish(new AiVoxResponseEvent("%s, %s ".formatted(StringUtls.affirmative(), StringUtls.player(playerSession))));
         }
 
@@ -156,7 +156,6 @@ public class ResponseRouter implements AIRouterInterface {
         EventBusManager.publish(new AppLogEvent("Command handler: " + handler.getClass().getSimpleName()));
         new Thread(() -> handler.handle(action, params, responseText)).start();
         log.debug("Handled command action: {}", action);
-        systemSession.clearChatHistory();
     }
 
 

@@ -25,7 +25,6 @@ public class BaseQueryAnalyzer {
         if (!analysis.has(AIConstants.PROPERTY_RESPONSE_TEXT)) {
             analysis = GenericResponse.getInstance().genericResponse("LLM failed to process this request.");
         }
-        SystemSession.getInstance().clearChatHistory();
         return analysis;
     }
 

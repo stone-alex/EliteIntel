@@ -19,8 +19,8 @@ public interface ChatHistoryDao {
     @SqlUpdate("DELETE FROM chat_history")
     void clear();
 
-    @SqlQuery("SELECT json, timestamp FROM chat_history")
-    ChatHistory[] listAll();
+    @SqlQuery("SELECT json, timestamp FROM chat_history limit 1")
+    ChatHistory lastChat();
 
 
     class ChatHistoryMapper implements RowMapper<ChatHistory> {

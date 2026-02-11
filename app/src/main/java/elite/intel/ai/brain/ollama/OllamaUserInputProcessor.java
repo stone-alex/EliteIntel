@@ -9,6 +9,7 @@ import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.UserInputEvent;
+import elite.intel.session.ChatHistory;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
@@ -67,7 +68,6 @@ public class OllamaUserInputProcessor extends CommandEndPoint implements AiComma
     private void processVoiceCommand(String userInput, float confidence) {
         if (userInput == null || userInput.isEmpty()) {
             getRouter().processAiResponse(createError("Sorry, I couldn't process that."), userInput);
-            systemSession.clearChatHistory();
             return;
         }
 
@@ -86,7 +86,6 @@ public class OllamaUserInputProcessor extends CommandEndPoint implements AiComma
         JsonObject response = OllamaCommandEndPoint.getInstance().processAiPrompt(request, 0.01f);
         if (response == null) {
             getRouter().processAiResponse(createError("Sorry, I couldn't reach Ollama."), userInput);
-            systemSession.clearChatHistory();
             return;
         }
 
@@ -101,9 +100,7 @@ public class OllamaUserInputProcessor extends CommandEndPoint implements AiComma
             assistant.addProperty("role", AIConstants.ROLE_SYSTEM);
             assistant.addProperty("content", getAsStringOrEmpty(response, AIConstants.PROPERTY_RESPONSE_TEXT));
             if (expect) {
-                systemSession.appendToChatHistory(userMsg, assistant);
-            } else {
-                systemSession.clearChatHistory();
+                systemSession.setChatHistory(new ChatHistory(userInput, response.getAsString()));
             }
         }
     }

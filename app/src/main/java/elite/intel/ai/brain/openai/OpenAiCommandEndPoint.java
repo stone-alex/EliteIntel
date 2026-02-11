@@ -12,6 +12,7 @@ import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.UserInputEvent;
+import elite.intel.session.ChatHistory;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
@@ -128,7 +129,6 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
             errorResponse.add("params", new JsonObject());
             errorResponse.addProperty(AIConstants.PROPERTY_EXPECT_FOLLOWUP, true);
             getRouter().processAiResponse(errorResponse, userInput);
-            systemSession.clearChatHistory();
             return;
         }
 
@@ -142,13 +142,6 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
         systemMessage.addProperty("content", systemPrompt);
         messages.add(systemMessage);
 
-        // Append existing chat history if any
-        JsonArray history = systemSession.getChatHistory();
-        for (int i = 0; i < history.size(); i++) {
-            messages.add(history.get(i));
-        }
-
-        // Add current user message
         JsonObject userMessage = new JsonObject();
         userMessage.addProperty("role", AIConstants.ROLE_USER);
 
@@ -165,7 +158,6 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
             errorResponse.add("params", new JsonObject());
             errorResponse.addProperty(AIConstants.PROPERTY_EXPECT_FOLLOWUP, true);
             getRouter().processAiResponse(errorResponse, userInput);
-            systemSession.clearChatHistory();
             return;
         }
 
@@ -176,16 +168,10 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
         String type = JsonUtils.getAsStringOrEmpty(apiResponse, "type").toLowerCase();
         String responseText = JsonUtils.getAsStringOrEmpty(apiResponse, AIConstants.PROPERTY_RESPONSE_TEXT);
         if ("chat".equals(type)) {
-            boolean expectFollowup = apiResponse.has(AIConstants.PROPERTY_EXPECT_FOLLOWUP) && apiResponse.get(AIConstants.PROPERTY_EXPECT_FOLLOWUP).getAsBoolean();
             JsonObject assistantMessage = new JsonObject();
             assistantMessage.addProperty("role", AIConstants.ROLE_ASSISTANT);
             assistantMessage.addProperty("content", responseText);
-
-            if (expectFollowup) {
-                systemSession.appendToChatHistory(userMessage, assistantMessage);
-            } else {
-                systemSession.clearChatHistory();
-            }
+            systemSession.setChatHistory(new ChatHistory(userInput, responseText));
         }
     }
 
@@ -243,7 +229,7 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
             log.debug("Open AI API call:\n{}", jsonString);
 
             // Store messages for history
-            systemSession.setChatHistory(messages);
+            //systemSession.setChatHistory(messages);
             JsonObject response = processAiPrompt(jsonString, client);
 
             // Extract content
@@ -302,8 +288,6 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
             log.error("Open AI API call failed: {}", e.getMessage(), e);
             String aiServerError = serverErrorMessage(e);
             return OpenAiClient.getInstance().createErrorResponse("API call failed: " + aiServerError);
-        } finally {
-            systemSession.clearChatHistory();
         }
     }
 }

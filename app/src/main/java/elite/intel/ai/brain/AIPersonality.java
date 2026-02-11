@@ -27,7 +27,7 @@ public enum AIPersonality {
         this.behaviorClause = behaviorClause;
     }
 
-    public String getBehaviorClause() {
+    public String getPersonalityClause() {
         return behaviorClause;
     }
 }

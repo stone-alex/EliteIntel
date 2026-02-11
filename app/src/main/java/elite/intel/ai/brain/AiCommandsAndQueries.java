@@ -71,7 +71,7 @@ public class AiCommandsAndQueries {
         commandMap.put(" command show comms panel, show comms ", DISPLAY_COMMS_PANEL.getAction());
         commandMap.put(" command display contacts panel", DISPLAY_CONTACTS_PANEL.getAction());
         commandMap.put(" command display internal panel ", DISPLAY_INTERNAL_PANEL.getAction());
-        commandMap.put(" command show loadout panel ", DISPLAY_LOADOUT_PANEL.getAction());
+        commandMap.put(" command show central panel ", DISPLAY_CENTRAL_PANEL.getAction());
         commandMap.put(" command **lets go**, lets get out of here, take us to hyperspace, enter hyperspace, go to next way point ", JUMP_TO_HYPERSPACE.getAction());
         commandMap.put(" command drop, disengage FSD, drop from supercruise", EXIT_SUPER_CRUISE.getAction());
         commandMap.put(" command navigate to carrier, navigate to base, return to base ", NAVIGATE_TO_CARRIER.getAction());
@@ -210,9 +210,8 @@ public class AiCommandsAndQueries {
         queryMap.put(" query data for stations ports and settlements", ANALYZE_LOCAL_STATIONS.getAction());
         queryMap.put(" query active missions ", ANALYZE_MISSIONS.getAction());
 
-        if (!systemSession.useLocalCommandLlm() && !systemSession.useLocalQueryLlm() && !systemSession.isRunningPiperTts()) {
-            queryMap.put(" IF NOTHING MATCHES USE general conversation", GENERAL_CONVERSATION.getAction());
-        }
+        ///
+        queryMap.put(" (if not match found) general conversation", GENERAL_CONVERSATION.getAction());
 
         return queryMap;
     }

@@ -50,7 +50,7 @@ public enum Queries {
     REMINDER                            ("query_reminder_remind_me",                    RemindTargetDestinationHandler.class),
     ANALYZE_MISSIONS                    ("query_analyze_active_missions",               AnalyzeMissionHandler.class),
     ANALYZE_LOCAL_STATIONS              ("query_stations_ports_settlements",            AnalyzeLocalStations.class),
-    GENERAL_CONVERSATION                ("general_conversation",                        ConversationalQueryHandler.class)
+    GENERAL_CONVERSATION                ("general_conversation",                        GeneralConversationHandler.class)
     ;
     /// ########################################################################################################################################
 

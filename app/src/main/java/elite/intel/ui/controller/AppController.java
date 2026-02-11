@@ -193,7 +193,12 @@ public class AppController implements Runnable {
     @Subscribe void onToggleServiceEvent(ToggleServicesEvent event) {
         new Thread(() -> {
             if (event.isStartSercice()) {
-                startServices();
+                try{
+                    startServices();
+                } catch (Exception stop){
+                    stopServices();
+                    EventBusManager.publish(new ServicesStateEvent(false));
+                }
             } else {
                 stopServices();
             }

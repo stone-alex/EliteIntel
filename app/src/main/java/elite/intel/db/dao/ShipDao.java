@@ -18,13 +18,12 @@ public interface ShipDao {
     Ship findShip(int shipId);
 
     @SqlUpdate(""" 
-            INSERT INTO ship (shipName, shipId, shipIdentifier, cargoCapacity, tradeProfileId) 
-                        VALUES (:shipName, :shipId, :shipIdentifier, :cargoCapacity, :tradeProfileId)
+            INSERT INTO ship (shipName, shipId, shipIdentifier, cargoCapacity)
+                        VALUES (:shipName, :shipId, :shipIdentifier, :cargoCapacity)
                         on conflict DO UPDATE set
                         shipName = excluded.shipName,
                         shipIdentifier = excluded.shipIdentifier,
-                        cargoCapacity = excluded.cargoCapacity,
-                        tradeProfileId= excluded.tradeProfileId
+                        cargoCapacity = excluded.cargoCapacity
             """)
     void save(@BindBean ShipDao.Ship ship);
 
@@ -36,7 +35,6 @@ public interface ShipDao {
             ship.setShipId(rs.getInt("shipId"));
             ship.setShipIdentifier(rs.getString("shipIdentifier"));
             ship.setCargoCapacity(rs.getInt("cargoCapacity"));
-            ship.setTradeProfileId(rs.getInt("tradeProfileId"));
             return ship;
         }
     }
@@ -61,7 +59,6 @@ public interface ShipDao {
         private Integer shipId;
         private String shipIdentifier;
         private Integer cargoCapacity;
-        private Integer tradeProfileId;
 
         public String getShipName() {
             return shipName;
@@ -93,14 +90,6 @@ public interface ShipDao {
 
         public void setCargoCapacity(int cargoCapacity) {
             this.cargoCapacity = cargoCapacity;
-        }
-
-        public Integer getTradeProfileId() {
-            return tradeProfileId;
-        }
-
-        public void setTradeProfileId(Integer tradeProfileId) {
-            this.tradeProfileId = tradeProfileId;
         }
     }
 }

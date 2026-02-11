@@ -133,7 +133,7 @@ public class ApiFactory {
             // TODO: Add Deepgram, Azure STT, etc.
             default:
                 EventBusManager.publish(new AppLogEvent("Unknown STT key format"));
-                EventBusManager.publish(new AiVoxResponseEvent("Using default Google STT—confirm?"));
+                EventBusManager.publish(new AiVoxResponseEvent("Google Speech To Text Key is required."));
                 return new GoogleSTTImpl();
         }
     }

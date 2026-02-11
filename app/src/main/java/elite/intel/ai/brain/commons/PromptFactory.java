@@ -71,6 +71,7 @@ public class PromptFactory implements AiPromptFactory {
                 • Use ONLY the exact key names and types shown in the command's template
                 • If no template → return empty {}
                 • Never invent new keys or values
+                • Never spell out numerics for keys, use digits instead. Example {"key": "123000"} | {lat:"12.21", lon:"-54"}
                 • Examples (follow the pattern exactly):
                   - "find mining site for LTD"          → {"key": "low temperature diamonds"}
                   - "lights on"                         → {"state": true}

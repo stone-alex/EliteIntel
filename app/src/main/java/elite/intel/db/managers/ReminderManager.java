@@ -26,7 +26,7 @@ public final class ReminderManager {
     public String getReminderText() {
         return Database.withDao(DestinationReminderDao.class, dao -> {
             DestinationReminderDao.Destination destination = dao.get();
-            if (destination == null) return null;
+            if (destination == null) return "";
             return destination.getJson();
         });
     }

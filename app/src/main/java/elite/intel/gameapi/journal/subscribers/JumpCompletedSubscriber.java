@@ -80,7 +80,7 @@ public class JumpCompletedSubscriber {
 
         if (finalDestination != null && finalDestination.equalsIgnoreCase(event.getStarSystem())) {
             shipRoute.clearRoute();
-            if (reminderText != null && !reminderText.isBlank()) {
+            if (!reminderText.isBlank()) {
                 EventBusManager.publish(new MissionCriticalAnnouncementEvent("Reminder " + reminderText));
             } else {
                 sb.append(" Arrived at final destination: ").append(finalDestination);
@@ -97,7 +97,7 @@ public class JumpCompletedSubscriber {
             primaryStar.setDeathsDto(deathsDto);
 
         } else if (roueSet) {
-            if (reminderText.toLowerCase().contains(event.getStarSystem().toLowerCase(Locale.ROOT))) {
+            if (!reminderText.isBlank() && reminderText.toLowerCase().contains(event.getStarSystem().toLowerCase(Locale.ROOT))) {
                 EventBusManager.publish(new MissionCriticalAnnouncementEvent("Reminder " + reminderText));
             }
 

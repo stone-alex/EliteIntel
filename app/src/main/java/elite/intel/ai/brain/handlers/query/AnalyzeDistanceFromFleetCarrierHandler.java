@@ -22,7 +22,6 @@ public class AnalyzeDistanceFromFleetCarrierHandler extends BaseQueryAnalyzer im
 
         CarrierDataDto carrierData = playerSession.getCarrierData();
         if (carrierData == null) return process("No data available");
-        String carrierLocation = playerSession.getLastKnownCarrierLocation();
         double carrierLocationX = carrierData.getX();
         double carrierLocationY = carrierData.getY();
         double carrierDataZ = carrierData.getZ();

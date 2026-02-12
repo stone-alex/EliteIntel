@@ -10,6 +10,6 @@ public class RemindTargetDestinationHandler extends BaseQueryAnalyzer implements
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         String reminder = destinationReminder.getReminderText();
-        return process(reminder == null || reminder.isBlank() ? "No reminder set" : reminder);
+        return process(reminder.isBlank() ? "No reminder set" : reminder);
     }
 }

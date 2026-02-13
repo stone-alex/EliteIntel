@@ -80,3 +80,21 @@ jobs:
       #   with:
       #     name: elite_intel-${{ env.VERSION }}
       #     path: elite_intel${{ env.VERSION }}.zip
+
+  notify:
+    if: always()
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - uses: Cadair/matrix-notify-action@main
+        id: message
+        with:
+          matrix_token: ${{ secrets.MATRIX_ACCESS_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          homeserver: 'https://matrix.org'
+          roomid: '!LIVNDkZJlSpraiOaei:matrix.org?via=matrix.org'
+          workflow_description: |
+            EliteIntel build finished! Version: ${{ env.VERSION }}
+
+      - name: Print the event ID
+        run: echo "Sent Matrix Event '${{ steps.message.outputs.eventId }}'"

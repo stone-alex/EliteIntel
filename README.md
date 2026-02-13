@@ -53,8 +53,7 @@ Released under Creative Commons license.
 If you run into issues, hit us up on GitHub issues or Feedback and bug reports are super welcome!
 Two ways to get in touch:
 
-🫆 👉[**Discord**](https://discord.gg/3qAqBENsBm).👈 (Corporate, spying, tracking, and profiling)
+👉[**Matrix**](https://matrix.to/#/#krondor:matrix.org)👈
 
-💬 👉[**Libera IRC**](https://web.libera.chat/?channel=#EliteIntelDev)👈 **NEW**
-(Private - no corpo spying, no tracking, no ads. no data collection)
-© Sudo Krondor (Alex Stone) | 2025 GitHub, Inc. | Open-Source Project
+Discord will be discontinued starting March 2026.
+👉[~~Discord~~ - deprecated❗](https://discord.gg/3qAqBENsBm).👈

@@ -20,8 +20,8 @@ public class GrokClient extends BaseAiClient implements Client {
     /// Grok 3
     // public static final String MODEL_GROK_NON_REASONING = "grok-3-fast";
 
-    public static final String MODEL_GROK_NON_REASONING = "grok-3-mini";
-    public static final String MODEL_GROK_REASONING = "grok-3-fast";
+    public static final String MODEL_GROK_NON_REASONING = "grok-4-1-fast-non-reasoning";
+    public static final String MODEL_GROK_REASONING = "grok-4-fast-reasoning";
     ///
     public static final boolean IS_STREAM = false;
 

@@ -94,9 +94,13 @@ public class CodexEntryEventSubscriber {
 
         if(playerSession.isDiscoveryAnnouncementOn()) {
             String instructions = """
-            Codex entry added to database. Notify User.
-            Do not append any extra data. Be breaf. Only facts, no speculation.
-            Spell out numerals. Round rewards in credits to nearest million.
+            Codex entry added. Provide essential summary.
+            - Only facts, no speculation.
+            - If there is a warning announce it, else do not mention that there are no warnings.
+            - Do not append any extra data.
+            - Be brief.
+            - Spell out numerals.
+            - Round rewards in credits to nearest million.
             """;
             EventBusManager.publish(new SensorDataEvent(sb.toString(), instructions));
         }

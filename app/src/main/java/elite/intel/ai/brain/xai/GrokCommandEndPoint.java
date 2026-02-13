@@ -31,7 +31,7 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
     private static GrokCommandEndPoint instance;
     private final AtomicBoolean running = new AtomicBoolean(false);
     private ExecutorService executor;
-    private SystemSession systemSession;
+    private final SystemSession systemSession;
 
     private GrokCommandEndPoint() {
         systemSession = SystemSession.getInstance();
@@ -208,15 +208,10 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
             JsonObject prompt = client.createPrompt(GrokClient.MODEL_GROK_REASONING, 1.00f);
             prompt.add("messages", messages);
             String jsonString = GsonFactory.getGson().toJson(prompt);
-            //log.debug("X AI API call:\n{}", jsonString);
-
-            // Store messages for history
-            //systemSession.setChatHistory(messages);
 
             HttpURLConnection conn = client.getHttpURLConnection();
             JsonObject response = processAiPrompt(jsonString, client);
 
-            // Extract content
             JsonArray choices = response.getAsJsonArray("choices");
             if (choices == null || choices.isEmpty()) {
                 log.error("No choices in API response:\n{}", response);
@@ -235,45 +230,74 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
                 return client.createErrorResponse("No content in API response");
             }
 
-            // Log content before parsing
-            log.debug("API response content:\n{}", content);
+            log.debug("Raw API content (before cleanup):\n{}", content);
 
-            // Parse JSON content
-            String jsonContent;
-            int jsonStart = content.indexOf("\n\n{");
-            if (jsonStart != -1) {
-                jsonContent = content.substring(jsonStart + 2); // Skip \n\n
-            } else {
-                jsonStart = content.indexOf("{");
-                if (jsonStart == -1) {
-                    log.error("No JSON object found in content:\n{}", content);
-                    return client.createErrorResponse("No JSON object in content");
-                }
-                jsonContent = content.substring(jsonStart);
-                try {
-                    JsonParser.parseString(jsonContent);
-                } catch (JsonSyntaxException e) {
-                    log.error("Invalid JSON object in content:\n{}", jsonContent, e);
-                    return client.createErrorResponse("Invalid JSON in content");
-                }
+            // Robust JSON extraction - handles ```json
+            String jsonContent = extractJsonFromContent(content);
+            if (jsonContent == null) {
+                log.error("Could not extract valid JSON from content:\n{}", content);
+                return client.createErrorResponse("Could not extract JSON from model response");
             }
 
-            // Log extracted JSON
-            log.debug("Extracted JSON content:\n\n{}\n\n", GsonFactory.getGson().toJson(jsonContent));
+            log.debug("Extracted JSON:\n{}", jsonContent);
 
-            // Parse JSON content
-            try {
-                return JsonParser.parseString(jsonContent).getAsJsonObject();
-            } catch (JsonSyntaxException e) {
-                log.error("Failed to parse API response content:\n\n{}\n\n", GsonFactory.getGson().toJson(jsonContent), e);
-                return client.createErrorResponse("Failed to parse API content");
-            }
+            return JsonParser.parseString(jsonContent).getAsJsonObject();
+
         } catch (IOException e) {
             log.error("X AI API call failed: {}", e.getMessage(), e);
             String aiServerError = serverErrorMessage(e);
             return GrokClient.getInstance().createErrorResponse("API call failed: " + aiServerError);
+        } catch (JsonSyntaxException e) {
+            log.error("JSON parse failed after extraction", e);
+            return GrokClient.getInstance().createErrorResponse("Invalid JSON structure from model");
         }
     }
+
+    /**
+     * Extracts the first valid JSON object from the content, handling common wrappers.
+     */
+    private String extractJsonFromContent(String content) {
+        // Remove any leading/trailing whitespace
+        content = content.trim();
+
+        // Common patterns: ```json ... ``` or just { ... }
+        int start = content.indexOf('{');
+        if (start == -1) return null;
+
+        // Look for code fence start
+        int fenceStart = content.indexOf("```json");
+        if (fenceStart != -1) {
+            start = content.indexOf('{', fenceStart + 7);
+        }
+
+        // Find matching closing brace (very basic, assumes no nested strings with })
+        int braceCount = 0;
+        int end = -1;
+        for (int i = start; i < content.length(); i++) {
+            char c = content.charAt(i);
+            if (c == '{') braceCount++;
+            else if (c == '}') {
+                braceCount--;
+                if (braceCount == 0) {
+                    end = i + 1;
+                    break;
+                }
+            }
+        }
+
+        if (end == -1) return null;
+
+        String candidate = content.substring(start, end);
+
+        // Quick validation
+        try {
+            JsonParser.parseString(candidate);
+            return candidate;
+        } catch (JsonSyntaxException ignored) {
+            return null;
+        }
+    }
+
 
     private String serverErrorMessage(Exception e) {
         String aiServerError = e.getMessage();

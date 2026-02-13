@@ -47,9 +47,7 @@ reflection) and principles like DRY and SRP. All PRs go through review.
 
 Released under Creative Commons license.
 
-[**Discord**](https://discord.gg/3qAqBENsBm)
----
-
+## Contact Developer / Join the Community
 If you run into issues, hit us up on GitHub issues or Feedback and bug reports are super welcome!
 Two ways to get in touch:
 

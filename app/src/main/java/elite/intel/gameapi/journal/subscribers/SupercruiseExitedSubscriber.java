@@ -22,7 +22,6 @@ public class SupercruiseExitedSubscriber {
         here.setBodyId(event.getBodyId());
         here.setSystemAddress(event.getSystemAddress());
         here.setStarName(playerSession.getPrimaryStarName());
-        here.setLandingCoordinates(starSystem.getLandingCoordinates());
 
         LocationDto.LocationType locationType = LocationDto.determineType(event.getBodyType(), false);
         if (LocationDto.LocationType.STATION == locationType) {

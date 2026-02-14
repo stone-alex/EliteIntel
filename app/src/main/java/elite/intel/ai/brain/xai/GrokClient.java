@@ -2,8 +2,8 @@ package elite.intel.ai.brain.xai;
 
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.brain.Client;
 import elite.intel.ai.brain.BaseAiClient;
+import elite.intel.ai.brain.Client;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
@@ -21,7 +21,7 @@ public class GrokClient extends BaseAiClient implements Client {
     // public static final String MODEL_GROK_NON_REASONING = "grok-3-fast";
 
     public static final String MODEL_GROK_NON_REASONING = "grok-4-1-fast-non-reasoning";
-    public static final String MODEL_GROK_REASONING = "grok-4-fast-reasoning";
+    public static final String MODEL_GROK_REASONING = "grok-4-1-fast-non-reasoning";// "grok-4-fast-reasoning";
     ///
     public static final boolean IS_STREAM = false;
 

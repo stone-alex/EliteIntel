@@ -5,7 +5,8 @@ public class AudioDeClicker {
     public static void sanitize(byte[] audioData, int fadeMs) {
         removeClicks(audioData);
         applyFade(audioData, fadeMs, true);
-        applyFade(audioData, fadeMs, false);
+        //no fade out
+        //applyFade(audioData, fadeMs, false);
     }
 
     private static void removeClicks(byte[] audioData) {

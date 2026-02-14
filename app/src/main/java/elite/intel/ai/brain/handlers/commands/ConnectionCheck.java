@@ -20,30 +20,33 @@ public class ConnectionCheck implements CommandHandler {
 
         StringBuilder sb = new StringBuilder();
         sb.append(" ping ");
+
         if (usingLocalLlmForCommandsAndQueries && usingSameLllmForCommandsAndQueries) {
             sb.append(" Model: ").append(commandModel);
-        } else if(usingLocalLlmForCommandsAndQueries) {
-            sb.append(" Command Model: ").append(commandModel);
-            sb.append(" Query Model: ").append(queryModel);
-        } else {
-            sb.append(" Cloud " );
         }
 
+        if (usingLocalLlmForCommandsAndQueries) {
+            sb.append(" Command Model: ").append(commandModel);
+        }
+
+        if (usingLocalLlmForCommandsAndQueries) {
+            sb.append(" Query Model: ").append(queryModel);
+        }
 
         EventBusManager.publish(
                 new SensorDataEvent(
                         sb.toString(),
                         usingLocalLlmForCommandsAndQueries
                                 ?
-                        """
-                        Acknowledge connection successful.
-                        Acknowledge LLM Model and number of parameters. Data is presented to you as (LLMName:120b)
-                        Example: Connection successful. LLM Model <llmname>, 120 billion parameters.
-                        """
+                                """
+                                        Acknowledge connection successful.
+                                        Acknowledge LLM Model and number of parameters. Data is presented to you as (LLMName:120b)
+                                        Example: Connection successful. LLM Model <llmname>, 120 billion parameters.
+                                        """
                                 :
-                        """
-                        Acknowledge connection successful.
-                        """
+                                """
+                                        Acknowledge connection successful.
+                                        """
                 )
         );
     }

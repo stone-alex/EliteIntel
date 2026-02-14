@@ -51,6 +51,8 @@ public class TouchdownEventSubscriber {
 
 
         LocationDto currentLocation = locationManager.findByLocationData(playerSession.getLocationData());
+        currentLocation.setLandingCoordinates(new double[]{event.getLatitude(), event.getLongitude()});
+        locationManager.save(currentLocation);
 
         if (pointOfInterest != null && !pointOfInterest.isEmpty()) {
             EventBusManager.publish(new SensorDataEvent(sb.toString(), "We have landed successfully. Notify user"));

@@ -17,7 +17,7 @@ public class NavigateToLandingZone implements CommandHandler {
 
         LocationDto currentLocation = locationManager.findByLocationData(playerSession.getLocationData());
         TargetLocation targetLocation = new TargetLocation();
-        if(currentLocation.getLandingCoordinates() == null){
+        if (currentLocation.getLandingCoordinates() == null || currentLocation.getLandingCoordinates().length == 0) {
             EventBusManager.publish(new AiVoxResponseEvent("Landing Zone Coordinates are not available"));
             return;
         }

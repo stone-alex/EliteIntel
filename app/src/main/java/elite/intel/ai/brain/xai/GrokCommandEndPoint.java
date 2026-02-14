@@ -176,7 +176,7 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
 
 
         JsonObject userMessage = new JsonObject();
-        userMessage.addProperty("role", AIConstants.ROLE_ASSISTANT);
+        userMessage.addProperty("role", AIConstants.ROLE_USER);
         userMessage.addProperty("content", event.getSensorData());
         messages.add(userMessage);
 

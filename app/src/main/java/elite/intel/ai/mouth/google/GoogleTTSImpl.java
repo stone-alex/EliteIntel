@@ -314,7 +314,7 @@ public class GoogleTTSImpl implements MouthInterface {
             log.debug("Google TTS API call completed in {}ms", apiEndTime - apiStartTime);
 
             byte[] audioData = response.getAudioContent().toByteArray();
-            AudioDeClicker.sanitize(audioData, 3);
+            AudioDeClicker.sanitize(audioData, 10);
             // Use persistent line instead of opening/closing
             if (persistentLine == null || !persistentLine.isOpen()) {
                 log.warn("Persistent line not available, attempting to reopen");

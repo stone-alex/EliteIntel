@@ -41,8 +41,6 @@ Fork it and submit pull requests! Stick to TOS, keep things modular and event-dr
 details, check out `DEVELOPERS.md` in the root. It covers the architecture (decoupled, multithreaded, event registry via
 reflection) and principles like DRY and SRP. All PRs go through review.
 
-[![Architecture Overview](https://img.youtube.com/vi/tpqcodcuIig/0.jpg)](https://youtu.be/tpqcodcuIig)
-
 ## License
 
 Released under Creative Commons license.

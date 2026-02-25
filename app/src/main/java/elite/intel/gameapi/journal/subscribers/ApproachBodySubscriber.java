@@ -50,7 +50,6 @@ public class ApproachBodySubscriber {
 
         if (playerSession.getTracking().isEnabled()) return;
 
-
         SystemBodiesDto systemBodiesDto = EdsmApiClient.searchSystemBodies(currentSystem);
 
         boolean weHaveOurOwnData = location.getGravity() > 0;
@@ -112,9 +111,9 @@ public class ApproachBodySubscriber {
         }
         sb.append(".");
         double surfaceTemperature = location.getSurfaceTemperature();
-        location.setSurfaceTemperature(surfaceTemperature);
-
-        sb.append(" Surface Temperature: ").append(surfaceTemperature).append(" Celsius. ");
+        double temperatureInC = surfaceTemperature - 273;
+        location.setSurfaceTemperature(temperatureInC);
+        sb.append(" Surface Temperature: ").append((int) temperatureInC).append(" Celsius. ");
         if (location.isTidalLocked()) sb.append(" The planet is tidally locked. ");
     }
 
@@ -128,7 +127,7 @@ public class ApproachBodySubscriber {
         }
         double surfaceTemperatureKelvin = bodyData.getSurfaceTemperature();
         location.setSurfaceTemperature(surfaceTemperatureKelvin);
-        sb.append(" Surface Temperature: ").append((surfaceTemperatureKelvin - 273)).append(" Celsius.");
+        sb.append(" Surface Temperature: ").append((int) (surfaceTemperatureKelvin - 273)).append(" Celsius.");
         if (bodyData.getAtmosphereType() != null && !bodyData.getAtmosphereType().isEmpty()) {
             sb.append(" Atmosphere: ").append(bodyData.getAtmosphereType());
             sb.append(". ");

@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static org.apache.logging.log4j.util.Strings.trimToNull;
+
 public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandInterface {
     private static final Logger log = LogManager.getLogger(OpenAiCommandEndPoint.class);
     private static OpenAiCommandEndPoint instance;
@@ -179,6 +181,8 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
     @Override
     public void onSensorDataEvent(SensorDataEvent event) {
         if (!running.get()) return;
+        if (trimToNull(event.getSensorData()) == null) return;
+
         EventBusManager.publish(new AppLogEvent("\nProcessing Sensor event"));
         JsonArray messages = new JsonArray();
 
@@ -193,7 +197,7 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
         messages.add(instructions);
 
         JsonObject userMessage = new JsonObject();
-        userMessage.addProperty("role", AIConstants.ROLE_ASSISTANT);
+        userMessage.addProperty("role", AIConstants.ROLE_USER);
         userMessage.addProperty("content", event.getSensorData());
         messages.add(userMessage);
 
@@ -226,7 +230,6 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
             JsonObject prompt = client.createPrompt(OpenAiClient.MODEL_GPT, 0.10f);
             prompt.add("messages", messages);
             String jsonString = GsonFactory.getGson().toJson(prompt);
-            log.debug("Open AI API call:\n{}", jsonString);
 
             // Store messages for history
             //systemSession.setChatHistory(messages);

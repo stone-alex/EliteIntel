@@ -25,6 +25,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static elite.intel.util.json.JsonUtils.getAsStringOrEmpty;
+import static org.apache.logging.log4j.util.Strings.trimToNull;
 
 public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInterface {
     private static final Logger log = LogManager.getLogger(GrokCommandEndPoint.class);
@@ -160,6 +161,8 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
 
     @Subscribe @Override public void onSensorDataEvent(SensorDataEvent event) {
         if (!running.get()) return;
+        if (trimToNull(event.getSensorData()) == null) return;
+
         EventBusManager.publish(new AppLogEvent("\nProcessing Sensor event"));
         JsonArray messages = new JsonArray();
         JsonObject systemMessage = new JsonObject();

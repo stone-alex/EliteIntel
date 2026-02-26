@@ -15,13 +15,10 @@ public class SellOrganicDataSubscriber {
         playerSession.clearBioSamples();
         CodexEntryManager codexEntryManager = CodexEntryManager.getInstance();
         codexEntryManager.clear();
-        if (playerSession.isDiscoveryAnnouncementOn()) {
-            String instructions = """
-                We sold organic data and made credits.
-                Provide user with sale summary. Start with total amount collected, provide breakdown by genus.
-            """;
-            EventBusManager.publish(new SensorDataEvent("Bio Data Sold: " + event.toJson(),
-                    instructions));
-        }
+        String instructions = """
+                    We sold organic data and made credits.
+                    Provide user with sale summary. Start with total amount collected, provide breakdown by genus.
+                """;
+        EventBusManager.publish(new SensorDataEvent("Bio Data Sold: " + event.toJson(), instructions));
     }
 }

@@ -123,7 +123,7 @@ public class AiCommandsAndQueries {
         commandMap.put(" command order fighter to hold fire ", REQUEST_HOLD_FIRE.getAction());
         commandMap.put(" command order fighter return to mother ship ", REQUEST_REQUEST_DOCK.getAction());
         commandMap.put(" command supercruise, enter super cruise, engage FSD ", ENTER_SUPER_CRUISE.getAction());
-        commandMap.put(" command retract hardpoints, stove weapons ", RETRACT_HARDPOINTS.getAction());
+        commandMap.put(" command retract hardpoints, store weapons ", RETRACT_HARDPOINTS.getAction());
         commandMap.put(" command deploy hardpoints, weapons hot, deploy weapons ", DEPLOY_HARDPOINTS.getAction());
         commandMap.put(" command gear-down, deploy landing gear, landing gear DOWN ", DEPLOY_LANDING_GEAR.getAction());
         commandMap.put(" command gear-up, retract landing gear, landing gear UP ", RETRACT_LANDING_GEAR.getAction());

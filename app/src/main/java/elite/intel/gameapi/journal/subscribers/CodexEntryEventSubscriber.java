@@ -1,7 +1,6 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.intel.ai.mouth.subscribers.events.DiscoveryAnnouncementEvent;
 import elite.intel.db.dao.CodexEntryDao;
 import elite.intel.db.managers.CodexEntryManager;
 import elite.intel.db.managers.LocationManager;
@@ -60,16 +59,15 @@ public class CodexEntryEventSubscriber {
             if (event.getVoucherAmount() > 0) {
                 sb.append("Voucher Amount: ");
                 sb.append(event.getVoucherAmount());
-                sb.append(" credits");
+                sb.append(" credits. ");
             }
             Boolean isAnnounced = playerSession.paymentHasBeenAnnounced(genus);
 
             if (projectedPayment != null && projectedPayment.payment() != null && !isAnnounced) {
-                sb.append("Vista Genomics Payment: ").append(projectedPayment).append(" credits. For a complete set of three samples");
+                sb.append("Vista Genomics Payment: ").append(projectedPayment).append(" credits. For a complete set of three samples. ");
                 if (projectedPayment.firstDiscoveryBonus() != null && currentLocation.isOurDiscovery()) {
-                    sb.append(", plus");
                     sb.append(projectedPayment.firstDiscoveryBonus());
-                    sb.append(" bonus for first discovery.");
+                    sb.append(" credits bonus for first discovery.");
                 }
                 sb.append(".");
                 playerSession.setGenusPaymentAnnounced(genus);

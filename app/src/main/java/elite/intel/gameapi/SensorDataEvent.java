@@ -11,7 +11,7 @@ public class SensorDataEvent {
     }
 
     public String getSensorData() {
-        return sensorData;
+        return "sensorData: " + sensorData;
     }
 
     public String getInstructions() {

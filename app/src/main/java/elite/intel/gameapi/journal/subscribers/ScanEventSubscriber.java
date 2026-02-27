@@ -174,8 +174,8 @@ public class ScanEventSubscriber {
             }
         }
 
-        if(countBioSignals > 0) location.setBioSignals(countBioSignals);
-        if(countGeological > 0) location.setGeoSignals(countGeological);
+        if (countBioSignals > 0) location.setBioSignals(countBioSignals);
+        if (countGeological > 0) location.setGeoSignals(countGeological);
 
 
         List<MaterialDto> materials = new ArrayList<>();
@@ -185,12 +185,7 @@ public class ScanEventSubscriber {
             }
             location.setMaterials(materials);
         }
-
-        if (location.getBioSignals() > 0 && playerSession.isDiscoveryAnnouncementOn()) {
-            EventBusManager.publish(new DiscoveryAnnouncementEvent("Life Found in " + location.getPlanetShortName()));
-        } else {
-            announceIfNewDiscovery(event, location);
-        }
+        announceDiscovery(event, location);
 
         locationManager.save(location);
         playerSession.setLastScan(location);
@@ -236,11 +231,10 @@ public class ScanEventSubscriber {
         }
     }
 
-    private void announceIfNewDiscovery(ScanEvent event, LocationDto location) {
+    private void announceDiscovery(ScanEvent event, LocationDto location) {
         boolean wasDiscovered = event.isWasDiscovered();
         boolean wasMapped = event.isWasMapped();
         String shortName = subtractString(event.getBodyName(), event.getStarSystem());
-
 
         boolean isStar = event.getStarType() != null && !event.getStarType().isEmpty() || event.getSurfaceTemperature() > 1000;
         boolean isPrimaryStar = event.getDistanceFromArrivalLS() == 0;
@@ -248,22 +242,30 @@ public class ScanEventSubscriber {
 
         if (!wasDiscovered && PLANET.equals(location.getLocationType())) {
             if (event.getTerraformState() != null && !event.getTerraformState().isEmpty()) {
-                EventBusManager.publish(new DiscoveryAnnouncementEvent("New Terraformable planet: " + shortName + ". "));
+                EventBusManager.publish(new DiscoveryAnnouncementEvent(" New Terraformable planet: " + shortName + ". "));
             } else if (event.getPlanetClass() != null && valuablePlanetClasses.contains(event.getPlanetClass().toLowerCase())) {
-                EventBusManager.publish(new DiscoveryAnnouncementEvent("New discovery logged: " + event.getPlanetClass()));
+                EventBusManager.publish(new DiscoveryAnnouncementEvent(" New discovery logged: " + event.getPlanetClass() + ". "));
             }
         }
 
         if (wasDiscovered && !STAR.equals(location.getLocationType())) {
             if (!BELT_CLUSTER.equals(location.getLocationType())) {
                 String sensorData = getDetails(event, shortName);
-
                 log.info(sensorData);
             }
         } else if (!wasDiscovered && PRIMARY_STAR.equals(location.getLocationType())) {
-            EventBusManager.publish(new MissionCriticalAnnouncementEvent("New System discovered!"));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent(" New System discovered! "));
         } else if (PRIMARY_STAR.equals(location.getLocationType())) {
-            EventBusManager.publish(new DiscoveryAnnouncementEvent("Previously discovered!"));
+            EventBusManager.publish(new DiscoveryAnnouncementEvent(" Previously discovered! "));
+        }
+
+        int bioSignals = location.getBioSignals();
+        if (bioSignals > 0) {
+            EventBusManager.publish(new DiscoveryAnnouncementEvent(" Life found in " + location.getPlanetShortName() + ". "));
+        }
+        int geoSignals = location.getGeoSignals();
+        if (geoSignals > 0) {
+            EventBusManager.publish(new DiscoveryAnnouncementEvent(" Geological signals detected on " + location.getPlanetShortName() + ". "));
         }
     }
 

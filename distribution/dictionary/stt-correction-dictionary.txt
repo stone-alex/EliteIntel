@@ -325,3 +325,4 @@
 "bind"="find"
 "paint"="find"
 "monitor is our route'="monetize our route"
+"open the assassins can"="open FSS and scan"

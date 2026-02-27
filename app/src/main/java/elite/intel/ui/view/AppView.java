@@ -35,7 +35,7 @@ public class AppView extends JFrame implements AppViewInterface {
     public static final String LABEL_PRIVACY_MODE = "Voice Input on/off";
     // ----- COLORS (adjust to taste) -----
     private static final Color BG = new Color(0x141622); // base background
-    private static final Color LOG_BG = new Color(0x141622); // base background
+    private static final Color LOG_BG = new Color(0x171927); // base background
     private static final Color BG_PANEL = new Color(0x1F2032); // panels/inputs background
     private static final Color FG = new Color(0xE6E6E6); // primary text
     private static final Color BUTTON_FG = new Color(0xFFFFFF); // primary text
@@ -108,7 +108,7 @@ public class AppView extends JFrame implements AppViewInterface {
 
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/images/elite-logo.png")));
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setMinimumSize(new Dimension(1200, 800));
+        setMinimumSize(new Dimension(600, 400));
         setSize(new Dimension(1200, 800));
         setLocationRelativeTo(null);
 

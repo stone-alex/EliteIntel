@@ -17,21 +17,12 @@ import java.net.URL;
 
 public class GrokClient extends BaseAiClient implements Client {
 
-    /// Grok 3
-    // public static final String MODEL_GROK_NON_REASONING = "grok-3-fast";
-
+    /// use the same non-reasoning model for commands and queries for now.
     public static final String MODEL_GROK_NON_REASONING = "grok-4-1-fast-non-reasoning";
-    public static final String MODEL_GROK_REASONING = "grok-4-1-fast-non-reasoning";// "grok-4-fast-reasoning";
+    public static final String MODEL_GROK_REASONING = "grok-4-1-fast-non-reasoning";
+
     ///
     public static final boolean IS_STREAM = false;
-
-    /// Grok 4.1
-    // public static final String MODEL_GROK_REASONING = "grok-4-1-fast-reasoning";
-    // public static final String MODEL_GROK_NON_REASONING = "grok-4-1-fast-non-reasoning";
-
-    /// Grok 4
-    // public static final String MODEL_GROK_REASONING = "grok-4-fast-reasoning";
-    // public static final String MODEL_GROK_NON_REASONING = "grok-4-fast-non-reasoning";
     private static final String API_URL = "https://api.x.ai/v1/chat/completions";
     private static final GrokClient instance = new GrokClient();
 

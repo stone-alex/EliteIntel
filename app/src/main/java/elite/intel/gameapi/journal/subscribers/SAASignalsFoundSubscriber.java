@@ -53,7 +53,7 @@ public class SAASignalsFoundSubscriber {
             int liveSignals = event.getGenuses() != null ? event.getGenuses().size() : 0;
             sb.append(" Signal(s) found: ");
             for (SAASignalsFoundEvent.Signal signal : signals) {
-                sb.append(" Type: ").append(signal.getType()).append(". ");
+                sb.append(" Type: ").append(signal.getTypeLocalised()).append(". ");
                 if ("Tritium".equals(signal.getType())) {
                     sb.append(" Carrier fuel source is detected. ");
                 }

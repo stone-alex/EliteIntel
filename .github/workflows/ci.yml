@@ -45,7 +45,12 @@ jobs:
         run: cp -r distribution/* release/ || true   # || true = ok if dir empty
 
       - name: Get version
-        run: echo "VERSION=$(echo ${{ github.ref }} | sed 's/refs\/tags\/v//')" >> $GITHUB_ENV
+        run: |
+          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            echo "VERSION=$(echo ${{ github.ref_name }} | sed 's/^v//')" >> $GITHUB_ENV
+          else
+            echo "VERSION=test-$(date +%Y%m%d-%H%M%S)" >> $GITHUB_ENV
+          fi
 
       - name: Create ZIP
         run: |

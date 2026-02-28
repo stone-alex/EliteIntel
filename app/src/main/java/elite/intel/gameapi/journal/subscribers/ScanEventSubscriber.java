@@ -259,14 +259,14 @@ public class ScanEventSubscriber {
             EventBusManager.publish(new DiscoveryAnnouncementEvent(" Previously discovered! "));
         }
 
-        int bioSignals = location.getBioSignals();
+/*        int bioSignals = location.getBioSignals();
         if (bioSignals > 0) {
             EventBusManager.publish(new DiscoveryAnnouncementEvent(" Life found in " + location.getPlanetShortName() + ". "));
         }
         int geoSignals = location.getGeoSignals();
         if (geoSignals > 0) {
             EventBusManager.publish(new DiscoveryAnnouncementEvent(" Geological signals detected on " + location.getPlanetShortName() + ". "));
-        }
+        }*/
     }
 
     private List<MaterialDto> toListOfMaterials(List<ScanEvent.Material> materials) {

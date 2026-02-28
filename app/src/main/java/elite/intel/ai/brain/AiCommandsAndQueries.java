@@ -155,11 +155,8 @@ public class AiCommandsAndQueries {
         commandMap.put(" command Clear Reminders", CLEAR_REMINDERS.getAction());
         commandMap.put(" command set reminder " + KEY_X, SET_REMINDER.getAction());
 
-        /// Cloud LLM only
-        if (!systemSession.useLocalCommandLlm() && !systemSession.useLocalQueryLlm() && !systemSession.isRunningPiperTts()) {
-            commandMap.put(" command change personality to " + KEY_X, SET_PERSONALITY.getAction());
-            commandMap.put(" command change profile to " + KEY_X, SET_PROFILE.getAction());
-        }
+        commandMap.put(" command change personality to " + KEY_X, SET_PERSONALITY.getAction());
+        commandMap.put(" command change profile to " + KEY_X, SET_PROFILE.getAction());
         return commandMap;
     }
 

@@ -103,12 +103,7 @@ public class PromptFactory implements AiPromptFactory {
         sb.append(" Spell out numerals for response_text, Example: We have one hundred and thirsty units of gold in cargo hold. ");
         sb.append(" Use numbers for parameters Example: {\"key\":\"1\"} ");
 
-        AICadence aiCadence = systemSession.getAICadence();
-        AIPersonality aiPersonality = systemSession.getAIPersonality();
-
-        sb.append(" Cadence and Personality: ");
-        sb.append(aiCadence.getCadenceClause());
-        sb.append(aiPersonality.getPersonalityClause());
+        appendCadenceAndPersonality(sb);
         return sb.toString();
     }
 
@@ -129,7 +124,6 @@ public class PromptFactory implements AiPromptFactory {
         return sb.toString();
     }
 
-    @SuppressWarnings("StringBufferReplaceableByString")
     @Override
     public String generateSensorPrompt() {
         StringBuilder sb = new StringBuilder();
@@ -168,7 +162,17 @@ public class PromptFactory implements AiPromptFactory {
                 
                 Respond with ONLY the JSON object.
                 """);
+
+        appendCadenceAndPersonality(sb);
         return sb.toString();
+    }
+
+    private void appendCadenceAndPersonality(StringBuilder sb) {
+        AICadence aiCadence = systemSession.getAICadence();
+        AIPersonality aiPersonality = systemSession.getAIPersonality();
+        sb.append(" Cadence and Personality: ");
+        sb.append(aiCadence.getCadenceClause());
+        sb.append(aiPersonality.getPersonalityClause());
     }
 
     private String getSessionValues() {

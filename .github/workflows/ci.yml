@@ -125,8 +125,8 @@ jobs:
           gh release create "$TAG" \
           --title "Elite Intel $VERSION" \
           --generate-notes \
-            artifacts/zip/elite_intel_*.zip \
-            artifacts/windows-exe/*.exe
+            artifacts/*.zip \
+            artifacts/*.exe
 #      - name: Create GitHub Release
 #        uses: softprops/action-gh-release@v2
 #        with:

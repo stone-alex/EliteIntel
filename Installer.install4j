@@ -9,7 +9,7 @@
       <mountPoint id="34" />
     </mountPoints>
     <entries>
-      <fileEntry mountPoint="34" file="./app/build/distributions/app-shadow/lib/elite_intel.jar" />
+      <fileEntry mountPoint="34" file="./distribution/elite_intel.jar" />
       <dirEntry mountPoint="34" file="./distribution" subDirectory="dictionary" />
     </entries>
   </files>

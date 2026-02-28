@@ -5,7 +5,6 @@ import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.PlayerSession;
-import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
 import elite.intel.util.yaml.ToYamlConvertable;
 import elite.intel.util.yaml.YamlFactory;
@@ -14,7 +13,7 @@ public class AnalyzeFsdTargetHandler extends BaseQueryAnalyzer implements QueryH
 
     @Override
     public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing FSD telemetry... Stand by..."));
+        EventBusManager.publish(new AiVoxResponseEvent("Analyzing FSD telemetry. Stand by."));
         PlayerSession playerSession = PlayerSession.getInstance();
 
         ToJsonConvertible fsdTarget = playerSession.getFsdTarget();

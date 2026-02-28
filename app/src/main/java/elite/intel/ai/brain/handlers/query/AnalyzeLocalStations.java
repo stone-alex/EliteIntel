@@ -19,7 +19,7 @@ public class AnalyzeLocalStations extends BaseQueryAnalyzer implements QueryHand
     private final PlayerSession playerSession = PlayerSession.getInstance();
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing stations data... Stand by..."));
+        EventBusManager.publish(new AiVoxResponseEvent("Analyzing stations data. Stand by."));
 
         String starName = playerSession.getPrimaryStarName();
         StationsDto stationsDto = EdsmApiClient.searchStations(starName, 0);

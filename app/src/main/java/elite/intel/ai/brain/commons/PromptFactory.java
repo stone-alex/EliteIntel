@@ -106,12 +106,9 @@ public class PromptFactory implements AiPromptFactory {
         AICadence aiCadence = systemSession.getAICadence();
         AIPersonality aiPersonality = systemSession.getAIPersonality();
 
-        //if (!systemSession.useLocalCommandLlm() && !systemSession.useLocalQueryLlm() && !systemSession.isRunningPiperTts()) {
         sb.append(" Cadence and Personality: ");
         sb.append(aiCadence.getCadenceClause());
         sb.append(aiPersonality.getPersonalityClause());
-        //}
-
         return sb.toString();
     }
 

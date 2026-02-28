@@ -8,20 +8,13 @@ import elite.intel.db.managers.ShipRouteManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.gamestate.dtos.NavRouteDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
-import elite.intel.search.edsm.EdsmApiClient;
-import elite.intel.search.edsm.dto.DeathsDto;
-import elite.intel.search.edsm.dto.TrafficDto;
 import elite.intel.session.PlayerSession;
-import elite.intel.util.json.GsonFactory;
-import elite.intel.util.json.JsonDataFactory;
-import elite.intel.util.json.ToJsonConvertible;
 import elite.intel.util.yaml.ToYamlConvertable;
 import elite.intel.util.yaml.YamlFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -36,7 +29,7 @@ public class AnalyzeRouterHandler extends BaseQueryAnalyzer implements QueryHand
     
     @Override
     public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing route telemetry... Stand By..."));
+        EventBusManager.publish(new AiVoxResponseEvent("Analyzing route telemetry. Stand by."));
         Collection<NavRouteDto> orderedRoute = shipRoute.getOrderedRoute();
         LocationDto here = locationManager.findByLocationData(playerSession.getLocationData());
 

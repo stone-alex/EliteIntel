@@ -20,7 +20,7 @@ public class FindHumanTechnologyBrokerHandler extends CommandOperator implements
 
     @Override public void handle(String action, JsonObject params, String responseText) {
         Number range = GetNumberFromParam.extractRangeParameter(params, DEFAULT_RANGE);
-        EventBusManager.publish(new MissionCriticalAnnouncementEvent("Searching for " + BrokerType.HUMAN.getType() + " technology broker... Stand by..."));
+        EventBusManager.publish(new MissionCriticalAnnouncementEvent("Searching for " + BrokerType.HUMAN.getType() + " technology broker. Stand by."));
         TradersAndBrokersSearch search = TradersAndBrokersSearch.getInstance();
         RoutePlotter routePlotter = new RoutePlotter(this.gameController);
         String location = search.location(null, BrokerType.HUMAN, range);

@@ -11,9 +11,10 @@ import elite.intel.gameapi.journal.events.dto.FssSignalDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 
-import java.util.*;
-
-import static org.apache.commons.lang3.StringUtils.trimToNull;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 public class BiomeAnalyzerHandler extends BaseQueryAnalyzer implements QueryHandler {
 
@@ -22,7 +23,7 @@ public class BiomeAnalyzerHandler extends BaseQueryAnalyzer implements QueryHand
     private final LocationManager locationManager = LocationManager.getInstance();
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing planetary and biome data... Stand by..."));
+        EventBusManager.publish(new AiVoxResponseEvent("Analyzing planetary and biome data. Stand by."));
 
         JsonElement key = params.get("key");
         String planetName = key == null ? null : key.getAsString().replace(" ", "");

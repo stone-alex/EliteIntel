@@ -5,11 +5,11 @@ import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.dao.LocationDao;
 import elite.intel.db.managers.LocationManager;
+import elite.intel.db.managers.ReminderManager;
+import elite.intel.gameapi.EventBusManager;
 import elite.intel.search.spansh.station.vista.VistaGenomicsLocationDto;
 import elite.intel.search.spansh.station.vista.VistaGenomicsSearch;
 import elite.intel.search.spansh.station.vista.VistaSearchCriteria;
-import elite.intel.db.managers.ReminderManager;
-import elite.intel.gameapi.EventBusManager;
 import elite.intel.util.json.GetNumberFromParam;
 
 import java.util.List;
@@ -26,7 +26,7 @@ public class FindVistaGenomicsHandler extends CommandOperator implements Command
 
     @Override public void handle(String action, JsonObject params, String responseText) {
         Number range = GetNumberFromParam.extractRangeParameter(params, 250);
-        EventBusManager.publish(new MissionCriticalAnnouncementEvent("Searching for Vista Genomics... Stand by..."));
+        EventBusManager.publish(new MissionCriticalAnnouncementEvent("Searching for Vista Genomics. Stand by."));
 
 
         VistaSearchCriteria criteria = new VistaSearchCriteria();

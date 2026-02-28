@@ -24,7 +24,7 @@ public class AnalyzeExplorationProfitsHandler extends BaseQueryAnalyzer implemen
     private final CodexEntryManager codexEntryManager = CodexEntryManager.getInstance();
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing exploration data... Stand by..."));
+        EventBusManager.publish(new AiVoxResponseEvent("Analyzing exploration data. Stand by."));
 
         String instructions = """
                 Use this data to provide answers on potential exo-biology exploration profits in credits.

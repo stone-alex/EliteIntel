@@ -5,12 +5,9 @@ import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.db.managers.MissionManager;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.MissionType;
 import elite.intel.gameapi.journal.events.dto.BountyDto;
 import elite.intel.gameapi.journal.events.dto.MissionDto;
 import elite.intel.session.PlayerSession;
-import elite.intel.util.json.GsonFactory;
-import elite.intel.util.json.ToJsonConvertible;
 import elite.intel.util.yaml.ToYamlConvertable;
 import elite.intel.util.yaml.YamlFactory;
 
@@ -25,7 +22,7 @@ public class AnalyzePirateMissionHandler extends BaseQueryAnalyzer implements Qu
 
     @Override
     public JsonObject handle(String action, JsonObject params, String originalUserInput) {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing mission data... Stand by..."));
+        EventBusManager.publish(new AiVoxResponseEvent("Analyzing mission data. Stand by."));
         Map<Long, MissionDto> missions = missionManager.getMissions(
                 missionManager.getPirateMissionTypes()
         );

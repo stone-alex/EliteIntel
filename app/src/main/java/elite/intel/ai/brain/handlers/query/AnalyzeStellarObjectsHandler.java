@@ -8,15 +8,12 @@ import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto.LocationType;
 import elite.intel.session.PlayerSession;
-import elite.intel.util.json.GsonFactory;
-import elite.intel.util.json.ToJsonConvertible;
 import elite.intel.util.yaml.ToYamlConvertable;
 import elite.intel.util.yaml.YamlFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 public class AnalyzeStellarObjectsHandler extends BaseQueryAnalyzer implements QueryHandler {
 
@@ -24,7 +21,7 @@ public class AnalyzeStellarObjectsHandler extends BaseQueryAnalyzer implements Q
     private final LocationManager locationManager = LocationManager.getInstance();
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing stelar objects data... Stand by..."));
+        EventBusManager.publish(new AiVoxResponseEvent("Analyzing stelar objects data. Stand by."));
 
         StellarObjectsData<List<LocationData>, String> data = toLocationList(locationManager.findAllBySystemAddress(playerSession.getLocationData().getSystemAddress()));
 

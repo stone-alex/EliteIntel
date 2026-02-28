@@ -23,7 +23,7 @@ public class AnalyzeCurrentLocationHandler extends BaseQueryAnalyzer implements 
     private final LocationManager locationManager = LocationManager.getInstance();
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing current location data... Stand by..."));
+        EventBusManager.publish(new AiVoxResponseEvent("Analyzing current location data. Stand by."));
         Status status = Status.getInstance();
 
         LocationDto location = locationManager.findByLocationData(playerSession.getLocationData());

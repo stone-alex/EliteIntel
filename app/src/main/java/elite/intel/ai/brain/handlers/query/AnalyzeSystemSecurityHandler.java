@@ -18,7 +18,7 @@ public class AnalyzeSystemSecurityHandler extends BaseQueryAnalyzer implements Q
     private final LocationManager locationManager = LocationManager.getInstance();
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing system security... Stand by..."));
+        EventBusManager.publish(new AiVoxResponseEvent("Analyzing system security. Stand by."));
 
         LocationDto currentLocation = locationManager.findByLocationData(playerSession.getLocationData());
         DeathsDto deathsDto = currentLocation.getDeathsDto();

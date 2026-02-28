@@ -8,8 +8,6 @@ import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.search.edsm.dto.ShipyardDto;
 import elite.intel.session.PlayerSession;
-import elite.intel.util.json.GsonFactory;
-import elite.intel.util.json.ToJsonConvertible;
 import elite.intel.util.yaml.ToYamlConvertable;
 import elite.intel.util.yaml.YamlFactory;
 
@@ -21,7 +19,7 @@ public class AnalyzeShipyardHandler extends BaseQueryAnalyzer implements QueryHa
 
     @Override
     public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing shipyard data... Stand by..."));
+        EventBusManager.publish(new AiVoxResponseEvent("Analyzing shipyard data. Stand by."));
 
         LocationDto currentLocation = locationManager.findByLocationData(playerSession.getLocationData());
         ShipyardDto shipyard = currentLocation.getShipyard();

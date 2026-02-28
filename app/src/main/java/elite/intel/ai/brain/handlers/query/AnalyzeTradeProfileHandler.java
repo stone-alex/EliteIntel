@@ -6,15 +6,13 @@ import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.db.managers.TradeProfileManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.search.spansh.traderoute.TradeRouteSearchCriteria;
-import elite.intel.util.json.GsonFactory;
-import elite.intel.util.json.ToJsonConvertible;
 import elite.intel.util.yaml.ToYamlConvertable;
 import elite.intel.util.yaml.YamlFactory;
 
 public class AnalyzeTradeProfileHandler extends BaseQueryAnalyzer implements QueryHandler {
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing trade profile... Stand by..."));
+        EventBusManager.publish(new AiVoxResponseEvent("Analyzing trade profile. Stand by."));
         TradeProfileManager tradeProfileManager = TradeProfileManager.getInstance();
         TradeRouteSearchCriteria criteria = tradeProfileManager.getCriteria(false);
         String instructions = "Summarize the trade profile for the player in plain English.  \n" +

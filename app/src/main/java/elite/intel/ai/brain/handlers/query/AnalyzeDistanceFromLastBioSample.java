@@ -19,7 +19,7 @@ public class AnalyzeDistanceFromLastBioSample extends BaseQueryAnalyzer implemen
     private final LocationManager locationManager = LocationManager.getInstance();
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing exobiology collection data... Stand by..."));
+        EventBusManager.publish(new AiVoxResponseEvent("Analyzing exobiology collection data. Stand by."));
 
         Status status = Status.getInstance();
         LocationDto currentLocation = locationManager.findByLocationData(playerSession.getLocationData());

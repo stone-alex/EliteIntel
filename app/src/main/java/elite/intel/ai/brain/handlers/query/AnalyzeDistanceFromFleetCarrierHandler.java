@@ -9,8 +9,6 @@ import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.gameapi.journal.events.dto.shiploadout.ShipLoadOutDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.NavigationUtils;
-import elite.intel.util.yaml.ToYamlConvertable;
-import elite.intel.util.yaml.YamlFactory;
 
 public class AnalyzeDistanceFromFleetCarrierHandler extends BaseQueryAnalyzer implements QueryHandler {
 
@@ -18,7 +16,7 @@ public class AnalyzeDistanceFromFleetCarrierHandler extends BaseQueryAnalyzer im
     private final LocationManager locationManager = LocationManager.getInstance();
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing travel telemetry... Stand by..."));
+        EventBusManager.publish(new AiVoxResponseEvent("Analyzing travel telemetry. Stand by."));
 
         CarrierDataDto carrierData = playerSession.getCarrierData();
         if (carrierData == null) return process("No data available");

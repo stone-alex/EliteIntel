@@ -7,8 +7,6 @@ import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
-import elite.intel.util.json.GsonFactory;
-import elite.intel.util.json.ToJsonConvertible;
 import elite.intel.util.yaml.ToYamlConvertable;
 import elite.intel.util.yaml.YamlFactory;
 
@@ -20,7 +18,7 @@ public class AnalyzeDistanceToStellarObject extends BaseQueryAnalyzer implements
     private final LocationManager locationManager = LocationManager.getInstance();
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing local star system data... Stand by..."));
+        EventBusManager.publish(new AiVoxResponseEvent("Analyzing local star system data. Stand by."));
 
         String instructions = """
                 Return 'distance' in light seconds to the stellar object or station requested by the user.

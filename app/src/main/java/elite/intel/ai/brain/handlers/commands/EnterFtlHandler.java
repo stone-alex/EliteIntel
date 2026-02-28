@@ -32,7 +32,7 @@ public class EnterFtlHandler extends CommandOperator implements CommandHandler {
                 SleepNoThrow.sleep(12_000);
                 operateKeyboard(BINDING_SET_SPEED100.getGameBinding(), 0);
             } else {
-                preJumpCheck(status);
+                PreFtlChecks.preJumpCheck(status, this);
                 operateKeyboard(BINDING_SET_SPEED100.getGameBinding(), 0);
                 operateKeyboard(BINDING_ENTER_SUPERCRUISE.getGameBinding(), 0);
                 SleepNoThrow.sleep(1_000);
@@ -51,25 +51,4 @@ public class EnterFtlHandler extends CommandOperator implements CommandHandler {
         }
     }
 
-    private void preJumpCheck(Status status) {
-        if (status.isHardpointsDeployed()) {
-            operateKeyboard(BINDING_HARDPOINTS_TOGGLE.getGameBinding(), 0);
-            SleepNoThrow.sleep(2000);
-        }
-        if (status.isLandingGearDown()) {
-            operateKeyboard(BINDING_LANDING_GEAR_TOGGLE.getGameBinding(), 0);
-        }
-        if (status.isCargoScoopDeployed()) {
-            operateKeyboard(BINDING_TOGGLE_CARGO_SCOOP.getGameBinding(), 0);
-            SleepNoThrow.sleep(2000);
-        }
-        if (status.isNightVision()) {
-            operateKeyboard(BINDING_NIGHT_VISION_TOGGLE.getGameBinding(), 0);
-            SleepNoThrow.sleep(250);
-        }
-        if (status.isLightsOn()) {
-            operateKeyboard(BINDING_LANDING_GEAR_TOGGLE.getGameBinding(), 0);
-            SleepNoThrow.sleep(250);
-        }
-    }
 }

@@ -4,11 +4,11 @@ import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.managers.LocationManager;
+import elite.intel.gameapi.EventBusManager;
+import elite.intel.gameapi.journal.events.dto.CarrierDataDto;
 import elite.intel.search.spansh.findcarrier.CarrierAccess;
 import elite.intel.search.spansh.findcarrier.FleetCarrierSearch;
 import elite.intel.search.spansh.findcarrier.FleetCarrierSearchResultsDto;
-import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.journal.events.dto.CarrierDataDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.Status;
 import elite.intel.util.TimeUtils;
@@ -30,7 +30,7 @@ public class FindNearestFleetCarrierHandler extends CommandOperator implements C
         if(status.isInSrv() || status.isInMainShip()) {
 
             Number range = GetNumberFromParam.extractRangeParameter(params, 500);
-            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Searching for nearest fleet carrier with public access within " + range.intValue() + " light years... Stand by..."));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Searching for nearest fleet carrier with public access within " + range.intValue() + " light years. Stand by."));
 
             PlayerSession playerSession = PlayerSession.getInstance();
             FleetCarrierSearchResultsDto fleetCarriers = FleetCarrierSearch.getInstance()

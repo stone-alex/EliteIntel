@@ -3,10 +3,8 @@ package elite.intel.ai.mouth;
 public class AudioDeClicker {
 
     public static void sanitize(byte[] audioData, int fadeMs) {
-        removeClicks(audioData);
+        //removeClicks(audioData);
         applyFade(audioData, fadeMs, true);
-        //no fade out
-        //applyFade(audioData, fadeMs, false);
     }
 
     private static void removeClicks(byte[] audioData) {

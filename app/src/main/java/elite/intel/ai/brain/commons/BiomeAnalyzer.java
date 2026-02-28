@@ -1,17 +1,12 @@
 package elite.intel.ai.brain.commons;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.brain.AIConstants;
 import elite.intel.ai.brain.handlers.query.BaseQueryAnalyzer;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
-import elite.intel.ai.mouth.subscribers.events.DiscoveryAnnouncementEvent;
 import elite.intel.db.managers.LocationManager;
-import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.data.BioForms;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
-import elite.intel.util.json.GsonFactory;
-import elite.intel.util.json.ToJsonConvertible;
 import elite.intel.util.yaml.ToYamlConvertable;
 import elite.intel.util.yaml.YamlFactory;
 
@@ -58,7 +53,7 @@ public class BiomeAnalyzer extends BaseQueryAnalyzer {
                 - Pure text only. No explanations, no stats, no other words.
                 - numBioSignals indicates number of detected bio signals. There should be at least that many different matches
                 
-                Output format: { "type":"chat", "response_text": "Planet X: probable genus are Genus1, Genus2, ... Genus5 Planet Y: Genus1, Genus2, ..., Genus5" }
+                Output format: { "type":"chat", "response_text": "Planet X: probable genus are Genus1, Genus2, ... Genus5. Planet Y: Genus1, Genus2, ..., Genus5." }
                 """;
 
         List<LocationData> list = List.of(locations);

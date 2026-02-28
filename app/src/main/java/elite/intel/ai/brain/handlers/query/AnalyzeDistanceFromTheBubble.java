@@ -31,7 +31,7 @@ public class AnalyzeDistanceFromTheBubble extends BaseQueryAnalyzer implements Q
         int minutes = (int) (totalMinutes % 60);
 
         String responseText = String.format(
-                "%d light years, carrier fuel required %d tons, travel time %d hours and %d minutes",
+                "%d light years, carrier fuel required %d tons, travel time %d hours and %d minutes by fleet carrier.",
                 distLy, fuelTons, hours, minutes
         );
 

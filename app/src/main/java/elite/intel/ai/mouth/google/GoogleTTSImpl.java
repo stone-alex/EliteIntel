@@ -180,7 +180,7 @@ public class GoogleTTSImpl implements MouthInterface {
 
             String[] sentences = event.getText().split("(?<=[.!?])\\s+(?=\\S)");
             for (String sentence : sentences) {
-                ttsQueue.put(new VoiceRequest(sentence.replace(".", ""), voiceName, (1f + systemSession.getSpeechSpeed()), event.getOriginType()));
+                ttsQueue.put(new VoiceRequest(sentence, voiceName, (1f + systemSession.getSpeechSpeed()), event.getOriginType()));
             }
 
             AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_2);

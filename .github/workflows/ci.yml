@@ -29,6 +29,11 @@ jobs:
       - name: Extract tar
         run: tar -xf app/build/distributions/app-shadow.tar
 
+      - name: Prepare for Install4j
+        run: |
+          mkdir -p distribution
+          cp app-shadow/lib/elite_intel.jar distribution/
+
       - name: Create release directory
         run: mkdir release
 

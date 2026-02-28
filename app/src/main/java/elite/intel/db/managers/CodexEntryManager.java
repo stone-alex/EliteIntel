@@ -3,6 +3,7 @@ package elite.intel.db.managers;
 import elite.intel.db.dao.CodexEntryDao;
 import elite.intel.db.util.Database;
 import elite.intel.gameapi.journal.events.CodexEntryEvent;
+import elite.intel.gameapi.journal.events.dto.TargetLocation;
 
 import java.util.List;
 
@@ -61,6 +62,13 @@ public final class CodexEntryManager {
         Database.withDao(CodexEntryDao.class, dao -> {
             dao.clear();
             return null;
+        });
+    }
+
+    public void deleteTrackedEntry(TargetLocation tracking) {
+        Database.withDao(CodexEntryDao.class, dao -> {
+            dao.deleteForCoordinates(tracking.getLatitude(), tracking.getLongitude());
+            return Void.TYPE;
         });
     }
 }

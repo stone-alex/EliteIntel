@@ -154,7 +154,7 @@ public class AiCommandsAndQueries {
         commandMap.put(" command clear cache ", CLEAR_CACHE.getAction());
         commandMap.put(" command Clear Reminders", CLEAR_REMINDERS.getAction());
         commandMap.put(" command set reminder " + KEY_X, SET_REMINDER.getAction());
-
+        commandMap.put(" command delete codex entry", DELETE_CODEX_ENTRY.getAction());
         commandMap.put(" command change personality to " + KEY_X, SET_PERSONALITY.getAction());
         commandMap.put(" command change profile to " + KEY_X, SET_PROFILE.getAction());
         return commandMap;

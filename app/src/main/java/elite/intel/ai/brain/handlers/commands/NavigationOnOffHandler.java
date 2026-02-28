@@ -7,9 +7,10 @@ import elite.intel.gameapi.journal.events.dto.TargetLocation;
 import elite.intel.session.PlayerSession;
 
 public class NavigationOnOffHandler implements CommandHandler {
+    private final PlayerSession playerSession = PlayerSession.getInstance();
 
     @Override public void handle(String action, JsonObject params, String responseText) {
-        PlayerSession playerSession = PlayerSession.getInstance();
+
         playerSession.setTracking(new TargetLocation(false));
         EventBusManager.publish(new MissionCriticalAnnouncementEvent("Navigation guidance off."));
     }

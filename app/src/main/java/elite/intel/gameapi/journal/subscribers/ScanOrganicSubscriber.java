@@ -50,6 +50,7 @@ public class ScanOrganicSubscriber {
         StringBuilder sb = new StringBuilder();
         String scanType = event.getScanType();
         String genus = event.getGenusLocalised();
+        playerSession.setCurrentPartial(genus);
         String species = subtractString(event.getSpeciesLocalised(), genus);
         LocationDto currentLocation = locationManager.findBySystemAddress(event.getSystemAddress(), event.getBody());
         playerSession.setCurrentLocationId(event.getBody(), event.getSystemAddress());
@@ -109,6 +110,7 @@ public class ScanOrganicSubscriber {
             bioSampleDto.setBioSampleCompleted(true);
             bioSampleDto.setOurDiscovery(currentLocation.isOurDiscovery());
             playerSession.addBioSample(bioSampleDto);
+            playerSession.setCurrentPartial(null);
             currentLocation.deletePartialBioSamples();
             removeCodexEntry(event.getVariantLocalised(), event.getSystemAddress(), event.getBody());
             playerSession.clearGenusPaymentAnnounced();
@@ -119,7 +121,7 @@ public class ScanOrganicSubscriber {
 
     private void removeCodexEntry(String variantLocalised, Long systemAddress, Long bodyId) {
         LocationDto address = locationManager.findBySystemAddress(systemAddress, bodyId);
-        codexEntryManager.clearCompleted(address.getStarName(),address.getBodyId(),variantLocalised);
+        codexEntryManager.clearCompleted(address.getStarName(), address.getBodyId(), variantLocalised);
     }
 
     private BioSampleDto createBioSampleDto(String genus, String species, boolean isOurDiscovery) {

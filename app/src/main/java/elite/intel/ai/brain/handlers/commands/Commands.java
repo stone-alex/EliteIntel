@@ -156,6 +156,7 @@ public enum Commands {
     LIST_AVAILABLE_VOICES                               ("list_available_voices", null,  ListAvailableVoices.class),
     CLEAR_REMINDERS                                     ("clear_reminders", null, CleareReminderHandler.class),
     SET_REMINDER                                        ("set_reminder", null, SetReminderHandler.class),
+    DELETE_CODEX_ENTRY                                  ("delete_codex_entry", null, DeleteCodexEntryHandler.class),
     ;
 
     ///

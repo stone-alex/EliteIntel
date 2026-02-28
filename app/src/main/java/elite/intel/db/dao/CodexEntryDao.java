@@ -39,6 +39,9 @@ public interface CodexEntryDao {
     @SqlQuery("SELECT * FROM codex_entries")
     List<CodexEntry> findAll();
 
+    @SqlUpdate("delete from codex_entries where latitude = :latitude and longitude = :longitude")
+    void deleteForCoordinates(@Bind("latitude") double latitude, @Bind("longitude") double longitude);
+
     class CodexEntryMapper implements RowMapper<CodexEntry> {
         @Override public CodexEntry map(ResultSet rs, StatementContext ctx) throws SQLException {
             CodexEntry entry = new CodexEntry();

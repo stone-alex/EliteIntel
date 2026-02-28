@@ -1,7 +1,7 @@
 package elite.intel.gameapi.gamestate.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.intel.ai.mouth.subscribers.events.NavigationVocalisationEvent;
+import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.gamestate.status_events.PlayerMovedEvent;
@@ -55,7 +55,7 @@ public class DistanceFromShipTracker {
         double lzLon = landingCoordinates[1];
 
         // Calculate great-circle distance (in meters)
-        Double distance = calculateSurfaceDistance(latitude, longitude, lzLat, lzLon, planetRadius, 0);
+        double distance = calculateSurfaceDistance(latitude, longitude, lzLat, lzLon, planetRadius, 0);
 
         // Define donut boundaries: 1.8km to 2km
         double innerDonut = 1800.0; // 1.8km in meters
@@ -66,7 +66,7 @@ public class DistanceFromShipTracker {
         long NOW = System.currentTimeMillis();
         if (isInDonut && shouldAnnounce && status.getStatus().getAltitude() == 0 && NOW - lastAnnounceTime < 15_000) {
             EventBusManager.publish(
-                    new NavigationVocalisationEvent(
+                    new MissionCriticalAnnouncementEvent(
                             String.format("Warning: You are %d meters from your ship, approaching auto-departure zone!",
                                     Math.round(distance))
                     )

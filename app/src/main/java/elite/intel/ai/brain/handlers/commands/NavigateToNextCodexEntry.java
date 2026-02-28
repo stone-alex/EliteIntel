@@ -84,11 +84,9 @@ public class NavigateToNextCodexEntry implements CommandHandler {
     }
 
 
-    private CodexEntryDao.CodexEntry findBestBioTarget(List<CodexEntryDao.CodexEntry> codexEntries,
-                                                       List<BioSampleDto> partials,
-                                                       double playerLat, double playerLon, double planetRadius) {
-
-        boolean hasPartials = partials != null && !partials.isEmpty();
+    private CodexEntryDao.CodexEntry findBestBioTarget(List<CodexEntryDao.CodexEntry> codexEntries, List<BioSampleDto> partials, double playerLat, double playerLon, double planetRadius) {
+        String partialGenus = playerSession.getCurrentPartial();
+        boolean hasPartials = partialGenus != null && !partials.isEmpty();
 
         CodexEntryDao.CodexEntry bestPartialMatch = null;
         CodexEntryDao.CodexEntry bestAny = null;
@@ -101,11 +99,9 @@ public class NavigateToNextCodexEntry implements CommandHandler {
             String genus = entry.getEntryName().split(" ")[0];
             double distToPlayer = calculateSurfaceDistance(playerLat, playerLon, entry.getLatitude(), entry.getLongitude(), planetRadius, 0);
 
-
             // Check distance (no partials or not too close to any partial of the same genus)
             boolean valid = !hasPartials || !isTooCloseToAnyPartialOfSameGenus(entry, genus, partials, planetRadius);
             if (!valid) continue;
-
 
             BioSampleDto partialMatch = findForGenus(genus, partials);
             Integer scanXof3 = partialMatch == null ? null : partialMatch.getScanXof3();
@@ -115,9 +111,12 @@ public class NavigateToNextCodexEntry implements CommandHandler {
                 continue;
             }
 
+            if (partialMatch != null && !partialMatch.getGenus().equalsIgnoreCase(partialGenus)) {
+                continue;
+            }
 
             // If we have partials and this matches one of their genera → priority track
-            if (hasPartials && partials.stream().anyMatch(p -> genus.equalsIgnoreCase(p.getGenus()))) {
+            if (hasPartials && partials.stream().anyMatch(p -> genus.equalsIgnoreCase(p.getGenus()) && genus.equalsIgnoreCase(partialGenus))) {
                 if (distToPlayer < bestPartialDist) {
                     bestPartialDist = distToPlayer;
                     bestPartialMatch = entry;
@@ -136,7 +135,7 @@ public class NavigateToNextCodexEntry implements CommandHandler {
     }
 
     private BioSampleDto findForGenus(String genus, List<BioSampleDto> partials) {
-        if (partials == null || partials.isEmpty()) return null;
+        if (partials.isEmpty()) return null;
         return partials.stream()
                 .filter(p -> genus.equalsIgnoreCase(p.getGenus()))
                 .findFirst()

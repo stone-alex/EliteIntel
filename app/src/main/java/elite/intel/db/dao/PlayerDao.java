@@ -30,7 +30,9 @@ public interface PlayerDao {
                        player_mission_statement, player_name, player_title, ships_owned, species_first_logged,
                        total_bounty_claimed, total_distance_traveled, total_hyperspace_distance,
                        total_profits_from_exploration, total_systems_visited, exobiology_profits, alternative_name,
-                       journal_dir, bindings_dir, logging_enabled, game_build, bounty_collected_lifetime, homeSystemId, localTtsServer, localLlmAddress, systemAddress)
+                       journal_dir, bindings_dir, logging_enabled, game_build, bounty_collected_lifetime, homeSystemId, 
+                       localTtsServer, localLlmAddress, systemAddress, currentGenus
+                    )
                     VALUES (1, :currentPrimaryStar,
                        :carrierDepartureTime, :crewWagsPayout,
                        :currentShip, :currentShipName, :currentLocationId, :currentWealth,
@@ -43,7 +45,8 @@ public interface PlayerDao {
                        :playerMissionStatement, :playerName, :playerTitle,
                        :shipsOwned, :speciesFirstLogged, :totalBountyClaimed, :totalDistanceTraveled, 
                        :totalHyperspaceDistance, :totalProfitsFromExploration, :totalSystemsVisited, :exobiologyProfits, :alternativeName,
-                       :journalDirectory, :bindingsDirectory, :loggingEnabled, :gameBuild, :bountyCollectedLifetime, :homeSystemId, :localTtsServer, :localLlmAddress, :systemAddress
+                       :journalDirectory, :bindingsDirectory, :loggingEnabled, :gameBuild, :bountyCollectedLifetime, :homeSystemId, 
+                       :localTtsServer, :localLlmAddress, :systemAddress, :currentGenus
                     )
             """)
     void save(@BindBean Player player);
@@ -95,6 +98,7 @@ public interface PlayerDao {
         private Long systemAddress;
         private String localTtsServer;
         private String localLlmAddress;
+        private String currentGenus;
 
         public Player() {
         } // required for JDBI
@@ -460,6 +464,14 @@ public interface PlayerDao {
         public void setSystemAddress(Long systemAddress) {
             this.systemAddress = systemAddress;
         }
+
+        public String getCurrentGenus() {
+            return currentGenus;
+        }
+
+        public void setCurrentGenus(String currentGenus) {
+            this.currentGenus = currentGenus;
+        }
     }
 
     class PlayerMapper implements RowMapper<Player> {
@@ -511,6 +523,7 @@ public interface PlayerDao {
             p.setLocalTtsServer(rs.getString("localTtsServer"));
             p.setLocalLlmAddress(rs.getString("localLlmAddress"));
             p.setSystemAddress(rs.getLong("systemAddress"));
+            p.setCurrentGenus(rs.getString("currentGenus"));
             return p;
         }
     }

@@ -39,20 +39,20 @@ public class PlayerSession {
     public static final String BINDINGS_DIR = "bindings_dir";
     private static volatile PlayerSession instance;
     /// Data managers.
-    private ShipScansManager shipScans = ShipScansManager.getInstance();
-    private MissionManager missions = MissionManager.getInstance();
-    private BountyManager bounties = BountyManager.getInstance();
-    private MiningTargetManager miningTargets = MiningTargetManager.getInstance();
-    private StationMarketsManager markets = StationMarketsManager.getInstance();
-    private RankAndProgressManager rankAndProgress = RankAndProgressManager.getInstance();
-    private FleetCarrierManager fleetCarriers = FleetCarrierManager.getInstance();
-    private BioSamplesManager bioSamples = BioSamplesManager.getInstance();
-    private ShipLoadoutManager shipLoadouts = ShipLoadoutManager.getInstance();
-    private GenusAnnouncementManager genusAnouncements = GenusAnnouncementManager.getInstance();
-    private CargoHoldManager cargoHold = CargoHoldManager.getInstance();
-    private ReputationManager reputationManager = ReputationManager.getInstance();
-    private TargetLocationManager targetLocationManager = TargetLocationManager.getInstance();
-    private FsdTargetManager fsdTargetManager = FsdTargetManager.getInstance();
+    private final ShipScansManager shipScans = ShipScansManager.getInstance();
+    private final MissionManager missions = MissionManager.getInstance();
+    private final BountyManager bounties = BountyManager.getInstance();
+    private final MiningTargetManager miningTargets = MiningTargetManager.getInstance();
+    private final StationMarketsManager markets = StationMarketsManager.getInstance();
+    private final RankAndProgressManager rankAndProgress = RankAndProgressManager.getInstance();
+    private final FleetCarrierManager fleetCarriers = FleetCarrierManager.getInstance();
+    private final BioSamplesManager bioSamples = BioSamplesManager.getInstance();
+    private final ShipLoadoutManager shipLoadouts = ShipLoadoutManager.getInstance();
+    private final GenusAnnouncementManager genusAnouncements = GenusAnnouncementManager.getInstance();
+    private final CargoHoldManager cargoHold = CargoHoldManager.getInstance();
+    private final ReputationManager reputationManager = ReputationManager.getInstance();
+    private final TargetLocationManager targetLocationManager = TargetLocationManager.getInstance();
+    private final FsdTargetManager fsdTargetManager = FsdTargetManager.getInstance();
 
     private PlayerSession() {
         EventBusManager.register(this);
@@ -845,6 +845,19 @@ public class PlayerSession {
             playerDao.save(player);
             return Void.class;
         });
+    }
+
+    public void setCurrentPartial(String genus) {
+        Database.withDao(PlayerDao.class, playerDao -> {
+            PlayerDao.Player player = playerDao.get();
+            player.setCurrentGenus(genus);
+            playerDao.save(player);
+            return Void.class;
+        });
+    }
+
+    public String getCurrentPartial() {
+        return Database.withDao(PlayerDao.class, dao -> dao.get().getCurrentGenus());
     }
 }
 

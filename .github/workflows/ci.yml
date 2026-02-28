@@ -116,6 +116,9 @@ jobs:
           pattern: '*'
           merge-multiple: true
 
+      - name: List downloaded files for debug
+        run: ls -la artifacts/
+
       - name: Create GitHub Release and attach assets
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -127,13 +130,3 @@ jobs:
           --generate-notes \
             artifacts/*.zip \
             artifacts/*.exe
-#      - name: Create GitHub Release
-#        uses: softprops/action-gh-release@v2
-#        with:
-#          tag_name: ${{ github.ref_name }}
-#          name: Elite Intel ${{ env.VERSION }}
-#          generate_release_notes: true
-#          files: |
-#            artifacts/zip/elite_intel_*.zip
-#            artifacts/windows-exe/*.exe
-#            artifacts/macos-dmg/*.dmg

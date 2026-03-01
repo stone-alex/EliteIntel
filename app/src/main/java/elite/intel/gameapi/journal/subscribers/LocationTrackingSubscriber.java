@@ -252,9 +252,9 @@ public class LocationTrackingSubscriber {
                 playerSession.setTracking(t);
                 resetTrackingState();
             } else if (headingDeviation) {
-                vocalize(movingAway ? "Diverging." : "Converging. ", navigator.distanceToTarget(), navigator.bearingToTarget(), false);
+                vocalize(movingAway ? "Diverging. " : "Converging. ", navigator.distanceToTarget(), navigator.bearingToTarget(), false);
             } else {
-                announceBearingAndDistances(navigator, movingAway ? "Diverging." : "Converging");
+                announceBearingAndDistances(navigator, movingAway ? " Diverging. " : " Converging. ");
             }
         } else {
             //FLYING in normal space above surface
@@ -270,7 +270,7 @@ public class LocationTrackingSubscriber {
                 }
 
                 if (headingDeviation) {
-                    vocalize(movingAway ? "Diverging." : "Converging. ", navigator.distanceToTarget(), navigator.bearingToTarget(), movingAway);
+                    vocalize(movingAway ? "Diverging. " : "Converging. ", navigator.distanceToTarget(), navigator.bearingToTarget(), movingAway);
                 } else if (event.getAltitude() > 3_000 && glideAngleOk) {
                     announceBearingAndDistances(navigator, movingAway ? "Diverging." : "Converging. Glide Angle " + glideAngle + " degrees.");
                 } else {
@@ -323,9 +323,9 @@ public class LocationTrackingSubscriber {
 
         if (isAboveAnnouncementThreshold(highPriority)) {
             StringBuilder sb = new StringBuilder();
-            if (text != null) sb.append(text).append(". ");
-            if (distance > 0) sb.append(formatDistance(distance)).append(". ");
-            if (bearing > 0) sb.append("Bearing: ").append((int) bearing).append(" degrees").append(". ");
+            if (text != null) sb.append(text);
+            if (distance > 0) sb.append(formatDistance(distance));
+            if (bearing > 0) sb.append(" Bearing: ").append((int) bearing).append(" degrees");
             log.info(sb.toString());
             EventBusManager.publish(new NavigationVocalisationEvent(sb.toString()));
             lastAnnounceTime = System.currentTimeMillis();

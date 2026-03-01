@@ -109,15 +109,15 @@ public class JumpCompletedSubscriber {
                         nextStop -> sb
                                 .append(". Next Waypoint: ")
                                 .append(nextStop.getName())
-                                .append(". ")
+                                .append(", ")
                                 .append(" Star Class: ")
                                 .append(nextStop.getStarClass())
-                                .append(" ")
+                                .append(". ")
                                 .append(isFuelStarClause(nextStop.getStarClass()))
                 );
                 sb.append(". We have ").append(remainingJump).append(" jump");
                 if (remainingJump > 1) sb.append("s");
-                sb.append(" left to destination.");
+                sb.append(" left to destination. ");
             }
         }
 

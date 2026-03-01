@@ -4,8 +4,10 @@ import elite.intel.db.dao.ShipRouteDao;
 import elite.intel.db.util.Database;
 import elite.intel.gameapi.gamestate.dtos.NavRouteDto;
 
-import javax.xml.crypto.Data;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 
 public class ShipRouteManager {
 
@@ -74,7 +76,7 @@ public class ShipRouteManager {
             for (ShipRouteDao.Route leg : list) {
                 result.add(routeLegToDto(leg));
             }
-            //result.sort(Comparator.comparingInt(NavRouteDto::getLeg));
+            result.sort(Comparator.comparingInt(NavRouteDto::getLeg));
             return result;
         });
     }

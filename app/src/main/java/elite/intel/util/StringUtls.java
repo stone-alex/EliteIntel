@@ -1,9 +1,5 @@
 package elite.intel.util;
 
-import elite.intel.db.dao.CommodityDao;
-import elite.intel.db.dao.MaterialNameDao;
-import elite.intel.db.dao.SubSystemDao;
-import elite.intel.db.util.Database;
 import elite.intel.session.PlayerSession;
 
 import java.time.LocalDateTime;
@@ -11,9 +7,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.trimToNull;
 
@@ -66,7 +59,7 @@ public class StringUtls {
             return "";
         }
         boolean isFuelStar = "KGBFOAM".contains(starClass);
-        return isFuelStar ? ", Fuel Available. " : " Warning! - No fuel Available at next stop. ";
+        return isFuelStar ? " Fuel Available. " : " Warning! - No fuel Available at next stop. ";
     }
 
     private static int getHourOfDay() {

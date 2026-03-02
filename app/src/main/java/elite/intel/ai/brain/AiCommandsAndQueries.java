@@ -43,7 +43,7 @@ public class AiCommandsAndQueries {
         commandMap.put(" command toggle radio on/off " + KEY_STATE, SET_RADIO_TRANSMISSION_MODE.getAction());
         commandMap.put(" command navigate to coordinates lat/lon " + KEY_LAT_LON, NAVIGATE_TO_TARGET.getAction());
         commandMap.put(" command discovery announcements on/off " + KEY_STATE, DISCOVERY_ON_OFF.getAction());
-        commandMap.put(" command mining announcements on/off " + KEY_STATE, MINING_ON_OFF.getAction());
+        commandMap.put(" command mining and material announcements on/off " + KEY_STATE, MINING_ON_OFF.getAction());
         commandMap.put(" command route announcements on/off " + KEY_STATE, ROUTE_ON_OFF.getAction());
         commandMap.put(" command set speed plus X " + KEY_X, INCREASE_SPEED_BY.getAction());  // Fixed to assumed correct action
         commandMap.put(" command set voice to X, change voice to X " + KEY_X, SET_AI_VOICE.getAction());

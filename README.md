@@ -10,12 +10,29 @@
 
 **✅ Local off-line private LLMs are now supported**
 [Installing local LLM](https://github.com/stone-alex/EliteIntel/wiki/Install-Local-LLM)
-- If you do not have the hardware to run your local LLM you can use cloud LLM from xAI or Open AI but that comes with a small fee. (about $6 a month)
+
+- If you do not have the hardware to run your local LLM you can use cloud LLM from Claude, xAI or Open AI but that comes with a small fee. (about $6 a month)
   [**Real life Cloud LLM cost breakdown**](https://github.com/stone-alex/EliteIntel/wiki/LLM-Real-Live-Cost)
   
 **✅ The off-line TTS. (Linux and Windows)**
 - See [Piper TTS](https://github.com/stone-alex/EliteIntel/wiki/OffLineVoiceProcessor) for instructions.
 ---
+
+LLMs
+
+- Ollama (Local LLMs)
+- Claude (Sonnet)
+- Grok (xAI)
+- Open AI (Chat GPT)
+
+STT
+
+- Google
+
+TTS
+
+- Google
+- Piper TTS (Local)
 
 ## Overview
 

@@ -669,7 +669,7 @@ public class AppView extends JFrame implements AppViewInterface {
         addCheck(localSettingsPanel, useLocalTTSCheck, gbc);
 
         nextRow(gbc);
-        addLabel(localSettingsPanel, "Speech Throttle ", gbc);
+        addLabel(localSettingsPanel, "Speech Speed ", gbc);
         speechSpeedSlider = new JSlider();
         speechSpeedSlider.setMinimum(-100);
         speechSpeedSlider.setMaximum(0);

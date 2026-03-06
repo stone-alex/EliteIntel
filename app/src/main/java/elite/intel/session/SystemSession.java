@@ -1,6 +1,5 @@
 package elite.intel.session;
 
-import com.google.gson.JsonObject;
 import elite.intel.ai.brain.AICadence;
 import elite.intel.ai.brain.AIPersonality;
 import elite.intel.ai.mouth.AiVoices;
@@ -164,22 +163,6 @@ public class SystemSession {
         });
     }
 
-    // New getters and setters
-    public boolean isLoggingEnabled() {
-        return Database.withDao(GameSessionDao.class, dao -> {
-            GameSessionDao.GameSession session = dao.get();
-            return session.getLoggingEnabled();
-        });
-    }
-
-    public void setLoggingEnabled(boolean loggingEnabled) {
-        Database.withDao(GameSessionDao.class, dao -> {
-            GameSessionDao.GameSession session = dao.get();
-            session.setLoggingEnabled(loggingEnabled);
-            dao.save(session);
-            return null;
-        });
-    }
 
     public String getTtsApiKey() {
         return Database.withDao(GameSessionDao.class, dao -> {
@@ -247,6 +230,7 @@ public class SystemSession {
         });
     }
 
+
     public void setAiApiKey(String aiApiKey) {
         if (aiApiKey == null && aiApiKey.isEmpty()) {
             Database.withDao(GameSessionDao.class, dao -> {
@@ -298,58 +282,7 @@ public class SystemSession {
         });
     }
 
-    public void setSendMarketData(boolean enabled) {
-        Database.withDao(GameSessionDao.class, dao -> {
-            GameSessionDao.GameSession session = dao.get();
-            session.setSendMarketData(enabled);
-            dao.save(session);
-            return Void.class;
-        });
-    }
 
-    public void setSendOutfittingData(boolean enabled) {
-        Database.withDao(GameSessionDao.class, dao -> {
-            GameSessionDao.GameSession session = dao.get();
-            session.setSendOutfittingData(enabled);
-            dao.save(session);
-            return Void.class;
-        });
-    }
-
-    public void setSendShipyardDataEvent(boolean enabled) {
-        Database.withDao(GameSessionDao.class, dao -> {
-            GameSessionDao.GameSession session = dao.get();
-            session.setSendShipyardData(enabled);
-            dao.save(session);
-            return Void.class;
-        });
-    }
-
-    public void setExplorationData(boolean enabled) {
-        Database.withDao(GameSessionDao.class, dao -> {
-            GameSessionDao.GameSession gameSession = dao.get();
-            gameSession.setSendExplorationData(enabled);
-            dao.save(gameSession);
-            return Void.class;
-        });
-    }
-
-
-    public boolean isExplorationData() {
-        return Database.withDao(GameSessionDao.class, dao -> dao.get().getSendExplorationData());
-    }
-
-    public boolean isSendMarketData() {
-        return Database.withDao(GameSessionDao.class, dao -> dao.get().getSendMarketData());
-    }
-
-    public boolean isSendOutfittingData() {
-        return Database.withDao(GameSessionDao.class, dao -> dao.get().getSendOutfittingData());
-    }
-
-    public boolean isSendShipyardData() {
-        return Database.withDao(GameSessionDao.class, dao -> dao.get().getSendShipyardData());
-    }
 
     public String readVersionFromResources() {
         try {
@@ -360,9 +293,6 @@ public class SystemSession {
         }
     }
 
-    public boolean isSendExplorationData() {
-        return Database.withDao(GameSessionDao.class, dao -> dao.get().getSendExplorationData());
-    }
 
     public void setSpeechSpeed(float speed) {
         Database.withDao(GameSessionDao.class, dao -> {

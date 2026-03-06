@@ -18,15 +18,13 @@ public interface GameSessionDao {
             INSERT OR REPLACE INTO game_session (id, aiPersonality,  aiCadence, aiVoice, aiApiKey, ttsApiKey, sttApiKey, 
                                                              edsmApiKey, loggingEnabled, privacyModeOn, rmsThresholdHigh,  
                                                              rmsThresholdLow, encryptedLLMKey, encryptedSTTKey, encryptedTTSKey, 
-                                                             encryptedEDSSMKey, sendMarketData, sendOutfittingData, sendShipyardData, 
-                                                             sendExplorationData, speechSpeed, localLlmCommandModel, localLlmQueryModel,
+                                                             encryptedEDSSMKey, speechSpeed, localLlmCommandModel, localLlmQueryModel,
                                                              useLocalCommandLlm, useLocalQueryLlm, useLocalTTS
                                                 )
                                   VALUES (1, :aiPersonality, :aiCadence, :aiVoice, :aiApiKey, :ttsApiKey, :sttApiKey, 
                                                       :edsmApiKey, :loggingEnabled, :privacyModeOn, :rmsThresholdHigh, 
                                                       :rmsThresholdLow, :encryptedLLMKey, :encryptedSTTKey, :encryptedTTSKey, 
-                                                      :encryptedEDSSMKey, :sendMarketData, :sendOutfittingData, :sendShipyardData, 
-                                                      :sendExplorationData, :speechSpeed, :localLlmCommandModel, :localLlmQueryModel,
+                                                      :encryptedEDSSMKey,  :speechSpeed, :localLlmCommandModel, :localLlmQueryModel,
                                                       :useLocalCommandLlm, :useLocalQueryLlm, :useLocalTTS
                                           )
             """)
@@ -61,10 +59,6 @@ public interface GameSessionDao {
             session.setRmsThresholdLow(rs.getDouble("rmsThresholdLow"));
             session.setEdsmApiKey(rs.getString("edsmApiKey"));
 
-            session.setSendMarketData(rs.getBoolean("sendMarketData"));
-            session.setSendOutfittingData(rs.getBoolean("sendOutfittingData"));
-            session.setSendShipyardData(rs.getBoolean("sendShipyardData"));
-            session.setSendExplorationData(rs.getBoolean("sendExplorationData"));
             session.setLocalLlmCommandModel(rs.getString("localLlmCommandModel"));
             session.setLocalLlmQueryModel(rs.getString("localLlmQueryModel"));
             session.setSpeechSpeed(rs.getFloat("speechSpeed"));
@@ -97,14 +91,9 @@ public interface GameSessionDao {
         private Double rmsThresholdLow = 100.00;
         private String edsmApiKey;
 
-        private Boolean sendMarketData;
-        private Boolean sendOutfittingData;
-        private Boolean sendShipyardData;
-        private Boolean sendExplorationData;
         private Float speechSpeed;
         private String localLlmCommandModel;
         private String localLlmQueryModel;
-
         private boolean useLocalCommandLlm;
         private boolean useLocalQueryLlm;
         private boolean useLocalTTS;
@@ -228,39 +217,6 @@ public interface GameSessionDao {
 
         public void setEncryptedEDSSMKey(String encryptedEDSSMKey) {
             this.encryptedEDSSMKey = encryptedEDSSMKey;
-        }
-
-
-        public Boolean getSendMarketData() {
-            return sendMarketData;
-        }
-
-        public void setSendMarketData(Boolean sendMarketData) {
-            this.sendMarketData = sendMarketData;
-        }
-
-        public Boolean getSendOutfittingData() {
-            return sendOutfittingData;
-        }
-
-        public void setSendOutfittingData(Boolean sendOutfittingData) {
-            this.sendOutfittingData = sendOutfittingData;
-        }
-
-        public Boolean getSendShipyardData() {
-            return sendShipyardData;
-        }
-
-        public void setSendShipyardData(Boolean sendShipyardData) {
-            this.sendShipyardData = sendShipyardData;
-        }
-
-        public Boolean getSendExplorationData() {
-            return sendExplorationData;
-        }
-
-        public void setSendExplorationData(Boolean sendExplorationData) {
-            this.sendExplorationData = sendExplorationData;
         }
 
         public Float getSpeechSpeed() {

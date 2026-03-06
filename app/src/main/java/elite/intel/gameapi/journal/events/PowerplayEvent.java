@@ -101,7 +101,7 @@ public class PowerplayEvent extends BaseEvent {
                 .add("merits=" + merits)
                 .add("timePledged=" + timePledged)
                 .add("timestamp='" + timestamp + "'")
-                .add("eventName='" + eventName + "'")
+                .add("eventName='" + event + "'")
                 .add("endOfLife=" + endOfLife)
                 .toString();
     }

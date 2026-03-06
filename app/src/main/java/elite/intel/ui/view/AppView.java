@@ -80,11 +80,6 @@ public class AppView extends JFrame implements AppViewInterface {
     private JCheckBox togglePrivacyModeCheckBox;
     private JPasswordField edsmKeyField;
     private JCheckBox edsmLockedCheck;
-    // Player tab components
-    private JCheckBox sendMarketData;
-    private JCheckBox sendShipyardData;
-    private JCheckBox sendOutfitingData;
-    private JCheckBox sendExplorationData;
 
     private JTextField playerAltNameField;
     private JTextField playerTitleField;
@@ -521,28 +516,6 @@ public class AppView extends JFrame implements AppViewInterface {
         gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.WEST;
 
-        JPanel checkBoxes = new JPanel(new GridLayout(0, 1, 0, 8));
-        checkBoxes.setOpaque(false);
-
-        sendMarketData = new JCheckBox("Send Market Data", false);
-        sendMarketData.addActionListener(e -> EventBusManager.publish(new ToggleSendMarketDataEvent(sendMarketData.isSelected())));
-        sendShipyardData = new JCheckBox("Send Shipyard Data", false);
-        sendShipyardData.addActionListener(e -> EventBusManager.publish(new ToggleSendShipyardDataEvent(sendShipyardData.isSelected())));
-        sendOutfitingData = new JCheckBox("Send Outfitting Data", false);
-        sendOutfitingData.addActionListener(e -> EventBusManager.publish(new ToggleSendOutfittingDataEvent(sendOutfitingData.isSelected())));
-        sendExplorationData = new JCheckBox("Send Exploration Data", false);
-        sendExplorationData.addActionListener(e -> EventBusManager.publish(new ToggleSendExplorationDataEvent(sendExplorationData.isSelected())));
-
-        checkBoxes.add(new JLabel(" "));
-        checkBoxes.add(new JLabel("This app relies in part on crowd sourced data from pilots like you."));
-        checkBoxes.add(new JLabel("Opt In to share Market, Shipyard and Outfitting data from stations you visit to EDDM crowd sourced network."));
-        checkBoxes.add(new JLabel("Information is shared anonymously. By default you are Opt-Out (not sharing)"));
-        checkBoxes.add(sendMarketData);
-        checkBoxes.add(sendShipyardData);
-        checkBoxes.add(sendOutfitingData);
-        checkBoxes.add(sendExplorationData);
-        checkBoxes.add(new JLabel(" "));
-        panel.add(checkBoxes, gbc);
 
         // Row 6: Save button
         nextRow(gbc);
@@ -969,10 +942,6 @@ public class AppView extends JFrame implements AppViewInterface {
         journalDirField.setText(playerSession.getJournalPath().toString());
         bindingsDirField.setText(playerSession.getBindingsDir().toString());
 
-        sendMarketData.setSelected(systemSession.isSendMarketData());
-        sendOutfitingData.setSelected(systemSession.isSendOutfittingData());
-        sendShipyardData.setSelected(systemSession.isSendShipyardData());
-        sendExplorationData.setSelected(systemSession.isSendExplorationData());
 
         // streaming / privacy checkboxes
         toggleStreamingModeCheckBox.setSelected(systemSession.isStreamingModeOn());

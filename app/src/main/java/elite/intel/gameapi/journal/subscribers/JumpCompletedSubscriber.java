@@ -14,12 +14,6 @@ import elite.intel.gameapi.gamestate.dtos.NavRouteDto;
 import elite.intel.gameapi.journal.events.FSDJumpEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.gameapi.journal.events.dto.MaterialDto;
-import elite.intel.search.eddn.EdDnClient;
-import elite.intel.search.eddn.ZMQUtil;
-import elite.intel.search.eddn.mappers.FsdJumpMapper;
-import elite.intel.search.eddn.schemas.EddnHeader;
-import elite.intel.search.eddn.schemas.EddnPayload;
-import elite.intel.search.eddn.schemas.FsdJumpMessage;
 import elite.intel.search.edsm.EdsmApiClient;
 import elite.intel.search.edsm.dto.DeathsDto;
 import elite.intel.search.edsm.dto.SystemBodiesDto;
@@ -47,7 +41,6 @@ public class JumpCompletedSubscriber {
     private final ShipRouteManager shipRoute = ShipRouteManager.getInstance();
     private final MonetizeRouteManager monetizeRouteManager = MonetizeRouteManager.getInstance();
     private final ReminderManager destinationReminderManager = ReminderManager.getInstance();
-    private final EdDnClient edDnClient = EdDnClient.getInstance();
 
     @Subscribe
     public void onFSDJumpEvent(FSDJumpEvent event) {
@@ -109,13 +102,13 @@ public class JumpCompletedSubscriber {
                 EventBusManager.publish(new MissionCriticalAnnouncementEvent("Reminder " + reminderText));
             }
 
-            sb.append("Arrived at ").append(event.getStarSystem());
+            sb.append("Arrived at ").append(event.getStarSystem()).append(".");
             List<NavRouteDto> adjustedRoute = shipRoute.removeLeg(event.getStarSystem());
             int remainingJump = adjustedRoute.size();
             if (remainingJump > 0) {
                 adjustedRoute.stream().findFirst().ifPresent(
                         nextStop -> sb
-                                .append(". Next Waypoint: ")
+                                .append(" Next Waypoint: ")
                                 .append(nextStop.getName())
                                 .append(", ")
                                 .append(" Star Class: ")
@@ -123,7 +116,7 @@ public class JumpCompletedSubscriber {
                                 .append(". ")
                                 .append(isFuelStarClause(nextStop.getStarClass()))
                 );
-                sb.append(". We have ").append(remainingJump).append(" jump");
+                sb.append(" We have ").append(remainingJump).append(" jump");
                 if (remainingJump > 1) sb.append("s");
                 sb.append(" left to destination. ");
             }
@@ -140,27 +133,6 @@ public class JumpCompletedSubscriber {
 
         if (isBuyerSystem && station != null) {
             EventBusManager.publish(new SensorDataEvent("Head to " + station.getDestinationStationName() + " sell " + station.getDestinationCommodity(), "Remind User"));
-        }
-
-
-        if (systemSession.isExplorationData()) {
-            FsdJumpMessage msg = FsdJumpMapper.map(
-                    event,
-                    playerSession.getPrimaryStarName(),
-                    locationManager.getGalacticCoordinates()
-            );
-
-            EddnHeader header = new EddnHeader(ZMQUtil.generateUploaderID());
-            header.setGameVersion(playerSession.getGameVersion());
-            header.setGameBuild(playerSession.getGameBuild());
-            header.setSoftwareVersion(systemSession.readVersionFromResources());
-
-            EddnPayload<FsdJumpMessage> payload = new EddnPayload<>(
-                    "https://eddn.edcd.io/schemas/journal/1",
-                    header,
-                    msg
-            );
-            edDnClient.upload(payload);
         }
     }
 

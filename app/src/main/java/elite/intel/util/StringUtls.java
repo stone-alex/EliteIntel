@@ -3,10 +3,7 @@ package elite.intel.util;
 import elite.intel.session.PlayerSession;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 
 import static org.apache.commons.lang3.StringUtils.trimToNull;
 
@@ -53,6 +50,9 @@ public class StringUtls {
         return result.toString();
     }
 
+    public static String generateUUID() {
+        return UUID.randomUUID().toString();
+    }
 
     public static String isFuelStarClause(String starClass) {
         if (starClass == null) {

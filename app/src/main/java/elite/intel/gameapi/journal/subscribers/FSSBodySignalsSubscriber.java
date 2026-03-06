@@ -1,7 +1,6 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.intel.ai.brain.commons.BiomeAnalyzer;
 import elite.intel.ai.mouth.subscribers.events.DiscoveryAnnouncementEvent;
 import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
@@ -36,7 +35,7 @@ public class FSSBodySignalsSubscriber {
         int geoSignals = 0;
         for (FSSBodySignalsEvent.Signal s : signals) {
             FssSignalDto signal = new FssSignalDto();
-            signal.setSignalName(event.getEventName());
+            signal.setSignalName(event.getEvent());
             signal.setSignalType(s.getTypeLocalised());
             if ("$SAA_SignalType_Biological;".equalsIgnoreCase(s.getType())) {
                 bioSignals = bioSignals + s.getCount();

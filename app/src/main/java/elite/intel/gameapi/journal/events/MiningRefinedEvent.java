@@ -50,7 +50,7 @@ public class MiningRefinedEvent extends BaseEvent {
                 .add("type='" + type + "'")
                 .add("typeLocalised='" + typeLocalised + "'")
                 .add("timestamp='" + timestamp + "'")
-                .add("eventName='" + eventName + "'")
+                .add("eventName='" + event + "'")
                 .add("endOfLife=" + endOfLife)
                 .toString();
     }

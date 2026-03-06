@@ -11,12 +11,6 @@ import elite.intel.gameapi.journal.events.SAASignalsFoundEvent;
 import elite.intel.gameapi.journal.events.ScanEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.gameapi.journal.events.dto.MaterialDto;
-import elite.intel.search.eddn.EdDnClient;
-import elite.intel.search.eddn.ZMQUtil;
-import elite.intel.search.eddn.mappers.ScanEventJournalMapper;
-import elite.intel.search.eddn.schemas.EddnHeader;
-import elite.intel.search.eddn.schemas.EddnPayload;
-import elite.intel.search.eddn.schemas.ScanEventJournalMessage;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.util.GravityCalculator;
@@ -51,7 +45,6 @@ public class ScanEventSubscriber {
     private final SystemSession systemSession = SystemSession.getInstance();
     private final LocationManager locationManager = LocationManager.getInstance();
     private final BiomeAnalyzer biomeAnalyzer = BiomeAnalyzer.getInstance();
-    private final EdDnClient edDnClient = EdDnClient.getInstance();
 
     private static String getDetails(ScanEvent event, String shortName) {
         boolean hasMats = event.getMaterials() != null && !event.getMaterials().isEmpty();
@@ -176,22 +169,6 @@ public class ScanEventSubscriber {
 
         locationManager.save(location);
         playerSession.setLastScan(location);
-
-
-        if (systemSession.isExplorationData()) {
-            ScanEventJournalMessage msg = ScanEventJournalMapper.map(event, location.getX(), location.getY(), location.getZ());
-            EddnHeader header = new EddnHeader(ZMQUtil.generateUploaderID());
-            header.setGameVersion(playerSession.getGameVersion());
-            header.setGameBuild(playerSession.getGameBuild());
-            header.setSoftwareVersion(systemSession.readVersionFromResources());
-
-            EddnPayload<ScanEventJournalMessage> payload = new EddnPayload<>(
-                    "https://eddn.edcd.io/schemas/journal/1",
-                    header,
-                    msg
-            );
-            edDnClient.upload(payload);
-        }
     }
 
     private LocationDto.LocationType determineLocationType(ScanEvent event) {

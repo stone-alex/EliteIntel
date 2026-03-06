@@ -421,7 +421,7 @@ public class ScanEvent extends BaseEvent {
                 .add("wasDiscovered=" + wasDiscovered)
                 .add("wasMapped=" + wasMapped)
                 .add("timestamp='" + timestamp + "'")
-                .add("eventName='" + eventName + "'")
+                .add("eventName='" + event + "'")
                 .add("endOfLife=" + endOfLife)
                 .toString();
     }

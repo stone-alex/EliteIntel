@@ -2,18 +2,12 @@ package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.mouth.subscribers.events.DiscoveryAnnouncementEvent;
-import elite.intel.db.managers.LocationManager;
 import elite.intel.db.managers.HuntingGroundManager;
+import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.FSSSignalDiscoveredEvent;
 import elite.intel.gameapi.journal.events.dto.FssSignalDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
-import elite.intel.search.eddn.EdDnClient;
-import elite.intel.search.eddn.ZMQUtil;
-import elite.intel.search.eddn.mappers.ScanFssSignalDiscoveredMapper;
-import elite.intel.search.eddn.schemas.EddnHeader;
-import elite.intel.search.eddn.schemas.EddnPayload;
-import elite.intel.search.eddn.schemas.ScanFssSignalDiscoveredMessage;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.util.TimeUtils;
@@ -29,34 +23,9 @@ public class FSSSignalDiscoveredSubscriber {
     private final HuntingGroundManager pirateMissionDataManager = HuntingGroundManager.getInstance();
     private final LocationManager locationManager = LocationManager.getInstance();
     private final SystemSession systemSession = SystemSession.getInstance();
-    private final EdDnClient edDnClient = EdDnClient.getInstance();
 
     @Subscribe
     public void onFSSSignalDiscovered(FSSSignalDiscoveredEvent event) {
-
-        /// TODO: if resource site is discovered, and we have a recon location, update the recon.
-
-
-        if(systemSession.isExplorationData()) {
-            ScanFssSignalDiscoveredMessage msg = ScanFssSignalDiscoveredMapper.map(
-                    event,
-                    playerSession.getPrimaryStarName(),
-                    locationManager.getGalacticCoordinates()
-            );
-
-            EddnHeader header = new EddnHeader(ZMQUtil.generateUploaderID());
-            header.setGameVersion(playerSession.getGameVersion());
-            header.setGameBuild(playerSession.getGameBuild());
-            header.setSoftwareVersion(systemSession.readVersionFromResources());
-
-            EddnPayload<ScanFssSignalDiscoveredMessage> payload = new EddnPayload<>(
-                    "https://eddn.edcd.io/schemas/journal/1",
-                    header,
-                    msg
-            );
-            edDnClient.upload(payload);
-        }
-
 
         locationManager.save(updateLocation(event));
 

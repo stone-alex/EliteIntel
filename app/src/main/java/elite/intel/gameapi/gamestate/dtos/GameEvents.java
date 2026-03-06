@@ -1,5 +1,6 @@
 package elite.intel.gameapi.gamestate.dtos;
 
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
@@ -716,9 +717,17 @@ public class GameEvents {
         public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }
+
+        public JsonObject toJsonObject() {
+            return GsonFactory.toJsonObject(this);
+        }
     }
 
     public static class ShipyardEvent {
+        public JsonObject toJsonObject() {
+            return GsonFactory.toJsonObject(this);
+        }
+
         public static class ShipPrice {
             @SerializedName("id")
             private int id;
@@ -1020,6 +1029,10 @@ public class GameEvents {
     }
 
     public static class MarketEvent implements ToJsonConvertible{
+        public JsonObject toJsonObject() {
+            return GsonFactory.toJsonObject(this);
+        }
+
         public static class MarketItem {
             @SerializedName("id")
             private long id;
@@ -1177,6 +1190,8 @@ public class GameEvents {
             public String toJson() {
                 return GsonFactory.getGson().toJson(this);
             }
+
+
         }
 
         @SerializedName("timestamp")

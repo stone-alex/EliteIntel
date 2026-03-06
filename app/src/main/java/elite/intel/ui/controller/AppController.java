@@ -206,22 +206,6 @@ public class AppController implements Runnable {
     }
 
 
-    @Subscribe void onToggleSendMarketDataEvent(ToggleSendMarketDataEvent event) {
-        SwingUtilities.invokeLater(() -> systemSession.setSendMarketData(event.isEnabled()));
-    }
-
-    @Subscribe void onToggleSendOutfittingDataEvent(ToggleSendOutfittingDataEvent event) {
-        SwingUtilities.invokeLater(() -> systemSession.setSendOutfittingData(event.isEnabled()));
-    }
-
-    @Subscribe void onToggleSendShipyardDataEvent(ToggleSendShipyardDataEvent event) {
-        SwingUtilities.invokeLater(() -> systemSession.setSendShipyardDataEvent(event.isEnabled()));
-    }
-
-    @Subscribe void onToggleSendExplorationData(ToggleSendExplorationDataEvent event) {
-        SwingUtilities.invokeLater(() -> systemSession.setExplorationData(event.isEnabled()));
-    }
-
 
     private void appendToLog(String data) {
         String formattedTime = Instant.now()

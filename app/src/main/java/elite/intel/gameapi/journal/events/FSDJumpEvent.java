@@ -97,6 +97,44 @@ public class FSDJumpEvent extends BaseEvent {
     @SerializedName("SystemFaction")
     private SystemFaction systemFaction;
 
+    @SerializedName("Conflicts")
+    private List<Conflict> conflicts;
+
+    public FSDJumpEvent(JsonObject json) {
+        super(json.get("timestamp").getAsString(), Duration.ofSeconds(15), "FSDJump");
+        FSDJumpEvent event = GsonFactory.getGson().fromJson(json, FSDJumpEvent.class);
+        this.taxi = event.taxi;
+        this.multicrew = event.multicrew;
+        this.starSystem = event.starSystem;
+        this.systemAddress = event.systemAddress;
+        this.starPos = event.starPos;
+        this.systemAllegiance = event.systemAllegiance;
+        this.systemEconomy = event.systemEconomy;
+        this.systemEconomyLocalised = event.systemEconomyLocalised;
+        this.systemSecondEconomy = event.systemSecondEconomy;
+        this.systemSecondEconomyLocalised = event.systemSecondEconomyLocalised;
+        this.systemGovernment = event.systemGovernment;
+        this.systemGovernmentLocalised = event.systemGovernmentLocalised;
+        this.systemSecurity = event.systemSecurity;
+        this.systemSecurityLocalised = event.systemSecurityLocalised;
+        this.population = event.population;
+        this.body = event.body;
+        this.bodyId = event.bodyId;
+        this.bodyType = event.bodyType;
+        this.controllingPower = event.controllingPower;
+        this.powers = event.powers;
+        this.powerplayState = event.powerplayState;
+        this.powerplayStateControlProgress = event.powerplayStateControlProgress;
+        this.powerplayStateReinforcement = event.powerplayStateReinforcement;
+        this.powerplayStateUndermining = event.powerplayStateUndermining;
+        this.jumpDist = event.jumpDist;
+        this.fuelUsed = event.fuelUsed;
+        this.fuelLevel = event.fuelLevel;
+        this.factions = event.factions;
+        this.systemFaction = event.systemFaction;
+        this.conflicts = event.conflicts;
+    }
+
     public void setTaxi(boolean taxi) {
         this.taxi = taxi;
     }
@@ -229,38 +267,8 @@ public class FSDJumpEvent extends BaseEvent {
         this.systemFaction = systemFaction;
     }
 
-    public FSDJumpEvent(JsonObject json) {
-        super(json.get("timestamp").getAsString(), Duration.ofSeconds(15), "FSDJump");
-        FSDJumpEvent event = GsonFactory.getGson().fromJson(json, FSDJumpEvent.class);
-        this.taxi = event.taxi;
-        this.multicrew = event.multicrew;
-        this.starSystem = event.starSystem;
-        this.systemAddress = event.systemAddress;
-        this.starPos = event.starPos;
-        this.systemAllegiance = event.systemAllegiance;
-        this.systemEconomy = event.systemEconomy;
-        this.systemEconomyLocalised = event.systemEconomyLocalised;
-        this.systemSecondEconomy = event.systemSecondEconomy;
-        this.systemSecondEconomyLocalised = event.systemSecondEconomyLocalised;
-        this.systemGovernment = event.systemGovernment;
-        this.systemGovernmentLocalised = event.systemGovernmentLocalised;
-        this.systemSecurity = event.systemSecurity;
-        this.systemSecurityLocalised = event.systemSecurityLocalised;
-        this.population = event.population;
-        this.body = event.body;
-        this.bodyId = event.bodyId;
-        this.bodyType = event.bodyType;
-        this.controllingPower = event.controllingPower;
-        this.powers = event.powers;
-        this.powerplayState = event.powerplayState;
-        this.powerplayStateControlProgress = event.powerplayStateControlProgress;
-        this.powerplayStateReinforcement = event.powerplayStateReinforcement;
-        this.powerplayStateUndermining = event.powerplayStateUndermining;
-        this.jumpDist = event.jumpDist;
-        this.fuelUsed = event.fuelUsed;
-        this.fuelLevel = event.fuelLevel;
-        this.factions = event.factions;
-        this.systemFaction = event.systemFaction;
+    public void setConflicts(List<Conflict> conflicts) {
+        this.conflicts = conflicts;
     }
 
     @Override
@@ -376,6 +384,46 @@ public class FSDJumpEvent extends BaseEvent {
 
     public SystemFaction getSystemFaction() {
         return systemFaction;
+    }
+
+    public List<Conflict> getConflicts() {
+        return conflicts;
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", FSDJumpEvent.class.getSimpleName() + "[", "]")
+                .add("taxi=" + taxi)
+                .add("multicrew=" + multicrew)
+                .add("starSystem='" + starSystem + "'")
+                .add("systemAddress=" + systemAddress)
+                .add("starPos=" + Arrays.toString(starPos))
+                .add("systemAllegiance='" + systemAllegiance + "'")
+                .add("systemEconomy='" + systemEconomy + "'")
+                .add("systemEconomyLocalised='" + systemEconomyLocalised + "'")
+                .add("systemSecondEconomy='" + systemSecondEconomy + "'")
+                .add("systemSecondEconomyLocalised='" + systemSecondEconomyLocalised + "'")
+                .add("systemGovernment='" + systemGovernment + "'")
+                .add("systemGovernmentLocalised='" + systemGovernmentLocalised + "'")
+                .add("systemSecurity='" + systemSecurity + "'")
+                .add("systemSecurityLocalised='" + systemSecurityLocalised + "'")
+                .add("population=" + population)
+                .add("body='" + body + "'")
+                .add("bodyId=" + bodyId)
+                .add("bodyType='" + bodyType + "'")
+                .add("controllingPower='" + controllingPower + "'")
+                .add("powers=" + powers)
+                .add("powerplayState='" + powerplayState + "'")
+                .add("powerplayStateControlProgress=" + powerplayStateControlProgress)
+                .add("powerplayStateReinforcement=" + powerplayStateReinforcement)
+                .add("powerplayStateUndermining=" + powerplayStateUndermining)
+                .add("jumpDist=" + jumpDist)
+                .add("fuelUsed=" + fuelUsed)
+                .add("fuelLevel=" + fuelLevel)
+                .add("factions=" + factions)
+                .add("systemFaction=" + systemFaction)
+                .add("conflicts=" + conflicts)
+                .toString();
     }
 
     public static class Faction {
@@ -504,38 +552,56 @@ public class FSDJumpEvent extends BaseEvent {
         }
     }
 
-    @Override
-    public String toString() {
-        return new StringJoiner(", ", FSDJumpEvent.class.getSimpleName() + "[", "]")
-                .add("taxi=" + taxi)
-                .add("multicrew=" + multicrew)
-                .add("starSystem='" + starSystem + "'")
-                .add("systemAddress=" + systemAddress)
-                .add("starPos=" + Arrays.toString(starPos))
-                .add("systemAllegiance='" + systemAllegiance + "'")
-                .add("systemEconomy='" + systemEconomy + "'")
-                .add("systemEconomyLocalised='" + systemEconomyLocalised + "'")
-                .add("systemSecondEconomy='" + systemSecondEconomy + "'")
-                .add("systemSecondEconomyLocalised='" + systemSecondEconomyLocalised + "'")
-                .add("systemGovernment='" + systemGovernment + "'")
-                .add("systemGovernmentLocalised='" + systemGovernmentLocalised + "'")
-                .add("systemSecurity='" + systemSecurity + "'")
-                .add("systemSecurityLocalised='" + systemSecurityLocalised + "'")
-                .add("population=" + population)
-                .add("body='" + body + "'")
-                .add("bodyId=" + bodyId)
-                .add("bodyType='" + bodyType + "'")
-                .add("controllingPower='" + controllingPower + "'")
-                .add("powers=" + powers)
-                .add("powerplayState='" + powerplayState + "'")
-                .add("powerplayStateControlProgress=" + powerplayStateControlProgress)
-                .add("powerplayStateReinforcement=" + powerplayStateReinforcement)
-                .add("powerplayStateUndermining=" + powerplayStateUndermining)
-                .add("jumpDist=" + jumpDist)
-                .add("fuelUsed=" + fuelUsed)
-                .add("fuelLevel=" + fuelLevel)
-                .add("factions=" + factions)
-                .add("systemFaction=" + systemFaction)
-                .toString();
+    public static class Conflict {
+        @SerializedName("WarType")
+        private String warType;
+
+        @SerializedName("Status")
+        private String status;
+
+        @SerializedName("Faction1")
+        private FactionSide faction1;
+
+        @SerializedName("Faction2")
+        private FactionSide faction2;
+
+        public String getWarType() {
+            return warType;
+        }
+
+        public String getStatus() {
+            return status;
+        }
+
+        public FactionSide getFaction1() {
+            return faction1;
+        }
+
+        public FactionSide getFaction2() {
+            return faction2;
+        }
+    }
+
+    public static class FactionSide {
+        @SerializedName("Name")
+        private String name;
+
+        @SerializedName("Stake")
+        private String stake;
+
+        @SerializedName("WonDays")
+        private Integer wonDays;
+
+        public String getName() {
+            return name;
+        }
+
+        public String getStake() {
+            return stake;
+        }
+
+        public Integer getWonDays() {
+            return wonDays;
+        }
     }
 }

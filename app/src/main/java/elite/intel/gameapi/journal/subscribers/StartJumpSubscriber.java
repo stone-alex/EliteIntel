@@ -1,12 +1,12 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.intel.search.edsm.EdsmApiClient;
-import elite.intel.search.edsm.dto.DeathsDto;
-import elite.intel.search.edsm.dto.TrafficDto;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.journal.events.StartJumpEvent;
+import elite.intel.search.edsm.EdsmApiClient;
+import elite.intel.search.edsm.dto.DeathsDto;
+import elite.intel.search.edsm.dto.TrafficDto;
 import elite.intel.session.PlayerSession;
 
 import static elite.intel.util.StringUtls.isFuelStarClause;
@@ -27,7 +27,6 @@ public class StartJumpSubscriber {
             sb.append(event.getStarClass());
             sb.append(", ");
             sb.append(isFuelStarClause(event.getStarClass()));
-            sb.append(". ");
             if (trafficDto.getData() != null && trafficDto.getData().getTraffic().getTotal() > 0) {
                 sb.append(" Traffic data: " + trafficDto.getData().getTraffic().toYaml());
             }

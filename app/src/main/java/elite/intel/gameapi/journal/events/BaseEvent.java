@@ -13,11 +13,11 @@ import java.time.Instant;
 public abstract class BaseEvent implements ToJsonConvertible, ToYamlConvertable {
 
     public String timestamp;
-    public String eventName;
+    public String event;
     public Instant endOfLife;
 
     public BaseEvent(String timestamp,  Duration ttl, String eventName) {
-        this.eventName = eventName;
+        this.event = eventName;
         this.timestamp = timestamp;
         this.endOfLife = Instant.parse(timestamp).plus(ttl);
     }
@@ -39,8 +39,8 @@ public abstract class BaseEvent implements ToJsonConvertible, ToYamlConvertable 
         return endOfLife;
     }
 
-    public String getEventName() {
-        return eventName;
+    public String getEvent() {
+        return event;
     }
 
 
@@ -53,7 +53,7 @@ public abstract class BaseEvent implements ToJsonConvertible, ToYamlConvertable 
     public String toYaml() {
         this.timestamp = null;
         this.endOfLife = null;
-        this.eventName = null;
+        this.event = null;
         return YamlFactory.toYaml(this);
     }
 

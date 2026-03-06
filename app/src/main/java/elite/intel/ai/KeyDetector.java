@@ -2,9 +2,7 @@ package elite.intel.ai;
 
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
-import elite.intel.util.Cypher;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,11 +37,11 @@ public class KeyDetector {
      * its format.
      */
     private static final Map<ProviderEnum, Pattern> PATTERNS = Map.ofEntries(
-            Map.entry(ProviderEnum.GROK, Pattern.compile("^[a-zA-Z0-9-]{40,100}$")),
+            Map.entry(ProviderEnum.GROK, Pattern.compile("^xai-[a-zA-Z0-9_-]{40,100}$")),
             Map.entry(ProviderEnum.OPENAI, Pattern.compile("^sk-[a-zA-Z0-9_-]{161}$")),
             Map.entry(ProviderEnum.GOOGLE_STT, Pattern.compile("^AIzaSy[a-zA-Z0-9_-]{33}$")),
             Map.entry(ProviderEnum.GOOGLE_TTS, Pattern.compile("^AIzaSy[a-zA-Z0-9_-]{33}$")),
-            Map.entry(ProviderEnum.ANTHROPIC, Pattern.compile("^sk-ant-[a-zA-Z0-9-]{80,90}$")),
+            Map.entry(ProviderEnum.ANTHROPIC, Pattern.compile("^sk-ant-api\\d{2}-[a-zA-Z0-9_-]{93,97}$")),
             Map.entry(ProviderEnum.AWS_LLM, Pattern.compile("^(AKIA|ASIA)[A-Z0-9]{16}$")),
             Map.entry(ProviderEnum.AWS_STT, Pattern.compile("^(AKIA|ASIA)[A-Z0-9]{16}$")),
             Map.entry(ProviderEnum.AWS_TTS, Pattern.compile("^(AKIA|ASIA)[A-Z0-9]{16}$")),

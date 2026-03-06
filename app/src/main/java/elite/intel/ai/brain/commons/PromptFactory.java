@@ -92,7 +92,7 @@ public class PromptFactory implements AiPromptFactory {
                   - Respond in Military clear style
                   - single clean string (no arrays, no objects, no commas as separators unless part of the natural sentence)
                   - only the final extracted answer
-                - If no matching data exists in the provided JSON -> let the user know that, do not invent values.
+                - If no matching data exists in the provided JSON -> let the user know that, do not invent values. Best Example: 'Insufficient data for a meaningful answer.'
                 - Calculate if asked, but never guess and never invent values
                 - Use ONLY information present in the data you receive
                 - If there is not enough info to answer the question let user know.

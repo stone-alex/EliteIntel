@@ -4,7 +4,6 @@ package elite.intel.search.eddn;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import elite.intel.search.eddn.schemas.EddnPayload;
-import elite.intel.util.json.GsonFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.zeromq.SocketType;
@@ -80,7 +79,7 @@ public class EdDnClient {
         if (running) return;
         startListening(jsonNode -> {
             //if (jsonNode.toString().contains("commodity/3")) {
-            System.out.println(jsonNode);
+            //System.out.println(jsonNode);
             //}
         });
     }
@@ -95,8 +94,9 @@ public class EdDnClient {
     }
 
     public <T> void upload(EddnPayload<T> payload) {
+
         try {
-            String json = GsonFactory.getGson().toJson(payload);
+            String json = payload.toJson();
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(UPLOAD_ENDPOINT))
                     .header("Content-Type", "application/json; charset=utf-8")
@@ -104,7 +104,12 @@ public class EdDnClient {
                     .build();
 
             HttpResponse<String> resp = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            resp.statusCode();
+            if (resp.statusCode() == 200) {
+                log.info("EDDN post successful");
+            } else {
+                log.error("Payload " + json + " failed with status " + resp.statusCode());
+                log.error("Failed to post to EDDN " + resp.body());
+            }
         } catch (Exception e) {
             log.warn("Failed to upload payload to EDDN: {}", e.getMessage());
         }

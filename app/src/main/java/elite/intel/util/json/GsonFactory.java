@@ -17,6 +17,7 @@ public final class GsonFactory {
             .disableHtmlEscaping()
             .registerTypeAdapter(Instant.class, new InstantTypeAdapter())
             .registerTypeAdapter(ZonedDateTime.class, new ZonedDateTimeTypeAdapter())
+            //.setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE)
             .create();
 
     public static Gson getGson() {

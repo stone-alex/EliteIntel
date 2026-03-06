@@ -14,6 +14,12 @@ import elite.intel.gameapi.gamestate.dtos.NavRouteDto;
 import elite.intel.gameapi.journal.events.FSDJumpEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.gameapi.journal.events.dto.MaterialDto;
+import elite.intel.search.eddn.EdDnClient;
+import elite.intel.search.eddn.ZMQUtil;
+import elite.intel.search.eddn.mappers.FsdJumpMapper;
+import elite.intel.search.eddn.schemas.EddnHeader;
+import elite.intel.search.eddn.schemas.EddnPayload;
+import elite.intel.search.eddn.schemas.FsdJumpMessage;
 import elite.intel.search.edsm.EdsmApiClient;
 import elite.intel.search.edsm.dto.DeathsDto;
 import elite.intel.search.edsm.dto.SystemBodiesDto;
@@ -22,6 +28,7 @@ import elite.intel.search.edsm.dto.data.BodyData;
 import elite.intel.search.edsm.dto.data.DeathsStats;
 import elite.intel.search.edsm.dto.data.TrafficStats;
 import elite.intel.session.PlayerSession;
+import elite.intel.session.SystemSession;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,11 +42,12 @@ import static elite.intel.util.StringUtls.isFuelStarClause;
 public class JumpCompletedSubscriber {
 
     private final PlayerSession playerSession = PlayerSession.getInstance();
+    private final SystemSession systemSession = SystemSession.getInstance();
     private final LocationManager locationManager = LocationManager.getInstance();
     private final ShipRouteManager shipRoute = ShipRouteManager.getInstance();
     private final MonetizeRouteManager monetizeRouteManager = MonetizeRouteManager.getInstance();
     private final ReminderManager destinationReminderManager = ReminderManager.getInstance();
-
+    private final EdDnClient edDnClient = EdDnClient.getInstance();
 
     @Subscribe
     public void onFSDJumpEvent(FSDJumpEvent event) {
@@ -132,6 +140,27 @@ public class JumpCompletedSubscriber {
 
         if (isBuyerSystem && station != null) {
             EventBusManager.publish(new SensorDataEvent("Head to " + station.getDestinationStationName() + " sell " + station.getDestinationCommodity(), "Remind User"));
+        }
+
+
+        if (systemSession.isExplorationData()) {
+            FsdJumpMessage msg = FsdJumpMapper.map(
+                    event,
+                    playerSession.getPrimaryStarName(),
+                    locationManager.getGalacticCoordinates()
+            );
+
+            EddnHeader header = new EddnHeader(ZMQUtil.generateUploaderID());
+            header.setGameVersion(playerSession.getGameVersion());
+            header.setGameBuild(playerSession.getGameBuild());
+            header.setSoftwareVersion(systemSession.readVersionFromResources());
+
+            EddnPayload<FsdJumpMessage> payload = new EddnPayload<>(
+                    "https://eddn.edcd.io/schemas/journal/1",
+                    header,
+                    msg
+            );
+            edDnClient.upload(payload);
         }
     }
 

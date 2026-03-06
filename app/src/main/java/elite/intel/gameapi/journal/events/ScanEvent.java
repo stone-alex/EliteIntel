@@ -13,6 +13,9 @@ public class ScanEvent extends BaseEvent {
     @SerializedName("ScanType")
     private String scanType;
 
+    @SerializedName("StarPos")
+    private List<Double> starPos; // [x, y, z] - required, add to session if missing
+
     @SerializedName("BodyName")
     private String bodyName;
 
@@ -421,5 +424,145 @@ public class ScanEvent extends BaseEvent {
                 .add("eventName='" + eventName + "'")
                 .add("endOfLife=" + endOfLife)
                 .toString();
+    }
+
+    public void setScanType(String scanType) {
+        this.scanType = scanType;
+    }
+
+    public List<Double> getStarPos() {
+        return starPos;
+    }
+
+    public void setStarPos(List<Double> starPos) {
+        this.starPos = starPos;
+    }
+
+    public void setBodyName(String bodyName) {
+        this.bodyName = bodyName;
+    }
+
+    public void setBodyID(Long bodyID) {
+        this.bodyID = bodyID;
+    }
+
+    public void setParents(List<Parent> parents) {
+        this.parents = parents;
+    }
+
+    public void setStarSystem(String starSystem) {
+        this.starSystem = starSystem;
+    }
+
+    public void setStarType(String starType) {
+        this.starType = starType;
+    }
+
+    public void setSystemAddress(long systemAddress) {
+        this.systemAddress = systemAddress;
+    }
+
+    public void setDistanceFromArrivalLS(double distanceFromArrivalLS) {
+        this.distanceFromArrivalLS = distanceFromArrivalLS;
+    }
+
+    public void setTidalLock(boolean tidalLock) {
+        this.tidalLock = tidalLock;
+    }
+
+    public void setTerraformState(String terraformState) {
+        this.terraformState = terraformState;
+    }
+
+    public void setPlanetClass(String planetClass) {
+        this.planetClass = planetClass;
+    }
+
+    public void setAtmosphere(String atmosphere) {
+        this.atmosphere = atmosphere;
+    }
+
+    public void setAtmosphereType(String atmosphereType) {
+        this.atmosphereType = atmosphereType;
+    }
+
+    public void setVolcanism(String volcanism) {
+        this.volcanism = volcanism;
+    }
+
+    public void setMassEM(double massEM) {
+        this.massEM = massEM;
+    }
+
+    public void setRadius(double radius) {
+        this.radius = radius;
+    }
+
+    public void setSurfaceGravity(double surfaceGravity) {
+        this.surfaceGravity = surfaceGravity;
+    }
+
+    public void setSurfaceTemperature(double surfaceTemperature) {
+        this.surfaceTemperature = surfaceTemperature;
+    }
+
+    public void setSurfacePressure(double surfacePressure) {
+        this.surfacePressure = surfacePressure;
+    }
+
+    public void setLandable(boolean landable) {
+        this.landable = landable;
+    }
+
+    public void setMaterials(List<Material> materials) {
+        this.materials = materials;
+    }
+
+    public void setComposition(Composition composition) {
+        this.composition = composition;
+    }
+
+    public void setSemiMajorAxis(double semiMajorAxis) {
+        this.semiMajorAxis = semiMajorAxis;
+    }
+
+    public void setEccentricity(double eccentricity) {
+        this.eccentricity = eccentricity;
+    }
+
+    public void setOrbitalInclination(double orbitalInclination) {
+        this.orbitalInclination = orbitalInclination;
+    }
+
+    public void setPeriapsis(double periapsis) {
+        this.periapsis = periapsis;
+    }
+
+    public void setOrbitalPeriod(double orbitalPeriod) {
+        this.orbitalPeriod = orbitalPeriod;
+    }
+
+    public void setAscendingNode(double ascendingNode) {
+        this.ascendingNode = ascendingNode;
+    }
+
+    public void setMeanAnomaly(double meanAnomaly) {
+        this.meanAnomaly = meanAnomaly;
+    }
+
+    public void setRotationPeriod(double rotationPeriod) {
+        this.rotationPeriod = rotationPeriod;
+    }
+
+    public void setAxialTilt(double axialTilt) {
+        this.axialTilt = axialTilt;
+    }
+
+    public void setWasDiscovered(boolean wasDiscovered) {
+        this.wasDiscovered = wasDiscovered;
+    }
+
+    public void setWasMapped(boolean wasMapped) {
+        this.wasMapped = wasMapped;
     }
 }

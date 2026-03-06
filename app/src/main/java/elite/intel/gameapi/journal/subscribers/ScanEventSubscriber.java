@@ -76,20 +76,7 @@ public class ScanEventSubscriber {
             // Ignore interrupted exception
         }
 
-        if (systemSession.isExplorationData()) {
-            ScanEventJournalMessage msg = ScanEventJournalMapper.map(event);
-            EddnHeader header = new EddnHeader(ZMQUtil.generateUploaderID());
-            header.setGameVersion(playerSession.getGameVersion());
-            header.setGameBuild(playerSession.getGameBuild());
-            header.setSoftwareVersion(systemSession.readVersionFromResources());
 
-            EddnPayload<ScanEventJournalMessage> payload = new EddnPayload<>(
-                    "https://eddn.edcd.io/schemas/journal/1",
-                    header,
-                    msg
-            );
-            edDnClient.upload(payload);
-        }
 
         String shortName = subtractString(event.getBodyName(), event.getStarSystem());
         String bodyName = event.getBodyName();
@@ -190,6 +177,21 @@ public class ScanEventSubscriber {
         locationManager.save(location);
         playerSession.setLastScan(location);
 
+
+        if (systemSession.isExplorationData()) {
+            ScanEventJournalMessage msg = ScanEventJournalMapper.map(event, location.getX(), location.getY(), location.getZ());
+            EddnHeader header = new EddnHeader(ZMQUtil.generateUploaderID());
+            header.setGameVersion(playerSession.getGameVersion());
+            header.setGameBuild(playerSession.getGameBuild());
+            header.setSoftwareVersion(systemSession.readVersionFromResources());
+
+            EddnPayload<ScanEventJournalMessage> payload = new EddnPayload<>(
+                    "https://eddn.edcd.io/schemas/journal/1",
+                    header,
+                    msg
+            );
+            edDnClient.upload(payload);
+        }
     }
 
     private LocationDto.LocationType determineLocationType(ScanEvent event) {

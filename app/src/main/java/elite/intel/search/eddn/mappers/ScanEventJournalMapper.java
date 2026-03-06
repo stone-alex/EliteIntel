@@ -3,11 +3,14 @@ package elite.intel.search.eddn.mappers;
 import elite.intel.gameapi.journal.events.ScanEvent;
 import elite.intel.search.eddn.schemas.ScanEventJournalMessage;
 
+import java.util.Arrays;
+
 public class ScanEventJournalMapper {
 
-    public static ScanEventJournalMessage map(ScanEvent event) {
+    public static ScanEventJournalMessage map(ScanEvent event, double x, double y, double z) {
         ScanEventJournalMessage msg = new ScanEventJournalMessage();
 
+        msg.setStarPos(Arrays.asList(x, y, z));
         msg.setTimestamp(event.getTimestamp());
         msg.setStarSystem(event.getStarSystem());
         msg.setSystemAddress(event.getSystemAddress());

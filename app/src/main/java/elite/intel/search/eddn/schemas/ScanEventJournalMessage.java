@@ -122,6 +122,158 @@ public class ScanEventJournalMessage {
     @SerializedName("StarType")
     private String starType;
 
+    public String getTimestamp() {
+        return timestamp;
+    }
+
+    public String getEvent() {
+        return event;
+    }
+
+    public String getStarSystem() {
+        return starSystem;
+    }
+
+    public List<Double> getStarPos() {
+        return starPos;
+    }
+
+    public long getSystemAddress() {
+        return systemAddress;
+    }
+
+    public Boolean getHorizons() {
+        return horizons;
+    }
+
+    public Boolean getOdyssey() {
+        return odyssey;
+    }
+
+    public String getScanType() {
+        return scanType;
+    }
+
+    public String getBodyName() {
+        return bodyName;
+    }
+
+    public Long getBodyID() {
+        return bodyID;
+    }
+
+    public List<ScanEvent.Parent> getParents() {
+        return parents;
+    }
+
+    public double getDistanceFromArrivalLS() {
+        return distanceFromArrivalLS;
+    }
+
+    public boolean isTidalLock() {
+        return tidalLock;
+    }
+
+    public String getTerraformState() {
+        return terraformState;
+    }
+
+    public String getPlanetClass() {
+        return planetClass;
+    }
+
+    public String getAtmosphere() {
+        return atmosphere;
+    }
+
+    public String getAtmosphereType() {
+        return atmosphereType;
+    }
+
+    public String getVolcanism() {
+        return volcanism;
+    }
+
+    public double getMassEM() {
+        return massEM;
+    }
+
+    public double getRadius() {
+        return radius;
+    }
+
+    public double getSurfaceGravity() {
+        return surfaceGravity;
+    }
+
+    public double getSurfaceTemperature() {
+        return surfaceTemperature;
+    }
+
+    public double getSurfacePressure() {
+        return surfacePressure;
+    }
+
+    public boolean isLandable() {
+        return landable;
+    }
+
+    public List<ScanEvent.Material> getMaterials() {
+        return materials;
+    }
+
+    public ScanEvent.Composition getComposition() {
+        return composition;
+    }
+
+    public double getSemiMajorAxis() {
+        return semiMajorAxis;
+    }
+
+    public double getEccentricity() {
+        return eccentricity;
+    }
+
+    public double getOrbitalInclination() {
+        return orbitalInclination;
+    }
+
+    public double getPeriapsis() {
+        return periapsis;
+    }
+
+    public double getOrbitalPeriod() {
+        return orbitalPeriod;
+    }
+
+    public double getAscendingNode() {
+        return ascendingNode;
+    }
+
+    public double getMeanAnomaly() {
+        return meanAnomaly;
+    }
+
+    public double getRotationPeriod() {
+        return rotationPeriod;
+    }
+
+    public double getAxialTilt() {
+        return axialTilt;
+    }
+
+    public boolean isWasDiscovered() {
+        return wasDiscovered;
+    }
+
+    public boolean isWasMapped() {
+        return wasMapped;
+    }
+
+    public String getStarType() {
+        return starType;
+    }
+
     public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
     }

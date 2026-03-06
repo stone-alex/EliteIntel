@@ -97,6 +97,138 @@ public class FSDJumpEvent extends BaseEvent {
     @SerializedName("SystemFaction")
     private SystemFaction systemFaction;
 
+    public void setTaxi(boolean taxi) {
+        this.taxi = taxi;
+    }
+
+    public void setMulticrew(boolean multicrew) {
+        this.multicrew = multicrew;
+    }
+
+    public void setStarSystem(String starSystem) {
+        this.starSystem = starSystem;
+    }
+
+    public void setSystemAddress(long systemAddress) {
+        this.systemAddress = systemAddress;
+    }
+
+    public void setStarPos(double[] starPos) {
+        this.starPos = starPos;
+    }
+
+    public void setSystemAllegiance(String systemAllegiance) {
+        this.systemAllegiance = systemAllegiance;
+    }
+
+    public String getSystemEconomy() {
+        return systemEconomy;
+    }
+
+    public void setSystemEconomy(String systemEconomy) {
+        this.systemEconomy = systemEconomy;
+    }
+
+    public void setSystemEconomyLocalised(String systemEconomyLocalised) {
+        this.systemEconomyLocalised = systemEconomyLocalised;
+    }
+
+    public String getSystemSecondEconomy() {
+        return systemSecondEconomy;
+    }
+
+    public void setSystemSecondEconomy(String systemSecondEconomy) {
+        this.systemSecondEconomy = systemSecondEconomy;
+    }
+
+    public void setSystemSecondEconomyLocalised(String systemSecondEconomyLocalised) {
+        this.systemSecondEconomyLocalised = systemSecondEconomyLocalised;
+    }
+
+    public String getSystemGovernment() {
+        return systemGovernment;
+    }
+
+    public void setSystemGovernment(String systemGovernment) {
+        this.systemGovernment = systemGovernment;
+    }
+
+    public void setSystemGovernmentLocalised(String systemGovernmentLocalised) {
+        this.systemGovernmentLocalised = systemGovernmentLocalised;
+    }
+
+    public String getSystemSecurity() {
+        return systemSecurity;
+    }
+
+    public void setSystemSecurity(String systemSecurity) {
+        this.systemSecurity = systemSecurity;
+    }
+
+    public void setSystemSecurityLocalised(String systemSecurityLocalised) {
+        this.systemSecurityLocalised = systemSecurityLocalised;
+    }
+
+    public void setPopulation(long population) {
+        this.population = population;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
+    }
+
+    public void setBodyId(long bodyId) {
+        this.bodyId = bodyId;
+    }
+
+    public void setBodyType(String bodyType) {
+        this.bodyType = bodyType;
+    }
+
+    public void setControllingPower(String controllingPower) {
+        this.controllingPower = controllingPower;
+    }
+
+    public void setPowers(List<String> powers) {
+        this.powers = powers;
+    }
+
+    public void setPowerplayState(String powerplayState) {
+        this.powerplayState = powerplayState;
+    }
+
+    public void setPowerplayStateControlProgress(double powerplayStateControlProgress) {
+        this.powerplayStateControlProgress = powerplayStateControlProgress;
+    }
+
+    public void setPowerplayStateReinforcement(int powerplayStateReinforcement) {
+        this.powerplayStateReinforcement = powerplayStateReinforcement;
+    }
+
+    public void setPowerplayStateUndermining(int powerplayStateUndermining) {
+        this.powerplayStateUndermining = powerplayStateUndermining;
+    }
+
+    public void setJumpDist(double jumpDist) {
+        this.jumpDist = jumpDist;
+    }
+
+    public void setFuelUsed(double fuelUsed) {
+        this.fuelUsed = fuelUsed;
+    }
+
+    public void setFuelLevel(double fuelLevel) {
+        this.fuelLevel = fuelLevel;
+    }
+
+    public void setFactions(List<Faction> factions) {
+        this.factions = factions;
+    }
+
+    public void setSystemFaction(SystemFaction systemFaction) {
+        this.systemFaction = systemFaction;
+    }
+
     public FSDJumpEvent(JsonObject json) {
         super(json.get("timestamp").getAsString(), Duration.ofSeconds(15), "FSDJump");
         FSDJumpEvent event = GsonFactory.getGson().fromJson(json, FSDJumpEvent.class);
@@ -273,6 +405,46 @@ public class FSDJumpEvent extends BaseEvent {
 
         @SerializedName("ActiveStates")
         private List<ActiveState> activeStates;
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public void setFactionState(String factionState) {
+            this.factionState = factionState;
+        }
+
+        public void setGovernment(String government) {
+            this.government = government;
+        }
+
+        public void setInfluence(double influence) {
+            this.influence = influence;
+        }
+
+        public void setAllegiance(String allegiance) {
+            this.allegiance = allegiance;
+        }
+
+        public String getHappiness() {
+            return happiness;
+        }
+
+        public void setHappiness(String happiness) {
+            this.happiness = happiness;
+        }
+
+        public void setHappinessLocalised(String happinessLocalised) {
+            this.happinessLocalised = happinessLocalised;
+        }
+
+        public void setMyReputation(double myReputation) {
+            this.myReputation = myReputation;
+        }
+
+        public void setActiveStates(List<ActiveState> activeStates) {
+            this.activeStates = activeStates;
+        }
 
         public String getName() {
             return name;

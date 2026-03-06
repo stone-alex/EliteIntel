@@ -37,6 +37,7 @@ public class PlayerSession {
     public static final String PLAYER_ALTERNATIVE_NAME = "alternative_name";
     public static final String JOURNAL_DIR = "journal_dir";
     public static final String BINDINGS_DIR = "bindings_dir";
+    private static final String UUD = java.util.UUID.randomUUID().toString();
     private static volatile PlayerSession instance;
     /// Data managers.
     private final ShipScansManager shipScans = ShipScansManager.getInstance();
@@ -56,6 +57,10 @@ public class PlayerSession {
 
     private PlayerSession() {
         EventBusManager.register(this);
+    }
+
+    public String getUUD() {
+        return UUD;
     }
 
     public static PlayerSession getInstance() {

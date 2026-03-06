@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import elite.intel.ai.brain.BaseAiClient;
 import elite.intel.ai.brain.Client;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.json.GsonFactory;
@@ -25,6 +26,7 @@ public class GrokClient extends BaseAiClient implements Client {
     public static final boolean IS_STREAM = false;
     private static final String API_URL = "https://api.x.ai/v1/chat/completions";
     private static final GrokClient instance = new GrokClient();
+    private static final PlayerSession playerSession = PlayerSession.getInstance();
 
 
     private GrokClient() {
@@ -46,6 +48,7 @@ public class GrokClient extends BaseAiClient implements Client {
         header.addProperty("model", model);
         header.addProperty("temperature", temp);
         header.addProperty("stream", IS_STREAM);
+        header.addProperty("x-grok-conv-id:", playerSession.getUUD()); // generate unique id.
         return header;
     }
 
@@ -71,6 +74,7 @@ public class GrokClient extends BaseAiClient implements Client {
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setRequestProperty("Authorization", "Bearer " + SystemSession.getInstance().getAiApiKey());
+            conn.setRequestProperty("x-grok-conv-id:", playerSession.getUUD());
             conn.setDoOutput(true);
             return conn;
         } catch (IOException noConnection) {

@@ -48,7 +48,6 @@ public class GrokClient extends BaseAiClient implements Client {
         header.addProperty("model", model);
         header.addProperty("temperature", temp);
         header.addProperty("stream", IS_STREAM);
-        header.addProperty("x-grok-conv-id:", playerSession.getUUD()); // generate unique id.
         return header;
     }
 
@@ -74,6 +73,7 @@ public class GrokClient extends BaseAiClient implements Client {
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setRequestProperty("Authorization", "Bearer " + SystemSession.getInstance().getAiApiKey());
+            conn.setRequestProperty("x-grok-conv-id", playerSession.getUUD());
             conn.setDoOutput(true);
             return conn;
         } catch (IOException noConnection) {

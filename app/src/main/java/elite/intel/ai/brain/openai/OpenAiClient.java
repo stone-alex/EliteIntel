@@ -1,9 +1,10 @@
 package elite.intel.ai.brain.openai;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.brain.Client;
 import elite.intel.ai.brain.BaseAiClient;
+import elite.intel.ai.brain.Client;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.json.GsonFactory;
@@ -21,6 +22,7 @@ public class OpenAiClient extends BaseAiClient implements Client {
     private static final String API_URL = "https://api.openai.com/v1/chat/completions";
     //NOTE: Do not use nano LLM. It can't properly map commands or queries.
     private static OpenAiClient instance;
+    private final PlayerSession playerSession = PlayerSession.getInstance();
 
     private OpenAiClient() {
         //
@@ -43,6 +45,8 @@ public class OpenAiClient extends BaseAiClient implements Client {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("model", model);
         jsonObject.addProperty("temperature", temp);
+        jsonObject.addProperty("prompt_cache_key", playerSession.getUUD());
+        jsonObject.addProperty("prompt_cache_retention", "1h");
         return jsonObject;
     }
 

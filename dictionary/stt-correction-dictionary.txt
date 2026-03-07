@@ -327,3 +327,4 @@
 "monitor is our route'="monetize our route"
 "open the assassins can"="open FSS and scan"
 "enhancements"="announcements"
+"assassins can"="open fss and scan"

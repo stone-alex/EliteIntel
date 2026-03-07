@@ -1,6 +1,7 @@
 package elite.intel.db.util;
 
-import elite.intel.db.dao.*;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import elite.intel.util.AppPaths;
 import org.jdbi.v3.core.Handle;
 import org.jdbi.v3.core.Jdbi;
@@ -10,11 +11,14 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.*;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Database {
 
+    private static final HikariDataSource DATA_SOURCE;
     private static final Jdbi JDBI;
 
     private static void migrateIfNeeded() {
@@ -41,6 +45,13 @@ public class Database {
         return JDBI.open();
     }
 
+    // Shutdown the connection pool gracefully
+    public static void shutdown() {
+        if (DATA_SOURCE != null && !DATA_SOURCE.isClosed()) {
+            DATA_SOURCE.close();
+        }
+    }
+
     static {
         Path dbPath;
         try {
@@ -49,14 +60,27 @@ public class Database {
             throw new RuntimeException("Unable to create database directory " + e.getMessage(), e);
         }
 
-
         String url = "jdbc:sqlite:" + dbPath
                 + "?journal_mode=WAL"      // safe concurrent reads/writes
-                + "&busy_timeout=5000"     // don’t deadlock if two threads hit it
+                     + "&busy_timeout=5000"     // don't deadlock if two threads hit it
                 + "&synchronous=NORMAL"    // fast + still safe on Linux
                 + "&foreign_keys=ON";      // Ensure Foreign Keys are enforced on every connection
 
-        JDBI = Jdbi.create(url).installPlugin(new SqlObjectPlugin());
+        // Configure HikariCP connection pool
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl(url);
+        config.setMaximumPoolSize(10);              // SQLite can handle ~10 concurrent connections with WAL
+        config.setMinimumIdle(2);                   // Keep 2 connections ready
+        config.setConnectionTimeout(30000);         // 30 seconds
+        config.setIdleTimeout(600000);              // 10 minutes
+        config.setMaxLifetime(1800000);             // 30 minutes
+        config.setPoolName("EliteIntelSQLitePool");
+
+        // SQLite-specific connection test query
+        config.setConnectionTestQuery("SELECT 1");
+
+        DATA_SOURCE = new HikariDataSource(config);
+        JDBI = Jdbi.create(DATA_SOURCE).installPlugin(new SqlObjectPlugin());
 
         // Open once so the file gets created if missing and persistent pragmas are set
         JDBI.withHandle(h -> {

@@ -43,7 +43,7 @@ public class AnthropicAnalysisEndpoint extends AiEndPoint implements AiAnalysisI
     public JsonObject analyzeData(String originalUserInput, AiData struct) {
         try {
             AnthropicClient client = AnthropicClient.getInstance();
-            JsonObject prompt = client.createPrompt(AnthropicClient.MODEL_OPUS, 0.65f);
+            JsonObject prompt = client.createPrompt(AnthropicClient.MODEL_ANALYSIS_PROMPT, 0.65f);
             String systemPrompt = apiFactory.getAiPromptFactory().generateAnalysisPrompt() + "\n\nINSTRUCTIONS: " + struct.getInstructions();
 
             JsonArray systemArray = new JsonArray();

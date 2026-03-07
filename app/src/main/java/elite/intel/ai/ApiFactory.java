@@ -3,7 +3,7 @@ package elite.intel.ai;
 import elite.intel.ai.brain.*;
 import elite.intel.ai.brain.anthropic.AnthropicAnalysisEndpoint;
 import elite.intel.ai.brain.anthropic.AnthropicCommandEndPoint;
-import elite.intel.ai.brain.anthropic.AnthropicUserInputProcessor;
+import elite.intel.ai.brain.anthropic.AnthropicUserEndPoint;
 import elite.intel.ai.brain.commons.PromptFactory;
 import elite.intel.ai.brain.commons.ResponseRouter;
 import elite.intel.ai.brain.ollama.OllamaAnalysisEndpoint;
@@ -72,7 +72,7 @@ public class ApiFactory {
         return switch (provider) {
             case GROK -> GrokChatEndPoint.getInstance();
             case OPENAI -> OpenAiChatEndPoint.getInstance();
-            case ANTHROPIC -> AnthropicCommandEndPoint.getInstance();
+            case ANTHROPIC -> AnthropicUserEndPoint.getInstance();
             default -> OllamaCommandEndPoint.getInstance();
         };
     }
@@ -103,7 +103,7 @@ public class ApiFactory {
         return switch (provider) {
             case GROK -> GrokCommandEndPoint.getInstance();
             case OPENAI -> OpenAiCommandEndPoint.getInstance();
-            case ANTHROPIC -> AnthropicUserInputProcessor.getInstance();
+            case ANTHROPIC -> AnthropicCommandEndPoint.getInstance();
             default -> OllamaUserInputProcessor.getInstance();
         };
     }

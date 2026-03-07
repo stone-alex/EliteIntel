@@ -36,10 +36,10 @@ public class AnthropicClient extends BaseAiClient implements Client {
     private static final Logger log = LogManager.getLogger(AnthropicClient.class);
 
 
-    // Model identifiers - expose both so callers can pick
-    public static final String MODEL_SONNET = "claude-sonnet-4-6";   // fast, balanced
-    public static final String MODEL_OPUS = "claude-sonnet-4-6";
-    /// "claude-opus-4-6";     // most capable
+    // Model identifiers - expose all so callers can pick
+    public static final String MODEL_COMMAND_PROMPT = "claude-haiku-4-5-20251001";    // fastest, cheapest - ideal for command parsing
+    public static final String MODEL_ANALYSIS_PROMPT = "claude-sonnet-4-6";           // fast, balanced - best for analysis/chat
+    //public static final String MODEL_OPUS = "claude-opus-4-6";               // most capable
 
     private static final String API_URL = "https://api.anthropic.com/v1/messages";
     private static final String API_VERSION = "2023-06-01";
@@ -57,29 +57,20 @@ public class AnthropicClient extends BaseAiClient implements Client {
         return INSTANCE;
     }
 
-    /**
-     * Build the base JsonObject for a Claude request.
-     *
-     * @param model one of MODEL_SONNET / MODEL_OPUS
-     * @param temp  temperature (0.0 – 1.0; Claude supports up to 1.0)
-     */
+
+    @Override public JsonObject createPrompt(int model, float temp) {
+        return createPrompt(model == 1 ? MODEL_COMMAND_PROMPT : MODEL_ANALYSIS_PROMPT, temp);
+    }
+
     @Override
     public JsonObject createPrompt(String model, float temp) {
         JsonObject request = new JsonObject();
         request.addProperty("model", model);
         request.addProperty("max_tokens", DEFAULT_MAX_TOKENS);
         request.addProperty("temperature", temp);
-        // Note: "stream" is intentionally omitted → defaults to false (synchronous)
         return request;
     }
 
-    /**
-     * Convenience overload using integer constants to mirror Ollama's pattern.
-     */
-    @Override
-    public JsonObject createPrompt(int model, float temp) {
-        return createPrompt(model == 1 ? MODEL_SONNET : MODEL_OPUS, temp);
-    }
 
     @Override
     public JsonObject createErrorResponse(String message) {

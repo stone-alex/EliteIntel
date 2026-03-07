@@ -1,110 +1,177 @@
 package elite.intel.ai.brain.anthropic;
 
+import com.google.common.eventbus.Subscribe;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import elite.intel.ai.brain.AIChatInterface;
 import elite.intel.ai.brain.AIConstants;
-import elite.intel.ai.brain.commons.AiEndPoint;
-import elite.intel.util.json.GsonFactory;
+import elite.intel.ai.brain.AiCommandInterface;
+import elite.intel.ai.brain.commons.CommandEndPoint;
+import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.gameapi.EventBusManager;
+import elite.intel.gameapi.SensorDataEvent;
+import elite.intel.gameapi.UserInputEvent;
+import elite.intel.session.ChatHistory;
+import elite.intel.session.PlayerSession;
+import elite.intel.session.SystemSession;
+import elite.intel.ui.event.AppLogEvent;
+import elite.intel.util.StringUtls;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class AnthropicCommandEndPoint extends AiEndPoint implements AIChatInterface {
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import static elite.intel.util.json.JsonUtils.getAsStringOrEmpty;
+import static org.apache.logging.log4j.util.Strings.trimToNull;
+
+/**
+ * Event-driven user input processor for the Anthropic (Claude) backend.
+ * <p>
+ * Intentionally mirrors OllamaUserInputProcessor structure so that the two
+ * implementations stay easy to diff and maintain together. The only real
+ * differences are:
+ * - Uses AnthropicCommandEndPoint / AnthropicClient instead of Ollama equivalents
+ * - Thread name is "AnthropicCommand-Worker"
+ */
+public class AnthropicCommandEndPoint extends CommandEndPoint implements AiCommandInterface {
 
     private static final Logger log = LogManager.getLogger(AnthropicCommandEndPoint.class);
     private static final AnthropicCommandEndPoint INSTANCE = new AnthropicCommandEndPoint();
 
+    private ExecutorService executor;
+    private final AtomicBoolean running = new AtomicBoolean(false);
+    private final SystemSession systemSession = SystemSession.getInstance();
+
     private AnthropicCommandEndPoint() {
+        // singleton
     }
 
     public static AnthropicCommandEndPoint getInstance() {
         return INSTANCE;
     }
 
+    // -----------------------------------------------------------------------
+    // Lifecycle
+    // -----------------------------------------------------------------------
+
     @Override
-    public JsonObject processAiPrompt(JsonArray messages, float temp) {
-        String bodyString = null;
-        try {
-            AnthropicClient client = AnthropicClient.getInstance();
+    public void start() {
+        EventBusManager.register(this);
+        if (running.compareAndSet(false, true)) {
+            this.executor = Executors.newSingleThreadExecutor(r -> {
+                Thread t = new Thread(r, "AnthropicCommand-Worker");
+                t.setDaemon(true);
+                return t;
+            });
+            log.info("AnthropicUserInputProcessor started");
+            EventBusManager.publish(new AiVoxResponseEvent(
+                    StringUtls.greeting(PlayerSession.getInstance().getPlayerName())));
+        }
+    }
 
-            // Build base prompt object (model, max_tokens, temperature)
-            JsonObject prompt = client.createPrompt(AnthropicClient.MODEL_SONNET, temp);
-
-            // ── Separate system messages from user/assistant messages ──────────
-            StringBuilder systemContent = new StringBuilder();
-            JsonArray conversationMessages = new JsonArray();
-
-            JsonArray sanitized = sanitizeJsonArray(messages);
-            for (JsonElement element : sanitized) {
-                JsonObject msg = element.getAsJsonObject();
-                String role = msg.has("role") ? msg.get("role").getAsString() : "";
-
-                if (AIConstants.ROLE_SYSTEM.equals(role)) {
-                    if (!systemContent.isEmpty()) systemContent.append("\n\n");
-                    systemContent.append(msg.get("content").getAsString());
-                } else {
-                    conversationMessages.add(msg);
-                }
+    @Override
+    public void stop() {
+        if (running.compareAndSet(true, false)) {
+            EventBusManager.unregister(this);
+            if (executor != null) {
+                executor.shutdownNow();
+                executor = null;
             }
+            log.info("AnthropicUserInputProcessor stopped");
+        }
+    }
 
-            // Claude requires at least one user message
-            if (conversationMessages.isEmpty()) {
-                log.error("No user/assistant messages found after system extraction");
-                return null;
+    // -----------------------------------------------------------------------
+    // Event subscribers
+    // -----------------------------------------------------------------------
+
+    @Subscribe
+    @Override
+    public void onUserInput(UserInputEvent event) {
+        if (!running.get()) return;
+        if (executor == null) {
+            processVoiceCommand(event.getUserInput(), event.getConfidence());
+            return;
+        }
+        executor.submit(() -> processVoiceCommand(event.getUserInput(), event.getConfidence()));
+    }
+
+    @Subscribe
+    @Override
+    public void onSensorDataEvent(SensorDataEvent event) {
+        if (!running.get()) return;
+        if (trimToNull(event.getSensorData()) == null) return;
+
+        EventBusManager.publish(new AppLogEvent("\nProcessing Sensor event"));
+
+        JsonArray messages = new JsonArray();
+
+        JsonObject systemMessage = new JsonObject();
+        systemMessage.addProperty("role", AIConstants.ROLE_SYSTEM);
+        systemMessage.addProperty("content", getContextFactory().generateSensorPrompt());
+        messages.add(systemMessage);
+
+        JsonObject instructions = new JsonObject();
+        instructions.addProperty("role", AIConstants.ROLE_SYSTEM);
+        instructions.addProperty("content", "EVENT SPECIFIC INSTRUCTIONS: " + event.getInstructions());
+        messages.add(instructions);
+
+        JsonObject userMsg = new JsonObject();
+        userMsg.addProperty("role", AIConstants.ROLE_USER);
+        userMsg.addProperty("content", event.getSensorData());
+        messages.add(userMsg);
+
+        // Low temperature for deterministic sensor-driven responses
+        executor.submit(() -> {
+            JsonObject response = AnthropicUserEndPoint.getInstance().processAiPrompt(messages, 0.1f);
+            if (response != null) getRouter().processAiResponse(response, null);
+        });
+    }
+
+    // -----------------------------------------------------------------------
+    // Core processing
+    // -----------------------------------------------------------------------
+
+    private void processVoiceCommand(String userInput, float confidence) {
+        if (userInput == null || userInput.isEmpty()) {
+            getRouter().processAiResponse(createError("Sorry, I couldn't process that."), userInput);
+            return;
+        }
+
+        log.info("Anthropic voice input: {} (conf: {})", userInput, confidence);
+
+        JsonArray request = new JsonArray();
+
+        // System prompt comes first – AnthropicCommandEndPoint will lift this
+        // out to the top-level "system" field before sending to the API.
+        JsonObject system = new JsonObject();
+        system.addProperty("role", AIConstants.ROLE_SYSTEM);
+        system.addProperty("content", getContextFactory().generateVoiceInputSystemPrompt());
+        request.add(system);
+
+        JsonObject userMsg = new JsonObject();
+        userMsg.addProperty("role", AIConstants.ROLE_USER);
+        userMsg.addProperty("content", userInput);
+        request.add(userMsg);
+
+        // Low temperature for command classification accuracy
+        JsonObject response = AnthropicUserEndPoint.getInstance().processAiPrompt(request, 0.1f);
+        if (response == null) {
+            getRouter().processAiResponse(createError("Sorry, I couldn't reach Claude."), userInput);
+            return;
+        }
+
+        getRouter().processAiResponse(response, userInput);
+
+        // Persist chat history on chat-type responses, identical to Ollama/Grok behaviour
+        String type = getAsStringOrEmpty(response, "type").toLowerCase();
+        if ("chat".equals(type)) {
+            boolean expectFollowup = response.has(AIConstants.PROPERTY_EXPECT_FOLLOWUP) &&
+                                     response.get(AIConstants.PROPERTY_EXPECT_FOLLOWUP).getAsBoolean();
+            if (expectFollowup) {
+                systemSession.setChatHistory(new ChatHistory(userInput, response.getAsString()));
             }
-
-            if (!systemContent.isEmpty()) {
-                JsonArray systemArray = new JsonArray();
-                JsonObject systemBlock = new JsonObject();
-                systemBlock.addProperty("type", "text");
-                systemBlock.addProperty("text", systemContent.toString());
-                JsonObject cacheControl = new JsonObject();
-                cacheControl.addProperty("type", "ephemeral");
-                systemBlock.add("cache_control", cacheControl);
-                systemArray.add(systemBlock);
-                prompt.add("system", systemArray);
-            }
-            prompt.add("messages", conversationMessages);
-
-
-            bodyString = prompt.toString();
-            log.debug("Anthropic API call:\n{}", GsonFactory.getGson().toJson(prompt));
-
-            // ── Send and unwrap ────────────────────────────────────────────────
-            JsonObject root = processAiPrompt(bodyString, client);
-            if (root == null) {
-                log.error("Null response from Anthropic API");
-                return null;
-            }
-
-            log.debug("Anthropic raw response:\n{}", GsonFactory.getGson().toJson(root));
-
-            // Check for API-level error envelope  { "type": "error", "error": {...} }
-            if ("error".equals(getStringOrNull(root, "type"))) {
-                JsonObject apiErr = root.has("error") ? root.getAsJsonObject("error") : root;
-                log.error("Anthropic API error: {}", apiErr);
-                return null;
-            }
-
-            // Extract text from content[0].text
-            String text = client.extractText(root);
-            if (text == null || text.isBlank()) {
-                log.error("Empty content in Anthropic response:\n{}", root);
-                return null;
-            }
-
-            // The shared prompt factory instructs all LLMs to reply with JSON.
-            // Strip any accidental markdown fences Claude may add.
-            text = stripJsonFences(text);
-
-            return JsonParser.parseString(text).getAsJsonObject();
-
-        } catch (Exception e) {
-            log.error("Anthropic chat call failed: {}", e.getMessage(), e);
-            log.error("Request body was:\n{}", bodyString != null ? bodyString : "null");
-            return null;
         }
     }
 
@@ -112,21 +179,12 @@ public class AnthropicCommandEndPoint extends AiEndPoint implements AIChatInterf
     // Helpers
     // -----------------------------------------------------------------------
 
-    /**
-     * Strip ```json … ``` or ``` … ``` fences that Claude occasionally wraps around JSON.
-     */
-    private String stripJsonFences(String text) {
-        String t = text.trim();
-        if (t.startsWith("```")) {
-            int firstNewline = t.indexOf('\n');
-            if (firstNewline != -1) t = t.substring(firstNewline + 1);
-            if (t.endsWith("```")) t = t.substring(0, t.lastIndexOf("```"));
-            t = t.trim();
-        }
-        return t;
-    }
-
-    private String getStringOrNull(JsonObject obj, String key) {
-        return obj.has(key) ? obj.get(key).getAsString() : null;
+    private JsonObject createError(String text) {
+        JsonObject err = new JsonObject();
+        err.addProperty("type", AIConstants.TYPE_CHAT);
+        err.addProperty(AIConstants.PROPERTY_RESPONSE_TEXT, text);
+        err.add("params", new JsonObject());
+        err.addProperty(AIConstants.PROPERTY_EXPECT_FOLLOWUP, true);
+        return err;
     }
 }

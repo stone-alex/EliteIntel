@@ -74,7 +74,6 @@ public class GrokClient extends BaseAiClient implements Client {
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setRequestProperty("Authorization", "Bearer " + SystemSession.getInstance().getAiApiKey());
-            conn.setRequestProperty("x-grok-conv-id:", playerSession.getUUD());
             conn.setDoOutput(true);
             return conn;
         } catch (IOException noConnection) {

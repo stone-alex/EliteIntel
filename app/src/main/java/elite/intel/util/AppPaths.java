@@ -38,6 +38,24 @@ public final class AppPaths {
         return dbDir.resolve("database.db");
     }
 
+    public static Path getWhisperModelPath() {
+        if (OsDetector.getOs() == OsDetector.OS.LINUX || OsDetector.getOs() == OsDetector.OS.MAC) {
+            String dataHome = System.getenv("XDG_DATA_HOME");
+            Path base = dataHome != null && !dataHome.isEmpty()
+                    ? Path.of(dataHome)
+                    : Path.of(System.getProperty("user.home"), ".var/app");
+            return base.resolve("elite.intel.app/whisper/ggml-base.en.bin");
+        } else if (OsDetector.getOs() == OsDetector.OS.WINDOWS) {
+            String localAppData = System.getenv("LOCALAPPDATA");
+            if (localAppData == null || localAppData.isEmpty()) {
+                throw new IllegalStateException("LOCALAPPDATA not set");
+            }
+            return Path.of(localAppData).resolve("elite-intel/whisper/ggml-base.en.bin");
+        } else {
+            throw new IllegalStateException("Unsupported OS");
+        }
+    }
+
     public static Path getConfigDirectory() {
         return APP_DIR.resolve("config");
     }

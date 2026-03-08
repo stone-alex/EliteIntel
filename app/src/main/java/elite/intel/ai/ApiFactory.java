@@ -17,13 +17,11 @@ import elite.intel.ai.brain.xai.GrokChatEndPoint;
 import elite.intel.ai.brain.xai.GrokCommandEndPoint;
 import elite.intel.ai.ears.EarsInterface;
 import elite.intel.ai.ears.google.GoogleSTTImpl;
+import elite.intel.ai.ears.whisper.WhisperSTTImpl;
 import elite.intel.ai.mouth.MouthInterface;
 import elite.intel.ai.mouth.google.GoogleTTSImpl;
 import elite.intel.ai.mouth.piper.PiperTTS;
-import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
-import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.SystemSession;
-import elite.intel.ui.event.AppLogEvent;
 
 /**
  * A singleton factory class responsible for providing various AI-related endpoint instances.
@@ -113,6 +111,7 @@ public class ApiFactory {
     }
 
     ///
+    @SuppressWarnings({"SwitchStatementWithTooFewBranches", "EnhancedSwitchMigration"})
     public MouthInterface getMouthImpl() {
         if(systemSession.useLocalTTS()){
             return PiperTTS.getInstance();
@@ -130,17 +129,15 @@ public class ApiFactory {
     }
 
     ///
+    @SuppressWarnings({"SwitchStatementWithTooFewBranches", "EnhancedSwitchMigration"})
     public EarsInterface getEarsImpl() {
         String apiKey = SystemSession.getInstance().getSttApiKey();
         ProviderEnum provider = KeyDetector.detectProvider(apiKey, "STT"); // Fixed category
         switch (provider) {
             case GOOGLE_STT:
                 return new GoogleSTTImpl();
-            // TODO: Add Deepgram, Azure STT, etc.
             default:
-                EventBusManager.publish(new AppLogEvent("Unknown STT key format"));
-                EventBusManager.publish(new AiVoxResponseEvent("Google Speech To Text Key is required."));
-                return new GoogleSTTImpl();
+                return new WhisperSTTImpl();
         }
     }
 }

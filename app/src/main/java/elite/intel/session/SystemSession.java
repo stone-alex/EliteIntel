@@ -6,6 +6,7 @@ import elite.intel.ai.mouth.AiVoices;
 import elite.intel.db.dao.ChatHistoryDao;
 import elite.intel.db.dao.GameSessionDao;
 import elite.intel.db.util.Database;
+import elite.intel.util.AppPaths;
 import elite.intel.util.Cypher;
 import elite.intel.util.json.GsonFactory;
 
@@ -376,4 +377,10 @@ public class SystemSession {
     public String getLocalLlmQueryModel() {
         return Database.withDao(GameSessionDao.class, dao -> dao.get().getLocalLlmQueryModel());
     }
+
+    public String getWhisperModelPath() {
+        return AppPaths.getWhisperModelPath().toString();
+    }
+
+    //TODO add setWhisperModelPath(String path) method
 }

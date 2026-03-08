@@ -21,7 +21,11 @@ public class Resampler {
         int totalInputBytes = length + leftoverBytes;
         short[] inSamples = new short[totalInputBytes / 2];
         // copy leftover + new data
-        System.arraycopy(leftover, 0, inSamples, 0, leftoverBytes / 2);
+        //System.arraycopy(leftover, 0, inSamples, 0, leftoverBytes / 2);
+        for (int i = 0, j = 0; i < leftoverBytes; i += 2, j++) {
+            inSamples[j] = (short) ((leftover[i + 1] & 0xff) << 8 | (leftover[i] & 0xff));
+        }
+
         for (int i = 0, j = leftoverBytes; i < length; i += 2, j++) {
             inSamples[j] = (short) ((input[i + 1] & 0xff) << 8 | (input[i] & 0xff));
         }

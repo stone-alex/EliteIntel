@@ -198,6 +198,7 @@ print_usage() {
                 -d       Deletes the EliteIntel installation and associated files from the computer
                 -h       Displays this message.
                 -T       Install Piper-TTS server or download new Piper-voice-models
+                -W       Download or re-download the Whisper offline STT model
 
 EOF
     exit 0
@@ -410,6 +411,47 @@ download_piper_tts_models() {
     echo "Downloaded $NATIONALITY-$MODEL-medium.onnx"
 }
 
+
+WHISPER_MODEL_DIR="$DEFAULT_INSTALL_LOCATION/whisper"
+WHISPER_MODEL="ggml-base.en.bin"
+WHISPER_MODEL_URL="https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.en.bin"
+
+download_whisper_model() {
+    # Skip if user isn't using Whisper STT
+    cat << EOF
+
+    EliteIntel supports an optional offline Speech-to-Text engine (Whisper).
+    This requires a ~150MB model file. If you use Google STT, you can skip this.
+
+EOF
+    read -rp "Download Whisper offline STT model? [y/n]: " _WHISPER
+    case "$_WHISPER" in
+        y|Y) ;;
+        *)
+            echo "Skipping Whisper model download."
+            return
+            ;;
+    esac
+
+    mkdir -p "$WHISPER_MODEL_DIR"
+
+    if [ -f "$WHISPER_MODEL_DIR/$WHISPER_MODEL" ]; then
+        echo "Whisper model already present, skipping download."
+        return
+    fi
+
+    echo "Downloading Whisper model (~150MB)..."
+    curl -L --progress-bar -o "$WHISPER_MODEL_DIR/$WHISPER_MODEL" "$WHISPER_MODEL_URL"
+
+    if [ $? -eq 0 ]; then
+        echo "Whisper model installed at: $WHISPER_MODEL_DIR/$WHISPER_MODEL"
+    else
+        echo "ERROR: Whisper model download failed. You can retry later with:"
+        echo "  curl -L -o \"$WHISPER_MODEL_DIR/$WHISPER_MODEL\" \"$WHISPER_MODEL_URL\""
+    fi
+}
+
+
 install_local_TTS() {
     if ! command -v python3 >/dev/null 2>&1; then
         echo "ERROR: Python is not installed on this system! Please resolve this error before trying again."
@@ -506,11 +548,12 @@ EOF
 ##########################################################################################################################
 #       Main Loop
 #
-while getopts ":hudT" opt; do
+while getopts ":hudTW" opt; do
     case $opt in
         h) print_usage ;;
         u) update_elite_intel ;;
         d) delete_elite_intel ;;
+        W) download_whisper_model ;;
         T)
             read -rp "Do you want to do a fresh install, or download new models? (choose 'y' for install) [y/n]: " _PIPER
             case "$_PIPER" in
@@ -537,6 +580,14 @@ sleep 0.2
 #
 set_install_folder
 sleep 0.2
+
+#
+#		Download Whisper.cpp model
+#
+
+download_whisper_model
+sleep 0.2
+
 #
 #		Create Symlink to relevant folders
 #

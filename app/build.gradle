@@ -45,12 +45,17 @@ dependencies {
     implementation 'org.xerial:sqlite-jdbc:3.51.0.0'
 
     // JDBI 3 - the real winner for Java + SQL in 2025
-    implementation 'org.jdbi:jdbi3-core:3.47.0'
-    implementation 'org.jdbi:jdbi3-sqlobject:3.47.0'
-    implementation 'org.jdbi:jdbi3-jackson2:3.47.0'
+    implementation platform('org.jdbi:jdbi3-bom:3.51.0')
+    implementation 'org.jdbi:jdbi3-sqlobject'
+    implementation 'org.jdbi:jdbi3-jackson2'
+    implementation 'org.jdbi:jdbi3-core'
 
     // Connection pool
     implementation 'com.zaxxer:HikariCP:5.1.0'
+
+    ///whisper
+    implementation 'io.github.givimad:whisper-jni:1.7.1'
+
 
     implementation 'org.zeromq:jeromq:0.6.0'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.17.2'

@@ -3,11 +3,9 @@ package elite.intel.gameapi.edsm;
 import com.google.common.eventbus.Subscribe;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.BaseEvent;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
-import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.json.GsonFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -58,9 +56,6 @@ public final class EdsmUploader {
         version = playerSession.getGameVersion();
 
         if (commander.isBlank() || apiKey.isBlank()) {
-            String message = "Warning: EDSM credentials are missing/incomplete. Materials info will not be updated.";
-            log.warn(message);
-            /// EventBusManager.publish(new AppLogEvent(message));
             return;
         }
 

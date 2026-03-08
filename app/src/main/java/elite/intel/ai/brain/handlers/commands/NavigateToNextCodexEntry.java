@@ -38,7 +38,7 @@ public class NavigateToNextCodexEntry implements CommandHandler {
 
 
         List<CodexEntryDao.CodexEntry> codexEntries = getCodexEntries(currentLocation);
-        if (codexEntries == null || codexEntries.isEmpty()) {
+        if (codexEntries.isEmpty()) {
             EventBusManager.publish(new AiVoxResponseEvent("No codex entries found."));
             return;
         }
@@ -61,13 +61,15 @@ public class NavigateToNextCodexEntry implements CommandHandler {
         nav.setRequestedTime(System.currentTimeMillis());
         playerSession.setTracking(nav);
 
-        EventBusManager.publish(new AiVoxResponseEvent(
-                "Heading to " + target.getEntryName() + " sample."));
+        EventBusManager.publish(new AiVoxResponseEvent("Heading to " + target.getEntryName() + " sample."));
     }
 
     private List<CodexEntryDao.CodexEntry> getCodexEntries(LocationDto currentLocation) {
         List<BioSampleDto> completedBioSamples = bioSamplesManager.findByPlanetName(currentLocation.getPlanetName());
         List<CodexEntryDao.CodexEntry> codexEntries = codexEntryManager.getForPlanet(currentLocation.getStarName(), currentLocation.getBodyId());
+        if (codexEntries == null) {
+            return new ArrayList<>();
+        }
         List<CodexEntryDao.CodexEntry> filteredResult = new ArrayList<>();
 
         if (completedBioSamples == null || completedBioSamples.isEmpty()) return codexEntries;

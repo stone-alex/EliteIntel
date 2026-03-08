@@ -30,6 +30,9 @@ public class WhisperSTTImpl implements EarsInterface {
     private static final int EXIT_SILENCE_FRAMES = 5; // ~1s silence at 100ms buffers
     private static final long BASE_BACKOFF_MS = 2000;
     private static final long MAX_BACKOFF_MS = 60000;
+    private static final int MIN_AUDIO_MS = 2000; // pad to at least 1 second
+    private static final int MIN_AUDIO_BYTES = WHISPER_SAMPLE_RATE * 2 * MIN_AUDIO_MS / 1000; // 32000 bytes
+
 
     private final AtomicBoolean isListening = new AtomicBoolean(false);
     private final AtomicBoolean isSpeaking = new AtomicBoolean(false);
@@ -178,9 +181,17 @@ public class WhisperSTTImpl implements EarsInterface {
         }
     }
 
+    private byte[] padAudio(byte[] pcm) {
+        if (pcm.length >= MIN_AUDIO_BYTES) return pcm;
+        byte[] padded = new byte[MIN_AUDIO_BYTES];
+        System.arraycopy(pcm, 0, padded, 0, pcm.length);
+        // remaining bytes are already zero (silence) by default
+        return padded;
+    }
+
     private synchronized void transcribeAndDispatch(byte[] pcmBytes) {
         try {
-            float[] samples = pcm16ToFloat(pcmBytes);
+            float[] samples = pcm16ToFloat(padAudio(pcmBytes));
 
             WhisperFullParams params = new WhisperFullParams();
             params.language = "en";
@@ -208,11 +219,13 @@ public class WhisperSTTImpl implements EarsInterface {
             log.debug("Whisper using {} threads", Runtime.getRuntime().availableProcessors());
             log.debug("Whisper transcription took {} ms", timeElapsed);
 
-            String transcript = sb.toString().trim();
-            EventBusManager.publish(new AppLogEvent("STT Heard: [" + transcript + "]"));
 
+            String transcript = sb.toString().toLowerCase().trim().replace("[blank_audio]", "");
+            if (transcript.contains("(")) return;
+            if (transcript.contains("*")) return;
             if (transcript.isBlank() || transcript.length() < 3) return;
 
+            EventBusManager.publish(new AppLogEvent("STT Heard: [" + transcript + "]"));
             String sanitized = STTSanitizer.getInstance().correctMistakes(transcript);
             EventBusManager.publish(new AppLogEvent("STT Sanitized: [" + sanitized + "]"));
 

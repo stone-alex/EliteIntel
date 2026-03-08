@@ -136,7 +136,7 @@ public class AppView extends JFrame implements AppViewInterface {
         bindLock(sttLockedCheck, sttApiKeyField);
         bindLock(llmLockedCheck, llmApiKeyField);
         bindLock(ttsLockedCheck, ttsApiKeyField);
-        bindLock(edsmLockedCheck, edsmKeyField);
+        ///bindLock(edsmLockedCheck, edsmKeyField);
 
         toggleStreamingModeCheckBox.setEnabled(false);//enabled when services start
         toggleStreamingModeCheckBox.setToolTipText("Prevent AI from processing unless you prefix your command or query with word 'computer'");
@@ -602,7 +602,7 @@ public class AppView extends JFrame implements AppViewInterface {
         addCheck(cloudFields, ttsLockedCheck, gbc);
         cloudFields.setBorder(new LineBorder(ACCENT, 1));
         cloudFields.revalidate();
-        addNestedPanel(settingsTabPanel, cloudFields);
+        addNestedPanel(settingsTabPanel, cloudFields, "CLOUD SETTINGS");
         /// --------------------------------------------------------------------------------------------------------------------------------------------
 
 
@@ -638,17 +638,14 @@ public class AppView extends JFrame implements AppViewInterface {
         localSettingsPanel.revalidate();
         useLocalQueryLLMCheck = new JCheckBox("Use", false);
         useLocalQueryLLMCheck.addActionListener(a -> {
-            SwingUtilities.invokeLater(() -> {
-                saveSystemConfig();
-                //EventBusManager.publish(new RestartServicesEvent());
-            });
+            SwingUtilities.invokeLater(this::saveSystemConfig);
         });
 
         addField(localSettingsPanel, localLlmModelQueryField, gbc, 1, 0.8);
         addCheck(localSettingsPanel, useLocalQueryLLMCheck, gbc);
 
 
-        addNestedPanel(settingsTabPanel, localSettingsPanel);
+        addNestedPanel(settingsTabPanel, localSettingsPanel, " ");
         /// --------------------------------------------------------------------------------------------------------------------------------------------
 
         nextRow(gbc);
@@ -659,10 +656,7 @@ public class AppView extends JFrame implements AppViewInterface {
         localTtsAddressField.setToolTipText("Local TTS Address");
         useLocalTTSCheck = new JCheckBox("Use", false);
         useLocalTTSCheck.addActionListener(a -> {
-            SwingUtilities.invokeLater(() -> {
-                saveSystemConfig();
-                //EventBusManager.publish(new RestartServicesEvent());
-            });
+            SwingUtilities.invokeLater(this::saveSystemConfig);
         });
 
         addField(localSettingsPanel, localTtsAddressField, gbc, 1, 0.8);
@@ -692,24 +686,23 @@ public class AppView extends JFrame implements AppViewInterface {
 
         addLabel(localSettingsPanel, speechSpeedLabel, gbc);
         localSettingsPanel.setBorder(new LineBorder(ACCENT, 1));
-
-        addNestedPanel(settingsTabPanel, localSettingsPanel);
+        addNestedPanel(settingsTabPanel, localSettingsPanel, "OFF LINE SETTINGS");
         /// --------------------------------------------------------------------------------------------------------------------------------------------
 
         /// blank
-        nextRow(gbc);
-        // Row EDSM KEY
-        nextRow(gbc);
-        addLabel(localSettingsPanel, "EDSM API Key:", gbc);
-        edsmKeyField = new JPasswordField();
-        edsmKeyField.setPreferredSize(new Dimension(200, 42));
-        edsmKeyField.setToolTipText("EDSM API Key");
-        addField(localSettingsPanel, edsmKeyField, gbc, 1, 0.8);
-        edsmLockedCheck = new JCheckBox("Locked", true);
-        addCheck(localSettingsPanel, edsmLockedCheck, gbc);
-        localSettingsPanel.setBorder(new LineBorder(ACCENT, 1));
+//        nextRow(gbc);
+//        // Row EDSM KEY
+//        nextRow(gbc);
+//        addLabel(localSettingsPanel, "EDSM API Key:", gbc);
+//        edsmKeyField = new JPasswordField();
+//        edsmKeyField.setPreferredSize(new Dimension(200, 42));
+//        edsmKeyField.setToolTipText("EDSM API Key");
+//        addField(localSettingsPanel, edsmKeyField, gbc, 1, 0.8);
+//        edsmLockedCheck = new JCheckBox("Locked", true);
+//        addCheck(localSettingsPanel, edsmLockedCheck, gbc);
+//        localSettingsPanel.setBorder(new LineBorder(ACCENT, 1));
 
-        addNestedPanel(settingsTabPanel, localSettingsPanel);
+        addNestedPanel(settingsTabPanel, localSettingsPanel, "");
         /// --------------------------------------------------------------------------------------------------------------------------------------------
 
 
@@ -924,7 +917,7 @@ public class AppView extends JFrame implements AppViewInterface {
         sttApiKeyField.setText(systemSession.getSttApiKey() != null ? systemSession.getSttApiKey() : "");
         llmApiKeyField.setText(systemSession.getAiApiKey() != null ? systemSession.getAiApiKey() : "");
         ttsApiKeyField.setText(systemSession.getTtsApiKey() != null ? systemSession.getTtsApiKey() : "");
-        edsmKeyField.setText(systemSession.getEdsmApiKey() != null ? systemSession.getEdsmApiKey() : "");
+        //edsmKeyField.setText(systemSession.getEdsmApiKey() != null ? systemSession.getEdsmApiKey() : "");
 
         localTtsAddressField.setText(playerSession.getLocalTtsAddress() != null ? playerSession.getLocalTtsAddress() : "");
         localLlmAddressField.setText(playerSession.getLocalLlmAddress() != null ? playerSession.getLocalLlmAddress() : "");
@@ -955,7 +948,7 @@ public class AppView extends JFrame implements AppViewInterface {
         s.setSttApiKey(new String(sttApiKeyField.getPassword()));
         s.setAiApiKey(new String(llmApiKeyField.getPassword()));
         s.setTtsApiKey(new String(ttsApiKeyField.getPassword()));
-        s.setEdsmApiKey(new String(edsmKeyField.getPassword()));
+        //s.setEdsmApiKey(new String(edsmKeyField.getPassword()));
         playerSession.setLocalTtsAddress(localTtsAddressField.getText());
         playerSession.setLocalLlmAddress(localLlmAddressField.getText());
         systemSession.setLocalLlmCommandModel(localLlmModelCommandField.getText());
@@ -1027,7 +1020,8 @@ public class AppView extends JFrame implements AppViewInterface {
         panel.add(check, gbc);
     }
 
-    private void addNestedPanel(JPanel parent, JPanel child) {
+    private void addNestedPanel(JPanel parent, JPanel child, String title) {
+        parent.add(new JLabel(title));
         parent.add(child);
     }
 

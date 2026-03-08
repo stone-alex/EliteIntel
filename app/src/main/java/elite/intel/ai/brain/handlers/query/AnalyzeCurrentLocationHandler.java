@@ -55,6 +55,7 @@ public class AnalyzeCurrentLocationHandler extends BaseQueryAnalyzer implements 
                         instructions,
                         new DataDto(
                                 status.isDocked(),
+                                status.isLanded(),
                                 playerSession.getPrimaryStarName(),
                                 location.getPlanetShortName(),
                                 location.getSecurity(),
@@ -133,6 +134,7 @@ public class AnalyzeCurrentLocationHandler extends BaseQueryAnalyzer implements 
 
     record DataDto(
             boolean isDocked,
+            boolean isLanded,
             String starSystemName,
             String planetName,
             String securityLevel,

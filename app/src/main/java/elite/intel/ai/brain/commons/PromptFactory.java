@@ -4,6 +4,7 @@ import elite.intel.ai.brain.AICadence;
 import elite.intel.ai.brain.AIPersonality;
 import elite.intel.ai.brain.AiCommandsAndQueries;
 import elite.intel.ai.brain.AiPromptFactory;
+import elite.intel.db.managers.ShipManager;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.util.Ranks;
@@ -27,7 +28,7 @@ public class PromptFactory implements AiPromptFactory {
     @Override
     public String generateVoiceInputSystemPrompt() {
         StringBuilder sb = new StringBuilder();
-        sb.append("YOU ARE ").append(aiName()).append(" a co-pilot in Elite Dangerous - space sim game. ");
+        youAre(sb);
         sb.append("""
                 - STRICT COMMAND PARSER. YOUR ONLY JOB IS TO PICK EXACTLY ONE ACTION FROM THE LIST BELOW. NOTHING ELSE.
                 
@@ -46,11 +47,8 @@ public class PromptFactory implements AiPromptFactory {
                 - NEVER invent, modify, combine, or create new actions or parameters.
                 - NEVER be "helpful" by guessing.
                 """);
-        if (systemSession.useLocalCommandLlm() || systemSession.useLocalQueryLlm()) {
-            sb.append("- If ZERO good match → type=chat response_text=No Matching Action");
-        } else {
             sb.append("- If ZERO good match → return: {\"type\": \"query\", \"action\": \"general_conversation\", \"params\": {}}");
-        }
+
         sb.append("""
                 
                 - ONLY use action names EXACTLY as written in the lists below.
@@ -83,11 +81,15 @@ public class PromptFactory implements AiPromptFactory {
         return sb.toString();
     }
 
+    private void youAre(StringBuilder sb) {
+        sb.append("YOU ARE ").append(aiName()).append(" ship in Elite Dangerous - space sim game. ");
+    }
+
     @Override
     public String generateAnalysisPrompt() {
         StringBuilder sb = new StringBuilder();
         sb.append("Instructions:\n");
-        sb.append("You are ").append(aiName()).append(" a co-pilot in Elite Dangerous - space sim game. ");
+        youAre(sb);
         sb.append(getSessionValues());
         sb.append(appendBehavior());
         sb.append("""
@@ -133,7 +135,7 @@ public class PromptFactory implements AiPromptFactory {
     @Override
     public String generateSensorPrompt() {
         StringBuilder sb = new StringBuilder();
-        sb.append("You are ").append(aiName()).append(" a co-pilot in Elite Dangerous - space sim game. ");
+        youAre(sb);
         sb.append("""
                 Instructions:
                 Data provided is in YAML format as 'sensorData'.
@@ -220,6 +222,11 @@ public class PromptFactory implements AiPromptFactory {
     }
 
     private String aiName() {
-        return systemSession.useLocalTTS() ? AMY : systemSession.getAIVoice().getName();
+        //return systemSession.useLocalTTS() ? AMY : systemSession.getAIVoice().getName();
+        return getShipName();
+    }
+
+    private String getShipName() {
+        return ShipManager.getInstance().getShip().getShipName();
     }
 }

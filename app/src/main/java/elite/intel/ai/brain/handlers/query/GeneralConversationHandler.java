@@ -21,7 +21,7 @@ public class GeneralConversationHandler extends BaseQueryAnalyzer implements Que
                 
         You are also provided with chat history for your own reference.
             - commanderLog is what user said in previous conversation.
-            - coPilotBrief is what you said in previous conversation.
+                    - shipBrief is what you said in previous conversation.
         """;
         return process(
                 new AiDataStruct(

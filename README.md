@@ -6,7 +6,7 @@
 
 --- 
 
-## Linux and Windows are supported.
+## Linux and Windows. Can be ran 100% off-line.
 
 **✅ Local off-line private LLMs are now supported**
 [Installing local LLM](https://github.com/stone-alex/EliteIntel/wiki/Install-Local-LLM)
@@ -15,24 +15,31 @@
   [**Real life Cloud LLM cost breakdown**](https://github.com/stone-alex/EliteIntel/wiki/LLM-Real-Live-Cost)
   
 **✅ The off-line TTS. (Linux and Windows)**
-- See [Piper TTS](https://github.com/stone-alex/EliteIntel/wiki/OffLineVoiceProcessor) for instructions.
+
+- See [Piper TTS](https://github.com/stone-alex/EliteIntel/wiki/OffLineVoiceProcessor) for instructions. More mechanical voice, but local and private
+
+**✅ The off-line STT. (Linux and Windows)**
+
+- Comes with installation. Not as accurate as Google STT, but local and private
+
 ---
 
-LLMs
+### 🧠 LLMs (Larger Language Models)
 
-- Ollama (Local LLMs)
-- Claude (Sonnet)
-- Grok (xAI)
-- Open AI (Chat GPT)
+- **Ollama (Local off-line Models tulu3:8b or qwen2.5:14b class)**
+- Claude (Cloud. Models: Sonnet/Haiku)
+- Grok (Cloud model xAI grok-4-1-fast-non-reasoning)
+- Open AI (Cloud Chat GPT gpt-5.2)
 
-STT
+### 🎤 STT (Speech To Text)
 
-- Google
+- **Whisper (Local - off-line)**
+- Google (Cloud)
 
-TTS
+### 🔊 TTS (Text To Speech)
 
-- Google
-- Piper TTS (Local)
+- **Piper TTS (Local - off-line)**
+- Google (Cloud)
 
 ## Overview
 

@@ -27,7 +27,7 @@ public class WhisperSTTImpl implements EarsInterface {
     private static final int WHISPER_SAMPLE_RATE = 16000; // Whisper requires exactly 16kHz
     private static final int CHANNELS = 1;
     private static final int ENTER_VOICE_FRAMES = 1;
-    private static final int EXIT_SILENCE_FRAMES = 5; // ~1s silence at 100ms buffers
+    private static final int EXIT_SILENCE_FRAMES = 10; // ~1s silence at 100ms buffers
     private static final long BASE_BACKOFF_MS = 2000;
     private static final long MAX_BACKOFF_MS = 60000;
     private static final int MIN_AUDIO_MS = 2000; // pad to at least 1 second

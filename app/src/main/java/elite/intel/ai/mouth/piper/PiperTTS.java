@@ -169,7 +169,7 @@ public class PiperTTS implements MouthInterface {
 
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("text", text);
-        jsonObject.addProperty("length_scale", SystemSession.getInstance().getSpeechSpeed());
+        jsonObject.addProperty("length_scale", (1f - SystemSession.getInstance().getSpeechSpeed()));
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(playerSession.getLocalTtsAddress()))

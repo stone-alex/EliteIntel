@@ -665,20 +665,20 @@ public class AppView extends JFrame implements AppViewInterface {
         nextRow(gbc);
         addLabel(localSettingsPanel, "Speech Speed ", gbc);
         speechSpeedSlider = new JSlider();
-        speechSpeedSlider.setMinimum(-100);
-        speechSpeedSlider.setMaximum(0);
+        speechSpeedSlider.setMinimum(0);
+        speechSpeedSlider.setMaximum(100);
         speechSpeedSlider.setMajorTickSpacing(25);
         speechSpeedSlider.setMinorTickSpacing(1);
-        speechSpeedSlider.setInverted(true);
+        speechSpeedSlider.setInverted(false);
         speechSpeedSlider.setSnapToTicks(true);
-        speechSpeedSlider.setValue(-(int) ((1.0f - systemSession.getSpeechSpeed()) * 100));
+        speechSpeedSlider.setValue((int) (systemSession.getSpeechSpeed() * 100));
         addField(localSettingsPanel, speechSpeedSlider, gbc, 1, 0.8);
         speechSpeedLabel = new JLabel("");
         setSpeedDisplayValue();
         speechSpeedSlider.addChangeListener(e -> SwingUtilities.invokeLater(() -> {
             EventBusManager.publish(
                     new SpeechSpeedChangeEvent(
-                            Math.abs(100 + speechSpeedSlider.getValue()) / 100f
+                            Math.abs(speechSpeedSlider.getValue()) / 100f
                     )
             );
             setSpeedDisplayValue();
@@ -821,7 +821,7 @@ public class AppView extends JFrame implements AppViewInterface {
 
     private void setSpeedDisplayValue() {
         float speed = speechSpeedSlider.getValue();
-        speechSpeedLabel.setText("+" + (100 + speed) + "%");
+        speechSpeedLabel.setText("+" + (speed) + "%");
     }
 
 

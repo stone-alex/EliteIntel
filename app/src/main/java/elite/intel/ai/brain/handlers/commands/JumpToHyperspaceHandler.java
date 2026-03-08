@@ -3,7 +3,9 @@ package elite.intel.ai.brain.handlers.commands;
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
+import elite.intel.db.managers.ShipRouteManager;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.gameapi.gamestate.dtos.NavRouteDto;
 import elite.intel.session.Status;
 
 import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.*;
@@ -15,6 +17,8 @@ public class JumpToHyperspaceHandler extends CommandOperator implements CommandH
     }
 
     @Override public void handle(String action, JsonObject params, String responseText) {
+        ShipRouteManager shipRouteManager = ShipRouteManager.getInstance();
+        NavRouteDto first = shipRouteManager.getOrderedRoute() == null || shipRouteManager.getOrderedRoute().getFirst() == null ? null : shipRouteManager.getOrderedRoute().getFirst();
 
         Status status = Status.getInstance();
 
@@ -25,6 +29,9 @@ public class JumpToHyperspaceHandler extends CommandOperator implements CommandH
         } else if (status.isFsdCooldown()) {
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("FSD is on cooldown."));
         } else if (status.isInMainShip()) {
+            if (first != null) {
+                EventBusManager.publish(new MissionCriticalAnnouncementEvent("Jumping to " + first.getName() + " Star Class " + first.getStarClass()));
+            }
             PreFtlChecks.preJumpCheck(status, this);
             operateKeyboard(BINDING_SET_SPEED100.getGameBinding(), 0);
             operateKeyboard(BINDING_TARGET_NEXT_ROUTE_SYSTEM.getGameBinding(), 0);

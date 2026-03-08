@@ -3,50 +3,17 @@ package elite.intel.ai.brain.handlers.commands;
 import com.google.gson.JsonObject;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
-import elite.intel.session.SystemSession;
 
 public class ConnectionCheck implements CommandHandler {
 
-    private final SystemSession systemSession = SystemSession.getInstance();
-
     @Override public void handle(String action, JsonObject params, String responseText) {
-
-        boolean localCommandLlm = systemSession.useLocalCommandLlm();
-        boolean localQueryLlm = systemSession.useLocalQueryLlm();
-        String commandModel = systemSession.getLocalLlmCommandModel();
-        String queryModel = systemSession.getLocalLlmQueryModel();
-        boolean usingLocalLlmForCommandsAndQueries = localCommandLlm && localQueryLlm;
-        boolean usingSameLllmForCommandsAndQueries = queryModel.equals(commandModel);
-
         StringBuilder sb = new StringBuilder();
         sb.append(" ping ");
-
-        if (usingLocalLlmForCommandsAndQueries && usingSameLllmForCommandsAndQueries) {
-            sb.append(" Model: ").append(commandModel);
-        }
-
-        if (usingLocalLlmForCommandsAndQueries) {
-            sb.append(" Command Model: ").append(commandModel);
-        }
-
-        if (usingLocalLlmForCommandsAndQueries) {
-            sb.append(" Query Model: ").append(queryModel);
-        }
-
+        String instructions = "Acknowledge LLM Model and number of parameters. Data is presented to you as (LLMName:120b) Example: LLM On Line";
         EventBusManager.publish(
                 new SensorDataEvent(
                         sb.toString(),
-                        usingLocalLlmForCommandsAndQueries
-                                ?
-                                """
-                                        Acknowledge connection successful.
-                                        Acknowledge LLM Model and number of parameters. Data is presented to you as (LLMName:120b)
-                                        Example: Connection successful. LLM Model <llmname>, 120 billion parameters.
-                                        """
-                                :
-                                """
-                                        Acknowledge connection successful.
-                                        """
+                        instructions
                 )
         );
     }

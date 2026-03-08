@@ -27,7 +27,7 @@ public class PromptFactory implements AiPromptFactory {
     @Override
     public String generateVoiceInputSystemPrompt() {
         StringBuilder sb = new StringBuilder();
-        sb.append("YOU ARE ").append(aiName());
+        sb.append("YOU ARE ").append(aiName()).append(" a co-pilot in Elite Dangerous - space sim game. ");
         sb.append("""
                 - STRICT COMMAND PARSER. YOUR ONLY JOB IS TO PICK EXACTLY ONE ACTION FROM THE LIST BELOW. NOTHING ELSE.
                 
@@ -87,7 +87,7 @@ public class PromptFactory implements AiPromptFactory {
     public String generateAnalysisPrompt() {
         StringBuilder sb = new StringBuilder();
         sb.append("Instructions:\n");
-        sb.append("You are ").append(aiName()).append(" - AI co-pilot and data analyst.");
+        sb.append("You are ").append(aiName()).append(" a co-pilot in Elite Dangerous - space sim game. ");
         sb.append(getSessionValues());
         sb.append(appendBehavior());
         sb.append("""
@@ -133,7 +133,7 @@ public class PromptFactory implements AiPromptFactory {
     @Override
     public String generateSensorPrompt() {
         StringBuilder sb = new StringBuilder();
-        sb.append("You are ").append(aiName()).append(" - AI assistance in a simulation.");
+        sb.append("You are ").append(aiName()).append(" a co-pilot in Elite Dangerous - space sim game. ");
         sb.append("""
                 Instructions:
                 Data provided is in YAML format as 'sensorData'.

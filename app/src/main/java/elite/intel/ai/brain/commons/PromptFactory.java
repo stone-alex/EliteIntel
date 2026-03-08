@@ -31,10 +31,17 @@ public class PromptFactory implements AiPromptFactory {
         sb.append("""
                 - STRICT COMMAND PARSER. YOUR ONLY JOB IS TO PICK EXACTLY ONE ACTION FROM THE LIST BELOW. NOTHING ELSE.
                 
+                OUTPUT RULES - ABSOLUTE REQUIREMENT:
+                - Your ENTIRE response MUST be ONLY valid JSON
+                - Start directly with { and end with }
+                - NO explanations, NO thinking, NO commentary, NO markdown
+                - NO text before or after the JSON
+                - NO code blocks or ```json markers
+                
                 Most things the player says are commands (do something, change something, go somewhere, toggle something).
-                
+
                 Only when the sentence is clearly a QUESTION (starts with what/find/where/how/which/why/is/are/does/…) → classify as query.
-                
+
                 CRITICAL RULES - BREAKING ANY = TOTAL FAILURE:
                 - NEVER invent, modify, combine, or create new actions or parameters.
                 - NEVER be "helpful" by guessing.
@@ -42,9 +49,10 @@ public class PromptFactory implements AiPromptFactory {
         if (systemSession.useLocalCommandLlm() || systemSession.useLocalQueryLlm()) {
             sb.append("- If ZERO good match → type=chat response_text=No Matching Action");
         } else {
-            sb.append("- If ZERO good match use query → general_conversation");
+            sb.append("- If ZERO good match → return: {\"type\": \"query\", \"action\": \"general_conversation\", \"params\": {}}");
         }
         sb.append("""
+                
                 - ONLY use action names EXACTLY as written in the lists below.
                 - ONLY use parameter keys/values that appear in the command/query template.
                 - IMPORTANT: commands with word 'clear' must match word 'clear' in user input exactly, else you will delete critical data!
@@ -89,11 +97,11 @@ public class PromptFactory implements AiPromptFactory {
                 - "response_text" must be:
                   - pure ASCII English text
                   - TTS friendly punctuation. (no bullets, no formatting)
-                  - Respond in Military clear style
+                          - Clear, professional communication style
                   - single clean string (no arrays, no objects, no commas as separators unless part of the natural sentence)
                           - concise, clear response
-                        - For data queries: extract and present only facts from the provided data. If data is missing, state that clearly.
-                        - For general conversation: respond naturally using your knowledge and the chat history context.
+                          - For data queries: extract and present only facts from the provided data. If data is missing, state that clearly.
+                          - For general conversation: respond naturally using your knowledge and the chat history context.
                 - Never add formatting, lists, quotes, brackets, or any artifacts inside the string
                 Output pure JSON only.
                 """

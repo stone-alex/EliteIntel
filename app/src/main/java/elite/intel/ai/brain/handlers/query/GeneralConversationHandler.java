@@ -18,7 +18,7 @@ public class GeneralConversationHandler extends BaseQueryAnalyzer implements Que
         String instructions = """
         General Chat.
         Use your own knowledge to chat with user.
-        
+                
         You are also provided with chat history for your own reference.
             - commanderLog is what user said in previous conversation.
             - coPilotBrief is what you said in previous conversation.

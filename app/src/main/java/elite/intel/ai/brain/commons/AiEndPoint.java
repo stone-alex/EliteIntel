@@ -1,6 +1,8 @@
 package elite.intel.ai.brain.commons;
 
-import com.google.gson.*;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import elite.intel.ai.brain.Client;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,7 +33,7 @@ public abstract class AiEndPoint {
 
 
     public JsonObject processAiPrompt(String jsonString, Client client) throws IOException {
-        log.debug("xAI API call:\n{}", jsonString);
+        log.debug("AI API call:\n{}", jsonString);
         return client.sendJsonRequest(jsonString);
     }
 

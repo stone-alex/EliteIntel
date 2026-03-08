@@ -45,7 +45,23 @@ public class AnthropicAnalysisEndpoint extends AiEndPoint implements AiAnalysisI
             AnthropicClient client = AnthropicClient.getInstance();
             JsonObject prompt = client.createPrompt(AnthropicClient.MODEL_ANALYSIS_MODEL, 0.65f);
 
-            String baseSystemPrompt = apiFactory.getAiPromptFactory().generateAnalysisPrompt();
+            // Check if this is general conversation - use minimal prompt to avoid Anthropic safety refusals
+            boolean isGeneralConversation = struct.getInstructions() != null &&
+                                            struct.getInstructions().contains("General Chat");
+
+            String baseSystemPrompt;
+            if (isGeneralConversation) {
+                // Minimal prompt for general conversation to avoid safety refusals
+                baseSystemPrompt = """
+                        AI assistant.
+                        Provide brief, casual conversational responses.
+                        Output ONLY this exact JSON structure {"type":"chat", "response_text": "YOUR ANSWER HERE"} - no markdown, no extra text.
+                        Keep responses to one short sentence.
+                        """;
+            } else {
+                baseSystemPrompt = apiFactory.getAiPromptFactory().generateAnalysisPrompt();
+            }
+
             String instructionsPrompt = "INSTRUCTIONS: " + struct.getInstructions();
 
             JsonArray systemArray = new JsonArray();
@@ -70,7 +86,18 @@ public class AnthropicAnalysisEndpoint extends AiEndPoint implements AiAnalysisI
 
             JsonObject userMsg = new JsonObject();
             userMsg.addProperty("role", AIConstants.ROLE_USER);
-            userMsg.addProperty("content", originalUserInput + " here is the data: " + struct.getData().toYaml());
+
+            // Format data section - if it's just empty/minimal chat history, omit the data preamble
+            String dataYaml = struct.getData().toYaml();
+            String content;
+            if (dataYaml == null || dataYaml.trim().isEmpty() || dataYaml.contains("coPilotBrief: \"Connection successful.\"")) {
+                // For general conversation with minimal/no real data
+                content = originalUserInput;
+            } else {
+                // For data queries
+                content = originalUserInput + "\n\nData:\n" + dataYaml;
+            }
+            userMsg.addProperty("content", content);
 
             JsonArray messages = new JsonArray();
             messages.add(userMsg);

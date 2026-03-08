@@ -70,10 +70,7 @@ public class AppController implements Runnable {
     }
 
     private void startIfWeHaveCredentials() {
-        /// auto start session if we have credentials.
-        if (!systemSession.getSttApiKey().isEmpty()) {
-            EventBusManager.publish(new ToggleServicesEvent(true));
-        }
+        EventBusManager.publish(new ToggleServicesEvent(true));
     }
 
     private String listVoices() {
@@ -168,8 +165,8 @@ public class AppController implements Runnable {
                         ears.start();
                         EventBusManager.publish(new MissionCriticalAnnouncementEvent("Audio calibration complete"));
                         appendToLog("Calibration complete: HIGH=" +
-                                SystemSession.getInstance().getRmsThresholdHigh() +
-                                " LOW=" + SystemSession.getInstance().getRmsThresholdLow());
+                                    SystemSession.getInstance().getRmsThresholdHigh() +
+                                    " LOW=" + SystemSession.getInstance().getRmsThresholdLow());
                     });
                 } catch (Exception ex) {
                     SwingUtilities.invokeLater(() -> {
@@ -193,9 +190,9 @@ public class AppController implements Runnable {
     @Subscribe void onToggleServiceEvent(ToggleServicesEvent event) {
         new Thread(() -> {
             if (event.isStartSercice()) {
-                try{
+                try {
                     startServices();
-                } catch (Exception stop){
+                } catch (Exception stop) {
                     stopServices();
                     EventBusManager.publish(new ServicesStateEvent(false));
                 }
@@ -204,7 +201,6 @@ public class AppController implements Runnable {
             }
         }).start();
     }
-
 
 
     private void appendToLog(String data) {
@@ -321,8 +317,8 @@ public class AppController implements Runnable {
         });
         connectionCheckTimer.setRepeats(false);
         connectionCheckTimer.start();
-        
-        
+
+
         KeyBindCheck.getInstance().check();
     }
 

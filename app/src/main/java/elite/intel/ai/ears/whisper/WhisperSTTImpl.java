@@ -223,6 +223,7 @@ public class WhisperSTTImpl implements EarsInterface {
             String transcript = sb.toString().toLowerCase().trim().replace("[blank_audio]", "");
             if (transcript.contains("(")) return;
             if (transcript.contains("*")) return;
+            if (transcript.contains("[")) return;
             if (transcript.isBlank() || transcript.length() < 3) return;
 
             EventBusManager.publish(new AppLogEvent("STT Heard: [" + transcript + "]"));

@@ -11,7 +11,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
 
 import static elite.intel.ai.brain.AIConstants.PROPERTY_CONTENT;
 import static elite.intel.ai.brain.AIConstants.PROPERTY_MESSAGE;
@@ -33,7 +32,6 @@ public class OpenAiAnalysisEndPoint extends AiEndPoint implements AiAnalysisInte
     @Override public JsonObject analyzeData(String originalUserInput, AiData struct) {
         try {
             OpenAiClient client = OpenAiClient.getInstance();
-            HttpURLConnection conn = client.getHttpURLConnection();
             String systemPrompt = ApiFactory.getInstance().getAiPromptFactory().generateAnalysisPrompt();
 
             JsonObject request = client.createPrompt(OpenAiClient.MODEL_GPT, 1);

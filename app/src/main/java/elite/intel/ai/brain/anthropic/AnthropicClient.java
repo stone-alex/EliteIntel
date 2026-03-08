@@ -37,8 +37,8 @@ public class AnthropicClient extends BaseAiClient implements Client {
 
 
     // Model identifiers - expose all so callers can pick
-    public static final String MODEL_COMMAND_PROMPT = "claude-haiku-4-5-20251001";    // fastest, cheapest - ideal for command parsing
-    public static final String MODEL_ANALYSIS_PROMPT = "claude-sonnet-4-6";           // fast, balanced - best for analysis/chat
+    public static final String MODEL_COMMAND_MODEL = "claude-haiku-4-5-20251001";    // fastest, cheapest - ideal for command parsing
+    public static final String MODEL_ANALYSIS_MODEL = "claude-sonnet-4-6";           // fast, balanced - best for analysis/chat
     //public static final String MODEL_OPUS = "claude-opus-4-6";               // most capable
 
     private static final String API_URL = "https://api.anthropic.com/v1/messages";
@@ -59,7 +59,7 @@ public class AnthropicClient extends BaseAiClient implements Client {
 
 
     @Override public JsonObject createPrompt(int model, float temp) {
-        return createPrompt(model == 1 ? MODEL_COMMAND_PROMPT : MODEL_ANALYSIS_PROMPT, temp);
+        return createPrompt(model == 1 ? MODEL_COMMAND_MODEL : MODEL_ANALYSIS_MODEL, temp);
     }
 
     @Override

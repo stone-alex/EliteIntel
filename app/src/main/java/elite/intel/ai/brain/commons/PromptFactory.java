@@ -79,23 +79,21 @@ public class PromptFactory implements AiPromptFactory {
     public String generateAnalysisPrompt() {
         StringBuilder sb = new StringBuilder();
         sb.append("Instructions:\n");
-        sb.append("You are ").append(aiName()).append(" - strict data extractor.");
+        sb.append("You are ").append(aiName()).append(" - AI co-pilot and data analyst.");
         sb.append(getSessionValues());
         sb.append(appendBehavior());
         sb.append("""
                 Output ONLY this exact JSON structure {"type":"chat", "response_text": "YOUR ANSWER HERE AS PLAIN TEXT"} - nothing else, no explanations, no thinking, no markdown, no extra characters:
-                
+
                 Rules - follow exactly:
                 - "response_text" must be:
                   - pure ASCII English text
                   - TTS friendly punctuation. (no bullets, no formatting)
                   - Respond in Military clear style
                   - single clean string (no arrays, no objects, no commas as separators unless part of the natural sentence)
-                  - only the final extracted answer
-                - If no matching data exists in the provided JSON -> let the user know that, do not invent values. Best Example: 'Insufficient data for a meaningful answer.'
-                - Calculate if asked, but never guess and never invent values
-                - Use ONLY information present in the data you receive
-                - If there is not enough info to answer the question let user know.
+                          - concise, clear response
+                        - For data queries: extract and present only facts from the provided data. If data is missing, state that clearly.
+                        - For general conversation: respond naturally using your knowledge and the chat history context.
                 - Never add formatting, lists, quotes, brackets, or any artifacts inside the string
                 Output pure JSON only.
                 """

@@ -30,7 +30,7 @@ public class AnthropicUserEndPoint extends AiEndPoint implements AIChatInterface
             AnthropicClient client = AnthropicClient.getInstance();
 
             // Build base prompt object (model, max_tokens, temperature)
-            JsonObject prompt = client.createPrompt(AnthropicClient.MODEL_COMMAND_PROMPT, temp);
+            JsonObject prompt = client.createPrompt(AnthropicClient.MODEL_COMMAND_MODEL, temp);
 
             // ── Separate system messages from user/assistant messages ──────────
             StringBuilder systemContent = new StringBuilder();

@@ -43,17 +43,29 @@ public class AnthropicAnalysisEndpoint extends AiEndPoint implements AiAnalysisI
     public JsonObject analyzeData(String originalUserInput, AiData struct) {
         try {
             AnthropicClient client = AnthropicClient.getInstance();
-            JsonObject prompt = client.createPrompt(AnthropicClient.MODEL_ANALYSIS_PROMPT, 0.65f);
-            String systemPrompt = apiFactory.getAiPromptFactory().generateAnalysisPrompt() + "\n\nINSTRUCTIONS: " + struct.getInstructions();
+            JsonObject prompt = client.createPrompt(AnthropicClient.MODEL_ANALYSIS_MODEL, 0.65f);
+
+            String baseSystemPrompt = apiFactory.getAiPromptFactory().generateAnalysisPrompt();
+            String instructionsPrompt = "INSTRUCTIONS: " + struct.getInstructions();
 
             JsonArray systemArray = new JsonArray();
-            JsonObject systemBlock = new JsonObject();
-            systemBlock.addProperty("type", "text");
-            systemBlock.addProperty("text", systemPrompt);
-            JsonObject cacheControl = new JsonObject();
-            cacheControl.addProperty("type", "ephemeral");
-            systemBlock.add("cache_control", cacheControl);
-            systemArray.add(systemBlock);
+
+            // Base system prompt
+            JsonObject systemBlock1 = new JsonObject();
+            systemBlock1.addProperty("type", "text");
+            systemBlock1.addProperty("text", baseSystemPrompt);
+
+            JsonObject cacheControl1 = new JsonObject();
+            cacheControl1.addProperty("type", "ephemeral");
+            systemBlock1.add("cache_control", cacheControl1);
+            systemArray.add(systemBlock1);
+
+            // Instructions prompt
+            JsonObject systemBlock2 = new JsonObject();
+            systemBlock2.addProperty("type", "text");
+            systemBlock2.addProperty("text", instructionsPrompt);
+            systemArray.add(systemBlock2);
+
             prompt.add("system", systemArray);
 
             JsonObject userMsg = new JsonObject();

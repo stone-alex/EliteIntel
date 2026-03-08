@@ -148,6 +148,16 @@ return console.askOkCancel(message, true);
                   <property name="itemName" type="string">${compiler:sys.fullName} ${compiler:sys.version}</property>
                 </serializedBean>
               </action>
+              <action id="39" beanClass="com.install4j.runtime.beans.actions.net.DownloadFileAction" actionElevationType="elevated" rollbackBarrierExitCode="0" errorMessage="Unable to download whisper (local speech to text)">
+                <serializedBean>
+                  <property name="targetFile">
+                    <object class="java.io.File">
+                      <string>${installer:sys.userHome}/AppData/Local/elite-intel/whisper/ggml-base.en.bin</string>
+                    </object>
+                  </property>
+                  <property name="url" type="string">https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.en.bin</property>
+                </serializedBean>
+              </action>
             </actions>
             <formComponents>
               <formComponent id="16" beanClass="com.install4j.runtime.beans.formcomponents.ProgressComponent">

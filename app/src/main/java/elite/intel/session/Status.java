@@ -4,7 +4,7 @@ import elite.intel.db.dao.StatusDao;
 import elite.intel.db.util.Database;
 import elite.intel.gameapi.gamestate.dtos.GameEvents;
 
-public class Status extends StatusFlags{
+public class Status extends StatusFlags {
 
     private static volatile Status instance; // Singleton instance
 

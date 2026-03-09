@@ -25,11 +25,11 @@ public class FSDTargetSubscriber {
         DeathsDto deathsDto = EdsmApiClient.searchDeaths(event.getName());
         TrafficDto trafficDto = EdsmApiClient.searchTraffic(event.getName());
 
-        playerSession.setFsdTarget(new FsdTarget(locationDto, systemDto, deathsDto, trafficDto, isFuelStarClause(event.getStarClass())));
+        playerSession.setFsdTarget(new FsdTarget(event.getName(), locationDto, systemDto, deathsDto, trafficDto, isFuelStarClause(event.getStarClass())));
     }
 
     private String isFuelStarClause(String starClass) {
         boolean isFuelStar = "KGBFOAM".toUpperCase().contains(starClass.toUpperCase());
-        return isFuelStar ? " (Fuel Star)" : "";
+        return isFuelStar ? " Fuel Available " : " No Fuel Available ";
     }
 }

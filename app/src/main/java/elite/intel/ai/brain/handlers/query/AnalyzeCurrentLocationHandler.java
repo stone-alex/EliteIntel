@@ -30,7 +30,7 @@ public class AnalyzeCurrentLocationHandler extends BaseQueryAnalyzer implements 
         DeathsDto deathsDto = EdsmApiClient.searchDeaths(location.getStarName());
         TrafficDto trafficDto = EdsmApiClient.searchTraffic(location.getStarName());
 
-        String station = "Station";
+        String station = "none";
         if (status.isDocked() && location.getStationName() != null || location.getStationName() != null) {
             station = "Docked at " + location.getStationName() + " " + location.getStationType();
         }
@@ -38,14 +38,13 @@ public class AnalyzeCurrentLocationHandler extends BaseQueryAnalyzer implements 
         String instructions = """                
                     The user may ask multiple questions at once. Answer each one individually using the matching rule below. Do not combine them into one sentence unless natural.
                     - If any requested info is missing or not in data, tell the user that you do not have enough information to determine the correct answer.
-                    - IF asked for summary or broad 'where are we' question return starSystemName, planetName followed by summary of what data provided. Example: Star System <X>, Planet <Y>. - <your summary>
-                    - IF planetName is unknown check stationName. Example: Docked at <stationName> in star system <starSystemName>
+                    - IF isDocked=true we are docked
+                    - IF isLanded=true we are landed
+                    - IF isDocked=false and isLanded=false we are in flight
                     - Extract and answer ALL questions in the user input using ONLY the provided data fields.
-                    - For temperature: If temperature is in Celsius and say: "Temperature on <X> is <Y> degrees Celsius."
-                    - For day length: Use dayLength directly and say: "Day on <planetName> lasts <dayLength>"
-                    - Answer each requested piece of information separately and clearly.
-                
-                    Use this data to provide answers for our location.
+                    - For temperature: "Temperature on <X> is <Y> degrees Celsius."
+                    - For day length: "Day on <planetName> lasts <dayLength>"
+                    Use this data to provide answers.
                 """;
 
         double rotationPeriod = Math.round(location.getRotationPeriod() * 100.0) / 100.0;

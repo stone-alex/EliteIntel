@@ -117,7 +117,8 @@ public class AiCommandsAndQueries {
 
         /// ship normal space flight (not supercruise)
         commandMap.put(" command target power plant, target subsystem,", TARGET_SUB_SYSTEM.getAction());
-        commandMap.put(" command recall ship / dismiss ship ", RECALL_DISMISS_SHIP.getAction());
+        commandMap.put(" command dismiss ship, go play, go to orbit", DISMISS_SHIP.getAction());
+        commandMap.put(" command return to surface pick me up ", RETURN_TO_SURFACE.getAction());
         commandMap.put(" command order fighter to defend ship ", REQUEST_DEFENSIVE_BEHAVIOUR.getAction());
         commandMap.put(" command order fighter focus my target ", REQUEST_FOCUS_TARGET.getAction());
         commandMap.put(" command order fighter to hold fire ", REQUEST_HOLD_FIRE.getAction());

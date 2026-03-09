@@ -131,7 +131,8 @@ public enum Commands {
     DRIVE_ASSIST                                        ("drive_assist", BINDING_DRIVE_ASSIST.getGameBinding(), GenericGameControlHandler.class),
 
     TARGET_SUB_SYSTEM                                   ("target_subsystem", null, TargetSubSystemHandler.class),
-    RECALL_DISMISS_SHIP                                 ("recall_or_dismiss_ship", BINDING_RECALL_DISMISS_SHIP.getGameBinding(), DismissShip.class),
+    DISMISS_SHIP                                        ("dismiss_ship_go_play_go_to_orbit", BINDING_RECALL_DISMISS_SHIP.getGameBinding(), DismissShip.class),
+    RETURN_TO_SURFACE                                   ("recall_ship_pick_me_up_return_to_surface", BINDING_RECALL_DISMISS_SHIP.getGameBinding(), DismissShip.class),
 
     REQUEST_DEFENSIVE_BEHAVIOUR                         ("fighter_orders_defend_fighter_order", BINDING_REQUEST_DEFENSIVE_BEHAVIOUR.getGameBinding(), GenericGameControlHandler.class),
     REQUEST_FOCUS_TARGET                                ("fighter_orders_attack_my_target_fighter_order", BINDING_REQUEST_DEFENSIVE_BEHAVIOUR.getGameBinding(), GenericGameControlHandler.class),

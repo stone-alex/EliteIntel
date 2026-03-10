@@ -1,4 +1,4 @@
-# EliteIntel — Technical Architecture
+# EliteIntel - Technical Architecture
 
 > This document is intended for developers and engineers interested in the architecture and
 > design decisions behind EliteIntel. For user documentation, see the [Wiki](https://github.com/stone-alex/EliteIntel/wiki).
@@ -9,7 +9,7 @@
 
 EliteIntel is a Java 21 desktop application providing real-time AI-assisted voice interaction
 for the game *Elite Dangerous*. It ingests live game telemetry, routes natural-language voice
-commands through an LLM inference pipeline, and executes keyboard-mapped ship controls — all
+commands through an LLM inference pipeline, and executes keyboard-mapped ship controls - all
 while remaining fully compliant with Frontier Developments' Terms of Service.
 
 The application runs on Linux and Windows, supports fully offline operation, and has real users
@@ -26,8 +26,8 @@ discovery**. Components register interest in event types at startup; at runtime 
 exclusively via events with no direct inter-component dependencies.
 
 This means the journal parser, AI inference pipeline, voice I/O layer, and ship control
-dispatcher are entirely decoupled. Adding a new capability — a new command type, a new data
-source, a new provider — requires no changes to existing components.
+dispatcher are entirely decoupled. Adding a new capability - a new command type, a new data
+source, a new provider - requires no changes to existing components.
 
 ### Multithreaded Pipeline
 
@@ -62,9 +62,9 @@ Supported providers:
 When running against Ollama, the application uses **two separate models** for different
 cognitive loads:
 
-- **Command model** (e.g. `tulu3:8b`) — intent classification and ship control dispatch.
+- **Command model** (e.g. `tulu3:8b`) - intent classification and ship control dispatch.
   Smaller, faster, lower temperature. Optimised for latency on simple commands.
-- **Query model** (e.g. `qwen2.5:14b`) — data analysis, exploration summaries, multi-step
+- **Query model** (e.g. `qwen2.5:14b`) - data analysis, exploration summaries, multi-step
   reasoning. Larger model tolerates higher latency in exchange for reasoning quality.
 
 This split avoids over-provisioning the command path with an expensive model while ensuring
@@ -90,8 +90,8 @@ mode, not a hidden constant:
 
 Two STT backends are supported behind a common interface:
 
-- **Whisper** (local, offline) — bundled with the installer, no API key required
-- **Google Cloud STT** (cloud) — higher accuracy, especially on domain-specific vocabulary
+- **Whisper** (local, offline) - bundled with the installer, no API key required
+- **Google Cloud STT** (cloud) - higher accuracy, especially on domain-specific vocabulary
 
 A **STT correction dictionary** handles domain-specific vocabulary that general-purpose
 STT models misrecognise. *Elite Dangerous* has hundreds of commodity and system names that
@@ -100,9 +100,9 @@ are phonetically ambiguous. The dictionary supports user-extensible entries in t
 
 ### TTS (Text-to-Speech)
 
-- **Piper TTS** (local, offline) — runs as a local HTTP server on port 5000, integrated via
+- **Piper TTS** (local, offline) - runs as a local HTTP server on port 5000, integrated via
   REST. No API key, no cloud dependency, sub-100ms synthesis latency on modern hardware.
-- **Google Cloud TTS** (cloud) — 14 voices across British, American, and Australian accents,
+- **Google Cloud TTS** (cloud) - 14 voices across British, American, and Australian accents,
   selected at runtime via voice command.
 
 ---
@@ -151,10 +151,10 @@ endpoint, and never leave the user's machine in any other form.
 
 ### Streaming Mode / Privacy Mode
 
-- **Streaming mode** — the application ignores all audio input unless prefixed with a
+- **Streaming mode** - the application ignores all audio input unless prefixed with a
   configurable wake word (default: "Computer"). STT still transcribes continuously in this
   mode, which has token cost implications the user is informed of.
-- **Privacy mode** — STT is disabled completely. No audio is captured or transmitted.
+- **Privacy mode** - STT is disabled completely. No audio is captured or transmitted.
   Cannot be toggled by voice command; requires manual UI interaction to prevent accidental
   re-activation.
 
@@ -162,7 +162,7 @@ endpoint, and never leave the user's machine in any other form.
 
 The application does not read game client memory, inject into the game process, or use
 overlays. All data is sourced from the journal file API or EDSM. This is a hard architectural
-constraint, not an implementation choice — it is what makes the application TOS-compliant.
+constraint, not an implementation choice - it is what makes the application TOS-compliant.
 
 ---
 
@@ -173,7 +173,7 @@ constraint, not an implementation choice — it is what makes the application TO
 - **Packaging**: Fat JAR (`app-shadow.tar`) via Shadow plugin
 - **Linux installer**: Bash script, no `sudo` required, installs to `~/.var/app/elite.intel.app`
 - **Windows installer**: NSIS-based, standard next-next-done
-- **Build from source**: `sh gradlew clean build` — requires Java 21 and Gradle Wrapper 8.7+
+- **Build from source**: `sh gradlew clean build` - requires Java 21 and Gradle Wrapper 8.7+
 
 Local STT (Whisper) is bundled with the installer. Local TTS (Piper) and local LLM (Ollama)
 are optional components installed separately via documented procedures.
@@ -182,17 +182,17 @@ are optional components installed separately via documented procedures.
 
 ## Design Principles
 
-**DRY and SRP throughout.** New provider implementations follow the existing pattern — the
+**DRY and SRP throughout.** New provider implementations follow the existing pattern - the
 abstraction layer was designed from the first provider with extension in mind, not retrofitted
 after the fact.
 
 **Offline-first.** Every cloud dependency has a local alternative. A user with sufficient
-hardware can run the entire stack — STT, LLM, TTS — with no internet connection and no
+hardware can run the entire stack - STT, LLM, TTS - with no internet connection and no
 ongoing API cost.
 
 **TOS compliance as a hard constraint.** The architecture was designed around what the
 official API exposes, not around what would be technically possible with memory access.
-This is not a limitation — it is what makes the application distributable and trustworthy.
+This is not a limitation - it is what makes the application distributable and trustworthy.
 
 **Minimal UI surface.** Three API key fields, a handful of buttons, everything else via
 voice. The interface does not compete with the game for screen real estate.

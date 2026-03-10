@@ -45,7 +45,7 @@ public class ApiFactory {
     }
 
     public AiAnalysisInterface getAnalysisEndpoint() {
-        if(systemSession.useLocalQueryLlm()){
+        if (systemSession.useLocalQueryLlm()) {
             return OllamaAnalysisEndpoint.getInstance();
         }
         String apiKey = SystemSession.getInstance().getAiApiKey();
@@ -61,7 +61,7 @@ public class ApiFactory {
 
     public AIChatInterface getChatEndpoint() {
 
-        if(systemSession.useLocalQueryLlm()){
+        if (systemSession.useLocalQueryLlm()) {
             return OllamaCommandEndPoint.getInstance();
         }
 
@@ -92,7 +92,7 @@ public class ApiFactory {
     }
 
     public AiCommandInterface getCommandEndpoint() {
-        if(systemSession.useLocalCommandLlm()){
+        if (systemSession.useLocalCommandLlm()) {
             return OllamaUserInputProcessor.getInstance();
         }
 
@@ -113,7 +113,7 @@ public class ApiFactory {
     ///
     @SuppressWarnings({"SwitchStatementWithTooFewBranches", "EnhancedSwitchMigration"})
     public MouthInterface getMouthImpl() {
-        if(systemSession.useLocalTTS()){
+        if (systemSession.useLocalTTS()) {
             return PiperTTS.getInstance();
         }
 
@@ -131,6 +131,11 @@ public class ApiFactory {
     ///
     @SuppressWarnings({"SwitchStatementWithTooFewBranches", "EnhancedSwitchMigration"})
     public EarsInterface getEarsImpl() {
+
+        if (systemSession.useLocalSTT()) {
+            return new WhisperSTTImpl();
+        }
+
         String apiKey = SystemSession.getInstance().getSttApiKey();
         ProviderEnum provider = KeyDetector.detectProvider(apiKey, "STT"); // Fixed category
         switch (provider) {

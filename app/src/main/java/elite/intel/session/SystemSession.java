@@ -369,6 +369,19 @@ public class SystemSession {
         return Database.withDao(GameSessionDao.class, dao -> dao.get().isUseLocalTTS());
     }
 
+    public void setUseLocalSTT(boolean use) {
+        Database.withDao(GameSessionDao.class, dao -> {
+            GameSessionDao.GameSession entity = dao.get();
+            entity.setUseLocalSTT(use);
+            dao.save(entity);
+            return Void.TYPE;
+        });
+    }
+
+    public boolean useLocalSTT() {
+        return Database.withDao(GameSessionDao.class, dao -> dao.get().isUseLocalSTT());
+    }
+
 
     public String getLocalLlmCommandModel() {
         return Database.withDao(GameSessionDao.class, dao -> dao.get().getLocalLlmCommandModel());

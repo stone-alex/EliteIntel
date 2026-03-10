@@ -74,6 +74,7 @@ public class PromptFactory implements AiPromptFactory {
                 • Never invent new keys or values
                 • Never spell out numerics for keys, use digits instead. Example {"key": "123000"} | {lat:"12.21", lon:"-54"}
                 • Examples (follow the pattern exactly):
+                  - "target subsystem drive"            → {"key": "drive"}
                   - "find mining site for LTD"          → {"key": "low temperature diamonds"}
                   - "lights on"                         → {"state": true}
                   - "find gold within 80 ly"            → {"key": "gold", "max_distance":"80"}

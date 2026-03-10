@@ -74,6 +74,7 @@ public class AppView extends JFrame implements AppViewInterface {
     private JCheckBox useLocalCommandLLMCheck;
     private JCheckBox useLocalQueryLLMCheck;
     private JCheckBox useLocalTTSCheck;
+    private JCheckBox useLocalSTTCheck;
     private JToggleButton startStopServicesButton;
     private JButton recalibrateAudioButton;
     private JButton updateAppButton;
@@ -655,12 +656,17 @@ public class AppView extends JFrame implements AppViewInterface {
         localTtsAddressField.setText("http://localhost:5000/");
         localTtsAddressField.setToolTipText("Local TTS Address");
         useLocalTTSCheck = new JCheckBox("Use", false);
-        useLocalTTSCheck.addActionListener(a -> {
-            SwingUtilities.invokeLater(this::saveSystemConfig);
-        });
+        useLocalTTSCheck.addActionListener(a -> SwingUtilities.invokeLater(this::saveSystemConfig));
 
         addField(localSettingsPanel, localTtsAddressField, gbc, 1, 0.8);
         addCheck(localSettingsPanel, useLocalTTSCheck, gbc);
+        nextRow(gbc);
+
+        useLocalSTTCheck = new JCheckBox("Use", true);
+        useLocalSTTCheck.addActionListener(a -> SwingUtilities.invokeLater(this::saveSystemConfig));
+        addLabel(localSettingsPanel, " ", gbc);
+        addLabel(localSettingsPanel, "Built in speech recognition", gbc, 1, 0.8);
+        addCheck(localSettingsPanel, useLocalSTTCheck, gbc);
 
         nextRow(gbc);
         addLabel(localSettingsPanel, "Speech Speed ", gbc);
@@ -819,6 +825,15 @@ public class AppView extends JFrame implements AppViewInterface {
         return settingsTabPanel;
     }
 
+    private void addLabel(JPanel panel, String text, GridBagConstraints gbc, int col, double weightX) {
+        gbc.gridx = col;
+        gbc.weightx = weightX;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        JLabel comp = new JLabel(text);
+        comp.setPreferredSize(new Dimension(0, comp.getPreferredSize().height)); // allow to grow
+        panel.add(comp, gbc);
+    }
+
     private void setSpeedDisplayValue() {
         float speed = speechSpeedSlider.getValue();
         speechSpeedLabel.setText("+" + (speed) + "%");
@@ -927,6 +942,7 @@ public class AppView extends JFrame implements AppViewInterface {
         useLocalCommandLLMCheck.setSelected(systemSession.useLocalCommandLlm());
         useLocalQueryLLMCheck.setSelected(systemSession.useLocalQueryLlm());
         useLocalTTSCheck.setSelected(systemSession.useLocalTTS());
+        useLocalSTTCheck.setSelected(systemSession.useLocalSTT());
 
         // Player tab
         playerAltNameField.setText(playerSession.getAlternativeName() != null ? playerSession.getAlternativeName() : "");
@@ -956,6 +972,7 @@ public class AppView extends JFrame implements AppViewInterface {
         systemSession.setUseLocalCommandLlm(useLocalCommandLLMCheck.isSelected());
         systemSession.setUseLocalQueryLlm(useLocalQueryLLMCheck.isSelected());
         systemSession.setUseLocalTTS(useLocalTTSCheck.isSelected());
+        systemSession.setUseLocalSTT(useLocalSTTCheck.isSelected());
         EventBusManager.publish(new AppLogEvent("System config saved"));
         initData();
     }
@@ -1131,7 +1148,7 @@ public class AppView extends JFrame implements AppViewInterface {
     }
 
 
-    @Subscribe void onClearConsoleEvent(ClearConsoleEvent event){
+    @Subscribe void onClearConsoleEvent(ClearConsoleEvent event) {
         logArea.setText("");
     }
 

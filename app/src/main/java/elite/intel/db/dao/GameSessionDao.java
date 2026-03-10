@@ -19,13 +19,13 @@ public interface GameSessionDao {
                                                              edsmApiKey, loggingEnabled, privacyModeOn, rmsThresholdHigh,  
                                                              rmsThresholdLow, encryptedLLMKey, encryptedSTTKey, encryptedTTSKey, 
                                                              encryptedEDSSMKey, speechSpeed, localLlmCommandModel, localLlmQueryModel,
-                                                             useLocalCommandLlm, useLocalQueryLlm, useLocalTTS
+                                                             useLocalCommandLlm, useLocalQueryLlm, useLocalTTS, useLocalSTT
                                                 )
                                   VALUES (1, :aiPersonality, :aiCadence, :aiVoice, :aiApiKey, :ttsApiKey, :sttApiKey, 
                                                       :edsmApiKey, :loggingEnabled, :privacyModeOn, :rmsThresholdHigh, 
                                                       :rmsThresholdLow, :encryptedLLMKey, :encryptedSTTKey, :encryptedTTSKey, 
                                                       :encryptedEDSSMKey,  :speechSpeed, :localLlmCommandModel, :localLlmQueryModel,
-                                                      :useLocalCommandLlm, :useLocalQueryLlm, :useLocalTTS
+                                                      :useLocalCommandLlm, :useLocalQueryLlm, :useLocalTTS, :useLocalSTT
                                           )
             """)
     void save(@BindBean GameSessionDao.GameSession data);
@@ -66,6 +66,7 @@ public interface GameSessionDao {
             session.setUseLocalCommandLlm(rs.getBoolean("useLocalCommandLlm"));
             session.setUseLocalQueryLlm(rs.getBoolean("useLocalQueryLlm"));
             session.setUseLocalTTS(rs.getBoolean("useLocalTTS"));
+            session.setUseLocalSTT(rs.getBoolean("useLocalSTT"));
             return session;
         }
     }
@@ -97,6 +98,7 @@ public interface GameSessionDao {
         private boolean useLocalCommandLlm;
         private boolean useLocalQueryLlm;
         private boolean useLocalTTS;
+        private boolean useLocalSTT;
 
 
         public String getAiPersonality() {
@@ -266,6 +268,14 @@ public interface GameSessionDao {
 
         public void setUseLocalTTS(boolean useLocalTTS) {
             this.useLocalTTS = useLocalTTS;
+        }
+
+        public boolean isUseLocalSTT() {
+            return useLocalSTT;
+        }
+
+        public void setUseLocalSTT(boolean useLocalSTT) {
+            this.useLocalSTT = useLocalSTT;
         }
     }
 }

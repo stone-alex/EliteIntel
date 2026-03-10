@@ -32,9 +32,9 @@ source, a new provider - requires no changes to existing components.
 ### Multithreaded Pipeline
 
 Audio capture, STT transcription, LLM inference, TTS synthesis, and game control dispatch
-run on independent threads. LLM response streaming and audio playback are parallelized:
-TTS begins synthesizing the start of a response while the LLM is still generating the end,
-minimizing perceived latency.
+run on independent threads. Cloud STT is optimized for response and performance, the audio is
+streamed to provider from the moment a mic gate opens to the moment it closes the server
+begins processing the audio before the user finishes the utterance.
 
 In Professional mode (LLM temperature 0.1), round-trip latency for a simple ship command
 such as `deploy_landing_gear` is approximately 750ms over a typical cloud connection.
@@ -120,7 +120,7 @@ through the officially documented third-party API.
 
 ### Session State Model
 
-The application maintains in-memory session state across the following domains:
+The application maintains an in-memory session state across the following domains:
 
 - Current star system, body, and coordinates
 - FSS / DSS scan results for the current system

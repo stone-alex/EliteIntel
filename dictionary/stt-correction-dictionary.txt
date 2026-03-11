@@ -348,3 +348,8 @@
 "target system"="target subsystem"
 "target's upcoming season"="target subsystem"
 "council"="cancel"
+"can solve"="cancel"
+"product center"="codex entry"
+"products entry"="codex entry"
+"products"="codex"
+"product"="codex"

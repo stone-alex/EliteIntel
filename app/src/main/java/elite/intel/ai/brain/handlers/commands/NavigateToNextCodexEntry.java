@@ -16,6 +16,7 @@ import elite.intel.session.Status;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import static elite.intel.util.NavigationUtils.calculateSurfaceDistance;
 
@@ -71,12 +72,25 @@ public class NavigateToNextCodexEntry implements CommandHandler {
             return new ArrayList<>();
         }
         List<CodexEntryDao.CodexEntry> filteredResult = new ArrayList<>();
-
         if (completedBioSamples == null || completedBioSamples.isEmpty()) return codexEntries;
 
+        List<BioSampleDto> partialBioSamples = currentLocation.getPartialBioSamples();
+
+        if (!partialBioSamples.isEmpty()) {
+            for (CodexEntryDao.CodexEntry entry : codexEntries) {
+                for (BioSampleDto partial : partialBioSamples) {
+                    if (entry.getEntryName().toLowerCase(Locale.ROOT).contains(partial.getGenus().toLowerCase(Locale.ROOT))) {
+                        filteredResult.add(entry);
+                        return filteredResult;
+                    }
+                }
+            }
+            return new ArrayList<>();
+        }
+
         for (CodexEntryDao.CodexEntry entry : codexEntries) {
-            for (BioSampleDto partial : completedBioSamples) {
-                if (!entry.getEntryName().contains(partial.getGenus())) {
+            for (BioSampleDto completed : completedBioSamples) {
+                if (!entry.getEntryName().contains(completed.getGenus())) {
                     filteredResult.add(entry);
                 }
             }

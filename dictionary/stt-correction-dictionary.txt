@@ -347,3 +347,4 @@
 "targets up season"="target subsystem"
 "target system"="target subsystem"
 "target's upcoming season"="target subsystem"
+"council"="cancel"

@@ -24,7 +24,7 @@ public class OllamaCommandEndPoint extends AiEndPoint implements AIChatInterface
         String bodyString = null;
         try {
             OllamaClient client = OllamaClient.getInstance();
-            JsonObject prompt = client.createPrompt(OllamaClient.MODEL_OLLAMA_SMALL, temp);
+            JsonObject prompt = client.createPrompt(OllamaClient.MODEL_COMMANDS, temp);
 
             JsonArray sanitized = sanitizeJsonArray(messages);
             prompt.add("messages", sanitized);

@@ -18,8 +18,8 @@ public class OllamaClient extends BaseAiClient implements Client {
     // qwen2.5:14b working but .5 sec on command response.
 
 
-    public static final Integer MODEL_OLLAMA_SMALL = 1;
-    public static final Integer MODEL_OLLAMA = 2;
+    public static final Integer MODEL_COMMANDS = 1;
+    public static final Integer MODEL_QUERIES = 2;
     private static final OllamaClient INSTANCE = new OllamaClient();
 
     private final PlayerSession playerSession = PlayerSession.getInstance();

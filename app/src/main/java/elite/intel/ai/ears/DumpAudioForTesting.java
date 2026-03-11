@@ -29,6 +29,7 @@ public class DumpAudioForTesting {
     }
 
     public void dumpAudioAsWav(byte[] audio, int sampleRateHertz) {
+        if (true) return; // dbug
         String filename = "MicOutputForTesting_" + System.currentTimeMillis() + ".wav";
         try (FileOutputStream fos = new FileOutputStream(filename)) {
             WavHeader header = new WavHeader(sampleRateHertz, (short) 16, audio.length);

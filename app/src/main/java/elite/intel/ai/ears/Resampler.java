@@ -10,6 +10,8 @@ public class Resampler {
     private final double ratio;
     private final byte[] leftover = new byte[4]; // max 2 samples
     private int leftoverBytes = 0;
+    private double phase = 0.0; // carry this across calls instead of resetting pos=0
+
 
     public Resampler(int sourceRate, int targetRate, int channels) {
         this.ratio = (double) sourceRate / targetRate;
@@ -30,11 +32,11 @@ public class Resampler {
             inSamples[j] = (short) ((input[i + 1] & 0xff) << 8 | (input[i] & 0xff));
         }
 
-        int outSamples = (int) (totalInputBytes / 2 / ratio) + 1;
+        int outSamples = (int) ((double) totalInputBytes / 2 / ratio) + 1;
         short[] out = new short[outSamples];
         int outIdx = 0;
 
-        double pos = 0;
+        double pos = phase;
         while (pos < inSamples.length - 1) {
             int i1 = (int) pos;
             int i2 = i1 + 1;
@@ -43,6 +45,8 @@ public class Resampler {
             out[outIdx++] = s;
             pos += ratio;
         }
+        phase = pos - (int) pos;
+
 
         // save leftover (normally 0–1 sample)
         int usedSamples = (int) pos;

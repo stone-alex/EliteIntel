@@ -27,7 +27,7 @@ public class WhisperSTTImpl implements EarsInterface {
     private static final int WHISPER_SAMPLE_RATE = 16000; // Whisper requires exactly 16kHz
     private static final int CHANNELS = 1;
     private static final int ENTER_VOICE_FRAMES = 1;
-    private static final int EXIT_SILENCE_FRAMES = 8; // ~1s silence at 100ms buffers
+    private static final int EXIT_SILENCE_FRAMES = 12; // ~1s silence at 100ms buffers
     private static final long BASE_BACKOFF_MS = 2000;
     private static final long MAX_BACKOFF_MS = 60000;
     private static final int MIN_AUDIO_MS = 1500; // padding
@@ -149,7 +149,7 @@ public class WhisperSTTImpl implements EarsInterface {
                 if (rms > RMS_THRESHOLD_HIGH) {
                     consecutiveVoice++;
                     consecutiveSilence = 0;
-                    audio = Amplifier.amplify(audio, 1.0);
+                    audio = Amplifier.amplify(audio);
                 } else {
                     consecutiveVoice = 0;
                     consecutiveSilence++;
@@ -168,12 +168,13 @@ public class WhisperSTTImpl implements EarsInterface {
                     log.debug("VAD: speech ended");
                 }
 
-                if (isActive && consecutiveSilence == 0) {
+                if (isActive) {
                     audioCollector.write(audio, 0, audioLen);
                 }
 
                 if (wasActive && !isActive && audioCollector.size() > 0) {
                     final byte[] utterance = audioCollector.toByteArray();
+                    DumpAudioForTesting.getInstance().dumpAudioAsWav(utterance, WHISPER_SAMPLE_RATE);
                     audioCollector.reset();
                     Thread.ofVirtual().start(() -> transcribeAndDispatch(utterance));
                 }
@@ -240,6 +241,7 @@ public class WhisperSTTImpl implements EarsInterface {
             } else {
                 sendToAi(sanitized);
             }
+
 
         } catch (Exception e) {
             log.error("Whisper transcription failed: {}", e.getMessage(), e);

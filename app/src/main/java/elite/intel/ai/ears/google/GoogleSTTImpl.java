@@ -14,14 +14,11 @@ import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.AudioPlayer;
 import elite.intel.util.STTSanitizer;
-import elite.intel.util.WavHeader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.sound.sampled.*;
 import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -42,8 +39,9 @@ public class GoogleSTTImpl implements EarsInterface {
     private final AtomicBoolean isListening = new AtomicBoolean(true);
     private final AtomicBoolean isSpeaking = new AtomicBoolean(false);
     private final SystemSession systemSession = SystemSession.getInstance();
-    Map<String, String> corrections;
     private final ByteArrayOutputStream audioCollector = new ByteArrayOutputStream();
+    private final StreamNormalizer streamNormalizer = new StreamNormalizer();
+    Map<String, String> corrections;
     private Resampler resampler;  // lazy-init when needed
     private int sampleRateHertz;  // Dynamically detected
     private int bufferSize; // Dynamically calculated based on sample rate
@@ -216,7 +214,6 @@ public class GoogleSTTImpl implements EarsInterface {
                         if (rms > RMS_THRESHOLD_HIGH) {
                             consecutiveVoice++;
                             consecutiveSilence = 0;
-                            audioToProcess = Amplifier.amplify(audioToProcess, 3.0);
                             // 4 debugging
                             // EventBusManager.publish(new AppLogEvent("RMS: " + calculateRMS(audioToProcess, bytesToProcess)));
                         } else {
@@ -243,12 +240,13 @@ public class GoogleSTTImpl implements EarsInterface {
                         boolean sendKeepAlive = (currentTime - lastAudioSentTime) >= KEEP_ALIVE_INTERVAL_MS;
 
                         if (isActive || sendKeepAlive) {
+                            byte[] normalized = streamNormalizer.normalize(audioToProcess, bytesToProcess);
                             if (isActive) {
-                                audioCollector.write(audioToProcess, 0, bytesToProcess);
+                                audioCollector.write(normalized, 0, bytesToProcess);
                             }
                             byte[] keepAliveBuffer = new byte[KEEP_ALIVE_BUFFER_SIZE]; // Small silent for cost savings
                             ByteString audioContent = isActive
-                                    ? ByteString.copyFrom(audioToProcess, 0, bytesToProcess)
+                                    ? ByteString.copyFrom(normalized, 0, bytesToProcess)
                                     : ByteString.copyFrom(keepAliveBuffer);
 
                             requestObserver.onNext(StreamingRecognizeRequest.newBuilder()
@@ -287,7 +285,7 @@ public class GoogleSTTImpl implements EarsInterface {
                                 }
                             }
                             if (audioCollector.size() > 0) {
-                                dumpAudioAsWav(audioCollector.toByteArray(), "full_audio");
+                                dumpAudioAsWav(audioCollector.toByteArray(), sampleRateHertz);
                                 audioCollector.reset();  // Clear for next utterance
                             }
                             currentTranscript.setLength(0);
@@ -440,16 +438,7 @@ public class GoogleSTTImpl implements EarsInterface {
                 .build();
     }
 
-    private void dumpAudioAsWav(byte[] audio, String prefix) {
-        if (true) return; /// comment out for testing.
-
-
-        try (FileOutputStream fos = new FileOutputStream(prefix + "_" + System.currentTimeMillis() + ".wav")) {
-            WavHeader header = new WavHeader(sampleRateHertz, (short) 16);
-            fos.write(header.toByteArray());
-            fos.write(audio);
-        } catch (IOException e) {
-            log.error("Failed to dump audio: ", e);
-        }
+    private void dumpAudioAsWav(byte[] audio, int sampleRateHertz) {
+        DumpAudioForTesting.getInstance().dumpAudioAsWav(audio, sampleRateHertz);
     }
 }

@@ -49,7 +49,7 @@ public class JumpToHyperspaceHandler extends CommandOperator implements CommandH
         } else if (status.isFsdCooldown()) {
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("FSD is on cooldown."));
         } else if (status.isInMainShip()) {
-            PreFtlChecks.preJumpCheck(status, this);
+            PreFtlChecks.preJumpCheck(status, this, "Preparing for FTL.");
             operateKeyboard(BINDING_SET_SPEED100.getGameBinding(), 0);
             operateKeyboard(BINDING_JUMP_TO_HYPERSPACE.getGameBinding(), 0);
         } else {

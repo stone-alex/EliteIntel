@@ -52,6 +52,7 @@ public class AnalyzeBioSamplesPlanetSurfaceHandler extends BaseQueryAnalyzer imp
                    - Remaining genus = genera in allBioFormsOnPlanet that do NOT appear in completedScansForPlanet with completed: true
                 3. Never report a genus as remaining if it has a completed: true entry, even if it appears in allBioFormsOnPlanet or partial scans.
                 4. If no remaining genus after above checks → clearly state "All known organic samples on this planet are already completed."
+                5. If asked partial scans, or what genus we are currently scanning use partialBioFormScans data.
                 
                 Return only the matching genus names (or none/"all done") — be concise.
                 """;

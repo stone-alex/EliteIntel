@@ -9,9 +9,9 @@ import elite.intel.util.SleepNoThrow;
 
 import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.*;
 
-public class EnterFtlHandler extends CommandOperator implements CommandHandler {
+public class SuperCruiseHandler extends CommandOperator implements CommandHandler {
 
-    public EnterFtlHandler(GameController controller) {
+    public SuperCruiseHandler(GameController controller) {
         super(controller.getMonitor(), controller.getExecutor());
     }
 
@@ -32,7 +32,7 @@ public class EnterFtlHandler extends CommandOperator implements CommandHandler {
                 SleepNoThrow.sleep(12_000);
                 operateKeyboard(BINDING_SET_SPEED100.getGameBinding(), 0);
             } else {
-                PreFtlChecks.preJumpCheck(status, this);
+                PreFtlChecks.preJumpCheck(status, this, "Preparing for Supercruise.");
                 operateKeyboard(BINDING_SET_SPEED100.getGameBinding(), 0);
                 operateKeyboard(BINDING_ENTER_SUPERCRUISE.getGameBinding(), 0);
                 SleepNoThrow.sleep(1_000);

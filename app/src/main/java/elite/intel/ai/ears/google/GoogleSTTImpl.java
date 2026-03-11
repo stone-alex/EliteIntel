@@ -4,7 +4,6 @@ import com.google.api.gax.rpc.ApiStreamObserver;
 import com.google.cloud.speech.v1.*;
 import com.google.common.eventbus.Subscribe;
 import com.google.protobuf.ByteString;
-import elite.intel.ai.brain.commons.PromptFactory;
 import elite.intel.ai.ears.*;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.mouth.subscribers.events.TTSInterruptEvent;
@@ -321,12 +320,9 @@ public class GoogleSTTImpl implements EarsInterface {
                         }
                         if (avgConfidence > MIN_CONFIDENCE_LEVEL) {
                             if (isStreamingModeOn) {
-                                String voiceName = systemSession.getAIVoice().getName();
-                                if (systemSession.useLocalCommandLlm() || systemSession.useLocalQueryLlm()) {
-                                    voiceName = PromptFactory.AMY;
-                                }
-                                if (sanitizedTranscript.toLowerCase().startsWith("computer") || sanitizedTranscript.toLowerCase().startsWith(voiceName.toLowerCase())) {
-                                    sendToAi(sanitizedTranscript.replace("computer,", "").replace(voiceName.toLowerCase() + ",", ""), avgConfidence);
+                                String designation = systemSession.getDesignaion();
+                                if (sanitizedTranscript.toLowerCase().startsWith("computer") || sanitizedTranscript.toLowerCase().startsWith(designation.toLowerCase())) {
+                                    sendToAi(sanitizedTranscript.replace("computer,", "").replace(designation.toLowerCase() + ",", ""), avgConfidence);
                                 }
                             } else {
                                 sendToAi(sanitizedTranscript, avgConfidence);

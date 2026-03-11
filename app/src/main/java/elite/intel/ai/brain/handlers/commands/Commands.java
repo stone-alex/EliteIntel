@@ -84,7 +84,7 @@ public enum Commands {
     RETRACT_LANDING_GEAR                                ("gear_up", null,  RetractLandingGearHandler.class),
 
     JUMP_TO_HYPERSPACE                                  ("jump_to_hyperspace", null,  JumpToHyperspaceHandler.class),
-    ENTER_SUPER_CRUISE                                  ("enter_super_cruise", null,  EnterFtlHandler.class),
+    ENTER_SUPER_CRUISE                                  ("enter_super_cruise", null,  SuperCruiseHandler.class),
 
     EXIT_SUPER_CRUISE                                   ("drop_from_super_cruise", null,  ExitFtlHandler.class),
     ACTIVATE_ANALYSIS_MODE                              ("swap_to_hud_analysis_mode", null,  ActivateAnalysisModeHandler.class),

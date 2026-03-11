@@ -17,6 +17,7 @@ import java.io.InputStreamReader;
 
 public class SystemSession {
     private static volatile SystemSession instance;
+    private String designation;
 
     private SystemSession() {
     }
@@ -393,6 +394,14 @@ public class SystemSession {
 
     public String getWhisperModelPath() {
         return AppPaths.getWhisperModelPath().toString();
+    }
+
+    public void setDesignation(String name) {
+        this.designation = name;
+    }
+
+    public String getDesignaion() {
+        return this.designation;
     }
 
     //TODO add setWhisperModelPath(String path) method

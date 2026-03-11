@@ -48,21 +48,21 @@ public class NavigateToNextCodexEntry implements CommandHandler {
         double playerLat = status.getStatus().getLatitude();
         double playerLon = status.getStatus().getLongitude();
 
-        CodexEntryDao.CodexEntry target = findBestBioTarget(codexEntries, currentLocation.getPartialBioSamples(), playerLat, playerLon, planetRadius);
+        Tuple<CodexEntryDao.CodexEntry, String> target = findBestBioTarget(codexEntries, currentLocation.getPartialBioSamples(), playerLat, playerLon, planetRadius);
 
-        if (target == null) {
-            EventBusManager.publish(new AiVoxResponseEvent("No Codex entries Found"));
+        if (target.getSample() == null) {
+            EventBusManager.publish(new AiVoxResponseEvent(target.getNote()));
             return;
         }
 
         TargetLocation nav = new TargetLocation();
-        nav.setLatitude(target.getLatitude());
-        nav.setLongitude(target.getLongitude());
+        nav.setLatitude(target.getSample().getLatitude());
+        nav.setLongitude(target.getSample().getLongitude());
         nav.setEnabled(true);
         nav.setRequestedTime(System.currentTimeMillis());
         playerSession.setTracking(nav);
 
-        EventBusManager.publish(new AiVoxResponseEvent("Heading to " + target.getEntryName() + " sample."));
+        EventBusManager.publish(new AiVoxResponseEvent("Heading to " + target.getSample().getEntryName() + " sample."));
     }
 
     private List<CodexEntryDao.CodexEntry> getCodexEntries(LocationDto currentLocation) {
@@ -100,15 +100,15 @@ public class NavigateToNextCodexEntry implements CommandHandler {
     }
 
 
-    private CodexEntryDao.CodexEntry findBestBioTarget(List<CodexEntryDao.CodexEntry> codexEntries, List<BioSampleDto> partials, double playerLat, double playerLon, double planetRadius) {
+    private Tuple<CodexEntryDao.CodexEntry, String> findBestBioTarget(List<CodexEntryDao.CodexEntry> codexEntries, List<BioSampleDto> partials, double playerLat, double playerLon, double planetRadius) {
         String partialGenus = playerSession.getCurrentPartial();
         boolean hasPartials = partialGenus != null && !partials.isEmpty();
-
+        String message = "";
         CodexEntryDao.CodexEntry bestPartialMatch = null;
         CodexEntryDao.CodexEntry bestAny = null;
         double bestPartialDist = Double.MAX_VALUE;
         double bestAnyDist = Double.MAX_VALUE;
-
+        boolean isTooClose = false;
         for (CodexEntryDao.CodexEntry entry : codexEntries) {
             if (entry.getLatitude() == 0 && entry.getLongitude() == 0) continue;
 
@@ -116,7 +116,8 @@ public class NavigateToNextCodexEntry implements CommandHandler {
             double distToPlayer = calculateSurfaceDistance(playerLat, playerLon, entry.getLatitude(), entry.getLongitude(), planetRadius, 0);
 
             // Check distance (no partials or not too close to any partial of the same genus)
-            boolean valid = !hasPartials || !isTooCloseToAnyPartialOfSameGenus(entry, genus, partials, planetRadius);
+            isTooClose = isTooCloseToAnyPartialOfSameGenus(entry, genus, partials, planetRadius);
+            boolean valid = !hasPartials || !isTooClose;
             if (!valid) continue;
 
             BioSampleDto partialMatch = findForGenus(genus, partials);
@@ -146,8 +147,9 @@ public class NavigateToNextCodexEntry implements CommandHandler {
             }
         }
 
-        // Priority: return partial genus match if available, otherwise any valid bio
-        return bestPartialMatch != null ? bestPartialMatch : bestAny;
+        CodexEntryDao.CodexEntry entry = bestPartialMatch != null ? bestPartialMatch : bestAny;
+        if (entry == null && isTooClose) message = "No matches found for partial sample within range.";
+        return new Tuple<>(entry, message);
     }
 
     private BioSampleDto findForGenus(String genus, List<BioSampleDto> partials) {
@@ -173,5 +175,23 @@ public class NavigateToNextCodexEntry implements CommandHandler {
             }
         }
         return false;
+    }
+
+    class Tuple<S, N> {
+        private final S sample;
+        private final N note;
+
+        Tuple(S sample, N note) {
+            this.sample = sample;
+            this.note = note;
+        }
+
+        public S getSample() {
+            return sample;
+        }
+
+        public N getNote() {
+            return note;
+        }
     }
 }

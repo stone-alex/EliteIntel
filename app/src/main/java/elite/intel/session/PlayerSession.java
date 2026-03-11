@@ -16,9 +16,7 @@ import elite.intel.util.OsDetector;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import static org.apache.commons.lang3.StringUtils.trimToNull;
@@ -32,11 +30,6 @@ import static org.apache.commons.lang3.StringUtils.trimToNull;
  */
 public class PlayerSession {
 
-    public static final String PLAYER_MISSION_STATEMENT = "mission_statement";
-    public static final String PLAYER_CUSTOM_TITLE = "title";
-    public static final String PLAYER_ALTERNATIVE_NAME = "alternative_name";
-    public static final String JOURNAL_DIR = "journal_dir";
-    public static final String BINDINGS_DIR = "bindings_dir";
     private static final String UUD = java.util.UUID.randomUUID().toString();
     private static volatile PlayerSession instance;
     /// Data managers.
@@ -770,11 +763,6 @@ public class PlayerSession {
         return Database.withDao(PlayerDao.class, dao -> dao.get().getAlternativeName());
     }
 
-/*
-    public LocationDto getPrimaryStarLocation() {
-        return locationManager.findPrimaryStar(getPrimaryStarName());
-    }
-*/
 
     public void clearShipScans() {
         shipScans.clear();
@@ -784,15 +772,6 @@ public class PlayerSession {
         fleetCarriers.setCarrierStats(event);
     }
 
-    public Map<String, String> asMap() {
-        Map<String, String> result = new HashMap<>();
-        result.put(PLAYER_ALTERNATIVE_NAME, getAlternativeName());
-        result.put(PLAYER_MISSION_STATEMENT, getPlayerMissionStatement());
-        result.put(PLAYER_CUSTOM_TITLE, getPlayerTitle());
-        result.put(JOURNAL_DIR, getJournalPath().toString());
-        result.put(BINDINGS_DIR, getBindingsDir().toString());
-        return result;
-    }
 
     public long getHighestTransaction() {
         return Database.withDao(PlayerDao.class, dao -> dao.get().getHighestSingleTransaction());

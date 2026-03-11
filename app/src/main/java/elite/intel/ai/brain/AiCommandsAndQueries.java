@@ -111,8 +111,8 @@ public class AiCommandsAndQueries {
         commandMap.put(" command max weapons, full power to weapons ", INCREASE_WEAPONS_POWER.getAction());
         commandMap.put(" command equalize power, reset power ", RESET_POWER.getAction());
         commandMap.put(" command cancel navigation ", NAVIGATION_ON_OFF.getAction());
-        commandMap.put(" command open cargo bay door, open cargo scoop ", OPEN_CARGO_SCOOP.getAction());
-        commandMap.put(" command close cargo bay door, close cargo scoop ", CLOSE_CARGO_SCOOP.getAction());
+        commandMap.put(" command open cargo bay door / cargo scoop " + KEY_STATE, OPEN_CARGO_SCOOP.getAction());
+        commandMap.put(" command close cargo bay door / cargo scoop " + KEY_STATE, CLOSE_CARGO_SCOOP.getAction());
         commandMap.put(" command navigate to next organic/sample/marker/codex entry ", NAVIGATE_TO_NEXT_BIO_SAMPLE.getAction());
 
         /// ship normal space flight (not supercruise)

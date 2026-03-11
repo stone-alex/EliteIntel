@@ -8,10 +8,7 @@ public class WhatIsYourNameHandler implements QueryHandler {
     private final SystemSession systemSession = SystemSession.getInstance();
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        return GenericResponse.getInstance().genericResponse(" I am " + aiName());
+        return GenericResponse.getInstance().genericResponse(" I am " + systemSession.getDesignaion());
     }
 
-    private String aiName() {
-        return systemSession.useLocalTTS() ? "Amy" : systemSession.getAIVoice().getName();
-    }
 }

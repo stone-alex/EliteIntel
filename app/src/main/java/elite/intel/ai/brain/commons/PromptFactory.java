@@ -68,6 +68,7 @@ public class PromptFactory implements AiPromptFactory {
         sb.append("Classify as {\"type\": \"query\", \"action\": \"action_name\", \"params\": {\"key\": \"value\"}}");
         sb.append(commandsAndQueries.getQueries());
         sb.append("""
+                It you fail to infer action fall back to query_general_conversation
                 PARAMS RULES - DO NOT DEVIATE:
                 • Use ONLY the exact key names and types shown in the command's template
                 • If no template → return empty {}
@@ -155,7 +156,7 @@ public class PromptFactory implements AiPromptFactory {
                 - NEVER write meta-statements like "this is", "here is", "notifying about", "detected and will inform".
                 - Spell out all numerals (twenty-one, not 21).
                 - DO NOT invent, guess or estimate any values not explicitly present in the YAML.
-                - Be extremely concise. Only state observable facts that matter.
+                - Be concise. Only state observable facts that matter.
                 
                 Examples of FORBIDDEN styles:
                 - "We have detected..." → wrong
@@ -223,7 +224,7 @@ public class PromptFactory implements AiPromptFactory {
     }
 
     private String aiName() {
-        //return systemSession.useLocalTTS() ? AMY : systemSession.getAIVoice().getName();
+        systemSession.setDesignation(getShipName());
         return getShipName();
     }
 

@@ -10,8 +10,8 @@ import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.*;
 public class PreFtlChecks {
 
 
-    public static void preJumpCheck(Status status, CommandOperator commandOperator) {
-        EventBusManager.publish(new MissionCriticalAnnouncementEvent("Preparing for FTL."));
+    public static void preJumpCheck(Status status, CommandOperator commandOperator, String message) {
+        EventBusManager.publish(new MissionCriticalAnnouncementEvent(message));
         if (status.isHardpointsDeployed()) {
             commandOperator.operateKeyboard(BINDING_HARDPOINTS_TOGGLE.getGameBinding(), 0);
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("Retracting hardpoints."));

@@ -11,18 +11,17 @@ package elite.intel.ai.mouth.kokoro;
  */
 public enum KokoroVoices {
 
-    HEART(0, false, "Heart", "American female (default)"), //F
-    ANNA(4, true, "Anna", "American female"), //F
-    ISABELLA(7, false, "Isabella", "British female"), //F
-    EMMA(8, true, "Emma", "British male"), //F
-    NICOLE(2, false, "Nicole", "American female - (whispering)"), //F
-    SKY(3, false, "Sky", "American female"), //F
-    BELLA(1, false, "Bella", "American female"), //F
-
-    GEORGE(6, false, "Emma", "British female — precise"),
-    MICHAEL(5, true, "Michael", "American male — authoritative"),
-    JASON(9, true, "Jason", "British male — measured"),
-    DANIEL(10, true, "Daniel", "British male — calm");
+    HEART(0, false, "Heart", "American female"),
+    BELLA(1, false, "Bella", "American female"),
+    NICOLE(2, false, "Nicole", "American female - whispering"),
+    SKY(3, false, "Sky", "American female"),
+    ANNA(4, false, "Anna", "American female"),
+    MICHAEL(5, true, "Michael", "American male"),
+    GEORGE(6, true, "George", "British male"),
+    ISABELLA(7, false, "Isabella", "British female"),
+    EMMA(8, false, "Emma", "British female"),
+    JASON(9, true, "Jason", "British male"),
+    DANIEL(10, true, "Daniel", "British male");
 
     private final int sid;
     private final boolean male;

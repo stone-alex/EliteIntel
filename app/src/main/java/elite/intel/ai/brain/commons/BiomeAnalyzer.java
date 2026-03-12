@@ -40,7 +40,7 @@ public class BiomeAnalyzer extends BaseQueryAnalyzer {
 
 
         String instructions = """
-                You are a classifier. IGNORE all planet properties except planetShortName, planetClass, atmosphere, temperature, volcanism (if relevant) — but ONLY to match against PROBABLE genusToBiome map.
+                You are a classifier. IGNORE all planet properties except planetShortName, planetClass, atmosphere, temperature, volcanism (if relevant) - but ONLY to match against PROBABLE genusToBiome map.
                 
                 ONLY source: the provided genusToBiome map.
                 

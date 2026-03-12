@@ -22,11 +22,12 @@ public class ListAvailableVoices implements CommandHandler {
             KokoroVoices[] voices = KokoroVoices.values();
             List<String> voiceNames = new ArrayList<>();
             for (KokoroVoices voice : voices) {
-                if (!voice.getDisplayName().equals(session.getGoogleVoice().getName())) {
-                    voiceNames.add(voice.getDisplayName());
+                KokoroVoices kokoroVoice = session.getKokoroVoice();
+                if (!voice.getDisplayName().equals(kokoroVoice.getDisplayName())) {
+                    voiceNames.add(voice.getDisplayName() + ", " + voice.getDescription());
                 }
             }
-            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Available voices:\n" + String.join(", ", voiceNames)));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Available voices:\n" + String.join(".\n", voiceNames)));
         } else {
             GoogleVoices[] voices = GoogleVoices.values();
             List<String> voiceNames = new ArrayList<>();
@@ -35,7 +36,7 @@ public class ListAvailableVoices implements CommandHandler {
                     voiceNames.add(voice.getName());
                 }
             }
-            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Available voices:\n" + String.join(", ", voiceNames)));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Available voices:\n" + String.join(".\n", voiceNames)));
         }
     }
 }

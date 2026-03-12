@@ -24,7 +24,7 @@ public class Amplifier {
     /**
      * Normalizes PCM audio to -3 dBFS peak.
      * <p>
-     * The gain parameter is kept for API compatibility but is ignored —
+     * The gain parameter is kept for API compatibility but is ignored -
      * gain is now derived from the actual peak of the audio data.
      *
      * @param audioData 16-bit little-endian PCM bytes
@@ -43,13 +43,13 @@ public class Amplifier {
             if (abs > peak) peak = abs;
         }
 
-        // Nothing useful in the buffer — return as-is
+        // Nothing useful in the buffer - return as-is
         if (peak < MIN_PEAK_TO_NORMALIZE) return audioData;
 
         // --- Derive exact gain to hit target peak ---
         double normalizeGain = TARGET_PEAK / peak;
 
-        // Already at or above target — no amplification needed (avoid boosting loud audio)
+        // Already at or above target - no amplification needed (avoid boosting loud audio)
         if (normalizeGain <= 1.0) return audioData;
 
         // --- Pass 2: apply gain with hard clip safety net ---

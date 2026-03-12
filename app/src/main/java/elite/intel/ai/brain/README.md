@@ -6,10 +6,10 @@ ________________
 
 
 The `brain` package is the extensible AI integration layer for the Elite Dangerous companion app. It routes user inputs (voice/text) to handlers for commands (e.g., key bindings like deploying landing gear), queries (e.g., analyzing ship loadout), and general chat (e.g., trivia or casual
-conversation)—all while adhering to TOS compliance. It focuses on QoL features like hands-free VR control, on-demand analysis of legally available data (via journal/aux files), and natural language interaction, avoiding automation, botting, or memory reading.
+conversation)-all while adhering to TOS compliance. It focuses on QoL features like hands-free VR control, on-demand analysis of legally available data (via journal/aux files), and natural language interaction, avoiding automation, botting, or memory reading.
 
 The architecture follows DRY and SRP: Enums (`QueryActions`, `GameCommands`, `CustomCommands`) centralize supported actions, while factories (`QueryHandlerFactory`, `CommandHandlerFactory`) use reflection to auto-register handlers at runtime. This ensures adding a new command or query propagates to
-all LLM backends without per-impl changes. No dependency injection, magic strings/numbers, or external languages—pure Java.
+all LLM backends without per-impl changes. No dependency injection, magic strings/numbers, or external languages-pure Java.
 
 To add a new LLM (e.g., OpenAI, Anthropic), create a subpackage under `brain` (e.g., `openai`). Implement the required interfaces in classes mirroring the Grok structure (e.g., `OpenAiAnalysisEndpoint`, `OpenAiChatEndPoint`). Wire it via `ApiFactory` based on config. Keep it modular and thread-safe.
 
@@ -119,6 +119,6 @@ Duplicate the Grok impl's structure, adapting API calls to your LLM. All are sin
 - **API Differences**: Adapt HTTP setup (e.g., headers, body format) but keep response parsing robust (strip BOM, find JSON after text).
 - **Rate Limits/Errors**: Implement retries or fallbacks in `sendToAi`.
 - **Performance**: Keep prompts concise; use non-streaming for simplicity.
-- **Extensibility**: If your LLM needs extra params, extend interfaces sparingly—propose upstream if core.
+- **Extensibility**: If your LLM needs extra params, extend interfaces sparingly-propose upstream if core.
 
 This setup ensures extensibility while enforcing principles. For specific class guidance, refer to the `Grok` implementation or provide your partial impl for review with temporary key for your chosen LLM!

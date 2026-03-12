@@ -29,11 +29,11 @@ public class ScanOrganicSubscriber {
     private static void announce(String sb) {
         if (PlayerSession.getInstance().isDiscoveryAnnouncementOn()) {
             EventBusManager.publish(new SensorDataEvent(sb, """
-                        Use ONLY facts from sensorData—no invention, external knowledge, or additions like planet/system/payment/bonus/vehicles/scan stages.
+                        Use ONLY facts from sensorData-no invention, external knowledge, or additions like planet/system/payment/bonus/vehicles/scan stages.
                         Rephrase to natural, immersive speech:
                             - Key elements ONLY: genus/species logged, distance/completion if stated.
-                            - Use "we", "You" — NEVER "ship", "SRV", or "vehicle".
-                            Examples of style (DO NOT copy—base on data):
+                            - Use "we", "You" - NEVER "ship", "SRV", or "vehicle".
+                            Examples of style (DO NOT copy-base on data):
                                 - Data mentions genus logged → "<genus> sample logged."
                                 - Data has distance → "First <genus> logged. Maintain 500 meters between colonies."
                                 - Data signals complete → "<genus> scans complete."

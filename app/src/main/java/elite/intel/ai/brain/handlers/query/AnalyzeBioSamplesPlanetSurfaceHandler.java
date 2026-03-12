@@ -54,7 +54,7 @@ public class AnalyzeBioSamplesPlanetSurfaceHandler extends BaseQueryAnalyzer imp
                 4. If no remaining genus after above checks → clearly state "All known organic samples on this planet are already completed."
                 5. If asked partial scans, or what genus we are currently scanning use partialBioFormScans data.
                 
-                Return only the matching genus names (or none/"all done") — be concise.
+                Return only the matching genus names (or none/"all done") - be concise.
                 """;
 
         AiDataStruct struct = new AiDataStruct(instructions, new DataDto(

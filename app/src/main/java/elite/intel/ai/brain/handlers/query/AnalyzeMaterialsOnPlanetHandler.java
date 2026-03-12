@@ -36,7 +36,7 @@ public class AnalyzeMaterialsOnPlanetHandler extends BaseQueryAnalyzer implement
                 - Rarer materials = LOWER rarity percentage
                 - More common materials = HIGHER rarity percentage
                 - Never invent, guess, calculate, or use external knowledge
-                - Never assume any field like topRare exists — it does NOT
+                - Never assume any field like topRare exists - it does NOT
                 
                 How to answer common patterns (be extremely brief):
                 - "X most rare / rarest / top X rare materials" → sort by rarity ASC, take first X names
@@ -46,7 +46,7 @@ public class AnalyzeMaterialsOnPlanetHandler extends BaseQueryAnalyzer implement
                 - "how much / percentage of X"                      → return the rarity value formatted to exactly 2 decimal places + "%" if present, else "No Data Available."
                 - "list all materials"                             → return all material names (comma-separated or line-separated)
                 
-                Output only the requested answer text — no extra words, no explanations, no JSON inside the answer.
+                Output only the requested answer text - no extra words, no explanations, no JSON inside the answer.
                 """;
 
         if (materials.isEmpty()) {

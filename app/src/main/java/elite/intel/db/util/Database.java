@@ -26,7 +26,7 @@ public class Database {
             try {
                 DatabaseMigrator.migrate(handle);
             } catch (Exception e) {
-                throw new RuntimeException("Migration failed — your DB might be b0rked", e);
+                throw new RuntimeException("Migration failed - your DB might be b0rked", e);
             }
         });
     }

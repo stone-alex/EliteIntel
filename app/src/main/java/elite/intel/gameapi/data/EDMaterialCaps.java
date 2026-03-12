@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Elite Dangerous Odyssey (2025) — Complete material storage caps
+ * Elite Dangerous Odyssey (2025) - Complete material storage caps
  * All categories use the same tier system:
  * G1=300, G2=250, G3=200, G4=150, G5=100
  */

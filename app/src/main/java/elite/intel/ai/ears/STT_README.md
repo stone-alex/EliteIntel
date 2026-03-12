@@ -341,7 +341,7 @@ Review `GoogleSTTImpl.java` for implementation details, especially:
                   return new MicrosoftSTTImpl();
               default:
                   EventBusManager.publish(new AppLogEvent("Unknown STT key format"));
-                  EventBusManager.publish(new VoiceProcessEvent("Using default Google STT—confirm?"));
+                  EventBusManager.publish(new VoiceProcessEvent("Using default Google STT-confirm?"));
                   return new GoogleSTTImpl();
           }
       }

@@ -31,7 +31,7 @@ public class StreamNormalizer {
     private static final double ATTACK_COEFF = 0.40; // ~fast: reacts within a few frames
     private static final double RELEASE_COEFF = 0.98; // ~slow: takes many frames to recover
 
-    // Frames with RMS below this are considered silence — gain is held, not updated
+    // Frames with RMS below this are considered silence - gain is held, not updated
     private static final double SILENCE_RMS_THRESHOLD = 200.0;
 
     private double smoothedGain = 1.0;
@@ -59,7 +59,7 @@ public class StreamNormalizer {
             double coeff = (idealGain < smoothedGain) ? ATTACK_COEFF : RELEASE_COEFF;
             smoothedGain = smoothedGain * (1.0 - coeff) + idealGain * coeff;
         }
-        // else: silence — hold current gain, don't let it creep up during pauses
+        // else: silence - hold current gain, don't let it creep up during pauses
 
         // Apply smoothed gain
         byte[] output = new byte[length];
@@ -78,7 +78,7 @@ public class StreamNormalizer {
     }
 
     /**
-     * Reset gain state — call this when starting a new stream session
+     * Reset gain state - call this when starting a new stream session
      * so stale gain from a previous session doesn't bleed in.
      */
     public void reset() {

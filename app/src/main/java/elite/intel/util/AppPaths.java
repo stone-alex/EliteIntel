@@ -140,7 +140,7 @@ public final class AppPaths {
                 }
             }
         } catch (Exception e) {
-            // ignore — will fall back
+            // ignore - will fall back
         }
 
         // FINAL FALLBACK: current working directory (./)

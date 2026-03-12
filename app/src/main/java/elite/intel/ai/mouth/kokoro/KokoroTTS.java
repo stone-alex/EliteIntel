@@ -81,7 +81,7 @@ public class KokoroTTS implements MouthInterface {
         try {
             extractAndLoadNatives();
         } catch (Exception e) {
-            log.error("KokoroTTS: native lib load failed — TTS unavailable", e);
+            log.error("KokoroTTS: native lib load failed - TTS unavailable", e);
             return;
         }
 
@@ -95,6 +95,7 @@ public class KokoroTTS implements MouthInterface {
         running = true;
         synthesisQueue.clear();
         playbackQueue.clear();
+        interruptRequested.set(false); // ← reset after stop() left it true
         EventBusManager.register(this);
 
         synthesisThread = new Thread(this::processSynthesisQueue, "KokoroTTS-Synthesis");
@@ -105,7 +106,7 @@ public class KokoroTTS implements MouthInterface {
         playbackThread.setDaemon(false);
         playbackThread.start();
 
-        log.info("KokoroTTS started — voice: {} sid={}", KokoroVoices.HEART.getDisplayName(), DEFAULT_SID);
+        log.info("KokoroTTS started - voice: {} sid={}", KokoroVoices.HEART.getDisplayName(), DEFAULT_SID);
     }
 
     @Override
@@ -118,17 +119,27 @@ public class KokoroTTS implements MouthInterface {
 
         if (synthesisThread != null) {
             synthesisThread.interrupt();
+            try {
+                synthesisThread.join(3000); // wait for in-flight generate() to finish
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
             synthesisThread = null;
         }
         if (playbackThread != null) {
             playbackThread.interrupt();
+            try {
+                playbackThread.join(2000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
             playbackThread = null;
         }
 
         closePersistentLine();
 
         if (tts != null) {
-            tts.release();
+            tts.release(); // safe - synthesis thread is guaranteed dead
             tts = null;
         }
     }
@@ -155,7 +166,7 @@ public class KokoroTTS implements MouthInterface {
 
         if (synthesisThread == null || !synthesisThread.isAlive() ||
             playbackThread == null || !playbackThread.isAlive()) {
-            log.warn("KokoroTTS worker died — restarting");
+            log.warn("KokoroTTS worker died - restarting");
             start();
         }
     }
@@ -303,7 +314,7 @@ public class KokoroTTS implements MouthInterface {
         if (!Files.exists(modelDir)) {
             throw new IllegalStateException(
                     "Kokoro model missing at: " + modelDir +
-                    " — run the installer to download TTS models.");
+                    " - run the installer to download TTS models.");
         }
 
         OfflineTtsKokoroModelConfig kokoro = OfflineTtsKokoroModelConfig.builder()
@@ -390,7 +401,7 @@ public class KokoroTTS implements MouthInterface {
     private static String sanitize(String input) {
         if (input == null) return "";
         return input.replaceAll("[^\\x00-\\x7F]", "")
-                .replace("—", ", ")
+                .replace("-", ", ")
                 .replace("*", " ")
                 .replace("[", "").replace("]", "")
                 .replace("ETA", ". E.T.A.")

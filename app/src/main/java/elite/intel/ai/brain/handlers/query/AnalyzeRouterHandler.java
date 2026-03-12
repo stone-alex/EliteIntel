@@ -44,18 +44,18 @@ public class AnalyzeRouterHandler extends BaseQueryAnalyzer implements QueryHand
         String distanceData = getDistanceDataForAnnouncement(currentLocation, orderedRoute);
         
         String instructions = """
-                Analyze the current plotted ship-route using ONLY the provided JSON data under "content". NEVER invent, assume, calculate, add external information, or guess — use ONLY the exact fields present.
+                Analyze the current plotted ship-route using ONLY the provided JSON data under "content". NEVER invent, assume, calculate, add external information, or guess - use ONLY the exact fields present.
                 
-                Output MUST be TTS-friendly: natural spoken English, short clear sentences, NO markdown tables, NO bold/italics/code, NO long lists unless specifically requested. Speak numbers naturally (twelve, eight hundred thirty-seven point three nine). Keep responses very short and focused — never more than 100–150 words unless the user explicitly asks for the full route.
+                Output MUST be TTS-friendly: natural spoken English, short clear sentences, NO markdown tables, NO bold/italics/code, NO long lists unless specifically requested. Speak numbers naturally (twelve, eight hundred thirty-seven point three nine). Keep responses very short and focused - never more than 100–150 words unless the user explicitly asks for the full route.
                 
-                ## Critical Rules — Do NOT violate these:
+                ## Critical Rules - Do NOT violate these:
                 - This action does NOT automatically return the complete route breakdown.
                 - Answer ONLY the specific question the user asked.
                 - Do NOT give unsolicited full-route summaries, leg lists, or totals unless the user requests:
                   • "full route", "all waypoints", "complete route", "entire plotted route", "list all legs", "show the whole thing"
-                - If the user asks about one thing (next jump, next star, scoopable status, remaining jumps, a specific leg, etc.), answer ONLY that — be extremely concise.
+                - If the user asks about one thing (next jump, next star, scoopable status, remaining jumps, a specific leg, etc.), answer ONLY that - be extremely concise.
                 
-                ## Quick Reference — How to Answer Common Requests:
+                ## Quick Reference - How to Answer Common Requests:
                 - "next waypoint / next jump / next stop / next star": \s
                   ONLY leg 1 (data[0]): "Next waypoint is [starName], [starClass] class. Scoopable: yes/no. Jumps remaining after: [remainingJumps]."
                 
@@ -75,9 +75,9 @@ public class AnalyzeRouterHandler extends BaseQueryAnalyzer implements QueryHand
                 - "traffic / casualties / security / hazards": \s
                   "No traffic, casualty, or security information is available in the plotted route data."
                 
-                - If user says "full route" or similar: THEN give totals first + simple spoken list of legs (short format: "Leg 1: [name], [class]. Leg 2: …" — group if long)
+                - If user says "full route" or similar: THEN give totals first + simple spoken list of legs (short format: "Leg 1: [name], [class]. Leg 2: …" - group if long)
                 
-                ALWAYS start directly with the answer — no preamble like "According to the data…". \s
+                ALWAYS start directly with the answer - no preamble like "According to the data…". \s
                 End without repeating totals unless asked.
                 """;
         return process(new AiDataStruct(instructions, new DataDto(toStopsData(orderedRoute), orderedRoute.size(), distanceData)), originalUserInput);

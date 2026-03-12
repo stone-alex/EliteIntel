@@ -146,8 +146,8 @@ public class PromptFactory implements AiPromptFactory {
                 Use ONLY the data inside sensorData and the event-specific instructions below (if any).
                 Ignore everything else: timestamps, eventName, endOfLife, metadata, status flags, non-essential fields, etc.
                 
-                STRICT RULES — MUST FOLLOW EVERY ONE:
-                - Output EXACTLY this JSON structure and NOTHING else — no extra text, no explanations, no markdown:
+                STRICT RULES - MUST FOLLOW EVERY ONE:
+                - Output EXACTLY this JSON structure and NOTHING else - no extra text, no explanations, no markdown:
                   {"type": "chat", "response_text": "summary here"}
                 - response_text must be pure natural-language summary of facts only.
                 - NEVER use first-person pronouns: no I, me, my, we, us, our.

@@ -1,7 +1,7 @@
 package elite.intel.ai.mouth.google;
 
 import com.google.cloud.texttospeech.v1.VoiceSelectionParams;
-import elite.intel.ai.mouth.AiVoices;
+import elite.intel.ai.mouth.GoogleVoices;
 import elite.intel.ai.mouth.VoiceProvider;
 import elite.intel.session.SystemSession;
 
@@ -25,17 +25,17 @@ public class GoogleVoiceProvider implements VoiceProvider<VoiceSelectionParams> 
         //voiceMap.put(AiVoices.BETTY.getName(), VoiceSelectionParams.newBuilder().setLanguageCode("en-GB").setName("en-GB-Chirp3-HD-Aoede").build());
         //voiceMap.put(AiVoices.CHARLES.getName(), VoiceSelectionParams.newBuilder().setLanguageCode("en-GB").setName("en-GB-Chirp3-HD-Algenib").build());
         //voiceMap.put(AiVoices.KAREN.getName(), VoiceSelectionParams.newBuilder().setLanguageCode("en-GB").setName("en-GB-Neural2-A").build());
-        voiceMap.put(AiVoices.ANNA.getName(), VoiceSelectionParams.newBuilder().setLanguageCode("en-GB").setName("en-GB-Chirp-HD-F").build());
-        voiceMap.put(AiVoices.EMMA.getName(), VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Despina").build());
-        voiceMap.put(AiVoices.JAKE.getName(), VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Iapetus").build());
-        voiceMap.put(AiVoices.JAMES.getName(), VoiceSelectionParams.newBuilder().setLanguageCode("en-AU").setName("en-AU-Chirp3-HD-Algieba").build());
-        voiceMap.put(AiVoices.JENNIFER.getName(), VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Sulafat").build());
-        voiceMap.put(AiVoices.JOSEPH.getName(), VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Sadachbia").build());
-        voiceMap.put(AiVoices.MARY.getName(), VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Zephyr").build());
-        voiceMap.put(AiVoices.MICHAEL.getName(), VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Charon").build());
-        voiceMap.put(AiVoices.OLIVIA.getName(), VoiceSelectionParams.newBuilder().setLanguageCode("en-GB").setName("en-GB-Chirp3-HD-Aoede").build());
-        voiceMap.put(AiVoices.RACHEL.getName(), VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Zephyr").build());
-        voiceMap.put(AiVoices.STEVE.getName(), VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Algenib").build());
+        voiceMap.put(GoogleVoices.ANNA.getName(), VoiceSelectionParams.newBuilder().setLanguageCode("en-GB").setName("en-GB-Chirp-HD-F").build());
+        voiceMap.put(GoogleVoices.EMMA.getName(), VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Despina").build());
+        voiceMap.put(GoogleVoices.JAKE.getName(), VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Iapetus").build());
+        voiceMap.put(GoogleVoices.JAMES.getName(), VoiceSelectionParams.newBuilder().setLanguageCode("en-AU").setName("en-AU-Chirp3-HD-Algieba").build());
+        voiceMap.put(GoogleVoices.JENNIFER.getName(), VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Sulafat").build());
+        voiceMap.put(GoogleVoices.JOSEPH.getName(), VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Sadachbia").build());
+        voiceMap.put(GoogleVoices.MARY.getName(), VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Zephyr").build());
+        voiceMap.put(GoogleVoices.MICHAEL.getName(), VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Charon").build());
+        voiceMap.put(GoogleVoices.OLIVIA.getName(), VoiceSelectionParams.newBuilder().setLanguageCode("en-GB").setName("en-GB-Chirp3-HD-Aoede").build());
+        voiceMap.put(GoogleVoices.RACHEL.getName(), VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Zephyr").build());
+        voiceMap.put(GoogleVoices.STEVE.getName(), VoiceSelectionParams.newBuilder().setLanguageCode("en-US").setName("en-US-Chirp3-HD-Algenib").build());
     }
 
     public static GoogleVoiceProvider getInstance() {
@@ -48,9 +48,9 @@ public class GoogleVoiceProvider implements VoiceProvider<VoiceSelectionParams> 
      * @return AiVoices for the current AI voice, or default (Jennifer) if none selected.
      */
     @Override
-    public AiVoices getUserSelectedVoice() {
-        AiVoices aiVoice = SystemSession.getInstance().getAIVoice();
-        return aiVoice != null ? aiVoice : AiVoices.JENNIFER; // Default to Jennifer
+    public GoogleVoices getUserSelectedVoice() {
+        GoogleVoices aiVoice = SystemSession.getInstance().getGoogleVoice();
+        return aiVoice != null ? aiVoice : GoogleVoices.JENNIFER; // Default to Jennifer
     }
 
     /**
@@ -59,13 +59,13 @@ public class GoogleVoiceProvider implements VoiceProvider<VoiceSelectionParams> 
      * @return AiVoices for a random voice, or default (Jennifer) if none available.
      */
     @Override
-    public AiVoices getRandomVoice() {
-        AiVoices currentAiVoice = SystemSession.getInstance().getAIVoice();
-        AiVoices[] availableVoices = Arrays.stream(AiVoices.values())
+    public GoogleVoices getRandomVoice() {
+        GoogleVoices currentAiVoice = SystemSession.getInstance().getGoogleVoice();
+        GoogleVoices[] availableVoices = Arrays.stream(GoogleVoices.values())
                 .filter(voice -> !voice.getName().equals(currentAiVoice.getName()))
-                .toArray(AiVoices[]::new);
+                .toArray(GoogleVoices[]::new);
         if (availableVoices.length == 0) {
-            return AiVoices.JENNIFER; // Default to Jennifer
+            return GoogleVoices.JENNIFER; // Default to Jennifer
         }
         return availableVoices[new Random().nextInt(availableVoices.length)];
     }
@@ -78,7 +78,7 @@ public class GoogleVoiceProvider implements VoiceProvider<VoiceSelectionParams> 
      */
     @Override
     public double getSpeechRate(String voiceName) {
-        for (AiVoices voice : AiVoices.values()) {
+        for (GoogleVoices voice : GoogleVoices.values()) {
             if (voice.getName().equals(voiceName)) {
                 return voice.getSpeechRate();
             }
@@ -96,7 +96,7 @@ public class GoogleVoiceProvider implements VoiceProvider<VoiceSelectionParams> 
     public VoiceSelectionParams getVoiceParams(String voiceName) {
         VoiceSelectionParams params = voiceMap.get(voiceName);
         if (params == null) {
-            params = voiceMap.get(AiVoices.JENNIFER.getName()); // Default to Jennifer
+            params = voiceMap.get(GoogleVoices.JENNIFER.getName()); // Default to Jennifer
         }
         return params;
     }

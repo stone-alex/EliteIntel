@@ -8,7 +8,7 @@ import elite.intel.ai.ears.AudioCalibrator;
 import elite.intel.ai.ears.AudioFormatDetector;
 import elite.intel.ai.ears.EarsInterface;
 import elite.intel.ai.hands.KeyBindCheck;
-import elite.intel.ai.mouth.AiVoices;
+import elite.intel.ai.mouth.GoogleVoices;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.gameapi.*;
@@ -74,13 +74,10 @@ public class AppController implements Runnable {
     }
 
     private String listVoices() {
-        if (systemSession.isRunningPiperTts()) {
-            return ""; // Voice choice is not available with Piper TTS
-        }
         StringBuilder sb = new StringBuilder();
-        AiVoices[] voices = AiVoices.values();
+        GoogleVoices[] voices = GoogleVoices.values();
         sb.append("[");
-        for (AiVoices voice : voices) {
+        for (GoogleVoices voice : voices) {
             sb.append(capitalizeWords(voice.name())).append(", ");
         }
         sb.append("]");
@@ -299,14 +296,6 @@ public class AppController implements Runnable {
 
         String mission_statement = playerSession.getPlayerMissionStatement();
         playerSession.setPlayerMissionStatement(mission_statement);
-
-        if (!systemSession.useLocalTTS()) {
-            appendToLog("Available voices:\n" + listVoices());
-        }
-        if (!systemSession.useLocalQueryLlm() && !systemSession.isRunningPiperTts()) {
-            appendToLog("Available personalities:\n" + listPersonalities());
-            appendToLog("Available profiles:\n" + listCadences());
-        }
 
         isRunning.set(true);
         EventBusManager.publish(new ServicesStateEvent(true));

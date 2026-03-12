@@ -23,48 +23,41 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.concurrent.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Offline TTS using Kokoro via sherpa-onnx JNI.
  * <p>
- * ── Gradle dependency (add to app/build.gradle) ──────────────────────────────
- * implementation files('libs/sherpa-onnx-v1.12.28.jar')
- * // Download from:
- * // https://github.com/k2-fsa/sherpa-onnx/releases/download/v1.12.28/sherpa-onnx-v1.12.28.jar
- * <p>
- * ── Native libs (vendor into src/main/resources/native/) ─────────────────────
- * linux-x86-64/libonnxruntime.so      ─┐ sherpa-onnx-v1.12.28-linux-x64-jni.tar.bz2
- * linux-x86-64/libsherpa-onnx-jni.so  ─┘
- * win-x86-64/onnxruntime.dll          ─┐ sherpa-onnx-v1.12.28-win-x64-jni.tar.bz2
- * win-x86-64/sherpa-onnx-jni.dll      ─┘
- * <p>
- * ── Model (downloaded by installer) ──────────────────────────────────────────
- * {appData}/models/tts/kokoro-en-v0_19/
- * model.onnx, voices.bin, tokens.txt, espeak-ng-data/
- * Download: https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/kokoro-en-v0_19.tar.bz2
+ * Two-queue pipeline: sentence splitting → synthesis queue → playback queue.
+ * Synthesis of sentence N+1 overlaps with playback of sentence N.
  */
 public class KokoroTTS implements MouthInterface {
 
     private static final Logger log = LogManager.getLogger(KokoroTTS.class);
 
     private static final int SAMPLE_RATE = 24000;
-    private static final int DEFAULT_SID = KokoroVoices.AF_HEART.getSid();
-    private static final float DEFAULT_SPEED = 1.0f;
+    private static final int DEFAULT_SID = KokoroVoices.HEART.getSid();
 
     private static volatile KokoroTTS instance;
 
     private final AtomicBoolean interruptRequested = new AtomicBoolean(false);
     private final AtomicBoolean canBeInterrupted = new AtomicBoolean(true);
     private final AtomicReference<SourceDataLine> currentLine = new AtomicReference<>();
-    private final BlockingQueue<VocalisationRequestEvent> queue = new LinkedBlockingQueue<>();
+
+    // Stage 1: raw sentence strings waiting for synthesis
+    private final BlockingQueue<String> synthesisQueue = new LinkedBlockingQueue<>();
+    // Stage 2: synthesized PCM waiting for playback
+    private final BlockingQueue<byte[]> playbackQueue = new LinkedBlockingQueue<>();
+
     private final SystemSession systemSession = SystemSession.getInstance();
     private SourceDataLine persistentLine;
     private volatile boolean running = false;
-    private Thread workerThread;
-    private ExecutorService callbackExecutor;
+    private Thread synthesisThread;
+    private Thread playbackThread;
     private OfflineTts tts;
 
     private KokoroTTS() {
@@ -84,7 +77,7 @@ public class KokoroTTS implements MouthInterface {
     @Override
     public void start() {
         if (running) return;
-
+        log.info("KokoroTTS.start() called from thread: {}", Thread.currentThread().getName());
         try {
             extractAndLoadNatives();
         } catch (Exception e) {
@@ -99,61 +92,41 @@ public class KokoroTTS implements MouthInterface {
             return;
         }
 
-        EventBusManager.register(this);
         running = true;
-        queue.clear();
+        synthesisQueue.clear();
+        playbackQueue.clear();
+        EventBusManager.register(this);
 
-        callbackExecutor = Executors.newSingleThreadExecutor(r -> {
-            Thread t = new Thread(r, "KokoroTTS-Audio");
-            t.setDaemon(true);
-            return t;
-        });
+        synthesisThread = new Thread(this::processSynthesisQueue, "KokoroTTS-Synthesis");
+        synthesisThread.setDaemon(true);
+        synthesisThread.start();
 
-        workerThread = new Thread(() -> {
-            while (running || !queue.isEmpty()) {
-                try {
-                    VocalisationRequestEvent event = queue.take();
-                    callbackExecutor.submit(() -> {
-                        try {
-                            synthesizeAndPlay(event.getText());
-                        } catch (Exception e) {
-                            log.warn("KokoroTTS synthesis error: {}", e.getMessage(), e);
-                        } finally {
-                            EventBusManager.publish(new AppLogEvent("\n"));
-                        }
-                    });
-                } catch (InterruptedException | RejectedExecutionException e) {
-                    Thread.currentThread().interrupt();
-                    break;
-                }
-            }
-        }, "KokoroTTS-Worker");
-        workerThread.setDaemon(false);
-        workerThread.start();
+        playbackThread = new Thread(this::processPlaybackQueue, "KokoroTTS-Playback");
+        playbackThread.setDaemon(false);
+        playbackThread.start();
 
-        log.info("KokoroTTS started — voice: {} sid={}", KokoroVoices.AF_HEART.getDisplayName(), DEFAULT_SID);
+        log.info("KokoroTTS started — voice: {} sid={}", KokoroVoices.HEART.getDisplayName(), DEFAULT_SID);
     }
 
     @Override
     public void stop() {
         EventBusManager.unregister(this);
-        queue.clear();
-        interruptRequested.set(true);
         running = false;
+        synthesisQueue.clear();
+        playbackQueue.clear();
+        interruptRequested.set(true);
 
-        if (workerThread != null) {
-            workerThread.interrupt();
-            workerThread = null;
+        if (synthesisThread != null) {
+            synthesisThread.interrupt();
+            synthesisThread = null;
         }
-        if (callbackExecutor != null) {
-            callbackExecutor.shutdownNow();
-            callbackExecutor = null;
+        if (playbackThread != null) {
+            playbackThread.interrupt();
+            playbackThread = null;
         }
-        if (persistentLine != null && persistentLine.isOpen()) {
-            persistentLine.stop();
-            persistentLine.close();
-            persistentLine = null;
-        }
+
+        closePersistentLine();
+
         if (tts != null) {
             tts.release();
             tts = null;
@@ -165,59 +138,119 @@ public class KokoroTTS implements MouthInterface {
     @Override
     public void interruptAndClear() {
         if (!canBeInterrupted.get()) return;
-        queue.clear();
+
+        synthesisQueue.clear();
+        playbackQueue.clear();
         interruptRequested.set(true);
+
         SourceDataLine line = currentLine.get();
         if (line != null && line.isOpen()) {
             line.stop();
             line.flush();
             line.start();
         }
-        if (workerThread == null || !workerThread.isAlive()) {
+        interruptRequested.set(false);
+
+        log.info("KokoroTTS interrupted and queues cleared");
+
+        if (synthesisThread == null || !synthesisThread.isAlive() ||
+            playbackThread == null || !playbackThread.isAlive()) {
             log.warn("KokoroTTS worker died — restarting");
             start();
         }
     }
 
-    @Subscribe public void shutUp(TTSInterruptEvent event) {
+    @Subscribe
+    public void shutUp(TTSInterruptEvent event) {
         interruptAndClear();
     }
 
     @Override
     @Subscribe
     public void onVoiceProcessEvent(VocalisationRequestEvent event) {
+        if (!running) return;
         canBeInterrupted.set(event.canBeInterrupted());
-        if (running) queue.offer(event);
+
+        String text = sanitize(event.getText());
+        if (text == null || text.isBlank()) return;
+
+        AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_2);
+        EventBusManager.publish(new AppLogEvent("AI: " + event.getText() + "\n"));
+
+        // Split on sentence boundaries and enqueue each piece for synthesis
+        String[] sentences = text.split("(?<=[.!?])\\s+(?=\\S)");
+        for (String sentence : sentences) {
+            if (!sentence.isBlank()) {
+                synthesisQueue.offer(sentence);
+            }
+        }
     }
 
-    // ── Synthesis ─────────────────────────────────────────────────────────────
+    // ── Stage 1: Synthesis thread ─────────────────────────────────────────────
 
-    private void synthesizeAndPlay(String input) throws Exception {
-        if (input == null || input.isBlank()) return;
+    private void processSynthesisQueue() {
+        while (running) {
+            try {
+                String sentence = synthesisQueue.take();
+                if (interruptRequested.get()) continue;
 
-        String text = sanitize(input);
-        AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_2);
-        EventBusManager.publish(new AppLogEvent("AI: " + text + "\n"));
+                GeneratedAudio audio = tts.generate(sentence, systemSession.getKokoroVoice().getSid(),
+                        1f + systemSession.getSpeechSpeed());
 
-        GeneratedAudio audio = tts.generate(text, DEFAULT_SID, (1f + systemSession.getSpeechSpeed()));
-        if (audio == null || audio.getSamples() == null || audio.getSamples().length == 0) {
-            log.warn("KokoroTTS: empty audio for: {}", text);
-            return;
+                if (audio == null || audio.getSamples() == null || audio.getSamples().length == 0) {
+                    log.warn("KokoroTTS: empty audio for: {}", sentence);
+                    continue;
+                }
+
+                byte[] pcm = floatToPcm16(audio.getSamples());
+                AudioDeClicker.sanitize(pcm, 5);
+                playbackQueue.put(pcm);
+
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            } catch (Exception e) {
+                log.warn("KokoroTTS synthesis error: {}", e.getMessage(), e);
+            }
         }
+    }
 
-        byte[] audioData = floatToPcm16(audio.getSamples());
-        AudioDeClicker.sanitize(audioData, 5);
+    // ── Stage 2: Playback thread ──────────────────────────────────────────────
 
+    private void processPlaybackQueue() {
+        if (!openPersistentLine()) return;
+
+        while (running) {
+            try {
+                byte[] pcm = playbackQueue.poll(200, TimeUnit.MILLISECONDS);
+                if (pcm == null) continue;
+                if (interruptRequested.get()) continue;
+
+                playPcm(pcm);
+
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            } catch (Exception e) {
+                log.warn("KokoroTTS playback error: {}", e.getMessage(), e);
+            } finally {
+                EventBusManager.publish(new AppLogEvent("\n"));
+            }
+        }
+        closePersistentLine();
+    }
+
+    private void playPcm(byte[] audioData) {
         if (persistentLine == null || !persistentLine.isOpen()) {
             if (!openPersistentLine()) return;
         }
 
         currentLine.set(persistentLine);
-        interruptRequested.set(false);
 
         AudioFormat fmt = persistentLine.getFormat();
         int frameSize = fmt.getFrameSize();
 
+        // Small silence gap between sentences
         byte[] silence = new byte[(int) (SAMPLE_RATE * 0.03f) * frameSize];
         persistentLine.write(silence, 0, silence.length);
 
@@ -239,13 +272,27 @@ public class KokoroTTS implements MouthInterface {
             AudioFormat format = new AudioFormat(SAMPLE_RATE, 16, 1, true, false);
             DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
             persistentLine = (SourceDataLine) AudioSystem.getLine(info);
-            persistentLine.open(format, (int) (format.getFrameSize() * format.getSampleRate()));
+            persistentLine.open(format, (int) (format.getFrameSize() * format.getSampleRate() / 10));
             persistentLine.start();
             log.info("KokoroTTS audio line: {}Hz 16-bit mono", SAMPLE_RATE);
             return true;
         } catch (Exception e) {
             log.error("KokoroTTS: failed to open audio line", e);
             return false;
+        }
+    }
+
+    private void closePersistentLine() {
+        if (persistentLine != null && persistentLine.isOpen()) {
+            try {
+                persistentLine.drain();
+                persistentLine.stop();
+                persistentLine.close();
+            } catch (Exception e) {
+                log.warn("KokoroTTS: error closing audio line", e);
+            } finally {
+                persistentLine = null;
+            }
         }
     }
 
@@ -301,7 +348,6 @@ public class KokoroTTS implements MouthInterface {
                     "sherpa-onnx-jni.dll"
             };
         }
-        // Linux (and macOS if ever needed)
         return new String[]{
                 "libonnxruntime.so",
                 "libsherpa-onnx-jni.so"
@@ -329,7 +375,6 @@ public class KokoroTTS implements MouthInterface {
         throw new UnsupportedOperationException("Unsupported OS: " + os);
     }
 
-
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     private static byte[] floatToPcm16(float[] samples) {
@@ -343,6 +388,7 @@ public class KokoroTTS implements MouthInterface {
     }
 
     private static String sanitize(String input) {
+        if (input == null) return "";
         return input.replaceAll("[^\\x00-\\x7F]", "")
                 .replace("—", ", ")
                 .replace("*", " ")

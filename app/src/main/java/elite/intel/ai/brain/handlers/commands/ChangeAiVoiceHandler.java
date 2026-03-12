@@ -1,8 +1,8 @@
 package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.mouth.AiVoices;
-import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.ai.mouth.GoogleVoices;
+import elite.intel.ai.mouth.kokoro.KokoroVoices;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.SystemSession;
@@ -18,13 +18,11 @@ import elite.intel.session.SystemSession;
 public class ChangeAiVoiceHandler implements CommandHandler {
 
     private final SystemSession systemSession = SystemSession.getInstance();
+
     @Override public void handle(String action, JsonObject params, String responseText) {
 
 
-        if(systemSession.isRunningPiperTts()){
-            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Running Piper TTS. Voice switching is not available. Please re-configure your Piper TTS server for alternative vocalisation."));
-            return;
-        }
+
 
 
         String voiceName = params.get("key").getAsString();
@@ -37,10 +35,15 @@ public class ChangeAiVoiceHandler implements CommandHandler {
 
     private void setVoice(String voiceName) {
         try {
-            systemSession.setAIVoice(AiVoices.valueOf(voiceName.toUpperCase()));
+            if (systemSession.useLocalTTS()) {
+                systemSession.setKokoroVoice(KokoroVoices.valueOf(voiceName.toUpperCase()));
+            } else {
+                systemSession.setGoogleVoice(GoogleVoices.valueOf(voiceName.toUpperCase()));
+            }
+
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("Voice set to " + voiceName.toUpperCase()));
         } catch (IllegalArgumentException e) {
-            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Sorry, I don't understand voice name: " + voiceName.toUpperCase() + ". Error: " + e.getMessage()));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Sorry, I don't understand voice name: " + voiceName.toUpperCase()));
         }
     }
 }

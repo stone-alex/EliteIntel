@@ -2,7 +2,8 @@ package elite.intel.session;
 
 import elite.intel.ai.brain.AICadence;
 import elite.intel.ai.brain.AIPersonality;
-import elite.intel.ai.mouth.AiVoices;
+import elite.intel.ai.mouth.GoogleVoices;
+import elite.intel.ai.mouth.kokoro.KokoroVoices;
 import elite.intel.db.dao.ChatHistoryDao;
 import elite.intel.db.dao.GameSessionDao;
 import elite.intel.db.util.Database;
@@ -35,18 +36,42 @@ public class SystemSession {
     }
 
 
-    public AiVoices getAIVoice() {
+    public GoogleVoices getGoogleVoice() {
         return Database.withDao(GameSessionDao.class, dao -> {
             GameSessionDao.GameSession session = dao.get();
-            if (session == null) return AiVoices.STEVE;
-            if (session.getAiVoice() == null) return AiVoices.STEVE;
-            return AiVoices.valueOf(
+            if (session == null) return GoogleVoices.STEVE;
+            if (session.getAiVoice() == null) return GoogleVoices.STEVE;
+            return GoogleVoices.valueOf(
                     session.getAiVoice()
             );
         });
     }
 
-    public void setAIVoice(AiVoices voice) {
+
+    public KokoroVoices getKokoroVoice() {
+        return Database.withDao(GameSessionDao.class, dao -> {
+            GameSessionDao.GameSession session = dao.get();
+            if (session == null) return KokoroVoices.HEART;
+            if (session.getAiVoice() == null) return KokoroVoices.HEART;
+            try {
+                return KokoroVoices.valueOf(session.getAiVoice());
+            } catch (IllegalArgumentException noVoiceForThatName) {
+                return KokoroVoices.HEART;
+            }
+        });
+    }
+
+
+    public void setGoogleVoice(GoogleVoices voice) {
+        Database.withDao(GameSessionDao.class, dao -> {
+            GameSessionDao.GameSession session = dao.get();
+            session.setAiVoice(voice.name());
+            dao.save(session);
+            return null;
+        });
+    }
+
+    public void setKokoroVoice(KokoroVoices voice) {
         Database.withDao(GameSessionDao.class, dao -> {
             GameSessionDao.GameSession session = dao.get();
             session.setAiVoice(voice.name());
@@ -173,11 +198,6 @@ public class SystemSession {
         });
     }
 
-    public boolean isRunningPiperTts() {
-        String ttsApiKey = getTtsApiKey();
-        return ttsApiKey == null || ttsApiKey.isEmpty();
-    }
-
     public boolean isRunningLocalLLM() {
         return getAiApiKey() == null || getAiApiKey().isEmpty();
     }
@@ -283,7 +303,6 @@ public class SystemSession {
             }
         });
     }
-
 
 
     public String readVersionFromResources() {

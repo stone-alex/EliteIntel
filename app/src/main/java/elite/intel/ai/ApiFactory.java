@@ -21,7 +21,6 @@ import elite.intel.ai.ears.whisper.WhisperSTTImpl;
 import elite.intel.ai.mouth.MouthInterface;
 import elite.intel.ai.mouth.google.GoogleTTSImpl;
 import elite.intel.ai.mouth.kokoro.KokoroTTS;
-import elite.intel.ai.mouth.piper.PiperTTS;
 import elite.intel.session.SystemSession;
 
 /**
@@ -125,7 +124,7 @@ public class ApiFactory {
                 return GoogleTTSImpl.getInstance();
             // TODO: Add ElevenLabs, AWS Polly, etc.
             default:
-                return PiperTTS.getInstance();
+                return KokoroTTS.getInstance();
         }
     }
 

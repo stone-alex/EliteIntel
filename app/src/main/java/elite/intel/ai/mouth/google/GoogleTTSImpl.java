@@ -2,8 +2,8 @@ package elite.intel.ai.mouth.google;
 
 import com.google.cloud.texttospeech.v1.*;
 import com.google.common.eventbus.Subscribe;
-import elite.intel.ai.mouth.AiVoices;
 import elite.intel.ai.mouth.AudioDeClicker;
+import elite.intel.ai.mouth.GoogleVoices;
 import elite.intel.ai.mouth.MouthInterface;
 import elite.intel.ai.mouth.subscribers.events.BaseVoxEvent;
 import elite.intel.ai.mouth.subscribers.events.TTSInterruptEvent;
@@ -290,7 +290,7 @@ public class GoogleTTSImpl implements MouthInterface {
             VoiceSelectionParams voice = googleVoiceProvider.getVoiceParams(voiceName);
             if (voice == null) {
                 log.warn("No voice found for name: {}, using default", voiceName);
-                voice = googleVoiceProvider.getVoiceParams(AiVoices.JENNIFER.getName());
+                voice = googleVoiceProvider.getVoiceParams(GoogleVoices.JENNIFER.getName());
             }
 
             if (interruptRequested.get()) {

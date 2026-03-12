@@ -11,14 +11,14 @@ public interface VoiceProvider<T> {
      *
      * @return AiVoices for the current AI voice, or default if none selected.
      */
-    AiVoices getUserSelectedVoice();
+    GoogleVoices getUserSelectedVoice();
 
     /**
      * Retrieves a random AiVoices enum value, excluding the user-selected AI voice.
      *
      * @return AiVoices for a random voice, or default if none available.
      */
-    AiVoices getRandomVoice();
+    GoogleVoices getRandomVoice();
 
     /**
      * Retrieves the speech rate for a given AiVoices voice name.

@@ -51,12 +51,12 @@ public class SystemSession {
     public KokoroVoices getKokoroVoice() {
         return Database.withDao(GameSessionDao.class, dao -> {
             GameSessionDao.GameSession session = dao.get();
-            if (session == null) return KokoroVoices.HEART;
-            if (session.getAiVoice() == null) return KokoroVoices.HEART;
+            if (session == null) return KokoroVoices.EMMA;
+            if (session.getAiVoice() == null) return KokoroVoices.EMMA;
             try {
                 return KokoroVoices.valueOf(session.getAiVoice());
             } catch (IllegalArgumentException noVoiceForThatName) {
-                return KokoroVoices.HEART;
+                return KokoroVoices.EMMA;
             }
         });
     }

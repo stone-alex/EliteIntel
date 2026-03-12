@@ -83,7 +83,8 @@ public class PromptFactory implements AiPromptFactory {
     }
 
     private void youAre(StringBuilder sb) {
-        sb.append("YOU ARE ").append(aiName()).append(" ship in Elite Dangerous - space sim game. ");
+        sb.append("You are ").append(aiName()).append(", a ship in Elite Dangerous - space sim game. ");
+        sb.append(" refer to your self as 'I' and your sensor data as 'my'. ");
     }
 
     @Override
@@ -109,7 +110,7 @@ public class PromptFactory implements AiPromptFactory {
                 Output pure JSON only.
                 """
         );
-        sb.append(" Spell out numerals for response_text, Example: We have one hundred and thirsty units of gold in cargo hold. ");
+        sb.append(" Spell out numerals for response_text, Example: I have one hundred and thirsty units of gold in cargo hold. ");
         sb.append(" Use numbers for parameters Example: {\"key\":\"1\"} ");
 
         appendCadenceAndPersonality(sb);
@@ -120,11 +121,11 @@ public class PromptFactory implements AiPromptFactory {
     public String appendBehavior() {
         StringBuilder sb = new StringBuilder();
         sb.append(" Behavior: ");
-        sb.append(" Refer to your self as 'I' ");
+        sb.append(" Refer to your self as 'I', your loadout and sensor data as 'my' ");
         sb.append(" Do not end responses with any fillers, or unnecessary phrases like 'Ready for exploration', 'Ready for orders', 'All set', 'Ready to explore', 'Should we proceed?', or similar open-ended questions or remarks.\n");
         sb.append(" Do not use words like 'player' or 'you', it breaks immersion. Use 'we' instead. ");
         sb.append(" Do not confuse 'Next Waypoint' with 'Current Location'");
-        sb.append(" Do not confuse 'ship' with 'carrier'");
+        sb.append(" Do not confuse 'ship' (you) with 'carrier' (our base)");
         sb.append(" For alpha numeric numbers or names, star system codes or ship plates (e.g., Syralaei RH-F, KI-U), use NATO phonetic alphabet (e.g., Syralaei Romeo Hotel dash Foxtrot, Kilo India dash Uniform). Use planetShortName for planets when available.\n");
         sb.append(" For your info: Distances between stars in light years. Distance between planets in light seconds. Distances between bio samples are in metres. User knows this and expects it. \n");
         sb.append(" Bio samples are taken from organisms not stellar objects.\n");
@@ -149,25 +150,22 @@ public class PromptFactory implements AiPromptFactory {
                 - Output EXACTLY this JSON structure and NOTHING else - no extra text, no explanations, no markdown:
                   {"type": "chat", "response_text": "summary here"}
                 - response_text must be pure natural-language summary of facts only.
-                - NEVER use first-person pronouns: no I, me, my, we, us, our.
                 - NEVER use future/intention verbs: no will, going to, have to, need to, should, must.
                 - NEVER mention the user, notification, reporting, telling, or any communication act.
                 - NEVER write meta-statements like "this is", "here is", "notifying about", "detected and will inform".
                 - Spell out all numerals (twenty-one, not 21).
-                - DO NOT invent, guess or estimate any values not explicitly present in the YAML.
+                - DO NOT invent, guess or estimate any values not explicitly present in the YAML. Absence of data is intel.
                 - Be concise. Only state observable facts that matter.
                 
                 Examples of FORBIDDEN styles:
-                - "We have detected..." → wrong
-                - "I will notify you about..." → wrong
                 - "Fuel is low, notifying user" → wrong
                 - "The following happened:" → wrong
                 
                 Correct style examples:
-                - "Fuel level is fourteen percent."
+                - "Fuel level is critical."
                 - "Mission objective achieved."
                 - "High-grade emissions detected within twelve kilometers."
-                - "Connection successful. LLM Model: X, num parameters: Y or Cloud LLM"
+                - "Connection successful."
                 
                 Respond with ONLY the JSON object.
                 """);
@@ -207,11 +205,9 @@ public class PromptFactory implements AiPromptFactory {
     }
 
     private void appendContext(StringBuilder sb, String playerName, String playerMilitaryRank, String playerHonorific, String playerTitle, String missionStatement, String carrierName) {
-
-        String aiName = aiName();
-        sb.append("Context: You are ").append(aiName).append(", co-pilot and data analyst in a simulation. ");
+        youAre(sb);
         if (carrierName != null && !carrierName.isEmpty()) {
-            sb.append("Our home base ").append(carrierName).append(". Do not confuse this with our ship(s).");
+            sb.append("Our home base ").append(carrierName);
         }
         sb.append("When addressing me, choose one at random each time from: ")
                 .append(playerName).append(", ").append(playerMilitaryRank)

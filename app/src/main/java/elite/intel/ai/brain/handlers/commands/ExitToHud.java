@@ -22,26 +22,26 @@ public class ExitToHud extends CommandOperator implements CommandHandler {
 
     @Override public void handle(String action, JsonObject params, String responseText) {
         String exit = Bindings.GameCommand.BINDING_EXIT_KEY.getGameBinding();
-        String headLookReset = Bindings.GameCommand.BINDING_HEAD_LOOK_RESET.getGameBinding();
+        //String headLookReset = Bindings.GameCommand.BINDING_HEAD_LOOK_RESET.getGameBinding();
         String quitFFS = Bindings.GameCommand.BINDING_EXPLORATION_FSSQUIT.getGameBinding();
         //back out of nested menus and sub windows
 
         operateKeyboard(quitFFS, 0);
         operateKeyboard(exit, 0);
-        operateKeyboard(headLookReset, 0);
+        //operateKeyboard(headLookReset, 0);
         operateKeyboard(exit, 0);
-        operateKeyboard(headLookReset, 0);
+        //operateKeyboard(headLookReset, 0);
         operateKeyboard(exit, 0);
-        operateKeyboard(headLookReset, 0);
+        //operateKeyboard(headLookReset, 0);
         operateKeyboard(exit, 0);
-        operateKeyboard(headLookReset, 0);
+        //operateKeyboard(headLookReset, 0);
         operateKeyboard(exit, 0);
-        operateKeyboard(headLookReset, 0);
+        //operateKeyboard(headLookReset, 0);
         operateKeyboard(exit, 0);
-        operateKeyboard(headLookReset, 0);
+        //operateKeyboard(headLookReset, 0);
         operateKeyboard(exit, 0);
-        operateKeyboard(headLookReset, 0);
+        //operateKeyboard(headLookReset, 0);
         operateKeyboard(exit, 0); // exit from all sub windows back to HUD
-        operateKeyboard(headLookReset, 0);
+        //operateKeyboard(headLookReset, 0);
     }
 }

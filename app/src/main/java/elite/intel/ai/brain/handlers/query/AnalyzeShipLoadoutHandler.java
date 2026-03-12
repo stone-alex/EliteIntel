@@ -17,24 +17,28 @@ import java.util.Map;
 public class AnalyzeShipLoadoutHandler extends BaseQueryAnalyzer implements QueryHandler {
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing ship loadout. Stand by."));
+        EventBusManager.publish(new AiVoxResponseEvent("Analyzing loadout. Stand by."));
         PlayerSession playerSession = PlayerSession.getInstance();
         ShipLoadOutDto shipLoadout = playerSession.getShipLoadout();
         if (shipLoadout == null) return process("No data available");
 
         String instructions = """
-                Provide answers about ship loadout details, health, damage report, suitability for a task, or whatever else user asks.
+                Data represents your build, health and capabilities.
+                
+                Example: I am equipped with ..., my classification is...
+                
+                Provide answers about your loadout details, health, damage report, suitability for a task, or whatever else user asks.
                 IF damage detected (moduleHealthPercentage < 100) list damaged modules and damage percentage.
-                IF asked about a specific module equiped reply with yes, or no. If yes, list know smodule specification.
+                IF asked about a specific module equipped reply with yes, or no. If yes, list know smodule specification.
                 IF asked about damage report, only provide a summary of the damaged modules and percent damage, if all modules are at full health (100) report no damage detected.
-                Mention if the ship has engeneered modules. (Engineering modules are modules that have been modified, and have special abilities or bonuses)
+                Mention if the ship has engineered modules. (Engineering modules are modules that have been modified, and have special abilities or bonuses)
                 ______________________________________________________________
                 For questions about ship classifications/suitability use this as a general guide line:
-                Ship configuration builds/types:
+                Configuration builds/types:
                     - Discovery class ships: long range jumps (more than 50ly) light, no cargo, no weapons minimal shielding.
-                    - Cargo class ships: a lot of cargo space, average jump range (less than 50 light years) may have some defencive weapons minimal shielding.
-                    - Combat class ships: lazers / cannons / missiles, and massive shields are priority over cargo space or range
-                    - Mining class ships: priority is mining tools, refinery and cargo space.
+                    - Cargo class: a lot of cargo space, average jump range (less than 50 light years) may have some defencive weapons minimal shielding.
+                    - Combat class: lazers / cannons / missiles, and massive shields are priority over cargo space or range
+                    - Mining class: priority is mining tools, refinery and cargo space.
                 ______________________________________________________________
                 """;
 

@@ -43,6 +43,13 @@ public class AnalyzeDistanceFromFleetCarrierHandler extends BaseQueryAnalyzer im
         double distance = NavigationUtils.calculateGalacticDistance(x, y, z, carrierLocationX, carrierLocationY, carrierDataZ);
 
         int numberOfJumps = (int) (distance / jumpRange);
-        return process("Distance is " + (int) distance + " light years. It will take " + numberOfJumps + " Jumps to get there.");
+        StringBuilder sb = new StringBuilder();
+        sb.append("Distance is ").append((int) distance).append(" light years. It will take ").append(numberOfJumps).append(" Jump");
+        if (numberOfJumps > 1) {
+            sb.append("s");
+        }
+        sb.append(" to get there.");
+
+        return process(sb.toString());
     }
 }

@@ -33,8 +33,6 @@ public class Bindings {
         BINDING_FOCUS_RADAR_PANEL_BUGGY("FocusRadarPanel_Buggy"),
         BINDING_FOCUS_LOADOUT_PANEL("FocusRadarPanel"),
         BINDING_FOCUS_LOADOUT_PANEL_BUGGY("FocusRadarPanel_Buggy"),
-        BINDING_EJECT_ALL_CARGO("EjectAllCargo"),
-        BINDING_EJECT_ALL_CARGO_BUGGY("EjectAllCargo_Buggy"),
         BINDING_LANDING_GEAR_TOGGLE("LandingGearToggle"),
         BINDING_RESET_POWER_DISTRIBUTION("ResetPowerDistribution"),
         BINDING_RESET_POWER_DISTRIBUTION_BUGGY("ResetPowerDistribution_Buggy"),
@@ -62,7 +60,6 @@ public class Bindings {
         BINDING_UI_DOWN("UI_Down"),
         BINDING_UI_LEFT("UI_Left"),
         BINDING_UI_RIGHT("UI_Right"),
-        BINDING_UI_FOCUS("UIFocus"),
         BINDING_UI_SELECT("UI_Select"),
         BINDING_UI_TOGGLE("UI_Toggle"),
         BINDING_UI_UP("UI_Up"),
@@ -102,7 +99,6 @@ public class Bindings {
         //GALNET_AUDIO_SKIP_BACKWARD("galnet_audio_skip_backward", "GalnetAudio_SkipBackward"),
         //GALNET_AUDIO_SKIP_FORWARD("galnet_audio_skip_forward", "GalnetAudio_SkipForward"),
 
-        BINDING_HEAD_LOOK_RESET("HeadLookReset"),
 
         BINDING_RADAR_DECREASE_RANGE("RadarDecreaseRange"),
         BINDING_RADAR_INCREASE_RANGE("RadarIncreaseRange"),

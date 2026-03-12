@@ -56,6 +56,8 @@ dependencies {
     ///whisper
     implementation 'io.github.givimad:whisper-jni:1.7.1'
 
+    //sherpa
+    implementation files('libs/sherpa-onnx-v1.12.28.jar')
 
     implementation 'org.zeromq:jeromq:0.6.0'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.17.2'
@@ -98,6 +100,8 @@ sourceSets {
             include '**/scripts/*.sh'
             include '**/scripts/*.bat'
             include 'version.txt'
+            include '**/native/**/*.so'
+            include '**/native/**/*.dll'
         }
     }
 }

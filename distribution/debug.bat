@@ -1,1 +1,0 @@
-java -jar ./elite_intel.jar

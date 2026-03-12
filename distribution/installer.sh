@@ -125,28 +125,31 @@ EOF
     if [ -e $ELITE_JAR ]; then
         # If the user has downloaded a release, we try to detect if it is in the current directory
         # Also assumes that this script will be in the distributed release folder
-        mv -r ./dictionary ./logs debug.bat run.bat elite_intel.jar "$DEFAULT_INSTALL_LOCATION"
+        # Use cp -r (not mv) — safe across filesystems and for upgrades over existing installs.
+        # logs/ is created at runtime, not distributed.
+        cp -r ./dictionary "$DEFAULT_INSTALL_LOCATION/"
+        cp ./elite_intel.jar "$DEFAULT_INSTALL_LOCATION/"
 
-        cat << EOF 
+        cat << EOF
         Installed EliteIntel with files in the current directory.
         Please check the $DEFAULT_INSTALL_LOCATION folder that all the files is present:
-        [ 'elite_intel.jar', 'dictionary/stt-correction-dictionary.txt', 'debug.bat', 'run.bat' ]
+        [ 'elite_intel.jar', 'dictionary/stt-correction-dictionary.txt' ]
 
 EOF
     elif [ -e $ELITE_ZIP ]; then
-        # If the user has downloaded a release.zip, and not extracted any thing we do the extraction 
+        # If the user has downloaded a release.zip, and not extracted any thing we do the extraction
         # as if we downloaded it our self
         unzip "$ELITE_ZIP" -d $DEFAULT_INSTALL_LOCATION
 
         echo "Extracted the app files to $DEFAULT_INSTALL_LOCATION"
-    
+
     else
         # Last resort. We fetch the latest version of EliteIntel from Github
         # and install it cleanly
         echo "Couldn't find the elite_intel.jar!"
-    
+
         curl -L -O $(curl -s https://api.github.com/repos/stone-alex/EliteIntel/releases/latest | grep "browser_download_url" | cut -d '"' -f 4)
-        
+
         local NEW_ELITE_ZIP=( elite_intel*.zip )
         unzip "$NEW_ELITE_ZIP" -d "$DEFAULT_INSTALL_LOCATION"
         rm "$NEW_ELITE_ZIP"
@@ -181,9 +184,9 @@ print_usage() {
     cat << EOF
 
     Thank you commander for trying out EliteIntel, an AI Copilot for Elite Dangerous.
-    
+
     This script will help you to install EliteIntel on your linux flavour, it can also
-    assist with updating your existing installation. Or removing it when you are done with 
+    assist with updating your existing installation. Or removing it when you are done with
     Elite Dangerous.
 
     Fly dangerous, commander!
@@ -197,7 +200,7 @@ print_usage() {
                 -u       Updates the EliteIntel by fetching the latest update from github
                 -d       Deletes the EliteIntel installation and associated files from the computer
                 -h       Displays this message.
-                -T       Install Piper-TTS server or download new Piper-voice-models
+                -T       [legacy] Install Piper-TTS server (replaced by built-in Kokoro TTS)
                 -W       Download or re-download the Whisper offline STT model
 
 EOF
@@ -223,7 +226,7 @@ update_elite_intel() {
 
     local ELITE_ZIP="elite_intel*.zip"
     unzip -o "$ELITE_ZIP" elite_intel.jar dictionary/stt-correction-dictionary.txt -d "$ELITEINTEL_FOLDER"
-    
+
     rm $ELITE_ZIP
 
     echo "Done!"
@@ -247,7 +250,7 @@ delete_elite_intel() {
             ;;
     esac
 
-    #   validate path    
+    #   validate path
     if [ -d "$ELITEINTEL_FOLDER" ]; then
         rm -r "$ELITEINTEL_FOLDER"
     else
@@ -256,7 +259,7 @@ delete_elite_intel() {
 
     # Remove the start menu shortcut
     rm "$HOME/.local/share/applications/elite-intel.desktop"
-    
+
     chmod +x $STARTMENU_DIR/elite-intel.desktop
     update-desktop-database $HOME/.local/share/applications
 
@@ -271,10 +274,10 @@ EOF
     read -rp "default n: [y/n]" DELETEEVERYTHING
 
     case $DELETEEVERYTHING in
-        y)  
+        y)
             rm -rf "$EI_DB"
-            cat << EOF 
-            
+            cat << EOF
+
             It is all gone now!
 
 EOF
@@ -299,11 +302,28 @@ create_start_menu() {
     local DESKTOP_DIR="$HOME/.local/share/applications"
     local DESKTOP_FILE="$DESKTOP_DIR/elite-intel.desktop"
     local ICON_PATH="$DEFAULT_INSTALL_LOCATION/elite-logo.png"
+    local LAUNCHER="$DEFAULT_INSTALL_LOCATION/elite-intel.sh"
+    local NATIVE_DIR="$DEFAULT_INSTALL_LOCATION/native/sherpa-onnx"
 
     mkdir -p "$DESKTOP_DIR"
 
     # Download icon only if missing
     [ -f "$ICON_PATH" ] || curl -L -o "$ICON_PATH" https://raw.githubusercontent.com/stone-alex/EliteIntel/master/app/src/main/resources/images/elite-logo.png
+
+    # Launcher script — sets LD_LIBRARY_PATH so sherpa-onnx JNI resolves
+    # libsherpa-onnx-jni.so by name (required by JDK 21, cannot be done post-launch)
+    cat > "$LAUNCHER" << 'LAUNCHEOF'
+#!/usr/bin/env bash
+NATIVE_DIR="NATIVE_DIR_PLACEHOLDER"
+export LD_LIBRARY_PATH="$NATIVE_DIR:$LD_LIBRARY_PATH"
+cd "INSTALL_DIR_PLACEHOLDER"
+exec java -jar "INSTALL_DIR_PLACEHOLDER/elite_intel.jar"
+LAUNCHEOF
+
+    # Substitute actual paths (avoids heredoc variable expansion issues)
+    sed -i "s|NATIVE_DIR_PLACEHOLDER|$NATIVE_DIR|g" "$LAUNCHER"
+    sed -i "s|INSTALL_DIR_PLACEHOLDER|$DEFAULT_INSTALL_LOCATION|g" "$LAUNCHER"
+    chmod +x "$LAUNCHER"
 
     cat > "$DESKTOP_FILE" << EOF
 [Desktop Entry]
@@ -311,7 +331,7 @@ Version=1.0
 Name=Elite Intel
 Comment=Elite Dangerous AI companion
 Path=$DEFAULT_INSTALL_LOCATION
-Exec=java -jar ./elite_intel.jar
+Exec=$LAUNCHER
 Icon=$ICON_PATH
 Terminal=false
 Type=Application
@@ -320,9 +340,9 @@ StartupNotify=true
 EOF
 
     chmod +x "$DESKTOP_FILE"
-
-    # Optional: only update if command exists
     command -v update-desktop-database >/dev/null && update-desktop-database "$DESKTOP_DIR"
+
+    echo "Launcher script: $LAUNCHER"
 }
 
 download_piper_tts_models() {
@@ -364,7 +384,7 @@ download_piper_tts_models() {
     read -rp "Choose either GB or US voice list: " _LOCALE
 
     case $_LOCALE in
-        gb) 
+        gb)
             for idx in "${!en_GB[@]}"; do
                 printf "  %2d) %s\n " "$((idx + 1))" "${en_GB[$idx]}"
             done
@@ -373,17 +393,17 @@ download_piper_tts_models() {
             read -rp "select a model number [1-${#en_GB[@]}]: " _MODEL
             MODEL="${en_GB[$((_MODEL-1))]}"
             ;;
-        GB) 
+        GB)
             for idx in "${!en_GB[@]}"; do
                 printf "  %2d) %s\n " "$((idx + 1))" "${en_GB[$idx]}"
             done
             NATIONALITY=en_GB
-            
+
             read -rp "select a model number [1-${#en_GB[@]}]: " _MODEL
             MODEL="${en_GB[$((_MODEL-1))]}"
             ;;
 
-        US) 
+        US)
             for idx in "${!en_US[@]}"; do
                 printf "  %2d) %s\n " "$((idx + 1))" "${en_US[$idx]}"
             done
@@ -391,7 +411,7 @@ download_piper_tts_models() {
 
             read -rp "select a model number [1-${#en_US[@]}]: " _MODEL
             MODEL="${en_US[$((_MODEL-1))]}";;
-        us) 
+        us)
             for idx in "${!en_US[@]}"; do
                 printf "  %2d) %s\n " "$((idx + 1))" "${en_US[$idx]}"
             done
@@ -402,7 +422,7 @@ download_piper_tts_models() {
             ;;
     esac
 
-    echo "$NATIONALITY - $MODEL"   
+    echo "$NATIONALITY - $MODEL"
 
     ## download voice models
     curl -L -o "$NATIONALITY-$MODEL-medium.onnx" "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/$NATIONALITY/$MODEL/medium/$NATIONALITY-$MODEL-medium.onnx"

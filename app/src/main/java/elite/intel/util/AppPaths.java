@@ -16,6 +16,8 @@ public final class AppPaths {
         return APP_DIR;
     }
 
+
+    /// --- APP USER DATA STUFF
     public static Path getDatabasePath() throws IOException {
         Path base;
         if (OsDetector.getOs() == OsDetector.OS.LINUX || OsDetector.getOs() == OsDetector.OS.MAC) {
@@ -38,31 +40,55 @@ public final class AppPaths {
         return dbDir.resolve("database.db");
     }
 
-    public static Path getWhisperModelPath() {
-        if (OsDetector.getOs() == OsDetector.OS.LINUX || OsDetector.getOs() == OsDetector.OS.MAC) {
-            String dataHome = System.getenv("XDG_DATA_HOME");
-            Path base = dataHome != null && !dataHome.isEmpty()
-                    ? Path.of(dataHome)
-                    : Path.of(System.getProperty("user.home"), ".var/app");
-            return base.resolve("elite.intel.app/whisper/ggml-base.en.bin");
-        } else if (OsDetector.getOs() == OsDetector.OS.WINDOWS) {
-            String localAppData = System.getenv("LOCALAPPDATA");
-            if (localAppData == null || localAppData.isEmpty()) {
-                throw new IllegalStateException("LOCALAPPDATA not set");
-            }
-            return Path.of(localAppData).resolve("elite-intel/whisper/ggml-base.en.bin");
-        } else {
-            throw new IllegalStateException("Unsupported OS");
+
+    ///  --- APP INSTALLATION STUFF (native libs etc)
+    private static Path getInstallDir() {
+        try {
+            return Path.of(AppPaths.class
+                            .getProtectionDomain()
+                            .getCodeSource()
+                            .getLocation()
+                            .toURI())
+                    .getParent();
+        } catch (Exception e) {
+            throw new IllegalStateException("Cannot determine installation directory", e);
         }
     }
 
-    public static Path getConfigDirectory() {
-        return APP_DIR.resolve("config");
+
+    public static Path getTtsModelDir() {
+        if (OsDetector.getOs() == OsDetector.OS.WINDOWS) {
+            return getInstallDir().resolve("tts");
+        }
+        String dataHome = System.getenv("XDG_DATA_HOME");
+        Path base = dataHome != null && !dataHome.isEmpty()
+                ? Path.of(dataHome)
+                : Path.of(System.getProperty("user.home"), ".var/app");
+        return base.resolve("elite.intel.app/tts");
     }
 
-    public static Path getLogsDirectory() {
-        return APP_DIR.resolve("logs");
+    public static Path getNativeLibDir() {
+        if (OsDetector.getOs() == OsDetector.OS.WINDOWS) {
+            return getInstallDir().resolve("native");
+        }
+        String dataHome = System.getenv("XDG_DATA_HOME");
+        Path base = dataHome != null && !dataHome.isEmpty()
+                ? Path.of(dataHome)
+                : Path.of(System.getProperty("user.home"), ".var/app");
+        return base.resolve("elite.intel.app/native");
     }
+
+    public static Path getWhisperModelPath() {
+        if (OsDetector.getOs() == OsDetector.OS.WINDOWS) {
+            return getInstallDir().resolve("whisper/ggml-base.en.bin");
+        }
+        String dataHome = System.getenv("XDG_DATA_HOME");
+        Path base = dataHome != null && !dataHome.isEmpty()
+                ? Path.of(dataHome)
+                : Path.of(System.getProperty("user.home"), ".var/app");
+        return base.resolve("elite.intel.app/whisper/ggml-base.en.bin");
+    }
+
 
     public static String getSecretKeyFile() {
         if (OsDetector.getOs() == OsDetector.OS.LINUX || OsDetector.getOs() == OsDetector.OS.MAC) {

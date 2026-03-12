@@ -24,7 +24,7 @@
   <launchers>
     <launcher name="elite-intel" id="35">
       <executable name="elite-intel" iconSet="true" executableMode="gui" singleInstance="true" />
-      <java mainClass="elite.intel.App" vmParameters="-Djava.library.path=${installer:sys.localAppDataDir}\elite-intel\native\sherpa-onnx">
+      <java mainClass="elite.intel.App" vmParameters="-Djava.library.path=native\sherpa-onnx">
         <classPath>
           <archive location="elite_intel.jar" failOnError="false" />
         </classPath>

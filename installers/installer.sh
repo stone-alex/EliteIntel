@@ -151,7 +151,11 @@ EOF
         # and install it cleanly
         echo "Couldn't find the elite_intel.jar!"
 
-        curl -L -O $(curl -s https://api.github.com/repos/stone-alex/EliteIntel/releases/latest | grep "browser_download_url" | cut -d '"' -f 4)
+        curl -L -O $(curl -s https://api.github.com/repos/stone-alex/EliteIntel/releases/latest \
+            | grep "browser_download_url" \
+            | grep "\.zip" \
+            | grep -v "\.exe" \
+            | cut -d '"' -f 4)
 
         local NEW_ELITE_ZIP=( elite_intel*.zip )
         unzip "$NEW_ELITE_ZIP" -d "$DEFAULT_INSTALL_LOCATION"
@@ -223,7 +227,11 @@ update_elite_intel() {
     esac
 
     echo "Updating EliteIntel ..."
-    curl -L -O $(curl -s https://api.github.com/repos/stone-alex/EliteIntel/releases/latest | grep "browser_download_url" | cut -d '"' -f 4)
+    curl -L -O $(curl -s https://api.github.com/repos/stone-alex/EliteIntel/releases/latest \
+        | grep "browser_download_url" \
+        | grep "\.zip" \
+        | grep -v "\.exe" \
+        | cut -d '"' -f 4)
 
     local ELITE_ZIP="elite_intel*.zip"
     # Update all distributed assets — jar, dictionary, models and native libs

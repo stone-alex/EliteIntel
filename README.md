@@ -8,19 +8,18 @@
 
 ## Linux and Windows. Can be ran 100% off-line.
 
+**✅ The off-line TTS. (Linux and Windows)**
+Powered by Kokoro. built-in / included.
+
+**✅ The off-line STT. (Linux and Windows)**
+Powered by Whisper. built-in / included.
+
 **✅ Local off-line private LLMs are now supported**
 [Installing local LLM](https://github.com/stone-alex/EliteIntel/wiki/Install-Local-LLM)
 
 - If you do not have the hardware to run your local LLM you can use cloud LLM from Claude, xAI or Open AI but that comes with a small fee. (about $6 a month)
   [**Real life Cloud LLM cost breakdown**](https://github.com/stone-alex/EliteIntel/wiki/LLM-Real-Live-Cost)
   
-**✅ The off-line TTS. (Linux and Windows)**
-
-- See [Piper TTS](https://github.com/stone-alex/EliteIntel/wiki/OffLineVoiceProcessor) for instructions. More mechanical voice, but local and private
-
-**✅ The off-line STT. (Linux and Windows)**
-
-- Comes with installation. Not as accurate as Google STT, but local and private
 
 ---
 
@@ -38,7 +37,7 @@
 
 ### 🔊 TTS (Text To Speech)
 
-- **Piper TTS (Local - off-line)**
+- **Kokoro (Local - off-line)**
 - Google (Cloud)
 
 ## Overview

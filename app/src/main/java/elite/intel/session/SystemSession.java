@@ -271,39 +271,6 @@ public class SystemSession {
         }
     }
 
-    public void setEdsmApiKey(String edsmApiKey) {
-        if (edsmApiKey == null && edsmApiKey.isEmpty()) {
-            Database.withDao(GameSessionDao.class, dao -> {
-                GameSessionDao.GameSession session = dao.get();
-                session.setEdsmApiKey(null);
-                dao.save(session);
-                return Void.class;
-            });
-        } else {
-            Database.withDao(GameSessionDao.class, dao -> {
-                GameSessionDao.GameSession session = dao.get();
-                session.setEncryptedEDSSMKey(Cypher.encrypt(edsmApiKey));
-                dao.save(session);
-                return Void.class;
-            });
-        }
-    }
-
-    public String getEdsmApiKey() {
-        return Database.withDao(GameSessionDao.class, dao -> {
-            GameSessionDao.GameSession session = dao.get();
-            String oldKey = session.getEdsmApiKey();
-            if (oldKey == null) {
-                return Cypher.decrypt(session.getEncryptedEDSSMKey());
-            } else {
-                session.setEncryptedEDSSMKey(Cypher.encrypt(oldKey));
-                session.setEdsmApiKey(null);
-                dao.save(session);
-                return Cypher.decrypt(session.getEncryptedEDSSMKey());
-            }
-        });
-    }
-
 
     public String readVersionFromResources() {
         try {
@@ -422,6 +389,4 @@ public class SystemSession {
     public String getDesignaion() {
         return this.designation;
     }
-
-    //TODO add setWhisperModelPath(String path) method
 }

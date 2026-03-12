@@ -13,7 +13,6 @@ import java.util.Objects;
 
 public class PromptFactory implements AiPromptFactory {
 
-    public static final String AMY = "Amy";
     private static final PromptFactory INSTANCE = new PromptFactory();
     private final SystemSession systemSession = SystemSession.getInstance();
     private final AiCommandsAndQueries commandsAndQueries = AiCommandsAndQueries.getInstance();

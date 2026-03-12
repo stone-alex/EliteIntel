@@ -79,14 +79,11 @@ public class AppView extends JFrame implements AppViewInterface {
     private JButton recalibrateAudioButton;
     private JButton updateAppButton;
     private JCheckBox togglePrivacyModeCheckBox;
-    private JPasswordField edsmKeyField;
-    private JCheckBox edsmLockedCheck;
 
     private JTextField playerAltNameField;
     private JTextField playerTitleField;
     private JTextField playerMissionDescription;
     private JTextField journalDirField;
-    private JTextField localTtsAddressField;
     private JSlider speechSpeedSlider;
     private JLabel speechSpeedLabel;
 
@@ -650,15 +647,9 @@ public class AppView extends JFrame implements AppViewInterface {
         /// --------------------------------------------------------------------------------------------------------------------------------------------
 
         nextRow(gbc);
-        addLabel(localSettingsPanel, "Local TTS Address", gbc);
-        localTtsAddressField = new JTextField();
-        localTtsAddressField.setPreferredSize(new Dimension(200, 42));
-        localTtsAddressField.setText("http://localhost:5000/");
-        localTtsAddressField.setToolTipText("Local TTS Address");
+        addLabel(localSettingsPanel, "Local TTS", gbc);
         useLocalTTSCheck = new JCheckBox("Use", false);
         useLocalTTSCheck.addActionListener(a -> SwingUtilities.invokeLater(this::saveSystemConfig));
-
-        addField(localSettingsPanel, localTtsAddressField, gbc, 1, 0.8);
         addCheck(localSettingsPanel, useLocalTTSCheck, gbc);
         nextRow(gbc);
 
@@ -798,7 +789,7 @@ public class AppView extends JFrame implements AppViewInterface {
         restoreDefaultsButton.setEnabled(true);
         restoreDefaultsButton.setText("Restore Local LLM Defaults");
         restoreDefaultsButton.addActionListener(e -> SwingUtilities.invokeLater(() -> {
-            localLlmAddressField.setText("http://localhost:11434");
+            localLlmAddressField.setText("http://localhost:11434/api/chat");
             localLlmModelCommandField.setText("tulu3:8b");
             localLlmModelQueryField.setText("tulu3:8b");
             saveSystemConfig();
@@ -934,7 +925,6 @@ public class AppView extends JFrame implements AppViewInterface {
         ttsApiKeyField.setText(systemSession.getTtsApiKey() != null ? systemSession.getTtsApiKey() : "");
         //edsmKeyField.setText(systemSession.getEdsmApiKey() != null ? systemSession.getEdsmApiKey() : "");
 
-        localTtsAddressField.setText(playerSession.getLocalTtsAddress() != null ? playerSession.getLocalTtsAddress() : "");
         localLlmAddressField.setText(playerSession.getLocalLlmAddress() != null ? playerSession.getLocalLlmAddress() : "");
         localLlmModelCommandField.setText(systemSession.getLocalLlmCommandModel() != null ? systemSession.getLocalLlmCommandModel() : "");
         localLlmModelQueryField.setText(systemSession.getLocalLlmQueryModel() != null ? systemSession.getLocalLlmQueryModel() : "");
@@ -964,8 +954,6 @@ public class AppView extends JFrame implements AppViewInterface {
         s.setSttApiKey(new String(sttApiKeyField.getPassword()));
         s.setAiApiKey(new String(llmApiKeyField.getPassword()));
         s.setTtsApiKey(new String(ttsApiKeyField.getPassword()));
-        //s.setEdsmApiKey(new String(edsmKeyField.getPassword()));
-        playerSession.setLocalTtsAddress(localTtsAddressField.getText());
         playerSession.setLocalLlmAddress(localLlmAddressField.getText());
         systemSession.setLocalLlmCommandModel(localLlmModelCommandField.getText());
         systemSession.setLocalLlmQueryModel(localLlmModelQueryField.getText());

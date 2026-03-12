@@ -92,7 +92,7 @@ public class OllamaClient extends BaseAiClient implements Client {
     @Override
     public HttpURLConnection getHttpURLConnection() {
         try {
-            String url = getBaseUrl() + "/api/chat";
+            String url = getBaseUrl();
             HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");

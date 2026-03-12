@@ -129,11 +129,14 @@ EOF
         # logs/ is created at runtime, not distributed.
         cp -r ./dictionary "$DEFAULT_INSTALL_LOCATION/"
         cp ./elite_intel.jar "$DEFAULT_INSTALL_LOCATION/"
+        [ -d ./whisper ] && cp -r ./whisper "$DEFAULT_INSTALL_LOCATION/"
+        [ -d ./tts ]     && cp -r ./tts     "$DEFAULT_INSTALL_LOCATION/"
+        [ -d ./native ]  && cp -r ./native  "$DEFAULT_INSTALL_LOCATION/"
 
         cat << EOF
         Installed EliteIntel with files in the current directory.
         Please check the $DEFAULT_INSTALL_LOCATION folder that all the files is present:
-        [ 'elite_intel.jar', 'dictionary/stt-correction-dictionary.txt' ]
+        [ 'elite_intel.jar', 'dictionary/', 'whisper/', 'tts/', 'native/' ]
 
 EOF
     elif [ -e $ELITE_ZIP ]; then
@@ -200,8 +203,6 @@ print_usage() {
                 -u       Updates the EliteIntel by fetching the latest update from github
                 -d       Deletes the EliteIntel installation and associated files from the computer
                 -h       Displays this message.
-                -T       [legacy] Install Piper-TTS server (replaced by built-in Kokoro TTS)
-                -W       Download or re-download the Whisper offline STT model
 
 EOF
     exit 0
@@ -225,7 +226,8 @@ update_elite_intel() {
     curl -L -O $(curl -s https://api.github.com/repos/stone-alex/EliteIntel/releases/latest | grep "browser_download_url" | cut -d '"' -f 4)
 
     local ELITE_ZIP="elite_intel*.zip"
-    unzip -o "$ELITE_ZIP" elite_intel.jar dictionary/stt-correction-dictionary.txt -d "$ELITEINTEL_FOLDER"
+    # Update all distributed assets — jar, dictionary, models and native libs
+    unzip -o "$ELITE_ZIP" -d "$ELITEINTEL_FOLDER"
 
     rm $ELITE_ZIP
 
@@ -257,11 +259,11 @@ delete_elite_intel() {
         echo "It seems that EliteIntel is already deleted!"
     fi
 
-    # Remove the start menu shortcut
-    rm "$HOME/.local/share/applications/elite-intel.desktop"
-
-    chmod +x $STARTMENU_DIR/elite-intel.desktop
-    update-desktop-database $HOME/.local/share/applications
+    # Remove the start menu shortcut and launcher script
+    local STARTMENU_DIR="$HOME/.local/share/applications"
+    rm -f "$STARTMENU_DIR/elite-intel.desktop"
+    rm -f "$DEFAULT_INSTALL_LOCATION/elite-intel.sh"
+    command -v update-desktop-database >/dev/null && update-desktop-database "$STARTMENU_DIR"
 
     # Prompt for database deletion
     cat << EOF
@@ -345,243 +347,15 @@ EOF
     echo "Launcher script: $LAUNCHER"
 }
 
-download_piper_tts_models() {
-    local en_GB=(
-        "alan"
-        "alba"
-        "aru"
-        "cori"
-        "jenny_dioco"
-        "northern_english_male"
-        "semaine"
-        "vctk"
-    )
-
-    local en_US=(
-        "amy"
-        "artic"
-        "bryce"
-        "hfc_female"
-        "hfc_male"
-        "joe"
-        "john"
-        "kristin"
-        "kusal"
-        "l2artic"
-        "lessac"
-        "libritts_r"
-        "ljspeech"
-        "norman"
-        "reza_imbrahim"
-        "ryan"
-        "sam"
-    )
-
-    local NATIONALITY=en_GB
-    local MODEL=amy
-    echo "Let's download some voices!"
-
-    read -rp "Choose either GB or US voice list: " _LOCALE
-
-    case $_LOCALE in
-        gb)
-            for idx in "${!en_GB[@]}"; do
-                printf "  %2d) %s\n " "$((idx + 1))" "${en_GB[$idx]}"
-            done
-            NATIONALITY=en_GB
-
-            read -rp "select a model number [1-${#en_GB[@]}]: " _MODEL
-            MODEL="${en_GB[$((_MODEL-1))]}"
-            ;;
-        GB)
-            for idx in "${!en_GB[@]}"; do
-                printf "  %2d) %s\n " "$((idx + 1))" "${en_GB[$idx]}"
-            done
-            NATIONALITY=en_GB
-
-            read -rp "select a model number [1-${#en_GB[@]}]: " _MODEL
-            MODEL="${en_GB[$((_MODEL-1))]}"
-            ;;
-
-        US)
-            for idx in "${!en_US[@]}"; do
-                printf "  %2d) %s\n " "$((idx + 1))" "${en_US[$idx]}"
-            done
-            NATIONALITY=en_US
-
-            read -rp "select a model number [1-${#en_US[@]}]: " _MODEL
-            MODEL="${en_US[$((_MODEL-1))]}";;
-        us)
-            for idx in "${!en_US[@]}"; do
-                printf "  %2d) %s\n " "$((idx + 1))" "${en_US[$idx]}"
-            done
-            NATIONALITY=en_US
-
-            read -rp "select a model number [1-${#en_US[@]}]: " _MODEL
-            MODEL="${en_US[$((_MODEL-1))]}"
-            ;;
-    esac
-
-    echo "$NATIONALITY - $MODEL"
-
-    ## download voice models
-    curl -L -o "$NATIONALITY-$MODEL-medium.onnx" "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/$NATIONALITY/$MODEL/medium/$NATIONALITY-$MODEL-medium.onnx"
-    curl -L -o "$NATIONALITY-$MODEL-medium.onnx.json" "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/$NATIONALITY/$MODEL/medium/$NATIONALITY-$MODEL-medium.onnx.json"
-
-    echo "Downloaded $NATIONALITY-$MODEL-medium.onnx"
-}
-
-
-WHISPER_MODEL_DIR="$DEFAULT_INSTALL_LOCATION/whisper"
-WHISPER_MODEL="ggml-base.en.bin"
-WHISPER_MODEL_URL="https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.en.bin"
-
-download_whisper_model() {
-    # Skip if user isn't using Whisper STT
-    cat << EOF
-
-    EliteIntel supports an optional offline Speech-to-Text engine (Whisper).
-    This requires a ~150MB model file. If you use Google STT, you can skip this.
-
-EOF
-    read -rp "Download Whisper offline STT model? [y/n]: " _WHISPER
-    case "$_WHISPER" in
-        y|Y) ;;
-        *)
-            echo "Skipping Whisper model download."
-            return
-            ;;
-    esac
-
-    mkdir -p "$WHISPER_MODEL_DIR"
-
-    if [ -f "$WHISPER_MODEL_DIR/$WHISPER_MODEL" ]; then
-        echo "Whisper model already present, skipping download."
-        return
-    fi
-
-    echo "Downloading Whisper model (~150MB)..."
-    curl -L --progress-bar -o "$WHISPER_MODEL_DIR/$WHISPER_MODEL" "$WHISPER_MODEL_URL"
-
-    if [ $? -eq 0 ]; then
-        echo "Whisper model installed at: $WHISPER_MODEL_DIR/$WHISPER_MODEL"
-    else
-        echo "ERROR: Whisper model download failed. You can retry later with:"
-        echo "  curl -L -o \"$WHISPER_MODEL_DIR/$WHISPER_MODEL\" \"$WHISPER_MODEL_URL\""
-    fi
-}
-
-
-install_local_TTS() {
-    if ! command -v python3 >/dev/null 2>&1; then
-        echo "ERROR: Python is not installed on this system! Please resolve this error before trying again."
-        exit 1
-    fi
-
-    cat << EOF
-
-    Installing Piper Text-To-Speech python server.
-
-    You can also do this manually as described in the wiki:
-    https://github.com/stone-alex/EliteIntel/wiki/OffLineVoiceProcessor
-
-EOF
-
-    local PIPER_FOLDER="$HOME/.var/app/piper-tts"
-    local VENV_FOLDER="$PIPER_FOLDER/.venv"
-
-    mkdir -p "$PIPER_FOLDER"
-    cd "$PIPER_FOLDER"
-
-    # Create virtual environment
-    python3 -m venv "$VENV_FOLDER"
-    source "$VENV_FOLDER/bin/activate"
-
-    pip install --upgrade pip
-    pip install piper-tts[http]
-
-    # Download models into piper folder
-    download_piper_tts_models
-
-    local MODEL_LIST=( *.onnx )
-
-    for idx in "${!MODEL_LIST[@]}"; do
-        printf "%2d) %s\n " "$((idx + 1))" "${MODEL_LIST[$idx]}"
-    done
-
-    read -rp "Select a model to use [1-${#MODEL_LIST[@]}]: " _USEME
-    local USE_MODEL="${MODEL_LIST[$((_USEME-1))]}"
-
-    # Test the Piper installation
-    python -m piper.http_server -m "$USE_MODEL" &
-    local PYTHON_PID=$!
-
-    sleep 2
-    curl -X POST -H 'Content-Type: application/json' -d '{ "text": "This is a test." }' -o test.wav localhost:5000
-
-    if command -v aplay >/dev/null 2>&1; then
-        aplay test.wav
-    elif command -v paplay >/dev/null 2>&1; then
-        paplay test.wav
-    else
-        echo "Audio player not found – test.wav saved in ${PWD}"
-    fi
-
-    kill "$PYTHON_PID" 2>/dev/null
-
-    # Create desktop shortcut
-    local STARTMENU_DIR="$HOME/.local/share/applications"
-    local DESKTOP_FILE="$STARTMENU_DIR/piper-tts.desktop"
-    mkdir -p "$STARTMENU_DIR"
-
-    # Download official Piper icon (PNG works everywhere)
-    local ICON_PATH="$PIPER_FOLDER/piper-logo.png"
-    [ -f "$ICON_PATH" ] || curl -L -o "$ICON_PATH" https://contribute.rhasspy.org/img/logo.png
-
-    cat > "$DESKTOP_FILE" << EOF
-[Desktop Entry]
-Name=Piper-TTS
-Comment=Local offline Text-to-Speech server (piper-tts)
-Exec=$VENV_FOLDER/bin/python -m piper.http_server -m "$PIPER_FOLDER/$USE_MODEL"
-Icon=$ICON_PATH
-Terminal=false
-Type=Application
-Categories=Utility;Audio;
-StartupNotify=true
-EOF
-
-    chmod +x "$DESKTOP_FILE"
-    command -v update-desktop-database >/dev/null && update-desktop-database "$STARTMENU_DIR"
-    cat << EOF
-
-    Piper-TTS Installed!
-
-    If you want to change the voice, edit '$STARTMENU_DIR/piper-tts.desktop'
-    and update the -m path in Exec= line.
-
-    Enjoy local TTS!
-
-EOF
-    exit 0
-}
 
 ##########################################################################################################################
 #       Main Loop
 #
-while getopts ":hudTW" opt; do
+while getopts ":hud" opt; do
     case $opt in
         h) print_usage ;;
         u) update_elite_intel ;;
         d) delete_elite_intel ;;
-        W) download_whisper_model ;;
-        T)
-            read -rp "Do you want to do a fresh install, or download new models? (choose 'y' for install) [y/n]: " _PIPER
-            case "$_PIPER" in
-                y|Y) install_local_TTS ;;
-                n|N) download_piper_tts_models ;;
-                *) echo "Invalid choice, aborting TTS option." ;;
-            esac
-            ;;
         \?) echo "Error: Invalid option -$OPTARG" >&2; print_usage ;;
         :)  echo "Error: Option -$OPTARG requires an argument." >&2; print_usage ;;
     esac
@@ -599,13 +373,6 @@ sleep 0.2
 #		Install EliteIntel
 #
 set_install_folder
-sleep 0.2
-
-#
-#		Download Whisper.cpp model
-#
-
-download_whisper_model
 sleep 0.2
 
 #

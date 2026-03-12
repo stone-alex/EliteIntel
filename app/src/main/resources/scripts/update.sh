@@ -7,5 +7,5 @@ unzip -o "$ZIP" elite_intel.jar dictionary/ -d "$1"
 rm "$ZIP"
 echo "Updated! Restarting EliteIntel..."
 # Using nohup or just exec to replace the shell process
-exec java -jar "$1/elite_intel.jar" &
+exec java -jar -Djava.library.path=native/sherpa-onnx  "$1/elite_intel.jar" &
 exit

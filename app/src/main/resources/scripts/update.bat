@@ -50,5 +50,5 @@ if %ERRORLEVEL% neq 0 (
 del "update.zip"
 
 echo Updated! Restarting EliteIntel...
-start "" javaw -jar "!TARGET!\elite_intel.jar"
+start "" javaw -jar -Djava.library.path=native/sherpa-onnx "!TARGET!\elite_intel.jar"
 exit

@@ -73,7 +73,7 @@ public class KokoroTTS implements MouthInterface {
         return instance;
     }
 
-    // ── Lifecycle ─────────────────────────────────────────────────────────────
+    // -- Lifecycle -------------------------------------------------------------
 
     @Override
     public void start() {
@@ -145,7 +145,7 @@ public class KokoroTTS implements MouthInterface {
         }
     }
 
-    // ── MouthInterface ────────────────────────────────────────────────────────
+    // -- MouthInterface --------------------------------------------------------
 
     @Override
     public void interruptAndClear() {
@@ -198,7 +198,7 @@ public class KokoroTTS implements MouthInterface {
         }
     }
 
-    // ── Stage 1: Synthesis thread ─────────────────────────────────────────────
+    // -- Stage 1: Synthesis thread ---------------------------------------------
 
     private void processSynthesisQueue() {
         while (running) {
@@ -206,8 +206,11 @@ public class KokoroTTS implements MouthInterface {
                 String sentence = synthesisQueue.take();
                 if (interruptRequested.get()) continue;
 
-                GeneratedAudio audio = tts.generate(sentence, systemSession.getKokoroVoice().getSid(),
-                        1f + systemSession.getSpeechSpeed());
+                GeneratedAudio audio = tts.generate(
+                        sentence,
+                        systemSession.getKokoroVoice().getSid(),
+                        1f + systemSession.getSpeechSpeed()
+                );
 
                 if (audio == null || audio.getSamples() == null || audio.getSamples().length == 0) {
                     log.warn("KokoroTTS: empty audio for: {}", sentence);
@@ -228,7 +231,7 @@ public class KokoroTTS implements MouthInterface {
         }
     }
 
-    // ── Stage 2: Playback thread ──────────────────────────────────────────────
+    // -- Stage 2: Playback thread ----------------------------------------------
 
     private void processPlaybackQueue() {
         if (!openPersistentLine()) return;
@@ -309,7 +312,7 @@ public class KokoroTTS implements MouthInterface {
         }
     }
 
-    // ── Engine construction ───────────────────────────────────────────────────
+    // -- Engine construction ---------------------------------------------------
 
     private OfflineTts buildOfflineTts() {
         Path modelDir = AppPaths.getTtsModelDir().resolve("kokoro-en-v0_19");
@@ -341,7 +344,7 @@ public class KokoroTTS implements MouthInterface {
         return new OfflineTts(config);
     }
 
-    // ── Native loading ────────────────────────────────────────────────────────
+    // -- Native loading --------------------------------------------------------
 
     private static void extractAndLoadNatives() throws IOException {
         String platform = detectPlatform();
@@ -388,7 +391,7 @@ public class KokoroTTS implements MouthInterface {
         throw new UnsupportedOperationException("Unsupported OS: " + os);
     }
 
-    // ── Helpers ───────────────────────────────────────────────────────────────
+    // -- Helpers ---------------------------------------------------------------
 
     private static byte[] floatToPcm16(float[] samples) {
         byte[] out = new byte[samples.length * 2];

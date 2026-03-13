@@ -1,8 +1,8 @@
-// ── updater/build.gradle ─────────────────────────────────────────────────────
+// -- updater/build.gradle -----------------------------------------------------
 // Produces elite_intel_updater.jar and copies it into the root-project's
 // distribution/ directory so install4j and the release ZIP both pick it up
 // automatically — no manual cp steps needed in CI.
-// ─────────────────────────────────────────────────────────────────────────────
+// -----------------------------------------------------------------------------
 
 plugins {
     id 'application'
@@ -35,7 +35,7 @@ shadowJar {
 // Ensure the plain jar task triggers the shadow build
 jar.dependsOn shadowJar
 
-// ── Copy the updater jar into ROOT/distribution/ after it is built ────────────
+// -- Copy the updater jar into ROOT/distribution/ after it is built ------------
 // This is the single source of truth for the artifact location.
 // Both the CI ZIP step and install4j read from that directory, so nothing
 // else needs changing when this task runs as part of the root build.

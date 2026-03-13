@@ -8,18 +8,18 @@ public class TimeUtils {
     private static final int SECONDS_PER_MINUTE = 60;
     //public static final String ISO_8601 = "yyyy-MM-dd HH:mm:ss";
 
-    // ──────────────────────────────────────────────────────────────
+    // --------------------------------------------------------------
     // 1. The classic human-readable one (what you currently have)
-    // ──────────────────────────────────────────────────────────────
+    // --------------------------------------------------------------
     /** Classic local date-time pattern used in logs, DB dumps, filenames, etc. */
     public static final String LOCAL_DATE_TIME = "yyyy-MM-dd HH:mm:ss";
 
     /** Same as above but with milliseconds – very common in detailed logs */
     public static final String LOCAL_DATE_TIME_MILLIS = "yyyy-MM-dd HH:mm:ss.SSS";
 
-    // ──────────────────────────────────────────────────────────────
+    // --------------------------------------------------------------
     // 2. Proper ISO 8601 / RFC 3339 patterns (the ones you SHOULD use for APIs)
-    // ──────────────────────────────────────────────────────────────
+    // --------------------------------------------------------------
     public static final String ISO_INSTANT = "yyyy-MM-dd'T'HH:mm:ss'Z'";  // ← no millis, Z literal
 
     /** Most common real-world API format (with fractional seconds + Z) */

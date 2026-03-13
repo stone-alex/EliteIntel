@@ -109,13 +109,13 @@ tar -xvf app-shadow.tar
 You should have something like this in your ~/ei directory now:
 ```shell
 .
-├── app-shadow
-│   ├── bin
-│        ├── app
-│        └── app.bat
-│   └── lib
-│        └── elite_intel.jar
-└── app-shadow.tar
+├-- app-shadow
+│   ├-- bin
+│        ├-- app
+│        └-- app.bat
+│   └-- lib
+│        └-- elite_intel.jar
+└-- app-shadow.tar
 ```
 
 You do not need the bin directory. It is an artifact of the build process.
@@ -145,15 +145,15 @@ java -jar elite_intel.jar
 When app starts it creates this directory structure:
 ```shell
 .
-├── db
-│   ├── database.db
-│   ├── database.db-shm
-│   └── database.db-wal
-├── dictionary
-│   └── stt-correction-dictionary.txt
-├── elite_intel.jar
-└── logs
-    └── elite-intel.log
+├-- db
+│   ├-- database.db
+│   ├-- database.db-shm
+│   └-- database.db-wal
+├-- dictionary
+│   └-- stt-correction-dictionary.txt
+├-- elite_intel.jar
+└-- logs
+    └-- elite-intel.log
 ```
 
 The database is stored in the db directory. 
@@ -303,13 +303,13 @@ tar -xf app-shadow.tar
 Your %USERPROFILE%\ei directory should look like:
 ```shell
 .  
-├── app-shadow  
-│   ├── bin  
-│   │   ├── app.bat  
-│   │   └── app  
-│   └── lib  
-│       └── elite_intel.jar  
-└── app-shadow.tar  
+├-- app-shadow  
+│   ├-- bin  
+│   │   ├-- app.bat  
+│   │   └-- app  
+│   └-- lib  
+│       └-- elite_intel.jar  
+└-- app-shadow.tar  
 ```
 
 The bin folder is a build artifact—remove it (Java doesn't need it):
@@ -341,15 +341,15 @@ When the app starts, it creates this structure in %USERPROFILE%\ei\app-shadow\li
 
 ```shell
 .  
-├── db  
-│   ├── database.db  
-│   ├── database.db-shm  
-│   └── database.db-wal  
-├── dictionary  
-│   └── stt-correction-dictionary.txt  
-├── elite_intel.jar  
-└── logs  
-    └── elite-intel.log  
+├-- db  
+│   ├-- database.db  
+│   ├-- database.db-shm  
+│   └-- database.db-wal  
+├-- dictionary  
+│   └-- stt-correction-dictionary.txt  
+├-- elite_intel.jar  
+└-- logs  
+    └-- elite-intel.log  
 ```
 
 The database lives in db. For updates: Rebuild and replace elite_intel.jar (keep db for data).

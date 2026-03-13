@@ -38,7 +38,7 @@ import java.util.zip.ZipInputStream;
  */
 public class UpdaterApp {
 
-    // ── Palette (mirrors AppView exactly) ────────────────────────────────────
+    // -- Palette (mirrors AppView exactly) ------------------------------------
     private static final Color BG = new Color(0x141622);
     private static final Color BG_PANEL = new Color(0x1F2032);
     private static final Color FG = new Color(0xE6E6E6);
@@ -52,7 +52,7 @@ public class UpdaterApp {
             "https://api.github.com/repos/stone-alex/EliteIntel/releases/latest";
     private static final String MAIN_JAR = "elite_intel.jar";
 
-    // ── UI components ─────────────────────────────────────────────────────────
+    // -- UI components ---------------------------------------------------------
     private JFrame frame;
     private JTextArea logArea;
     private JProgressBar progressBar;
@@ -60,7 +60,7 @@ public class UpdaterApp {
 
     private final String installDir;
 
-    // ─────────────────────────────────────────────────────────────────────────
+    // -------------------------------------------------------------------------
 
     public static void main(String[] args) {
         String dir = args.length > 0 ? args[0] : detectInstallDir();
@@ -71,7 +71,7 @@ public class UpdaterApp {
         this.installDir = installDir;
     }
 
-    // ── Bootstrap ─────────────────────────────────────────────────────────────
+    // -- Bootstrap -------------------------------------------------------------
 
     private void launch() {
         installDarkDefaults();
@@ -82,7 +82,7 @@ public class UpdaterApp {
         Thread.ofVirtual().name("updater-pipeline").start(this::runPipeline);
     }
 
-    // ── UI construction (no MVC, just like the main app) ──────────────────────
+    // -- UI construction (no MVC, just like the main app) ----------------------
 
     private void buildUi() {
         frame = new JFrame("Elite Intel – Updater");
@@ -104,13 +104,13 @@ public class UpdaterApp {
         root.setBorder(new EmptyBorder(14, 14, 14, 14));
         frame.setContentPane(root);
 
-        // ── Title ─────────────────────────────────────────────────────────────
+        // -- Title -------------------------------------------------------------
         JLabel title = new JLabel("ELITE INTEL  ·  UPDATE", SwingConstants.CENTER);
         title.setFont(title.getFont().deriveFont(Font.BOLD, 16f));
         title.setForeground(ACCENT);
         root.add(title, BorderLayout.NORTH);
 
-        // ── Centre: log area ──────────────────────────────────────────────────
+        // -- Centre: log area --------------------------------------------------
         logArea = new JTextArea();
         logArea.setEditable(false);
         logArea.setLineWrap(true);
@@ -127,7 +127,7 @@ public class UpdaterApp {
         scroll.setBackground(BG);
         root.add(scroll, BorderLayout.CENTER);
 
-        // ── South: status label + progress bar ────────────────────────────────
+        // -- South: status label + progress bar --------------------------------
         JPanel south = new JPanel(new BorderLayout(0, 4));
         south.setBackground(BG);
 
@@ -173,7 +173,7 @@ public class UpdaterApp {
         root.add(south, BorderLayout.SOUTH);
     }
 
-    // ── Update pipeline ───────────────────────────────────────────────────────
+    // -- Update pipeline -------------------------------------------------------
 
     private void runPipeline() {
         try {
@@ -205,7 +205,7 @@ public class UpdaterApp {
         }
     }
 
-    // ── Step 1 – resolve download URL ─────────────────────────────────────────
+    // -- Step 1 – resolve download URL -----------------------------------------
 
     private String fetchLatestZipUrl() throws Exception {
         status("Checking GitHub for latest release…");
@@ -249,7 +249,7 @@ public class UpdaterApp {
         return zipUrl;
     }
 
-    // ── Step 2 – download with progress ───────────────────────────────────────
+    // -- Step 2 – download with progress ---------------------------------------
 
     private Path downloadZip(String url) throws Exception {
         status("Downloading update…");
@@ -317,7 +317,7 @@ public class UpdaterApp {
         return tmp;
     }
 
-    // ── Step 3 – unzip ────────────────────────────────────────────────────────
+    // -- Step 3 – unzip --------------------------------------------------------
 
     private void unzip(Path zipFile, Path targetDir) throws IOException {
         status("Extracting files…");
@@ -352,7 +352,7 @@ public class UpdaterApp {
         });
     }
 
-    // ── Step 4 – relaunch main app ────────────────────────────────────────────
+    // -- Step 4 – relaunch main app --------------------------------------------
 
     private void relaunch() throws IOException {
         Path jar = Path.of(installDir, MAIN_JAR);
@@ -378,7 +378,7 @@ public class UpdaterApp {
         System.exit(0);
     }
 
-    // ── UI helpers ────────────────────────────────────────────────────────────
+    // -- UI helpers ------------------------------------------------------------
 
     private void log(String msg) {
         SwingUtilities.invokeLater(() -> {
@@ -399,7 +399,7 @@ public class UpdaterApp {
         SwingUtilities.invokeLater(() -> statusLabel.setText(msg));
     }
 
-    // ── Dark theme defaults (mirrors AppView.installDarkDefaults) ─────────────
+    // -- Dark theme defaults (mirrors AppView.installDarkDefaults) -------------
 
     private static void installDarkDefaults() {
         UIManager.put("Panel.background", BG);
@@ -413,7 +413,7 @@ public class UpdaterApp {
         UIManager.put("ProgressBar.foreground", BUTTON_BG);
     }
 
-    // ── Fallback: detect install dir from the updater jar's own location ──────
+    // -- Fallback: detect install dir from the updater jar's own location ------
 
     private static String detectInstallDir() {
         try {

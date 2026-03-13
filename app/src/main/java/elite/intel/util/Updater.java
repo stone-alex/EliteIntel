@@ -42,7 +42,7 @@ public class Updater {
     private Updater() {
     }
 
-    // ── Directory resolution ──────────────────────────────────────────────────
+    // -- Directory resolution --------------------------------------------------
 
     private static Path resolveJarDirectory() {
         try {
@@ -57,7 +57,7 @@ public class Updater {
         }
     }
 
-    // ── Public API ────────────────────────────────────────────────────────────
+    // -- Public API ------------------------------------------------------------
 
     /**
      * Launches the companion updater jar in a separate process, then signals the
@@ -134,7 +134,7 @@ public class Updater {
         });
     }
 
-    // ── Private helpers ───────────────────────────────────────────────────────
+    // -- Private helpers -------------------------------------------------------
 
     /**
      * Builds the OS-appropriate command to launch the updater jar.

@@ -139,6 +139,7 @@ public enum Commands {
     REQUEST_HOLD_FIRE                                   ("fighter_orders_hold_your_fire_fighter_order", BINDING_REQUEST_HOLD_FIRE.getGameBinding(), GenericGameControlHandler.class),
     REQUEST_REQUEST_DOCK                                ("fighter_orders_recall", BINDING_REQUEST_REQUEST_DOCK.getGameBinding(), GenericGameControlHandler.class),
     STOP                                                ("stop", BINDING_SET_SPEED_ZERO.getGameBinding(), GenericGameControlHandler.class),
+    TAXI                                                ("taxi", BINDING_SET_SPEED_ZERO.getGameBinding(), GenericGameControlHandler.class),
     SET_SPEED_ZERO                                      ("set_speed_to_zero_0", BINDING_SET_SPEED_ZERO.getGameBinding(), GenericGameControlHandler.class),
     SET_SPEED25                                         ("set_speed_to_slow_throttle_25", BINDING_SET_SPEED25.getGameBinding(), GenericGameControlHandler.class),
     SET_SPEED50                                         ("set_speed_to_medium_throttle_50", BINDING_SET_SPEED50.getGameBinding(), GenericGameControlHandler.class),

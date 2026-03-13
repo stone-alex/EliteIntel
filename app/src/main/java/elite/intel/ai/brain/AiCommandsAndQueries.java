@@ -88,16 +88,17 @@ public class AiCommandsAndQueries {
         commandMap.put(" command cancel/clear trade route ", CLEAR_TRADE_ROUTE.getAction());
 
         commandMap.put(" command deploy heat sink ", DEPLOY_HEAT_SINK.getAction());
-        commandMap.put(" command stop, engine stop, full stop, taxi, set speed zero ", STOP.getAction());
+        commandMap.put(" command stop, engine stop, full stop, set speed zero ", STOP.getAction());
+        commandMap.put(" command taxi, take us in, auto pilot, auto docking ", TAXI.getAction());
         commandMap.put(" command quarter throttle, quarter speed, speed 25 ", SET_SPEED25.getAction());
         commandMap.put(" command half throttle, half speed, speed 50 ", SET_SPEED50.getAction());
         commandMap.put(" command throttle 75, three quarters throttle, set speed 75 ", SET_SPEED75.getAction());  // Removed duplicates
         commandMap.put(" command max speed, full speed ", SET_SPEED100.getAction());
         commandMap.put(" command set fuel reserve" + KEY_X, SET_CARRIER_FUEL_RESERVE.getAction());
         commandMap.put(" command select/target next system in route ", TARGET_NEXT_ROUTE_SYSTEM.getAction());
-//            commandMap.put(" command target wingman 1 ", TARGET_WINGMAN0.getAction());
-//            commandMap.put(" command target wingman 2 ", TARGET_WINGMAN1.getAction());
-//            commandMap.put(" command target wingman 3 ", TARGET_WINGMAN2.getAction());
+        commandMap.put(" command target wingman 1 ", TARGET_WINGMAN0.getAction());
+        commandMap.put(" command target wingman 2 ", TARGET_WINGMAN1.getAction());
+        commandMap.put(" command target wingman 3 ", TARGET_WINGMAN2.getAction());
         commandMap.put(" command wing nav lock, lock on wing ", WING_NAV_LOCK.getAction());
 
 

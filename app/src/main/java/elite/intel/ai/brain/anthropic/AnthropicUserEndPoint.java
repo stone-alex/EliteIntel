@@ -32,7 +32,7 @@ public class AnthropicUserEndPoint extends AiEndPoint implements AIChatInterface
             // Build base prompt object (model, max_tokens, temperature)
             JsonObject prompt = client.createPrompt(AnthropicClient.MODEL_COMMAND_MODEL, temp);
 
-            // ── Separate system messages from user/assistant messages ──────────
+            // -- Separate system messages from user/assistant messages ----------
             StringBuilder systemContent = new StringBuilder();
             JsonArray conversationMessages = new JsonArray();
 
@@ -72,7 +72,7 @@ public class AnthropicUserEndPoint extends AiEndPoint implements AIChatInterface
             bodyString = prompt.toString();
             log.debug("Anthropic API call:\n{}", GsonFactory.getGson().toJson(prompt));
 
-            // ── Send and unwrap ────────────────────────────────────────────────
+            // -- Send and unwrap ------------------------------------------------
             JsonObject root = processAiPrompt(bodyString, client);
             if (root == null) {
                 log.error("Null response from Anthropic API");

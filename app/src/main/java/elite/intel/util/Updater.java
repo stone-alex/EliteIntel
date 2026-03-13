@@ -1,148 +1,153 @@
 package elite.intel.util;
 
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.OsDetector.OS;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.nio.file.attribute.PosixFilePermissions;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import static elite.intel.session.SystemSession.getInstance;
 import static elite.intel.util.StringUtls.normalizeVersion;
 
+/**
+ * Handles version checking and update delegation for EliteIntel.
+ * <p>
+ * When an update is requested, the main application is not responsible for
+ * downloading or unpacking anything. Instead, it locates the companion
+ * {@code elite_intel_updater.jar} sitting alongside the main jar, launches it
+ * as a separate process (passing the install directory as the first argument),
+ * and then exits.  All download / extraction / relaunch logic lives in
+ * {@code UpdaterApp} inside that companion jar.
+ * <p>
+ * The updater jar is intentionally tiny — no native STT/TTS/LLM dependencies —
+ * so it starts in under a second even on modest hardware.
+ */
 public class Updater {
 
-    private static final Path JAR_DIR = getJarDirectory();
+    /**
+     * Name of the companion updater jar, expected in the same directory as the main jar.
+     */
+    private static final String UPDATER_JAR_NAME = "elite_intel_updater.jar";
+
+    private static final Path JAR_DIR = resolveJarDirectory();
 
     private Updater() {
     }
 
-    private static Path getJarDirectory() {
+    // ── Directory resolution ──────────────────────────────────────────────────
+
+    private static Path resolveJarDirectory() {
         try {
             URI uri = Updater.class
                     .getProtectionDomain()
                     .getCodeSource()
                     .getLocation()
                     .toURI();
-            return Path.of(uri).getParent();  // Safe: Path.of(URI) handles file:/C: correctly
+            return Path.of(uri).getParent();
         } catch (Exception e) {
             throw new RuntimeException("Cannot detect JAR directory", e);
         }
     }
 
+    // ── Public API ────────────────────────────────────────────────────────────
+
     /**
-     * Executes an update operation asynchronously by extracting the appropriate
-     * platform-specific update script to a temporary directory, running it, and managing the
-     * temporary files. The method handles platform-specific commands for Windows and Linux.
+     * Launches the companion updater jar in a separate process, then signals the
+     * caller that the main application should exit.
      * <p>
-     * The update operation invokes a script to potentially modify or update local files
-     * based on the current application setup.
+     * Returns {@code true} when the updater process was successfully spawned
+     * (the caller should call {@code System.exit(0)} after this).
+     * Returns {@code false} if the updater jar is missing or the process cannot
+     * be started, in which case the main app stays running.
      *
-     * @return a {@code CompletableFuture<Boolean>} that completes with {@code true} if the
-     * update process starts successfully, or {@code false} if an error occurs during
-     * the setup or execution of the process.
+     * @return a {@code CompletableFuture<Boolean>} — {@code true} means "exit now".
      */
     public static CompletableFuture<Boolean> performUpdateAsync() {
         return CompletableFuture.supplyAsync(() -> {
+            Path updaterJar = JAR_DIR.resolve(UPDATER_JAR_NAME);
 
-            Path tempDir = null;
-            boolean success = false;
+            if (!updaterJar.toFile().exists()) {
+                EventBusManager.publish(new AppLogEvent(
+                        "Updater jar not found: " + updaterJar));
+                return false;
+            }
+
             try {
-                tempDir = Files.createTempDirectory("elite-intel-update");
-                Path script = extractPlatformScript(tempDir);
-
-                List<String> command = OsDetector.getOs() == OS.WINDOWS
-                        ? List.of("cmd.exe", "/c", script.toString(), JAR_DIR.toString())
-                        : List.of("bash", script.toString(), JAR_DIR.toString());
-
+                List<String> command = buildLaunchCommand(updaterJar);
                 ProcessBuilder pb = new ProcessBuilder(command);
-                pb.directory(tempDir.toFile());
+                pb.directory(JAR_DIR.toFile());
+                pb.inheritIO();    // updater writes to its own window, not ours
+                pb.start();
+                return true;       // caller should now exit
 
-                pb.inheritIO();
-
-                Process process = pb.start();
-                if (process.isAlive()) {
-                    success = true;
-                    return true;
-                }
-                return false;
             } catch (IOException e) {
+                EventBusManager.publish(new AppLogEvent(
+                        "Failed to launch updater: " + e.getMessage()));
                 return false;
-            } finally {
-                if (tempDir != null && !success) {
-                    cleanupTemp(tempDir);
-                }
             }
         });
     }
 
-    private static Path extractPlatformScript(Path tempDir) throws IOException {
-        String scriptName = OsDetector.getOs() == OS.WINDOWS ? "update.bat" : "update.sh";
-        try (InputStream is = Updater.class.getResourceAsStream("/scripts/" + scriptName)) {
-            if (is == null) throw new IOException("Missing update script: " + scriptName);
-            Path script = tempDir.resolve(scriptName);
-            Files.copy(is, script, StandardCopyOption.REPLACE_EXISTING);
-            if (!scriptName.endsWith(".bat")) {
-                Files.setPosixFilePermissions(script, PosixFilePermissions.fromString("rwxr-xr-x"));
-            }
-            return script;
-        }
-    }
-
-    private static void cleanupTemp(Path dir) {
-        try (var stream = Files.walk(dir)) {
-            stream.sorted((a, b) -> -a.compareTo(b))
-                    .forEach(p -> {
-                        try {
-                            Files.deleteIfExists(p);
-                        } catch (IOException ignored) {
-                        }
-                    });
-        } catch (IOException ignored) {
-        }
-    }
-
     /**
-     * Checks asynchronously if a newer version of the software is available by comparing the local version
-     * with the remote version fetched from a predefined resource URL.
+     * Checks asynchronously whether a newer version is available on GitHub.
      *
-     * @return a {@code CompletableFuture<Boolean>} that completes with {@code true} if a newer version
-     * is available, or {@code false} if the local version is up-to-date or an error occurs during the check.
+     * @return {@code true} if a newer version exists; {@code false} if up-to-date
+     *         or the check could not be completed.
      */
     public static CompletableFuture<Boolean> isUpdateAvailableAsync() {
         return CompletableFuture.supplyAsync(() -> {
-            SystemSession.getInstance().readVersionFromResources();
-            String local = normalizeVersion(SystemSession.getInstance().readVersionFromResources());
+            String local = normalizeVersion(getInstance().readVersionFromResources());
             if (local.isBlank()) return false;
 
-            long localVersion = StringUtls.getNumericBuild(local);
+            long localBuild = StringUtls.getNumericBuild(local);
 
             try {
                 HttpClient client = HttpClient.newHttpClient();
                 HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create("https://raw.githubusercontent.com/stone-alex/EliteIntel/refs/heads/master/app/src/main/resources/version.txt"))
+                        .uri(URI.create(
+                                "https://raw.githubusercontent.com/stone-alex/EliteIntel"
+                                        + "/refs/heads/master/app/src/main/resources/version.txt"))
                         .GET()
                         .build();
-                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+                HttpResponse<String> response =
+                        client.send(request, HttpResponse.BodyHandlers.ofString());
+
                 if (response.statusCode() == 200) {
                     String remote = normalizeVersion(response.body().trim());
-                    long remoteVersion = StringUtls.getNumericBuild(remote);
-                    return remoteVersion > localVersion;
+                    long remoteBuild = StringUtls.getNumericBuild(remote);
+                    return remoteBuild > localBuild;
                 }
             } catch (Exception e) {
-                EventBusManager.publish(new AppLogEvent("update check failed: " + e.getMessage()));
+                EventBusManager.publish(new AppLogEvent(
+                        "Update check failed: " + e.getMessage()));
             }
             return false;
         });
+    }
+
+    // ── Private helpers ───────────────────────────────────────────────────────
+
+    /**
+     * Builds the OS-appropriate command to launch the updater jar.
+     * On Windows we use {@code javaw} (no console window); on Linux/macOS {@code java}.
+     */
+    private static List<String> buildLaunchCommand(Path updaterJar) {
+        String javaExe = OsDetector.getOs() == OS.WINDOWS ? "javaw" : "java";
+
+        List<String> cmd = new ArrayList<>();
+        cmd.add(javaExe);
+        cmd.add("-jar");
+        cmd.add(updaterJar.toAbsolutePath().toString());
+        cmd.add(JAR_DIR.toAbsolutePath().toString());   // argv[0] = install dir
+        return cmd;
     }
 }

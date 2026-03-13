@@ -35,17 +35,16 @@ jobs:
 
       - name: Prepare for Install4j
         run: |
+          # elite_intel.jar: copied from the shadow tar
+          # elite_intel_updater.jar: already in distribution/ — Gradle put it there
           mkdir -p distribution
           cp app-shadow/lib/elite_intel.jar distribution/
 
       - name: Create release directory
         run: mkdir release
 
-      - name: Copy fat JAR
-        run: cp app-shadow/lib/elite_intel.jar release/
-
-      - name: Copy distribution files
-        run: cp -r distribution/* release/ || true   # || true = ok if dir empty
+      - name: Copy distribution to release
+        run: cp -r distribution/. release/
 
       - name: Get version
         run: |
@@ -59,6 +58,9 @@ jobs:
         run: |
           cd release
           zip -r ../elite_intel_${{ env.VERSION }}.zip .
+
+      - name: Verify ZIP contents
+        run: unzip -l elite_intel_${{ env.VERSION }}.zip | grep "\.jar"
 
       - name: Upload ZIP artifact
         uses: actions/upload-artifact@v4
@@ -93,11 +95,13 @@ jobs:
 
       - name: Prepare distribution for install4j
         run: |
+          # elite_intel.jar: copied from the shadow tar
+          # elite_intel_updater.jar: already in distribution/ — Gradle put it there
           mkdir -p distribution
           cp app-shadow/lib/elite_intel.jar distribution/elite_intel.jar
           ls -la distribution/
-          du -sh distribution/elite_intel.jar || true
-          file distribution/elite_intel.jar || true
+          du -sh distribution/*.jar || true
+          file distribution/*.jar   || true
 
       - name: Setup install4j
         uses: luangong/setup-install4j@v1

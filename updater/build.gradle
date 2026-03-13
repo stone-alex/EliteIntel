@@ -1,0 +1,52 @@
+// ── updater/build.gradle ─────────────────────────────────────────────────────
+// Produces elite_intel_updater.jar and copies it into the root-project's
+// distribution/ directory so install4j and the release ZIP both pick it up
+// automatically — no manual cp steps needed in CI.
+// ─────────────────────────────────────────────────────────────────────────────
+
+plugins {
+    id 'application'
+    // 'java' and shadow are already applied by the root subprojects block
+}
+
+application {
+    mainClass = 'elite.intel.updater.UpdaterApp'
+}
+
+dependencies {
+    // Intentionally empty.
+    // The updater only needs java.net.http and java.util.zip — both JDK 21 builtins.
+    // Do NOT add :app here; that would drag in all native STT/TTS/LLM deps.
+}
+
+shadowJar {
+    archiveBaseName = 'elite_intel_updater'
+    archiveClassifier = ''   // no '-all' suffix
+    archiveVersion = ''   // stable filename: elite_intel_updater.jar
+
+    manifest {
+        attributes 'Main-Class': application.mainClass
+    }
+
+    mergeServiceFiles()
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+// Ensure the plain jar task triggers the shadow build
+jar.dependsOn shadowJar
+
+// ── Copy the updater jar into ROOT/distribution/ after it is built ────────────
+// This is the single source of truth for the artifact location.
+// Both the CI ZIP step and install4j read from that directory, so nothing
+// else needs changing when this task runs as part of the root build.
+tasks.register('copyUpdaterToDistribution', Copy) {
+    dependsOn shadowJar
+    description = 'Copies elite_intel_updater.jar into the root distribution/ directory.'
+    group = 'distribution'
+
+    from(shadowJar.archiveFile)
+    into(rootProject.layout.projectDirectory.dir('distribution'))
+}
+
+// Hook into the standard build lifecycle so the root 'build' task triggers the copy
+build.finalizedBy copyUpdaterToDistribution

@@ -1,7 +1,6 @@
 package elite.intel.ui.view;
 
 import com.google.common.eventbus.Subscribe;
-import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
@@ -757,11 +756,21 @@ public class AppView extends JFrame implements AppViewInterface {
         updateAppButton.setEnabled(false);
         updateAppButton.setText("App is Up to Date");
         updateAppButton.addActionListener(e -> {
-            EventBusManager.publish(new AiVoxResponseEvent("Updating. See you soon..."));
-            SleepNoThrow.sleep(3000);
-            Updater.performUpdateAsync().thenAccept(success -> {
-                if (success) {
-                    SwingUtilities.invokeLater(() -> System.exit(0));
+            updateAppButton.setEnabled(false);
+            updateAppButton.setText("Updating…");
+
+            Updater.performUpdateAsync().thenAccept(launched -> {
+                if (launched) {
+                    // Updater process is running — shut the main app down cleanly.
+                    EventBusManager.publish(new SystemShutDownEvent());
+                } else {
+                    // Couldn't start updater; re-enable the button.
+                    SwingUtilities.invokeLater(() -> {
+                        updateAppButton.setEnabled(true);
+                        updateAppButton.setText("Update Available");
+                    });
+                    EventBusManager.publish(new AppLogEvent(
+                            "Could not launch updater — is elite_intel_updater.jar present?"));
                 }
             });
         });

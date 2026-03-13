@@ -31,4 +31,5 @@ application {
 
 tasks.named('build') {
     dependsOn project(':app').tasks.shadowJar
+    dependsOn project(':updater').tasks.shadowJar
 }

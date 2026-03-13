@@ -1,3 +1,4 @@
 rootProject.name = 'elite-intel'
 include 'app'
+include ':updater'
 

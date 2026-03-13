@@ -40,7 +40,7 @@ public class KeyBindCheck {
 
         for (String binding : missingBindings) {
             missingBindingsMessage.append(binding);
-            missingBindingsMessage.append(", ");
+            missingBindingsMessage.append(".\n");
         }
 
         StringBuilder warning = new StringBuilder();

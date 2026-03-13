@@ -34,6 +34,8 @@ public class WhisperSTTImpl implements EarsInterface {
     private static final int MIN_AUDIO_BYTES = WHISPER_SAMPLE_RATE * 2 * MIN_AUDIO_MS / 1000; // 32000 bytes
 
 
+    private final AtomicBoolean isStopping = new AtomicBoolean(false);
+    private volatile Thread currentTranscriptionThread = null;
     private final AtomicBoolean isListening = new AtomicBoolean(false);
     private final AtomicBoolean isSpeaking = new AtomicBoolean(false);
     private final SystemSession systemSession = SystemSession.getInstance();
@@ -90,9 +92,25 @@ public class WhisperSTTImpl implements EarsInterface {
 
     @Override
     public void stop() {
+        isStopping.set(true);
         isListening.set(false);
         if (processingThread != null) processingThread.interrupt();
-        if (whisperCtx != null) whisperCtx.close();
+
+        // Wait for any in-flight transcription to finish before releasing the context
+        Thread t = currentTranscriptionThread;
+        if (t != null) {
+            try {
+                t.join(5000); // wait up to 5s for transcription to complete
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+
+        if (whisperCtx != null) {
+            whisperCtx.close();
+            whisperCtx = null;
+        }
+        isStopping.set(false);
         EventBusManager.publish(new AiVoxResponseEvent("Voice input disabled."));
     }
 

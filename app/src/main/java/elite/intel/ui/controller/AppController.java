@@ -7,7 +7,6 @@ import elite.intel.ai.brain.AIPersonality;
 import elite.intel.ai.ears.AudioCalibrator;
 import elite.intel.ai.ears.AudioFormatDetector;
 import elite.intel.ai.ears.EarsInterface;
-import elite.intel.ai.ears.google.GoogleSTTImpl;
 import elite.intel.ai.hands.KeyBindCheck;
 import elite.intel.ai.mouth.GoogleVoices;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
@@ -126,7 +125,8 @@ public class AppController implements Runnable {
 
     @Subscribe public void togglePrivacyMode(TogglePrivacyModeEvent event) {
         EarsInterface ears = services.get(ServiceType.EARS).get();
-        if (ears instanceof GoogleSTTImpl) { // <-- can't start stop Whisper STT all the time without a JNI crash
+        //if (ears instanceof GoogleSTTImpl) { // <-- can't start stop Whisper STT all the time without a JNI crash
+        if (ears != null) { // <-- can't start stop Whisper STT all the time without a JNI crash
             if (event.isEnabled()) {
                 ears.stop();
             } else {

@@ -225,7 +225,7 @@ public class TradeProfileManager {
     public boolean setAllowPermit(boolean allowPermit) {
         final ShipDao.Ship ship = shipManager.getShip();
         if (ship == null) {
-            EventBusManager.publish(new MissionCriticalAnnouncementEvent("No ship data availale. Please board a cargo ship."));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("No ship data available. Please board a cargo ship."));
             return false;
         }
         TradeProfileDao.TradeProfile profile = getProfile(ship);
@@ -239,7 +239,7 @@ public class TradeProfileManager {
     public boolean setAllowProhibitedCargo(boolean allowProhibitedCargo) {
         final ShipDao.Ship ship = shipManager.getShip();
         if (ship == null) {
-            EventBusManager.publish(new MissionCriticalAnnouncementEvent("No ship data availale. Please board a cargo ship."));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("No ship data available. Please board a cargo ship."));
             return false;
         }
         TradeProfileDao.TradeProfile profile = getProfile(ship);

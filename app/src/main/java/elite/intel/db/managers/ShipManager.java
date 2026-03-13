@@ -2,6 +2,7 @@ package elite.intel.db.managers;
 
 import elite.intel.db.dao.ShipDao;
 import elite.intel.db.util.Database;
+import elite.intel.gameapi.journal.events.dto.shiploadout.ShipLoadOutDto;
 import elite.intel.util.ShipPadSizes;
 
 public class ShipManager {
@@ -29,18 +30,22 @@ public class ShipManager {
             ship.setCargoCapacity(cargoCapacity);
             ship.setShipIdentifier(shipMake);
             dao.save(ship);
-            return null;
+            return Void.TYPE;
         });
     }
 
     public ShipDao.Ship getShip() {
-        return Database.withDao(ShipDao.class, dao -> dao.findShip(
-                        ShipLoadoutManager.getInstance().get().getShipId()
-                )
+        return Database.withDao(ShipDao.class, dao -> {
+                    ShipLoadOutDto dto = ShipLoadoutManager.getInstance().get();
+                    if (dto == null) return null;
+                    return dao.findShip(dto.getShipId());
+                }
         );
     }
 
     public boolean requireLargePad() {
-        return "L".equals(ShipPadSizes.getPadSize(getShip().getShipIdentifier()));
+        ShipDao.Ship ship = getShip();
+        if (ship == null) return false;
+        return "L".equals(ShipPadSizes.getPadSize(ship.getShipIdentifier()));
     }
 }

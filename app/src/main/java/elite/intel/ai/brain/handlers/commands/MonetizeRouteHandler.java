@@ -15,7 +15,7 @@ public class MonetizeRouteHandler implements CommandHandler {
 
     @Override public void handle(String action, JsonObject params, String responseText) {
         ShipManager shipManager = ShipManager.getInstance();
-        if (shipManager.getShip().getCargoCapacity() < 1) {
+        if (shipManager.getShip() == null || shipManager.getShip().getCargoCapacity() < 1) {
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("Ship does not have enough cargo capacity."));
             return;
         }

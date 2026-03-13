@@ -45,8 +45,6 @@ public class OpenAiClient extends BaseAiClient implements Client {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("model", model);
         jsonObject.addProperty("temperature", temp);
-        jsonObject.addProperty("prompt_cache_key", playerSession.getUUD());
-        jsonObject.addProperty("prompt_cache_retention", "1h");
         return jsonObject;
     }
 

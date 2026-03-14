@@ -17,7 +17,6 @@ import java.net.URL;
 public class OllamaClient extends BaseAiClient implements Client {
     // qwen2.5:14b working but .5 sec on command response.
 
-
     public static final Integer MODEL_COMMANDS = 1;
     public static final Integer MODEL_QUERIES = 2;
     private static final OllamaClient INSTANCE = new OllamaClient();
@@ -48,24 +47,23 @@ public class OllamaClient extends BaseAiClient implements Client {
         request.addProperty("temperature", temp);
         request.addProperty("stream", false);
         request.addProperty("format", "json");
-        request.addProperty("stream", false);
         request.addProperty("think", false);
-        request.addProperty("num_ctx", 8192);
+        // num_ctx intentionally omitted — governed by Modelfile (tulu3-gaming: 2048 commands, 4096 queries)
 
-        /// OLAMA tricks.
+        /// OLLAMA tricks.
         /// Strongest "follow instructions + output clean JSON" preset for ~8–13B models
         request.addProperty("mirostat", 2);           // mirostat 2.0 - best for controlled output
-        request.addProperty("mirostat_tau", 3.5f);    // 3.0–4.5 range usually best; 3.5 is a common sweet spot
-        request.addProperty("mirostat_eta", 0.1f);    // usually leave at default
+        request.addProperty("mirostat_tau", 3.5f);    // 3.0–4.5 range; 3.5 is a common sweet spot
+        request.addProperty("mirostat_eta", 0.1f);    // leave at default
 
         request.addProperty("top_p", 0.85f);          // 0.8–0.9 → lower = more deterministic
         request.addProperty("top_k", 20);             // 15–30 → very low values help JSON a lot
         request.addProperty("repeat_penalty", 1.12f); // 1.08–1.15 → prevents repeating keys or structure
 
         /// Speed / VRAM / Performance
-        request.addProperty("num_predict", 4098);         // max tokens to generate (default -1 = unlimited, set 256–1024)
-        request.addProperty("num_keep", 4098);             // tokens from prompt to keep in KV cache (0 = default, usually all)
-        request.addProperty("num_thread", 1);           // 0 = auto (good), or set to physical cores if you want to limit CPU
+        request.addProperty("num_predict", 4098);     // max tokens to generate
+        request.addProperty("num_keep", 4098);        // tokens from prompt to keep in KV cache
+        request.addProperty("num_thread", 1);         // 1 = single thread, reduces GPU compute contention during gameplay
 
         return request;
     }

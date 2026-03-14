@@ -28,6 +28,9 @@
         <classPath>
           <archive location="elite_intel.jar" failOnError="false" />
         </classPath>
+        <vmOptions>
+          <options version="21-" line="-Xmx6g" />
+        </vmOptions>
       </java>
       <vmOptionsFile mode="none" />
       <iconImageFiles>

@@ -327,7 +327,7 @@ create_start_menu() {
 NATIVE_DIR="NATIVE_DIR_PLACEHOLDER"
 export LD_LIBRARY_PATH="$NATIVE_DIR:$LD_LIBRARY_PATH"
 cd "INSTALL_DIR_PLACEHOLDER"
-exec java -jar "INSTALL_DIR_PLACEHOLDER/elite_intel.jar"
+exec java -Xmx6g -jar "/home/alex/.var/app/elite.intel.app/elite_intel.jar"
 LAUNCHEOF
 
     # Substitute actual paths (avoids heredoc variable expansion issues)

@@ -20,6 +20,7 @@ public class OllamaCommandEndPoint extends AiEndPoint implements AIChatInterface
     public static OllamaCommandEndPoint getInstance() {
         return INSTANCE;
     }
+
     @Override public JsonObject processAiPrompt(JsonArray messages, float temp) {
         String bodyString = null;
         try {
@@ -29,13 +30,14 @@ public class OllamaCommandEndPoint extends AiEndPoint implements AIChatInterface
             JsonArray sanitized = sanitizeJsonArray(messages);
             prompt.add("messages", sanitized);
 
-            // === ADD STRUCTURED SCHEMA ENFORCEMENT ===
+            // === STRUCTURED SCHEMA ENFORCEMENT ===
+            // Command parser returns: type, action, params — never response_text
             JsonObject format = new JsonObject();
             JsonObject properties = new JsonObject();
 
-            JsonObject responseTextProp = new JsonObject();
-            responseTextProp.addProperty("type", "string");
-            properties.add("response_text", responseTextProp);
+            JsonObject typeProp = new JsonObject();
+            typeProp.addProperty("type", "string");
+            properties.add("type", typeProp);
 
             JsonObject actionProp = new JsonObject();
             actionProp.addProperty("type", "string");
@@ -45,14 +47,21 @@ public class OllamaCommandEndPoint extends AiEndPoint implements AIChatInterface
             paramsProp.addProperty("type", "object");
             properties.add("params", paramsProp);
 
+            format.add("properties", properties);
+
+
+            // Only enforce the fields the command parser actually produces
             JsonArray required = new JsonArray();
-            required.add("type"); required.add("response_text"); required.add("action");
+            required.add("type");
+            required.add("action");
+            required.add("params");
             format.add("required", required);
             format.addProperty("additionalProperties", false);
             format.addProperty("type", "object");
+
+            // raw:true conflicts with format schema enforcement — do not use together
             JsonObject options = new JsonObject();
             options.add("format", format);
-            options.addProperty("raw", true);
             prompt.add("options", options);
 
             bodyString = prompt.toString();
@@ -69,7 +78,6 @@ public class OllamaCommandEndPoint extends AiEndPoint implements AIChatInterface
             String content = message.get("content").getAsString();
             log.debug("Ollama raw response:\n{}", GsonFactory.getGson().toJson(message));
 
-            // Now content is already your exact schema JSON
             return JsonParser.parseString(content).getAsJsonObject();
 
         } catch (Exception e) {

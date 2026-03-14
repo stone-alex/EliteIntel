@@ -110,29 +110,9 @@ public class OllamaUserInputProcessor extends CommandEndPoint implements AiComma
     @Subscribe @Override public void onSensorDataEvent(SensorDataEvent event) {
         if (!running.get()) return;
         if (trimToNull(event.getSensorData()) == null) return;
-
         EventBusManager.publish(new AppLogEvent("\nProcessing Sensor event"));
-        JsonArray messages = new JsonArray();
-        JsonObject systemMessage = new JsonObject();
-        systemMessage.addProperty("role", AIConstants.ROLE_SYSTEM);
-        systemMessage.addProperty("content", getContextFactory().generateSensorPrompt());
-        messages.add(systemMessage);
-
-        JsonObject instructions = new JsonObject();
-        instructions.addProperty("role", AIConstants.ROLE_SYSTEM);
-        instructions.addProperty("content", "EVENT SPECIFIC INSTRUCTIONS: "+event.getInstructions());
-        messages.add(instructions);
-
-
-        JsonObject userMsg = new JsonObject();
-        userMsg.addProperty("role", AIConstants.ROLE_USER);
-        userMsg.addProperty("content", event.getSensorData());
-        messages.add(userMsg);
-
-        executor.submit(() -> {
-            JsonObject response = OllamaCommandEndPoint.getInstance().processAiPrompt(messages, 0.1f);
-            if (response != null) getRouter().processAiResponse(response, null);
-        });
+        JsonObject response = OllamaAnalysisEndpoint.getInstance().processSensor(event);
+        getRouter().processAiResponse(response, "");
     }
 
     private JsonObject createError(String text) {

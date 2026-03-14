@@ -27,7 +27,7 @@ public class AiCommandsAndQueries {
 
     private Map<String, String> buildCommandMap() {
         Map<String, String> commandMap = new HashMap<>();
-        commandMap.put(" command Verify LLM Connection ", CONNECTION_CHECK.getAction());
+
         /// ship
         commandMap.put(" command add <material> to mining targets " + KEY_X, ADD_MINING_TARGET.getAction());
         commandMap.put(" command find raw material trader" + KEY_X, FIND_RAW_MATERIAL_TRADER.getAction());
@@ -159,6 +159,7 @@ public class AiCommandsAndQueries {
         commandMap.put(" command delete codex entry", DELETE_CODEX_ENTRY.getAction());
         commandMap.put(" command change personality to " + KEY_X, SET_PERSONALITY.getAction());
         commandMap.put(" command change profile to " + KEY_X, SET_PROFILE.getAction());
+        commandMap.put(" command Verify LLM Connection ", CONNECTION_CHECK.getAction());
         return commandMap;
     }
 

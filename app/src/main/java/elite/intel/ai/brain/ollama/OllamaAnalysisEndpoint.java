@@ -56,6 +56,27 @@ public class OllamaAnalysisEndpoint extends AiEndPoint implements AiAnalysisInte
 
             log.debug("Ollama analysis call:\n{}", gson.toJson(prompt));
 
+            JsonObject properties = new JsonObject();
+            JsonObject typeProp = new JsonObject();
+            typeProp.addProperty("type", "string");
+            properties.add("type", typeProp);
+            JsonObject responseTextProp = new JsonObject();
+            responseTextProp.addProperty("type", "string");
+            properties.add("response_text", responseTextProp);
+
+            JsonObject format = new JsonObject();
+            format.add("properties", properties);
+            JsonArray required = new JsonArray();
+            required.add("type");
+            required.add("response_text");
+            format.add("required", required);
+            format.addProperty("additionalProperties", false);
+            format.addProperty("type", "object");
+
+            JsonObject options = new JsonObject();
+            options.add("format", format);
+            prompt.add("options", options);
+
             JsonObject root = processAiPrompt(gson.toJson(prompt), client);
             log.debug("Ollama analysis raw response:\n{}", gson.toJson(root));
             return JsonParser.parseString(root.getAsJsonObject("message").get("content").getAsString()).getAsJsonObject();

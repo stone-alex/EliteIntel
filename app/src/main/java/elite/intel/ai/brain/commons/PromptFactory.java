@@ -93,10 +93,13 @@ public class PromptFactory implements AiPromptFactory {
         StringBuilder sb = new StringBuilder();
         sb.append("Instructions:\n");
         youAre(sb);
-        sb.append(getSessionValues());
-        sb.append(appendBehavior());
+        if (!systemSession.isRunningLocalLLM()) {
+            sb.append(getSessionValues());
+            sb.append(appendBehavior());
+        }
         sb.append("""
-                Output ONLY this exact JSON structure {"type":"chat", "response_text": "YOUR ANSWER HERE AS PLAIN TEXT"} - nothing else, no explanations, no thinking, no markdown, no extra characters:
+                        Output ONLY this exact JSON structure {"type":"chat", "response_text": "YOUR ANSWER HERE AS PLAIN TEXT"} 
+                        - nothing else, no explanations, no thinking, no markdown, no extra characters:
 
                 Rules - follow exactly:
                 - "response_text" must be:
@@ -114,7 +117,9 @@ public class PromptFactory implements AiPromptFactory {
         sb.append(" Spell out numerals for response_text, Example: I have one hundred and thirsty units of gold in cargo hold. ");
         sb.append(" Use numbers for parameters Example: {\"key\":\"1\"} ");
 
-        appendCadenceAndPersonality(sb);
+        if (!systemSession.isRunningLocalLLM()) {
+            appendCadenceAndPersonality(sb);
+        }
         return sb.toString();
     }
 

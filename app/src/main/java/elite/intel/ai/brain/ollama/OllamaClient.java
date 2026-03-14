@@ -15,12 +15,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class OllamaClient extends BaseAiClient implements Client {
-    // qwen2.5:14b working but .5 sec on command response.
-
     public static final Integer MODEL_COMMANDS = 1;
     public static final Integer MODEL_QUERIES = 2;
     private static final OllamaClient INSTANCE = new OllamaClient();
-
     private final PlayerSession playerSession = PlayerSession.getInstance();
     private final SystemSession systemSession = SystemSession.getInstance();
 
@@ -46,7 +43,6 @@ public class OllamaClient extends BaseAiClient implements Client {
         request.addProperty("model", model == 1 ? localLlmCommandModel : localLlmQueryModel);
         request.addProperty("temperature", temp);
         request.addProperty("stream", false);
-        request.addProperty("format", "json");
         request.addProperty("think", false);
         // num_ctx intentionally omitted — governed by Modelfile (tulu3-gaming: 2048 commands, 4096 queries)
 
@@ -55,15 +51,8 @@ public class OllamaClient extends BaseAiClient implements Client {
         request.addProperty("mirostat", 2);           // mirostat 2.0 - best for controlled output
         request.addProperty("mirostat_tau", 3.5f);    // 3.0–4.5 range; 3.5 is a common sweet spot
         request.addProperty("mirostat_eta", 0.1f);    // leave at default
-
-        request.addProperty("top_p", 0.85f);          // 0.8–0.9 → lower = more deterministic
         request.addProperty("top_k", 20);             // 15–30 → very low values help JSON a lot
         request.addProperty("repeat_penalty", 1.12f); // 1.08–1.15 → prevents repeating keys or structure
-
-        /// Speed / VRAM / Performance
-        request.addProperty("num_predict", 4098);     // max tokens to generate
-        request.addProperty("num_keep", 4098);        // tokens from prompt to keep in KV cache
-        request.addProperty("num_thread", 1);         // 1 = single thread, reduces GPU compute contention during gameplay
 
         return request;
     }

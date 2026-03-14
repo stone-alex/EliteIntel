@@ -4,6 +4,7 @@ import elite.intel.ai.brain.AICadence;
 import elite.intel.ai.brain.AIPersonality;
 import elite.intel.ai.brain.AiCommandsAndQueries;
 import elite.intel.ai.brain.AiPromptFactory;
+import elite.intel.ai.brain.handlers.query.Queries;
 import elite.intel.db.dao.ShipDao;
 import elite.intel.db.managers.ShipManager;
 import elite.intel.session.PlayerSession;
@@ -28,7 +29,9 @@ public class PromptFactory implements AiPromptFactory {
     @Override
     public String generateVoiceInputSystemPrompt() {
         StringBuilder sb = new StringBuilder();
-        youAre(sb);
+        if (!systemSession.isRunningLocalLLM()) {
+            youAre(sb);
+        }
         sb.append("""
                 - STRICT COMMAND PARSER. YOUR ONLY JOB IS TO PICK EXACTLY ONE ACTION FROM THE LIST BELOW. NOTHING ELSE.
                 
@@ -47,7 +50,7 @@ public class PromptFactory implements AiPromptFactory {
                 - NEVER invent, modify, combine, or create new actions or parameters.
                 - NEVER be "helpful" by guessing.
                 """);
-            sb.append("- If ZERO good match → return: {\"type\": \"query\", \"action\": \"general_conversation\", \"params\": {}}");
+        sb.append("- If ZERO good match → return: {\"type\": \"query\", \"action\": \"").append(Queries.GENERAL_CONVERSATION.getAction()).append("\", \"params\": {}}");
 
         sb.append("""
                 
@@ -68,7 +71,6 @@ public class PromptFactory implements AiPromptFactory {
         sb.append("Classify as {\"type\": \"query\", \"action\": \"action_name\", \"params\": {\"key\": \"value\"}}");
         sb.append(commandsAndQueries.getQueries());
         sb.append("""
-                It you fail to infer action fall back to query_general_conversation
                 PARAMS RULES - DO NOT DEVIATE:
                 • Use ONLY the exact key names and types shown in the command's template
                 • If no template → return empty {}
@@ -176,7 +178,9 @@ public class PromptFactory implements AiPromptFactory {
                 Respond with ONLY the JSON object.
                 """);
 
-        appendCadenceAndPersonality(sb);
+        if (!systemSession.isRunningLocalLLM()) {
+            appendCadenceAndPersonality(sb);
+        }
         return sb.toString();
     }
 

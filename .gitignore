@@ -19,3 +19,4 @@ app/src/main/resources/elite-intel-xai-api-key.conf
 ./.gradle/file-system.probe
 ./.gradle/buildOutputCleanup/
 ./locations
+./CLAUDE.md

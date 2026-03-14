@@ -244,6 +244,7 @@ public class WhisperSTTImpl implements EarsInterface {
             if (transcript.contains("*")) return;
             if (transcript.contains("[")) return;
             if (transcript.isBlank() || transcript.length() < 3) return;
+            if (transcript.contains("www.beadaholique.com")) return;
 
             EventBusManager.publish(new AppLogEvent("STT Heard: [" + transcript + "]"));
             String sanitized = STTSanitizer.getInstance().correctMistakes(transcript);
@@ -253,7 +254,7 @@ public class WhisperSTTImpl implements EarsInterface {
             if (streamingMode) {
                 String designation = systemSession.getDesignaion();
                 if (sanitized.toLowerCase().contains("computer")
-                    || sanitized.toLowerCase().contains(designation.toLowerCase())) {
+                        || sanitized.toLowerCase().contains(designation.toLowerCase())) {
                     sendToAi(sanitized);
                 }
             } else {

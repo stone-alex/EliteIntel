@@ -58,6 +58,7 @@ public class PromptFactory implements AiPromptFactory {
                 - ONLY use parameter keys/values that appear in the command/query template.
                 - IMPORTANT: commands with word 'clear' must match word 'clear' in user input exactly, else you will delete critical data!
                 - IMPORTANT: commands with word 'confirm' must match word 'confirm' in user input exactly, else you will delete critical data!
+                - IMPORTANT: if user says 'help with X', 'help me with X', 'how do I X', 'explain X' → ALWAYS use action=help with {key: X}. Never route to a topic-specific action.
                 
                 Classify "Verify LLM Connection" as a command with action verify_llm_connection_command
                 Map of allowed actions:

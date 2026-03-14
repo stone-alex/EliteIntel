@@ -158,7 +158,7 @@ public class AiCommandsAndQueries {
 
     private Map<String, String> buildQueryMap() {
         Map<String, String> queryMap = new HashMap<>();
-        queryMap.put("help, how do I X, explain X, can you help with X" + KEY_X, HELP.getAction());
+        queryMap.put("help with <topic>, how do I <topic>, explain <topic>, can you help me with <topic>, how can you help me with <topic> → key=topic" + KEY_X, HELP.getAction());
         queryMap.put("check missing key bindings", KEY_BINDINGS_ANALYSIS.getAction());
         queryMap.put("which stellar objects need bio scan, organic scan status in system", BIO_SAMPLE_IN_STAR_SYSTEM.getAction());
         queryMap.put("organics on this planet, biology samples here, exobiology this location", EXOBIOLOGY_SAMPLES.getAction());

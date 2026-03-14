@@ -6,7 +6,7 @@ import elite.intel.ai.brain.handlers.query.struct.AnalyseMaterialsHandler;
 public enum Queries {
 
     /// ########################################################################################################################################
-    HELP                                ("help",                                        HelpHandler.class),
+    HELP                                ("help_with",                                        HelpHandler.class),
     BIO_SAMPLE_IN_STAR_SYSTEM           ("query_organic_samples_star_system",           AnalyzeBioSignalsStarSystemHandler.class),
     EXOBIOLOGY_SAMPLES                  ("query_organic_samples_this_planet",           AnalyzeBioSamplesPlanetSurfaceHandler.class),
     QUERY_STELLAR_OBJETS                ("query_data_for_stellar_objects_planets_moons",AnalyzeStellarObjectsHandler.class),

@@ -67,14 +67,14 @@ public class AiCommandsAndQueries {
         commandMap.put("display contacts panel", DISPLAY_CONTACTS_PANEL.getAction());
         commandMap.put("display internal panel", DISPLAY_INTERNAL_PANEL.getAction());
         commandMap.put("show central panel", DISPLAY_CENTRAL_PANEL.getAction());
-        commandMap.put("jump to hyperspace, lets go, enter hyperspace, go to next waypoint, engage FSD jump", JUMP_TO_HYPERSPACE.getAction());
+        commandMap.put("jump to hyperspace, let's get out of here, lets go, enter hyperspace, go to next waypoint, engage FSD jump", JUMP_TO_HYPERSPACE.getAction());
         commandMap.put("drop from supercruise, disengage FSD, exit supercruise", EXIT_SUPER_CRUISE.getAction());
         commandMap.put("navigate to carrier, return to base, go to fleet carrier", NAVIGATE_TO_CARRIER.getAction());
-        commandMap.put("navigate to home system, take me home, go home", TAKE_ME_HOME.getAction());
+        //commandMap.put("navigate to home system", TAKE_ME_HOME.getAction());
         commandMap.put("set optimal speed", SET_OPTIMAL_SPEED.getAction());
-        commandMap.put("scan this system, open FSS, perform full system scan, honk", OPEN_FSS_AND_SCAN.getAction());
+        commandMap.put("scan the system, open FSS, perform full system scan, honk", OPEN_FSS_AND_SCAN.getAction());
         commandMap.put("navigate to landing zone, get heading to LZ", GET_HEADING_TO_LZ.getAction());
-        commandMap.put("deploy SRV, deploy surface vehicle", DEPLOY_SRV.getAction());
+        commandMap.put("deploy SRV, deploy buggy, deploy surface vehicle", DEPLOY_SRV.getAction());
         commandMap.put("calculate carrier jump route, plot fleet carrier route", CALCULATE_FLEET_CARRIER_ROUTE.getAction());
         commandMap.put("enter carrier destination, set next carrier waypoint", ENTER_NEXT_FLEET_CARRIER_DESTINATION.getAction());
         commandMap.put("calculate trade route, get us a trade route, find trade route", CALCULATE_TRADE_ROUTE.getAction());
@@ -126,7 +126,7 @@ public class AiCommandsAndQueries {
         commandMap.put("select highest threat, target most dangerous", SELECT_HIGHEST_THREAT.getAction());
         commandMap.put("headlights on/off, toggle lights" + KEY_STATE, LIGHTS_ON_OFF.getAction());
         commandMap.put("drive assist on/off" + KEY_STATE, DRIVE_ASSIST.getAction());
-        commandMap.put("recover SRV, requesting extraction, extract surface vehicle", RECOVER_SRV.getAction());
+        commandMap.put("recover SRV, recover buggy, requesting extraction, extract surface vehicle", RECOVER_SRV.getAction());
 
         /// any status
         commandMap.put("activate, punch it, engage", ACTIVATE.getAction());
@@ -190,7 +190,7 @@ public class AiCommandsAndQueries {
         queryMap.put("distance to fleet carrier, how far is the carrier", DISTANCE_TO_CARRIER.getAction());
         queryMap.put("pirate mission progress, massacre mission kills", PIRATE_MISSION_PROGRESS.getAction());
         queryMap.put("player stats, ranks, combat rank, exploration rank", PLAYER_PROFILE_ANALYSIS.getAction());
-        queryMap.put("ship loadout, what modules do we have", SHIP_LOADOUT.getAction());
+        queryMap.put("ship loadout, damage report, what modules do we have", SHIP_LOADOUT.getAction());
         queryMap.put("station services, what services are available here", STATION_DETAILS.getAction());
         queryMap.put("what can you do, your capabilities, app features", APP_CAPABILITIES.getAction());
         queryMap.put("your name, your designation, who are you", AI_DESIGNATION.getAction());
@@ -198,7 +198,7 @@ public class AiCommandsAndQueries {
         queryMap.put("distance to the bubble, how far from civilisation", DISTANCE_TO_BUBBLE.getAction());
         queryMap.put("distance to last bio sample, how far to next organic", DISTANCE_TO_LAST_BIO_SAMPLE.getAction());
         queryMap.put("what time is it, earth time, current time", TIME_IN_ZONE.getAction());
-        queryMap.put("biome analysis for system or planet" + KEY_X, PLANET_BIOME_ANALYSIS.getAction());
+        queryMap.put("star system biome analysis" + KEY_X, PLANET_BIOME_ANALYSIS.getAction());
         queryMap.put("reminder, remind me, what was my reminder", REMINDER.getAction());
         queryMap.put("stations ports and settlements in system, local infrastructure", ANALYZE_LOCAL_STATIONS.getAction());
         queryMap.put("active missions, mission list, what missions do we have", ANALYZE_MISSIONS.getAction());

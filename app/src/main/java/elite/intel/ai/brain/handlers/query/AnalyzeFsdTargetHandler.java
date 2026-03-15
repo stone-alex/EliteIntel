@@ -17,7 +17,7 @@ public class AnalyzeFsdTargetHandler extends BaseQueryAnalyzer implements QueryH
         PlayerSession playerSession = PlayerSession.getInstance();
 
         ToJsonConvertible fsdTarget = playerSession.getFsdTarget();
-        return process(new AiDataStruct("Use this data to provide answers for the currently selected FSD target", new DataDto(fsdTarget)), originalUserInput);
+        return process(new AiDataStruct("Provide summary of this data", new DataDto(fsdTarget)), originalUserInput);
     }
 
     record DataDto(ToJsonConvertible data) implements ToYamlConvertable {

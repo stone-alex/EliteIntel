@@ -694,3 +694,4 @@
 "products entry"="codex entry"
 "products"="codex"
 "product"="codex"
+"train"="trade"

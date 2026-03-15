@@ -26,11 +26,14 @@ public class DismissShip extends CommandOperator implements CommandHandler {
             operateKeyboard(BINDING_EXIT_KEY.getGameBinding(), 0);
         } else if (status.isInMainShip()) {
             EventBusManager.publish(new AiVoxResponseEvent("Unable to comply. You have the deck."));
+            return;
         }
         if (status.isLanded()) {
             EventBusManager.publish(new AiVoxResponseEvent("Going to orbit, call me, when you need me."));
+            return;
         } else {
             EventBusManager.publish(new AiVoxResponseEvent("Coming back to get you."));
+            return;
         }
     }
 }

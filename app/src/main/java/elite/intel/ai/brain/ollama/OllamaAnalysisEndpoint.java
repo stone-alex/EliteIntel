@@ -73,10 +73,7 @@ public class OllamaAnalysisEndpoint extends AiEndPoint implements AiAnalysisInte
             format.add("required", required);
             format.addProperty("additionalProperties", false);
             format.addProperty("type", "object");
-
-            JsonObject options = new JsonObject();
-            options.add("format", format);
-            prompt.add("options", options);
+            prompt.add("format", format);
 
             JsonObject root = processAiPrompt(gson.toJson(prompt), client);
             log.debug("Ollama analysis raw response:\n{}", gson.toJson(root));
@@ -133,10 +130,7 @@ public class OllamaAnalysisEndpoint extends AiEndPoint implements AiAnalysisInte
             format.add("required", required);
             format.addProperty("additionalProperties", false);
             format.addProperty("type", "object");
-
-            JsonObject options = new JsonObject();
-            options.add("format", format);
-            prompt.add("options", options);
+            prompt.add("format", format);
 
             JsonObject root = processAiPrompt(gson.toJson(prompt), client);
             log.debug("Ollama sensor raw response:\n{}", gson.toJson(root));

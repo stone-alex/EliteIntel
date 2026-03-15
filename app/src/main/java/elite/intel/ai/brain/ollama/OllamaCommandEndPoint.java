@@ -60,10 +60,8 @@ public class OllamaCommandEndPoint extends AiEndPoint implements AIChatInterface
             format.addProperty("additionalProperties", false);
             format.addProperty("type", "object");
 
-            // raw:true conflicts with format schema enforcement — do not use together
-            JsonObject options = new JsonObject();
-            options.add("format", format);
-            prompt.add("options", options);
+            // format must be top-level per Ollama structured output API (not inside options)
+            prompt.add("format", format);
 
             bodyString = prompt.toString();
             log.debug("Ollama API call:\n{}", GsonFactory.getGson().toJson(prompt));

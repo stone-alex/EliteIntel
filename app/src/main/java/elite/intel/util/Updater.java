@@ -147,7 +147,8 @@ public class Updater {
         cmd.add(javaExe);
         cmd.add("-jar");
         cmd.add(updaterJar.toAbsolutePath().toString());
-        cmd.add(JAR_DIR.toAbsolutePath().toString());   // argv[0] = install dir
+        cmd.add(JAR_DIR.toAbsolutePath().toString());        // argv[0] = install dir
+        cmd.add(String.valueOf(ProcessHandle.current().pid())); // argv[1] = main app PID
         return cmd;
     }
 }

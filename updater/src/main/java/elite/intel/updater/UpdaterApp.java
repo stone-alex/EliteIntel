@@ -10,9 +10,11 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -59,16 +61,27 @@ public class UpdaterApp {
     private JLabel statusLabel;
 
     private final String installDir;
+    private final long mainPid;
 
     // -------------------------------------------------------------------------
 
     public static void main(String[] args) {
         String dir = args.length > 0 ? args[0] : detectInstallDir();
-        new UpdaterApp(dir).launch();
+        long pid = args.length > 1 ? parsePidArg(args[1]) : -1L;
+        new UpdaterApp(dir, pid).launch();
     }
 
-    public UpdaterApp(String installDir) {
+    private static long parsePidArg(String arg) {
+        try {
+            return Long.parseLong(arg);
+        } catch (NumberFormatException e) {
+            return -1L;
+        }
+    }
+
+    public UpdaterApp(String installDir, long mainPid) {
         this.installDir = installDir;
+        this.mainPid = mainPid;
     }
 
     // -- Bootstrap -------------------------------------------------------------
@@ -178,8 +191,7 @@ public class UpdaterApp {
     private void runPipeline() {
         try {
             log("Install directory : " + installDir);
-            log("Waiting for main app to exit…");
-            Thread.sleep(3000);     // give the JVM that launched us time to close
+            waitForMainAppToExit();
 
             String zipUrl = fetchLatestZipUrl();  // logs the resolved URL itself
 
@@ -203,6 +215,35 @@ public class UpdaterApp {
                 progressBar.setString("Failed");
             });
         }
+    }
+
+    // -- Step 0 – wait for main app to release file locks ----------------------
+
+    private void waitForMainAppToExit() throws InterruptedException {
+        if (mainPid <= 0) {
+            log("No PID supplied – waiting 5 s for main app to exit…");
+            Thread.sleep(5_000);
+            return;
+        }
+        log("Waiting for main app (PID " + mainPid + ") to exit…");
+        Optional<ProcessHandle> handle = ProcessHandle.of(mainPid);
+        if (handle.isEmpty() || !handle.get().isAlive()) {
+            log("Main app already gone.");
+        } else {
+            long deadline = System.currentTimeMillis() + 30_000;
+            while (true) {
+                Optional<ProcessHandle> ph = ProcessHandle.of(mainPid);
+                if (ph.isEmpty() || !ph.get().isAlive()) break;
+                if (System.currentTimeMillis() > deadline) {
+                    log("WARNING: main app still running after 30 s – proceeding anyway.");
+                    break;
+                }
+                Thread.sleep(500);
+            }
+            log("Main app exited.");
+        }
+        // Brief pause to let the OS flush and release all file handles
+        Thread.sleep(1_500);
     }
 
     // -- Step 1 – resolve download URL -----------------------------------------
@@ -338,7 +379,10 @@ public class UpdaterApp {
                     Files.createDirectories(dest);
                 } else {
                     Files.createDirectories(dest.getParent());
-                    Files.copy(zis, dest, StandardCopyOption.REPLACE_EXISTING);
+                    // Buffer the entry first so we can retry the write on Windows
+                    // without consuming the ZipInputStream a second time.
+                    byte[] content = zis.readAllBytes();
+                    writeWithRetry(dest, content);
                     log("  extracted: " + entry.getName());
                 }
                 zis.closeEntry();
@@ -350,6 +394,30 @@ public class UpdaterApp {
             progressBar.setValue(100);
             progressBar.setString("Done");
         });
+    }
+
+    /**
+     * Writes {@code content} to {@code dest}, retrying up to 10 times on
+     * {@link AccessDeniedException}.  On Windows the previous JVM may release
+     * its file-system lock on elite_intel.jar a beat after the process exits;
+     * a short retry loop absorbs that window without failing the whole update.
+     */
+    private static void writeWithRetry(Path dest, byte[] content) throws IOException {
+        IOException last = null;
+        for (int attempt = 0; attempt < 10; attempt++) {
+            try {
+                Files.write(dest, content,
+                        StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+                return;
+            } catch (AccessDeniedException e) {
+                last = e;
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException ignored) {
+                }
+            }
+        }
+        throw last;
     }
 
     // -- Step 4 – relaunch main app --------------------------------------------

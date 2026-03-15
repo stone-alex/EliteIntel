@@ -95,7 +95,27 @@ public class AnalyzeStellarObjectsHandler extends BaseQueryAnalyzer implements Q
                     location.getMarket() != null
             ));
         }
-        return new StellarObjectsData<>(result, "Star System contains: " + numberOfStars + " stars " + numberOfPlanets + " planets " + numberOfMoons + " moons, and " + numberOfStations + " stations.");
+
+        long landableMoons = result.stream().filter(l -> "MOON".equals(l.objectClass()) && l.isLandable()).count();
+        long landablePlanets = result.stream().filter(l -> "PLANET".equals(l.objectClass()) && l.isLandable()).count();
+        long bioMoons = result.stream().filter(l -> "MOON".equals(l.objectClass()) && l.bioSignals() > 0).count();
+        long bioPlanets = result.stream().filter(l -> "PLANET".equals(l.objectClass()) && l.bioSignals() > 0).count();
+        long atmosMoons = result.stream().filter(l -> "MOON".equals(l.objectClass()) && hasAtmosphere(l)).count();
+        long fuelStars = result.stream().filter(l -> isScoopable(l)).count();
+
+        String summary = """
+                Star System contains: %d stars, %d planets, %d moons, %d stations.
+                PRE-COMPUTED FACTS (authoritative, do not recount from the detail list):
+                Landable moons: %d
+                Landable planets: %d
+                Moons with bio signals: %d
+                Planets with bio signals: %d
+                Moons with atmosphere: %d
+                Scoopable fuel stars: %d
+                """.formatted(numberOfStars, numberOfPlanets, numberOfMoons, numberOfStations,
+                landableMoons, landablePlanets, bioMoons, bioPlanets, atmosMoons, fuelStars);
+
+        return new StellarObjectsData<>(result, summary);
     }
 
     record LocationData(String stellarObjectName,
@@ -142,5 +162,16 @@ public class AnalyzeStellarObjectsHandler extends BaseQueryAnalyzer implements Q
         public B getSummary() {
             return summary;
         }
+    }
+
+
+    private static boolean hasAtmosphere(LocationData l) {
+        String atm = l.atmosphere();
+        return atm != null && !atm.isBlank() && !"None".equalsIgnoreCase(atm);
+    }
+
+    private static boolean isScoopable(LocationData l) {
+        String sc = l.starClass();
+        return sc != null && List.of("M", "K", "G", "F", "A", "B", "O").contains(sc.trim().toUpperCase());
     }
 }

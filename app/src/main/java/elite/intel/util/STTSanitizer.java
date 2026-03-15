@@ -1,8 +1,8 @@
 package elite.intel.util;
 
 import elite.intel.ai.ears.google.GoogleSTTImpl;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager; 
 
 import java.io.*;
 import java.net.URI;
@@ -34,7 +34,7 @@ public class STTSanitizer {
     }
 
     private String determineAppDir() {
-        String appDir = "dictionary/";
+        String appDir = "distribution" + File.separator + "dictionary/";
         try {
             URI jarUri = GoogleSTTImpl.class.getProtectionDomain().getCodeSource().getLocation().toURI();
             File jarFile = new File(jarUri);

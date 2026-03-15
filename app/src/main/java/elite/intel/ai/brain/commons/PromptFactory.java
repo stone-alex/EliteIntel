@@ -29,7 +29,7 @@ public class PromptFactory implements AiPromptFactory {
     @Override
     public String generateVoiceInputSystemPrompt() {
         StringBuilder sb = new StringBuilder();
-        if (!systemSession.isRunningLocalLLM()) {
+        if (!systemSession.useLocalCommandLlm()) {
             youAre(sb);
         }
         sb.append("""
@@ -97,7 +97,7 @@ public class PromptFactory implements AiPromptFactory {
         StringBuilder sb = new StringBuilder();
         sb.append("Instructions:\n");
         youAre(sb);
-        if (!systemSession.isRunningLocalLLM()) {
+        if (!systemSession.useLocalQueryLlm()) {
             sb.append(getSessionValues());
             sb.append(appendBehavior());
         }
@@ -121,7 +121,7 @@ public class PromptFactory implements AiPromptFactory {
         sb.append(" Spell out numerals for response_text, Example: I have one hundred and thirsty units of gold in cargo hold. ");
         sb.append(" Use numbers for parameters Example: {\"key\":\"1\"} ");
 
-        if (!systemSession.isRunningLocalLLM()) {
+        if (!systemSession.useLocalQueryLlm()) {
             appendCadenceAndPersonality(sb);
         }
         return sb.toString();
@@ -180,7 +180,7 @@ public class PromptFactory implements AiPromptFactory {
                 Respond with ONLY the JSON object.
                 """);
 
-        if (!systemSession.isRunningLocalLLM()) {
+        if (!systemSession.useLocalQueryLlm()) {
             appendCadenceAndPersonality(sb);
         }
         return sb.toString();

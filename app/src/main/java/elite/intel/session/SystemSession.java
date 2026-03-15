@@ -198,9 +198,6 @@ public class SystemSession {
         });
     }
 
-    public boolean isRunningLocalLLM() {
-        return getAiApiKey() == null || getAiApiKey().isEmpty();
-    }
 
     public void setTtsApiKey(String ttsApiKey) {
         if (ttsApiKey == null && ttsApiKey.isEmpty()) {

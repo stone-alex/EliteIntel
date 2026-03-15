@@ -18,7 +18,7 @@ public class TimeQueryHandler extends BaseQueryAnalyzer implements QueryHandler 
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
 
-        if (SystemSession.getInstance().isRunningLocalLLM()) {
+        if (SystemSession.getInstance().useLocalQueryLlm()) {
             ZonedDateTime localNow = ZonedDateTime.now(ZoneId.systemDefault());
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm dd-MM-yyyy");
             String formattedTime = localNow.format(formatter);

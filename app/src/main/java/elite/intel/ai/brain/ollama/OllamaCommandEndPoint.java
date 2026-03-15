@@ -6,6 +6,7 @@ import com.google.gson.JsonParser;
 import elite.intel.ai.brain.AIChatInterface;
 import elite.intel.ai.brain.commons.AiEndPoint;
 import elite.intel.util.json.GsonFactory;
+import elite.intel.util.json.JsonUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -78,7 +79,7 @@ public class OllamaCommandEndPoint extends AiEndPoint implements AIChatInterface
             String content = message.get("content").getAsString();
             log.debug("Ollama raw response:\n{}", GsonFactory.getGson().toJson(message));
 
-            return JsonParser.parseString(content).getAsJsonObject();
+            return JsonParser.parseString(JsonUtils.repairLlmJson(content)).getAsJsonObject();
 
         } catch (Exception e) {
             log.error("Ollama chat call failed: {}", e.getMessage(), e);

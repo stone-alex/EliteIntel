@@ -1,5 +1,7 @@
 package elite.intel.ai.brain;
 
+import elite.intel.session.SystemSession;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -7,6 +9,8 @@ import static elite.intel.ai.brain.handlers.commands.Commands.*;
 import static elite.intel.ai.brain.handlers.query.Queries.*;
 
 public class AiCommandsAndQueries {
+
+    private final SystemSession systemSession = SystemSession.getInstance();
 
     private final static String KEY_X = " {key:X}";
     private final static String KEY_X_WITH_DISTANCE = " {key:X, max_distance:Y}";
@@ -145,13 +149,15 @@ public class AiCommandsAndQueries {
         commandMap.put("close map", CLOSE_ANY_MAP.getAction());
         commandMap.put("exit to HUD, close panel", EXIT_TO_HUD.getAction());
         commandMap.put("list voices", LIST_AVAILABLE_VOICES.getAction());
-        commandMap.put("clear codex entries", CLEAR_CODEX_ENTRIES.getAction());
+        commandMap.put("delete this codex entry", DELETE_CODEX_ENTRY.getAction());
+        commandMap.put("clear all codex entries", CLEAR_CODEX_ENTRIES.getAction());
         commandMap.put("clear cache", CLEAR_CACHE.getAction());
         commandMap.put("clear reminders", CLEAR_REMINDERS.getAction());
         commandMap.put("set reminder" + KEY_X, SET_REMINDER.getAction());
-        commandMap.put("delete codex entry", DELETE_CODEX_ENTRY.getAction());
-        commandMap.put("change personality to" + KEY_X, SET_PERSONALITY.getAction());
-        commandMap.put("change profile to" + KEY_X, SET_PROFILE.getAction());
+        if (!systemSession.isRunningLocalLLM()) {
+            commandMap.put("change personality to" + KEY_X, SET_PERSONALITY.getAction());
+            commandMap.put("change profile to" + KEY_X, SET_PROFILE.getAction());
+        }
         commandMap.put("verify LLM connection, connection check", CONNECTION_CHECK.getAction());
         return commandMap;
     }

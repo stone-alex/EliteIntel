@@ -12,6 +12,7 @@ import elite.intel.ai.brain.commons.AiEndPoint;
 import elite.intel.ai.brain.handlers.query.struct.AiData;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.util.json.GsonFactory;
+import elite.intel.util.json.JsonUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -79,7 +80,8 @@ public class OllamaAnalysisEndpoint extends AiEndPoint implements AiAnalysisInte
 
             JsonObject root = processAiPrompt(gson.toJson(prompt), client);
             log.debug("Ollama analysis raw response:\n{}", gson.toJson(root));
-            return JsonParser.parseString(root.getAsJsonObject("message").get("content").getAsString()).getAsJsonObject();
+            String content = root.getAsJsonObject("message").get("content").getAsString();
+            return JsonParser.parseString(JsonUtils.repairLlmJson(content)).getAsJsonObject();
 
         } catch (Exception e) {
             log.error("Ollama analysis failed", e);
@@ -138,7 +140,8 @@ public class OllamaAnalysisEndpoint extends AiEndPoint implements AiAnalysisInte
 
             JsonObject root = processAiPrompt(gson.toJson(prompt), client);
             log.debug("Ollama sensor raw response:\n{}", gson.toJson(root));
-            return JsonParser.parseString(root.getAsJsonObject("message").get("content").getAsString()).getAsJsonObject();
+            String sensorContent = root.getAsJsonObject("message").get("content").getAsString();
+            return JsonParser.parseString(JsonUtils.repairLlmJson(sensorContent)).getAsJsonObject();
 
         } catch (Exception e) {
             log.error("Ollama sensor processing failed", e);

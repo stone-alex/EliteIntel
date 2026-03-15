@@ -1,8 +1,8 @@
 package elite.intel.util.json;
 
 import com.google.gson.JsonObject;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * A utility class for handling JSON operations with safety and default values.
@@ -35,6 +35,30 @@ public final class JsonUtils {
         }
         log.debug("Expected string for key '{}' but got {}", key, el);
         return "";
+    }
+
+    /**
+     * Repairs common LLM JSON output failures before parsing.
+     * Handles the case where a model outputs an unquoted string value for {@code response_text},
+     * e.g. {@code {"type":"chat","response_text": Hello Commander}} instead of quoting the value.
+     */
+    public static String repairLlmJson(String raw) {
+        if (raw == null || raw.isEmpty()) return raw;
+        java.util.regex.Pattern p = java.util.regex.Pattern.compile(
+                "\"response_text\"\\s*:\\s*(?!\")(.+?)\\s*}\\s*$",
+                java.util.regex.Pattern.DOTALL
+        );
+        java.util.regex.Matcher m = p.matcher(raw);
+        if (m.find()) {
+            String value = m.group(1)
+                    .replace("\\", "\\\\")
+                    .replace("\"", "\\\"")
+                    .replace("\n", "\\n")
+                    .replace("\r", "\\r")
+                    .replace("\t", "\\t");
+            return raw.substring(0, m.start()) + "\"response_text\": \"" + value + "\"}";
+        }
+        return raw;
     }
 
     public static JsonObject nullSaveJsonObject(JsonObject obj, String key, Logger log) {

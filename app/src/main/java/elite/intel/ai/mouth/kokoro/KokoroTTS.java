@@ -405,11 +405,22 @@ public class KokoroTTS implements MouthInterface {
 
     private static String sanitize(String input) {
         if (input == null) return "";
-        return input.replaceAll("[^\\x00-\\x7F]", "")
+        return input
+                .replaceAll("[^\\x00-\\x7F]", "")               // strip non-ASCII (emojis, unicode)
+                .replaceAll("\\*{1,2}([^*\n]*?)\\*{1,2}", "$1") // **bold** / *italic* → plain
+                .replaceAll("_([^_\n]*?)_", "$1")                // _italic_ → plain
+                .replaceAll("~~([^~\n]*?)~~", "$1")              // ~~strikethrough~~ → plain
+                .replaceAll("`{1,3}[^`\n]*`{1,3}", "")          // `code` / ```block``` → remove
+                .replaceAll("(?m)^#{1,6}\\s*", "")              // # headings → remove marker
+                .replaceAll("(?m)^>\\s?", "")                   // > blockquotes → remove marker
+                .replaceAll("[\\r\\n]+", " ")                    // newlines → space
                 .replace("-", ", ")
-                .replace("*", " ")
+                .replace("*", " ")                              // any stray asterisks
+                .replace("`", "")                               // any stray backticks
                 .replace("[", "").replace("]", "")
                 .replace("ETA", ". E.T.A.")
-                .replace(":", " - ");
+                .replace(":", " - ")
+                .replaceAll("\\s{2,}", " ")                     // collapse repeated spaces
+                .trim();
     }
 }

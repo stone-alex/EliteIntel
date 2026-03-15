@@ -417,6 +417,7 @@ public class KokoroTTS implements MouthInterface {
                 .replace("-", ", ")
                 .replace("*", " ")                              // any stray asterisks
                 .replace("`", "")                               // any stray backticks
+                .replace("\"", "")
                 .replace("[", "").replace("]", "")
                 .replace("ETA", ". E.T.A.")
                 .replace(":", " - ")

@@ -35,38 +35,53 @@ public class AnalyzeCurrentLocationHandler extends BaseQueryAnalyzer implements 
             station = "Docked at " + location.getStationName() + " " + location.getStationType();
         }
 
-        String instructions = """                
-                    The user may ask multiple questions at once. Answer each one individually using the matching rule below. Do not combine them into one sentence unless natural.
-                    - If any requested info is missing or not in data, tell the user that you do not have enough information to determine the correct answer.
-                    - IF isDocked=true we are docked
-                    - IF isLanded=true we are landed
-                    - IF isDocked=false and isLanded=false we are in flight
-                    - Extract and answer ALL questions in the user input using ONLY the provided data fields.
-                    - For temperature: "Temperature on <X> is <Y> degrees Celsius."
-                    - For day length: "Day on <planetName> lasts <dayLength>"
-                    Use this data to provide answers.
+        String flightStatus;
+        if (status.isDocked()) {
+            flightStatus = station;
+        } else if (status.isLanded()) {
+            flightStatus = "Landed on surface";
+        } else {
+            flightStatus = "In flight";
+        }
+
+        String instructions = """
+                Answer the user's questions about current location. Answer each question individually using only the provided data.
+                
+                Data fields:
+                - flightStatus: current state (docked/landed/in flight)
+                - starSystemName: current star system
+                - planetName: current planet or body (if applicable)
+                - securityLevel: system security level
+                - controllingFaction: faction controlling current location
+                - localPowers: powers active in this system
+                - deathsData: EDSM historical death statistics for this system
+                - trafficData: EDSM historical traffic statistics for this system
+                - planetRadius: radius of current planet in kilometers
+                - surfaceTemperatureInCelsius: surface temperature of current planet
+                - dayLength: pre-formatted solar day length for current planet
+                
+                Rules:
+                - If asked about docking or flight state: use flightStatus directly.
+                - If asked about temperature: state surfaceTemperatureInCelsius in degrees Celsius.
+                - If asked about day length: use dayLength directly. Do not recalculate.
+                - If any requested data is missing, say you do not have enough information.
                 """;
 
-        double rotationPeriod = Math.round(location.getRotationPeriod() * 100.0) / 100.0;
         double surfaceTemperatureInKelvin = Math.round(location.getSurfaceTemperature() * 100.0) / 100.0;
         return process(
                 new AiDataStruct(
                         instructions,
                         new DataDto(
-                                status.isDocked(),
-                                status.isLanded(),
+                                flightStatus,
                                 playerSession.getPrimaryStarName(),
                                 location.getPlanetShortName(),
                                 location.getSecurity(),
-                                station,
                                 location.getStationFaction(),
                                 location.getPowers() == null ? null : location.getPowers().toArray(String[]::new),
                                 deathsDto.getData() == null ? null : deathsDto.getData().getDeaths(),
                                 trafficDto.getData() == null ? null : trafficDto.getData().getTraffic(),
-                                rotationPeriod,
                                 location.getRadius(),
-                                location.isTidalLocked(),
-                                (surfaceTemperatureInKelvin - 273), // Convert Kelvin to Celsius
+                                (surfaceTemperatureInKelvin - 273),
                                 getFormattedSolarDayLength(location.getRotationPeriod(), location.getOrbitalPeriod(), location.isTidalLocked())
                         )
                 ),
@@ -132,22 +147,17 @@ public class AnalyzeCurrentLocationHandler extends BaseQueryAnalyzer implements 
     }
 
     record DataDto(
-            boolean isDocked,
-            boolean isLanded,
+            String flightStatus,
             String starSystemName,
             String planetName,
             String securityLevel,
-            String locationName,
             String controllingFaction,
             String[] localPowers,
             DeathsStats deathsData,
             TrafficStats trafficData,
-            double rotationPeriod,
             double planetRadius,
-            boolean isTidallyLocked,
             double surfaceTemperatureInCelsius,
             String dayLength
-
     ) implements ToYamlConvertable {
         @Override public String toYaml() {
             return YamlFactory.toYaml(this);

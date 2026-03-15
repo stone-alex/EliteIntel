@@ -35,7 +35,7 @@ public class OllamaAnalysisEndpoint extends AiEndPoint implements AiAnalysisInte
         try {
             OllamaClient client = OllamaClient.getInstance();
 
-            JsonObject prompt = client.createPrompt(OllamaClient.MODEL_QUERIES, 1.00f);
+            JsonObject prompt = client.createPrompt(OllamaClient.MODEL_QUERIES, 0.70f);
 
             JsonObject systemMsg1 = new JsonObject();
             systemMsg1.addProperty("role", AIConstants.ROLE_SYSTEM);
@@ -91,7 +91,7 @@ public class OllamaAnalysisEndpoint extends AiEndPoint implements AiAnalysisInte
     public JsonObject processSensor(SensorDataEvent event) {
         try {
             OllamaClient client = OllamaClient.getInstance();
-            JsonObject prompt = client.createPrompt(OllamaClient.MODEL_QUERIES, 0.80f);
+            JsonObject prompt = client.createPrompt(OllamaClient.MODEL_QUERIES, 0.70f);
 
             // Build messages array
             JsonArray messages = new JsonArray();

@@ -21,7 +21,31 @@ public class AnalyzeLocalMarketsHandler extends BaseQueryAnalyzer implements Que
         EventBusManager.publish(new AiVoxResponseEvent("Analyzing local market data. Stand by."));
         LocationDto currentLocation = locationManager.findByLocationData(playerSession.getLocationData());
         MarketDto market = currentLocation.getMarket();
-        return process(new AiDataStruct("Use markets data to provide answers.", new DataDto(market)), originalUserInput);
+        if (market == null || market.getData() == null) {
+            return process("No market data available for current location.");
+        }
+
+        String instructions = """
+                Answer the user's question about the market at the current station.
+                
+                Data fields:
+                - market.data.name: station name
+                - market.data.sName: star system name
+                - market.data.commodities: list of commodities available at this market
+                  - name: commodity name
+                  - buyPrice: price to buy from the station (zero if not sold here)
+                  - stock: units available to buy
+                  - sellPrice: price the station pays when you sell (zero if not buying)
+                  - demand: units the station wants to buy
+                  - stockBracket: supply level indicator (zero = not stocked)
+                
+                Rules:
+                - If asked about a specific commodity: find it by name and report buy price, sell price, stock, and demand.
+                - If asked what is available to buy: list commodities where stock is greater than zero.
+                - If asked what the station is buying: list commodities where demand is greater than zero.
+                - Answer only what was asked.
+                """;
+        return process(new AiDataStruct(instructions, new DataDto(market)), originalUserInput);
     }
 
     private record DataDto(MarketDto market) implements ToYamlConvertable{

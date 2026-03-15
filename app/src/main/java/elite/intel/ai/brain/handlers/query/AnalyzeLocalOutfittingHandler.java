@@ -21,8 +21,25 @@ public class AnalyzeLocalOutfittingHandler extends BaseQueryAnalyzer implements 
         EventBusManager.publish(new AiVoxResponseEvent("Analyzing outfitting data. Stand by."));
         LocationDto currentLocation = locationManager.findByLocationData(playerSession.getLocationData());
         OutfittingDto outfitting = currentLocation.getOutfitting();
+        if (outfitting == null || outfitting.getData() == null) {
+            return process("No outfitting data available for current location.");
+        }
 
-        return process(new AiDataStruct("Answer questions about available outfitting options", new DataDto(outfitting)), originalUserInput);
+        String instructions = """
+                Answer the user's question about outfitting modules available at the current station.
+
+                Data fields:
+                - outfitting.data.name: station name
+                - outfitting.data.sName: star system name
+                - outfitting.data.outfitting: list of modules available for purchase at this station
+                
+                Rules:
+                - If asked whether a specific module is available: search the outfitting list by name and reply yes or no.
+                - If asked what modules are available: list items from outfitting.data.outfitting.
+                - If the outfitting list is empty or null, say no modules are currently listed at this station.
+                - Answer only what was asked.
+                """;
+        return process(new AiDataStruct(instructions, new DataDto(outfitting)), originalUserInput);
     }
 
     private record DataDto(OutfittingDto outfitting) implements ToYamlConvertable {

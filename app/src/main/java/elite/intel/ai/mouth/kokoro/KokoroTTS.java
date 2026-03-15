@@ -12,6 +12,7 @@ import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.AppPaths;
 import elite.intel.util.AudioPlayer;
+import elite.intel.util.StringUtls;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -183,7 +184,7 @@ public class KokoroTTS implements MouthInterface {
         if (!running) return;
         canBeInterrupted.set(event.canBeInterrupted());
 
-        String text = sanitize(event.getText());
+        String text = StringUtls.sanitizeTts(event.getText());
         if (text == null || text.isBlank()) return;
 
         AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_2);
@@ -403,25 +404,5 @@ public class KokoroTTS implements MouthInterface {
         return out;
     }
 
-    private static String sanitize(String input) {
-        if (input == null) return "";
-        return input
-                .replaceAll("[^\\x00-\\x7F]", "")               // strip non-ASCII (emojis, unicode)
-                .replaceAll("\\*{1,2}([^*\n]*?)\\*{1,2}", "$1") // **bold** / *italic* → plain
-                .replaceAll("_([^_\n]*?)_", "$1")                // _italic_ → plain
-                .replaceAll("~~([^~\n]*?)~~", "$1")              // ~~strikethrough~~ → plain
-                .replaceAll("`{1,3}[^`\n]*`{1,3}", "")          // `code` / ```block``` → remove
-                .replaceAll("(?m)^#{1,6}\\s*", "")              // # headings → remove marker
-                .replaceAll("(?m)^>\\s?", "")                   // > blockquotes → remove marker
-                .replaceAll("[\\r\\n]+", " ")                    // newlines → space
-                .replace("-", ", ")
-                .replace("*", " ")                              // any stray asterisks
-                .replace("`", "")                               // any stray backticks
-                .replace("\"", "")
-                .replace("[", "").replace("]", "")
-                .replace("ETA", ". E.T.A.")
-                .replace(":", " - ")
-                .replaceAll("\\s{2,}", " ")                     // collapse repeated spaces
-                .trim();
-    }
+
 }

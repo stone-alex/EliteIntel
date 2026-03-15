@@ -8,8 +8,6 @@ import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.FSSBodySignalsEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
-import elite.intel.util.json.GsonFactory;
-import elite.intel.util.json.ToJsonConvertible;
 import elite.intel.util.yaml.ToYamlConvertable;
 import elite.intel.util.yaml.YamlFactory;
 
@@ -27,9 +25,14 @@ public class AnalyzeGeologyInStarSystemHandler extends BaseQueryAnalyzer impleme
         EventBusManager.publish(new AiVoxResponseEvent("Searching for planets with geological signals..."));
         Map<String, Integer> planetsWithGeoSignals = planetsWithGeoSignals();
         String instructions = """
-                    Data contains a map of planet name to amount of geo signals
-                    Name the planets with geo signals if any.
-                    Example: Planets with geological signals: 1A - 3 signals, 4C - 2 signals.
+                Report geological signals detected in this star system.
+                
+                Data fields:
+                - planetsWithGeoSignals: map of planet short name to geological signal count
+                
+                Rules:
+                - List each planet and its signal count.
+                - If the map is empty, say no geological signals are on record.
                 """;
         return process(new AiDataStruct(instructions, new DataDto(planetsWithGeoSignals)), originalUserInput);
     }

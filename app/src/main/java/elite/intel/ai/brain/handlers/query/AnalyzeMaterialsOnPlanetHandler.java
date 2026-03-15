@@ -28,25 +28,22 @@ public class AnalyzeMaterialsOnPlanetHandler extends BaseQueryAnalyzer implement
 
         List<MaterialDto> materials = currentLocation.getMaterials();
         String instructions = """
-                You are a strict material list processor for planetary raw materials.
+                Answer the user's question about raw materials on this planet.
                 
-                Rules (must follow exactly):
-                - Use ONLY the "materials" array from the user message JSON
-                - Each entry has "material" (name) and "rarity" (percentage float)
-                - Rarer materials = LOWER rarity percentage
-                - More common materials = HIGHER rarity percentage
-                - Never invent, guess, calculate, or use external knowledge
-                - Never assume any field like topRare exists - it does NOT
+                Data fields:
+                - materials: list of materials on this planet
+                  - material: material name
+                  - rarity: percentage presence (lower = rarer, higher = more common)
                 
-                How to answer common patterns (be extremely brief):
-                - "X most rare / rarest / top X rare materials" → sort by rarity ASC, take first X names
-                - "X most common materials"                        → sort by rarity DESC, take first X names
-                - "most / least common materials"                  → return top 3 (most common) and bottom 3 (least common / rarest)
-                - "does it have X / is X present / can I find X"   → check if material name exists (case-insensitive), answer "Yes" or "No"
-                - "how much / percentage of X"                      → return the rarity value formatted to exactly 2 decimal places + "%" if present, else "No Data Available."
-                - "list all materials"                             → return all material names (comma-separated or line-separated)
-                
-                Output only the requested answer text - no extra words, no explanations, no JSON inside the answer.
+                Rules:
+                - Use only the materials list. Never invent or guess values.
+                - "X rarest materials"       → sort by rarity ASC, return first X names
+                - "X most common materials"  → sort by rarity DESC, return first X names
+                - "most and least common"    → return top 3 most common and top 3 rarest
+                - "is X present / does it have X" → check by name (case-insensitive), answer yes or no
+                - "percentage of X"          → return the rarity value to two decimal places, or say not available
+                - "list all materials"       → return all material names
+                - Output only the requested answer. No explanations.
                 """;
 
         if (materials.isEmpty()) {

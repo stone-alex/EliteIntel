@@ -34,12 +34,25 @@ public class AnalyzeCarriersHandler extends BaseQueryAnalyzer implements QueryHa
         }
 
 
+        int totalCarriers = stationsData.size();
+        long withCommodities = stationsData.stream().filter(s -> s.numberOfCommodities() != null && s.numberOfCommodities() > 0).count();
+        long withServices = stationsData.stream().filter(s -> s.numberOfServices() != null && s.numberOfServices() > 0).count();
+
         String instructions = """
-                    Summarize the fleet carriers in the star system by type. How many present, How many carriers have commodities? How many carriers have services?
-                    Example X carriers present, Y have commodities (IF no commodity - none have commodity), Z have services (IF non have services - non have services).
+                Report fleet carriers present in this star system.
+                
+                Data fields:
+                - carriers: list of fleet carriers (name, numberOfCommodities, numberOfServices)
+                - totalCarriers: total number of fleet carriers present
+                - carriersWithCommodities: number of carriers that have commodities listed
+                - carriersWithServices: number of carriers that have services listed
+                
+                Rules:
+                - Use the pre-computed counts directly. Do not recount from the list.
+                - Answer only what the user asked.
                 """;
 
-        return process(new AiDataStruct(instructions, new DataDto(stationsData)), originalUserInput);
+        return process(new AiDataStruct(instructions, new DataDto(stationsData, totalCarriers, (int) withCommodities, (int) withServices)), originalUserInput);
     }
 
     record StationData(String name, Integer numberOfCommodities, Integer numberOfServices) implements ToYamlConvertable {
@@ -49,7 +62,8 @@ public class AnalyzeCarriersHandler extends BaseQueryAnalyzer implements QueryHa
     }
 
 
-    record DataDto(List<StationData> carriers) implements ToYamlConvertable {
+    record DataDto(List<StationData> carriers, int totalCarriers, int carriersWithCommodities,
+                   int carriersWithServices) implements ToYamlConvertable {
         @Override public String toYaml() {
             return YamlFactory.toYaml(this);
         }

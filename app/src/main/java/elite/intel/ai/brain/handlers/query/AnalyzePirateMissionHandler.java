@@ -30,10 +30,17 @@ public class AnalyzePirateMissionHandler extends BaseQueryAnalyzer implements Qu
         String remainingKills = computeKillsRemaining(missions, bounties);
         String missionProfit = computeMissionProfit(missions, bounties);
         String instructions = """
-                Do not sum anything do not calculate!
-                Just use data pre-calculated for you to answer the question.
-                If asked about total kills remaining only return the number of kills remaining to complete all assignments.
-                Else provide complete summary.
+                Answer the user's question about active pirate kill missions.
+                
+                Data fields:
+                - totalMissionKillsLeft: pre-computed kills remaining per faction and total, formatted as a summary string
+                - totalMissionProfit: pre-computed total credit reward from missions and bounties combined
+                
+                Rules:
+                - All values are pre-computed. Do not recalculate.
+                - If asked about kills remaining: report totalMissionKillsLeft directly.
+                - If asked about profit or reward: report totalMissionProfit directly.
+                - Otherwise: report both fields as a brief summary.
                 """;
         return process(new AiDataStruct(instructions, new DataDto(remainingKills, missionProfit)), originalUserInput);
     }

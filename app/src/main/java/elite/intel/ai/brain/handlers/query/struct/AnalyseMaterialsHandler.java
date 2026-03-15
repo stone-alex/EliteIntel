@@ -30,11 +30,20 @@ public class AnalyseMaterialsHandler extends BaseQueryAnalyzer implements QueryH
                 );
 
         MaterialsDao.Material data = Database.withDao(MaterialsDao.class, dao -> dao.findByExactName(material));
+        if (data == null) {
+            return process("No data found for material: " + material);
+        }
 
         String instructions = """
-                Provide answers about material on hand based on this data.
-                Material amount is measured in units. 
-                Example Answer:  {"type":"chat", "response_text":"We have 12 units of mercury out of 200"}
+                Answer the user's question about this material in the ship's inventory.
+                
+                Data fields:
+                - materialName: name of the material
+                - materialType: category of the material
+                - amount: current units held
+                - maxCap: maximum storage capacity in units
+                
+                State the amount held and maximum capacity. Answer only what was asked.
                 """;
 
         return process(new AiDataStruct(instructions, new DataDto(data)), originalUserInput);

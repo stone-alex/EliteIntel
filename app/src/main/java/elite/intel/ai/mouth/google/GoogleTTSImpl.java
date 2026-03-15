@@ -13,6 +13,7 @@ import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.AudioPlayer;
+import elite.intel.util.StringUtls;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -170,7 +171,8 @@ public class GoogleTTSImpl implements MouthInterface {
     @Subscribe @Override public void onVoiceProcessEvent(VocalisationRequestEvent event) {
         canBeInterrupted.set(event.canBeInterrupted());
         log.debug("Received VoiceProcessEvent: text='{}', useRandom={}", event.getText(), event.useRandomVoice());
-        if (event.getText() == null || event.getText().isEmpty()) {
+        String text = StringUtls.sanitizeTts(event.getText());
+        if (text.isEmpty()) {
             return;
         }
         try {
@@ -178,7 +180,7 @@ public class GoogleTTSImpl implements MouthInterface {
                     ? googleVoiceProvider.getRandomVoice().getName()
                     : googleVoiceProvider.getUserSelectedVoice().getName();
 
-            String[] sentences = event.getText().split("(?<=[.!?])\\s+(?=\\S)");
+            String[] sentences = text.split("(?<=[.!?])\\s+(?=\\S)");
             for (String sentence : sentences) {
                 ttsQueue.put(new VoiceRequest(sentence, voiceName, (1f + systemSession.getSpeechSpeed()), event.getOriginType()));
             }

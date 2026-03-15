@@ -37,31 +37,23 @@ public class AnalyzeBioSamplesPlanetSurfaceHandler extends BaseQueryAnalyzer imp
         List<GenusDto> genusListNotScannedForCurrentLocation = calculateGenusNotYetScanned(completedScansForThisLocation, genusListForCurrentLocation);
 
         String instructions = """
-                Answer user questions about remaining genus/organics to scan on the current planet.
+                Answer the user's question about exobiology scanning on this planet.
                 
-                Available data:
-                - allBioFormsOnPlanet: list of ALL genus/species known to exist on the planet (with rewards)
-                - completedScansForPlanet: list of FULLY completed scans (look for completed: true and scanXof3: 3)
-                - partialBioFormScans: list of partial/in-progress scans (usually 1 or 2 scans done)
-                - genusListNotScannedForCurrentLocation: explicit list of genus that still need at least one scan (most authoritative when present)
+                Data fields:
+                - remainingGenus: genus that still need scanning (pre-computed, authoritative)
+                - currentlyScanning: genus with partial scans in progress (1 or 2 of 3 samples taken)
+                - completedCount: number of genus fully completed (all 3 samples taken)
                 
-                Rules (in priority order):
-                1. If genusListNotScannedForCurrentLocation exists and is non-empty → those are the only remaining genus to scan. Return only those genus names that match the user's question.
-                2. If genusListNotScannedForCurrentLocation is missing or empty → check completedScansForPlanet:
-                   - A genus is DONE if it has an entry with completed: true (and preferably scanXof3: 3)
-                   - Remaining genus = genera in allBioFormsOnPlanet that do NOT appear in completedScansForPlanet with completed: true
-                3. Never report a genus as remaining if it has a completed: true entry, even if it appears in allBioFormsOnPlanet or partial scans.
-                4. If no remaining genus after above checks → clearly state "All known organic samples on this planet are already completed."
-                5. If asked partial scans, or what genus we are currently scanning use partialBioFormScans data.
-                
-                Return only the matching genus names (or none/"all done") - be concise.
+                Rules:
+                - If asked what is left to scan: list names from remainingGenus. If empty, say all known organics are completed.
+                - If asked what we are currently scanning: list names from currentlyScanning.
+                - Be concise. Return only genus names, no extra data.
                 """;
 
         AiDataStruct struct = new AiDataStruct(instructions, new DataDto(
+                genusListNotScannedForCurrentLocation,
                 partialScans,
-                genusListForCurrentLocation,
-                completedScansForThisLocation,
-                genusListNotScannedForCurrentLocation
+                completedScansForThisLocation.size()
         ));
 
         return process(struct, originalUserInput);
@@ -85,11 +77,9 @@ public class AnalyzeBioSamplesPlanetSurfaceHandler extends BaseQueryAnalyzer imp
     }
 
     record DataDto(
-            List<BioSampleDto> partialBioFormScans,
-            List<GenusDto> allBioFormsOnPlanet,
-            List<ExoBio.DataDto> completedScansForPlanet,
-            List<GenusDto> genusListNotScannedForCurrentLocation
-
+            List<GenusDto> remainingGenus,
+            List<BioSampleDto> currentlyScanning,
+            int completedCount
     ) implements ToYamlConvertable {
         @Override public String toYaml() {
             return YamlFactory.toYaml(this);

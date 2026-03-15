@@ -5,8 +5,6 @@ import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
 import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
-import elite.intel.util.json.GsonFactory;
-import elite.intel.util.json.ToJsonConvertible;
 import elite.intel.util.yaml.ToYamlConvertable;
 import elite.intel.util.yaml.YamlFactory;
 
@@ -23,7 +21,15 @@ public class StationDataHandler extends BaseQueryAnalyzer implements QueryHandle
         LocationDto location = locationManager.findByLocationData(playerSession.getLocationData());
 
         String instructions = """
-                Analyze data for the current station.
+                Answer the user's question about the current station.
+                
+                Data fields:
+                - stationServices: list of services available at this station
+                
+                Rules:
+                - If asked what services are available: list all items from stationServices.
+                - If asked whether a specific service is available: check the list and reply yes or no.
+                - If the list is empty or null, say no service data is available.
                 """;
 
         return process(new AiDataStruct(instructions, new DataDto(location.getStationServices())), originalUserInput);

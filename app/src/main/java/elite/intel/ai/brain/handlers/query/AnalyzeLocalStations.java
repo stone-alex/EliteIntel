@@ -46,7 +46,25 @@ public class AnalyzeLocalStations extends BaseQueryAnalyzer implements QueryHand
         ));
 
         String instructions = """
-                Answer questions about local stations.
+                Answer the user's question about stations in this star system.
+                
+                Data fields (per station):
+                - stationType: station type (Coriolis, Outpost, Planetary Port, Fleet Carrier, etc.)
+                - stationName: station name
+                - orbitingAround: body the station orbits (if applicable)
+                - distanceToArrivalInLightSeconds: distance from the main star in light seconds
+                - allegiance: faction allegiance
+                - government: government type
+                - economy: primary economy type
+                - haveMarket: whether the station has a commodity market
+                - haveShipyard: whether the station has a shipyard
+                - haveOutfitting: whether the station has outfitting services
+                - controllingFaction: faction controlling this station
+                
+                Rules:
+                - Answer only what the user asked.
+                - If asked which stations have a market, shipyard, or outfitting: filter by the relevant boolean field.
+                - If asked about a specific station: match by stationName.
                 """;
 
         return process(

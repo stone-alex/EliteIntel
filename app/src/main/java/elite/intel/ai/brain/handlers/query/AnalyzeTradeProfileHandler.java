@@ -15,14 +15,21 @@ public class AnalyzeTradeProfileHandler extends BaseQueryAnalyzer implements Que
         EventBusManager.publish(new AiVoxResponseEvent("Analyzing trade profile. Stand by."));
         TradeProfileManager tradeProfileManager = TradeProfileManager.getInstance();
         TradeRouteSearchCriteria criteria = tradeProfileManager.getCriteria(false);
-        String instructions = "Summarize the trade profile for the player in plain English.  \n" +
-                "- Convert any price age given in seconds to \"X hours\" or \"X hours Y minutes\".  \n" +
-                "- If the startingBudget is 0 the profile is not configured yet.  \n" +
-                              "- The value maxStationDistanceLs (or maxLsFromArrival) is the maximum allowed station distance **in Light Seconds from the arrival point / main star** - it is an in-system distance, never light-years and never a distance between systems.  \n" +
-                "- Example: 6000 → \"stations no farther than 6000 Ls from the star\" or \"max 6000 Ls from arrival\".  \n" +
-                "- Hops are measured in light years. (distances between stars)  \n" +
-                "- allowStrongHold field is true/false - allow or dissalow stops at enemy strongholds for power players. Mention state of allowStrongHold or not\n" +
-                "- Completely omit the system name and station name.";
+        String instructions = """
+                Answer the user's question about the current trade profile configuration.
+                
+                Field notes:
+                - startingBudget: if zero, the profile is not configured yet
+                - maxStationDistanceLs: maximum station distance in light seconds from the arrival star (in-system only, never light years)
+                - priceAge: given in seconds, convert to hours and minutes when reporting
+                - hops: measured in light years (distance between star systems)
+                - allowStrongHold: whether stops at enemy powerplay strongholds are permitted
+                
+                Rules:
+                - Answer only what the user asked.
+                - Do not include system name or station name in the response.
+                - If startingBudget is zero, state the profile is not configured.
+                """;
         return process(
                 new AiDataStruct(
                         instructions,

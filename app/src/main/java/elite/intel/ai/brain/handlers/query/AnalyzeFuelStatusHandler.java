@@ -21,18 +21,41 @@ public class AnalyzeFuelStatusHandler extends BaseQueryAnalyzer implements Query
         GameEvents.StatusEvent fuelStatus =status.getStatus();
         ShipLoadOutDto loadout = playerSession.getShipLoadout();
 
-        if(loadout != null && fuelStatus != null) {
-            return process(new AiDataStruct("Use loadout data and fuel fuelStatus.fuelMain to provide answers.", new DataDto(loadout, fuelStatus)), originalUserInput);
-        } else if(loadout != null) {
-            return process(new AiDataStruct("Use loadout data to provide answers.", new DataDto(loadout, null)), originalUserInput);
-        }
-        else {
+        if (loadout == null) {
             return process("Data not available");
         }
+
+        Double currentFuel = null;
+        Double currentReserve = null;
+        if (fuelStatus != null && fuelStatus.getFuel() != null) {
+            currentFuel = fuelStatus.getFuel().getFuelMain();
+            currentReserve = fuelStatus.getFuel().getFuelReservoir();
+        }
+
+        Double mainTankCapacity = loadout.getFuelCapacity() != null ? loadout.getFuelCapacity().getMainTank() : null;
+        Double reserveTankCapacity = loadout.getFuelCapacity() != null ? loadout.getFuelCapacity().getReserveTank() : null;
+
+        String instructions = """
+                Answer the user's question about ship fuel status.
+                
+                Data fields:
+                - currentFuel: current fuel in main tank in tons
+                - currentReserve: current fuel in reserve tank in tons
+                - mainTankCapacity: maximum main tank capacity in tons
+                - reserveTankCapacity: maximum reserve tank capacity in tons
+                - maxJumpRange: maximum single jump range in light years
+
+                Rules:
+                - Answer only the specific value the user asked about.
+                - If a value is null, say it is not available.
+                """;
+
+        return process(new AiDataStruct(instructions, new DataDto(currentFuel, currentReserve, mainTankCapacity, reserveTankCapacity, loadout.getMaxJumpRange())), originalUserInput);
     }
 
 
-    record DataDto(ShipLoadOutDto loadout, GameEvents.StatusEvent fuelData) implements ToYamlConvertable {
+    record DataDto(Double currentFuel, Double currentReserve, Double mainTankCapacity, Double reserveTankCapacity,
+                   double maxJumpRange) implements ToYamlConvertable {
         @Override public String toYaml() {
             return YamlFactory.toYaml(this);
         }

@@ -27,7 +27,23 @@ public class AnalyzeLastScanHandler extends BaseQueryAnalyzer implements QueryHa
 
 
         String instructions = """
-                Summarize scanner data. Or use this data to answer specific questions.
+                Answer the user's question about the last scanned body or current partial bio scans.
+                
+                Data fields:
+                - lastScan: full data for the last scanned body. Key fields:
+                  - planetShortName / starName: name of the body
+                  - bodyType / starClass: type of body
+                  - gravity, surfaceTemperature, atmosphere: surface conditions
+                  - isLandable: whether the surface can be landed on
+                  - isTerraformable: terraforming candidate
+                  - bioSignals, geoSignals: number of biological and geological signals detected
+                  - ourDiscovery, weMappedIt: whether we were first to discover or map
+                - partialScans: list of bio samples currently in progress (genus, species, scanXof3, payout)
+                
+                Rules:
+                - If asked about the last scanned body: use lastScan fields relevant to the question.
+                - If asked about current bio scans in progress: use partialScans.
+                - Answer only what was asked.
                 """;
         return process(new AiDataStruct(instructions, new DataDto(lastScan, partialScans)), originalUserInput);
     }

@@ -24,10 +24,23 @@ public class AnalyzeShipyardHandler extends BaseQueryAnalyzer implements QueryHa
         LocationDto currentLocation = locationManager.findByLocationData(playerSession.getLocationData());
         ShipyardDto shipyard = currentLocation.getShipyard();
 
+        if (shipyard == null || shipyard.getData() == null) {
+            return process("No shipyard data available.");
+        }
+
         String instructions = """
-            Answer questions about shipyard contents.
-            If no data available return no data available
-        """;
+                Answer the user's question about the shipyard at the current station.
+                
+                Data fields:
+                - shipyard.data.name: station name
+                - shipyard.data.sName: star system name
+                - shipyard.data.ships: list of ships available for purchase at this shipyard
+                
+                Rules:
+                - If asked what ships are available: list names from shipyard.data.ships.
+                - If asked whether a specific ship is available: check the ships list and reply yes or no.
+                - If ships list is empty or null, say no ships are currently listed at this shipyard.
+                """;
 
         return process(new AiDataStruct(instructions, new DataDto(shipyard)), originalUserInput);
     }

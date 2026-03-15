@@ -27,9 +27,13 @@ public class AnalyzeExplorationProfitsHandler extends BaseQueryAnalyzer implemen
         EventBusManager.publish(new AiVoxResponseEvent("Analyzing exploration data. Stand by."));
 
         String instructions = """
-                Use this data to provide answers on potential exo-biology exploration profits in credits.
-                potentialProfit is a sum of credits user can receive this session (could have)
-                acquiredProfit is a sum of all credits user actually acquired this session. (will have)
+                Report exobiology exploration profits for this session.
+                
+                Data fields:
+                - potentialProfit: total credits available if all known genus in the current system are fully scanned
+                - acquiredProfit: total credits already earned from completed bio samples and codex entries this session
+                
+                State both values in credits. Answer only what the user asked.
                 """;
         return process(
                 new AiDataStruct(

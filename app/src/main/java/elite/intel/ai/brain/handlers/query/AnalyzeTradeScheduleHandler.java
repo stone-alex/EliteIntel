@@ -11,8 +11,17 @@ import java.util.List;
 
 public class AnalyzeTradeScheduleHandler extends BaseQueryAnalyzer implements QueryHandler {
 
-    public static final String INSTRUCTIONS = """ 
-            Use this data to answer users' queries
+    public static final String INSTRUCTIONS = """
+            Answer the user's question about the current trade route schedule.
+            
+            Data format (one line per leg):
+            Leg: <number>, Source System: <system>, Station: <station>, Commodities: [<list>], Destination System: <system>, Destination Station: <station>
+            
+            Rules:
+            - Answer only what the user asked.
+            - If asked about a specific leg: find the matching leg number and report its details.
+            - If asked what commodities are being traded: list the commodities from all legs or a specific leg.
+            - If asked about source or destination: report the system and station names.
             """;
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {

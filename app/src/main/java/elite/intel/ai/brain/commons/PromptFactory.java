@@ -95,36 +95,37 @@ public class PromptFactory implements AiPromptFactory {
     @Override
     public String generateAnalysisPrompt() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Instructions:\n");
         youAre(sb);
         if (!systemSession.useLocalQueryLlm()) {
             sb.append(getSessionValues());
             sb.append(appendBehavior());
+        } else {
+            sb.append(appendLocalBehavior());
         }
         sb.append("""
-                        Output ONLY this exact JSON structure {"type":"chat", "response_text": "YOUR ANSWER HERE AS PLAIN TEXT"} 
-                        - nothing else, no explanations, no thinking, no markdown, no extra characters:
+                Output ONLY this exact JSON structure — nothing else, no explanations, no markdown:
+                {"type": "chat", "response_text": "ANSWER"}
 
-                Rules - follow exactly:
-                - "response_text" must be:
-                  - pure ASCII English text
-                  - TTS friendly punctuation. (no bullets, no formatting)
-                          - Clear, professional communication style
-                  - single clean string (no arrays, no objects, no commas as separators unless part of the natural sentence)
-                          - concise, clear response
-                          - For data queries: extract and present only facts from the provided data. If data is missing, state that clearly.
-                          - For general conversation: respond naturally using your knowledge and the chat history context.
-                - Never add formatting, lists, quotes, brackets, or any artifacts inside the string
-                Output pure JSON only.
-                """
-        );
-        sb.append(" Spell out numerals for response_text, Example: I have one hundred and thirsty units of gold in cargo hold. ");
-        sb.append(" Use numbers for parameters Example: {\"key\":\"1\"} ");
+                Rules for response_text:
+                - Plain English text only. No bullets, no markdown, no lists, no brackets.
+                - Spell out numerals (e.g., twenty-three, not 23).
+                - Concise and direct. Answer only what the user asked.
+                - All numeric values in the provided data are pre-computed. Do not perform arithmetic.
+                - If data is missing, state that clearly.
+                """);
 
         if (!systemSession.useLocalQueryLlm()) {
             appendCadenceAndPersonality(sb);
         }
         return sb.toString();
+    }
+
+    private String appendLocalBehavior() {
+        return """
+                Do not end responses with filler phrases like "Ready for orders", "All set", or "Should we proceed?".
+                Do not use the word "player". Use "we" or "commander" instead.
+                Do not confuse the ship (you) with the fleet carrier (our base).
+                """;
     }
 
     @Override

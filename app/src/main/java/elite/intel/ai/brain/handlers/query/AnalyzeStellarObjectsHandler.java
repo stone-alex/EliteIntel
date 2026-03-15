@@ -26,15 +26,32 @@ public class AnalyzeStellarObjectsHandler extends BaseQueryAnalyzer implements Q
         StellarObjectsData<List<LocationData>, String> data = toLocationList(locationManager.findAllBySystemAddress(playerSession.getLocationData().getSystemAddress()));
 
         String instructions = """
-                Answer user question using this data.
-                Provide answers based on this data only, do not invent information. Info no matching data = INSTANT FAIL.
-                You are a strict data-only responder. Use ONLY the provided JSON array "allStellarObjectsInStarSystem"
-                    - objectType: Type of object such as planet, moon, ring, station, star.
-                    - isLandable: true/false landable or not.
-                    - distanceFromStar: distance from primary star in light seconds.
-                    - starClass: star class (M, K, G, F, A, B, O are fuel stars).
-                    - "atmosphere": "None" (no atmosphere) | else see atmosphere type in "atmosphere"
-                    - "gravity": 0.0 means we have no data on gravity for this object
+                Answer ONLY the specific question asked. Do not give an overview or summary unless the user explicitly asks for one.
+                Be concise — two to three sentences maximum. Plain text only, no markdown, no bullets, no unit conversions.
+                
+                Data fields:
+                - summary: pre-computed counts (stars, planets, moons, stations, landable, bio signals, scoopable stars). Use this for any count or summary question.
+                - detailedStellarObjectList: full list of stellar objects with per-object data:
+                  - stellarObjectName: short display name
+                  - objectClass: STAR, PLANET, MOON, STATION
+                  - objectType: specific type (e.g. Rocky Body, High metal content world, Neutron Star)
+                  - starClass: star spectral class (M, K, G, F, A, B, O are fuel-scoopable)
+                  - isLandable: whether the surface can be landed on
+                  - isTerraformable: terraforming candidate
+                  - gravity: surface gravity (zero means no data)
+                  - surfaceTemperature: in Celsius
+                  - atmosphere: atmosphere type or None
+                  - parentPlanetName: parent body if this is a moon
+                  - distanceFromStar: distance from primary star in light seconds
+                  - bioSignals: number of biological signals detected
+                  - ourDiscovery: true if we were first to discover this body
+                  - weMappedIt: true if we mapped this body
+                  - hasMarkets: true if this location has a market
+                
+                Rules:
+                - For count or summary questions: use summary directly. Do not recount from the list.
+                - For specific object questions: search detailedStellarObjectList by stellarObjectName or objectClass.
+                - Do not invent data not present in the provided fields.
                 """;
 
         return process(

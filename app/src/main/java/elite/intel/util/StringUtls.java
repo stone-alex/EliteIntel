@@ -114,6 +114,28 @@ public class StringUtls {
         return Long.parseLong(sb.substring(0, 12));
     }
 
+    public static String sanitizeTts(String input) {
+        if (input == null) return "";
+        return input
+                .replaceAll("[^\\x00-\\x7F]", "")               // strip non-ASCII (emojis, unicode)
+                .replaceAll("\\*{1,2}([^*\n]*?)\\*{1,2}", "$1") // **bold** / *italic* → plain
+                .replaceAll("_([^_\n]*?)_", "$1")                // _italic_ → plain
+                .replaceAll("~~([^~\n]*?)~~", "$1")              // ~~strikethrough~~ → plain
+                .replaceAll("`{1,3}[^`\n]*`{1,3}", "")          // `code` / ```block``` → remove
+                .replaceAll("(?m)^#{1,6}\\s*", "")              // # headings → remove marker
+                .replaceAll("(?m)^>\\s?", "")                   // > blockquotes → remove marker
+                .replaceAll("[\\r\\n]+", " ")                    // newlines → space
+                .replace("-", ", ")
+                .replace("*", " ")                              // any stray asterisks
+                .replace("`", "")                               // any stray backticks
+                .replace("\"", "")
+                .replace("[", "").replace("]", "")
+                .replace("ETA", ". E.T.A.")
+                .replace(":", " - ")
+                .replaceAll("\\s{2,}", " ")                     // collapse repeated spaces
+                .trim();
+    }
+
     public static String normalizeVersion(String v) {
         if (v == null) return "";
         return v.replaceAll("[\\r\\n]+", "").trim();

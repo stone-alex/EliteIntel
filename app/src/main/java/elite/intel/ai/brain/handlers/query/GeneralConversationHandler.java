@@ -16,13 +16,14 @@ public class GeneralConversationHandler extends BaseQueryAnalyzer implements Que
 
         ChatHistory chatHistory = systemSession.getChatHistory();
         String instructions = """
-        General Chat.
-        Use your own knowledge to chat with user.
+                Respond naturally to the user's message using your own knowledge.
                 
-        You are also provided with chat history for your own reference.
-            - commanderLog is what user said in previous conversation.
-                    - shipBrief is what you said in previous conversation.
-        """;
+                Data fields:
+                - chatHistory.commanderLog: what the user said in previous turns
+                - chatHistory.shipBrief: what you said in previous turns
+                
+                Use chat history for context. Answer only what was asked.
+                """;
         return process(
                 new AiDataStruct(
                         instructions,

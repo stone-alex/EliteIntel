@@ -21,15 +21,22 @@ public class AnalyzeCarrierDataHandler extends BaseQueryAnalyzer implements Quer
             return process("No data available. Please open carrier management panel.");
         } else {
             String instructions = """
-                    Range is in light years, max is calculated 'maxRange' value provided. 
-                        - reserveBalance: credits reserved for weekly ops (usually thirty one million credits per week). 
-                        - totalBalance: total credits in carrier bank, including reserveBalance. 
-                        - marketBalance: credits for purchases; 
-                        - fundedOperation: time in weeks the carrier can operate with current funding. 
-                    Do not improvise or assume anything.
-                    Example: Carrier balance is X credits. Or Carrier max range is X light years. Or We are funded for 19 weeks of ops.
-                    Spell out numerals.
-                    If data not available state so.
+                    Answer the user's question about fleet carrier status.
+                    
+                    Data fields:
+                    - reserveBalance: credits reserved for weekly operations
+                    - totalBalance: total credits in carrier bank (includes reserveBalance)
+                    - marketBalance: credits available for market purchases
+                    - fuelSupply: current tritium fuel in supply depot
+                    - fuelSupplyReserve: tritium held in reserve
+                    - totalFuelAvailable: fuelSupply and fuelSupplyReserve combined
+                    - maxRange: maximum jump range in light years
+                    - fundedOperation: weeks of operation funded at current balance
+                    
+                    Rules:
+                    - Answer only the specific field the user asks about.
+                    - Do not invent or assume values not in the data.
+                    - If a value is zero or missing, state that clearly.
                     """;
             return process(
                     new AiDataStruct(

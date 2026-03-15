@@ -22,30 +22,45 @@ public class AnalyzeShipLoadoutHandler extends BaseQueryAnalyzer implements Quer
         ShipLoadOutDto shipLoadout = playerSession.getShipLoadout();
         if (shipLoadout == null) return process("No data available");
 
+        Map<String, Object> facts = ShipFactsExtractor.extractFacts(shipLoadout);
+
+        Map<String, Float> damagedModules = new HashMap<>();
+        boolean hasEngineeredModules = false;
+        java.util.List<ModuleDto> modules = shipLoadout.getModules() != null ? shipLoadout.getModules() : java.util.Collections.emptyList();
+        for (ModuleDto module : modules) {
+            if (module.getHealthPercentage() < 100.0f) {
+                damagedModules.put(module.getSlot(), module.getHealthPercentage());
+            }
+            if (module.getEngineering() != null) {
+                hasEngineeredModules = true;
+            }
+        }
+
         String instructions = """
-                Data represents your build, health and capabilities.
+                Answer the user's question about ship loadout, health, or capabilities.
                 
-                Example: I am equipped with ..., my classification is...
+                Data fields:
+                - data: map of ship modules by slot (moduleName, moduleHealthPercentage, engineering)
+                - damagedModules: pre-computed map of slots with health below 100 percent (slot -> healthPercentage)
+                - hasEngineeredModules: true if any module has engineering modifications
                 
-                Provide answers about your loadout details, health, damage report, suitability for a task, or whatever else user asks.
-                IF damage detected (moduleHealthPercentage < 100) list damaged modules and damage percentage.
-                IF asked about a specific module equipped reply with yes, or no. If yes, list know smodule specification.
-                IF asked about damage report, only provide a summary of the damaged modules and percent damage, if all modules are at full health (100) report no damage detected.
-                Mention if the ship has engineered modules. (Engineering modules are modules that have been modified, and have special abilities or bonuses)
-                ______________________________________________________________
-                For questions about ship classifications/suitability use this as a general guide line:
-                Configuration builds/types:
-                    - Discovery class ships: long range jumps (more than 50ly) light, no cargo, no weapons minimal shielding.
-                    - Cargo class: a lot of cargo space, average jump range (less than 50 light years) may have some defencive weapons minimal shielding.
-                    - Combat class: lazers / cannons / missiles, and massive shields are priority over cargo space or range
-                    - Mining class: priority is mining tools, refinery and cargo space.
-                ______________________________________________________________
+                Rules:
+                - If asked about a specific module: check data by slot name, reply yes/no and list its specs if present.
+                - If asked about damage: use damagedModules directly. If empty, report no damage detected.
+                - If asked about engineering: use hasEngineeredModules. Engineered modules have modified stats or special bonuses.
+                - If asked about ship classification or suitability, use these guidelines:
+                  - Discovery: jump range above fifty light years, light build, no cargo, minimal weapons and shields
+                  - Cargo: large cargo space, jump range below fifty light years, minimal weapons
+                  - Combat: weapons and shields are priority, cargo and range are secondary
+                  - Mining: mining tools, refinery, and cargo space are priority
+                - Answer only what was asked.
                 """;
 
-        return process(new AiDataStruct(instructions, new DataDto(ShipFactsExtractor.extractFacts(shipLoadout))), originalUserInput);
+        return process(new AiDataStruct(instructions, new DataDto(facts, damagedModules, hasEngineeredModules)), originalUserInput);
     }
 
-    record DataDto(Map<String, Object> data) implements ToYamlConvertable {
+    record DataDto(Map<String, Object> data, Map<String, Float> damagedModules,
+                   boolean hasEngineeredModules) implements ToYamlConvertable {
         @Override public String toYaml() {
             return YamlFactory.toYaml(this);
         }

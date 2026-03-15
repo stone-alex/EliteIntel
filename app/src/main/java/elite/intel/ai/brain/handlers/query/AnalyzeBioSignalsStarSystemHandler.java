@@ -17,8 +17,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import static elite.intel.util.StringUtls.getIntSafely;
-
 public class AnalyzeBioSignalsStarSystemHandler extends BaseQueryAnalyzer implements QueryHandler {
 
     private final PlayerSession playerSession = PlayerSession.getInstance();
@@ -30,10 +28,16 @@ public class AnalyzeBioSignalsStarSystemHandler extends BaseQueryAnalyzer implem
         List<PlanetsToScan> planetsRequireBioScans = planetsWithBioFormsNotYetScanned();
 
         String instructions = """
-                You are a strict data-only responder for this query.
-                Answer only what is user asking using this data. Do not read back the entire data set.
-                   - planetsRequireBioScans (object): shows bodies that STILL NEED bio scans (key = planet name, value = number of remaining scans needed).
-                   - allCompletedBioScans (array): shows bodies where bio samples are already fully scanned
+                Answer only what the user is asking. Do not read back the entire data set.
+                
+                Data fields:
+                - planetsRequireBioScans: planets in this star system that still have bio organics left to scan (planet name + remaining count)
+                - partialSamples: individual genus samples that are in progress (1 or 2 of 3 taken) with how many scans still needed
+                
+                Rules:
+                - If asked which planets have bio signals remaining: use planetsRequireBioScans.
+                - If asked about partial or in-progress scans: use partialSamples.
+                - Be concise. List names and counts only.
                 """;
 
         return process(new AiDataStruct(instructions, new DataDto(planetsRequireBioScans, toBioSameplDataList(allCompletedBioScans))), originalUserInput);
@@ -86,7 +90,8 @@ public class AnalyzeBioSignalsStarSystemHandler extends BaseQueryAnalyzer implem
         return result;
     }
 
-    record DataDto(List<PlanetsToScan> planetsRequireBioScans, List<BioSampleData> allCompletedBioScans) implements ToYamlConvertable {
+    record DataDto(List<PlanetsToScan> planetsRequireBioScans,
+                   List<BioSampleData> partialSamples) implements ToYamlConvertable {
         @Override public String toYaml() {
             return YamlFactory.toYaml(this);
         }

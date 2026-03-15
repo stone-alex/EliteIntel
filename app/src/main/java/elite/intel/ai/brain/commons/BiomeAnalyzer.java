@@ -40,20 +40,21 @@ public class BiomeAnalyzer extends BaseQueryAnalyzer {
 
 
         String instructions = """
-                You are a classifier. IGNORE all planet properties except planetShortName, planetClass, atmosphere, temperature, volcanism (if relevant) - but ONLY to match against PROBABLE genusToBiome map.
+                Predict probable genus for each planet using the genusToBiome map.
                 
-                ONLY source: the provided genusToBiome map.
+                Data fields:
+                - locations: list of planets to classify (planetName, planetClass, atmosphere, temperature in Kelvin, vulcanism, numBioSignals)
+                - genusToBiome: map of genus name to the biome conditions it requires
+                - starSystemCharacteristics: star types and planet types present in this system
                 
-                For each planet:
-                - Find ALL genera whose conditions can POSSIBLY be met (lenient/partial match allowed, do NOT require 100% fit).
-                - Output: "Planet <planetName>: " followed by comma-separated list (no trailing comma).
-                - Number of genera listed MUST be equal or greater than numBioSignals.
-                - If ZERO plausible matches but numBioSignals > 0 → list "Bacterium"
-                - If no POSSIBLE/PROBABLE matches and numBioSignals = 0 → "Planet <shortName>: no matching genus found"
-                - Pure text only. No explanations, no stats, no other words.
-                - numBioSignals indicates number of detected bio signals. There should be at least that many different matches
+                Rules:
+                - For each planet: match its planetClass, atmosphere, temperature, and vulcanism against genusToBiome conditions. Allow partial and lenient matches.
+                - The number of genus listed per planet must be equal to or greater than numBioSignals.
+                - If no plausible matches exist but numBioSignals is greater than zero: list Bacterium as a fallback.
+                - If no matches and numBioSignals is zero: output "Planet <planetName>: no matching genus found".
+                - Output only planet names and genus lists. No explanations.
                 
-                Output format: { "type":"chat", "response_text": "Planet X: probable genus are Genus1, Genus2, ... Genus5. Planet Y: Genus1, Genus2, ..., Genus5." }
+                Output format: Planet X: Genus1, Genus2, Genus3. Planet Y: Genus1, Genus2.
                 """;
 
         List<LocationData> list = List.of(locations);

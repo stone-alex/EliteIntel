@@ -25,7 +25,13 @@ public class AnalyzeDistanceFromLastBioSample extends BaseQueryAnalyzer implemen
         LocationDto currentLocation = locationManager.findByLocationData(playerSession.getLocationData());
 
         String instructions = """
-                use userLatitude, userLongitude, bioSample.scanLatitude, bioSample.scanLongitude and planetRadius to calculate distance to the last partial bio-sample.
+                Report the distance to the last partial bio sample.
+                
+                Data fields:
+                - distanceInMeters: pre-computed distance to the last partial scan location
+                - genusName: genus of the bio sample
+                
+                State the distance in meters and name the genus.
                 """;
 
         if (status.getStatus() == null) {

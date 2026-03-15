@@ -8,8 +8,6 @@ import elite.intel.gameapi.MissionType;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.gameapi.journal.events.dto.MissionDto;
 import elite.intel.session.PlayerSession;
-import elite.intel.util.json.GsonFactory;
-import elite.intel.util.json.ToJsonConvertible;
 import elite.intel.util.yaml.ToYamlConvertable;
 import elite.intel.util.yaml.YamlFactory;
 
@@ -39,19 +37,27 @@ public class AnalyzeMissionHandler extends BaseQueryAnalyzer implements QueryHan
 
         LocationDto playerLocation = locationManager.findByLocationData(playerSession.getLocationData());
         String instructions = """
-                        Use this data to answer questions about outstanding (incomplete/active) missions.
+                Answer the user's question about active missions.
                 
-                        Follow these rules in order of priority:
+                Data fields:
+                - currentStarSystem: the player's current star system
+                - missions: map of mission type to list of missions. Per mission:
+                  - faction: issuing faction
+                  - missionDescription: what the mission requires
+                  - missionType: category of mission
+                  - reward: credit reward
+                  - destinationSystem: system where the mission must be completed
+                  - destinationStation: specific station destination (if applicable)
+                  - commodity / commodityName / count: cargo details for delivery missions
+                  - killCount / target / missionTargetFaction: combat mission details
+                  - expiry: when the mission expires
+                  - isWing: whether this is a wing mission
                 
-                        1. If the question does NOT mention any specific star system or location → return the full list of missions, including for each: faction, missionDescription, destinationSystem (and origin system if relevant).
-                
-                        2. If the question mentions the current star system (or "here", "current location", "this system", etc.) → return ONLY missions that match currentStarSystem == originSystem (or pickup location) AND/OR currentStarSystem == destinationSystem. Clearly state if no missions match the current system.
-                
-                        3. If the question mentions a different/specific system (not the current one) → return only missions relevant to that named system (as origin or destination).
-                
-                        Never assume the user is only asking about the current system unless the question explicitly refers to it.
-                        
-                        Do NOT filter to current system unless the question explicitly refers to the current location / current system / here / local missions.
+                Rules:
+                - If the user does not mention a specific system: list all active missions with faction, description, and destination.
+                - If the user refers to the current system ("here", "this system", "current location"): show only missions where destinationSystem or origin matches currentStarSystem.
+                - If the user names a specific system: show only missions relevant to that system.
+                - Do not filter by current system unless the user explicitly asks about it.
                 """;
         return process(new AiDataStruct(instructions, new DataDto(missions, playerLocation.getStarName())), originalUserInput);
     }

@@ -25,9 +25,28 @@ public class AnalyzeSystemSecurityHandler extends BaseQueryAnalyzer implements Q
         TrafficDto trafficDto = currentLocation.getTrafficDto();
 
         String instructions = """
-                Provided security and safety assessment based on this data.
-                Power play state is indicated by powerPlayState and powerPlayStateControlProgress
-                However even if system does not have major power play it may have controlling faction and local government.
+                Answer the user's question about system security and political status.
+                
+                Data fields:
+                - starSystem: name of the star system
+                - security: security level (High, Medium, Low, Anarchy)
+                - faction: controlling faction at current location
+                - government: government type
+                - economy: secondary economy type
+                - population: system population
+                - controllingPower: major power controlling this system (if any)
+                - powerPlayState: current powerplay state for this system
+                - powerplayStateControlProgress: control progress (none = not under powerplay)
+                - powerplayStateReinforcement: powerplay reinforcement points
+                - powerplayStateUndermining: powerplay undermining points
+                - deathsDto: historical death statistics from EDSM
+                - trafficDto: historical traffic statistics from EDSM
+                - discoveredBy: EDSM discovery attribution data
+                
+                Rules:
+                - A system may have a controlling faction and government even without major powerplay presence.
+                - Answer only what the user asked.
+                - If a field is null or none, state that data is not available.
                 """;
         double pscp = currentLocation.getPowerplayStateControlProgress();
         String powerPlayStateControlProgress = pscp == 0 ? "none" : String.valueOf(pscp);

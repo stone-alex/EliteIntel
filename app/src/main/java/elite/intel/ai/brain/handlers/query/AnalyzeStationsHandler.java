@@ -40,8 +40,21 @@ public class AnalyzeStationsHandler extends BaseQueryAnalyzer implements QueryHa
 
 
         String instructions = """
-                    Summarize the stations in the star system by type. Provide information about government and allegiance.
-                    If not data avialble, return no data available.
+                Answer the user's question about stations in this star system. Fleet carriers are excluded.
+                
+                Data fields (per station):
+                - name: station name
+                - type: station type (Coriolis, Outpost, Planetary Port, etc.)
+                - allegiance: faction allegiance
+                - government: government type
+                - economy: primary economy type
+                - numberOfCommodities: count of commodities listed at this station
+                - numberOfServices: count of services available at this station
+                
+                Rules:
+                - Answer only what the user asked.
+                - If asked about a specific station: match by name.
+                - If no station data is available, say so.
                 """;
 
         return process(new AiDataStruct(instructions, new DataDto(stationsData)), originalUserInput);

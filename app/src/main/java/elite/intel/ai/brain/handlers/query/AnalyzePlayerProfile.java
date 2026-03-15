@@ -32,13 +32,31 @@ public class AnalyzePlayerProfile extends BaseQueryAnalyzer implements QueryHand
         }
 
         String instructions = """
-                Use this data to provide user with the current progression statistics.
-                If a specific question is asked, provide a detailed answer using this data only.
-                If no question is asked, provide a summary of the player's progression.
-                    - timePledge provided in seconds, convert it to hours and minutes.
-                    - powerRank is just a numeric value
-                    - distances in light years
-                    - all other ranks are provided in percentage, 0 means no progress, 99 means 99% to next rank.
+                Answer the user's question about commander progression statistics.
+                
+                Data fields:
+                - data.combatRank / explorationRank / exobiologyRank / mercenaryRank: current rank titles
+                - data.militaryRankEmpire / militaryRankFederation: military ranks
+                - data.combatProgressToNextRankInPercent and similar: progress toward next rank (0-99 percent)
+                - data.pledgedToPower: power the commander is pledged to
+                - data.powerRank: numeric power rank
+                - data.timePledged: time pledged to power in seconds — convert to hours and minutes when reporting
+                - data.merits: powerplay merits
+                - highestMilitaryRank: highest military rank achieved across all factions
+                - totalBountiesCollected: lifetime bounty credits collected
+                - highestTransaction: largest single transaction in credits
+                - totalProfits: total trade profits in credits
+                - personalCredits: current credit balance
+                - totalDistanceTraveled: total distance traveled in light years
+                - totalHyperspaceDistanceTraveled: total hyperspace distance in light years
+                - totalSystemsVisited: number of star systems visited
+                - totalExobiologyProfits: total credits from exobiology
+                - totalProfitsFromExploration: total credits from exploration
+                
+                Rules:
+                - Answer only what the user asked. If no specific question, provide a brief progression summary.
+                - Convert timePledged from seconds to hours and minutes.
+                - Distances are in light years.
                 """;
         return process(
                 new AiDataStruct(

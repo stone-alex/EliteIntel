@@ -9,8 +9,6 @@ import elite.intel.gameapi.journal.events.dto.FssSignalDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.StringUtls;
-import elite.intel.util.json.GsonFactory;
-import elite.intel.util.json.ToJsonConvertible;
 import elite.intel.util.yaml.ToYamlConvertable;
 import elite.intel.util.yaml.YamlFactory;
 
@@ -26,41 +24,26 @@ public class AnalyzeStellarSignalsHandler extends BaseQueryAnalyzer implements Q
 
 
         String instructions = """
-                Data format:
-                - "body": short name (e.g. "4", "2 d", "6z")
-                - "type": "Biological", "geological signal", "ring / mining hotspot"
-                - "ring": letter if ring (e.g. "A", "B")
-                - "hotspots": {"Type": count, ...}
-                - discoveredSignals contains hunting/battle grounds such as "Resource Sites",  "Conflict Zones" and other points of interest.
+                Answer the user's question about signals detected in this star system.
                 
-                Rules (priority):
-                Crucial: Bio/Geo/planet Q → ignore rings, bio. Ring/mining Q → ignore planets.
-                IF asked about geological signals
-                1. Geo/surface/planets: ONLY Geological planets.
-                   "Signals found. Geological signals on planets a, b, c and z." or "No geological signals on record."
+                Data fields:
+                - stellarObjectSignals: list of signal entries per body or ring
+                  - bodyName: set if this entry is for a planet or moon (null for rings)
+                  - ringName: set if this entry is for a ring (null for planets)
+                  - signalType: the category label for this entry
+                  - hotspotsAndSignals: map of signal type to count for this body or ring
+                - discoveredSignals: known points of interest (Resource Sites, Conflict Zones, etc.)
+                  - locationName: body where the signal was detected
+                  - signalName: name of the point of interest
+                  - signalType: type classification
                 
-                IF asked about biological signals
-                2. Biological: ONLY Biological planets.
-                   "signals found. Biological signals on planets a, b, c and z." or "No bio signals on record."
-                
-                IF asked about ring mining hotspots
-                3. Rings/mining/hotspots: ONLY resource rings.
-                   "Signals found. Mining hotspots in ring 2 B: Serendibite times 3, Rhodplumsite times 1. Ring 4 A: Platinum, Gold, Silver." or "No mining hotspots on record."
-                
-                IF asked about conflict zones, battle grounds, hunting grounds, resource sites
-                    "X resource sites found" or "X conflict zones found". List these points of interest.
-                    IF nothing found return "No conflict zones on record."
-                
-                ELSE
-                5. General (user is asking broadly about signals in the system)
-                   Provide board summary of detected signals.
-                
-                RESOURCE EXTRACTION SITES ARE NOT HOT SPOTS, THEY ARE HUNTING GROUNDS
-                
-                All:
-                - TTS-safe: letters, numbers, spaces, commas, dots, "times"
-                - 1 sentence per ring/planet group
-                - Natural order, no mix
+                Rules:
+                - If asked about biological signals: use stellarObjectSignals where bodyName is set and hotspotsAndSignals contains a biological type. List the planet names only.
+                - If asked about geological signals: use stellarObjectSignals where bodyName is set and hotspotsAndSignals contains a geological type. List the planet names only.
+                - If asked about mining hotspots or rings: use stellarObjectSignals where ringName is set. List ring name and hotspot types with counts.
+                - If asked about conflict zones, hunting grounds, resource sites, or points of interest: use discoveredSignals. Resource extraction sites are hunting grounds, not hotspots.
+                - If asked broadly about all signals: provide a brief summary across all categories.
+                - Answer only what was asked. One sentence per body or ring group.
                 """;
         List<ToYamlConvertable> signals = aggregateSignals();
         List<ToYamlConvertable> discoveredSignals = toDiscoveredSignals();

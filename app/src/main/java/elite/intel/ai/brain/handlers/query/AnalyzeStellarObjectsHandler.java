@@ -27,8 +27,6 @@ public class AnalyzeStellarObjectsHandler extends BaseQueryAnalyzer implements Q
 
         String instructions = """
                 Answer ONLY the specific question asked. Do not give an overview or summary unless the user explicitly asks for one.
-                Be concise — two to three sentences maximum. Plain text only, no markdown, no bullets, no unit conversions.
-                
                 Data fields:
                 - summary: pre-computed counts (stars, planets, moons, stations, landable, bio signals, scoopable stars). Use this for any count or summary question.
                 - detailedStellarObjectList: full list of stellar objects with per-object data:

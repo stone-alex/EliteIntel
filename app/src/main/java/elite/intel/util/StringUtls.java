@@ -124,7 +124,8 @@ public class StringUtls {
                 .replaceAll("`{1,3}[^`\n]*`{1,3}", "")          // `code` / ```block``` → remove
                 .replaceAll("(?m)^#{1,6}\\s*", "")              // # headings → remove marker
                 .replaceAll("(?m)^>\\s?", "")                   // > blockquotes → remove marker
-                .replaceAll("[\\r\\n]+", " ")                    // newlines → space
+                .replace("\\n", " ").replace("\\r", " ")        // literal escape sequences from LLM
+                .replaceAll("[\\r\\n]+", " ")                    // actual newline characters → space
                 .replace("-", ", ")
                 .replace("*", " ")                              // any stray asterisks
                 .replace("`", "")                               // any stray backticks

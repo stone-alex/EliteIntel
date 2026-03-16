@@ -2,7 +2,9 @@ package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
+import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.db.managers.LocationManager;
+import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.FSSBodySignalsEvent;
 import elite.intel.gameapi.journal.events.SAASignalsFoundEvent;
 import elite.intel.gameapi.journal.events.dto.FssSignalDto;
@@ -21,10 +23,12 @@ public class AnalyzeStellarSignalsHandler extends BaseQueryAnalyzer implements Q
 
     @Override
     public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-
+        EventBusManager.publish(new AiVoxResponseEvent("Analyzing signals data. Stand by."));
 
         String instructions = """
                 Answer the user's question about signals detected in this star system.
+                Respond in plain spoken English only. No lists, no bullets, no numbering, no markdown.
+                Two to four sentences maximum. Answer only what was asked.
                 
                 Data fields:
                 - stellarObjectSignals: list of signal entries per body or ring
@@ -36,14 +40,14 @@ public class AnalyzeStellarSignalsHandler extends BaseQueryAnalyzer implements Q
                   - locationName: body where the signal was detected
                   - signalName: name of the point of interest
                   - signalType: type classification
-                
+
                 Rules:
-                - If asked about biological signals: use stellarObjectSignals where bodyName is set and hotspotsAndSignals contains a biological type. List the planet names only.
-                - If asked about geological signals: use stellarObjectSignals where bodyName is set and hotspotsAndSignals contains a geological type. List the planet names only.
-                - If asked about mining hotspots or rings: use stellarObjectSignals where ringName is set. List ring name and hotspot types with counts.
-                - If asked about conflict zones, hunting grounds, resource sites, or points of interest: use discoveredSignals. Resource extraction sites are hunting grounds, not hotspots.
-                - If asked broadly about all signals: provide a brief summary across all categories.
-                - Answer only what was asked. One sentence per body or ring group.
+                - Biological signals: name the planets that have them and the count.
+                - Geological signals: name the planets that have them and the count.
+                - Mining hotspots or rings: name the ring and hotspot types with counts.
+                - Conflict zones, resource sites, points of interest: use discoveredSignals only.
+                - Broad summary: one sentence each for bio, geo, mining, and points of interest if present.
+                - Skip categories with no data. Do not say "none detected" for every category.
                 """;
         List<ToYamlConvertable> signals = aggregateSignals();
         List<ToYamlConvertable> discoveredSignals = toDiscoveredSignals();
@@ -115,18 +119,33 @@ public class AnalyzeStellarSignalsHandler extends BaseQueryAnalyzer implements Q
     }
 
     private List<ToYamlConvertable> toDiscoveredSignals() {
-        List<ToYamlConvertable> discoveredSignals;
         Collection<LocationDto> locations = locationManager.findAllBySystemAddress(playerSession.getLocationData().getSystemAddress());
-        List<ToYamlConvertable> list = new ArrayList<>();
-        locations.forEach(location -> {
-            Set<FssSignalDto> detectedSignals = location.getDetectedSignals();
-            detectedSignals.stream().map(signal -> new DiscoveredSignal(
-                    location.getPlanetName(),
-                    signal.getSignalName(), signal.getSignalType()
-            )).forEachOrdered(list::add);
-        });
-        discoveredSignals = list;
-        return discoveredSignals;
+
+        // Named signals worth calling out individually (stations, megaships, notable POI)
+        List<ToYamlConvertable> named = new ArrayList<>();
+        // Anonymous signals (fleet carriers etc.) aggregated by type → count
+        Map<String, Integer> typeCounts = new LinkedHashMap<>();
+
+        for (LocationDto location : locations) {
+            for (FssSignalDto signal : location.getDetectedSignals()) {
+                String type = signal.getSignalType();
+                String name = signal.getSignalName();
+                boolean isAnonymous = name == null || name.isBlank()
+                        || name.startsWith("$")
+                        || (type != null && type.toLowerCase().contains("fleetcarrier"));
+                if (isAnonymous) {
+                    typeCounts.merge(type != null ? type : "Unknown", 1, Integer::sum);
+                } else {
+                    named.add(new DiscoveredSignal(location.getPlanetName(), name, type));
+                }
+            }
+        }
+
+        // Append aggregated anonymous counts as summary entries
+        typeCounts.forEach((type, count) ->
+                named.add(new DiscoveredSignal(null, count + "x " + type, type)));
+
+        return named;
     }
 
     private record DiscoveredSignal(String locationName, String signalName, String signalType) implements ToYamlConvertable {

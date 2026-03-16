@@ -47,6 +47,7 @@ public class AnalyzeLocalStations extends BaseQueryAnalyzer implements QueryHand
 
         String instructions = """
                 Answer the user's question about stations in this star system.
+                Answer only what was asked.
                 
                 Data fields (per station):
                 - stationType: station type (Coriolis, Outpost, Planetary Port, Fleet Carrier, etc.)
@@ -60,11 +61,13 @@ public class AnalyzeLocalStations extends BaseQueryAnalyzer implements QueryHand
                 - haveShipyard: whether the station has a shipyard
                 - haveOutfitting: whether the station has outfitting services
                 - controllingFaction: faction controlling this station
-                
+
                 Rules:
-                - Answer only what the user asked.
-                - If asked which stations have a market, shipyard, or outfitting: filter by the relevant boolean field.
-                - If asked about a specific station: match by stationName.
+                - If asked broadly whether stations exist: state the count by type. Do not list names.
+                - If asked which stations have a market, shipyard, or outfitting: state the count and name up to three examples.
+                - If asked about a specific station by name: give its details.
+                - Fleet Carriers are player-owned ships, not permanent stations. Mention them as a count only.
+                - Answer only what was asked.
                 """;
 
         return process(

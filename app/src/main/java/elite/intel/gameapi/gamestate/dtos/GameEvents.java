@@ -236,9 +236,9 @@ public class GameEvents {
         @SerializedName("event")
         private String event;
         @SerializedName("Flags")
-        private int flags;
+        private long flags;
         @SerializedName("Flags2")
-        private int flags2;
+        private long flags2;
         @SerializedName("Pips")
         private int[] pips;
         @SerializedName("FireGroup")
@@ -265,6 +265,19 @@ public class GameEvents {
         private Destination destination;
         @SerializedName("PlanetRadius")
         private double planetRadius;
+        @SerializedName("BodyName")
+        private String bodyName;
+        // On-foot fields (Odyssey only – absent when in ship/SRV)
+        @SerializedName("Oxygen")
+        private Double oxygen;
+        @SerializedName("Health")
+        private Double health;
+        @SerializedName("Temperature")
+        private Double temperature;
+        @SerializedName("SelectedWeapon")
+        private String selectedWeapon;
+        @SerializedName("Gravity")
+        private Double gravity;
 
 
         // Getters
@@ -276,11 +289,11 @@ public class GameEvents {
             return event;
         }
 
-        public int getFlags() {
+        public long getFlags() {
             return flags;
         }
 
-        public int getFlags2() {
+        public long getFlags2() {
             return flags2;
         }
 
@@ -340,6 +353,30 @@ public class GameEvents {
             return planetRadius;
         }
 
+        public String getBodyName() {
+            return bodyName;
+        }
+
+        public Double getOxygen() {
+            return oxygen;
+        }
+
+        public Double getHealth() {
+            return health;
+        }
+
+        public Double getTemperature() {
+            return temperature;
+        }
+
+        public String getSelectedWeapon() {
+            return selectedWeapon;
+        }
+
+        public Double getGravity() {
+            return gravity;
+        }
+
         public void setTimestamp(String timestamp) {
             this.timestamp = timestamp;
         }
@@ -348,11 +385,11 @@ public class GameEvents {
             this.event = event;
         }
 
-        public void setFlags(int flags) {
+        public void setFlags(long flags) {
             this.flags = flags;
         }
 
-        public void setFlags2(int flags2) {
+        public void setFlags2(long flags2) {
             this.flags2 = flags2;
         }
 
@@ -406,6 +443,30 @@ public class GameEvents {
 
         public void setPlanetRadius(double planetRadius) {
             this.planetRadius = planetRadius;
+        }
+
+        public void setBodyName(String bodyName) {
+            this.bodyName = bodyName;
+        }
+
+        public void setOxygen(Double oxygen) {
+            this.oxygen = oxygen;
+        }
+
+        public void setHealth(Double health) {
+            this.health = health;
+        }
+
+        public void setTemperature(Double temperature) {
+            this.temperature = temperature;
+        }
+
+        public void setSelectedWeapon(String selectedWeapon) {
+            this.selectedWeapon = selectedWeapon;
+        }
+
+        public void setGravity(Double gravity) {
+            this.gravity = gravity;
         }
     }
 

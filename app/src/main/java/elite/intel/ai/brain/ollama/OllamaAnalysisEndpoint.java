@@ -78,7 +78,9 @@ public class OllamaAnalysisEndpoint extends AiEndPoint implements AiAnalysisInte
             JsonObject root = processAiPrompt(gson.toJson(prompt), client);
             log.debug("Ollama analysis raw response:\n{}", gson.toJson(root));
             String content = root.getAsJsonObject("message").get("content").getAsString();
-            return JsonParser.parseString(JsonUtils.repairLlmJson(content)).getAsJsonObject();
+            JsonObject parsed = JsonParser.parseString(JsonUtils.repairLlmJson(content)).getAsJsonObject();
+            parsed.addProperty("type", "chat"); // normalize — model sometimes hallucinates type values
+            return parsed;
 
         } catch (Exception e) {
             log.error("Ollama analysis failed", e);
@@ -135,7 +137,9 @@ public class OllamaAnalysisEndpoint extends AiEndPoint implements AiAnalysisInte
             JsonObject root = processAiPrompt(gson.toJson(prompt), client);
             log.debug("Ollama sensor raw response:\n{}", gson.toJson(root));
             String sensorContent = root.getAsJsonObject("message").get("content").getAsString();
-            return JsonParser.parseString(JsonUtils.repairLlmJson(sensorContent)).getAsJsonObject();
+            JsonObject parsed = JsonParser.parseString(JsonUtils.repairLlmJson(sensorContent)).getAsJsonObject();
+            parsed.addProperty("type", "chat");
+            return parsed;
 
         } catch (Exception e) {
             log.error("Ollama sensor processing failed", e);

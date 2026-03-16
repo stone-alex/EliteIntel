@@ -99,6 +99,7 @@ public class Bindings {
         //GALNET_AUDIO_SKIP_BACKWARD("galnet_audio_skip_backward", "GalnetAudio_SkipBackward"),
         //GALNET_AUDIO_SKIP_FORWARD("galnet_audio_skip_forward", "GalnetAudio_SkipForward"),
 
+            //BINDING_HEAD_LOOK_RESET("HeadLookReset"),
 
         BINDING_RADAR_DECREASE_RANGE("RadarDecreaseRange"),
         BINDING_RADAR_INCREASE_RANGE("RadarIncreaseRange"),

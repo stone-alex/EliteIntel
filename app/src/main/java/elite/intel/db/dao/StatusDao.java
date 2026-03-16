@@ -15,8 +15,10 @@ public interface StatusDao {
 
 
     @SqlUpdate("""
-            INSERT OR REPLACE INTO player_status (id, timestamp, event, flags, flags2, fireGroup, guiFocus, cargo, latituge, longitude, heading, altitude, balance, planetRadius) 
-            VALUES (1, :timestamp, :event, :flags, :flags2, :fireGroup, :guiFocus, :cargo, :latituge, :longitude, :heading, :altitude, :balance, :planetRadius)
+                    INSERT OR REPLACE INTO player_status (id, timestamp, event, flags, flags2, fireGroup, guiFocus, cargo, latituge, longitude, heading, altitude, balance, planetRadius,
+                        pips, legalState, destination, oxygen, health, temperature, selectedWeapon, gravity)
+                    VALUES (1, :timestamp, :event, :flags, :flags2, :fireGroup, :guiFocus, :cargo, :latituge, :longitude, :heading, :altitude, :balance, :planetRadius,
+                        :pips, :legalState, :destination, :oxygen, :health, :temperature, :selectedWeapon, :gravity)
     """)
     void save(@BindBean StatusDao.Status status);
 
@@ -32,8 +34,8 @@ public interface StatusDao {
             Status status = new Status();
             status.setTimestamp(rs.getString("timestamp"));
             status.setEvent(rs.getString("event"));
-            status.setFlags(rs.getInt("flags"));
-            status.setFlags2(rs.getInt("flags2"));
+            status.setFlags(rs.getLong("flags"));
+            status.setFlags2(rs.getLong("flags2"));
             status.setFireGroup(rs.getInt("fireGroup"));
             status.setGuiFocus(rs.getInt("guiFocus"));
             status.setCargo(rs.getDouble("cargo"));
@@ -43,7 +45,14 @@ public interface StatusDao {
             status.setAltitude(rs.getDouble("altitude"));
             status.setBalance(rs.getLong("balance"));
             status.setPlanetRadius(rs.getDouble("planetRadius"));
-
+            status.setPips(rs.getString("pips"));
+            status.setLegalState(rs.getString("legalState"));
+            status.setDestination(rs.getString("destination"));
+            status.setOxygen(rs.getDouble("oxygen"));
+            status.setHealth(rs.getDouble("health"));
+            status.setTemperature(rs.getDouble("temperature"));
+            status.setSelectedWeapon(rs.getString("selectedWeapon"));
+            status.setGravity(rs.getDouble("gravity"));
             return status;
         }
     }
@@ -55,8 +64,8 @@ public interface StatusDao {
 
         private String timestamp ="";
         private String event = "";
-        private int flags =0;
-        private int flags2=0;
+        private long flags = 0L;
+        private long flags2 = 0L;
         private int fireGroup=0;
         private int guiFocus=0;
         private double cargo=0.0;
@@ -66,6 +75,14 @@ public interface StatusDao {
         private double altitude=0.0;
         private long balance=0;
         private double planetRadius=0.0;
+        private String pips = null;         // comma-separated half-pips: "sys,eng,wpn"
+        private String legalState = null;
+        private String destination = null;  // JSON: {system, body, name}
+        private Double oxygen = null;
+        private Double health = null;
+        private Double temperature = null;
+        private String selectedWeapon = null;
+        private Double gravity = null;
 
 
         public String getTimestamp() {
@@ -84,19 +101,19 @@ public interface StatusDao {
             this.event = event;
         }
 
-        public int getFlags() {
+        public long getFlags() {
             return flags;
         }
 
-        public void setFlags(int flags) {
+        public void setFlags(long flags) {
             this.flags = flags;
         }
 
-        public int getFlags2() {
+        public long getFlags2() {
             return flags2;
         }
 
-        public void setFlags2(int flags2) {
+        public void setFlags2(long flags2) {
             this.flags2 = flags2;
         }
 
@@ -170,6 +187,70 @@ public interface StatusDao {
 
         public void setPlanetRadius(double planetRadius) {
             this.planetRadius = planetRadius;
+        }
+
+        public String getPips() {
+            return pips;
+        }
+
+        public void setPips(String pips) {
+            this.pips = pips;
+        }
+
+        public String getLegalState() {
+            return legalState;
+        }
+
+        public void setLegalState(String legalState) {
+            this.legalState = legalState;
+        }
+
+        public String getDestination() {
+            return destination;
+        }
+
+        public void setDestination(String destination) {
+            this.destination = destination;
+        }
+
+        public Double getOxygen() {
+            return oxygen;
+        }
+
+        public void setOxygen(Double oxygen) {
+            this.oxygen = oxygen;
+        }
+
+        public Double getHealth() {
+            return health;
+        }
+
+        public void setHealth(Double health) {
+            this.health = health;
+        }
+
+        public Double getTemperature() {
+            return temperature;
+        }
+
+        public void setTemperature(Double temperature) {
+            this.temperature = temperature;
+        }
+
+        public String getSelectedWeapon() {
+            return selectedWeapon;
+        }
+
+        public void setSelectedWeapon(String selectedWeapon) {
+            this.selectedWeapon = selectedWeapon;
+        }
+
+        public Double getGravity() {
+            return gravity;
+        }
+
+        public void setGravity(Double gravity) {
+            this.gravity = gravity;
         }
     }
 

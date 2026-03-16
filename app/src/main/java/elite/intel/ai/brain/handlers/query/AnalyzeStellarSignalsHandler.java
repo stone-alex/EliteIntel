@@ -153,7 +153,7 @@ public class AnalyzeStellarSignalsHandler extends BaseQueryAnalyzer implements Q
         }
 
         typeCounts.forEach((label, count) ->
-                named.add(new DiscoveredSignal(null, count + "x " + label, label)));
+                named.add(new DiscoveredSignal(null, count + " " + label, label)));
 
         return named;
     }

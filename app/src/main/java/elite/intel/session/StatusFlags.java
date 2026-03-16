@@ -60,6 +60,46 @@ public abstract class StatusFlags {
     private static final long PHYSICAL_MULTICREW = 262144L;
     private static final long FSD_HYPERDRIVE_CHARGING = 524288L;
 
+    /**
+     * Decoded values of the GuiFocus field from Status.json.
+     * Tells you which panel or mode the player currently has open.
+     * Note: tab-level state within a panel is not exposed by the journal API.
+     */
+    public enum GuiFocus {
+        NO_FOCUS(0),
+        INTERNAL_PANEL(1),   // Right panel
+        EXTERNAL_PANEL(2),   // Left panel
+        COMMS_PANEL(3),      // Top panel
+        ROLE_PANEL(4),       // Bottom panel
+        STATION_SERVICES(5),
+        GALAXY_MAP(6),
+        SYSTEM_MAP(7),
+        ORRERY(8),
+        FSS_MODE(9),
+        SAA_MODE(10),
+        CODEX(11),
+        UNKNOWN(-1);
+
+        private final int value;
+
+        GuiFocus(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
+
+        public static GuiFocus fromValue(int value) {
+            for (GuiFocus focus : values()) {
+                if (focus.value == value) return focus;
+            }
+            return UNKNOWN;
+        }
+    }
+
+    // --- Flags bitmask helpers ---
+
     public boolean isDocked(long flags) {
         return (flags & DOCKED) != 0;
     }
@@ -187,6 +227,8 @@ public abstract class StatusFlags {
     public boolean isSrvHighBeam(long flags) {
         return (flags & SRV_HIGH_BEAM) != 0;
     }
+
+    // --- Flags2 bitmask helpers ---
 
     public boolean isOnFoot(long flags2) {
         return (flags2 & ON_FOOT) != 0;

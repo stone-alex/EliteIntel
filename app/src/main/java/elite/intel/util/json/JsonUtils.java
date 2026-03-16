@@ -38,12 +38,32 @@ public final class JsonUtils {
     }
 
     /**
-     * Repairs common LLM JSON output failures before parsing.
-     * Handles the case where a model outputs an unquoted string value for {@code response_text},
-     * e.g. {@code {"type":"chat","response_text": Hello Commander}} instead of quoting the value.
+     * Repairs common LLM JSON output failures before parsing:
+     * 1. Unquoted response_text value (model forgot the quotes)
+     * 2. Truncated response_text string (num_predict limit hit mid-generation)
      */
     public static String repairLlmJson(String raw) {
         if (raw == null || raw.isEmpty()) return raw;
+
+        // Repair 1: truncated string — JSON cut off mid response_text value (no closing "})
+        if (!raw.trim().endsWith("}")) {
+            java.util.regex.Pattern truncP = java.util.regex.Pattern.compile(
+                    "\"response_text\"\\s*:\\s*\"(.*?)$",
+                    java.util.regex.Pattern.DOTALL
+            );
+            java.util.regex.Matcher truncM = truncP.matcher(raw);
+            if (truncM.find()) {
+                String value = truncM.group(1)
+                        .replace("\\", "\\\\")
+                        .replace("\"", "\\\"")
+                        .replace("\n", "\\n")
+                        .replace("\r", "\\r")
+                        .replace("\t", "\\t");
+                return raw.substring(0, truncM.start()) + "\"response_text\": \"" + value + "\"}";
+            }
+        }
+
+        // Repair 2: unquoted response_text value (model output value without surrounding quotes)
         java.util.regex.Pattern p = java.util.regex.Pattern.compile(
                 "\"response_text\"\\s*:\\s*(?!\")(.+?)\\s*}\\s*$",
                 java.util.regex.Pattern.DOTALL
@@ -58,6 +78,7 @@ public final class JsonUtils {
                     .replace("\t", "\\t");
             return raw.substring(0, m.start()) + "\"response_text\": \"" + value + "\"}";
         }
+
         return raw;
     }
 

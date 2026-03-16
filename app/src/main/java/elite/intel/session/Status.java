@@ -3,6 +3,7 @@ package elite.intel.session;
 import elite.intel.db.dao.StatusDao;
 import elite.intel.db.util.Database;
 import elite.intel.gameapi.gamestate.dtos.GameEvents;
+import elite.intel.util.json.GsonFactory;
 
 public class Status extends StatusFlags {
 
@@ -39,6 +40,14 @@ public class Status extends StatusFlags {
             result.setLatitude(status.getLatituge());
             result.setLongitude(status.getLongitude());
             result.setPlanetRadius(status.getPlanetRadius());
+            result.setPips(pipsFromString(status.getPips()));
+            result.setLegalState(status.getLegalState());
+            result.setDestination(destinationFromJson(status.getDestination()));
+            result.setOxygen(status.getOxygen());
+            result.setHealth(status.getHealth());
+            result.setTemperature(status.getTemperature());
+            result.setSelectedWeapon(status.getSelectedWeapon());
+            result.setGravity(status.getGravity());
             return result;
         });
     }
@@ -59,11 +68,238 @@ public class Status extends StatusFlags {
             status.setLongitude(event.getLongitude());
             status.setPlanetRadius(event.getPlanetRadius());
             status.setTimestamp(event.getTimestamp());
+            status.setPips(pipsToString(event.getPips()));
+            status.setLegalState(event.getLegalState());
+            status.setDestination(destinationToJson(event.getDestination()));
+            status.setOxygen(event.getOxygen());
+            status.setHealth(event.getHealth());
+            status.setTemperature(event.getTemperature());
+            status.setSelectedWeapon(event.getSelectedWeapon());
+            status.setGravity(event.getGravity());
             dao.save(status);
             return null;
         });
     }
 
+    // --- Serialization helpers ---
+
+    private static String pipsToString(int[] pips) {
+        if (pips == null || pips.length < 3) return null;
+        return pips[0] + "," + pips[1] + "," + pips[2];
+    }
+
+    private static int[] pipsFromString(String s) {
+        if (s == null || s.isBlank()) return null;
+        String[] parts = s.split(",");
+        if (parts.length < 3) return null;
+        return new int[]{Integer.parseInt(parts[0].trim()), Integer.parseInt(parts[1].trim()), Integer.parseInt(parts[2].trim())};
+    }
+
+    private static String destinationToJson(GameEvents.StatusEvent.Destination dest) {
+        if (dest == null) return null;
+        return GsonFactory.getGson().toJson(dest);
+    }
+
+    private static GameEvents.StatusEvent.Destination destinationFromJson(String json) {
+        if (json == null || json.isBlank()) return null;
+        return GsonFactory.getGson().fromJson(json, GameEvents.StatusEvent.Destination.class);
+    }
+
+    // --- GuiFocus ---
+
+    /**
+     * Returns the decoded GUI panel/mode the player currently has open.
+     */
+    public GuiFocus getGuiFocus() {
+        return GuiFocus.fromValue(getStatus().getGuiFocus());
+    }
+
+    /**
+     * Returns true if the player has no panel open (pure cockpit/on-foot view).
+     */
+    public boolean isNoFocus() {
+        return getGuiFocus() == GuiFocus.NO_FOCUS;
+    }
+
+    public boolean isInternalPanelOpen() {
+        return getGuiFocus() == GuiFocus.INTERNAL_PANEL;
+    }
+
+    public boolean isExternalPanelOpen() {
+        return getGuiFocus() == GuiFocus.EXTERNAL_PANEL;
+    }
+
+    public boolean isCommsPanelOpen() {
+        return getGuiFocus() == GuiFocus.COMMS_PANEL;
+    }
+
+    public boolean isRolePanelOpen() {
+        return getGuiFocus() == GuiFocus.ROLE_PANEL;
+    }
+
+    public boolean isStationServicesOpen() {
+        return getGuiFocus() == GuiFocus.STATION_SERVICES;
+    }
+
+    public boolean isGalaxyMapOpen() {
+        return getGuiFocus() == GuiFocus.GALAXY_MAP;
+    }
+
+    public boolean isSystemMapOpen() {
+        return getGuiFocus() == GuiFocus.SYSTEM_MAP;
+    }
+
+    public boolean isOrreryOpen() {
+        return getGuiFocus() == GuiFocus.ORRERY;
+    }
+
+    public boolean isFssModeActive() {
+        return getGuiFocus() == GuiFocus.FSS_MODE;
+    }
+
+    public boolean isSaaModeActive() {
+        return getGuiFocus() == GuiFocus.SAA_MODE;
+    }
+
+    public boolean isCodexOpen() {
+        return getGuiFocus() == GuiFocus.CODEX;
+    }
+
+    // --- Pips ---
+
+    /**
+     * Returns energy distribution as an int[3] array in half-pips: [SYS, ENG, WPN].
+     * Each value is 0–8 (0 = no power, 8 = full 4 pips). May be null if not in a ship.
+     */
+    public int[] getPips() {
+        return getStatus().getPips();
+    }
+
+    public int getSysPips() {
+        int[] pips = getPips();
+        return pips != null ? pips[0] : 0;
+    }
+
+    public int getEngPips() {
+        int[] pips = getPips();
+        return pips != null ? pips[1] : 0;
+    }
+
+    public int getWpnPips() {
+        int[] pips = getPips();
+        return pips != null ? pips[2] : 0;
+    }
+
+    // --- LegalState ---
+
+    /**
+     * Returns the player's current legal state string as reported by the game.
+     * Known values: Clean, IllegalCargo, Speeding, Wanted, Hostile,
+     * PassengerWanted, Warrant, Allied, Thargoid.
+     */
+    public String getLegalState() {
+        return getStatus().getLegalState();
+    }
+
+    public boolean isClean() {
+        return "Clean".equals(getLegalState());
+    }
+
+    public boolean isWanted() {
+        return "Wanted".equals(getLegalState());
+    }
+
+    public boolean isHostile() {
+        return "Hostile".equals(getLegalState());
+    }
+
+    public boolean isSpeeding() {
+        return "Speeding".equals(getLegalState());
+    }
+
+    public boolean hasIllegalCargo() {
+        return "IllegalCargo".equals(getLegalState());
+    }
+
+    public boolean hasPassengerWanted() {
+        return "PassengerWanted".equals(getLegalState());
+    }
+
+    public boolean hasWarrant() {
+        return "Warrant".equals(getLegalState());
+    }
+
+    // --- Destination ---
+
+    /**
+     * Returns the current nav-lock destination, or null if none is set.
+     * Contains System address, Body id, and Name.
+     */
+    public GameEvents.StatusEvent.Destination getDestination() {
+        return getStatus().getDestination();
+    }
+
+    public String getDestinationName() {
+        GameEvents.StatusEvent.Destination dest = getDestination();
+        return dest != null ? dest.getName() : null;
+    }
+
+    public boolean hasDestination() {
+        return getDestination() != null;
+    }
+
+    // --- On-foot vitals (Odyssey only, present only when on foot) ---
+
+    /**
+     * Suit oxygen level, 0.0 to 1.0. Only present when on foot.
+     * Returns -1.0 if not available.
+     */
+    public double getOxygen() {
+        Double oxygen = getStatus().getOxygen();
+        return oxygen != null ? oxygen : -1.0;
+    }
+
+    /**
+     * Suit health level, 0.0 to 1.0. Only present when on foot.
+     * Returns -1.0 if not available.
+     */
+    public double getHealth() {
+        Double health = getStatus().getHealth();
+        return health != null ? health : -1.0;
+    }
+
+    /**
+     * Ambient temperature in Kelvin. Only present when on foot.
+     * Returns -1.0 if not available.
+     */
+    public double getTemperature() {
+        Double temperature = getStatus().getTemperature();
+        return temperature != null ? temperature : -1.0;
+    }
+
+    /**
+     * Gravity relative to 1G. Only present when on foot.
+     * Returns -1.0 if not available.
+     */
+    public double getGravity() {
+        Double gravity = getStatus().getGravity();
+        return gravity != null ? gravity : -1.0;
+    }
+
+    /**
+     * Currently selected weapon name. Only present when on foot.
+     * Returns null if not available.
+     */
+    public String getSelectedWeapon() {
+        return getStatus().getSelectedWeapon();
+    }
+
+    public boolean hasWeaponSelected() {
+        String weapon = getSelectedWeapon();
+        return weapon != null && !weapon.isBlank();
+    }
+
+    // --- Flags (ship/flight) ---
 
     public boolean isInSrv() {
         return isInSrv(getStatus().getFlags());
@@ -105,30 +341,6 @@ public class Status extends StatusFlags {
         return isSrvHandbrake(getStatus().getFlags());
     }
 
-    public boolean isOnFoot() {
-        return isOnFoot(getStatus().getFlags2());
-    }
-
-    public boolean isAimDownSight() {
-        return isAimingDownSights(getStatus().getFlags());
-    }
-
-    public boolean isLowOxygen() {
-        return isLowOxygenF2(getStatus().getFlags2());
-    }
-
-    public boolean isLowHealth() {
-        return isLowHealthF2(getStatus().getFlags2());
-    }
-
-    public boolean isHot() {
-        return isHot(getStatus().getFlags());
-    }
-
-    public boolean isCold() {
-        return isCold(getStatus().getFlags());
-    }
-
     public boolean isNightVision() {
         return isNightVision(getStatus().getFlags());
     }
@@ -155,6 +367,100 @@ public class Status extends StatusFlags {
 
     public boolean isFsdMassLocked() {
         return isFsdMassLocked(getStatus().getFlags());
+    }
+
+    public boolean isDocked() {
+        return isDocked(getStatus().getFlags());
+    }
+
+    public boolean isLanded() {
+        return isLanded(getStatus().getFlags());
+    }
+
+    public boolean isLandingGearDown() {
+        return isLandingGearDown(getStatus().getFlags());
+    }
+
+    public boolean isShieldsUp() {
+        return isShieldsUp(getStatus().getFlags());
+    }
+
+    public boolean isInSupercruise() {
+        return isInSupercruise(getStatus().getFlags());
+    }
+
+    public boolean isFlightAssistOff() {
+        return isFlightAssistOff(getStatus().getFlags());
+    }
+
+    public boolean isSrvTurretView() {
+        return isSrvTurretView(getStatus().getFlags());
+    }
+
+    public boolean isSrvTurretRetracted() {
+        return isSrvTurretRetracted(getStatus().getFlags());
+    }
+
+    public boolean isSrvDriveAssist() {
+        return isSrvDriveAssist(getStatus().getFlags());
+    }
+
+    public boolean isLowFuel() {
+        return isLowFuel(getStatus().getFlags());
+    }
+
+    public boolean isOverheating() {
+        return isOverheating(getStatus().getFlags());
+    }
+
+    public boolean hasLatLong() {
+        return hasLatLong(getStatus().getFlags());
+    }
+
+    public boolean isInDanger() {
+        return isInDanger(getStatus().getFlags());
+    }
+
+    public boolean isBeingInterdicted() {
+        return isBeingInterdicted(getStatus().getFlags());
+    }
+
+    public boolean isAltFromAvgRadius() {
+        return isAltFromAvgRadius(getStatus().getFlags2());
+    }
+
+    // --- Flags2 (on-foot/suit) ---
+
+    public boolean isOnFoot() {
+        return isOnFoot(getStatus().getFlags2());
+    }
+
+    public boolean isAimDownSight() {
+        return isAimingDownSights(getStatus().getFlags2());
+    }
+
+    public boolean isLowOxygen() {
+        return isLowOxygenF2(getStatus().getFlags2());
+    }
+
+    public boolean isLowHealth() {
+        return isLowHealthF2(getStatus().getFlags2());
+    }
+
+    public boolean isHot() {
+        return isHot(getStatus().getFlags2());
+    }
+
+    public boolean isCold() {
+        return isCold(getStatus().getFlags2());
+    }
+
+    public boolean isVeryHot() {
+        return isVeryHot(getStatus().getFlags2());
+    }
+
+    public boolean isVeryCold() {
+        return isVeryCold(getStatus().getFlags2());
     }
 
     public boolean isInTaxi() {
@@ -193,14 +499,6 @@ public class Status extends StatusFlags {
         return isGlideModeF2(getStatus().getFlags2());
     }
 
-    public boolean isVeryHot() {
-        return isVeryHot(getStatus().getFlags2());
-    }
-
-    public boolean isVeryCold() {
-        return isVeryCold(getStatus().getFlags2());
-    }
-
     public boolean isTelepresenceMulticrew() {
         return isTelepresenceMulticrew(getStatus().getFlags2());
     }
@@ -212,65 +510,4 @@ public class Status extends StatusFlags {
     public boolean isFsdHyperdriveCharging() {
         return isFsdHyperdriveCharging(getStatus().getFlags2());
     }
-
-    public boolean isAltFromAvgRadius() {
-        return isAltFromAvgRadius(getStatus().getFlags2());
-    }
-
-    public boolean isDocked() {
-        return isDocked(getStatus().getFlags());
-    }
-
-    public boolean isLanded() {
-        return isLanded(getStatus().getFlags());
-    }
-
-    public boolean isLandingGearDown() {
-        return isLandingGearDown(getStatus().getFlags());
-    }
-
-    public boolean isShieldsUp() {
-        return isShieldsUp(getStatus().getFlags2());
-    }
-
-    public boolean isInSupercruise() {
-        return isInSupercruise(getStatus().getFlags());
-    }
-
-    public boolean isFlightAssistOff() {
-        return isFlightAssistOff(getStatus().getFlags2());
-    }
-
-    public boolean isSrvTurretView() {
-        return isSrvTurretView(getStatus().getFlags2());
-    }
-
-    public boolean isSrvTurretRetracted() {
-        return isSrvTurretRetracted(getStatus().getFlags2());
-    }
-
-    public boolean isSrvDriveAssist() {
-        return isSrvDriveAssist(getStatus().getFlags2());
-    }
-
-    public boolean isLowFuel() {
-        return isLowFuel(getStatus().getFlags());
-    }
-
-    public boolean isOverheating() {
-        return isOverheating(getStatus().getFlags());
-    }
-
-    public boolean hasLatLong() {
-        return hasLatLong(getStatus().getFlags());
-    }
-
-    public boolean isInDanger() {
-        return isInDanger(getStatus().getFlags());
-    }
-
-    public boolean isBeingInterdicted() {
-        return isBeingInterdicted(getStatus().getFlags());
-    }
 }
-

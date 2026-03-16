@@ -179,8 +179,8 @@ Bulletproof Installation Steps:
 
 Click the "64-bit Git for Windows Setup" link to download the installer 
 (e.g., Git-2.51.0-64-bit.exe).
-Run the installer as Administrator (right-click the .exe and select "Run as administrator") 
-to avoid permission issues. During setup, accept the defaults for most options—they're 
+Run the installer as Administrator (right-click the .exe and select "Run as administrator")
+to avoid permission issues. During setup, accept the defaults for most options-they're
 programmer-friendly: Choose "Git from the command line and also from 3rd-party software" 
 (adds Git to your PATH).
 Select "Use MinTTY" for the terminal (better for Linux-like experience).
@@ -207,8 +207,8 @@ Bulletproof Installation Steps:
 
 Under "Java SE Development Kit 21.x.x" (e.g., 21.0.9), select the x64 MSI Installer for Windows 
 (file: jdk-21.0.9_windows-x64_bin.msi, ~163 MB).
-Download and run the MSI as Administrator (right-click > "Run as administrator") to ensure 
-a proper installation. Follow the installer prompts—accept the license and default path 
+Download and run the MSI as Administrator (right-click > "Run as administrator") to ensure
+a proper installation. Follow the installer prompts-accept the license and default path
 (usually C:\Program Files\Java\jdk-21.0.9). The installer automatically adds Java to your 
 system PATH. If not, see manual steps below. Important: Open a new Command Prompt 
 after installation (old ones won't see the PATH changes).
@@ -242,7 +242,9 @@ and use its 7z x app-shadow.tar instead of tar.
 ---
 
 ## Building and Running
-All commands below are for Command Prompt (cmd.exe)—not PowerShell, to match Linux simplicity. Run as a regular user (no admin needed). Start in your home directory: Run cd %USERPROFILE% in Command Prompt.
+
+All commands below are for Command Prompt (cmd.exe)-not PowerShell, to match Linux simplicity. Run as a regular user (no
+admin needed). Start in your home directory: Run cd %USERPROFILE% in Command Prompt.
 
 
 Clone the Repository
@@ -270,7 +272,7 @@ gradlew.bat --no-daemon clean build
 ```
 
 - This builds the app and creates app\build\distributions\app-shadow.tar.
-- First build takes time (downloads dependencies)—be patient, no internet issues.
+- First build takes time (downloads dependencies)-be patient, no internet issues.
 - If errors: Ensure Java 21 is active (java --version) and Git is in PATH.
 
 The tar file is rebuilt each time, so copy it elsewhere for running. Create an install folder:
@@ -312,7 +314,7 @@ Your %USERPROFILE%\ei directory should look like:
 └-- app-shadow.tar  
 ```
 
-The bin folder is a build artifact—remove it (Java doesn't need it):
+The bin folder is a build artifact-remove it (Java doesn't need it):
 
 ```shell
 rmdir /S /Q app-shadow\bin  
@@ -422,7 +424,7 @@ xcopy /E /I /Y "%REPO%\dictionary" "app-shadow\lib\dictionary"
 
 :: Launch  
 echo.  
-echo Starting EliteIntel—enjoy the intel grind!  
+echo Starting EliteIntel-enjoy the intel grind!  
 cd app-shadow\lib  
 java -XX:+UseZGC -Xmx4g -jar elite_intel.jar  
 

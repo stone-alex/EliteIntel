@@ -138,15 +138,15 @@ public class AnalyzeStellarSignalsHandler extends BaseQueryAnalyzer implements Q
                 boolean isGameCode = rawName != null && rawName.startsWith("$");
 
                 if (isCarrier) {
-                    // Aggregate all carriers by type — individual names are not useful
+                    // Aggregate all carriers by type - individual names are not useful
                     typeCounts.merge(type, 1, Integer::sum);
                 } else if (isGameCode) {
-                    // Game-code signals (conflict zones, nav beacons, etc.) — aggregate by localised label
+                    // Game-code signals (conflict zones, nav beacons, etc.) - aggregate by localised label
                     if (displayName != null && !displayName.isBlank()) {
                         typeCounts.merge(displayName, 1, Integer::sum);
                     }
                 } else if (displayName != null && !displayName.isBlank()) {
-                    // Named POI (stations, megaships, outposts) — keep individually
+                    // Named POI (stations, megaships, outposts) - keep individually
                     named.add(new DiscoveredSignal(location.getPlanetName(), displayName, type));
                 }
             }

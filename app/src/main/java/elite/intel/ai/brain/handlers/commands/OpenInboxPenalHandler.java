@@ -3,19 +3,26 @@ package elite.intel.ai.brain.handlers.commands;
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
 import elite.intel.session.Status;
+import elite.intel.session.StatusFlags;
+import elite.intel.session.ui.CommsPanel;
 import elite.intel.session.ui.UINavigator;
 
-public class ClosePanelHandler extends CommandOperator implements CommandHandler {
+public class OpenInboxPenalHandler extends CommandOperator implements CommandHandler {
 
-    public ClosePanelHandler(GameController controller) {
+    public OpenInboxPenalHandler(GameController controller) {
         super(controller.getMonitor(), controller.getExecutor());
     }
+
 
     private final UINavigator navigator = new UINavigator(this);
     private final Status status = Status.getInstance();
 
+
     @Override
     public void handle(String action, JsonObject params, String responseText) {
-        navigator.closeOpenPanel();
+        if (status.isInMainShip() || status.isInSrv()) {
+            operateKeyboard(Bindings.GameCommand.BINDING_TARGET_NEXT_ROUTE_SYSTEM.getGameBinding(), 0);
+            navigator.openAndNavigate(StatusFlags.GuiFocus.COMMS_PANEL, CommsPanel.INBOX);
+        }
     }
 }

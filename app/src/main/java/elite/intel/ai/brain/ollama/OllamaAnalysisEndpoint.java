@@ -79,7 +79,7 @@ public class OllamaAnalysisEndpoint extends AiEndPoint implements AiAnalysisInte
             log.debug("Ollama analysis raw response:\n{}", gson.toJson(root));
             String content = root.getAsJsonObject("message").get("content").getAsString();
             JsonObject parsed = JsonParser.parseString(JsonUtils.repairLlmJson(content)).getAsJsonObject();
-            parsed.addProperty("type", "chat"); // normalize — model sometimes hallucinates type values
+            parsed.addProperty("type", "chat"); // normalize - model sometimes hallucinates type values
             return parsed;
 
         } catch (Exception e) {
@@ -115,7 +115,7 @@ public class OllamaAnalysisEndpoint extends AiEndPoint implements AiAnalysisInte
 
             prompt.add("messages", messages);
 
-            // Chat schema — sensor responses are type + response_text only
+            // Chat schema - sensor responses are type + response_text only
             JsonObject properties = new JsonObject();
             JsonObject typeProp = new JsonObject();
             typeProp.addProperty("type", "string");

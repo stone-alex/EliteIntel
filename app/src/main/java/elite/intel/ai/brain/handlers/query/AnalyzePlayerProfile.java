@@ -40,7 +40,7 @@ public class AnalyzePlayerProfile extends BaseQueryAnalyzer implements QueryHand
                 - data.combatProgressToNextRankInPercent and similar: progress toward next rank (0-99 percent)
                 - data.pledgedToPower: power the commander is pledged to
                 - data.powerRank: numeric power rank
-                - data.timePledged: time pledged to power in seconds — convert to hours and minutes when reporting
+                - data.timePledged: time pledged to power in seconds - convert to hours and minutes when reporting
                 - data.merits: powerplay merits
                 - highestMilitaryRank: highest military rank achieved across all factions
                 - totalBountiesCollected: lifetime bounty credits collected

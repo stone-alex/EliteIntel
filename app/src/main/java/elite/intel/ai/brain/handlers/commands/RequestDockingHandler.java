@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
 import elite.intel.session.Status;
 import elite.intel.session.StatusFlags;
-import elite.intel.session.ui.LeftPanelTab;
+import elite.intel.session.ui.LeftPanel;
 import elite.intel.session.ui.UINavigator;
 
 public class RequestDockingHandler extends CommandOperator implements CommandHandler {
@@ -23,9 +23,8 @@ public class RequestDockingHandler extends CommandOperator implements CommandHan
         if(status.isInMainShip()){
             // un-target ships
             operateKeyboard(Bindings.GameCommand.BINDING_TARGET_NEXT_ROUTE_SYSTEM.getGameBinding(), 0);
-            navigator.closeOpenPanel(); // close and restore whatever we had open before.
 
-            navigator.openAndNavigate(StatusFlags.GuiFocus.EXTERNAL_PANEL, LeftPanelTab.CONTACTS, 0);
+            navigator.openAndNavigate(StatusFlags.GuiFocus.EXTERNAL_PANEL, LeftPanel.CONTACTS);
 
             //navigate to panel
             operateKeyboard(Bindings.GameCommand.BINDING_UI_DOWN.getGameBinding(), 0);
@@ -36,7 +35,7 @@ public class RequestDockingHandler extends CommandOperator implements CommandHan
             operateKeyboard(Bindings.GameCommand.BINDING_UI_SELECT.getGameBinding(), 120);
 
             /// Exit
-            navigator.closeAndRestore(StatusFlags.GuiFocus.EXTERNAL_PANEL, 0);
+            navigator.closeAndRestore(StatusFlags.GuiFocus.EXTERNAL_PANEL);
         }
     }
 }

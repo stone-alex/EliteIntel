@@ -1,6 +1,6 @@
 package elite.intel.session.ui;
 
-public enum LeftPanelTab implements PanelTab {
+public enum LeftPanel implements PanelTab {
     SYSTEM(0),
     NAVIGATION(1), // <-- default at game start
     TRANSACTIONS(2),
@@ -8,7 +8,7 @@ public enum LeftPanelTab implements PanelTab {
 
     public final int index;
 
-    LeftPanelTab(int tabIndex) {
+    LeftPanel(int tabIndex) {
         this.index = tabIndex;
     }
 

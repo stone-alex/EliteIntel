@@ -45,7 +45,7 @@ Powered by Whisper. built-in / included.
 Elite Intel is your AI-powered, TOS-compliant sidekick for *Elite Dangerous*.
 It's a Quality of Life (QoL) app that enhances gameplay with voice-activated commands 
 **uttered in natural language**,
-real-time journal parsing, and smart AI assistance—all while staying fully compliant
+real-time journal parsing, and smart AI assistance-all while staying fully compliant
 with Frontier Developments' Terms of Service. No AFK play, no botting, and no
 automation that gives unfair advantages; everything requires your input.
 

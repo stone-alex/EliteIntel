@@ -125,7 +125,7 @@ EOF
     if [ -e $ELITE_JAR ]; then
         # If the user has downloaded a release, we try to detect if it is in the current directory
         # Also assumes that this script will be in the distributed release folder
-        # Use cp -r (not mv) — safe across filesystems and for upgrades over existing installs.
+        # Use cp -r (not mv) - safe across filesystems and for upgrades over existing installs.
         # logs/ is created at runtime, not distributed.
         cp -r ./dictionary "$DEFAULT_INSTALL_LOCATION/"
         cp ./elite_intel.jar "$DEFAULT_INSTALL_LOCATION/"
@@ -310,7 +310,7 @@ create_start_menu() {
     # Download icon only if missing
     [ -f "$ICON_PATH" ] || curl -L -o "$ICON_PATH" https://raw.githubusercontent.com/stone-alex/EliteIntel/master/app/src/main/resources/images/elite-logo.png
 
-    # Launcher script — sets LD_LIBRARY_PATH so sherpa-onnx JNI resolves
+    # Launcher script - sets LD_LIBRARY_PATH so sherpa-onnx JNI resolves
     # libsherpa-onnx-jni.so by name (required by JDK 21, cannot be done post-launch)
     cat > "$LAUNCHER" << 'LAUNCHEOF'
 #!/usr/bin/env bash

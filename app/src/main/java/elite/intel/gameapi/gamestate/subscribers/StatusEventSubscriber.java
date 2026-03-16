@@ -27,7 +27,7 @@ public class StatusEventSubscriber {
         String legalStatusBeforeChange = oldStatus == null ? null : oldStatus.getLegalState();
 
         // --------------------------------------------------------------------------------------
-        // GuiFocus transition — must run before setStatus() so we compare against
+        // GuiFocus transition - must run before setStatus() so we compare against
         // the genuinely previous state, not the one we're about to overwrite.
         GuiFocus currentGuiFocus = GuiFocus.fromValue(event.getGuiFocus());
         if (currentGuiFocus != previousGuiFocus) {

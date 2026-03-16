@@ -50,7 +50,7 @@ public class AnalyzeShipLoadoutHandler extends BaseQueryAnalyzer implements Quer
                 IMPORTANT: shipModel is the hull type, not the role classification.
                 Derive classification by evaluating the installed modules against the priority rules below.
                 
-                Ship classification — evaluate in this exact priority order, stop at first match:
+                Ship classification - evaluate in this exact priority order, stop at first match:
                 
                 1. PASSENGER: any moduleName contains "Passengercabin" → Passenger. Stop.
                 
@@ -59,7 +59,7 @@ public class AnalyzeShipLoadoutHandler extends BaseQueryAnalyzer implements Quer
                 
                 3. DISCOVERY: moduleName contains "Detailedsurfacescanner" AND fuel scoop present
                    AND maxJumpRange >= 65 → Discovery.
-                   Discovery ships may carry weapons for deep-space self-defence — weapons do NOT disqualify.
+                   Discovery ships may carry weapons for deep-space self-defence - weapons do NOT disqualify.
                    Mining lasers on a discovery ship are for surface material sampling, not mining classification.
                    Stop.
                 
@@ -77,14 +77,14 @@ public class AnalyzeShipLoadoutHandler extends BaseQueryAnalyzer implements Quer
                 Module lookup rules:
                 - Search moduleName values for the relevant keyword to determine if a module is fitted.
                 - If NOT found in the data → answer NO. Never infer, assume, or guess.
-                Response patterns — apply the FIRST match only:
+                Response patterns - apply the FIRST match only:
                 1. If the question names a specific module (e.g. fuel scoop, refinery, shield): answer YES or NO first.
                    Then add the module name and class only if fitted.
                    Example: "Yes, we have a Class six, grade five fuel scoop fitted."
                    Example: "No, there is no fuel scoop fitted."
                 2. General loadout / classification question (no specific module asked):
                    Lead with "I am [shipName], a [role] class vessel" where [role] is the derived role
-                   (Discovery, Combat, Trade, Mining, Passenger, or Hopper) — NOT the ship model name.
+                   (Discovery, Combat, Trade, Mining, Passenger, or Hopper) - NOT the ship model name.
                    Then summarise key modules.
                 3. Damage question: use damagedModules. If empty, say no damage detected.
                 """;

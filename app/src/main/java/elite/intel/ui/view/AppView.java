@@ -761,7 +761,7 @@ public class AppView extends JFrame implements AppViewInterface {
 
             Updater.performUpdateAsync().thenAccept(launched -> {
                 if (launched) {
-                    // Updater process is running — shut the main app down cleanly.
+                    // Updater process is running - shut the main app down cleanly.
                     EventBusManager.publish(new SystemShutDownEvent());
                 } else {
                     // Couldn't start updater; re-enable the button.
@@ -770,7 +770,7 @@ public class AppView extends JFrame implements AppViewInterface {
                         updateAppButton.setText("Update Available");
                     });
                     EventBusManager.publish(new AppLogEvent(
-                            "Could not launch updater — is elite_intel_updater.jar present?"));
+                            "Could not launch updater - is elite_intel_updater.jar present?"));
                 }
             });
         });

@@ -57,13 +57,13 @@ public class AnalyzeRouterHandler extends BaseQueryAnalyzer implements QueryHand
                 - Never invent or calculate values not present in the data.
                 
                 How to answer common questions:
-                - "next waypoint / next jump / next star": use data[0] — report starName, starClass, isScoopable, and remainingJumps.
+                - "next waypoint / next jump / next star": use data[0] - report starName, starClass, isScoopable, and remainingJumps.
                 - "how many jumps left / remaining": use jumpsRemaining directly.
                 - "distance / how far": report distanceToFinal verbatim.
                 - "is it scoopable": use data[0].isScoopable for next stop, or scan data for exceptions if asking about full route.
                 - "what class is the next star": use data[0].starClass.
                 - "traffic / casualties / security": say no such information is available in the route data.
-                - "full route": list all legs as — Leg N: starName, starClass, scoopable yes/no.
+                - "full route": list all legs as - Leg N: starName, starClass, scoopable yes/no.
                 
                 Start directly with the answer. No preamble.
                 """;

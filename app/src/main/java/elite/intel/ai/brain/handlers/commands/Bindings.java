@@ -21,10 +21,9 @@ public class Bindings {
         BINDING_HARDPOINTS_TOGGLE("DeployHardpointToggle"),
         BINDING_FOCUS_COMMS_PANEL("FocusCommsPanel"),
         BINDING_FOCUS_COMMS_PANEL_BUGGY("FocusCommsPanel_Buggy"),
-            BINDING_FOCUS_LEFT_PANEL("FocusLeftPanel"),
+        BINDING_FOCUS_LEFT_PANEL("FocusLeftPanel"),
         BINDING_FOCUS_CONTACTS_PANEL_BUGGY("FocusLeftPanel_Buggy"),
-//        BINDING_FOCUS_LEFT_PANEL("FocusLeftPanel"),
-//        BINDING_FOCUS_LEFT_PANEL_BUGGY("FocusLeftPanel_Buggy"),
+        BINDING_FOCUS_LEFT_PANEL_BUGGY("FocusLeftPanel_Buggy"),
         BINDING_FOCUS_INTERNAL_PANEL("FocusRightPanel"),
         BINDING_FOCUS_INTERNAL_PANEL_BUGGY("FocusRightPanel_Buggy"),
         BINDING_FOCUS_STATUS_PANEL("FocusRightPanel"),
@@ -99,7 +98,7 @@ public class Bindings {
         //GALNET_AUDIO_SKIP_BACKWARD("galnet_audio_skip_backward", "GalnetAudio_SkipBackward"),
         //GALNET_AUDIO_SKIP_FORWARD("galnet_audio_skip_forward", "GalnetAudio_SkipForward"),
 
-            //BINDING_HEAD_LOOK_RESET("HeadLookReset"),
+        //BINDING_HEAD_LOOK_RESET("HeadLookReset"),
 
         BINDING_RADAR_DECREASE_RANGE("RadarDecreaseRange"),
         BINDING_RADAR_INCREASE_RANGE("RadarIncreaseRange"),

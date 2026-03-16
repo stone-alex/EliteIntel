@@ -66,11 +66,6 @@ public class AiCommandsAndQueries {
         commandMap.put("locate nearest vista genomics", FIND_VISTA_GENOMICS.getAction());
         commandMap.put("locate nearest fleet carrier", FIND_NEAREST_FLEET_CARRIER.getAction());
         commandMap.put("clear or cancel fleet carrier route", CLEAR_FLEET_CARRIER_ROUTE.getAction());
-
-        commandMap.put("show comms panel, open comms", DISPLAY_COMMS_PANEL.getAction());
-        commandMap.put("display contacts panel, display left panel", DISPLAY_CONTACTS_PANEL.getAction());
-        commandMap.put("display right panel", DISPLAY_INTERNAL_PANEL.getAction());
-        commandMap.put("display central panel", DISPLAY_CENTRAL_PANEL.getAction());
         commandMap.put("jump to hyperspace, let's get out of here, lets go, enter hyperspace, go to next waypoint, engage FSD jump", JUMP_TO_HYPERSPACE.getAction());
         commandMap.put("drop from supercruise, disengage FSD, exit supercruise", EXIT_SUPER_CRUISE.getAction());
         commandMap.put("navigate to carrier, return to base, go to fleet carrier", NAVIGATE_TO_CARRIER.getAction());
@@ -132,12 +127,30 @@ public class AiCommandsAndQueries {
         commandMap.put("drive assist on/off" + KEY_STATE, DRIVE_ASSIST.getAction());
         commandMap.put("recover SRV, recover buggy, requesting extraction, extract surface vehicle", RECOVER_SRV.getAction());
 
-        /// any status
+        /// UI panels
         commandMap.put("activate, punch it, engage", ACTIVATE.getAction());
         commandMap.put("show transactions", SHOW_TRANSACTIONS.getAction());
+        commandMap.put("show contacts", SHOW_CONTACTS.getAction());
+        commandMap.put("show navigation", SHOW_NAVIGATION.getAction());
+        commandMap.put("show comms, show chat", SHOW_CHAT_PANEL.getAction());
+        commandMap.put("show inbox, show messages", SHOW_INBOX_PANEL.getAction());
+        commandMap.put("show social, show friends", SHOW_SOCIAL_PANEL.getAction());
+        commandMap.put("show history, show history panel", SHOW_HISTORY_PANEL.getAction());
+        commandMap.put("show squadron, show squadron panel", SHOW_SQUADRON.getAction());
+        commandMap.put("show central panel, role panel", SHOW_COMMANDER_PANEL.getAction());
+        commandMap.put("show fighter panel", SHOW_FIGHTER_PANEL.getAction());
+        commandMap.put("show crew panel", SHOW_CREW.getAction());
+        commandMap.put("show internal panel, commander panel", SHOW_INTERNAL_PANEL.getAction());
+        commandMap.put("show modules panel", SHOW_MODULES_PANEL.getAction());
+        commandMap.put("show fire groups", SHOW_FIRE_GROUPS.getAction());
+        commandMap.put("show inventory panel", SHOW_INVENTORY_PANEL.getAction());
+        commandMap.put("show storage panel", SHOW_STORAGE_PANEL.getAction());
+        commandMap.put("show status panel", SHOW_STATUS_PANEL.getAction());
+        commandMap.put("show ship panel", SHOW_SHIP_PANEL.getAction());
+
         commandMap.put("close, close panel, exit, esc", CLOSE.getAction());
 
-        commandMap.put("system shutdown", SHUT_DOWN.getAction());
+        //commandMap.put("system shut down", SHUT_DOWN.getAction());
         commandMap.put("streaming mode on/off" + KEY_STATE, SET_STREAMING_MODE.getAction());
         commandMap.put("show carrier management panel", DISPLAY_CARRIER_MANAGEMENT.getAction());
         commandMap.put("change trade profile starting budget to" + KEY_X, CHANGE_TRADE_PROFILE_SET_STARTING_BUDGET.getAction());
@@ -149,8 +162,6 @@ public class AiCommandsAndQueries {
         commandMap.put("change trade profile allow strongholds on/off" + KEY_STATE, CHANGE_TRADE_PROFILE_SET_ALLOW_STRONGHOLDS.getAction());
         commandMap.put("galaxy map, open galaxy map, show galaxy map", OPEN_GALAXY_MAP.getAction());
         commandMap.put("local map, open system map, show local map", OPEN_SYSTEM_MAP.getAction());
-        commandMap.put("close map", CLOSE_ANY_MAP.getAction());
-        commandMap.put("exit to HUD, close panel", EXIT_TO_HUD.getAction());
         commandMap.put("list voices", LIST_AVAILABLE_VOICES.getAction());
         commandMap.put("delete this codex entry", DELETE_CODEX_ENTRY.getAction());
         commandMap.put("clear all codex entries", CLEAR_CODEX_ENTRIES.getAction());

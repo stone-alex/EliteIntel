@@ -89,7 +89,7 @@ public class KeyBindingExecutor {
             for (int modCode : modifierCodes) {
                 keyProcessor.holdKey(modCode);
             }
-            // Always pressKey — never hold, regardless of binding.hold flag
+            // Always pressKey - never hold, regardless of binding.hold flag
             keyProcessor.pressKey(mainKeyCode);
             log.debug("Executed tap binding: key={}, modifiers={}", binding.key, binding.modifiers);
             for (int i = modifierCodes.length - 1; i >= 0; i--) {

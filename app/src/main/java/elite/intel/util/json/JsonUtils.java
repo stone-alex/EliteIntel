@@ -45,7 +45,7 @@ public final class JsonUtils {
     public static String repairLlmJson(String raw) {
         if (raw == null || raw.isEmpty()) return raw;
 
-        // Repair 1: truncated string — JSON cut off mid response_text value (no closing "})
+        // Repair 1: truncated string - JSON cut off mid response_text value (no closing "})
         if (!raw.trim().endsWith("}")) {
             java.util.regex.Pattern truncP = java.util.regex.Pattern.compile(
                     "\"response_text\"\\s*:\\s*\"(.*?)$",

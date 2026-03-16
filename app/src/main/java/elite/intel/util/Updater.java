@@ -27,7 +27,7 @@ import static elite.intel.util.StringUtls.normalizeVersion;
  * and then exits.  All download / extraction / relaunch logic lives in
  * {@code UpdaterApp} inside that companion jar.
  * <p>
- * The updater jar is intentionally tiny — no native STT/TTS/LLM dependencies —
+ * The updater jar is intentionally tiny - no native STT/TTS/LLM dependencies -
  * so it starts in under a second even on modest hardware.
  */
 public class Updater {
@@ -68,7 +68,7 @@ public class Updater {
      * Returns {@code false} if the updater jar is missing or the process cannot
      * be started, in which case the main app stays running.
      *
-     * @return a {@code CompletableFuture<Boolean>} — {@code true} means "exit now".
+     * @return a {@code CompletableFuture<Boolean>} - {@code true} means "exit now".
      */
     public static CompletableFuture<Boolean> performUpdateAsync() {
         return CompletableFuture.supplyAsync(() -> {

@@ -696,3 +696,4 @@
 "lenging here down"="landing gear down"
 "wave point"="way point"
 "weight point"="way point"
+"hello"="close"

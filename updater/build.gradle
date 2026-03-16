@@ -1,7 +1,7 @@
 // -- updater/build.gradle -----------------------------------------------------
 // Produces elite_intel_updater.jar and copies it into the root-project's
 // distribution/ directory so install4j and the release ZIP both pick it up
-// automatically — no manual cp steps needed in CI.
+// automatically - no manual cp steps needed in CI.
 // -----------------------------------------------------------------------------
 
 plugins {
@@ -15,7 +15,7 @@ application {
 
 dependencies {
     // Intentionally empty.
-    // The updater only needs java.net.http and java.util.zip — both JDK 21 builtins.
+    // The updater only needs java.net.http and java.util.zip - both JDK 21 builtins.
     // Do NOT add :app here; that would drag in all native STT/TTS/LLM deps.
 }
 

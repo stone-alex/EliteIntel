@@ -1,12 +1,12 @@
 package elite.intel.session.ui;
 
-public enum CentreTab implements PanelTab {
+public enum CenterPanel implements PanelTab {
 
     COMMANDER(0), FIGHTER(1), SRV(2), CREW(3);
 
     public final int index;
 
-    CentreTab(int tabIndex) {
+    CenterPanel(int tabIndex) {
         this.index = tabIndex;
     }
 

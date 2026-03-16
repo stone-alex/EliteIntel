@@ -50,7 +50,7 @@ public class OllamaClient extends BaseAiClient implements Client {
         if (isQueryModel) {
             // Query model: larger context for data payloads, capped output to prevent generation loops
             request.addProperty("num_ctx", 8192);
-            request.addProperty("num_predict", 512);  // hard cap — prevents infinite generation with structured output
+            request.addProperty("num_predict", 512);  // hard cap - prevents infinite generation with structured output
         } else {
             // Command model: large system prompt (commands + queries list) needs real headroom, short output
             request.addProperty("num_ctx", 8192);
@@ -65,9 +65,9 @@ public class OllamaClient extends BaseAiClient implements Client {
         request.addProperty("repeat_penalty", 1.12f); // 1.08–1.15 → prevents repeating keys or structure
 
         if (isQueryModel) {
-            request.addProperty("top_k", 40);         // higher for query — allows natural language generation
+            request.addProperty("top_k", 40);         // higher for query - allows natural language generation
         } else {
-            request.addProperty("top_k", 20);         // low for commands — forces strict JSON structure
+            request.addProperty("top_k", 20);         // low for commands - forces strict JSON structure
         }
 
         return request;

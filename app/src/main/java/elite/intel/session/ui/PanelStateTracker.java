@@ -5,7 +5,7 @@ import elite.intel.session.StatusFlags.GuiFocus;
 /**
  * Tracks which tab the player is on for each of the four ship UI panels.
  * <p>
- * This class is pure state — no keyboard, no command handlers, no Bindings.
+ * This class is pure state - no keyboard, no command handlers, no Bindings.
  * It lives in PlayerSession and is safe to access from anywhere including
  * StatusEventSubscriber.
  * <p>
@@ -16,10 +16,10 @@ public class PanelStateTracker {
 
     private static volatile PanelStateTracker instance;
 
-    private final PanelState<LeftPanelTab> leftPanel = new PanelState<>(LeftPanelTab.NAVIGATION);
-    private final PanelState<CommsTab> commsPanel = new PanelState<>(CommsTab.CHAT);
-    private final PanelState<CentreTab> centrePanel = new PanelState<>(CentreTab.COMMANDER);
-    private final PanelState<RightPanelTab> rightPanel = new PanelState<>(RightPanelTab.MAIN);
+    private final PanelState<LeftPanel> leftPanel = new PanelState<>(LeftPanel.NAVIGATION);
+    private final PanelState<CommsPanel> commsPanel = new PanelState<>(CommsPanel.CHAT);
+    private final PanelState<CenterPanel> centrePanel = new PanelState<>(CenterPanel.COMMANDER);
+    private final PanelState<RightPanel> rightPanel = new PanelState<>(RightPanel.MAIN);
 
     // True while EliteIntel is the one who opened the current panel.
     // Set by UINavigator before dispatching the open keystroke.
@@ -56,11 +56,11 @@ public class PanelStateTracker {
      */
     public void onGuiFocusChanged(GuiFocus newFocus) {
         if (newFocus == GuiFocus.NO_FOCUS) {
-            eliteIntelOpenedPanel = false;
+            //eliteIntelOpenedPanel = false;
             return;
         }
         if (!eliteIntelOpenedPanel) {
-            // Player opened the panel — tab position is now unknown
+            // Player opened the panel - tab position is now unknown
             getState(newFocus).markUnknown();
         }
     }
@@ -86,22 +86,22 @@ public class PanelStateTracker {
     }
 
     // -------------------------------------------------------------------------
-    // Panel state accessors — used by UINavigator for delta navigation
+    // Panel state accessors - used by UINavigator for delta navigation
     // -------------------------------------------------------------------------
 
-    public PanelState<LeftPanelTab> getLeftPanel() {
+    public PanelState<LeftPanel> getLeftPanel() {
         return leftPanel;
     }
 
-    public PanelState<CommsTab> getCommsPanel() {
+    public PanelState<CommsPanel> getCommsPanel() {
         return commsPanel;
     }
 
-    public PanelState<CentreTab> getCentrePanel() {
+    public PanelState<CenterPanel> getCentrePanel() {
         return centrePanel;
     }
 
-    public PanelState<RightPanelTab> getRightPanel() {
+    public PanelState<RightPanel> getRightPanel() {
         return rightPanel;
     }
 
@@ -110,6 +110,10 @@ public class PanelStateTracker {
      */
     public GuiFocus getLastOpenedPanel() {
         return lastOpenedPanel;
+    }
+
+    public boolean isEliteIntelOpenedPanel() {
+        return eliteIntelOpenedPanel;
     }
 
     public PanelState<?> getState(GuiFocus panel) {

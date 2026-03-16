@@ -251,7 +251,7 @@ public class UpdaterApp {
     private String fetchLatestZipUrl() throws Exception {
         status("Checking GitHub for latest release…");
 
-        // Use ALWAYS on the API client too — GitHub may redirect http→https or
+        // Use ALWAYS on the API client too - GitHub may redirect http→https or
         // api.github.com itself can 301 on certain paths.
         HttpClient client = HttpClient.newBuilder()
                 .followRedirects(HttpClient.Redirect.ALWAYS)
@@ -268,7 +268,7 @@ public class UpdaterApp {
             throw new IOException("GitHub API returned HTTP " + apiStatus
                     + "\nBody: " + resp.body().substring(0, Math.min(200, resp.body().length())));
 
-        // Match the Linux ZIP asset — exclude .exe and Windows-only variants.
+        // Match the Linux ZIP asset - exclude .exe and Windows-only variants.
         // Pattern mirrors what installer.sh does:
         //   grep "browser_download_url" | grep "\.zip" | grep -v "\.exe"
         Matcher m = Pattern.compile(
@@ -296,13 +296,13 @@ public class UpdaterApp {
         status("Downloading update…");
         log("Source: " + url);
 
-        // ALWAYS follow redirects — GitHub release asset URLs issue a 302 to
+        // ALWAYS follow redirects - GitHub release asset URLs issue a 302 to
         // objects.githubusercontent.com before serving the actual bytes.
         HttpClient client = HttpClient.newBuilder()
                 .followRedirects(HttpClient.Redirect.ALWAYS)
                 .build();
         // GitHub's asset CDN rejects requests with Java's default User-Agent.
-        // Mimic curl's UA — the same one installer.sh uses implicitly.
+        // Mimic curl's UA - the same one installer.sh uses implicitly.
         HttpRequest req = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .header("User-Agent", "curl/8.0")
@@ -316,7 +316,7 @@ public class UpdaterApp {
         int httpStatus = resp.statusCode();
         if (httpStatus < 200 || httpStatus >= 300)
             throw new IOException("Download failed, HTTP " + httpStatus
-                    + " — URL was: " + url);
+                    + " - URL was: " + url);
 
         long total = resp.headers()
                 .firstValueAsLong("content-length")

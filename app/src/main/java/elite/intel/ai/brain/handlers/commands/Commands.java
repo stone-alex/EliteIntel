@@ -64,17 +64,13 @@ public enum Commands {
     RESET_POWER                                         ("equalize_power_settings", null,  ResetPowerSettings.class),
 
     OPEN_GALAXY_MAP                                     ("show_open_galaxy_star_map", null,  OpenGalaxyMapHandler.class),
-    OPEN_SYSTEM_MAP                                     ("show_open_local_system_map", null,  OpenSystemMapHandler.class),
-    CLOSE_ANY_MAP                                       ("close_map", null,  ExitToHud.class),
-    EXIT_TO_HUD                                         ("display_hud", null,  ExitToHud.class),
-    EXIT                                                ("exit", null,  ExitToHud.class),
+    OPEN_SYSTEM_MAP                                     ("show_open_local_system_map", null,  OpenLocalMapHandler.class),
 
-    DISPLAY_COMMS_PANEL                                 ("display_comms_panel", null,  DisplayCommsPanelHandler.class),
-    DISPLAY_CONTACTS_PANEL                              ("display_contacts", null,  DisplayContactsPanelHandler.class),
-    DISPLAY_INTERNAL_PANEL                              ("display_internal_panel", null,  DisplayInternalPanelHandler.class),
-    DISPLAY_STATUS_PANEL                                ("display_status_panel", null,  DisplayStatusPanelHandler.class),
+
+    ///DISPLAY_INTERNAL_PANEL                              ("display_internal_panel", null,  DisplayInternalPanelHandler.class),
+    ///DISPLAY_STATUS_PANEL                                ("display_status_panel", null,  DisplayStatusPanelHandler.class),
     DISPLAY_RADAR_PANEL                                 ("display_radar_panel", null,  DisplayRadarPanelHandler.class),
-    DISPLAY_CENTRAL_PANEL                               ("display_central_panel", null,  DisplayLoadoutPanelHandler.class),
+    ///
     DISPLAY_CARRIER_MANAGEMENT                          ("display_carrier_management", null,  OpenFleetCarrierManagementHandler.class    ),
     OPEN_CARGO_SCOOP                                    ("open_cargo_scoop", null,  OpenCargoScoopHandler.class),
     CLOSE_CARGO_SCOOP                                   ("close_cargo_scoop", null,  CloseCargoScoopHandler.class),
@@ -100,7 +96,7 @@ public enum Commands {
     CLEAR_CODEX_ENTRIES                                 ("clear_codex_entries", null,  ClearCodexEntriesHandler.class),
     CALCULATE_FLEET_CARRIER_ROUTE                       ("calculate_fleet_carrier_route", null,  CalculateFleetCarrierRouteHandler.class),
     ENTER_NEXT_FLEET_CARRIER_DESTINATION                ("enter_next_fleet_carrier_destination", null,  EnterNextCarrierDestinationHandler.class),
-    SHUT_DOWN                                           ("system_shut_down", null,  SystemShutDownRequestHandler.class),
+    //SHUT_DOWN                                           ("system_shut_down", null,  SystemShutDownRequestHandler.class),
 
     CALCULATE_TRADE_ROUTE                               ("calculate_trade_route", null,  CalculateTradeRouteHandler.class),
     NAVIGATE_TO_NEXT_TRADE_STOP                       ("navigate_to_trade_stop_port_or_station", null,  PlotRouteToNextTradeStopHandler.class),
@@ -116,8 +112,26 @@ public enum Commands {
 
     /// Generic simple commands. no parameters, but require binding
     ACTIVATE                                            ("activate", BINDING_ACTIVATE.getGameBinding(), GenericGameControlHandler.class),
-    SHOW_TRANSACTIONS                                   ("show_transactions", null, ShowTransactionHandler.class),
+    SHOW_TRANSACTIONS                                   ("show_transactions", null, OpenTransactionHandler.class),
+    SHOW_CONTACTS                                       ("show_contacts", null, OpenContactsHandler.class),
+    SHOW_NAVIGATION                                     ("show_navigation", null, OpenNavigationHandler.class),
+    SHOW_CHAT_PANEL                                     ("show_chat", null, OpenCommsPanelHandler.class   ),
+    SHOW_INBOX_PANEL                                    ("show_inbox", null, OpenInboxPenalHandler.class),
+    SHOW_SOCIAL_PANEL                                   ("show_social", null, OpenSocialPanelHandler.class),
+    SHOW_HISTORY_PANEL                                  ("show_history", null, OpenHistoryPanelHandler.class),
+    SHOW_SQUADRON                                       ("show_squadron", null, OpenSquadronHandler.class),
+    SHOW_COMMANDER_PANEL                                ("show_role_panel", null, OpenCommanderPanel.class),
+    SHOW_FIGHTER_PANEL                                  ("show_fighter_panel", null, OpenFighterPanelHandler.class),
+    SHOW_CREW                                           ("show_crew", null, OpenCrewPanelHandler.class),
+    SHOW_INTERNAL_PANEL                                 ("show_internal_panel", null, OpenInternalPanelHandler.class),
+    SHOW_MODULES_PANEL                                  ("show_modules_panel", null, OpenModulesPanelHandler.class),
+    SHOW_FIRE_GROUPS                                    ("show_fire_groups", null, OpenFireGroupsPanelHandler.class),
+    SHOW_INVENTORY_PANEL                                ("show_inventory_panel", null, OpenInventoryHandler.class),
+    SHOW_STORAGE_PANEL                                  ("show_storage_panel", null, OpenStoragePanelHandler.class),
+    SHOW_STATUS_PANEL                                   ("show_status_panel", null, OpenStatusPanelHandler.class),
+    SHOW_SHIP_PANEL                                     ("show_ship_panel", null, OpenShipPanelHandler.class),
     CLOSE                                               ("close", null, ClosePanelHandler.class),
+
 
     REQUEST_DOCKING                                     ("request_docking", null,  RequestDockingHandler.class),
     NIGHT_VISION_ON_OFF                                 ("toggle_night_vision_on_off", BINDING_NIGHT_VISION_TOGGLE.getGameBinding(), ToggleNightVision.class),

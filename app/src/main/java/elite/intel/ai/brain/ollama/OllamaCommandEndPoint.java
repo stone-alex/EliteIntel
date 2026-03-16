@@ -32,7 +32,7 @@ public class OllamaCommandEndPoint extends AiEndPoint implements AIChatInterface
             prompt.add("messages", sanitized);
 
             // === STRUCTURED SCHEMA ENFORCEMENT ===
-            // Command parser returns: type, action, params — never response_text
+            // Command parser returns: type, action, params - never response_text
             JsonObject format = new JsonObject();
             JsonObject properties = new JsonObject();
 

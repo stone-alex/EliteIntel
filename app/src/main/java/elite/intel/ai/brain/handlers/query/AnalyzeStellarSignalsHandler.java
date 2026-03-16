@@ -27,8 +27,7 @@ public class AnalyzeStellarSignalsHandler extends BaseQueryAnalyzer implements Q
 
         String instructions = """
                 Answer the user's question about signals detected in this star system.
-                Respond in plain spoken English only. No lists, no bullets, no numbering, no markdown.
-                Two to four sentences maximum. Answer only what was asked.
+                Answer only what was asked.
                 
                 Data fields:
                 - stellarObjectSignals: list of signal entries per body or ring
@@ -119,31 +118,42 @@ public class AnalyzeStellarSignalsHandler extends BaseQueryAnalyzer implements Q
     }
 
     private List<ToYamlConvertable> toDiscoveredSignals() {
-        Collection<LocationDto> locations = locationManager.findAllBySystemAddress(playerSession.getLocationData().getSystemAddress());
+        Collection<LocationDto> locations = locationManager.findAllBySystemAddress(
+                playerSession.getLocationData().getSystemAddress());
 
-        // Named signals worth calling out individually (stations, megaships, notable POI)
         List<ToYamlConvertable> named = new ArrayList<>();
-        // Anonymous signals (fleet carriers etc.) aggregated by type → count
         Map<String, Integer> typeCounts = new LinkedHashMap<>();
 
         for (LocationDto location : locations) {
             for (FssSignalDto signal : location.getDetectedSignals()) {
                 String type = signal.getSignalType();
-                String name = signal.getSignalName();
-                boolean isAnonymous = name == null || name.isBlank()
-                        || name.startsWith("$")
-                        || (type != null && type.toLowerCase().contains("fleetcarrier"));
-                if (isAnonymous) {
-                    typeCounts.merge(type != null ? type : "Unknown", 1, Integer::sum);
-                } else {
-                    named.add(new DiscoveredSignal(location.getPlanetName(), name, type));
+                String rawName = signal.getSignalName();
+                String localised = signal.getSignalNameLocalised();
+
+                // Use localised name when available, otherwise raw name
+                String displayName = (localised != null && !localised.isBlank()) ? localised : rawName;
+
+                boolean isCarrier = "FleetCarrier".equalsIgnoreCase(type)
+                        || "SquadronCarrier".equalsIgnoreCase(type);
+                boolean isGameCode = rawName != null && rawName.startsWith("$");
+
+                if (isCarrier) {
+                    // Aggregate all carriers by type — individual names are not useful
+                    typeCounts.merge(type, 1, Integer::sum);
+                } else if (isGameCode) {
+                    // Game-code signals (conflict zones, nav beacons, etc.) — aggregate by localised label
+                    if (displayName != null && !displayName.isBlank()) {
+                        typeCounts.merge(displayName, 1, Integer::sum);
+                    }
+                } else if (displayName != null && !displayName.isBlank()) {
+                    // Named POI (stations, megaships, outposts) — keep individually
+                    named.add(new DiscoveredSignal(location.getPlanetName(), displayName, type));
                 }
             }
         }
 
-        // Append aggregated anonymous counts as summary entries
-        typeCounts.forEach((type, count) ->
-                named.add(new DiscoveredSignal(null, count + "x " + type, type)));
+        typeCounts.forEach((label, count) ->
+                named.add(new DiscoveredSignal(null, count + "x " + label, label)));
 
         return named;
     }

@@ -678,8 +678,6 @@
 "french with rife"="frame shift drive / supercruise"
 "french with rife"="frame shift drive / supercruise"
 "fel?"="ftl"
-". you"=""
-" you"=""
 "macs"="map"
 "super kuru"="supercruise"
 "cruz."="supercruise"
@@ -697,3 +695,4 @@
 "train"="trade"
 "lenging here down"="landing gear down"
 "wave point"="way point"
+"weight point"="way point"

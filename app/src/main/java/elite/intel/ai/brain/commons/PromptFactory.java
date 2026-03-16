@@ -78,11 +78,19 @@ public class PromptFactory implements AiPromptFactory {
                 • If no template → return empty {}
                 • Never invent new keys or values
                 • Never spell out numerics for keys, use digits instead. Example {"key": "123000"} | {lat:"12.21", lon:"-54"}
+                • NATO ALPHABET: input may use NATO phonetic words for letters/digits. Decode before using in params.
+                  Alpha=A, Bravo=B, Charlie/Charly=C, Delta=D, Echo=E, Foxtrot=F, Golf=G, Hotel=H,
+                  India=I, Juliet=J, Kilo=K, Lima=L, Mike=M, November=N, Oscar=O, Papa=P,
+                  Quebec=Q, Romeo=R, Sierra=S, Tango=T, Uniform=U, Victor=V, Whiskey=W,
+                  X-ray=X, Yankee=Y, Zulu=Z. Digits: Zero=0, One=1, Two=2, Three=3, Four=4,
+                  Five=5, Six=6, Seven=7, Eight=8, Nine/Niner=9.
+                  Example: "moon two Charlie" → "2C" | "planet Alpha two" → "A2"
                 • Examples (follow the pattern exactly):
                   - "target subsystem drive"            → {"key": "drive"}
                   - "find mining site for LTD"          → {"key": "low temperature diamonds"}
                   - "lights on"                         → {"state": true}
                   - "find gold within 80 ly"            → {"key": "gold", "max_distance":"80"}
+                  - "is moon two Charlie landable"      → query with key "2C"
                 """);
         return sb.toString();
     }
@@ -103,8 +111,7 @@ public class PromptFactory implements AiPromptFactory {
             sb.append(appendLocalBehavior());
         }
         sb.append("""
-                Output ONLY this exact JSON structure — nothing else, no explanations, no markdown:
-                {"type": "chat", "response_text": "ANSWER"}
+                Respond with JSON only. Set "type" to "chat". Set "response_text" to your answer.
 
                 Rules for response_text:
                 - Plain English text only. No bullets, no markdown, no lists, no brackets.

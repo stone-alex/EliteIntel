@@ -38,22 +38,55 @@ public class AnalyzeShipLoadoutHandler extends BaseQueryAnalyzer implements Quer
 
         String instructions = """
                 Answer the user's question about ship loadout, health, or capabilities.
-                
+
                 Data fields:
                 - data: map of ship modules by slot (moduleName, moduleHealthPercentage, engineering)
+                  - shipModel: the ship's manufacturer model name (e.g. Mandalay, Anaconda). NOT the classification.
+                  - maxJumpRange: jump range in light years
+                  - cargoCapacity: cargo in tonnes
                 - damagedModules: pre-computed map of slots with health below 100 percent (slot -> healthPercentage)
                 - hasEngineeredModules: true if any module has engineering modifications
                 
-                Rules:
-                - If asked about a specific module: check data by slot name, reply yes/no and list its specs if present.
-                - If asked about damage: use damagedModules directly. If empty, report no damage detected.
-                - If asked about engineering: use hasEngineeredModules. Engineered modules have modified stats or special bonuses.
-                - If asked about ship classification or suitability, use these guidelines:
-                  - Discovery: jump range above fifty light years, light build, no cargo, minimal weapons and shields
-                  - Cargo: large cargo space, jump range below fifty light years, minimal weapons
-                  - Combat: weapons and shields are priority, cargo and range are secondary
-                  - Mining: mining tools, refinery, and cargo space are priority
-                - Answer only what was asked.
+                IMPORTANT: shipModel is the hull type, not the role classification.
+                Derive classification by evaluating the installed modules against the priority rules below.
+                
+                Ship classification — evaluate in this exact priority order, stop at first match:
+                
+                1. PASSENGER: any moduleName contains "Passengercabin" → Passenger. Stop.
+                
+                2. MINING: moduleName contains "Refinery" AND at least one hardpoint moduleName contains
+                   "Mining" → Mining. Stop. (Cargo racks on a mining ship store ore, not trade goods.)
+                
+                3. DISCOVERY: moduleName contains "Detailedsurfacescanner" AND fuel scoop present
+                   AND maxJumpRange >= 65 → Discovery.
+                   Discovery ships may carry weapons for deep-space self-defence — weapons do NOT disqualify.
+                   Mining lasers on a discovery ship are for surface material sampling, not mining classification.
+                   Stop.
+                
+                4. COMBAT: weapons present in hardpoints (non-mining, non-point-defence hardpoints)
+                   AND no cargo racks (no moduleName contains "Cargorack") → Combat. Stop.
+                
+                5. TRADE: moduleName contains "Cargorack" and cargo racks dominate the internal slots
+                   → Trade. Defensive weapons are acceptable on a trade ship. Stop.
+                
+                6. HOPPER: no cargo, no DSS, no refinery, no passenger cabins, no dominant weapons.
+                   Small light ship focused on range and speed. Stop.
+                
+                Jump range tiers: high = 65+ ly, mid = 30-64 ly, low = below 30 ly.
+                
+                Module lookup rules:
+                - Search moduleName values for the relevant keyword to determine if a module is fitted.
+                - If NOT found in the data → answer NO. Never infer, assume, or guess.
+                Response patterns — apply the FIRST match only:
+                1. If the question names a specific module (e.g. fuel scoop, refinery, shield): answer YES or NO first.
+                   Then add the module name and class only if fitted.
+                   Example: "Yes, we have a Class six, grade five fuel scoop fitted."
+                   Example: "No, there is no fuel scoop fitted."
+                2. General loadout / classification question (no specific module asked):
+                   Lead with "I am [shipName], a [role] class vessel" where [role] is the derived role
+                   (Discovery, Combat, Trade, Mining, Passenger, or Hopper) — NOT the ship model name.
+                   Then summarise key modules.
+                3. Damage question: use damagedModules. If empty, say no damage detected.
                 """;
 
         return process(new AiDataStruct(instructions, new DataDto(facts, damagedModules, hasEngineeredModules)), originalUserInput);
@@ -67,6 +100,21 @@ public class AnalyzeShipLoadoutHandler extends BaseQueryAnalyzer implements Quer
     }
 
     public static class ShipFactsExtractor {
+        private static boolean isCosmeticSlot(String slot) {
+            if (slot == null) return false;
+            String s = slot.toLowerCase();
+            return s.startsWith("decal")
+                    || s.startsWith("shipid")
+                    || s.startsWith("shipname")
+                    || s.startsWith("shipkit")
+                    || s.startsWith("paintjob")
+                    || s.startsWith("enginecolour")
+                    || s.startsWith("weaponcolour")
+                    || s.startsWith("vesselvoice")
+                    || s.startsWith("shipcockpit")
+                    || s.equals("fueltank");
+        }
+
         public static Map<String, Object> extractFacts(ShipLoadOutDto loadout) {
             Map<String, Object> facts = new HashMap<>();
             if (loadout == null) {
@@ -82,6 +130,7 @@ public class AnalyzeShipLoadoutHandler extends BaseQueryAnalyzer implements Quer
 
             if (loadout.getModules() != null) {
                 for (ModuleDto module : loadout.getModules()) {
+                    if (isCosmeticSlot(module.getSlot())) continue;
                     StringBuilder sb = new StringBuilder();
                     EngineeringDto engineering = module.getEngineering();
                     if (engineering != null) {

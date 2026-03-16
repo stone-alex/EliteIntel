@@ -68,9 +68,9 @@ public class AiCommandsAndQueries {
         commandMap.put("clear or cancel fleet carrier route", CLEAR_FLEET_CARRIER_ROUTE.getAction());
 
         commandMap.put("show comms panel, open comms", DISPLAY_COMMS_PANEL.getAction());
-        commandMap.put("display contacts panel", DISPLAY_CONTACTS_PANEL.getAction());
-        commandMap.put("display internal panel", DISPLAY_INTERNAL_PANEL.getAction());
-        commandMap.put("show central panel", DISPLAY_CENTRAL_PANEL.getAction());
+        commandMap.put("display contacts panel, display left panel", DISPLAY_CONTACTS_PANEL.getAction());
+        commandMap.put("display right panel", DISPLAY_INTERNAL_PANEL.getAction());
+        commandMap.put("display central panel", DISPLAY_CENTRAL_PANEL.getAction());
         commandMap.put("jump to hyperspace, let's get out of here, lets go, enter hyperspace, go to next waypoint, engage FSD jump", JUMP_TO_HYPERSPACE.getAction());
         commandMap.put("drop from supercruise, disengage FSD, exit supercruise", EXIT_SUPER_CRUISE.getAction());
         commandMap.put("navigate to carrier, return to base, go to fleet carrier", NAVIGATE_TO_CARRIER.getAction());
@@ -121,7 +121,7 @@ public class AiCommandsAndQueries {
         commandMap.put("order fighter focus my target", REQUEST_FOCUS_TARGET.getAction());
         commandMap.put("order fighter hold fire", REQUEST_HOLD_FIRE.getAction());
         commandMap.put("order fighter return to mothership", REQUEST_REQUEST_DOCK.getAction());
-        commandMap.put("enter supercruise, engage FSD supercruise", ENTER_SUPER_CRUISE.getAction());
+        commandMap.put("enter supercruise, light speed, engage FSD supercruise", ENTER_SUPER_CRUISE.getAction());
         commandMap.put("retract hardpoints, store weapons, weapons cold", RETRACT_HARDPOINTS.getAction());
         commandMap.put("deploy hardpoints, weapons hot, combat ready", DEPLOY_HARDPOINTS.getAction());
         commandMap.put("landing gear down, deploy landing gear, gear down", DEPLOY_LANDING_GEAR.getAction());
@@ -196,7 +196,7 @@ public class AiCommandsAndQueries {
         queryMap.put("distance to fleet carrier, how far is the carrier", DISTANCE_TO_CARRIER.getAction());
         queryMap.put("pirate mission progress, massacre mission kills", PIRATE_MISSION_PROGRESS.getAction());
         queryMap.put("player stats, ranks, combat rank, exploration rank", PLAYER_PROFILE_ANALYSIS.getAction());
-        queryMap.put("ship loadout, damage report, what modules do we have", SHIP_LOADOUT.getAction());
+        queryMap.put("ship loadout, classification, damage report, what modules do we have", SHIP_LOADOUT.getAction());
         queryMap.put("station services, what services are available here", STATION_DETAILS.getAction());
         queryMap.put("what can you do, your capabilities, app features", APP_CAPABILITIES.getAction());
         queryMap.put("your name, your designation, who are you", AI_DESIGNATION.getAction());

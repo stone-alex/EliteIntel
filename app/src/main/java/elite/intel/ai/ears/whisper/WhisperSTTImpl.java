@@ -19,6 +19,9 @@ import org.apache.logging.log4j.Logger;
 import javax.sound.sampled.*;
 import java.io.ByteArrayOutputStream;
 import java.nio.file.Path;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class WhisperSTTImpl implements EarsInterface {
@@ -35,8 +38,9 @@ public class WhisperSTTImpl implements EarsInterface {
 
 
     private final AtomicBoolean isStopping = new AtomicBoolean(false);
-    private volatile Thread currentTranscriptionThread = null;
     private final AtomicBoolean isListening = new AtomicBoolean(false);
+    // Single-thread executor serializes transcriptions without virtual-thread pinning
+    private ExecutorService transcriptionExecutor;
     private final AtomicBoolean isSpeaking = new AtomicBoolean(false);
     private final SystemSession systemSession = SystemSession.getInstance();
     private final ByteArrayOutputStream audioCollector = new ByteArrayOutputStream();
@@ -84,6 +88,11 @@ public class WhisperSTTImpl implements EarsInterface {
             throw new RuntimeException("Whisper init failed", e);
         }
 
+        transcriptionExecutor = Executors.newSingleThreadExecutor(r -> {
+            Thread t = new Thread(r, "Whisper-Transcription");
+            t.setDaemon(true);
+            return t;
+        });
         isListening.set(true);
         processingThread = new Thread(this::captureLoop);
         processingThread.start();
@@ -97,10 +106,10 @@ public class WhisperSTTImpl implements EarsInterface {
         if (processingThread != null) processingThread.interrupt();
 
         // Wait for any in-flight transcription to finish before releasing the context
-        Thread t = currentTranscriptionThread;
-        if (t != null) {
+        if (transcriptionExecutor != null) {
+            transcriptionExecutor.shutdown();
             try {
-                t.join(5000); // wait up to 5s for transcription to complete
+                transcriptionExecutor.awaitTermination(5, TimeUnit.SECONDS);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
@@ -194,7 +203,7 @@ public class WhisperSTTImpl implements EarsInterface {
                     final byte[] utterance = audioCollector.toByteArray();
                     DumpAudioForTesting.getInstance().dumpAudioAsWav(utterance, WHISPER_SAMPLE_RATE);
                     audioCollector.reset();
-                    Thread.ofVirtual().start(() -> transcribeAndDispatch(utterance));
+                    transcriptionExecutor.submit(() -> transcribeAndDispatch(utterance));
                 }
             }
         }
@@ -208,7 +217,7 @@ public class WhisperSTTImpl implements EarsInterface {
         return padded;
     }
 
-    private synchronized void transcribeAndDispatch(byte[] pcmBytes) {
+    private void transcribeAndDispatch(byte[] pcmBytes) {
         try {
             float[] samples = pcm16ToFloat(padAudio(pcmBytes));
 

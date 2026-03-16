@@ -4,8 +4,8 @@ import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
 import elite.intel.session.Status;
 
-import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_FOCUS_CONTACTS_PANEL;
 import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_FOCUS_CONTACTS_PANEL_BUGGY;
+import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_FOCUS_LEFT_PANEL;
 
 public class DisplayContactsPanelHandler extends CommandOperator implements CommandHandler {
 
@@ -18,7 +18,7 @@ public class DisplayContactsPanelHandler extends CommandOperator implements Comm
         Status status = Status.getInstance();
 
         if (status.isInMainShip()) {
-            operateKeyboard(BINDING_FOCUS_CONTACTS_PANEL.getGameBinding(), 0);
+            operateKeyboard(BINDING_FOCUS_LEFT_PANEL.getGameBinding(), 0);
         }
 
         if (status.isInSrv()) {

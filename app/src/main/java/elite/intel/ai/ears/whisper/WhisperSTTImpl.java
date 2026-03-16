@@ -254,6 +254,7 @@ public class WhisperSTTImpl implements EarsInterface {
             if (transcript.contains("[")) return;
             if (transcript.isBlank() || transcript.length() < 3) return;
             if (transcript.contains("www.beadaholique.com")) return;
+            if (transcript.contains("www.zeoranger.co.uk")) return;
 
             EventBusManager.publish(new AppLogEvent("STT Heard: [" + transcript + "]"));
             String sanitized = STTSanitizer.getInstance().correctMistakes(transcript);

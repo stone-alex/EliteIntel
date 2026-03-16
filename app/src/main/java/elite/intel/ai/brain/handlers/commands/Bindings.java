@@ -21,7 +21,7 @@ public class Bindings {
         BINDING_HARDPOINTS_TOGGLE("DeployHardpointToggle"),
         BINDING_FOCUS_COMMS_PANEL("FocusCommsPanel"),
         BINDING_FOCUS_COMMS_PANEL_BUGGY("FocusCommsPanel_Buggy"),
-        BINDING_FOCUS_CONTACTS_PANEL("FocusLeftPanel"),
+            BINDING_FOCUS_LEFT_PANEL("FocusLeftPanel"),
         BINDING_FOCUS_CONTACTS_PANEL_BUGGY("FocusLeftPanel_Buggy"),
 //        BINDING_FOCUS_LEFT_PANEL("FocusLeftPanel"),
 //        BINDING_FOCUS_LEFT_PANEL_BUGGY("FocusLeftPanel_Buggy"),

@@ -1,7 +1,7 @@
 package elite.intel.ai.hands;
 
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager; 
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -64,6 +64,40 @@ public class KeyBindingExecutor {
 
     public void executeBinding(KeyBindingsParser.KeyBinding binding) {
         executeBindingWithHold(binding, 0); // Default: no hold
+    }
+
+    /**
+     * Executes a binding as a guaranteed single tap regardless of the binding's
+     * hold flag. Use for UI navigation where holding would cause key-repeat.
+     */
+    public void executeTap(KeyBindingsParser.KeyBinding binding) {
+        try {
+            Integer mainKeyCode = ELITE_TO_KEYPROCESSOR_MAP.get(binding.key.toUpperCase());
+            if (mainKeyCode == null) {
+                log.error("No KeyProcessor mapping for key: {}", binding.key.toUpperCase());
+                return;
+            }
+            int[] modifierCodes = new int[binding.modifiers.length];
+            for (int i = 0; i < binding.modifiers.length; i++) {
+                Integer modCode = ELITE_TO_KEYPROCESSOR_MAP.get(binding.modifiers[i].toUpperCase());
+                if (modCode == null) {
+                    log.error("No KeyProcessor mapping for modifier: {}", binding.modifiers[i]);
+                    return;
+                }
+                modifierCodes[i] = modCode;
+            }
+            for (int modCode : modifierCodes) {
+                keyProcessor.holdKey(modCode);
+            }
+            // Always pressKey — never hold, regardless of binding.hold flag
+            keyProcessor.pressKey(mainKeyCode);
+            log.debug("Executed tap binding: key={}, modifiers={}", binding.key, binding.modifiers);
+            for (int i = modifierCodes.length - 1; i >= 0; i--) {
+                keyProcessor.releaseKey(modifierCodes[i]);
+            }
+        } catch (Exception e) {
+            log.error("Error executing tap binding: {}", e.getMessage());
+        }
     }
 
     public void executeBindingWithHold(KeyBindingsParser.KeyBinding binding, int holdTimeMs) {

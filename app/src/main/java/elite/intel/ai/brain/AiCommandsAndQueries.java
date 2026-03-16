@@ -134,6 +134,9 @@ public class AiCommandsAndQueries {
 
         /// any status
         commandMap.put("activate, punch it, engage", ACTIVATE.getAction());
+        commandMap.put("show transactions", SHOW_TRANSACTIONS.getAction());
+        commandMap.put("close, close panel, exit, esc", CLOSE.getAction());
+
         commandMap.put("system shutdown", SHUT_DOWN.getAction());
         commandMap.put("streaming mode on/off" + KEY_STATE, SET_STREAMING_MODE.getAction());
         commandMap.put("show carrier management panel", DISPLAY_CARRIER_MANAGEMENT.getAction());

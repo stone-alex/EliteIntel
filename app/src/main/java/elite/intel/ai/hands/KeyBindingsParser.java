@@ -1,8 +1,8 @@
 package elite.intel.ai.hands;
 
 import elite.intel.db.managers.KeyBindingManager;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager; 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -34,9 +34,9 @@ public class KeyBindingsParser {
     }
 
     public class KeyBinding {
-        String key;
+        public String key;
         String[] modifiers;
-        boolean hold;
+        public boolean hold;
 
         public KeyBinding(String key, String[] modifiers, boolean hold) {
             this.key = key;

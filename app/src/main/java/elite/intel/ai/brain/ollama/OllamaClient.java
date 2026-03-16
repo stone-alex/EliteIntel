@@ -39,20 +39,36 @@ public class OllamaClient extends BaseAiClient implements Client {
         String localLlmCommandModel = systemSession.getLocalLlmCommandModel();
         String localLlmQueryModel = systemSession.getLocalLlmQueryModel();
 
+        boolean isQueryModel = model == MODEL_QUERIES;
+
         JsonObject request = new JsonObject();
-        request.addProperty("model", model == 1 ? localLlmCommandModel : localLlmQueryModel);
+        request.addProperty("model", isQueryModel ? localLlmQueryModel : localLlmCommandModel);
         request.addProperty("temperature", temp);
         request.addProperty("stream", false);
         request.addProperty("think", false);
-        // num_ctx intentionally omitted — governed by Modelfile (tulu3-gaming: 2048 commands, 4096 queries)
+
+        if (isQueryModel) {
+            // Query model: larger context for data payloads, capped output to prevent generation loops
+            request.addProperty("num_ctx", 8192);
+            request.addProperty("num_predict", 512);  // hard cap — prevents infinite generation with structured output
+        } else {
+            // Command model: large system prompt (commands + queries list) needs real headroom, short output
+            request.addProperty("num_ctx", 8192);
+            request.addProperty("num_predict", 200);  // command responses are tiny JSON, 200 is plenty
+        }
 
         /// OLLAMA tricks.
         /// Strongest "follow instructions + output clean JSON" preset for ~8–13B models
         request.addProperty("mirostat", 2);           // mirostat 2.0 - best for controlled output
         request.addProperty("mirostat_tau", 3.5f);    // 3.0–4.5 range; 3.5 is a common sweet spot
         request.addProperty("mirostat_eta", 0.1f);    // leave at default
-        request.addProperty("top_k", 20);             // 15–30 → very low values help JSON a lot
         request.addProperty("repeat_penalty", 1.12f); // 1.08–1.15 → prevents repeating keys or structure
+
+        if (isQueryModel) {
+            request.addProperty("top_k", 40);         // higher for query — allows natural language generation
+        } else {
+            request.addProperty("top_k", 20);         // low for commands — forces strict JSON structure
+        }
 
         return request;
     }

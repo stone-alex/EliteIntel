@@ -13,8 +13,12 @@ public class AiDataStruct implements AiData {
         this.data = data;
     }
 
+    private static final String FORMAT_PREFIX =
+            "Respond in plain spoken English only. No lists, no bullets, no numbering, no markdown. " +
+                    "Two to four sentences maximum unless the question explicitly asks for a full list.\n\n";
+
     @Override public String getInstructions() {
-        return instructions;
+        return FORMAT_PREFIX + instructions;
     }
 
     @Override public ToYamlConvertable getData() {

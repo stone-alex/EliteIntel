@@ -6,6 +6,8 @@ import elite.intel.ai.mouth.GoogleVoices;
 import elite.intel.ai.mouth.kokoro.KokoroVoices;
 import elite.intel.db.dao.ChatHistoryDao;
 import elite.intel.db.dao.GameSessionDao;
+import elite.intel.db.dao.ShipDao;
+import elite.intel.db.managers.ShipManager;
 import elite.intel.db.util.Database;
 import elite.intel.util.AppPaths;
 import elite.intel.util.Cypher;
@@ -383,7 +385,8 @@ public class SystemSession {
         this.designation = name;
     }
 
-    public String getDesignaion() {
-        return this.designation;
+    public String getDesignation() {
+        ShipDao.Ship ship = ShipManager.getInstance().getShip();
+        return ship == null ? "I have no designation" : ship.getShipName();
     }
 }

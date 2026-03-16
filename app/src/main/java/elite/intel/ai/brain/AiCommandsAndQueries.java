@@ -158,56 +158,56 @@ public class AiCommandsAndQueries {
             commandMap.put("change personality to" + KEY_X, SET_PERSONALITY.getAction());
             commandMap.put("change profile to" + KEY_X, SET_PROFILE.getAction());
         }
-        commandMap.put("verify LLM connection, connection check", CONNECTION_CHECK.getAction());
+        commandMap.put("Verify LLM Connection", CONNECTION_CHECK.getAction());
         return commandMap;
     }
 
     private Map<String, String> buildQueryMap() {
         Map<String, String> queryMap = new HashMap<>();
         queryMap.put("help with <topic>, how do I <topic>, explain <topic>, can you help me with <topic>, how can you help me with <topic> → key=topic" + KEY_X, HELP.getAction());
-        queryMap.put("check missing key bindings", KEY_BINDINGS_ANALYSIS.getAction());
-        queryMap.put("which stellar objects need bio scan, organic scan status in system", BIO_SAMPLE_IN_STAR_SYSTEM.getAction());
-        queryMap.put("organics on this planet, biology samples here, exobiology this location", EXOBIOLOGY_SAMPLES.getAction());
-        queryMap.put("stellar objects analysis, landable planets and moons", QUERY_STELLAR_OBJETS.getAction());
-        queryMap.put("signals detected, what signals are here", QUERY_STELLAR_SIGNALS.getAction());
-        queryMap.put("geo signals, which planets have geological signals", QUERY_GEO_SIGNALS.getAction());
-        queryMap.put("what stations or ports are in this system", QUERY_STATIONS.getAction());
-        queryMap.put("fleet carriers in this system", QUERY_CARRIERS.getAction());
-        queryMap.put("system security, traffic, factions, controlling powers", SYSTEM_SECURITY_ANALYSIS.getAction());
-        queryMap.put("trade profile settings, show trade parameters", TRADE_PROFILE_ANALYSIS.getAction());
+        queryMap.put("check missing key bindings, any unbound keys, key binding check, what keys are not set", KEY_BINDINGS_ANALYSIS.getAction());
+        queryMap.put("which stellar objects need bio scan, organic scan status in system, which planets need scanning, any unscanned bio signals, bio scan progress", BIO_SAMPLE_IN_STAR_SYSTEM.getAction());
+        queryMap.put("organics on this planet, biology samples here, exobiology this location, what organisms are here, any life on this planet, bio samples at current location", EXOBIOLOGY_SAMPLES.getAction());
+        queryMap.put("stellar objects analysis, landable planets and moons, what is in this system, how many planets are here, any landable bodies, scan data for this system, what bodies are in this system", QUERY_STELLAR_OBJETS.getAction());
+        queryMap.put("analyze signals, detected signals, any conflict zones, conflict zones in system, combat zones here, resource extraction sites, mining hot spots, resource sites, any outposts nearby, points of interest in system, what signals are detected, any resource sites here, nav beacon, any combat zones, signal breakdown", QUERY_STELLAR_SIGNALS.getAction());
+        queryMap.put("geo signals, which planets have geological signals, any geology here, geological activity, volcanic signals", QUERY_GEO_SIGNALS.getAction());
+        queryMap.put("what stations or ports are in this system, nearby stations, docking options, any coriolis here, where can we dock", QUERY_STATIONS.getAction());
+        queryMap.put("fleet carriers in this system, any carriers here, player carriers nearby", QUERY_CARRIERS.getAction());
+        queryMap.put("system security, traffic, factions, controlling powers, who controls this system, system politics, what faction runs this system, power play status, system allegiance", SYSTEM_SECURITY_ANALYSIS.getAction());
+        queryMap.put("trade profile settings, show trade parameters, our trade configuration, what are our trade settings", TRADE_PROFILE_ANALYSIS.getAction());
         queryMap.put("distance to stellar object" + KEY_X, DISTANCE_TO_BODY.getAction());
-        queryMap.put("analyze last scan, what did we just scan", LAST_SCAN_ANALYSIS.getAction());
+        queryMap.put("analyze last scan, what did we just scan, last scanned body, results of last scan, what was that we scanned", LAST_SCAN_ANALYSIS.getAction());
         queryMap.put("inventory for material X, how much X do we have" + KEY_X, MATERIALS_INVENTORY.getAction());
-        queryMap.put("materials on this planet, what can we collect here", PLANET_MATERIALS.getAction());
-        queryMap.put("exploration profits, exobiology earnings", EXPLORATION_PROFITS.getAction());
-        queryMap.put("current location, where are we, system info", CURRENT_LOCATION.getAction());
-        queryMap.put("ship fuel level, how much fuel do we have", SHIP_FUEL_STATUS.getAction());
-        queryMap.put("analyze jump destination, info on selected system", FSD_TARGET_ANALYSIS.getAction());
-        queryMap.put("ship plotted route, our navigation route", PLOTTED_ROUTE_ANALYSIS.getAction());
-        queryMap.put("fleet carrier plotted route, carrier navigation plan", CARRIER_ROUTE_ANALYSIS.getAction());
-        queryMap.put("trade schedule, trade route stops, our trading plan", TRADE_ROUTE_ANALYSIS.getAction());
-        queryMap.put("outfitting available at station, ship modules for sale", LOCAL_OUTFITTING.getAction());
-        queryMap.put("ships for sale at station, local shipyard", LOCAL_SHIPYARD.getAction());
-        queryMap.put("cargo hold contents, what commodities do we have", CARGO_HOLD_CONTENTS.getAction());
-        queryMap.put("carrier destination, where is the carrier going", CARRIER_DESTINATION.getAction());
-        queryMap.put("carrier fuel supply, carrier tritium, carrier jump range", CARRIER_TRITIUM_SUPPLY.getAction());
-        queryMap.put("carrier finances, how many days of operation funded", CARRIER_STATUS.getAction());
-        queryMap.put("carrier ETA, when does the carrier arrive", CARRIER_ETA.getAction());
-        queryMap.put("distance to fleet carrier, how far is the carrier", DISTANCE_TO_CARRIER.getAction());
-        queryMap.put("pirate mission progress, massacre mission kills", PIRATE_MISSION_PROGRESS.getAction());
-        queryMap.put("player stats, ranks, combat rank, exploration rank", PLAYER_PROFILE_ANALYSIS.getAction());
-        queryMap.put("ship loadout, classification, damage report, what modules do we have", SHIP_LOADOUT.getAction());
-        queryMap.put("station services, what services are available here", STATION_DETAILS.getAction());
-        queryMap.put("what can you do, your capabilities, app features", APP_CAPABILITIES.getAction());
-        queryMap.put("your name, your designation, who are you", AI_DESIGNATION.getAction());
-        queryMap.put("total bounties collected, bounty earnings", TOTAL_BOUNTIES.getAction());
-        queryMap.put("distance to the bubble, how far from civilisation", DISTANCE_TO_BUBBLE.getAction());
-        queryMap.put("distance to last bio sample, how far to next organic", DISTANCE_TO_LAST_BIO_SAMPLE.getAction());
-        queryMap.put("what time is it, earth time, current time", TIME_IN_ZONE.getAction());
+        queryMap.put("materials on this planet, what can we collect here, surface materials here, what materials are available, what can we gather here", PLANET_MATERIALS.getAction());
+        queryMap.put("exploration profits, exobiology earnings, how much have we earned, exploration income, total scan value, what have we made from exploration", EXPLORATION_PROFITS.getAction());
+        queryMap.put("current location, where are we, system info, what system is this, our position, what star system are we in, navigation status", CURRENT_LOCATION.getAction());
+        queryMap.put("ship fuel level, how much fuel do we have, fuel status, are we low on fuel, check fuel, fuel remaining, fuel reserves", SHIP_FUEL_STATUS.getAction());
+        queryMap.put("analyze jump destination, info on selected system, what is our target system, tell me about the destination, next jump target, where are we jumping to", FSD_TARGET_ANALYSIS.getAction());
+        queryMap.put("ship plotted route, our navigation route, how long is our route, route progress, where are we headed, how many jumps remaining", PLOTTED_ROUTE_ANALYSIS.getAction());
+        queryMap.put("fleet carrier plotted route, carrier navigation plan, where is the carrier route going, carrier jump plan", CARRIER_ROUTE_ANALYSIS.getAction());
+        queryMap.put("trade schedule, trade route stops, our trading plan, trade run details, trade itinerary", TRADE_ROUTE_ANALYSIS.getAction());
+        queryMap.put("outfitting available at station, ship modules for sale, what can we buy here, module shop, any good outfitting here, what modules are available", LOCAL_OUTFITTING.getAction());
+        queryMap.put("ships for sale at station, local shipyard, what ships are available, any ships to buy here, shipyard stock", LOCAL_SHIPYARD.getAction());
+        queryMap.put("cargo hold contents, what commodities do we have, what are we carrying, how full is the hold, cargo manifest, what is in the hold", CARGO_HOLD_CONTENTS.getAction());
+        queryMap.put("carrier destination, where is the carrier going, carrier next stop, carrier heading", CARRIER_DESTINATION.getAction());
+        queryMap.put("carrier fuel supply, carrier tritium, carrier jump range, how much tritium does the carrier have, carrier fuel status", CARRIER_TRITIUM_SUPPLY.getAction());
+        queryMap.put("carrier finances, how many days of operation funded, carrier upkeep, carrier running costs, carrier budget, how long can the carrier operate", CARRIER_STATUS.getAction());
+        queryMap.put("carrier ETA, when does the carrier arrive, how long until carrier arrives, carrier arrival time", CARRIER_ETA.getAction());
+        queryMap.put("distance to fleet carrier, how far is the carrier, where is my carrier, carrier location, how far to the carrier", DISTANCE_TO_CARRIER.getAction());
+        queryMap.put("pirate mission progress, massacre mission kills, how many kills do we have, bounty mission status, kill count, mission kill tally", PIRATE_MISSION_PROGRESS.getAction());
+        queryMap.put("player stats, ranks, combat rank, exploration rank, trade rank, pilot profile, our credentials, what rank are we, check our rank", PLAYER_PROFILE_ANALYSIS.getAction());
+        queryMap.put("ship loadout, classification, damage report, what modules do we have, ship status, ship build, what is equipped, module check, are we armed, do we have a fuel scoop", SHIP_LOADOUT.getAction());
+        queryMap.put("station services, what services are available here, what does this station offer, station facilities, can we repair here, can we rearm here", STATION_DETAILS.getAction());
+        queryMap.put("what can you do, your capabilities, app features, list your functions, what commands do you know", APP_CAPABILITIES.getAction());
+        queryMap.put("your name, your designation, who are you, what are you called, identify yourself", AI_DESIGNATION.getAction());
+        queryMap.put("total bounties collected, bounty earnings, how much in bounties, our bounty total, bounty income", TOTAL_BOUNTIES.getAction());
+        queryMap.put("distance to the bubble, how far from civilisation, how far from inhabited space, how far are we from the bubble", DISTANCE_TO_BUBBLE.getAction());
+        queryMap.put("distance to last bio sample, how far to next organic, how far back to that organism, distance to previous sample", DISTANCE_TO_LAST_BIO_SAMPLE.getAction());
+        queryMap.put("what time is it, earth time, current time, real world time, what is the time", TIME_IN_ZONE.getAction());
         queryMap.put("star system biome analysis" + KEY_X, PLANET_BIOME_ANALYSIS.getAction());
-        queryMap.put("reminder, remind me, what was my reminder", REMINDER.getAction());
-        queryMap.put("stations ports and settlements in system, local infrastructure", ANALYZE_LOCAL_STATIONS.getAction());
-        queryMap.put("active missions, mission list, what missions do we have", ANALYZE_MISSIONS.getAction());
+        queryMap.put("reminder, remind me, what was my reminder, any reminders, check my notes", REMINDER.getAction());
+        queryMap.put("stations ports and settlements in system, local infrastructure, any settlements here, what ports are here, planetary bases nearby, any outposts in system", ANALYZE_LOCAL_STATIONS.getAction());
+        queryMap.put("active missions, mission list, what missions do we have, current objectives, mission status, what are we doing", ANALYZE_MISSIONS.getAction());
         queryMap.put("(fallback) general conversation, chitchat, anything not matched above", GENERAL_CONVERSATION.getAction());
 
         return queryMap;
@@ -225,8 +225,16 @@ public class AiCommandsAndQueries {
     public String getQueries() {
         StringBuilder sb = new StringBuilder();
         sb.append("ALLOWED QUERIES (use ONLY these exact action names): \n\n");
-        buildQueryMap().forEach((concept, action) ->
-                sb.append("  ").append(action).append(" ← ").append(concept).append(" \n"));
+        buildQueryMap().forEach((concept, action) -> {
+            // Keep only first 4 trigger phrases to limit prompt token usage
+            String[] parts = concept.split(",");
+            StringBuilder compact = new StringBuilder();
+            for (int i = 0; i < Math.min(4, parts.length); i++) {
+                if (i > 0) compact.append(",");
+                compact.append(parts[i]);
+            }
+            sb.append("  ").append(action).append(" ← ").append(compact).append(" \n");
+        });
         return sb.toString();
     }
 }

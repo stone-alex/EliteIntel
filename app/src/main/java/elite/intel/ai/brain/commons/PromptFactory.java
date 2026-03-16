@@ -5,8 +5,6 @@ import elite.intel.ai.brain.AIPersonality;
 import elite.intel.ai.brain.AiCommandsAndQueries;
 import elite.intel.ai.brain.AiPromptFactory;
 import elite.intel.ai.brain.handlers.query.Queries;
-import elite.intel.db.dao.ShipDao;
-import elite.intel.db.managers.ShipManager;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.util.Ranks;
@@ -239,12 +237,7 @@ public class PromptFactory implements AiPromptFactory {
     }
 
     private String aiName() {
-        systemSession.setDesignation(getShipName());
-        return getShipName();
+        return systemSession.getDesignation();
     }
 
-    private String getShipName() {
-        ShipDao.Ship ship = ShipManager.getInstance().getShip();
-        return ship == null ? "" : ship.getShipName();
-    }
 }

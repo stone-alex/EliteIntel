@@ -261,7 +261,7 @@ public class WhisperSTTImpl implements EarsInterface {
 
             boolean streamingMode = systemSession.isStreamingModeOn();
             if (streamingMode) {
-                String designation = systemSession.getDesignaion();
+                String designation = systemSession.getDesignation();
                 if (sanitized.toLowerCase().contains("computer")
                         || sanitized.toLowerCase().contains(designation.toLowerCase())) {
                     sendToAi(sanitized);

@@ -20,3 +20,5 @@ app/src/main/resources/elite-intel-xai-api-key.conf
 ./.gradle/buildOutputCleanup/
 ./locations
 ./CLAUDE.md
+/distribution/elite_intel_updater.jar
+/CLAUDE.md

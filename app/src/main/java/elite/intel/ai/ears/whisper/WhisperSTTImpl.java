@@ -253,8 +253,12 @@ public class WhisperSTTImpl implements EarsInterface {
             if (transcript.contains("*")) return;
             if (transcript.contains("[")) return;
             if (transcript.isBlank() || transcript.length() < 3) return;
-            if (transcript.contains("www.beadaholique.com")) return;
-            if (transcript.contains("www.zeoranger.co.uk")) return;
+            if (transcript.contains("www.")) return;
+            if (transcript.contains(".co.uk")) return;
+            if (transcript.contains(".com")) return;
+            if (transcript.contains(".biz")) return;
+            if (transcript.contains(".org")) return;
+            if (transcript.contains(".net")) return;
 
             EventBusManager.publish(new AppLogEvent("STT Heard: [" + transcript + "]"));
             String sanitized = STTSanitizer.getInstance().correctMistakes(transcript);
@@ -280,8 +284,8 @@ public class WhisperSTTImpl implements EarsInterface {
     private void sendToAi(String transcript) {
         EventBusManager.publish(new TTSInterruptEvent());
         AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_1);
-        log.info("Dispatching transcript: {}", transcript);
-        EventBusManager.publish(new UserInputEvent(transcript, 1.0f)); // Whisper has no confidence score
+        log.info("Dispatching transcript: {}", transcript.replace("computer", ""));
+        EventBusManager.publish(new UserInputEvent(transcript.replace("computer", ""), 1.0f)); // Whisper has no confidence score
     }
 
     @Subscribe

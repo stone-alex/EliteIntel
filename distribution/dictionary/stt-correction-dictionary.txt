@@ -697,3 +697,4 @@
 "wave point"="way point"
 "weight point"="way point"
 "hello"="close"
+"voice input of"="toggle voice input off"

@@ -3,9 +3,9 @@ package elite.intel.ai.brain.handlers.commands;
 import com.google.gson.JsonObject;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.SystemSession;
-import elite.intel.ui.event.StreamModelToggleEvent;
-import org.apache.logging.log4j.Logger;
+import elite.intel.ui.event.VoiceInputModeToggleEvent;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * The SetStreamingModeHandler class is responsible for processing the command
@@ -28,20 +28,15 @@ import org.apache.logging.log4j.LogManager;
  * Implements the CommandHandler interface to ensure consistent handling
  * of incoming commands across the system.
  */
-public class SetStreamingModeHandler implements CommandHandler {
+public class SetVoiceInputModeHandler implements CommandHandler {
 
-    private static final Logger log = LogManager.getLogger(SetStreamingModeHandler.class);
+    private static final Logger log = LogManager.getLogger(SetVoiceInputModeHandler.class);
 
     @Override public void handle(String action, JsonObject params, String responseText) {
 
         boolean isOn = params.get("state").getAsBoolean();
         SystemSession systemSession = SystemSession.getInstance();
-        systemSession.setStreamingMode(isOn);
-
-        if (isOn) {
-            EventBusManager.publish(new StreamModelToggleEvent(true));
-        } else {
-            EventBusManager.publish(new StreamModelToggleEvent(false));
-        }
+        systemSession.setStreamingMode(!isOn);
+        EventBusManager.publish(new VoiceInputModeToggleEvent(!isOn));
     }
 }

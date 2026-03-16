@@ -111,14 +111,14 @@ public class AppController implements Runnable {
     }
 
     @Subscribe
-    public void onStreamModeToggle(StreamModelToggleEvent event) {
+    public void onStreamModeToggle(VoiceInputModeToggleEvent event) {
         this.view.toggleStreamingModeCheckBox.setSelected(event.isStreaming());
         EventBusManager.publish(new ToggleStreamingModeEvent(event.isStreaming()));
     }
 
 
     @Subscribe public void toggleStreamingMode(ToggleStreamingModeEvent event) {
-        appendToLog("Toggle streaming mode");
+        appendToLog("Voice input mode toggle");
         systemSession.setStreamingMode(event.isStreaming());
         EventBusManager.publish(new AiVoxResponseEvent(event.isStreaming() ? streamingModeIsOnMessage() : streamingModeIsOffMessage()));
     }
@@ -140,7 +140,7 @@ public class AppController implements Runnable {
     }
 
     private String streamingModeIsOnMessage() {
-        return "Streaming mode is On. Prefix your command with word computer";
+        return "Prefix your calls with word computer";
     }
 
 

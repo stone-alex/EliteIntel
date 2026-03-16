@@ -1,10 +1,10 @@
 package elite.intel.ui.event;
 
-public class StreamModelToggleEvent {
+public class VoiceInputModeToggleEvent {
 
     private boolean isStreaming;
 
-    public StreamModelToggleEvent(boolean isStreaming) {
+    public VoiceInputModeToggleEvent(boolean isStreaming) {
         this.isStreaming = isStreaming;
     }
 

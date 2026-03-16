@@ -151,7 +151,7 @@ public class AiCommandsAndQueries {
         commandMap.put("close, close panel, exit, esc", CLOSE.getAction());
 
         //commandMap.put("system shut down", SHUT_DOWN.getAction());
-        commandMap.put("streaming mode on/off" + KEY_STATE, SET_STREAMING_MODE.getAction());
+        commandMap.put("voice input on/off" + KEY_STATE, SET_VOICE_INPUT_MODE.getAction());
         commandMap.put("show carrier management panel", DISPLAY_CARRIER_MANAGEMENT.getAction());
         commandMap.put("change trade profile starting budget to" + KEY_X, CHANGE_TRADE_PROFILE_SET_STARTING_BUDGET.getAction());
         commandMap.put("change trade profile max stops to" + KEY_X, CHANGE_TRADE_PROFILE_SET_MAX_NUMBER_OF_STOPS.getAction());

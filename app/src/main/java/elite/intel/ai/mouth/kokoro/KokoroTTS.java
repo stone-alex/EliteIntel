@@ -2,7 +2,6 @@ package elite.intel.ai.mouth.kokoro;
 
 import com.google.common.eventbus.Subscribe;
 import com.k2fsa.sherpa.onnx.*;
-import elite.intel.ai.ears.Amplifier;
 import elite.intel.ai.mouth.AudioDeClicker;
 import elite.intel.ai.mouth.MouthInterface;
 import elite.intel.ai.mouth.subscribers.events.TTSInterruptEvent;
@@ -221,7 +220,8 @@ public class KokoroTTS implements MouthInterface {
                 byte[] pcm = floatToPcm16(audio.getSamples());
 
                 AudioDeClicker.sanitize(pcm, 5);
-                playbackQueue.put(Amplifier.amplify(pcm));
+                //playbackQueue.put(Amplifier.amplify(pcm));
+                playbackQueue.put(pcm);
 
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();

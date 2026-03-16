@@ -30,8 +30,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class AppView extends JFrame implements AppViewInterface {
 
-    public static final String LABEL_STREAMING_MODE = "Streaming Mode";
-    public static final String LABEL_PRIVACY_MODE = "Voice Input on/off";
+    public static final String LABEL_STREAMING_MODE = " Prefix commands with 'Computer'";
+    public static final String LABEL_PRIVACY_MODE = "STT on/off";
     // ----- COLORS (adjust to taste) -----
     private static final Color BG = new Color(0x141622); // base background
     private static final Color LOG_BG = new Color(0x171927); // base background
@@ -355,9 +355,9 @@ public class AppView extends JFrame implements AppViewInterface {
         styleButton(recalibrateAudioButton);
         buttons.add(startStopServicesButton);
         buttons.add(toggleStreamingModeCheckBox);
-        buttons.add(togglePrivacyModeCheckBox);
         buttons.add(recalibrateAudioButton);
         buttons.add(showDetailedLog);
+        buttons.add(togglePrivacyModeCheckBox);
         panel.add(new JLabel(" ")); //<-- placeholder
         panel.add(buttons, gbc);
 
@@ -1117,7 +1117,7 @@ public class AppView extends JFrame implements AppViewInterface {
 
     private void setupStreamingCheckBox(Boolean streamingModeOn) {
         toggleStreamingModeCheckBox.setSelected(streamingModeOn);
-        toggleStreamingModeCheckBox.setText(streamingModeOn ? "Streaming On" : "Streaming Off");
+        //toggleStreamingModeCheckBox.setText(streamingModeOn ? "Streaming On" : "Streaming Off");
     }
 
 

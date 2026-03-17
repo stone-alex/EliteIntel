@@ -126,7 +126,7 @@ public class StringUtls {
                 .replaceAll("(?m)^>\\s?", "")                   // > blockquotes → remove marker
                 .replace("\\n", " ").replace("\\r", " ")        // literal escape sequences from LLM
                 .replaceAll("[\\r\\n]+", " ")                    // actual newline characters → space
-                .replace("-", ", ")
+                .replaceAll("(?<=\\S)-(?=\\S)", " ")             // "ninety-five" → "ninety five" (hyphen between chars)
                 .replace("*", " ")                              // any stray asterisks
                 .replace("`", "")                               // any stray backticks
                 .replace("\"", "")

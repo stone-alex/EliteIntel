@@ -5,6 +5,7 @@ import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.Status;
+import elite.intel.session.ui.UINavigator;
 import elite.intel.util.SleepNoThrow;
 
 import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.*;
@@ -15,8 +16,12 @@ public class SuperCruiseHandler extends CommandOperator implements CommandHandle
         super(controller.getMonitor(), controller.getExecutor());
     }
 
+    private final UINavigator navigator = new UINavigator(this);
+    private final Status status = Status.getInstance();
+
     @Override public void handle(String action, JsonObject params, String responseText) {
-        Status status = Status.getInstance();
+        navigator.closeOpenPanel();
+
         if (status.isFsdCharging()) return;
 
         if (status.isFsdMassLocked()) {
@@ -26,6 +31,7 @@ public class SuperCruiseHandler extends CommandOperator implements CommandHandle
         } else if (status.isInMainShip()) {
 
             if (status.isInSupercruise()) {
+                navigator.closeOpenPanel();
                 operateKeyboard(BINDING_TARGET_NEXT_ROUTE_SYSTEM.getGameBinding(), 0);
                 operateKeyboard(BINDING_SET_SPEED100.getGameBinding(), 0);
                 operateKeyboard(BINDING_JUMP_TO_HYPERSPACE.getGameBinding(), 0);

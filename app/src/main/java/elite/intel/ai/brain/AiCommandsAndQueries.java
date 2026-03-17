@@ -3,7 +3,9 @@ package elite.intel.ai.brain;
 import elite.intel.session.SystemSession;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import static elite.intel.ai.brain.handlers.commands.Commands.*;
 import static elite.intel.ai.brain.handlers.query.Queries.*;
@@ -66,8 +68,8 @@ public class AiCommandsAndQueries {
         commandMap.put("locate nearest vista genomics", FIND_VISTA_GENOMICS.getAction());
         commandMap.put("locate nearest fleet carrier", FIND_NEAREST_FLEET_CARRIER.getAction());
         commandMap.put("clear or cancel fleet carrier route", CLEAR_FLEET_CARRIER_ROUTE.getAction());
-        commandMap.put("jump to hyperspace, let's get out of here, lets go, enter hyperspace, go to next waypoint, engage FSD jump", JUMP_TO_HYPERSPACE.getAction());
-        commandMap.put("drop from supercruise, disengage FSD, exit supercruise", EXIT_SUPER_CRUISE.getAction());
+        commandMap.put("jump to hyperspace, jump to the next way point, let's get out of here, lets go, enter hyperspace, go to next waypoint, engage FSD jump", JUMP_TO_HYPERSPACE.getAction());
+        commandMap.put("drop from supercruise, disengage FSD, drop", DROP_FROM_SUPER_CRUISE.getAction());
         commandMap.put("navigate to carrier, return to base, go to fleet carrier", NAVIGATE_TO_CARRIER.getAction());
         //commandMap.put("navigate to home system", TAKE_ME_HOME.getAction());
         commandMap.put("set optimal speed", SET_OPTIMAL_SPEED.getAction());
@@ -75,7 +77,7 @@ public class AiCommandsAndQueries {
         commandMap.put("navigate to landing zone, get heading to LZ", GET_HEADING_TO_LZ.getAction());
         commandMap.put("deploy SRV, deploy buggy, deploy surface vehicle", DEPLOY_SRV.getAction());
         commandMap.put("calculate carrier jump route, plot fleet carrier route", CALCULATE_FLEET_CARRIER_ROUTE.getAction());
-        commandMap.put("enter carrier destination, set next carrier waypoint", ENTER_NEXT_FLEET_CARRIER_DESTINATION.getAction());
+        commandMap.put("enter carrier destination", ENTER_FLEET_CARRIER_DESTINATION.getAction());
         commandMap.put("calculate trade route, get us a trade route, find trade route", CALCULATE_TRADE_ROUTE.getAction());
         commandMap.put("navigate to next trade stop, go to trade station", NAVIGATE_TO_NEXT_TRADE_STOP.getAction());
         commandMap.put("describe trade profile, list trade parameters", LIST_TRADE_ROUTE_PARAMETERS.getAction());
@@ -116,7 +118,7 @@ public class AiCommandsAndQueries {
         commandMap.put("order fighter focus my target", REQUEST_FOCUS_TARGET.getAction());
         commandMap.put("order fighter hold fire", REQUEST_HOLD_FIRE.getAction());
         commandMap.put("order fighter return to mothership", REQUEST_REQUEST_DOCK.getAction());
-        commandMap.put("enter supercruise, light speed, engage FSD supercruise", ENTER_SUPER_CRUISE.getAction());
+        commandMap.put("supercruise, light speed, engage FSD supercruise", ENTER_SUPER_CRUISE.getAction());
         commandMap.put("retract hardpoints, store weapons, weapons cold", RETRACT_HARDPOINTS.getAction());
         commandMap.put("deploy hardpoints, weapons hot, combat ready", DEPLOY_HARDPOINTS.getAction());
         commandMap.put("landing gear down, deploy landing gear, gear down", DEPLOY_LANDING_GEAR.getAction());
@@ -172,7 +174,7 @@ public class AiCommandsAndQueries {
             commandMap.put("change personality to" + KEY_X, SET_PERSONALITY.getAction());
             commandMap.put("change profile to" + KEY_X, SET_PROFILE.getAction());
         }
-        commandMap.put("Verify LLM Connection", CONNECTION_CHECK.getAction());
+        commandMap.put("0101010101", CONNECTION_CHECK.getAction());
         return commandMap;
     }
 
@@ -227,6 +229,29 @@ public class AiCommandsAndQueries {
         return queryMap;
     }
 
+    /**
+     * Returns all unique words extracted from every command and query hint phrase.
+     * Used by {@link elite.intel.util.SttTermCorrector} to fuzzy-correct STT output
+     * against known colloquial terms. New entries added here are automatically included.
+     */
+    public Set<String> getVocabulary() {
+        Set<String> words = new HashSet<>();
+        collectWords(words, buildCommandMap().keySet());
+        collectWords(words, buildQueryMap().keySet());
+        return words;
+    }
+
+    private static void collectWords(Set<String> target, Set<String> phrases) {
+        for (String phrase : phrases) {
+            // Strip template markers {key:X}, {state:true/false}, <material>, etc.
+            String cleaned = phrase.replaceAll("\\{[^}]*\\}", " ").replaceAll("<[^>]*>", " ");
+            for (String word : cleaned.toLowerCase().split("[^a-z']+")) {
+                if (word.length() >= 3) {
+                    target.add(word);
+                }
+            }
+        }
+    }
 
     public String getCommandMap() {
         StringBuilder sb = new StringBuilder();

@@ -5,7 +5,7 @@ import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.*;
 // @formatter:off
 public enum Commands {
 
-    CONNECTION_CHECK                                    ("verify_llm_connection_command", null, ConnectionCheck.class),
+    CONNECTION_CHECK                                    ("0101010101", null, ConnectionCheck.class),
 
     NAVIGATE_TO_NEXT_MISSION                            ("navigate_to_active_mission_location",null, PlotRouteToMissionDestination.class),
     LIGHTS_ON_OFF                                       ("toggle_lights_on_off", null, LightsOnOffHandler.class),
@@ -82,7 +82,7 @@ public enum Commands {
     JUMP_TO_HYPERSPACE                                  ("jump_to_hyperspace", null,  JumpToHyperspaceHandler.class),
     ENTER_SUPER_CRUISE                                  ("enter_super_cruise", null,  SuperCruiseHandler.class),
 
-    EXIT_SUPER_CRUISE                                   ("drop_from_super_cruise", null,  ExitFtlHandler.class),
+    DROP_FROM_SUPER_CRUISE                              ("drop_from_super_cruise", null,  DropFromFtlHandler.class),
     ACTIVATE_ANALYSIS_MODE                              ("swap_to_hud_analysis_mode", null,  ActivateAnalysisModeHandler.class),
     ACTIVATE_COMBAT_MODE                                ("swap_to_hud_combat_mode", null,  ActivateCombatModeHandler.class),
     NAVIGATE_TO_CARRIER                                 ("navigate_to_fleet_carrier", null,  PlotRouteToMyFleetCarrier.class),
@@ -95,7 +95,7 @@ public enum Commands {
     RECOVER_SRV                                         ("recover_srv", null,  BoardSrvHandler.class),
     CLEAR_CODEX_ENTRIES                                 ("clear_codex_entries", null,  ClearCodexEntriesHandler.class),
     CALCULATE_FLEET_CARRIER_ROUTE                       ("calculate_fleet_carrier_route", null,  CalculateFleetCarrierRouteHandler.class),
-    ENTER_NEXT_FLEET_CARRIER_DESTINATION                ("enter_next_fleet_carrier_destination", null,  EnterNextCarrierDestinationHandler.class),
+    ENTER_FLEET_CARRIER_DESTINATION                     ("enter_fleet_carrier_destination", null,  EnterNextCarrierDestinationHandler.class),
     //SHUT_DOWN                                           ("system_shut_down", null,  SystemShutDownRequestHandler.class),
 
     CALCULATE_TRADE_ROUTE                               ("calculate_trade_route", null,  CalculateTradeRouteHandler.class),

@@ -8,6 +8,7 @@ import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.data.FsdTarget;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.Status;
+import elite.intel.session.ui.UINavigator;
 import elite.intel.util.SleepNoThrow;
 
 import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.*;
@@ -15,12 +16,15 @@ import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.*;
 public class JumpToHyperspaceHandler extends CommandOperator implements CommandHandler {
 
     private final PlayerSession playerSession = PlayerSession.getInstance();
+    private final UINavigator navigator = new UINavigator(this);
+    private final Status status = Status.getInstance();
 
     public JumpToHyperspaceHandler(GameController controller) {
         super(controller.getMonitor(), controller.getExecutor());
     }
 
     @Override public void handle(String action, JsonObject params, String responseText) {
+        navigator.closeOpenPanel();
         operateKeyboard(BINDING_TARGET_NEXT_ROUTE_SYSTEM.getGameBinding(), 0);
         SleepNoThrow.sleep(800);
         FsdTarget fsdTarget = playerSession.getFsdTarget();

@@ -53,7 +53,8 @@ public class OllamaClient extends BaseAiClient implements Client {
             request.addProperty("num_predict", 512);  // hard cap - prevents infinite generation with structured output
         } else {
             // Command model: large system prompt (commands + queries list) needs real headroom, short output
-            request.addProperty("num_ctx", 8192);
+            //request.addProperty("num_ctx", 8192);
+            request.addProperty("num_ctx", 16384);
             request.addProperty("num_predict", 200);  // command responses are tiny JSON, 200 is plenty
         }
 

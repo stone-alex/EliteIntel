@@ -23,7 +23,6 @@ public class RequestDockingHandler extends CommandOperator implements CommandHan
         if(status.isInMainShip()){
             // un-target ships
             operateKeyboard(Bindings.GameCommand.BINDING_TARGET_NEXT_ROUTE_SYSTEM.getGameBinding(), 0);
-
             navigator.openAndNavigate(StatusFlags.GuiFocus.EXTERNAL_PANEL, LeftPanel.CONTACTS);
 
             //navigate to panel

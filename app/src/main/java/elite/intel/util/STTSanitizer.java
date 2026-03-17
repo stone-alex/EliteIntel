@@ -118,6 +118,7 @@ public class STTSanitizer {
         for (Map.Entry<String, String> entry : STT_CORRECTIONS.entrySet()) {
             sanitized = sanitized.replaceAll("\\b" + Pattern.quote(entry.getKey()) + "\\b", entry.getValue());
         }
+        sanitized = SttTermCorrector.getInstance().correct(sanitized);
         return sanitized.trim();
     }
 }

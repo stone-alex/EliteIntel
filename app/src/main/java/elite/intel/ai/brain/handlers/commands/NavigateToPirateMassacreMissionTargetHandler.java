@@ -8,13 +8,11 @@ import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.MissionType;
 import elite.intel.gameapi.journal.events.dto.MissionDto;
 
-import java.util.List;
 import java.util.Set;
 
 public class NavigateToPirateMassacreMissionTargetHandler extends CommandOperator implements CommandHandler {
 
     private final GameController controller;
-
     public NavigateToPirateMassacreMissionTargetHandler(GameController controller) {
         super(controller.getMonitor(), controller.getExecutor());
         this.controller = controller;

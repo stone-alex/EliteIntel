@@ -183,14 +183,14 @@ public class KokoroTTS implements MouthInterface {
         if (!running) return;
         canBeInterrupted.set(event.canBeInterrupted());
 
-        String text = StringUtls.sanitizeTts(event.getText());
-        if (text == null || text.isBlank()) return;
+        String sanitizedText = StringUtls.sanitizeTts(event.getText());
+        if (sanitizedText.isBlank()) return;
 
         AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_2);
-        EventBusManager.publish(new AppLogEvent("AI: " + event.getText() + "\n"));
+        EventBusManager.publish(new AppLogEvent("AI: " + sanitizedText + "\n"));
 
         // Split on sentence boundaries and enqueue each piece for synthesis
-        String[] sentences = text.split("(?<=[.!?])\\s+(?=\\S)");
+        String[] sentences = sanitizedText.split("(?<=[.!?])\\s+(?=\\S)");
         for (String sentence : sentences) {
             if (!sentence.isBlank()) {
                 synthesisQueue.offer(sentence);

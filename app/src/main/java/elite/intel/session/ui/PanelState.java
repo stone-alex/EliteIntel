@@ -50,18 +50,24 @@ public class PanelState<T extends Enum<T> & PanelTab> {
     }
 
     /**
-     * Returns the number of tab presses needed to reach the target from the current position,
-     * always choosing the shortest path (wraps around if that is fewer presses).
-     * Positive = BINDING_CYCLE_PREVIOUS_PANEL (moves right - Frontier naming is inverted).
-     * Negative = BINDING_CYCLE_NEXT_PANEL     (moves left  - Frontier naming is inverted).
-     * NOTE: Do not "fix" this inversion. It matches the actual in-game behaviour.
+     * Steps to reach target by always going right (increasing index, wrapping at end).
+     * Use BINDING_CYCLE_NEXT_PANEL for each step.
+     * NOTE: Frontier's binding names are inverted vs visual direction - do not "fix" this.
      */
-    public int stepsTo(PanelTab target) {
+    public int stepsToRight(PanelTab target) {
         if (!known)
             throw new IllegalStateException("Tab position unknown for panel - call resetToDefault() before navigating");
-        int diff = target.getIndex() - currentTab.getIndex();
-        if (diff > totalTabs / 2) diff -= totalTabs;
-        else if (diff < -(totalTabs / 2)) diff += totalTabs;
-        return diff;
+        return (target.getIndex() - currentTab.getIndex() + totalTabs) % totalTabs;
+    }
+
+    /**
+     * Steps to reach target by always going left (decreasing index, wrapping at start).
+     * Use BINDING_CYCLE_PREVIOUS_PANEL for each step.
+     * NOTE: Frontier's binding names are inverted vs visual direction - do not "fix" this.
+     */
+    public int stepsToLeft(PanelTab target) {
+        if (!known)
+            throw new IllegalStateException("Tab position unknown for panel - call resetToDefault() before navigating");
+        return (currentTab.getIndex() - target.getIndex() + totalTabs) % totalTabs;
     }
 }

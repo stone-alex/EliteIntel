@@ -5,6 +5,7 @@ import elite.intel.ai.brain.handlers.commands.CommandOperator;
 import elite.intel.session.Status;
 import elite.intel.session.StatusFlags;
 import elite.intel.session.StatusFlags.GuiFocus;
+import elite.intel.util.SleepNoThrow;
 
 /**
  * Dispatches panel navigation keystrokes on behalf of c
@@ -52,7 +53,7 @@ public class UINavigator {
     public void openAndNavigate(GuiFocus panel, PanelTab target) {
         if (tracker.getLastOpenedPanel() == panel) {
             // Panel already open - skip the close/open cycle and just move tabs
-            navigateToTab(panel, target);
+            navigateToTargetTab(panel, target);
             return;
         }
 
@@ -67,7 +68,8 @@ public class UINavigator {
             blindResetToDefault(panel);
         }
 
-        navigateToTab(panel, target);
+        navigateToTargetTab(panel, target);
+        SleepNoThrow.sleep(250); // <--- important! Don't be hasty.
     }
 
 
@@ -99,7 +101,7 @@ public class UINavigator {
     public void closeAndRestore(GuiFocus panel) {
         PanelState<?> state = tracker.getState(panel);
         if (state.isKnown()) {
-            navigateToTab(panel, state.getDefault());
+            navigateToDefaultTab(panel, state.getDefault());
         }
         closePanel(panel);
         sleep(PANEL_OPEN_DELAY_MS);
@@ -110,27 +112,34 @@ public class UINavigator {
     // Private navigation helpers
     // -------------------------------------------------------------------------
 
+    // Always navigate to target by going right (NEXT_PANEL).
+    // NOTE: Frontier inverted the tab direction bindings. Do not "fix" this.
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private void navigateToTab(GuiFocus panel, PanelTab target) {
+    private void navigateToTargetTab(GuiFocus panel, PanelTab target) {
         PanelState state = tracker.getState(panel);
-        int steps = state.stepsTo(target);
-
+        int steps = state.stepsToRight(target);
         if (steps == 0) return;
-
-        // Positive = go right = BINDING_CYCLE_NEXT_PANEL
-        // Negative = go left  = BINDING_CYCLE_PREVIOUS_PANEL
-        // NOTE: Frontier inverted the tab direction bindings. Do not "fix" this.
-        String key = steps > 0
-                ? Bindings.GameCommand.BINDING_CYCLE_NEXT_PANEL.getGameBinding()
-                : Bindings.GameCommand.BINDING_CYCLE_PREVIOUS_PANEL.getGameBinding();
-
-        for (int i = 0; i < Math.abs(steps); i++) {
-            operator.operateKeyboardTap(key); // always tap - binding.hold flag must be ignored for tab cycled
+        String key = Bindings.GameCommand.BINDING_CYCLE_NEXT_PANEL.getGameBinding();
+        for (int i = 0; i < steps; i++) {
+            operator.operateKeyboardTap(key); // always tap - binding.hold flag must be ignored for tab cycling
             sleep(TAB_DELAY_MS);
         }
-        // Cast is safe: each PanelState is always paired with its matching tab enum
-        // by construction in PanelStateTracker's field declarations.
         state.recordTab((Enum & PanelTab) target);
+    }
+
+    // Always navigate to default by going left (PREVIOUS_PANEL).
+    // NOTE: Frontier inverted the tab direction bindings. Do not "fix" this.
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private void navigateToDefaultTab(GuiFocus panel, PanelTab defaultTarget) {
+        PanelState state = tracker.getState(panel);
+        int steps = state.stepsToLeft(defaultTarget);
+        if (steps == 0) return;
+        String key = Bindings.GameCommand.BINDING_CYCLE_PREVIOUS_PANEL.getGameBinding();
+        for (int i = 0; i < steps; i++) {
+            operator.operateKeyboardTap(key); // always tap - binding.hold flag must be ignored for tab cycling
+            sleep(TAB_DELAY_MS);
+        }
+        state.recordTab((Enum & PanelTab) defaultTarget);
     }
 
     /**

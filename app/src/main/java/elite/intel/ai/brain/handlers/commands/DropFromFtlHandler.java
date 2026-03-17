@@ -6,9 +6,9 @@ import elite.intel.session.Status;
 
 import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_EXIT_SUPERCRUISE;
 
-public class ExitFtlHandler extends CommandOperator implements CommandHandler {
+public class DropFromFtlHandler extends CommandOperator implements CommandHandler {
 
-    public ExitFtlHandler(GameController controller) {
+    public DropFromFtlHandler(GameController controller) {
         super(controller.getMonitor(), controller.getExecutor());
     }
 

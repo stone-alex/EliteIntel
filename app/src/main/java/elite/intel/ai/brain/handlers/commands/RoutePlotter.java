@@ -3,9 +3,9 @@ package elite.intel.ai.brain.handlers.commands;
 import elite.intel.ai.hands.GameController;
 import elite.intel.ai.hands.KeyProcessor;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
-import elite.intel.db.dao.ShipRouteDao;
 import elite.intel.db.managers.ShipRouteManager;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.session.ui.UINavigator;
 import elite.intel.util.AudioPlayer;
 
 import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.*;
@@ -13,11 +13,13 @@ import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.*;
 public class RoutePlotter extends CommandOperator {
 
 
+    private final UINavigator navigator = new UINavigator(this);
     public RoutePlotter(GameController cameController) {
         super(cameController.getMonitor(), cameController.getExecutor());
     }
 
     public void plotRoute(String destination) {
+        navigator.closeOpenPanel();
         if (destination == null || destination.isEmpty()) {
             return;
         }

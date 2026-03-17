@@ -2,11 +2,9 @@ package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
-import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.db.dao.CodexEntryDao;
 import elite.intel.db.managers.CodexEntryManager;
 import elite.intel.db.managers.LocationManager;
-import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.dto.BioSampleDto;
 import elite.intel.gameapi.journal.events.dto.GenusDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
@@ -24,7 +22,7 @@ public class AnalyzeExplorationProfitsHandler extends BaseQueryAnalyzer implemen
     private final CodexEntryManager codexEntryManager = CodexEntryManager.getInstance();
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing exploration data. Stand by."));
+        //EventBusManager.publish(new AiVoxResponseEvent("Analyzing exploration data. Stand by."));
 
         String instructions = """
                 Report exobiology exploration profits for this session.

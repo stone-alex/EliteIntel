@@ -8,7 +8,7 @@ public class ConnectionCheck implements CommandHandler {
 
     @Override public void handle(String action, JsonObject params, String responseText) {
         StringBuilder sb = new StringBuilder();
-        sb.append(" ping ");
+        sb.append(" connection check ");
         String instructions = "Acknowledge successful connection.";
         EventBusManager.publish(
                 new SensorDataEvent(

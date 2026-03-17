@@ -17,15 +17,15 @@ public interface GameSessionDao {
     @SqlUpdate("""
             INSERT OR REPLACE INTO game_session (id, aiPersonality,  aiCadence, aiVoice, aiApiKey, ttsApiKey, sttApiKey, 
                                                              edsmApiKey, loggingEnabled, privacyModeOn, rmsThresholdHigh,  
-                                                             rmsThresholdLow, encryptedLLMKey, encryptedSTTKey, encryptedTTSKey, 
+                                                             rmsThresholdLow, encryptedLLMKey, encryptedTTSKey, 
                                                              encryptedEDSSMKey, speechSpeed, localLlmCommandModel, localLlmQueryModel,
-                                                             useLocalCommandLlm, useLocalQueryLlm, useLocalTTS, useLocalSTT
+                                                             useLocalCommandLlm, useLocalQueryLlm, useLocalTTS
                                                 )
                                   VALUES (1, :aiPersonality, :aiCadence, :aiVoice, :aiApiKey, :ttsApiKey, :sttApiKey, 
                                                       :edsmApiKey, :loggingEnabled, :privacyModeOn, :rmsThresholdHigh, 
-                                                      :rmsThresholdLow, :encryptedLLMKey, :encryptedSTTKey, :encryptedTTSKey, 
+                                                      :rmsThresholdLow, :encryptedLLMKey, :encryptedTTSKey, 
                                                       :encryptedEDSSMKey,  :speechSpeed, :localLlmCommandModel, :localLlmQueryModel,
-                                                      :useLocalCommandLlm, :useLocalQueryLlm, :useLocalTTS, :useLocalSTT
+                                                      :useLocalCommandLlm, :useLocalQueryLlm, :useLocalTTS
                                           )
             """)
     void save(@BindBean GameSessionDao.GameSession data);
@@ -48,7 +48,6 @@ public interface GameSessionDao {
             /// <<
 
             session.setEncryptedLLMKey(rs.getString("encryptedLLMKey"));
-            session.setEncryptedSTTKey(rs.getString("encryptedSTTKey"));
             session.setEncryptedTTSKey(rs.getString("encryptedTTSKey"));
             session.setEncryptedEDSSMKey(rs.getString("encryptedEDSSMKey"));
 
@@ -66,7 +65,6 @@ public interface GameSessionDao {
             session.setUseLocalCommandLlm(rs.getBoolean("useLocalCommandLlm"));
             session.setUseLocalQueryLlm(rs.getBoolean("useLocalQueryLlm"));
             session.setUseLocalTTS(rs.getBoolean("useLocalTTS"));
-            session.setUseLocalSTT(rs.getBoolean("useLocalSTT"));
             return session;
         }
     }
@@ -81,7 +79,6 @@ public interface GameSessionDao {
         private String sttApiKey;
 
         private String encryptedLLMKey;
-        private String encryptedSTTKey;
         private String encryptedTTSKey;
         private String encryptedEDSSMKey;
 
@@ -98,7 +95,6 @@ public interface GameSessionDao {
         private boolean useLocalCommandLlm;
         private boolean useLocalQueryLlm;
         private boolean useLocalTTS;
-        private boolean useLocalSTT;
 
 
         public String getAiPersonality() {
@@ -197,13 +193,6 @@ public interface GameSessionDao {
             this.encryptedLLMKey = encryptedLLMKey;
         }
 
-        public String getEncryptedSTTKey() {
-            return encryptedSTTKey;
-        }
-
-        public void setEncryptedSTTKey(String encryptedSTTKey) {
-            this.encryptedSTTKey = encryptedSTTKey;
-        }
 
         public String getEncryptedTTSKey() {
             return encryptedTTSKey;
@@ -268,14 +257,6 @@ public interface GameSessionDao {
 
         public void setUseLocalTTS(boolean useLocalTTS) {
             this.useLocalTTS = useLocalTTS;
-        }
-
-        public boolean isUseLocalSTT() {
-            return useLocalSTT;
-        }
-
-        public void setUseLocalSTT(boolean useLocalSTT) {
-            this.useLocalSTT = useLocalSTT;
         }
     }
 }

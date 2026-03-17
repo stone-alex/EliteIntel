@@ -2,8 +2,6 @@ package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
-import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
-import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.dto.shiploadout.EngineeringDto;
 import elite.intel.gameapi.journal.events.dto.shiploadout.ModuleDto;
 import elite.intel.gameapi.journal.events.dto.shiploadout.ShipLoadOutDto;
@@ -17,7 +15,7 @@ import java.util.Map;
 public class AnalyzeShipLoadoutHandler extends BaseQueryAnalyzer implements QueryHandler {
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing loadout. Stand by."));
+        //EventBusManager.publish(new AiVoxResponseEvent("Analyzing loadout. Stand by."));
         PlayerSession playerSession = PlayerSession.getInstance();
         ShipLoadOutDto shipLoadout = playerSession.getShipLoadout();
         if (shipLoadout == null) return process("No data available");

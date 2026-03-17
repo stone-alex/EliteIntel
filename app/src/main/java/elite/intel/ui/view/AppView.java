@@ -60,8 +60,6 @@ public class AppView extends JFrame implements AppViewInterface {
     public JTextArea logArea;
     private Font monoFont;
     // System tab components
-    private JPasswordField sttApiKeyField;
-    private JCheckBox sttLockedCheck;
     private JPasswordField llmApiKeyField;
     private JTextField localLlmAddressField;
     private JTextField localLlmModelCommandField;
@@ -73,7 +71,6 @@ public class AppView extends JFrame implements AppViewInterface {
     private JCheckBox useLocalCommandLLMCheck;
     private JCheckBox useLocalQueryLLMCheck;
     private JCheckBox useLocalTTSCheck;
-    private JCheckBox useLocalSTTCheck;
     private JToggleButton startStopServicesButton;
     private JButton recalibrateAudioButton;
     private JButton updateAppButton;
@@ -130,7 +127,6 @@ public class AppView extends JFrame implements AppViewInterface {
         applyDarkPalette(getContentPane());
 
         //initial state
-        bindLock(sttLockedCheck, sttApiKeyField);
         bindLock(llmLockedCheck, llmApiKeyField);
         bindLock(ttsLockedCheck, ttsApiKeyField);
         ///bindLock(edsmLockedCheck, edsmKeyField);
@@ -575,7 +571,7 @@ public class AppView extends JFrame implements AppViewInterface {
         gbc.weighty = 0.0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         JPanel cloudFields = new JPanel(new GridBagLayout());
-        addLabel(cloudFields, "Cloud LLM Key:", gbc);
+        addLabel(cloudFields, "Cloud LLM Key: (optional)", gbc);
         llmApiKeyField = new JPasswordField();
         llmApiKeyField.setPreferredSize(new Dimension(200, 42));
         addField(cloudFields, llmApiKeyField, gbc, 1, 0.8);
@@ -583,15 +579,7 @@ public class AppView extends JFrame implements AppViewInterface {
         addCheck(cloudFields, llmLockedCheck, gbc);
 
         nextRow(gbc);
-        addLabel(cloudFields, "Cloud STT Key:", gbc);
-        sttApiKeyField = new JPasswordField();
-        sttApiKeyField.setPreferredSize(new Dimension(200, 42));
-        addField(cloudFields, sttApiKeyField, gbc, 1, 0.8);
-        sttLockedCheck = new JCheckBox("Locked", true);
-        addCheck(cloudFields, sttLockedCheck, gbc);
-
-        nextRow(gbc);
-        addLabel(cloudFields, "Cloud TTS Key:", gbc);
+        addLabel(cloudFields, "Google TTS Key: (optional)", gbc);
         ttsApiKeyField = new JPasswordField();
         ttsApiKeyField.setPreferredSize(new Dimension(200, 42));
         addField(cloudFields, ttsApiKeyField, gbc, 1, 0.8);
@@ -651,12 +639,6 @@ public class AppView extends JFrame implements AppViewInterface {
         useLocalTTSCheck.addActionListener(a -> SwingUtilities.invokeLater(this::saveSystemConfig));
         addCheck(localSettingsPanel, useLocalTTSCheck, gbc);
         nextRow(gbc);
-
-        useLocalSTTCheck = new JCheckBox("Use", true);
-        useLocalSTTCheck.addActionListener(a -> SwingUtilities.invokeLater(this::saveSystemConfig));
-        addLabel(localSettingsPanel, " ", gbc);
-        addLabel(localSettingsPanel, "Built in speech recognition", gbc, 1, 0.8);
-        addCheck(localSettingsPanel, useLocalSTTCheck, gbc);
 
         nextRow(gbc);
         addLabel(localSettingsPanel, "Speech Speed ", gbc);
@@ -929,7 +911,6 @@ public class AppView extends JFrame implements AppViewInterface {
 
     @Override
     public void initData() {
-        sttApiKeyField.setText(systemSession.getSttApiKey() != null ? systemSession.getSttApiKey() : "");
         llmApiKeyField.setText(systemSession.getAiApiKey() != null ? systemSession.getAiApiKey() : "");
         ttsApiKeyField.setText(systemSession.getTtsApiKey() != null ? systemSession.getTtsApiKey() : "");
         //edsmKeyField.setText(systemSession.getEdsmApiKey() != null ? systemSession.getEdsmApiKey() : "");
@@ -941,7 +922,6 @@ public class AppView extends JFrame implements AppViewInterface {
         useLocalCommandLLMCheck.setSelected(systemSession.useLocalCommandLlm());
         useLocalQueryLLMCheck.setSelected(systemSession.useLocalQueryLlm());
         useLocalTTSCheck.setSelected(systemSession.useLocalTTS());
-        useLocalSTTCheck.setSelected(systemSession.useLocalSTT());
 
         // Player tab
         playerAltNameField.setText(playerSession.getAlternativeName() != null ? playerSession.getAlternativeName() : "");
@@ -960,7 +940,6 @@ public class AppView extends JFrame implements AppViewInterface {
 
     private void saveSystemConfig() {
         SystemSession s = SystemSession.getInstance();
-        s.setSttApiKey(new String(sttApiKeyField.getPassword()));
         s.setAiApiKey(new String(llmApiKeyField.getPassword()));
         s.setTtsApiKey(new String(ttsApiKeyField.getPassword()));
         playerSession.setLocalLlmAddress(localLlmAddressField.getText());
@@ -969,7 +948,6 @@ public class AppView extends JFrame implements AppViewInterface {
         systemSession.setUseLocalCommandLlm(useLocalCommandLLMCheck.isSelected());
         systemSession.setUseLocalQueryLlm(useLocalQueryLLMCheck.isSelected());
         systemSession.setUseLocalTTS(useLocalTTSCheck.isSelected());
-        systemSession.setUseLocalSTT(useLocalSTTCheck.isSelected());
         EventBusManager.publish(new AppLogEvent("System config saved"));
         initData();
     }

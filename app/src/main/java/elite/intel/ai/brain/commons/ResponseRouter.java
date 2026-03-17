@@ -21,6 +21,7 @@ import org.apache.logging.log4j.Logger;
 import javax.annotation.Nullable;
 import java.util.Map;
 
+import static elite.intel.ai.brain.commons.AiEndPoint.CONNECTION_CHECK_COMMAND;
 import static elite.intel.util.json.JsonUtils.nullSaveJsonObject;
 
 
@@ -143,7 +144,7 @@ public class ResponseRouter implements AIRouterInterface {
 
     protected void handleCommand(String action, JsonObject params, String responseText) {
         EventBusManager.publish(new AppLogEvent("Processing action: " + action + " with params: " + params.toString()));
-        if (!"verify_llm_connection_command".equalsIgnoreCase(action)) {
+        if (!CONNECTION_CHECK_COMMAND.equalsIgnoreCase(action)) {
             EventBusManager.publish(new AiVoxResponseEvent("%s, %s ".formatted(StringUtls.affirmative(), StringUtls.player(playerSession))));
         }
 

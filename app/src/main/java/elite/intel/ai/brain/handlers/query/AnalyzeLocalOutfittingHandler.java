@@ -2,9 +2,7 @@ package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
-import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.db.managers.LocationManager;
-import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.search.edsm.dto.OutfittingDto;
 import elite.intel.session.PlayerSession;
@@ -18,7 +16,7 @@ public class AnalyzeLocalOutfittingHandler extends BaseQueryAnalyzer implements 
 
     @Override
     public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing outfitting data. Stand by."));
+        //EventBusManager.publish(new AiVoxResponseEvent("Analyzing outfitting data. Stand by."));
         LocationDto currentLocation = locationManager.findByLocationData(playerSession.getLocationData());
         OutfittingDto outfitting = currentLocation.getOutfitting();
         if (outfitting == null || outfitting.getData() == null) {

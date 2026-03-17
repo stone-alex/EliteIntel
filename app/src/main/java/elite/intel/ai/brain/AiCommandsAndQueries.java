@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import static elite.intel.ai.brain.commons.AiEndPoint.CONNECTION_CHECK_COMMAND;
 import static elite.intel.ai.brain.handlers.commands.Commands.*;
 import static elite.intel.ai.brain.handlers.query.Queries.*;
 
@@ -164,7 +165,7 @@ public class AiCommandsAndQueries {
         commandMap.put("change trade profile allow strongholds on/off" + KEY_STATE, CHANGE_TRADE_PROFILE_SET_ALLOW_STRONGHOLDS.getAction());
         commandMap.put("galaxy map, open galaxy map, show galaxy map", OPEN_GALAXY_MAP.getAction());
         commandMap.put("local map, open system map, show local map", OPEN_SYSTEM_MAP.getAction());
-        commandMap.put("list voices", LIST_AVAILABLE_VOICES.getAction());
+        commandMap.put("list voices, list available voices", LIST_AVAILABLE_VOICES.getAction());
         commandMap.put("delete this codex entry", DELETE_CODEX_ENTRY.getAction());
         commandMap.put("clear all codex entries", CLEAR_CODEX_ENTRIES.getAction());
         commandMap.put("clear cache", CLEAR_CACHE.getAction());
@@ -174,7 +175,9 @@ public class AiCommandsAndQueries {
             commandMap.put("change personality to" + KEY_X, SET_PERSONALITY.getAction());
             commandMap.put("change profile to" + KEY_X, SET_PROFILE.getAction());
         }
-        commandMap.put("0101010101", CONNECTION_CHECK.getAction());
+
+        /// very special case. machie-only command
+        commandMap.put(CONNECTION_CHECK_COMMAND, CONNECTION_CHECK.getAction());
         return commandMap;
     }
 

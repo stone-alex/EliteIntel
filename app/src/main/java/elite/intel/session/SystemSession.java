@@ -219,31 +219,6 @@ public class SystemSession {
         }
     }
 
-    public String getSttApiKey() {
-        return Database.withDao(GameSessionDao.class, dao -> {
-            GameSessionDao.GameSession session = dao.get();
-            return Cypher.decrypt(session.getEncryptedSTTKey());
-        });
-    }
-
-    public void setSttApiKey(String sttApiKey) {
-        if (sttApiKey == null && sttApiKey.isEmpty()) {
-            Database.withDao(GameSessionDao.class, dao -> {
-                GameSessionDao.GameSession session = dao.get();
-                session.setSttApiKey(null);
-                dao.save(session);
-                return Void.class;
-            });
-        } else {
-            Database.withDao(GameSessionDao.class, dao -> {
-                GameSessionDao.GameSession session = dao.get();
-                session.setEncryptedSTTKey(Cypher.encrypt(sttApiKey));
-                dao.save(session);
-                return null;
-            });
-        }
-    }
-
     public String getAiApiKey() {
         return Database.withDao(GameSessionDao.class, dao -> {
             GameSessionDao.GameSession session = dao.get();
@@ -354,20 +329,6 @@ public class SystemSession {
     public boolean useLocalTTS() {
         return Database.withDao(GameSessionDao.class, dao -> dao.get().isUseLocalTTS());
     }
-
-    public void setUseLocalSTT(boolean use) {
-        Database.withDao(GameSessionDao.class, dao -> {
-            GameSessionDao.GameSession entity = dao.get();
-            entity.setUseLocalSTT(use);
-            dao.save(entity);
-            return Void.TYPE;
-        });
-    }
-
-    public boolean useLocalSTT() {
-        return Database.withDao(GameSessionDao.class, dao -> dao.get().isUseLocalSTT());
-    }
-
 
     public String getLocalLlmCommandModel() {
         return Database.withDao(GameSessionDao.class, dao -> dao.get().getLocalLlmCommandModel());

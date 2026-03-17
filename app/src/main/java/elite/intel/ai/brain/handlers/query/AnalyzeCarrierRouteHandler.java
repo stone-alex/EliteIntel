@@ -2,10 +2,8 @@ package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
-import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.db.managers.FleetCarrierManager;
 import elite.intel.db.managers.FleetCarrierRouteManager;
-import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.dto.CarrierDataDto;
 import elite.intel.search.spansh.carrierroute.CarrierJump;
 import elite.intel.session.PlayerSession;
@@ -21,7 +19,7 @@ public class AnalyzeCarrierRouteHandler extends BaseQueryAnalyzer implements Que
 
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing fleet carrier route. Stand by."));
+        //EventBusManager.publish(new AiVoxResponseEvent("Analyzing fleet carrier route. Stand by."));
         PlayerSession playerSession = PlayerSession.getInstance();
         FleetCarrierManager fleetCarrierManager = FleetCarrierManager.getInstance();
         FleetCarrierRouteManager fleetCarrierRouteManager = FleetCarrierRouteManager.getInstance();

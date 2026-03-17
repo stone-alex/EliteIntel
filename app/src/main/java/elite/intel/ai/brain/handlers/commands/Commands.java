@@ -1,11 +1,13 @@
 package elite.intel.ai.brain.handlers.commands;
 
+import static elite.intel.ai.brain.commons.AiEndPoint.CONNECTION_CHECK_COMMAND;
 import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.*;
+
 
 // @formatter:off
 public enum Commands {
 
-    CONNECTION_CHECK                                    ("0101010101", null, ConnectionCheck.class),
+    CONNECTION_CHECK                                    (CONNECTION_CHECK_COMMAND, null, ConnectionCheck.class),
 
     NAVIGATE_TO_NEXT_MISSION                            ("navigate_to_active_mission_location",null, PlotRouteToMissionDestination.class),
     LIGHTS_ON_OFF                                       ("toggle_lights_on_off", null, LightsOnOffHandler.class),

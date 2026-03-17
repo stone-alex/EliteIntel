@@ -4,9 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.commons.BiomeAnalyzer;
 import elite.intel.ai.brain.commons.BiomeAnalyzer.LocationData;
-import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.db.managers.LocationManager;
-import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.dto.FssSignalDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
@@ -23,7 +21,7 @@ public class BiomeAnalyzerHandler extends BaseQueryAnalyzer implements QueryHand
     private final LocationManager locationManager = LocationManager.getInstance();
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing planetary and biome data. Stand by."));
+        //EventBusManager.publish(new AiVoxResponseEvent("Analyzing planetary and biome data. Stand by."));
 
         JsonElement key = params.get("key");
         String planetName = key == null ? null : key.getAsString().replace(" ", "");

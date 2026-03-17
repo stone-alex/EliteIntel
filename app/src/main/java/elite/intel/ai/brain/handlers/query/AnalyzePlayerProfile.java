@@ -2,8 +2,6 @@ package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
-import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
-import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.dto.RankAndProgressDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.yaml.ToYamlConvertable;
@@ -12,7 +10,7 @@ import elite.intel.util.yaml.YamlFactory;
 public class AnalyzePlayerProfile extends BaseQueryAnalyzer implements QueryHandler {
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing commander's  data. Stand by."));
+        //EventBusManager.publish(new AiVoxResponseEvent("Analyzing commander's  data. Stand by."));
         PlayerSession playerSession = PlayerSession.getInstance();
 
         String highestMilitaryRank = playerSession.getPlayerHighestMilitaryRank();

@@ -2,8 +2,6 @@ package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
-import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
-import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.SystemSession;
 import elite.intel.util.yaml.ToYamlConvertable;
 import elite.intel.util.yaml.YamlFactory;
@@ -24,7 +22,7 @@ public class TimeQueryHandler extends BaseQueryAnalyzer implements QueryHandler 
             String formattedTime = localNow.format(formatter);
             return process("Only local time available: " + formattedTime+" time in other timezone is not available");
         } else {
-            EventBusManager.publish(new AiVoxResponseEvent("Analyzing temporal data. Stand by."));
+            ////EventBusManager.publish(new AiVoxResponseEvent("Analyzing temporal data. Stand by."));
 
             Instant instant = Clock.systemUTC().instant();
             String utcTime = instant.toString();

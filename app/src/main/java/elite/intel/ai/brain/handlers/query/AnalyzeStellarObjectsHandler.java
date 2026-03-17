@@ -2,9 +2,7 @@ package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
-import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.db.managers.LocationManager;
-import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto.LocationType;
 import elite.intel.session.PlayerSession;
@@ -21,7 +19,7 @@ public class AnalyzeStellarObjectsHandler extends BaseQueryAnalyzer implements Q
     private final LocationManager locationManager = LocationManager.getInstance();
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing stelar objects data. Stand by."));
+        //EventBusManager.publish(new AiVoxResponseEvent("Analyzing stelar objects data. Stand by."));
 
         StellarObjectsData<List<LocationData>, String> data = toLocationList(locationManager.findAllBySystemAddress(playerSession.getLocationData().getSystemAddress()));
 

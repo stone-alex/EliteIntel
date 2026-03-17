@@ -1,6 +1,6 @@
 package elite.intel.util;
 
-import elite.intel.ai.ears.google.GoogleSTTImpl;
+import elite.intel.ai.ears.whisper.WhisperSTTImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -36,7 +36,7 @@ public class STTSanitizer {
     private String determineAppDir() {
         String appDir = "distribution" + File.separator + "dictionary/";
         try {
-            URI jarUri = GoogleSTTImpl.class.getProtectionDomain().getCodeSource().getLocation().toURI();
+            URI jarUri = WhisperSTTImpl.class.getProtectionDomain().getCodeSource().getLocation().toURI();
             File jarFile = new File(jarUri);
             if (jarFile.getPath().endsWith(".jar")) {
                 String parentDir = jarFile.getParent();

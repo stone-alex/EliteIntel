@@ -2,8 +2,6 @@ package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
-import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
-import elite.intel.gameapi.EventBusManager;
 import elite.intel.search.edsm.EdsmApiClient;
 import elite.intel.search.edsm.dto.StationsDto;
 import elite.intel.search.edsm.dto.data.Station;
@@ -19,7 +17,7 @@ public class AnalyzeLocalStations extends BaseQueryAnalyzer implements QueryHand
     private final PlayerSession playerSession = PlayerSession.getInstance();
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing stations data. Stand by."));
+        //EventBusManager.publish(new AiVoxResponseEvent("Analyzing stations data. Stand by."));
 
         String starName = playerSession.getPrimaryStarName();
         StationsDto stationsDto = EdsmApiClient.searchStations(starName, 0);

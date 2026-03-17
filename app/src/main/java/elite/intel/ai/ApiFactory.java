@@ -16,7 +16,6 @@ import elite.intel.ai.brain.xai.GrokAnalysisEndpoint;
 import elite.intel.ai.brain.xai.GrokChatEndPoint;
 import elite.intel.ai.brain.xai.GrokCommandEndPoint;
 import elite.intel.ai.ears.EarsInterface;
-import elite.intel.ai.ears.google.GoogleSTTImpl;
 import elite.intel.ai.ears.whisper.WhisperSTTImpl;
 import elite.intel.ai.mouth.MouthInterface;
 import elite.intel.ai.mouth.google.GoogleTTSImpl;
@@ -128,21 +127,8 @@ public class ApiFactory {
         }
     }
 
-    ///
-    @SuppressWarnings({"SwitchStatementWithTooFewBranches", "EnhancedSwitchMigration"})
+    /// -- no choises here
     public EarsInterface getEarsImpl() {
-
-        if (systemSession.useLocalSTT()) {
-            return new WhisperSTTImpl();
-        }
-
-        String apiKey = SystemSession.getInstance().getSttApiKey();
-        ProviderEnum provider = KeyDetector.detectProvider(apiKey, "STT"); // Fixed category
-        switch (provider) {
-            case GOOGLE_STT:
-                return new GoogleSTTImpl();
-            default:
-                return new WhisperSTTImpl();
-        }
+        return new WhisperSTTImpl();
     }
 }

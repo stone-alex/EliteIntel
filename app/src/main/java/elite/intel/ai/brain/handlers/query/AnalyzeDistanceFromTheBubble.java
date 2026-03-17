@@ -1,16 +1,14 @@
 package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.db.dao.LocationDao;
 import elite.intel.db.managers.LocationManager;
-import elite.intel.gameapi.EventBusManager;
 import elite.intel.util.NavigationUtils;
 
 public class AnalyzeDistanceFromTheBubble extends BaseQueryAnalyzer implements QueryHandler {
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing galactic coordinates. Stand by."));
+        //EventBusManager.publish(new AiVoxResponseEvent("Analyzing galactic coordinates. Stand by."));
         LocationDao.Coordinates galacticCoordinates = LocationManager.getInstance().getGalacticCoordinates();
 
         if (galacticCoordinates.x() == 0 && galacticCoordinates.y() == 0 && galacticCoordinates.z() == 0) {

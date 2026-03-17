@@ -59,9 +59,10 @@ public class PromptFactory implements AiPromptFactory {
                 - IMPORTANT: if user says 'help with X', 'help me with X', 'how do I X', 'explain X' → ALWAYS use action=help with {key: X}. Never route to a topic-specific action.
                 - IMPORTANT: commands such as 'lets go' or 'lets get out of here' are meant for hyperspace jump.
                 
-                Classify "Verify LLM Connection" as a command with action 0101010101
-                Map of allowed actions:
                 """);
+
+        sb.append("Classify \"").append(AiEndPoint.CONNECTION_CHECK_COMMAND).append("\" as a command with action ").append(AiEndPoint.CONNECTION_CHECK_COMMAND).append(" \n");
+        sb.append("Map of allowed actions:");
 
         sb.append("Classify as {\"type\": \"command\", \"action\": \"action_name\", \"params\": {\"key\": \"value\"}}");
         sb.append(commandsAndQueries.getCommandMap());

@@ -2,9 +2,7 @@ package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
-import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.db.managers.LocationManager;
-import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.FSSBodySignalsEvent;
 import elite.intel.gameapi.journal.events.SAASignalsFoundEvent;
 import elite.intel.gameapi.journal.events.dto.FssSignalDto;
@@ -23,7 +21,7 @@ public class AnalyzeStellarSignalsHandler extends BaseQueryAnalyzer implements Q
 
     @Override
     public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Analyzing signals data. Stand by."));
+        //EventBusManager.publish(new AiVoxResponseEvent("Analyzing signals data. Stand by."));
 
         String instructions = """
                 Answer the user's question about signals detected in this star system.

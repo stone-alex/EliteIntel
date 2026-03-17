@@ -57,6 +57,7 @@ public class AppView extends JFrame implements AppViewInterface {
     private final JLabel titleLabel;
     private final AtomicBoolean isServiceRunning = new AtomicBoolean(false);
     public JCheckBox toggleWakeWordOnOff;
+    public JCheckBox toggleObsOverlay;
     public JTextArea logArea;
     private Font monoFont;
     // System tab components
@@ -134,6 +135,8 @@ public class AppView extends JFrame implements AppViewInterface {
         toggleWakeWordOnOff.setToolTipText("Prevent AI from processing unless you prefix your command or query with word 'computer'");
         toggleWakeWordOnOff.setText(LABEL_STREAMING_MODE);
         toggleWakeWordOnOff.setForeground(ACCENT);
+        toggleObsOverlay.setForeground(ACCENT);
+        toggleObsOverlay.setToolTipText("Open a chroma-key green overlay window for OBS capture");
         showDetailedLog.setForeground(ACCENT);
 
         journalDirField.setEditable(false);
@@ -314,6 +317,17 @@ public class AppView extends JFrame implements AppViewInterface {
                 e -> EventBusManager.publish(new ToggleWakeWordEvent(toggleWakeWordOnOff.isSelected()))
         );
 
+        final OBSOverlayWindow[] obsOverlay = {null};
+        toggleObsOverlay = new JCheckBox("OBS Overlay", false);
+        toggleObsOverlay.addActionListener(e -> {
+            if (toggleObsOverlay.isSelected()) {
+                if (obsOverlay[0] == null) obsOverlay[0] = new OBSOverlayWindow();
+                obsOverlay[0].setVisible(true);
+            } else if (obsOverlay[0] != null) {
+                obsOverlay[0].setVisible(false);
+            }
+        });
+
 
 
         recalibrateAudioButton = new JButton("Recalibrate Audio") {
@@ -348,6 +362,8 @@ public class AppView extends JFrame implements AppViewInterface {
         buttons.add(Box.createHorizontalGlue());
 
         buttons.add(toggleWakeWordOnOff);
+        buttons.add(Box.createRigidArea(new Dimension(8, 0)));
+        buttons.add(toggleObsOverlay);
         buttons.add(Box.createRigidArea(new Dimension(8, 0)));
         buttons.add(showDetailedLog);
 

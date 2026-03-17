@@ -25,6 +25,6 @@ public record OllamaMetadata(
                 " | Prompt Tokens: " + promptTokens +
                 " | Completion: " + completionTokens +
                 " | Total: " + totalTokens() +
-                " | Speed≈" + String.format("%.1f", tokensPerSecond()) + " t/s";
+                " | Speed:" + String.format("%.1f", tokensPerSecond()) + " t/s";
     }
 }

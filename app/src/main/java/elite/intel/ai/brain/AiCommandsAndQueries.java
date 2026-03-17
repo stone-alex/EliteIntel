@@ -113,7 +113,7 @@ public class AiCommandsAndQueries {
 
         /// ship normal space flight
         commandMap.put("target subsystem, target power plant" + KEY_X, TARGET_SUB_SYSTEM.getAction());
-        commandMap.put("dismiss ship, go to orbit, go play", DISMISS_SHIP.getAction());
+        commandMap.put("dismiss ship, go to orbit", DISMISS_SHIP.getAction());
         commandMap.put("return to surface, pick me up, extraction requested", RETURN_TO_SURFACE.getAction());
         commandMap.put("order fighter defend ship", REQUEST_DEFENSIVE_BEHAVIOUR.getAction());
         commandMap.put("order fighter focus my target", REQUEST_FOCUS_TARGET.getAction());
@@ -183,7 +183,10 @@ public class AiCommandsAndQueries {
 
     private Map<String, String> buildQueryMap() {
         Map<String, String> queryMap = new HashMap<>();
-        queryMap.put("help with <topic>, how do I <topic>, explain <topic>, can you help me with <topic>, how can you help me with <topic> → key=topic" + KEY_X, HELP.getAction());
+        if (!systemSession.useLocalQueryLlm()) {
+            queryMap.put("help with <topic>, how do I <topic>, explain <topic>, can you help me with <topic>, how can you help me with <topic> → key=topic" + KEY_X, HELP.getAction());
+        }
+
         queryMap.put("check missing key bindings, any unbound keys, key binding check, what keys are not set", KEY_BINDINGS_ANALYSIS.getAction());
         queryMap.put("which stellar objects need bio scan, organic scan status in system, which planets need scanning, any unscanned bio signals, bio scan progress", BIO_SAMPLE_IN_STAR_SYSTEM.getAction());
         queryMap.put("organics on this planet, biology samples here, exobiology this location, what organisms are here, any life on this planet, bio samples at current location", EXOBIOLOGY_SAMPLES.getAction());

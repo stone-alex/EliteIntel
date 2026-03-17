@@ -46,17 +46,17 @@ public class PromptFactory implements AiPromptFactory {
 
                 CRITICAL RULES - BREAKING ANY = TOTAL FAILURE:
                 - NEVER invent, modify, combine, or create new actions or parameters.
-                - NEVER be "helpful" by guessing.
                 """);
         sb.append("- If ZERO good match → return: {\"type\": \"query\", \"action\": \"").append(Queries.GENERAL_CONVERSATION.getAction()).append("\", \"params\": {}}");
+        if (!systemSession.useLocalQueryLlm()) {
+            sb.append("- CRITICAL: if input contains 'help with X', 'help me with X', 'can you help with X', 'how do I X', 'explain X' → respond EXACTLY: {\"type\": \"query\", \"action\": \"").append(Queries.HELP.getAction()).append("\", \"params\": {\"key\": \"<topic>\"}}. Replace <topic> with the subject using spaces not underscores (e.g. 'biology', 'trade routes', 'fleet carrier routing'). No other action.\n");
+        }
 
         sb.append("""
-                
                 - ONLY use action names EXACTLY as written in the lists below.
                 - ONLY use parameter keys/values that appear in the command/query template.
                 - IMPORTANT: commands with word 'clear' must match word 'clear' in user input exactly, else you will delete critical data!
                 - IMPORTANT: commands with word 'confirm' must match word 'confirm' in user input exactly, else you will delete critical data!
-                - IMPORTANT: if user says 'help with X', 'help me with X', 'how do I X', 'explain X' → ALWAYS use action=help with {key: X}. Never route to a topic-specific action.
                 - IMPORTANT: commands such as 'lets go' or 'lets get out of here' are meant for hyperspace jump.
                 
                 """);

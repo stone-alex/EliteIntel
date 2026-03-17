@@ -43,6 +43,11 @@ public class PromptFactory implements AiPromptFactory {
                 Most things the player says are commands (do something, change something, go somewhere, toggle something).
 
                 Only when the sentence is clearly a QUESTION (starts with what/find/where/how/which/why/is/are/does/…) → classify as query.
+                
+                - do not confuse organics with materials or resources
+                  organics - exobiology query
+                  materials - geological query
+                - do not confuse ship (you) with fleet carrier (our base)
 
                 CRITICAL RULES - BREAKING ANY = TOTAL FAILURE:
                 - NEVER invent, modify, combine, or create new actions or parameters.

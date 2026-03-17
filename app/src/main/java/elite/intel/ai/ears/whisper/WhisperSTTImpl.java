@@ -262,7 +262,6 @@ public class WhisperSTTImpl implements EarsInterface {
 
             EventBusManager.publish(new AppLogEvent("STT Heard: [" + transcript + "]"));
             String sanitized = STTSanitizer.getInstance().correctMistakes(transcript);
-            EventBusManager.publish(new AppLogEvent("STT Sanitized: [" + sanitized + "]"));
 
             boolean streamingMode = systemSession.isStreamingModeOn();
             if (streamingMode) {

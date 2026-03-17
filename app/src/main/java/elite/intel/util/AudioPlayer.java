@@ -1,10 +1,15 @@
 package elite.intel.util;
 
+import com.google.common.eventbus.Subscribe;
+import elite.intel.gameapi.EventBusManager;
+import elite.intel.ui.event.NotificationVolumeChangedEvent;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager; 
 
 import javax.sound.sampled.*;
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 public final class AudioPlayer {
 
@@ -14,9 +19,10 @@ public final class AudioPlayer {
 
     private static final Logger log = LogManager.getLogger(AudioPlayer.class);
     private static AudioPlayer instance;
-    private static float volume = 0.8f;
+    private static float volume = 0.7f;
 
     private AudioPlayer() {
+        EventBusManager.register(this);
     }
 
     public static AudioPlayer getInstance() {
@@ -26,16 +32,16 @@ public final class AudioPlayer {
         return instance;
     }
 
-    public float getVolume() {
-        return volume;
-    }
 
-    public void setVolume(float volume) {
+    @Subscribe
+    public void onVolumeChangedEvent(NotificationVolumeChangedEvent event) {
+        float value = event.getVolume();
         if (volume < 0.0f || volume > 1.0f) {
             throw new IllegalArgumentException("Volume must be between 0.0 and 1.0");
         }
-        AudioPlayer.volume = volume;
+        AudioPlayer.volume = value;
     }
+
 
     public void playBeep(String soundFile) {
         try {

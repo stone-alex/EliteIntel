@@ -265,6 +265,19 @@ public class SystemSession {
         });
     }
 
+    public void setBeepVolume(float volume) {
+        Database.withDao(GameSessionDao.class, dao -> {
+            GameSessionDao.GameSession session = dao.get();
+            session.setNotificationVolume(volume);
+            dao.save(session);
+            return Void.class;
+        });
+    }
+
+    public float getBeepVolume() {
+        return Database.withDao(GameSessionDao.class, dao -> dao.get().getNotificationVolume());
+    }
+
     public Float getSpeechSpeed() {
         return Database.withDao(GameSessionDao.class, dao -> dao.get().getSpeechSpeed());
     }

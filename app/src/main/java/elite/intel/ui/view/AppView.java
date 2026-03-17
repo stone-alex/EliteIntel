@@ -30,8 +30,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class AppView extends JFrame implements AppViewInterface {
 
-    public static final String LABEL_STREAMING_MODE = " Prefix commands with 'Computer'";
-    public static final String LABEL_PRIVACY_MODE = "STT on/off";
+    public static final String LABEL_STREAMING_MODE = "Wake Word";
+    public static final String LABEL_STT_ON_OFF = "STT on/off";
     // ----- COLORS (adjust to taste) -----
     private static final Color BG = new Color(0x141622); // base background
     private static final Color LOG_BG = new Color(0x171927); // base background
@@ -56,7 +56,7 @@ public class AppView extends JFrame implements AppViewInterface {
     // Title
     private final JLabel titleLabel;
     private final AtomicBoolean isServiceRunning = new AtomicBoolean(false);
-    public JCheckBox toggleStreamingModeCheckBox;
+    public JCheckBox toggleWakeWordOnOff;
     public JTextArea logArea;
     private Font monoFont;
     // System tab components
@@ -74,14 +74,14 @@ public class AppView extends JFrame implements AppViewInterface {
     private JToggleButton startStopServicesButton;
     private JButton recalibrateAudioButton;
     private JButton updateAppButton;
-    private JCheckBox togglePrivacyModeCheckBox;
+    private JCheckBox toggleSttOnOff;
 
     private JTextField playerAltNameField;
     private JTextField playerTitleField;
     private JTextField playerMissionDescription;
     private JTextField journalDirField;
     private JSlider speechSpeedSlider;
-    private JLabel speechSpeedLabel;
+    private JSlider beepVolumeSlider;
 
     // ---------- Public API ----------
     private JTextField bindingsDirField;
@@ -131,16 +131,16 @@ public class AppView extends JFrame implements AppViewInterface {
         bindLock(ttsLockedCheck, ttsApiKeyField);
         ///bindLock(edsmLockedCheck, edsmKeyField);
 
-        toggleStreamingModeCheckBox.setEnabled(false);//enabled when services start
-        toggleStreamingModeCheckBox.setToolTipText("Prevent AI from processing unless you prefix your command or query with word 'computer'");
-        toggleStreamingModeCheckBox.setText(LABEL_STREAMING_MODE);
-        toggleStreamingModeCheckBox.setForeground(ACCENT);
+        toggleWakeWordOnOff.setEnabled(false);//enabled when services start
+        toggleWakeWordOnOff.setToolTipText("Prevent AI from processing unless you prefix your command or query with word 'computer'");
+        toggleWakeWordOnOff.setText(LABEL_STREAMING_MODE);
+        toggleWakeWordOnOff.setForeground(ACCENT);
         showDetailedLog.setForeground(ACCENT);
 
-        togglePrivacyModeCheckBox.setEnabled(false); // enabled when services start
-        togglePrivacyModeCheckBox.setToolTipText("Disable Speech to Text completely");
-        togglePrivacyModeCheckBox.setText(LABEL_PRIVACY_MODE);
-        togglePrivacyModeCheckBox.setForeground(ACCENT);
+        toggleSttOnOff.setEnabled(false); // enabled when services start
+        toggleSttOnOff.setToolTipText("Disable Speech to Text completely");
+        toggleSttOnOff.setText(LABEL_STT_ON_OFF);
+        toggleSttOnOff.setForeground(ACCENT);
 
         journalDirField.setEditable(false);
         journalDirField.setPreferredSize(new Dimension(200, 42));
@@ -276,10 +276,11 @@ public class AppView extends JFrame implements AppViewInterface {
         gbc.gridx = 0;
         gbc.gridwidth = 3;
         gbc.weightx = 1;
-        gbc.fill = GridBagConstraints.NONE;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.WEST;
 
-        JPanel buttons = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+        JPanel buttons = new JPanel();
+        buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
         buttons.setOpaque(false);
         // Use inline subclass to custom-paint the dark background (no reassignment issues)
 
@@ -314,14 +315,14 @@ public class AppView extends JFrame implements AppViewInterface {
                 e -> EventBusManager.publish(new ToggleDetailedLogEvent(showDetailedLog.isSelected()))
         );
 
-        toggleStreamingModeCheckBox = new JCheckBox(LABEL_STREAMING_MODE, false);
-        toggleStreamingModeCheckBox.addActionListener(
-                e -> EventBusManager.publish(new ToggleStreamingModeEvent(toggleStreamingModeCheckBox.isSelected()))
+        toggleWakeWordOnOff = new JCheckBox(LABEL_STREAMING_MODE, false);
+        toggleWakeWordOnOff.addActionListener(
+                e -> EventBusManager.publish(new ToggleStreamingModeEvent(toggleWakeWordOnOff.isSelected()))
         );
 
-        togglePrivacyModeCheckBox = new JCheckBox(LABEL_STREAMING_MODE, false);
-        togglePrivacyModeCheckBox.addActionListener(
-                e -> EventBusManager.publish(new TogglePrivacyModeEvent(togglePrivacyModeCheckBox.isSelected()))
+        toggleSttOnOff = new JCheckBox(LABEL_STREAMING_MODE, false);
+        toggleSttOnOff.addActionListener(
+                e -> EventBusManager.publish(new TogglePrivacyModeEvent(toggleSttOnOff.isSelected()))
         );
 
 
@@ -349,11 +350,19 @@ public class AppView extends JFrame implements AppViewInterface {
             EventBusManager.publish(new RecalibrateAudioEvent());
         });
         styleButton(recalibrateAudioButton);
+
         buttons.add(startStopServicesButton);
-        buttons.add(toggleStreamingModeCheckBox);
+        buttons.add(Box.createRigidArea(new Dimension(8, 0)));
         buttons.add(recalibrateAudioButton);
+
+        buttons.add(Box.createHorizontalGlue());
+
+        buttons.add(toggleWakeWordOnOff);
+        buttons.add(Box.createRigidArea(new Dimension(8, 0)));
+        buttons.add(toggleSttOnOff);
+        buttons.add(Box.createRigidArea(new Dimension(8, 0)));
         buttons.add(showDetailedLog);
-        buttons.add(togglePrivacyModeCheckBox);
+
         panel.add(new JLabel(" ")); //<-- placeholder
         panel.add(buttons, gbc);
 
@@ -649,40 +658,46 @@ public class AppView extends JFrame implements AppViewInterface {
         speechSpeedSlider.setMinorTickSpacing(1);
         speechSpeedSlider.setInverted(false);
         speechSpeedSlider.setSnapToTicks(true);
+        speechSpeedSlider.setPaintTicks(true);
+        speechSpeedSlider.setPaintLabels(true);
         speechSpeedSlider.setValue((int) (systemSession.getSpeechSpeed() * 100));
         addField(localSettingsPanel, speechSpeedSlider, gbc, 1, 0.8);
-        speechSpeedLabel = new JLabel("");
-        setSpeedDisplayValue();
         speechSpeedSlider.addChangeListener(e -> SwingUtilities.invokeLater(() -> {
             EventBusManager.publish(
                     new SpeechSpeedChangeEvent(
                             Math.abs(speechSpeedSlider.getValue()) / 100f
                     )
             );
-            setSpeedDisplayValue();
         }));
 
-        addLabel(localSettingsPanel, speechSpeedLabel, gbc);
+
+        nextRow(gbc);
+        addLabel(localSettingsPanel, "Beep Volume ", gbc);
+        beepVolumeSlider = new JSlider();
+        beepVolumeSlider.setMinimum(0);
+        beepVolumeSlider.setMaximum(100);
+        beepVolumeSlider.setMajorTickSpacing(25);
+        beepVolumeSlider.setMinorTickSpacing(1);
+        beepVolumeSlider.setInverted(false);
+        beepVolumeSlider.setSnapToTicks(true);
+        beepVolumeSlider.setPaintTicks(true);
+        beepVolumeSlider.setPaintLabels(true);
+        beepVolumeSlider.setValue((int) (systemSession.getBeepVolume() * 100));
+        addField(localSettingsPanel, beepVolumeSlider, gbc, 1, 0.8);
+        beepVolumeSlider.addChangeListener(e -> SwingUtilities.invokeLater(() -> {
+            EventBusManager.publish(
+                    new NotificationVolumeChangedEvent(
+                            Math.abs(beepVolumeSlider.getValue()) / 100f
+                    )
+            );
+        }));
+
         localSettingsPanel.setBorder(new LineBorder(ACCENT, 1));
+
         addNestedPanel(settingsTabPanel, localSettingsPanel, "OFF LINE SETTINGS");
         /// --------------------------------------------------------------------------------------------------------------------------------------------
-
-        /// blank
-//        nextRow(gbc);
-//        // Row EDSM KEY
-//        nextRow(gbc);
-//        addLabel(localSettingsPanel, "EDSM API Key:", gbc);
-//        edsmKeyField = new JPasswordField();
-//        edsmKeyField.setPreferredSize(new Dimension(200, 42));
-//        edsmKeyField.setToolTipText("EDSM API Key");
-//        addField(localSettingsPanel, edsmKeyField, gbc, 1, 0.8);
-//        edsmLockedCheck = new JCheckBox("Locked", true);
-//        addCheck(localSettingsPanel, edsmLockedCheck, gbc);
-//        localSettingsPanel.setBorder(new LineBorder(ACCENT, 1));
-
-        addNestedPanel(settingsTabPanel, localSettingsPanel, "");
+        addNestedPanel(settingsTabPanel, localSettingsPanel, ""); /// blank row decor
         /// --------------------------------------------------------------------------------------------------------------------------------------------
-
 
         // Row 3: Buttons
         nextRow(gbc);
@@ -816,11 +831,6 @@ public class AppView extends JFrame implements AppViewInterface {
         panel.add(comp, gbc);
     }
 
-    private void setSpeedDisplayValue() {
-        float speed = speechSpeedSlider.getValue();
-        speechSpeedLabel.setText("+" + (speed) + "%");
-    }
-
 
     /**
      * Recursively applies a dark theme to the specified UI component and its children.
@@ -932,9 +942,9 @@ public class AppView extends JFrame implements AppViewInterface {
 
 
         // streaming / privacy checkboxes
-        toggleStreamingModeCheckBox.setSelected(systemSession.isStreamingModeOn());
+        toggleWakeWordOnOff.setSelected(systemSession.isStreamingModeOn());
         setupStreamingCheckBox(systemSession.isStreamingModeOn());
-        togglePrivacyModeCheckBox.setSelected(systemSession.isStreamingModeOn());
+        toggleSttOnOff.setSelected(systemSession.isStreamingModeOn());
     }
 
 
@@ -1094,7 +1104,7 @@ public class AppView extends JFrame implements AppViewInterface {
     }
 
     private void setupStreamingCheckBox(Boolean streamingModeOn) {
-        toggleStreamingModeCheckBox.setSelected(streamingModeOn);
+        toggleWakeWordOnOff.setSelected(streamingModeOn);
         //toggleStreamingModeCheckBox.setText(streamingModeOn ? "Streaming On" : "Streaming Off");
     }
 
@@ -1108,8 +1118,8 @@ public class AppView extends JFrame implements AppViewInterface {
             startStopServicesButton.setBackground(BUTTON_BG);
             startStopServicesButton.setEnabled(true);
             recalibrateAudioButton.setEnabled(event.isRunning());
-            togglePrivacyModeCheckBox.setEnabled(event.isRunning());
-            toggleStreamingModeCheckBox.setEnabled(event.isRunning());
+            toggleSttOnOff.setEnabled(event.isRunning());
+            toggleWakeWordOnOff.setEnabled(event.isRunning());
 
         });
     }

@@ -111,8 +111,13 @@ public class AppController implements Runnable {
     }
 
     @Subscribe
+    public void onBeepVolumeChangeEvent(NotificationVolumeChangedEvent event) {
+        systemSession.setBeepVolume(event.getVolume());
+    }
+
+    @Subscribe
     public void onStreamModeToggle(VoiceInputModeToggleEvent event) {
-        this.view.toggleStreamingModeCheckBox.setSelected(event.isStreaming());
+        this.view.toggleWakeWordOnOff.setSelected(event.isStreaming());
         EventBusManager.publish(new ToggleStreamingModeEvent(event.isStreaming()));
     }
 
@@ -242,11 +247,25 @@ public class AppController implements Runnable {
 
     @Subscribe
     public void onAppLogEvent(AppLogEvent event) {
-        String line = "\n" + event.getData();
-        if (line.isBlank() || this.view.logArea == null) return;
+        if (event.getData() == null || event.getData().isBlank()) return;
+        typeWriter("System: " + event.getData() + "\n");
+    }
+
+    @Subscribe
+    public void onUserInputEvent(UserInputEvent event) {
+        typeWriter("User: " + event.getUserInput() + "\n\n");
+    }
+
+    @Subscribe
+    public void onAiResponseLogEvent(AiResponseLogEvent event) {
+        typeWriter("AI: " + event.getData() + "\n\n");
+    }
+
+    private void typeWriter(String text) {
+        if (text.isBlank() || this.view.logArea == null) return;
 
         synchronized (logBuffer) {
-            logBuffer.append(line);
+            logBuffer.append(text);
         }
 
         if (typewriterActive.compareAndSet(false, true)) {

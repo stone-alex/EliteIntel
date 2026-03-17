@@ -121,7 +121,7 @@ public class AnthropicClient extends BaseAiClient implements Client {
                     int cached = usage.has("cache_read_input_tokens") ? usage.get("cache_read_input_tokens").getAsInt() : 0;
                     int written = usage.has("cache_creation_input_tokens") ? usage.get("cache_creation_input_tokens").getAsInt() : 0;
                     EventBusManager.publish(new AppLogEvent(
-                            "AI: Claude – in= " + in + " out= " + out +
+                            "Claude – in= " + in + " out= " + out +
                             (cached > 0 ? " cache_read= " + cached : "") +
                             (written > 0 ? " cache_written= " + written : "") +
                             " tokens"));

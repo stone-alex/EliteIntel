@@ -11,6 +11,7 @@ import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
 import elite.intel.ai.mouth.subscribers.events.VocalisationSuccessfulEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.SystemSession;
+import elite.intel.ui.event.AiResponseLogEvent;
 import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.AudioPlayer;
 import elite.intel.util.StringUtls;
@@ -91,7 +92,7 @@ public class GoogleTTSImpl implements MouthInterface {
 
         log.info("VoiceGenerator started");
         if (systemSession.getRmsThresholdHigh() != null) {
-            EventBusManager.publish(new AppLogEvent("AI: Speech enabled."));
+            EventBusManager.publish(new AiResponseLogEvent("Speech enabled"));
         }
     }
 
@@ -186,7 +187,7 @@ public class GoogleTTSImpl implements MouthInterface {
             }
 
             AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_2);
-            EventBusManager.publish(new AppLogEvent("AI: " + event.getText()+"\n"));
+            EventBusManager.publish(new AiResponseLogEvent(event.getText()));
             log.debug("Added VoiceRequest to queue: text='{}', voice='{}'", event.getText(), voiceName);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -227,7 +228,7 @@ public class GoogleTTSImpl implements MouthInterface {
             } catch (Exception e) {
                 log.error("Unexpected error in VoiceGenerator", e);
             }  finally {
-                EventBusManager.publish(new AppLogEvent("\n"));
+                EventBusManager.publish(new AppLogEvent(""));
             }
         }
         closePersistentLine();

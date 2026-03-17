@@ -74,9 +74,9 @@ public class ResponseRouter implements AIRouterInterface {
 
             String paramsForLogging = action + (params == null ? "" : " params " + params);
             if (systemSession.useLocalCommandLlm()) {
-                EventBusManager.publish(new AppLogEvent("\nLocal LLM Action: " + paramsForLogging));
+                EventBusManager.publish(new AppLogEvent("Local LLM Action: " + paramsForLogging));
             } else {
-                EventBusManager.publish(new AppLogEvent("\nCloud LLM Action: " + paramsForLogging));
+                EventBusManager.publish(new AppLogEvent("Cloud LLM Action: " + paramsForLogging));
             }
 
             switch (type) {
@@ -93,7 +93,7 @@ public class ResponseRouter implements AIRouterInterface {
             log.error("Failed to process LLM response: {}", e.getMessage(), e);
             EventBusManager.publish(new AiVoxResponseEvent("Error processing response."));
         } finally {
-            EventBusManager.publish(new AppLogEvent("\n"));
+            EventBusManager.publish(new AppLogEvent(""));
         }
     }
 

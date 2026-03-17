@@ -348,3 +348,4 @@
 "fleet carryin"="fleet carrier"
 "fleet care, error"="fleet carrier"
 "fleet care, care"="fleet carrier"
+"console"="cancel"

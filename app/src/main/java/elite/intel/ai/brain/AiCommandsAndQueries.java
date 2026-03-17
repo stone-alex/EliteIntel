@@ -154,7 +154,7 @@ public class AiCommandsAndQueries {
         commandMap.put("close, close panel, exit, esc", CLOSE.getAction());
 
         //commandMap.put("system shut down", SHUT_DOWN.getAction());
-        commandMap.put("voice input on/off" + KEY_STATE, SET_VOICE_INPUT_MODE.getAction());
+        commandMap.put("wake word on/off" + KEY_STATE, SET_VOICE_INPUT_MODE.getAction());
         commandMap.put("show carrier management panel", DISPLAY_CARRIER_MANAGEMENT.getAction());
         commandMap.put("change trade profile starting budget to" + KEY_X, CHANGE_TRADE_PROFILE_SET_STARTING_BUDGET.getAction());
         commandMap.put("change trade profile max stops to" + KEY_X, CHANGE_TRADE_PROFILE_SET_MAX_NUMBER_OF_STOPS.getAction());
@@ -215,7 +215,7 @@ public class AiCommandsAndQueries {
         queryMap.put("carrier fuel supply, carrier tritium, carrier jump range, how much tritium does the carrier have, carrier fuel status", CARRIER_TRITIUM_SUPPLY.getAction());
         queryMap.put("carrier finances, how many days of operation funded, carrier upkeep, carrier running costs, carrier budget, how long can the carrier operate", CARRIER_STATUS.getAction());
         queryMap.put("carrier ETA, when does the carrier arrive, how long until carrier arrives, carrier arrival time", CARRIER_ETA.getAction());
-        queryMap.put("distance to fleet carrier, how far is the carrier, where is my carrier, carrier location, how far to the carrier", DISTANCE_TO_CARRIER.getAction());
+        queryMap.put("distance to fleet carrier, distance to home base, how far is the carrier, where is my carrier, carrier location, how far to the carrier", DISTANCE_TO_CARRIER.getAction());
         queryMap.put("pirate mission progress, massacre mission kills, how many kills do we have, bounty mission status, kill count, mission kill tally", PIRATE_MISSION_PROGRESS.getAction());
         queryMap.put("player statistics and ranks", PLAYER_PROFILE_ANALYSIS.getAction());
         queryMap.put("ship loadout, classification, damage report, what modules do we have, ship status, ship build, what is equipped, module check, are we armed, do we have a fuel scoop", SHIP_LOADOUT.getAction());

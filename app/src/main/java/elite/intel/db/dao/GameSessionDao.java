@@ -19,13 +19,13 @@ public interface GameSessionDao {
                                                              edsmApiKey, loggingEnabled, privacyModeOn, rmsThresholdHigh,  
                                                              rmsThresholdLow, encryptedLLMKey, encryptedTTSKey, 
                                                              encryptedEDSSMKey, speechSpeed, localLlmCommandModel, localLlmQueryModel,
-                                                             useLocalCommandLlm, useLocalQueryLlm, useLocalTTS
+                                                             useLocalCommandLlm, useLocalQueryLlm, useLocalTTS, notificationVolume
                                                 )
                                   VALUES (1, :aiPersonality, :aiCadence, :aiVoice, :aiApiKey, :ttsApiKey, :sttApiKey, 
                                                       :edsmApiKey, :loggingEnabled, :privacyModeOn, :rmsThresholdHigh, 
                                                       :rmsThresholdLow, :encryptedLLMKey, :encryptedTTSKey, 
                                                       :encryptedEDSSMKey,  :speechSpeed, :localLlmCommandModel, :localLlmQueryModel,
-                                                      :useLocalCommandLlm, :useLocalQueryLlm, :useLocalTTS
+                                                      :useLocalCommandLlm, :useLocalQueryLlm, :useLocalTTS, :notificationVolume
                                           )
             """)
     void save(@BindBean GameSessionDao.GameSession data);
@@ -65,6 +65,7 @@ public interface GameSessionDao {
             session.setUseLocalCommandLlm(rs.getBoolean("useLocalCommandLlm"));
             session.setUseLocalQueryLlm(rs.getBoolean("useLocalQueryLlm"));
             session.setUseLocalTTS(rs.getBoolean("useLocalTTS"));
+            session.setNotificationVolume(rs.getFloat("notificationVolume"));
             return session;
         }
     }
@@ -90,6 +91,7 @@ public interface GameSessionDao {
         private String edsmApiKey;
 
         private Float speechSpeed;
+        private Float notificationVolume;
         private String localLlmCommandModel;
         private String localLlmQueryModel;
         private boolean useLocalCommandLlm;
@@ -257,6 +259,14 @@ public interface GameSessionDao {
 
         public void setUseLocalTTS(boolean useLocalTTS) {
             this.useLocalTTS = useLocalTTS;
+        }
+
+        public Float getNotificationVolume() {
+            return notificationVolume;
+        }
+
+        public void setNotificationVolume(Float notificationVolume) {
+            this.notificationVolume = notificationVolume;
         }
     }
 }

@@ -47,7 +47,7 @@ public enum Commands {
     SET_PERSONALITY                                     ("set_personality", null, SetPersonalityHandler.class),
     SET_PROFILE                                         ("set_profile", null, SetCadenceHandler.class),
     SET_RADIO_TRANSMISSION_MODE                         ("turn_radio_transmission_on_off", null,  SetRadioTransmissionOnOff.class),
-    SET_VOICE_INPUT_MODE                               ("toggle_voice_input_mode", null, SetVoiceInputModeHandler.class),
+    SET_VOICE_INPUT_MODE                               ("toggle_wake_word_mode", null, SetWakeWordOnOffHandler.class),
     NAVIGATE_TO_TARGET                                  ("navigate_to_coordinates", null,  NavigateToCoordinatesHandler.class),
     NAVIGATION_ON_OFF                                   ("cancel_navigation", null,  NavigationOnOffHandler.class),
     DISCOVERY_ON_OFF                                    ("toggle_discovery_announcements", null, DiscoveryOnOffHandler.class),

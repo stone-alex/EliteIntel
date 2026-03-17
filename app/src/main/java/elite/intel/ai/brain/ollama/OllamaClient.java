@@ -6,7 +6,7 @@ import elite.intel.ai.brain.Client;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
-import elite.intel.ui.event.AppLogEvent;
+import elite.intel.ui.event.AiResponseLogEvent;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.OllamaMetadata;
 
@@ -90,7 +90,7 @@ public class OllamaClient extends BaseAiClient implements Client {
     @Override public JsonObject sendJsonRequest(String request) {
         JsonObject response = super.sendJsonRequest(request, getHttpURLConnection());
         OllamaMetadata metadata = GsonFactory.getGson().fromJson(response, OllamaMetadata.class);
-        EventBusManager.publish(new AppLogEvent("AI: Model " + metadata));
+        EventBusManager.publish(new AiResponseLogEvent("Model " + metadata));
         return response;
     }
 

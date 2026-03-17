@@ -8,7 +8,6 @@ import elite.intel.gameapi.journal.events.BaseEvent;
 import elite.intel.session.PlayerSession;
 import elite.intel.ui.controller.ManagedService;
 import elite.intel.ui.event.AppLogDebugEvent;
-import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.json.GsonFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -89,13 +88,13 @@ public class JournalParser implements Runnable, ManagedService {
             startReading();
         } catch (IOException e) {
             log.error("IOException in JournalParser", e);
-            EventBusManager.publish(new AppLogEvent("Please check jounral directory"));
+            EventBusManager.publish(new AppLogDebugEvent("Please check journal directory"));
         } catch (InterruptedException e) {
             log.info("JournalParser interrupted, shutting down");
             Thread.currentThread().interrupt(); // Restore interrupted status
         } catch (Exception e) {
             log.error("Unexpected error in JournalParser", e);
-            EventBusManager.publish(new AppLogEvent("Please check jounral directory"));
+            EventBusManager.publish(new AppLogDebugEvent("Please check journal directory"));
         }
     }
 

@@ -163,7 +163,7 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
         if (!running.get()) return;
         if (trimToNull(event.getSensorData()) == null) return;
 
-        EventBusManager.publish(new AppLogEvent("\nProcessing Sensor event"));
+        EventBusManager.publish(new AppLogEvent("Processing Sensor event"));
         JsonArray messages = new JsonArray();
         JsonObject systemMessage = new JsonObject();
         systemMessage.addProperty("role", AIConstants.ROLE_SYSTEM);

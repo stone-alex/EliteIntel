@@ -8,6 +8,7 @@ import elite.intel.ai.mouth.subscribers.events.TTSInterruptEvent;
 import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.SystemSession;
+import elite.intel.ui.event.AiResponseLogEvent;
 import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.AppPaths;
 import elite.intel.util.AudioPlayer;
@@ -187,7 +188,7 @@ public class KokoroTTS implements MouthInterface {
         if (sanitizedText.isBlank()) return;
 
         AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_2);
-        EventBusManager.publish(new AppLogEvent("AI: " + sanitizedText + "\n"));
+        EventBusManager.publish(new AiResponseLogEvent(sanitizedText));
 
         // Split on sentence boundaries and enqueue each piece for synthesis
         String[] sentences = sanitizedText.split("(?<=[.!?])\\s+(?=\\S)");
@@ -251,7 +252,7 @@ public class KokoroTTS implements MouthInterface {
             } catch (Exception e) {
                 log.warn("KokoroTTS playback error: {}", e.getMessage(), e);
             } finally {
-                EventBusManager.publish(new AppLogEvent("\n"));
+                EventBusManager.publish(new AppLogEvent(""));
             }
         }
         closePersistentLine();

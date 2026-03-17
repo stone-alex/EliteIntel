@@ -33,7 +33,6 @@ Powered by Whisper. built-in / included.
 ### 🎤 STT (Speech To Text)
 
 - **Whisper (Local - off-line)**
-- Google (Cloud)
 
 ### 🔊 TTS (Text To Speech)
 
@@ -46,8 +45,8 @@ Elite Intel is your AI-powered, TOS-compliant sidekick for *Elite Dangerous*.
 It's a Quality of Life (QoL) app that enhances gameplay with voice-activated commands 
 **uttered in natural language**,
 real-time journal parsing, and smart AI assistance-all while staying fully compliant
-with Frontier Developments' Terms of Service. No AFK play, no botting, and no
-automation that gives unfair advantages; everything requires your input.
+with Frontier Developments' Terms of Service. No AFK play, and no unfair advantages;
+everything requires your input.
 
 The app uses Speech-to-Text (STT) and Text-to-Speech (TTS) for **natural voice interactions**,
 and LLM for handling commands, queries, and chats. It processes game data from journal 

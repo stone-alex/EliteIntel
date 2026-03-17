@@ -71,4 +71,11 @@ public final class CodexEntryManager {
             return Void.TYPE;
         });
     }
+
+    public void clearEntriesForCurrentLocation(String entryName, String starName, long bodyId) {
+        Database.withDao(CodexEntryDao.class, dao -> {
+            dao.clearEntriesForCurrentLocation(entryName, starName, bodyId);
+            return Void.TYPE;
+        });
+    }
 }

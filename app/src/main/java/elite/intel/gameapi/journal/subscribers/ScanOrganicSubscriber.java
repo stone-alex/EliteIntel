@@ -112,6 +112,11 @@ public class ScanOrganicSubscriber {
             playerSession.addBioSample(bioSampleDto);
             playerSession.setCurrentPartial(null);
             currentLocation.deletePartialBioSamples();
+            codexEntryManager.clearEntriesForCurrentLocation(
+                    event.getSpeciesLocalised(),
+                    currentLocation.getStarName(),
+                    currentLocation.getBodyId()
+            );
             playerSession.clearGenusPaymentAnnounced();
         }
 

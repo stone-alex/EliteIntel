@@ -71,25 +71,38 @@ public class NavigateToNextCodexEntry implements CommandHandler {
         if (codexEntries == null) {
             return new ArrayList<>();
         }
-        List<CodexEntryDao.CodexEntry> filteredResult = new ArrayList<>();
-        if (completedBioSamples == null || completedBioSamples.isEmpty()) return codexEntries;
-
         List<BioSampleDto> partialBioSamples = currentLocation.getPartialBioSamples();
 
         if (!partialBioSamples.isEmpty()) {
+            List<CodexEntryDao.CodexEntry> filteredResult = new ArrayList<>();
             for (CodexEntryDao.CodexEntry entry : codexEntries) {
+                String entryNameLower = entry.getEntryName().toLowerCase(Locale.ROOT);
+                if (completedBioSamples != null && completedBioSamples.stream()
+                        .anyMatch(c -> entryNameLower.contains(c.getGenus().toLowerCase(Locale.ROOT)))) {
+                    continue;
+                }
                 for (BioSampleDto partial : partialBioSamples) {
-                    if (entry.getEntryName().toLowerCase(Locale.ROOT).contains(partial.getGenus().toLowerCase(Locale.ROOT))) {
+                    if (entryNameLower.contains(partial.getGenus().toLowerCase(Locale.ROOT))) {
                         filteredResult.add(entry);
-                        return filteredResult;
+                        break;
                     }
                 }
             }
-            return new ArrayList<>();
+            return filteredResult;
         }
 
+        if (completedBioSamples == null || completedBioSamples.isEmpty()) return codexEntries;
+
+        List<CodexEntryDao.CodexEntry> filteredResult = new ArrayList<>();
         for (CodexEntryDao.CodexEntry entry : codexEntries) {
             for (BioSampleDto completed : completedBioSamples) {
+                if (completedBioSamples.stream().anyMatch(
+                        c -> entry.getEntryName()
+                                .toLowerCase()
+                                .contains(c.getGenus().toLowerCase(Locale.ROOT))
+                )) {
+                    continue;
+                }
                 if (!entry.getEntryName().contains(completed.getGenus())) {
                     filteredResult.add(entry);
                 }
@@ -121,6 +134,8 @@ public class NavigateToNextCodexEntry implements CommandHandler {
             if (!valid) continue;
 
             BioSampleDto partialMatch = findForGenus(genus, partials);
+            if (hasPartials && partialMatch == null) continue;
+
             Integer scanXof3 = partialMatch == null ? null : partialMatch.getScanXof3();
 
             if (hasPartials && scanXof3 != null && scanXof3 > 2) {
@@ -133,7 +148,7 @@ public class NavigateToNextCodexEntry implements CommandHandler {
             }
 
             // If we have partials and this matches one of their genera → priority track
-            if (hasPartials && partials.stream().anyMatch(p -> genus.equalsIgnoreCase(p.getGenus()) && genus.equalsIgnoreCase(partialGenus))) {
+            if (hasPartials && partials.stream().anyMatch(p -> genus.equalsIgnoreCase(p.getGenus()))) {
                 if (distToPlayer < bestPartialDist) {
                     bestPartialDist = distToPlayer;
                     bestPartialMatch = entry;

@@ -103,10 +103,10 @@ public class JumpCompletedSubscriber {
             }
 
             sb.append("Arrived at ").append(event.getStarSystem()).append(".");
-            List<NavRouteDto> adjustedRoute = shipRoute.removeLeg(event.getStarSystem());
-            int remainingJump = adjustedRoute.size();
+            List<NavRouteDto> route = shipRoute.getOrderedRoute();
+            int remainingJump = route.size();
             if (remainingJump > 0) {
-                adjustedRoute.stream().findFirst().ifPresent(
+                route.stream().findFirst().ifPresent(
                         nextStop -> sb
                                 .append(" Next Waypoint: ")
                                 .append(nextStop.getName())

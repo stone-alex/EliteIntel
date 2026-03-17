@@ -59,6 +59,9 @@ public class UINavigator {
 
         closeOpenPanel();
         PanelState<?> state = tracker.getState(panel);
+        if (state == null) {
+            return;
+        }
 
         tracker.notifyEliteIntelOpeningPanel(panel);
         openPanel(panel);
@@ -100,6 +103,9 @@ public class UINavigator {
      */
     public void closeAndRestore(GuiFocus panel) {
         PanelState<?> state = tracker.getState(panel);
+        if (state == null) {
+            return;
+        }
         if (state.isKnown()) {
             navigateToDefaultTab(panel, state.getDefault());
         }
@@ -117,6 +123,9 @@ public class UINavigator {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private void navigateToTargetTab(GuiFocus panel, PanelTab target) {
         PanelState state = tracker.getState(panel);
+        if (state == null) {
+            return;
+        }
         int steps = state.stepsToRight(target);
         if (steps == 0) return;
         String key = Bindings.GameCommand.BINDING_CYCLE_NEXT_PANEL.getGameBinding();
@@ -132,6 +141,9 @@ public class UINavigator {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private void navigateToDefaultTab(GuiFocus panel, PanelTab defaultTarget) {
         PanelState state = tracker.getState(panel);
+        if (state == null) {
+            return;
+        }
         int steps = state.stepsToLeft(defaultTarget);
         if (steps == 0) return;
         String key = Bindings.GameCommand.BINDING_CYCLE_PREVIOUS_PANEL.getGameBinding();
@@ -149,12 +161,16 @@ public class UINavigator {
      */
     @SuppressWarnings("rawtypes")
     private void blindResetToDefault(GuiFocus panel) {
+        PanelState<?> state = tracker.getState(panel);
+        if (state == null) {
+            return;
+        }
         String nextTab = Bindings.GameCommand.BINDING_CYCLE_NEXT_PANEL.getGameBinding();
         for (int i = 0; i < getTabCount(panel); i++) {
             operator.operateKeyboardTap(nextTab); // always tap
             sleep(TAB_DELAY_MS);
         }
-        tracker.getState(panel).resetToDefault();
+        state.resetToDefault();
     }
 
     private static void sleep(int ms) {

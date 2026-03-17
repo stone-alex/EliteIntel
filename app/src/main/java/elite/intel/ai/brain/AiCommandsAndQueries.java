@@ -204,7 +204,7 @@ public class AiCommandsAndQueries {
         queryMap.put("exploration profits, exobiology earnings, how much have we earned, exploration income, total scan value, what have we made from exploration", EXPLORATION_PROFITS.getAction());
         queryMap.put("current location, where are we, system info, what system is this, our position, what star system are we in, navigation status", CURRENT_LOCATION.getAction());
         queryMap.put("ship fuel level, how much fuel do we have, fuel status, are we low on fuel, check fuel, fuel remaining, fuel reserves", SHIP_FUEL_STATUS.getAction());
-        queryMap.put("analyze jump destination, info on selected system, what is our target system, tell me about the destination, next jump target, where are we jumping to", FSD_TARGET_ANALYSIS.getAction());
+        queryMap.put("analyze selected destination, info on selected system, what is our target system, tell me about the destination", FSD_TARGET_ANALYSIS.getAction());
         queryMap.put("ship plotted route, our navigation route, how long is our route, route progress, where are we headed, how many jumps remaining", PLOTTED_ROUTE_ANALYSIS.getAction());
         queryMap.put("fleet carrier plotted route, carrier navigation plan, where is the carrier route going, carrier jump plan", CARRIER_ROUTE_ANALYSIS.getAction());
         queryMap.put("trade schedule, trade route stops, our trading plan, trade run details, trade itinerary", TRADE_ROUTE_ANALYSIS.getAction());
@@ -217,7 +217,7 @@ public class AiCommandsAndQueries {
         queryMap.put("carrier ETA, when does the carrier arrive, how long until carrier arrives, carrier arrival time", CARRIER_ETA.getAction());
         queryMap.put("distance to fleet carrier, how far is the carrier, where is my carrier, carrier location, how far to the carrier", DISTANCE_TO_CARRIER.getAction());
         queryMap.put("pirate mission progress, massacre mission kills, how many kills do we have, bounty mission status, kill count, mission kill tally", PIRATE_MISSION_PROGRESS.getAction());
-        queryMap.put("player stats, ranks, combat rank, exploration rank, trade rank, pilot profile, our credentials, what rank are we, check our rank", PLAYER_PROFILE_ANALYSIS.getAction());
+        queryMap.put("player statistics and ranks", PLAYER_PROFILE_ANALYSIS.getAction());
         queryMap.put("ship loadout, classification, damage report, what modules do we have, ship status, ship build, what is equipped, module check, are we armed, do we have a fuel scoop", SHIP_LOADOUT.getAction());
         queryMap.put("station services, what services are available here, what does this station offer, station facilities, can we repair here, can we rearm here", STATION_DETAILS.getAction());
         queryMap.put("what can you do, your capabilities, app features, list your functions, what commands do you know", APP_CAPABILITIES.getAction());

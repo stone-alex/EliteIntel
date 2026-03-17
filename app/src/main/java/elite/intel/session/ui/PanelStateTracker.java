@@ -61,7 +61,11 @@ public class PanelStateTracker {
         }
         if (!eliteIntelOpenedPanel) {
             // Player opened the panel - tab position is now unknown
-            getState(newFocus).markUnknown();
+            PanelState<?> state = getState(newFocus);
+            if (state == null) {
+                return;
+            }
+            state.markUnknown();
         }
     }
 
@@ -117,12 +121,18 @@ public class PanelStateTracker {
     }
 
     public PanelState<?> getState(GuiFocus panel) {
-        return switch (panel) {
-            case EXTERNAL_PANEL -> leftPanel;
-            case COMMS_PANEL -> commsPanel;
-            case ROLE_PANEL -> centrePanel;
-            case INTERNAL_PANEL -> rightPanel;
-            default -> throw new IllegalArgumentException("No panel state for GuiFocus: " + panel);
-        };
+        if (panel == GuiFocus.EXTERNAL_PANEL) {
+            return leftPanel;
+        }
+        if (panel == GuiFocus.COMMS_PANEL) {
+            return commsPanel;
+        }
+        if (panel == GuiFocus.ROLE_PANEL) {
+            return centrePanel;
+        }
+        if (panel == GuiFocus.INTERNAL_PANEL) {
+            return rightPanel;
+        }
+        return null;
     }
 }

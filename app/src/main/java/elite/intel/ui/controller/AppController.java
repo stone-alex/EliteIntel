@@ -118,14 +118,15 @@ public class AppController implements Runnable {
     @Subscribe
     public void onStreamModeToggle(VoiceInputModeToggleEvent event) {
         this.view.toggleWakeWordOnOff.setSelected(event.isStreaming());
-        EventBusManager.publish(new ToggleStreamingModeEvent(event.isStreaming()));
+        EventBusManager.publish(new ToggleWakeWordEvent(event.isStreaming()));
     }
 
 
-    @Subscribe public void toggleStreamingMode(ToggleStreamingModeEvent event) {
+    @Subscribe
+    public void toggleStreamingMode(ToggleWakeWordEvent event) {
         appendToLog("Voice input mode toggle");
-        systemSession.setStreamingMode(event.isStreaming());
-        EventBusManager.publish(new AiVoxResponseEvent(event.isStreaming() ? streamingModeIsOnMessage() : streamingModeIsOffMessage()));
+        systemSession.setStreamingMode(event.isOn());
+        EventBusManager.publish(new AiVoxResponseEvent(event.isOn() ? streamingModeIsOnMessage() : streamingModeIsOffMessage()));
     }
 
     @Subscribe public void togglePrivacyMode(TogglePrivacyModeEvent event) {

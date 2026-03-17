@@ -33,8 +33,8 @@ public interface BioSampleDao {
     @SqlQuery("SELECT * FROM bio_samples")
     BioSampleDao.BioSample[] listAll();
 
-    @SqlQuery("SELECT * FROM bio_samples WHERE json LIKE '%' || :planetName || '%'")
-    List<BioSample> findByPlanetName(String planetName);
+    @SqlQuery("SELECT * FROM bio_samples WHERE json LIKE '%' || :planetName || '%' and json LIKE '%' || :primaryStar|| '%'")
+    List<BioSample> findByPlanetName(String primaryStar, String planetName);
 
     class BioSampleMapper implements RowMapper<BioSampleDao.BioSample> {
 

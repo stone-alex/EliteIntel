@@ -46,9 +46,9 @@ public class BioSamplesManager {
         });
     }
 
-    public List<BioSampleDto> findByPlanetName(String planetName) {
+    public List<BioSampleDto> findByPlanetName(String primaryStar, String planetName) {
         return Database.withDao(BioSampleDao.class, dao ->{
-            List<BioSampleDao.BioSample> samples = dao.findByPlanetName(planetName);
+            List<BioSampleDao.BioSample> samples = dao.findByPlanetName(primaryStar, planetName);
             List<BioSampleDto> result = new ArrayList<>();
             for(BioSampleDao.BioSample sample : samples) {
                 result.add(GsonFactory.getGson().fromJson(sample.getJson(), BioSampleDto.class));

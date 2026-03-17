@@ -128,7 +128,7 @@ public class AiCommandsAndQueries {
         commandMap.put("select highest threat, target most dangerous", SELECT_HIGHEST_THREAT.getAction());
         commandMap.put("headlights on/off, toggle lights" + KEY_STATE, LIGHTS_ON_OFF.getAction());
         commandMap.put("drive assist on/off" + KEY_STATE, DRIVE_ASSIST.getAction());
-        commandMap.put("recover SRV, recover buggy, requesting extraction, extract surface vehicle", RECOVER_SRV.getAction());
+        commandMap.put("recover SRV, recover buggy, board ship, requesting extraction, extract surface vehicle", RECOVER_SRV.getAction());
 
         /// UI panels
         commandMap.put("activate, punch it, engage", ACTIVATE.getAction());

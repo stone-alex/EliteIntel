@@ -74,7 +74,6 @@ public class AppView extends JFrame implements AppViewInterface {
     private JToggleButton startStopServicesButton;
     private JButton recalibrateAudioButton;
     private JButton updateAppButton;
-    private JCheckBox toggleSttOnOff;
 
     private JTextField playerAltNameField;
     private JTextField playerTitleField;
@@ -136,11 +135,6 @@ public class AppView extends JFrame implements AppViewInterface {
         toggleWakeWordOnOff.setText(LABEL_STREAMING_MODE);
         toggleWakeWordOnOff.setForeground(ACCENT);
         showDetailedLog.setForeground(ACCENT);
-
-        toggleSttOnOff.setEnabled(false); // enabled when services start
-        toggleSttOnOff.setToolTipText("Disable Speech to Text completely");
-        toggleSttOnOff.setText(LABEL_STT_ON_OFF);
-        toggleSttOnOff.setForeground(ACCENT);
 
         journalDirField.setEditable(false);
         journalDirField.setPreferredSize(new Dimension(200, 42));
@@ -317,13 +311,9 @@ public class AppView extends JFrame implements AppViewInterface {
 
         toggleWakeWordOnOff = new JCheckBox(LABEL_STREAMING_MODE, false);
         toggleWakeWordOnOff.addActionListener(
-                e -> EventBusManager.publish(new ToggleStreamingModeEvent(toggleWakeWordOnOff.isSelected()))
+                e -> EventBusManager.publish(new ToggleWakeWordEvent(toggleWakeWordOnOff.isSelected()))
         );
 
-        toggleSttOnOff = new JCheckBox(LABEL_STREAMING_MODE, false);
-        toggleSttOnOff.addActionListener(
-                e -> EventBusManager.publish(new TogglePrivacyModeEvent(toggleSttOnOff.isSelected()))
-        );
 
 
         recalibrateAudioButton = new JButton("Recalibrate Audio") {
@@ -358,8 +348,6 @@ public class AppView extends JFrame implements AppViewInterface {
         buttons.add(Box.createHorizontalGlue());
 
         buttons.add(toggleWakeWordOnOff);
-        buttons.add(Box.createRigidArea(new Dimension(8, 0)));
-        buttons.add(toggleSttOnOff);
         buttons.add(Box.createRigidArea(new Dimension(8, 0)));
         buttons.add(showDetailedLog);
 
@@ -944,7 +932,6 @@ public class AppView extends JFrame implements AppViewInterface {
         // streaming / privacy checkboxes
         toggleWakeWordOnOff.setSelected(systemSession.isStreamingModeOn());
         setupStreamingCheckBox(systemSession.isStreamingModeOn());
-        toggleSttOnOff.setSelected(systemSession.isStreamingModeOn());
     }
 
 
@@ -1118,7 +1105,6 @@ public class AppView extends JFrame implements AppViewInterface {
             startStopServicesButton.setBackground(BUTTON_BG);
             startStopServicesButton.setEnabled(true);
             recalibrateAudioButton.setEnabled(event.isRunning());
-            toggleSttOnOff.setEnabled(event.isRunning());
             toggleWakeWordOnOff.setEnabled(event.isRunning());
 
         });

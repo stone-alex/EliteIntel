@@ -66,7 +66,7 @@ public class NavigateToNextCodexEntry implements CommandHandler {
     }
 
     private List<CodexEntryDao.CodexEntry> getCodexEntries(LocationDto currentLocation) {
-        List<BioSampleDto> completedBioSamples = bioSamplesManager.findByPlanetName(currentLocation.getPlanetName());
+        List<BioSampleDto> completedBioSamples = bioSamplesManager.findByPlanetName(currentLocation.getStarName(), currentLocation.getPlanetName());
         List<CodexEntryDao.CodexEntry> codexEntries = codexEntryManager.getForPlanet(currentLocation.getStarName(), currentLocation.getBodyId());
         if (codexEntries == null) {
             return new ArrayList<>();

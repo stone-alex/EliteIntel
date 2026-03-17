@@ -2,13 +2,10 @@ package elite.intel.ui.controller;
 
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.ApiFactory;
-import elite.intel.ai.brain.AICadence;
-import elite.intel.ai.brain.AIPersonality;
 import elite.intel.ai.ears.AudioCalibrator;
 import elite.intel.ai.ears.AudioFormatDetector;
 import elite.intel.ai.ears.EarsInterface;
 import elite.intel.ai.hands.KeyBindCheck;
-import elite.intel.ai.mouth.GoogleVoices;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.gameapi.*;
@@ -29,8 +26,6 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
-
-import static elite.intel.util.StringUtls.capitalizeWords;
 
 public class AppController implements Runnable {
     private final AtomicBoolean isRunning = new AtomicBoolean(false);
@@ -71,39 +66,6 @@ public class AppController implements Runnable {
 
     private void startIfWeHaveCredentials() {
         EventBusManager.publish(new ToggleServicesEvent(true));
-    }
-
-    private String listVoices() {
-        StringBuilder sb = new StringBuilder();
-        GoogleVoices[] voices = GoogleVoices.values();
-        sb.append("[");
-        for (GoogleVoices voice : voices) {
-            sb.append(capitalizeWords(voice.name())).append(", ");
-        }
-        sb.append("]");
-        return sb.toString().replace(", ]", "]");
-    }
-
-    private String listPersonalities() {
-        AIPersonality[] personalities = AIPersonality.values();
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
-        for (AIPersonality personality : personalities) {
-            sb.append(capitalizeWords(personality.name())).append(", ");
-        }
-        sb.append("]");
-        return sb.toString().replace(", ]", "]");
-    }
-
-    private String listCadences() {
-        AICadence[] cadences = AICadence.values();
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
-        for (AICadence cadence : cadences) {
-            sb.append(capitalizeWords(cadence.name())).append(", ");
-        }
-        sb.append("]");
-        return sb.toString().replace(", ]", "]");
     }
 
     @Subscribe public void onSpeechSpeedChangeEvent(SpeechSpeedChangeEvent event) {

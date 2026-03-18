@@ -224,8 +224,16 @@ public class WhisperSTTImpl implements EarsInterface {
             WhisperFullParams params = new WhisperFullParams();
             params.language = "en";
             params.nThreads = Math.min(Runtime.getRuntime().availableProcessors(), 4);
-            params.noContext = true;      // Don't carry context between utterances
-            params.singleSegment = false;
+            params.noContext = true;
+            params.singleSegment = true;            // voice commands are single utterances - faster
+            params.beamSearchBeamSize = 5;          // biggest accuracy win - considers 5 decode paths vs greedy
+            params.temperature = 0.0f;              // greedy/deterministic base
+            params.temperatureInc = 0.2f;           // fallback increment if confidence too low
+            params.entropyThold = 2.4f;             // default 2.4 - increase to 2.8 if too many rejections
+            params.suppressBlank = true;            // already default but explicit is better
+
+
+
             long timeStart = System.currentTimeMillis();
             int result = whisper.full(whisperCtx, params, samples, samples.length);
             if (result != 0) {

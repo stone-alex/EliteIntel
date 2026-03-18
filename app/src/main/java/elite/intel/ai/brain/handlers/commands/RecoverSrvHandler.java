@@ -5,9 +5,9 @@ import elite.intel.ai.hands.GameController;
 import elite.intel.session.StatusFlags;
 import elite.intel.session.ui.UINavigator;
 
-public class BoardSrvHandler extends CommandOperator implements CommandHandler {
+public class RecoverSrvHandler extends CommandOperator implements CommandHandler {
 
-    public BoardSrvHandler(GameController controller) {
+    public RecoverSrvHandler(GameController controller) {
         super(controller.getMonitor(), controller.getExecutor());
     }
 

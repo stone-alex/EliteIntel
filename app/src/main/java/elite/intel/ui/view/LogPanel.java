@@ -120,7 +120,7 @@ class LogPanel extends JPanel {
         typewriterTimer.stop();
         removeAllTimerListeners();
 
-        Message msg = new Message(text);
+        Message msg = new Message("\n \u2022 " + text);
         messages.add(msg);
         while (messages.size() > MAX_MESSAGES) messages.remove(0);
 

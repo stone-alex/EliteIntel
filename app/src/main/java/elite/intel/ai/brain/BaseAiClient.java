@@ -2,6 +2,8 @@ package elite.intel.ai.brain;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.gameapi.EventBusManager;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -59,6 +61,19 @@ public class BaseAiClient {
 
             int code = conn.getResponseCode();
             if (code != 200) {
+                if (code == 400) {
+                    EventBusManager.publish(new AiVoxResponseEvent("Bad Request. Unsupported request format or invalid API key"));
+                }
+                if (code == 429) {
+                    EventBusManager.publish(new AiVoxResponseEvent("Too Many Requests. Please try again later."));
+                }
+                if (code == 401) {
+                    EventBusManager.publish(new AiVoxResponseEvent("Invalid API Key. Please check your API Key and try again."));
+                }
+                if (code == 500) {
+                    EventBusManager.publish(new AiVoxResponseEvent("Internal Server Error. Please try again later."));
+                }
+
                 return createErrorResponse("HTTP " + code);
             }
 

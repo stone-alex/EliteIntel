@@ -258,7 +258,11 @@ public class GoogleTTSImpl implements MouthInterface {
     private void closePersistentLine() {
         if (persistentLine != null) {
             try {
-                persistentLine.drain();
+                if (!running) {
+                    persistentLine.flush(); // forced stop — discard buffered audio immediately
+                } else {
+                    persistentLine.drain(); // normal end — play out remaining audio
+                }
                 persistentLine.stop();
                 persistentLine.close();
                 log.info("Persistent audio line closed");

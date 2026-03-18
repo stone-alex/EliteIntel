@@ -1,5 +1,6 @@
 package elite.intel.ai.brain;
 
+import elite.intel.session.Status;
 import elite.intel.session.SystemSession;
 
 import java.util.HashMap;
@@ -21,6 +22,7 @@ public class AiCommandsAndQueries {
     private final static String KEY_LAT_LON = " {lat:X, lon:Y}";
 
     private static final AiCommandsAndQueries INSTANCE = new AiCommandsAndQueries();
+    private final Status status = Status.getInstance();
 
     private AiCommandsAndQueries() {
     }
@@ -76,7 +78,7 @@ public class AiCommandsAndQueries {
         commandMap.put("set optimal speed", SET_OPTIMAL_SPEED.getAction());
         commandMap.put("scan the system, open FSS, perform full system scan, honk", OPEN_FSS_AND_SCAN.getAction());
         commandMap.put("navigate to landing zone, get heading to LZ", GET_HEADING_TO_LZ.getAction());
-        commandMap.put("deploy SRV, deploy buggy, deploy surface vehicle", DEPLOY_SRV.getAction());
+
         commandMap.put("calculate carrier jump route, plot fleet carrier route", CALCULATE_FLEET_CARRIER_ROUTE.getAction());
         commandMap.put("enter carrier destination", ENTER_FLEET_CARRIER_DESTINATION.getAction());
         commandMap.put("calculate trade route, get us a trade route, find trade route", CALCULATE_TRADE_ROUTE.getAction());
@@ -128,7 +130,14 @@ public class AiCommandsAndQueries {
         commandMap.put("select highest threat, target most dangerous", SELECT_HIGHEST_THREAT.getAction());
         commandMap.put("headlights on/off, toggle lights" + KEY_STATE, LIGHTS_ON_OFF.getAction());
         commandMap.put("drive assist on/off" + KEY_STATE, DRIVE_ASSIST.getAction());
-        commandMap.put("recover SRV, recover buggy, board ship, requesting extraction, extract surface vehicle", RECOVER_SRV.getAction());
+
+
+        if (status.isInMainShip()) {
+            commandMap.put("deploy SRV, deploy buggy, deploy surface vehicle", DEPLOY_SRV.getAction());
+        }
+        if (status.isInSrv()) {
+            commandMap.put("recover SRV, recover buggy, board ship, requesting extraction, extract surface vehicle", RECOVER_SRV.getAction());
+        }
 
         /// UI panels
         commandMap.put("activate, punch it, engage", ACTIVATE.getAction());

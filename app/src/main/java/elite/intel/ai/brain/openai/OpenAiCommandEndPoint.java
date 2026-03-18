@@ -77,6 +77,7 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
         if (running.compareAndSet(true, false)) {
             EventBusManager.unregister(this);
             if (executor != null) {
+                OpenAiClient.getInstance().cancelCurrentRequest();
                 executor.shutdown();
                 try {
                     if (!executor.awaitTermination(2, java.util.concurrent.TimeUnit.SECONDS)) {

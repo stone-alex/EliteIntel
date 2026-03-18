@@ -71,6 +71,8 @@ public class OpenAiClient extends BaseAiClient implements Client {
             conn.setRequestProperty("Authorization", "Bearer " + SystemSession.getInstance().getAiApiKey());
             conn.setRequestProperty("User-Agent", "EliteIntel/1.0");
             conn.setDoOutput(true);
+            conn.setConnectTimeout(10_000);
+            conn.setReadTimeout(60_000);
             return conn;
         } catch (IOException noConnectiotn) {
             throw new RuntimeException(noConnectiotn);

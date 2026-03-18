@@ -105,7 +105,7 @@ public class KokoroTTS implements MouthInterface {
         synthesisThread.start();
 
         playbackThread = new Thread(this::processPlaybackQueue, "KokoroTTS-Playback");
-        playbackThread.setDaemon(false);
+        playbackThread.setDaemon(true);
         playbackThread.start();
 
         log.info("KokoroTTS started - voice: {} sid={}", KokoroVoices.HEART.getDisplayName(), DEFAULT_SID);
@@ -303,7 +303,11 @@ public class KokoroTTS implements MouthInterface {
     private void closePersistentLine() {
         if (persistentLine != null && persistentLine.isOpen()) {
             try {
-                persistentLine.drain();
+                if (interruptRequested.get()) {
+                    persistentLine.flush(); // forced stop — discard buffered audio immediately
+                } else {
+                    persistentLine.drain(); // normal end — play out remaining audio
+                }
                 persistentLine.stop();
                 persistentLine.close();
             } catch (Exception e) {

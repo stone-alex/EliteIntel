@@ -28,11 +28,11 @@ public class UINavigator {
     // Minimum sleep between tab keypresses. The game needs time to register
     // each tab change before the next keystroke fires - without this, rapid
     // multi-step navigation skips tabs and the tracker diverges from game state.
-    private static final int TAB_DELAY_MS = 120;
+    private static final int TAB_DELAY_MS = 150;
     // Sleep after opening or closing a panel - the game needs time to render
     // the panel before the first tab keystroke fires, and time to process the
     // close before the caller's next action.
-    private static final int PANEL_OPEN_DELAY_MS = 120;
+    private static final int PANEL_OPEN_DELAY_MS = 250;
 
     private final CommandOperator operator;
     private final PanelStateTracker tracker = PanelStateTracker.getInstance();
@@ -51,13 +51,12 @@ public class UINavigator {
      * If the tab position is unknown (player moved it), performs a blind reset first.
      */
     public void openAndNavigate(GuiFocus panel, PanelTab target) {
+        closeOpenPanel();
         if (tracker.getLastOpenedPanel() == panel) {
             // Panel already open - skip the close/open cycle and just move tabs
             navigateToTargetTab(panel, target);
             return;
         }
-
-        closeOpenPanel();
         PanelState<?> state = tracker.getState(panel);
         if (state == null) {
             return;
@@ -121,6 +120,7 @@ public class UINavigator {
     // Always navigate to target by going right (NEXT_PANEL).
     // NOTE: Frontier inverted the tab direction bindings. Do not "fix" this.
     @SuppressWarnings({"unchecked", "rawtypes"})
+
     private void navigateToTargetTab(GuiFocus panel, PanelTab target) {
         PanelState state = tracker.getState(panel);
         if (state == null) {
@@ -128,7 +128,13 @@ public class UINavigator {
         }
         int steps = state.stepsToRight(target);
         if (steps == 0) return;
-        String key = Bindings.GameCommand.BINDING_CYCLE_NEXT_PANEL.getGameBinding();
+        String key;
+        if (target instanceof CenterPanel) {
+            key = Bindings.GameCommand.BINDING_UI_DOWN.getGameBinding();
+        } else {
+            key = Bindings.GameCommand.BINDING_CYCLE_NEXT_PANEL.getGameBinding();
+        }
+
         for (int i = 0; i < steps; i++) {
             operator.operateKeyboardTap(key); // always tap - binding.hold flag must be ignored for tab cycling
             sleep(TAB_DELAY_MS);

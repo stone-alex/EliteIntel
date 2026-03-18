@@ -8,18 +8,38 @@ import elite.intel.ui.event.AiResponseLogEvent;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class OBSOverlayWindow extends JFrame {
 
     private static final Color BG = new Color(0, 0, 0);
-    private static final Color FG = new Color(0xFF8C00); // orange
+    private static final Color FG = new Color(0xFF8C00);
 
-    private final JTextArea textArea;
-    private final Timer typewriterTimer;
-    private final StringBuilder buffer = new StringBuilder();
-    private final AtomicBoolean typewriterActive = new AtomicBoolean(false);
+    private static final int TYPEWRITER_DELAY_MS = 50;
+    private static final int MAX_MESSAGES = 7;
+
+    // -- Inner model -----------------------------------------------------------
+
+    private static final class OverlayMessage {
+        final String prefix;   // "User: " or "AI: "
+        final String fullText;
+        String visibleText = "";
+        boolean complete = false;
+
+        OverlayMessage(String prefix, String fullText) {
+            this.prefix = prefix;
+            this.fullText = fullText;
+        }
+    }
+
+    // -- State -----------------------------------------------------------------
+
+    private final List<OverlayMessage> messages = new ArrayList<>();
+    private final OverlayPanel overlayPanel;
+
+    // -- Construction ----------------------------------------------------------
 
     public OBSOverlayWindow() {
         setTitle("Elite Intel OBS Overlay");
@@ -28,76 +48,191 @@ public class OBSOverlayWindow extends JFrame {
         setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         setSize(900, 220);
         setLocationRelativeTo(null);
+        setLocation(0, 0);
 
-        Font monoFont;
-        try {
-            monoFont = Font.createFont(Font.TRUETYPE_FONT, Objects.requireNonNull(
-                    getClass().getResourceAsStream("/fonts/Electrolize-Regular.ttf"))
-            ).deriveFont(20f);
-        } catch (FontFormatException | IOException e) {
-            monoFont = new Font(Font.MONOSPACED, Font.PLAIN, 20);
-        }
-
-        textArea = new JTextArea();
-        textArea.setEditable(false);
-        textArea.setFocusable(false);
-        textArea.setFont(monoFont);
-        textArea.setLineWrap(true);
-        textArea.setWrapStyleWord(true);
-        textArea.setBackground(BG);
-        textArea.setForeground(FG);
-        textArea.setCaretColor(BG);
-        textArea.setBorder(BorderFactory.createEmptyBorder(8, 12, 8, 12));
-
-        JScrollPane scroll = new JScrollPane(textArea,
-                JScrollPane.VERTICAL_SCROLLBAR_NEVER,
-                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        scroll.setBorder(null);
-        scroll.setBackground(BG);
-        scroll.getViewport().setBackground(BG);
-
+        overlayPanel = new OverlayPanel();
+        setContentPane(overlayPanel);
         getContentPane().setBackground(BG);
-        getContentPane().add(new JLabel(" "), BorderLayout.NORTH); /// cosmetics
-        getContentPane().add(scroll, BorderLayout.CENTER);
-
-        typewriterTimer = new Timer(30, e -> tick());
-
-        EventBusManager.register(this);
     }
+
+    @Override
+    public void setVisible(boolean visible) {
+        if (visible) {
+            messages.clear();
+            EventBusManager.register(this);
+        } else {
+            EventBusManager.unregister(this);
+        }
+        super.setVisible(visible);
+    }
+
+    // -- Event bus -------------------------------------------------------------
 
     @Subscribe
     public void onUserInputEvent(UserInputEvent event) {
         if (event.getUserInput() == null || event.getUserInput().isBlank()) return;
-        enqueue("User: " + event.getUserInput() + "\n\n");
+        SwingUtilities.invokeLater(() -> addMessage("User: ", event.getUserInput()));
     }
 
     @Subscribe
     public void onAiResponseLogEvent(AiResponseLogEvent event) {
         if (event.getData() == null || event.getData().isBlank()) return;
-        enqueue("AI: " + event.getData() + "\n\n");
+        SwingUtilities.invokeLater(() -> addMessage("AI: ", event.getData()));
     }
 
-    private void enqueue(String text) {
-        synchronized (buffer) {
-            buffer.append(text);
+    // -- Message lifecycle -----------------------------------------------------
+
+    private void addMessage(String prefix, String text) {
+        // Fast-forward any still-typing message
+        for (OverlayMessage m : messages) {
+            m.complete = true;
+            m.visibleText = m.fullText;
         }
-        if (typewriterActive.compareAndSet(false, true)) {
-            SwingUtilities.invokeLater(typewriterTimer::start);
+
+        OverlayMessage msg = new OverlayMessage(prefix, text);
+        messages.add(msg);
+
+        while (messages.size() > MAX_MESSAGES) {
+            messages.remove(0);
         }
+
+        overlayPanel.repaint();
+        startTypewriter(msg);
     }
 
-    private void tick() {
-        String nextChar;
-        synchronized (buffer) {
-            if (buffer.isEmpty()) {
-                typewriterTimer.stop();
-                typewriterActive.set(false);
+    private void startTypewriter(OverlayMessage target) {
+        Timer[] holder = new Timer[1];
+        holder[0] = new Timer(TYPEWRITER_DELAY_MS, null);
+        holder[0].addActionListener(e -> {
+            if (target.complete) {
+                // Fast-forwarded externally — flush and stop
+                target.visibleText = target.fullText;
+                holder[0].stop();
+                overlayPanel.repaint();
                 return;
             }
-            nextChar = String.valueOf(buffer.charAt(0));
-            buffer.deleteCharAt(0);
+            int len = target.visibleText.length();
+            if (len >= target.fullText.length()) {
+                target.complete = true;
+                target.visibleText = target.fullText;
+                holder[0].stop();
+            } else {
+                target.visibleText = target.fullText.substring(0, len + 1);
+            }
+            overlayPanel.repaint();
+        });
+        holder[0].start();
+    }
+
+    // -- Custom panel ----------------------------------------------------------
+
+    private final class OverlayPanel extends JPanel {
+
+        private static final int PAD_X = 12;
+        private static final int PAD_Y = 8;
+        private static final int LINE_GAP = 6;
+
+        private final Font font;
+
+        OverlayPanel() {
+            setOpaque(true);
+            setBackground(BG);
+
+            Font loaded;
+            try {
+                loaded = Font.createFont(Font.TRUETYPE_FONT, Objects.requireNonNull(
+                        getClass().getResourceAsStream("/fonts/Electrolize-Regular.ttf"))
+                ).deriveFont(20f);
+            } catch (FontFormatException | IOException e) {
+                loaded = new Font(Font.MONOSPACED, Font.PLAIN, 20);
+            }
+            font = loaded;
         }
-        textArea.append(nextChar);
-        textArea.setCaretPosition(textArea.getDocument().getLength());
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            if (messages.isEmpty()) return;
+
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
+            g2.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+
+            g2.setFont(font);
+            FontMetrics fm = g2.getFontMetrics();
+            int maxW = getWidth() - PAD_X * 2;
+
+            // Measure all message blocks bottom-up
+            List<List<String>> wrappedAll = new ArrayList<>();
+            for (OverlayMessage m : messages) {
+                String display = m.prefix + (m.complete ? m.fullText : m.visibleText);
+                wrappedAll.add(wrapText(display, fm, maxW));
+            }
+
+            // Draw from the bottom up, newest last (bottom of panel)
+            int y = getHeight() - PAD_Y;
+            for (int i = messages.size() - 1; i >= 0; i--) {
+                List<String> lines = wrappedAll.get(i);
+                int blockH = lines.size() * fm.getHeight();
+                y -= blockH;
+                if (y + blockH < 0) break; // scrolled off top
+
+                g2.setColor(FG);
+                for (int li = 0; li < lines.size(); li++) {
+                    g2.drawString(lines.get(li), PAD_X, y + li * fm.getHeight() + fm.getAscent());
+                }
+
+                // Blinking cursor on the active (newest, incomplete) message
+                OverlayMessage msg = messages.get(i);
+                if (!msg.complete && i == messages.size() - 1) {
+                    String lastLine = lines.get(lines.size() - 1);
+                    int cx = PAD_X + fm.stringWidth(lastLine);
+                    int cy = y + (lines.size() - 1) * fm.getHeight();
+                    boolean blink = (System.currentTimeMillis() / 500) % 2 == 0;
+                    if (blink) {
+                        g2.setColor(FG);
+                        g2.fillRect(cx + 2, cy + 2, fm.charWidth('M') / 2, fm.getAscent() - 2);
+                    }
+                }
+
+                y -= LINE_GAP;
+            }
+
+            g2.dispose();
+        }
+
+        private List<String> wrapText(String text, FontMetrics fm, int maxW) {
+            List<String> result = new ArrayList<>();
+            if (text == null || text.isEmpty()) {
+                result.add("");
+                return result;
+            }
+            String[] words = text.split(" ", -1);
+            StringBuilder line = new StringBuilder();
+            for (String word : words) {
+                String candidate = line.isEmpty() ? word : line + " " + word;
+                if (fm.stringWidth(candidate) <= maxW) {
+                    line = new StringBuilder(candidate);
+                } else {
+                    if (!line.isEmpty()) result.add(line.toString());
+                    if (fm.stringWidth(word) > maxW) {
+                        StringBuilder part = new StringBuilder();
+                        for (char c : word.toCharArray()) {
+                            if (fm.stringWidth(part + String.valueOf(c)) > maxW) {
+                                result.add(part.toString());
+                                part = new StringBuilder();
+                            }
+                            part.append(c);
+                        }
+                        line = part;
+                    } else {
+                        line = new StringBuilder(word);
+                    }
+                }
+            }
+            if (!line.isEmpty()) result.add(line.toString());
+            return result;
+        }
     }
 }

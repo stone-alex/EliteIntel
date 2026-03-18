@@ -320,12 +320,15 @@ public class AppView extends JFrame implements AppViewInterface {
         final OBSOverlayWindow[] obsOverlay = {null};
         toggleObsOverlay = new JCheckBox("OBS Overlay", false);
         toggleObsOverlay.addActionListener(e -> {
-            if (toggleObsOverlay.isSelected()) {
-                if (obsOverlay[0] == null) obsOverlay[0] = new OBSOverlayWindow();
-                obsOverlay[0].setVisible(true);
-            } else if (obsOverlay[0] != null) {
-                obsOverlay[0].setVisible(false);
-            }
+
+            SwingUtilities.invokeLater(() -> {
+                if (toggleObsOverlay.isSelected()) {
+                    if (obsOverlay[0] == null) obsOverlay[0] = new OBSOverlayWindow();
+                    obsOverlay[0].setVisible(true);
+                } else if (obsOverlay[0] != null) {
+                    obsOverlay[0].setVisible(false);
+                }
+            });
         });
 
 

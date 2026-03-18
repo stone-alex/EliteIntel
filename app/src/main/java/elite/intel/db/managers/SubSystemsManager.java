@@ -53,7 +53,7 @@ public class SubSystemsManager extends CommandOperator {
                 if (!pause) {
                     operateKeyboard(BINDING_CYCLE_NEXT_SUBSYSTEM.getGameBinding(), 50);
                     pause = true;
-                    SleepNoThrow.sleep(100);
+                    SleepNoThrow.sleep(250);
                 }
                 SleepNoThrow.sleep(10);  // yield + quick flag check
             }

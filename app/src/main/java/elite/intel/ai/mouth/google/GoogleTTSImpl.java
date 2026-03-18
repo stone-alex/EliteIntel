@@ -259,9 +259,9 @@ public class GoogleTTSImpl implements MouthInterface {
         if (persistentLine != null) {
             try {
                 if (!running) {
-                    persistentLine.flush(); // forced stop — discard buffered audio immediately
+                    persistentLine.flush(); // forced stop - discard buffered audio immediately
                 } else {
-                    persistentLine.drain(); // normal end — play out remaining audio
+                    persistentLine.drain(); // normal end - play out remaining audio
                 }
                 persistentLine.stop();
                 persistentLine.close();

@@ -304,9 +304,9 @@ public class KokoroTTS implements MouthInterface {
         if (persistentLine != null && persistentLine.isOpen()) {
             try {
                 if (interruptRequested.get()) {
-                    persistentLine.flush(); // forced stop — discard buffered audio immediately
+                    persistentLine.flush(); // forced stop - discard buffered audio immediately
                 } else {
-                    persistentLine.drain(); // normal end — play out remaining audio
+                    persistentLine.drain(); // normal end - play out remaining audio
                 }
                 persistentLine.stop();
                 persistentLine.close();

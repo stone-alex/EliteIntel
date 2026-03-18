@@ -27,7 +27,7 @@ public class SttTermCorrector {
     private static final SttTermCorrector INSTANCE = new SttTermCorrector();
     private final Logger log = LogManager.getLogger(SttTermCorrector.class);
 
-    // Ignore tokens shorter than this — too risky for false-positives on common words
+    // Ignore tokens shorter than this - too risky for false-positives on common words
     private static final int MIN_TOKEN_LENGTH = 4;
     // Accept a correction only when edit distance is within this threshold
     private static final int MAX_EDIT_DISTANCE = 2;
@@ -91,7 +91,7 @@ public class SttTermCorrector {
         int bestDist = MAX_EDIT_DISTANCE + 1;
         for (String candidate : vocab) {
             // Skip candidates that are just the token with a suffix added or removed
-            // (e.g. "trade" vs "trader") — these are related forms, not corrections.
+            // (e.g. "trade" vs "trader") - these are related forms, not corrections.
             if (candidate.startsWith(token) || token.startsWith(candidate)) continue;
 
             int dist = FuzzySearch.levenshteinDistance(token, candidate);

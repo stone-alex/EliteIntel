@@ -16,6 +16,7 @@ public class DeleteCodexEntryHandler implements CommandHandler {
         TargetLocation tracking = playerSession.getTracking();
         if (tracking != null) {
             codexEntryManager.deleteTrackedEntry(tracking);
+            playerSession.setTracking(null);
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("Deleted codex entry for tracked location."));
         } else {
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("No tracking location."));

@@ -136,7 +136,7 @@ public class AiCommandsAndQueries {
             commandMap.put("deploy SRV, deploy buggy, deploy surface vehicle", DEPLOY_SRV.getAction());
         }
         if (status.isInSrv()) {
-            commandMap.put("recover SRV, recover buggy, board ship, requesting extraction, extract surface vehicle", RECOVER_SRV.getAction());
+            commandMap.put("recover SRV, recover buggy, get car back aboard ship, requesting extraction, extract surface vehicle", RECOVER_SRV.getAction());
         }
 
         /// UI panels

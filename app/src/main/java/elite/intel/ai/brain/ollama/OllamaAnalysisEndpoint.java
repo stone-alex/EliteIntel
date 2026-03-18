@@ -77,6 +77,17 @@ public class OllamaAnalysisEndpoint extends AiEndPoint implements AiAnalysisInte
 
             JsonObject root = processAiPrompt(gson.toJson(prompt), client);
             log.debug("Ollama analysis raw response:\n{}", gson.toJson(root));
+            String asString = root.getAsString();
+            if (asString != null && asString.length() > 0) {
+                boolean faliledCall = asString.toLowerCase().contains("LLM Call Failed");
+                if (faliledCall) {
+                    log.error("LLM Call failed. Failure processing system request. response: {}", asString);
+                    JsonObject err = new JsonObject();
+                    err.addProperty("response_text", "Analysis failed – check logs");
+                    return err;
+                }
+            }
+
             String content = root.getAsJsonObject("message").get("content").getAsString();
             JsonObject parsed = JsonParser.parseString(JsonUtils.repairLlmJson(content)).getAsJsonObject();
             parsed.addProperty("type", "chat"); // normalize - model sometimes hallucinates type values

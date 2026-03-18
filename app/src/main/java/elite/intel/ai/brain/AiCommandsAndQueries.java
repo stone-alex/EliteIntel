@@ -218,7 +218,7 @@ public class AiCommandsAndQueries {
         queryMap.put("distance to fleet carrier, distance to home base, how far is the carrier, where is my carrier, carrier location, how far to the carrier", DISTANCE_TO_CARRIER.getAction());
         queryMap.put("pirate mission progress, massacre mission kills, how many kills do we have, bounty mission status, kill count, mission kill tally", PIRATE_MISSION_PROGRESS.getAction());
         queryMap.put("player statistics and ranks", PLAYER_PROFILE_ANALYSIS.getAction());
-        queryMap.put("ship loadout, classification, damage report, what modules do we have, ship status, ship build, what is equipped, module check, are we armed, do we have a fuel scoop", SHIP_LOADOUT.getAction());
+        queryMap.put("ship loadout, classification, damage report, module integrity check, what modules do we have, ship status, ship build, what is equipped, module check, are we armed, do we have a fuel scoop", SHIP_LOADOUT.getAction());
         queryMap.put("station services, what services are available here, what does this station offer, station facilities, can we repair here, can we rearm here", STATION_DETAILS.getAction());
         queryMap.put("what can you do, your capabilities, app features, list your functions, what commands do you know", APP_CAPABILITIES.getAction());
         queryMap.put("your name, your designation, who are you, what are you called, identify yourself", AI_DESIGNATION.getAction());

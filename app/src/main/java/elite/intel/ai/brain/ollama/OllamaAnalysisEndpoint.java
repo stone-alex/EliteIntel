@@ -86,7 +86,7 @@ public class OllamaAnalysisEndpoint extends AiEndPoint implements AiAnalysisInte
         } catch (Exception e) {
             log.error("Ollama analysis failed", e);
             JsonObject err = new JsonObject();
-            err.addProperty("response_text", "Analysis failed – check logs");
+            err.addProperty("response_text", "LLM Returned malformed response. Analysis failed – check logs");
             return err;
         }
     }

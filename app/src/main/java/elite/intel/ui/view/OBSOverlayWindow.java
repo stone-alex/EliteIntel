@@ -7,6 +7,7 @@ import elite.intel.ui.event.AiResponseLogEvent;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,9 @@ public class OBSOverlayWindow extends JFrame {
 
     private static final int TYPEWRITER_DELAY_MS = 50;
     private static final int MAX_MESSAGES = 7;
+
+    /// cached buffered image
+    private BufferedImage frame;
 
     // -- Inner model -----------------------------------------------------------
 
@@ -105,10 +109,9 @@ public class OBSOverlayWindow extends JFrame {
         holder[0] = new Timer(TYPEWRITER_DELAY_MS, null);
         holder[0].addActionListener(e -> {
             if (target.complete) {
-                // Fast-forwarded externally — flush and stop
                 target.visibleText = target.fullText;
                 holder[0].stop();
-                overlayPanel.repaint();
+                overlayPanel.paintImmediately(0, 0, overlayPanel.getWidth(), overlayPanel.getHeight());
                 return;
             }
             int len = target.visibleText.length();
@@ -119,7 +122,7 @@ public class OBSOverlayWindow extends JFrame {
             } else {
                 target.visibleText = target.fullText.substring(0, len + 1);
             }
-            overlayPanel.repaint();
+            overlayPanel.paintImmediately(0, 0, overlayPanel.getWidth(), overlayPanel.getHeight());
         });
         holder[0].start();
     }
@@ -153,8 +156,21 @@ public class OBSOverlayWindow extends JFrame {
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
             if (messages.isEmpty()) return;
+            int w = getWidth();
+            int h = getHeight();
 
-            Graphics2D g2 = (Graphics2D) g.create();
+            //BufferedImage frame = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+
+            // reallocate only if size changed
+            if (frame == null || frame.getWidth() != w || frame.getHeight() != h) {
+                frame = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+            }
+
+            Graphics2D g2 = frame.createGraphics();
+            g2.setColor(BG);
+            g2.fillRect(0, 0, w, h);
+
+
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
             g2.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
@@ -200,6 +216,7 @@ public class OBSOverlayWindow extends JFrame {
             }
 
             g2.dispose();
+            g.drawImage(frame, 0, 0, null); // single blit to screen
         }
 
         private List<String> wrapText(String text, FontMetrics fm, int maxW) {

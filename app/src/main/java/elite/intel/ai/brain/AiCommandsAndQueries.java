@@ -132,10 +132,10 @@ public class AiCommandsAndQueries {
 
         /// UI panels
         commandMap.put("activate, punch it, engage", ACTIVATE.getAction());
-        commandMap.put("show transactions", SHOW_TRANSACTIONS.getAction());
-        commandMap.put("show contacts", SHOW_CONTACTS.getAction());
-        commandMap.put("show navigation", SHOW_NAVIGATION.getAction());
-        commandMap.put("show comms, show chat", SHOW_CHAT_PANEL.getAction());
+        commandMap.put("show transactions panel", SHOW_TRANSACTIONS.getAction());
+        commandMap.put("show contacts panel", SHOW_CONTACTS.getAction());
+        commandMap.put("show navigation panel", SHOW_NAVIGATION.getAction());
+        commandMap.put("show comms, show chat panel", SHOW_CHAT_PANEL.getAction());
         commandMap.put("show inbox, show messages", SHOW_INBOX_PANEL.getAction());
         commandMap.put("show social, show friends", SHOW_SOCIAL_PANEL.getAction());
         commandMap.put("show history, show history panel", SHOW_HISTORY_PANEL.getAction());

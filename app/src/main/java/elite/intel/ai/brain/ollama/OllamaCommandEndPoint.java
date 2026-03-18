@@ -31,42 +31,6 @@ public class OllamaCommandEndPoint extends AiEndPoint implements AIChatInterface
             JsonArray sanitized = sanitizeJsonArray(messages);
             prompt.add("messages", sanitized);
 
-            // === STRUCTURED SCHEMA ENFORCEMENT ===
-            // Command parser returns: type, action, params - never response_text
-            JsonObject format = new JsonObject();
-            JsonObject properties = new JsonObject();
-
-            // promptType: "command" | "query"
-            JsonObject typeProp = new JsonObject();
-            typeProp.addProperty("type", "string");
-            JsonArray typeEnum = new JsonArray();
-            typeEnum.add("command");
-            typeEnum.add("query");
-            typeEnum.add("chat");
-            typeProp.add("enum", typeEnum);
-            properties.add("promptType", typeProp);
-
-            // action: any string
-            JsonObject actionProp = new JsonObject();
-            actionProp.addProperty("type", "string");
-            properties.add("action", actionProp);
-
-            // params: object
-            JsonObject paramsProp = new JsonObject();
-            paramsProp.addProperty("type", "object");
-            properties.add("params", paramsProp);
-
-            format.add("properties", properties);
-
-            JsonArray required = new JsonArray();
-            required.add("promptType");
-            required.add("action");
-            required.add("params");
-            format.add("required", required);
-            format.addProperty("additionalProperties", false);
-            format.addProperty("type", "object");
-
-            prompt.add("format", format);
 
             bodyString = prompt.toString();
             log.debug("Ollama API call:\n{}", GsonFactory.getGson().toJson(prompt));

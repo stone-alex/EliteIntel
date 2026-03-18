@@ -64,9 +64,6 @@ public class OllamaAnalysisEndpoint extends AiEndPoint implements AiAnalysisInte
             log.debug("Ollama analysis call:\n{}", gson.toJson(prompt));
 
             JsonObject properties = new JsonObject();
-            JsonObject typeProp = new JsonObject();
-            typeProp.addProperty("type", "string");
-            properties.add("promptType", typeProp);
             JsonObject responseTextProp = new JsonObject();
             responseTextProp.addProperty("type", "string");
             properties.add("response_text", responseTextProp);
@@ -74,7 +71,6 @@ public class OllamaAnalysisEndpoint extends AiEndPoint implements AiAnalysisInte
             JsonObject format = new JsonObject();
             format.add("properties", properties);
             JsonArray required = new JsonArray();
-            required.add("promptType");
             required.add("response_text");
             format.add("required", required);
             format.addProperty("additionalProperties", false);
@@ -85,9 +81,7 @@ public class OllamaAnalysisEndpoint extends AiEndPoint implements AiAnalysisInte
             log.debug("Ollama analysis raw response:\n{}", gson.toJson(root));
 
             String content = root.getAsJsonObject("message").get("content").getAsString();
-            JsonObject parsed = JsonParser.parseString(JsonUtils.repairLlmJson(content)).getAsJsonObject();
-            parsed.addProperty("promptType", "chat"); // normalize - model sometimes hallucinates promptType values
-            return parsed;
+            return JsonParser.parseString(JsonUtils.repairLlmJson(content)).getAsJsonObject();
 
         } catch (Exception e) {
             log.error("Ollama analysis failed", e);
@@ -122,11 +116,7 @@ public class OllamaAnalysisEndpoint extends AiEndPoint implements AiAnalysisInte
 
             prompt.add("messages", messages);
 
-            // Chat schema - sensor responses are promptType + response_text only
             JsonObject properties = new JsonObject();
-            JsonObject typeProp = new JsonObject();
-            typeProp.addProperty("type", "string");
-            properties.add("promptType", typeProp);
             JsonObject responseTextProp = new JsonObject();
             responseTextProp.addProperty("type", "string");
             properties.add("response_text", responseTextProp);
@@ -134,7 +124,6 @@ public class OllamaAnalysisEndpoint extends AiEndPoint implements AiAnalysisInte
             JsonObject format = new JsonObject();
             format.add("properties", properties);
             JsonArray required = new JsonArray();
-            required.add("promptType");
             required.add("response_text");
             format.add("required", required);
             format.addProperty("additionalProperties", false);
@@ -144,14 +133,11 @@ public class OllamaAnalysisEndpoint extends AiEndPoint implements AiAnalysisInte
             JsonObject root = processAiPrompt(gson.toJson(prompt), client);
             log.debug("Ollama sensor raw response:\n{}", gson.toJson(root));
             String sensorContent = root.getAsJsonObject("message").get("content").getAsString();
-            JsonObject parsed = JsonParser.parseString(JsonUtils.repairLlmJson(sensorContent)).getAsJsonObject();
-            parsed.addProperty("promptType", "chat");
-            return parsed;
+            return JsonParser.parseString(JsonUtils.repairLlmJson(sensorContent)).getAsJsonObject();
 
         } catch (Exception e) {
             log.error("Ollama sensor processing failed", e);
             JsonObject err = new JsonObject();
-            err.addProperty("promptType", "chat");
             err.addProperty("response_text", "Sensor analysis failed – check logs");
             return err;
         }

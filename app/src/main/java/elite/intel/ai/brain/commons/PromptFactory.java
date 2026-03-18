@@ -52,12 +52,12 @@ public class PromptFactory implements AiPromptFactory {
                 CRITICAL RULES - BREAKING ANY = TOTAL FAILURE:
                 - NEVER invent, modify, combine, or create new actions or parameters.
                 """);
-        //sb.append("- If ZERO good match → return: {\"promptType\": \"query\", \"action\": \"").append(Queries.GENERAL_CONVERSATION.getAction()).append("\", \"params\": {}}");
-        sb.append("- Pilot chatter, exclamations, incomplete sentences, or anything with no clear intent → query_general_conversation\n" +
-                "- When in doubt → query_general_conversation\n" +
-                "- It is always safer to return query_general_conversation than to guess");
+        sb.append("- If ZERO good match → return: {\"action\": \"").append(Queries.GENERAL_CONVERSATION.getAction()).append("\", \"params\": {}}");
+//        sb.append("- Pilot chatter, exclamations, incomplete sentences, or anything with no clear intent → query_general_conversation\n" +
+//                "- When in doubt → query_general_conversation\n" +
+//                "- It is always safer to return query_general_conversation than to guess");
         if (!systemSession.useLocalQueryLlm()) {
-            sb.append("- CRITICAL: if input contains 'help with X', 'help me with X', 'can you help with X', 'how do I X', 'explain X' → respond EXACTLY: {\"promptType\": \"query\", \"action\": \"").append(Queries.HELP.getAction()).append("\", \"params\": {\"key\": \"<topic>\"}}. Replace <topic> with the subject using spaces not underscores (e.g. 'biology', 'trade routes', 'fleet carrier routing'). No other action.\n");
+            sb.append("- CRITICAL: if input contains 'help with X', 'help me with X', 'can you help with X', 'how do I X', 'explain X' → respond EXACTLY: {\"action\": \"").append(Queries.HELP.getAction()).append("\", \"params\": {\"key\": \"<topic>\"}}. Replace <topic> with the subject using spaces not underscores (e.g. 'biology', 'trade routes', 'fleet carrier routing'). No other action.\n");
         }
 
         sb.append("""
@@ -69,16 +69,11 @@ public class PromptFactory implements AiPromptFactory {
                 
                 """);
 
-        sb.append("Classify \"").append(AiEndPoint.CONNECTION_CHECK_COMMAND).append("\" as a command with action ").append(AiEndPoint.CONNECTION_CHECK_COMMAND).append(" \n");
-        sb.append("Map of allowed actions:");
-
-        sb.append("Classify as {\"promptType\": \"command\", \"action\": \"action_name\", \"params\": {\"key\": \"value\"}}");
+        sb.append("\nCOMMANDS:\n");
         sb.append(commandsAndQueries.getCommandMap());
-        sb.append("""
-                Supported QUERIES: patterns, concepts, and formulations -> ACTION_NAME (use ONLY these action names):
-                """);
-        sb.append("Classify as {\"promptType\": \"query\", \"action\": \"action_name\", \"params\": {\"key\": \"value\"}}");
+        sb.append("\nQUERIES:\n");
         sb.append(commandsAndQueries.getQueries());
+        sb.append("Output format: {\"action\": \"action_name\", \"params\": {}}\n");
         sb.append("""
                 PARAMS RULES - DO NOT DEVIATE:
                 • Use ONLY the exact key names and types shown in the command's template
@@ -118,7 +113,7 @@ public class PromptFactory implements AiPromptFactory {
             sb.append(appendLocalBehavior());
         }
         sb.append("""
-                Respond with JSON only. Set "promptType" to "chat". Set "response_text" to your answer.
+                Respond with JSON only. Set "response_text" to your answer.
 
                 Rules for response_text:
                 - Plain English text only. No bullets, no markdown, no lists, no brackets.
@@ -173,7 +168,7 @@ public class PromptFactory implements AiPromptFactory {
                 
                 STRICT RULES - MUST FOLLOW EVERY ONE:
                 - Output EXACTLY this JSON structure and NOTHING else - no extra text, no explanations, no markdown:
-                  {"promptType": "chat", "response_text": "summary here"}
+                  {"response_text": "summary here"}
                 - response_text must be pure natural-language summary of facts only.
                 - NEVER use future/intention verbs: no will, going to, have to, need to, should, must.
                 - NEVER mention the user, notification, reporting, telling, or any communication act.

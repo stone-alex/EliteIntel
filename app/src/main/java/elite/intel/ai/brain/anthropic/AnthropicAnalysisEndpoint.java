@@ -55,7 +55,7 @@ public class AnthropicAnalysisEndpoint extends AiEndPoint implements AiAnalysisI
                 baseSystemPrompt = """
                         AI assistant.
                         Provide brief, casual conversational responses.
-                        Output ONLY this exact JSON structure {"promptType":"chat", "response_text": "YOUR ANSWER HERE"} - no markdown, no extra text.
+                        Output ONLY this exact JSON structure {"response_text": "YOUR ANSWER HERE"} - no markdown, no extra text.
                         Keep responses to one short sentence.
                         """;
             } else {

@@ -69,7 +69,7 @@ public class OllamaClient extends BaseAiClient implements Client {
         if (isQueryModel) {
             request.addProperty("top_k", 80);         // higher for query - allows natural language generation
         } else {
-            request.addProperty("top_k", 20);         // low for commands - forces strict JSON structure
+            request.addProperty("top_k", 10);         // low for commands - forces strict JSON structure
         }
 
         return request;

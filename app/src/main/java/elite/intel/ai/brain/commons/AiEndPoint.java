@@ -11,7 +11,7 @@ import java.io.IOException;
 
 public abstract class AiEndPoint {
 
-    public static final String CONNECTION_CHECK_COMMAND = "llm connection check";
+    public static final String CONNECTION_CHECK_COMMAND = "command_verify_connection";
 
     private static final Logger log = LogManager.getLogger(AiEndPoint.class);
 

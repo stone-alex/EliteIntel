@@ -10,9 +10,7 @@ import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.UserInputEvent;
-import elite.intel.session.ChatHistory;
 import elite.intel.session.PlayerSession;
-import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.StringUtls;
 import org.apache.logging.log4j.LogManager;
@@ -22,7 +20,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static elite.intel.util.json.JsonUtils.getAsStringOrEmpty;
 import static org.apache.logging.log4j.util.Strings.trimToNull;
 
 /**
@@ -41,8 +38,6 @@ public class AnthropicCommandEndPoint extends CommandEndPoint implements AiComma
 
     private ExecutorService executor;
     private final AtomicBoolean running = new AtomicBoolean(false);
-    private final SystemSession systemSession = SystemSession.getInstance();
-
     private AnthropicCommandEndPoint() {
         // singleton
     }
@@ -163,16 +158,6 @@ public class AnthropicCommandEndPoint extends CommandEndPoint implements AiComma
         }
 
         getRouter().processAiResponse(response, userInput);
-
-        // Persist chat history on chat-type responses, identical to Ollama/Grok behaviour
-        String type = getAsStringOrEmpty(response, "promptType").toLowerCase();
-        if ("chat".equals(type)) {
-            boolean expectFollowup = response.has(AIConstants.PROPERTY_EXPECT_FOLLOWUP) &&
-                                     response.get(AIConstants.PROPERTY_EXPECT_FOLLOWUP).getAsBoolean();
-            if (expectFollowup) {
-                systemSession.setChatHistory(new ChatHistory(userInput, response.getAsString()));
-            }
-        }
     }
 
     // -----------------------------------------------------------------------
@@ -181,10 +166,7 @@ public class AnthropicCommandEndPoint extends CommandEndPoint implements AiComma
 
     private JsonObject createError(String text) {
         JsonObject err = new JsonObject();
-        err.addProperty("promptType", AIConstants.TYPE_CHAT);
         err.addProperty(AIConstants.PROPERTY_RESPONSE_TEXT, text);
-        err.add("params", new JsonObject());
-        err.addProperty(AIConstants.PROPERTY_EXPECT_FOLLOWUP, true);
         return err;
     }
 }

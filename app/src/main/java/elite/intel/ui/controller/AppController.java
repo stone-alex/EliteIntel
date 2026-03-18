@@ -27,6 +27,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
+import static elite.intel.ai.brain.commons.AiEndPoint.CONNECTION_CHECK_COMMAND;
+
 public class AppController implements Runnable {
     private final AtomicBoolean isRunning = new AtomicBoolean(false);
     private final AtomicBoolean showDetailedLog = new AtomicBoolean(false);
@@ -285,7 +287,7 @@ public class AppController implements Runnable {
 
         Timer connectionCheckTimer = new Timer(2000, e -> {
             EventBusManager.publish(new AiVoxResponseEvent("Connecting to LLM..."));
-            EventBusManager.publish(new UserInputEvent("Verify LLM Connection", 100f));
+            EventBusManager.publish(new UserInputEvent(CONNECTION_CHECK_COMMAND, 100f));
         });
         connectionCheckTimer.setRepeats(false);
         connectionCheckTimer.start();

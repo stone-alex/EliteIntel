@@ -12,13 +12,10 @@ import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.UserInputEvent;
-import elite.intel.session.ChatHistory;
 import elite.intel.session.PlayerSession;
-import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.StringUtls;
 import elite.intel.util.json.GsonFactory;
-import elite.intel.util.json.JsonUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -32,11 +29,9 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
     private static final Logger log = LogManager.getLogger(OpenAiCommandEndPoint.class);
     private static OpenAiCommandEndPoint instance;
     private final AtomicBoolean running = new AtomicBoolean(false);
-    private final SystemSession systemSession;
     private ExecutorService executor;
 
     private OpenAiCommandEndPoint() {
-        systemSession = SystemSession.getInstance();
         EventBusManager.register(this);
     }
 
@@ -125,11 +120,7 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
 
         if (userInput == null || userInput.isEmpty()) {
             JsonObject errorResponse = new JsonObject();
-            errorResponse.addProperty("promptType", AIConstants.TYPE_CHAT);
             errorResponse.addProperty(AIConstants.PROPERTY_RESPONSE_TEXT, "Sorry, I couldn't process that.");
-            errorResponse.addProperty(AIConstants.TYPE_ACTION, (String) null);
-            errorResponse.add("params", new JsonObject());
-            errorResponse.addProperty(AIConstants.PROPERTY_EXPECT_FOLLOWUP, true);
             getRouter().processAiResponse(errorResponse, userInput);
             return;
         }
@@ -154,27 +145,12 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
         JsonObject apiResponse = callOpenAiApi(messages);
         if (apiResponse == null) {
             JsonObject errorResponse = new JsonObject();
-            errorResponse.addProperty("promptType", AIConstants.TYPE_CHAT);
             errorResponse.addProperty(AIConstants.PROPERTY_RESPONSE_TEXT, "Sorry, I couldn't process that.");
-            errorResponse.addProperty(AIConstants.TYPE_ACTION, (String) null);
-            errorResponse.add("params", new JsonObject());
-            errorResponse.addProperty(AIConstants.PROPERTY_EXPECT_FOLLOWUP, true);
             getRouter().processAiResponse(errorResponse, userInput);
             return;
         }
 
-        // Route the response
         getRouter().processAiResponse(apiResponse, userInput);
-
-        // Handle history updates for chat continuations
-        String type = JsonUtils.getAsStringOrEmpty(apiResponse, "promptType").toLowerCase();
-        String responseText = JsonUtils.getAsStringOrEmpty(apiResponse, AIConstants.PROPERTY_RESPONSE_TEXT);
-        if ("chat".equals(type)) {
-            JsonObject assistantMessage = new JsonObject();
-            assistantMessage.addProperty("role", AIConstants.ROLE_ASSISTANT);
-            assistantMessage.addProperty("content", responseText);
-            systemSession.setChatHistory(new ChatHistory(userInput, responseText));
-        }
     }
 
     @Subscribe

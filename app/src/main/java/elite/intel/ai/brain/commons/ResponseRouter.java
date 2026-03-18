@@ -56,16 +56,11 @@ public class ResponseRouter implements AIRouterInterface {
             return;
         }
         try {
-            String type = getAsStringOrEmpty(jsonResponse, "promptType").toLowerCase();
             String responseText = getAsStringOrEmpty(jsonResponse, AIConstants.PROPERTY_RESPONSE_TEXT);
             String action = getAsStringOrEmpty(jsonResponse, AIConstants.TYPE_ACTION);
             JsonObject params = getAsObjectOrEmpty(jsonResponse);
 
-            if (action == null) {
-                type = AIConstants.TYPE_CHAT;
-            }
-
-            if (!responseText.isEmpty() && type.equals(AIConstants.TYPE_CHAT)) {
+            if (!responseText.isEmpty() && action.isEmpty()) {
                 systemSession.setChatHistory(new ChatHistory(userInput, responseText));
                 EventBusManager.publish(new AiVoxResponseEvent(responseText));
                 log.info("Spoke initial response: {}", responseText);
@@ -79,15 +74,12 @@ public class ResponseRouter implements AIRouterInterface {
                 EventBusManager.publish(new AppLogEvent("Cloud LLM Action: " + paramsForLogging));
             }
 
-            switch (type) {
-                case AIConstants.TYPE_COMMAND:
-                    handleCommand(action, params, responseText);
-                    break;
-                case AIConstants.TYPE_QUERY:
-                    handleQuery(action, params, userInput);
-                    break;
-                default:
-                    handleChat(responseText);
+            if (getCommandHandlers().containsKey(action)) {
+                handleCommand(action, params, responseText);
+            } else if (getQueryHandlers().containsKey(action)) {
+                handleQuery(action, params, userInput);
+            } else {
+                handleChat(responseText);
             }
         } catch (Exception e) {
             log.error("Failed to process LLM response: {}", e.getMessage(), e);
@@ -100,7 +92,7 @@ public class ResponseRouter implements AIRouterInterface {
     private void handleQuery(String action, JsonObject params, String userInput) {
         QueryHandler handler = getQueryHandlers().get(action);
         if (handler == null) {
-            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Failed to infer action"));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("StFailed to infer action"));
             return;
         }
 

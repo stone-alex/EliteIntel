@@ -83,7 +83,6 @@ public class GrokChatEndPoint extends AiEndPoint implements AIChatInterface {
                 jsonStart = content.indexOf("{");
                 if (jsonStart == -1) {
                     JsonObject result = new JsonObject();
-                    result.addProperty("promptType", AIConstants.TYPE_CHAT);
                     result.addProperty(AIConstants.PROPERTY_RESPONSE_TEXT, content);
                     return result;
                 }

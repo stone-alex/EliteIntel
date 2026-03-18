@@ -9,13 +9,10 @@ import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.UserInputEvent;
-import elite.intel.session.ChatHistory;
 import elite.intel.session.PlayerSession;
-import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.StringUtls;
 import elite.intel.util.json.GsonFactory;
-import elite.intel.util.json.JsonUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -32,11 +29,8 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
     private static GrokCommandEndPoint instance;
     private final AtomicBoolean running = new AtomicBoolean(false);
     private ExecutorService executor;
-    private final SystemSession systemSession;
 
     private GrokCommandEndPoint() {
-        systemSession = SystemSession.getInstance();
-
     }
 
     public static GrokCommandEndPoint getInstance() {
@@ -107,11 +101,7 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
 
         if (userInput == null || userInput.isEmpty()) {
             JsonObject errorResponse = new JsonObject();
-            errorResponse.addProperty("promptType", AIConstants.TYPE_CHAT);
             errorResponse.addProperty(AIConstants.PROPERTY_RESPONSE_TEXT, "Sorry, I couldn't process that.");
-            errorResponse.addProperty(AIConstants.TYPE_ACTION, (String) null);
-            errorResponse.add("params", new JsonObject());
-            errorResponse.addProperty(AIConstants.PROPERTY_EXPECT_FOLLOWUP, true);
             getRouter().processAiResponse(errorResponse, userInput);
             return;
         }
@@ -134,29 +124,13 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
         JsonObject apiResponse = getChatInterface().processAiPrompt(messages, 0.01f);
         if (apiResponse == null) {
             JsonObject errorResponse = new JsonObject();
-            errorResponse.addProperty("promptType", AIConstants.TYPE_CHAT);
             errorResponse.addProperty(AIConstants.PROPERTY_RESPONSE_TEXT, "Sorry, I couldn't process that.");
-            errorResponse.addProperty(AIConstants.TYPE_ACTION, (String) null);
-            errorResponse.add("params", new JsonObject());
-            errorResponse.addProperty(AIConstants.PROPERTY_EXPECT_FOLLOWUP, true);
             getRouter().processAiResponse(errorResponse, userInput);
             return;
-        } else {
-            String type = JsonUtils.getAsStringOrEmpty(apiResponse, "promptType").toLowerCase();
-            String action = getAsStringOrEmpty(apiResponse, AIConstants.TYPE_ACTION).toLowerCase();
-            log.info("Processing Action: {} for type {}", action, type);
         }
 
+        log.info("Processing Action: {}", getAsStringOrEmpty(apiResponse, AIConstants.TYPE_ACTION));
         getRouter().processAiResponse(apiResponse, userInput);
-
-        String type = getAsStringOrEmpty(apiResponse, "promptType").toLowerCase();
-        String responseText = getAsStringOrEmpty(apiResponse, AIConstants.PROPERTY_RESPONSE_TEXT);
-        if ("chat".equals(type)) {
-            JsonObject assistantMessage = new JsonObject();
-            assistantMessage.addProperty("role", AIConstants.ROLE_ASSISTANT);
-            assistantMessage.addProperty("content", responseText);
-            systemSession.setChatHistory(new ChatHistory(userInput, responseText));
-        }
     }
 
     @Subscribe @Override public void onSensorDataEvent(SensorDataEvent event) {

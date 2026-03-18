@@ -47,15 +47,18 @@ public class PromptFactory implements AiPromptFactory {
                 - do not confuse organics with materials or resources
                   organics - exobiology query
                   materials - geological query
-                - do not confuse ship (you) with fleet carrier (our base)
+                - do not confuse 'ship/you' (query_ship_loadout*) with 'carrier' (query_carrier*)
+                
+                - queries about you see query_ship_loadout*
+                - queries about your cargo hold see query_cargo_hold_contents*
+                - queries about materials we have see query_material_inventory*
+                - queries about the carrier see query_carrier*
 
                 CRITICAL RULES - BREAKING ANY = TOTAL FAILURE:
                 - NEVER invent, modify, combine, or create new actions or parameters.
                 """);
         sb.append("- If ZERO good match → return: {\"action\": \"").append(Queries.GENERAL_CONVERSATION.getAction()).append("\", \"params\": {}}");
-//        sb.append("- Pilot chatter, exclamations, incomplete sentences, or anything with no clear intent → query_general_conversation\n" +
-//                "- When in doubt → query_general_conversation\n" +
-//                "- It is always safer to return query_general_conversation than to guess");
+
         if (!systemSession.useLocalQueryLlm()) {
             sb.append("- CRITICAL: if input contains 'help with X', 'help me with X', 'can you help with X', 'how do I X', 'explain X' → respond EXACTLY: {\"action\": \"").append(Queries.HELP.getAction()).append("\", \"params\": {\"key\": \"<topic>\"}}. Replace <topic> with the subject using spaces not underscores (e.g. 'biology', 'trade routes', 'fleet carrier routing'). No other action.\n");
         }

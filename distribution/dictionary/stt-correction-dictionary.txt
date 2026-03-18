@@ -355,3 +355,5 @@
 "we're happy"="where are we"
 "recolor"="revover"
 "srb"="srv"
+"strip"="ship"
+"loud out"="load out"

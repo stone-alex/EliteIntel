@@ -225,9 +225,9 @@ public class AiCommandsAndQueries {
         queryMap.put("carrier finances, how many days of operation funded, carrier upkeep, carrier running costs, carrier budget, how long can the carrier operate", CARRIER_STATUS.getAction());
         queryMap.put("carrier ETA, when does the carrier arrive, how long until carrier arrives, carrier arrival time", CARRIER_ETA.getAction());
         queryMap.put("distance to fleet carrier, distance to home base, how far is the carrier, where is my carrier, carrier location, how far to the carrier", DISTANCE_TO_CARRIER.getAction());
-        queryMap.put("pirate mission progress, massacre mission kills, how many kills do we have, bounty mission status, kill count, mission kill tally", PIRATE_MISSION_PROGRESS.getAction());
-        queryMap.put("player statistics and ranks", PLAYER_PROFILE_ANALYSIS.getAction());
-        queryMap.put("ship loadout, classification, damage report, module integrity check, what modules do we have, ship status, ship build, what is equipped, module check, are we armed, do we have a fuel scoop", SHIP_LOADOUT.getAction());
+        queryMap.put("pirate mission info, massacre mission kills, how many kills do we have, bounty mission status, kill count, mission kill tally", PIRATE_MISSION_PROGRESS.getAction());
+        queryMap.put("user statistics, user ranks and progress", PLAYER_PROFILE_ANALYSIS.getAction());
+        queryMap.put("ship loadout, your equipment, your jump range, classification, damage report, module integrity check, what modules do we have, ship status, ship build, what is equipped, module check, are we armed, do we have a fuel scoop", SHIP_LOADOUT.getAction());
         queryMap.put("station services, what services are available here, what does this station offer, station facilities, can we repair here, can we rearm here", STATION_DETAILS.getAction());
         queryMap.put("what can you do, your capabilities, app features, list your functions, what commands do you know", APP_CAPABILITIES.getAction());
         queryMap.put("your name, your designation, who are you, what are you called, identify yourself", AI_DESIGNATION.getAction());

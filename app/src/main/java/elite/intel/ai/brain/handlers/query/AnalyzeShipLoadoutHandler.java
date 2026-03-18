@@ -81,8 +81,8 @@ public class AnalyzeShipLoadoutHandler extends BaseQueryAnalyzer implements Quer
                    Example: "Yes, we have a Class six, grade five fuel scoop fitted."
                    Example: "No, there is no fuel scoop fitted."
                 2. General loadout / classification question (no specific module asked):
-                   Lead with "I am [shipName], a [role] class vessel" where [role] is the derived role
-                   (Discovery, Combat, Trade, Mining, Passenger, or Hopper) - NOT the ship model name.
+                
+                
                    Then summarise key modules.
                 3. Damage question: use damagedModules. If empty, say no damage detected.
                 """;

@@ -119,7 +119,7 @@ public class STTSanitizer {
             sanitized = sanitized.replaceAll("\\b" + Pattern.quote(entry.getKey()) + "\\b", entry.getValue());
         }
         /// Do not use fuzzy. Use params in Whisper instead.
-        sanitized = SttTermCorrector.getInstance().correct(sanitized);
+        /// sanitized = SttTermCorrector.getInstance().correct(sanitized);
         return sanitized.trim();
     }
 }

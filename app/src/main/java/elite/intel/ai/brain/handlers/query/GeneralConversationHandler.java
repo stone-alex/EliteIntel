@@ -22,7 +22,7 @@ public class GeneralConversationHandler extends BaseQueryAnalyzer implements Que
                 - chatHistory.commanderLog: what the user said in previous turns
                 - chatHistory.shipBrief: what you said in previous turns
                 
-                Use chat history for context. Answer only what was asked.
+                      Use chat history for context. do not echo back the data fields. those are for your reference only. 
                 """;
         return process(
                 new AiDataStruct(

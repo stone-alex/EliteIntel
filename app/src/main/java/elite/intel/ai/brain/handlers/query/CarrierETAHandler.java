@@ -25,7 +25,7 @@ public class CarrierETAHandler extends BaseQueryAnalyzer implements QueryHandler
             ZonedDateTime arrival = ZonedDateTime.parse(carrierDepartureTime, DateTimeFormatter.ISO_DATE_TIME);
             minutesUntilArrival = ChronoUnit.MINUTES.between(ZonedDateTime.now(), arrival);
         } catch (Exception e) {
-            return process("Unable to parse carrier arrival time.");
+            return process("Carrier ETA not available.");
         }
 
         String instructions = """

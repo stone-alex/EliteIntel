@@ -2,12 +2,16 @@ package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
+import elite.intel.session.StatusFlags;
+import elite.intel.session.ui.UINavigator;
 
 public class BoardSrvHandler extends CommandOperator implements CommandHandler {
 
     public BoardSrvHandler(GameController controller) {
         super(controller.getMonitor(), controller.getExecutor());
     }
+
+    private final UINavigator navigator = new UINavigator(this);
 
     @Override public void handle(String action, JsonObject params, String responseText) {
         String openPanel = Bindings.GameCommand.BINDING_FOCUS_LOADOUT_PANEL.getGameBinding();
@@ -29,6 +33,6 @@ public class BoardSrvHandler extends CommandOperator implements CommandHandler {
         operateKeyboard(ui_down, 0);
         operateKeyboard(ui_right, 0);
         operateKeyboard(activate, 0);
-
+        navigator.assumeDefaultState(StatusFlags.GuiFocus.ROLE_PANEL);
     }
 }

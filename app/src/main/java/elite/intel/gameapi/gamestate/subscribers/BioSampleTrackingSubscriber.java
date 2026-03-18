@@ -64,7 +64,7 @@ public class BioSampleTrackingSubscriber {
             boolean onFoot = status.isOnFoot();
             boolean inSrv = status.isInSrv();
             String shipname  = playerSession.getShipLoadout().getShipName();
-            String vehicle = inSrv ? "Surfece Reconginsense Vehicle" : (onFoot ? "You Are" : shipname);
+            String vehicle = inSrv ? "Surface Recon Vehicle" : (onFoot ? "You Are" : shipname);
 
 
             if (wasFarEnough != isFarEnough) {

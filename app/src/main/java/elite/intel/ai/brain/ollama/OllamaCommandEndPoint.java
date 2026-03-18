@@ -32,6 +32,24 @@ public class OllamaCommandEndPoint extends AiEndPoint implements AIChatInterface
             prompt.add("messages", sanitized);
 
 
+            // Enforce output schema at the grammar level - works even for smaller/weaker models
+            JsonObject actionProp = new JsonObject();
+            actionProp.addProperty("type", "string");
+            JsonObject paramsProp = new JsonObject();
+            paramsProp.addProperty("type", "object");
+            JsonObject properties = new JsonObject();
+            properties.add("action", actionProp);
+            properties.add("params", paramsProp);
+            JsonArray required = new JsonArray();
+            required.add("action");
+            required.add("params");
+            JsonObject format = new JsonObject();
+            format.addProperty("type", "object");
+            format.add("properties", properties);
+            format.add("required", required);
+            format.addProperty("additionalProperties", false);
+            prompt.add("format", format);
+
             bodyString = prompt.toString();
             log.debug("Ollama API call:\n{}", GsonFactory.getGson().toJson(prompt));
 

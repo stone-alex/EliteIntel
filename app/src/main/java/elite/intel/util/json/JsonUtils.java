@@ -45,13 +45,33 @@ public final class JsonUtils {
     public static String repairLlmJson(String raw) {
         if (raw == null || raw.isEmpty()) return raw;
 
+        // Repair 0: model returned plain text or buried JSON in preamble/postamble
+        String working = raw.trim();
+        if (!working.startsWith("{")) {
+            int firstBrace = working.indexOf('{');
+            int lastBrace = working.lastIndexOf('}');
+            if (firstBrace >= 0 && lastBrace > firstBrace) {
+                // JSON object buried in surrounding text - extract it
+                working = working.substring(firstBrace, lastBrace + 1);
+            } else {
+                // No JSON at all - wrap as response_text so the router can speak it
+                String escaped = working
+                        .replace("\\", "\\\\")
+                        .replace("\"", "\\\"")
+                        .replace("\n", "\\n")
+                        .replace("\r", "\\r")
+                        .replace("\t", "\\t");
+                return "{\"response_text\": \"" + escaped + "\"}";
+            }
+        }
+
         // Repair 1: truncated string - JSON cut off mid response_text value (no closing "})
-        if (!raw.trim().endsWith("}")) {
+        if (!working.endsWith("}")) {
             java.util.regex.Pattern truncP = java.util.regex.Pattern.compile(
                     "\"response_text\"\\s*:\\s*\"(.*?)$",
                     java.util.regex.Pattern.DOTALL
             );
-            java.util.regex.Matcher truncM = truncP.matcher(raw);
+            java.util.regex.Matcher truncM = truncP.matcher(working);
             if (truncM.find()) {
                 String value = truncM.group(1)
                         .replace("\\", "\\\\")
@@ -59,16 +79,18 @@ public final class JsonUtils {
                         .replace("\n", "\\n")
                         .replace("\r", "\\r")
                         .replace("\t", "\\t");
-                return raw.substring(0, truncM.start()) + "\"response_text\": \"" + value + "\"}";
+                return working.substring(0, truncM.start()) + "\"response_text\": \"" + value + "\"}";
             }
         }
 
         // Repair 2: unquoted response_text value (model output value without surrounding quotes)
+        // Note: \\s*+ is possessive - prevents backtracking past whitespace so (?!\") correctly
+        // rejects properly-quoted values like: "response_text": "some text"
         java.util.regex.Pattern p = java.util.regex.Pattern.compile(
-                "\"response_text\"\\s*:\\s*(?!\")(.+?)\\s*}\\s*$",
+                "\"response_text\"\\s*:\\s*+(?!\")(.+?)\\s*}\\s*$",
                 java.util.regex.Pattern.DOTALL
         );
-        java.util.regex.Matcher m = p.matcher(raw);
+        java.util.regex.Matcher m = p.matcher(working);
         if (m.find()) {
             String value = m.group(1)
                     .replace("\\", "\\\\")
@@ -76,10 +98,10 @@ public final class JsonUtils {
                     .replace("\n", "\\n")
                     .replace("\r", "\\r")
                     .replace("\t", "\\t");
-            return raw.substring(0, m.start()) + "\"response_text\": \"" + value + "\"}";
+            return working.substring(0, m.start()) + "\"response_text\": \"" + value + "\"}";
         }
 
-        return raw;
+        return working;
     }
 
     public static JsonObject nullSaveJsonObject(JsonObject obj, String key, Logger log) {

@@ -75,6 +75,18 @@ public class UINavigator {
     }
 
 
+    /**
+     * Tells the tracker that the game has already reset a panel to its default tab
+     * without any keystroke from us - e.g. when the game switches context on SRV
+     * deploy/recover. No keystrokes are sent; this is purely a state sync.
+     */
+    public void assumeDefaultState(GuiFocus panel) {
+        PanelState<?> state = tracker.getState(panel);
+        if (state != null) {
+            state.resetToDefault();
+        }
+    }
+
     public void closeOpenPanel() {
         /// hack-workaround - clears any current UI selection
         operator.operateKeyboard(Bindings.GameCommand.BINDING_TARGET_NEXT_ROUTE_SYSTEM.getGameBinding(), 0);

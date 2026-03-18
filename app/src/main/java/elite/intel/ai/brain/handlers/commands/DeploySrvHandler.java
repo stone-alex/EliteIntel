@@ -42,6 +42,7 @@ public class DeploySrvHandler extends CommandOperator implements CommandHandler 
             operateKeyboard(ui_down, 0);
             operateKeyboard(ui_right, 0);
             operateKeyboard(activate, 0);
+            navigator.assumeDefaultState(StatusFlags.GuiFocus.ROLE_PANEL);
         }
     }
 }

@@ -350,3 +350,4 @@
 "fleet care, care"="fleet carrier"
 "console"="cancel"
 "jaleet"="delete"
+"lock life"="looks like"

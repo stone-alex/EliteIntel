@@ -78,7 +78,7 @@ public class AnalyzeCurrentLocationHandler extends BaseQueryAnalyzer implements 
                                 location.getPowers() == null ? null : location.getPowers().toArray(String[]::new),
                                 deathsDto.getData() == null ? null : deathsDto.getData().getDeaths(),
                                 trafficDto.getData() == null ? null : trafficDto.getData().getTraffic(),
-                                location.getRadius(),
+                                (int) location.getRadius(),
                                 (surfaceTemperatureInKelvin - 273),
                                 getFormattedSolarDayLength(location.getRotationPeriod(), location.getOrbitalPeriod(), location.isTidalLocked())
                         )

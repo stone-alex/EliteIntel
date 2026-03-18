@@ -52,7 +52,10 @@ public class PromptFactory implements AiPromptFactory {
                 CRITICAL RULES - BREAKING ANY = TOTAL FAILURE:
                 - NEVER invent, modify, combine, or create new actions or parameters.
                 """);
-        sb.append("- If ZERO good match → return: {\"type\": \"query\", \"action\": \"").append(Queries.GENERAL_CONVERSATION.getAction()).append("\", \"params\": {}}");
+        //sb.append("- If ZERO good match → return: {\"type\": \"query\", \"action\": \"").append(Queries.GENERAL_CONVERSATION.getAction()).append("\", \"params\": {}}");
+        sb.append("- Pilot chatter, exclamations, incomplete sentences, or anything with no clear intent → query_general_conversation\n" +
+                "- When in doubt → query_general_conversation\n" +
+                "- It is always safer to return query_general_conversation than to guess");
         if (!systemSession.useLocalQueryLlm()) {
             sb.append("- CRITICAL: if input contains 'help with X', 'help me with X', 'can you help with X', 'how do I X', 'explain X' → respond EXACTLY: {\"type\": \"query\", \"action\": \"").append(Queries.HELP.getAction()).append("\", \"params\": {\"key\": \"<topic>\"}}. Replace <topic> with the subject using spaces not underscores (e.g. 'biology', 'trade routes', 'fleet carrier routing'). No other action.\n");
         }

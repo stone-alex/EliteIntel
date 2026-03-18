@@ -39,11 +39,17 @@ public class OllamaAnalysisEndpoint extends AiEndPoint implements AiAnalysisInte
 
             JsonObject systemMsg1 = new JsonObject();
             systemMsg1.addProperty("role", AIConstants.ROLE_SYSTEM);
-            systemMsg1.addProperty("content", apiFactory.getAiPromptFactory().generateAnalysisPrompt());
+            systemMsg1.addProperty("content",
+                    /// generic catch all
+                    apiFactory.getAiPromptFactory().generateAnalysisPrompt()
+                            + "\n "
+                            /// analysis specific
+                            + struct.getInstructions()
+            );
 
-            JsonObject systemMsg2 = new JsonObject();
-            systemMsg2.addProperty("role", AIConstants.ROLE_SYSTEM);
-            systemMsg2.addProperty("content", "INSTRUCTIONS: " + struct.getInstructions());
+            //JsonObject systemMsg2 = new JsonObject();
+            //systemMsg2.addProperty("role", AIConstants.ROLE_SYSTEM);
+            //systemMsg2.addProperty("content", "INSTRUCTIONS: " + struct.getInstructions());
 
             JsonObject userMsg = new JsonObject();
             userMsg.addProperty("role", AIConstants.ROLE_USER);
@@ -51,7 +57,7 @@ public class OllamaAnalysisEndpoint extends AiEndPoint implements AiAnalysisInte
 
             JsonArray messages = new JsonArray();
             messages.add(systemMsg1);
-            messages.add(systemMsg2);
+            //messages.add(systemMsg2);
             messages.add(userMsg);
             prompt.add("messages", messages);
 
@@ -77,16 +83,6 @@ public class OllamaAnalysisEndpoint extends AiEndPoint implements AiAnalysisInte
 
             JsonObject root = processAiPrompt(gson.toJson(prompt), client);
             log.debug("Ollama analysis raw response:\n{}", gson.toJson(root));
-            String asString = root.getAsString();
-            if (asString != null && asString.length() > 0) {
-                boolean faliledCall = asString.toLowerCase().contains("LLM Call Failed");
-                if (faliledCall) {
-                    log.error("LLM Call failed. Failure processing system request. response: {}", asString);
-                    JsonObject err = new JsonObject();
-                    err.addProperty("response_text", "Analysis failed – check logs");
-                    return err;
-                }
-            }
 
             String content = root.getAsJsonObject("message").get("content").getAsString();
             JsonObject parsed = JsonParser.parseString(JsonUtils.repairLlmJson(content)).getAsJsonObject();

@@ -36,22 +36,27 @@ public class OllamaCommandEndPoint extends AiEndPoint implements AIChatInterface
             JsonObject format = new JsonObject();
             JsonObject properties = new JsonObject();
 
+            // type: "command" | "query"
             JsonObject typeProp = new JsonObject();
             typeProp.addProperty("type", "string");
+            JsonArray typeEnum = new JsonArray();
+            typeEnum.add("command");
+            typeEnum.add("query");
+            typeProp.add("enum", typeEnum);
             properties.add("type", typeProp);
 
+            // action: any string
             JsonObject actionProp = new JsonObject();
             actionProp.addProperty("type", "string");
             properties.add("action", actionProp);
 
+            // params: object
             JsonObject paramsProp = new JsonObject();
             paramsProp.addProperty("type", "object");
             properties.add("params", paramsProp);
 
             format.add("properties", properties);
 
-
-            // Only enforce the fields the command parser actually produces
             JsonArray required = new JsonArray();
             required.add("type");
             required.add("action");
@@ -60,7 +65,6 @@ public class OllamaCommandEndPoint extends AiEndPoint implements AIChatInterface
             format.addProperty("additionalProperties", false);
             format.addProperty("type", "object");
 
-            // format must be top-level per Ollama structured output API (not inside options)
             prompt.add("format", format);
 
             bodyString = prompt.toString();

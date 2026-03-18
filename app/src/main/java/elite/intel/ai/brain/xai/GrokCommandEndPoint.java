@@ -107,7 +107,7 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
 
         if (userInput == null || userInput.isEmpty()) {
             JsonObject errorResponse = new JsonObject();
-            errorResponse.addProperty("type", AIConstants.TYPE_CHAT);
+            errorResponse.addProperty("promptType", AIConstants.TYPE_CHAT);
             errorResponse.addProperty(AIConstants.PROPERTY_RESPONSE_TEXT, "Sorry, I couldn't process that.");
             errorResponse.addProperty(AIConstants.TYPE_ACTION, (String) null);
             errorResponse.add("params", new JsonObject());
@@ -134,7 +134,7 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
         JsonObject apiResponse = getChatInterface().processAiPrompt(messages, 0.01f);
         if (apiResponse == null) {
             JsonObject errorResponse = new JsonObject();
-            errorResponse.addProperty("type", AIConstants.TYPE_CHAT);
+            errorResponse.addProperty("promptType", AIConstants.TYPE_CHAT);
             errorResponse.addProperty(AIConstants.PROPERTY_RESPONSE_TEXT, "Sorry, I couldn't process that.");
             errorResponse.addProperty(AIConstants.TYPE_ACTION, (String) null);
             errorResponse.add("params", new JsonObject());
@@ -142,14 +142,14 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
             getRouter().processAiResponse(errorResponse, userInput);
             return;
         } else {
-            String type = JsonUtils.getAsStringOrEmpty(apiResponse, "type").toLowerCase();
+            String type = JsonUtils.getAsStringOrEmpty(apiResponse, "promptType").toLowerCase();
             String action = getAsStringOrEmpty(apiResponse, AIConstants.TYPE_ACTION).toLowerCase();
             log.info("Processing Action: {} for type {}", action, type);
         }
 
         getRouter().processAiResponse(apiResponse, userInput);
 
-        String type = getAsStringOrEmpty(apiResponse, "type").toLowerCase();
+        String type = getAsStringOrEmpty(apiResponse, "promptType").toLowerCase();
         String responseText = getAsStringOrEmpty(apiResponse, AIConstants.PROPERTY_RESPONSE_TEXT);
         if ("chat".equals(type)) {
             JsonObject assistantMessage = new JsonObject();

@@ -125,7 +125,7 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
 
         if (userInput == null || userInput.isEmpty()) {
             JsonObject errorResponse = new JsonObject();
-            errorResponse.addProperty("type", AIConstants.TYPE_CHAT);
+            errorResponse.addProperty("promptType", AIConstants.TYPE_CHAT);
             errorResponse.addProperty(AIConstants.PROPERTY_RESPONSE_TEXT, "Sorry, I couldn't process that.");
             errorResponse.addProperty(AIConstants.TYPE_ACTION, (String) null);
             errorResponse.add("params", new JsonObject());
@@ -154,7 +154,7 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
         JsonObject apiResponse = callOpenAiApi(messages);
         if (apiResponse == null) {
             JsonObject errorResponse = new JsonObject();
-            errorResponse.addProperty("type", AIConstants.TYPE_CHAT);
+            errorResponse.addProperty("promptType", AIConstants.TYPE_CHAT);
             errorResponse.addProperty(AIConstants.PROPERTY_RESPONSE_TEXT, "Sorry, I couldn't process that.");
             errorResponse.addProperty(AIConstants.TYPE_ACTION, (String) null);
             errorResponse.add("params", new JsonObject());
@@ -167,7 +167,7 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
         getRouter().processAiResponse(apiResponse, userInput);
 
         // Handle history updates for chat continuations
-        String type = JsonUtils.getAsStringOrEmpty(apiResponse, "type").toLowerCase();
+        String type = JsonUtils.getAsStringOrEmpty(apiResponse, "promptType").toLowerCase();
         String responseText = JsonUtils.getAsStringOrEmpty(apiResponse, AIConstants.PROPERTY_RESPONSE_TEXT);
         if ("chat".equals(type)) {
             JsonObject assistantMessage = new JsonObject();

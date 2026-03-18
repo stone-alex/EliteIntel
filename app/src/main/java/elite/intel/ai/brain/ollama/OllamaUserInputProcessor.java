@@ -94,7 +94,7 @@ public class OllamaUserInputProcessor extends CommandEndPoint implements AiComma
         getRouter().processAiResponse(response, userInput);
 
         // history handling – identical to your Grok version
-        String type = getAsStringOrEmpty(response, "type").toLowerCase();
+        String type = getAsStringOrEmpty(response, "promptType").toLowerCase();
         if ("chat".equals(type)) {
             boolean expect = response.has(AIConstants.PROPERTY_EXPECT_FOLLOWUP) &&
                     response.get(AIConstants.PROPERTY_EXPECT_FOLLOWUP).getAsBoolean();
@@ -117,7 +117,7 @@ public class OllamaUserInputProcessor extends CommandEndPoint implements AiComma
 
     private JsonObject createError(String text) {
         JsonObject err = new JsonObject();
-        err.addProperty("type", AIConstants.TYPE_CHAT);
+        err.addProperty("promptType", AIConstants.TYPE_CHAT);
         err.addProperty(AIConstants.PROPERTY_RESPONSE_TEXT, text);
         err.add("params", new JsonObject());
         err.addProperty(AIConstants.PROPERTY_EXPECT_FOLLOWUP, true);

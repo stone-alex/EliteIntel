@@ -165,7 +165,7 @@ public class AnthropicCommandEndPoint extends CommandEndPoint implements AiComma
         getRouter().processAiResponse(response, userInput);
 
         // Persist chat history on chat-type responses, identical to Ollama/Grok behaviour
-        String type = getAsStringOrEmpty(response, "type").toLowerCase();
+        String type = getAsStringOrEmpty(response, "promptType").toLowerCase();
         if ("chat".equals(type)) {
             boolean expectFollowup = response.has(AIConstants.PROPERTY_EXPECT_FOLLOWUP) &&
                                      response.get(AIConstants.PROPERTY_EXPECT_FOLLOWUP).getAsBoolean();
@@ -181,7 +181,7 @@ public class AnthropicCommandEndPoint extends CommandEndPoint implements AiComma
 
     private JsonObject createError(String text) {
         JsonObject err = new JsonObject();
-        err.addProperty("type", AIConstants.TYPE_CHAT);
+        err.addProperty("promptType", AIConstants.TYPE_CHAT);
         err.addProperty(AIConstants.PROPERTY_RESPONSE_TEXT, text);
         err.add("params", new JsonObject());
         err.addProperty(AIConstants.PROPERTY_EXPECT_FOLLOWUP, true);

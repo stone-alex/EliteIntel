@@ -7,7 +7,6 @@ import com.google.gson.JsonSyntaxException;
 import elite.intel.ai.brain.AIChatInterface;
 import elite.intel.ai.brain.AIConstants;
 import elite.intel.ai.brain.commons.AiEndPoint;
-import elite.intel.session.SystemSession;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -84,7 +83,7 @@ public class GrokChatEndPoint extends AiEndPoint implements AIChatInterface {
                 jsonStart = content.indexOf("{");
                 if (jsonStart == -1) {
                     JsonObject result = new JsonObject();
-                    result.addProperty("type", AIConstants.TYPE_CHAT);
+                    result.addProperty("promptType", AIConstants.TYPE_CHAT);
                     result.addProperty(AIConstants.PROPERTY_RESPONSE_TEXT, content);
                     return result;
                 }

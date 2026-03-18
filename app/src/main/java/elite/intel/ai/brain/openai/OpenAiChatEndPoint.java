@@ -73,7 +73,7 @@ public class OpenAiChatEndPoint extends AiEndPoint implements AIChatInterface {
                 jsonStart = content.indexOf("{");
                 if (jsonStart == -1) {
                     JsonObject result = new JsonObject();
-                    result.addProperty("type", AIConstants.TYPE_CHAT);
+                    result.addProperty("promptType", AIConstants.TYPE_CHAT);
                     result.addProperty(AIConstants.PROPERTY_RESPONSE_TEXT, content);
                     return result;
                 }
@@ -84,7 +84,7 @@ public class OpenAiChatEndPoint extends AiEndPoint implements AIChatInterface {
                 } catch (JsonSyntaxException e) {
                     log.error("Invalid JSON object in content:\n{}", jsonContent, e);
                     JsonObject result = new JsonObject();
-                    result.addProperty("type", AIConstants.TYPE_CHAT);
+                    result.addProperty("promptType", AIConstants.TYPE_CHAT);
                     result.addProperty(AIConstants.PROPERTY_RESPONSE_TEXT, content);
                     return result;
                 }

@@ -56,7 +56,7 @@ public class ResponseRouter implements AIRouterInterface {
             return;
         }
         try {
-            String type = getAsStringOrEmpty(jsonResponse, "type").toLowerCase();
+            String type = getAsStringOrEmpty(jsonResponse, "promptType").toLowerCase();
             String responseText = getAsStringOrEmpty(jsonResponse, AIConstants.PROPERTY_RESPONSE_TEXT);
             String action = getAsStringOrEmpty(jsonResponse, AIConstants.TYPE_ACTION);
             JsonObject params = getAsObjectOrEmpty(jsonResponse);

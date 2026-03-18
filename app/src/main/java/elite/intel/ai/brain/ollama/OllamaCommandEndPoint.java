@@ -36,14 +36,15 @@ public class OllamaCommandEndPoint extends AiEndPoint implements AIChatInterface
             JsonObject format = new JsonObject();
             JsonObject properties = new JsonObject();
 
-            // type: "command" | "query"
+            // promptType: "command" | "query"
             JsonObject typeProp = new JsonObject();
             typeProp.addProperty("type", "string");
             JsonArray typeEnum = new JsonArray();
             typeEnum.add("command");
             typeEnum.add("query");
+            typeEnum.add("chat");
             typeProp.add("enum", typeEnum);
-            properties.add("type", typeProp);
+            properties.add("promptType", typeProp);
 
             // action: any string
             JsonObject actionProp = new JsonObject();
@@ -58,7 +59,7 @@ public class OllamaCommandEndPoint extends AiEndPoint implements AIChatInterface
             format.add("properties", properties);
 
             JsonArray required = new JsonArray();
-            required.add("type");
+            required.add("promptType");
             required.add("action");
             required.add("params");
             format.add("required", required);

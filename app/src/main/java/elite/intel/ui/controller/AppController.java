@@ -13,12 +13,10 @@ import elite.intel.gameapi.journal.MissingMissionMonitor;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.*;
-import elite.intel.ui.view.AppView;
 import elite.intel.util.Updater;
 
 import javax.swing.*;
 import javax.swing.Timer;
-import javax.swing.text.BadLocationException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -30,21 +28,15 @@ import java.util.function.Supplier;
 import static elite.intel.ai.brain.commons.AiEndPoint.CONNECTION_CHECK_COMMAND;
 
 public class AppController implements Runnable {
+
     private final AtomicBoolean isRunning = new AtomicBoolean(false);
-    private final AtomicBoolean showDetailedLog = new AtomicBoolean(false);
     private final PlayerSession playerSession = PlayerSession.getInstance();
     private final SystemSession systemSession = SystemSession.getInstance();
-    private final Timer logTypewriterTimer = new Timer(5, null);
-    private final StringBuilder logBuffer = new StringBuilder();
-    private final AtomicBoolean typewriterActive = new AtomicBoolean(false);
-    private final AppView view;
 
     /// NOTE Order of services is important
     private final Map<ServiceType, ServiceHolder> services = new LinkedHashMap<>();
 
-
-    public AppController(AppView view) {
-        this.view = view;
+    public AppController() {
         EventBusManager.register(this);
         this.isRunning.set(false);
         startIfWeHaveCredentials();
@@ -63,14 +55,14 @@ public class AppController implements Runnable {
                 //kek
             }
         });
-
     }
 
     private void startIfWeHaveCredentials() {
         EventBusManager.publish(new ToggleServicesEvent(true));
     }
 
-    @Subscribe public void onSpeechSpeedChangeEvent(SpeechSpeedChangeEvent event) {
+    @Subscribe
+    public void onSpeechSpeedChangeEvent(SpeechSpeedChangeEvent event) {
         systemSession.setSpeechSpeed(event.getSpeed());
     }
 
@@ -81,10 +73,8 @@ public class AppController implements Runnable {
 
     @Subscribe
     public void onStreamModeToggle(VoiceInputModeToggleEvent event) {
-        this.view.toggleWakeWordOnOff.setSelected(event.isStreaming());
         EventBusManager.publish(new ToggleWakeWordEvent(event.isStreaming()));
     }
-
 
     @Subscribe
     public void toggleStreamingMode(ToggleWakeWordEvent event) {
@@ -93,10 +83,10 @@ public class AppController implements Runnable {
         EventBusManager.publish(new AiVoxResponseEvent(event.isOn() ? streamingModeIsOnMessage() : streamingModeIsOffMessage()));
     }
 
-    @Subscribe public void togglePrivacyMode(TogglePrivacyModeEvent event) {
+    @Subscribe
+    public void togglePrivacyMode(TogglePrivacyModeEvent event) {
         EarsInterface ears = services.get(ServiceType.EARS).get();
-        //if (ears instanceof GoogleSTTImpl) { // <-- can't start stop Whisper STT all the time without a JNI crash
-        if (ears != null) { // <-- can't start stop Whisper STT all the time without a JNI crash
+        if (ears != null) {
             if (event.isEnabled()) {
                 ears.stop();
             } else {
@@ -113,32 +103,27 @@ public class AppController implements Runnable {
         return "Prefix your calls with word computer";
     }
 
-
-    @Subscribe private void recalibrateAudio(RecalibrateAudioEvent event) {
+    @Subscribe
+    private void recalibrateAudio(RecalibrateAudioEvent event) {
         SwingUtilities.invokeLater(() -> {
             appendToLog("Starting audio calibration...");
-            // Stop normal listening
             EarsInterface ears = services.get(ServiceType.EARS).get();
             if (ears == null) return;
-
             ears.stop();
-
             new Thread(() -> {
                 try {
                     AudioFormatDetector.Format format = AudioFormatDetector.detectSupportedFormat();
                     AudioCalibrator.calibrateRMS(format.getSampleRate(), format.getBufferSize());
-
-                    // Back to EDT: restart ears + success
                     SwingUtilities.invokeLater(() -> {
                         ears.start();
                         EventBusManager.publish(new MissionCriticalAnnouncementEvent("Audio calibration complete"));
                         appendToLog("Calibration complete: HIGH=" +
-                                    SystemSession.getInstance().getRmsThresholdHigh() +
-                                    " LOW=" + SystemSession.getInstance().getRmsThresholdLow());
+                                SystemSession.getInstance().getRmsThresholdHigh() +
+                                " LOW=" + SystemSession.getInstance().getRmsThresholdLow());
                     });
                 } catch (Exception ex) {
                     SwingUtilities.invokeLater(() -> {
-                        ears.start(); // always restart on way out
+                        ears.start();
                         appendToLog("Calibration failed: " + ex.getMessage());
                         EventBusManager.publish(new MissionCriticalAnnouncementEvent("Audio calibration failed"));
                     });
@@ -148,14 +133,7 @@ public class AppController implements Runnable {
     }
 
     @Subscribe
-    public void onSystemShutdownEvent(SystemShutDownEvent event) {
-        SwingUtilities.invokeLater(() -> {
-            this.view.setVisible(false);
-            System.exit(0);
-        });
-    }
-
-    @Subscribe void onToggleServiceEvent(ToggleServicesEvent event) {
+    void onToggleServiceEvent(ToggleServicesEvent event) {
         new Thread(() -> {
             if (event.isStartSercice()) {
                 try {
@@ -169,7 +147,6 @@ public class AppController implements Runnable {
             }
         }).start();
     }
-
 
     private void appendToLog(String data) {
         String formattedTime = Instant.now()
@@ -191,92 +168,15 @@ public class AppController implements Runnable {
         }
     }
 
-    @Subscribe public void onToggleDetailedLogEvent(ToggleDetailedLogEvent event) {
-        showDetailedLog.set(event.isDetailed());
-    }
-
-    @Subscribe public void onAppLogDebugEvent(AppLogDebugEvent event) {
-        if (showDetailedLog.get()) {
-            String line = "\n" + event.getData();
-            if (line.isBlank() || this.view.logArea == null) return;
-
-            synchronized (logBuffer) {
-                logBuffer.append(line);
-            }
-
-            if (typewriterActive.compareAndSet(false, true)) {
-                SwingUtilities.invokeLater(this::startTypewriter);
-            }
-        }
-    }
-
-    @Subscribe
-    public void onAppLogEvent(AppLogEvent event) {
-        if (event.getData() == null || event.getData().isBlank()) return;
-        typeWriter("System: " + event.getData() + "\n");
-    }
-
-    @Subscribe
-    public void onUserInputEvent(UserInputEvent event) {
-        typeWriter("User: " + event.getUserInput() + "\n\n");
-    }
-
-    @Subscribe
-    public void onAiResponseLogEvent(AiResponseLogEvent event) {
-        typeWriter("AI: " + event.getData() + "\n\n");
-    }
-
-    private void typeWriter(String text) {
-        if (text.isBlank() || this.view.logArea == null) return;
-
-        synchronized (logBuffer) {
-            logBuffer.append(text);
-        }
-
-        if (typewriterActive.compareAndSet(false, true)) {
-            SwingUtilities.invokeLater(this::startTypewriter);
-        }
-    }
-
-    private void startTypewriter() {
-        logTypewriterTimer.stop();
-        logTypewriterTimer.addActionListener(e -> {
-            String nextChar;
-            synchronized (logBuffer) {
-                if (logBuffer.isEmpty()) {
-                    logTypewriterTimer.stop();
-                    typewriterActive.set(false);
-                    return;
-                }
-                nextChar = String.valueOf(logBuffer.charAt(0));
-                logBuffer.deleteCharAt(0);
-            }
-
-            try {
-                int pos = this.view.logArea.getDocument().getLength();
-                this.view.logArea.getDocument().insertString(pos, nextChar, null);
-                this.view.logArea.setCaretPosition(pos + 1);
-                this.view.logArea.repaint();
-            } catch (BadLocationException ex) {
-                logTypewriterTimer.stop();
-                typewriterActive.set(false);
-            }
-        });
-        logTypewriterTimer.start();
-    }
-
     private void startServices() {
         checkForUpdates();
         if (isRunning.get()) return;
         EventBusManager.publish(new ClearConsoleEvent());
-        /// NOTE: User can swap keys. the services MUST be re-initialized before we start them.
         initServices();
 
         for (ServiceType type : ServiceType.values()) {
             ServiceHolder service = services.get(type);
-            if (service != null) {
-                service.start();
-            }
+            if (service != null) service.start();
         }
 
         String mission_statement = playerSession.getPlayerMissionStatement();
@@ -292,17 +192,13 @@ public class AppController implements Runnable {
         connectionCheckTimer.setRepeats(false);
         connectionCheckTimer.start();
 
-
         KeyBindCheck.getInstance().check();
     }
 
     private void stopServices() {
         if (!isRunning.get()) return;
-
-        // Stop in reverse dependency order
         List<ServiceType> reverseOrder = new ArrayList<>(services.keySet());
         Collections.reverse(reverseOrder);
-
         for (ServiceType type : reverseOrder) {
             ServiceHolder holder = services.get(type);
             if (holder != null) {
@@ -311,7 +207,6 @@ public class AppController implements Runnable {
             }
         }
         this.services.clear();
-
         EventBusManager.publish(new ServicesStateEvent(false));
         isRunning.set(false);
         EventBusManager.publish(new ClearConsoleEvent());
@@ -319,7 +214,6 @@ public class AppController implements Runnable {
     }
 
     private void initServices() {
-        /// NOTE Order is important.
         stopServices();
         this.services.clear();
         services.put(ServiceType.JOURNAL_PARSER, new ServiceHolder(JournalParser::new));
@@ -340,12 +234,8 @@ public class AppController implements Runnable {
         }
 
         void start() {
-            if (instance == null) {
-                instance = creator.get();
-            }
-            if (instance != null) {
-                instance.start();
-            }
+            if (instance == null) instance = creator.get();
+            if (instance != null) instance.start();
         }
 
         void stop() {
@@ -355,7 +245,6 @@ public class AppController implements Runnable {
             }
         }
 
-
         @SuppressWarnings("unchecked")
         <T extends ManagedService> T get() {
             return (T) instance;
@@ -363,12 +252,7 @@ public class AppController implements Runnable {
     }
 
     private enum ServiceType {
-        JOURNAL_PARSER,
-        AUXILIARY_FILES_MONITOR,
-        MOUTH,
-        EARS,
-        BRAIN,
-        NOTIFICATION_MONITOR,
-        MISSING_MISSION_MONITOR
+        JOURNAL_PARSER, AUXILIARY_FILES_MONITOR, MOUTH, EARS, BRAIN,
+        NOTIFICATION_MONITOR, MISSING_MISSION_MONITOR
     }
 }

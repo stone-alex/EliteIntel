@@ -44,7 +44,7 @@ public class App {
                 e.printStackTrace();
             }
             AppView view = new AppView();
-            new AppController(view);
+            new AppController();
             view.getUiComponent().setVisible(true);
         });
     }

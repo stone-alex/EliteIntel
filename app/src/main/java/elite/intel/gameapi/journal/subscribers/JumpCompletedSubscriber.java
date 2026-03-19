@@ -45,7 +45,7 @@ public class JumpCompletedSubscriber {
     @Subscribe
     public void onFSDJumpEvent(FSDJumpEvent event) {
         SystemBodiesDto systemBodiesDto = EdsmApiClient.searchSystemBodies(event.getStarSystem());
-        processEdsmData(systemBodiesDto, event.getSystemAddress());
+        processEdsmData(systemBodiesDto, event.getSystemAddress(), event.getStarPos());
 
         boolean isSellerSystem = monetizeRouteManager.isSeller(event.getStarSystem());
         boolean isBuyerSystem = monetizeRouteManager.isBuyer(event.getStarSystem());
@@ -136,7 +136,7 @@ public class JumpCompletedSubscriber {
         }
     }
 
-    private void processEdsmData(SystemBodiesDto systemBodiesDto, long systemAddress) {
+    private void processEdsmData(SystemBodiesDto systemBodiesDto, long systemAddress, double[] starPos) {
         if (systemBodiesDto == null) return;
         if (systemBodiesDto.getData() == null) return;
         List<BodyData> bodies = systemBodiesDto.getData().getBodies();
@@ -159,6 +159,11 @@ public class JumpCompletedSubscriber {
             stellarObject.setSurfaceTemperature(data.getSurfaceTemperature()); // Keep Kelvin
             stellarObject.setTidalLocked(data.isRotationalPeriodTidallyLocked());
             stellarObject.setLocationType(LocationDto.determineType(data.getType(), data.getDistanceToArrival() == 0));
+            if (starPos != null) {
+                stellarObject.setX(starPos[0]);
+                stellarObject.setY(starPos[1]);
+                stellarObject.setZ(starPos[2]);
+            }
             if (data.getDiscovery() != null) {
                 stellarObject.setOurDiscovery(data.getDiscovery().getCommander() == null);
                 stellarObject.setDiscoveredBy(data.getDiscovery().getCommander());

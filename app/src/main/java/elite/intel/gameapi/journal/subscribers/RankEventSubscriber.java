@@ -14,10 +14,6 @@ public class RankEventSubscriber {
         RankAndProgressDto rp = playerSession.getRankAndProgressDto();
         rp.setRanksData(event);
         playerSession.setRankAndProgressDto(rp);
-
         playerSession.setPlayerHighestMilitaryRank(rp.getHighestMilitaryRank());
-        String title = PlayerSession.getInstance().getPlayerTitle();
-        playerSession.setPlayerTitle(title);
-
     }
 }

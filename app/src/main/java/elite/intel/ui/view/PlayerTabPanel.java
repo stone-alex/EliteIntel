@@ -15,8 +15,6 @@ public class PlayerTabPanel extends JPanel {
     private final PlayerSession playerSession = PlayerSession.getInstance();
 
     private JTextField playerAltNameField;
-    private JTextField playerTitleField;
-    private JTextField playerMissionDescription;
     private JTextField journalDirField;
     private JTextField bindingsDirField;
 
@@ -36,27 +34,6 @@ public class PlayerTabPanel extends JPanel {
         addField(this, playerAltNameField, gbc, 1, 1.0);
 
         // Row 1: Title
-        nextRow(gbc);
-        addLabel(this, "Title:", gbc);
-        playerTitleField = new JTextField();
-        playerTitleField.setToolTipText(
-                "Optional title. AI will occasionally refer to you by your title. "
-                        + "If not provided, title will be based on your highest military rank");
-        playerTitleField.setPreferredSize(new Dimension(200, 42));
-        addField(this, playerTitleField, gbc, 1, 1.0);
-
-        // Row 2: Session Theme
-        nextRow(gbc);
-        addLabel(this, "Session Theme:", gbc);
-        playerMissionDescription = new JTextField();
-        playerMissionDescription.setPreferredSize(new Dimension(200, 42));
-        playerMissionDescription.setToolTipText(
-                "Session theme description (optional). 'We are bounty hunters' or "
-                        + "'We are deep-space explorers' or 'We are pirates'");
-        installTextLimit(playerMissionDescription, 120);
-        addField(this, playerMissionDescription, gbc, 1, 1.0);
-
-        // Row 3: Journal Directory
         nextRow(gbc);
         addLabel(this, "Journal Directory:", gbc);
         journalDirField = new JTextField();
@@ -133,16 +110,12 @@ public class PlayerTabPanel extends JPanel {
 
     public void initData() {
         playerAltNameField.setText(playerSession.getAlternativeName() != null ? playerSession.getAlternativeName() : "");
-        playerTitleField.setText(playerSession.getPlayerTitle() != null ? playerSession.getPlayerTitle() : "");
-        playerMissionDescription.setText(playerSession.getPlayerMissionStatement() != null ? playerSession.getPlayerMissionStatement() : "");
         journalDirField.setText(playerSession.getJournalPath().toString());
         bindingsDirField.setText(playerSession.getBindingsDir().toString());
     }
 
     private void savePlayerConfig() {
         playerSession.setAlternativeName(playerAltNameField.getText());
-        playerSession.setPlayerTitle(playerTitleField.getText());
-        playerSession.setPlayerMissionStatement(playerMissionDescription.getText());
         playerSession.setJournalPath(journalDirField.getText());
         playerSession.setBindingsDir(bindingsDirField.getText());
         EventBusManager.publish(new AppLogEvent("Player config saved"));

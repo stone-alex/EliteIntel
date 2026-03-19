@@ -30,7 +30,7 @@ public class App {
         SubscriberRegistration.registerSubscribers();
 
         // Turn off streaming mode
-        SystemSession.getInstance().setStreamingMode(false);
+        SystemSession.getInstance().stopStartListening(false);
 
         // spin up the session
         EventBusManager.publish(new LoadSessionEvent());

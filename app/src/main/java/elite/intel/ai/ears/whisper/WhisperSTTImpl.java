@@ -24,7 +24,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static elite.intel.ai.brain.AIConstants.passThroughWords;
+
 public class WhisperSTTImpl implements EarsInterface {
+
 
     private static final Logger log = LogManager.getLogger(WhisperSTTImpl.class);
     private static final int WHISPER_SAMPLE_RATE = 16000; // Whisper requires exactly 16kHz
@@ -55,6 +58,7 @@ public class WhisperSTTImpl implements EarsInterface {
 
     public WhisperSTTImpl() {
         EventBusManager.register(this);
+        //passThroughWords.add(systemSession.getDesignation().toLowerCase());
     }
 
     @Override
@@ -97,6 +101,7 @@ public class WhisperSTTImpl implements EarsInterface {
         processingThread = new Thread(this::captureLoop);
         processingThread.start();
         EventBusManager.publish(new AiVoxResponseEvent("Voice input enabled"));
+
     }
 
     @Override
@@ -273,9 +278,7 @@ public class WhisperSTTImpl implements EarsInterface {
 
             boolean streamingMode = systemSession.isStreamingModeOn();
             if (streamingMode) {
-                String designation = systemSession.getDesignation();
-                if (sanitized.toLowerCase().contains("computer")
-                        || sanitized.toLowerCase().contains(designation.toLowerCase())) {
+                if (passThrough(sanitized)) {
                     sendToAi(sanitized);
                 }
             } else {
@@ -286,6 +289,15 @@ public class WhisperSTTImpl implements EarsInterface {
         } catch (Exception e) {
             log.error("Whisper transcription failed: {}", e.getMessage(), e);
         }
+    }
+
+    private boolean passThrough(String sanitized) {
+        for (String word : passThroughWords) {
+            if (sanitized.toLowerCase().contains(word)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void sendToAi(String transcript) {

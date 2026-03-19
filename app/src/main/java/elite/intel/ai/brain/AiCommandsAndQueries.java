@@ -34,6 +34,10 @@ public class AiCommandsAndQueries {
     private Map<String, String> buildCommandMap() {
         Map<String, String> commandMap = new HashMap<>();
 
+        commandMap.put("start listening, listen to me, wake word ON", START_LISTENING.getAction());
+
+        commandMap.put("stop listening, ignore me, wake word OFF", STOP_LISTENING.getAction());
+
         /// ship
         commandMap.put("add <material> to mining targets" + KEY_X, ADD_MINING_TARGET.getAction());
         commandMap.put("find raw material trader" + KEY_X, FIND_RAW_MATERIAL_TRADER.getAction());
@@ -163,7 +167,8 @@ public class AiCommandsAndQueries {
         commandMap.put("close, close panel, exit, esc", CLOSE.getAction());
 
         //commandMap.put("system shut down", SHUT_DOWN.getAction());
-        commandMap.put("wake word on/off" + KEY_STATE, SET_VOICE_INPUT_MODE.getAction());
+
+
         commandMap.put("show carrier management panel", DISPLAY_CARRIER_MANAGEMENT.getAction());
         commandMap.put("change trade profile starting budget to" + KEY_X, CHANGE_TRADE_PROFILE_SET_STARTING_BUDGET.getAction());
         commandMap.put("change trade profile max stops to" + KEY_X, CHANGE_TRADE_PROFILE_SET_MAX_NUMBER_OF_STOPS.getAction());

@@ -79,7 +79,7 @@ public class AppController implements Runnable {
     @Subscribe
     public void toggleStreamingMode(ToggleWakeWordEvent event) {
         appendToLog("Voice input mode toggle");
-        systemSession.setStreamingMode(event.isOn());
+        systemSession.stopStartListening(event.isOn());
         EventBusManager.publish(new AiVoxResponseEvent(event.isOn() ? streamingModeIsOnMessage() : streamingModeIsOffMessage()));
     }
 
@@ -100,7 +100,7 @@ public class AppController implements Runnable {
     }
 
     private String streamingModeIsOnMessage() {
-        return "Prefix your calls with word computer";
+        return "I am ignoring you, unless I hear 'ship' or 'listen'";
     }
 
     @Subscribe

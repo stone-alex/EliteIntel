@@ -1,8 +1,12 @@
 package elite.intel.ai.brain;
 
-public class AIConstants {
-    public final static String TYPE_ACTION = "action";
+import java.util.List;
 
+public class AIConstants {
+    /// NOT FINAL, EDITED ON START
+    public static List<String> passThroughWords = List.of("computer", "ship", "listen");
+
+    public final static String TYPE_ACTION = "action";
     public final static String PROPERTY_RESPONSE_TEXT = "response_text";
     public final static String PROPERTY_CONTENT = "content";
     public final static String PROPERTY_MESSAGE = "message";

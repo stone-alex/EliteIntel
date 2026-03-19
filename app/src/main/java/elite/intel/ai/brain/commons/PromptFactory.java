@@ -216,34 +216,27 @@ public class PromptFactory implements AiPromptFactory {
         PlayerSession playerSession = PlayerSession.getInstance();
         String alternativeName = playerSession.getAlternativeName();
         String playerName = alternativeName != null ? alternativeName : playerSession.getPlayerName();
-        String playerTitle = playerSession.getPlayerTitle();
         String playerMilitaryRank = playerSession.getPlayerHighestMilitaryRank();
         String playerHonorific = Ranks.getPlayerHonorific();
-        String missionStatement = playerSession.getPlayerMissionStatement();
         String carrierName = playerSession.getCarrierData() != null ? playerSession.getCarrierData().getCarrierName() : null;
 
         appendContext(sb,
                 Objects.requireNonNullElse(playerName, "Commander"),
                 Objects.requireNonNullElse(playerMilitaryRank, "Commander"),
                 Objects.requireNonNullElse(playerHonorific, "Commander"),
-                Objects.requireNonNullElse(playerTitle, "Commander"),
-                Objects.requireNonNullElse(missionStatement, ""),
                 carrierName
         );
         return sb.toString();
     }
 
-    private void appendContext(StringBuilder sb, String playerName, String playerMilitaryRank, String playerHonorific, String playerTitle, String missionStatement, String carrierName) {
+    private void appendContext(StringBuilder sb, String playerName, String playerMilitaryRank, String playerHonorific, String carrierName) {
         youAre(sb);
         if (carrierName != null && !carrierName.isEmpty()) {
             sb.append("Our home base ").append(carrierName);
         }
         sb.append("When addressing me, choose one at random each time from: ")
                 .append(playerName).append(", ").append(playerMilitaryRank)
-                .append(", ").append(playerTitle).append(", ").append(playerHonorific).append(". ");
-        if (missionStatement != null && !missionStatement.isEmpty()) {
-            sb.append(" Session theme: ").append(missionStatement).append(": ");
-        }
+                .append(", ").append(", ").append(playerHonorific).append(". ");
         sb.append("\n");
     }
 

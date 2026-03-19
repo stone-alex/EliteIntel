@@ -201,12 +201,11 @@ public class StringUtls {
     public static String player(PlayerSession playerSession) {
         String alternativeName = playerSession.getAlternativeName();
         String playerName = trimToNull(alternativeName) != null ? alternativeName : playerSession.getPlayerName();
-        String playerTitle = trimToNull(playerSession.getPlayerTitle()) != null ? "Commander" : playerSession.getPlayerTitle();
         String playerMilitaryRank = playerSession.getPlayerHighestMilitaryRank();
         String playerHonorific = Ranks.getPlayerHonorific();
 
         List<String> result = Arrays.stream(
-                new String[]{alternativeName, playerHonorific, playerName, playerTitle, playerMilitaryRank}
+                new String[]{alternativeName, playerHonorific, playerName, playerMilitaryRank}
         ).filter(Objects::nonNull).toList();
         if (result.isEmpty()) {
             return "Commander";

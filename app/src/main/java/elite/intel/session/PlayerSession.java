@@ -422,10 +422,6 @@ public class PlayerSession {
         });
     }
 
-    public String getPlayerTitle() {
-        return Database.withDao(PlayerDao.class, dao -> dao.get().getPlayerTitle());
-    }
-
     public void setPlayerTitle(String playerTitle) {
         Database.withDao(PlayerDao.class, dao -> {
             PlayerDao.Player player = dao.get();

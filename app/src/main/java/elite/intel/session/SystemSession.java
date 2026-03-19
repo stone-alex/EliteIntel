@@ -150,7 +150,7 @@ public class SystemSession {
         });
     }
 
-    public void setStreamingMode(boolean streamingModeOn) {
+    public void stopStartListening(boolean streamingModeOn) {
         Database.withDao(GameSessionDao.class, dao -> {
             GameSessionDao.GameSession session = dao.get();
             session.setPrivacyModeOn(streamingModeOn);

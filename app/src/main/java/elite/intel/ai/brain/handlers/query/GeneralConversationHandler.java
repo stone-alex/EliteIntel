@@ -17,12 +17,13 @@ public class GeneralConversationHandler extends BaseQueryAnalyzer implements Que
         ChatHistory chatHistory = systemSession.getChatHistory();
         String instructions = """
                 Respond naturally to the user's message using your own knowledge.
-                
+
                 Data fields:
                 - chatHistory.commanderLog: what the user said in previous turns
                 - chatHistory.shipBrief: what you said in previous turns
                 
-                      Use chat history for context. do not echo back the data fields. those are for your reference only. 
+                These fields are silent context only. Use them to inform your understanding of the conversation.
+                Do not reference, repeat, summarize, or acknowledge them in your response.
                 """;
         return process(
                 new AiDataStruct(

@@ -30,7 +30,7 @@ public class Bindings {
         BINDING_FOCUS_STATUS_PANEL_BUGGY("FocusRightPanel_Buggy"),
         BINDING_FOCUS_RADAR_PANEL("FocusRadarPanel"),
         BINDING_FOCUS_RADAR_PANEL_BUGGY("FocusRadarPanel_Buggy"),
-        BINDING_FOCUS_LOADOUT_PANEL("FocusRadarPanel"),
+        BINDING_FOCUS_ROLE_PANEL("FocusRadarPanel"),
         BINDING_FOCUS_LOADOUT_PANEL_BUGGY("FocusRadarPanel_Buggy"),
         BINDING_LANDING_GEAR_TOGGLE("LandingGearToggle"),
         BINDING_RESET_POWER_DISTRIBUTION("ResetPowerDistribution"),

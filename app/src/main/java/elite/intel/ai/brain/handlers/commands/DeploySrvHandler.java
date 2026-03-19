@@ -19,7 +19,7 @@ public class DeploySrvHandler extends CommandOperator implements CommandHandler 
     @Override public void handle(String action, JsonObject params, String responseText) {
 
         if (status.isInMainShip()) {
-            operateKeyboard(Bindings.GameCommand.BINDING_TARGET_NEXT_ROUTE_SYSTEM.getGameBinding(), 0);
+            navigator.closeOpenPanel();
             navigator.openAndNavigate(StatusFlags.GuiFocus.ROLE_PANEL, CenterPanel.COMMANDER);
             /// NOTE: Special case here. DO NOT use navigator to get to the SRV tab.
             /// After SRV deployed, we have no chance to close the panel and return to the default state.

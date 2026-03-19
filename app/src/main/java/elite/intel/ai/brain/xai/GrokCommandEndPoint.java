@@ -112,7 +112,7 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
         JsonArray messages = new JsonArray();
         JsonObject systemMessage = new JsonObject();
         systemMessage.addProperty("role", AIConstants.ROLE_SYSTEM);
-        String systemPrompt = getContextFactory().generateVoiceInputSystemPrompt();
+        String systemPrompt = getContextFactory().generateUserInputSystemPrompt();
         systemMessage.addProperty("content", systemPrompt);
         messages.add(systemMessage);
 

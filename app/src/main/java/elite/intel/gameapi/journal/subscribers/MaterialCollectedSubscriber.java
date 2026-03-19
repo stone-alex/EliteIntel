@@ -10,19 +10,49 @@ import elite.intel.gameapi.journal.events.MaterialCollectedEvent;
 import elite.intel.search.edsm.dto.MaterialsType;
 import elite.intel.util.StringUtls;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
 public class MaterialCollectedSubscriber {
 
+    private static final int DEBOUNCE_MS = 2000;
+
     private final MaterialManager materialManager = MaterialManager.getInstance();
+    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+    private final List<String> pending = new ArrayList<>();
+    private ScheduledFuture<?> pendingAnnouncement;
 
     @Subscribe
     public void onMaterialCollected(MaterialCollectedEvent event) {
+        // Always record immediately
         materialManager.save(event.getName(), determineType(event.getCategory()), event.getCount());
+
         MaterialsDao.Material material = Database.withDao(MaterialsDao.class, dao -> dao.findByExactName(StringUtls.capitalizeWords(event.getName())));
-        EventBusManager.publish(
-                new MiningAnnouncementEvent(
-                        "Collected " + event.getCount() + " units of " + event.getName() + (material == null ? "." : ". Total in storage is " + material.getAmount() + " units.")
-                )
-        );
+        String message = "Collected " + event.getCount() + " units of " + event.getName()
+                + (material == null ? "." : ". Total in storage is " + material.getAmount() + " units.");
+
+        synchronized (pending) {
+            pending.add(message);
+            if (pendingAnnouncement != null) {
+                pendingAnnouncement.cancel(false);
+            }
+            pendingAnnouncement = scheduler.schedule(this::flush, DEBOUNCE_MS, TimeUnit.MILLISECONDS);
+        }
+    }
+
+    private void flush() {
+        synchronized (pending) {
+            if (pending.isEmpty()) return;
+            String announcement = pending.size() == 1
+                    ? pending.getFirst()
+                    : pending.size() + " materials collected.";
+            pending.clear();
+            EventBusManager.publish(new MiningAnnouncementEvent(announcement));
+        }
     }
 
     private MaterialsType determineType(String category) {

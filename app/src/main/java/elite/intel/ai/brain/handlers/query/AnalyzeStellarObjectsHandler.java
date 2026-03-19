@@ -45,6 +45,8 @@ public class AnalyzeStellarObjectsHandler extends BaseQueryAnalyzer implements Q
                   - hasMarkets: true if this location has a market
                 
                 Rules:
+                - IF data shows 0 planets, 0 moons, 0 stations etc., it means you do not have enough data to answer this question and scans may be required.
+                - ELSE
                 - For count or summary questions: use summary directly. Do not recount from the list.
                 - For specific object questions: search detailedStellarObjectList by stellarObjectName or objectClass.
                 - Do not invent data not present in the provided fields.

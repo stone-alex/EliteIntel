@@ -30,12 +30,16 @@ public class CodexEntryEventSubscriber {
         playerSession.setCurrentLocationId(event.getBodyID(), event.getSystemAddress());
         StringBuilder sb = new StringBuilder();
 
-        String firstWordOfEntryName = event.getNameLocalised().split(" ")[0];
+        String nameLocalised = event.getNameLocalised();
+        if (nameLocalised == null) nameLocalised = event.getName();
+        if (nameLocalised == null) nameLocalised = "Unknown";
+
+        String firstWordOfEntryName = nameLocalised.split(" ")[0];
         int bioSampleDistance = BioForms.getDistance(firstWordOfEntryName);
         BioForms.ProjectedPayment projectedPayment = BioForms.getAverageProjectedPayment(capitalizeWords(firstWordOfEntryName));
         String genus = bioSampleDistance > 0 ? capitalizeWords(firstWordOfEntryName) : null;
 
-        boolean alreadyHaveThisEntry = codexEntryManager.checkIfExist(currentLocation.getStarName(), currentLocation.getBodyId(), event.getNameLocalised());
+        boolean alreadyHaveThisEntry = codexEntryManager.checkIfExist(currentLocation.getStarName(), currentLocation.getBodyId(), nameLocalised);
 
 
         if (!alreadyHaveThisEntry && event.isNewEntry()) {
@@ -44,8 +48,12 @@ public class CodexEntryEventSubscriber {
             sb.append(" Codex Entry: ");
         }
         sb.append(" Name: ");
-        String[] split = event.getNameLocalised().split("-");
-        sb.append(split[0]).append(", variant ").append(split[1]).append(", ");
+        String[] split = nameLocalised.split(" - ", 2);
+        if (split.length == 2) {
+            sb.append(split[0]).append(", variant ").append(split[1]).append(", ");
+        } else {
+            sb.append(nameLocalised).append(", ");
+        }
         sb.append(" Category: ");
         sb.append(event.getSubCategoryLocalised()).append(". ");
 
@@ -74,7 +82,7 @@ public class CodexEntryEventSubscriber {
             }
         } else {
             for (CodexEntryDao.CodexEntry entry : codexEntryManager.getForPlanet(currentLocation.getStarName(), currentLocation.getBodyId())) {
-                boolean isNameMatched = entry.getEntryName().equals(event.getNameLocalised());
+                boolean isNameMatched = entry.getEntryName().equals(nameLocalised);
                 double distanceFromPreviousSample = NavigationUtils.calculateSurfaceDistance(
                         status.getStatus().getLatitude(),
                         status.getStatus().getLongitude(),

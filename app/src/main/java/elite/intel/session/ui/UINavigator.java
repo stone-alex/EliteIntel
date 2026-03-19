@@ -51,20 +51,26 @@ public class UINavigator {
      * If the tab position is unknown (player moved it), performs a blind reset first.
      */
     public void openAndNavigate(GuiFocus panel, PanelTab target) {
-        closeOpenPanel();
+        // Check tracker BEFORE closing - if we already have this panel open, just navigate.
         if (tracker.getLastOpenedPanel() == panel) {
-            // Panel already open - skip the close/open cycle and just move tabs
             navigateToTargetTab(panel, target);
             return;
         }
+
+        closeOpenPanel();
+
         PanelState<?> state = tracker.getState(panel);
         if (state == null) {
             return;
         }
 
         tracker.notifyEliteIntelOpeningPanel(panel);
-        openPanel(panel);
-        sleep(PANEL_OPEN_DELAY_MS);
+        // Only send the open keystroke if the game doesn't already have this panel open.
+        // openPanel() is a toggle - sending it when the panel is already open would close it.
+        if (status.getGuiFocus() != panel) {
+            openPanel(panel);
+            sleep(PANEL_OPEN_DELAY_MS);
+        }
 
         if (!state.isKnown()) {
             blindResetToDefault(panel);
@@ -91,9 +97,18 @@ public class UINavigator {
         /// hack-workaround - clears any current UI selection
         operator.operateKeyboard(Bindings.GameCommand.BINDING_TARGET_NEXT_ROUTE_SYSTEM.getGameBinding(), 0);
 
-        StatusFlags.GuiFocus panel = PanelStateTracker.getInstance().getLastOpenedPanel();
-        if (panel != null) {
-            closeAndRestore(panel);
+        StatusFlags.GuiFocus lastOpened = tracker.getLastOpenedPanel();
+        if (lastOpened != null) {
+            closeAndRestore(lastOpened);
+        } else {
+            // Tracker has no record of an open panel, but the game may have one open
+            // (e.g. player opened it manually). Close it via toggle to avoid the
+            // subsequent openPanel() call toggling it shut instead of open.
+            StatusFlags.GuiFocus currentFocus = status.getGuiFocus();
+            if (currentFocus != null && tracker.getState(currentFocus) != null) {
+                closePanel(currentFocus);
+                sleep(PANEL_OPEN_DELAY_MS);
+            }
         }
 
         if (status.isFssModeActive()) {

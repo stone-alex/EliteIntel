@@ -2,6 +2,8 @@ package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
+import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.Status;
 import elite.intel.session.StatusFlags;
 import elite.intel.session.ui.CommsPanel;
@@ -19,9 +21,11 @@ public class OpenSquadronHandler extends CommandOperator implements CommandHandl
 
     @Override
     public void handle(String action, JsonObject params, String responseText) {
-        if (status.isInMainShip() || status.isInSrv()) {
+        if (status.isInMainShip()) {
             operateKeyboard(Bindings.GameCommand.BINDING_TARGET_NEXT_ROUTE_SYSTEM.getGameBinding(), 0);
             navigator.openAndNavigate(StatusFlags.GuiFocus.COMMS_PANEL, CommsPanel.SQUADRON);
+        } else {
+            EventBusManager.publish(new AiVoxResponseEvent("Sorry, I can't do that right now."));
         }
     }
 }

@@ -93,8 +93,8 @@ public enum Commands {
     OPEN_FSS_AND_SCAN                                   ("open_fss_to_scan_or_honk_star_system", null,  DisplayFssAndScanHandler.class),
 
     GET_HEADING_TO_LZ                                   ("navigate_bearing_direction_to_landing_zone", null,  NavigateToLandingZone.class),
-    DEPLOY_SRV                                          ("deploy_srv", null,  DeploySrvHandler.class),
-    RECOVER_SRV                                         ("recover_srv_board_ship", null,  RecoverSrvHandler.class),
+    DEPLOY_SRV                                          ("deploy_srv_car", null,  DeploySrvHandler.class),
+    RECOVER_SRV                                         ("recover_srv_car_board_ship", null,  RecoverSrvHandler.class),
     CLEAR_CODEX_ENTRIES                                 ("clear_codex_entries", null,  ClearCodexEntriesHandler.class),
     CALCULATE_FLEET_CARRIER_ROUTE                       ("calculate_fleet_carrier_route", null,  CalculateFleetCarrierRouteHandler.class),
     ENTER_FLEET_CARRIER_DESTINATION                     ("enter_fleet_carrier_destination", null,  EnterNextCarrierDestinationHandler.class),

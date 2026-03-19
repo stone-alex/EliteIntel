@@ -358,3 +358,4 @@
 "strip"="ship"
 "loud out"="load out"
 "to plot the car"="deploy the SRV"
+"duplify"="deploy"

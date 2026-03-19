@@ -14,7 +14,8 @@ public class RecoverSrvHandler extends CommandOperator implements CommandHandler
     private final UINavigator navigator = new UINavigator(this);
 
     @Override public void handle(String action, JsonObject params, String responseText) {
-        String openPanel = Bindings.GameCommand.BINDING_FOCUS_LOADOUT_PANEL.getGameBinding();
+        navigator.closeOpenPanel();
+        String openPanel = Bindings.GameCommand.BINDING_FOCUS_ROLE_PANEL.getGameBinding();
 
         String ui_left = Bindings.GameCommand.BINDING_UI_LEFT.getGameBinding();
         String ui_up = Bindings.GameCommand.BINDING_UI_UP.getGameBinding();

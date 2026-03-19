@@ -25,7 +25,7 @@ public class PromptFactory implements AiPromptFactory {
     }
 
     @Override
-    public String generateVoiceInputSystemPrompt() {
+    public String generateUserInputSystemPrompt() {
         StringBuilder sb = new StringBuilder();
         if (!systemSession.useLocalCommandLlm()) {
             youAre(sb);
@@ -53,6 +53,7 @@ public class PromptFactory implements AiPromptFactory {
                 - queries about your cargo hold see query_cargo_hold_contents*
                 - queries about materials we have see query_material_inventory*
                 - queries about the carrier see query_carrier*
+                - User may utilize NATO alphabet for letters/digits. Decode before using in params: Alpha 2 is A2, Charly 3 is C3, etc.
 
                 CRITICAL RULES - BREAKING ANY = TOTAL FAILURE:
                 - NEVER invent, modify, combine, or create new actions or parameters.
@@ -125,6 +126,7 @@ public class PromptFactory implements AiPromptFactory {
                 - All numeric values in the provided data are pre-computed. Do not perform arithmetic.
                 - If data is missing, state that clearly.
                 - Do not mention the data format, or where it might have come from? Return TTS Friendly following the prompt rules.
+                - User may utilize NATO alphabet for letters/digits. Example: planet alpha 2 bravo means planet a2b
                 """);
 
         if (!systemSession.useLocalQueryLlm()) {

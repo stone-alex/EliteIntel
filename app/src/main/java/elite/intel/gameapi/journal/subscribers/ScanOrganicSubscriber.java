@@ -97,7 +97,7 @@ public class ScanOrganicSubscriber {
             announce("Scan for genus \"" + genus + "\" logged. ");
         } else if (scan3.equalsIgnoreCase(scanType)) {
             sb = new StringBuilder();
-            sb.append("Organic scans for genus: ");
+            sb.append("NOTE: Organic scans for genus: ");
             sb.append("\"").append(genus).append("\"");
             sb.append(" are complete. ");
 

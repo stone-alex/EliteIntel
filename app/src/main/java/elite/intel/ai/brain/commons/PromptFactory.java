@@ -124,6 +124,7 @@ public class PromptFactory implements AiPromptFactory {
                 - Concise and direct. Answer only what the user asked.
                 - All numeric values in the provided data are pre-computed. Do not perform arithmetic.
                 - If data is missing, state that clearly.
+                - Do not mention the data format, or where it might have come from? Return TTS Friendly following the prompt rules.
                 """);
 
         if (!systemSession.useLocalQueryLlm()) {
@@ -179,6 +180,7 @@ public class PromptFactory implements AiPromptFactory {
                 - Spell out all numerals (twenty-one, not 21).
                 - DO NOT invent, guess or estimate any values not explicitly present in the YAML. Absence of data is intel.
                 - Be concise. Only state observable facts that matter.
+                - Do not mention the data format, or where it might have come from? Return TTS Friendly following the prompt rules.
                 
                 Examples of FORBIDDEN styles:
                 - "Fuel is low, notifying user" → wrong

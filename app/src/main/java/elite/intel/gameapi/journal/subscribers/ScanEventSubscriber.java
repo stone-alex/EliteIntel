@@ -176,6 +176,10 @@ public class ScanEventSubscriber {
         boolean isPlanet = false;
         boolean isMoon = false;
         List<ScanEvent.Parent> parents = event.getParents();
+        if (parents == null || parents.isEmpty()) {
+            if (isPrimaryStar) return PRIMARY_STAR;
+            return isStar ? STAR : UNCLASSIFIED;
+        }
         for (ScanEvent.Parent parent : parents) {
             if (parent.getStar() != null && parent.getStar() >= 0) {
                 isPlanet = true;

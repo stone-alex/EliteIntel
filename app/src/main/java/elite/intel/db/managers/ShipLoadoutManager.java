@@ -2,7 +2,6 @@ package elite.intel.db.managers;
 
 import elite.intel.db.dao.ShipLoadoutDao;
 import elite.intel.db.util.Database;
-import elite.intel.gameapi.journal.events.LoadoutEvent;
 import elite.intel.gameapi.journal.events.dto.shiploadout.ShipLoadOutDto;
 import elite.intel.util.json.GsonFactory;
 
@@ -35,6 +34,7 @@ public class ShipLoadoutManager {
     public ShipLoadOutDto get() {
         return Database.withDao(ShipLoadoutDao.class, dao ->{
             ShipLoadoutDao.ShipLoadout shipLoadout = dao.get();
+            if (shipLoadout == null) return null;
             return GsonFactory.getGson().fromJson(shipLoadout.getJson(), ShipLoadOutDto.class);
         });
     }

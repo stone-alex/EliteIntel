@@ -1,4 +1,4 @@
-## Elite Intel v0.0301-beta
+## Elite Intel v0.0303-beta
 
 ### Full Offline Operation
 

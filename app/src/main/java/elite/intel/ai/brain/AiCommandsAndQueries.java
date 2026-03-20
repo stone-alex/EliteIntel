@@ -164,10 +164,7 @@ public class AiCommandsAndQueries {
         commandMap.put("show status panel", SHOW_STATUS_PANEL.getAction());
         commandMap.put("show ship panel", SHOW_SHIP_PANEL.getAction());
 
-        commandMap.put("close, close panel, exit, esc", CLOSE.getAction());
-
-        //commandMap.put("system shut down", SHUT_DOWN.getAction());
-
+        commandMap.put("close, close panel, exit, esc", EXIT_CLOSE.getAction());
 
         commandMap.put("show carrier management panel", DISPLAY_CARRIER_MANAGEMENT.getAction());
         commandMap.put("change trade profile starting budget to" + KEY_X, CHANGE_TRADE_PROFILE_SET_STARTING_BUDGET.getAction());

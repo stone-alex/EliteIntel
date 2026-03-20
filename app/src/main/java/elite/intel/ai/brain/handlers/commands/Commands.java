@@ -135,7 +135,7 @@ public enum Commands {
     SHOW_STORAGE_PANEL                                  ("show_storage_panel", null, OpenStoragePanelHandler.class),
     SHOW_STATUS_PANEL                                   ("show_status_panel", null, OpenStatusPanelHandler.class),
     SHOW_SHIP_PANEL                                     ("show_ship_panel", null, OpenShipPanelHandler.class),
-    CLOSE                                               ("close", null, ClosePanelHandler.class),
+    EXIT_CLOSE                                          ("exit_close", null, ClosePanelHandler.class),
 
 
     REQUEST_DOCKING                                     ("request_docking", null,  RequestDockingHandler.class),

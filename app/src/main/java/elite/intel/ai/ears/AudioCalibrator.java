@@ -118,7 +118,7 @@ public class AudioCalibrator {
         systemSession.setRmsThresholdLow(adjustedLowThreshold);
 
         log.info("Final calibrated RMS thresholds: HIGH={}, LOW={}", highThreshold, lowThreshold);
-        EventBusManager.publish(new AppLogEvent("Audio calibration complete: HIGH=" + highThreshold + ", LOW=" + adjustedLowThreshold));
+        EventBusManager.publish(new AppLogEvent("Audio calibration complete: RMS=" + highThreshold + ", NOISE FLOOR=" + adjustedLowThreshold));
         return new RmsTupple<>(highThreshold, lowThreshold);
     }
 

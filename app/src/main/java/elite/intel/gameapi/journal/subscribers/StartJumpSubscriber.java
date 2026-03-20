@@ -17,6 +17,7 @@ public class StartJumpSubscriber {
     @Subscribe
     public void onStartJumpEvent(StartJumpEvent event) {
         if ("Hyperspace".equalsIgnoreCase(event.getJumpType())) {
+            Thread.ofVirtual().start(() -> {
             TrafficDto trafficDto = EdsmApiClient.searchTraffic(event.getStarSystem());
             DeathsDto deathsDto = EdsmApiClient.searchDeaths(event.getStarSystem());
             StringBuilder sb = new StringBuilder();
@@ -51,6 +52,7 @@ public class StartJumpSubscriber {
                 """;
                 EventBusManager.publish(new SensorDataEvent(sb.toString(), instructions));
             }
+            }); // end virtual thread
         }
     }
 }

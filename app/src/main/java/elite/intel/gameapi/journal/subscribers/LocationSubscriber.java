@@ -55,14 +55,16 @@ public class LocationSubscriber {
 
         if (event.getStationFaction() != null) dto.setStationFaction(event.getStationFaction().getName());
 
-        dto.setTrafficDto(EdsmApiClient.searchTraffic(event.getStarSystem()));
-        dto.setDeathsDto(EdsmApiClient.searchDeaths(event.getStarSystem()));
+        Thread.ofVirtual().start(() -> {
+            dto.setTrafficDto(EdsmApiClient.searchTraffic(event.getStarSystem()));
+            dto.setDeathsDto(EdsmApiClient.searchDeaths(event.getStarSystem()));
 
-        if (dto.getStarName() != null && !dto.getStarName().isEmpty()) {
-            //have to check for star name (primary star of the system). Sometimes the star name is empty.
-            //do not save locations without star name.
-            locationManager.save(dto);
-        }
+            if (dto.getStarName() != null && !dto.getStarName().isEmpty()) {
+                //have to check for star name (primary star of the system). Sometimes the star name is empty.
+                //do not save locations without star name.
+                locationManager.save(dto);
+            }
+        });
     }
 
     private LocationDto findLocation(LocationEvent event) {

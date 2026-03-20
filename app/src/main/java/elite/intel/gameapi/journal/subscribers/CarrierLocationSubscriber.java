@@ -11,8 +11,6 @@ import elite.intel.search.edsm.dto.StarSystemDto;
 import elite.intel.search.spansh.carrierroute.CarrierJump;
 import elite.intel.session.PlayerSession;
 
-import java.util.Map;
-
 public class CarrierLocationSubscriber {
 
     PlayerSession playerSession = PlayerSession.getInstance();
@@ -39,23 +37,25 @@ public class CarrierLocationSubscriber {
             route.removeLeg(event.getStarSystem());
 
             if (!routeEntryFound) {
-                // try via EDSM
-                StarSystemDto starSystemDto = EdsmApiClient.searchStarSystem(event.getStarSystem(), 1);
-                StarSystemDto.Coords coords = starSystemDto.getCoords();
-                if (coords != null && coords.getX() > 0 && coords.getY() > 0 && coords.getZ() > 0) {
-                    carrierData.setX(coords.getX());
-                    carrierData.setY(coords.getY());
-                    carrierData.setZ(coords.getZ());
-                    playerSession.setCarrierData(carrierData);
-                } else {
-                    // try via saved locations
-                    LocationManager locationData = LocationManager.getInstance();
-                    LocationDto location = locationData.findPrimaryStar(event.getStarSystem());
-                    carrierData.setX(location.getX());
-                    carrierData.setY(location.getY());
-                    carrierData.setZ(location.getZ());
-                    playerSession.setCarrierData(carrierData);
-                }
+                Thread.ofVirtual().start(() -> {
+                    // try via EDSM
+                    StarSystemDto starSystemDto = EdsmApiClient.searchStarSystem(event.getStarSystem(), 1);
+                    StarSystemDto.Coords coords = starSystemDto.getCoords();
+                    if (coords != null && coords.getX() > 0 && coords.getY() > 0 && coords.getZ() > 0) {
+                        carrierData.setX(coords.getX());
+                        carrierData.setY(coords.getY());
+                        carrierData.setZ(coords.getZ());
+                        playerSession.setCarrierData(carrierData);
+                    } else {
+                        // try via saved locations
+                        LocationManager locationData = LocationManager.getInstance();
+                        LocationDto location = locationData.findPrimaryStar(event.getStarSystem());
+                        carrierData.setX(location.getX());
+                        carrierData.setY(location.getY());
+                        carrierData.setZ(location.getZ());
+                        playerSession.setCarrierData(carrierData);
+                    }
+                });
             }
         }
     }

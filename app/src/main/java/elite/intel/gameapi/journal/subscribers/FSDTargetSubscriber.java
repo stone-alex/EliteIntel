@@ -19,13 +19,14 @@ public class FSDTargetSubscriber {
 
     @Subscribe
     public void onFSDTargetEvent(FSDTargetEvent event) {
+        Thread.ofVirtual().start(() -> {
+            LocationDto locationDto = locationManager.findBySystemAddress(event.getSystemAddress());
+            StarSystemDto systemDto = EdsmApiClient.searchStarSystem(event.getName(), 1);
+            DeathsDto deathsDto = EdsmApiClient.searchDeaths(event.getName());
+            TrafficDto trafficDto = EdsmApiClient.searchTraffic(event.getName());
 
-        LocationDto locationDto = locationManager.findBySystemAddress(event.getSystemAddress());
-        StarSystemDto systemDto = EdsmApiClient.searchStarSystem(event.getName(), 1);
-        DeathsDto deathsDto = EdsmApiClient.searchDeaths(event.getName());
-        TrafficDto trafficDto = EdsmApiClient.searchTraffic(event.getName());
-
-        playerSession.setFsdTarget(new FsdTarget(event.getName(), locationDto, systemDto, deathsDto, trafficDto, isFuelStarClause(event.getStarClass())));
+            playerSession.setFsdTarget(new FsdTarget(event.getName(), locationDto, systemDto, deathsDto, trafficDto, isFuelStarClause(event.getStarClass())));
+        });
     }
 
     private String isFuelStarClause(String starClass) {

@@ -44,6 +44,7 @@ public class JumpCompletedSubscriber {
 
     @Subscribe
     public void onFSDJumpEvent(FSDJumpEvent event) {
+        Thread.ofVirtual().start(() -> {
         SystemBodiesDto systemBodiesDto = EdsmApiClient.searchSystemBodies(event.getStarSystem());
         processEdsmData(systemBodiesDto, event.getSystemAddress(), event.getStarPos());
 
@@ -134,6 +135,7 @@ public class JumpCompletedSubscriber {
         if (isBuyerSystem && station != null) {
             EventBusManager.publish(new SensorDataEvent("Head to " + station.getDestinationStationName() + " sell " + station.getDestinationCommodity(), "Remind User"));
         }
+        }); // end virtual thread
     }
 
     private void processEdsmData(SystemBodiesDto systemBodiesDto, long systemAddress, double[] starPos) {

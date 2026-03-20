@@ -1,4 +1,4 @@
-## Elite Intel v0.0307-beta
+## Elite Intel v0.0308-beta
 
 ## ⚠ Windows Users:
 
@@ -10,6 +10,12 @@
 - This change does not affect updater on linux. (As far as I know)
 
 ### bug fixes:
+
+- Performance improvements
+- Introduced Virtual threads, so game events are processed in a more predictable manner.
+- Fixed EDSM blocking calls, the app will no longer be blocked by EDSM failed calls.
+- Introduced adjustable threads to Whisper processing. This allows for faster STT transcriptions on more powerful
+  hardware
 
 - Location coordinates were not save correctly in some corner cases
 - Fleet Carrier jump location / ETA was broken.

@@ -28,6 +28,7 @@ public class ApproachBodySubscriber {
 
     @Subscribe
     public void onApproachBodyEvent(ApproachBodyEvent event) {
+        Thread.ofVirtual().start(() -> {
         Status status = Status.getInstance();
         double orbitalCruiseEntryAltitude = status.getStatus().getAltitude();
         StringBuilder sb = new StringBuilder();
@@ -82,6 +83,7 @@ public class ApproachBodySubscriber {
                     Gravity around equal to or less than 1G is safe. Issue a gravity warning if gravity is higher than 1G.
                 """;
         EventBusManager.publish(new SensorDataEvent(sb.toString(), instructions));
+        }); // end virtual thread
     }
 
 

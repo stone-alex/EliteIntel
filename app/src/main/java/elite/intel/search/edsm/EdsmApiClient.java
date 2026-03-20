@@ -3,8 +3,6 @@ package elite.intel.search.edsm;
 import com.google.gson.JsonSyntaxException;
 import elite.intel.search.edsm.dto.*;
 import elite.intel.search.edsm.dto.data.*;
-import elite.intel.session.PlayerSession;
-import elite.intel.session.SystemSession;
 import elite.intel.util.SleepNoThrow;
 import elite.intel.util.json.GsonFactory;
 import org.apache.logging.log4j.LogManager;
@@ -41,7 +39,7 @@ public class EdsmApiClient {
             log.error("Failed to encode query parameters", e);
             return new StarSystemDto();
         }
-        String response = getResponse(query);
+        String response = callEdsm(query);
         long timestamp = System.currentTimeMillis();
         StarSystemData data;
         if (response.isEmpty()) {
@@ -72,7 +70,7 @@ public class EdsmApiClient {
             log.error("Failed to encode query parameters", e);
             return new StarsWithinRadiusDto();
         }
-        String response = getResponse(query);
+        String response = callEdsm(query);
         if (response.isEmpty()) {
             return new StarsWithinRadiusDto();
         }
@@ -94,7 +92,7 @@ public class EdsmApiClient {
             log.error("Failed to encode query parameters", e);
             return new SystemBodiesDto();
         }
-        String response = getResponse(query);
+        String response = callEdsm(query);
         log.debug("EDSM bodies response for {}: {}", starSystemName, response);  // Swapped to debug
         long timestamp = System.currentTimeMillis();
         SystemBodiesData data;
@@ -124,7 +122,7 @@ public class EdsmApiClient {
             log.error("Failed to encode query parameters", e);
             return new EstimatedScanValuesDto();
         }
-        String response = getResponse(query);
+        String response = callEdsm(query);
         long timestamp = System.currentTimeMillis();
         EstimatedScanValuesData data;
         if (response.isEmpty()) {
@@ -155,7 +153,7 @@ public class EdsmApiClient {
             log.error("Failed to encode query parameters", e);
             return new StationsDto();
         }
-        String response = getResponse(query);
+        String response = callEdsm(query);
         long timestamp = System.currentTimeMillis();
         StationsData data;
         if (response.isEmpty()) {
@@ -187,7 +185,7 @@ public class EdsmApiClient {
             log.error("Failed to encode query parameters", e);
             return new FactionDto();
         }
-        String response = getResponse(query);
+        String response = callEdsm(query);
         long timestamp = System.currentTimeMillis();
         FactionStats data;
         if (response.isEmpty()) {
@@ -216,7 +214,7 @@ public class EdsmApiClient {
             log.error("Failed to encode query parameters", e);
             return new TrafficDto();
         }
-        String response = getResponse(query);
+        String response = callEdsm(query);
         long timestamp = System.currentTimeMillis();
         TrafficData data;
         if (response.isEmpty()) {
@@ -245,7 +243,7 @@ public class EdsmApiClient {
             log.error("Failed to encode query parameters", e);
             return new DeathsDto();
         }
-        String response = getResponse(query);
+        String response = callEdsm(query);
         long timestamp = System.currentTimeMillis();
         DeathsData data;
         if (response.isEmpty()) {
@@ -343,14 +341,16 @@ public class EdsmApiClient {
             log.error("Failed to encode query parameters", e);
             return "";
         }
-        return getResponse(query);
+        return callEdsm(query);
     }
 
-    private static String getResponse(StringBuilder query) {
+    private static String callEdsm(StringBuilder query) {
         try {
             URI uri = URI.create(query.toString());
             URL url = uri.toURL();
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setConnectTimeout(5_000);
+            conn.setReadTimeout(10_000);
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");
             conn.setRequestProperty("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:144.0) Gecko/20100101 Firefox/144.0");

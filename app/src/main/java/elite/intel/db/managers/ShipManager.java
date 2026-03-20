@@ -22,13 +22,14 @@ public class ShipManager {
      * Creates or updates ship on LoadoutEvent.
      *
      */
-    public void save(int shipId, String shipName, int cargoCapacity, String shipMake) {
+    public void save(int shipId, String shipName, int cargoCapacity, String shipMake, String voice) {
         Database.withDao(ShipDao.class, dao -> {
             ShipDao.Ship ship = new ShipDao.Ship();
             ship.setShipId(shipId);
             ship.setShipName(shipName);
             ship.setCargoCapacity(cargoCapacity);
             ship.setShipIdentifier(shipMake);
+            ship.setVoice(voice);
             dao.save(ship);
             return Void.TYPE;
         });
@@ -54,5 +55,9 @@ public class ShipManager {
             dao.save(ship);
             return Void.TYPE;
         });
+    }
+
+    public ShipDao.Ship getShipById(int shipId) {
+        return Database.withDao(ShipDao.class, dao -> dao.findShip(shipId));
     }
 }

@@ -45,6 +45,7 @@ public class DockedSubscriber {
         location.setPlanetShortName(null);
 
 
+        Thread.ofVirtual().start(() -> {
         MarketDto edsmMarketDto = EdsmApiClient.searchMarket(event.getMarketID(), null, null, 0);
         location.setMarket(edsmMarketDto);
         location.setStationName(edsmMarketDto.getData().getStationName());
@@ -90,5 +91,6 @@ public class DockedSubscriber {
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("Market data available."));
         }
         locationManager.save(location);
+        }); // end virtual thread
     }
 }

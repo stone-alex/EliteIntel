@@ -10,7 +10,7 @@
 
 ### Windows users: in-app update is borked at the moment. Please just re-download installer to update for now.
 
-See list of [changes / bug fixes](TRESTERS) from last release.
+See list of [changes / bug fixes](https://github.com/stone-alex/EliteIntel/blob/master/TRESTERS) from last release.
 
 ---
 

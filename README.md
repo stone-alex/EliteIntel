@@ -10,6 +10,8 @@
 
 ### Windows users: in-app update is borked at the moment. Please just re-download installer to update for now.
 
+See list of [changes / bug fixes](TRESTERS) from last release.
+
 ---
 
 **✅ The off-line TTS. (Linux and Windows)**

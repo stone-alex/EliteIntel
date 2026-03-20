@@ -1,47 +1,23 @@
-## Elite Intel v0.0304-beta
+## Elite Intel v0.0307-beta
 
-### Full Offline Operation
+## ⚠ Windows Users:
 
-Now possible to run **100% offline**:
+- There is a new version 307. The installer (not the updater) contains the possible updater fix. Please update to 307
+  manually by running installer, and let me know if the update works for the version after that.
 
-- Whisper for local speech-to-text
-- Local LLM for commands & queries
-- Kokoro TTS for voice output
-  → no API keys or internet required anymore
+## Linux Users:
 
-### Streaming & OBS Improvements
+- This change does not affect updater on linux. (As far as I know)
 
-- Brand new **dedicated OBS overlay window**  
-  → clean, typewriter-animated conversation feed (User → AI)  
-  → transparent background, no app borders or buttons — perfect for streams
-- Redesigned AI tab in main app with smooth animated text reveal
+### bug fixes:
 
-### In-Game UI Navigation Overhaul
-
-Huge reliability boost — commands now open **exact panels/tabs** reliably:
-
-- Role panel → Commander for SRV deploy
-- Contacts panel for docking requests
-- Navigation / Transactions / Comms panels via voice
-- Smart closing of stray panels before complex actions (jump, route plot, etc.)
-  → far fewer "stuck UI" moments during automation
-
-### Voice & Intelligence Polish
-
-- Whisper is now the only/default STT → better accuracy overall
-- Fuzzy correction catches common mishears of game terms
-- Cleaner prompt rules → organics vs materials, ship vs carrier distinction
-- Tuned LLM responses for shorter, more natural replies
-- Context-aware SRV commands (deploy only in ship, recover only in SRV)
-
-### Other Tweaks
-
-- Wake word toggle renamed ("voice input" → "wake word")
-- New Settings tab with sliders for speech speed & beep volume
-- Reduced log spam, cleaner internal response format
-
-o7 This feels like a big step toward polish + true offline play.  
-Test the overlay hard if you're streaming — any jitter or clipping?  
-UI nav still reliable in all the usual pain spots (supercruise drop, carrier jump, SRV handoff)?
-
-Let me know what feels most important to call out more loudly.
+- Location coordinates were not save correctly in some corner cases
+- Fleet Carrier jump location / ETA was broken.
+- UI navigation improvements
+- You can now tell the app to ignore you by saying "ignore me" and turn that back on by saying "listen to me" (or
+  something to that effect, as long as words 'ignore' or 'listen' present it will trigger. you can still issue commands
+  in ignore mode by mixing in word 'ship' in to your command. Hopefully that flows more naturally.
+- Some TTS corrections (quirks of Whisper when it transcribes 'exit' as 'thank you' for some reason, and others like it.
+- Fix for qwen3.5 and other local LLMs where it would cancel previous prompt while issuing a new one assyncronously. the
+  prompts are now queued and are processed sequentially in the order they arrive.
+- Some other minor fixes.

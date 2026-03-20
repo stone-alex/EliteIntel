@@ -30,6 +30,7 @@ public class SettingsTabPanel extends JPanel {
     private JCheckBox useLocalTTSCheck;
     private JSlider speechSpeedSlider;
     private JSlider beepVolumeSlider;
+    private JSlider whisperThreadsSlider;
     private JButton updateAppButton;
 
     public SettingsTabPanel() {
@@ -115,7 +116,21 @@ public class SettingsTabPanel extends JPanel {
         speechSpeedSlider.setPaintLabels(true);
         addField(localSettingsPanel, speechSpeedSlider, gbc, 1, 0.8);
         speechSpeedSlider.addChangeListener(e -> EventBusManager.publish(
-                new SpeechSpeedChangeEvent(Math.abs(speechSpeedSlider.getValue()) / 100f)));
+                new SpeechSpeedChangeEvent(Math.abs(speechSpeedSlider.getValue()) / 100f))
+        );
+
+        nextRow(gbc);
+        addLabel(localSettingsPanel, "Speech Engine Threads ", gbc);
+        whisperThreadsSlider = new JSlider(4, 10, systemSession.getSttThreads());
+        whisperThreadsSlider.setMajorTickSpacing(1);
+        whisperThreadsSlider.setSnapToTicks(true);
+        whisperThreadsSlider.setPaintTicks(true);
+        whisperThreadsSlider.setPaintLabels(true);
+        addField(localSettingsPanel, whisperThreadsSlider, gbc, 1, 0.8);
+        whisperThreadsSlider.addChangeListener(e -> EventBusManager.publish(
+                new SttThreadsChangedEvent(whisperThreadsSlider.getValue()))
+        );
+
 
         nextRow(gbc);
         addLabel(localSettingsPanel, "Beep Volume ", gbc);
@@ -127,7 +142,11 @@ public class SettingsTabPanel extends JPanel {
         beepVolumeSlider.setPaintLabels(true);
         addField(localSettingsPanel, beepVolumeSlider, gbc, 1, 0.8);
         beepVolumeSlider.addChangeListener(e -> EventBusManager.publish(
-                new NotificationVolumeChangedEvent(Math.abs(beepVolumeSlider.getValue()) / 100f)));
+                new NotificationVolumeChangedEvent(Math.abs(beepVolumeSlider.getValue()) / 100f))
+        );
+
+
+
 
         localSettingsPanel.setBorder(new LineBorder(ACCENT, 1));
         addNestedPanel(this, localSettingsPanel, "OFF LINE SETTINGS");

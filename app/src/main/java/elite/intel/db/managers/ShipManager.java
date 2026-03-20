@@ -48,4 +48,11 @@ public class ShipManager {
         if (ship == null) return false;
         return "L".equals(ShipPadSizes.getPadSize(ship.getShipIdentifier()));
     }
+
+    public void saveShip(ShipDao.Ship ship) {
+        Database.withDao(ShipDao.class, dao -> {
+            dao.save(ship);
+            return Void.TYPE;
+        });
+    }
 }

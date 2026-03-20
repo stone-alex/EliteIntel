@@ -33,7 +33,7 @@ public class WhisperSTTImpl implements EarsInterface {
     private static final int WHISPER_SAMPLE_RATE = 16000; // Whisper requires exactly 16kHz
     private static final int CHANNELS = 1;
     private static final int ENTER_VOICE_FRAMES = 1;
-    private static final int EXIT_SILENCE_FRAMES = 10; // ~1s silence at 100ms buffers
+    private static final int EXIT_SILENCE_FRAMES = 8; // ~1s silence at 100ms buffers
     private static final long BASE_BACKOFF_MS = 2000;
     private static final long MAX_BACKOFF_MS = 60000;
     private static final int MIN_AUDIO_MS = 1500; // padding
@@ -228,7 +228,7 @@ public class WhisperSTTImpl implements EarsInterface {
 
             WhisperFullParams params = new WhisperFullParams();
             params.language = "en";
-            params.nThreads = Math.min(Runtime.getRuntime().availableProcessors(), 4);
+            params.nThreads = Math.min(Runtime.getRuntime().availableProcessors(), systemSession.getSttThreads());
             params.noContext = true;
             params.singleSegment = true;            // voice commands are single utterances - faster
             params.beamSearchBeamSize = 5;          // biggest accuracy win - considers 5 decode paths vs greedy

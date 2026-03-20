@@ -369,3 +369,8 @@
 "thanks for watching!"="exit"
 "thank you for watching"="exit"
 "take yourself!"="exit"
+"thank you, sir."="exit"
+"thank you"="exit"
+"thanks if you like"="exit"
+
+

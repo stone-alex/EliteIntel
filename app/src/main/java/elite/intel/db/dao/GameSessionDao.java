@@ -19,13 +19,13 @@ public interface GameSessionDao {
                                                              edsmApiKey, loggingEnabled, privacyModeOn, rmsThresholdHigh,  
                                                              rmsThresholdLow, encryptedLLMKey, encryptedTTSKey, 
                                                              encryptedEDSSMKey, speechSpeed, localLlmCommandModel, localLlmQueryModel,
-                                                             useLocalCommandLlm, useLocalQueryLlm, useLocalTTS, notificationVolume
+                                                             useLocalCommandLlm, useLocalQueryLlm, useLocalTTS, notificationVolume, sttThreads
                                                 )
                                   VALUES (1, :aiPersonality, :aiCadence, :aiVoice, :aiApiKey, :ttsApiKey, :sttApiKey, 
                                                       :edsmApiKey, :loggingEnabled, :privacyModeOn, :rmsThresholdHigh, 
                                                       :rmsThresholdLow, :encryptedLLMKey, :encryptedTTSKey, 
                                                       :encryptedEDSSMKey,  :speechSpeed, :localLlmCommandModel, :localLlmQueryModel,
-                                                      :useLocalCommandLlm, :useLocalQueryLlm, :useLocalTTS, :notificationVolume
+                                                      :useLocalCommandLlm, :useLocalQueryLlm, :useLocalTTS, :notificationVolume, :sttThreads
                                           )
             """)
     void save(@BindBean GameSessionDao.GameSession data);
@@ -66,6 +66,7 @@ public interface GameSessionDao {
             session.setUseLocalQueryLlm(rs.getBoolean("useLocalQueryLlm"));
             session.setUseLocalTTS(rs.getBoolean("useLocalTTS"));
             session.setNotificationVolume(rs.getFloat("notificationVolume"));
+            session.setSttThreads(rs.getInt("sttThreads"));
             return session;
         }
     }
@@ -97,6 +98,7 @@ public interface GameSessionDao {
         private boolean useLocalCommandLlm;
         private boolean useLocalQueryLlm;
         private boolean useLocalTTS;
+        private Integer sttThreads;
 
 
         public String getAiPersonality() {
@@ -267,6 +269,14 @@ public interface GameSessionDao {
 
         public void setNotificationVolume(Float notificationVolume) {
             this.notificationVolume = notificationVolume;
+        }
+
+        public Integer getSttThreads() {
+            return sttThreads;
+        }
+
+        public void setSttThreads(Integer sttThreads) {
+            this.sttThreads = sttThreads;
         }
     }
 }

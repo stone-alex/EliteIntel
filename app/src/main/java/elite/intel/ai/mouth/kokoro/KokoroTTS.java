@@ -42,7 +42,7 @@ public class KokoroTTS implements MouthInterface {
     private static final Logger log = LogManager.getLogger(KokoroTTS.class);
 
     private static final int SAMPLE_RATE = 24000;
-    private static final int DEFAULT_SID = KokoroVoices.HEART.getSid();
+    private static final int DEFAULT_SID = KokoroVoices.GEORGE.getSid();
 
     private static volatile KokoroTTS instance;
 
@@ -108,7 +108,7 @@ public class KokoroTTS implements MouthInterface {
         playbackThread.setDaemon(true);
         playbackThread.start();
 
-        log.info("KokoroTTS started - voice: {} sid={}", KokoroVoices.HEART.getDisplayName(), DEFAULT_SID);
+        log.info("KokoroTTS started - voice: {} sid={}", KokoroVoices.GEORGE.getDisplayName(), DEFAULT_SID);
     }
 
     @Override

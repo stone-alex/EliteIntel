@@ -72,7 +72,7 @@ public class AnalyzeStellarObjectsHandler extends BaseQueryAnalyzer implements Q
                 - summary: pre-computed counts (stars, planets, moons, stations, landable, bio signals, scoopable stars). Use this for any count or summary question.
                 - detailedStellarObjectList: full list of stellar objects with per-object data:
                   - stellarObjectName: short canonical name (e.g. "AB 1 B")
-                  - stellarObjectPhonetic: NATO phonetic expansion (e.g. "Alpha Bravo 1 Bravo") — match STT input against this field; accept partial/variant NATO words (e.g. "Charly"/"Charlie")
+                  - stellarObjectPhonetic: NATO phonetic expansion (e.g. "Alpha Bravo 1 Bravo") - match STT input against this field; accept partial/variant NATO words (e.g. "Charly"/"Charlie")
                   - objectClass: STAR, PLANET, MOON, STATION
                   - objectType: specific type (e.g. Rocky Body, High metal content world, Neutron Star)
                   - starClass: star spectral class (M, K, G, F, A, B, O are fuel-scoopable)

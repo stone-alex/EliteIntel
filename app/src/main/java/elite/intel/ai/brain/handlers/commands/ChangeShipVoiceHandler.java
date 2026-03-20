@@ -15,15 +15,11 @@ import elite.intel.session.SystemSession;
  * and updates the system's AI voice configuration. If the provided voice name is invalid
  * or null, an error event is published via the EventBusManager.
  */
-public class ChangeAiVoiceHandler implements CommandHandler {
+public class ChangeShipVoiceHandler implements CommandHandler {
 
     private final SystemSession systemSession = SystemSession.getInstance();
 
     @Override public void handle(String action, JsonObject params, String responseText) {
-
-
-
-
 
         String voiceName = params.get("key").getAsString();
         if (voiceName == null || voiceName.isEmpty()) {

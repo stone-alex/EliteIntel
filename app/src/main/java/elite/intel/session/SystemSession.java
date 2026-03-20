@@ -39,47 +39,37 @@ public class SystemSession {
 
 
     public GoogleVoices getGoogleVoice() {
-        return Database.withDao(GameSessionDao.class, dao -> {
-            GameSessionDao.GameSession session = dao.get();
-            if (session == null) return GoogleVoices.STEVE;
-            if (session.getAiVoice() == null) return GoogleVoices.STEVE;
-            return GoogleVoices.valueOf(
-                    session.getAiVoice()
-            );
-        });
+        ShipDao.Ship ship = ShipManager.getInstance().getShip();
+        if (ship == null) return GoogleVoices.STEVE;
+        String voice = ship.getVoice();
+        if (voice == null) return GoogleVoices.STEVE;
+        return GoogleVoices.valueOf(voice);
     }
 
 
     public KokoroVoices getKokoroVoice() {
-        return Database.withDao(GameSessionDao.class, dao -> {
-            GameSessionDao.GameSession session = dao.get();
-            if (session == null) return KokoroVoices.EMMA;
-            if (session.getAiVoice() == null) return KokoroVoices.EMMA;
-            try {
-                return KokoroVoices.valueOf(session.getAiVoice());
-            } catch (IllegalArgumentException noVoiceForThatName) {
-                return KokoroVoices.EMMA;
-            }
-        });
+        ShipDao.Ship ship = ShipManager.getInstance().getShip();
+        if (ship == null) return KokoroVoices.EMMA;
+        String voice = ship.getVoice();
+        if (voice == null) return KokoroVoices.EMMA;
+        return KokoroVoices.valueOf(voice);
     }
 
 
     public void setGoogleVoice(GoogleVoices voice) {
-        Database.withDao(GameSessionDao.class, dao -> {
-            GameSessionDao.GameSession session = dao.get();
-            session.setAiVoice(voice.name());
-            dao.save(session);
-            return null;
-        });
+        setShipVoice(voice.name());
+    }
+
+    private void setShipVoice(String voice) {
+        ShipManager shipManager = ShipManager.getInstance();
+        ShipDao.Ship ship = shipManager.getShip();
+        if (ship == null) return;
+        ship.setVoice(voice);
+        shipManager.saveShip(ship);
     }
 
     public void setKokoroVoice(KokoroVoices voice) {
-        Database.withDao(GameSessionDao.class, dao -> {
-            GameSessionDao.GameSession session = dao.get();
-            session.setAiVoice(voice.name());
-            dao.save(session);
-            return null;
-        });
+        setShipVoice(voice.name());
     }
 
     public void setAIPersonality(AIPersonality personality) {
@@ -280,6 +270,19 @@ public class SystemSession {
 
     public Float getSpeechSpeed() {
         return Database.withDao(GameSessionDao.class, dao -> dao.get().getSpeechSpeed());
+    }
+
+    public int getSttThreads() {
+        return Database.withDao(GameSessionDao.class, dao -> dao.get().getSttThreads());
+    }
+
+    public void setSttThreads(int threads) {
+        Database.withDao(GameSessionDao.class, dao -> {
+            GameSessionDao.GameSession session = dao.get();
+            session.setSttThreads(threads);
+            dao.save(session);
+            return Void.class;
+        });
     }
 
 

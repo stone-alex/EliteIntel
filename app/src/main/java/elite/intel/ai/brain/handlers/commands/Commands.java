@@ -42,7 +42,7 @@ public enum Commands {
     CLEAR_FLEET_CARRIER_ROUTE                           ("clear_fleet_carrier_route", null,  ClearFleetCarrierRouteHandler.class),
 
     FIND_COMMODITY                                      ("find_market_where_to_buy", null, FindCommodityHandler.class),
-    SET_AI_VOICE                                        ("set_or_change_voice_to", null,  ChangeAiVoiceHandler.class),
+    SET_AI_VOICE                                        ("set_or_change_voice_to", null,  ChangeShipVoiceHandler.class),
     SET_HOME_SYSTEM                                     ("set_location_as_home_star_system", null,  SetCurrentStarAsHomeSystem.class),
     SET_PERSONALITY                                     ("set_personality", null, SetPersonalityHandler.class),
     SET_PROFILE                                         ("set_profile", null, SetCadenceHandler.class),

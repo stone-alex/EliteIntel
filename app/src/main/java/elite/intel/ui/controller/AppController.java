@@ -72,6 +72,11 @@ public class AppController implements Runnable {
     }
 
     @Subscribe
+    public void onSttThreadsChangedEvent(SttThreadsChangedEvent event) {
+        systemSession.setSttThreads(event.getNumThreads());
+    }
+
+    @Subscribe
     public void onStreamModeToggle(VoiceInputModeToggleEvent event) {
         EventBusManager.publish(new ToggleWakeWordEvent(event.isStreaming()));
     }

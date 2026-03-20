@@ -18,12 +18,13 @@ public interface ShipDao {
     Ship findShip(int shipId);
 
     @SqlUpdate(""" 
-            INSERT INTO ship (shipName, shipId, shipIdentifier, cargoCapacity)
-                        VALUES (:shipName, :shipId, :shipIdentifier, :cargoCapacity)
+            INSERT INTO ship (shipName, shipId, shipIdentifier, cargoCapacity, voice)
+                        VALUES (:shipName, :shipId, :shipIdentifier, :cargoCapacity, :voice)
                         on conflict DO UPDATE set
                         shipName = excluded.shipName,
                         shipIdentifier = excluded.shipIdentifier,
-                        cargoCapacity = excluded.cargoCapacity
+                        cargoCapacity = excluded.cargoCapacity,
+                        voice = excluded.voice
             """)
     void save(@BindBean ShipDao.Ship ship);
 
@@ -35,6 +36,7 @@ public interface ShipDao {
             ship.setShipId(rs.getInt("shipId"));
             ship.setShipIdentifier(rs.getString("shipIdentifier"));
             ship.setCargoCapacity(rs.getInt("cargoCapacity"));
+            ship.setVoice(rs.getString("voice"));
             return ship;
         }
     }
@@ -59,6 +61,7 @@ public interface ShipDao {
         private Integer shipId;
         private String shipIdentifier;
         private Integer cargoCapacity;
+        private String voice;
 
         public String getShipName() {
             return shipName;
@@ -90,6 +93,18 @@ public interface ShipDao {
 
         public void setCargoCapacity(int cargoCapacity) {
             this.cargoCapacity = cargoCapacity;
+        }
+
+        public void setCargoCapacity(Integer cargoCapacity) {
+            this.cargoCapacity = cargoCapacity;
+        }
+
+        public String getVoice() {
+            return voice;
+        }
+
+        public void setVoice(String voice) {
+            this.voice = voice;
         }
     }
 }

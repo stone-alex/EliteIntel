@@ -34,7 +34,7 @@ public class AiCommandsAndQueries {
     private Map<String, String> buildCommandMap() {
         Map<String, String> commandMap = new HashMap<>();
 
-        commandMap.put("start listening, listen to me, wake word ON", START_LISTENING.getAction());
+        commandMap.put("start listening, listen to me, wake word ON, stop ignoring user", START_LISTENING.getAction());
 
         commandMap.put("stop listening, ignore me, wake word OFF", STOP_LISTENING.getAction());
 
@@ -83,7 +83,7 @@ public class AiCommandsAndQueries {
         commandMap.put("scan the system, open FSS, perform full system scan, honk", OPEN_FSS_AND_SCAN.getAction());
         commandMap.put("navigate to landing zone, get heading to LZ", GET_HEADING_TO_LZ.getAction());
 
-        commandMap.put("calculate carrier jump route, plot fleet carrier route", CALCULATE_FLEET_CARRIER_ROUTE.getAction());
+        commandMap.put("calculate carrier route, plot fleet carrier route", CALCULATE_FLEET_CARRIER_ROUTE.getAction());
         commandMap.put("enter carrier destination", ENTER_FLEET_CARRIER_DESTINATION.getAction());
         commandMap.put("calculate trade route, get us a trade route, find trade route", CALCULATE_TRADE_ROUTE.getAction());
         commandMap.put("navigate to next trade stop, go to trade station", NAVIGATE_TO_NEXT_TRADE_STOP.getAction());
@@ -164,10 +164,7 @@ public class AiCommandsAndQueries {
         commandMap.put("show status panel", SHOW_STATUS_PANEL.getAction());
         commandMap.put("show ship panel", SHOW_SHIP_PANEL.getAction());
 
-        commandMap.put("close, close panel, exit, esc", CLOSE.getAction());
-
-        //commandMap.put("system shut down", SHUT_DOWN.getAction());
-
+        commandMap.put("close, close panel, exit, esc", EXIT_CLOSE.getAction());
 
         commandMap.put("show carrier management panel", DISPLAY_CARRIER_MANAGEMENT.getAction());
         commandMap.put("change trade profile starting budget to" + KEY_X, CHANGE_TRADE_PROFILE_SET_STARTING_BUDGET.getAction());
@@ -240,7 +237,7 @@ public class AiCommandsAndQueries {
         queryMap.put("distance to the bubble, how far from civilisation, how far from inhabited space, how far are we from the bubble", DISTANCE_TO_BUBBLE.getAction());
         queryMap.put("distance to last bio sample, how far to next organic, how far back to that organism, distance to previous sample", DISTANCE_TO_LAST_BIO_SAMPLE.getAction());
         queryMap.put("what time is it, earth time, current time, real world time, what is the time", TIME_IN_ZONE.getAction());
-        queryMap.put("star system biome analysis" + KEY_X, PLANET_BIOME_ANALYSIS.getAction());
+        queryMap.put("star system biome analysis, what organics are possible here, any biology in this star system" + KEY_X, PLANET_BIOME_ANALYSIS.getAction());
         queryMap.put("reminder, remind me, what was my reminder, any reminders, check my notes", REMINDER.getAction());
         queryMap.put("stations ports and settlements in system, local infrastructure, any settlements here, what ports are here, planetary bases nearby, any outposts in system", ANALYZE_LOCAL_STATIONS.getAction());
         queryMap.put("active missions, mission list, what missions do we have, current objectives, mission status, what are we doing", ANALYZE_MISSIONS.getAction());

@@ -21,7 +21,7 @@ To add a new LLM (e.g., OpenAI, Anthropic), create a subpackage under `brain` (e
     - `type`: Must be `"command"`, `"query"`, or `"chat"`. Determines handler path.
     - `action`: String matching a `GameCommand.getUserCommand()` value, `QueryActions.getAction()`, or `null` for chat.
     - `params`: `JsonObject` with action-specific data (e.g., `{"commodity": "painite"}`).
-    - `response_text`: String for TTS output or feedback (can be empty for single-step commands).
+  - `text_to_speech_response`: String for TTS output or feedback (can be empty for single-step commands).
     - `expect_followup`: Boolean (optional, default `false`) for queries needing re-query (e.g., analysis).
 - **Handler Signature**: Command handlers (`CommandHandler`) use `handle(JsonObject params, String responseText)`. Query handlers (`QueryHandler`) use `handle(String action, JsonObject params, String originalUserInput)`. The router (`AIRouterInterface`) processes `JsonObject jsonResponse` with the
   above fields.
@@ -42,20 +42,27 @@ Duplicate the Grok impl's structure, adapting API calls to your LLM. All are sin
 - **Methods**:
     - `start()` starts the local thread
     - `stop()` stops the local thread
-    - `@Subscribe onVoiceProcessEvent(VoiceProcessEvent event)`: Sanitize input, build prompt via `AiContextFactory.generatePlayerInstructions()`, send to LLM, parse into `{ "type": "...", "action": "...", "params": {...}, "response_text": "..." }`.`
-    - `@Subscribe onUserInput(UserInputEvent event)`: Sanitize input, build prompt via `AiContextFactory.generatePlayerInstructions()`, send to LLM, parse into `{ "type": "...", "action": "...", "params": {...}, "response_text": "..." }`.
+  - `@Subscribe onVoiceProcessEvent(VoiceProcessEvent event)`: Sanitize input, build prompt via
+    `AiContextFactory.generatePlayerInstructions()`, send to LLM, parse into
+    `{ "type": "...", "action": "...", "params": {...}, "text_to_speech_response": "..." }`.`
+  - `@Subscribe onUserInput(UserInputEvent event)`: Sanitize input, build prompt via
+    `AiContextFactory.generatePlayerInstructions()`, send to LLM, parse into
+    `{ "type": "...", "action": "...", "params": {...}, "text_to_speech_response": "..." }`.
     - `@Subscribe onSensorDataEvent(SensorDataEvent event)`: Process sensor data, build prompt, send, format response.
-- **Tips**: Use `ThreadLocal<JsonArray>` for chat history. Publish `VoiceProcessEvent` for TTS. Fallback to chat on errors. Example: "Weapons Hot!" → `{ "type": "command", "action": "weapons_hot", "params": {}, "response_text": "Hardpoints deployed." }`.
+- **Tips**: Use `ThreadLocal<JsonArray>` for chat history. Publish `VoiceProcessEvent` for TTS. Fallback to chat on
+  errors. Example: "Weapons Hot!" →
+  `{ "type": "command", "action": "weapons_hot", "params": {}, "text_to_speech_response": "Hardpoints deployed." }`.
 - **Grok Example**: Builds payload, extracts JSON after "\n\n{", publishes events.
 
 ### 2. AIRouterInterface (e.g., `YourLlmResponseRouter`)
 
 - **Role**: Dispatches responses to handlers.
 - **Methods**:
-    - `processAiResponse(JsonObject jsonResponse, @Nullable String userInput)`: Extract `type`, `action`, `params`, `response_text`. Switch on `type`:
+    - `processAiResponse(JsonObject jsonResponse, @Nullable String userInput)`: Extract `type`, `action`, `params`,
+      `text_to_speech_response`. Switch on `type`:
         - `"command"`: Call `handleCommand(action, params, responseText, jsonResponse)` using `action` matched to `GameCommand.getUserCommand()` values.
         - `"query"`: Call `handleQuery(action, params, userInput)` (handles follow-ups if `expect_followup` is true).
-        - `"chat"`: Call `handleChat(response_text)`.
+      - `"chat"`: Call `handleChat(text_to_speech_response)`.
         - Default: Log warning, fallback to chat.
 - **Tips**: Use `getAsStringOrEmpty` and `getAsObjectOrEmpty` for safe access. For follow-ups, append a tool message (e.g., `role: "tool"`) to re-query. Ensure `action` aligns with user commands (e.g., `"weapons_hot"`, not they key binding `"DeployHardpointToggle"`).
 - **Grok Example**: Parses response, routes to `commandHandlers` or `queryHandlers`, handles follow-up logic.
@@ -67,7 +74,8 @@ Duplicate the Grok impl's structure, adapting API calls to your LLM. All are sin
     - `generateSystemInstructions(String sensorInput)`: Build prompt with sensor data and session details.
     - `generatePlayerInstructions(String playerVoiceInput)`: Craft a prompt to classify input as "command", "query", or "chat", supporting game actions (e.g., "deploy landing gear"), game queries (e.g., "analyze my loadout"), and general chat (e.g., "who was the last man on the moon?").
     - `generateAnalysisPrompt(String userIntent, String dataJson)`: Prepare a prompt for analyzing game data with intent and JSON context.
-    - `generateSystemPrompt()`: Define AI role, rules, and response format (e.g., JSON with `type`, `action`, `params`, `response_text`).
+  - `generateSystemPrompt()`: Define AI role, rules, and response format (e.g., JSON with `type`, `action`, `params`,
+    `text_to_speech_response`).
     - `generateQueryPrompt()`: Guide query classification for game and general topics.
     - `appendBehavior(StringBuilder sb)`: Add personality or cadence from session settings.
 - **Tips**: Tailor prompts to your LLM’s strengths, including headers (e.g., model, temperature) via `ConfigManager`. Instruct the LLM to handle diverse inputs with the standard JSON structure. Refer to `GrokContextFactory` for examples of prompt construction, behavior integration, and chat
@@ -79,14 +87,16 @@ Duplicate the Grok impl's structure, adapting API calls to your LLM. All are sin
 - **Role**: Handles queries.
 - **Methods**:
     - `sendToAi(JsonArray messages)`: Send prompt, parse response into standard JSON.
-- **Tips**: Ensure response matches `{ "type": "query", "action": "...", "params": {...}, "response_text": "..." }` or triggers follow-up.
+- **Tips**: Ensure response matches
+  `{ "type": "query", "action": "...", "params": {...}, "text_to_speech_response": "..." }` or triggers follow-up.
 - **Grok Example**: Tailored for query-specific parsing.
 
 ### 5. AiAnalysisInterface (e.g., `YourLlmAnalysisEndpoint`)
 
 - **Role**: Analyzes data.
 - **Methods**:
-    - `analyzeData(String userIntent, String dataJson)`: Build prompt, return `{ "type": "query", "action": "...", "params": {...}, "response_text": "..." }`.
+    - `analyzeData(String userIntent, String dataJson)`: Build prompt, return
+      `{ "type": "query", "action": "...", "params": {...}, "text_to_speech_response": "..." }`.
 - **Tips**: Focus on structured output for handlers.
 - **Grok Example**: Extracts content as JsonObject.
 
@@ -94,7 +104,8 @@ Duplicate the Grok impl's structure, adapting API calls to your LLM. All are sin
 
 - **Role**: General conversation.
 - **Methods**:
-    - `sendToAi(JsonArray messages)`: Return `{ "type": "chat", "action": null, "params": {}, "response_text": "..." }`.
+    - `sendToAi(JsonArray messages)`: Return
+      `{ "type": "chat", "action": null, "params": {}, "text_to_speech_response": "..." }`.
 - **Tips**: Fallback to chat type if no structured JSON. Maintain history for context.
 - **Grok Example**: Routes non-JSON to chat type.
 
@@ -103,8 +114,11 @@ Duplicate the Grok impl's structure, adapting API calls to your LLM. All are sin
 1. **Create Subpackage**: e.g., `brain/yourllm`.
 2. **Implement Classes**: As above, making them singletons with `getInstance()`.
 3. **Wire in ApiFactory**: Add getters like `getYourLlmRouter()`, returning instances based on `KeyDetector`’s provider detection for the LLM key in `system.conf`.
-4. **Prompt Engineering**: Instruct your LLM to return JSON with `type`, `action`, `params`, `response_text`, and optionally `expect_followup`. Example: "For every response, format as { \"type\": \"command/query/chat\", \"action\": \"...\", \"params\": {...}, \"response_text\": \"...\",
-   \"expect_followup\": true/false }". Include examples for chat (e.g., "What is six times seven?" → `{ "type": "chat", "action": null, "params": {}, "response_text": "Forty-two" }`).
+4. **Prompt Engineering**: Instruct your LLM to return JSON with `type`, `action`, `params`, `text_to_speech_response`,
+   and optionally `expect_followup`. Example: "For every response, format as { \"type\": \"command/query/chat\",
+   \"action\": \"...\", \"params\": {...}, \"text_to_speech_response\": \"...\",
+   \"expect_followup\": true/false }". Include examples for chat (e.g., "What is six times seven?" →
+   `{ "type": "chat", "action": null, "params": {}, "text_to_speech_response": "Forty-two" }`).
 5. **Testing**:
     - Voice command: "Power to engines" → Command handler triggers custom handler.
     - Voice command: "Set optimal speed" → Command handler triggers single action command (speed 75%).

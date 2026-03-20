@@ -102,7 +102,7 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
 
         if (userInput == null || userInput.isEmpty()) {
             JsonObject errorResponse = new JsonObject();
-            errorResponse.addProperty(AIConstants.PROPERTY_RESPONSE_TEXT, "Sorry, I couldn't process that.");
+            errorResponse.addProperty(AIConstants.PROPERTY_text_to_speech_response, "Sorry, I couldn't process that.");
             getRouter().processAiResponse(errorResponse, userInput);
             return;
         }
@@ -125,7 +125,7 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
         JsonObject apiResponse = getChatInterface().processAiPrompt(messages, 0.01f);
         if (apiResponse == null) {
             JsonObject errorResponse = new JsonObject();
-            errorResponse.addProperty(AIConstants.PROPERTY_RESPONSE_TEXT, "Sorry, I couldn't process that.");
+            errorResponse.addProperty(AIConstants.PROPERTY_text_to_speech_response, "Sorry, I couldn't process that.");
             getRouter().processAiResponse(errorResponse, userInput);
             return;
         }

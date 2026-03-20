@@ -91,7 +91,7 @@ public class OllamaUserInputProcessor extends CommandEndPoint implements AiComma
 
         JsonObject response = OllamaCommandEndPoint.getInstance().processAiPrompt(request, 0.01f);
         if (response == null) {
-            getRouter().processAiResponse(createError("Sorry, I couldn't reach Ollama."), userInput);
+            getRouter().processAiResponse(createError("LLM did not answer."), userInput);
             return;
         }
 
@@ -109,7 +109,7 @@ public class OllamaUserInputProcessor extends CommandEndPoint implements AiComma
 
     private JsonObject createError(String text) {
         JsonObject err = new JsonObject();
-        err.addProperty(AIConstants.PROPERTY_RESPONSE_TEXT, text);
+        err.addProperty(AIConstants.PROPERTY_text_to_speech_response, text);
         return err;
     }
 }

@@ -4,8 +4,8 @@ import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.commands.Commands;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager; 
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -92,14 +92,14 @@ public class GameController {
      * Any exceptions encountered during processing are logged and handled appropriately.
      *
      * @param jsonResponse the JSON object containing the AI-generated response. It is expected
-     *                     to contain keys such as "type", "response_text", "action", and "params".
+     *                     to contain keys such as "type", "text_to_speech_response", "action", and "params".
      *                     The "type" value determines how the response is processed. If the type is
      *                     "command", additional fields like "action" and "params" are used for further processing.
      */
     public void processAiCommand(JsonObject jsonResponse) {
         try {
             String type = jsonResponse.has("type") ? jsonResponse.get("type").getAsString() : "";
-            String responseText = jsonResponse.has("response_text") ? jsonResponse.get("response_text").getAsString() : "";
+            String responseText = jsonResponse.has("text_to_speech_response") ? jsonResponse.get("text_to_speech_response").getAsString() : "";
 
             if (type.equalsIgnoreCase("command")) {
                 String action = jsonResponse.has("action") ? jsonResponse.get("action").getAsString() : "";

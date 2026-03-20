@@ -7,7 +7,7 @@ public class AIConstants {
     public static List<String> passThroughWords = List.of("computer", "ship", "listen");
 
     public final static String TYPE_ACTION = "action";
-    public final static String PROPERTY_RESPONSE_TEXT = "response_text";
+    public final static String PROPERTY_text_to_speech_response = "text_to_speech_response";
     public final static String PROPERTY_CONTENT = "content";
     public final static String PROPERTY_MESSAGE = "message";
 

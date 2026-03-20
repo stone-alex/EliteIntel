@@ -16,7 +16,7 @@ public class AiDataStruct implements AiData {
     private static final String FORMAT_PREFIX =
             "CRITICAL: This response is read aloud by a text-to-speech engine. " +
                     "Output MUST be plain spoken English only. " +
-                    "FORBIDDEN in response_text: asterisks, hyphens used as bullets, markdown headers (#), bold (**text**), " +
+                    "FORBIDDEN in text_to_speech_response: asterisks, hyphens used as bullets, markdown headers (#), bold (**text**), " +
                     "numbered lists, brackets, colons followed by lists, or any formatting symbols. " +
                     "Two to four sentences maximum. Answer only what was asked. " +
                     "Do not invent, estimate, or assume any data not explicitly present in the provided fields.\n\n";

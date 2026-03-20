@@ -22,7 +22,7 @@ public class BaseAiClient {
 
     public JsonObject createErrorResponse(String message) {
         JsonObject err = new JsonObject();
-        err.addProperty(AIConstants.PROPERTY_RESPONSE_TEXT, message);
+        err.addProperty(AIConstants.PROPERTY_text_to_speech_response, message);
         return err;
     }
 
@@ -50,11 +50,10 @@ public class BaseAiClient {
     }
 
     public JsonObject sendJsonRequest(String request, HttpURLConnection conn) {
-        cancelCurrentRequest();
-        Thread currentThread = Thread.currentThread();  // or pass from caller if async
+        Thread currentThread = Thread.currentThread();
 
         try {
-            setCurrentConnection(conn, currentThread);  // ← key: register for cancel
+            setCurrentConnection(conn, currentThread);
 
             conn.getOutputStream().write(request.getBytes(StandardCharsets.UTF_8));
             conn.getOutputStream().flush();

@@ -48,7 +48,7 @@ public enum Commands {
     SET_PROFILE                                         ("set_profile", null, SetCadenceHandler.class),
     SET_RADIO_TRANSMISSION_MODE                         ("turn_radio_transmission_on_off", null,  SetRadioTransmissionOnOff.class),
 
-    START_LISTENING                                     ("start_listening_monitor_commands", null, StartListeningHandler.class),
+    START_LISTENING                                     ("start_listening_monitor_commands_do_not_ignore_user", null, StartListeningHandler.class),
     STOP_LISTENING                                      ("stop_listening_ignore_commands", null, StopListeningHandler.class),
 
     NAVIGATE_TO_TARGET                                  ("navigate_to_coordinates", null,  NavigateToCoordinatesHandler.class),
@@ -135,7 +135,7 @@ public enum Commands {
     SHOW_STORAGE_PANEL                                  ("show_storage_panel", null, OpenStoragePanelHandler.class),
     SHOW_STATUS_PANEL                                   ("show_status_panel", null, OpenStatusPanelHandler.class),
     SHOW_SHIP_PANEL                                     ("show_ship_panel", null, OpenShipPanelHandler.class),
-    CLOSE                                               ("close", null, ClosePanelHandler.class),
+    EXIT_CLOSE                                          ("exit_close", null, ClosePanelHandler.class),
 
 
     REQUEST_DOCKING                                     ("request_docking", null,  RequestDockingHandler.class),
@@ -152,8 +152,8 @@ public enum Commands {
     DRIVE_ASSIST                                        ("drive_assist", BINDING_DRIVE_ASSIST.getGameBinding(), GenericGameControlHandler.class),
 
     TARGET_SUB_SYSTEM                                   ("target_subsystem", null, TargetSubSystemHandler.class),
-    DISMISS_SHIP                                        ("dismiss_ship_go_to_orbit", BINDING_RECALL_DISMISS_SHIP.getGameBinding(), DismissShip.class),
-    RETURN_TO_SURFACE                                   ("recall_ship_pick_me_up_return_to_surface", BINDING_RECALL_DISMISS_SHIP.getGameBinding(), DismissShip.class),
+    DISMISS_SHIP                                        ("dismiss_ship_go_to_orbit", BINDING_RECALL_DISMISS_SHIP.getGameBinding(), DismissRecallShip.class),
+    RETURN_TO_SURFACE                                   ("recall_ship_pick_me_up_return_to_surface", BINDING_RECALL_DISMISS_SHIP.getGameBinding(), DismissRecallShip.class),
 
     REQUEST_DEFENSIVE_BEHAVIOUR                         ("fighter_orders_defend_fighter_order", BINDING_REQUEST_DEFENSIVE_BEHAVIOUR.getGameBinding(), GenericGameControlHandler.class),
     REQUEST_FOCUS_TARGET                                ("fighter_orders_attack_my_target_fighter_order", BINDING_REQUEST_DEFENSIVE_BEHAVIOUR.getGameBinding(), GenericGameControlHandler.class),

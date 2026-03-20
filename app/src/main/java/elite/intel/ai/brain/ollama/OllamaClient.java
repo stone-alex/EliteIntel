@@ -83,11 +83,12 @@ public class OllamaClient extends BaseAiClient implements Client {
     @Override
     public JsonObject createErrorResponse(String message) {
         JsonObject err = new JsonObject();
-        err.addProperty("response_text", message);
+        err.addProperty("text_to_speech_response", message);
         return err;
     }
 
-    @Override public JsonObject sendJsonRequest(String request) {
+    @Override
+    public synchronized JsonObject sendJsonRequest(String request) {
         JsonObject response = super.sendJsonRequest(request, getHttpURLConnection());
         OllamaMetadata metadata = GsonFactory.getGson().fromJson(response, OllamaMetadata.class);
         EventBusManager.publish(new AppLogEvent("Model " + metadata));

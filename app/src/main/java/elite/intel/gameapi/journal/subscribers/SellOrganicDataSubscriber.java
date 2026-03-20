@@ -17,8 +17,8 @@ public class SellOrganicDataSubscriber {
         codexEntryManager.clear();
         String instructions = """
                     We sold organic data and made credits.
-                    Provide user with sale summary. Start with total amount collected, provide breakdown by genus.
+                    Provide user with a sale summary. Start with total amount collected, then provide a breakdown by genus.
                 """;
-        EventBusManager.publish(new SensorDataEvent("Bio Data Sold: " + event.toJson(), instructions));
+        EventBusManager.publish(new SensorDataEvent("Bio Data Sold: " + event.toYaml(), instructions));
     }
 }

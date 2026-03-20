@@ -19,7 +19,7 @@ public class BaseQueryAnalyzer {
         AiAnalysisInterface aiAnalysisInterface = ApiFactory.getInstance().getAnalysisEndpoint();
         JsonObject analysis = aiAnalysisInterface.analyzeData(originalUserInput, struct);
 
-        if (!analysis.has(AIConstants.PROPERTY_RESPONSE_TEXT)) {
+        if (!analysis.has(AIConstants.PROPERTY_text_to_speech_response)) {
             analysis = GenericResponse.getInstance().genericResponse("LLM failed to process this request.");
         }
         return analysis;
@@ -27,7 +27,7 @@ public class BaseQueryAnalyzer {
 
     protected JsonObject process(String message) {
         JsonObject object = new JsonObject();
-        object.addProperty(AIConstants.PROPERTY_RESPONSE_TEXT, message);
+        object.addProperty(AIConstants.PROPERTY_text_to_speech_response, message);
         return object;
     }
 }

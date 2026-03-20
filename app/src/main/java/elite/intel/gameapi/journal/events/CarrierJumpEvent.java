@@ -147,7 +147,7 @@ public class CarrierJumpEvent extends BaseEvent {
         return starSystem;
     }
 
-    public double getSystemAddress() {
+    public long getSystemAddress() {
         return systemAddress;
     }
 

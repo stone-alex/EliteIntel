@@ -27,13 +27,13 @@ public class AnalyzeDistanceFromFleetCarrierHandler extends BaseQueryAnalyzer im
         }
 
         double x = 0, y = 0, z = 0;
-        LocationDto primarySystem = locationManager.findPrimaryStar(playerSession.getPrimaryStarName());
-        x = primarySystem.getX();
-        y = primarySystem.getY();
-        z = primarySystem.getZ();
-        boolean currentLocationCoordinatesAreNotAvailable = x == 0 && y == 0 && z == 0;
-        if (currentLocationCoordinatesAreNotAvailable) {
-            return process("Current location coordinates are not available.");
+        LocationDto playerLocation = locationManager.findPrimaryStar(playerSession.getPrimaryStarName());
+        x = playerLocation.getX();
+        y = playerLocation.getY();
+        z = playerLocation.getZ();
+        boolean arePlayerLocationCoordinatesAvailable = x == 0 && y == 0 && z == 0;
+        if (arePlayerLocationCoordinatesAvailable) {
+            return process("Player location coordinates are not available.");
         }
 
         ShipLoadOutDto shipLoadout = playerSession.getShipLoadout();

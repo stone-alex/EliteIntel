@@ -39,8 +39,8 @@ public final class JsonUtils {
 
     /**
      * Repairs common LLM JSON output failures before parsing:
-     * 1. Unquoted response_text value (model forgot the quotes)
-     * 2. Truncated response_text string (num_predict limit hit mid-generation)
+     * 1. Unquoted text_to_speech_response value (model forgot the quotes)
+     * 2. Truncated text_to_speech_response string (num_predict limit hit mid-generation)
      */
     public static String repairLlmJson(String raw) {
         if (raw == null || raw.isEmpty()) return raw;
@@ -54,21 +54,21 @@ public final class JsonUtils {
                 // JSON object buried in surrounding text - extract it
                 working = working.substring(firstBrace, lastBrace + 1);
             } else {
-                // No JSON at all - wrap as response_text so the router can speak it
+                // No JSON at all - wrap as text_to_speech_response so the router can speak it
                 String escaped = working
                         .replace("\\", "\\\\")
                         .replace("\"", "\\\"")
                         .replace("\n", "\\n")
                         .replace("\r", "\\r")
                         .replace("\t", "\\t");
-                return "{\"response_text\": \"" + escaped + "\"}";
+                return "{\"text_to_speech_response\": \"" + escaped + "\"}";
             }
         }
 
-        // Repair 1: truncated string - JSON cut off mid response_text value (no closing "})
+        // Repair 1: truncated string - JSON cut off mid text_to_speech_response value (no closing "})
         if (!working.endsWith("}")) {
             java.util.regex.Pattern truncP = java.util.regex.Pattern.compile(
-                    "\"response_text\"\\s*:\\s*\"(.*?)$",
+                    "\"text_to_speech_response\"\\s*:\\s*\"(.*?)$",
                     java.util.regex.Pattern.DOTALL
             );
             java.util.regex.Matcher truncM = truncP.matcher(working);
@@ -79,15 +79,15 @@ public final class JsonUtils {
                         .replace("\n", "\\n")
                         .replace("\r", "\\r")
                         .replace("\t", "\\t");
-                return working.substring(0, truncM.start()) + "\"response_text\": \"" + value + "\"}";
+                return working.substring(0, truncM.start()) + "\"text_to_speech_response\": \"" + value + "\"}";
             }
         }
 
-        // Repair 2: unquoted response_text value (model output value without surrounding quotes)
+        // Repair 2: unquoted text_to_speech_response value (model output value without surrounding quotes)
         // Note: \\s*+ is possessive - prevents backtracking past whitespace so (?!\") correctly
-        // rejects properly-quoted values like: "response_text": "some text"
+        // rejects properly-quoted values like: "text_to_speech_response": "some text"
         java.util.regex.Pattern p = java.util.regex.Pattern.compile(
-                "\"response_text\"\\s*:\\s*+(?!\")(.+?)\\s*}\\s*$",
+                "\"text_to_speech_response\"\\s*:\\s*+(?!\")(.+?)\\s*}\\s*$",
                 java.util.regex.Pattern.DOTALL
         );
         java.util.regex.Matcher m = p.matcher(working);
@@ -98,10 +98,71 @@ public final class JsonUtils {
                     .replace("\n", "\\n")
                     .replace("\r", "\\r")
                     .replace("\t", "\\t");
-            return working.substring(0, m.start()) + "\"response_text\": \"" + value + "\"}";
+            return working.substring(0, m.start()) + "\"text_to_speech_response\": \"" + value + "\"}";
         }
 
         return working;
+    }
+
+    /**
+     * Strips markdown and non-TTS-safe characters from the text_to_speech_response field
+     * of a parsed LLM response object. Mutates the object in place and returns it.
+     * Handles models that ignore formatting instructions and return markdown anyway.
+     */
+    public static JsonObject sanitizeTtsResponse(JsonObject obj) {
+        if (obj == null || !obj.has("text_to_speech_response")) return obj;
+        String raw = getAsStringOrEmpty(obj, "text_to_speech_response");
+        obj.addProperty("text_to_speech_response", stripMarkdownForTts(raw));
+        return obj;
+    }
+
+    /**
+     * Strips markdown formatting and non-standard characters, leaving plain spoken text
+     * safe for TTS. Only standard American keyboard characters survive.
+     */
+    public static String stripMarkdownForTts(String text) {
+        if (text == null || text.isEmpty()) return text;
+        String s = text;
+
+        // Em dash, en dash → comma space
+        s = s.replace("\u2014", ", ").replace("\u2013", ", ");
+
+        // Markdown links [label](url) → label
+        s = s.replaceAll("\\[([^\\]]+)]\\([^)]*\\)", "$1");
+
+        // Table rows (lines that start and end with |) → removed
+        s = s.replaceAll("(?m)^\\|.*$", "");
+
+        // ATX headers (# ## ###) → just the text
+        s = s.replaceAll("(?m)^#{1,6}\\s*", "");
+
+        // Bold/italic markers ** * __ _
+        s = s.replaceAll("[*_]{1,3}([^*_\n]+)[*_]{1,3}", "$1");
+
+        // Blockquote markers
+        s = s.replaceAll("(?m)^>\\s*", "");
+
+        // Bullet and numbered list markers at line start
+        s = s.replaceAll("(?m)^[-*+•]\\s+", "");
+        s = s.replaceAll("(?m)^\\d+[.):]\\s+", "");
+
+        // Backticks (inline code / code fences)
+        s = s.replaceAll("`+", "");
+
+        // Horizontal rules
+        s = s.replaceAll("(?m)^[-*_]{3,}\\s*$", "");
+
+        // Drop any character outside the printable ASCII / standard keyboard range
+        s = s.replaceAll("[^\\x20-\\x7E\\n]", "");
+
+        // Collapse blank lines left by removed table rows / headers
+        s = s.replaceAll("(?m)^[ \\t]+$", "");
+        s = s.replaceAll("\\n{3,}", "\n\n");
+
+        // Collapse multiple spaces
+        s = s.replaceAll("[ \\t]{2,}", " ");
+
+        return s.trim();
     }
 
     public static JsonObject nullSaveJsonObject(JsonObject obj, String key, Logger log) {

@@ -66,12 +66,12 @@ public class OllamaAnalysisEndpoint extends AiEndPoint implements AiAnalysisInte
             JsonObject properties = new JsonObject();
             JsonObject responseTextProp = new JsonObject();
             responseTextProp.addProperty("type", "string");
-            properties.add("response_text", responseTextProp);
+            properties.add("text_to_speech_response", responseTextProp);
 
             JsonObject format = new JsonObject();
             format.add("properties", properties);
             JsonArray required = new JsonArray();
-            required.add("response_text");
+            required.add("text_to_speech_response");
             format.add("required", required);
             format.addProperty("additionalProperties", false);
             format.addProperty("type", "object");
@@ -81,12 +81,12 @@ public class OllamaAnalysisEndpoint extends AiEndPoint implements AiAnalysisInte
             log.debug("Ollama analysis raw response:\n{}", gson.toJson(root));
 
             String content = root.getAsJsonObject("message").get("content").getAsString();
-            return JsonParser.parseString(JsonUtils.repairLlmJson(content)).getAsJsonObject();
+            return JsonUtils.sanitizeTtsResponse(JsonParser.parseString(JsonUtils.repairLlmJson(content)).getAsJsonObject());
 
         } catch (Exception e) {
             log.error("Ollama analysis failed", e);
             JsonObject err = new JsonObject();
-            err.addProperty("response_text", "LLM Returned malformed response. Analysis failed – check logs");
+            err.addProperty("text_to_speech_response", "LLM Returned malformed response. Analysis failed – check logs");
             return err;
         }
     }
@@ -119,12 +119,12 @@ public class OllamaAnalysisEndpoint extends AiEndPoint implements AiAnalysisInte
             JsonObject properties = new JsonObject();
             JsonObject responseTextProp = new JsonObject();
             responseTextProp.addProperty("type", "string");
-            properties.add("response_text", responseTextProp);
+            properties.add("text_to_speech_response", responseTextProp);
 
             JsonObject format = new JsonObject();
             format.add("properties", properties);
             JsonArray required = new JsonArray();
-            required.add("response_text");
+            required.add("text_to_speech_response");
             format.add("required", required);
             format.addProperty("additionalProperties", false);
             format.addProperty("type", "object");
@@ -133,12 +133,12 @@ public class OllamaAnalysisEndpoint extends AiEndPoint implements AiAnalysisInte
             JsonObject root = processAiPrompt(gson.toJson(prompt), client);
             log.debug("Ollama sensor raw response:\n{}", gson.toJson(root));
             String sensorContent = root.getAsJsonObject("message").get("content").getAsString();
-            return JsonParser.parseString(JsonUtils.repairLlmJson(sensorContent)).getAsJsonObject();
+            return JsonUtils.sanitizeTtsResponse(JsonParser.parseString(JsonUtils.repairLlmJson(sensorContent)).getAsJsonObject());
 
         } catch (Exception e) {
             log.error("Ollama sensor processing failed", e);
             JsonObject err = new JsonObject();
-            err.addProperty("response_text", "Sensor analysis failed – check logs");
+            err.addProperty("text_to_speech_response", "Sensor analysis failed – check logs");
             return err;
         }
     }

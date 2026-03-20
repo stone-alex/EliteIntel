@@ -50,7 +50,8 @@ To add an alternative LLM (e.g., for users with other LLM accounts):
    Do not hard-code any command or query specifics in your implementation.
 
 3. **Implement Pipeline Contracts**: Adhere to interfaces in `elite.intel.ai.brain` for command, query, chat, and analysis handling. Your implementation must:
-    - Support the existing JSON schema (e.g., `messages` array, `response_text` for vocalizing responses, `tool` calls for deep processing, and `action` for game actions).
+    - Support the existing JSON schema (e.g., `messages` array, `text_to_speech_response` for vocalizing responses,
+      `tool` calls for deep processing, and `action` for game actions).
     - Handle JSON-formatted data provided by the handlers.
     - Maintain conversation history for commands, queries, and chats.
     - Integrate with Handlers via `CommandHandler handler = commandHandlers.get(action);` and `QueryHandler handler = queryHandlers.get(action);`

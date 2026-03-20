@@ -5,21 +5,17 @@ import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.Status;
-import elite.intel.session.ui.UINavigator;
 
 import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.*;
 
-public class DismissShip extends CommandOperator implements CommandHandler {
+public class DismissRecallShip extends CommandOperator implements CommandHandler {
 
-    public DismissShip(GameController controller) {
+    public DismissRecallShip(GameController controller) {
         super(controller.getMonitor(), controller.getExecutor());
     }
 
-    private final UINavigator navigator = new UINavigator(this);
-
     @Override public void handle(String action, JsonObject params, String responseText) {
         Status status = Status.getInstance();
-        navigator.closeOpenPanel();
 
         if (status.isInSrv()) {
             operateKeyboard(BINDING_RECALL_DISMISS_SHIP.getGameBinding(), 0);

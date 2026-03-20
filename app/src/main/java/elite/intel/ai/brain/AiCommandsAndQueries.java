@@ -34,7 +34,7 @@ public class AiCommandsAndQueries {
     private Map<String, String> buildCommandMap() {
         Map<String, String> commandMap = new HashMap<>();
 
-        commandMap.put("start listening, listen to me, wake word ON", START_LISTENING.getAction());
+        commandMap.put("start listening, listen to me, wake word ON, stop ignoring user", START_LISTENING.getAction());
 
         commandMap.put("stop listening, ignore me, wake word OFF", STOP_LISTENING.getAction());
 

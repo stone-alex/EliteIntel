@@ -48,7 +48,7 @@ public enum Commands {
     SET_PROFILE                                         ("set_profile", null, SetCadenceHandler.class),
     SET_RADIO_TRANSMISSION_MODE                         ("turn_radio_transmission_on_off", null,  SetRadioTransmissionOnOff.class),
 
-    START_LISTENING                                     ("start_listening_monitor_commands", null, StartListeningHandler.class),
+    START_LISTENING                                     ("start_listening_monitor_commands_do_not_ignore_user", null, StartListeningHandler.class),
     STOP_LISTENING                                      ("stop_listening_ignore_commands", null, StopListeningHandler.class),
 
     NAVIGATE_TO_TARGET                                  ("navigate_to_coordinates", null,  NavigateToCoordinatesHandler.class),

@@ -53,7 +53,7 @@ public class GrokClient extends BaseAiClient implements Client {
 
     @Override public JsonObject createErrorResponse(String message) {
         JsonObject error = new JsonObject();
-        error.addProperty("response_text", message);
+        error.addProperty("text_to_speech_response", message);
         return error;
     }
 

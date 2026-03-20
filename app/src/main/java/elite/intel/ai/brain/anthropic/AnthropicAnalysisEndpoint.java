@@ -55,7 +55,7 @@ public class AnthropicAnalysisEndpoint extends AiEndPoint implements AiAnalysisI
                 baseSystemPrompt = """
                         AI assistant.
                         Provide brief, casual conversational responses.
-                        Output ONLY this exact JSON structure {"response_text": "YOUR ANSWER HERE"} - no markdown, no extra text.
+                        Output ONLY this exact JSON structure {"text_to_speech_response": "YOUR ANSWER HERE"} - no markdown, no extra text.
                         Keep responses to one short sentence.
                         """;
             } else {
@@ -141,7 +141,7 @@ public class AnthropicAnalysisEndpoint extends AiEndPoint implements AiAnalysisI
 
     private JsonObject buildError(String message) {
         JsonObject err = new JsonObject();
-        err.addProperty("response_text", message);
+        err.addProperty("text_to_speech_response", message);
         return err;
     }
 

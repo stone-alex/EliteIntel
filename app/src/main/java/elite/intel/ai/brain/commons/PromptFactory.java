@@ -116,16 +116,14 @@ public class PromptFactory implements AiPromptFactory {
         } else {
             sb.append(appendLocalBehavior());
         }
+        sb.append("Respond with JSON only. Set \"text_to_speech_response\" to your answer.\n\n");
+        sb.append(ttsResponseRules());
         sb.append("""
-                Respond with JSON only. Set "response_text" to your answer.
-
-                Rules for response_text:
-                - Plain English text only. No bullets, no markdown, no lists, no brackets.
                 - Spell out numerals (e.g., twenty-three, not 23).
                 - Concise and direct. Answer only what the user asked.
                 - All numeric values in the provided data are pre-computed. Do not perform arithmetic.
                 - If data is missing, state that clearly.
-                - Do not mention the data format, or where it might have come from? Return TTS Friendly following the prompt rules.
+                - Do not mention the data format or where it came from.
                 - User may utilize NATO alphabet for letters/digits. Example: planet alpha 2 bravo means planet a2b
                 """);
 
@@ -164,25 +162,26 @@ public class PromptFactory implements AiPromptFactory {
     public String generateSensorPrompt() {
         StringBuilder sb = new StringBuilder();
         youAre(sb);
+        sb.append(ttsResponseRules());
         sb.append("""
                 Instructions:
                 Data provided is in YAML format as 'sensorData'.
-                
+
                 Summarise ONLY the important concrete readings and events that are ACTUALLY present in the provided sensorData.
                 Use ONLY the data inside sensorData and the event-specific instructions below (if any).
                 Ignore everything else: timestamps, eventName, endOfLife, metadata, status flags, non-essential fields, etc.
-                
+
                 STRICT RULES - MUST FOLLOW EVERY ONE:
                 - Output EXACTLY this JSON structure and NOTHING else - no extra text, no explanations, no markdown:
-                  {"response_text": "summary here"}
-                - response_text must be pure natural-language summary of facts only.
+                  {"text_to_speech_response": "summary here"}
+                - text_to_speech_response must be pure natural-language summary of facts only.
                 - NEVER use future/intention verbs: no will, going to, have to, need to, should, must.
                 - NEVER mention the user, notification, reporting, telling, or any communication act.
                 - NEVER write meta-statements like "this is", "here is", "notifying about", "detected and will inform".
                 - Spell out all numerals (twenty-one, not 21).
                 - DO NOT invent, guess or estimate any values not explicitly present in the YAML. Absence of data is intel.
                 - Be concise. Only state observable facts that matter.
-                - Do not mention the data format, or where it might have come from? Return TTS Friendly following the prompt rules.
+                - Do not mention the data format or where it came from.
                 
                 Examples of FORBIDDEN styles:
                 - "Fuel is low, notifying user" → wrong
@@ -242,6 +241,17 @@ public class PromptFactory implements AiPromptFactory {
 
     private String aiName() {
         return systemSession.getDesignation();
+    }
+
+    public static String ttsResponseRules() {
+        return """
+                TTS OUTPUT RULES - text_to_speech_response field MUST comply:
+                - Plain spoken text only. No markup, markdown, HTML, XML, or any document format.
+                - No em dashes, en dashes, or any character not found on a standard American keyboard.
+                - Allowed characters: letters, numbers, spaces, commas, periods, apostrophes, hyphens, question marks, exclamation points, and basic punctuation.
+                - No asterisks, bullet points, pound signs, angle brackets, backticks, underscores used for emphasis, or formatting symbols of any kind.
+                - Write in complete natural spoken sentences as if speaking aloud.
+                """;
     }
 
 }

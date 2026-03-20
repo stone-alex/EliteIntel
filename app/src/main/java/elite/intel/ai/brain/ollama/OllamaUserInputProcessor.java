@@ -109,7 +109,7 @@ public class OllamaUserInputProcessor extends CommandEndPoint implements AiComma
 
     private JsonObject createError(String text) {
         JsonObject err = new JsonObject();
-        err.addProperty(AIConstants.PROPERTY_RESPONSE_TEXT, text);
+        err.addProperty(AIConstants.PROPERTY_text_to_speech_response, text);
         return err;
     }
 }

@@ -39,7 +39,7 @@ public class ScanOrganicSubscriber {
                                 - Data signals complete → "<genus> scans complete."
                     
                             Output EXACTLY:
-                                {"response_text": "your natural rephrase"}
+                                {"text_to_speech_response": "your natural rephrase"}
                     """));
         }
     }

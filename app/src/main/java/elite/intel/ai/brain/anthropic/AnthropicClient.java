@@ -75,7 +75,7 @@ public class AnthropicClient extends BaseAiClient implements Client {
     @Override
     public JsonObject createErrorResponse(String message) {
         JsonObject err = new JsonObject();
-        err.addProperty("response_text", message);
+        err.addProperty("text_to_speech_response", message);
         return err;
     }
 

@@ -338,7 +338,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public String getStationType() {
-        return stationType;
+        return stationType == null ? "FleetCarrier" : stationType;
     }
 
     public void setStationType(String stationType) {

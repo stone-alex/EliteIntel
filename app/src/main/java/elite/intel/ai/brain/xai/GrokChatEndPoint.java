@@ -83,7 +83,7 @@ public class GrokChatEndPoint extends AiEndPoint implements AIChatInterface {
                 jsonStart = content.indexOf("{");
                 if (jsonStart == -1) {
                     JsonObject result = new JsonObject();
-                    result.addProperty(AIConstants.PROPERTY_RESPONSE_TEXT, content);
+                    result.addProperty(AIConstants.PROPERTY_text_to_speech_response, content);
                     return result;
                 }
                 jsonContent = content.substring(jsonStart);

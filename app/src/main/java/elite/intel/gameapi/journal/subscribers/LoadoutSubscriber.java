@@ -17,7 +17,6 @@ import elite.intel.util.Ranks;
 public class LoadoutSubscriber {
 
     private final ShipManager shipManager = ShipManager.getInstance();
-    private final PlayerSession playerSession = PlayerSession.getInstance();
     private final SystemSession systemSession = SystemSession.getInstance();
 
     @Subscribe

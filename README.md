@@ -8,6 +8,10 @@
 
 ## Linux and Windows. Can be ran 100% off-line.
 
+### Windows users: in-app update is borked at the moment. Please just re-download installer to update for now.
+
+---
+
 **✅ The off-line TTS. (Linux and Windows)**
 Powered by Kokoro. built-in / included.
 

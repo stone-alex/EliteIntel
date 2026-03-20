@@ -32,6 +32,7 @@ public class OBSOverlayWindow extends JFrame {
         String visibleText = "";
         boolean complete = false;
 
+
         OverlayMessage(String prefix, String fullText) {
             this.prefix = prefix;
             this.fullText = fullText;
@@ -53,6 +54,7 @@ public class OBSOverlayWindow extends JFrame {
         setSize(900, 220);
         setLocationRelativeTo(null);
         setLocation(0, 0);
+        setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/images/ai.png")));
 
         overlayPanel = new OverlayPanel();
         setContentPane(overlayPanel);

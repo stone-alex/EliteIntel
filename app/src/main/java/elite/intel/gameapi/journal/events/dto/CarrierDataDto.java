@@ -12,6 +12,7 @@ public class CarrierDataDto implements ToJsonConvertible {
     private static final int MAX_CARRIER_SINGLE_JUMP_RANGE = 500;
     private static final int MAX_FUEL_PER_JUMP = 100;
     private String starName;
+    private Long systemAddress;
     private long totalBalance;
     private long reserveBalance;
     private int fuelReserve;
@@ -323,5 +324,13 @@ public class CarrierDataDto implements ToJsonConvertible {
 
     @Override public String toJson() {
         return GsonFactory.getGson().toJson(this);
+    }
+
+    public Long getSystemAddress() {
+        return systemAddress;
+    }
+
+    public void setSystemAddress(Long systemAddress) {
+        this.systemAddress = systemAddress;
     }
 }

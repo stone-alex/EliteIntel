@@ -13,7 +13,6 @@ import java.time.temporal.ChronoUnit;
 public class CarrierETAHandler extends BaseQueryAnalyzer implements QueryHandler {
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        //EventBusManager.publish(new AiVoxResponseEvent("Analyzing fleet carrier telemetry. Stand by."));
         PlayerSession playerSession = PlayerSession.getInstance();
         String carrierDepartureTime = playerSession.getCarrierDepartureTime();
         if (carrierDepartureTime == null) {

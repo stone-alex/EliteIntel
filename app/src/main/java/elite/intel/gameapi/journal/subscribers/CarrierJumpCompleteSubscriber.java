@@ -1,6 +1,7 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.managers.DeferredNotificationManager;
 import elite.intel.db.managers.FleetCarrierRouteManager;
 import elite.intel.db.managers.LocationManager;
@@ -30,13 +31,16 @@ public class CarrierJumpCompleteSubscriber {
         double[] starPos = event.getStarPos();
         playerSession.setLastKnownCarrierLocation(starSystem);
 
-        if (starPos.length == 3 && starPos[0] == 0.0 && starPos[1] == 0.0 && starPos[2] == 0) {
+        if (starPos.length == 3 && starPos[0] == 0.0 && starPos[1] == 0.0 && starPos[2] == 0 && !"sol".equalsIgnoreCase(starSystem)) {
             EventBusManager.publish(new AppLogEvent("WARNING: Carrier Jump complete, but star position is reported 0.0.0"));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Carrier jump is complete, but star position was not reported."));
         }
 
 
         FleetCarrierRouteManager fleetCarrierRouteManager = FleetCarrierRouteManager.getInstance();
         CarrierDataDto carrierData = playerSession.getCarrierData();
+        carrierData.setSystemAddress(event.getSystemAddress());
+        carrierData.setStarName(event.getStarSystem());
         CarrierJump currentLocationLeg = fleetCarrierRouteManager.findByPrimaryStar(event.getStarSystem());
         boolean currentLegIsNotPresent = currentLocationLeg == null;
         boolean routePlotted = !fleetCarrierRouteManager.getFleetCarrierRoute().isEmpty();
@@ -66,8 +70,8 @@ public class CarrierJumpCompleteSubscriber {
             location.setX(starPos[0]);
             location.setY(starPos[1]);
             location.setZ(starPos[2]);
-            playerSession.setCurrentLocationId(location.getBodyId(), location.getSystemAddress());
-            playerSession.setCurrentPrimaryStarName(starSystem);
+            playerSession.setCurrentLocationId(event.getBodyId(), event.getSystemAddress());
+            playerSession.setCurrentPrimaryStarName(event.getStarSystem());
             locationManager.save(location);
         }
 
@@ -75,7 +79,6 @@ public class CarrierJumpCompleteSubscriber {
             carrierData.setX(starPos[0]);
             carrierData.setY(starPos[1]);
             carrierData.setZ(starPos[2]);
-            carrierData.setStarName(starSystem);
             playerSession.setCarrierData(carrierData);
         }
 

@@ -4,7 +4,7 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.plaf.basic.BasicTabbedPaneUI;
-import javax.swing.text.*;
+import javax.swing.text.JTextComponent;
 import java.awt.*;
 
 /**
@@ -291,36 +291,4 @@ class AppTheme {
         apply.run();
     }
 
-    static void installTextLimit(JTextField field, int maxChars) {
-        ((AbstractDocument) field.getDocument()).setDocumentFilter(new DocumentFilter() {
-            @Override
-            public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr)
-                    throws BadLocationException {
-                if (string == null) return;
-                int newLen = fb.getDocument().getLength() + string.length();
-                if (newLen <= maxChars) {
-                    super.insertString(fb, offset, string, attr);
-                } else {
-                    int allowed = maxChars - fb.getDocument().getLength();
-                    if (allowed > 0) super.insertString(fb, offset, string.substring(0, allowed), attr);
-                }
-            }
-
-            @Override
-            public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs)
-                    throws BadLocationException {
-                if (text == null) {
-                    super.replace(fb, offset, length, null, attrs);
-                    return;
-                }
-                int newLen = fb.getDocument().getLength() - length + text.length();
-                if (newLen <= maxChars) {
-                    super.replace(fb, offset, length, text, attrs);
-                } else {
-                    int allowed = maxChars - (fb.getDocument().getLength() - length);
-                    if (allowed > 0) super.replace(fb, offset, length, text.substring(0, allowed), attrs);
-                }
-            }
-        });
-    }
 }

@@ -100,15 +100,6 @@ public class UINavigator {
         StatusFlags.GuiFocus lastOpened = tracker.getLastOpenedPanel();
         if (lastOpened != null) {
             closeAndRestore(lastOpened);
-        } else {
-            // Tracker has no record of an open panel, but the game may have one open
-            // (e.g. player opened it manually). Close it via toggle to avoid the
-            // subsequent openPanel() call toggling it shut instead of open.
-            StatusFlags.GuiFocus currentFocus = status.getGuiFocus();
-            if (currentFocus != null && tracker.getState(currentFocus) != null) {
-                closePanel(currentFocus);
-                sleep(PANEL_OPEN_DELAY_MS);
-            }
         }
 
         if (status.isFssModeActive()) {

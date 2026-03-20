@@ -6,7 +6,6 @@ import elite.intel.session.Status;
 import elite.intel.session.StatusFlags;
 import elite.intel.session.ui.LeftPanel;
 import elite.intel.session.ui.UINavigator;
-import elite.intel.util.SleepNoThrow;
 
 public class RequestDockingHandler extends CommandOperator implements CommandHandler {
 
@@ -23,11 +22,9 @@ public class RequestDockingHandler extends CommandOperator implements CommandHan
         /// NOTE: There is no way to detect where we are on the UI, or what is selected.
         if(status.isInMainShip()){
             navigator.assumeDefaultState(StatusFlags.GuiFocus.EXTERNAL_PANEL);
-            SleepNoThrow.sleep(1000);
             // un-target ships
             operateKeyboard(Bindings.GameCommand.BINDING_TARGET_NEXT_ROUTE_SYSTEM.getGameBinding(), 0);
             navigator.openAndNavigate(StatusFlags.GuiFocus.EXTERNAL_PANEL, LeftPanel.CONTACTS);
-            SleepNoThrow.sleep(500);
             //navigate to panel
             operateKeyboard(Bindings.GameCommand.BINDING_UI_DOWN.getGameBinding(), 0);
             operateKeyboard(Bindings.GameCommand.BINDING_UI_UP.getGameBinding(), 1500); // scroll up to the top (and hope our station is there)
@@ -35,7 +32,6 @@ public class RequestDockingHandler extends CommandOperator implements CommandHan
 
             //request docking
             operateKeyboard(Bindings.GameCommand.BINDING_UI_SELECT.getGameBinding(), 120);
-            SleepNoThrow.sleep(500);
             /// Exit
             navigator.closeAndRestore(StatusFlags.GuiFocus.EXTERNAL_PANEL);
         }

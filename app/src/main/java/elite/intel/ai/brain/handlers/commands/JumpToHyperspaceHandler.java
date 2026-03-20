@@ -24,7 +24,6 @@ public class JumpToHyperspaceHandler extends CommandOperator implements CommandH
     }
 
     @Override public void handle(String action, JsonObject params, String responseText) {
-        navigator.closeOpenPanel();
         operateKeyboard(BINDING_TARGET_NEXT_ROUTE_SYSTEM.getGameBinding(), 0);
         SleepNoThrow.sleep(800);
         FsdTarget fsdTarget = playerSession.getFsdTarget();

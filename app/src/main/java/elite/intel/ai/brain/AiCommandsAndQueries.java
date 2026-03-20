@@ -83,7 +83,7 @@ public class AiCommandsAndQueries {
         commandMap.put("scan the system, open FSS, perform full system scan, honk", OPEN_FSS_AND_SCAN.getAction());
         commandMap.put("navigate to landing zone, get heading to LZ", GET_HEADING_TO_LZ.getAction());
 
-        commandMap.put("calculate carrier jump route, plot fleet carrier route", CALCULATE_FLEET_CARRIER_ROUTE.getAction());
+        commandMap.put("calculate carrier route, plot fleet carrier route", CALCULATE_FLEET_CARRIER_ROUTE.getAction());
         commandMap.put("enter carrier destination", ENTER_FLEET_CARRIER_DESTINATION.getAction());
         commandMap.put("calculate trade route, get us a trade route, find trade route", CALCULATE_TRADE_ROUTE.getAction());
         commandMap.put("navigate to next trade stop, go to trade station", NAVIGATE_TO_NEXT_TRADE_STOP.getAction());

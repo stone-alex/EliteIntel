@@ -220,8 +220,8 @@ public class UpdaterApp {
 
     private void waitForMainAppToExit() throws InterruptedException {
         if (mainPid <= 0) {
-            log("No PID supplied – waiting 5 s for main app to exit…");
-            Thread.sleep(5_000);
+            log("No PID supplied – waiting 15 s for main app to exit…");
+            Thread.sleep(15_000);
             return;
         }
         log("Waiting for main app (PID " + mainPid + ") to exit…");

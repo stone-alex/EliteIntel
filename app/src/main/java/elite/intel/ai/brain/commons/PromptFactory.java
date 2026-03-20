@@ -244,14 +244,7 @@ public class PromptFactory implements AiPromptFactory {
     }
 
     public static String ttsResponseRules() {
-        return """
-                TTS OUTPUT RULES - text_to_speech_response field MUST comply:
-                - Plain spoken text only. No markup, markdown, HTML, XML, or any document format.
-                - No em dashes, en dashes, or any character not found on a standard American keyboard.
-                - Allowed characters: letters, numbers, spaces, commas, periods, apostrophes, hyphens, question marks, exclamation points, and basic punctuation.
-                - No asterisks, bullet points, pound signs, angle brackets, backticks, underscores used for emphasis, or formatting symbols of any kind.
-                - Write in complete natural spoken sentences as if speaking aloud.
-                """;
+        return "text_to_speech_response must be plain spoken sentences. No markdown, no lists, no symbols.\n";
     }
 
 }

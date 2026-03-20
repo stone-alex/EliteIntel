@@ -45,7 +45,7 @@ public class AnalyzeBioSamplesPlanetSurfaceHandler extends BaseQueryAnalyzer imp
                 Rules:
                 - If asked what is left to scan: list names from remainingGenus. If empty, say all known organics are completed.
                 - If asked what we are currently scanning: list names from currentlyScanning.
-                - Be concise. Return only genus names, no extra data.
+                - Always return genus names, not just how many
                 """;
 
         AiDataStruct struct = new AiDataStruct(instructions, new DataDto(

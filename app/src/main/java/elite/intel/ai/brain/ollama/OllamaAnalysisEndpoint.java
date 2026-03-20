@@ -81,7 +81,7 @@ public class OllamaAnalysisEndpoint extends AiEndPoint implements AiAnalysisInte
             log.debug("Ollama analysis raw response:\n{}", gson.toJson(root));
 
             String content = root.getAsJsonObject("message").get("content").getAsString();
-            return JsonParser.parseString(JsonUtils.repairLlmJson(content)).getAsJsonObject();
+            return JsonUtils.sanitizeTtsResponse(JsonParser.parseString(JsonUtils.repairLlmJson(content)).getAsJsonObject());
 
         } catch (Exception e) {
             log.error("Ollama analysis failed", e);
@@ -133,7 +133,7 @@ public class OllamaAnalysisEndpoint extends AiEndPoint implements AiAnalysisInte
             JsonObject root = processAiPrompt(gson.toJson(prompt), client);
             log.debug("Ollama sensor raw response:\n{}", gson.toJson(root));
             String sensorContent = root.getAsJsonObject("message").get("content").getAsString();
-            return JsonParser.parseString(JsonUtils.repairLlmJson(sensorContent)).getAsJsonObject();
+            return JsonUtils.sanitizeTtsResponse(JsonParser.parseString(JsonUtils.repairLlmJson(sensorContent)).getAsJsonObject());
 
         } catch (Exception e) {
             log.error("Ollama sensor processing failed", e);

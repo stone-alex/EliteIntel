@@ -10,7 +10,6 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -367,6 +366,8 @@ public class UpdaterApp {
             progressBar.setString("Extracting…");
         });
 
+        int extracted = 0, skipped = 0;
+
         try (ZipInputStream zis = new ZipInputStream(
                 new BufferedInputStream(Files.newInputStream(zipFile)))) {
             ZipEntry entry;
@@ -379,15 +380,29 @@ public class UpdaterApp {
                     Files.createDirectories(dest);
                 } else {
                     Files.createDirectories(dest.getParent());
+                    // Large model/data files (onnx, bin, dat) that already exist are
+                    // skipped when their on-disk size matches the ZIP entry size – they
+                    // are never modified between app releases and Windows may still hold
+                    // a file-system lock on them immediately after the previous JVM exits.
+                    if (isUnchangedLargeAsset(dest, entry.getSize())) {
+                        log("  skipped (unchanged): " + entry.getName());
+                        skipped++;
+                        zis.closeEntry();
+                        continue;
+                    }
                     // Buffer the entry first so we can retry the write on Windows
                     // without consuming the ZipInputStream a second time.
                     byte[] content = zis.readAllBytes();
                     writeWithRetry(dest, content);
                     log("  extracted: " + entry.getName());
+                    extracted++;
                 }
                 zis.closeEntry();
             }
         }
+
+        log(String.format("Extraction summary: %d file(s) updated, %d file(s) skipped (unchanged).",
+                extracted, skipped));
 
         SwingUtilities.invokeLater(() -> {
             progressBar.setIndeterminate(false);
@@ -397,10 +412,34 @@ public class UpdaterApp {
     }
 
     /**
-     * Writes {@code content} to {@code dest}, retrying up to 10 times on
-     * {@link AccessDeniedException}.  On Windows the previous JVM may release
-     * its file-system lock on elite_intel.jar a beat after the process exits;
-     * a short retry loop absorbs that window without failing the whole update.
+     * Returns true when {@code dest} already exists and its on-disk size matches
+     * {@code zipEntrySize}.  Used to skip large, infrequently-changed assets
+     * (ONNX models, binary data files) that Windows may still have locked
+     * immediately after the previous JVM exits.
+     */
+    private static boolean isUnchangedLargeAsset(Path dest, long zipEntrySize) {
+        if (zipEntrySize <= 0) return false;
+        String name = dest.getFileName().toString().toLowerCase();
+        if (!name.endsWith(".onnx") && !name.endsWith(".bin") && !name.endsWith(".dat"))
+            return false;
+        try {
+            return Files.exists(dest) && Files.size(dest) == zipEntrySize;
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Writes {@code content} to {@code dest}, retrying up to 10 times on any
+     * {@link IOException}.  On Windows the previous JVM may release its
+     * file-system lock on elite_intel.jar (or ONNX model files held by the
+     * native runtime) a beat after the process exits; a short retry loop
+     * absorbs that window without failing the whole update.
+     *
+     * Note: catching the broader IOException (not just AccessDeniedException)
+     * is intentional – Windows "file in use" errors surface as
+     * FileSystemException, which is a sibling of AccessDeniedException, not a
+     * subclass.
      */
     private static void writeWithRetry(Path dest, byte[] content) throws IOException {
         IOException last = null;
@@ -409,7 +448,7 @@ public class UpdaterApp {
                 Files.write(dest, content,
                         StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
                 return;
-            } catch (AccessDeniedException e) {
+            } catch (IOException e) {
                 last = e;
                 try {
                     Thread.sleep(500);

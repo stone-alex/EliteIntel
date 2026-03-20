@@ -240,7 +240,7 @@ public class AiCommandsAndQueries {
         queryMap.put("distance to the bubble, how far from civilisation, how far from inhabited space, how far are we from the bubble", DISTANCE_TO_BUBBLE.getAction());
         queryMap.put("distance to last bio sample, how far to next organic, how far back to that organism, distance to previous sample", DISTANCE_TO_LAST_BIO_SAMPLE.getAction());
         queryMap.put("what time is it, earth time, current time, real world time, what is the time", TIME_IN_ZONE.getAction());
-        queryMap.put("star system biome analysis" + KEY_X, PLANET_BIOME_ANALYSIS.getAction());
+        queryMap.put("star system biome analysis, what organics are possible here, any biology in this star system" + KEY_X, PLANET_BIOME_ANALYSIS.getAction());
         queryMap.put("reminder, remind me, what was my reminder, any reminders, check my notes", REMINDER.getAction());
         queryMap.put("stations ports and settlements in system, local infrastructure, any settlements here, what ports are here, planetary bases nearby, any outposts in system", ANALYZE_LOCAL_STATIONS.getAction());
         queryMap.put("active missions, mission list, what missions do we have, current objectives, mission status, what are we doing", ANALYZE_MISSIONS.getAction());

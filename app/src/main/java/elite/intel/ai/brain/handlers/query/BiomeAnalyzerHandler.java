@@ -44,7 +44,8 @@ public class BiomeAnalyzerHandler extends BaseQueryAnalyzer implements QueryHand
                             String.valueOf(firstMatchingLocation.getDistance()),
                             firstMatchingLocation.getVolcanism(),
                             firstMatchingLocation.getAtmosphere(),
-                            String.valueOf(firstMatchingLocation.getSurfaceTemperature()) // Keep Kelvin
+                            String.valueOf(firstMatchingLocation.getSurfaceTemperature()
+                            ) // Keep Kelvin
                     )
             );
         }

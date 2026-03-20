@@ -104,6 +104,67 @@ public final class JsonUtils {
         return working;
     }
 
+    /**
+     * Strips markdown and non-TTS-safe characters from the text_to_speech_response field
+     * of a parsed LLM response object. Mutates the object in place and returns it.
+     * Handles models that ignore formatting instructions and return markdown anyway.
+     */
+    public static JsonObject sanitizeTtsResponse(JsonObject obj) {
+        if (obj == null || !obj.has("text_to_speech_response")) return obj;
+        String raw = getAsStringOrEmpty(obj, "text_to_speech_response");
+        obj.addProperty("text_to_speech_response", stripMarkdownForTts(raw));
+        return obj;
+    }
+
+    /**
+     * Strips markdown formatting and non-standard characters, leaving plain spoken text
+     * safe for TTS. Only standard American keyboard characters survive.
+     */
+    public static String stripMarkdownForTts(String text) {
+        if (text == null || text.isEmpty()) return text;
+        String s = text;
+
+        // Em dash, en dash → comma space
+        s = s.replace("\u2014", ", ").replace("\u2013", ", ");
+
+        // Markdown links [label](url) → label
+        s = s.replaceAll("\\[([^\\]]+)]\\([^)]*\\)", "$1");
+
+        // Table rows (lines that start and end with |) → removed
+        s = s.replaceAll("(?m)^\\|.*$", "");
+
+        // ATX headers (# ## ###) → just the text
+        s = s.replaceAll("(?m)^#{1,6}\\s*", "");
+
+        // Bold/italic markers ** * __ _
+        s = s.replaceAll("[*_]{1,3}([^*_\n]+)[*_]{1,3}", "$1");
+
+        // Blockquote markers
+        s = s.replaceAll("(?m)^>\\s*", "");
+
+        // Bullet and numbered list markers at line start
+        s = s.replaceAll("(?m)^[-*+•]\\s+", "");
+        s = s.replaceAll("(?m)^\\d+[.):]\\s+", "");
+
+        // Backticks (inline code / code fences)
+        s = s.replaceAll("`+", "");
+
+        // Horizontal rules
+        s = s.replaceAll("(?m)^[-*_]{3,}\\s*$", "");
+
+        // Drop any character outside the printable ASCII / standard keyboard range
+        s = s.replaceAll("[^\\x20-\\x7E\\n]", "");
+
+        // Collapse blank lines left by removed table rows / headers
+        s = s.replaceAll("(?m)^[ \\t]+$", "");
+        s = s.replaceAll("\\n{3,}", "\n\n");
+
+        // Collapse multiple spaces
+        s = s.replaceAll("[ \\t]{2,}", " ");
+
+        return s.trim();
+    }
+
     public static JsonObject nullSaveJsonObject(JsonObject obj, String key, Logger log) {
         if (obj == null || key == null) return new JsonObject();
         if (!obj.has(key)) return new JsonObject();

@@ -54,7 +54,7 @@ public class BiomeAnalyzer extends BaseQueryAnalyzer {
                 - If no matches and numBioSignals is zero: output "Planet <planetName>: no matching genus found".
                 - Output only planet names and genus lists. No explanations.
                 
-                Output format: Planet X: Genus1, Genus2, Genus3. Planet Y: Genus1, Genus2.
+                Output format: Planet X: Possible genus are Genus1, Genus2, Genus3. Planet Y: Possible genus are Genus1, Genus2.
                 """;
 
         List<LocationData> list = List.of(locations);

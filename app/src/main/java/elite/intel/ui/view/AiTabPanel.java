@@ -59,8 +59,6 @@ public class AiTabPanel extends JPanel {
         toggleWakeWordOnOff.addActionListener(
                 e -> EventBusManager.publish(new ToggleWakeWordEvent(toggleWakeWordOnOff.isSelected())));
         toggleWakeWordOnOff.setEnabled(false);
-        toggleWakeWordOnOff.setToolTipText(
-                "Prevent AI from processing unless you prefix your command or query with word 'computer'");
         toggleWakeWordOnOff.setForeground(ACCENT);
 
         final OBSOverlayWindow[] obsOverlay = {null};

@@ -87,7 +87,7 @@ public class AudioSettingsPanel extends JPanel {
         lblSttThreads.setPreferredSize(new Dimension(120, 42));
         grid.add(lblSttThreads, ag);
 
-        whisperThreadsSlider = makeSlider(4, 10, systemSession.getSttThreads(), 1, 1);
+        whisperThreadsSlider = makeSlider(4, 11, systemSession.getSttThreads(), 1, 1);
         whisperThreadsSlider.addChangeListener(e -> EventBusManager.publish(new SttThreadsChangedEvent(whisperThreadsSlider.getValue())));
         ag.gridx = 3;
         ag.weightx = 1.0;

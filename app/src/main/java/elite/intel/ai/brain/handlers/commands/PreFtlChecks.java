@@ -12,17 +12,17 @@ public class PreFtlChecks {
 
     public static void preJumpCheck(Status status, CommandOperator commandOperator, String message) {
         EventBusManager.publish(new MissionCriticalAnnouncementEvent(message));
-        if (status.isHardpointsDeployed()) {
+        if (status.isHardpointsDeployed() && !status.isInSupercruise()) {
             commandOperator.operateKeyboard(BINDING_HARDPOINTS_TOGGLE.getGameBinding(), 0);
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("Retracting hardpoints."));
             SleepNoThrow.sleep(2000);
         }
-        if (status.isLandingGearDown()) {
+        if (status.isLandingGearDown() && !status.isInSupercruise()) {
             commandOperator.operateKeyboard(BINDING_LANDING_GEAR_TOGGLE.getGameBinding(), 0);
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("Retracting landing gear."));
             SleepNoThrow.sleep(2000);
         }
-        if (status.isCargoScoopDeployed()) {
+        if (status.isCargoScoopDeployed() && !status.isInSupercruise()) {
             commandOperator.operateKeyboard(BINDING_TOGGLE_CARGO_SCOOP.getGameBinding(), 0);
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("Closing cargo bay."));
             SleepNoThrow.sleep(2000);

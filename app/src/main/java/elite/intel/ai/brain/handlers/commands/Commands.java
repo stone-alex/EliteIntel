@@ -8,7 +8,7 @@ import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.*;
 public enum Commands {
 
     CONNECTION_CHECK                                    (CONNECTION_CHECK_COMMAND, null, ConnectionCheck.class),
-
+    DISABLE_ALL_ANNOUNCEMENTS                           ("disable_all_announcements", null, DisableAllAnnouncementHandler.class),
     NAVIGATE_TO_NEXT_MISSION                            ("navigate_to_active_mission_location",null, PlotRouteToMissionDestination.class),
     LIGHTS_ON_OFF                                       ("toggle_lights_on_off", null, LightsOnOffHandler.class),
     ADD_MINING_TARGET                                   ("add_mining_target", null, AddMiningTargetHandler.class),

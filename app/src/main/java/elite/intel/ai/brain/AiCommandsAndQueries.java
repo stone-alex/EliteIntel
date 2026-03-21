@@ -34,7 +34,7 @@ public class AiCommandsAndQueries {
     private Map<String, String> buildCommandMap() {
         Map<String, String> commandMap = new HashMap<>();
 
-        commandMap.put("start listening, listen to me, wake word ON, stop ignoring user", START_LISTENING.getAction());
+        commandMap.put("start listening, listen to me, wake word ON, stop ignoring me", START_LISTENING.getAction());
 
         commandMap.put("stop listening, ignore me, wake word OFF", STOP_LISTENING.getAction());
 
@@ -82,7 +82,7 @@ public class AiCommandsAndQueries {
         commandMap.put("set optimal speed", SET_OPTIMAL_SPEED.getAction());
         commandMap.put("scan the system, open FSS, perform full system scan, honk", OPEN_FSS_AND_SCAN.getAction());
         commandMap.put("navigate to landing zone, get heading to LZ", GET_HEADING_TO_LZ.getAction());
-
+        commandMap.put("disable all announcements, be silent, be quiet", DISABLE_ALL_ANNOUNCEMENTS.getAction());
         commandMap.put("calculate carrier route, plot fleet carrier route", CALCULATE_FLEET_CARRIER_ROUTE.getAction());
         commandMap.put("enter carrier destination", ENTER_FLEET_CARRIER_DESTINATION.getAction());
         commandMap.put("calculate trade route, get us a trade route, find trade route", CALCULATE_TRADE_ROUTE.getAction());

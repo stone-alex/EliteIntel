@@ -110,7 +110,7 @@ public class AppController implements Runnable {
     }
 
     private String streamingModeIsOnMessage() {
-        return "I am ignoring you, unless I hear 'ship' or 'listen'";
+        return "I am ignoring you, ask me to stop ignoring you, or say 'hey ship' followed by your command";
     }
 
     @Subscribe

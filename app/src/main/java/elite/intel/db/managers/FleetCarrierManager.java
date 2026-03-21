@@ -65,11 +65,11 @@ public class FleetCarrierManager {
             carrierData.setTotalBalance(finance.getCarrierBalance());
             carrierData.setReserveBalance(finance.getReserveBalance());
             carrierData.setMarketBalance(finance.getAvailableBalance());
-            carrierData.setPioneerSupplyTax(finance.getTaxRate_pioneersupplies());
-            carrierData.setShipYardSupplyTax(finance.getTaxRate_shipyard());
-            carrierData.setRearmSupplyTax(finance.getTaxRate_rearm());
-            carrierData.setRepairSupplyTax(finance.getTaxRate_repair());
-            carrierData.setRefuelSupplyTax(finance.getTaxRate_refuel());
+            carrierData.setPioneerSupplyTax(finance.getTaxRatePioneerSupplies());
+            carrierData.setShipYardSupplyTax(finance.getTaxRateShipyard());
+            carrierData.setRearmSupplyTax(finance.getTaxRateRearm());
+            carrierData.setRepairSupplyTax(finance.getTaxRateRepair());
+            carrierData.setRefuelSupplyTax(finance.getTaxRateRefuel());
         }
         save(carrierData);
     }

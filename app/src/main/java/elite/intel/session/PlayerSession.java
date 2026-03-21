@@ -831,5 +831,9 @@ public class PlayerSession {
     public String getCurrentPartial() {
         return Database.withDao(PlayerDao.class, dao -> dao.get().getCurrentGenus());
     }
+
+    public void setSquadronCarrierData(CarrierDataDto carrierData) {
+        /// implement squadron carrier dao etc. see fleetCarriers manager
+    }
 }
 

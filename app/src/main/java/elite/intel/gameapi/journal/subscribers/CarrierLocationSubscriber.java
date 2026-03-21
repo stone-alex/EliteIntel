@@ -18,7 +18,10 @@ public class CarrierLocationSubscriber {
     @Subscribe
     public void onCarrierLocationEvent(CarrierLocationEvent event) {
 
-        if ("FleetCarrier".equalsIgnoreCase(event.getCarrierType())) {
+        if ("FleetCarrier".equalsIgnoreCase(event.getCarrierType()) || "SquadronCarrier".equalsIgnoreCase(event.getCarrierType())) {
+
+            boolean isSquadron = "SquadronCarrier".equalsIgnoreCase(event.getCarrierType());
+
             playerSession.setLastKnownCarrierLocation(event.getStarSystem());
             FleetCarrierRouteManager route = FleetCarrierRouteManager.getInstance();
             CarrierDataDto carrierData = playerSession.getCarrierData();
@@ -30,7 +33,12 @@ public class CarrierLocationSubscriber {
                 carrierData.setX(currentCompletedJump.getX());
                 carrierData.setY(currentCompletedJump.getY());
                 carrierData.setZ(currentCompletedJump.getZ());
-                playerSession.setCarrierData(carrierData);
+                if (isSquadron) {
+                    playerSession.setSquadronCarrierData(carrierData);
+                } else {
+                    playerSession.setCarrierData(carrierData);
+                }
+
                 routeEntryFound = true;
             }
 

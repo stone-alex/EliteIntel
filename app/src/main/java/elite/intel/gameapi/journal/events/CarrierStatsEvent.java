@@ -180,19 +180,25 @@ public class CarrierStatsEvent extends BaseEvent {
         private long AvailableBalance;
 
         @SerializedName("TaxRate_pioneersupplies")
-        private int TaxRate_pioneersupplies;
+        private int taxRatePioneerSupplies;
 
         @SerializedName("TaxRate_shipyard")
-        private int TaxRate_shipyard;
+        private int TaxRateShipyard;
 
         @SerializedName("TaxRate_rearm")
-        private int TaxRate_rearm;
+        private int TaxRateRearm;
 
         @SerializedName("TaxRate_refuel")
-        private int TaxRate_refuel;
+        private int TaxRateRefuel;
+
+        @SerializedName("TaxRate_outfitting")
+        private int TaxRateOutfitting;
 
         @SerializedName("TaxRate_repair")
-        private int TaxRate_repair;
+        private int TaxRateRepair;
+
+        @SerializedName("ReservePercent")
+        private int ReservePercent;
 
         public long getCarrierBalance() {
             return CarrierBalance;
@@ -218,44 +224,60 @@ public class CarrierStatsEvent extends BaseEvent {
             this.AvailableBalance = availableBalance;
         }
 
-        public int getTaxRate_pioneersupplies() {
-            return TaxRate_pioneersupplies;
+        public int getTaxRatePioneerSupplies() {
+            return taxRatePioneerSupplies;
         }
 
-        public void setTaxRate_pioneersupplies(int taxRate) {
-            this.TaxRate_pioneersupplies = taxRate;
+        public void setTaxRatePioneerSupplies(int taxRate) {
+            this.taxRatePioneerSupplies = taxRate;
         }
 
-        public int getTaxRate_shipyard() {
-            return TaxRate_shipyard;
+        public int getTaxRateShipyard() {
+            return TaxRateShipyard;
         }
 
-        public void setTaxRate_shipyard(int taxRate) {
-            this.TaxRate_shipyard = taxRate;
+        public void setTaxRateShipyard(int taxRate) {
+            this.TaxRateShipyard = taxRate;
         }
 
-        public int getTaxRate_rearm() {
-            return TaxRate_rearm;
+        public int getTaxRateRearm() {
+            return TaxRateRearm;
         }
 
-        public void setTaxRate_rearm(int taxRate) {
-            this.TaxRate_rearm = taxRate;
+        public void setTaxRateRearm(int taxRate) {
+            this.TaxRateRearm = taxRate;
         }
 
-        public int getTaxRate_refuel() {
-            return TaxRate_refuel;
+        public int getTaxRateRefuel() {
+            return TaxRateRefuel;
         }
 
-        public void setTaxRate_refuel(int taxRate) {
-            this.TaxRate_refuel = taxRate;
+        public void setTaxRateRefuel(int taxRate) {
+            this.TaxRateRefuel = taxRate;
         }
 
-        public int getTaxRate_repair() {
-            return TaxRate_repair;
+        public int getTaxRateOutfitting() {
+            return TaxRateOutfitting;
         }
 
-        public void setTaxRate_repair(int taxRate) {
-            this.TaxRate_repair = taxRate;
+        public void setTaxRateOutfitting(int taxRate) {
+            this.TaxRateOutfitting = taxRate;
+        }
+
+        public int getTaxRateRepair() {
+            return TaxRateRepair;
+        }
+
+        public void setTaxRateRepair(int taxRate) {
+            this.TaxRateRepair = taxRate;
+        }
+
+        public int getReservePercent() {
+            return ReservePercent;
+        }
+
+        public void setReservePercent(int reservePercent) {
+            this.ReservePercent = reservePercent;
         }
     }
 

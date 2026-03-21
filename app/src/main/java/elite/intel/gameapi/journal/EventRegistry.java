@@ -1,13 +1,12 @@
 package elite.intel.gameapi.journal;
 
 import com.google.gson.JsonObject;
-import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.UserInputEvent;
 import elite.intel.gameapi.journal.events.*;
 import elite.intel.session.ClearSessionCacheEvent;
 import elite.intel.session.LoadSessionEvent;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager; 
 
 import java.lang.reflect.Constructor;
 import java.time.Instant;
@@ -20,7 +19,7 @@ public class EventRegistry {
     private static final Logger log = LogManager.getLogger(EventRegistry.class);
     private static final Map<String, Class<? extends BaseEvent>> eventMap = new HashMap<>();
     private static final Set<String> NON_TIMED_EVENTS = Set.of(
-            "LoadGame", "Commander", "Statistics", "Loadout", "Rank", "Materials", "EngineerProgress", "CarrierStats"
+            "LoadGame", "Commander", "Statistics", "Loadout", "Rank", "Materials", "EngineerProgress", "CarrierStats", "SquadronStartup"
     );
     private static final Set<String> LONG_THRESHOLD_EVENTS = Set.of(
             "ProspectedAsteroid", "FSDJump"
@@ -100,6 +99,7 @@ public class EventRegistry {
         registerEvent("SwitchSuitLoadout", SwitchSuitLoadoutEvent.class);
         registerEvent("Touchdown", TouchdownEvent.class);
         registerEvent("Shutdown", ShutdownEvent.class);
+        registerEvent("SquadronStartup", SquadronStartupEvent.class);
     }
 
     private static void registerEvent(String eventName, Class<? extends BaseEvent> eventClass) {

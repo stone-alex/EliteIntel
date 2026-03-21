@@ -3,8 +3,7 @@ package elite.intel.ai.brain;
 import java.util.List;
 
 public class AIConstants {
-    /// NOT FINAL, EDITED ON START
-    public static List<String> passThroughWords = List.of("ship", "listen", "ignore", "stop ignoring");
+    public final static List<String> passThroughWords = List.of("ship", "listen", "ignore", "stop ignoring");
 
     public final static String TYPE_ACTION = "action";
     public final static String PROPERTY_TEXT_TO_SPEECH_RESPONSE = "text_to_speech_response";

@@ -469,3 +469,6 @@
 "shit"="ship"
 "show cargo"="open inventory"
 "cook a lowest"="close"
+"manifest"="open inventory"
+"daxia"="taxi"
+"daxias"=taxi"

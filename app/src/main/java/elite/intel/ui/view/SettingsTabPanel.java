@@ -133,7 +133,7 @@ public class SettingsTabPanel extends JPanel {
                 new NotificationVolumeChangedEvent(Math.abs(beepVolumeSlider.getValue()) / 100f))
         );
 
-        localSettingsPanel.setBorder(new LineBorder(ACCENT, 1));
+        localSettingsPanel.setBorder(new LineBorder(BUTTON_BG, 1));
         addNestedPanel(this, localSettingsPanel, "OFF LINE SETTINGS");
 
         JPanel padding = new JPanel();
@@ -163,6 +163,8 @@ public class SettingsTabPanel extends JPanel {
         addField(cloudFields, ttsApiKeyField, gbc, 1, 0.8);
         ttsLockedCheck = new JCheckBox("Locked", true);
         addCheck(cloudFields, ttsLockedCheck, gbc);
+
+        cloudFields.setBorder(new LineBorder(BUTTON_BG, 1));
         addNestedPanel(this, cloudFields, "CLOUD SETTINGS");
 
 

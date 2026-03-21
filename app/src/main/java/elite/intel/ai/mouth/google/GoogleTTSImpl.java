@@ -33,7 +33,6 @@ import java.util.concurrent.atomic.AtomicReference;
  * queuing requests, and handling event-driven vocalization.
  */
 public class GoogleTTSImpl implements MouthInterface {
-    public static final int VOLUME_GAIN_DB = 6;
     private static final Logger log = LogManager.getLogger(GoogleTTSImpl.class);
     private static final GoogleTTSImpl INSTANCE = new GoogleTTSImpl();
     private final BlockingQueue<VoiceRequest> ttsQueue;
@@ -310,7 +309,6 @@ public class GoogleTTSImpl implements MouthInterface {
             SynthesisInput input = SynthesisInput.newBuilder().setText(text).build();
             AudioConfig config = AudioConfig.newBuilder()
                     .setAudioEncoding(AudioEncoding.LINEAR16)
-                    .setVolumeGainDb(VOLUME_GAIN_DB)
                     .setSpeakingRate(speechRate)
                     .build();
             SynthesizeSpeechResponse response = textToSpeechClient.synthesizeSpeech(input, voice, config);
@@ -319,6 +317,7 @@ public class GoogleTTSImpl implements MouthInterface {
 
             byte[] audioData = response.getAudioContent().toByteArray();
             AudioDeClicker.sanitize(audioData, 6);
+            AudioDeClicker.applyVolume(audioData, systemSession.getVoiceVolume() / 100f);
             // Use persistent line instead of opening/closing
             if (persistentLine == null || !persistentLine.isOpen()) {
                 log.warn("Persistent line not available, attempting to reopen");

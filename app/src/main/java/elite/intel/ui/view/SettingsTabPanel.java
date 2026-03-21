@@ -31,6 +31,7 @@ public class SettingsTabPanel extends JPanel {
     private JSlider speechSpeedSlider;
     private JSlider beepVolumeSlider;
     private JSlider whisperThreadsSlider;
+    private JSlider voceVolumeSlider;
     private JButton updateAppButton;
 
     public SettingsTabPanel() {
@@ -41,32 +42,6 @@ public class SettingsTabPanel extends JPanel {
     private void buildUi() {
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
         GridBagConstraints gbc = baseGbc();
-
-        // ── Cloud Settings ────────────────────────────────────────────────────
-        nextRow(gbc);
-        gbc.gridx = 1;
-        gbc.weightx = 1.0;
-        gbc.weighty = 0.0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-
-        JPanel cloudFields = new JPanel(new GridBagLayout());
-        addLabel(cloudFields, "Cloud LLM Key: (optional)", gbc);
-        llmApiKeyField = new JPasswordField();
-        llmApiKeyField.setPreferredSize(new Dimension(200, 42));
-        addField(cloudFields, llmApiKeyField, gbc, 1, 0.8);
-        llmLockedCheck = new JCheckBox("Locked", true);
-        addCheck(cloudFields, llmLockedCheck, gbc);
-
-        nextRow(gbc);
-        addLabel(cloudFields, "Google TTS Key: (optional)", gbc);
-        ttsApiKeyField = new JPasswordField();
-        ttsApiKeyField.setPreferredSize(new Dimension(200, 42));
-        addField(cloudFields, ttsApiKeyField, gbc, 1, 0.8);
-        ttsLockedCheck = new JCheckBox("Locked", true);
-        addCheck(cloudFields, ttsLockedCheck, gbc);
-        cloudFields.setBorder(new LineBorder(ACCENT, 1));
-        addNestedPanel(this, cloudFields, "CLOUD SETTINGS");
-
         // ── Local Settings ────────────────────────────────────────────────────
         JPanel localSettingsPanel = new JPanel(new GridBagLayout());
         nextRow(gbc);
@@ -106,7 +81,6 @@ public class SettingsTabPanel extends JPanel {
         addCheck(localSettingsPanel, useLocalTTSCheck, gbc);
 
         nextRow(gbc);
-        nextRow(gbc);
         addLabel(localSettingsPanel, "Speech Speed ", gbc);
         speechSpeedSlider = new JSlider(0, 100, (int) (systemSession.getSpeechSpeed() * 100));
         speechSpeedSlider.setMajorTickSpacing(25);
@@ -120,7 +94,21 @@ public class SettingsTabPanel extends JPanel {
         );
 
         nextRow(gbc);
-        addLabel(localSettingsPanel, "Speech Engine Threads ", gbc);
+        addLabel(localSettingsPanel, "Speech Volume", gbc);
+        voceVolumeSlider = new JSlider(0, 100, systemSession.getVoiceVolume());
+        voceVolumeSlider.setMajorTickSpacing(25);
+        voceVolumeSlider.setMinorTickSpacing(1);
+        voceVolumeSlider.setSnapToTicks(true);
+        voceVolumeSlider.setPaintTicks(true);
+        voceVolumeSlider.setPaintLabels(true);
+        addField(localSettingsPanel, voceVolumeSlider, gbc, 1, 0.8);
+        voceVolumeSlider.addChangeListener(e -> EventBusManager.publish(
+                new SttVolumeChangedEvent(voceVolumeSlider.getValue()))
+        );
+
+
+        nextRow(gbc);
+        addLabel(localSettingsPanel, "Speech Recognition Speed ", gbc);
         whisperThreadsSlider = new JSlider(4, 10, systemSession.getSttThreads());
         whisperThreadsSlider.setMajorTickSpacing(1);
         whisperThreadsSlider.setSnapToTicks(true);
@@ -145,12 +133,38 @@ public class SettingsTabPanel extends JPanel {
                 new NotificationVolumeChangedEvent(Math.abs(beepVolumeSlider.getValue()) / 100f))
         );
 
-
-
-
         localSettingsPanel.setBorder(new LineBorder(ACCENT, 1));
         addNestedPanel(this, localSettingsPanel, "OFF LINE SETTINGS");
-        addNestedPanel(this, localSettingsPanel, "");
+
+        JPanel padding = new JPanel();
+        padding.setBorder(BorderFactory.createEmptyBorder(32, 0, 0, 0));
+        addNestedPanel(this, padding, " ");
+
+        // ── Cloud Settings ────────────────────────────────────────────────────
+        nextRow(gbc);
+        gbc.gridx = 1;
+        gbc.weightx = 1.0;
+        gbc.weighty = 0.0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        JPanel cloudFields = new JPanel(new GridBagLayout());
+
+        addLabel(cloudFields, "Cloud LLM Key: (optional)", gbc);
+        llmApiKeyField = new JPasswordField();
+        llmApiKeyField.setPreferredSize(new Dimension(200, 42));
+        addField(cloudFields, llmApiKeyField, gbc, 1, 0.8);
+        llmLockedCheck = new JCheckBox("Locked", true);
+        addCheck(cloudFields, llmLockedCheck, gbc);
+
+        nextRow(gbc);
+        addLabel(cloudFields, "Google TTS Key: (optional)", gbc);
+        ttsApiKeyField = new JPasswordField();
+        ttsApiKeyField.setPreferredSize(new Dimension(200, 42));
+        addField(cloudFields, ttsApiKeyField, gbc, 1, 0.8);
+        ttsLockedCheck = new JCheckBox("Locked", true);
+        addCheck(cloudFields, ttsLockedCheck, gbc);
+        addNestedPanel(this, cloudFields, "CLOUD SETTINGS");
+
 
         // ── Buttons ───────────────────────────────────────────────────────────
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.CENTER, 8, 0));

@@ -221,7 +221,7 @@ public class KokoroTTS implements MouthInterface {
                 byte[] pcm = floatToPcm16(audio.getSamples());
 
                 AudioDeClicker.sanitize(pcm, 5);
-                //playbackQueue.put(Amplifier.amplify(pcm));
+                AudioDeClicker.applyVolume(pcm, systemSession.getVoiceVolume() / 100f);
                 playbackQueue.put(pcm);
 
             } catch (InterruptedException e) {

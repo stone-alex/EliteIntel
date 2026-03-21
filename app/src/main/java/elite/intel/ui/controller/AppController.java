@@ -77,6 +77,11 @@ public class AppController implements Runnable {
     }
 
     @Subscribe
+    public void onSttVolumeChangedEvent(SttVolumeChangedEvent event) {
+        systemSession.setVoiceVolume(event.getVolume());
+    }
+
+    @Subscribe
     public void onStreamModeToggle(VoiceInputModeToggleEvent event) {
         EventBusManager.publish(new ToggleWakeWordEvent(event.isStreaming()));
     }

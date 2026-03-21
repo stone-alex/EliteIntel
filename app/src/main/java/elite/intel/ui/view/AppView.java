@@ -38,8 +38,8 @@ public class AppView extends JFrame implements AppViewInterface {
         setIconImage(Toolkit.getDefaultToolkit().getImage(
                 getClass().getResource("/images/elite-logo.png")));
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setMinimumSize(new Dimension(600, 400));
-        setSize(new Dimension(1200, 800));
+        setMinimumSize(new Dimension(600, 500));
+        setSize(new Dimension(1200, 900));
         setLocationRelativeTo(null);
 
         JPanel root = new JPanel(new BorderLayout());

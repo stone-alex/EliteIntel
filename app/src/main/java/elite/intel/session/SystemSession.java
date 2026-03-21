@@ -366,4 +366,19 @@ public class SystemSession {
         ShipDao.Ship ship = ShipManager.getInstance().getShip();
         return ship == null ? "I have no designation" : ship.getShipName();
     }
+
+
+    /// 0 to 100 %
+    public int getVoiceVolume() {
+        return Database.withDao(GameSessionDao.class, dao -> dao.get().getVoiceVolume());
+    }
+
+    public void setVoiceVolume(int volume) {
+        Database.withDao(GameSessionDao.class, dao -> {
+            GameSessionDao.GameSession session = dao.get();
+            session.setVoiceVolume(volume);
+            dao.save(session);
+            return null;
+        });
+    }
 }

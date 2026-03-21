@@ -19,13 +19,13 @@ public interface GameSessionDao {
                                                              edsmApiKey, loggingEnabled, privacyModeOn, rmsThresholdHigh,  
                                                              rmsThresholdLow, encryptedLLMKey, encryptedTTSKey, 
                                                              encryptedEDSSMKey, speechSpeed, localLlmCommandModel, localLlmQueryModel,
-                                                             useLocalCommandLlm, useLocalQueryLlm, useLocalTTS, notificationVolume, sttThreads
+                                                             useLocalCommandLlm, useLocalQueryLlm, useLocalTTS, notificationVolume, sttThreads, voiceVolume
                                                 )
                                   VALUES (1, :aiPersonality, :aiCadence, :aiVoice, :aiApiKey, :ttsApiKey, :sttApiKey, 
                                                       :edsmApiKey, :loggingEnabled, :privacyModeOn, :rmsThresholdHigh, 
                                                       :rmsThresholdLow, :encryptedLLMKey, :encryptedTTSKey, 
                                                       :encryptedEDSSMKey,  :speechSpeed, :localLlmCommandModel, :localLlmQueryModel,
-                                                      :useLocalCommandLlm, :useLocalQueryLlm, :useLocalTTS, :notificationVolume, :sttThreads
+                                                      :useLocalCommandLlm, :useLocalQueryLlm, :useLocalTTS, :notificationVolume, :sttThreads, :voiceVolume
                                           )
             """)
     void save(@BindBean GameSessionDao.GameSession data);
@@ -67,6 +67,7 @@ public interface GameSessionDao {
             session.setUseLocalTTS(rs.getBoolean("useLocalTTS"));
             session.setNotificationVolume(rs.getFloat("notificationVolume"));
             session.setSttThreads(rs.getInt("sttThreads"));
+            session.setVoiceVolume(rs.getInt("voiceVolume"));
             return session;
         }
     }
@@ -99,6 +100,7 @@ public interface GameSessionDao {
         private boolean useLocalQueryLlm;
         private boolean useLocalTTS;
         private Integer sttThreads;
+        private Integer voiceVolume;
 
 
         public String getAiPersonality() {
@@ -277,6 +279,14 @@ public interface GameSessionDao {
 
         public void setSttThreads(Integer sttThreads) {
             this.sttThreads = sttThreads;
+        }
+
+        public Integer getVoiceVolume() {
+            return voiceVolume;
+        }
+
+        public void setVoiceVolume(Integer voiceVolume) {
+            this.voiceVolume = voiceVolume;
         }
     }
 }

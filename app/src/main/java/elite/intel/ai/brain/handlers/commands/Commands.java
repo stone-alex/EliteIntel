@@ -8,7 +8,7 @@ import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.*;
 public enum Commands {
 
     CONNECTION_CHECK                                    (CONNECTION_CHECK_COMMAND, null, ConnectionCheck.class),
-    DISABLE_ALL_ANNOUNCEMENTS                           ("disable_all_announcements", null, DisableAllAnnouncementHandler.class),
+    DISABLE_ALL_ANNOUNCEMENTS                           ("disble_all_announcements", null, DisableAllAnnouncementHandler.class),
     NAVIGATE_TO_NEXT_MISSION                            ("navigate_to_active_mission_location",null, PlotRouteToMissionDestination.class),
     LIGHTS_ON_OFF                                       ("toggle_lights_on_off", null, LightsOnOffHandler.class),
     ADD_MINING_TARGET                                   ("add_mining_target", null, AddMiningTargetHandler.class),
@@ -35,7 +35,7 @@ public enum Commands {
 
     FIND_VISTA_GENOMICS                                 ("find_vista_genomics", null,  FindVistaGenomicsHandler.class),
     FIND_BRAIN_TREES                                    ("find_brain_trees", null,  FindBrainTreesHandler.class),
-    //FIND_FLEET_CARRIER_FUEL_MINING_SITE                 ("find_fleet_carrier_fuel_mining_site", null,  FindCarrierFuelMiningSiteHandler.class),
+    FIND_FLEET_CARRIER_FUEL_MINING_SITE                 ("find_fleet_carrier_fuel_mining_site", null,  FindCarrierFuelMiningSiteHandler.class),
     FIND_MINING_SITE                                    ("find_mining_site_for_material", null, FindMiningSiteHandler.class),
 
     FIND_NEAREST_FLEET_CARRIER                          ("find_nearest_fleet_carrier", null,  FindNearestFleetCarrierHandler.class),
@@ -85,7 +85,7 @@ public enum Commands {
     RETRACT_LANDING_GEAR                                ("gear_up", null,  RetractLandingGearHandler.class),
 
     JUMP_TO_HYPERSPACE                                  ("jump_to_hyperspace", null,  JumpToHyperspaceHandler.class),
-    ENTER_SUPER_CRUISE                                  ("enter_super_cruise_light_speed", null,  SuperCruiseHandler.class),
+    ENTER_SUPER_CRUISE                                  ("enter_super_cruise", null,  SuperCruiseHandler.class),
 
     DROP_FROM_SUPER_CRUISE                              ("drop_from_super_cruise", null,  DropFromFtlHandler.class),
     ACTIVATE_ANALYSIS_MODE                              ("swap_to_hud_analysis_mode", null,  ActivateAnalysisModeHandler.class),
@@ -128,7 +128,7 @@ public enum Commands {
     SHOW_COMMANDER_PANEL                                ("show_role_panel", null, OpenCommanderPanel.class),
     SHOW_FIGHTER_PANEL                                  ("show_fighter_panel", null, OpenFighterPanelHandler.class),
     SHOW_CREW                                           ("show_crew", null, OpenCrewPanelHandler.class),
-    SHOW_INTERNAL_PANEL                                 ("show_internal_home_panel", null, OpenInternalPanelHandler.class),
+    SHOW_INTERNAL_PANEL                                 ("show_internal_panel", null, OpenInternalPanelHandler.class),
     SHOW_MODULES_PANEL                                  ("show_modules_panel", null, OpenModulesPanelHandler.class),
     SHOW_FIRE_GROUPS                                    ("show_fire_groups", null, OpenFireGroupsPanelHandler.class),
     SHOW_INVENTORY_PANEL                                ("show_inventory_panel", null, OpenInventoryHandler.class),
@@ -167,7 +167,7 @@ public enum Commands {
     SET_SPEED75                                         ("set_speed_to_optimal_throttle_75", BINDING_SET_SPEED75.getGameBinding(), GenericGameControlHandler.class),
     SET_SPEED100                                        ("set_speed_to_maximum_throttle_100", BINDING_SET_SPEED100.getGameBinding(), GenericGameControlHandler.class),
 
-    SET_CARRIER_FUEL_RESERVE                            ("set_carrier_fuel_reserve", null,  SetFleetCarrierFuelReserveHandler.class),
+    SET_CARRIER_FUEL_RESERVE                            ("set_tritium_carrier_fuel_reserve", null,  SetFleetCarrierFuelReserveHandler.class),
 
     SELECT_HIGHEST_THREAT                               ("target_highest_threat", BINDING_SELECT_HIGHEST_THREAT.getGameBinding(), GenericGameControlHandler.class),
     TARGET_NEXT_ROUTE_SYSTEM                            ("select_next_system_in_route", BINDING_TARGET_NEXT_ROUTE_SYSTEM.getGameBinding(), GenericGameControlHandler.class),
@@ -180,7 +180,6 @@ public enum Commands {
     CLEAR_REMINDERS                                     ("clear_reminders", null, CleareReminderHandler.class),
     SET_REMINDER                                        ("set_reminder", null, SetReminderHandler.class),
     DELETE_CODEX_ENTRY                                  ("delete_codex_entry", null, DeleteCodexEntryHandler.class),
-    COMMAND_NOT_FOUND                                   ("command_not_found", null, CommandNotFoundHandler.class),
     ;
 
     ///

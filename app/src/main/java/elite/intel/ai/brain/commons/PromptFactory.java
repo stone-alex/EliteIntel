@@ -1,6 +1,9 @@
 package elite.intel.ai.brain.commons;
 
-import elite.intel.ai.brain.*;
+import elite.intel.ai.brain.AICadence;
+import elite.intel.ai.brain.AIPersonality;
+import elite.intel.ai.brain.AiCommandsAndQueries;
+import elite.intel.ai.brain.AiPromptFactory;
 import elite.intel.ai.brain.handlers.query.Queries;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
@@ -37,82 +40,36 @@ public class PromptFactory implements AiPromptFactory {
                 - NO text before or after the JSON
                 - NO code blocks or ```json markers
                 
-                Most things the player says are commands (do something, go somewhere, toggle something).
-                Only when the sentence is clearly a QUESTION (starts with what/where/how/which/why/is/are/does/can…) → classify as query.
-                - "show" or "display" at the start → ALWAYS a COMMAND, never a query.
-                - "find X" with no question word = COMMAND. "where/what to find" = QUERY.
+                Most things the player says are commands (do something, change something, go somewhere, toggle something).
                 
-                SEMANTIC DISAMBIGUATION — apply these rules before choosing any action:
+                Only when the sentence is clearly a QUESTION (starts with what/find/where/how/which/why/is/are/does/…) → classify as query.
                 
-                [EXOBIOLOGY — three actions, never mix]
-                - bio signals across this system / which planets need scanning → query_organic_samples_star_system
-                - organisms at our current planet right now (standing here) → query_organic_samples_this_planet
-                - predicted/possible organisms, biome conditions (before landing) → query_biome_analysis
-                - organics/exobiology are NEVER materials; do NOT confuse with geological queries.
+                - do not confuse organics with materials or resources
+                  organics - exobiology query
+                  materials - geological query
+                - do not confuse 'ship/you' (query_ship_loadout*) with 'carrier' (query_carrier*)
                 
-                [CURRENT SYSTEM SCIENCE — only about WHERE WE ARE NOW, never searches for other systems]
-                - physical bodies (planets, moons, rings, landable, water worlds) → query_data_for_stellar_objects_planets_moons
-                - activity signals (combat zones, resource sites, emissions, nav beacon) → query_for_detected_signals
-                - geological signals on surfaces → query_for_geo_signals
-                - NEVER use these to find a system, find a mining location, or search the galaxy.
-                
-                [MINING & COMMERCE — always COMMANDS, never queries]
-                - "mine X", "where to mine X", "find mining site for X", "find system to mine X" → find_mining_site_for_material (COMMAND)
-                - "where to buy X", "find commodity X" → find_market_where_to_buy (COMMAND)
-                - Any input with buy/sell/trade/commodity/market/mine + item → commerce COMMAND, not a science query.
-                
-                [STATIONS — two contexts, never substitute]
-                - Stations IN THIS SYSTEM (orbital, planetary, settlements, outposts) → query_stations_ports_settlements
-                - Fleet carriers in this system only → query_for_fleet-carriers
-                - AT THIS STATION (docked): modules available → query_local_outfitting | ships available → query_local_shipyard | services/facilities → query_station_details
-                
-                [SHIP INVENTORY — three distinct types, never substitute]
-                - Trade goods/commodities in the hold (hauling, cargo manifest) → query_cargo_hold_contents
-                - Engineering materials (raw/encoded/manufactured) → query_material_inventory
-                - Materials collectable on current planet surface right now → query_materials_present_on_planet
-                
-                [SHIP vs FLEET CARRIER — never confuse]
-                - Ship modules / weapons / equipment / loadout / jump range → query_ship_loadout_equipment_classification_range
-                - Carrier fuel (tritium supply) → query_carrier_fuel_supply
-                - Carrier finances / upkeep / running costs / budget → query_carrier_statistics
-                - Carrier route → query_carrier_route_analysis | destination → query_carrier_destination | ETA → query_carrier_eta
-                
-                [NAVIGATION — three distinct queries]
-                - Where we are right now → query_current_location_analysis
-                - Selected/targeted jump destination (before jumping) → analyze_selected_jump_destination
-                - Plotted route details (jumps remaining, progress) → query_ship_route_analysis
-                
-                [EARNINGS — do not mix]
-                - Exploration / scan / exobiology income → query_expobiology_and_exploration_profits
-                - Bounties / combat earnings → query_total_bounties
-                
+                - queries about you see query_ship_loadout*
+                - queries about your cargo hold see query_cargo_hold_contents*
+                - queries about materials we have see query_material_inventory*
+                - queries about the carrier see query_carrier*
                 - User may utilize NATO alphabet for letters/digits. Decode before using in params: Alpha 2 is A2, Charly 3 is C3, etc.
 
                 CRITICAL RULES - BREAKING ANY = TOTAL FAILURE:
                 - NEVER invent, modify, combine, or create new actions or parameters.
-                - QUERIES are ONLY allowed when the input is clearly a question. If the input is not a question → it is a COMMAND. Never use a query as a fallback.
-                - use query_app_capabilities action only if asked about capabilities and never fall back to it for any reason.
-                - use query_key_bindings_analysis action only if explicitly asked about key bindings or unbound keys. Never use it as a fallback.
                 """);
-        sb.append("- If ZERO good match → return: {\"action\": \"").append(Queries.GENERAL_CONVERSATION.getAction()).append("\", \"params\": {}}\n");
-
+        sb.append("- If ZERO good match → return: {\"action\": \"").append(Queries.GENERAL_CONVERSATION.getAction()).append("\", \"params\": {}}");
 
         if (!systemSession.useLocalQueryLlm()) {
             sb.append("- CRITICAL: if input contains 'help with X', 'help me with X', 'can you help with X', 'how do I X', 'explain X' → respond EXACTLY: {\"action\": \"").append(Queries.HELP.getAction()).append("\", \"params\": {\"key\": \"<topic>\"}}. Replace <topic> with the subject using spaces not underscores (e.g. 'biology', 'trade routes', 'fleet carrier routing'). No other action.\n");
         }
 
-        if (!systemSession.useLocalCommandLlm()) {
-            sb.append("- CRITICAL: if no match found, return: {\"action\": \"").append(Queries.GENERAL_CONVERSATION.getAction()).append("\", \"params\": {" + AIConstants.PROPERTY_TEXT_TO_SPEECH_RESPONSE + ":'command not found'}}\n");
-        }
-
         sb.append("""
                 - ONLY use action names EXACTLY as written in the lists below.
                 - ONLY use parameter keys/values that appear in the command/query template.
-                - IMPORTANT: 'show inventory', 'open inventory', 'display inventory' → ALWAYS action show_inventory_panel. NEVER a query. NEVER show_modules_panel.
                 - IMPORTANT: commands with word 'clear' must match word 'clear' in user input exactly, else you will delete critical data!
                 - IMPORTANT: commands with word 'confirm' must match word 'confirm' in user input exactly, else you will delete critical data!
                 - IMPORTANT: commands such as 'lets go' or 'lets get out of here' are meant for hyperspace jump.
-                - IMPORTANT: supercruise ≠ hyperspace. "lightspeed", "light speed", "supercruise" → enter_super_cruise (travel within THIS system). "jump", "hyperspace", "next waypoint", "lets go", "get out of here" → jump_to_hyperspace (travel to ANOTHER system).
                 
                 """);
 
@@ -140,7 +97,6 @@ public class PromptFactory implements AiPromptFactory {
                   - "lights on"                         → {"state": true}
                   - "find gold within 80 ly"            → {"key": "gold", "max_distance":"80"}
                   - "is moon two Charlie landable"      → query with key "2C"
-                  - Allowed parameter names are {key:X}, {lat:X, lon:Y}, {key:X, max_distance:Y}, {state:true/false} and {lat:X, lon:Y}  ALL other parameters are instant failure.
                 """);
         return sb.toString();
     }

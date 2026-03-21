@@ -5,7 +5,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.AIConstants;
 import elite.intel.ai.brain.AiCommandInterface;
-import elite.intel.ai.brain.AiCommandsAndQueries;
 import elite.intel.ai.brain.commons.CommandEndPoint;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
@@ -17,8 +16,6 @@ import elite.intel.util.StringUtls;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -28,22 +25,6 @@ public class OllamaUserInputProcessor extends CommandEndPoint implements AiComma
 
     private static final Logger log = LogManager.getLogger(OllamaUserInputProcessor.class);
     private static final OllamaUserInputProcessor INSTANCE = new OllamaUserInputProcessor();
-
-    // Actions the LLM uses as a catch-all - only permitted when input contains at least one required keyword
-    private static final Map<String, List<String>> GUARDED_ACTIONS = Map.of(
-            "query_key_bindings_analysis", List.of("key", "bind", "binding", "keybind", "unbound"),
-            "query_app_capabilities", List.of("capabilit", "what can you", "your function", "what do you do", "commands do you")
-    );
-    // Actions blocked when the input contains any of these keywords (wrong semantic domain)
-    private static final Map<String, List<String>> BLOCKED_ACTIONS = Map.of(
-            // Stellar objects = science/discovery only. Commerce and mining searches go elsewhere.
-            "query_data_for_stellar_objects_planets_moons", List.of("mine ", "mining", "buy ", "sell ", "purchase", "commodity", "market", "trade", "tritium", "where can", "find system", "find star")
-    );
-    // Queries are only valid when the input is actually a question
-    private static final List<String> QUESTION_WORDS = List.of(
-            "what", "where", "how", "which", "why", "is ", "are ", "does", "can ", "do we",
-            "tell me", "any ", "how much", "how many", "who ", "when "
-    );
     private ExecutorService executor;
     private final AtomicBoolean running = new AtomicBoolean(false);
 
@@ -98,23 +79,6 @@ public class OllamaUserInputProcessor extends CommandEndPoint implements AiComma
             return;
         }
 
-        String directAction = AiCommandsAndQueries.getInstance().matchCommand(userInput);
-        if (directAction != null) {
-            log.info("Direct command match (bypassing LLM): {} → {}", userInput, directAction);
-            JsonObject direct = new JsonObject();
-            direct.addProperty("action", directAction);
-            direct.add("params", new JsonObject());
-            getRouter().processAiResponse(direct, userInput);
-            return;
-        }
-
-        JsonObject directJson = AiCommandsAndQueries.getInstance().matchCommandJson(userInput);
-        if (directJson != null) {
-            log.info("Direct parameterized match (bypassing LLM): {}", userInput);
-            getRouter().processAiResponse(directJson, userInput);
-            return;
-        }
-
         JsonArray request = new JsonArray();
         JsonObject system = new JsonObject();
         system.addProperty("role", AIConstants.ROLE_SYSTEM);
@@ -131,7 +95,7 @@ public class OllamaUserInputProcessor extends CommandEndPoint implements AiComma
             return;
         }
 
-        getRouter().processAiResponse(guardResponse(response, userInput), userInput);
+        getRouter().processAiResponse(response, userInput);
 
     }
 
@@ -141,48 +105,6 @@ public class OllamaUserInputProcessor extends CommandEndPoint implements AiComma
         EventBusManager.publish(new AppLogEvent("Processing Sensor event"));
         JsonObject response = OllamaAnalysisEndpoint.getInstance().processSensor(event);
         getRouter().processAiResponse(response, "");
-    }
-
-    /**
-     * Rejects guarded actions when the input doesn't contain any of their required keywords.
-     * Also rejects any query_* action when the input is not a question.
-     */
-    private JsonObject guardResponse(JsonObject response, String input) {
-        String action = response.has("action") ? response.get("action").getAsString() : "";
-        String lower = input.toLowerCase();
-
-        // Reject query_* actions when input is not a question
-        if (action.startsWith("query_")) {
-            boolean isQuestion = QUESTION_WORDS.stream().anyMatch(lower::contains);
-            if (!isQuestion) {
-                log.warn("Query action {} rejected - input is not a question: {}", action, input);
-                JsonObject fallback = new JsonObject();
-                fallback.addProperty("action", "command_not_found");
-                fallback.add("params", new JsonObject());
-                return fallback;
-            }
-        }
-
-        List<String> blocked = BLOCKED_ACTIONS.get(action);
-        if (blocked != null && blocked.stream().anyMatch(lower::contains)) {
-            log.warn("Blocked action {} rejected for input: {}", action, input);
-            JsonObject fallback = new JsonObject();
-            fallback.addProperty("action", "command_not_found");
-            fallback.add("params", new JsonObject());
-            return fallback;
-        }
-
-        List<String> required = GUARDED_ACTIONS.get(action);
-        if (required == null) return response;
-        boolean permitted = required.stream().anyMatch(lower::contains);
-        if (!permitted) {
-            log.warn("Guarded action {} rejected for input: {}", action, input);
-            JsonObject fallback = new JsonObject();
-            fallback.addProperty("action", "command_not_found");
-            fallback.add("params", new JsonObject());
-            return fallback;
-        }
-        return response;
     }
 
     private JsonObject createError(String text) {

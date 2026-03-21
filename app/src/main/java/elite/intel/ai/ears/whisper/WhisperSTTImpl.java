@@ -19,6 +19,7 @@ import org.apache.logging.log4j.Logger;
 import javax.sound.sampled.*;
 import java.io.ByteArrayOutputStream;
 import java.nio.file.Path;
+import java.util.ArrayDeque;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -34,6 +35,7 @@ public class WhisperSTTImpl implements EarsInterface {
     private static final int CHANNELS = 1;
     private static final int ENTER_VOICE_FRAMES = 1;
     private static final int EXIT_SILENCE_FRAMES = 8; // ~1s silence at 100ms buffers
+    private static final int PRE_ROLL_FRAMES = 4;     // ~400ms look-back so first word isn't clipped
     private static final long BASE_BACKOFF_MS = 2000;
     private static final long MAX_BACKOFF_MS = 60000;
     private static final int MIN_AUDIO_MS = 1500; // padding
@@ -47,6 +49,7 @@ public class WhisperSTTImpl implements EarsInterface {
     private final AtomicBoolean isSpeaking = new AtomicBoolean(false);
     private final SystemSession systemSession = SystemSession.getInstance();
     private final ByteArrayOutputStream audioCollector = new ByteArrayOutputStream();
+    private final ArrayDeque<byte[]> preRoll = new ArrayDeque<>();
 
     private WhisperJNI whisper;
     private WhisperContext whisperCtx;
@@ -176,6 +179,7 @@ public class WhisperSTTImpl implements EarsInterface {
             int consecutiveVoice = 0;
             int consecutiveSilence = 0;
             audioCollector.reset();
+            preRoll.clear();
 
             while (isListening.get() && line.isOpen()) {
                 int bytesRead = line.read(buffer, 0, buffer.length);
@@ -187,6 +191,10 @@ public class WhisperSTTImpl implements EarsInterface {
                 int audioLen = (resampler != null) ? audio.length : bytesRead;
 
                 double rms = calculateRMS(audio, audioLen);
+
+                // Keep a rolling window of recent frames; prepended to recording when gate opens
+                preRoll.addLast(java.util.Arrays.copyOf(audio, audioLen));
+                if (preRoll.size() > PRE_ROLL_FRAMES) preRoll.removeFirst();
 
                 if (rms > RMS_THRESHOLD_HIGH) {
                     consecutiveVoice++;
@@ -200,6 +208,8 @@ public class WhisperSTTImpl implements EarsInterface {
                 if (!isActive && consecutiveVoice >= ENTER_VOICE_FRAMES && !isSpeaking.get()) {
                     isActive = true;
                     audioCollector.reset();
+                    for (byte[] frame : preRoll) audioCollector.write(frame, 0, frame.length);
+                    preRoll.clear();
                     log.debug("VAD: speech started");
                 }
 

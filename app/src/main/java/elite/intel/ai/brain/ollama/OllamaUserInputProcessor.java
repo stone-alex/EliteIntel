@@ -34,6 +34,11 @@ public class OllamaUserInputProcessor extends CommandEndPoint implements AiComma
             "query_key_bindings_analysis", List.of("key", "bind", "binding", "keybind", "unbound"),
             "query_app_capabilities", List.of("capabilit", "what can you", "your function", "what do you do", "commands do you")
     );
+    // Queries are only valid when the input is actually a question
+    private static final List<String> QUESTION_WORDS = List.of(
+            "what", "where", "how", "which", "why", "is ", "are ", "does", "can ", "do we",
+            "tell me", "any ", "how much", "how many", "who ", "when "
+    );
     private ExecutorService executor;
     private final AtomicBoolean running = new AtomicBoolean(false);
 
@@ -128,12 +133,26 @@ public class OllamaUserInputProcessor extends CommandEndPoint implements AiComma
 
     /**
      * Rejects guarded actions when the input doesn't contain any of their required keywords.
+     * Also rejects any query_* action when the input is not a question.
      */
     private JsonObject guardResponse(JsonObject response, String input) {
         String action = response.has("action") ? response.get("action").getAsString() : "";
+        String lower = input.toLowerCase();
+
+        // Reject query_* actions when input is not a question
+        if (action.startsWith("query_")) {
+            boolean isQuestion = QUESTION_WORDS.stream().anyMatch(lower::contains);
+            if (!isQuestion) {
+                log.warn("Query action {} rejected - input is not a question: {}", action, input);
+                JsonObject fallback = new JsonObject();
+                fallback.addProperty("action", "command_not_found");
+                fallback.add("params", new JsonObject());
+                return fallback;
+            }
+        }
+
         List<String> required = GUARDED_ACTIONS.get(action);
         if (required == null) return response;
-        String lower = input.toLowerCase();
         boolean permitted = required.stream().anyMatch(lower::contains);
         if (!permitted) {
             log.warn("Guarded action {} rejected for input: {}", action, input);

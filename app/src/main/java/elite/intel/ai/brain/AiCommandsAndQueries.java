@@ -8,7 +8,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import static elite.intel.ai.brain.commons.AiEndPoint.CONNECTION_CHECK_COMMAND;
 import static elite.intel.ai.brain.handlers.commands.Commands.*;
 import static elite.intel.ai.brain.handlers.query.Queries.*;
 
@@ -106,11 +105,12 @@ public class AiCommandsAndQueries {
 
         /// ship or SRV
         commandMap.put("night vision on/off" + KEY_STATE, NIGHT_VISION_ON_OFF.getAction());
-        commandMap.put("switch to combat mode, HUD combat mode", ACTIVATE_COMBAT_MODE.getAction());
-        commandMap.put("switch to analysis mode, HUD analysis mode", ACTIVATE_ANALYSIS_MODE.getAction());
-        commandMap.put("max shields, shields up, boost shields", INCREASE_SHIELDS_POWER.getAction());
-        commandMap.put("max engines, full power to engines, boost engines", INCREASE_ENGINES_POWER.getAction());
-        commandMap.put("max weapons, full power to weapons, boost weapons", INCREASE_WEAPONS_POWER.getAction());
+        commandMap.put("switch to combat mode, HUD combat mode, combat mode, change to combat mode, activate combat mode, enable combat mode, go to combat mode", ACTIVATE_COMBAT_MODE.getAction());
+        commandMap.put("switch to analysis mode, HUD analysis mode, analysis mode, change to analysis mode, activate analysis mode, enable analysis mode, go to analysis mode", ACTIVATE_ANALYSIS_MODE.getAction());
+        commandMap.put("max shields, shields up, boost shields, transfer power to shields, power to shields, all power to shields, shields maximum, shields full, reinforce shields, divert power to shields, full shields, power shields", INCREASE_SHIELDS_POWER.getAction());
+        commandMap.put("max engines, full power to engines, boost engines, transfer power to engines, power to engines, all power to engines, engines maximum, engines full, max thrusters, full thrusters, divert power to engines, divert power to thrusters, power to thrusters, full engines, power engines", INCREASE_ENGINES_POWER.getAction());
+        commandMap.put("max weapons, full power to weapons, boost weapons, transfer power to weapons, power to weapons, all power to weapons, weapons maximum, weapons full, divert power to weapons, charge weapons, full weapons, power weapons", INCREASE_WEAPONS_POWER.getAction());
+        commandMap.put("max systems, power to systems, all power to systems, full power to systems, transfer power to systems, systems maximum, systems full, boost systems, divert power to systems, reinforce systems, full systems, power systems", INCREASE_SYSTEMS_POWER.getAction());
         commandMap.put("equalize power, reset power distribution", RESET_POWER.getAction());
         commandMap.put("cancel navigation", NAVIGATION_ON_OFF.getAction());
         commandMap.put("open cargo scoop, open cargo bay" + KEY_STATE, OPEN_CARGO_SCOOP.getAction());
@@ -125,7 +125,7 @@ public class AiCommandsAndQueries {
         commandMap.put("order fighter focus my target", REQUEST_FOCUS_TARGET.getAction());
         commandMap.put("order fighter hold fire", REQUEST_HOLD_FIRE.getAction());
         commandMap.put("order fighter return to mothership", REQUEST_REQUEST_DOCK.getAction());
-        commandMap.put("supercruise, light speed, engage FSD supercruise", ENTER_SUPER_CRUISE.getAction());
+        commandMap.put("supercruise, lightspeed, light speed, engage FSD supercruise", ENTER_SUPER_CRUISE.getAction());
         commandMap.put("retract hardpoints, store weapons, weapons cold", RETRACT_HARDPOINTS.getAction());
         commandMap.put("deploy hardpoints, weapons hot, combat ready", DEPLOY_HARDPOINTS.getAction());
         commandMap.put("landing gear down, deploy landing gear, gear down", DEPLOY_LANDING_GEAR.getAction());
@@ -187,8 +187,6 @@ public class AiCommandsAndQueries {
             commandMap.put("change profile to" + KEY_X, SET_PROFILE.getAction());
         }
 
-        /// very special case. machie-only command
-        commandMap.put(CONNECTION_CHECK_COMMAND, CONNECTION_CHECK.getAction());
         return commandMap;
     }
 
@@ -254,6 +252,10 @@ public class AiCommandsAndQueries {
             "and", "uh", "um", "please", "okay", "ok", "hey", "so", "now", "just", "right", "well", "go ahead and"
     );
 
+    // Filler words stripped from anywhere in the input before matching
+    private static final java.util.regex.Pattern FILLER_WORDS =
+            java.util.regex.Pattern.compile("\\b(the|that|this|these|those|a|an|my|our)\\b");
+
     /**
      * Attempts to match input directly against command trigger phrases without LLM involvement.
      * Only matches parameter-free triggers (no {key:X} etc.) - parameterised commands still go to the LLM.
@@ -264,13 +266,15 @@ public class AiCommandsAndQueries {
     public String matchCommand(String input) {
         String normalized = normalize(input);
         String denoised = stripLeadingNoise(normalized);
-        String depluraled = deplural(denoised);
+        String deflled = stripFillers(denoised);
+        String depluraled = deplural(deflled);
 
+        // Pass 1: endsWith — precise, handles STT leading noise
         for (Map.Entry<String, String> entry : buildCommandMap().entrySet()) {
             for (String trigger : entry.getKey().split(",")) {
                 String clean = normalize(trigger.replaceAll("\\{[^}]*}", "").replaceAll("<[^>]*>", ""));
                 if (clean.isEmpty()) continue;
-                if (normalized.endsWith(clean) || denoised.endsWith(clean) || depluraled.endsWith(clean)) {
+                if (normalized.endsWith(clean) || denoised.endsWith(clean) || deflled.endsWith(clean) || depluraled.endsWith(clean)) {
                     return entry.getValue();
                 }
             }
@@ -293,6 +297,10 @@ public class AiCommandsAndQueries {
         return result;
     }
 
+    private static String stripFillers(String s) {
+        return FILLER_WORDS.matcher(s).replaceAll(" ").trim().replaceAll("\\s+", " ");
+    }
+
     /**
      * Strips a trailing 's' from the last word to normalise simple plural/singular variance.
      */
@@ -304,6 +312,7 @@ public class AiCommandsAndQueries {
     private static String normalize(String s) {
         return s.toLowerCase().replaceAll("[^a-z0-9 ]", "").trim().replaceAll("\\s+", " ");
     }
+
 
     /**
      * Returns all unique words extracted from every command and query hint phrase.
@@ -333,7 +342,7 @@ public class AiCommandsAndQueries {
         StringBuilder sb = new StringBuilder();
         sb.append("ALLOWED COMMANDS (use ONLY these exact action names): \n\n");
         buildCommandMap().forEach((concept, action) ->
-                sb.append("  ").append(concept).append("  →  ").append(action).append(" \n"));
+                sb.append("  ").append(action).append(" ← ").append(concept).append(" \n"));
         return sb.toString();
     }
 
@@ -341,7 +350,7 @@ public class AiCommandsAndQueries {
         StringBuilder sb = new StringBuilder();
         sb.append("ALLOWED QUERIES (use ONLY these exact action names): \n\n");
         buildQueryMap().forEach((concept, action) ->
-                sb.append("  ").append(concept).append("  →  ").append(action).append(" \n"));
+                sb.append("  ").append(action).append(" ← ").append(concept).append(" \n"));
         return sb.toString();
     }
 }

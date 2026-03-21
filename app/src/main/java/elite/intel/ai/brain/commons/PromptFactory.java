@@ -37,13 +37,10 @@ public class PromptFactory implements AiPromptFactory {
                 - NO text before or after the JSON
                 - NO code blocks or ```json markers
                 
-                COMMAND vs QUERY - decide this first:
-                - If input starts with "show" or "display" → ALWAYS a COMMAND. Never a query. No exceptions.
-                - COMMAND: starts with an imperative verb → show, open, display, set, deploy, find, navigate, jump, engage, target, calculate, transfer, toggle, request, activate, plot, cancel, clear, add, go, enter, dismiss, lock, close, retract, swap, disable, enable, equalize, increase, boost, recall, drop, start, stop, ignore, confirm, delete, list, monetize
-                - QUERY: starts with a question word → what, where, how, which, why, is, are, does, can, any, how much, how many, do we, tell me
-                - "find X" with no question word = COMMAND (find trader, find mining site)
-                - "where/what/how" before "find" = QUERY (where to find, what can we find)
-                - When in doubt: if it sounds like an order → COMMAND; if it sounds like a question → QUERY.
+                Most things the player says are commands (do something, go somewhere, toggle something).
+                Only when the sentence is clearly a QUESTION (starts with what/where/how/which/why/is/are/does/can…) → classify as query.
+                - "show" or "display" at the start → ALWAYS a COMMAND, never a query.
+                - "find X" with no question word = COMMAND. "where/what to find" = QUERY.
                 
                 - do not confuse organics with materials or resources
                   organics - exobiology query
@@ -58,10 +55,11 @@ public class PromptFactory implements AiPromptFactory {
 
                 CRITICAL RULES - BREAKING ANY = TOTAL FAILURE:
                 - NEVER invent, modify, combine, or create new actions or parameters.
+                - QUERIES are ONLY allowed when the input is clearly a question. If the input is not a question → it is a COMMAND. Never use a query as a fallback.
                 - use query_app_capabilities action only if asked about capabilities and never fall back to it for any reason.
                 - use query_key_bindings_analysis action only if explicitly asked about key bindings or unbound keys. Never use it as a fallback.
                 """);
-        sb.append("- If ZERO good match → return: {\"action\": \"").append(Queries.GENERAL_CONVERSATION.getAction()).append("\", \"params\": {}}");
+        sb.append("- If ZERO good match → return: {\"action\": \"").append(Queries.GENERAL_CONVERSATION.getAction()).append("\", \"params\": {}}\n");
 
 
         if (!systemSession.useLocalQueryLlm()) {
@@ -69,7 +67,7 @@ public class PromptFactory implements AiPromptFactory {
         }
 
         if (!systemSession.useLocalCommandLlm()) {
-            sb.append("- CRITICAL: if no match found, return: {\"action\": \"").append(Queries.GENERAL_CONVERSATION.getAction()).append("\", \"params\": {" + AIConstants.PROPERTY_TEXT_TO_SPEECH_RESPONSE + ":'command not found'}}");
+            sb.append("- CRITICAL: if no match found, return: {\"action\": \"").append(Queries.GENERAL_CONVERSATION.getAction()).append("\", \"params\": {" + AIConstants.PROPERTY_TEXT_TO_SPEECH_RESPONSE + ":'command not found'}}\n");
         }
 
         sb.append("""

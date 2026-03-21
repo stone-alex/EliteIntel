@@ -128,7 +128,7 @@ public enum Commands {
     SHOW_COMMANDER_PANEL                                ("show_role_panel", null, OpenCommanderPanel.class),
     SHOW_FIGHTER_PANEL                                  ("show_fighter_panel", null, OpenFighterPanelHandler.class),
     SHOW_CREW                                           ("show_crew", null, OpenCrewPanelHandler.class),
-    SHOW_INTERNAL_PANEL                                 ("show_internal_panel", null, OpenInternalPanelHandler.class),
+    SHOW_INTERNAL_PANEL                                 ("show_internal_home_panel", null, OpenInternalPanelHandler.class),
     SHOW_MODULES_PANEL                                  ("show_modules_panel", null, OpenModulesPanelHandler.class),
     SHOW_FIRE_GROUPS                                    ("show_fire_groups", null, OpenFireGroupsPanelHandler.class),
     SHOW_INVENTORY_PANEL                                ("show_inventory_panel", null, OpenInventoryHandler.class),
@@ -167,7 +167,7 @@ public enum Commands {
     SET_SPEED75                                         ("set_speed_to_optimal_throttle_75", BINDING_SET_SPEED75.getGameBinding(), GenericGameControlHandler.class),
     SET_SPEED100                                        ("set_speed_to_maximum_throttle_100", BINDING_SET_SPEED100.getGameBinding(), GenericGameControlHandler.class),
 
-    SET_CARRIER_FUEL_RESERVE                            ("set_tritium_carrier_fuel_reserve", null,  SetFleetCarrierFuelReserveHandler.class),
+    SET_CARRIER_FUEL_RESERVE                            ("set_carrier_fuel_reserve", null,  SetFleetCarrierFuelReserveHandler.class),
 
     SELECT_HIGHEST_THREAT                               ("target_highest_threat", BINDING_SELECT_HIGHEST_THREAT.getGameBinding(), GenericGameControlHandler.class),
     TARGET_NEXT_ROUTE_SYSTEM                            ("select_next_system_in_route", BINDING_TARGET_NEXT_ROUTE_SYSTEM.getGameBinding(), GenericGameControlHandler.class),

@@ -54,6 +54,8 @@ public class WhisperSTTImpl implements EarsInterface {
     private int sampleRateHertz;
     private int bufferSize;
     private double RMS_THRESHOLD_HIGH;
+    private double NOISE_FLOOR;
+    private double MINIMUM_NOISE_FLOOR_TO_RMS_RATIO = 300;
     private Thread processingThread;
 
     public WhisperSTTImpl() {
@@ -77,8 +79,10 @@ public class WhisperSTTImpl implements EarsInterface {
         if (high == 0 || low == 0) {
             RmsTupple<Double, Double> cal = AudioCalibrator.calibrateRMS(sampleRateHertz, bufferSize);
             this.RMS_THRESHOLD_HIGH = cal.getRmsHigh();
+            this.NOISE_FLOOR = cal.getRmsLow();
         } else {
             this.RMS_THRESHOLD_HIGH = high;
+            this.NOISE_FLOOR = low;
         }
 
         try {
@@ -100,8 +104,14 @@ public class WhisperSTTImpl implements EarsInterface {
         isListening.set(true);
         processingThread = new Thread(this::captureLoop);
         processingThread.start();
-        EventBusManager.publish(new AiVoxResponseEvent("Voice input enabled"));
 
+        if (RMS_THRESHOLD_HIGH == 0 || NOISE_FLOOR == 0) {
+            EventBusManager.publish(new AiVoxResponseEvent("Audio calibration required"));
+        } else if (RMS_THRESHOLD_HIGH < 250 || RMS_THRESHOLD_HIGH - NOISE_FLOOR < MINIMUM_NOISE_FLOOR_TO_RMS_RATIO) {
+            EventBusManager.publish(new AiVoxResponseEvent("Voice input enabled. WARNING: Insufficient noise floor to input signal ratio. The communication may be compromised. Please adjust microphone settings."));
+        } else {
+            EventBusManager.publish(new AiVoxResponseEvent("Voice input enabled"));
+        }
     }
 
     @Override

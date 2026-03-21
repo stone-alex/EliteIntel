@@ -97,7 +97,7 @@ public class AiCommandsAndQueries {
         commandMap.put("half throttle, half speed, speed 50", SET_SPEED50.getAction());
         commandMap.put("throttle 75, three quarters throttle, speed 75", SET_SPEED75.getAction());
         commandMap.put("max speed, full speed, full throttle", SET_SPEED100.getAction());
-        commandMap.put("set fuel reserve" + KEY_X, SET_CARRIER_FUEL_RESERVE.getAction());
+        commandMap.put("set fuel reserve, set fuel reserves, set carrier fuel reserve, set carrier fuel reserves" + KEY_X, SET_CARRIER_FUEL_RESERVE.getAction());
         commandMap.put("select next system in route, target next route system", TARGET_NEXT_ROUTE_SYSTEM.getAction());
         commandMap.put("target wingman 1", TARGET_WINGMAN0.getAction());
         commandMap.put("target wingman 2", TARGET_WINGMAN1.getAction());
@@ -156,7 +156,7 @@ public class AiCommandsAndQueries {
         commandMap.put("show central panel, role panel", SHOW_COMMANDER_PANEL.getAction());
         commandMap.put("show fighter panel", SHOW_FIGHTER_PANEL.getAction());
         commandMap.put("show crew panel", SHOW_CREW.getAction());
-        commandMap.put("show internal panel, commander panel", SHOW_INTERNAL_PANEL.getAction());
+        commandMap.put("show internal panel, commander panel, home panel", SHOW_INTERNAL_PANEL.getAction());
         commandMap.put("show modules panel", SHOW_MODULES_PANEL.getAction());
         commandMap.put("show fire groups", SHOW_FIRE_GROUPS.getAction());
         commandMap.put("show inventory panel", SHOW_INVENTORY_PANEL.getAction());

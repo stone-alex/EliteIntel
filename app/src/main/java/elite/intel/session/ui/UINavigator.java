@@ -28,7 +28,7 @@ public class UINavigator {
     // Minimum sleep between tab keypresses. The game needs time to register
     // each tab change before the next keystroke fires - without this, rapid
     // multi-step navigation skips tabs and the tracker diverges from game state.
-    private static final int TAB_DELAY_MS = 150;
+    private static final int TAB_DELAY_MS = 25;
     // Sleep after opening or closing a panel - the game needs time to render
     // the panel before the first tab keystroke fires, and time to process the
     // close before the caller's next action.

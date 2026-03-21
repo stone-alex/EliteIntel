@@ -82,10 +82,6 @@
 "can the star system"="scan the star system"
 "can the system"="scan the system"
 "cancer"="scans"
-"carrier feel"="tritium"
-"carrier field"="tritium"
-"carrier fuel"="tritium"
-"carrier juice"="tritium"
 "carry around"="carrier route"
 "carry routing"="carrier routing"
 "check out carry around"="check our carrier route"
@@ -372,5 +368,3 @@
 "thank you, sir."="exit"
 "thank you"="exit"
 "thanks if you like"="exit"
-
-

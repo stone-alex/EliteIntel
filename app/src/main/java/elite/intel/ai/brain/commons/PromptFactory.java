@@ -97,6 +97,7 @@ public class PromptFactory implements AiPromptFactory {
                   - "lights on"                         → {"state": true}
                   - "find gold within 80 ly"            → {"key": "gold", "max_distance":"80"}
                   - "is moon two Charlie landable"      → query with key "2C"
+                  - Allowed parameter names are {key:X}, {lat:X, lon:Y}, {key:X, max_distance:Y}, {state:true/false} and {lat:X, lon:Y}  ALL other parameters are instant failure.
                 """);
         return sb.toString();
     }

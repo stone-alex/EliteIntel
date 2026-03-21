@@ -35,7 +35,7 @@ public enum Commands {
 
     FIND_VISTA_GENOMICS                                 ("find_vista_genomics", null,  FindVistaGenomicsHandler.class),
     FIND_BRAIN_TREES                                    ("find_brain_trees", null,  FindBrainTreesHandler.class),
-    FIND_FLEET_CARRIER_FUEL_MINING_SITE                 ("find_fleet_carrier_fuel_mining_site", null,  FindCarrierFuelMiningSiteHandler.class),
+    //FIND_FLEET_CARRIER_FUEL_MINING_SITE                 ("find_fleet_carrier_fuel_mining_site", null,  FindCarrierFuelMiningSiteHandler.class),
     FIND_MINING_SITE                                    ("find_mining_site_for_material", null, FindMiningSiteHandler.class),
 
     FIND_NEAREST_FLEET_CARRIER                          ("find_nearest_fleet_carrier", null,  FindNearestFleetCarrierHandler.class),
@@ -85,7 +85,7 @@ public enum Commands {
     RETRACT_LANDING_GEAR                                ("gear_up", null,  RetractLandingGearHandler.class),
 
     JUMP_TO_HYPERSPACE                                  ("jump_to_hyperspace", null,  JumpToHyperspaceHandler.class),
-    ENTER_SUPER_CRUISE                                  ("enter_super_cruise", null,  SuperCruiseHandler.class),
+    ENTER_SUPER_CRUISE                                  ("enter_super_cruise_light_speed", null,  SuperCruiseHandler.class),
 
     DROP_FROM_SUPER_CRUISE                              ("drop_from_super_cruise", null,  DropFromFtlHandler.class),
     ACTIVATE_ANALYSIS_MODE                              ("swap_to_hud_analysis_mode", null,  ActivateAnalysisModeHandler.class),

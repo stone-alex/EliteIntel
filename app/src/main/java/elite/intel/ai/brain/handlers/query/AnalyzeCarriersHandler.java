@@ -23,7 +23,6 @@ public class AnalyzeCarriersHandler extends BaseQueryAnalyzer implements QueryHa
         ArrayList<StationData> stationsData = new ArrayList<>();
         StationsData data = stationsDto.getData();
         for (Station station : data.getStations()) {
-            /// skip all fleet carriers. (query carriers in another handler to save on tokens)
             if ("Fleet Carrier".equalsIgnoreCase(station.getType())) {
                 stationsData.add(new StationData(
                         station.getName(),

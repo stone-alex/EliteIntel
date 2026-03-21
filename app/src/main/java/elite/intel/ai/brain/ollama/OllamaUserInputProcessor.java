@@ -34,6 +34,11 @@ public class OllamaUserInputProcessor extends CommandEndPoint implements AiComma
             "query_key_bindings_analysis", List.of("key", "bind", "binding", "keybind", "unbound"),
             "query_app_capabilities", List.of("capabilit", "what can you", "your function", "what do you do", "commands do you")
     );
+    // Actions blocked when the input contains any of these keywords (wrong semantic domain)
+    private static final Map<String, List<String>> BLOCKED_ACTIONS = Map.of(
+            // Stellar objects = science/discovery only. Commerce and mining searches go elsewhere.
+            "query_data_for_stellar_objects_planets_moons", List.of("mine ", "mining", "buy ", "sell ", "purchase", "commodity", "market", "trade", "tritium", "where can", "find system", "find star")
+    );
     // Queries are only valid when the input is actually a question
     private static final List<String> QUESTION_WORDS = List.of(
             "what", "where", "how", "which", "why", "is ", "are ", "does", "can ", "do we",
@@ -103,6 +108,13 @@ public class OllamaUserInputProcessor extends CommandEndPoint implements AiComma
             return;
         }
 
+        JsonObject directJson = AiCommandsAndQueries.getInstance().matchCommandJson(userInput);
+        if (directJson != null) {
+            log.info("Direct parameterized match (bypassing LLM): {}", userInput);
+            getRouter().processAiResponse(directJson, userInput);
+            return;
+        }
+
         JsonArray request = new JsonArray();
         JsonObject system = new JsonObject();
         system.addProperty("role", AIConstants.ROLE_SYSTEM);
@@ -149,6 +161,15 @@ public class OllamaUserInputProcessor extends CommandEndPoint implements AiComma
                 fallback.add("params", new JsonObject());
                 return fallback;
             }
+        }
+
+        List<String> blocked = BLOCKED_ACTIONS.get(action);
+        if (blocked != null && blocked.stream().anyMatch(lower::contains)) {
+            log.warn("Blocked action {} rejected for input: {}", action, input);
+            JsonObject fallback = new JsonObject();
+            fallback.addProperty("action", "command_not_found");
+            fallback.add("params", new JsonObject());
+            return fallback;
         }
 
         List<String> required = GUARDED_ACTIONS.get(action);

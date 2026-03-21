@@ -115,6 +115,9 @@ public class STTSanitizer {
 
     public String correctMistakes(String transcript) {
         String sanitized = transcript.toLowerCase();
+        // Normalize symbols that Whisper may output as characters rather than words
+        sanitized = sanitized.replaceAll(" \\+(\\d)", " plus $1").replaceAll(" -(\\d)", " minus $1")
+                .replace(" + ", " plus ").replace(" - ", " minus ").replace(",", " ").replace("!", "").replace("?", "").replace(".", "");
         for (Map.Entry<String, String> entry : STT_CORRECTIONS.entrySet()) {
             sanitized = sanitized.replaceAll("\\b" + Pattern.quote(entry.getKey()) + "\\b", entry.getValue());
         }

@@ -7,11 +7,6 @@
 --- 
 
 ## Linux and Windows. Can be ran 100% off-line.
-
-### Windows users: in-app update is borked at the moment. Please just re-download installer to update for now.
-
-See list of [changes / bug fixes](https://github.com/stone-alex/EliteIntel/blob/master/TESTERS.md) from last release.
-
 ---
 
 **✅ The off-line TTS. (Linux and Windows)**

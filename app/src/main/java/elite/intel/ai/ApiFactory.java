@@ -6,6 +6,9 @@ import elite.intel.ai.brain.anthropic.AnthropicCommandEndPoint;
 import elite.intel.ai.brain.anthropic.AnthropicUserEndPoint;
 import elite.intel.ai.brain.commons.PromptFactory;
 import elite.intel.ai.brain.commons.ResponseRouter;
+import elite.intel.ai.brain.gemini.GeminiAnalysisEndpoint;
+import elite.intel.ai.brain.gemini.GeminiChatEndPoint;
+import elite.intel.ai.brain.gemini.GeminiCommandEndPoint;
 import elite.intel.ai.brain.ollama.OllamaAnalysisEndpoint;
 import elite.intel.ai.brain.ollama.OllamaCommandEndPoint;
 import elite.intel.ai.brain.ollama.OllamaUserInputProcessor;
@@ -53,6 +56,7 @@ public class ApiFactory {
             case GROK -> GrokAnalysisEndpoint.getInstance();
             case OPENAI -> OpenAiAnalysisEndPoint.getInstance();
             case ANTHROPIC -> AnthropicAnalysisEndpoint.getInstance();
+            case GOOGLE_LLM -> GeminiAnalysisEndpoint.getInstance();
             default -> OllamaAnalysisEndpoint.getInstance();
         };
 
@@ -70,6 +74,7 @@ public class ApiFactory {
             case GROK -> GrokChatEndPoint.getInstance();
             case OPENAI -> OpenAiChatEndPoint.getInstance();
             case ANTHROPIC -> AnthropicUserEndPoint.getInstance();
+            case GOOGLE_LLM -> GeminiChatEndPoint.getInstance();
             default -> OllamaCommandEndPoint.getInstance();
         };
     }
@@ -101,6 +106,7 @@ public class ApiFactory {
             case GROK -> GrokCommandEndPoint.getInstance();
             case OPENAI -> OpenAiCommandEndPoint.getInstance();
             case ANTHROPIC -> AnthropicCommandEndPoint.getInstance();
+            case GOOGLE_LLM -> GeminiCommandEndPoint.getInstance();
             default -> OllamaUserInputProcessor.getInstance();
         };
     }

@@ -76,7 +76,7 @@ public class AiTabPanel extends JPanel {
             }
         }));
 
-        recalibrateAudioButton = makeButton("Recalibrate Audio");
+        recalibrateAudioButton = makeButton("Calibrate Audio");
         recalibrateAudioButton.setForeground(DISABLED_FG);
         recalibrateAudioButton.setEnabled(false);
         recalibrateAudioButton.addActionListener(e -> EventBusManager.publish(new RecalibrateAudioEvent()));

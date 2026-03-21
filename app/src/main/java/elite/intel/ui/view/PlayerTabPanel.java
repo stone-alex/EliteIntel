@@ -93,7 +93,7 @@ public class PlayerTabPanel extends JPanel {
         gbc.anchor = GridBagConstraints.WEST;
         JPanel btns = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
         btns.setOpaque(false);
-        JButton saveButton = makeButton("Save Player Configuration");
+        JButton saveButton = makeButton("Save");
         saveButton.addActionListener(e -> savePlayerConfig());
         btns.add(saveButton);
         add(btns, gbc);

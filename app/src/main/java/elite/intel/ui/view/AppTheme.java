@@ -10,30 +10,30 @@ import java.awt.*;
 /**
  * Shared colors, component factories, and layout helpers for the dark UI theme.
  */
-class AppTheme {
+public class AppTheme {
 
-    static final Color BG = new Color(0x141622);
-    static final Color LOG_BG = new Color(0x171927);
-    static final Color BG_PANEL = new Color(0x1F2032);
-    static final Color FG = new Color(0xE6E6E6);
-    static final Color BUTTON_FG = new Color(0xFFFFFF);
-    static final Color BUTTON_BG = new Color(0x03529F);
-    static final Color FG_MUTED = new Color(0xB0B0B0);
-    static final Color ACCENT = new Color(0xFF8C00);
-    static final Color CONSOLE_FG = new Color(0xE0FFEF);
-    static final Color SEL_BG = new Color(0xE0FFEF);
-    static final Color SEL_FG = new Color(0x13181D);
-    static final Color TAB_UNSELECTED = new Color(0x141622);
-    static final Color TAB_SELECTED = new Color(0x141622);
-    static final Color DISABLED_FG = new Color(0x8B0101);
+    public static final Color BG = new Color(0x141622);
+    public static final Color LOG_BG = new Color(0x171927);
+    public static final Color BG_PANEL = new Color(0x1F2032);
+    public static final Color FG = new Color(0xE6E6E6);
+    public static final Color BUTTON_FG = new Color(0xFFFFFF);
+    public static final Color BUTTON_BG = new Color(0x03529F);
+    public static final Color FG_MUTED = new Color(0xB0B0B0);
+    public static final Color ACCENT = new Color(0xFF8C00);
+    public static final Color CONSOLE_FG = new Color(0xE0FFEF);
+    public static final Color SEL_BG = new Color(0xE0FFEF);
+    public static final Color SEL_FG = new Color(0x13181D);
+    public static final Color TAB_UNSELECTED = new Color(0x141622);
+    public static final Color TAB_SELECTED = new Color(0x141622);
+    public static final Color DISABLED_FG = new Color(0x8B0101);
 
     // ── Button factories ──────────────────────────────────────────────────────
 
-    static JButton makeButton(String label) {
+    public static JButton makeButton(String label) {
         return makeRoundButton(label, BUTTON_BG);
     }
 
-    static JButton makeButtonSubtle(String label) {
+    public static JButton makeButtonSubtle(String label) {
         return makeRoundButton(label, BG_PANEL);
     }
 
@@ -60,7 +60,7 @@ class AppTheme {
         return btn;
     }
 
-    static JToggleButton makeToggleButton(String label) {
+    public static JToggleButton makeToggleButton(String label) {
         JToggleButton btn = new JToggleButton(label) {
             @Override
             protected void paintComponent(Graphics g) {
@@ -83,7 +83,7 @@ class AppTheme {
         return btn;
     }
 
-    static void styleButton(AbstractButton b) {
+    public static void styleButton(AbstractButton b) {
         b.setOpaque(false);
         b.setContentAreaFilled(false);
         b.setFocusPainted(false);
@@ -97,7 +97,7 @@ class AppTheme {
 
     // ── Tabbed pane ───────────────────────────────────────────────────────────
 
-    static void styleTabbedPane(JTabbedPane tp) {
+    public static void styleTabbedPane(JTabbedPane tp) {
         tp.setOpaque(true);
         tp.setBackground(BG);
         tp.setForeground(FG);
@@ -158,7 +158,7 @@ class AppTheme {
 
     // ── Dark palette ──────────────────────────────────────────────────────────
 
-    static void applyDarkPalette(Component c) {
+    public static void applyDarkPalette(Component c) {
         if (c == null) return;
 
         if (c instanceof JPanel || c instanceof JTabbedPane || c instanceof JScrollPane) {
@@ -224,7 +224,7 @@ class AppTheme {
 
     // ── GridBagLayout helpers ─────────────────────────────────────────────────
 
-    static GridBagConstraints baseGbc() {
+    public static GridBagConstraints baseGbc() {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -236,11 +236,11 @@ class AppTheme {
         return gbc;
     }
 
-    static void nextRow(GridBagConstraints gbc) {
+    public static void nextRow(GridBagConstraints gbc) {
         gbc.gridy++;
     }
 
-    static void addLabel(JPanel panel, String text, GridBagConstraints gbc) {
+    public static void addLabel(JPanel panel, String text, GridBagConstraints gbc) {
         gbc.gridx = 0;
         gbc.weightx = 0;
         gbc.fill = GridBagConstraints.NONE;
@@ -249,7 +249,7 @@ class AppTheme {
         panel.add(label, gbc);
     }
 
-    static void addLabel(JPanel panel, String text, GridBagConstraints gbc, int col, double weightX) {
+    public static void addLabel(JPanel panel, String text, GridBagConstraints gbc, int col, double weightX) {
         gbc.gridx = col;
         gbc.weightx = weightX;
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -258,7 +258,7 @@ class AppTheme {
         panel.add(comp, gbc);
     }
 
-    static void addField(JPanel panel, JComponent comp, GridBagConstraints gbc, int col, double weightX) {
+    public static void addField(JPanel panel, JComponent comp, GridBagConstraints gbc, int col, double weightX) {
         gbc.gridx = col;
         gbc.weightx = weightX;
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -266,19 +266,19 @@ class AppTheme {
         panel.add(comp, gbc);
     }
 
-    static void addCheck(JPanel panel, JCheckBox check, GridBagConstraints gbc) {
+    public static void addCheck(JPanel panel, JCheckBox check, GridBagConstraints gbc) {
         gbc.gridx = 2;
         gbc.weightx = 0.2;
         gbc.fill = GridBagConstraints.NONE;
         panel.add(check, gbc);
     }
 
-    static void addNestedPanel(JPanel parent, JPanel child, String title) {
+    public static void addNestedPanel(JPanel parent, JPanel child, String title) {
         parent.add(new JLabel(title));
         parent.add(child);
     }
 
-    static void bindLock(JCheckBox lockCheck, JComponent field) {
+    public static void bindLock(JCheckBox lockCheck, JComponent field) {
         Runnable apply = () -> {
             boolean locked = lockCheck.isSelected();
             if (field instanceof JTextComponent tc) {

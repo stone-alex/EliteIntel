@@ -76,7 +76,7 @@ public class AppView extends JFrame implements AppViewInterface {
     private ImageIcon scaledIcon(String resource) {
         return new ImageIcon(
                 new ImageIcon(Objects.requireNonNull(getClass().getResource(resource)))
-                        .getImage().getScaledInstance(24, 24, Image.SCALE_SMOOTH));
+                        .getImage().getScaledInstance(48, 48, Image.SCALE_SMOOTH));
     }
 
     @Override

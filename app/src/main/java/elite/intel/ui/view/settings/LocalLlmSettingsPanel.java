@@ -4,6 +4,7 @@ import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
+import elite.intel.ui.event.RestartBrainEvent;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -41,6 +42,7 @@ public class LocalLlmSettingsPanel extends JPanel {
         localLlmModelCommandField = new JTextField();
         addField(fields, localLlmModelCommandField, gc, 1, 1.0);
         useLocalCommandLLMCheck = new JCheckBox("Use", false);
+        useLocalCommandLLMCheck.addActionListener(e -> onCheckboxToggled());
         addCheck(fields, useLocalCommandLLMCheck, gc);
 
         nextRow(gc);
@@ -48,6 +50,7 @@ public class LocalLlmSettingsPanel extends JPanel {
         localLlmModelQueryField = new JTextField();
         addField(fields, localLlmModelQueryField, gc, 1, 1.0);
         useLocalQueryLLMCheck = new JCheckBox("Use", false);
+        useLocalQueryLLMCheck.addActionListener(e -> onCheckboxToggled());
         addCheck(fields, useLocalQueryLLMCheck, gc);
 
         fields.setBorder(BorderFactory.createCompoundBorder(
@@ -90,6 +93,15 @@ public class LocalLlmSettingsPanel extends JPanel {
         useLocalQueryLLMCheck.setSelected(systemSession.useLocalQueryLlm());
     }
 
+    private void onCheckboxToggled() {
+        systemSession.setUseLocalCommandLlm(useLocalCommandLLMCheck.isSelected());
+        systemSession.setUseLocalQueryLlm(useLocalQueryLLMCheck.isSelected());
+        EventBusManager.publish(new AppLogEvent("LLM mode changed: command="
+                + (useLocalCommandLLMCheck.isSelected() ? "local" : "cloud")
+                + " query=" + (useLocalQueryLLMCheck.isSelected() ? "local" : "cloud")));
+        EventBusManager.publish(new RestartBrainEvent());
+    }
+
     private void save() {
         playerSession.setLocalLlmAddress(localLlmAddressField.getText());
         systemSession.setLocalLlmCommandModel(localLlmModelCommandField.getText());
@@ -97,6 +109,7 @@ public class LocalLlmSettingsPanel extends JPanel {
         systemSession.setUseLocalCommandLlm(useLocalCommandLLMCheck.isSelected());
         systemSession.setUseLocalQueryLlm(useLocalQueryLLMCheck.isSelected());
         EventBusManager.publish(new AppLogEvent("Local LLM config saved"));
+        EventBusManager.publish(new RestartBrainEvent());
         initData();
     }
 }

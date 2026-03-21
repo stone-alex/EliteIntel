@@ -3,6 +3,7 @@ package elite.intel.ui.view.settings;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
+import elite.intel.ui.event.RestartBrainEvent;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -78,6 +79,7 @@ public class CloudServicesSettingsPanel extends JPanel {
         systemSession.setAiApiKey(new String(llmApiKeyField.getPassword()));
         systemSession.setTtsApiKey(new String(ttsApiKeyField.getPassword()));
         EventBusManager.publish(new AppLogEvent("Cloud services config saved"));
+        EventBusManager.publish(new RestartBrainEvent());
         initData();
     }
 }

@@ -159,6 +159,21 @@ public class AppController implements Runnable {
         }).start();
     }
 
+    @Subscribe
+    void onRestartBrainEvent(RestartBrainEvent event) {
+        new Thread(this::restartBrainService, "BrainRestart-Thread").start();
+    }
+
+    private void restartBrainService() {
+        if (!isRunning.get()) return;
+        ServiceHolder brain = services.get(ServiceType.BRAIN);
+        if (brain == null) return;
+        appendToLog("Restarting LLM service...");
+        brain.stop();
+        brain.start();
+        appendToLog("LLM service restarted");
+    }
+
     private void appendToLog(String data) {
         String formattedTime = Instant.now()
                 .atZone(ZoneId.systemDefault())

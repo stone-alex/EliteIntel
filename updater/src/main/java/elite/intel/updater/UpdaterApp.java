@@ -190,6 +190,7 @@ public class UpdaterApp {
     private void runPipeline() {
         try {
             log("Install directory : " + installDir);
+            checkInstallDirWritable();
             waitForMainAppToExit();
 
             String zipUrl = fetchLatestZipUrl();  // logs the resolved URL itself
@@ -213,6 +214,57 @@ public class UpdaterApp {
                 progressBar.setValue(0);
                 progressBar.setString("Failed");
             });
+        }
+    }
+
+    // -- Pre-flight: verify we can write to the install directory --------------
+
+    private void checkInstallDirWritable() {
+        Path probe = Path.of(installDir, ".updater-write-test");
+        try {
+            Files.write(probe, new byte[0], StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+            Files.deleteIfExists(probe);
+        } catch (IOException e) {
+            SwingUtilities.invokeLater(() -> {
+                progressBar.setIndeterminate(false);
+                progressBar.setValue(0);
+                progressBar.setString("Permission error");
+                statusLabel.setText("Cannot write to install directory.");
+
+                String msg = "<html><body style='width:380px;font-family:sans-serif'>"
+                        + "<b>Elite Intel cannot update itself from this install location.</b>"
+                        + "<br><br>"
+                        + "The installation directory:<br>"
+                        + "<tt>&nbsp;&nbsp;" + installDir + "</tt><br><br>"
+                        + "is protected by Windows and requires Administrator rights to modify. "
+                        + "The recommended fix is to reinstall to a user-local directory:"
+                        + "<ol>"
+                        + "<li>Uninstall Elite Intel from <i>Windows Settings → Apps</i>.</li>"
+                        + "<li>Download the latest installer from GitHub.</li>"
+                        + "<li>Run the installer — it will default to<br>"
+                        + "<tt>%LOCALAPPDATA%\\Programs\\Elite Intel</tt><br>"
+                        + "which does not require Administrator rights.</li>"
+                        + "</ol>"
+                        + "<b>Your user data and settings will not be deleted</b> by the uninstaller."
+                        + "</body></html>";
+
+                JEditorPane pane = new JEditorPane("text/html", msg);
+                pane.setEditable(false);
+                pane.setBackground(BG_PANEL);
+                pane.setForeground(FG);
+
+                JOptionPane.showMessageDialog(frame, pane,
+                        "Update Failed – Permission Error",
+                        JOptionPane.ERROR_MESSAGE);
+                System.exit(1);
+            });
+
+            // Block the pipeline thread until the dialog closes + exit
+            try {
+                Thread.sleep(60_000);
+            } catch (InterruptedException ignored) {
+            }
+            System.exit(1);
         }
     }
 

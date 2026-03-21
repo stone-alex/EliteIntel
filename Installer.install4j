@@ -45,7 +45,11 @@
           <screen id="1" beanClass="com.install4j.runtime.beans.screens.StartupScreen" rollbackBarrierExitCode="0">
             <actions>
               <action id="22" beanClass="com.install4j.runtime.beans.actions.misc.RequestPrivilegesAction" actionElevationType="none" rollbackBarrierExitCode="0" />
-              <action id="23" beanClass="com.install4j.runtime.beans.actions.control.SetInstallationDirectoryAction" actionElevationType="none" rollbackBarrierExitCode="0" />
+              <action id="23" beanClass="com.install4j.runtime.beans.actions.control.SetInstallationDirectoryAction" actionElevationType="none" rollbackBarrierExitCode="0">
+                <serializedBean>
+                  <property name="installationScope" type="enum" class="com.install4j.runtime.beans.actions.control.InstallationScope" value="USER_WRITABLE" />
+                </serializedBean>
+              </action>
             </actions>
           </screen>
         </startup>

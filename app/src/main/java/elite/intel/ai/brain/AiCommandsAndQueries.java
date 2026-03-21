@@ -3,8 +3,8 @@ package elite.intel.ai.brain;
 import elite.intel.session.Status;
 import elite.intel.session.SystemSession;
 
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -32,7 +32,7 @@ public class AiCommandsAndQueries {
     }
 
     private Map<String, String> buildCommandMap() {
-        Map<String, String> commandMap = new HashMap<>();
+        Map<String, String> commandMap = new LinkedHashMap<>();
 
         commandMap.put("start listening, listen to me, wake word ON, stop ignoring me", START_LISTENING.getAction());
 
@@ -145,28 +145,28 @@ public class AiCommandsAndQueries {
 
         /// UI panels
         commandMap.put("activate, punch it, engage", ACTIVATE.getAction());
-        commandMap.put("show transactions panel", SHOW_TRANSACTIONS.getAction());
-        commandMap.put("show contacts panel", SHOW_CONTACTS.getAction());
-        commandMap.put("show navigation panel", SHOW_NAVIGATION.getAction());
-        commandMap.put("show comms, show chat panel", SHOW_CHAT_PANEL.getAction());
-        commandMap.put("show inbox, show messages", SHOW_INBOX_PANEL.getAction());
-        commandMap.put("show social, show friends", SHOW_SOCIAL_PANEL.getAction());
-        commandMap.put("show history, show history panel", SHOW_HISTORY_PANEL.getAction());
-        commandMap.put("show squadron, show squadron panel", SHOW_SQUADRON.getAction());
-        commandMap.put("show central panel, role panel", SHOW_COMMANDER_PANEL.getAction());
-        commandMap.put("show fighter panel", SHOW_FIGHTER_PANEL.getAction());
-        commandMap.put("show crew panel", SHOW_CREW.getAction());
-        commandMap.put("show internal panel, commander panel, home panel", SHOW_INTERNAL_PANEL.getAction());
-        commandMap.put("show modules panel", SHOW_MODULES_PANEL.getAction());
-        commandMap.put("show fire groups", SHOW_FIRE_GROUPS.getAction());
-        commandMap.put("show inventory panel", SHOW_INVENTORY_PANEL.getAction());
-        commandMap.put("show storage panel", SHOW_STORAGE_PANEL.getAction());
-        commandMap.put("show status panel", SHOW_STATUS_PANEL.getAction());
-        commandMap.put("show ship panel", SHOW_SHIP_PANEL.getAction());
+        commandMap.put("show transactions, show transactions panel, display transactions, display transactions panel", SHOW_TRANSACTIONS.getAction());
+        commandMap.put("show contacts, show contacts panel, display contacts, display contacts panel", SHOW_CONTACTS.getAction());
+        commandMap.put("show navigation, show navigation panel, display navigation, display navigation panel", SHOW_NAVIGATION.getAction());
+        commandMap.put("show comms, show chat, show chat panel, display comms, display chat", SHOW_CHAT_PANEL.getAction());
+        commandMap.put("show inbox, show messages, display inbox, display messages", SHOW_INBOX_PANEL.getAction());
+        commandMap.put("show social, show friends, display social, display friends", SHOW_SOCIAL_PANEL.getAction());
+        commandMap.put("show history, show history panel, display history, display history panel", SHOW_HISTORY_PANEL.getAction());
+        commandMap.put("show squadron, show squadron panel, display squadron, display squadron panel", SHOW_SQUADRON.getAction());
+        commandMap.put("show central panel, show role panel, display central panel, display role panel, role panel", SHOW_COMMANDER_PANEL.getAction());
+        commandMap.put("show fighter panel, display fighter panel", SHOW_FIGHTER_PANEL.getAction());
+        commandMap.put("show crew, show crew panel, display crew, display crew panel", SHOW_CREW.getAction());
+        commandMap.put("show internal panel, show home panel, display internal panel, display home panel, commander panel, home panel", SHOW_INTERNAL_PANEL.getAction());
+        commandMap.put("show modules, show modules panel, display modules, display modules panel", SHOW_MODULES_PANEL.getAction());
+        commandMap.put("show fire groups, display fire groups", SHOW_FIRE_GROUPS.getAction());
+        commandMap.put("show inventory, show inventory panel, display inventory, display inventory panel, open inventory", SHOW_INVENTORY_PANEL.getAction());
+        commandMap.put("show storage, show storage panel, display storage, display storage panel", SHOW_STORAGE_PANEL.getAction());
+        commandMap.put("show status, show status panel, display status, display status panel", SHOW_STATUS_PANEL.getAction());
+        commandMap.put("show ship panel, display ship panel", SHOW_SHIP_PANEL.getAction());
 
-        commandMap.put("close, close panel, exit, esc", EXIT_CLOSE.getAction());
+        commandMap.put("close, close panel, exit, esc, close map, close galaxy map, close system map, close local map, close star map", EXIT_CLOSE.getAction());
 
-        commandMap.put("show carrier management panel", DISPLAY_CARRIER_MANAGEMENT.getAction());
+        commandMap.put("show carrier management, show carrier management panel, display carrier management, display carrier management panel", DISPLAY_CARRIER_MANAGEMENT.getAction());
         commandMap.put("change trade profile starting budget to" + KEY_X, CHANGE_TRADE_PROFILE_SET_STARTING_BUDGET.getAction());
         commandMap.put("change trade profile max stops to" + KEY_X, CHANGE_TRADE_PROFILE_SET_MAX_NUMBER_OF_STOPS.getAction());
         commandMap.put("change trade profile max distance from entry to" + KEY_X, CHANGE_TRADE_PROFILE_SET_MAX_DISTANCE_FROM_ENTRY.getAction());
@@ -193,12 +193,12 @@ public class AiCommandsAndQueries {
     }
 
     private Map<String, String> buildQueryMap() {
-        Map<String, String> queryMap = new HashMap<>();
+        Map<String, String> queryMap = new LinkedHashMap<>();
         if (!systemSession.useLocalQueryLlm()) {
             queryMap.put("help with <topic>, how do I <topic>, explain <topic>, can you help me with <topic>, how can you help me with <topic> → key=topic" + KEY_X, HELP.getAction());
         }
 
-        queryMap.put("check missing key bindings, any unbound keys, key binding check, what keys are not set", KEY_BINDINGS_ANALYSIS.getAction());
+        queryMap.put("key binding check, what keys are not set, unbound key bindings, are any key bindings missing", KEY_BINDINGS_ANALYSIS.getAction());
         queryMap.put("which stellar objects need bio scan, organic scan status in system, which planets need scanning, any unscanned bio signals, bio scan progress", BIO_SAMPLE_IN_STAR_SYSTEM.getAction());
         queryMap.put("organics on this planet, biology samples here, exobiology this location, what organisms are here, any life on this planet, bio samples at current location", EXOBIOLOGY_SAMPLES.getAction());
         queryMap.put("stellar objects analysis, landable planets and moons, what is in this system, how many planets are here, any landable bodies, scan data for this system, what bodies are in this system", QUERY_STELLAR_OBJETS.getAction());
@@ -207,14 +207,14 @@ public class AiCommandsAndQueries {
         queryMap.put("what stations or ports are in this system, nearby stations, docking options, any coriolis here, where can we dock", QUERY_STATIONS.getAction());
         queryMap.put("fleet carriers in this system, any carriers here, player carriers nearby", QUERY_CARRIERS.getAction());
         queryMap.put("system security, traffic, factions, controlling powers, who controls this system, system politics, what faction runs this system, power play status, system allegiance", SYSTEM_SECURITY_ANALYSIS.getAction());
-        queryMap.put("trade profile settings, show trade parameters, our trade configuration, what are our trade settings", TRADE_PROFILE_ANALYSIS.getAction());
+        queryMap.put("trade profile settings, our trade configuration, what are our trade settings, trade parameters", TRADE_PROFILE_ANALYSIS.getAction());
         queryMap.put("distance to stellar object" + KEY_X, DISTANCE_TO_BODY.getAction());
         queryMap.put("analyze last scan, what did we just scan, last scanned body, results of last scan, what was that we scanned", LAST_SCAN_ANALYSIS.getAction());
-        queryMap.put("inventory for material X, how much X do we have" + KEY_X, MATERIALS_INVENTORY.getAction());
+        queryMap.put("inventory for material X, how much X do we have, how many X do we have, do we have any X" + KEY_X, MATERIALS_INVENTORY.getAction());
         queryMap.put("materials on this planet, what can we collect here, surface materials here, what materials are available, what can we gather here", PLANET_MATERIALS.getAction());
         queryMap.put("exploration profits, exobiology earnings, how much have we earned, exploration income, total scan value, what have we made from exploration", EXPLORATION_PROFITS.getAction());
         queryMap.put("current location, where are we, system info, what system is this, our position, what star system are we in, navigation status", CURRENT_LOCATION.getAction());
-        queryMap.put("ship fuel level, how much fuel do we have, fuel status, are we low on fuel, check fuel, fuel remaining, fuel reserves", SHIP_FUEL_STATUS.getAction());
+        queryMap.put("ship fuel level, how much fuel do we have, fuel status, are we low on fuel, fuel remaining, fuel reserves", SHIP_FUEL_STATUS.getAction());
         queryMap.put("analyze selected destination, info on selected system, what is our target system, tell me about the destination", FSD_TARGET_ANALYSIS.getAction());
         queryMap.put("ship plotted route, our navigation route, how long is our route, route progress, where are we headed, how many jumps remaining", PLOTTED_ROUTE_ANALYSIS.getAction());
         queryMap.put("fleet carrier plotted route, carrier navigation plan, where is the carrier route going, carrier jump plan", CARRIER_ROUTE_ANALYSIS.getAction());
@@ -231,19 +231,78 @@ public class AiCommandsAndQueries {
         queryMap.put("user statistics, user ranks and progress", PLAYER_PROFILE_ANALYSIS.getAction());
         queryMap.put("ship loadout, your equipment, your jump range, classification, damage report, module integrity check, what modules do we have, ship status, ship build, what is equipped, module check, are we armed, do we have a fuel scoop", SHIP_LOADOUT.getAction());
         queryMap.put("station services, what services are available here, what does this station offer, station facilities, can we repair here, can we rearm here", STATION_DETAILS.getAction());
-        queryMap.put("what can you do, your capabilities, app features, list your functions, what commands do you know", APP_CAPABILITIES.getAction());
+        queryMap.put("what can you do, your capabilities, app features, what functions do you have, what commands do you know", APP_CAPABILITIES.getAction());
         queryMap.put("your name, your designation, who are you, what are you called, identify yourself", AI_DESIGNATION.getAction());
         queryMap.put("total bounties collected, bounty earnings, how much in bounties, our bounty total, bounty income", TOTAL_BOUNTIES.getAction());
         queryMap.put("distance to the bubble, how far from civilisation, how far from inhabited space, how far are we from the bubble", DISTANCE_TO_BUBBLE.getAction());
         queryMap.put("distance to last bio sample, how far to next organic, how far back to that organism, distance to previous sample", DISTANCE_TO_LAST_BIO_SAMPLE.getAction());
         queryMap.put("what time is it, earth time, current time, real world time, what is the time", TIME_IN_ZONE.getAction());
         queryMap.put("star system biome analysis, what organics are possible here, any biology in this star system" + KEY_X, PLANET_BIOME_ANALYSIS.getAction());
-        queryMap.put("reminder, remind me, what was my reminder, any reminders, check my notes", REMINDER.getAction());
+        queryMap.put("what was my reminder, any reminders, my notes, reminder status", REMINDER.getAction());
         queryMap.put("stations ports and settlements in system, local infrastructure, any settlements here, what ports are here, planetary bases nearby, any outposts in system", ANALYZE_LOCAL_STATIONS.getAction());
         queryMap.put("active missions, mission list, what missions do we have, current objectives, mission status, what are we doing", ANALYZE_MISSIONS.getAction());
-        queryMap.put("(fallback) general conversation, chitchat, anything not matched above", GENERAL_CONVERSATION.getAction());
+        if (!systemSession.useLocalQueryLlm()) {
+            queryMap.put("(fallback) general conversation, chitchat, anything not matched above", GENERAL_CONVERSATION.getAction());
+        } else {
+            queryMap.put("(fallback)", COMMAND_NOT_FOUND.getAction());
+        }
 
         return queryMap;
+    }
+
+    private static final Set<String> NOISE_PREFIXES = Set.of(
+            "and", "uh", "um", "please", "okay", "ok", "hey", "so", "now", "just", "right", "well", "go ahead and"
+    );
+
+    /**
+     * Attempts to match input directly against command trigger phrases without LLM involvement.
+     * Only matches parameter-free triggers (no {key:X} etc.) - parameterised commands still go to the LLM.
+     * Handles leading STT noise ("and display modules"), plural/singular variance ("display module"),
+     * and trailing filler ("show modules panel please").
+     * Returns the action name if matched, null otherwise.
+     */
+    public String matchCommand(String input) {
+        String normalized = normalize(input);
+        String denoised = stripLeadingNoise(normalized);
+        String depluraled = deplural(denoised);
+
+        for (Map.Entry<String, String> entry : buildCommandMap().entrySet()) {
+            for (String trigger : entry.getKey().split(",")) {
+                String clean = normalize(trigger.replaceAll("\\{[^}]*}", "").replaceAll("<[^>]*>", ""));
+                if (clean.isEmpty()) continue;
+                if (normalized.endsWith(clean) || denoised.endsWith(clean) || depluraled.endsWith(clean)) {
+                    return entry.getValue();
+                }
+            }
+        }
+        return null;
+    }
+
+    private static String stripLeadingNoise(String s) {
+        String result = s;
+        boolean stripped = true;
+        while (stripped) {
+            stripped = false;
+            for (String noise : NOISE_PREFIXES) {
+                if (result.startsWith(noise + " ")) {
+                    result = result.substring(noise.length()).trim();
+                    stripped = true;
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Strips a trailing 's' from the last word to normalise simple plural/singular variance.
+     */
+    private static String deplural(String s) {
+        if (s.endsWith("s") && s.length() > 2) return s.substring(0, s.length() - 1);
+        return s;
+    }
+
+    private static String normalize(String s) {
+        return s.toLowerCase().replaceAll("[^a-z0-9 ]", "").trim().replaceAll("\\s+", " ");
     }
 
     /**
@@ -274,23 +333,15 @@ public class AiCommandsAndQueries {
         StringBuilder sb = new StringBuilder();
         sb.append("ALLOWED COMMANDS (use ONLY these exact action names): \n\n");
         buildCommandMap().forEach((concept, action) ->
-                sb.append("  ").append(action).append(" ← ").append(concept).append(" \n"));
+                sb.append("  ").append(concept).append("  →  ").append(action).append(" \n"));
         return sb.toString();
     }
 
     public String getQueries() {
         StringBuilder sb = new StringBuilder();
         sb.append("ALLOWED QUERIES (use ONLY these exact action names): \n\n");
-        buildQueryMap().forEach((concept, action) -> {
-            // Keep only first 4 trigger phrases to limit prompt token usage
-            String[] parts = concept.split(",");
-            StringBuilder compact = new StringBuilder();
-            for (int i = 0; i < Math.min(4, parts.length); i++) {
-                if (i > 0) compact.append(",");
-                compact.append(parts[i]);
-            }
-            sb.append("  ").append(action).append(" ← ").append(compact).append(" \n");
-        });
+        buildQueryMap().forEach((concept, action) ->
+                sb.append("  ").append(concept).append("  →  ").append(action).append(" \n"));
         return sb.toString();
     }
 }

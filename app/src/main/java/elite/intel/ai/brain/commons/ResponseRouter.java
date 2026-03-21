@@ -56,7 +56,7 @@ public class ResponseRouter implements AIRouterInterface {
             return;
         }
         try {
-            String responseText = getAsStringOrEmpty(jsonResponse, AIConstants.PROPERTY_text_to_speech_response);
+            String responseText = getAsStringOrEmpty(jsonResponse, AIConstants.PROPERTY_TEXT_TO_SPEECH_RESPONSE);
             String action = getAsStringOrEmpty(jsonResponse, AIConstants.TYPE_ACTION);
             JsonObject params = getAsObjectOrEmpty(jsonResponse);
 
@@ -104,7 +104,7 @@ public class ResponseRouter implements AIRouterInterface {
         try {
             JsonObject dataJson = handler.handle(action, params, userInput);
             if (dataJson == null) return;
-            String responseTextToUse = dataJson.has(AIConstants.PROPERTY_text_to_speech_response) ? dataJson.get(AIConstants.PROPERTY_text_to_speech_response).getAsString() : "";
+            String responseTextToUse = dataJson.has(AIConstants.PROPERTY_TEXT_TO_SPEECH_RESPONSE) ? dataJson.get(AIConstants.PROPERTY_TEXT_TO_SPEECH_RESPONSE).getAsString() : "";
             if (responseTextToUse != null && !responseTextToUse.isEmpty()) {
                 EventBusManager.publish(new AiVoxResponseEvent(responseTextToUse));
                 systemSession.setChatHistory(new ChatHistory(userInput, responseTextToUse));

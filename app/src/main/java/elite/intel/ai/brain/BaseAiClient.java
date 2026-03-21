@@ -22,7 +22,7 @@ public class BaseAiClient {
 
     public JsonObject createErrorResponse(String message) {
         JsonObject err = new JsonObject();
-        err.addProperty(AIConstants.PROPERTY_text_to_speech_response, message);
+        err.addProperty(AIConstants.PROPERTY_TEXT_TO_SPEECH_RESPONSE, message);
         return err;
     }
 

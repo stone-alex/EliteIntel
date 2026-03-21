@@ -1,9 +1,6 @@
 package elite.intel.ai.brain.commons;
 
-import elite.intel.ai.brain.AICadence;
-import elite.intel.ai.brain.AIPersonality;
-import elite.intel.ai.brain.AiCommandsAndQueries;
-import elite.intel.ai.brain.AiPromptFactory;
+import elite.intel.ai.brain.*;
 import elite.intel.ai.brain.handlers.query.Queries;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
@@ -40,9 +37,13 @@ public class PromptFactory implements AiPromptFactory {
                 - NO text before or after the JSON
                 - NO code blocks or ```json markers
                 
-                Most things the player says are commands (do something, change something, go somewhere, toggle something).
-
-                Only when the sentence is clearly a QUESTION (starts with what/find/where/how/which/why/is/are/does/…) → classify as query.
+                COMMAND vs QUERY - decide this first:
+                - If input starts with "show" or "display" → ALWAYS a COMMAND. Never a query. No exceptions.
+                - COMMAND: starts with an imperative verb → show, open, display, set, deploy, find, navigate, jump, engage, target, calculate, transfer, toggle, request, activate, plot, cancel, clear, add, go, enter, dismiss, lock, close, retract, swap, disable, enable, equalize, increase, boost, recall, drop, start, stop, ignore, confirm, delete, list, monetize
+                - QUERY: starts with a question word → what, where, how, which, why, is, are, does, can, any, how much, how many, do we, tell me
+                - "find X" with no question word = COMMAND (find trader, find mining site)
+                - "where/what/how" before "find" = QUERY (where to find, what can we find)
+                - When in doubt: if it sounds like an order → COMMAND; if it sounds like a question → QUERY.
                 
                 - do not confuse organics with materials or resources
                   organics - exobiology query
@@ -57,16 +58,24 @@ public class PromptFactory implements AiPromptFactory {
 
                 CRITICAL RULES - BREAKING ANY = TOTAL FAILURE:
                 - NEVER invent, modify, combine, or create new actions or parameters.
+                - use query_app_capabilities action only if asked about capabilities and never fall back to it for any reason.
+                - use query_key_bindings_analysis action only if explicitly asked about key bindings or unbound keys. Never use it as a fallback.
                 """);
         sb.append("- If ZERO good match → return: {\"action\": \"").append(Queries.GENERAL_CONVERSATION.getAction()).append("\", \"params\": {}}");
+
 
         if (!systemSession.useLocalQueryLlm()) {
             sb.append("- CRITICAL: if input contains 'help with X', 'help me with X', 'can you help with X', 'how do I X', 'explain X' → respond EXACTLY: {\"action\": \"").append(Queries.HELP.getAction()).append("\", \"params\": {\"key\": \"<topic>\"}}. Replace <topic> with the subject using spaces not underscores (e.g. 'biology', 'trade routes', 'fleet carrier routing'). No other action.\n");
         }
 
+        if (!systemSession.useLocalCommandLlm()) {
+            sb.append("- CRITICAL: if no match found, return: {\"action\": \"").append(Queries.GENERAL_CONVERSATION.getAction()).append("\", \"params\": {" + AIConstants.PROPERTY_TEXT_TO_SPEECH_RESPONSE + ":'command not found'}}");
+        }
+
         sb.append("""
                 - ONLY use action names EXACTLY as written in the lists below.
                 - ONLY use parameter keys/values that appear in the command/query template.
+                - IMPORTANT: 'show inventory', 'open inventory', 'display inventory' → ALWAYS action show_inventory_panel. NEVER a query. NEVER show_modules_panel.
                 - IMPORTANT: commands with word 'clear' must match word 'clear' in user input exactly, else you will delete critical data!
                 - IMPORTANT: commands with word 'confirm' must match word 'confirm' in user input exactly, else you will delete critical data!
                 - IMPORTANT: commands such as 'lets go' or 'lets get out of here' are meant for hyperspace jump.

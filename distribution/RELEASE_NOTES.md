@@ -23,3 +23,4 @@
 - Fix for qwen3.5 and other local LLMs where it would cancel the previous prompt while issuing a new one asynchronously.
   the prompts are now queued and are processed sequentially in the order they arrive.
 - Removed chat history from chit-chat. LLM would just echo that back at the user. That was annoying.
+- default to all announcements OFF.

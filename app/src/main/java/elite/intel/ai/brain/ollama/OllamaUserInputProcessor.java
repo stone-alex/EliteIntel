@@ -5,6 +5,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.AIConstants;
 import elite.intel.ai.brain.AiCommandInterface;
+import elite.intel.ai.brain.AiCommandsAndQueries;
 import elite.intel.ai.brain.commons.CommandEndPoint;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
@@ -16,6 +17,8 @@ import elite.intel.util.StringUtls;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -25,6 +28,12 @@ public class OllamaUserInputProcessor extends CommandEndPoint implements AiComma
 
     private static final Logger log = LogManager.getLogger(OllamaUserInputProcessor.class);
     private static final OllamaUserInputProcessor INSTANCE = new OllamaUserInputProcessor();
+
+    // Actions the LLM uses as a catch-all - only permitted when input contains at least one required keyword
+    private static final Map<String, List<String>> GUARDED_ACTIONS = Map.of(
+            "query_key_bindings_analysis", List.of("key", "bind", "binding", "keybind", "unbound"),
+            "query_app_capabilities", List.of("capabilit", "what can you", "your function", "what do you do", "commands do you")
+    );
     private ExecutorService executor;
     private final AtomicBoolean running = new AtomicBoolean(false);
 
@@ -79,6 +88,16 @@ public class OllamaUserInputProcessor extends CommandEndPoint implements AiComma
             return;
         }
 
+        String directAction = AiCommandsAndQueries.getInstance().matchCommand(userInput);
+        if (directAction != null) {
+            log.info("Direct command match (bypassing LLM): {} → {}", userInput, directAction);
+            JsonObject direct = new JsonObject();
+            direct.addProperty("action", directAction);
+            direct.add("params", new JsonObject());
+            getRouter().processAiResponse(direct, userInput);
+            return;
+        }
+
         JsonArray request = new JsonArray();
         JsonObject system = new JsonObject();
         system.addProperty("role", AIConstants.ROLE_SYSTEM);
@@ -95,7 +114,7 @@ public class OllamaUserInputProcessor extends CommandEndPoint implements AiComma
             return;
         }
 
-        getRouter().processAiResponse(response, userInput);
+        getRouter().processAiResponse(guardResponse(response, userInput), userInput);
 
     }
 
@@ -107,9 +126,28 @@ public class OllamaUserInputProcessor extends CommandEndPoint implements AiComma
         getRouter().processAiResponse(response, "");
     }
 
+    /**
+     * Rejects guarded actions when the input doesn't contain any of their required keywords.
+     */
+    private JsonObject guardResponse(JsonObject response, String input) {
+        String action = response.has("action") ? response.get("action").getAsString() : "";
+        List<String> required = GUARDED_ACTIONS.get(action);
+        if (required == null) return response;
+        String lower = input.toLowerCase();
+        boolean permitted = required.stream().anyMatch(lower::contains);
+        if (!permitted) {
+            log.warn("Guarded action {} rejected for input: {}", action, input);
+            JsonObject fallback = new JsonObject();
+            fallback.addProperty("action", "command_not_found");
+            fallback.add("params", new JsonObject());
+            return fallback;
+        }
+        return response;
+    }
+
     private JsonObject createError(String text) {
         JsonObject err = new JsonObject();
-        err.addProperty(AIConstants.PROPERTY_text_to_speech_response, text);
+        err.addProperty(AIConstants.PROPERTY_TEXT_TO_SPEECH_RESPONSE, text);
         return err;
     }
 }

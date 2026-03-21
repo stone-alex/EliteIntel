@@ -7,6 +7,8 @@ import elite.intel.session.StatusFlags;
 import elite.intel.session.StatusFlags.GuiFocus;
 import elite.intel.util.SleepNoThrow;
 
+import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_EXIT_KEY;
+
 /**
  * Dispatches panel navigation keystrokes on behalf of c
  * command handlers.
@@ -55,6 +57,9 @@ public class UINavigator {
         if (tracker.getLastOpenedPanel() == panel) {
             navigateToTargetTab(panel, target);
             return;
+        }
+        for (int i = 0; i < 10; i++) { ///  back out of all menus etc
+            operator.operateKeyboard(BINDING_EXIT_KEY.getGameBinding(), 0);
         }
 
         closeOpenPanel();

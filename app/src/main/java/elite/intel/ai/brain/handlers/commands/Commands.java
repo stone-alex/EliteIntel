@@ -180,6 +180,7 @@ public enum Commands {
     CLEAR_REMINDERS                                     ("clear_reminders", null, CleareReminderHandler.class),
     SET_REMINDER                                        ("set_reminder", null, SetReminderHandler.class),
     DELETE_CODEX_ENTRY                                  ("delete_codex_entry", null, DeleteCodexEntryHandler.class),
+    COMMAND_NOT_FOUND                                   ("command_not_found", null, CommandNotFoundHandler.class),
     ;
 
     ///

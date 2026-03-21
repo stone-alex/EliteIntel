@@ -121,7 +121,7 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
 
         if (userInput == null || userInput.isEmpty()) {
             JsonObject errorResponse = new JsonObject();
-            errorResponse.addProperty(AIConstants.PROPERTY_text_to_speech_response, "Sorry, I couldn't process that.");
+            errorResponse.addProperty(AIConstants.PROPERTY_TEXT_TO_SPEECH_RESPONSE, "Sorry, I couldn't process that.");
             getRouter().processAiResponse(errorResponse, userInput);
             return;
         }
@@ -146,7 +146,7 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
         JsonObject apiResponse = callOpenAiApi(messages);
         if (apiResponse == null) {
             JsonObject errorResponse = new JsonObject();
-            errorResponse.addProperty(AIConstants.PROPERTY_text_to_speech_response, "Sorry, I couldn't process that.");
+            errorResponse.addProperty(AIConstants.PROPERTY_TEXT_TO_SPEECH_RESPONSE, "Sorry, I couldn't process that.");
             getRouter().processAiResponse(errorResponse, userInput);
             return;
         }

@@ -368,3 +368,7 @@
 "thank you, sir."="exit"
 "thank you"="exit"
 "thanks if you like"="exit"
+"show in and tours"="show inventory"
+"in the entire"="inventory"
+"clothes"="close"
+"cloth"="close"

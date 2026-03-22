@@ -132,24 +132,20 @@ public class AudioSettingsPanel extends JPanel {
         helpLabels.setOpaque(false);
         helpLabels.setAlignmentX(Component.LEFT_ALIGNMENT);
         helpLabels.add(Box.createVerticalStrut(18));
-        JLabel sttThreadsLabel = new JLabel("<html><div style='text-align: left; white-space: pre-wrap;'>"
-                + "<h3>STT Threads</h3> Request processor (CPU) to allocate threads for speech recognition.<br>"
-                + "This is a min/max setting. Meaning you can request 11 threads, but only 4 will be used.<br>"
-                + "This setting does not improve quality, only speed."
-                + "</div></html>");
-        helpLabels.add(sttThreadsLabel);
-
-        helpLabels.add(Box.createVerticalStrut(8));
-        JLabel noteLabel = new JLabel("<html><div style='text-align: left; white-space: pre-wrap;'>"
-                + "<h3>NOTE</h3> Switching to Cloud TTS or to Local TTS will reset all ship voices to EMMA.<br>"
-                + "Personalities and cadences will be preserved."
-                + "</div></html>");
-        noteLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        helpLabels.add(noteLabel);
-
-
+        JLabel graphLabel = new JLabel("""
+                <html><div style='text-align: left; white-space: pre-wrap;'>
+                <ul>
+                <li> <b><span style="color:#FF4444FF;">RED</b></span> mic gate is closed - we are not sending audio<br>
+                <li> <b><span style="color:#FF8C00FF;">AMBER</b></span> gate opens sometimes, but cuts off your words - expect incorrect transcriptions<br>
+                <li> <b><span style="color:#44CC66FF;">GREEN</b></span> with <span style="color:#FF4444FF;">red</span> clipping indicator means your mic is too hot - expect transcription errors <br>
+                <li> <b><span style="color:#44CC66FF;">GREEN</b></span> All good <br>
+                </ul>
+                <hr style="color:#1E2035FF;"/>
+                <p style="font-size:12pt;"><b>STT Threads</b> Request processor (CPU) to allocate threads for speech recognition. This is a min/max setting. Meaning you can request 11 threads, but only 4 will be used. This setting does not improve quality, only speed. Switching to Cloud TTS or to Local TTS will reset all ship voices to EMMA. Personalities and cadences will be preserved.</p>
+                </div></html>
+                """);
+        helpLabels.add(graphLabel);
         content.add(helpLabels);
-
 
         add(content, BorderLayout.NORTH);
     }

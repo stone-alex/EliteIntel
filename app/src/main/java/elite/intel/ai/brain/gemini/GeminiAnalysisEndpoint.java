@@ -29,7 +29,9 @@ public class GeminiAnalysisEndpoint extends AiEndPoint implements AiAnalysisInte
         try {
             GeminiClient client = GeminiClient.getInstance();
             JsonObject prompt = client.createPrompt(GeminiClient.MODEL_FLASH, 0.8f);
-            prompt.getAsJsonObject("generationConfig").addProperty("responseMimeType", "application/json");
+            JsonObject generationConfig = prompt.getAsJsonObject("generationConfig");
+            generationConfig.addProperty("responseMimeType", "application/json");
+            generationConfig.addProperty("maxOutputTokens", 8192);
 
             // System instruction: analysis prompt + query-specific instructions
             String systemPrompt = apiFactory.getAiPromptFactory().generateAnalysisPrompt();
@@ -69,6 +71,15 @@ public class GeminiAnalysisEndpoint extends AiEndPoint implements AiAnalysisInte
             if (!rawResponse.has("candidates")) {
                 log.error("No candidates in Gemini analysis response:\n{}", rawResponse);
                 return client.createErrorResponse("Analysis error.");
+            }
+
+            String finishReason = rawResponse.getAsJsonArray("candidates")
+                    .get(0).getAsJsonObject()
+                    .has("finishReason")
+                    ? rawResponse.getAsJsonArray("candidates").get(0).getAsJsonObject().get("finishReason").getAsString()
+                    : "UNKNOWN";
+            if ("MAX_TOKENS".equals(finishReason)) {
+                log.warn("Gemini analysis response truncated at token limit — increase maxOutputTokens");
             }
 
             String text = client.extractText(rawResponse);

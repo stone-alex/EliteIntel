@@ -15,17 +15,19 @@ public interface GameSessionDao {
 
 
     @SqlUpdate("""
-            INSERT OR REPLACE INTO game_session (id, aiPersonality,  aiCadence, aiVoice, aiApiKey, ttsApiKey, sttApiKey, 
-                                                             edsmApiKey, loggingEnabled, privacyModeOn, rmsThresholdHigh,  
-                                                             rmsThresholdLow, encryptedLLMKey, encryptedTTSKey, 
+            INSERT OR REPLACE INTO game_session (id, aiPersonality,  aiCadence, aiVoice, aiApiKey, ttsApiKey, sttApiKey,
+                                                             edsmApiKey, loggingEnabled, privacyModeOn, rmsThresholdHigh,
+                                                             rmsThresholdLow, encryptedLLMKey, encryptedTTSKey,
                                                              encryptedEDSSMKey, speechSpeed, localLlmCommandModel, localLlmQueryModel,
-                                                             useLocalCommandLlm, useLocalQueryLlm, useLocalTTS, notificationVolume, sttThreads, voiceVolume
+                                                             useLocalCommandLlm, useLocalQueryLlm, useLocalTTS, notificationVolume, sttThreads, voiceVolume,
+                                                             localLlmProvider, localLlmAddress
                                                 )
-                                  VALUES (1, :aiPersonality, :aiCadence, :aiVoice, :aiApiKey, :ttsApiKey, :sttApiKey, 
-                                                      :edsmApiKey, :loggingEnabled, :privacyModeOn, :rmsThresholdHigh, 
-                                                      :rmsThresholdLow, :encryptedLLMKey, :encryptedTTSKey, 
+                                  VALUES (1, :aiPersonality, :aiCadence, :aiVoice, :aiApiKey, :ttsApiKey, :sttApiKey,
+                                                      :edsmApiKey, :loggingEnabled, :privacyModeOn, :rmsThresholdHigh,
+                                                      :rmsThresholdLow, :encryptedLLMKey, :encryptedTTSKey,
                                                       :encryptedEDSSMKey,  :speechSpeed, :localLlmCommandModel, :localLlmQueryModel,
-                                                      :useLocalCommandLlm, :useLocalQueryLlm, :useLocalTTS, :notificationVolume, :sttThreads, :voiceVolume
+                                                      :useLocalCommandLlm, :useLocalQueryLlm, :useLocalTTS, :notificationVolume, :sttThreads, :voiceVolume,
+                                                      :localLlmProvider, :localLlmAddress
                                           )
             """)
     void save(@BindBean GameSessionDao.GameSession data);
@@ -68,6 +70,8 @@ public interface GameSessionDao {
             session.setNotificationVolume(rs.getFloat("notificationVolume"));
             session.setSttThreads(rs.getInt("sttThreads"));
             session.setVoiceVolume(rs.getInt("voiceVolume"));
+            session.setLocalLlmProvider(rs.getString("localLlmProvider"));
+            session.setLocalLlmAddress(rs.getString("localLlmAddress"));
             return session;
         }
     }
@@ -101,6 +105,8 @@ public interface GameSessionDao {
         private boolean useLocalTTS;
         private Integer sttThreads;
         private Integer voiceVolume;
+        private String localLlmProvider;
+        private String localLlmAddress;
 
 
         public String getAiPersonality() {
@@ -287,6 +293,22 @@ public interface GameSessionDao {
 
         public void setVoiceVolume(Integer voiceVolume) {
             this.voiceVolume = voiceVolume;
+        }
+
+        public String getLocalLlmProvider() {
+            return localLlmProvider;
+        }
+
+        public void setLocalLlmProvider(String localLlmProvider) {
+            this.localLlmProvider = localLlmProvider;
+        }
+
+        public String getLocalLlmAddress() {
+            return localLlmAddress;
+        }
+
+        public void setLocalLlmAddress(String localLlmAddress) {
+            this.localLlmAddress = localLlmAddress;
         }
     }
 }

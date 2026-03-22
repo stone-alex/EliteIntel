@@ -4,7 +4,6 @@ import com.google.gson.JsonObject;
 import elite.intel.ai.brain.BaseAiClient;
 import elite.intel.ai.brain.Client;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.json.GsonFactory;
@@ -18,7 +17,6 @@ public class OllamaClient extends BaseAiClient implements Client {
     public static final Integer MODEL_COMMANDS = 1;
     public static final Integer MODEL_QUERIES = 2;
     private static final OllamaClient INSTANCE = new OllamaClient();
-    private final PlayerSession playerSession = PlayerSession.getInstance();
     private final SystemSession systemSession = SystemSession.getInstance();
 
     private OllamaClient() {
@@ -30,7 +28,7 @@ public class OllamaClient extends BaseAiClient implements Client {
     }
 
     private String getBaseUrl() {
-        return playerSession.getLocalLlmAddress();
+        return systemSession.getLocalLlmAddress();
     }
 
     @Override

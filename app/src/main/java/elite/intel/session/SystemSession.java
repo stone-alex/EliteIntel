@@ -2,6 +2,7 @@ package elite.intel.session;
 
 import elite.intel.ai.brain.AICadence;
 import elite.intel.ai.brain.AIPersonality;
+import elite.intel.ai.brain.LocalLlmProvider;
 import elite.intel.ai.mouth.GoogleVoices;
 import elite.intel.ai.mouth.kokoro.KokoroVoices;
 import elite.intel.db.dao.ChatHistoryDao;
@@ -342,6 +343,37 @@ public class SystemSession {
 
     public String getLocalLlmQueryModel() {
         return Database.withDao(GameSessionDao.class, dao -> dao.get().getLocalLlmQueryModel());
+    }
+
+    public LocalLlmProvider getLocalLlmProvider() {
+        String raw = Database.withDao(GameSessionDao.class, dao -> dao.get().getLocalLlmProvider());
+        try {
+            return LocalLlmProvider.valueOf(raw);
+        } catch (Exception e) {
+            return LocalLlmProvider.OLLAMA;
+        }
+    }
+
+    public void setLocalLlmProvider(LocalLlmProvider provider) {
+        Database.withDao(GameSessionDao.class, dao -> {
+            GameSessionDao.GameSession session = dao.get();
+            session.setLocalLlmProvider(provider.name());
+            dao.save(session);
+            return Void.class;
+        });
+    }
+
+    public String getLocalLlmAddress() {
+        return Database.withDao(GameSessionDao.class, dao -> dao.get().getLocalLlmAddress());
+    }
+
+    public void setLocalLlmAddress(String address) {
+        Database.withDao(GameSessionDao.class, dao -> {
+            GameSessionDao.GameSession session = dao.get();
+            session.setLocalLlmAddress(address);
+            dao.save(session);
+            return Void.class;
+        });
     }
 
     public String getWhisperModelPath() {

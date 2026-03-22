@@ -9,6 +9,9 @@ import elite.intel.ai.brain.commons.ResponseRouter;
 import elite.intel.ai.brain.gemini.GeminiAnalysisEndpoint;
 import elite.intel.ai.brain.gemini.GeminiChatEndPoint;
 import elite.intel.ai.brain.gemini.GeminiCommandEndPoint;
+import elite.intel.ai.brain.lmstudio.LMStudioAnalysisEndpoint;
+import elite.intel.ai.brain.lmstudio.LMStudioCommandEndPoint;
+import elite.intel.ai.brain.lmstudio.LMStudioUserInputProcessor;
 import elite.intel.ai.brain.ollama.OllamaAnalysisEndpoint;
 import elite.intel.ai.brain.ollama.OllamaCommandEndPoint;
 import elite.intel.ai.brain.ollama.OllamaUserInputProcessor;
@@ -48,7 +51,10 @@ public class ApiFactory {
 
     public AiAnalysisInterface getAnalysisEndpoint() {
         if (systemSession.useLocalQueryLlm()) {
-            return OllamaAnalysisEndpoint.getInstance();
+            return switch (systemSession.getLocalLlmProvider()) {
+                case LMSTUDIO -> LMStudioAnalysisEndpoint.getInstance();
+                default -> OllamaAnalysisEndpoint.getInstance();
+            };
         }
         String apiKey = SystemSession.getInstance().getAiApiKey();
         ProviderEnum provider = KeyDetector.detectProvider(apiKey, "LLM");
@@ -65,7 +71,10 @@ public class ApiFactory {
     public AIChatInterface getChatEndpoint() {
 
         if (systemSession.useLocalQueryLlm()) {
-            return OllamaCommandEndPoint.getInstance();
+            return switch (systemSession.getLocalLlmProvider()) {
+                case LMSTUDIO -> LMStudioCommandEndPoint.getInstance();
+                default -> OllamaCommandEndPoint.getInstance();
+            };
         }
 
         String apiKey = SystemSession.getInstance().getAiApiKey();
@@ -97,7 +106,10 @@ public class ApiFactory {
 
     public AiCommandInterface getCommandEndpoint() {
         if (systemSession.useLocalCommandLlm()) {
-            return OllamaUserInputProcessor.getInstance();
+            return switch (systemSession.getLocalLlmProvider()) {
+                case LMSTUDIO -> LMStudioUserInputProcessor.getInstance();
+                default -> OllamaUserInputProcessor.getInstance();
+            };
         }
 
         String apiKey = SystemSession.getInstance().getAiApiKey();

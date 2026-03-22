@@ -2,6 +2,8 @@
 
 ### bug fixes / features:
 
+- Added LM Studio support.
+- Fixing orbital navigation.
 ---
 
 ## Elite Intel v-0.0313 (hot fix)
@@ -21,8 +23,8 @@
 - Added support for Google Gemeni (Generative Language API)
 - Added disable all announcements callout.
 - Added audio calibration verification on service startup.
-    - If the Noise Floor to RMS ratio is low, (below 300) you will get a warning.
-    - If audio is not calibrated at all, the app will issue a warning.
+- If the Noise Floor to RMS ratio is low, (below 300) you will get a warning.
+- If audio is not calibrated at all, the app will issue a warning.
 - Added isInSupercruise check for hyperspace jump preparation. This should fix unnecessary check for hardpoints etc
   before jumping.
 - Performance improvements

@@ -63,7 +63,7 @@ public class ResponseRouter implements AIRouterInterface {
             if (!responseText.isEmpty() && action.isEmpty()) {
                 systemSession.setChatHistory(new ChatHistory(userInput, responseText));
                 EventBusManager.publish(new AiVoxResponseEvent(responseText));
-                log.info("Spoke initial response: {}", responseText);
+                log.info("Response Sent to vocalization: {}", responseText);
                 return;
             }
 

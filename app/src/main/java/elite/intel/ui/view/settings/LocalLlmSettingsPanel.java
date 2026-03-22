@@ -1,7 +1,7 @@
 package elite.intel.ui.view.settings;
 
+import elite.intel.ai.brain.LocalLlmProvider;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
 import elite.intel.ui.event.RestartBrainEvent;
@@ -15,13 +15,14 @@ import static elite.intel.ui.view.AppTheme.*;
 public class LocalLlmSettingsPanel extends JPanel {
 
     private final SystemSession systemSession = SystemSession.getInstance();
-    private final PlayerSession playerSession = PlayerSession.getInstance();
 
     private JTextField localLlmAddressField;
     private JTextField localLlmModelCommandField;
     private JTextField localLlmModelQueryField;
     private JCheckBox useLocalCommandLLMCheck;
     private JCheckBox useLocalQueryLLMCheck;
+    private JRadioButton ollamaRadio;
+    private JRadioButton lmStudioRadio;
 
     public LocalLlmSettingsPanel() {
         buildUi();
@@ -58,6 +59,20 @@ public class LocalLlmSettingsPanel extends JPanel {
                 BorderFactory.createEmptyBorder(8, 8, 8, 8)
         ));
 
+        ollamaRadio = new JRadioButton("Ollama");
+        lmStudioRadio = new JRadioButton("LM Studio");
+        ButtonGroup providerGroup = new ButtonGroup();
+        providerGroup.add(ollamaRadio);
+        providerGroup.add(lmStudioRadio);
+        ollamaRadio.addActionListener(e -> onProviderSelected(LocalLlmProvider.OLLAMA));
+        lmStudioRadio.addActionListener(e -> onProviderSelected(LocalLlmProvider.LMSTUDIO));
+
+        JPanel providerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+        providerPanel.setOpaque(false);
+        providerPanel.add(new JLabel("LLM Host:"));
+        providerPanel.add(ollamaRadio);
+        providerPanel.add(lmStudioRadio);
+
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
         buttons.setOpaque(false);
 
@@ -66,7 +81,8 @@ public class LocalLlmSettingsPanel extends JPanel {
 
         JButton restoreButton = makeButton("Restore Defaults");
         restoreButton.addActionListener(e -> SwingUtilities.invokeLater(() -> {
-            localLlmAddressField.setText("http://localhost:11434/api/chat");
+            ollamaRadio.setSelected(true);
+            localLlmAddressField.setText(LocalLlmProvider.OLLAMA.getDefaultUrl());
             localLlmModelCommandField.setText("tulu3:8b");
             localLlmModelQueryField.setText("tulu3:8b");
             save();
@@ -80,17 +96,29 @@ public class LocalLlmSettingsPanel extends JPanel {
         content.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
         content.add(fields);
         content.add(Box.createVerticalStrut(12));
+        content.add(providerPanel);
+        content.add(Box.createVerticalStrut(4));
         content.add(buttons);
 
         add(content, BorderLayout.NORTH);
     }
 
     public void initData() {
-        localLlmAddressField.setText(playerSession.getLocalLlmAddress() != null ? playerSession.getLocalLlmAddress() : "");
+        localLlmAddressField.setText(systemSession.getLocalLlmAddress() != null ? systemSession.getLocalLlmAddress() : "");
         localLlmModelCommandField.setText(systemSession.getLocalLlmCommandModel() != null ? systemSession.getLocalLlmCommandModel() : "");
         localLlmModelQueryField.setText(systemSession.getLocalLlmQueryModel() != null ? systemSession.getLocalLlmQueryModel() : "");
         useLocalCommandLLMCheck.setSelected(systemSession.useLocalCommandLlm());
         useLocalQueryLLMCheck.setSelected(systemSession.useLocalQueryLlm());
+
+        LocalLlmProvider provider = systemSession.getLocalLlmProvider();
+        ollamaRadio.setSelected(provider == LocalLlmProvider.OLLAMA);
+        lmStudioRadio.setSelected(provider == LocalLlmProvider.LMSTUDIO);
+    }
+
+    private void onProviderSelected(LocalLlmProvider provider) {
+        localLlmAddressField.setText(provider.getDefaultUrl());
+        save();
+        EventBusManager.publish(new AppLogEvent("Local LLM provider set to: " + provider.name()));
     }
 
     private void onCheckboxToggled() {
@@ -102,7 +130,9 @@ public class LocalLlmSettingsPanel extends JPanel {
     }
 
     private void save() {
-        playerSession.setLocalLlmAddress(localLlmAddressField.getText());
+        LocalLlmProvider provider = lmStudioRadio.isSelected() ? LocalLlmProvider.LMSTUDIO : LocalLlmProvider.OLLAMA;
+        systemSession.setLocalLlmProvider(provider);
+        systemSession.setLocalLlmAddress(localLlmAddressField.getText());
         systemSession.setLocalLlmCommandModel(localLlmModelCommandField.getText());
         systemSession.setLocalLlmQueryModel(localLlmModelQueryField.getText());
         systemSession.setUseLocalCommandLlm(useLocalCommandLLMCheck.isSelected());

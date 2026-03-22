@@ -166,7 +166,7 @@ public class LocationTrackingSubscriber {
         boolean glideAngleOk = isGlideAngleOk(event, navigator);
         boolean trajectoryDeviation = isHeadingDeviation(navigator);
 
-        int glideAngle = -calculateGlideAngle(event.getAltitude(), navigator.distanceToTarget());
+        int glideAngle = calculateGlideAngle(event.getAltitude(), navigator.distanceToTarget());
         double distanceToEdgeOfRadius = navigator.distanceToTarget() + GLIDE_ENTRY_RADIUS;
         double distanceToTarget = navigator.distanceToTarget();
 
@@ -175,7 +175,7 @@ public class LocationTrackingSubscriber {
             hasAnnouncedOrbital = true;
         }
 
-        String glideAngleText = glideAngleOk ? "Glide Angle:" + glideAngle : "Steep Glide Angle:" + glideAngle;
+        String glideAngleText = glideAngleOk ? "Glide Angle minus " + glideAngle + " degrees. " : "Steep descent. Glide Angle minus " + glideAngle + " degrees. ";
 
         if (trajectoryDeviation) {
             log.info("Off course, we are moving away from the target.");
@@ -272,7 +272,7 @@ public class LocationTrackingSubscriber {
                 if (headingDeviation) {
                     vocalize(movingAway ? "Diverging. " : "Converging. ", navigator.distanceToTarget(), navigator.bearingToTarget(), movingAway);
                 } else if (event.getAltitude() > 3_000 && glideAngleOk) {
-                    announceBearingAndDistances(navigator, movingAway ? "Diverging." : "Converging. Glide Angle " + glideAngle + " degrees.");
+                    announceBearingAndDistances(navigator, movingAway ? "Diverging." : "Converging. Glide Angle minus " + glideAngle + " degrees.");
                 } else {
                     announceBearingAndDistances(navigator, movingAway ? "Diverging." : "Converging. ");
                 }

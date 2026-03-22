@@ -4,7 +4,6 @@ import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.ears.*;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.mouth.subscribers.events.TTSInterruptEvent;
-import elite.intel.gameapi.AudioMonitorBus;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.UserInputEvent;
 import elite.intel.session.SystemSession;
@@ -27,6 +26,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static elite.intel.ai.brain.AIConstants.passThroughWords;
+import static elite.intel.gameapi.AudioMonitorBus.publish;
+import static java.util.Arrays.copyOf;
 
 public class WhisperSTTImpl implements EarsInterface {
 
@@ -193,12 +194,12 @@ public class WhisperSTTImpl implements EarsInterface {
 
                 double rms = calculateRMS(audio, audioLen);
 
-                AudioMonitorBus.publish(new AudioMonitorEvent(
-                        java.util.Arrays.copyOf(audio, audioLen), audioLen,
-                        rms, NOISE_FLOOR, RMS_THRESHOLD_HIGH));
+                publish(new AudioMonitorEvent(
+                        copyOf(audio, audioLen), audioLen, rms, NOISE_FLOOR, RMS_THRESHOLD_HIGH)
+                );
 
                 // Keep a rolling window of recent frames; prepended to recording when gate opens
-                preRoll.addLast(java.util.Arrays.copyOf(audio, audioLen));
+                preRoll.addLast(copyOf(audio, audioLen));
                 if (preRoll.size() > PRE_ROLL_FRAMES) preRoll.removeFirst();
 
                 if (rms > RMS_THRESHOLD_HIGH) {

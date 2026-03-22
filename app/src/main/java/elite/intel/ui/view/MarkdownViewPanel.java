@@ -100,7 +100,7 @@ public class MarkdownViewPanel extends JPanel {
         return null;
     }
 
-    // ── Markdown → HTML converter ─────────────────────────────────────────────
+    // -- Markdown → HTML converter ---------------------------------------------
 
     private String convertToHtml(String md) {
         String[] lines = md.split("\r?\n", -1);
@@ -113,7 +113,7 @@ public class MarkdownViewPanel extends JPanel {
 
         for (String raw : lines) {
 
-            // ── Fenced code block ──────────────────────────────────────────
+            // -- Fenced code block ------------------------------------------
             if (raw.startsWith("```")) {
                 if (inCode) {
                     out.append("</code></pre>\n");
@@ -133,7 +133,7 @@ public class MarkdownViewPanel extends JPanel {
                 continue;
             }
 
-            // ── Blank line ─────────────────────────────────────────────────
+            // -- Blank line -------------------------------------------------
             if (raw.trim().isEmpty()) {
                 flushParagraph(out, paraLines);
                 if (inUl) {
@@ -147,7 +147,7 @@ public class MarkdownViewPanel extends JPanel {
                 continue;
             }
 
-            // ── Headings ───────────────────────────────────────────────────
+            // -- Headings ---------------------------------------------------
             if (raw.startsWith("#### ")) {
                 flushAndCloseLists(out, paraLines, inUl, inOl);
                 inUl = inOl = false;
@@ -173,7 +173,7 @@ public class MarkdownViewPanel extends JPanel {
                 continue;
             }
 
-            // ── Horizontal rule ────────────────────────────────────────────
+            // -- Horizontal rule --------------------------------------------
             if (raw.matches("^[-*_]{3,}\\s*$")) {
                 flushAndCloseLists(out, paraLines, inUl, inOl);
                 inUl = inOl = false;
@@ -181,7 +181,7 @@ public class MarkdownViewPanel extends JPanel {
                 continue;
             }
 
-            // ── Blockquote ─────────────────────────────────────────────────
+            // -- Blockquote -------------------------------------------------
             if (raw.startsWith("> ")) {
                 flushAndCloseLists(out, paraLines, inUl, inOl);
                 inUl = inOl = false;
@@ -189,7 +189,7 @@ public class MarkdownViewPanel extends JPanel {
                 continue;
             }
 
-            // ── Unordered list ─────────────────────────────────────────────
+            // -- Unordered list ---------------------------------------------
             if (raw.matches("^[*\\-+] .+")) {
                 flushParagraph(out, paraLines);
                 if (inOl) {
@@ -204,7 +204,7 @@ public class MarkdownViewPanel extends JPanel {
                 continue;
             }
 
-            // ── Ordered list ───────────────────────────────────────────────
+            // -- Ordered list -----------------------------------------------
             if (raw.matches("^\\d+[.)].+")) {
                 flushParagraph(out, paraLines);
                 if (inUl) {
@@ -220,7 +220,7 @@ public class MarkdownViewPanel extends JPanel {
                 continue;
             }
 
-            // ── Regular paragraph text ─────────────────────────────────────
+            // -- Regular paragraph text -------------------------------------
             if (inUl || inOl) {
                 // indented continuation → treat as new paragraph after closing list
                 closeLists(out, inUl, inOl);

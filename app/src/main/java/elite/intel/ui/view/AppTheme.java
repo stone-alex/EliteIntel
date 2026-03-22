@@ -27,7 +27,7 @@ public class AppTheme {
     public static final Color TAB_SELECTED = new Color(0x141622);
     public static final Color DISABLED_FG = new Color(0x8B0101);
 
-    // ── Button factories ──────────────────────────────────────────────────────
+    // -- Button factories ------------------------------------------------------
 
     public static JButton makeButton(String label) {
         return makeRoundButton(label, BUTTON_BG);
@@ -95,7 +95,7 @@ public class AppTheme {
         ));
     }
 
-    // ── Tabbed pane ───────────────────────────────────────────────────────────
+    // -- Tabbed pane -----------------------------------------------------------
 
     public static void styleTabbedPane(JTabbedPane tp) {
         tp.setOpaque(true);
@@ -156,7 +156,7 @@ public class AppTheme {
         });
     }
 
-    // ── Dark palette ──────────────────────────────────────────────────────────
+    // -- Dark palette ----------------------------------------------------------
 
     public static void applyDarkPalette(Component c) {
         if (c == null) return;
@@ -222,7 +222,7 @@ public class AppTheme {
         }
     }
 
-    // ── GridBagLayout helpers ─────────────────────────────────────────────────
+    // -- GridBagLayout helpers -------------------------------------------------
 
     public static GridBagConstraints baseGbc() {
         GridBagConstraints gbc = new GridBagConstraints();

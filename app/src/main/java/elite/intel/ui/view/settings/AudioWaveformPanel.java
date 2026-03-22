@@ -22,7 +22,7 @@ import java.util.Arrays;
  */
 public class AudioWaveformPanel extends JPanel {
 
-    // ── Tuning constants ────────────────────────────────────────────────────
+    // -- Tuning constants ----------------------------------------------------
     /**
      * Total scrolling-window samples held in the ring buffer.
      */
@@ -34,9 +34,9 @@ public class AudioWaveformPanel extends JPanel {
     /**
      * Panel height in pixels.
      */
-    private static final int PANEL_HEIGHT = 96;
+    public static final int PANEL_HEIGHT = 200;
 
-    // ── Palette ────────────────────────────────────────────────────────────
+    // -- Palette ------------------------------------------------------------
     private static final Color BG_SCOPE = new Color(0x0D, 0x0E, 0x17);
     private static final Color COLOR_GRID = new Color(0x1E, 0x20, 0x35);
     private static final Color COLOR_RED = new Color(0xFF, 0x44, 0x44);
@@ -47,7 +47,7 @@ public class AudioWaveformPanel extends JPanel {
     private static final Color COLOR_LABEL = new Color(0x66, 0x77, 0x88);
     private static final float[] DASH = {5f, 4f};
 
-    // ── Clip detection ──────────────────────────────────────────────────────
+    // -- Clip detection ------------------------------------------------------
     /**
      * Samples at or above this absolute value (97.7 % of 32767) are genuine hardware clips.
      */
@@ -57,7 +57,7 @@ public class AudioWaveformPanel extends JPanel {
      */
     private static final long CLIP_HOLD_MS = 1500;
 
-    // ── State (written on monitor bus thread, read on EDT) ──────────────────
+    // -- State (written on monitor bus thread, read on EDT) ------------------
     private final short[] waveBuffer = new short[WAVE_BUFFER_SIZE];
     private volatile double currentRms = 0;
     private volatile double noiseFloor = 0;
@@ -67,7 +67,7 @@ public class AudioWaveformPanel extends JPanel {
      */
     private volatile long clipExpiry = 0;
 
-    // ── Constructor ─────────────────────────────────────────────────────────
+    // -- Constructor ---------------------------------------------------------
     public AudioWaveformPanel() {
         setBackground(BG_SCOPE);
         setOpaque(true);
@@ -86,7 +86,7 @@ public class AudioWaveformPanel extends JPanel {
         AudioMonitorBus.unregister(this);
     }
 
-    // ── Bus subscriber ──────────────────────────────────────────────────────
+    // -- Bus subscriber ------------------------------------------------------
     @Subscribe
     public void onAudioFrame(AudioMonitorEvent event) {
         byte[] buf = event.getBuffer();
@@ -132,7 +132,7 @@ public class AudioWaveformPanel extends JPanel {
         SwingUtilities.invokeLater(this::repaint);
     }
 
-    // ── Painting ────────────────────────────────────────────────────────────
+    // -- Painting ------------------------------------------------------------
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -156,6 +156,7 @@ public class AudioWaveformPanel extends JPanel {
             drawThresholdLines(g2, w, cy, scale);
             drawWaveform(g2, w, cy, scale);
             drawLabels(g2, w, cy, scale);
+            drawLegend(g2, w, h);
             drawClipBadge(g2);
 
         } finally {
@@ -223,6 +224,23 @@ public class AudioWaveformPanel extends JPanel {
             ys[x] = cy - yOff;
         }
         g2.drawPolyline(xs, ys, w);
+
+        // Clip markers: bright red ticks at the panel edge for every pixel column
+        // that maps to a genuinely saturated sample (≥ CLIP_THRESHOLD).
+        // A flat-topped waveform under these ticks = real hardware clipping.
+        // A flat-topped waveform with NO ticks = display scale only, not clipping.
+        int h = getHeight();
+        g2.setColor(new Color(0xFF, 0x22, 0x22));
+        g2.setStroke(new BasicStroke(2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL));
+        for (int x = 0; x < w; x++) {
+            int bufIdx = x * WAVE_BUFFER_SIZE / w;
+            short sample = snapshot[bufIdx];
+            if (sample >= CLIP_THRESHOLD) {
+                g2.drawLine(x, 0, x, 5);
+            } else if (sample <= -CLIP_THRESHOLD) {
+                g2.drawLine(x, h - 5, x, h);
+            }
+        }
     }
 
     private void drawLabels(Graphics2D g2, int w, int cy, double scale) {
@@ -273,6 +291,49 @@ public class AudioWaveformPanel extends JPanel {
         g2.fillRoundRect(4, 3, fm.stringWidth("MIC") + 4, fm.getHeight(), 4, 4);
         g2.setColor(COLOR_LABEL);
         g2.drawString("MIC", 6, 11);
+    }
+
+    private void drawLegend(Graphics2D g2, @SuppressWarnings("unused") int w, int h) {
+        Font font = new Font(Font.MONOSPACED, Font.PLAIN, 9);
+        g2.setFont(font);
+        FontMetrics fm = g2.getFontMetrics();
+
+        // Three entries: colour swatch + description
+        String[] labels = {"Gate closed", "Marginal", "Gate open"};
+        Color[] colors = {COLOR_RED, COLOR_AMBER, COLOR_GREEN};
+
+        int swatchSize = fm.getAscent() - 1;
+        int rowH = fm.getHeight();
+        int entryGap = 14;   // horizontal gap between entries
+        int swatchGap = 4;    // gap between swatch and its text
+
+        // Measure total legend width for the backing rect
+        int totalW = 0;
+        for (int i = 0; i < labels.length; i++) {
+            totalW += swatchSize + swatchGap + fm.stringWidth(labels[i]);
+            if (i < labels.length - 1) totalW += entryGap;
+        }
+
+        int lx = 6;
+        int ly = h - 5;   // baseline sits 5px from bottom edge
+
+        // semi-transparent backing
+        g2.setColor(new Color(0x0D, 0x0E, 0x17, 0xCC));
+        g2.fillRoundRect(lx - 3, ly - fm.getAscent() - 1, totalW + 6, rowH + 2, 4, 4);
+
+        // Draw each swatch + label
+        int x = lx;
+        for (int i = 0; i < labels.length; i++) {
+            // coloured square swatch, vertically centred on the text baseline
+            g2.setColor(colors[i]);
+            g2.fillRect(x, ly - swatchSize, swatchSize, swatchSize);
+
+            // label text in muted colour
+            g2.setColor(COLOR_LABEL);
+            g2.drawString(labels[i], x + swatchSize + swatchGap, ly);
+
+            x += swatchSize + swatchGap + fm.stringWidth(labels[i]) + entryGap;
+        }
     }
 
     private void drawClipBadge(Graphics2D g2) {

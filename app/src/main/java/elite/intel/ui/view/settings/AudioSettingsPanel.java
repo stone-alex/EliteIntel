@@ -120,11 +120,11 @@ public class AudioSettingsPanel extends JPanel {
         content.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
         content.add(grid);
 
-        // ── Mic monitor ──────────────────────────────────────────────────────
+        // -- Mic monitor ------------------------------------------------------
         content.add(Box.createVerticalStrut(8));
         AudioWaveformPanel waveformPanel = new AudioWaveformPanel();
         waveformPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        waveformPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 96));
+        waveformPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, AudioWaveformPanel.PANEL_HEIGHT));
         content.add(waveformPanel);
 
         JPanel helpLabels = new JPanel();

@@ -1,3 +1,11 @@
+## Elite Intel v-0.0315
+
+### bug fixes / features:
+
+- Changed Gemini model to "gemini-3.1-flash-lite-preview" per request.
+
+---
+
 ## Elite Intel v-0.0314
 
 ### bug fixes / features:

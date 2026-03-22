@@ -14,7 +14,7 @@ import java.net.URL;
 
 public class GeminiClient extends BaseAiClient implements Client {
 
-    public static final String MODEL_FLASH = "gemini-2.5-flash";
+    public static final String MODEL_FLASH = "gemini-3.1-flash-lite-preview";
     public static final String MODEL_FLASH_LITE = "gemini-2.5-flash-lite";
 
     private static final String API_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models/";

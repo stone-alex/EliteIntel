@@ -5,6 +5,8 @@ import elite.intel.db.util.Database;
 import elite.intel.gameapi.journal.events.dto.shiploadout.ShipLoadOutDto;
 import elite.intel.util.ShipPadSizes;
 
+import java.util.List;
+
 public class ShipManager {
     private static ShipManager instance;
 
@@ -44,6 +46,7 @@ public class ShipManager {
         );
     }
 
+
     public boolean requireLargePad() {
         ShipDao.Ship ship = getShip();
         if (ship == null) return false;
@@ -59,5 +62,9 @@ public class ShipManager {
 
     public ShipDao.Ship getShipById(int shipId) {
         return Database.withDao(ShipDao.class, dao -> dao.findShip(shipId));
+    }
+
+    public List<ShipDao.Ship> getAllShips() {
+        return Database.withDao(ShipDao.class, dao -> dao.allShips());
     }
 }

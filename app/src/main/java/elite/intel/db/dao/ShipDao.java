@@ -9,6 +9,7 @@ import org.jdbi.v3.sqlobject.statement.SqlUpdate;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 @RegisterRowMapper(ShipDao.ShipRowMapper.class)
 public interface ShipDao {
@@ -17,14 +18,21 @@ public interface ShipDao {
     @SqlQuery("SELECT * FROM ship where shipId= :shipId")
     Ship findShip(int shipId);
 
+    @SqlQuery("SELECT * FROM ship")
+    List<Ship> allShips();
+
+
+
     @SqlUpdate(""" 
-            INSERT INTO ship (shipName, shipId, shipIdentifier, cargoCapacity, voice)
-                        VALUES (:shipName, :shipId, :shipIdentifier, :cargoCapacity, :voice)
+            INSERT INTO ship (shipName, shipId, shipIdentifier, cargoCapacity, voice, personality, cadence)
+                        VALUES (:shipName, :shipId, :shipIdentifier, :cargoCapacity, :voice, :personality, :cadence)
                         on conflict DO UPDATE set
                         shipName = excluded.shipName,
                         shipIdentifier = excluded.shipIdentifier,
                         cargoCapacity = excluded.cargoCapacity,
-                        voice = excluded.voice
+                        voice = excluded.voice,
+                        personality = excluded.personality,
+                        cadence = excluded.cadence
             """)
     void save(@BindBean ShipDao.Ship ship);
 
@@ -37,6 +45,8 @@ public interface ShipDao {
             ship.setShipIdentifier(rs.getString("shipIdentifier"));
             ship.setCargoCapacity(rs.getInt("cargoCapacity"));
             ship.setVoice(rs.getString("voice"));
+            ship.setPersonality(rs.getString("personality"));
+            ship.setCadence(rs.getString("cadence"));
             return ship;
         }
     }
@@ -62,6 +72,8 @@ public interface ShipDao {
         private String shipIdentifier;
         private Integer cargoCapacity;
         private String voice;
+        private String personality;
+        private String cadence;
 
         public String getShipName() {
             return shipName;
@@ -105,6 +117,22 @@ public interface ShipDao {
 
         public void setVoice(String voice) {
             this.voice = voice;
+        }
+
+        public String getPersonality() {
+            return personality;
+        }
+
+        public void setPersonality(String personality) {
+            this.personality = personality;
+        }
+
+        public String getCadence() {
+            return cadence;
+        }
+
+        public void setCadence(String cadence) {
+            this.cadence = cadence;
         }
     }
 }

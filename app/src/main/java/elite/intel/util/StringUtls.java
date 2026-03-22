@@ -213,5 +213,4 @@ public class StringUtls {
 
         return result.get(new Random().nextInt(result.size()));
     }
-
 }

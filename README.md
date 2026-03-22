@@ -9,6 +9,8 @@
 ## Linux and Windows. Can be ran 100% off-line.
 ---
 
+Latest [release notes](https://github.com/stone-alex/EliteIntel/blob/master/distribution/release-notes.md)
+
 **✅ The off-line TTS. (Linux and Windows)**
 Powered by Kokoro. built-in / included.
 
@@ -18,7 +20,8 @@ Powered by Whisper. built-in / included.
 **✅ Local off-line private LLMs are now supported**
 [Installing local LLM](https://github.com/stone-alex/EliteIntel/wiki/Install-Local-LLM)
 
-- If you do not have the hardware to run your local LLM you can use cloud LLM from Claude, xAI or Open AI but that comes with a small fee. (about $6 a month)
+- If you do not have the hardware to run your local LLM you can use cloud LLM from Claude, xAI, Google, or Open AI but
+  that comes with a small fee. (about $6 a month)
   [**Real life Cloud LLM cost breakdown**](https://github.com/stone-alex/EliteIntel/wiki/LLM-Real-Live-Cost)
   
 

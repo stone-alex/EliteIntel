@@ -12,9 +12,7 @@ import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.UserInputEvent;
-import elite.intel.session.PlayerSession;
 import elite.intel.ui.event.AppLogEvent;
-import elite.intel.util.StringUtls;
 import elite.intel.util.json.GsonFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -66,7 +64,6 @@ public class OpenAiCommandEndPoint extends CommandEndPoint implements AiCommandI
             });
             EventBusManager.register(this);
             log.info("OpenAiCommandEndPoint started");
-            EventBusManager.publish(new AiVoxResponseEvent(StringUtls.greeting(PlayerSession.getInstance().getPlayerName())));
         } else {
             log.debug("OpenAiCommandEndPoint already started");
         }

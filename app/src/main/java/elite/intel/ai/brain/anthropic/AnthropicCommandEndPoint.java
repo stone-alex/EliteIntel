@@ -6,13 +6,10 @@ import com.google.gson.JsonObject;
 import elite.intel.ai.brain.AIConstants;
 import elite.intel.ai.brain.AiCommandInterface;
 import elite.intel.ai.brain.commons.CommandEndPoint;
-import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.UserInputEvent;
-import elite.intel.session.PlayerSession;
 import elite.intel.ui.event.AppLogEvent;
-import elite.intel.util.StringUtls;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -60,8 +57,6 @@ public class AnthropicCommandEndPoint extends CommandEndPoint implements AiComma
                 return t;
             });
             log.info("AnthropicUserInputProcessor started");
-            EventBusManager.publish(new AiVoxResponseEvent(
-                    StringUtls.greeting(PlayerSession.getInstance().getPlayerName())));
         }
     }
 

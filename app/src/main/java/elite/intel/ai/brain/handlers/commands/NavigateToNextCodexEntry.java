@@ -61,6 +61,7 @@ public class NavigateToNextCodexEntry implements CommandHandler {
         nav.setEnabled(true);
         nav.setRequestedTime(System.currentTimeMillis());
         playerSession.setTracking(nav);
+        playerSession.setNavigationAnnouncementOn(true);
 
         EventBusManager.publish(new AiVoxResponseEvent("Heading to " + target.getSample().getEntryName() + " sample."));
     }

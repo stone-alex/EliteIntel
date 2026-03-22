@@ -29,6 +29,7 @@ public class GeminiAnalysisEndpoint extends AiEndPoint implements AiAnalysisInte
         try {
             GeminiClient client = GeminiClient.getInstance();
             JsonObject prompt = client.createPrompt(GeminiClient.MODEL_FLASH, 0.8f);
+            prompt.getAsJsonObject("generationConfig").addProperty("responseMimeType", "application/json");
 
             // System instruction: analysis prompt + query-specific instructions
             String systemPrompt = apiFactory.getAiPromptFactory().generateAnalysisPrompt();

@@ -4,6 +4,7 @@
 
 - Fixed 'Change Personality' and 'Change Cadence' via voice commands.
 - UI will now update properly when you change the ship cadence, personality or voice.
+- Fixed hot LLM swap when changing from LM Studio to Gemini.
 
 ## Elite Intel v-0.0315
 

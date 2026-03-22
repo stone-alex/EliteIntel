@@ -94,8 +94,7 @@ public class LocalLlmSettingsPanel extends JPanel {
     }
 
     private void onCheckboxToggled() {
-        systemSession.setUseLocalCommandLlm(useLocalCommandLLMCheck.isSelected());
-        systemSession.setUseLocalQueryLlm(useLocalQueryLLMCheck.isSelected());
+        save();
         EventBusManager.publish(new AppLogEvent("LLM mode changed: command="
                 + (useLocalCommandLLMCheck.isSelected() ? "local" : "cloud")
                 + " query=" + (useLocalQueryLLMCheck.isSelected() ? "local" : "cloud")));

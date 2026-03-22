@@ -176,7 +176,7 @@ public class AiCommandsAndQueries {
         commandMap.put("change trade profile allow strongholds on/off" + KEY_STATE, CHANGE_TRADE_PROFILE_SET_ALLOW_STRONGHOLDS.getAction());
         commandMap.put("galaxy map, open galaxy map, show galaxy map", OPEN_GALAXY_MAP.getAction());
         commandMap.put("local map, open system map, show local map", OPEN_SYSTEM_MAP.getAction());
-        commandMap.put("list voices, list available voices", LIST_AVAILABLE_VOICES.getAction());
+        commandMap.put("list voices, list available voices, tell me what voices you have", LIST_AVAILABLE_VOICES.getAction());
         commandMap.put("delete this codex entry", DELETE_CODEX_ENTRY.getAction());
         commandMap.put("clear all codex entries", CLEAR_CODEX_ENTRIES.getAction());
         commandMap.put("clear cache", CLEAR_CACHE.getAction());

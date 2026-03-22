@@ -472,3 +472,4 @@
 "manifest"="open inventory"
 "daxia"="taxi"
 "daxias"=taxi"
+"life speed"="light speed"

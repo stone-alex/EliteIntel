@@ -189,7 +189,7 @@ public class StringUtls {
 
     public static String affirmative() {
         List<String> result = Arrays.stream(
-                new String[]{"yes", "affirmative", "aye-aye!", "certainly", "of course", "rightaway"}
+                new String[]{"yes!", "affirmative!", "aye-aye!", "certainly!", "of course!", "rightaway!"}
         ).filter(Objects::nonNull).toList();
         if (result.isEmpty()) {
             return "Commander";

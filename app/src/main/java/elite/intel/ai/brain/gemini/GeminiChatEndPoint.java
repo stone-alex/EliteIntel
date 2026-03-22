@@ -79,7 +79,9 @@ public class GeminiChatEndPoint extends AiEndPoint implements AIChatInterface {
 
             if (!rawResponse.has("candidates")) {
                 log.error("No candidates in Gemini response:\n{}", rawResponse);
-                return null;
+                JsonObject fallback = new JsonObject();
+                fallback.addProperty(AIConstants.PROPERTY_TEXT_TO_SPEECH_RESPONSE, "Gemeni did not return any candidates. LLM Code aborted");
+                return fallback;
             }
 
             String text = client.extractText(rawResponse);

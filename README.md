@@ -77,6 +77,3 @@ If you run into issues, hit us up on GitHub issues or Feedback and bug reports a
 Two ways to get in touch:
 
 👉[**Matrix**](https://matrix.to/#/#krondor:matrix.org)👈
-
-Discord will be discontinued starting March 2026.
-👉[~~Discord~~ - deprecated❗](https://discord.gg/3qAqBENsBm).👈

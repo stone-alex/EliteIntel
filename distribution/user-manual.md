@@ -10,8 +10,7 @@ list exists so you know what's possible, not so you can recite scripts.
 - If app is firing random commands for no reason: brain problem (LLM is weak or configuration is wonky)
 - If app is firing commands, but they do not activate: hands problem (Key bindings)
 - If app can't hear you well: ears problem (noisy room low noise-to-rms ratio, audio not calibrated etc)
-- If app does not speak: mouth problem. Audio connection is not routed properly or routed to an audio end point that you
-  are not monitoring check audio routing at OS level.
+- If app does not speak: mouth problem. Audio connection is not routed properly or routed to an audio end point that you are not monitoring check audio routing at OS level.
 
 ### [Full Wiki is here](https://github.com/stone-alex/EliteIntel/wiki)
 
@@ -20,8 +19,7 @@ But here are some essentials to get you started.
 ## Audio Input
 
 **Calibrate the audio in the app**. If the difference between Noise Floor and RMS is too low (e.g. less than 400) the
-app
-will have hard time understanding you. A good ratio is at least 800-1000. Speakers and mic do not go together.
+app will have hard time understanding you. A good ratio is at least 800-1000. Speakers and mic do not go together.
 Headphones and mic are recommended.
 
 **Play around with STT Threads**. Under the Settings / Audio. What do they do? They tell speech recognition how many
@@ -132,14 +130,10 @@ Make sure you mention carrier, else it might think you are talking about the shi
 
 ## ⚔️ Combat & Missions
 
-- Find hunting a ground (Will find target/mission provider paris. Will tell you to fly to a target system and confirm
-  the presence of the resource extraction site)
-- Confirm hunting ground (will manually confirm the presence of the resource extraction site, might be needed if we did
-  not detect it from beacon or auto-discovery)
+- Find hunting a ground (Will find target/mission provider paris. Will tell you to fly to a target system and confirm the presence of the resource extraction site)
+- Confirm hunting ground (will manually confirm the presence of the resource extraction site, might be needed if we didnot detect it from beacon or auto-discovery)
 - Plot / navigate reconnaissance route to hunting ground.
-- Navigate to the mission provider. (this will activate once you have a confirmed hunting ground. Fly there take pirate
-  missions against the target faction. Ask to navigate again, the app may have another star system with missions against
-  the same faction)
+- Navigate to the mission provider. (this will activate once you have a confirmed hunting ground. Fly there take pirate missions against the target faction. Ask to navigate again, the app may have another star system with missions against the same faction)
 - Navigate to active mission. (will navigate to a first mission star system in the list)
 - How many pirate kills left? (calculates the stack)
 - Potential profit from active pirate missions.
@@ -148,13 +142,11 @@ Make sure you mention carrier, else it might think you are talking about the shi
 - What active missions do I have? (any missions, not just pirate)
 - Target power plant (works now)
 - Target Subsystem [fsd / power plant / thrusters / etc.] (broken now)
-- Note: "Light Speed!" or "Supercruise!" will retract hardpoints / gear if needed and bail you out of there, but only if
-  you are not mass-locked.
+- Note: "Light Speed!" or "Supercruise!" will retract hardpoints / gear if needed and bail you out of there, but only if you are not mass-locked.
 
 ## 🧭 Navigation Commands
 
-- Navigate to coordinates [latitude] [longitude]. (will guide you from orbit to location within 1 km, once landed within
-  100m)
+- Navigate to coordinates [latitude] [longitude]. (will guide you from orbit to location within 1 km, once landed within 100m)
 - Navigate to landing zone. (will give you GPS nav back to where your ship landed last time)
 - Navigate to next bio sample / codex entry.
 - Navigate to nearest Fleet Carrier.

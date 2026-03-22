@@ -75,7 +75,8 @@ public class AudioWaveformPanel extends JPanel {
         setMinimumSize(new Dimension(200, PANEL_HEIGHT));
         setBorder(BorderFactory.createCompoundBorder(
                 new LineBorder(AppTheme.BUTTON_BG, 1),
-                BorderFactory.createEmptyBorder(4, 6, 4, 6)));
+                BorderFactory.createEmptyBorder(4, 6, 4, 6))
+        );
         AudioMonitorBus.register(this);
     }
 
@@ -109,10 +110,12 @@ public class AudioWaveformPanel extends JPanel {
         synchronized (waveBuffer) {
             System.arraycopy(waveBuffer, SAMPLES_PER_FRAME,
                     waveBuffer, 0,
-                    WAVE_BUFFER_SIZE - SAMPLES_PER_FRAME);
+                    WAVE_BUFFER_SIZE - SAMPLES_PER_FRAME
+            );
             System.arraycopy(incoming, 0,
                     waveBuffer, WAVE_BUFFER_SIZE - SAMPLES_PER_FRAME,
-                    SAMPLES_PER_FRAME);
+                    SAMPLES_PER_FRAME
+            );
         }
 
         currentRms = event.getRms();
@@ -176,8 +179,7 @@ public class AudioWaveformPanel extends JPanel {
     }
 
     private void drawThresholdLines(Graphics2D g2, int w, int cy, double scale) {
-        BasicStroke dashed = new BasicStroke(
-                1f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1f, DASH, 0f);
+        BasicStroke dashed = new BasicStroke(1f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1f, DASH, 0f);
 
         if (noiseFloor > 0) {
             int fy = (int) (noiseFloor * scale);

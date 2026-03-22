@@ -2,6 +2,7 @@
 
 ### bug fixes / features:
 
+- Added support for Google Gemeni (Generative Language API)
 - Added disable all announcements callout.
 - Added audio calibration verification on service startup.
   - If the Noise Floor to RMS ratio is low, (below 300) you will get a warning.
@@ -23,4 +24,6 @@
 - Fix for qwen3.5 and other local LLMs where it would cancel the previous prompt while issuing a new one asynchronously.
   the prompts are now queued and are processed sequentially in the order they arrive.
 - Removed chat history from chit-chat. LLM would just echo that back at the user. That was annoying.
-- default to all announcements OFF.
+- Default to all announcements OFF.
+- Short acknowledgement call-outs. The app will no longer post-fix with "Commander" or "<your name>"
+- Checking "Use" box on the Local LLM settings panel will not automatically re-start the app's LLM service.

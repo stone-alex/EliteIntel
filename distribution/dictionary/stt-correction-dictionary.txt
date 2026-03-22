@@ -473,3 +473,4 @@
 "daxia"="taxi"
 "daxias"=taxi"
 "life speed"="light speed"
+"playpoint"="way point"

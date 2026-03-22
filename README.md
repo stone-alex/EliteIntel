@@ -74,6 +74,4 @@ Released under Creative Commons license.
 
 ## Contact Developer / Join the Community
 If you run into issues, hit us up on GitHub issues or Feedback and bug reports are super welcome!
-Two ways to get in touch:
-
-👉[**Matrix**](https://matrix.to/#/#krondor:matrix.org)👈
+To get in touch: 👉[**Matrix**](https://matrix.to/#/#krondor:matrix.org)👈

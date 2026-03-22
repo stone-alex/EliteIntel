@@ -20,7 +20,7 @@ import java.io.InputStreamReader;
 
 public class SystemSession {
     private static volatile SystemSession instance;
-    private String designation;
+    private final ShipManager shipManager = ShipManager.getInstance();
 
     private SystemSession() {
     }
@@ -82,14 +82,9 @@ public class SystemSession {
     }
 
     public AIPersonality getAIPersonality() {
-        return Database.withDao(GameSessionDao.class, dao -> {
-            GameSessionDao.GameSession session = dao.get();
-            if (session == null) return AIPersonality.CASUAL;
-            if (session.getAiPersonality() == null) return AIPersonality.CASUAL;
-            return AIPersonality.valueOf(
-                    session.getAiPersonality()
-            );
-        });
+        ShipDao.Ship ship = shipManager.getShip();
+        if (ship == null) return AIPersonality.CASUAL;
+        return AIPersonality.valueOf(ship.getPersonality());
     }
 
     public void setAICadence(AICadence cadence) {
@@ -102,14 +97,9 @@ public class SystemSession {
     }
 
     public AICadence getAICadence() {
-        return Database.withDao(GameSessionDao.class, dao -> {
-            GameSessionDao.GameSession session = dao.get();
-            if (session == null) return AICadence.FEDERATION;
-            if (session.getAiCadence() == null) return AICadence.FEDERATION;
-            return AICadence.valueOf(
-                    session.getAiCadence()
-            );
-        });
+        ShipDao.Ship ship = shipManager.getShip();
+        if (ship == null) return AICadence.IMPERIAL;
+        return AICadence.valueOf(ship.getCadence());
     }
 
     public ChatHistory getChatHistory() {
@@ -358,12 +348,8 @@ public class SystemSession {
         return AppPaths.getWhisperModelPath().toString();
     }
 
-    public void setDesignation(String name) {
-        this.designation = name;
-    }
-
     public String getDesignation() {
-        ShipDao.Ship ship = ShipManager.getInstance().getShip();
+        ShipDao.Ship ship = shipManager.getShip();
         return ship == null ? "I have no designation" : ship.getShipName();
     }
 

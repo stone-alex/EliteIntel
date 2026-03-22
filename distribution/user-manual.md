@@ -9,7 +9,7 @@ list exists so you know what's possible, not so you can recite scripts.
 
 - If app is firing random commands for no reason: brain problem (LLM is weak or configuration is wonky)
 - If app is firing commands, but they do not activate: hands problem (Key bindings)
-- If app can't hear you well: ears problem (noisy room low noise-to-rms ratio, audio no calibrated etc)
+- If app can't hear you well: ears problem (noisy room low noise-to-rms ratio, audio not calibrated etc)
 - If app does not speak: mouth problem. Audio connection is not routed properly or routed to an audio end point that you
   are not monitoring check audio routing at OS level.
 
@@ -19,9 +19,17 @@ But here are some essentials to get you started.
 
 ## Audio Input
 
-Calibrate the audio in the app. If the difference between Noise Floor and RMS is too low (e.g. less than 400) the app
-will have hard time understanding you.
-A good ratio is at least 800-1000. Speakers and mic do not go together. Headphones and mic are recommended.
+**Calibrate the audio in the app**. If the difference between Noise Floor and RMS is too low (e.g. less than 400) the
+app
+will have hard time understanding you. A good ratio is at least 800-1000. Speakers and mic do not go together.
+Headphones and mic are recommended.
+
+**Play around with STT Threads**. Under the Settings / Audio. What do they do? They tell speech recognition how many
+threads to ask from the processor.
+It is a min/max. You can ask for 10 threads, but if your processor can only give you 5 - 5 is all you get. If your
+processor can only
+give it 1 thread, one thread is all you get even if you ask for 11 threads. The more threads you get
+the faster the STT will process your speech. Faster, but not better. This does not have effect on quality.
 
 ## How to Speak Commands (successfully)
 

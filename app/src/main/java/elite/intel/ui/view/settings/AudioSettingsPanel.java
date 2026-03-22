@@ -1,5 +1,6 @@
 package elite.intel.ui.view.settings;
 
+import elite.intel.db.managers.ShipManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.NotificationVolumeChangedEvent;
@@ -122,7 +123,25 @@ public class AudioSettingsPanel extends JPanel {
     }
 
     private void saveLocalTts() {
-        systemSession.setUseLocalTTS(useLocalTTSCheck.isSelected());
+        boolean newValue = useLocalTTSCheck.isSelected();
+        boolean oldValue = systemSession.useLocalTTS();
+        if (newValue != oldValue) {
+            int confirm = JOptionPane.showConfirmDialog(
+                    this,
+                    "Switching TTS engine will reset all ship voices to EMMA.\n"
+                            + "Personalities and cadences will be preserved.\n\n"
+                            + "You will need to re-configure your fleet voices.\n"
+                            + "Continue?",
+                    "Switch TTS Engine",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.WARNING_MESSAGE);
+            if (confirm != JOptionPane.YES_OPTION) {
+                useLocalTTSCheck.setSelected(oldValue);
+                return;
+            }
+            ShipManager.getInstance().resetAllVoicesToDefault();
+        }
+        systemSession.setUseLocalTTS(newValue);
     }
 
     private static JSlider makeSlider(int min, int max, int value, int majorTick, int minorTick) {

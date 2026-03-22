@@ -126,7 +126,6 @@ public class LocalLlmSettingsPanel extends JPanel {
         EventBusManager.publish(new AppLogEvent("LLM mode changed: command="
                 + (useLocalCommandLLMCheck.isSelected() ? "local" : "cloud")
                 + " query=" + (useLocalQueryLLMCheck.isSelected() ? "local" : "cloud")));
-        EventBusManager.publish(new RestartBrainEvent());
     }
 
     private void save() {

@@ -1,11 +1,11 @@
 package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.brain.AIPersonality;
-import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.ai.brain.ShipPersonality;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.session.SystemSession;
+import elite.intel.ui.event.ShipProfileChangedEvent;
 
 /**
  * The SetPersonalityHandler class implements the CommandHandler interface and
@@ -34,9 +34,9 @@ public class SetPersonalityHandler implements CommandHandler {
         try {
             String keyValue = params.get("key").getAsString();
 
-            AIPersonality aiPersonality = AIPersonality.valueOf(keyValue.toUpperCase());
-
-            systemSession.setAIPersonality(aiPersonality);
+            ShipPersonality personality = ShipPersonality.valueOf(keyValue.toUpperCase());
+            systemSession.setShipPersonality(personality);
+            EventBusManager.publish(new ShipProfileChangedEvent());
         } catch (IllegalArgumentException e) {
             EventBusManager.publish(new SensorDataEvent("No such personality. try Professional, Casual, Friendly, Unhinged or Rogue", "Notify User"));
         }

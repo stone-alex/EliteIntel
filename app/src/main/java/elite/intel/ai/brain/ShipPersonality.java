@@ -14,7 +14,7 @@ package elite.intel.ai.brain;
  * This enum is intended to be used in scenarios where the AI's tone and style
  * of interaction need to match specific contextual or user preferences.
  */
-public enum AIPersonality {
+public enum ShipPersonality {
     PROFESSIONAL("Respond extremely briefly and concisely as a military professional."),
     CASUAL("Respond extremely briefly and concisely in a casual tone like a colleague. Use occasional slang matching cadence."),
     FRIENDLY("Respond extremely briefly and concisely in a friendly, casual tone like a close friend. Use slang matching cadence."),
@@ -23,7 +23,7 @@ public enum AIPersonality {
 
     private final String behaviorClause;
 
-    AIPersonality(String behaviorClause) {
+    ShipPersonality(String behaviorClause) {
         this.behaviorClause = behaviorClause;
     }
 

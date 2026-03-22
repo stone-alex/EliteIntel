@@ -183,8 +183,8 @@ public class AiCommandsAndQueries {
         commandMap.put("clear reminders", CLEAR_REMINDERS.getAction());
         commandMap.put("set reminder" + KEY_X, SET_REMINDER.getAction());
         if (!systemSession.useLocalQueryLlm()) {
-            commandMap.put("change personality to" + KEY_X, SET_PERSONALITY.getAction());
-            commandMap.put("change profile to" + KEY_X, SET_PROFILE.getAction());
+            commandMap.put("set/change personality to" + KEY_X, SET_PERSONALITY.getAction());
+            commandMap.put("set/change cadence to" + KEY_X, SET_CADENCE.getAction());
         }
 
         /// very special case. machie-only command

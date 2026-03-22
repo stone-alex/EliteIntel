@@ -1,3 +1,10 @@
+## Elite Intel v-0.0316
+
+### bug fixes / features:
+
+- Fixed 'Change Personality' and 'Change Cadence' via voice commands.
+- UI will now update properly when you change the ship cadence, personality or voice.
+
 ## Elite Intel v-0.0315
 
 ### bug fixes / features:

@@ -1,8 +1,8 @@
 package elite.intel.session;
 
-import elite.intel.ai.brain.AICadence;
-import elite.intel.ai.brain.AIPersonality;
 import elite.intel.ai.brain.LocalLlmProvider;
+import elite.intel.ai.brain.ShipCadence;
+import elite.intel.ai.brain.ShipPersonality;
 import elite.intel.ai.mouth.GoogleVoices;
 import elite.intel.ai.mouth.kokoro.KokoroVoices;
 import elite.intel.db.dao.ChatHistoryDao;
@@ -73,34 +73,30 @@ public class SystemSession {
         setShipVoice(voice.name());
     }
 
-    public void setAIPersonality(AIPersonality personality) {
-        Database.withDao(GameSessionDao.class, dao -> {
-            GameSessionDao.GameSession session = dao.get();
-            session.setAiPersonality(personality.name());
-            dao.save(session);
-            return null;
-        });
-    }
-
-    public AIPersonality getAIPersonality() {
+    public void setShipPersonality(ShipPersonality personality) {
         ShipDao.Ship ship = shipManager.getShip();
-        if (ship == null) return AIPersonality.CASUAL;
-        return AIPersonality.valueOf(ship.getPersonality());
+        if (ship == null) return;
+        ship.setPersonality(personality.name());
+        shipManager.saveShip(ship);
     }
 
-    public void setAICadence(AICadence cadence) {
-        Database.withDao(GameSessionDao.class, dao -> {
-            GameSessionDao.GameSession session = dao.get();
-            session.setAiCadence(cadence.name());
-            dao.save(session);
-            return null;
-        });
-    }
-
-    public AICadence getAICadence() {
+    public ShipPersonality getAIPersonality() {
         ShipDao.Ship ship = shipManager.getShip();
-        if (ship == null) return AICadence.IMPERIAL;
-        return AICadence.valueOf(ship.getCadence());
+        if (ship == null) return ShipPersonality.CASUAL;
+        return ShipPersonality.valueOf(ship.getPersonality());
+    }
+
+    public void setShipCadence(ShipCadence cadence) {
+        ShipDao.Ship ship = shipManager.getShip();
+        if (ship == null) return;
+        ship.setCadence(cadence.name());
+        shipManager.saveShip(ship);
+    }
+
+    public ShipCadence getAICadence() {
+        ShipDao.Ship ship = shipManager.getShip();
+        if (ship == null) return ShipCadence.IMPERIAL;
+        return ShipCadence.valueOf(ship.getCadence());
     }
 
     public ChatHistory getChatHistory() {

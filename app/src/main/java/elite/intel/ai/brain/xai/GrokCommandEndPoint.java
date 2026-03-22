@@ -119,7 +119,7 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
         messages.add(userMessage);
 
         // Send via GrokChatEndPoint
-        JsonObject apiResponse = getChatInterface().processAiPrompt(messages, 0.01f);
+        JsonObject apiResponse = GrokChatEndPoint.getInstance().processAiPrompt(messages, 0.01f);
         if (apiResponse == null) {
             JsonObject errorResponse = new JsonObject();
             errorResponse.addProperty(AIConstants.PROPERTY_TEXT_TO_SPEECH_RESPONSE, "Sorry, I couldn't process that.");

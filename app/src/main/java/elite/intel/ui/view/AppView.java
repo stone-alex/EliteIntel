@@ -4,6 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.controller.AiTabController;
+import elite.intel.ui.event.ShipProfileChangedEvent;
 import elite.intel.ui.event.SystemShutDownEvent;
 import elite.intel.ui.event.UpdateAvailableEvent;
 import org.slf4j.Logger;
@@ -94,6 +95,11 @@ public class AppView extends JFrame implements AppViewInterface {
         settingsTabPanel.initData();
         playerTabPanel.initData();
         aiTabPanel.initData(systemSession.isStreamingModeOn());
+    }
+
+    @Subscribe
+    public void onShipProfileChangedEvent(ShipProfileChangedEvent event) {
+        SwingUtilities.invokeLater(this::initData);
     }
 
     @Override

@@ -1,12 +1,11 @@
 package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.brain.AICadence;
-import elite.intel.ai.mouth.GoogleVoices;
-import elite.intel.ai.mouth.VoiceToAllegiances;
+import elite.intel.ai.brain.ShipCadence;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.session.SystemSession;
+import elite.intel.ui.event.ShipProfileChangedEvent;
 
 /**
  * Handles the command to set the AI cadence in the system session.
@@ -37,12 +36,9 @@ public class SetCadenceHandler implements CommandHandler {
 
         try {
             String profileName = params.get("key").getAsString();
-            AICadence aiCadence = AICadence.valueOf(profileName.toUpperCase());
-
-            GoogleVoices currentVoice = systemSession.getGoogleVoice();
-            VoiceToAllegiances.getInstance().getVoiceForCadence(aiCadence, currentVoice);
-
-            systemSession.setAICadence(aiCadence);
+            ShipCadence shipCadence = ShipCadence.valueOf(profileName.toUpperCase());
+            systemSession.setShipCadence(shipCadence);
+            EventBusManager.publish(new ShipProfileChangedEvent());
         } catch (IllegalArgumentException e) {
             EventBusManager.publish(new SensorDataEvent("No such cadence. try Imperial, Federation or Alliance", "Notify User"));
         }

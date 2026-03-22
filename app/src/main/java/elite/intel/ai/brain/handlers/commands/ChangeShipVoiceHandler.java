@@ -6,6 +6,7 @@ import elite.intel.ai.mouth.kokoro.KokoroVoices;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.SystemSession;
+import elite.intel.ui.event.ShipProfileChangedEvent;
 
 /**
  * The SetAiVoice class implements the CommandHandler interface and facilitates the
@@ -36,7 +37,7 @@ public class ChangeShipVoiceHandler implements CommandHandler {
             } else {
                 systemSession.setGoogleVoice(GoogleVoices.valueOf(voiceName.toUpperCase()));
             }
-
+            EventBusManager.publish(new ShipProfileChangedEvent());
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("Voice set to " + voiceName.toUpperCase()));
         } catch (IllegalArgumentException e) {
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("Sorry, I don't understand voice name: " + voiceName.toUpperCase()));

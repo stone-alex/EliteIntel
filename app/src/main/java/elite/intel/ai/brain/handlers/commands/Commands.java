@@ -45,7 +45,7 @@ public enum Commands {
     SET_AI_VOICE                                        ("set_or_change_voice_to", null,  ChangeShipVoiceHandler.class),
     SET_HOME_SYSTEM                                     ("set_location_as_home_star_system", null,  SetCurrentStarAsHomeSystem.class),
     SET_PERSONALITY                                     ("set_personality", null, SetPersonalityHandler.class),
-    SET_PROFILE                                         ("set_profile", null, SetCadenceHandler.class),
+    SET_CADENCE                                         ("set_cadence", null, SetCadenceHandler.class),
     SET_RADIO_TRANSMISSION_MODE                         ("turn_radio_transmission_on_off", null,  SetRadioTransmissionOnOff.class),
 
     START_LISTENING                                     ("start_listening_monitor_commands_do_not_ignore_user", null, StartListeningHandler.class),

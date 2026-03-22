@@ -1,9 +1,9 @@
 package elite.intel.ai.brain.commons;
 
-import elite.intel.ai.brain.AICadence;
-import elite.intel.ai.brain.AIPersonality;
 import elite.intel.ai.brain.AiCommandsAndQueries;
 import elite.intel.ai.brain.AiPromptFactory;
+import elite.intel.ai.brain.ShipCadence;
+import elite.intel.ai.brain.ShipPersonality;
 import elite.intel.ai.brain.handlers.query.Queries;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
@@ -203,10 +203,10 @@ public class PromptFactory implements AiPromptFactory {
     }
 
     private void appendCadenceAndPersonality(StringBuilder sb) {
-        AICadence aiCadence = systemSession.getAICadence();
-        AIPersonality aiPersonality = systemSession.getAIPersonality();
+        ShipCadence shipCadence = systemSession.getAICadence();
+        ShipPersonality aiPersonality = systemSession.getAIPersonality();
         sb.append(" Cadence and Personality: ");
-        sb.append(aiCadence.getCadenceClause());
+        sb.append(shipCadence.getCadenceClause());
         sb.append(aiPersonality.getPersonalityClause());
     }
 

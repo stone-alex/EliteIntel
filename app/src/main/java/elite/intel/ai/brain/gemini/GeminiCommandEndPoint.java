@@ -121,7 +121,7 @@ public class GeminiCommandEndPoint extends CommandEndPoint implements AiCommandI
         userMessage.addProperty("content", userInput);
         messages.add(userMessage);
 
-        JsonObject apiResponse = getChatInterface().processAiPrompt(messages, 0.01f);
+        JsonObject apiResponse = GeminiChatEndPoint.getInstance().processAiPrompt(messages, 0.01f);
         if (apiResponse == null) {
             JsonObject errorResponse = new JsonObject();
             errorResponse.addProperty(AIConstants.PROPERTY_TEXT_TO_SPEECH_RESPONSE, "Sorry, I couldn't process that.");
@@ -160,7 +160,7 @@ public class GeminiCommandEndPoint extends CommandEndPoint implements AiCommandI
 
         executor.submit(() -> {
             try {
-                JsonObject apiResponse = getChatInterface().processAiPrompt(messages, 0.01f);
+                JsonObject apiResponse = GeminiChatEndPoint.getInstance().processAiPrompt(messages, 0.01f);
                 if (apiResponse == null) {
                     EventBusManager.publish(new AiVoxResponseEvent("Failure processing system request. Check programming"));
                     return;

@@ -1,7 +1,7 @@
 package elite.intel.ui.view;
 
-import elite.intel.ai.brain.AICadence;
-import elite.intel.ai.brain.AIPersonality;
+import elite.intel.ai.brain.ShipCadence;
+import elite.intel.ai.brain.ShipPersonality;
 import elite.intel.ai.mouth.GoogleVoices;
 import elite.intel.ai.mouth.kokoro.KokoroVoices;
 import elite.intel.db.dao.ShipDao;
@@ -153,8 +153,8 @@ public class PlayerTabPanel extends JPanel {
         String[] voiceOptions = useLocal
                 ? Arrays.stream(KokoroVoices.values()).map(Enum::name).toArray(String[]::new)
                 : Arrays.stream(GoogleVoices.values()).map(Enum::name).toArray(String[]::new);
-        String[] personalityOptions = Arrays.stream(AIPersonality.values()).map(Enum::name).toArray(String[]::new);
-        String[] cadenceOptions = Arrays.stream(AICadence.values()).map(Enum::name).toArray(String[]::new);
+        String[] personalityOptions = Arrays.stream(ShipPersonality.values()).map(Enum::name).toArray(String[]::new);
+        String[] cadenceOptions = Arrays.stream(ShipCadence.values()).map(Enum::name).toArray(String[]::new);
 
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBackground(BG);

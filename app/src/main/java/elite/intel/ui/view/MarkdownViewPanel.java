@@ -287,11 +287,11 @@ public class MarkdownViewPanel extends JPanel {
                 <html>
                 <head>
                 <style type="text/css">
-                body   { background-color: #1F2032; color: #E6E6E6; margin: 20px; font-size: 14pt; }
-                h1     { color: #FF8C00; font-size: 28pt; }
-                h2     { color: #FF8C00; font-size: 24pt; }
-                h3     { color: #FF8C00; font-size: 20pt; }
-                h4     { color: #FF8C00; font-size: 18pt; }
+                body   { background-color: #1F2032; color: #E6E6E6; margin: 20px; font-size: 18pt; }
+                h1     { color: #FF8C00; font-size: 30pt; }
+                h2     { color: #FF8C00; font-size: 26pt; }
+                h3     { color: #FF8C00; font-size: 22pt; }
+                h4     { color: #FF8C00; font-size: 20pt; }
                 a      { color: #4E9AF1; }
                 b      { color: #FFFFFF; }
                 code   { font-family: monospace; color: #E0FFEF; background-color: #141622; }

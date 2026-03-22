@@ -120,12 +120,18 @@ public class AudioSettingsPanel extends JPanel {
         content.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
         content.add(grid);
 
+        // ── Mic monitor ──────────────────────────────────────────────────────
+        content.add(Box.createVerticalStrut(8));
+        AudioWaveformPanel waveformPanel = new AudioWaveformPanel();
+        waveformPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        waveformPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 96));
+        content.add(waveformPanel);
 
         JPanel helpLabels = new JPanel();
         helpLabels.setLayout(new BoxLayout(helpLabels, BoxLayout.PAGE_AXIS));
         helpLabels.setOpaque(false);
         helpLabels.setAlignmentX(Component.LEFT_ALIGNMENT);
-        helpLabels.add(Box.createVerticalStrut(48));
+        helpLabels.add(Box.createVerticalStrut(18));
         JLabel sttThreadsLabel = new JLabel("<html><div style='text-align: left; white-space: pre-wrap;'>"
                 + "<h3>STT Threads</h3> Request processor (CPU) to allocate threads for speech recognition.<br>"
                 + "This is a min/max setting. Meaning you can request 11 threads, but only 4 will be used.<br>"
@@ -133,7 +139,7 @@ public class AudioSettingsPanel extends JPanel {
                 + "</div></html>");
         helpLabels.add(sttThreadsLabel);
 
-        helpLabels.add(Box.createVerticalStrut(48));
+        helpLabels.add(Box.createVerticalStrut(8));
         JLabel noteLabel = new JLabel("<html><div style='text-align: left; white-space: pre-wrap;'>"
                 + "<h3>NOTE</h3> Switching to Cloud TTS or to Local TTS will reset all ship voices to EMMA.<br>"
                 + "Personalities and cadences will be preserved."

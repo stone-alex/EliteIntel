@@ -4,6 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.ears.*;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.mouth.subscribers.events.TTSInterruptEvent;
+import elite.intel.gameapi.AudioMonitorBus;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.UserInputEvent;
 import elite.intel.session.SystemSession;
@@ -191,6 +192,10 @@ public class WhisperSTTImpl implements EarsInterface {
                 int audioLen = (resampler != null) ? audio.length : bytesRead;
 
                 double rms = calculateRMS(audio, audioLen);
+
+                AudioMonitorBus.publish(new AudioMonitorEvent(
+                        java.util.Arrays.copyOf(audio, audioLen), audioLen,
+                        rms, NOISE_FLOOR, RMS_THRESHOLD_HIGH));
 
                 // Keep a rolling window of recent frames; prepended to recording when gate opens
                 preRoll.addLast(java.util.Arrays.copyOf(audio, audioLen));

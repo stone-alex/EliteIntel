@@ -1,11 +1,10 @@
-## Elite Intel v-0.0312-beta
+## Elite Intel v-0.0312-beta (hot fix)
 
 ### bug fixes / features:
 
 - Navigation announcements will turn on automatically when you ask to navigate to surface coordinates or codex entry.
 - Gemeni response format tuning.
-- Added a Fleet management panel under the Player tab. You can now customize the personality, cadence and voice of your
-  ships. NOTE: The voice names will be reset to default if you switch from Local to Cloud voices and back.
+- Added a Fleet management panel under the Player tab. You can now customize the personality, cadence and voice of your ships. NOTE: The voice names will be reset to default if you switch from Local to Cloud voices and back.
 
 ---
 

@@ -54,6 +54,7 @@ public class AudioSettingsPanel extends JPanel {
         ag.gridx = 2;
         ag.weightx = 0;
         ag.fill = GridBagConstraints.NONE;
+        ag.insets = new Insets(6, 24, 6, 6);
         JLabel lblBeepVol = new JLabel("Beep Volume");
         lblBeepVol.setPreferredSize(new Dimension(120, 42));
         grid.add(lblBeepVol, ag);
@@ -63,6 +64,7 @@ public class AudioSettingsPanel extends JPanel {
         ag.gridx = 3;
         ag.weightx = 1.0;
         ag.fill = GridBagConstraints.HORIZONTAL;
+        ag.insets = new Insets(6, 6, 6, 6);
         grid.add(beepVolumeSlider, ag);
 
         // Row 1: TTS Voice Speed | STT Threads
@@ -84,6 +86,7 @@ public class AudioSettingsPanel extends JPanel {
         ag.gridx = 2;
         ag.weightx = 0;
         ag.fill = GridBagConstraints.NONE;
+        ag.insets = new Insets(6, 24, 6, 6);
         JLabel lblSttThreads = new JLabel("STT Threads");
         lblSttThreads.setPreferredSize(new Dimension(120, 42));
         grid.add(lblSttThreads, ag);
@@ -93,6 +96,7 @@ public class AudioSettingsPanel extends JPanel {
         ag.gridx = 3;
         ag.weightx = 1.0;
         ag.fill = GridBagConstraints.HORIZONTAL;
+        ag.insets = new Insets(6, 6, 6, 6);
         grid.add(whisperThreadsSlider, ag);
 
         // Row 2: Use Local TTS
@@ -105,6 +109,7 @@ public class AudioSettingsPanel extends JPanel {
         useLocalTTSCheck.addActionListener(a -> saveLocalTts());
         grid.add(useLocalTTSCheck, ag);
 
+        grid.setAlignmentX(Component.LEFT_ALIGNMENT);
         grid.setBorder(BorderFactory.createCompoundBorder(
                 new LineBorder(BUTTON_BG, 1),
                 BorderFactory.createEmptyBorder(8, 8, 8, 8)
@@ -114,6 +119,31 @@ public class AudioSettingsPanel extends JPanel {
         content.setLayout(new BoxLayout(content, BoxLayout.PAGE_AXIS));
         content.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
         content.add(grid);
+
+
+        JPanel helpLabels = new JPanel();
+        helpLabels.setLayout(new BoxLayout(helpLabels, BoxLayout.PAGE_AXIS));
+        helpLabels.setOpaque(false);
+        helpLabels.setAlignmentX(Component.LEFT_ALIGNMENT);
+        helpLabels.add(Box.createVerticalStrut(48));
+        JLabel sttThreadsLabel = new JLabel("<html><div style='text-align: left; white-space: pre-wrap;'>"
+                + "<h3>STT Threads</h3> Request processor (CPU) to allocate threads for speech recognition.<br>"
+                + "This is a min/max setting. Meaning you can request 11 threads, but only 4 will be used.<br>"
+                + "This setting does not improve quality, only speed."
+                + "</div></html>");
+        helpLabels.add(sttThreadsLabel);
+
+        helpLabels.add(Box.createVerticalStrut(48));
+        JLabel noteLabel = new JLabel("<html><div style='text-align: left; white-space: pre-wrap;'>"
+                + "<h3>NOTE</h3> Switching to Cloud TTS or to Local TTS will reset all ship voices to EMMA.<br>"
+                + "Personalities and cadences will be preserved."
+                + "</div></html>");
+        noteLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        helpLabels.add(noteLabel);
+
+
+        content.add(helpLabels);
+
 
         add(content, BorderLayout.NORTH);
     }

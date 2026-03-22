@@ -1,7 +1,6 @@
 # EliteIntel AI Queries & Commands Guide
 
 Hey Commander! This is a reference for the kinds of things you can ask or tell your **Elite Intel** sidekick.
-
 **Idealy - You don't need to memorize any of these** - just speak naturally, and the app figures out what you mean. This
 list exists so you know what's possible, not so you can recite scripts.
 
@@ -14,7 +13,7 @@ list exists so you know what's possible, not so you can recite scripts.
 
 ### [Full Wiki is here](https://github.com/stone-alex/EliteIntel/wiki)
 
-But here are some essentials to get you started.
+Some essentials to get you started.
 
 ## Audio Input
 
@@ -116,7 +115,6 @@ Make sure you mention carrier, else it might think you are talking about the shi
 - Alter trade profile set max distance from entry to 6000 (will filter stations for this range)
 - Alter trade profile set the starting budget to 25000000 (sets the starting capital for the trade route)
 - Alter trade profile set max stops to 10. (route will be no longer than 10 stops)
-
 - Alter trading profile, starting capital [amount].
 - Alter trading profile, maximum distance from star [X] light seconds.
 - Alter trading profile, maximum stops [N].
@@ -131,10 +129,10 @@ Make sure you mention carrier, else it might think you are talking about the shi
 ## ⚔️ Combat & Missions
 
 - Find hunting a ground (Will find target/mission provider paris. Will tell you to fly to a target system and confirm the presence of the resource extraction site)
-- Confirm hunting ground (will manually confirm the presence of the resource extraction site, might be needed if we didnot detect it from beacon or auto-discovery)
-- Plot / navigate reconnaissance route to hunting ground.
+- Confirm hunting ground (will manually confirm the presence of the resource extraction site, might be needed if we didn't detect it from beacon or auto-discovery)
+- Plot / Navigate reconnaissance route to hunting ground.
 - Navigate to the mission provider. (this will activate once you have a confirmed hunting ground. Fly there take pirate missions against the target faction. Ask to navigate again, the app may have another star system with missions against the same faction)
-- Navigate to active mission. (will navigate to a first mission star system in the list)
+- Navigate to an active mission. (will navigate to the first mission star system in the list)
 - How many pirate kills left? (calculates the stack)
 - Potential profit from active pirate missions.
 - Mission progress summary.
@@ -209,8 +207,7 @@ Make sure you mention carrier, else it might think you are talking about the shi
 - Show Modules panel.
 - Show Fire groups
 - Show ship panel
-- Show manifest / inventory panel / cargo hold panel. (note - show manifast works without word panel, the other variants
-  need word panel, else it can be confused with query cargo etc)
+- Show manifest / inventory panel / cargo hold panel. (note - show manifast works without word panel, the other variants need word panel, else it can be confused with query cargo etc)
 
 ## 🎙️ Fighter Commands
 
@@ -234,7 +231,8 @@ Make sure you mention carrier, else it might think you are talking about the shi
 - Toggle radio chatter on / off.
 - Add mining target [material name].
 - Clear mining targets.
-- Clear codex entries. / Delete codex entry.
+- Delete codex entry. (Deletes codes entry you are GPS tracking)
+- Clear codex entries. (Deletes all codes entries)
 - Clear cache. *(Big red button - clears session. Use with caution.)*
 
 ## 🆘 Help commands (Cloud LLMs only)
@@ -249,15 +247,10 @@ a Sidekick.
 
 ---
 
-**Pro Tip**: Just talk like you're talking to a crewmate.
-*"Hey, how's fuel looking?"* → AI checks ship hydrogen.
-*"Where's the nearest market for LTDs?"* → AI finds the station.
-*"What's growing on this rock?"* → AI runs biome + bio-sample analysis.
-*"Silence"* or *"Shut up"* → AI stops talking mid-sentence.
-
 [More commands here](https://github.com/stone-alex/EliteIntel/wiki/Obscure-System-Commands)
 
-Fly safe, Commander! o7
+Fly Dangerous, Commander! o7
 
 ----
-Community 👉[**Matrix**](https://matrix.to/#/#krondor:matrix.org)👈
+Community 👉[**Matrix**](https://matrix.to/#/#krondor:matrix.org)👈 | Open Source [**GitHub
+**](https://github.com/stone-alex/EliteIntel) | [YouTube](https://www.youtube.com/@SudoKrondor) | [Twitch](https://www.twitch.tv/sudokrondor) | Cretive Commons License |

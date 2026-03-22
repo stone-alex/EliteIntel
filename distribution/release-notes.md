@@ -1,3 +1,9 @@
+## Elite Intel v-0.0314
+
+### bug fixes / features:
+
+---
+
 ## Elite Intel v-0.0313 (hot fix)
 
 ### bug fixes / features:

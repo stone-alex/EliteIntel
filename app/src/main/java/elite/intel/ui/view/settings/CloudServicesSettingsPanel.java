@@ -23,11 +23,11 @@ public class CloudServicesSettingsPanel extends JPanel {
     private JCheckBox useCloudTtsCheck;
 
     /**
-     * Called when the user activates cloud LLM — wired in by SettingsTabPanel.
+     * Called when the user activates cloud LLM - wired in by SettingsTabPanel.
      */
     private Runnable onCloudLlmUsed;
     /**
-     * Called when the user activates cloud TTS — wired in by SettingsTabPanel.
+     * Called when the user activates cloud TTS - wired in by SettingsTabPanel.
      */
     private Runnable onCloudTtsUsed;
 
@@ -140,7 +140,7 @@ public class CloudServicesSettingsPanel extends JPanel {
         if (useCloudTtsCheck.isSelected() && onCloudTtsUsed != null) {
             onCloudTtsUsed.run();
         }
-        // Re-sync from session — if the TTS confirmation dialog was cancelled,
+        // Re-sync from session - if the TTS confirmation dialog was cancelled,
         // systemSession.useLocalTTS() is still true so this reverts the checkbox
         useCloudTtsCheck.setSelected(!systemSession.useLocalTTS());
     }

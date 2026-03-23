@@ -418,7 +418,7 @@ public class UpdaterApp {
             progressBar.setString("Extracting…");
         });
 
-        int extracted = 0, skipped = 0;
+        int extracted = 0;
 
         try (ZipInputStream zis = new ZipInputStream(
                 new BufferedInputStream(Files.newInputStream(zipFile)))) {
@@ -432,18 +432,7 @@ public class UpdaterApp {
                     Files.createDirectories(dest);
                 } else {
                     Files.createDirectories(dest.getParent());
-                    // Large model/data files (onnx, bin, dat) that already exist are
-                    // skipped when their on-disk size matches the ZIP entry size – they
-                    // are never modified between app releases and Windows may still hold
-                    // a file-system lock on them immediately after the previous JVM exits.
-                    if (isUnchangedLargeAsset(dest, entry.getSize())) {
-                        log("  skipped (unchanged): " + entry.getName());
-                        skipped++;
-                        zis.closeEntry();
-                        continue;
-                    }
-                    // Buffer the entry first so we can retry the write on Windows
-                    // without consuming the ZipInputStream a second time.
+                    // Buffer the entry so writeWithRetry can retry on Windows file-lock races.
                     byte[] content = zis.readAllBytes();
                     writeWithRetry(dest, content);
                     log("  extracted: " + entry.getName());
@@ -453,32 +442,13 @@ public class UpdaterApp {
             }
         }
 
-        log(String.format("Extraction summary: %d file(s) updated, %d file(s) skipped (unchanged).",
-                extracted, skipped));
+        log(String.format("Extraction summary: %d file(s) extracted.", extracted));
 
         SwingUtilities.invokeLater(() -> {
             progressBar.setIndeterminate(false);
             progressBar.setValue(100);
             progressBar.setString("Done");
         });
-    }
-
-    /**
-     * Returns true when {@code dest} already exists and its on-disk size matches
-     * {@code zipEntrySize}.  Used to skip large, infrequently-changed assets
-     * (ONNX models, binary data files) that Windows may still have locked
-     * immediately after the previous JVM exits.
-     */
-    private static boolean isUnchangedLargeAsset(Path dest, long zipEntrySize) {
-        if (zipEntrySize <= 0) return false;
-        String name = dest.getFileName().toString().toLowerCase();
-        if (!name.endsWith(".onnx") && !name.endsWith(".bin") && !name.endsWith(".dat"))
-            return false;
-        try {
-            return Files.exists(dest) && Files.size(dest) == zipEntrySize;
-        } catch (IOException e) {
-            return false;
-        }
     }
 
     /**

@@ -12,6 +12,9 @@ import java.util.Map;
  * by interfacing with a KeyProcessor. It handles mapping keys from external naming conventions
  * to internal representations, processes modifiers, and manages key press sequences
  * including press and hold actions.
+ *
+ * Left/right modifier key distinction (Key_LeftControl vs Key_RightControl etc.) is handled
+ * transparently inside KeyProcessor via ModifierKeySimulator - no special logic is needed here.
  */
 public class KeyBindingExecutor {
     private static final Logger log = LogManager.getLogger(KeyBindingExecutor.class);
@@ -77,15 +80,9 @@ public class KeyBindingExecutor {
                 log.error("No KeyProcessor mapping for key: {}", binding.key.toUpperCase());
                 return;
             }
-            int[] modifierCodes = new int[binding.modifiers.length];
-            for (int i = 0; i < binding.modifiers.length; i++) {
-                Integer modCode = ELITE_TO_KEYPROCESSOR_MAP.get(binding.modifiers[i].toUpperCase());
-                if (modCode == null) {
-                    log.error("No KeyProcessor mapping for modifier: {}", binding.modifiers[i]);
-                    return;
-                }
-                modifierCodes[i] = modCode;
-            }
+            int[] modifierCodes = resolveModifiers(binding);
+            if (modifierCodes == null) return;
+
             for (int modCode : modifierCodes) {
                 keyProcessor.holdKey(modCode);
             }
@@ -107,15 +104,8 @@ public class KeyBindingExecutor {
                 log.error("No KeyProcessor mapping for key: {}", binding.key.toUpperCase());
                 return;
             }
-            int[] modifierCodes = new int[binding.modifiers.length];
-            for (int i = 0; i < binding.modifiers.length; i++) {
-                Integer modCode = ELITE_TO_KEYPROCESSOR_MAP.get(binding.modifiers[i].toUpperCase());
-                if (modCode == null) {
-                    log.error("No KeyProcessor mapping for modifier: {}", binding.modifiers[i]);
-                    return;
-                }
-                modifierCodes[i] = modCode;
-            }
+            int[] modifierCodes = resolveModifiers(binding);
+            if (modifierCodes == null) return;
 
             // Press modifiers
             for (int modCode : modifierCodes) {
@@ -148,5 +138,18 @@ public class KeyBindingExecutor {
             keyProcessor.releaseKey(ELITE_TO_KEYPROCESSOR_MAP.getOrDefault(binding.key, 0));
             log.error("Error executing key binding: {}", e.getMessage());
         }
+    }
+
+    private int[] resolveModifiers(KeyBindingsParser.KeyBinding binding) {
+        int[] modifierCodes = new int[binding.modifiers.length];
+        for (int i = 0; i < binding.modifiers.length; i++) {
+            Integer modCode = ELITE_TO_KEYPROCESSOR_MAP.get(binding.modifiers[i].toUpperCase());
+            if (modCode == null) {
+                log.error("No KeyProcessor mapping for modifier: {}", binding.modifiers[i]);
+                return null;
+            }
+            modifierCodes[i] = modCode;
+        }
+        return modifierCodes;
     }
 }

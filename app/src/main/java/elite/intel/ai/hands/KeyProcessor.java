@@ -6,6 +6,15 @@ import java.awt.event.KeyEvent;
 public class KeyProcessor {
 
     private final Robot robot;
+    private final ModifierKeySimulator modifierSim;
+
+    /**
+     * Flag ORed into the KEY_* constants for left/right modifier keys.
+     * Any value with this bit set is dispatched through ModifierKeySimulator
+     * instead of Robot, giving correct left/right X11 keysym or Win32 VK dispatch.
+     * The lower bits hold the ModifierKeySimulator modifier ID.
+     */
+    static final int NATIVE_MODIFIER_FLAG = 0x40000000;
 
     public static final int KEY_SPACE = KeyEvent.VK_SPACE;
     public static final int KEY_ENTER = KeyEvent.VK_ENTER;
@@ -60,13 +69,16 @@ public class KeyProcessor {
     public static final int KEY_NUMTAB = KeyEvent.VK_TAB;
     public static final int KEY_NUMCLEAR = KeyEvent.VK_CLEAR;
     public static final int KEY_NUMSLASHPERIOD = KeyEvent.VK_DIVIDE;
-    public static final int KEY_LEFTCONTROL = KeyEvent.VK_CONTROL;
-    public static final int KEY_LEFTSHIFT = KeyEvent.VK_SHIFT;
-    public static final int KEY_LEFTALT = KeyEvent.VK_ALT;
+    // Left/right modifier keys use the NATIVE_MODIFIER_FLAG so that holdKey/releaseKey
+    // dispatch through ModifierKeySimulator rather than Robot, preserving the left/right
+    // distinction that Elite Dangerous requires (Key_LeftControl vs Key_RightControl etc.).
+    public static final int KEY_LEFTCONTROL = NATIVE_MODIFIER_FLAG | ModifierKeySimulator.LEFT_CTRL;
+    public static final int KEY_RIGHTCONTROL = NATIVE_MODIFIER_FLAG | ModifierKeySimulator.RIGHT_CTRL;
+    public static final int KEY_LEFTALT = NATIVE_MODIFIER_FLAG | ModifierKeySimulator.LEFT_ALT;
+    public static final int KEY_RIGHTALT = NATIVE_MODIFIER_FLAG | ModifierKeySimulator.RIGHT_ALT;
+    public static final int KEY_LEFTSHIFT = NATIVE_MODIFIER_FLAG | ModifierKeySimulator.LEFT_SHIFT;
+    public static final int KEY_RIGHTSHIFT = NATIVE_MODIFIER_FLAG | ModifierKeySimulator.RIGHT_SHIFT;
     public static final int KEY_LEFTSUPER = KeyEvent.VK_WINDOWS;
-    public static final int KEY_RIGHTCONTROL = KeyEvent.VK_CONTROL;
-    public static final int KEY_RIGHTSHIFT = KeyEvent.VK_SHIFT;
-    public static final int KEY_RIGHTALT = KeyEvent.VK_ALT_GRAPH;
     public static final int KEY_RIGHTSUPER = KeyEvent.VK_WINDOWS;
     public static final int KEY_MENU = KeyEvent.VK_CONTEXT_MENU;
     public static final int KEY_LEFTBRACKET = KeyEvent.VK_OPEN_BRACKET;
@@ -158,49 +170,89 @@ public class KeyProcessor {
     private KeyProcessor() throws AWTException {
         this.robot = new Robot();
         robot.setAutoDelay(50);
+        this.modifierSim = new ModifierKeySimulator();
     }
 
+    // ── Native-aware dispatch helpers ─────────────────────────────────────────
+
+    private boolean isNativeModifier(int keyCode) {
+        return (keyCode & NATIVE_MODIFIER_FLAG) != 0;
+    }
+
+    /**
+     * Press (hold down) a key - routes modifier keys to ModifierKeySimulator.
+     */
+    private void rawPress(int keyCode) {
+        if (isNativeModifier(keyCode)) {
+            int modId = keyCode & ~NATIVE_MODIFIER_FLAG;
+            if (modifierSim.isAvailable()) {
+                modifierSim.press(modId);
+            } else {
+                robot.keyPress(modifierSim.fallbackVk(modId));
+            }
+        } else {
+            robot.keyPress(keyCode);
+        }
+    }
+
+    /**
+     * Release a key - routes modifier keys to ModifierKeySimulator.
+     */
+    private void rawRelease(int keyCode) {
+        if (isNativeModifier(keyCode)) {
+            int modId = keyCode & ~NATIVE_MODIFIER_FLAG;
+            if (modifierSim.isAvailable()) {
+                modifierSim.release(modId);
+            } else {
+                robot.keyRelease(modifierSim.fallbackVk(modId));
+            }
+        } else {
+            robot.keyRelease(keyCode);
+        }
+    }
+
+    // ── Public API ────────────────────────────────────────────────────────────
+
     public void pressKey(int keyCode) {
-        robot.keyPress(keyCode);
-        robot.keyRelease(keyCode);
+        rawPress(keyCode);
+        rawRelease(keyCode);
     }
 
     public void pressAndHoldKey(int keyCode, int holdTime) {
-        robot.keyPress(keyCode);
+        rawPress(keyCode);
         robot.delay(holdTime);
-        robot.keyRelease(keyCode);
+        rawRelease(keyCode);
     }
 
     public void holdKey(int keyCode) {
-        robot.keyPress(keyCode);
+        rawPress(keyCode);
     }
 
     public void releaseKey(int keyCode) {
-        robot.keyRelease(keyCode);
+        rawRelease(keyCode);
     }
 
     public void pressKeys(int... keyCodes) {
         for (int keyCode : keyCodes) {
-            robot.keyPress(keyCode);
+            rawPress(keyCode);
         }
-
         for (int i = keyCodes.length - 1; i >= 0; i--) {
-            robot.keyRelease(keyCodes[i]);
+            rawRelease(keyCodes[i]);
         }
     }
 
     public void pressKeyCombo(int... keyCodes) {
         try {
             for (int keyCode : keyCodes) {
-                robot.keyPress(keyCode);
+                rawPress(keyCode);
             }
             Thread.sleep(100);
             for (int i = keyCodes.length - 1; i >= 0; i--) {
-                robot.keyRelease(keyCodes[i]);
+                rawRelease(keyCodes[i]);
             }
         } catch (InterruptedException e) {
             for (int i = keyCodes.length - 1; i >= 0; i--) {
-                robot.keyRelease(keyCodes[i]);
+                rawRelease(keyCodes[i]);
             }
             Thread.currentThread().interrupt();
         }

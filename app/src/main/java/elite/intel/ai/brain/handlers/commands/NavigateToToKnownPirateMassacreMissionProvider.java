@@ -6,24 +6,21 @@ import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.dao.PirateMissionProviderDao.MissionProvider;
 import elite.intel.db.managers.HuntingGroundManager;
 import elite.intel.db.managers.LocationManager;
-import elite.intel.db.managers.MissionManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.UserInputEvent;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
-import elite.intel.gameapi.journal.events.dto.MissionDto;
 import elite.intel.session.PlayerSession;
 
-import java.util.Collection;
 import java.util.List;
 
-public class PlotRouteToKnownPirateMassacreMissionProvider extends CommandOperator implements CommandHandler {
+public class NavigateToToKnownPirateMassacreMissionProvider extends CommandOperator implements CommandHandler {
 
     private final GameController controller;
     private final HuntingGroundManager huntingGroundManager = HuntingGroundManager.getInstance();
     private final LocationManager locationManager = LocationManager.getInstance();
     private final PlayerSession playerSession = PlayerSession.getInstance();
 
-    public PlotRouteToKnownPirateMassacreMissionProvider(GameController controller) {
+    public NavigateToToKnownPirateMassacreMissionProvider(GameController controller) {
         super(controller.getMonitor(), controller.getExecutor());
         this.controller = controller;
     }

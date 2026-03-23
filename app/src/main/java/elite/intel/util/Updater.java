@@ -109,12 +109,12 @@ public class Updater {
 
             long localBuild = StringUtls.getNumericBuild(local);
 
-            try {
-                HttpClient client = HttpClient.newHttpClient();
+            try (HttpClient client = HttpClient.newBuilder()
+                    .followRedirects(HttpClient.Redirect.NORMAL)
+                    .build()) {
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(
-                                "https://raw.githubusercontent.com/stone-alex/EliteIntel"
-                                        + "/refs/heads/master/app/src/main/resources/version.txt"))
+                                "https://github.com/stone-alex/EliteIntel/releases/latest"))
                         .GET()
                         .build();
 
@@ -122,8 +122,9 @@ public class Updater {
                         client.send(request, HttpResponse.BodyHandlers.ofString());
 
                 if (response.statusCode() == 200) {
-                    String remote = normalizeVersion(response.body().trim());
-                    long remoteBuild = StringUtls.getNumericBuild(remote);
+                    String path = response.uri().getPath();          // e.g. /releases/tag/v-0.0316-beta
+                    String tag = path.substring(path.lastIndexOf('/') + 1);
+                    long remoteBuild = StringUtls.getNumericBuild(tag);
                     return remoteBuild > localBuild;
                 }
             } catch (Exception e) {

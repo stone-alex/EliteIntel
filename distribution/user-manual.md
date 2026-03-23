@@ -172,6 +172,7 @@ Make sure you mention carrier, else it might think you are talking about the shi
 - Wing nav lock / lock on wing.
 - Select / target highest threat.
 - Target power plant / subsystem.
+- Navigate from memory. (This will open the galaxy map and navigate to the location you have copied from somewhere via Ctrl+C.)
 
 ## 🎮 Ship Controls
 

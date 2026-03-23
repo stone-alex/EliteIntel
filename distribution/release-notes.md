@@ -1,4 +1,13 @@
-## Elite Intel v-0.0317
+## Elite Intel v-0.0322
+
+### bug fixes / features:
+
+- Fixed the updater problem where it would indicate that a new version is available before it can actually be downloaded.
+- "Navigate from memory" command. This will open the galaxy map and navigate to the location you have copied from somewhere via Ctrl+C.
+- Fixed combo key bindings.
+- Fixed sub system targeting. Say "target fsd" or "target drive" or "target engines" etc. Fallback is powerplant.
+
+## Elite Intel v-0.0320
 
 ### bug fixes / features:
 
@@ -34,6 +43,7 @@
 
 - Added LM Studio support.
 - Fixing orbital navigation.
+
 ---
 
 ## Elite Intel v-0.0313 (hot fix)

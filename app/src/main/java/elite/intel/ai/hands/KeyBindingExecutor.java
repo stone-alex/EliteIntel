@@ -62,7 +62,7 @@ public class KeyBindingExecutor {
         return eliteKey.toString().toUpperCase();
     }
 
-    public void executeBinding(KeyBindingsParser.KeyBinding binding) {
+    public synchronized void executeBinding(KeyBindingsParser.KeyBinding binding) {
         executeBindingWithHold(binding, 0); // Default: no hold
     }
 
@@ -70,7 +70,7 @@ public class KeyBindingExecutor {
      * Executes a binding as a guaranteed single tap regardless of the binding's
      * hold flag. Use for UI navigation where holding would cause key-repeat.
      */
-    public void executeTap(KeyBindingsParser.KeyBinding binding) {
+    public synchronized void executeTap(KeyBindingsParser.KeyBinding binding) {
         try {
             Integer mainKeyCode = ELITE_TO_KEYPROCESSOR_MAP.get(binding.key.toUpperCase());
             if (mainKeyCode == null) {
@@ -100,7 +100,7 @@ public class KeyBindingExecutor {
         }
     }
 
-    public void executeBindingWithHold(KeyBindingsParser.KeyBinding binding, int holdTimeMs) {
+    public synchronized void executeBindingWithHold(KeyBindingsParser.KeyBinding binding, int holdTimeMs) {
         try {
             Integer mainKeyCode = ELITE_TO_KEYPROCESSOR_MAP.get(binding.key.toUpperCase());
             if (mainKeyCode == null) {

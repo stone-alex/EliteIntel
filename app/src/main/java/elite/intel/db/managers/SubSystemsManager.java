@@ -16,8 +16,8 @@ public class SubSystemsManager extends CommandOperator {
     private static volatile SubSystemsManager instance;
 
     private String target;
-    private boolean continueTargeting = true;
-    private boolean pause = false;
+    private volatile boolean continueTargeting = true;
+    private volatile boolean pause = false;
 
     private SubSystemsManager(GameController cameController) {
         super(cameController.getMonitor(), cameController.getExecutor());
@@ -45,14 +45,26 @@ public class SubSystemsManager extends CommandOperator {
 
     public void targetSubSystem(String subsystem) {
         pause = false;
-        setTarget(FuzzySearch.fuzzySubSystemSearch(subsystem, 3));
+        setTarget(FuzzySearch.fuzzySubSystemSearch(subsystem, 2));
         continueTargeting = getTarget() != null && !getTarget().isEmpty();
 
         new Thread(() -> {
+            int cycleCount = 0;
+            boolean usingFallback = false;
             while (continueTargeting) {
                 if (!pause) {
+                    if (cycleCount >= 25) {
+                        if (usingFallback) {
+                            continueTargeting = false;
+                            break;
+                        }
+                        setTarget("Power Plant");
+                        usingFallback = true;
+                        cycleCount = 0;
+                    }
                     operateKeyboard(BINDING_CYCLE_NEXT_SUBSYSTEM.getGameBinding(), 50);
                     pause = true;
+                    cycleCount++;
                     SleepNoThrow.sleep(250);
                 }
                 SleepNoThrow.sleep(10);  // yield + quick flag check
@@ -64,14 +76,15 @@ public class SubSystemsManager extends CommandOperator {
         if (event == null) {
             return;
         }
-        if (event.getSubsystemLocalised() == null) {
+        if (!event.isTargetLocked()) {
             continueTargeting = false;
             return;
         }
-        if (event.getSubsystemLocalised().isEmpty()) {
-            continueTargeting = false;
+        if (event.getSubsystemLocalised() == null || event.getSubsystemLocalised().isEmpty()) {
             return;
         }
+
+        System.out.println("subsystem: " + event.getSubsystemLocalised() + " | target: " + getTarget() + " |");
 
         if (event.getSubsystemLocalised().equalsIgnoreCase(getTarget())) {
             continueTargeting = false;

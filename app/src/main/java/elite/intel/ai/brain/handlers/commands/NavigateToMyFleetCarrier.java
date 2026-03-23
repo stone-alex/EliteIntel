@@ -7,11 +7,11 @@ import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.Status;
 
-public class PlotRouteToMyFleetCarrier extends CommandOperator implements CommandHandler {
+public class NavigateToMyFleetCarrier extends CommandOperator implements CommandHandler {
 
     private final GameController controller;
 
-    public PlotRouteToMyFleetCarrier(GameController commandHandler) {
+    public NavigateToMyFleetCarrier(GameController commandHandler) {
         super(commandHandler.getMonitor(), commandHandler.getExecutor());
         this.controller = commandHandler;
     }

@@ -195,7 +195,6 @@ public class AppController implements Runnable {
     }
 
     private void startServices() {
-        checkForUpdates();
         if (isRunning.get()) return;
         EventBusManager.publish(new ClearConsoleEvent());
         initServices();
@@ -219,6 +218,7 @@ public class AppController implements Runnable {
         connectionCheckTimer.start();
 
         KeyBindCheck.getInstance().check();
+        checkForUpdates();
     }
 
     private void stopServices() {

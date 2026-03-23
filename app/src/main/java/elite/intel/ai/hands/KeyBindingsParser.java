@@ -10,7 +10,8 @@ import org.w3c.dom.NodeList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -45,11 +46,6 @@ public class KeyBindingsParser {
         }
     }
 
-    private final Set<String> BLACKLISTED_ACTIONS = new HashSet<>(Arrays.asList(
-            "PrimaryFire", "SecondaryFire", "TriggerFieldNeutraliser",
-            "BuggyPrimaryFireButton", "BuggySecondaryFireButton"
-    ));
-
     public Map<String, KeyBinding> parseBindings(File file) throws Exception {
         Map<String, KeyBinding> bindings = new HashMap<>();
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -77,7 +73,7 @@ public class KeyBindingsParser {
                     }
                 }
 
-                if (secondaryList.getLength() > 0) {
+                if (!bindings.containsKey(actionName) && secondaryList.getLength() > 0) {
                     Element secondary = (Element) secondaryList.item(0);
                     if ("Keyboard".equals(secondary.getAttribute("Device"))) {
                         String key = secondary.getAttribute("Key");

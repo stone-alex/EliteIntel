@@ -71,6 +71,11 @@ public class PromptFactory implements AiPromptFactory {
                 - IMPORTANT: commands with word 'clear' must match word 'clear' in user input exactly, else you will delete critical data!
                 - IMPORTANT: commands with word 'confirm' must match word 'confirm' in user input exactly, else you will delete critical data!
                 - IMPORTANT: commands such as 'lets go' or 'lets get out of here' are meant for hyperspace jump.
+                - IMPORTANT: 'target' disambiguation:
+                    • "target wingman 1/2/3"          → their specific actions
+                    • "target next route system"       → select_next_system_in_route
+                    • "target most dangerous/highest"  → target_highest_threat
+                    • "target <anything else>"         → target_subsystem, key=the word(s) after target (e.g. "target fsd" → key="fsd", "target engines" → key="engines")
                 
                 """);
 
@@ -93,7 +98,8 @@ public class PromptFactory implements AiPromptFactory {
                   Five=5, Six=6, Seven=7, Eight=8, Nine/Niner=9.
                   Example: "moon two Charlie" → "2C" | "planet Alpha two" → "A2"
                 • Examples (follow the pattern exactly):
-                  - "target subsystem drive"            → {"key": "drive"}
+                  - "target drive"                      → {"action": "target_subsystem", "params": {"key": "drive"}}
+                  - "target fsd"                        → {"action": "target_subsystem", "params": {"key": "fsd"}}
                   - "find mining site for LTD"          → {"key": "low temperature diamonds"}
                   - "lights on"                         → {"state": true}
                   - "find gold within 80 ly"            → {"key": "gold", "max_distance":"80"}

@@ -66,7 +66,7 @@ public class KeyProcessor {
     public static final int KEY_LEFTSUPER = KeyEvent.VK_WINDOWS;
     public static final int KEY_RIGHTCONTROL = KeyEvent.VK_CONTROL;
     public static final int KEY_RIGHTSHIFT = KeyEvent.VK_SHIFT;
-    public static final int KEY_RIGHTALT = KeyEvent.VK_ALT;
+    public static final int KEY_RIGHTALT = KeyEvent.VK_ALT_GRAPH;
     public static final int KEY_RIGHTSUPER = KeyEvent.VK_WINDOWS;
     public static final int KEY_MENU = KeyEvent.VK_CONTEXT_MENU;
     public static final int KEY_LEFTBRACKET = KeyEvent.VK_OPEN_BRACKET;

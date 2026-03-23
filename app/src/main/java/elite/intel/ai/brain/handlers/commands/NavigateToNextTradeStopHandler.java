@@ -15,7 +15,7 @@ import elite.intel.session.PlayerSession;
 
 import java.util.List;
 
-public class PlotRouteToNextTradeStopHandler extends CommandOperator implements CommandHandler {
+public class NavigateToNextTradeStopHandler extends CommandOperator implements CommandHandler {
 
     private final PlayerSession playerSession = PlayerSession.getInstance();
     private final TradeRouteManager tradeRouteManager = TradeRouteManager.getInstance();
@@ -23,7 +23,7 @@ public class PlotRouteToNextTradeStopHandler extends CommandOperator implements 
     private final LocationManager locationManager = LocationManager.getInstance();
     private final GameController gameController;
 
-    public PlotRouteToNextTradeStopHandler(GameController controller) {
+    public NavigateToNextTradeStopHandler(GameController controller) {
         super(controller.getMonitor(), controller.getExecutor());
         this.gameController = controller;
     }

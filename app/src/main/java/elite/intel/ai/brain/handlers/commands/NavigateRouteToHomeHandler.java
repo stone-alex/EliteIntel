@@ -2,20 +2,18 @@ package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
-import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
-import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.Status;
 
-public class PlotRouteToHomeHandler extends CommandOperator implements CommandHandler {
+public class NavigateRouteToHomeHandler extends CommandOperator implements CommandHandler {
 
     private final GameController commandHandler;
     private final PlayerSession playerSession = PlayerSession.getInstance();
 
-    public PlotRouteToHomeHandler(GameController commandHandler) {
+    public NavigateRouteToHomeHandler(GameController commandHandler) {
         super(commandHandler.getMonitor(), commandHandler.getExecutor());
         this.commandHandler = commandHandler;
     }

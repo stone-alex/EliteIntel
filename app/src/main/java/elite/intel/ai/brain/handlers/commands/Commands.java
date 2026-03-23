@@ -9,7 +9,6 @@ public enum Commands {
 
     CONNECTION_CHECK                                    (CONNECTION_CHECK_COMMAND, null, ConnectionCheck.class),
     DISABLE_ALL_ANNOUNCEMENTS                           ("disble_all_announcements", null, DisableAllAnnouncementHandler.class),
-    NAVIGATE_TO_NEXT_MISSION                            ("navigate_to_active_mission_location",null, PlotRouteToMissionDestination.class),
     LIGHTS_ON_OFF                                       ("toggle_lights_on_off", null, LightsOnOffHandler.class),
     ADD_MINING_TARGET                                   ("add_mining_target", null, AddMiningTargetHandler.class),
     CLEAR_MINING_TARGETS                                ("clear_mining_targets", null, ClearMiningTargetsHandler.class),
@@ -25,8 +24,12 @@ public enum Commands {
     RECON_PROVIDER_SYSTEM                               ("navigate_to_system_with_matching_mission_provider", null,  ReconMissionProviderSystemHandler.class),
     IGNORE_HUNTING_GROUND                               ("ignore_hunting_ground", null, IgnoreHuntingGroundHandler.class),
     CONFIRM_HUNTING_GROUND                              ("confirm_hunting_ground", null, ConfirmHuntingGroundHandler.class),
+
+    NAVIGATE_TO_NEXT_MISSION                            ("navigate_to_active_mission_location",null, NavigateToMissionDestination.class),
     NAVIGATE_TO_PIRATE_MISSION_TARGET_SYSTEM            ("navigate_to_pirate_massacre_mission_target_system", null,  NavigateToPirateMassacreMissionTargetHandler.class),
-    NAVIGATE_TO_PIRATE_MISSION_PROVIDER                 ("navigate_to_known_pirate_massacre_mission_provider", null,  PlotRouteToKnownPirateMassacreMissionProvider.class),
+    NAVIGATE_TO_PIRATE_MISSION_PROVIDER                 ("navigate_to_known_pirate_massacre_mission_provider", null,  NavigateToToKnownPirateMassacreMissionProvider.class),
+    NAVIGATE_TO_NEXT_TRADE_STOP                         ("navigate_to_trade_stop_port_or_station", null,  NavigateToNextTradeStopHandler.class),
+    NAVIGATE_TO_ADDRESS_FROM_MEMORY                     ("navigate_from_memory_paste_from_memory", null, PasteFromMemoryHandler.class),
 
     MONETIZE_ROUTE                                      ("monetize_route", null,  MonetizeRouteHandler.class),
 
@@ -91,9 +94,9 @@ public enum Commands {
     DROP_FROM_SUPER_CRUISE                              ("drop_from_super_cruise", null,  DropFromFtlHandler.class),
     ACTIVATE_ANALYSIS_MODE                              ("swap_to_hud_analysis_mode", null,  ActivateAnalysisModeHandler.class),
     ACTIVATE_COMBAT_MODE                                ("swap_to_hud_combat_mode", null,  ActivateCombatModeHandler.class),
-    NAVIGATE_TO_CARRIER                                 ("navigate_to_fleet_carrier", null,  PlotRouteToMyFleetCarrier.class),
+    NAVIGATE_TO_CARRIER                                 ("navigate_to_fleet_carrier", null,  NavigateToMyFleetCarrier.class),
     SET_OPTIMAL_SPEED                                   ("set_optimal_approach_speed", null,  SetOptimalSpeedHandler.class),
-    TAKE_ME_HOME                                        ("navigate_to_home_star", null,  PlotRouteToHomeHandler.class),
+    TAKE_ME_HOME                                        ("navigate_to_home_star", null,  NavigateRouteToHomeHandler.class),
     OPEN_FSS_AND_SCAN                                   ("open_fss_to_scan_or_honk_star_system", null,  DisplayFssAndScanHandler.class),
 
     GET_HEADING_TO_LZ                                   ("navigate_bearing_direction_to_landing_zone", null,  NavigateToLandingZone.class),
@@ -105,8 +108,8 @@ public enum Commands {
     ENTER_FLEET_CARRIER_DESTINATION                     ("enter_fleet_carrier_destination", null,  EnterNextCarrierDestinationHandler.class),
     //SHUT_DOWN                                           ("system_shut_down", null,  SystemShutDownRequestHandler.class),
 
+
     CALCULATE_TRADE_ROUTE                               ("calculate_trade_route", null,  CalculateTradeRouteHandler.class),
-    NAVIGATE_TO_NEXT_TRADE_STOP                       ("navigate_to_trade_stop_port_or_station", null,  PlotRouteToNextTradeStopHandler.class),
     CHANGE_TRADE_PROFILE_SET_STARTING_BUDGET            ("alter_trade_profile_set_starting_budget", null,  ChangeTradeProfileSetStartingBudgetHander.class),
     CHANGE_TRADE_PROFILE_SET_MAX_NUMBER_OF_STOPS        ("alter_trade_profile_set_maximum_number_of_stops", null,  ChangeTradeProfileSetMaxStopsHandler.class),
     CHANGE_TRADE_PROFILE_SET_MAX_DISTANCE_FROM_ENTRY    ("alter_trade_profile_set_maximum_distance_from_entry", null,  ChangeTradeProfileSetMaxDistanceFromEntryHandler.class),
@@ -147,8 +150,6 @@ public enum Commands {
     CYCLE_NEXT_PANEL                                    ("cycle_next_panel", BINDING_CYCLE_NEXT_PANEL.getGameBinding(), GenericGameControlHandler.class),
     CYCLE_PREVIOUS_PAGE                                 ("cycle_previous_page", BINDING_CYCLE_PREVIOUS_PAGE.getGameBinding(), GenericGameControlHandler.class),
     CYCLE_PREVIOUS_PANEL                                ("cycle_previous_panel", BINDING_CYCLE_PREVIOUS_PANEL.getGameBinding(), GenericGameControlHandler.class),
-    CYCLE_NEXT_SUBSYSTEM                                ("cycle_next_subsystem", BINDING_CYCLE_NEXT_SUBSYSTEM.getGameBinding(), GenericGameControlHandler.class),
-    CYCLE_PREVIOUS_SUBSYSTEM                            ("cycle_previous_subsystem", BINDING_CYCLE_PREVIOUS_SUBSYSTEM.getGameBinding(), GenericGameControlHandler.class),
 
     DEPLOY_HEAT_SINK                                    ("deploy_heat_sink", BINDING_DEPLOY_HEAT_SINK.getGameBinding(), GenericGameControlHandler.class),
     DRIVE_ASSIST                                        ("drive_assist", BINDING_DRIVE_ASSIST.getGameBinding(), GenericGameControlHandler.class),
@@ -182,6 +183,7 @@ public enum Commands {
     CLEAR_REMINDERS                                     ("clear_reminders", null, CleareReminderHandler.class),
     SET_REMINDER                                        ("set_reminder", null, SetReminderHandler.class),
     DELETE_CODEX_ENTRY                                  ("delete_codex_entry", null, DeleteCodexEntryHandler.class),
+
     ;
 
     ///

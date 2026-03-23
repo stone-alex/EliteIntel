@@ -70,7 +70,7 @@ public class FuzzySearch {
         int bestDist = Integer.MAX_VALUE;
 
         for (String c : candidates) {
-            int dist = levenshteinDistance(lowerInput, c);
+            int dist = levenshteinDistance(lowerInput, c.toLowerCase());
             if (dist < bestDist) {
                 bestDist = dist;
                 bestLower = c;

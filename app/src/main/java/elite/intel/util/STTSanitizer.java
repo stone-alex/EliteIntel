@@ -140,6 +140,12 @@ public class STTSanitizer {
         if (sanitized.startsWith("this is")) {
             sanitized = sanitized.replaceFirst("this is", "");
         }
+        if (sanitized.startsWith("that")) {
+            sanitized = sanitized.replaceFirst("that", "");
+        }
+        if (sanitized.startsWith("my")) {
+            sanitized = sanitized.replaceFirst("my", "");
+        }
 
 
         /// Do not use fuzzy. Use params in Whisper instead.

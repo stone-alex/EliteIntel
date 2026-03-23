@@ -22,21 +22,15 @@ public class TargetSubSystemHandler implements CommandHandler {
         if (key == null) {
             subSystem = "power plant";
         } else {
-            String keyAsString = key
-                    .getAsString()
+            subSystem = key.getAsString()
                     .toLowerCase(Locale.ROOT)
                     .replace(".", "")
+                    .replace(",", "")
                     .replace("frame shift drive", "fsd")
-                    .replace("drive", "fsd")
-                    .replace(",", "");
-
-            if ("frame shift drive".equalsIgnoreCase(keyAsString)) {
-                subSystem = "FSD";
-            } else if ("drive".equalsIgnoreCase(keyAsString)) {
-                subSystem = "FSD";
-            } else {
-                subSystem = keyAsString;
-            }
+                    .replace("thrusters", "drive")
+                    .replace("engines", "drive")
+                    .replace("shields", "shield generator")
+                    .trim();
         }
         SubSystemsManager.getInstance(controller).targetSubSystem(subSystem);
     }

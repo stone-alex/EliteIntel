@@ -1,3 +1,9 @@
+## Elite Intel v-0.0323-beta
+
+### bug fixes / features:
+
+- Hot fix for left / vs right key modifiers.
+
 ## Elite Intel v-0.0322-beta
 
 ### bug fixes / features:

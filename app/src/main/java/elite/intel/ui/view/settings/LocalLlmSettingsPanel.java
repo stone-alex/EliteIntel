@@ -24,6 +24,12 @@ public class LocalLlmSettingsPanel extends JPanel {
     private JRadioButton ollamaRadio;
     private JRadioButton lmStudioRadio;
 
+    private Runnable onLocalLlmChanged;
+
+    public void setOnLocalLlmChanged(Runnable r) {
+        onLocalLlmChanged = r;
+    }
+
     public LocalLlmSettingsPanel() {
         buildUi();
     }
@@ -121,11 +127,23 @@ public class LocalLlmSettingsPanel extends JPanel {
         EventBusManager.publish(new AppLogEvent("Local LLM provider set to: " + provider.name()));
     }
 
+    /**
+     * Called by CloudServicesSettingsPanel when the user activates cloud LLM.
+     */
+    public void deactivateLocalLlm() {
+        if (useLocalCommandLLMCheck.isSelected() || useLocalQueryLLMCheck.isSelected()) {
+            useLocalCommandLLMCheck.setSelected(false);
+            useLocalQueryLLMCheck.setSelected(false);
+            onCheckboxToggled();
+        }
+    }
+
     private void onCheckboxToggled() {
         save();
         EventBusManager.publish(new AppLogEvent("LLM mode changed: command="
                 + (useLocalCommandLLMCheck.isSelected() ? "local" : "cloud")
                 + " query=" + (useLocalQueryLLMCheck.isSelected() ? "local" : "cloud")));
+        if (onLocalLlmChanged != null) onLocalLlmChanged.run();
     }
 
     private void save() {

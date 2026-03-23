@@ -2,11 +2,13 @@
 
 ### bug fixes / features:
 
-- Added Audio wave / mic input visualization.
+- Added Audio wave / mic input visualization to help with calibration.
 - Added trim to saveApiKey calls to ensure that the key is not saved with a trailing space.
 - Simplified GeneralConversationHandler removed chat history to avoid LLM confusion.
 - Added Radar contact on/off toggle.
 - Voice detection (ignore mode) on-off toggle changed. Say "ignore me" or "stop ignoring me" to toggle. Say "listen" to bypass.
+- Added fighter commands: "Deploy Fighter", "Fighter Escort", "Fighter return to base", "attack my target", "cease fire", "hold your fire" etc.
+- "Use" checkboxes for Local vs Cloud services now work properly.
 
 ## Elite Intel v-0.0316
 

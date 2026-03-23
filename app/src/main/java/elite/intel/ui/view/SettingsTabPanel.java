@@ -28,6 +28,10 @@ public class SettingsTabPanel extends JPanel {
     public SettingsTabPanel() {
         EventBusManager.register(this);
         buildUi();
+        cloudPanel.setOnCloudLlmUsed(() -> localLlmPanel.deactivateLocalLlm());
+        cloudPanel.setOnCloudTtsUsed(() -> audioPanel.activateCloudTts());
+        localLlmPanel.setOnLocalLlmChanged(() -> cloudPanel.syncUseCheckboxes());
+        audioPanel.setOnLocalTtsChanged(() -> cloudPanel.syncUseCheckboxes());
     }
 
     private void buildUi() {

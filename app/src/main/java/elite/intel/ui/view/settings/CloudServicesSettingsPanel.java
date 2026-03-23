@@ -19,6 +19,25 @@ public class CloudServicesSettingsPanel extends JPanel {
     private JPasswordField ttsApiKeyField;
     private JCheckBox llmLockedCheck;
     private JCheckBox ttsLockedCheck;
+    private JCheckBox useCloudLlmCheck;
+    private JCheckBox useCloudTtsCheck;
+
+    /**
+     * Called when the user activates cloud LLM — wired in by SettingsTabPanel.
+     */
+    private Runnable onCloudLlmUsed;
+    /**
+     * Called when the user activates cloud TTS — wired in by SettingsTabPanel.
+     */
+    private Runnable onCloudTtsUsed;
+
+    public void setOnCloudLlmUsed(Runnable r) {
+        onCloudLlmUsed = r;
+    }
+
+    public void setOnCloudTtsUsed(Runnable r) {
+        onCloudTtsUsed = r;
+    }
 
     public CloudServicesSettingsPanel() {
         buildUi();
@@ -36,6 +55,12 @@ public class CloudServicesSettingsPanel extends JPanel {
         addField(fields, llmApiKeyField, gc, 1, 0.8);
         llmLockedCheck = new JCheckBox("Locked", true);
         addCheck(fields, llmLockedCheck, gc);
+        useCloudLlmCheck = new JCheckBox("Use", false);
+        useCloudLlmCheck.addActionListener(e -> onUseCloudLlm());
+        gc.gridx = 3;
+        gc.weightx = 0.2;
+        gc.fill = GridBagConstraints.NONE;
+        fields.add(useCloudLlmCheck, gc);
 
         nextRow(gc);
         addLabel(fields, "Google TTS Key: (optional)", gc);
@@ -44,6 +69,12 @@ public class CloudServicesSettingsPanel extends JPanel {
         addField(fields, ttsApiKeyField, gc, 1, 0.8);
         ttsLockedCheck = new JCheckBox("Locked", true);
         addCheck(fields, ttsLockedCheck, gc);
+        useCloudTtsCheck = new JCheckBox("Use", false);
+        useCloudTtsCheck.addActionListener(e -> onUseCloudTts());
+        gc.gridx = 3;
+        gc.weightx = 0.2;
+        gc.fill = GridBagConstraints.NONE;
+        fields.add(useCloudTtsCheck, gc);
 
         fields.setBorder(BorderFactory.createCompoundBorder(
                 new LineBorder(BUTTON_BG, 1),
@@ -83,6 +114,35 @@ public class CloudServicesSettingsPanel extends JPanel {
     public void initData() {
         llmApiKeyField.setText(systemSession.getAiApiKey() != null ? systemSession.getAiApiKey() : "");
         ttsApiKeyField.setText(systemSession.getTtsApiKey() != null ? systemSession.getTtsApiKey() : "");
+        // Derive "Use" state: cloud is active when neither local option is selected
+        useCloudLlmCheck.setSelected(!systemSession.useLocalCommandLlm() && !systemSession.useLocalQueryLlm());
+        useCloudTtsCheck.setSelected(!systemSession.useLocalTTS());
+    }
+
+    /**
+     * Re-derives the two "Use" checkbox states from SystemSession.
+     * Called by the local panels whenever their own Use state changes.
+     */
+    public void syncUseCheckboxes() {
+        useCloudLlmCheck.setSelected(!systemSession.useLocalCommandLlm() && !systemSession.useLocalQueryLlm());
+        useCloudTtsCheck.setSelected(!systemSession.useLocalTTS());
+    }
+
+    private void onUseCloudLlm() {
+        if (useCloudLlmCheck.isSelected() && onCloudLlmUsed != null) {
+            onCloudLlmUsed.run();
+        }
+        // Re-sync from session in case the action changed nothing or was a no-op
+        useCloudLlmCheck.setSelected(!systemSession.useLocalCommandLlm() && !systemSession.useLocalQueryLlm());
+    }
+
+    private void onUseCloudTts() {
+        if (useCloudTtsCheck.isSelected() && onCloudTtsUsed != null) {
+            onCloudTtsUsed.run();
+        }
+        // Re-sync from session — if the TTS confirmation dialog was cancelled,
+        // systemSession.useLocalTTS() is still true so this reverts the checkbox
+        useCloudTtsCheck.setSelected(!systemSession.useLocalTTS());
     }
 
     private void save() {

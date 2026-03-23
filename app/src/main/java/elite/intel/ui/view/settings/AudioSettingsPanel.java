@@ -25,6 +25,12 @@ public class AudioSettingsPanel extends JPanel {
     private JSlider whisperThreadsSlider;
     private JCheckBox useLocalTTSCheck;
 
+    private Runnable onLocalTtsChanged;
+
+    public void setOnLocalTtsChanged(Runnable r) {
+        onLocalTtsChanged = r;
+    }
+
     public AudioSettingsPanel() {
         buildUi();
     }
@@ -154,6 +160,16 @@ public class AudioSettingsPanel extends JPanel {
         useLocalTTSCheck.setSelected(systemSession.useLocalTTS());
     }
 
+    /**
+     * Called by CloudServicesSettingsPanel when the user activates cloud TTS.
+     * Delegates to saveLocalTts() so the confirmation dialog and voice-reset
+     * logic fire identically to the user clicking the checkbox directly.
+     */
+    public void activateCloudTts() {
+        useLocalTTSCheck.setSelected(false);
+        saveLocalTts();
+    }
+
     private void saveLocalTts() {
         boolean newValue = useLocalTTSCheck.isSelected();
         boolean oldValue = systemSession.useLocalTTS();
@@ -174,6 +190,7 @@ public class AudioSettingsPanel extends JPanel {
             ShipManager.getInstance().resetAllVoicesToDefault();
         }
         systemSession.setUseLocalTTS(newValue);
+        if (onLocalTtsChanged != null) onLocalTtsChanged.run();
     }
 
     private static JSlider makeSlider(int min, int max, int value, int majorTick, int minorTick) {

@@ -128,6 +128,7 @@ Make sure you mention carrier, else it might think you are talking about the shi
 
 ## ⚔️ Combat & Missions
 
+- Radar contact on/off (turns the radar announcements on and off)
 - Find hunting a ground (Will find target/mission provider paris. Will tell you to fly to a target system and confirm the presence of the resource extraction site)
 - Confirm hunting ground (will manually confirm the presence of the resource extraction site, might be needed if we didn't detect it from beacon or auto-discovery)
 - Plot / Navigate reconnaissance route to hunting ground.

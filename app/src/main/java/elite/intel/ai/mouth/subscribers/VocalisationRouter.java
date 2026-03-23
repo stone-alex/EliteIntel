@@ -30,6 +30,13 @@ public class VocalisationRouter {
     }
 
     @Subscribe
+    public void onRadarContactEvent(RadarContactAnnouncementEvent event) {
+        if (playerSession.isRadarContactAnnouncementOn()) {
+            EventBusManager.publish(new VocalisationRequestEvent(event.getText(), RadarContactAnnouncementEvent.class, false));
+        }
+    }
+
+    @Subscribe
     public void onDiscoveryAnnouncementEvent(DiscoveryAnnouncementEvent event) {
         if (playerSession.isDiscoveryAnnouncementOn()) {
             EventBusManager.publish(new VocalisationRequestEvent(event.getText(), DiscoveryAnnouncementEvent.class, true));

@@ -51,6 +51,7 @@ public class AiCommandsAndQueries {
         commandMap.put("find where to buy X, where can we buy X, within Y ly" + KEY_X_WITH_DISTANCE, FIND_COMMODITY.getAction());
         commandMap.put("set as home system", SET_HOME_SYSTEM.getAction());
         commandMap.put("toggle radio on/off" + KEY_STATE, SET_RADIO_TRANSMISSION_MODE.getAction());
+        commandMap.put("radar announcement on/off, radar contact on/off" + KEY_STATE, SET_RADAR_CONTACT_ANNOUNCEMENT.getAction());
         commandMap.put("navigate to coordinates lat/lon" + KEY_LAT_LON, NAVIGATE_TO_TARGET.getAction());
         commandMap.put("discovery announcements on/off" + KEY_STATE, DISCOVERY_ON_OFF.getAction());
         commandMap.put("mining and material announcements on/off" + KEY_STATE, MINING_ON_OFF.getAction());
@@ -108,13 +109,13 @@ public class AiCommandsAndQueries {
         commandMap.put("night vision on/off" + KEY_STATE, NIGHT_VISION_ON_OFF.getAction());
         commandMap.put("switch to combat mode, HUD combat mode", ACTIVATE_COMBAT_MODE.getAction());
         commandMap.put("switch to analysis mode, HUD analysis mode", ACTIVATE_ANALYSIS_MODE.getAction());
-        commandMap.put("max shields, shields up, boost shields", INCREASE_SHIELDS_POWER.getAction());
-        commandMap.put("max engines, full power to engines, boost engines", INCREASE_ENGINES_POWER.getAction());
-        commandMap.put("max weapons, full power to weapons, boost weapons", INCREASE_WEAPONS_POWER.getAction());
+        commandMap.put("max shields, shields full, full power to shields, shields up, boost shields", INCREASE_SHIELDS_POWER.getAction());
+        commandMap.put("max engines, engines full, full power to engines, boost engines", INCREASE_ENGINES_POWER.getAction());
+        commandMap.put("max weapons, weapons full, full power to weapons, boost weapons", INCREASE_WEAPONS_POWER.getAction());
         commandMap.put("equalize power, reset power distribution", RESET_POWER.getAction());
         commandMap.put("cancel navigation", NAVIGATION_ON_OFF.getAction());
-        commandMap.put("open cargo scoop, open cargo bay" + KEY_STATE, OPEN_CARGO_SCOOP.getAction());
-        commandMap.put("close cargo scoop, close cargo bay" + KEY_STATE, CLOSE_CARGO_SCOOP.getAction());
+        commandMap.put("open cargo scoop, open cargo bay, deploy cargo scoop" + KEY_STATE, OPEN_CARGO_SCOOP.getAction());
+        commandMap.put("close cargo scoop, close cargo bay, retract cargo scoop" + KEY_STATE, CLOSE_CARGO_SCOOP.getAction());
         commandMap.put("navigate to next bio sample, go to next organic, next codex marker", NAVIGATE_TO_NEXT_BIO_SAMPLE.getAction());
 
         /// ship normal space flight
@@ -134,7 +135,6 @@ public class AiCommandsAndQueries {
         commandMap.put("select highest threat, target most dangerous", SELECT_HIGHEST_THREAT.getAction());
         commandMap.put("headlights on/off, toggle lights" + KEY_STATE, LIGHTS_ON_OFF.getAction());
         commandMap.put("drive assist on/off" + KEY_STATE, DRIVE_ASSIST.getAction());
-
 
         if (status.isInMainShip()) {
             commandMap.put("deploy SRV, deploy buggy, deploy car, deploy surface vehicle", DEPLOY_SRV.getAction());

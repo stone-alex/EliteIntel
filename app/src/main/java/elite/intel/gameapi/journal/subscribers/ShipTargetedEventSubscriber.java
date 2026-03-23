@@ -2,10 +2,9 @@ package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
-import elite.intel.ai.mouth.subscribers.events.TTSInterruptEvent;
+import elite.intel.ai.mouth.subscribers.events.RadarContactAnnouncementEvent;
 import elite.intel.db.managers.MissionManager;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.MissionType;
 import elite.intel.gameapi.journal.events.ShipTargetedEvent;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.Md5Utils;
@@ -27,7 +26,7 @@ public class ShipTargetedEventSubscriber {
         log.debug(event.toJson());
 
         if (!event.isTargetLocked()) {
-            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Contact Lost"));
+            EventBusManager.publish(new RadarContactAnnouncementEvent("Contact Lost"));
         }
 
         String localizedShipName = event.getShipLocalised();

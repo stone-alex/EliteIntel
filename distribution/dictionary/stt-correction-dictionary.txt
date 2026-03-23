@@ -474,3 +474,8 @@
 "daxias"=taxi"
 "life speed"="light speed"
 "playpoint"="way point"
+"employ"="deploy"
+"jumped"="jump"
+"talking"="docking"
+" of "=" off "
+"rather"="radar"

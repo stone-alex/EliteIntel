@@ -189,7 +189,7 @@ public class SystemSession {
         } else {
             Database.withDao(GameSessionDao.class, dao -> {
                 GameSessionDao.GameSession session = dao.get();
-                session.setEncryptedTTSKey(Cypher.encrypt(ttsApiKey));
+                session.setEncryptedTTSKey(Cypher.encrypt(ttsApiKey.trim()));
                 dao.save(session);
                 return null;
             });
@@ -215,7 +215,7 @@ public class SystemSession {
         } else {
             Database.withDao(GameSessionDao.class, dao -> {
                 GameSessionDao.GameSession session = dao.get();
-                session.setEncryptedLLMKey(Cypher.encrypt(aiApiKey));
+                session.setEncryptedLLMKey(Cypher.encrypt(aiApiKey.trim()));
                 dao.save(session);
                 return null;
             });

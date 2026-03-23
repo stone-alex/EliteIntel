@@ -835,5 +835,18 @@ public class PlayerSession {
     public void setSquadronCarrierData(CarrierDataDto carrierData) {
         /// implement squadron carrier dao etc. see fleetCarriers manager
     }
+
+    public boolean isRadarContactAnnouncementOn() {
+        return Database.withDao(PlayerDao.class, dao -> dao.get().isRadarAnnouncementOn());
+    }
+
+    public void setRadarContactAnnouncementOn(boolean isOn) {
+        Database.withDao(PlayerDao.class, dao -> {
+            PlayerDao.Player player = dao.get();
+            player.setRadarAnnouncementOn(isOn);
+            dao.save(player);
+            return Void.class;
+        });
+    }
 }
 

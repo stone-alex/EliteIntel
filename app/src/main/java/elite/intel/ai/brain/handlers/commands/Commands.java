@@ -47,6 +47,7 @@ public enum Commands {
     SET_PERSONALITY                                     ("set_personality", null, SetPersonalityHandler.class),
     SET_CADENCE                                         ("set_cadence", null, SetCadenceHandler.class),
     SET_RADIO_TRANSMISSION_MODE                         ("turn_radio_transmission_on_off", null,  SetRadioTransmissionOnOff.class),
+    SET_RADAR_CONTACT_ANNOUNCEMENT                      ("turn_radar_contact_announcements_on_off", null, RadarAnnouncementOnOffHandler.class),
 
     START_LISTENING                                     ("start_listening_monitor_commands_do_not_ignore_user", null, StartListeningHandler.class),
     STOP_LISTENING                                      ("stop_listening_ignore_commands", null, StopListeningHandler.class),

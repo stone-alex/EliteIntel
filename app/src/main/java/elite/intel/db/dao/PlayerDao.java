@@ -31,7 +31,7 @@ public interface PlayerDao {
                        total_bounty_claimed, total_distance_traveled, total_hyperspace_distance,
                        total_profits_from_exploration, total_systems_visited, exobiology_profits, alternative_name,
                        journal_dir, bindings_dir, logging_enabled, game_build, bounty_collected_lifetime, homeSystemId, 
-                       localTtsServer, localLlmAddress, systemAddress, currentGenus
+                       localTtsServer, localLlmAddress, systemAddress, currentGenus, radarAnnouncementOn
                     )
                     VALUES (1, :currentPrimaryStar,
                        :carrierDepartureTime, :crewWagsPayout,
@@ -46,7 +46,7 @@ public interface PlayerDao {
                        :shipsOwned, :speciesFirstLogged, :totalBountyClaimed, :totalDistanceTraveled, 
                        :totalHyperspaceDistance, :totalProfitsFromExploration, :totalSystemsVisited, :exobiologyProfits, :alternativeName,
                        :journalDirectory, :bindingsDirectory, :loggingEnabled, :gameBuild, :bountyCollectedLifetime, :homeSystemId, 
-                       :localTtsServer, :localLlmAddress, :systemAddress, :currentGenus
+                       :localTtsServer, :localLlmAddress, :systemAddress, :currentGenus, :radarAnnouncementOn
                     )
             """)
     void save(@BindBean Player player);
@@ -99,6 +99,7 @@ public interface PlayerDao {
         private String localTtsServer;
         private String localLlmAddress;
         private String currentGenus;
+        private boolean radarAnnouncementOn;
 
         public Player() {
         } // required for JDBI
@@ -472,6 +473,14 @@ public interface PlayerDao {
         public void setCurrentGenus(String currentGenus) {
             this.currentGenus = currentGenus;
         }
+
+        public boolean isRadarAnnouncementOn() {
+            return radarAnnouncementOn;
+        }
+
+        public void setRadarAnnouncementOn(boolean radarAnnouncementOn) {
+            this.radarAnnouncementOn = radarAnnouncementOn;
+        }
     }
 
     class PlayerMapper implements RowMapper<Player> {
@@ -524,6 +533,7 @@ public interface PlayerDao {
             p.setLocalLlmAddress(rs.getString("localLlmAddress"));
             p.setSystemAddress(rs.getLong("systemAddress"));
             p.setCurrentGenus(rs.getString("currentGenus"));
+            p.setRadarAnnouncementOn(rs.getBoolean("radarAnnouncementOn"));
             return p;
         }
     }

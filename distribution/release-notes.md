@@ -1,3 +1,12 @@
+## Elite Intel v-0.0317
+
+### bug fixes / features:
+
+- Added Audio wave / mic input visualization.
+- Added trim to saveApiKey calls to ensure that the key is not saved with a trailing space.
+- Simplified GeneralConversationHandler removed chat history to avoid LLM confusion.
+- Added Radar contact on/off toggle.
+
 ## Elite Intel v-0.0316
 
 ### bug fixes / features:

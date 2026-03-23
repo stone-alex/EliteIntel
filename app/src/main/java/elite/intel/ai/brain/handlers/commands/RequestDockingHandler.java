@@ -35,5 +35,11 @@ public class RequestDockingHandler extends CommandOperator implements CommandHan
             /// Exit
             navigator.closeAndRestore(StatusFlags.GuiFocus.EXTERNAL_PANEL);
         }
+        if (status.isInFighter()) {
+            operateKeyboard(Bindings.GameCommand.BINDING_FOCUS_ROLE_PANEL.getGameBinding(), 0);
+            operateKeyboard(Bindings.GameCommand.BINDING_UI_RIGHT.getGameBinding(), 0);
+            operateKeyboard(Bindings.GameCommand.BINDING_UI_SELECT.getGameBinding(), 120);
+            operateKeyboard(Bindings.GameCommand.BINDING_FOCUS_ROLE_PANEL.getGameBinding(), 0);
+        }
     }
 }

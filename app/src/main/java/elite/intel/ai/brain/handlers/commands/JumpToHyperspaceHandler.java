@@ -51,6 +51,9 @@ public class JumpToHyperspaceHandler extends CommandOperator implements CommandH
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("We are mass locked, FTL is not available."));
         } else if (status.isFsdCooldown()) {
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("FSD is on cooldown."));
+        } else if (status.isFighterOut()) {
+            operateKeyboard(BINDING_REQUEST_REQUEST_DOCK.getGameBinding(), 0);
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Fighter is still out. Can not comply."));
         } else if (status.isInMainShip()) {
             PreFtlChecks.preJumpCheck(status, this, "Preparing for FTL.");
             operateKeyboard(BINDING_SET_SPEED100.getGameBinding(), 0);

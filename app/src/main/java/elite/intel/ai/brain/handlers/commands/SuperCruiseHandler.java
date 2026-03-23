@@ -28,8 +28,10 @@ public class SuperCruiseHandler extends CommandOperator implements CommandHandle
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("We are mass locked, FTL is not available."));
         } else if (status.isFsdCooldown()) {
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("FSD is on cooldown."));
+        } else if (status.isFighterOut()) {
+            operateKeyboard(BINDING_REQUEST_REQUEST_DOCK.getGameBinding(), 0);
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Fighter is still out. Can not comply."));
         } else if (status.isInMainShip()) {
-
             if (status.isInSupercruise()) {
                 navigator.closeOpenPanel();
                 operateKeyboard(BINDING_TARGET_NEXT_ROUTE_SYSTEM.getGameBinding(), 0);

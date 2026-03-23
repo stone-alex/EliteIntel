@@ -122,10 +122,8 @@ public class AiCommandsAndQueries {
         commandMap.put("target subsystem, target power plant" + KEY_X, TARGET_SUB_SYSTEM.getAction());
         commandMap.put("dismiss ship, go to orbit", DISMISS_SHIP.getAction());
         commandMap.put("return to surface, pick me up, extraction requested", RETURN_TO_SURFACE.getAction());
-        commandMap.put("order fighter defend ship", REQUEST_DEFENSIVE_BEHAVIOUR.getAction());
-        commandMap.put("order fighter focus my target", REQUEST_FOCUS_TARGET.getAction());
-        commandMap.put("order fighter hold fire", REQUEST_HOLD_FIRE.getAction());
-        commandMap.put("order fighter return to mothership", REQUEST_REQUEST_DOCK.getAction());
+
+
         commandMap.put("supercruise, light speed, engage FSD supercruise", ENTER_SUPER_CRUISE.getAction());
         commandMap.put("retract hardpoints, store weapons, weapons cold", RETRACT_HARDPOINTS.getAction());
         commandMap.put("deploy hardpoints, weapons hot, combat ready", DEPLOY_HARDPOINTS.getAction());
@@ -138,6 +136,11 @@ public class AiCommandsAndQueries {
 
         if (status.isInMainShip()) {
             commandMap.put("deploy SRV, deploy buggy, deploy car, deploy surface vehicle", DEPLOY_SRV.getAction());
+            commandMap.put("deploy fighter, launch fighter, fighter escort", DEPLOY_FIGHTER.getAction());
+            commandMap.put("order fighter defend ship", FIGHTER_REQUEST_DEFENSIVE_BEHAVIOUR.getAction());
+            commandMap.put("order fighter focus my target, attack my target", FIGHTER_REQUEST_FOCUS_TARGET.getAction());
+            commandMap.put("order fighter hold fire, cease fire, ceasefire", FIGHTER_REQUEST_HOLD_FIRE.getAction());
+            commandMap.put("order fighter return to base, fighter return to ship, escort return", FIGHTER_REQUEST_REQUEST_DOCK.getAction());
         }
         if (status.isInSrv()) {
             commandMap.put("recover SRV, recover buggy, recover car,get car back aboard ship, requesting extraction, extract surface vehicle", RECOVER_SRV.getAction());

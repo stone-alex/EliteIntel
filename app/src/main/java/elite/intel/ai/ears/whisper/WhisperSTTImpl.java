@@ -299,8 +299,8 @@ public class WhisperSTTImpl implements EarsInterface {
             if (transcript.contains(".org")) return;
             if (transcript.contains(".net")) return;
 
-            EventBusManager.publish(new AppLogEvent("STT Heard: [" + transcript + "]"));
             String sanitized = STTSanitizer.getInstance().correctMistakes(transcript);
+            EventBusManager.publish(new AppLogEvent("STT: [" + sanitized + "]"));
 
             boolean streamingMode = systemSession.isStreamingModeOn();
             if (streamingMode) {

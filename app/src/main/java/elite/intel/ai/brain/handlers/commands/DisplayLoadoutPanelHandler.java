@@ -4,8 +4,8 @@ import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
 import elite.intel.session.Status;
 
-import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_FOCUS_RADAR_PANEL_BUGGY;
 import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_FOCUS_ROLE_PANEL;
+import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_FOCUS_ROLE_PANEL_BUGGY;
 
 public class DisplayLoadoutPanelHandler extends CommandOperator implements CommandHandler {
 
@@ -22,7 +22,7 @@ public class DisplayLoadoutPanelHandler extends CommandOperator implements Comma
         }
 
         if (status.isInSrv()) {
-            operateKeyboard(BINDING_FOCUS_RADAR_PANEL_BUGGY.getGameBinding(), 0);
+            operateKeyboard(BINDING_FOCUS_ROLE_PANEL_BUGGY.getGameBinding(), 0);
         }
     }
 }

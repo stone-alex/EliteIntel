@@ -8,6 +8,7 @@ import elite.intel.util.json.GsonFactory;
 public class Status extends StatusFlags {
 
     private static volatile Status instance; // Singleton instance
+    private boolean isFighterOut = false;
 
     private Status() {
         //
@@ -509,5 +510,13 @@ public class Status extends StatusFlags {
 
     public boolean isFsdHyperdriveCharging() {
         return isFsdHyperdriveCharging(getStatus().getFlags2());
+    }
+
+    public boolean isFighterOut() {
+        return isFighterOut;
+    }
+
+    public void setFighterOut(boolean fighterOut) {
+        isFighterOut = fighterOut;
     }
 }

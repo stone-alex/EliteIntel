@@ -121,6 +121,27 @@ public class STTSanitizer {
         for (Map.Entry<String, String> entry : STT_CORRECTIONS.entrySet()) {
             sanitized = sanitized.replaceAll("\\b" + Pattern.quote(entry.getKey()) + "\\b", entry.getValue());
         }
+
+        if (sanitized.startsWith("the")) {
+            sanitized = sanitized.replaceFirst("the", "");
+        }
+        if (sanitized.startsWith("to")) {
+            sanitized = sanitized.replaceFirst("to", "");
+        }
+        if (sanitized.startsWith("for")) {
+            sanitized = sanitized.replaceFirst("for", "");
+        }
+        if (sanitized.startsWith("and")) {
+            sanitized = sanitized.replaceFirst("and", "");
+        }
+        if (sanitized.startsWith("it's")) {
+            sanitized = sanitized.replaceFirst("it's", "");
+        }
+        if (sanitized.startsWith("this is")) {
+            sanitized = sanitized.replaceFirst("this is", "");
+        }
+
+
         /// Do not use fuzzy. Use params in Whisper instead.
         /// sanitized = SttTermCorrector.getInstance().correct(sanitized);
         return sanitized.trim();

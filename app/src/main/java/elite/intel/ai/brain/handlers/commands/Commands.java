@@ -98,6 +98,7 @@ public enum Commands {
 
     GET_HEADING_TO_LZ                                   ("navigate_bearing_direction_to_landing_zone", null,  NavigateToLandingZone.class),
     DEPLOY_SRV                                          ("deploy_srv_car", null,  DeploySrvHandler.class),
+    DEPLOY_FIGHTER                                      ("deploy_fighter", null,  DeployFighterHandler.class),
     RECOVER_SRV                                         ("recover_srv_car_board_ship", null,  RecoverSrvHandler.class),
     CLEAR_CODEX_ENTRIES                                 ("clear_codex_entries", null,  ClearCodexEntriesHandler.class),
     CALCULATE_FLEET_CARRIER_ROUTE                       ("calculate_fleet_carrier_route", null,  CalculateFleetCarrierRouteHandler.class),
@@ -156,10 +157,10 @@ public enum Commands {
     DISMISS_SHIP                                        ("dismiss_ship_go_to_orbit", BINDING_RECALL_DISMISS_SHIP.getGameBinding(), DismissRecallShip.class),
     RETURN_TO_SURFACE                                   ("recall_ship_pick_me_up_return_to_surface", BINDING_RECALL_DISMISS_SHIP.getGameBinding(), DismissRecallShip.class),
 
-    REQUEST_DEFENSIVE_BEHAVIOUR                         ("fighter_orders_defend_fighter_order", BINDING_REQUEST_DEFENSIVE_BEHAVIOUR.getGameBinding(), GenericGameControlHandler.class),
-    REQUEST_FOCUS_TARGET                                ("fighter_orders_attack_my_target_fighter_order", BINDING_REQUEST_DEFENSIVE_BEHAVIOUR.getGameBinding(), GenericGameControlHandler.class),
-    REQUEST_HOLD_FIRE                                   ("fighter_orders_hold_your_fire_fighter_order", BINDING_REQUEST_HOLD_FIRE.getGameBinding(), GenericGameControlHandler.class),
-    REQUEST_REQUEST_DOCK                                ("fighter_orders_recall", BINDING_REQUEST_REQUEST_DOCK.getGameBinding(), GenericGameControlHandler.class),
+    FIGHTER_REQUEST_DEFENSIVE_BEHAVIOUR                         ("fighter_orders_defend_fighter_order", BINDING_REQUEST_DEFENSIVE_BEHAVIOUR.getGameBinding(), GenericGameControlHandler.class),
+    FIGHTER_REQUEST_FOCUS_TARGET                                ("fighter_orders_attack_my_target_fighter_order", BINDING_REQUEST_DEFENSIVE_BEHAVIOUR.getGameBinding(), GenericGameControlHandler.class),
+    FIGHTER_REQUEST_HOLD_FIRE                                   ("fighter_orders_hold_your_fire_fighter_order", BINDING_REQUEST_HOLD_FIRE.getGameBinding(), GenericGameControlHandler.class),
+    FIGHTER_REQUEST_REQUEST_DOCK                                ("fighter_orders_recall", BINDING_REQUEST_REQUEST_DOCK.getGameBinding(), GenericGameControlHandler.class),
     STOP                                                ("stop", BINDING_SET_SPEED_ZERO.getGameBinding(), GenericGameControlHandler.class),
     TAXI                                                ("taxi", BINDING_SET_SPEED_ZERO.getGameBinding(), GenericGameControlHandler.class),
     SET_SPEED_ZERO                                      ("set_speed_to_zero_0", BINDING_SET_SPEED_ZERO.getGameBinding(), GenericGameControlHandler.class),

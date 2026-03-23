@@ -68,6 +68,8 @@ public class EventRegistry {
         registerEvent("FSDTarget", FSDTargetEvent.class);
         registerEvent("FSSSignalDiscovered", FSSSignalDiscoveredEvent.class);
         registerEvent("LaunchDrone", LaunchDroneEvent.class);
+        registerEvent("LaunchFighter", LaunchFighterEvent.class);
+        registerEvent("DockFighter", DockFighterEvent.class);
         registerEvent("Liftoff", LiftoffEvent.class);
         registerEvent("LoadGame", LoadGameEvent.class);
         registerEvent("Loadout", LoadoutEvent.class);
@@ -92,6 +94,8 @@ public class EventRegistry {
         registerEvent("Scan", ScanEvent.class);
         registerEvent("Scanned", ScannedEvent.class);
         registerEvent("ShipTargeted", ShipTargetedEvent.class);
+        registerEvent("ShipyardBuy", ShipyardBuyEvent.class);
+        registerEvent("ShipyardNew", ShipyardNewEvent.class);
         registerEvent("StartJump", StartJumpEvent.class);
         registerEvent("Statistics", StatisticsEvent.class);
         registerEvent("SupercruiseDestinationDrop", SupercruiseDestinationDropEvent.class);

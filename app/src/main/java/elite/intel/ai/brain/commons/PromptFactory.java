@@ -57,6 +57,7 @@ public class PromptFactory implements AiPromptFactory {
 
                 CRITICAL RULES - BREAKING ANY = TOTAL FAILURE:
                 - NEVER invent, modify, combine, or create new actions or parameters.
+                - never return action query_app_capabilities unless explicitly requested by the user. Request must have 'your capabilities' always default to query_general_conversation action if unsure.
                 """);
         sb.append("- If ZERO good match → return: {\"action\": \"").append(Queries.GENERAL_CONVERSATION.getAction()).append("\", \"params\": {}}");
 

@@ -259,7 +259,7 @@ public class AudioWaveformPanel extends JPanel {
     }
 
     private void drawLabels(Graphics2D g2, int w, int cy, double scale) {
-        Font labelFont = new Font(Font.MONOSPACED, Font.PLAIN, 9);
+        Font labelFont = new Font(Font.MONOSPACED, Font.PLAIN, 12);
         g2.setFont(labelFont);
         FontMetrics fm = g2.getFontMetrics();
 
@@ -309,7 +309,7 @@ public class AudioWaveformPanel extends JPanel {
     }
 
     private void drawLegend(Graphics2D g2, @SuppressWarnings("unused") int w, int h) {
-        Font font = new Font(Font.MONOSPACED, Font.PLAIN, 9);
+        Font font = new Font(Font.MONOSPACED, Font.PLAIN, 12);
         g2.setFont(font);
         FontMetrics fm = g2.getFontMetrics();
 

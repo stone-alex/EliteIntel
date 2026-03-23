@@ -212,14 +212,14 @@ Make sure you mention carrier, else it might think you are talking about the shi
 
 ## 🎙️ Fighter Commands
 
-- Order fighter to defend ship. (not tested, could be broken)
-- Order fighter to focus my target. (not tested, could be broken)
+- Order fighters to defend the ship. (not tested, could be broken)
+- Order fighter to focus on my target. (not tested, could be broken)
 - Order fighter to hold fire. (not tested, could be broken)
-- Order fighter return to mothership. (not tested, could be broken)
+- Order fighter to return to mothership. (not tested, could be broken)
 
 ## ⚙️ App & Session Commands
 
-- Ignore me / stop ignoring me / listen to me. (ignore all commands or monitor commands)
+- Ignore me / stop ignoring me to toggle ignore mode. Say "listen" to temorarelly bypass.
 - Change voice to [name]
 - List available voices.
 - Change personality to [Professional / Friendly / Unhinged / Rogue]. (could only)

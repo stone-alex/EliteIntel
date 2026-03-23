@@ -85,7 +85,7 @@ public class CarrierJumpCompleteSubscriber {
         CarrierDataDto postJumpCarrierData = playerSession.getCarrierData();
         int numJumpsRemaining = fleetCarrierRouteManager.getFleetCarrierRoute().size();
         int estimatedTimeToFinal = numJumpsRemaining * 20;
-        String remainingRoute = numJumpsRemaining == 0 ? ". Final destination reached!" : ". Remaining " + numJumpsRemaining + " jumps. Estimated time to final " + estimatedTimeToFinal;
+        String remainingRoute = numJumpsRemaining == 0 ? ". Final destination reached!" : ". Remaining " + numJumpsRemaining + " jumps. Estimated time to final " + estimatedTimeToFinal + " minutes ";
 
         String instructions = """
                     Notify user about new carrier location.

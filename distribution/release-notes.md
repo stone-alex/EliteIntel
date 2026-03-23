@@ -6,6 +6,7 @@
 - Added trim to saveApiKey calls to ensure that the key is not saved with a trailing space.
 - Simplified GeneralConversationHandler removed chat history to avoid LLM confusion.
 - Added Radar contact on/off toggle.
+- Voice detection (ignore mode) on-off toggle changed. Say "ignore me" or "stop ignoring me" to toggle. Say "listen" to bypass.
 
 ## Elite Intel v-0.0316
 

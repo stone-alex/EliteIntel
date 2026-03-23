@@ -90,7 +90,7 @@ public class AppController implements Runnable {
     public void toggleStreamingMode(ToggleWakeWordEvent event) {
         appendToLog("Voice input mode toggle");
         systemSession.stopStartListening(event.isOn());
-        EventBusManager.publish(new AiVoxResponseEvent(event.isOn() ? streamingModeIsOnMessage() : streamingModeIsOffMessage()));
+        EventBusManager.publish(new AiVoxResponseEvent(event.isOn() ? ignoreModeOnMessage() : ignoreModeOffMessage()));
     }
 
     @Subscribe
@@ -105,12 +105,12 @@ public class AppController implements Runnable {
         }
     }
 
-    private String streamingModeIsOffMessage() {
+    private String ignoreModeOffMessage() {
         return "I am listening";
     }
 
-    private String streamingModeIsOnMessage() {
-        return "I am ignoring you, ask me to stop ignoring you, or say 'hey ship' followed by your command";
+    private String ignoreModeOnMessage() {
+        return "I am ignoring you, ask me to stop ignoring you";
     }
 
     @Subscribe

@@ -9,6 +9,8 @@
 - Voice detection (ignore mode) on-off toggle changed. Say "ignore me" or "stop ignoring me" to toggle. Say "listen" to bypass.
 - Added fighter commands: "Deploy Fighter", "Fighter Escort", "Fighter return to base", "attack my target", "cease fire", "hold your fire" etc.
 - "Use" checkboxes for Local vs Cloud services now work properly.
+- Added more misinterpreted words to the correction dictionary.
+- Fixed Speed +N / Speed -N commands.
 
 ## Elite Intel v-0.0316
 

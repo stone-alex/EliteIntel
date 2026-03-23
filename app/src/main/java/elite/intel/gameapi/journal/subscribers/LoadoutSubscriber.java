@@ -10,24 +10,32 @@ import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.LoadoutEvent;
 import elite.intel.gameapi.journal.events.dto.shiploadout.LoadoutConverter;
 import elite.intel.session.PlayerSession;
+import elite.intel.session.Status;
 import elite.intel.session.SystemSession;
 import elite.intel.util.Ranks;
+
+import java.util.Objects;
 
 
 public class LoadoutSubscriber {
 
     private final ShipManager shipManager = ShipManager.getInstance();
     private final SystemSession systemSession = SystemSession.getInstance();
+    private final PlayerSession playerSession = PlayerSession.getInstance();
 
     @Subscribe
     public void onLoadoutEvent(LoadoutEvent event) {
-        PlayerSession playerSession = PlayerSession.getInstance();
+        ShipDao.Ship currentShip = shipManager.getShip();
+        if (currentShip != null && Objects.equals(currentShip.getShipId(), event.getShipId())) {
+            Status.getInstance().setOkToAnnounceLoadout(false);
+        }
+
         playerSession.setCurrentShipName(event.getShipName());
         playerSession.setCurrentShip(event.getShip());
         playerSession.setShipLoadout(LoadoutConverter.toShipLoadOutDto(event));
 
-        ShipDao.Ship ship = shipManager.getShipById(event.getShipId());
 
+        ShipDao.Ship ship = shipManager.getShipById(event.getShipId());
         if (ship == null) {
             String shipDefaultVoice = KokoroVoices.EMMA.name();
             if (!systemSession.useLocalTTS()) {
@@ -41,6 +49,8 @@ public class LoadoutSubscriber {
             shipManager.saveShip(ship);
         }
 
-        EventBusManager.publish(new MissionCriticalAnnouncementEvent("Hello " + playerSession.getPlayerName() + ", I am " + ship.getShipName() + ", at your service " + Ranks.getPlayerHonorific()));
+        if (Status.getInstance().isOkToAnnounceLoadout()) {
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Hello " + playerSession.getPlayerName() + ", I am " + ship.getShipName() + ", at your service " + Ranks.getPlayerHonorific()));
+        }
     }
 }

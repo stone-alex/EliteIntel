@@ -430,8 +430,6 @@
 "serve optimal"="set optimal speed"
 "so, self-optimal speed"="set optimal speed"
 "says"="set"
-"+"="plus"
-"-"="minus"
 "compact tower"="contact tower"
 "conduct tower"="contact tower"
 "bellar"="tower"
@@ -541,3 +539,4 @@
 "this is limited time of"="estimated time of"
 "has to make the time of arrival"="estimated time of arrival"
 "what does it estimate"="what is the estimated"
+"fireproofs"="firegroups"

@@ -9,6 +9,7 @@ public class Status extends StatusFlags {
 
     private static volatile Status instance; // Singleton instance
     private boolean isFighterOut = false;
+    private boolean okToAnnounceLoadout = true;
 
     private Status() {
         //
@@ -518,5 +519,13 @@ public class Status extends StatusFlags {
 
     public void setFighterOut(boolean fighterOut) {
         isFighterOut = fighterOut;
+    }
+
+    public boolean isOkToAnnounceLoadout() {
+        return okToAnnounceLoadout;
+    }
+
+    public void setOkToAnnounceLoadout(boolean okToAnounceLoadout) {
+        this.okToAnnounceLoadout = okToAnounceLoadout;
     }
 }

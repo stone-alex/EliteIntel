@@ -9,5 +9,6 @@ public class LaunchFighterEventSubscriber {
     @Subscribe
     public void onLaunchFighterEvent(LaunchFighterEvent event) {
         Status.getInstance().setFighterOut(true);
+        Status.getInstance().setOkToAnnounceLoadout(false);
     }
 }

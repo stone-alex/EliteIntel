@@ -32,8 +32,7 @@ public class DeployFighterHandler extends CommandOperator implements CommandHand
             operateKeyboard(Bindings.GameCommand.BINDING_UI_RIGHT.getGameBinding(), 0);
             SleepNoThrow.sleep(150);
             operateKeyboard(Bindings.GameCommand.BINDING_UI_SELECT.getGameBinding(), 0);
-            //SleepNoThrow.sleep(2000);
-            for (int i = 0; i < 4; i++) {
+            for (int i = 0; i < 6; i++) {
                 operateKeyboard(Bindings.GameCommand.BINDING_UI_DOWN.getGameBinding(), 0);
                 SleepNoThrow.sleep(150);
             }
@@ -45,6 +44,7 @@ public class DeployFighterHandler extends CommandOperator implements CommandHand
             operateKeyboard(Bindings.GameCommand.BINDING_UI_LEFT.getGameBinding(), 0);
             operateKeyboard(Bindings.GameCommand.BINDING_UI_UP.getGameBinding(), 0);
             operateKeyboard(Bindings.GameCommand.BINDING_FOCUS_ROLE_PANEL.getGameBinding(), 0);
+            status.setOkToAnnounceLoadout(false);
         }
     }
 }

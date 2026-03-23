@@ -66,6 +66,11 @@ public class AudioWaveformPanel extends JPanel {
      * Epoch-ms until which the CLIP badge stays lit; 0 = not clipping.
      */
     private volatile long clipExpiry = 0;
+    /**
+     * Rolling peak amplitude used for auto-scaling the display.
+     * Decays toward zero so the scale opens up again after loud transients.
+     */
+    private volatile double displayPeak = 1000.0;
 
     // -- Constructor ---------------------------------------------------------
     public AudioWaveformPanel() {
@@ -122,15 +127,22 @@ public class AudioWaveformPanel extends JPanel {
         noiseFloor = event.getNoiseFloor();
         rmsHigh = event.getRmsHigh();
 
-        // Clip detection: scan every sample in the full buffer, not just the
-        // subsampled display points — we must not miss a single saturated peak.
+        // Clip detection + peak tracking: single pass over the full buffer.
+        // Peak drives auto-scale so the display never squashes or falsely clips
+        // the waveform regardless of the signal's crest factor.
+        double framePeak = 0;
         for (int i = 0; i + 1 < len; i += 2) {
             short s = (short) (((buf[i + 1] & 0xFF) << 8) | (buf[i] & 0xFF));
+            double abs = Math.abs(s);
+            if (abs > framePeak) framePeak = abs;
             if (s >= CLIP_THRESHOLD || s <= -CLIP_THRESHOLD) {
                 clipExpiry = System.currentTimeMillis() + CLIP_HOLD_MS;
-                break;
             }
         }
+        // Decay the rolling peak slowly (~1.5 s to halve) so the scale opens
+        // back up after a loud transient without snapping back instantly.
+        displayPeak = Math.max(framePeak, displayPeak * 0.95);
+        displayPeak = Math.max(displayPeak, 200.0); // floor prevents divide-by-zero on silence
 
         SwingUtilities.invokeLater(this::repaint);
     }
@@ -151,10 +163,11 @@ public class AudioWaveformPanel extends JPanel {
 
             drawGrid(g2, w, h, cy);
 
-            // Scale: rmsHigh maps to ~70% of half-height; multiply by 1.5 to
-            // account for typical voice crest factor (peak ≈ 1.4-1.5× RMS)
-            double effectiveHigh = Math.max(rmsHigh, 200.0);
-            double scale = (cy * 0.70) / (effectiveHigh * 1.5);
+            // Auto-scale: fit the actual rolling peak to 85% of half-height.
+            // This handles any crest factor correctly - clean processed audio,
+            // cheap USB headsets, everything in between - without ever falsely
+            // squashing or clipping the display representation.
+            double scale = (cy * 0.85) / displayPeak;
 
             drawThresholdLines(g2, w, cy, scale);
             drawWaveform(g2, w, cy, scale);
@@ -250,7 +263,7 @@ public class AudioWaveformPanel extends JPanel {
         g2.setFont(labelFont);
         FontMetrics fm = g2.getFontMetrics();
 
-        // FLOOR label — sits just above the upper floor line
+        // FLOOR label - sits just above the upper floor line
         if (noiseFloor > 0) {
             int fy = (int) (noiseFloor * scale);
             int lx = 6;
@@ -261,7 +274,7 @@ public class AudioWaveformPanel extends JPanel {
             g2.drawString("FLOOR", lx, ly);
         }
 
-        // GATE label — sits just above the upper gate line
+        // GATE label - sits just above the upper gate line
         if (rmsHigh > 0) {
             int gy = (int) (rmsHigh * scale);
             int lx = 6;
@@ -272,7 +285,7 @@ public class AudioWaveformPanel extends JPanel {
             g2.drawString("GATE", lx, ly);
         }
 
-        // RMS + delta readout — top-right corner
+        // RMS + delta readout - top-right corner
         double delta = currentRms - noiseFloor;
         Color statusColor;
         if (delta < 200) statusColor = COLOR_RED;
@@ -288,7 +301,7 @@ public class AudioWaveformPanel extends JPanel {
         g2.setColor(statusColor);
         g2.drawString(rmsStr, rmsX, rmsY);
 
-        // Static "MIC" badge — top-left
+        // Static "MIC" badge - top-left
         g2.setColor(new Color(0x0D, 0x0E, 0x17, 0xCC));
         g2.fillRoundRect(4, 3, fm.stringWidth("MIC") + 4, fm.getHeight(), 4, 4);
         g2.setColor(COLOR_LABEL);

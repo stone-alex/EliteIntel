@@ -205,7 +205,7 @@ public class WhisperSTTImpl implements EarsInterface {
                 if (rms > RMS_THRESHOLD_HIGH) {
                     consecutiveVoice++;
                     consecutiveSilence = 0;
-                    audio = Amplifier.amplify(audio);
+                    audio = Amplifier.amplify(audio); //automatically normalize audio.
                 } else {
                     consecutiveVoice = 0;
                     consecutiveSilence++;

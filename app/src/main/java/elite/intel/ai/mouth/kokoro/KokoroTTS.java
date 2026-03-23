@@ -194,7 +194,7 @@ public class KokoroTTS implements MouthInterface {
         EventBusManager.publish(new AiResponseLogEvent(sanitizedText));
 
         // Split on sentence boundaries and enqueue each piece for synthesis
-        String[] sentences = sanitizedText.split("(?<=[.!?])\\s+(?=\\S)");
+        String[] sentences = sanitizedText.split("(?<=[.,!?])\\s+(?=\\S)");
         for (String sentence : sentences) {
             if (!sentence.isBlank()) {
                 synthesisQueue.offer(sentence);

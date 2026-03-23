@@ -41,7 +41,7 @@ public class MarkdownViewPanel extends JPanel {
                 try {
                     Desktop.getDesktop().browse(e.getURL().toURI());
                 } catch (Exception ex) {
-                    // silently ignore — no browser or unsupported platform
+                    // silently ignore - no browser or unsupported platform
                 }
             }
         });

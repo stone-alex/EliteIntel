@@ -79,7 +79,7 @@ public class GeminiAnalysisEndpoint extends AiEndPoint implements AiAnalysisInte
                     ? rawResponse.getAsJsonArray("candidates").get(0).getAsJsonObject().get("finishReason").getAsString()
                     : "UNKNOWN";
             if ("MAX_TOKENS".equals(finishReason)) {
-                log.warn("Gemini analysis response truncated at token limit — increase maxOutputTokens");
+                log.warn("Gemini analysis response truncated at token limit - increase maxOutputTokens");
             }
 
             String text = client.extractText(rawResponse);
@@ -91,7 +91,7 @@ public class GeminiAnalysisEndpoint extends AiEndPoint implements AiAnalysisInte
             try {
                 return JsonParser.parseString(text).getAsJsonObject();
             } catch (JsonSyntaxException e) {
-                log.warn("Gemini returned plain text instead of JSON — wrapping as TTS response");
+                log.warn("Gemini returned plain text instead of JSON - wrapping as TTS response");
                 JsonObject fallback = new JsonObject();
                 fallback.addProperty(AIConstants.PROPERTY_TEXT_TO_SPEECH_RESPONSE, text);
                 return fallback;

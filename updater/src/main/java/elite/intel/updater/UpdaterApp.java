@@ -241,7 +241,7 @@ public class UpdaterApp {
                         + "<ol>"
                         + "<li>Uninstall Elite Intel from <i>Windows Settings → Apps</i>.</li>"
                         + "<li>Download the latest installer from GitHub.</li>"
-                        + "<li>Run the installer — it will default to<br>"
+                        + "<li>Run the installer - it will default to<br>"
                         + "<tt>%LOCALAPPDATA%\\Programs\\Elite Intel</tt><br>"
                         + "which does not require Administrator rights.</li>"
                         + "</ol>"

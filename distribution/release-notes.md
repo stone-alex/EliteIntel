@@ -1,4 +1,4 @@
-## Elite Intel v-0.0322
+## Elite Intel v-0.0322-beta
 
 ### bug fixes / features:
 

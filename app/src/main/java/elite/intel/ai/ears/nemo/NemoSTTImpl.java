@@ -42,7 +42,8 @@ public class NemoSTTImpl implements EarsInterface {
     private static final int ENTER_VOICE_FRAMES = 1;
     private static final int EXIT_SILENCE_FRAMES = 8;
     private static final int PRE_ROLL_FRAMES = 4;
-    private static final int MIN_AUDIO_BYTES = 32000; // 1s @ 16kHz 16-bit mono
+    private static final int MIN_AUDIO_MS = 1500;
+    private static final int MIN_AUDIO_BYTES = TARGET_SAMPLE_RATE * 2 * MIN_AUDIO_MS / 1000; // ~48000 bytes
 
     private final SystemSession systemSession = SystemSession.getInstance();
 
@@ -51,7 +52,7 @@ public class NemoSTTImpl implements EarsInterface {
     private final AtomicBoolean isSpeaking = new AtomicBoolean(false);
 
     private HttpClient httpClient;
-    private WebSocket webSocket;
+    private volatile WebSocket webSocket;
     private Thread processingThread;
     private Resampler resampler;
     private int sampleRateHertz;
@@ -119,35 +120,31 @@ public class NemoSTTImpl implements EarsInterface {
             processingThread.interrupt();
         }
         if (webSocket != null && !webSocket.isOutputClosed()) {
-            webSocket.sendClose(WebSocket.NORMAL_CLOSURE, "shutdown").join();
+            webSocket.sendClose(WebSocket.NORMAL_CLOSURE, "shutdown")
+                    .orTimeout(3, java.util.concurrent.TimeUnit.SECONDS)
+                    .exceptionally(ex -> null);
         }
         if (httpClient != null) {
             httpClient.close();
         }
         log.info("NemoSTTImpl stopped");
+        EventBusManager.publish(new AiVoxResponseEvent("NeMo voice input disabled"));
     }
 
     private void captureLoop() {
         AudioFormat audioFormat = new AudioFormat(sampleRateHertz, 16, CHANNELS, true, false);
         DataLine.Info info = new DataLine.Info(TargetDataLine.class, audioFormat);
-        TargetDataLine line;
-        try {
-            line = (TargetDataLine) AudioSystem.getLine(info);
+        try (TargetDataLine line = (TargetDataLine) AudioSystem.getLine(info)) {
             line.open(audioFormat, bufferSize);
             line.start();
-        } catch (LineUnavailableException e) {
-            log.error("Audio line unavailable: {}", e.getMessage());
-            return;
-        }
 
-        byte[] buffer = new byte[bufferSize];
-        ArrayDeque<byte[]> preRoll = new ArrayDeque<>(PRE_ROLL_FRAMES);
-        ByteArrayOutputStream audioCollector = new ByteArrayOutputStream();
-        boolean isActive = false;
-        int consecutiveVoice = 0;
-        int consecutiveSilence = 0;
+            byte[] buffer = new byte[bufferSize];
+            ArrayDeque<byte[]> preRoll = new ArrayDeque<>(PRE_ROLL_FRAMES);
+            ByteArrayOutputStream audioCollector = new ByteArrayOutputStream();
+            boolean isActive = false;
+            int consecutiveVoice = 0;
+            int consecutiveSilence = 0;
 
-        try {
             while (isListening.get() && !isStopping.get() && !Thread.currentThread().isInterrupted()) {
                 int bytesRead = line.read(buffer, 0, bufferSize);
                 if (bytesRead <= 0) continue;
@@ -198,9 +195,8 @@ public class NemoSTTImpl implements EarsInterface {
                     }
                 }
             }
-        } finally {
-            line.stop();
-            line.close();
+        } catch (LineUnavailableException e) {
+            log.error("Audio line unavailable: {}", e.getMessage());
         }
     }
 

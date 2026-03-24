@@ -263,9 +263,15 @@ public class NemoSTTImpl implements EarsInterface {
 
     private class NemoListener implements WebSocket.Listener {
 
+        private final StringBuilder textAccumulator = new StringBuilder();
+
         @Override
         public CompletionStage<?> onText(WebSocket webSocket, CharSequence data, boolean last) {
-            onTranscription(data.toString().trim());
+            textAccumulator.append(data);
+            if (last) {
+                onTranscription(textAccumulator.toString().trim());
+                textAccumulator.setLength(0);
+            }
             webSocket.request(1);
             return null;
         }

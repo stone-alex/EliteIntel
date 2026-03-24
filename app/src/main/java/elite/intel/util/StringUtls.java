@@ -2,6 +2,7 @@ package elite.intel.util;
 
 import elite.intel.session.PlayerSession;
 
+import javax.annotation.Nullable;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -16,9 +17,10 @@ public class StringUtls {
     }
 
 
-    public static Integer getIntSafely(String value) {
+    public static Integer getIntSafely(@Nullable String value) {
+        if (value == null) return null;
         try {
-            return Integer.parseInt(value);
+            return Integer.parseInt(value.replaceAll("[^0-9]", ""));
         } catch (NumberFormatException e) {
             return null;
         }

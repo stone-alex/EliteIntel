@@ -2,7 +2,6 @@ package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.managers.FleetCarrierManager;
 import elite.intel.gameapi.EventBusManager;
@@ -16,7 +15,7 @@ public class SetFleetCarrierFuelReserveHandler implements CommandHandler {
         if (key == null) {
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("Invalid fuel reserve value received."));
         }
-        Integer reserve = StringUtls.getIntSafely(key.getAsString().replace(",", ""));
+        Integer reserve = StringUtls.getIntSafely(key.getAsString());
         if(reserve == null){
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("Invalid fuel reserve value received."));
             return;

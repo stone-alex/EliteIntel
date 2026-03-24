@@ -20,14 +20,14 @@ public interface GameSessionDao {
                                                              rmsThresholdLow, encryptedLLMKey, encryptedTTSKey,
                                                              encryptedEDSSMKey, speechSpeed, localLlmCommandModel, localLlmQueryModel,
                                                              useLocalCommandLlm, useLocalQueryLlm, useLocalTTS, notificationVolume, sttThreads, voiceVolume,
-                                                             localLlmProvider, localLlmAddress
+                                                             localLlmProvider, localLlmAddress, sttProvider
                                                 )
                                   VALUES (1, :aiPersonality, :aiCadence, :aiVoice, :aiApiKey, :ttsApiKey, :sttApiKey,
                                                       :edsmApiKey, :loggingEnabled, :privacyModeOn, :rmsThresholdHigh,
                                                       :rmsThresholdLow, :encryptedLLMKey, :encryptedTTSKey,
                                                       :encryptedEDSSMKey,  :speechSpeed, :localLlmCommandModel, :localLlmQueryModel,
                                                       :useLocalCommandLlm, :useLocalQueryLlm, :useLocalTTS, :notificationVolume, :sttThreads, :voiceVolume,
-                                                      :localLlmProvider, :localLlmAddress
+                                                      :localLlmProvider, :localLlmAddress, :sttProvider
                                           )
             """)
     void save(@BindBean GameSessionDao.GameSession data);
@@ -72,6 +72,7 @@ public interface GameSessionDao {
             session.setVoiceVolume(rs.getInt("voiceVolume"));
             session.setLocalLlmProvider(rs.getString("localLlmProvider"));
             session.setLocalLlmAddress(rs.getString("localLlmAddress"));
+            session.setSttProvider(rs.getString("sttProvider"));
             return session;
         }
     }
@@ -107,6 +108,7 @@ public interface GameSessionDao {
         private Integer voiceVolume;
         private String localLlmProvider;
         private String localLlmAddress;
+        private String sttProvider;
 
 
         public String getAiPersonality() {
@@ -309,6 +311,14 @@ public interface GameSessionDao {
 
         public void setLocalLlmAddress(String localLlmAddress) {
             this.localLlmAddress = localLlmAddress;
+        }
+
+        public String getSttProvider() {
+            return sttProvider;
+        }
+
+        public void setSttProvider(String sttProvider) {
+            this.sttProvider = sttProvider;
         }
     }
 }

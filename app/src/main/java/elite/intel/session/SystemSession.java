@@ -3,6 +3,7 @@ package elite.intel.session;
 import elite.intel.ai.brain.LocalLlmProvider;
 import elite.intel.ai.brain.ShipCadence;
 import elite.intel.ai.brain.ShipPersonality;
+import elite.intel.ai.ears.SttProvider;
 import elite.intel.ai.mouth.GoogleVoices;
 import elite.intel.ai.mouth.kokoro.KokoroVoices;
 import elite.intel.db.dao.ChatHistoryDao;
@@ -354,6 +355,24 @@ public class SystemSession {
         Database.withDao(GameSessionDao.class, dao -> {
             GameSessionDao.GameSession session = dao.get();
             session.setLocalLlmProvider(provider.name());
+            dao.save(session);
+            return Void.class;
+        });
+    }
+
+    public SttProvider getSttProvider() {
+        String raw = Database.withDao(GameSessionDao.class, dao -> dao.get().getSttProvider());
+        try {
+            return SttProvider.valueOf(raw);
+        } catch (Exception e) {
+            return SttProvider.WHISPER;
+        }
+    }
+
+    public void setSttProvider(SttProvider provider) {
+        Database.withDao(GameSessionDao.class, dao -> {
+            GameSessionDao.GameSession session = dao.get();
+            session.setSttProvider(provider.name());
             dao.save(session);
             return Void.class;
         });

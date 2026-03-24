@@ -99,8 +99,6 @@ public class UINavigator {
     }
 
     public void closeOpenPanel() {
-        /// hack-workaround - clears any current UI selection
-        operator.operateKeyboard(Bindings.GameCommand.BINDING_TARGET_NEXT_ROUTE_SYSTEM.getGameBinding(), 0);
 
         StatusFlags.GuiFocus lastOpened = tracker.getLastOpenedPanel();
         if (lastOpened != null) {
@@ -111,12 +109,12 @@ public class UINavigator {
             operator.operateKeyboard(Bindings.GameCommand.BINDING_EXPLORATION_FSSQUIT.getGameBinding(), 0);
         }
 
-        if (status.isGalaxyMapOpen() || status.isSystemMapOpen() || status.isSaaModeActive()) {
+        //if (status.isGalaxyMapOpen() || status.isSystemMapOpen() || status.isSaaModeActive()) {
             /// traverse out of all nested windows
             for (int i = 0; i < 10; i++) {
                 operator.operateKeyboard(Bindings.GameCommand.BINDING_EXIT_KEY.getGameBinding(), 0);
             }
-        }
+        //}
     }
 
 

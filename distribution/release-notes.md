@@ -1,3 +1,9 @@
+## Elite Intel v-0.0327-beta
+
+### bug fixes / features:
+
+-- Fuzzy search for STT corrections. This works like a spell checker attempting to match bad input to commands known to the app.
+
 ## Elite Intel v-0.0326-beta
 
 ### bug fixes / features:

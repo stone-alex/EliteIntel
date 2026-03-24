@@ -59,9 +59,6 @@ dependencies {
     //sherpa
     implementation files('libs/sherpa-onnx-v1.12.28.jar')
 
-    // JNA - platform-native key simulation (left/right ctrl, alt, shift)
-    implementation 'net.java.dev.jna:jna:5.14.0'
-
     implementation 'org.zeromq:jeromq:0.6.0'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.17.2'
 

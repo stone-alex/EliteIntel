@@ -130,7 +130,7 @@ public enum Commands {
     SHOW_SOCIAL_PANEL                                   ("show_social", null, OpenSocialPanelHandler.class),
     SHOW_HISTORY_PANEL                                  ("show_history", null, OpenHistoryPanelHandler.class),
     SHOW_SQUADRON                                       ("show_squadron", null, OpenSquadronHandler.class),
-    SHOW_COMMANDER_PANEL                                ("show_role_panel", null, OpenCommanderPanel.class),
+    SHOW_COMMANDER_PANEL                                ("show_role_panel_commander_panel", null, OpenCommanderPanel.class),
     SHOW_FIGHTER_PANEL                                  ("show_fighter_panel", null, OpenFighterPanelHandler.class),
     SHOW_CREW                                           ("show_crew", null, OpenCrewPanelHandler.class),
     SHOW_INTERNAL_PANEL                                 ("show_internal_panel", null, OpenInternalPanelHandler.class),

@@ -131,10 +131,10 @@ public class AiCommandsAndQueries {
         commandMap.put("show social, show friends", SHOW_SOCIAL_PANEL.getAction());
         commandMap.put("show history, show history panel", SHOW_HISTORY_PANEL.getAction());
         commandMap.put("show squadron, show squadron panel", SHOW_SQUADRON.getAction());
-        commandMap.put("show central panel, role panel", SHOW_COMMANDER_PANEL.getAction());
+        commandMap.put("show central panel, role panel, commander panel", SHOW_COMMANDER_PANEL.getAction());
         commandMap.put("show fighter panel", SHOW_FIGHTER_PANEL.getAction());
         commandMap.put("show crew panel", SHOW_CREW.getAction());
-        commandMap.put("show internal panel, commander panel", SHOW_INTERNAL_PANEL.getAction());
+        commandMap.put("show internal panel, show home panel, open home panel", SHOW_INTERNAL_PANEL.getAction());
         commandMap.put("show modules panel", SHOW_MODULES_PANEL.getAction());
         commandMap.put("show fire groups", SHOW_FIRE_GROUPS.getAction());
         commandMap.put("show inventory panel", SHOW_INVENTORY_PANEL.getAction());

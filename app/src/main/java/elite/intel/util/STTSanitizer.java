@@ -149,7 +149,7 @@ public class STTSanitizer {
 
 
         /// Do not use fuzzy. Use params in Whisper instead.
-        /// sanitized = SttTermCorrector.getInstance().correct(sanitized);
+        sanitized = SttTermCorrector.getInstance().correct(sanitized);
         return sanitized.trim();
     }
 }

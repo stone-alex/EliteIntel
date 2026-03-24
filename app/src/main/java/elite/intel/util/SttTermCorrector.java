@@ -28,9 +28,9 @@ public class SttTermCorrector {
     private final Logger log = LogManager.getLogger(SttTermCorrector.class);
 
     // Ignore tokens shorter than this - too risky for false-positives on common words
-    private static final int MIN_TOKEN_LENGTH = 4;
+    private static final int MIN_TOKEN_LENGTH = 7;
     // Accept a correction only when edit distance is within this threshold
-    private static final int MAX_EDIT_DISTANCE = 2;
+    private static final int MAX_EDIT_DISTANCE = 3;
 
     // Lazily populated on first call to correct()
     private volatile Set<String> vocabulary = null;

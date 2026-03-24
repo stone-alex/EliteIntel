@@ -550,3 +550,7 @@
 "minigens"="engines"
 "tada arbita"="target"
 "fes ding"="FSD"
+"is it"="exit"
+"give it down"="gear down"
+"lensing gear is down"="gear down"
+"clolos"="close"

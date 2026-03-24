@@ -147,7 +147,6 @@ public class ApiFactory {
         }
     }
 
-    /// -- no choises here
     public EarsInterface getEarsImpl() {
         return switch (systemSession.getSttProvider()) {
             case NEMO_PARAKEET -> new NemoSTTImpl();

@@ -1,5 +1,6 @@
 package elite.intel.ui.view.settings;
 
+import elite.intel.ai.ears.SttProvider;
 import elite.intel.db.managers.ShipManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.SystemSession;
@@ -24,6 +25,7 @@ public class AudioSettingsPanel extends JPanel {
     private JSlider speechSpeedSlider;
     private JSlider whisperThreadsSlider;
     private JCheckBox useLocalTTSCheck;
+    private JComboBox<String> sttProviderCombo;
 
     private Runnable onLocalTtsChanged;
 
@@ -115,6 +117,25 @@ public class AudioSettingsPanel extends JPanel {
         useLocalTTSCheck.addActionListener(a -> saveLocalTts());
         grid.add(useLocalTTSCheck, ag);
 
+        // Row 3: STT Provider
+        ag.gridy = 3;
+        ag.gridwidth = 1;  // Reset from row 2 which set gridwidth = 4
+        ag.gridx = 0;
+        ag.weightx = 0;
+        ag.fill = GridBagConstraints.NONE;
+        ag.insets = new Insets(6, 6, 6, 6);
+        JLabel lblSttProvider = new JLabel("STT Provider");
+        lblSttProvider.setPreferredSize(new Dimension(140, 42));
+        grid.add(lblSttProvider, ag);
+
+        sttProviderCombo = new JComboBox<>(new String[]{"Whisper (Local)", "NeMo Parakeet (Local)"});
+        sttProviderCombo.addActionListener(e -> saveSttProvider());
+        ag.gridx = 1;
+        ag.gridwidth = 3;
+        ag.weightx = 1.0;
+        ag.fill = GridBagConstraints.HORIZONTAL;
+        grid.add(sttProviderCombo, ag);
+
         grid.setAlignmentX(Component.LEFT_ALIGNMENT);
         grid.setBorder(BorderFactory.createCompoundBorder(
                 new LineBorder(BUTTON_BG, 1),
@@ -158,6 +179,9 @@ public class AudioSettingsPanel extends JPanel {
 
     public void initData() {
         useLocalTTSCheck.setSelected(systemSession.useLocalTTS());
+        sttProviderCombo.setSelectedIndex(
+            systemSession.getSttProvider() == SttProvider.NEMO_PARAKEET ? 1 : 0
+        );
     }
 
     /**
@@ -191,6 +215,21 @@ public class AudioSettingsPanel extends JPanel {
         }
         systemSession.setUseLocalTTS(newValue);
         if (onLocalTtsChanged != null) onLocalTtsChanged.run();
+    }
+
+    private void saveSttProvider() {
+        SttProvider selected = sttProviderCombo.getSelectedIndex() == 1
+                ? SttProvider.NEMO_PARAKEET
+                : SttProvider.WHISPER;
+        if (selected != systemSession.getSttProvider()) {
+            systemSession.setSttProvider(selected);
+            JOptionPane.showMessageDialog(
+                    this,
+                    "STT provider changed to " + sttProviderCombo.getSelectedItem()
+                            + ".\nRestart EliteIntel for the change to take effect.",
+                    "Restart Required",
+                    JOptionPane.INFORMATION_MESSAGE);
+        }
     }
 
     private static JSlider makeSlider(int min, int max, int value, int majorTick, int minorTick) {

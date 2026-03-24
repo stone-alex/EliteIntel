@@ -171,12 +171,12 @@ public class NemoSTTImpl implements EarsInterface {
                 if (!isActive && consecutiveVoice >= ENTER_VOICE_FRAMES && !isSpeaking.get()) {
                     isActive = true;
                     for (byte[] pre : preRoll) {
-                        audioCollector.write(pre);
+                        audioCollector.write(pre, 0, pre.length);
                     }
                 }
 
                 if (isActive) {
-                    audioCollector.write(frame);
+                    audioCollector.write(frame, 0, frame.length);
                 }
 
                 if (preRoll.size() >= PRE_ROLL_FRAMES) {

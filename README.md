@@ -62,7 +62,7 @@ and auxiliary files, pulls in info from EDSM when needed, and keeps things respo
 
 ## ⚠️ **Important:**
 
-Limitation:
+### Limitation:
 
 - 🔴 EliteIntel uses Java's Robot API for keystroke simulation, which **does not distinguish between left and right
   modifier keys (Shift, Ctrl, Alt)**.

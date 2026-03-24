@@ -146,59 +146,59 @@ public class AiCommandsAndQueries {
         commandMap.put("galaxy map, open galaxy map, show galaxy map", OPEN_GALAXY_MAP.getAction());
         commandMap.put("local map, open system map, show local map", OPEN_SYSTEM_MAP.getAction());
 
+        commandMap.put("max shields, shields full, full power to shields, shields up, boost shields", INCREASE_SHIELDS_POWER.getAction());
+        commandMap.put("max engines, engines full, full power to engines, boost engines", INCREASE_ENGINES_POWER.getAction());
+        commandMap.put("max weapons, weapons full, full power to weapons, boost weapons", INCREASE_WEAPONS_POWER.getAction());
+        /// pirate massacre missions
+        commandMap.put("plot reconnaissance route to hunting ground, recon hunting ground", RECON_TARGET_SYSTEM.getAction());
+        commandMap.put("navigate to system with matching mission provider, go to mission provider system", RECON_PROVIDER_SYSTEM.getAction());
+        commandMap.put("navigate to confirmed pirate massacre mission provider, go to pirate mission giver", NAVIGATE_TO_PIRATE_MISSION_PROVIDER.getAction());
+        commandMap.put("find hunting grounds" + KEY_X, FIND_HUNTING_GROUNDS.getAction());
+        commandMap.put("ignore hunting ground", IGNORE_HUNTING_GROUND.getAction());
+        commandMap.put("confirm hunting ground", CONFIRM_HUNTING_GROUND.getAction());
+        commandMap.put("deploy hardpoints, weapons hot, combat ready", DEPLOY_HARDPOINTS.getAction());
+
         /// vehicle deployment (mode-independent)
+
+        commandMap.put("deploy SRV, deploy buggy, deploy car, deploy surface vehicle", DEPLOY_SRV.getAction());
+
+
+        commandMap.put("recover SRV, recover buggy, recover car,get car back aboard ship, requesting extraction, extract surface vehicle", RECOVER_SRV.getAction());
+
+        commandMap.put("deploy heat sink", DEPLOY_HEAT_SINK.getAction());
+        commandMap.put("equalize power, reset power distribution", RESET_POWER.getAction());
+        commandMap.put("retract hardpoints, store weapons, weapons cold", RETRACT_HARDPOINTS.getAction());
+
+        /// science
+        commandMap.put("add <material> to mining targets" + KEY_X, ADD_MINING_TARGET.getAction());
+        commandMap.put("clear mining targets", CLEAR_MINING_TARGETS.getAction());
+        commandMap.put("mining and material announcements on/off" + KEY_STATE, MINING_ON_OFF.getAction());
+        commandMap.put("find brain trees" + KEY_X_WITH_DISTANCE, FIND_BRAIN_TREES.getAction());
+        commandMap.put("find mining site for material X" + KEY_X_WITH_DISTANCE, FIND_MINING_SITE.getAction());
+        commandMap.put("find where to mine tritium, find tritium mining site" + KEY_X_WITH_DISTANCE, FIND_FLEET_CARRIER_FUEL_MINING_SITE.getAction());
+        commandMap.put("navigate to next bio sample, go to next organic, next codex marker", NAVIGATE_TO_NEXT_BIO_SAMPLE.getAction());
+        commandMap.put("scan the system, open FSS, perform full system scan, honk", OPEN_FSS_AND_SCAN.getAction());
+        commandMap.put("locate nearest vista genomics", FIND_VISTA_GENOMICS.getAction());
+        commandMap.put("delete this codex entry", DELETE_CODEX_ENTRY.getAction());
+        commandMap.put("clear all codex entries", CLEAR_CODEX_ENTRIES.getAction());
+
+        /// combat
+        commandMap.put("target <subsystem name> e.g. target fsd, target cockpit, target engines, target drive, target shield generator, target power plant, select target" + KEY_X, TARGET_SUB_SYSTEM.getAction());
+        commandMap.put("target wingman 1", TARGET_WINGMAN0.getAction());
+        commandMap.put("target wingman 2", TARGET_WINGMAN1.getAction());
+        commandMap.put("target wingman 3", TARGET_WINGMAN2.getAction());
+        commandMap.put("wing nav lock, lock on wing", WING_NAV_LOCK.getAction());
+        commandMap.put("select highest threat, target most dangerous", SELECT_HIGHEST_THREAT.getAction());
+
+
+        /// fighter
         if (status.isInMainShip()) {
-            commandMap.put("deploy SRV, deploy buggy, deploy car, deploy surface vehicle", DEPLOY_SRV.getAction());
+            commandMap.put("deploy fighter, launch fighter, fighter escort", DEPLOY_FIGHTER.getAction());
+            commandMap.put("order fighter defend ship", FIGHTER_REQUEST_DEFENSIVE_BEHAVIOUR.getAction());
+            commandMap.put("order fighter focus my target, attack my target", FIGHTER_REQUEST_FOCUS_TARGET.getAction());
+            commandMap.put("order fighter hold fire, cease fire, ceasefire", FIGHTER_REQUEST_HOLD_FIRE.getAction());
+            commandMap.put("order fighter return to base, fighter return to ship, escort return", FIGHTER_REQUEST_REQUEST_DOCK.getAction());
         }
-        if (status.isInSrv()) {
-            commandMap.put("recover SRV, recover buggy, recover car,get car back aboard ship, requesting extraction, extract surface vehicle", RECOVER_SRV.getAction());
-        }
-
-        if (status.isAnalysisMode()) {
-            /// science
-            commandMap.put("add <material> to mining targets" + KEY_X, ADD_MINING_TARGET.getAction());
-            commandMap.put("clear mining targets", CLEAR_MINING_TARGETS.getAction());
-            commandMap.put("mining and material announcements on/off" + KEY_STATE, MINING_ON_OFF.getAction());
-            commandMap.put("find brain trees" + KEY_X_WITH_DISTANCE, FIND_BRAIN_TREES.getAction());
-            commandMap.put("find mining site for material X" + KEY_X_WITH_DISTANCE, FIND_MINING_SITE.getAction());
-            commandMap.put("find where to mine tritium, find tritium mining site" + KEY_X_WITH_DISTANCE, FIND_FLEET_CARRIER_FUEL_MINING_SITE.getAction());
-            commandMap.put("navigate to next bio sample, go to next organic, next codex marker", NAVIGATE_TO_NEXT_BIO_SAMPLE.getAction());
-            commandMap.put("scan the system, open FSS, perform full system scan, honk", OPEN_FSS_AND_SCAN.getAction());
-            commandMap.put("locate nearest vista genomics", FIND_VISTA_GENOMICS.getAction());
-            commandMap.put("delete this codex entry", DELETE_CODEX_ENTRY.getAction());
-            commandMap.put("clear all codex entries", CLEAR_CODEX_ENTRIES.getAction());
-        } else {
-            /// combat
-            commandMap.put("target <subsystem name> e.g. target fsd, target cockpit, target engines, target drive, target shield generator, target power plant, select target" + KEY_X, TARGET_SUB_SYSTEM.getAction());
-            commandMap.put("target wingman 1", TARGET_WINGMAN0.getAction());
-            commandMap.put("target wingman 2", TARGET_WINGMAN1.getAction());
-            commandMap.put("target wingman 3", TARGET_WINGMAN2.getAction());
-            commandMap.put("wing nav lock, lock on wing", WING_NAV_LOCK.getAction());
-            commandMap.put("select highest threat, target most dangerous", SELECT_HIGHEST_THREAT.getAction());
-            commandMap.put("deploy heat sink", DEPLOY_HEAT_SINK.getAction());
-            commandMap.put("max shields, shields full, full power to shields, shields up, boost shields", INCREASE_SHIELDS_POWER.getAction());
-            commandMap.put("max engines, engines full, full power to engines, boost engines", INCREASE_ENGINES_POWER.getAction());
-            commandMap.put("max weapons, weapons full, full power to weapons, boost weapons", INCREASE_WEAPONS_POWER.getAction());
-            commandMap.put("equalize power, reset power distribution", RESET_POWER.getAction());
-            commandMap.put("retract hardpoints, store weapons, weapons cold", RETRACT_HARDPOINTS.getAction());
-            commandMap.put("deploy hardpoints, weapons hot, combat ready", DEPLOY_HARDPOINTS.getAction());
-            /// pirate massacre missions
-            commandMap.put("plot reconnaissance route to hunting ground, recon hunting ground", RECON_TARGET_SYSTEM.getAction());
-            commandMap.put("navigate to system with matching mission provider, go to mission provider system", RECON_PROVIDER_SYSTEM.getAction());
-            commandMap.put("navigate to confirmed pirate massacre mission provider, go to pirate mission giver", NAVIGATE_TO_PIRATE_MISSION_PROVIDER.getAction());
-            commandMap.put("find hunting grounds" + KEY_X, FIND_HUNTING_GROUNDS.getAction());
-            commandMap.put("ignore hunting ground", IGNORE_HUNTING_GROUND.getAction());
-            commandMap.put("confirm hunting ground", CONFIRM_HUNTING_GROUND.getAction());
-            /// fighter
-            if (status.isInMainShip()) {
-                commandMap.put("deploy fighter, launch fighter, fighter escort", DEPLOY_FIGHTER.getAction());
-                commandMap.put("order fighter defend ship", FIGHTER_REQUEST_DEFENSIVE_BEHAVIOUR.getAction());
-                commandMap.put("order fighter focus my target, attack my target", FIGHTER_REQUEST_FOCUS_TARGET.getAction());
-                commandMap.put("order fighter hold fire, cease fire, ceasefire", FIGHTER_REQUEST_HOLD_FIRE.getAction());
-                commandMap.put("order fighter return to base, fighter return to ship, escort return", FIGHTER_REQUEST_REQUEST_DOCK.getAction());
-            }
-        }
-
         /// very special case. machine-only command
         commandMap.put(CONNECTION_CHECK_COMMAND, CONNECTION_CHECK.getAction());
         return commandMap;

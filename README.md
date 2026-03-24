@@ -7,6 +7,7 @@
 --- 
 
 ## Linux and Windows. Can be ran 100% off-line.
+
 ---
 
 Latest [release notes](https://github.com/stone-alex/EliteIntel/blob/master/distribution/release-notes.md)
@@ -57,10 +58,18 @@ The app uses Speech-to-Text (STT) and Text-to-Speech (TTS) for **natural voice i
 and LLM for handling commands, queries, and chats. It processes game data from journal 
 and auxiliary files, pulls in info from EDSM when needed, and keeps things responsive.
 
-___
+---
 
-The project is open-source under a [Creative Commons license CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en),
-so feel free to check out the code and contribute. (see [DEVELOPERS.md](DEVELOPERS.md) for details)
+## ⚠️ **Important:**
+
+Limitation:
+
+- 🔴 EliteIntel uses Java's Robot API for keystroke simulation, which **does not distinguish between left and right
+  modifier keys (Shift, Ctrl, Alt)**.
+- 🔴 If your bindings require a specific side (e.g., Key_RightAlt), those commands will not trigger correctly.
+- 🔴 A workaround is to create a separate binding save for AI. Map you HOTAS/controller etc to the left column and keyboard to the right. Which modifiers you use is up to you but remember that there is no difference betgween right and left.
+
+___
 
 ## Contributing
 
@@ -70,7 +79,8 @@ reflection) and principles like DRY and SRP. All PRs go through review.
 
 ## License
 
-Released under Creative Commons license.
+The project is open-source under a [Creative Commons license CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en),
+so feel free to check out the code and contribute. (see [DEVELOPERS.md](DEVELOPERS.md) for details)
 
 ## Contact Developer / Join the Community
 If you run into issues, hit us up on GitHub issues or Feedback and bug reports are super welcome!

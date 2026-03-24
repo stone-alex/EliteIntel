@@ -224,6 +224,10 @@ public class PlayerSession {
         miningTargets.add(miningTarget);
     }
 
+    public void removeMiningTarget(String target) {
+        miningTargets.remove(target);
+    }
+
     public void clearMiningTargets() {
         miningTargets.clear();
     }

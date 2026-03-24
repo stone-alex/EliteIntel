@@ -1,14 +1,18 @@
 package elite.intel.util;
 
 import elite.intel.ai.ears.whisper.WhisperSTTImpl;
+import elite.intel.db.dao.CommodityDao;
+import elite.intel.db.dao.MaterialsDao;
+import elite.intel.db.dao.SubSystemDao;
+import elite.intel.db.util.Database;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 
 /**
@@ -24,6 +28,7 @@ public class STTSanitizer {
     private static final STTSanitizer INSTANCE = new STTSanitizer();
     private final Logger log = LogManager.getLogger(STTSanitizer.class);
     private final Map<String, String> STT_CORRECTIONS = loadCorrections();
+    private Set<String> dictionary = new HashSet<>();
 
     private STTSanitizer() {
         // Private constructor for singleton
@@ -51,6 +56,19 @@ public class STTSanitizer {
             log.warn("Could not determine JAR location, using default APP_DIR: {}. Error: {}", appDir, e.getMessage());
         }
         return appDir;
+    }
+
+
+    private Set<String> subSystems() {
+        return Database.withDao(SubSystemDao.class, dao -> new HashSet<>(dao.getAllNamesLowerCase()));
+    }
+
+    private Set<String> getMaterials() {
+        return Database.withDao(MaterialsDao.class, dao -> new HashSet<>(dao.getAllNamesLowerCase()));
+    }
+
+    private Set<String> getCommodities() {
+        return Database.withDao(CommodityDao.class, dao -> new HashSet<>(dao.getAllNamesLowerCase()));
     }
 
 
@@ -86,10 +104,6 @@ public class STTSanitizer {
         return file;
     }
 
-    public Map<String, String> getCorrections() {
-        return STT_CORRECTIONS;
-    }
-
     private Map<String, String> loadCorrections() {
         Map<String, String> map = new HashMap<>();
         File file = ensureCorrectionsFileExists();
@@ -110,14 +124,14 @@ public class STTSanitizer {
                 log.warn("Failed to load STT corrections from {}: {}", file.getPath(), e.getMessage());
             }
         }
+
         return map;
     }
 
     public String correctMistakes(String transcript) {
         String sanitized = transcript.toLowerCase();
         // Normalize symbols that Whisper may output as characters rather than words
-        sanitized = sanitized.replaceAll(" \\+(\\d)", " plus $1").replaceAll(" -(\\d)", " minus $1")
-                .replace(" + ", " plus ").replace(" - ", " minus ").replace(",", " ").replace("!", "").replace("?", "").replace(".", "");
+        sanitized = sanitized.replaceAll(" \\+(\\d)", " plus $1").replaceAll(" -(\\d)", " minus $1").replace(" + ", " plus ").replace(" - ", " minus ").replace(",", " ").replace("!", "").replace("?", "").replace(".", "");
         for (Map.Entry<String, String> entry : STT_CORRECTIONS.entrySet()) {
             sanitized = sanitized.replaceAll("\\b" + Pattern.quote(entry.getKey()) + "\\b", entry.getValue());
         }
@@ -146,10 +160,16 @@ public class STTSanitizer {
         if (sanitized.startsWith("my")) {
             sanitized = sanitized.replaceFirst("my", "");
         }
+        if (sanitized.startsWith("you")) {
+            sanitized = sanitized.replaceFirst("you", "");
+        }
 
-
+        Set<String> tempDictionary = STT_CORRECTIONS.entrySet().stream().map(Map.Entry::getValue).collect(Collectors.toSet());
+        tempDictionary.addAll(getCommodities());
+        tempDictionary.addAll(subSystems());
+        tempDictionary.addAll(getMaterials());
         /// Do not use fuzzy. Use params in Whisper instead.
-        sanitized = SttTermCorrector.getInstance().correct(sanitized);
+        sanitized = SttTermCorrector.getInstance().correct(sanitized, new TreeSet<>(tempDictionary));
         return sanitized.trim();
     }
 }

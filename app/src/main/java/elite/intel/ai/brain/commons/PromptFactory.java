@@ -66,9 +66,10 @@ public class PromptFactory implements AiPromptFactory {
         }
 
         sb.append("""
+                COMMAND RULES - DO NOT DEVIATE:
+                - CRITICAL: commands with word 'clear' must match word 'clear' in user input exactly, failure to follow this rule will result in damage and data loss!
                 - ONLY use action names EXACTLY as written in the lists below.
                 - ONLY use parameter keys/values that appear in the command/query template.
-                - IMPORTANT: commands with word 'clear' must match word 'clear' in user input exactly, else you will delete critical data!
                 - IMPORTANT: commands with word 'confirm' must match word 'confirm' in user input exactly, else you will delete critical data!
                 - IMPORTANT: commands such as 'lets go' or 'lets get out of here' are meant for hyperspace jump.
                 - IMPORTANT: 'target' disambiguation:
@@ -76,7 +77,6 @@ public class PromptFactory implements AiPromptFactory {
                     • "target next route system"       → select_next_system_in_route
                     • "target most dangerous/highest"  → target_highest_threat
                     • "target <anything else>"         → target_subsystem, key=the word(s) after target (e.g. "target fsd" → key="fsd", "target engines" → key="engines")
-                
                 """);
 
         sb.append("\nCOMMANDS:\n");

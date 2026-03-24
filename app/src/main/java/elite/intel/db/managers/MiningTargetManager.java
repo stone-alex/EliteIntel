@@ -47,4 +47,11 @@ public class MiningTargetManager {
             return null;
         });
     }
+
+    public void remove(String target) {
+        Database.withDao(MiningTargetDao.class, dao -> {
+            dao.remove(target);
+            return null;
+        });
+    }
 }

@@ -11,6 +11,7 @@ public enum Commands {
     DISABLE_ALL_ANNOUNCEMENTS                           ("disble_all_announcements", null, DisableAllAnnouncementHandler.class),
     LIGHTS_ON_OFF                                       ("toggle_lights_on_off", null, LightsOnOffHandler.class),
     ADD_MINING_TARGET                                   ("add_mining_target", null, AddMiningTargetHandler.class),
+    REMOVE_MINING_TARGET                                ("remove_mining_target", null, RemoveMiningTargetHandler.class),
     CLEAR_MINING_TARGETS                                ("clear_mining_targets", null, ClearMiningTargetsHandler.class),
     CLEAR_CACHE                                         ("clear_cache", null, ClearCacheHandler.class),
     INTERRUPT_TTS                                       ("shut_up_cancel_interrupt_tts_vocalization", null,ShutUpHandler.class),

@@ -50,7 +50,7 @@ public class AiCommandsAndQueries {
         commandMap.put("navigate from memory, paste from memory, paste address", NAVIGATE_TO_ADDRESS_FROM_MEMORY.getAction());
         commandMap.put("cancel navigation", NAVIGATION_ON_OFF.getAction());
         commandMap.put("select next system in route, target next route system", TARGET_NEXT_ROUTE_SYSTEM.getAction());
-        commandMap.put("jump to hyperspace, jump to the next way point, let's get out of here, lets go, enter hyperspace, go to next waypoint, engage FSD jump", JUMP_TO_HYPERSPACE.getAction());
+        commandMap.put("jump to hyperspace, jump to the next way point, let's get out of here, lets go, enter hyperspace, go to next waypoint, engage FSD jump, engage frame shift drive", JUMP_TO_HYPERSPACE.getAction());
         commandMap.put("drop from supercruise, disengage FSD, drop", DROP_FROM_SUPER_CRUISE.getAction());
         commandMap.put("supercruise, light speed, engage FSD supercruise", ENTER_SUPER_CRUISE.getAction());
         commandMap.put("set as home system", SET_HOME_SYSTEM.getAction());
@@ -170,10 +170,12 @@ public class AiCommandsAndQueries {
         commandMap.put("retract hardpoints, store weapons, weapons cold", RETRACT_HARDPOINTS.getAction());
 
         /// science
-        commandMap.put("add <material> to mining targets" + KEY_X, ADD_MINING_TARGET.getAction());
-        commandMap.put("clear mining targets", CLEAR_MINING_TARGETS.getAction());
+        commandMap.put("set mining target to requested material" + KEY_X, ADD_MINING_TARGET.getAction());
+        commandMap.put("remove only specified mining target" + KEY_X, REMOVE_MINING_TARGET.getAction());
+        commandMap.put("clear all mining targets only if word clear is present", CLEAR_MINING_TARGETS.getAction());
+
         commandMap.put("mining and material announcements on/off" + KEY_STATE, MINING_ON_OFF.getAction());
-        commandMap.put("find brain trees" + KEY_X_WITH_DISTANCE, FIND_BRAIN_TREES.getAction());
+        commandMap.put("find brain trees, find planet with brain trees that contain requested material" + KEY_X_WITH_DISTANCE, FIND_BRAIN_TREES.getAction());
         commandMap.put("find mining site for material X" + KEY_X_WITH_DISTANCE, FIND_MINING_SITE.getAction());
         commandMap.put("find where to mine tritium, find tritium mining site" + KEY_X_WITH_DISTANCE, FIND_FLEET_CARRIER_FUEL_MINING_SITE.getAction());
         commandMap.put("navigate to next bio sample, go to next organic, next codex marker", NAVIGATE_TO_NEXT_BIO_SAMPLE.getAction());
@@ -273,7 +275,7 @@ public class AiCommandsAndQueries {
     private static void collectWords(Set<String> target, Set<String> phrases) {
         for (String phrase : phrases) {
             // Strip template markers {key:X}, {state:true/false}, <material>, etc.
-            String cleaned = phrase.replaceAll("\\{[^}]*\\}", " ").replaceAll("<[^>]*>", " ");
+            String cleaned = phrase.replaceAll("\\{[^}]*\\}", " ").replaceAll("<[^>]*>", " ").toLowerCase();
             for (String word : cleaned.toLowerCase().split("[^a-z']+")) {
                 if (word.length() >= 3) {
                     target.add(word);

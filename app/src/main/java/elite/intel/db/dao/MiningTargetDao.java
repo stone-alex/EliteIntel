@@ -23,6 +23,9 @@ public interface MiningTargetDao {
     @SqlUpdate("DELETE FROM mining_targets")
     void clear();
 
+    @SqlUpdate("DELETE FROM mining_targets WHERE target = :target")
+    void remove(String target);
+
 
     class MiningTargetMapper implements RowMapper<MiningTarget> {
 

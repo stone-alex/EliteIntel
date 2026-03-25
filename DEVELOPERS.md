@@ -74,7 +74,7 @@ java -Djava.library.path=distribution/native/sherpa-onnx \
    ```
    -Djava.library.path=distribution/native/sherpa-onnx
    ```
-   This is required for the local Sherpa-ONNX STT/TTS native libraries to load. Without it the app will fail to start when a local STT or TTS backend is selected.
+   This is required for the local Sherpa-ONNX STT/TTS native libraries to load. Without it the app will fail to run the local STT or TTS backend.
 4. **Unused-declaration false positives**: see the *IntelliJ IDEA Note* section at the bottom of this file.
 
 ---
@@ -187,16 +187,6 @@ There are classes instantiated via reflection. Intelli J IDEA will flag these as
 4. Click on Unused declaration to expand it.
 5. You'll see an option called Annotations. Click on the ellipsis (...) next to it.
 6. In the dialog that appears, you can add @Subscribe to the list of annotations that are considered as usage.
-
-## Running app from Intelli J IDEA
-
-The runner configuration must have VM options set to include the path to the native libraries:
-
-``` 
--Djava.library.path=distribution/native/sherpa-onnx
-```
-
-Without it the app will start, but you will get no audio input or output.
 
 ## Contact
 

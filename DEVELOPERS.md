@@ -1,6 +1,6 @@
 # Elite Intel Developer Guidelines
 
-## Overview
+## Overview (video is dated, but still relevant)
 
 [![Architecture Overview](https://img.youtube.com/vi/tpqcodcuIig/0.jpg)](https://youtu.be/tpqcodcuIig)
 
@@ -23,6 +23,61 @@ If the input matches a query the AI will respond with a different format of data
 query handler for processing. The querry handler will aggregate data necessary to perform the action and send it to 
 AI for analysis in a different prompt along with the original user input. AI will respond with the data analysis response.
 
+## Getting Started
+
+### Prerequisites
+
+| Tool       | Version               | Notes                                                        |
+|------------|-----------------------|--------------------------------------------------------------|
+| **Java**   | **21 LTS**            | Required. Tested with Eclipse Temurin / OpenJDK 21.          |
+| **Gradle** | **8.7** (via wrapper) | Do **not** install Gradle manually — always use `./gradlew`. |
+| **Git**    | Any recent            | —                                                            |
+
+> The build will fail on Java versions other than 21. Make sure `JAVA_HOME` points to a JDK 21 installation.
+
+### Checkout
+
+```bash
+git clone https://github.com/<your-fork>/EliteIntel.git
+cd EliteIntel
+```
+
+Or clone the upstream repo directly:
+
+```bash
+git clone https://github.com/djlondon/EliteIntel.git
+cd EliteIntel
+```
+
+### Build
+
+```bash
+./gradlew clean build          # Full build (both modules)
+./gradlew app:build            # Build main app only
+./gradlew shadowJar            # Create fat JAR → distribution/elite_intel.jar
+```
+
+The fat JAR is written to `distribution/elite_intel.jar`.
+
+### Run
+
+```bash
+java -Djava.library.path=distribution/native/sherpa-onnx \
+     -jar distribution/elite_intel.jar
+```
+
+### IDE Configuration (IntelliJ IDEA)
+
+1. **Open** the project root as a Gradle project (`File → Open`).
+2. **SDK**: ensure the project SDK is set to Java 21 (`File → Project Structure → Project → SDK`).
+3. **Run configuration**: edit the `App` run configuration and add the following to **VM options**:
+   ```
+   -Djava.library.path=distribution/native/sherpa-onnx
+   ```
+   This is required for the local Sherpa-ONNX STT/TTS native libraries to load. Without it the app will fail to start when a local STT or TTS backend is selected.
+4. **Unused-declaration false positives**: see the *IntelliJ IDEA Note* section at the bottom of this file.
+
+---
 
 ## Coding Standards
 
@@ -72,17 +127,27 @@ If you want to implement a new command or query follow the established patterns.
 
 - **Interface**: Implement `elite.intel.ai.ears.EarsInterface`.
     - Methods: `start()`, `stop()`, `getNextTranscription()`, `stopListening()`, `shutdown()`.
-    - Run in a separate thread, stream mic input to STT, and throw `UserInputEvent` on API callback.
-    - Use `AudioCalibrator` to automatically set up Root Mean Square (RMS) thresholds based on real time audio analysis.
+  - Run in a separate thread, stream mic input to STT, and publish `UserInputEvent` when a transcription is ready.
+  - Use `AudioCalibrator` to automatically set RMS thresholds based on real-time audio analysis.
     - Use `AudioFormatDetector` to automatically detect the audio device, bitrate, and sample rate.
-- **Example**: See `elite.intel.ai.ears.google` for Google STT integration.
+- **Current backend**: `elite.intel.ai.ears.whisper.WhisperSTTImpl` — offline, runs locally via
+  `whisper-jni` (JNI bindings to whisper.cpp). Requires a 16 kHz mono audio stream; resampling is handled internally by
+  `Resampler`.
+- **Native dependency**: Whisper native libraries are loaded at runtime from the path specified by
+  `-Djava.library.path` (see IDE Configuration above).
 
 ### TTS (Text-to-Speech)
 
 - **Interface**: Implement `elite.intel.ai.mouth.MouthInterface`.
-    - Methods: `start()`, `stop()`, `@Subscribe void onVoiceProcessEvent(VoiceProcessEvent event)`.
-    - Run in a separate thread, manage an internal queue, and subscribe via `SubscriberRegistration` or `EventBusManager.register(this)` for singletons.
-- **Example**: See `elite.intel.ai.mouth.google` for Google TTS integration.
+  - Methods: `start()`, `stop()`, and subscribe to relevant vocalisation events via `@Subscribe`.
+  - Run in a separate thread, manage an internal queue, and register via `SubscriberRegistration` or
+    `EventBusManager.register(this)` for singletons.
+- **Current backends**:
+  - `elite.intel.ai.mouth.kokoro.KokoroTTS` — **primary, offline**. Uses Kokoro via
+    `sherpa-onnx` JNI. Two-queue pipeline: sentence splitting → synthesis queue → playback queue. Native libraries loaded from
+    `-Djava.library.path`. No API key required.
+  -
+  `elite.intel.ai.mouth.google.GoogleTTSImpl` — cloud-based fallback via Google Cloud Text-to-Speech API. Requires a Google Cloud API key configured in the System settings tab.
 
 ### AI (LLM Integration)
 
@@ -122,6 +187,16 @@ There are classes instantiated via reflection. Intelli J IDEA will flag these as
 4. Click on Unused declaration to expand it.
 5. You'll see an option called Annotations. Click on the ellipsis (...) next to it.
 6. In the dialog that appears, you can add @Subscribe to the list of annotations that are considered as usage.
+
+## Running app from Intelli J IDEA
+
+The runner configuration must have VM options set to include the path to the native libraries:
+
+``` 
+-Djava.library.path=distribution/native/sherpa-onnx
+```
+
+Without it the app will start, but you will get no audio input or output.
 
 ## Contact
 

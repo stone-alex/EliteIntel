@@ -26,8 +26,8 @@ public class UINavigator {
     private static final int CENTRE_PANEL_TAB_COUNT = CenterPanel.values().length;
     private static final int RIGHT_PANEL_TAB_COUNT = RightPanel.values().length;
 
-    private static final int RANDOM_MIN = 80;
-    private static final int RANDOM_MAX = 200;
+    private static final int RANDOM_MIN = 125;
+    private static final int RANDOM_MAX = 250;
 
     private final CommandOperator operator;
     private final PanelStateTracker tracker = PanelStateTracker.getInstance();

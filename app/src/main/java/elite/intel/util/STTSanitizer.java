@@ -185,7 +185,7 @@ public class STTSanitizer {
         tempDictionary.addAll(subSystems());
         tempDictionary.addAll(getMaterials());
         /// Do not use fuzzy. Use params in Whisper instead.
-        sanitized = SttTermCorrector.getInstance().correct(sanitized, new TreeSet<>(tempDictionary));
+        //sanitized = SttTermCorrector.getInstance().correct(sanitized, new TreeSet<>(tempDictionary));
         return sanitized.trim();
     }
 

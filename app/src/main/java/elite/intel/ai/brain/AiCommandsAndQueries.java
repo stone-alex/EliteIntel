@@ -141,7 +141,7 @@ public class AiCommandsAndQueries {
         commandMap.put("show storage panel", SHOW_STORAGE_PANEL.getAction());
         commandMap.put("show status panel", SHOW_STATUS_PANEL.getAction());
         commandMap.put("show carrier management panel", DISPLAY_CARRIER_MANAGEMENT.getAction());
-        commandMap.put("close, close panel, exit, esc", EXIT_CLOSE.getAction());
+        commandMap.put("exit, close, close panel, close window", EXIT_CLOSE.getAction());
         commandMap.put("galaxy map, open galaxy map, show galaxy map", OPEN_GALAXY_MAP.getAction());
         commandMap.put("local map, open system map, show local map", OPEN_SYSTEM_MAP.getAction());
 

@@ -37,6 +37,7 @@ public class AnalyzeStellarSignalsHandler extends BaseQueryAnalyzer implements Q
                   - locationName: body where the signal was detected
                   - signalName: name of the point of interest
                   - signalType: type classification
+                - data format indicates number of signals. For example '2 Fleet Carrier' means there are 2 fleet carriers in this star system
 
                 Rules:
                 - Biological signals: name the planets that have them and the count.

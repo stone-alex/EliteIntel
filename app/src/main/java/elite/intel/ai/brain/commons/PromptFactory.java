@@ -71,7 +71,9 @@ public class PromptFactory implements AiPromptFactory {
                 - ONLY use action names EXACTLY as written in the lists below.
                 - ONLY use parameter keys/values that appear in the command/query template.
                 - IMPORTANT: commands with word 'confirm' must match word 'confirm' in user input exactly, else you will delete critical data!
-                - IMPORTANT: commands such as 'lets go' or 'lets get out of here' are meant for hyperspace jump.
+                - IMPORTANT: command such as 'lets go' or 'lets get out of here' 'jump to ...' followed by whatever, are always this action jump_to_hyperspace..
+                - IMPORTANT: command such as 'exit' are always this action exit_close.
+                - IMPORTANT: command such as 'drop' is always this action drop_from_super_cruise.
                 - IMPORTANT: - Map "listen" / "listen up" to action `start_listening_monitor_commands_do_not_ignore_user`
                                ONLY when it appears as a standalone utterance with no following instruction or intent.
                                If "listen" or "listen up" is immediately followed by additional content (e.g. "listen up,

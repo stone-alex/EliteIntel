@@ -4,12 +4,14 @@ import elite.intel.ai.brain.ShipCadence;
 import elite.intel.ai.brain.ShipPersonality;
 import elite.intel.ai.mouth.GoogleVoices;
 import elite.intel.ai.mouth.kokoro.KokoroVoices;
+import elite.intel.ai.mouth.subscribers.events.AiVoxDemoEvent;
 import elite.intel.db.dao.ShipDao;
 import elite.intel.db.managers.ShipManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
+import elite.intel.util.Ranks;
 
 import javax.swing.*;
 import javax.swing.border.MatteBorder;
@@ -206,7 +208,13 @@ public class PlayerTabPanel extends JPanel {
             c.weightx = 0.25;
             JComboBox<String> voiceCombo = makeCombo(voiceOptions, ship.getVoice());
             voiceCombo.addActionListener(e -> {
-                ship.setVoice((String) voiceCombo.getSelectedItem());
+                String voiceName = (String) voiceCombo.getSelectedItem();
+                ship.setVoice(voiceName);
+                String tts = "Hello " + playerSession.getPlayerName() + ", I am " + ship.getShipName() + ", at your service " + Ranks.getPlayerHonorific();
+                EventBusManager.publish(new AiVoxDemoEvent(
+                        tts,
+                        voiceName
+                ));
                 ShipManager.getInstance().saveShip(ship);
             });
             panel.add(voiceCombo, c);

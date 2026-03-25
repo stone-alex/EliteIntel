@@ -179,7 +179,7 @@ public enum Commands {
     TARGET_WINGMAN1                                     ("target_wingman_2", BINDING_TARGET_WINGMAN1.getGameBinding(), GenericGameControlHandler.class),
     TARGET_WINGMAN2                                     ("target_wingman_3", BINDING_TARGET_WINGMAN2.getGameBinding(), GenericGameControlHandler.class),
     WING_NAV_LOCK                                       ("lock_on_wingman", BINDING_WING_NAV_LOCK.getGameBinding(), GenericGameControlHandler.class),
-    LIST_AVAILABLE_VOICES                               ("list_available_voices", null,  ListAvailableVoices.class),
+    LIST_AVAILABLE_VOICES                               ("list_available_voices", null,  ListAvailableVoicesHandler.class),
     CLEAR_REMINDERS                                     ("clear_reminders", null, CleareReminderHandler.class),
     SET_REMINDER                                        ("set_reminder", null, SetReminderHandler.class),
     DELETE_CODEX_ENTRY                                  ("delete_codex_entry", null, DeleteCodexEntryHandler.class),

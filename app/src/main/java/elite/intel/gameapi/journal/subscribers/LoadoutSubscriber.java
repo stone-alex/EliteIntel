@@ -26,9 +26,10 @@ public class LoadoutSubscriber {
     @Subscribe
     public void onLoadoutEvent(LoadoutEvent event) {
         ShipDao.Ship currentShip = shipManager.getShip();
-        if (currentShip != null && Objects.equals(currentShip.getShipId(), event.getShipId())) {
-            Status.getInstance().setOkToAnnounceLoadout(false);
-        }
+        Status.getInstance().setOkToAnnounceLoadout(
+                !Objects.equals(currentShip.getShipId(), event.getShipId())
+        );
+
 
         playerSession.setCurrentShipName(event.getShipName());
         playerSession.setCurrentShip(event.getShip());

@@ -177,7 +177,11 @@ public class GoogleTTSImpl implements MouthInterface {
         try {
             String voiceName = event.useRandomVoice()
                     ? googleVoiceProvider.getRandomVoice().getName()
-                    : googleVoiceProvider.getUserSelectedVoice().getName();
+                    : event.getVoiceName();
+            if (voiceName == null) {
+                voiceName = systemSession.getGoogleVoice().name();
+            }
+            ;
 
             String[] sentences = text.split("(?<=[.!?])\\s+(?=\\S)");
             for (String sentence : sentences) {

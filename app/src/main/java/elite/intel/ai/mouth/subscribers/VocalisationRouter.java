@@ -20,6 +20,11 @@ public class VocalisationRouter {
         EventBusManager.publish(new VocalisationRequestEvent(event.getText(), MissionCriticalAnnouncementEvent.class, false));
     }
 
+    @Subscribe
+    public void onVoiceDemoEvent(AiVoxDemoEvent event) {
+        EventBusManager.publish(new VocalisationRequestEvent(event.getText(), event.getVoiceName(), AiVoxDemoEvent.class, true));
+    }
+
 
     /// --- on/off based on user settings
     @Subscribe

@@ -196,7 +196,7 @@ public class STTSanitizer {
      * @return A collection of strings representing the words or phrases to be removed from the start of a text.
      */
     private Collection<String> getStartWordsToRemove() {
-        return Arrays.asList("and", "it's", "this is", "that", "my", "you", "for", "to", "the");
+        return Arrays.asList("and", "it's", "this is", "that", "my", "you", "for", "to", "the", "or", "i", "let me", "but", "so", "did", "i'm going");
     }
 
     /**
@@ -208,6 +208,6 @@ public class STTSanitizer {
      * "panel", "exit", "open", "display", "hide", "dismiss", "dismissed", and "deploy".
      */
     private Collection<String> getTerms() {
-        return Arrays.asList("email", "show", "window", "close", "panel", "exit", "open", "display", "hide", "dismiss", "dismissed", "deploy", "drill", "mine", "mining");
+        return Arrays.asList("email", "show", "equalize", "window", "recall", "close", "panel", "exit", "open", "display", "hide", "dismiss", "dismissed", "deploy", "drill", "mine", "mining");
     }
 }

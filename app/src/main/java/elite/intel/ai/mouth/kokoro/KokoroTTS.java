@@ -13,7 +13,6 @@ import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AiResponseLogEvent;
 import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.AppPaths;
-import elite.intel.util.AudioPlayer;
 import elite.intel.util.StringUtls;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -52,8 +51,11 @@ public class KokoroTTS implements MouthInterface {
     private final AtomicBoolean canBeInterrupted = new AtomicBoolean(true);
     private final AtomicReference<SourceDataLine> currentLine = new AtomicReference<>();
 
+    private record SynthesisTask(String text, String voiceName) {
+    }
+
     // Stage 1: raw sentence strings waiting for synthesis
-    private final BlockingQueue<String> synthesisQueue = new LinkedBlockingQueue<>();
+    private final BlockingQueue<SynthesisTask> synthesisQueue = new LinkedBlockingQueue<>();
     // Stage 2: synthesized PCM waiting for playback
     private final BlockingQueue<byte[]> playbackQueue = new LinkedBlockingQueue<>();
 
@@ -190,14 +192,13 @@ public class KokoroTTS implements MouthInterface {
         String sanitizedText = StringUtls.sanitizeTts(event.getText());
         if (sanitizedText.isBlank()) return;
 
-        AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_2);
         EventBusManager.publish(new AiResponseLogEvent(sanitizedText));
 
         // Split on sentence boundaries and enqueue each piece for synthesis
         String[] sentences = sanitizedText.split("(?<=[.,!?])\\s+(?=\\S)");
         for (String sentence : sentences) {
             if (!sentence.isBlank()) {
-                synthesisQueue.offer(sentence);
+                synthesisQueue.offer(new SynthesisTask(sentence, event.getVoiceName()));
             }
         }
     }
@@ -207,17 +208,22 @@ public class KokoroTTS implements MouthInterface {
     private void processSynthesisQueue() {
         while (running) {
             try {
-                String sentence = synthesisQueue.take();
+                SynthesisTask task = synthesisQueue.take();
                 if (interruptRequested.get()) continue;
 
+                KokoroVoices voice = task.voiceName() != null
+                        ? KokoroVoices.valueOf(task.voiceName())
+                        : systemSession.getKokoroVoice();
+                int sid = voice.getSid();
+
                 GeneratedAudio audio = tts.generate(
-                        sentence,
-                        systemSession.getKokoroVoice().getSid(),
+                        task.text(),
+                        sid,
                         1f + systemSession.getSpeechSpeed()
                 );
 
                 if (audio == null || audio.getSamples() == null || audio.getSamples().length == 0) {
-                    log.warn("KokoroTTS: empty audio for: {}", sentence);
+                    log.warn("KokoroTTS: empty audio for: {}", task.text());
                     continue;
                 }
 

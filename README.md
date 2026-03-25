@@ -60,18 +60,6 @@ and auxiliary files, pulls in info from EDSM when needed, and keeps things respo
 
 ---
 
-## ⚠️ **Important:**
-
-### Limitation:
-
-- 🔴 EliteIntel uses Java's Robot API for keystroke simulation, which **does not distinguish between left and right
-  modifier keys (Shift, Ctrl, Alt)**.
-- 🔴 If your bindings require a specific side (e.g., Key_RightAlt), those commands will not trigger correctly. *
-  *A+RightAlt is the same as A+LeftAlt.**
-- 🔴 A workaround is to create a separate binding save for AI. Map your HOTAS/controller etc to the left column and keyboard to the right. Which modifiers you use is up to you but remember that there is no difference betgween right and left.
-
-___
-
 ## Contributing
 
 Fork it and submit pull requests! Stick to TOS, keep things modular and event-driven, and test your changes. For dev

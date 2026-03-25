@@ -4,6 +4,8 @@
 
 - Added native key bind support for left and right modifiers for Linux and Windows.
 - Added panel navigation support to Fighter.
+- Radio now has random vocalizations and 2-way radio effect static.
+- Added suport for left/right modifier keys for Windows and Linux.
 
 ## Elite Intel v-0.0327-beta
 

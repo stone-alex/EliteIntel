@@ -20,7 +20,7 @@ public class OpenStatusPanelHandler extends CommandOperator implements CommandHa
 
     @Override
     public void handle(String action, JsonObject params, String responseText) {
-        if (status.isInMainShip() || status.isInSrv()) {
+        if (status.isInMainShip() || status.isInSrv() || status.isInFighter()) {
             operateKeyboard(Bindings.GameCommand.BINDING_TARGET_NEXT_ROUTE_SYSTEM.getGameBinding(), 0);
             navigator.openAndNavigate(StatusFlags.GuiFocus.INTERNAL_PANEL, RightPanel.STATUS);
         }

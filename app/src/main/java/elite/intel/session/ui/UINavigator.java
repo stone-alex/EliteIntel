@@ -27,14 +27,8 @@ public class UINavigator {
     private static final int CENTRE_PANEL_TAB_COUNT = CenterPanel.values().length;
     private static final int RIGHT_PANEL_TAB_COUNT = RightPanel.values().length;
 
-    // Minimum sleep between tab keypresses. The game needs time to register
-    // each tab change before the next keystroke fires - without this, rapid
-    // multi-step navigation skips tabs and the tracker diverges from game state.
-    private static final int TAB_DELAY_MS = 25;
-    // Sleep after opening or closing a panel - the game needs time to render
-    // the panel before the first tab keystroke fires, and time to process the
-    // close before the caller's next action.
-    private static final int PANEL_OPEN_DELAY_MS = 250;
+    private static final int RANDOM_MIN = 50;
+    private static final int RANDOM_MAX = 150;
 
     private final CommandOperator operator;
     private final PanelStateTracker tracker = PanelStateTracker.getInstance();
@@ -74,7 +68,6 @@ public class UINavigator {
         // openPanel() is a toggle - sending it when the panel is already open would close it.
         if (status.getGuiFocus() != panel) {
             openPanel(panel);
-            sleep(PANEL_OPEN_DELAY_MS);
         }
 
         if (!state.isKnown()) {
@@ -109,12 +102,10 @@ public class UINavigator {
             operator.operateKeyboard(Bindings.GameCommand.BINDING_EXPLORATION_FSSQUIT.getGameBinding(), 0);
         }
 
-        //if (status.isGalaxyMapOpen() || status.isSystemMapOpen() || status.isSaaModeActive()) {
-            /// traverse out of all nested windows
-            for (int i = 0; i < 10; i++) {
-                operator.operateKeyboard(Bindings.GameCommand.BINDING_EXIT_KEY.getGameBinding(), 0);
-            }
-        //}
+        /// traverse out of all nested windows - has no negative effect if we are out of the nested menus / views
+        for (int i = 0; i < 5; i++) {
+            operator.operateKeyboard(Bindings.GameCommand.BINDING_EXIT_KEY.getGameBinding(), 0);
+        }
     }
 
 
@@ -130,7 +121,6 @@ public class UINavigator {
             navigateToDefaultTab(panel, state.getDefault());
         }
         closePanel(panel);
-        sleep(PANEL_OPEN_DELAY_MS);
         tracker.notifyEliteIntelClosedPanel();
     }
 
@@ -158,7 +148,6 @@ public class UINavigator {
 
         for (int i = 0; i < steps; i++) {
             operator.operateKeyboardTap(key); // always tap - binding.hold flag must be ignored for tab cycling
-            sleep(TAB_DELAY_MS);
         }
         state.recordTab((Enum & PanelTab) target);
     }
@@ -176,7 +165,6 @@ public class UINavigator {
         String key = Bindings.GameCommand.BINDING_CYCLE_PREVIOUS_PANEL.getGameBinding();
         for (int i = 0; i < steps; i++) {
             operator.operateKeyboardTap(key); // always tap - binding.hold flag must be ignored for tab cycling
-            sleep(TAB_DELAY_MS);
         }
         state.recordTab((Enum & PanelTab) defaultTarget);
     }
@@ -195,17 +183,8 @@ public class UINavigator {
         String nextTab = Bindings.GameCommand.BINDING_CYCLE_NEXT_PANEL.getGameBinding();
         for (int i = 0; i < getTabCount(panel); i++) {
             operator.operateKeyboardTap(nextTab); // always tap
-            sleep(TAB_DELAY_MS);
         }
         state.resetToDefault();
-    }
-
-    private static void sleep(int ms) {
-        try {
-            Thread.sleep(ms);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
     }
 
     private void openPanel(GuiFocus panel) {
@@ -244,5 +223,10 @@ public class UINavigator {
             case INTERNAL_PANEL -> RIGHT_PANEL_TAB_COUNT;
             default -> throw new IllegalArgumentException("No tab count for GuiFocus: " + panel);
         };
+    }
+
+
+    public static int randomDelay() {
+        return Math.max((int) (Math.random() * RANDOM_MAX), RANDOM_MIN);
     }
 }

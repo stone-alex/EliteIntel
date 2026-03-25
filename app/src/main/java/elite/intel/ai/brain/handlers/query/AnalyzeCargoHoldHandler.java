@@ -22,6 +22,7 @@ public class AnalyzeCargoHoldHandler extends BaseQueryAnalyzer implements QueryH
                 
                 Rules:
                 - If asked about cargo contents: list items from cargo. If empty, say cargo hold is empty.
+                - List items in cargo hold and number of units (tonnes).
                 - If asked about cargo capacity: state the cargoCapacity value in tons.
                 - No follow-up questions.
                 """;

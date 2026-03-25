@@ -16,19 +16,16 @@ import java.util.stream.Collectors;
 
 
 /**
- * The STTSanitizer class is a singleton utility for sanitizing
- * transcripts and correcting common speech-to-text (STT) transcription mistakes.
- * It processes and replaces misheard words from STT results using a correction
- * dictionary, which is either loaded from or created in the application directory.
- * <p>
- * This class also provides helper functions such as word capitalization.
+ * Singleton class used to sanitize and correct errors in Speech-To-Text (STT) transcripts.
+ * The class provides mechanisms to load correction mappings, normalize text, and apply
+ * replacements to STT outputs. It leverages predefined correction dictionaries and domain-specific
+ * vocabularies to enhance the accuracy of transcriptions.
  */
 public class STTSanitizer {
 
     private static final STTSanitizer INSTANCE = new STTSanitizer();
     private final Logger log = LogManager.getLogger(STTSanitizer.class);
     private final Map<String, String> STT_CORRECTIONS = loadCorrections();
-    private Set<String> dictionary = new HashSet<>();
 
     private STTSanitizer() {
         // Private constructor for singleton
@@ -38,6 +35,16 @@ public class STTSanitizer {
         return INSTANCE;
     }
 
+    /**
+     * Determines the application directory used for storing the dictionary files.
+     * The method attempts to identify if the application is running from a JAR file,
+     * and if so, sets the directory path relative to the JAR's parent directory.
+     * If an error occurs or the JAR's location cannot be determined, a default directory
+     * path is used.
+     *
+     * @return A string representing the path to the application's directory, either
+     * derived from the JAR's location or a default fallback value.
+     */
     private String determineAppDir() {
         String appDir = "distribution" + File.separator + "dictionary/";
         try {
@@ -72,8 +79,14 @@ public class STTSanitizer {
     }
 
 
-    // Ensure corrections file exists, create with defaults if not
-
+    /**
+     * Ensures the existence of the STT corrections file in the application's directory.
+     * If the corrections file does not exist, it creates a new file with a default template.
+     * The file is used to correct common misinterpretations of the Speech-To-Text (STT) system.
+     *
+     * @return A {@code File} object representing the corrections file, or {@code null} if the file
+     * could not be created due to errors (e.g., directory creation failure).
+     */
     private File ensureCorrectionsFileExists() {
         String APP_DIR = determineAppDir();
         String CORRECTIONS_FILE = "stt-correction-dictionary.txt";
@@ -104,6 +117,20 @@ public class STTSanitizer {
         return file;
     }
 
+    /**
+     * Loads Speech-To-Text (STT) correction mappings from a predefined corrections file.
+     * The corrections file contains key-value pairs where the key represents the misheard
+     * text and the value represents its corrected form. Lines starting with '#' or empty
+     * lines are ignored during parsing. Keys and values are normalized to lower case and
+     * stripped of any quotation marks.
+     * <p>
+     * If the corrections file does not exist, it will be created using a default template
+     * by the {@code ensureCorrectionsFileExists()} method.
+     *
+     * @return A map containing the loaded corrections, where each key is a normalized
+     * misheard string and its corresponding value is the corrected text.
+     * Returns an empty map if the corrections file cannot be read or does not exist.
+     */
     private Map<String, String> loadCorrections() {
         Map<String, String> map = new HashMap<>();
         File file = ensureCorrectionsFileExists();
@@ -128,6 +155,17 @@ public class STTSanitizer {
         return map;
     }
 
+    /**
+     * Corrects errors and normalizes text in a given transcript by applying several transformations
+     * such as replacing specific patterns, applying substitution rules, and trimming redundant
+     * prefixes from the beginning of the text. It also leverages domain-specific dictionaries
+     * to adjust and refine the final output.
+     *
+     * @param transcript The original Speech-To-Text (STT) transcript that may contain errors or
+     *                   inconsistencies to be corrected.
+     * @return A sanitized and corrected version of the provided transcript, with adjustments based
+     * on predefined correction mappings and domain-specific lexicons.
+     */
     public String correctMistakes(String transcript) {
         String sanitized = transcript.toLowerCase();
         // Normalize symbols that Whisper may output as characters rather than words
@@ -136,40 +174,40 @@ public class STTSanitizer {
             sanitized = sanitized.replaceAll("\\b" + Pattern.quote(entry.getKey()) + "\\b", entry.getValue());
         }
 
-        if (sanitized.startsWith("the")) {
-            sanitized = sanitized.replaceFirst("the", "");
-        }
-        if (sanitized.startsWith("to")) {
-            sanitized = sanitized.replaceFirst("to", "");
-        }
-        if (sanitized.startsWith("for")) {
-            sanitized = sanitized.replaceFirst("for", "");
-        }
-        if (sanitized.startsWith("and")) {
-            sanitized = sanitized.replaceFirst("and", "");
-        }
-        if (sanitized.startsWith("it's")) {
-            sanitized = sanitized.replaceFirst("it's", "");
-        }
-        if (sanitized.startsWith("this is")) {
-            sanitized = sanitized.replaceFirst("this is", "");
-        }
-        if (sanitized.startsWith("that")) {
-            sanitized = sanitized.replaceFirst("that", "");
-        }
-        if (sanitized.startsWith("my")) {
-            sanitized = sanitized.replaceFirst("my", "");
-        }
-        if (sanitized.startsWith("you")) {
-            sanitized = sanitized.replaceFirst("you", "");
+        Collection<String> startWordsToRemove = getStartWordsToRemove();
+        for (String word : startWordsToRemove) {
+            sanitized = sanitized.replaceFirst(word + " ", "");
         }
 
         Set<String> tempDictionary = STT_CORRECTIONS.entrySet().stream().map(Map.Entry::getValue).collect(Collectors.toSet());
+        tempDictionary.addAll(getTerms());
         tempDictionary.addAll(getCommodities());
         tempDictionary.addAll(subSystems());
         tempDictionary.addAll(getMaterials());
         /// Do not use fuzzy. Use params in Whisper instead.
         sanitized = SttTermCorrector.getInstance().correct(sanitized, new TreeSet<>(tempDictionary));
         return sanitized.trim();
+    }
+
+    /**
+     * Retrieves a collection of words or phrases that should be removed if they appear at the start of a text.
+     * These words are typically filler or redundant expressions that do not add meaningful value to the context.
+     *
+     * @return A collection of strings representing the words or phrases to be removed from the start of a text.
+     */
+    private Collection<String> getStartWordsToRemove() {
+        return Arrays.asList("and", "it's", "this is", "that", "my", "you", "for", "to", "the");
+    }
+
+    /**
+     * Retrieves a predefined collection of terms relevant to operations, such as handling UI components
+     * or user interactions. These terms might be used for filtering, matching, or processing purposes
+     * within the application.
+     *
+     * @return A collection of strings representing operation-related terms, such as "window", "close",
+     * "panel", "exit", "open", "display", "hide", "dismiss", "dismissed", and "deploy".
+     */
+    private Collection<String> getTerms() {
+        return Arrays.asList("email", "window", "close", "panel", "exit", "open", "display", "hide", "dismiss", "dismissed", "deploy", "drill", "mine", "mining");
     }
 }

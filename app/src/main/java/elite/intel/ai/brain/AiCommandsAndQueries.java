@@ -140,7 +140,6 @@ public class AiCommandsAndQueries {
         commandMap.put("show inventory panel", SHOW_INVENTORY_PANEL.getAction());
         commandMap.put("show storage panel", SHOW_STORAGE_PANEL.getAction());
         commandMap.put("show status panel", SHOW_STATUS_PANEL.getAction());
-        commandMap.put("show ship panel", SHOW_SHIP_PANEL.getAction());
         commandMap.put("show carrier management panel", DISPLAY_CARRIER_MANAGEMENT.getAction());
         commandMap.put("close, close panel, exit, esc", EXIT_CLOSE.getAction());
         commandMap.put("galaxy map, open galaxy map, show galaxy map", OPEN_GALAXY_MAP.getAction());

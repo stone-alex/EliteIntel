@@ -38,7 +38,7 @@ public enum Queries {
     DISTANCE_TO_CARRIER                 ("query_distance_to_carrier",                   AnalyzeDistanceFromFleetCarrierHandler.class),
     PIRATE_MISSION_PROGRESS             ("query_pirate_mission_info",                   AnalyzePirateMissionHandler.class),
     PLAYER_PROFILE_ANALYSIS             ("query_player_ranks_progress_profile",         AnalyzePlayerProfile.class),
-    SHIP_LOADOUT                        ("query_ship_loadout_equipment_classification_range",           AnalyzeShipLoadoutHandler.class),
+    SHIP_LOADOUT                        ("query_ship_loadout_equipment_classification_range_damage_report",           AnalyzeShipLoadoutHandler.class),
     STATION_DETAILS                     ("query_station_details",                       StationDataHandler.class),
     APP_CAPABILITIES                    ("query_app_capabilities",                      WhatAreYourCapabilitiesHandler.class),
     AI_DESIGNATION                      ("query_ai_designation",                        WhatIsYourNameHandler.class),

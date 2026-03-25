@@ -4,6 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import com.k2fsa.sherpa.onnx.*;
 import elite.intel.ai.mouth.AudioDeClicker;
 import elite.intel.ai.mouth.MouthInterface;
+import elite.intel.ai.mouth.RadioFilter;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.mouth.subscribers.events.TTSInterruptEvent;
 import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
@@ -13,6 +14,7 @@ import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AiResponseLogEvent;
 import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.AppPaths;
+import elite.intel.util.AudioPlayer;
 import elite.intel.util.StringUtls;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -51,7 +53,7 @@ public class KokoroTTS implements MouthInterface {
     private final AtomicBoolean canBeInterrupted = new AtomicBoolean(true);
     private final AtomicReference<SourceDataLine> currentLine = new AtomicReference<>();
 
-    private record SynthesisTask(String text, String voiceName) {
+    private record SynthesisTask(String text, String voiceName, boolean isRadio) {
     }
 
     // Stage 1: raw sentence strings waiting for synthesis
@@ -198,7 +200,7 @@ public class KokoroTTS implements MouthInterface {
         String[] sentences = sanitizedText.split("(?<=[.,!?])\\s+(?=\\S)");
         for (String sentence : sentences) {
             if (!sentence.isBlank()) {
-                synthesisQueue.offer(new SynthesisTask(sentence, event.getVoiceName()));
+                synthesisQueue.offer(new SynthesisTask(sentence, event.getVoiceName(), event.isRadio()));
             }
         }
     }
@@ -231,6 +233,10 @@ public class KokoroTTS implements MouthInterface {
 
                 AudioDeClicker.sanitize(pcm, 5);
                 AudioDeClicker.applyVolume(pcm, systemSession.getVoiceVolume() / 100f);
+                if (task.isRadio()) {
+                    AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_2);
+                    RadioFilter.apply(pcm);
+                }
                 playbackQueue.put(pcm);
 
             } catch (InterruptedException e) {

@@ -5,6 +5,7 @@ import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.mouth.AudioDeClicker;
 import elite.intel.ai.mouth.GoogleVoices;
 import elite.intel.ai.mouth.MouthInterface;
+import elite.intel.ai.mouth.RadioFilter;
 import elite.intel.ai.mouth.subscribers.events.*;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.PlayerSession;
@@ -185,7 +186,7 @@ public class GoogleTTSImpl implements MouthInterface {
 
             String[] sentences = text.split("(?<=[.!?])\\s+(?=\\S)");
             for (String sentence : sentences) {
-                ttsQueue.put(new VoiceRequest(sentence, voiceName, (1f + systemSession.getSpeechSpeed()), event.getOriginType()));
+                ttsQueue.put(new VoiceRequest(sentence, voiceName, (1f + systemSession.getSpeechSpeed()), event.getOriginType(), event.isRadio()));
             }
 
             AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_2);
@@ -220,7 +221,8 @@ public class GoogleTTSImpl implements MouthInterface {
                         request.text().replace("present", "detected").replace("_", " ").replace("*", ""),
                         request.voiceName(),
                         request.speechRate(),
-                        request.originType()
+                        request.originType(),
+                        request.isRadio()
                 );
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
@@ -276,7 +278,7 @@ public class GoogleTTSImpl implements MouthInterface {
         }
     }
 
-    private void processVoiceRequest(String text, String voiceName, double speechRate, Class<? extends BaseVoxEvent> originType) {
+    private void processVoiceRequest(String text, String voiceName, double speechRate, Class<? extends BaseVoxEvent> originType, boolean isRadio) {
         if (text == null || text.isEmpty()) {
             return;
         }
@@ -321,6 +323,7 @@ public class GoogleTTSImpl implements MouthInterface {
             byte[] audioData = response.getAudioContent().toByteArray();
             AudioDeClicker.sanitize(audioData, 6);
             AudioDeClicker.applyVolume(audioData, systemSession.getVoiceVolume() / 100f);
+            if (isRadio) RadioFilter.apply(audioData);
             // Use persistent line instead of opening/closing
             if (persistentLine == null || !persistentLine.isOpen()) {
                 log.warn("Persistent line not available, attempting to reopen");
@@ -389,7 +392,8 @@ public class GoogleTTSImpl implements MouthInterface {
         }
     }
 
-    private record VoiceRequest(String text, String voiceName, double speechRate, Class<? extends BaseVoxEvent> originType) {
+    private record VoiceRequest(String text, String voiceName, double speechRate,
+                                Class<? extends BaseVoxEvent> originType, boolean isRadio) {
     }
 
     private record VocalizationRequest(String text, String voiceName, Class<? extends BaseVoxEvent> originType, byte[] audioData) {

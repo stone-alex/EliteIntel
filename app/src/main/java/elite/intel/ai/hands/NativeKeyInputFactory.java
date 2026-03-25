@@ -38,12 +38,12 @@ class NativeKeyInputFactory {
                     log.info("Using Linux X11 native key input (XTestFakeKeyEvent)");
                     return impl;
                 }
-                log.warn("LinuxX11NativeKeyInput initialised but unavailable — falling back to Robot.");
+                log.warn("LinuxX11NativeKeyInput initialised but unavailable - falling back to Robot.");
             } catch (Exception | UnsatisfiedLinkError e) {
                 log.warn("LinuxX11NativeKeyInput unavailable: {}. Falling back to Robot.", e.getMessage());
             }
         } else {
-            log.warn("Unrecognised OS '{}' — falling back to Robot for modifier keys.", os);
+            log.warn("Unrecognised OS '{}' - falling back to Robot for modifier keys.", os);
         }
 
         log.warn("Native left/right modifier distinction is NOT active. " +
@@ -59,7 +59,7 @@ class NativeKeyInputFactory {
         private static final java.util.Map<Integer, Integer> FALLBACK_VK = new java.util.HashMap<>();
 
         static {
-            // Left and right variants map to the same generic VK — no distinction possible
+            // Left and right variants map to the same generic VK - no distinction possible
             FALLBACK_VK.put(NATIVE_BASE + 1, KeyEvent.VK_CONTROL);  // LEFTCONTROL
             FALLBACK_VK.put(NATIVE_BASE + 2, KeyEvent.VK_CONTROL);  // RIGHTCONTROL
             FALLBACK_VK.put(NATIVE_BASE + 3, KeyEvent.VK_SHIFT);    // LEFTSHIFT

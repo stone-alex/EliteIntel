@@ -86,7 +86,7 @@ public class VocalisationRouter {
                         .toArray(GoogleVoices[]::new);
                 voice = voices.length > 0 ? voices[(int) (Math.random() * voices.length)].name() : allVoices[0].name();
             }
-            EventBusManager.publish(new VocalisationRequestEvent(event.getText(), voice, RadioTransmissionEvent.class, true));
+            EventBusManager.publish(new VocalisationRequestEvent(event.getText(), voice, RadioTransmissionEvent.class, true, true));
         }
     }
 }

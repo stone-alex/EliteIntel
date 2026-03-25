@@ -72,14 +72,14 @@ class LinuxX11NativeKeyInput implements NativeKeyInput {
             xtstRef = XTst.INSTANCE;
             disp = x11ref.XOpenDisplay(null);
             if (disp == null) {
-                log.warn("XOpenDisplay returned null — likely pure Wayland session. " +
+                log.warn("XOpenDisplay returned null - likely pure Wayland session. " +
                         "Left/right modifier distinction will fall back to generic Robot keys.");
             } else {
                 // Pre-populate keycode cache for all known synthetic codes
                 for (Map.Entry<Integer, Long> entry : KEYSYM_MAP.entrySet()) {
                     byte kc = x11ref.XKeysymToKeycode(disp, new X11.KeySym(entry.getValue()));
                     if (kc == 0) {
-                        log.warn("XKeysymToKeycode returned 0 for keysym 0x{} — key may not be mapped in current X keymap",
+                        log.warn("XKeysymToKeycode returned 0 for keysym 0x{} - key may not be mapped in current X keymap",
                                 Long.toHexString(entry.getValue()));
                     }
                     keycodeCache.put(entry.getKey(), kc);
@@ -120,7 +120,7 @@ class LinuxX11NativeKeyInput implements NativeKeyInput {
             return;
         }
         if (keycode == 0) {
-            log.warn("X11 keycode is 0 for synthetic code 0x{} — skipping", Integer.toHexString(syntheticCode));
+            log.warn("X11 keycode is 0 for synthetic code 0x{} - skipping", Integer.toHexString(syntheticCode));
             return;
         }
         xtst.XTestFakeKeyEvent(display, keycode & 0xFF, press ? 1 : 0, new NativeLong(0));

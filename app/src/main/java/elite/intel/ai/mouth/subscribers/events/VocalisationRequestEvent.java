@@ -7,25 +7,24 @@ public class VocalisationRequestEvent extends BaseVoxEvent {
 
     private final Class<? extends BaseVoxEvent> originType;
     private final String voiceName;
-    private boolean canBeInterrupted = true;
+    private boolean canBeInterrupted;
+    private final boolean isRadio;
 
     public VocalisationRequestEvent(String textToVoice, Class<? extends BaseVoxEvent> originType, boolean canBeInterrupted) {
-        this(textToVoice, null, originType, canBeInterrupted);
+        this(textToVoice, null, originType, canBeInterrupted, false);
         SystemSession.getInstance().setChatHistory(new ChatHistory(null, textToVoice));
     }
 
-    public VocalisationRequestEvent(String textToVoice, boolean useRandom, Class<? extends BaseVoxEvent> originType, boolean canBeInterrupted) {
-        super(textToVoice, useRandom);
-        this.voiceName = null;
-        this.originType = originType;
-        this.canBeInterrupted = canBeInterrupted;
+    public VocalisationRequestEvent(String textToVoice, String voiceName, Class<? extends BaseVoxEvent> originType, boolean canBeInterrupted) {
+        this(textToVoice, voiceName, originType, canBeInterrupted, false);
     }
 
-    public VocalisationRequestEvent(String textToVoice, String voiceName, Class<? extends BaseVoxEvent> originType, boolean canBeInterrupted) {
+    public VocalisationRequestEvent(String textToVoice, String voiceName, Class<? extends BaseVoxEvent> originType, boolean canBeInterrupted, boolean isRadio) {
         super(textToVoice, false);
         this.voiceName = voiceName;
         this.originType = originType;
         this.canBeInterrupted = canBeInterrupted;
+        this.isRadio = isRadio;
     }
 
     public Class<? extends BaseVoxEvent> getOriginType() {
@@ -41,5 +40,12 @@ public class VocalisationRequestEvent extends BaseVoxEvent {
      */
     public String getVoiceName() {
         return voiceName;
+    }
+
+    /**
+     * True when this vocalisation should be processed through the radio transmission filter.
+     */
+    public boolean isRadio() {
+        return isRadio;
     }
 }

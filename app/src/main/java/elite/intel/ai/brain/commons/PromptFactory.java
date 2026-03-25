@@ -77,7 +77,7 @@ public class PromptFactory implements AiPromptFactory {
                 - IMPORTANT: - Map "listen" / "listen up" to action `start_listening_monitor_commands_do_not_ignore_user`
                                ONLY when it appears as a standalone utterance with no following instruction or intent.
                                If "listen" or "listen up" is immediately followed by additional content (e.g. "listen up,
-                               do X"), treat the entire utterance as a normal command or query — do NOT map it to
+                               do X"), treat the entire utterance as a normal command or query - do NOT map it to
                                `start_listening_monitor_commands_do_not_ignore_user`.
                 - IMPORTANT: 'target' disambiguation:
                     • "target wingman 1/2/3"          → their specific actions

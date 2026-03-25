@@ -754,3 +754,6 @@
 "maximals"="max"
 "maximal"="max"
 "next hstyle"="next hostile target"
+"excel style"="next hostile target"
+"next hairstyle"="next hostile target"
+"excel hairstyle"="next hostile target"

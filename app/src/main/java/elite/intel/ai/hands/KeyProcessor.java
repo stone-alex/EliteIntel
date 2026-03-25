@@ -165,7 +165,7 @@ public class KeyProcessor {
 
     private KeyProcessor() throws AWTException {
         this.robot = new Robot();
-        robot.setAutoDelay(50);
+        robot.setAutoDelay(20);
         this.nativeKeyInput = NativeKeyInputFactory.create(robot);
     }
 

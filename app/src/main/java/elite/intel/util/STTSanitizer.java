@@ -208,6 +208,6 @@ public class STTSanitizer {
      * "panel", "exit", "open", "display", "hide", "dismiss", "dismissed", and "deploy".
      */
     private Collection<String> getTerms() {
-        return Arrays.asList("email", "window", "close", "panel", "exit", "open", "display", "hide", "dismiss", "dismissed", "deploy", "drill", "mine", "mining");
+        return Arrays.asList("email", "show", "window", "close", "panel", "exit", "open", "display", "hide", "dismiss", "dismissed", "deploy", "drill", "mine", "mining");
     }
 }

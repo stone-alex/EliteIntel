@@ -24,8 +24,10 @@ public class ClosePanelHandler extends CommandOperator implements CommandHandler
             operateKeyboard(Bindings.GameCommand.BINDING_UI_LEFT.getGameBinding(), 0);
             operateKeyboard(Bindings.GameCommand.BINDING_UI_RIGHT.getGameBinding(), 0);
         }
-        for (int i = 0; i < 10; i++) { ///  back out of all menus etc
-            operateKeyboard(BINDING_EXIT_KEY.getGameBinding(), 0);
+        if (status.isGalaxyMapOpen() || status.isSystemMapOpen() || status.isStationServicesOpen() || status.isOrreryOpen()) {
+            for (int i = 0; i < 10; i++) { ///  back out of all menus etc
+                operateKeyboard(BINDING_EXIT_KEY.getGameBinding(), 0);
+            }
         }
     }
 }

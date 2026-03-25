@@ -5,9 +5,8 @@ import elite.intel.ai.brain.handlers.commands.CommandOperator;
 import elite.intel.session.Status;
 import elite.intel.session.StatusFlags;
 import elite.intel.session.StatusFlags.GuiFocus;
-import elite.intel.util.SleepNoThrow;
 
-import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_EXIT_KEY;
+import static elite.intel.util.SleepNoThrow.sleep;
 
 /**
  * Dispatches panel navigation keystrokes on behalf of c
@@ -27,8 +26,8 @@ public class UINavigator {
     private static final int CENTRE_PANEL_TAB_COUNT = CenterPanel.values().length;
     private static final int RIGHT_PANEL_TAB_COUNT = RightPanel.values().length;
 
-    private static final int RANDOM_MIN = 50;
-    private static final int RANDOM_MAX = 150;
+    private static final int RANDOM_MIN = 80;
+    private static final int RANDOM_MAX = 200;
 
     private final CommandOperator operator;
     private final PanelStateTracker tracker = PanelStateTracker.getInstance();
@@ -52,9 +51,6 @@ public class UINavigator {
             navigateToTargetTab(panel, target);
             return;
         }
-        for (int i = 0; i < 10; i++) { ///  back out of all menus etc
-            operator.operateKeyboard(BINDING_EXIT_KEY.getGameBinding(), 0);
-        }
 
         closeOpenPanel();
 
@@ -68,6 +64,7 @@ public class UINavigator {
         // openPanel() is a toggle - sending it when the panel is already open would close it.
         if (status.getGuiFocus() != panel) {
             openPanel(panel);
+            sleep(RANDOM_MAX);
         }
 
         if (!state.isKnown()) {
@@ -75,7 +72,7 @@ public class UINavigator {
         }
 
         navigateToTargetTab(panel, target);
-        SleepNoThrow.sleep(250); // <--- important! Don't be hasty.
+        sleep(250); // <--- important! Don't be hasty.
     }
 
 
@@ -103,8 +100,10 @@ public class UINavigator {
         }
 
         /// traverse out of all nested windows - has no negative effect if we are out of the nested menus / views
-        for (int i = 0; i < 5; i++) {
-            operator.operateKeyboard(Bindings.GameCommand.BINDING_EXIT_KEY.getGameBinding(), 0);
+        if (status.isGalaxyMapOpen() || status.isSystemMapOpen() || status.isSaaModeActive()) {
+            for (int i = 0; i < 5; i++) {
+                operator.operateKeyboard(Bindings.GameCommand.BINDING_EXIT_KEY.getGameBinding(), 0);
+            }
         }
     }
 
@@ -121,6 +120,7 @@ public class UINavigator {
             navigateToDefaultTab(panel, state.getDefault());
         }
         closePanel(panel);
+        sleep(RANDOM_MAX);
         tracker.notifyEliteIntelClosedPanel();
     }
 
@@ -208,6 +208,7 @@ public class UINavigator {
             };
         }
         if (binding != null) operator.operateKeyboardTap(binding); // panel focus keys must be tapped, not held
+        sleep(RANDOM_MAX);
     }
 
     private void closePanel(GuiFocus panel) {

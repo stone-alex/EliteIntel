@@ -1,13 +1,15 @@
+## Elite Intel v-0.0328-beta
+
+### bug fixes / features:
+
+- Added native key bind support for left and right modifiers for Linux and Windows.
+- Added panel navigation support to Fighter.
+
 ## Elite Intel v-0.0327-beta
 
 ### bug fixes / features:
 
--- Fuzzy search for STT corrections. This works like a spell checker attempting to match bad input to commands known to the app.
-
-## Elite Intel v-0.0326-beta
-
-### bug fixes / features:
-
+- Fuzzy search for STT corrections. This works like a spell checker attempting to match bad input to commands known to the app.
 - Hot fix for left / vs right key modifiers.
 
 ## Elite Intel v-0.0322-beta

@@ -560,3 +560,4 @@
 "right soon"="tritium"
 "night soon"="tritium"
 "try to"="tritium"
+"can i fix it"="exit"

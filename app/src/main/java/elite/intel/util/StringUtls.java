@@ -136,6 +136,7 @@ public class StringUtls {
                 .replace("ETA", ". E.T.A.")
                 .replace(":", " - ")
                 .replaceAll("\\s{2,}", " ")                     // collapse repeated spaces
+                .replace(", pilot", ".")
                 .trim();
     }
 

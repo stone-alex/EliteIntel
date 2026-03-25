@@ -21,27 +21,19 @@ public class DeploySrvHandler extends CommandOperator implements CommandHandler 
         if (status.isInMainShip()) {
             navigator.closeOpenPanel();
             navigator.openAndNavigate(StatusFlags.GuiFocus.ROLE_PANEL, CenterPanel.COMMANDER);
-            /// NOTE: Special case here. DO NOT use navigator to get to the SRV tab.
-            /// After SRV deployed, we have no chance to close the panel and return to the default state.
-
-            String ui_left = Bindings.GameCommand.BINDING_UI_LEFT.getGameBinding();
-            String ui_up = Bindings.GameCommand.BINDING_UI_UP.getGameBinding();
-            String ui_down = Bindings.GameCommand.BINDING_UI_DOWN.getGameBinding();
-            String ui_right = Bindings.GameCommand.BINDING_UI_RIGHT.getGameBinding();
-            String activate = Bindings.GameCommand.BINDING_ACTIVATE.getGameBinding();
 
             /// ensure the cursor is at the top
-            operateKeyboard(ui_left, 0);
-            operateKeyboard(ui_left, 0);
-            operateKeyboard(ui_up, 0);
-            operateKeyboard(ui_up, 0);
-            operateKeyboard(ui_up, 0);
+            operateKeyboard(Bindings.GameCommand.BINDING_UI_LEFT.getGameBinding(), 0);
+            operateKeyboard(Bindings.GameCommand.BINDING_UI_LEFT.getGameBinding(), 0);
+            operateKeyboard(Bindings.GameCommand.BINDING_UI_UP.getGameBinding(), 0);
+            operateKeyboard(Bindings.GameCommand.BINDING_UI_UP.getGameBinding(), 0);
+            operateKeyboard(Bindings.GameCommand.BINDING_UI_UP.getGameBinding(), 0);
 
             /// Deploy SRV
-            operateKeyboard(ui_down, 0);
-            operateKeyboard(ui_down, 0);
-            operateKeyboard(ui_right, 0);
-            operateKeyboard(activate, 0);
+            operateKeyboard(Bindings.GameCommand.BINDING_UI_DOWN.getGameBinding(), 0);
+            operateKeyboard(Bindings.GameCommand.BINDING_UI_DOWN.getGameBinding(), 0);
+            operateKeyboard(Bindings.GameCommand.BINDING_UI_RIGHT.getGameBinding(), 0);
+            operateKeyboard(Bindings.GameCommand.BINDING_ACTIVATE.getGameBinding(), 0);
             navigator.assumeDefaultState(StatusFlags.GuiFocus.ROLE_PANEL);
         }
     }

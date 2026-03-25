@@ -5,7 +5,15 @@ import java.awt.event.KeyEvent;
 
 public class KeyProcessor {
 
+    /**
+     * Synthetic code base for left/right modifier keys that require platform-native
+     * handling (above AWT's VK range of 0–0xFFFF).  Any keyCode >= NATIVE_BASE is
+     * routed through NativeKeyInput instead of Robot.
+     */
+    public static final int NATIVE_BASE = 0x10000;
+
     private final Robot robot;
+    private final NativeKeyInput nativeKeyInput;
 
     public static final int KEY_SPACE = KeyEvent.VK_SPACE;
     public static final int KEY_ENTER = KeyEvent.VK_ENTER;
@@ -60,14 +68,14 @@ public class KeyProcessor {
     public static final int KEY_NUMTAB = KeyEvent.VK_TAB;
     public static final int KEY_NUMCLEAR = KeyEvent.VK_CLEAR;
     public static final int KEY_NUMSLASHPERIOD = KeyEvent.VK_DIVIDE;
-    public static final int KEY_LEFTCONTROL = KeyEvent.VK_CONTROL;
-    public static final int KEY_LEFTSHIFT = KeyEvent.VK_SHIFT;
-    public static final int KEY_LEFTALT = KeyEvent.VK_ALT;
-    public static final int KEY_LEFTSUPER = KeyEvent.VK_WINDOWS;
-    public static final int KEY_RIGHTCONTROL = KeyEvent.VK_CONTROL;
-    public static final int KEY_RIGHTSHIFT = KeyEvent.VK_SHIFT;
-    public static final int KEY_RIGHTALT = KeyEvent.VK_ALT;
-    public static final int KEY_RIGHTSUPER = KeyEvent.VK_WINDOWS;
+    public static final int KEY_LEFTCONTROL = NATIVE_BASE + 1;
+    public static final int KEY_RIGHTCONTROL = NATIVE_BASE + 2;
+    public static final int KEY_LEFTSHIFT = NATIVE_BASE + 3;
+    public static final int KEY_RIGHTSHIFT = NATIVE_BASE + 4;
+    public static final int KEY_LEFTALT = NATIVE_BASE + 5;
+    public static final int KEY_RIGHTALT = NATIVE_BASE + 6;
+    public static final int KEY_LEFTSUPER = NATIVE_BASE + 7;
+    public static final int KEY_RIGHTSUPER = NATIVE_BASE + 8;
     public static final int KEY_MENU = KeyEvent.VK_CONTEXT_MENU;
     public static final int KEY_LEFTBRACKET = KeyEvent.VK_OPEN_BRACKET;
     public static final int KEY_BACKSLASH = KeyEvent.VK_BACK_SLASH;
@@ -157,50 +165,78 @@ public class KeyProcessor {
 
     private KeyProcessor() throws AWTException {
         this.robot = new Robot();
-        robot.setAutoDelay(50);
+        robot.setAutoDelay(20);
+        this.nativeKeyInput = NativeKeyInputFactory.create(robot);
+    }
+
+    private boolean isNative(int keyCode) {
+        return keyCode >= NATIVE_BASE;
     }
 
     public void pressKey(int keyCode) {
-        robot.keyPress(keyCode);
-        robot.keyRelease(keyCode);
+        if (isNative(keyCode)) {
+            nativeKeyInput.keyDown(keyCode);
+            nativeKeyInput.keyUp(keyCode);
+        } else {
+            robot.keyPress(keyCode);
+            robot.keyRelease(keyCode);
+        }
     }
 
     public void pressAndHoldKey(int keyCode, int holdTime) {
-        robot.keyPress(keyCode);
-        robot.delay(holdTime);
-        robot.keyRelease(keyCode);
+        if (isNative(keyCode)) {
+            nativeKeyInput.keyDown(keyCode);
+            robot.delay(holdTime);
+            nativeKeyInput.keyUp(keyCode);
+        } else {
+            robot.keyPress(keyCode);
+            robot.delay(holdTime);
+            robot.keyRelease(keyCode);
+        }
     }
 
     public void holdKey(int keyCode) {
-        robot.keyPress(keyCode);
+        if (isNative(keyCode)) {
+            nativeKeyInput.keyDown(keyCode);
+        } else {
+            robot.keyPress(keyCode);
+        }
     }
 
     public void releaseKey(int keyCode) {
-        robot.keyRelease(keyCode);
+        if (isNative(keyCode)) {
+            nativeKeyInput.keyUp(keyCode);
+        } else {
+            robot.keyRelease(keyCode);
+        }
     }
 
     public void pressKeys(int... keyCodes) {
         for (int keyCode : keyCodes) {
-            robot.keyPress(keyCode);
+            if (isNative(keyCode)) nativeKeyInput.keyDown(keyCode);
+            else robot.keyPress(keyCode);
         }
-
         for (int i = keyCodes.length - 1; i >= 0; i--) {
-            robot.keyRelease(keyCodes[i]);
+            if (isNative(keyCodes[i])) nativeKeyInput.keyUp(keyCodes[i]);
+            else robot.keyRelease(keyCodes[i]);
         }
     }
 
     public void pressKeyCombo(int... keyCodes) {
         try {
             for (int keyCode : keyCodes) {
-                robot.keyPress(keyCode);
+                if (isNative(keyCode)) nativeKeyInput.keyDown(keyCode);
+                else robot.keyPress(keyCode);
             }
             Thread.sleep(100);
             for (int i = keyCodes.length - 1; i >= 0; i--) {
-                robot.keyRelease(keyCodes[i]);
+                if (isNative(keyCodes[i])) nativeKeyInput.keyUp(keyCodes[i]);
+                else robot.keyRelease(keyCodes[i]);
             }
         } catch (InterruptedException e) {
             for (int i = keyCodes.length - 1; i >= 0; i--) {
-                robot.keyRelease(keyCodes[i]);
+                if (isNative(keyCodes[i])) nativeKeyInput.keyUp(keyCodes[i]);
+                else robot.keyRelease(keyCodes[i]);
             }
             Thread.currentThread().interrupt();
         }

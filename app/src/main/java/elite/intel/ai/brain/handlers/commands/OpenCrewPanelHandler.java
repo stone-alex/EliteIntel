@@ -19,7 +19,7 @@ public class OpenCrewPanelHandler extends CommandOperator implements CommandHand
 
     @Override
     public void handle(String action, JsonObject params, String responseText) {
-        if (status.isInMainShip() || status.isInSrv()) {
+        if (status.isInMainShip() || status.isInSrv() || status.isInFighter()) {
             operateKeyboard(Bindings.GameCommand.BINDING_TARGET_NEXT_ROUTE_SYSTEM.getGameBinding(), 0);
             navigator.openAndNavigate(StatusFlags.GuiFocus.ROLE_PANEL, CenterPanel.CREW);
         }

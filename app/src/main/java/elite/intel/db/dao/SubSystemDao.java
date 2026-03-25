@@ -13,7 +13,7 @@ import java.util.List;
 @RegisterRowMapper(SubSystemDao.SubSystemMapper.class)
 public interface SubSystemDao {
 
-    @SqlQuery("SELECT subsystem FROM sub_system ORDER BY subsystem")
+    @SqlQuery("SELECT LOWER(subsystem) FROM sub_system ORDER BY subsystem")
     List<String> getAllNamesLowerCase();
 
     @SqlQuery("SELECT subsystem FROM sub_system WHERE LOWER(subsystem) = LOWER(:subsystem) LIMIT 1")

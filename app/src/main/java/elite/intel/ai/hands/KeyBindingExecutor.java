@@ -40,6 +40,8 @@ public class KeyBindingExecutor {
                 }
             }
             ELITE_TO_KEYPROCESSOR_MAP.put("KEY_APPS", KeyProcessor.KEY_MENU);
+            // Elite uses "Key_Grave" for the backtick/grave key; KeyProcessor defines it as KEY_GRAVEACCENT
+            ELITE_TO_KEYPROCESSOR_MAP.put("KEY_GRAVE", KeyProcessor.KEY_GRAVEACCENT);
         } catch (IllegalAccessException e) {
             throw new RuntimeException("Failed to initialize key mappings", e);
         }

@@ -24,7 +24,14 @@ public class SuperCruiseDropSubscriber {
     public void onSuperCruiseDrop(SupercruiseDestinationDropEvent event) {
 
         if (event.getThreat() > 0) {
-            EventBusManager.publish(new SensorDataEvent(" Dropped from supercruise. Threat level: " + event.getThreat() + ". ", "Notify user about supercruise exit and threat level"));
+            String instructions = """
+                        Notify user about supercruise exit and threat level
+                        - level 0 threat level is none
+                        - level 1 - 2 threat level low
+                        - level 3 - 5 threat level medium
+                        - level 6 - 8 threat level high
+                    """;
+            EventBusManager.publish(new SensorDataEvent(" Dropped from supercruise. Threat level: " + event.getThreat() + ". ", instructions));
             if (event.getThreat() > 2) {
                 CommandHandler activateCombatMode = commandHandlerFactory.getCommandHandlers().get(ACTIVATE_COMBAT_MODE.getAction());
                 new Thread(() -> activateCombatMode.handle(ACTIVATE_COMBAT_MODE.getAction(), null, "")).start();

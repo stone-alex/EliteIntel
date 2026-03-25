@@ -3,14 +3,11 @@ package elite.intel.ai.brain.handlers.commands;
 import com.google.gson.JsonObject;
 import elite.intel.ai.mouth.GoogleVoices;
 import elite.intel.ai.mouth.kokoro.KokoroVoices;
-import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
+import elite.intel.ai.mouth.subscribers.events.AiVoxDemoEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.SystemSession;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class ListAvailableVoices implements CommandHandler {
+public class ListAvailableVoicesHandler implements CommandHandler {
 
     private final SystemSession session = SystemSession.getInstance();
 
@@ -20,23 +17,19 @@ public class ListAvailableVoices implements CommandHandler {
 
         if (session.useLocalTTS()) {
             KokoroVoices[] voices = KokoroVoices.values();
-            List<String> voiceNames = new ArrayList<>();
             for (KokoroVoices voice : voices) {
                 KokoroVoices kokoroVoice = session.getKokoroVoice();
                 if (!voice.getDisplayName().equals(kokoroVoice.getDisplayName())) {
-                    voiceNames.add(voice.getDisplayName() + ", " + voice.getDescription());
+                    EventBusManager.publish(new AiVoxDemoEvent(voice.getDisplayName() + ", " + voice.getDescription(), voice.name()));
                 }
             }
-            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Available voices:\n" + String.join(".\n", voiceNames)));
         } else {
             GoogleVoices[] voices = GoogleVoices.values();
-            List<String> voiceNames = new ArrayList<>();
             for (GoogleVoices voice : voices) {
                 if (!voice.getName().equals(session.getGoogleVoice().getName())) {
-                    voiceNames.add(voice.getName());
+                    EventBusManager.publish(new AiVoxDemoEvent(voice.getName() + " at your service commander. ", voice.name()));
                 }
             }
-            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Available voices:\n" + String.join(".\n", voiceNames)));
         }
     }
 }

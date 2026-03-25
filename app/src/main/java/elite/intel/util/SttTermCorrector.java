@@ -1,12 +1,13 @@
 package elite.intel.util;
 
 import elite.intel.ai.brain.AiCommandsAndQueries;
-import elite.intel.db.FuzzySearch;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
 import java.util.Set;
+
+import static elite.intel.db.FuzzySearch.levenshteinDistance;
 
 /**
  * Applies word-level fuzzy correction to STT output, catching close misspellings
@@ -28,7 +29,7 @@ public class SttTermCorrector {
     private final Logger log = LogManager.getLogger(SttTermCorrector.class);
 
     // Ignore tokens shorter than this - too risky for false-positives on common words
-    private static final int MIN_TOKEN_LENGTH = 7;
+    private static final int MIN_TOKEN_LENGTH = 5;
     // Accept a correction only when edit distance is within this threshold
     private static final int MAX_EDIT_DISTANCE = 3;
 
@@ -57,6 +58,7 @@ public class SttTermCorrector {
                 }
             }
         }
+
         return vocabulary;
     }
 
@@ -66,8 +68,9 @@ public class SttTermCorrector {
      * vocabulary, shorter than {@value MIN_TOKEN_LENGTH} chars, or have no close
      * match are left unchanged.
      */
-    public String correct(String transcript) {
+    public String correct(String transcript, Set<String> knownTerms) {
         Set<String> vocab = getVocabulary();
+        vocab.addAll(knownTerms);
         if (vocab.isEmpty()) return transcript;
 
         String[] tokens = transcript.split("\\s+");
@@ -94,7 +97,7 @@ public class SttTermCorrector {
             // (e.g. "trade" vs "trader") - these are related forms, not corrections.
             if (candidate.startsWith(token) || token.startsWith(candidate)) continue;
 
-            int dist = FuzzySearch.levenshteinDistance(token, candidate);
+            int dist = levenshteinDistance(token, candidate);
             if (dist < bestDist) {
                 bestDist = dist;
                 best = candidate;

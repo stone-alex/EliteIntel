@@ -110,7 +110,7 @@ public class AppController implements Runnable {
     }
 
     private String ignoreModeOnMessage() {
-        return "I am ignoring you, ask me to stop ignoring you";
+        return "I am ignoring you";
     }
 
     @Subscribe

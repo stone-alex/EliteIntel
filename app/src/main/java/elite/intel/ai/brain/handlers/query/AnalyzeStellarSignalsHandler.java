@@ -37,6 +37,7 @@ public class AnalyzeStellarSignalsHandler extends BaseQueryAnalyzer implements Q
                   - locationName: body where the signal was detected
                   - signalName: name of the point of interest
                   - signalType: type classification
+                - data format indicates number of signals. For example '2 Fleet Carrier' means there are 2 fleet carriers in this star system
 
                 Rules:
                 - Biological signals: name the planets that have them and the count.
@@ -121,6 +122,7 @@ public class AnalyzeStellarSignalsHandler extends BaseQueryAnalyzer implements Q
 
         List<ToYamlConvertable> named = new ArrayList<>();
         Map<String, Integer> typeCounts = new LinkedHashMap<>();
+        Set<String> gameCodeSeen = new LinkedHashSet<>();
 
         for (LocationDto location : locations) {
             for (FssSignalDto signal : location.getDetectedSignals()) {
@@ -139,9 +141,10 @@ public class AnalyzeStellarSignalsHandler extends BaseQueryAnalyzer implements Q
                     // Aggregate all carriers by type - individual names are not useful
                     typeCounts.merge(type, 1, Integer::sum);
                 } else if (isGameCode) {
-                    // Game-code signals (conflict zones, nav beacons, etc.) - aggregate by localised label
+                    // Game-code signals (nav beacons, conflict zones, etc.) - deduplicate by label;
+                    // duplicate journal events fire for the same signal (auto-discovery + scan)
                     if (displayName != null && !displayName.isBlank()) {
-                        typeCounts.merge(displayName, 1, Integer::sum);
+                        gameCodeSeen.add(displayName);
                     }
                 } else if (displayName != null && !displayName.isBlank()) {
                     // Named POI (stations, megaships, outposts) - keep individually
@@ -150,6 +153,7 @@ public class AnalyzeStellarSignalsHandler extends BaseQueryAnalyzer implements Q
             }
         }
 
+        gameCodeSeen.forEach(label -> named.add(new DiscoveredSignal(null, label, label)));
         typeCounts.forEach((label, count) ->
                 named.add(new DiscoveredSignal(null, count + " " + label, label)));
 

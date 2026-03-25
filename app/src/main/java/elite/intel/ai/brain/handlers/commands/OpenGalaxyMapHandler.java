@@ -44,7 +44,7 @@ public class OpenGalaxyMapHandler extends CommandOperator implements CommandHand
 
         navigator.closeOpenPanel();
         Status status = Status.getInstance();
-        if (status.isInMainShip()) {
+        if (status.isInMainShip() || status.isInFighter()) {
             operateKeyboard(BINDING_GALAXY_MAP.getGameBinding(), 0);
         }
 

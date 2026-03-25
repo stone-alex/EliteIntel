@@ -1,13 +1,19 @@
 package elite.intel.ai.mouth.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.intel.ai.mouth.GoogleVoices;
+import elite.intel.ai.mouth.kokoro.KokoroVoices;
 import elite.intel.ai.mouth.subscribers.events.*;
+import elite.intel.db.managers.ShipManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.PlayerSession;
+import elite.intel.session.SystemSession;
 
 public class VocalisationRouter {
 
     private final PlayerSession playerSession = PlayerSession.getInstance();
+    private final SystemSession systemSession = SystemSession.getInstance();
+    private final ShipManager shipManager = ShipManager.getInstance();
 
     /// --- always pass through
     @Subscribe
@@ -18,6 +24,11 @@ public class VocalisationRouter {
     @Subscribe
     public void onMissionCriticalAnnouncementEvent(MissionCriticalAnnouncementEvent event) {
         EventBusManager.publish(new VocalisationRequestEvent(event.getText(), MissionCriticalAnnouncementEvent.class, false));
+    }
+
+    @Subscribe
+    public void onVoiceDemoEvent(AiVoxDemoEvent event) {
+        EventBusManager.publish(new VocalisationRequestEvent(event.getText(), event.getVoiceName(), AiVoxDemoEvent.class, true));
     }
 
 
@@ -60,7 +71,22 @@ public class VocalisationRouter {
     @Subscribe
     public void onRadioTransmissionEvent(RadioTransmissionEvent event) {
         if (playerSession.isRadioTransmissionOn()) {
-            EventBusManager.publish(new VocalisationRequestEvent(event.getText(), RadioTransmissionEvent.class, true));
+            String shipVoice = shipManager.getShip().getVoice();
+            String voice;
+            if (systemSession.useLocalTTS()) {
+                KokoroVoices[] allVoices = KokoroVoices.values();
+                KokoroVoices[] voices = java.util.Arrays.stream(allVoices)
+                        .filter(v -> !v.name().equals(shipVoice))
+                        .toArray(KokoroVoices[]::new);
+                voice = voices.length > 0 ? voices[(int) (Math.random() * voices.length)].name() : allVoices[0].name();
+            } else {
+                GoogleVoices[] allVoices = GoogleVoices.values();
+                GoogleVoices[] voices = java.util.Arrays.stream(allVoices)
+                        .filter(v -> !v.name().equals(shipVoice))
+                        .toArray(GoogleVoices[]::new);
+                voice = voices.length > 0 ? voices[(int) (Math.random() * voices.length)].name() : allVoices[0].name();
+            }
+            EventBusManager.publish(new VocalisationRequestEvent(event.getText(), voice, RadioTransmissionEvent.class, true, true));
         }
     }
 }

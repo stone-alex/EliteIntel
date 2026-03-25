@@ -22,7 +22,7 @@ public class OpenSocialPanelHandler extends CommandOperator implements CommandHa
 
     @Override
     public void handle(String action, JsonObject params, String responseText) {
-        if (status.isInMainShip()) {
+        if (status.isInMainShip() || status.isInFighter()) {
             operateKeyboard(Bindings.GameCommand.BINDING_TARGET_NEXT_ROUTE_SYSTEM.getGameBinding(), 0);
             navigator.openAndNavigate(StatusFlags.GuiFocus.COMMS_PANEL, CommsPanel.SOCIAL);
         } else {

@@ -82,9 +82,10 @@ public class AnalyzeShipLoadoutHandler extends BaseQueryAnalyzer implements Quer
                    Example: "No, there is no fuel scoop fitted."
                 2. General loadout / classification question (no specific module asked):
                 
+                3. If damage report is requested: provide list of modules that show health below 100%. Or say no damage detected.
                 
                    Then summarise key modules.
-                3. Damage question: use damagedModules. If empty, say no damage detected.
+                4. Damage question: use damagedModules. If empty, say no damage detected.
                 """;
 
         return process(new AiDataStruct(instructions, new DataDto(facts, damagedModules, hasEngineeredModules)), originalUserInput);

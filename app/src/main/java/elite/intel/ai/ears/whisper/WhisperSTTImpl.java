@@ -7,6 +7,7 @@ import elite.intel.ai.mouth.subscribers.events.TTSInterruptEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.UserInputEvent;
 import elite.intel.session.SystemSession;
+import elite.intel.ui.event.AppLogDebugEvent;
 import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.AudioPlayer;
 import elite.intel.util.STTSanitizer;
@@ -299,6 +300,7 @@ public class WhisperSTTImpl implements EarsInterface {
             if (transcript.contains(".org")) return;
             if (transcript.contains(".net")) return;
 
+            EventBusManager.publish(new AppLogDebugEvent("RAW: [" + transcript + "]"));
             String sanitized = STTSanitizer.getInstance().correctMistakes(transcript);
             EventBusManager.publish(new AppLogEvent("STT: [" + sanitized + "]"));
 

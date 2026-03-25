@@ -18,7 +18,7 @@ public class OpenCommanderPanel extends CommandOperator implements CommandHandle
     private final Status status = Status.getInstance();
 
     @Override public void handle(String action, JsonObject params, String responseText) {
-        if (status.isInMainShip() || status.isInSrv()) {
+        if (status.isInMainShip() || status.isInSrv() || status.isInFighter()) {
             navigator.openAndNavigate(StatusFlags.GuiFocus.ROLE_PANEL, CenterPanel.COMMANDER);
         }
     }

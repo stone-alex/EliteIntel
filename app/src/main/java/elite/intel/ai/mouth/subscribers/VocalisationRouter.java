@@ -31,15 +31,13 @@ public class VocalisationRouter {
         EventBusManager.publish(new VocalisationRequestEvent(event.getText(), event.getVoiceName(), AiVoxDemoEvent.class, true));
     }
 
-
-    /// --- on/off based on user settings
     @Subscribe
     public void onNavigationVocalisationRequest(NavigationVocalisationEvent event) {
-        if (playerSession.isNavigationAnnouncementOn()) {
-            EventBusManager.publish(new VocalisationRequestEvent(event.getText(), NavigationVocalisationEvent.class, false));
-        }
+        EventBusManager.publish(new VocalisationRequestEvent(event.getText(), NavigationVocalisationEvent.class, false));
     }
 
+
+    /// --- on/off based on user settings
     @Subscribe
     public void onRadarContactEvent(RadarContactAnnouncementEvent event) {
         if (playerSession.isRadarContactAnnouncementOn()) {

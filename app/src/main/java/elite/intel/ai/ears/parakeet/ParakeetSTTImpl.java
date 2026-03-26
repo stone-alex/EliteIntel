@@ -21,6 +21,7 @@ import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -38,12 +39,14 @@ public class ParakeetSTTImpl implements EarsInterface {
     private static final int PRE_ROLL_FRAMES = 4;
     private static final long BASE_BACKOFF_MS = 2000;
     private static final long MAX_BACKOFF_MS = 60000;
+    private static final long INFERENCE_TIMEOUT_SEC = 15;
     private static final int MIN_AUDIO_MS = 1500;
     private static final int MIN_AUDIO_BYTES = SAMPLE_RATE * 2 * MIN_AUDIO_MS / 1000;
 
     private final AtomicBoolean isStopping = new AtomicBoolean(false);
     private final AtomicBoolean isListening = new AtomicBoolean(false);
     private final AtomicBoolean isSpeaking = new AtomicBoolean(false);
+    private final java.util.concurrent.atomic.AtomicInteger pendingTranscriptions = new java.util.concurrent.atomic.AtomicInteger(0);
     private final SystemSession systemSession = SystemSession.getInstance();
     private final ByteArrayOutputStream audioCollector = new ByteArrayOutputStream();
     private final ArrayDeque<byte[]> preRoll = new ArrayDeque<>();
@@ -149,8 +152,8 @@ public class ParakeetSTTImpl implements EarsInterface {
         OfflineModelConfig modelConfig = OfflineModelConfig.builder()
                 .setTransducer(transducer)
                 .setTokens(tokensFile.toString())
-                .setNumThreads(Math.min(Runtime.getRuntime().availableProcessors(), systemSession.getSttThreads()))
-                .setDebug(false)
+                .setNumThreads(Math.max(1, Math.min(Runtime.getRuntime().availableProcessors(), systemSession.getSttThreads())))
+                .setDebug(true)
                 .setProvider("cpu")
                 .build();
 
@@ -244,7 +247,7 @@ public class ParakeetSTTImpl implements EarsInterface {
                     audioCollector.reset();
                     for (byte[] frame : preRoll) audioCollector.write(frame, 0, frame.length);
                     preRoll.clear();
-                    log.debug("VAD: speech started");
+                    log.info("VAD: speech started (rms={}, threshold={})", (int) rms, (int) RMS_THRESHOLD_HIGH);
                 }
 
                 boolean wasActive = isActive;
@@ -259,13 +262,39 @@ public class ParakeetSTTImpl implements EarsInterface {
                     final byte[] utterance = audioCollector.toByteArray();
                     DumpAudioForTesting.getInstance().dumpAudioAsWav(utterance, SAMPLE_RATE);
                     audioCollector.reset();
-                    transcriptionExecutor.submit(() -> transcribeAndDispatch(utterance));
+                    int pending = pendingTranscriptions.get();
+                    if (pending > 0) log.warn("Transcription queue backed up: {} utterances waiting", pending);
+                    pendingTranscriptions.incrementAndGet();
+                    submitWithTimeout(utterance);
                 }
             }
         }
     }
 
+    private void submitWithTimeout(byte[] utterance) {
+        Future<?> future = transcriptionExecutor.submit(() -> transcribeAndDispatch(utterance));
+        Thread watchdog = new Thread(() -> {
+            try {
+                future.get(INFERENCE_TIMEOUT_SEC, TimeUnit.SECONDS);
+            } catch (java.util.concurrent.TimeoutException e) {
+                future.cancel(true);
+                log.error("Parakeet inference hung after {}s — replacing executor", INFERENCE_TIMEOUT_SEC);
+                transcriptionExecutor.shutdownNow();
+                transcriptionExecutor = Executors.newSingleThreadExecutor(r -> {
+                    Thread t = new Thread(r, "Parakeet-Transcription");
+                    t.setDaemon(true);
+                    return t;
+                });
+            } catch (Exception e) {
+                // task completed with exception — already logged in transcribeAndDispatch
+            }
+        }, "Parakeet-Watchdog");
+        watchdog.setDaemon(true);
+        watchdog.start();
+    }
+
     private void transcribeAndDispatch(byte[] pcmBytes) {
+        pendingTranscriptions.decrementAndGet();
         try {
             float[] samples = pcm16ToFloat(padAudio(pcmBytes));
 

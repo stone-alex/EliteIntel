@@ -57,7 +57,7 @@ dependencies {
     implementation 'io.github.givimad:whisper-jni:1.7.1'
 
     //sherpa
-    implementation files('libs/sherpa-onnx-v1.12.28.jar')
+    implementation files('libs/sherpa-onnx-v1.12.33.jar')
 
     // JNA - platform-native key simulation (left/right ctrl, alt, shift)
     implementation 'net.java.dev.jna:jna:5.14.0'

@@ -2,6 +2,9 @@ package elite.intel.ai.mouth.kokoro;
 
 import com.google.common.eventbus.Subscribe;
 import com.k2fsa.sherpa.onnx.*;
+import com.sun.jna.Library;
+import com.sun.jna.Native;
+import com.sun.jna.Platform;
 import elite.intel.ai.mouth.AudioDeClicker;
 import elite.intel.ai.mouth.MouthInterface;
 import elite.intel.ai.mouth.RadioFilter;
@@ -218,6 +221,7 @@ public class KokoroTTS implements MouthInterface {
                         : systemSession.getKokoroVoice();
                 int sid = voice.getSid();
 
+                resetNumericLocale();
                 GeneratedAudio audio = tts.generate(
                         task.text(),
                         sid,
@@ -348,12 +352,13 @@ public class KokoroTTS implements MouthInterface {
                 .setVoices(modelDir.resolve("voices.bin").toString())
                 .setTokens(modelDir.resolve("tokens.txt").toString())
                 .setDataDir(modelDir.resolve("espeak-ng-data").toString())
+                .setLang("en-us")
                 .build();
 
         OfflineTtsModelConfig modelConfig = OfflineTtsModelConfig.builder()
                 .setKokoro(kokoro)
                 .setNumThreads(2)
-                .setDebug(false)
+                .setDebug(true)
                 .setProvider("cpu")
                 .build();
 
@@ -363,6 +368,29 @@ public class KokoroTTS implements MouthInterface {
                 .build();
 
         return new OfflineTts(config);
+    }
+
+    // -- Locale fix ------------------------------------------------------------
+
+    /**
+     * ONNX Runtime (initialized by OfflineRecognizer / Parakeet STT) calls setlocale()
+     * which can change LC_NUMERIC to the system locale (e.g. de_DE uses "," as decimal).
+     * espeak-ng inside Generate() calls stof() which is locale-sensitive and crashes
+     * with std::invalid_argument if LC_NUMERIC is not "C".
+     * Reset before every generate() call so Parakeet's init can't corrupt TTS synthesis.
+     */
+    private interface CLib extends Library {
+        String setlocale(int category, String locale);
+    }
+
+    private static void resetNumericLocale() {
+        try {
+            // LC_NUMERIC: Linux=1, macOS=4, Windows=2
+            int LC_NUMERIC = Platform.isLinux() ? 1 : Platform.isMac() ? 4 : 2;
+            Native.load("c", CLib.class).setlocale(LC_NUMERIC, "C");
+        } catch (Exception e) {
+            log.warn("KokoroTTS: could not reset LC_NUMERIC locale: {}", e.getMessage());
+        }
     }
 
     // -- Native loading --------------------------------------------------------
@@ -375,6 +403,14 @@ public class KokoroTTS implements MouthInterface {
         for (String lib : nativeLibsInOrder(platform)) {
             extractAndLoad(platform, nativeDir, lib);
         }
+
+        // Tell sherpa-onnx's LibraryLoader where the natives already are.
+        // Without this, every OfflineTts/OfflineRecognizer constructor calls
+        // LibraryLoader.maybeLoad() → loadFromResourceInJar() which extracts
+        // the lib to a temp dir and calls System.load() a second time, causing
+        // JVM native-symbol corruption (manifests as stof / std::invalid_argument).
+        System.setProperty("sherpa_onnx.native.path", nativeDir.toAbsolutePath().toString());
+        log.info("KokoroTTS: set sherpa_onnx.native.path = {}", nativeDir.toAbsolutePath());
     }
 
     private static String[] nativeLibsInOrder(String platform) {

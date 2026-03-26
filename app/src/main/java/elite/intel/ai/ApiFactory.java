@@ -22,7 +22,7 @@ import elite.intel.ai.brain.xai.GrokAnalysisEndpoint;
 import elite.intel.ai.brain.xai.GrokChatEndPoint;
 import elite.intel.ai.brain.xai.GrokCommandEndPoint;
 import elite.intel.ai.ears.EarsInterface;
-import elite.intel.ai.ears.whisper.WhisperSTTImpl;
+import elite.intel.ai.ears.parakeet.ParakeetSTTImpl;
 import elite.intel.ai.mouth.MouthInterface;
 import elite.intel.ai.mouth.google.GoogleTTSImpl;
 import elite.intel.ai.mouth.kokoro.KokoroTTS;
@@ -147,6 +147,7 @@ public class ApiFactory {
 
     /// -- no choises here
     public EarsInterface getEarsImpl() {
-        return new WhisperSTTImpl();
+        ///return new WhisperSTTImpl();
+        return new ParakeetSTTImpl();
     }
 }

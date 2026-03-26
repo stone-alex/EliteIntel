@@ -129,12 +129,14 @@ public class StringUtls {
                 .replace("\\n", " ").replace("\\r", " ")        // literal escape sequences from LLM
                 .replaceAll("[\\r\\n]+", " ")                    // actual newline characters → space
                 .replaceAll("(?<=\\S)-(?=\\S)", " ")             // "ninety-five" → "ninety five" (hyphen between chars)
+                .replace("!", ". ")                             // espeak-ng stof crash on exclamatory sentences
                 .replace("*", " ")                              // any stray asterisks
                 .replace("`", "")                               // any stray backticks
                 .replace("\"", "")
                 .replace("[", "").replace("]", "")
                 .replace("ETA", ". E.T.A.")
                 .replace(":", " - ")
+                .replaceAll("\\.{2,}", " ")                     // "..." → space (espeak-ng stof crash on multi-dot sequences)
                 .replaceAll("\\s{2,}", " ")                     // collapse repeated spaces
                 .replace(", pilot", ".")
                 .trim();

@@ -41,52 +41,38 @@ public final class AppPaths {
     }
 
 
-    ///  --- APP INSTALLATION STUFF (native libs etc)
-    private static Path getInstallDir() {
-        try {
-            return Path.of(AppPaths.class
-                            .getProtectionDomain()
-                            .getCodeSource()
-                            .getLocation()
-                            .toURI())
-                    .getParent();
-        } catch (Exception e) {
-            throw new IllegalStateException("Cannot determine installation directory", e);
-        }
-    }
-
 
     public static Path getTtsModelDir() {
-        if (OsDetector.getOs() == OsDetector.OS.WINDOWS) {
-            return getInstallDir().resolve("tts");
-        }
-        String dataHome = System.getenv("XDG_DATA_HOME");
-        Path base = dataHome != null && !dataHome.isEmpty()
-                ? Path.of(dataHome)
-                : Path.of(System.getProperty("user.home"), ".var/app");
-        return base.resolve("elite.intel.app/tts");
+        return getDistributionFile("tts");
     }
 
     public static Path getNativeLibDir() {
-        if (OsDetector.getOs() == OsDetector.OS.WINDOWS) {
-            return getInstallDir().resolve("native");
-        }
-        String dataHome = System.getenv("XDG_DATA_HOME");
-        Path base = dataHome != null && !dataHome.isEmpty()
-                ? Path.of(dataHome)
-                : Path.of(System.getProperty("user.home"), ".var/app");
-        return base.resolve("elite.intel.app/native");
+        return getDistributionFile("native");
     }
 
     public static Path getWhisperModelPath() {
-        if (OsDetector.getOs() == OsDetector.OS.WINDOWS) {
-            return getInstallDir().resolve("whisper/ggml-base.en.bin");
+        return getDistributionFile("whisper/ggml-base.en.bin");
+    }
+
+    public static Path getParakeetModelDir() {
+        return getDistributionFile("parakeet");
+    }
+
+    private static Path getDistributionFile(String subPath) {
+        if (isRunningFromJar()) {
+            return APP_DIR.resolve(subPath);
         }
-        String dataHome = System.getenv("XDG_DATA_HOME");
-        Path base = dataHome != null && !dataHome.isEmpty()
-                ? Path.of(dataHome)
-                : Path.of(System.getProperty("user.home"), ".var/app");
-        return base.resolve("elite.intel.app/whisper/ggml-base.en.bin");
+        return APP_DIR.resolve("../distribution/" + subPath).normalize();
+    }
+
+    private static boolean isRunningFromJar() {
+        try {
+            return Path.of(AppPaths.class.getProtectionDomain()
+                            .getCodeSource().getLocation().toURI())
+                    .toString().endsWith(".jar");
+        } catch (Exception e) {
+            return false;
+        }
     }
 
 

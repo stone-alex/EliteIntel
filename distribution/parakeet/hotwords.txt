@@ -1,0 +1,550 @@
+supercruise
+enter supercruise
+exit supercruise
+hyperspace
+enter hyperspace
+waypoint
+navigate
+plot the route
+plot route
+landing gear
+landing gear down
+landing gear up
+deploy landing gear
+retract landing gear
+gear down
+gear up
+hardpoints
+deploy hardpoints
+retract hardpoints
+weapons hot
+weapons cold
+cargo scoop
+heat sink
+boost
+power to weapons
+power to hardpoints
+power to cargo
+equilize power
+max weapons
+max shields
+max engines
+supercruise
+hyperspace
+light speed
+max engines
+max shields
+max weapons
+max systems
+power to engines
+power to shields
+power to weapons
+equalize power
+SRV
+deploy SRV
+recover SRV
+fighter
+deploy fighter
+fighter escort
+fighter order
+escort
+galaxy map
+system map
+contact tower
+request docking
+auto docking
+FSS
+open FSS
+honk
+fleet carrier
+carrier route
+tritium
+target
+target subsystem
+highest threat
+ceasefire
+wing nav lock
+codex
+codex entry
+biome
+bio signals
+exobiology
+brain trees
+mining target
+recall
+dismiss
+cancel
+FSD
+limpets
+trade route
+trade station
+shipyard
+outfitting
+commodity
+Advanced Catalysers
+Advanced Medicines
+Agronomic Treatment
+AI Relics
+Alexandrite
+Aluminium
+Animal Meat
+Animal Monitors
+Anomaly Particles
+Antimatter Containment Unit
+Antique Jewellery
+Antiquities
+Articulation Motors
+Assault Plans
+Atmospheric Processors
+Auto-Fabricators
+Bauxite
+Battle Weapons
+Beer
+Benitoite
+Beryllium
+Bioreducing Lichen
+Bismuth
+Black Box
+Bone Fragments
+Bootleg Liquor
+Building Fabricators
+Ceramic Composites
+Chemical Waste
+Chemicals
+Clothing
+CMM Composite
+Cobalt
+Coffee
+Coltan
+Combat Stabilisers
+Commercial Samples
+Computer Components
+Conductive Fabrics
+Consumer Technology
+Coral Sap
+Crop Harvesters
+Cryolite
+Cyst Specimen
+Damaged Escape Pod
+Data Core
+Diplomatic Bag
+Domestic Appliances
+Earth Relics
+Emergency Power Cells
+Encrypted Correspondence
+Encrypted Data Storage
+Energy Grid Assembly
+Exhaust Manifold
+Evacuation Shelter
+Explosives
+Fish
+Food Cartridges
+Fossil Remnants
+Fruit and Vegetables
+Gallium
+Gallite
+Gene Bank
+Geological Equipment
+Geological Samples
+Gold
+Grain
+Grandidierite
+Guardian Casket
+Guardian Orb
+Guardian Relic
+Guardian Tablet
+Guardian Totem
+Guardian Urn
+H.E. Suits
+HN Shock Mount
+Haematite
+Hafnium 178
+Hardware Diagnostic Sensor
+Heatsink Interlink
+Hostages
+Hydrogen Fuel
+Hydrogen Peroxide
+Imperial Slaves
+Indium
+Indite
+Insulating Membrane
+Ion Distributor
+Jadeite
+Land Enrichment Systems
+Lanthanum
+Large Survey Data Cache
+Leather
+Legal Drugs
+Lepidolite
+Liquid Oxygen
+Liquor
+Lithium
+Lithium Hydroxide
+Low Temperature Diamonds
+Magnetic Emitter Coil
+Marine Equipment
+Methane Clathrate
+Methanol Monohydrate Crystals
+Meta-Alloys
+Micro Controllers
+Microbial Furnaces
+Micro-weave Cooling Hoses
+Military Intelligence
+Military Plans
+Mineral Extractors
+Mineral Oil
+Moissanite
+Modular Terminals
+Mollusc Brain Tissue
+Mollusc Fluid
+Mollusc Membrane
+Mollusc Mycelium
+Mollusc Soft Tissue
+Mollusc Spores
+Monazite
+Musgravite
+Nanobreakers
+Narcotics
+Natural Fabrics
+Neofabric Insulation
+Nerve Agents
+Non-Lethal Weapons
+Onionhead Gamma Strain
+Osmium
+Painite
+Palladium
+Performance Enhancers
+Personal Effects
+Personal Weapons
+Pesticides
+Platinum
+Pod Core Tissue
+Pod Dead Tissue
+Pod Mesoglea
+Pod Outer Tissue
+Pod Shell Tissue
+Pod Surface Tissue
+Pod Tissue
+Political Prisoners
+Polymers
+Power Converter
+Power Generators
+Power Transfer Bus
+Praseodymium
+Precious Gems
+Progenitor Cells
+Prohibited Research Materials
+Prototype Tech
+Pyrophyllite
+Radiation Baffle
+Rare Artwork
+Reactive Armour
+Rebel Transmissions
+Reinforced Mounting Plate
+Resonating Separators
+Rhodplumsite
+Robotics
+Rockforth Fertiliser
+Rutile
+Samarium
+Scrap
+Semiconductors
+Serendibite
+Silver
+Slaves
+Small Survey Data Cache
+Space Pioneer Relics
+Steel
+Structural Regulators
+Superconductors
+Surface Stabilisers
+Survival Equipment
+Synthetic Fabrics
+Synthetic Meat
+Synthetic Reagents
+Tactical Data
+Taaffeite
+Tantalum
+Tea
+Technical Blueprints
+Telemetry Suite
+Thermal Cooling Units
+Thallium
+Thargoid Basilisk Tissue Sample
+Thargoid Bio-storage Capsule
+Thargoid Biological Matter
+Thargoid Cyclops Tissue Sample
+Thargoid Glaive Tissue Sample
+Thargoid Heart
+Thargoid Hydra Tissue Sample
+Thargoid Link
+Thargoid Medusa Tissue Sample
+Thargoid Orthrus Tissue Sample
+Thargoid Probe
+Thargoid Resin
+Thargoid Scout Tissue Sample
+Thargoid Scythe Tissue Sample
+Thargoid Sensor
+Thargoid Technology Samples
+Thorium
+Time Capsule
+Titan Deep Tissue Sample
+Titan Drive Component
+Titan Maw Deep Tissue Sample
+Titan Maw Partial Tissue Sample
+Titan Maw Tissue Sample
+Titan Partial Tissue Sample
+Titan Tissue Sample
+Tobacco
+Toxic Waste
+Trade Data
+Trinkets of Hidden Fortune
+Tritium
+Unclassified Relic
+Unoccupied Escape Pod
+Unstable Data Core
+Uranium
+Void Opal
+Water
+Weapons
+Wine
+Basic Medicines
+materialName
+Antimony
+Arsenic
+Basic Conductors
+Bio-mechanical Conduits
+Biotech Conductors
+Boron
+Cadmium
+Carbon
+Caustic Crystal
+Caustic Shard
+Chemical Distillery
+Chemical Manipulators
+Chemical Processors
+Chemical Storage Units
+Chromium
+Compact Composites
+Compound Shielding
+Conductive Ceramics
+Conductive Components
+Conductive Polymers
+Configurable Components
+Core Dynamics Composites
+Corrosive Mechanisms
+Crystal Shards
+Electrochemical Arrays
+Exquisite Focus Crystals
+Filament Composites
+Flawed Focus Crystals
+Focus Crystals
+Galvanising Alloys
+Germanium
+Grid Resistors
+Guardian Power Cell
+Guardian Power Conduit
+Guardian Sentinel Weapon Parts
+Guardian Sentinel Wreckage Components
+Guardian Technology Component
+Hardened Surface Fragments
+Heat Conduction Wiring
+Heat Dispersion Plate
+Heat Exchangers
+Heat Exposure Specimen
+Heat Resistant Ceramics
+Heat Vanes
+High Density Composites
+Hybrid Capacitors
+Imperial Shielding
+Improvised Components
+Iron
+Lead
+Manganese
+Mechanical Components
+Mechanical Equipment
+Mechanical Scrap
+Mercury
+Military Grade Alloys
+Military Supercapacitors
+Molybdenum
+Nickel
+Niobium
+Pharmaceutical Isolators
+Phase Alloys
+Phasing Membrane Residue
+Phosphorus
+Polonium
+Polymer Capacitors
+Precipitated Alloys
+Proprietary Composites
+Propulsion Elements
+Proto Heat Radiators
+Proto Light Alloys
+Proto Radiolic Alloys
+Refined Focus Crystals
+Rhenium
+Ruthenium
+Salvaged Alloys
+Selenium
+Sensor Fragment
+Shield Emitters
+Shielding Sensors
+Sulphur
+Tactical Core Chip
+Technetium
+Tellurium
+Tempered Alloys
+Thargoid Carapace
+Thargoid Energy Cell
+Thargoid Organic Circuitry
+Thargoid Technological Components
+Thermic Alloys
+Tin
+Tungsten
+Vanadium
+Weapon Parts
+Worn Shield Emitters
+Wreckage Components
+Yttrium
+Zinc
+Zirconium
+Aberrant Shield Pattern Analysis
+Abnormal Compact Emission Data
+Adaptive Encryptors Capture
+Anomalous Bulk Scan Data
+Anomalous Fsd Telemetry
+Atypical Disrupted Wake Echoes
+Atypical Encryption Archives
+Classified Scan Databanks
+Classified Scan Fragment
+Cracked Industrial Firmware
+Datamined Wake Exceptions
+Decoded Emission Data
+Distorted Shield Cycle Recordings
+Divergent Scan Data
+Eccentric Hyperspace Trajectories
+Exceptional Scrambled Emission Data
+Guardian Module Blueprint Segment
+Guardian Vessel Blueprint Segment
+Guardian Weapon Blueprint Segment
+Inconsistent Shield Soak Analysis
+Irregular Emission Data
+Massive Energy Surge Analytics
+Modified Consumer Firmware
+Modified Embedded Firmware
+Open Symmetric Keys
+Pattern Alpha Obelisk Data
+Pattern Beta Obelisk Data
+Pattern Delta Obelisk Data
+Pattern Epsilon Obelisk Data
+Pattern Gamma Obelisk Data
+Peculiar Shield Frequency Data
+Security Firmware Patch
+Ship Flight Data
+Ship Systems Data
+Specialised Legacy Firmware
+Strange Wake Solutions
+Tagged Encryption Codes
+Thargoid Interdiction Telemetry
+Thargoid Material Composition Data
+Thargoid Residue Data
+Thargoid Ship Signature
+Thargoid Structural Data
+Thargoid Wake Data
+Unexpected Emission Data
+Unidentified Scan Archives
+Untypical Shield Scans
+Unusual Encrypted Files
+Shieldsoakanalysis
+Shielddensityreports
+Emissiondata
+Shieldpatternanalysis
+Scanarchives
+Scandatabanks
+Shieldcyclerecordings
+Decodedemissiondata
+Bulkscandata
+Archivedemissiondata
+Legacyfirmware
+Scrambledemissiondata
+Consumerfirmware
+Industrialfirmware
+Adaptiveencryptors
+Encryptionarchives
+Encodedscandata
+Classifiedscandata
+Dataminedwake
+Disruptedwakeechoes
+Hyperspacetrajectories
+Symmetrickeys
+Fsdtelemetry
+Wakesolutions
+Securityfirmware
+Guardian_weaponblueprint
+Ancientbiologicaldata
+Ancienthistoricaldata
+Ancientculturaldata
+Embeddedfirmware
+Ancientlanguagedata
+Ancienttechnologicaldata
+Encryptedfiles
+Encryptioncodes
+Compactemissionsdata
+Shieldfrequencydata
+Salvagedalloys
+Galvanisingalloys
+Hybridcapacitors
+Shieldemitters
+Wornshieldemitters
+Heatdispersionplate
+Mechanicalequipment
+Heatconductionwiring
+Chemicalprocessors
+Basicconductors
+Gridresistors
+Crystalshards
+Chemicalstorageunits
+Mechanicalscrap
+Conductivecomponents
+Heatresistantceramics
+Chemicalmanipulators
+Heatexchangers
+Electrochemicalarrays
+Highdensitycomposites
+Mechanicalcomponents
+Refinedfocuscrystals
+Conductivepolymers
+Phasealloys
+Focuscrystals
+Conductiveceramics
+Shieldingsensors
+Configurablecomponents
+Chemicaldistillery
+Compoundshielding
+Polymercapacitors
+Uncutfocuscrystals
+Heatvanes
+Precipitatedalloys
+Filamentcomposites
+Protolightalloys
+Exquisitefocuscrystals
+Imperialshielding
+Protoheatradiators
+Protoradiolicalloys
+Fedcorecomposites
+Militarygradealloys
+Fedproprietarycomposites
+Militarysupercapacitors
+Improvisedcomponents
+Temperedalloys
+Pharmaceuticalisolators
+Compactcomposites
+Thermicalloys
+Guardian_techcomponent
+Guardian_powercell
+Guardian_powerconduit
+Guardian_sentinel_wreckagecomponents
+Guardian_sentinel_weaponparts
+Biotechconductors
+Unknownenergysource

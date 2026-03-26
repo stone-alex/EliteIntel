@@ -176,7 +176,9 @@ public class STTSanitizer {
 
         Collection<String> startWordsToRemove = getStartWordsToRemove();
         for (String word : startWordsToRemove) {
-            sanitized = sanitized.replaceFirst(word + " ", "");
+            if (sanitized.startsWith(word)) {
+                sanitized = sanitized.replaceFirst(word + " ", "");
+            }
         }
 
         Set<String> tempDictionary = STT_CORRECTIONS.entrySet().stream().map(Map.Entry::getValue).collect(Collectors.toSet());
@@ -196,7 +198,7 @@ public class STTSanitizer {
      * @return A collection of strings representing the words or phrases to be removed from the start of a text.
      */
     private Collection<String> getStartWordsToRemove() {
-        return Arrays.asList("and", "it's", "this is", "that", "my", "you", "for", "to", "the", "or", "i", "let me", "but", "so", "did", "i'm going");
+        return Arrays.asList("can i", "and", "it's", "this is", "that", "my", "you", "for", "to", "the", "or", "i", "let me", "but", "so", "did", "i'm going");
     }
 
     /**

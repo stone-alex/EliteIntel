@@ -395,4 +395,11 @@ public class SystemSession {
             return null;
         });
     }
+
+    public void clearChatHistory() {
+        Database.withDao(ChatHistoryDao.class, dao -> {
+            dao.clear();
+            return Void.class;
+        });
+    }
 }

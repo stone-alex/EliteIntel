@@ -32,6 +32,9 @@ public class PromptFactory implements AiPromptFactory {
         }
         sb.append("""
                 - STRICT COMMAND PARSER. YOUR ONLY JOB IS TO PICK EXACTLY ONE ACTION FROM THE LIST BELOW. NOTHING ELSE.
+                CRITICAL RULES - BREAKING ANY = TOTAL FAILURE:
+                - NEVER invent, modify, combine, or create new actions or parameters. Only use actions provided.
+                - never return action query_app_capabilities unless explicitly requested by the user. Request must have 'your capabilities' always default to query_general_conversation action if unsure.
                 
                 OUTPUT RULES - ABSOLUTE REQUIREMENT:
                 - Your ENTIRE response MUST be ONLY valid JSON
@@ -47,7 +50,11 @@ public class PromptFactory implements AiPromptFactory {
                 - do not confuse organics with materials or resources
                   organics - exobiology query
                   materials - geological query
+                  material trader - find corresponding trader action: (find_raw_material_trader, find_encoded_material_trader, find_manufactured_material_trader)
                 - do not confuse 'ship/you' (query_ship_loadout*) with 'carrier' (query_carrier*)
+                - do not confuse geo signals with 'brain trees' for brain trees use action: 'find_brain_trees'
+                - do not confuse material inventory with search for mining sites. Search for mining sites use action: 'find_mining_site_for_material'
+                
                 
                 - queries about you see query_ship_loadout*
                 - queries about your cargo hold see query_cargo_hold_contents*
@@ -55,9 +62,7 @@ public class PromptFactory implements AiPromptFactory {
                 - queries about the carrier see query_carrier*
                 - User may utilize NATO alphabet for letters/digits. Decode before using in params: Alpha 2 is A2, Charly 3 is C3, etc.
 
-                CRITICAL RULES - BREAKING ANY = TOTAL FAILURE:
-                - NEVER invent, modify, combine, or create new actions or parameters.
-                - never return action query_app_capabilities unless explicitly requested by the user. Request must have 'your capabilities' always default to query_general_conversation action if unsure.
+                
                 """);
         sb.append("- If ZERO good match → return: {\"action\": \"").append(Queries.GENERAL_CONVERSATION.getAction()).append("\", \"params\": {}}");
 

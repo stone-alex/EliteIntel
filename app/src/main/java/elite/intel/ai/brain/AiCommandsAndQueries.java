@@ -49,7 +49,7 @@ public class AiCommandsAndQueries {
         commandMap.put("navigate to next trade stop, go to trade station", NAVIGATE_TO_NEXT_TRADE_STOP.getAction());
         commandMap.put("navigate from memory, paste from memory, paste address", NAVIGATE_TO_ADDRESS_FROM_MEMORY.getAction());
         commandMap.put("cancel navigation", NAVIGATION_ON_OFF.getAction());
-        commandMap.put("select next system in route, target next route system", TARGET_NEXT_ROUTE_SYSTEM.getAction());
+        commandMap.put("select next system in route", TARGET_NEXT_ROUTE_SYSTEM.getAction());
         commandMap.put("jump to hyperspace, jump to the next way point, let's get out of here, lets go, enter hyperspace, go to next waypoint, engage FSD jump, engage frame shift drive", JUMP_TO_HYPERSPACE.getAction());
         commandMap.put("drop from supercruise, disengage FSD, drop", DROP_FROM_SUPER_CRUISE.getAction());
         commandMap.put("supercruise, light speed, engage FSD supercruise", ENTER_SUPER_CRUISE.getAction());
@@ -111,6 +111,7 @@ public class AiCommandsAndQueries {
         commandMap.put("radar announcement on/off, radar contact on/off" + KEY_STATE, SET_RADAR_CONTACT_ANNOUNCEMENT.getAction());
         commandMap.put("discovery announcements on/off" + KEY_STATE, DISCOVERY_ON_OFF.getAction());
         commandMap.put("route announcements on/off" + KEY_STATE, ROUTE_ON_OFF.getAction());
+        commandMap.put("disable all announcements", DISABLE_ALL_ANNOUNCEMENTS.getAction());
         commandMap.put("set voice to X, change voice to X" + KEY_X, SET_AI_VOICE.getAction());
         commandMap.put("list voices, list available voices, tell me what voices you have", LIST_AVAILABLE_VOICES.getAction());
         commandMap.put("clear cache", CLEAR_CACHE.getAction());
@@ -148,11 +149,12 @@ public class AiCommandsAndQueries {
         commandMap.put("max shields, shields full, full power to shields, shields up, boost shields", INCREASE_SHIELDS_POWER.getAction());
         commandMap.put("max engines, engines full, full power to engines, boost engines", INCREASE_ENGINES_POWER.getAction());
         commandMap.put("max weapons, weapons full, full power to weapons, boost weapons", INCREASE_WEAPONS_POWER.getAction());
+
         /// pirate massacre missions
+        commandMap.put("find hunting grounds, find pirate mission providers" + KEY_X, FIND_HUNTING_GROUNDS.getAction());
         commandMap.put("plot reconnaissance route to hunting ground, recon hunting ground", RECON_TARGET_SYSTEM.getAction());
         commandMap.put("navigate to system with matching mission provider, go to mission provider system", RECON_PROVIDER_SYSTEM.getAction());
         commandMap.put("navigate to confirmed pirate massacre mission provider, go to pirate mission giver", NAVIGATE_TO_PIRATE_MISSION_PROVIDER.getAction());
-        commandMap.put("find hunting grounds" + KEY_X, FIND_HUNTING_GROUNDS.getAction());
         commandMap.put("ignore hunting ground", IGNORE_HUNTING_GROUND.getAction());
         commandMap.put("confirm hunting ground", CONFIRM_HUNTING_GROUND.getAction());
         commandMap.put("deploy hardpoints, weapons hot, combat ready", DEPLOY_HARDPOINTS.getAction());

@@ -65,6 +65,8 @@ public class ResponseRouter implements AIRouterInterface {
                 EventBusManager.publish(new AiVoxResponseEvent(responseText));
                 log.info("Response Sent to vocalization: {}", responseText);
                 return;
+            } else {
+                systemSession.clearChatHistory();
             }
 
             String paramsForLogging = action + (params == null ? "" : " params " + params);

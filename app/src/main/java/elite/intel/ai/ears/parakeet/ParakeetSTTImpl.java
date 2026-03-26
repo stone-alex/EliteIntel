@@ -334,7 +334,14 @@ public class ParakeetSTTImpl implements EarsInterface {
 
     private boolean blockWord(String transctipt) {
         for (String word : blockWords) {
-            if (transctipt.toLowerCase().contains(word)) return true;
+            /// if the transcript is block word and nothing else. - ignore
+            if (word.equalsIgnoreCase(transctipt)) return true;
+
+            /// if the transcript contains block word. - remove it and continue
+            if (transctipt.contains(word)) {
+                transctipt.toLowerCase().replace(word, "");
+                return false;
+            }
         }
         return false;
     }

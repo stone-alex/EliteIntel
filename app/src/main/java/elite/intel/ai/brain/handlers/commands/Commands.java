@@ -97,7 +97,7 @@ public enum Commands {
     ACTIVATE_COMBAT_MODE                                ("swap_to_hud_combat_mode", null,  ActivateCombatModeHandler.class),
     NAVIGATE_TO_CARRIER                                 ("navigate_to_fleet_carrier", null,  NavigateToMyFleetCarrier.class),
     SET_OPTIMAL_SPEED                                   ("set_optimal_approach_speed", null,  SetOptimalSpeedHandler.class),
-    TAKE_ME_HOME                                        ("navigate_to_home_star", null,  NavigateRouteToHomeHandler.class),
+    TAKE_ME_HOME                                        ("navigate_to_home_system", null,  NavigateRouteToHomeHandler.class),
     OPEN_FSS_AND_SCAN                                   ("open_fss_to_scan_or_honk_star_system", null,  DisplayFssAndScanHandler.class),
 
     GET_HEADING_TO_LZ                                   ("navigate_bearing_direction_to_landing_zone", null,  NavigateToLandingZone.class),

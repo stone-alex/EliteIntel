@@ -25,6 +25,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static elite.intel.ai.brain.AIConstants.blockWords;
 import static elite.intel.ai.brain.AIConstants.passThroughWords;
 import static elite.intel.gameapi.AudioMonitorBus.publish;
 import static java.util.Arrays.copyOf;
@@ -169,8 +170,9 @@ public class ParakeetSTTImpl implements EarsInterface {
         Path hotwordsFile = modelDir.resolve("hotwords.txt");
         if (Files.exists(hotwordsFile)) {
             configBuilder.setHotwordsFile(hotwordsFile.toString());
-            configBuilder.setHotwordsScore(1.5f);
+            configBuilder.setHotwordsScore(1.0f);
             configBuilder.setDecodingMethod("modified_beam_search");
+            configBuilder.setBlankPenalty(1.0f);
             log.info("Parakeet hotwords loaded from {}", hotwordsFile);
         }
 
@@ -312,6 +314,7 @@ public class ParakeetSTTImpl implements EarsInterface {
                 // EventBusManager.publish(new AppLogDebugEvent("RAW: [" + transcript + "]"));
                 ///String sanitized = STTSanitizer.getInstance().correctMistakes(transcript);
                 //String sanitized = transcript;
+                if (blockWord(transcript)) return;
 
                 EventBusManager.publish(new AppLogEvent("STT: [" + transcript + "]"));
 
@@ -328,9 +331,17 @@ public class ParakeetSTTImpl implements EarsInterface {
         }
     }
 
-    private boolean passThrough(String sanitized) {
+
+    private boolean blockWord(String transctipt) {
+        for (String word : blockWords) {
+            if (transctipt.toLowerCase().contains(word)) return true;
+        }
+        return false;
+    }
+
+    private boolean passThrough(String transcript) {
         for (String word : passThroughWords) {
-            if (sanitized.toLowerCase().contains(word)) return true;
+            if (transcript.toLowerCase().contains(word)) return true;
         }
         return false;
     }

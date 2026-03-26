@@ -259,6 +259,7 @@ fruit
 fsd
 fsdtelemetry
 fss
+full
 fuel
 furnaces
 galaxy
@@ -319,6 +320,7 @@ improvised
 improvisedcomponents
 inconsistent
 indite
+ignore
 indium
 industrial
 industrialfirmware
@@ -347,6 +349,7 @@ lepidolite
 lichen
 light
 limpets
+listen
 link
 liquid
 liquor
@@ -424,6 +427,7 @@ organic
 orthrus
 osmium
 outer
+optimize
 outfitting
 oxygen
 painite

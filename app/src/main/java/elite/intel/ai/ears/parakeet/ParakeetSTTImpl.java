@@ -16,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 
 import javax.sound.sampled.*;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayDeque;
@@ -169,11 +170,16 @@ public class ParakeetSTTImpl implements EarsInterface {
 
         Path hotwordsFile = modelDir.resolve("hotwords.txt");
         if (Files.exists(hotwordsFile)) {
-            configBuilder.setHotwordsFile(hotwordsFile.toString());
-            configBuilder.setHotwordsScore(1.0f);
-            configBuilder.setDecodingMethod("modified_beam_search");
-            configBuilder.setBlankPenalty(1.0f);
-            log.info("Parakeet hotwords loaded from {}", hotwordsFile);
+            try {
+                Path encodedHotwords = new HotwordEncoder(tokensFile).encodeFile(hotwordsFile);
+                configBuilder.setHotwordsFile(encodedHotwords.toString());
+                configBuilder.setHotwordsScore(1.0f);
+                configBuilder.setDecodingMethod("modified_beam_search");
+                configBuilder.setBlankPenalty(1.0f);
+                log.info("Parakeet hotwords encoded and loaded from {}", hotwordsFile);
+            } catch (IOException e) {
+                log.warn("Failed to encode hotwords, running without hotword boosting: {}", e.getMessage());
+            }
         }
 
         return new OfflineRecognizer(configBuilder.build());

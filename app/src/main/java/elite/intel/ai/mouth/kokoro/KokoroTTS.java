@@ -358,7 +358,7 @@ public class KokoroTTS implements MouthInterface {
         OfflineTtsModelConfig modelConfig = OfflineTtsModelConfig.builder()
                 .setKokoro(kokoro)
                 .setNumThreads(2)
-                .setDebug(true)
+                .setDebug(false)
                 .setProvider("cpu")
                 .build();
 

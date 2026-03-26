@@ -149,8 +149,8 @@ public class ParakeetSTTImpl implements EarsInterface {
         OfflineModelConfig modelConfig = OfflineModelConfig.builder()
                 .setTransducer(transducer)
                 .setTokens(tokensFile.toString())
-                //.setNumThreads(Math.min(Runtime.getRuntime().availableProcessors(), systemSession.getSttThreads()))
-                .setDebug(true)
+                .setNumThreads(Math.min(Runtime.getRuntime().availableProcessors(), systemSession.getSttThreads()))
+                .setDebug(false)
                 .setProvider("cpu")
                 .build();
 

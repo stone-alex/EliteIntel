@@ -4,6 +4,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.Client;
+import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
+import elite.intel.gameapi.EventBusManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -52,7 +54,13 @@ public abstract class AiEndPoint {
             return new StructuredResponse(null, null, null, false);
         }
 
-        String content = message.get("content").getAsString();
+        JsonElement element = message.get("content");
+        if (element == null) {
+            EventBusManager.publish(new AiVoxResponseEvent("No content in API response message: " + response.toString().replace("\n", "")));
+            throw new RuntimeException("No content in API response message");
+        }
+        String content = element.getAsString();
+
         if (content == null) {
             log.error("No content in API response message:\n{}", response);
             return new StructuredResponse(null, null, null, false);

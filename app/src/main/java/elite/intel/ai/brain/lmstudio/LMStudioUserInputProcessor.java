@@ -66,7 +66,16 @@ public class LMStudioUserInputProcessor extends CommandEndPoint implements AiCom
             processVoiceCommand(event.getUserInput(), event.getConfidence());
             return;
         }
-        executor.submit(() -> processVoiceCommand(event.getUserInput(), event.getConfidence()));
+        executor.submit(() -> {
+            {
+                try {
+                    processVoiceCommand(event.getUserInput(), event.getConfidence());
+                } catch (Exception e) {
+                    EventBusManager.publish(new AppLogEvent("Error processing user input. See logs."));
+                    log.error("Error processing user input", e);
+                }
+            }
+        });
     }
 
     private void processVoiceCommand(String userInput, float confidence) {

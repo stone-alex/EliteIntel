@@ -147,7 +147,14 @@ public class ResponseRouter implements AIRouterInterface {
         }
 
         EventBusManager.publish(new AppLogEvent("Command handler: " + handler.getClass().getSimpleName()));
-        new Thread(() -> handler.handle(action, params, responseText)).start();
+        new Thread(() -> {
+            try {
+                handler.handle(action, params, responseText);
+            } catch (Exception e) {
+                EventBusManager.publish(new AiVoxResponseEvent("Error processing command for action " + action + " see logs."));
+                log.error("Command handling failed for action {}: {}", action, e.getMessage(), e);
+            }
+        }).start();
         log.debug("Handled command action: {}", action);
     }
 

@@ -1,6 +1,6 @@
 package elite.intel.util;
 
-import elite.intel.ai.ears.whisper.WhisperSTTImpl;
+import elite.intel.ai.ears.parakeet.ParakeetSTTImpl;
 import elite.intel.db.dao.CommodityDao;
 import elite.intel.db.dao.MaterialsDao;
 import elite.intel.db.dao.SubSystemDao;
@@ -48,7 +48,7 @@ public class STTSanitizer {
     private String determineAppDir() {
         String appDir = "distribution" + File.separator + "dictionary/";
         try {
-            URI jarUri = WhisperSTTImpl.class.getProtectionDomain().getCodeSource().getLocation().toURI();
+            URI jarUri = ParakeetSTTImpl.class.getProtectionDomain().getCodeSource().getLocation().toURI();
             File jarFile = new File(jarUri);
             if (jarFile.getPath().endsWith(".jar")) {
                 String parentDir = jarFile.getParent();

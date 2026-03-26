@@ -293,7 +293,7 @@ public class ParakeetSTTImpl implements EarsInterface {
                 future.get(INFERENCE_TIMEOUT_SEC, TimeUnit.SECONDS);
             } catch (java.util.concurrent.TimeoutException e) {
                 future.cancel(true);
-                log.error("Parakeet inference hung after {}s — replacing executor", INFERENCE_TIMEOUT_SEC);
+                log.error("Parakeet inference hung after {}s - replacing executor", INFERENCE_TIMEOUT_SEC);
                 transcriptionExecutor.shutdownNow();
                 transcriptionExecutor = Executors.newSingleThreadExecutor(r -> {
                     Thread t = new Thread(r, "Parakeet-Transcription");
@@ -301,7 +301,7 @@ public class ParakeetSTTImpl implements EarsInterface {
                     return t;
                 });
             } catch (Exception e) {
-                // task completed with exception — already logged in transcribeAndDispatch
+                // task completed with exception - already logged in transcribeAndDispatch
             }
         }, "Parakeet-Watchdog");
         watchdog.setDaemon(true);

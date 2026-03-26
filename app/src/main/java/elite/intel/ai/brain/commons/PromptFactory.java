@@ -33,7 +33,7 @@ public class PromptFactory implements AiPromptFactory {
         sb.append("""
                 You are a strict command parser. Your only job: return exactly one JSON action from the lists below.
                 
-                OUTPUT (required format — no exceptions):
+                OUTPUT (required format - no exceptions):
                 {"action": "action_name", "params": {}}
                 Raw JSON only. No text, no markdown, no explanation before or after.
                 
@@ -62,7 +62,7 @@ public class PromptFactory implements AiPromptFactory {
                 - material trader (raw/encoded/manufactured) → find_raw/encoded/manufactured_material_trader
                 - "geo signals / geological" → query_geo_signals (NOT find_brain_trees)
                 - "find mission providers" / "find pirate mission providers" → find_hunting_grounds (NOT fleet carrier)
-                - "inventory" and "storage" are different panels — never substitute one for the other
+                - "inventory" and "storage" are different panels - never substitute one for the other
                 - queries about ship/you → query_ship_loadout*
                 - queries about the carrier → query_carrier*
                 - NATO alphabet in params: Alpha=A, Bravo=B, Charlie/Charly=C, Delta=D, Echo=E, Foxtrot=F, Golf=G,

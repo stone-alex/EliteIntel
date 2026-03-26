@@ -81,7 +81,7 @@ public class ResponseRouter implements AIRouterInterface {
             } else if (getQueryHandlers().containsKey(action)) {
                 handleQuery(action, params, userInput);
             } else if (!action.isEmpty()) {
-                log.warn("Unknown action '{}' — LLM invented an action name not in registry", action);
+                log.warn("Unknown action '{}' - LLM invented an action name not in registry", action);
                 EventBusManager.publish(new AppLogEvent("Unknown action: " + action));
                 EventBusManager.publish(new AiVoxResponseEvent("Action not recognized."));
             } else {

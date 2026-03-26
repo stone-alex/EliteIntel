@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ public class HotwordEncoder {
     private final String boundary; // word-start marker (e.g. ▁), read from tokens.txt itself
 
     public HotwordEncoder(Path tokensFile) throws IOException {
-        List<String> lines = Files.readAllLines(tokensFile);
+        List<String> lines = Files.readAllLines(tokensFile, StandardCharsets.UTF_8);
         Set<String> vocab = new HashSet<>();
         String foundBoundary = null;
         for (String line : lines) {
@@ -74,7 +75,7 @@ public class HotwordEncoder {
                 }
             }
             if (!found) {
-                // No token covers this character — skip it (rare with a full BPE vocab)
+                // No token covers this character - skip it (rare with a full BPE vocab)
                 log.trace("HotwordEncoder: no token for char '{}' in word '{}'", text.charAt(i), word);
                 i++;
             }
@@ -90,12 +91,12 @@ public class HotwordEncoder {
     public Path encodeFile(Path rawFile) throws IOException {
         List<String> encoded = new ArrayList<>();
         int skipped = 0;
-        for (String line : Files.readAllLines(rawFile)) {
+        for (String line : Files.readAllLines(rawFile, StandardCharsets.UTF_8)) {
             String word = line.trim();
             if (word.isEmpty() || word.matches("[0-9]+")) continue;
             String tokenized = encode(word);
             if (tokenized.isEmpty()) {
-                log.warn("HotwordEncoder: could not encode '{}' — skipping", word);
+                log.warn("HotwordEncoder: could not encode '{}' - skipping", word);
                 skipped++;
             } else {
                 encoded.add(tokenized);
@@ -103,7 +104,7 @@ public class HotwordEncoder {
         }
         Path tmp = Files.createTempFile("parakeet_hotwords_", ".txt");
         tmp.toFile().deleteOnExit();
-        Files.write(tmp, encoded);
+        Files.write(tmp, encoded, StandardCharsets.UTF_8);
         log.info("HotwordEncoder: {} hotwords encoded, {} skipped → {}", encoded.size(), skipped, tmp);
         return tmp;
     }

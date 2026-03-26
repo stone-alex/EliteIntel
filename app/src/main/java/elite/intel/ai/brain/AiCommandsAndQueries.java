@@ -52,7 +52,7 @@ public class AiCommandsAndQueries {
         commandMap.put("select next system in route", TARGET_NEXT_ROUTE_SYSTEM.getAction());
         commandMap.put("jump to hyperspace, jump to the next way point, let's get out of here, lets go, enter hyperspace, go to next waypoint, engage FSD jump, engage frame shift drive", JUMP_TO_HYPERSPACE.getAction());
         commandMap.put("drop from supercruise, disengage FSD, drop", DROP_FROM_SUPER_CRUISE.getAction());
-        commandMap.put("supercruise, light speed, engage FSD supercruise", ENTER_SUPER_CRUISE.getAction());
+        commandMap.put("supercruise, super cruise, light speed, engage FSD supercruise, engage super cruise", ENTER_SUPER_CRUISE.getAction());
         commandMap.put("set as home system", SET_HOME_SYSTEM.getAction());
 
         /// speed / throttle
@@ -117,6 +117,7 @@ public class AiCommandsAndQueries {
         commandMap.put("clear cache", CLEAR_CACHE.getAction());
         commandMap.put("clear reminders", CLEAR_REMINDERS.getAction());
         commandMap.put("set reminder" + KEY_X, SET_REMINDER.getAction());
+
         if (!systemSession.useLocalQueryLlm()) {
             commandMap.put("set/change personality to" + KEY_X, SET_PERSONALITY.getAction());
             commandMap.put("set/change cadence to" + KEY_X, SET_CADENCE.getAction());
@@ -124,34 +125,33 @@ public class AiCommandsAndQueries {
 
         /// UI panels
         commandMap.put("activate, punch it, engage", ACTIVATE.getAction());
-        commandMap.put("show transactions panel", SHOW_TRANSACTIONS.getAction());
-        commandMap.put("show contacts panel", SHOW_CONTACTS.getAction());
-        commandMap.put("show navigation panel", SHOW_NAVIGATION.getAction());
-        commandMap.put("show comms, show chat panel", SHOW_CHAT_PANEL.getAction());
+        commandMap.put("show transactions panel, show transactions, open transactions", SHOW_TRANSACTIONS.getAction());
+        commandMap.put("show contacts panel, show contacts, open contacts", SHOW_CONTACTS.getAction());
+        commandMap.put("show navigation panel, navigation tab, open navigation tab, show nav panel, show navigation", SHOW_NAVIGATION.getAction());
+        commandMap.put("show comms, show chat panel, show chat", SHOW_CHAT_PANEL.getAction());
         commandMap.put("show inbox, show messages", SHOW_INBOX_PANEL.getAction());
         commandMap.put("show social, show friends", SHOW_SOCIAL_PANEL.getAction());
         commandMap.put("show history, show history panel", SHOW_HISTORY_PANEL.getAction());
         commandMap.put("show squadron, show squadron panel", SHOW_SQUADRON.getAction());
-        commandMap.put("show central panel, role panel, commander panel", SHOW_COMMANDER_PANEL.getAction());
-        commandMap.put("show fighter panel", SHOW_FIGHTER_PANEL.getAction());
-        commandMap.put("show crew panel", SHOW_CREW.getAction());
+        commandMap.put("show central panel, role panel, commander panel, show commander", SHOW_COMMANDER_PANEL.getAction());
+        commandMap.put("show fighter panel, show fighter, fighter controls", SHOW_FIGHTER_PANEL.getAction());
+        commandMap.put("show crew panel, show crew", SHOW_CREW.getAction());
         commandMap.put("show internal panel, show home panel, open home panel", SHOW_INTERNAL_PANEL.getAction());
-        commandMap.put("show modules panel", SHOW_MODULES_PANEL.getAction());
-        commandMap.put("show fire groups", SHOW_FIRE_GROUPS.getAction());
-        commandMap.put("show inventory panel", SHOW_INVENTORY_PANEL.getAction());
-        commandMap.put("show storage panel", SHOW_STORAGE_PANEL.getAction());
-        commandMap.put("show status panel", SHOW_STATUS_PANEL.getAction());
-        commandMap.put("show carrier management panel", DISPLAY_CARRIER_MANAGEMENT.getAction());
+        commandMap.put("show modules panel, show modules, open modules", SHOW_MODULES_PANEL.getAction());
+        commandMap.put("show fire groups, open fire groups", SHOW_FIRE_GROUPS.getAction());
+        commandMap.put("show inventory panel, show inventory, open inventory, display inventory", SHOW_INVENTORY_PANEL.getAction());
+        commandMap.put("show storage panel, show storage, open storage", SHOW_STORAGE_PANEL.getAction());
+        commandMap.put("show status panel, show status, open status", SHOW_STATUS_PANEL.getAction());
+        commandMap.put("show carrier management panel, show carrier management, carrier management, open carrier management", DISPLAY_CARRIER_MANAGEMENT.getAction());
         commandMap.put("exit, close, close panel, close window", EXIT_CLOSE.getAction());
         commandMap.put("galaxy map, open galaxy map, show galaxy map", OPEN_GALAXY_MAP.getAction());
         commandMap.put("local map, open system map, show local map", OPEN_SYSTEM_MAP.getAction());
-
-        commandMap.put("max shields, shields full, full power to shields, shields up, boost shields", INCREASE_SHIELDS_POWER.getAction());
-        commandMap.put("max engines, engines full, full power to engines, boost engines", INCREASE_ENGINES_POWER.getAction());
-        commandMap.put("max weapons, weapons full, full power to weapons, boost weapons", INCREASE_WEAPONS_POWER.getAction());
+        commandMap.put("max shields, maximum shields, shields full, full power to shields, transfer power to shields, power to shields, all power to shields, shields up, boost shields, reinforce shields, divert to shields", INCREASE_SHIELDS_POWER.getAction());
+        commandMap.put("max engines, maximum engines, engines full, full power to engines, transfer power to engines, power to engines, all power to engines, boost engines, divert to engines", INCREASE_ENGINES_POWER.getAction());
+        commandMap.put("max weapons, maximum weapons, weapons full, full power to weapons, transfer power to weapons, power to weapons, all power to weapons, boost weapons, divert to weapons", INCREASE_WEAPONS_POWER.getAction());
 
         /// pirate massacre missions
-        commandMap.put("find hunting grounds, find pirate mission providers" + KEY_X, FIND_HUNTING_GROUNDS.getAction());
+        commandMap.put("find hunting grounds, find pirate mission providers, find mission providers, find massacre mission providers" + KEY_X, FIND_HUNTING_GROUNDS.getAction());
         commandMap.put("plot reconnaissance route to hunting ground, recon hunting ground", RECON_TARGET_SYSTEM.getAction());
         commandMap.put("navigate to system with matching mission provider, go to mission provider system", RECON_PROVIDER_SYSTEM.getAction());
         commandMap.put("navigate to confirmed pirate massacre mission provider, go to pirate mission giver", NAVIGATE_TO_PIRATE_MISSION_PROVIDER.getAction());
@@ -162,10 +162,7 @@ public class AiCommandsAndQueries {
         /// vehicle deployment (mode-independent)
 
         commandMap.put("deploy SRV, deploy buggy, deploy car, deploy surface vehicle", DEPLOY_SRV.getAction());
-
-
         commandMap.put("recover SRV, recover buggy, recover car,get car back aboard ship, requesting extraction, extract surface vehicle", RECOVER_SRV.getAction());
-
         commandMap.put("deploy heat sink", DEPLOY_HEAT_SINK.getAction());
         commandMap.put("equalize power, reset power distribution", RESET_POWER.getAction());
         commandMap.put("retract hardpoints, store weapons, weapons cold", RETRACT_HARDPOINTS.getAction());

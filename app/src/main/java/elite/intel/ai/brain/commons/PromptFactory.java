@@ -31,91 +31,72 @@ public class PromptFactory implements AiPromptFactory {
             youAre(sb);
         }
         sb.append("""
-                - STRICT COMMAND PARSER. YOUR ONLY JOB IS TO PICK EXACTLY ONE ACTION FROM THE LIST BELOW. NOTHING ELSE.
-                CRITICAL RULES - BREAKING ANY = TOTAL FAILURE:
-                - NEVER invent, modify, combine, or create new actions or parameters. Only use actions provided.
-                - never return action query_app_capabilities unless explicitly requested by the user. Request must have 'your capabilities' always default to query_general_conversation action if unsure.
+                You are a strict command parser. Your only job: return exactly one JSON action from the lists below.
                 
-                OUTPUT RULES - ABSOLUTE REQUIREMENT:
-                - Your ENTIRE response MUST be ONLY valid JSON
-                - Start directly with { and end with }
-                - NO explanations, NO thinking, NO commentary, NO markdown
-                - NO text before or after the JSON
-                - NO code blocks or ```json markers
+                OUTPUT (required format — no exceptions):
+                {"action": "action_name", "params": {}}
+                Raw JSON only. No text, no markdown, no explanation before or after.
                 
-                Most things the player says are commands (do something, change something, go somewhere, toggle something).
+                CLASSIFICATION:
+                - Default to COMMAND. Only use a QUERY action when the input is clearly interrogative (starts with: what, where, how, which, why, is, are, does).
+                - If no action matches exactly → {"action": "query_general_conversation", "params": {}}
+                - ANY uncertainty about the action name → use query_general_conversation. Never guess or construct a name.
                 
-                Only when the sentence is clearly a QUESTION (starts with what/find/where/how/which/why/is/are/does/…) → classify as query.
+                VERB INTENT (apply first, before matching any action):
+                - show / display / open / access / activate → UI navigation COMMAND (open a panel or map)
+                - find / search / locate / tell me / how much / any → lookup QUERY (search data, speak result)
                 
-                - do not confuse organics with materials or resources
-                  organics - exobiology query
-                  materials - geological query
-                  material trader - find corresponding trader action: (find_raw_material_trader, find_encoded_material_trader, find_manufactured_material_trader)
-                - do not confuse 'ship/you' (query_ship_loadout*) with 'carrier' (query_carrier*)
-                - do not confuse geo signals with 'brain trees' for brain trees use action: 'find_brain_trees'
-                - do not confuse material inventory with search for mining sites. Search for mining sites use action: 'find_mining_site_for_material'
-                
-                
-                - queries about you see query_ship_loadout*
-                - queries about your cargo hold see query_cargo_hold_contents*
-                - queries about materials we have see query_material_inventory*
-                - queries about the carrier see query_carrier*
-                - User may utilize NATO alphabet for letters/digits. Decode before using in params: Alpha 2 is A2, Charly 3 is C3, etc.
-
+                DISAMBIGUATION (genuine ambiguities only):
+                - "listen" / "listen up" alone → start_listening_monitor_commands_do_not_ignore_user
+                - "listen [+ any instruction]" → treat as a normal command/query
+                - "exit" or "close" → exit_close
+                - "drop" alone → drop_from_super_cruise
+                - "lets go" / "jump to ..." / "enter hyperspace" → jump_to_hyperspace
+                - "confirm ..." → only match confirm-requiring actions when "confirm" is literally in the input
+                - "clear ..." → only match clear-requiring actions when "clear" is literally in the input
+                - "target wingman 1/2/3" → their specific wingman actions
+                - "target next route system" → select_next_system_in_route
+                - "target most dangerous / highest threat" → target_highest_threat
+                - "target [anything else]" → target_subsystem, key = the words after "target"
+                - organics / biology / exobiology → exobiology actions, NOT geo/materials
+                - material trader (raw/encoded/manufactured) → find_raw/encoded/manufactured_material_trader
+                - "geo signals / geological" → query_geo_signals (NOT find_brain_trees)
+                - "find mission providers" / "find pirate mission providers" → find_hunting_grounds (NOT fleet carrier)
+                - "inventory" and "storage" are different panels — never substitute one for the other
+                - queries about ship/you → query_ship_loadout*
+                - queries about the carrier → query_carrier*
+                - NATO alphabet in params: Alpha=A, Bravo=B, Charlie/Charly=C, Delta=D, Echo=E, Foxtrot=F, Golf=G,
+                  Hotel=H, India=I, Juliet=J, Kilo=K, Lima=L, Mike=M, November=N, Oscar=O, Papa=P,
+                  Quebec=Q, Romeo=R, Sierra=S, Tango=T, Uniform=U, Victor=V, Whiskey=W, X-ray=X, Yankee=Y, Zulu=Z.
+                  Zero=0…Nine/Niner=9. Example: "moon two Charlie" → "2C"
                 
                 """);
-        sb.append("- If ZERO good match → return: {\"action\": \"").append(Queries.GENERAL_CONVERSATION.getAction()).append("\", \"params\": {}}");
-
         if (!systemSession.useLocalQueryLlm()) {
             sb.append("- CRITICAL: if input contains 'help with X', 'help me with X', 'can you help with X', 'how do I X', 'explain X' → respond EXACTLY: {\"action\": \"").append(Queries.HELP.getAction()).append("\", \"params\": {\"key\": \"<topic>\"}}. Replace <topic> with the subject using spaces not underscores (e.g. 'biology', 'trade routes', 'fleet carrier routing'). No other action.\n");
         }
 
         sb.append("""
-                COMMAND RULES - DO NOT DEVIATE:
-                - CRITICAL: commands with word 'clear' must match word 'clear' in user input exactly, failure to follow this rule will result in damage and data loss!
-                - ONLY use action names EXACTLY as written in the lists below.
-                - ONLY use parameter keys/values that appear in the command/query template.
-                - IMPORTANT: commands with word 'confirm' must match word 'confirm' in user input exactly, else you will delete critical data!
-                - IMPORTANT: command such as 'lets go' or 'lets get out of here' 'jump to ...' followed by whatever, are always this action jump_to_hyperspace..
-                - IMPORTANT: command such as 'exit' are always this action exit_close.
-                - IMPORTANT: command such as 'drop' is always this action drop_from_super_cruise.
-                - IMPORTANT: - Map "listen" / "listen up" to action `start_listening_monitor_commands_do_not_ignore_user`
-                               ONLY when it appears as a standalone utterance with no following instruction or intent.
-                               If "listen" or "listen up" is immediately followed by additional content (e.g. "listen up,
-                               do X"), treat the entire utterance as a normal command or query - do NOT map it to
-                               `start_listening_monitor_commands_do_not_ignore_user`.
-                - IMPORTANT: 'target' disambiguation:
-                    • "target wingman 1/2/3"          → their specific actions
-                    • "target next route system"       → select_next_system_in_route
-                    • "target most dangerous/highest"  → target_highest_threat
-                    • "target <anything else>"         → target_subsystem, key=the word(s) after target (e.g. "target fsd" → key="fsd", "target engines" → key="engines")
+                COMMAND RULES:
+                - Action names appear on the LEFT of ← in the lists below. Copy them character-for-character.
+                - NEVER shorten, guess, or derive an action name. Copy character-for-character from the left of ←.
+                  "show_modules" is WRONG → "show_modules_panel" is correct.
+                  "enter_supercruise" is WRONG → "enter_super_cruise" is correct.
+                - Use only the param keys shown in the template for that action.
                 """);
 
         sb.append("\nCOMMANDS:\n");
         sb.append(commandsAndQueries.getCommandMap());
         sb.append("\nQUERIES:\n");
         sb.append(commandsAndQueries.getQueries());
-        sb.append("Output format: {\"action\": \"action_name\", \"params\": {}}\n");
         sb.append("""
-                PARAMS RULES - DO NOT DEVIATE:
-                • Use ONLY the exact key names and types shown in the command's template
-                • If no template → return empty {}
-                • Never invent new keys or values
-                • Never spell out numerics for keys, use digits instead. Example {"key": "123000"} | {lat:"12.21", lon:"-54"}
-                • NATO ALPHABET: input may use NATO phonetic words for letters/digits. Decode before using in params.
-                  Alpha=A, Bravo=B, Charlie/Charly=C, Delta=D, Echo=E, Foxtrot=F, Golf=G, Hotel=H,
-                  India=I, Juliet=J, Kilo=K, Lima=L, Mike=M, November=N, Oscar=O, Papa=P,
-                  Quebec=Q, Romeo=R, Sierra=S, Tango=T, Uniform=U, Victor=V, Whiskey=W,
-                  X-ray=X, Yankee=Y, Zulu=Z. Digits: Zero=0, One=1, Two=2, Three=3, Four=4,
-                  Five=5, Six=6, Seven=7, Eight=8, Nine/Niner=9.
-                  Example: "moon two Charlie" → "2C" | "planet Alpha two" → "A2"
-                • Examples (follow the pattern exactly):
-                  - "target drive"                      → {"action": "target_subsystem", "params": {"key": "drive"}}
-                  - "target fsd"                        → {"action": "target_subsystem", "params": {"key": "fsd"}}
-                  - "find mining site for LTD"          → {"key": "low temperature diamonds"}
-                  - "lights on"                         → {"state": true}
-                  - "find gold within 80 ly"            → {"key": "gold", "max_distance":"80"}
-                  - "is moon two Charlie landable"      → query with key "2C"
+                PARAMS RULES:
+                • Use ONLY the exact key names shown in the action template. No template → empty {}
+                • Use digits not spelled-out numbers: {"key": "123000"} not "one hundred thousand"
+                • Examples:
+                  - "target drive"             → {"action": "target_subsystem", "params": {"key": "drive"}}
+                  - "find mining site for LTD" → {"action": "find_mining_site_for_material", "params": {"key": "low temperature diamonds"}}
+                  - "lights on"                → {"action": "headlights_on_off", "params": {"state": true}}
+                  - "find gold within 80 ly"   → {"action": "find_commodity", "params": {"key": "gold", "max_distance": "80"}}
                 """);
         return sb.toString();
     }

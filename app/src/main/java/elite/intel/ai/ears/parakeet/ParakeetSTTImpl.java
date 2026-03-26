@@ -41,9 +41,11 @@ public class ParakeetSTTImpl implements EarsInterface {
     private static final int PRE_ROLL_FRAMES = 4;
     private static final long BASE_BACKOFF_MS = 2000;
     private static final long MAX_BACKOFF_MS = 60000;
-    private static final long INFERENCE_TIMEOUT_SEC = 15;
+    private static final long INFERENCE_TIMEOUT_SEC = 5;
     private static final int MIN_AUDIO_MS = 1500;
     private static final int MIN_AUDIO_BYTES = SAMPLE_RATE * 2 * MIN_AUDIO_MS / 1000;
+    private static final int MAX_UTTERANCE_MS = 8000;
+    private static final int MAX_UTTERANCE_BYTES = SAMPLE_RATE * 2 * MAX_UTTERANCE_MS / 1000;
 
     private final AtomicBoolean isStopping = new AtomicBoolean(false);
     private final AtomicBoolean isListening = new AtomicBoolean(false);
@@ -265,6 +267,11 @@ public class ParakeetSTTImpl implements EarsInterface {
                 }
                 if (isActive) {
                     audioCollector.write(audio, 0, audioLen);
+                    if (audioCollector.size() >= MAX_UTTERANCE_BYTES) {
+                        isActive = false;
+                        consecutiveSilence = 0;
+                        log.warn("VAD: max utterance length ({}ms) reached, forcing gate close", MAX_UTTERANCE_MS);
+                    }
                 }
                 if (wasActive && !isActive && audioCollector.size() > 0) {
                     final byte[] utterance = audioCollector.toByteArray();

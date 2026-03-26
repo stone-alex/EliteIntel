@@ -1,3 +1,10 @@
+## Elite Intel v-0.0329-beta
+
+### bug fixes / features:
+
+- Replacing whisper with NVIDIA Parakeet
+- Dictionary file no longer in use and not longer needed.
+
 ## Elite Intel v-0.0328-beta
 
 ### bug fixes / features:

@@ -154,7 +154,7 @@ public class ParakeetSTTImpl implements EarsInterface {
                 .setTransducer(transducer)
                 .setTokens(tokensFile.toString())
                 .setNumThreads(Math.max(1, Math.min(Runtime.getRuntime().availableProcessors(), systemSession.getSttThreads())))
-                .setDebug(true)
+                .setDebug(false)
                 .setProvider("cpu")
                 .build();
 

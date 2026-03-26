@@ -30,8 +30,8 @@ AI for analysis in a different prompt along with the original user input. AI wil
 | Tool       | Version               | Notes                                                        |
 |------------|-----------------------|--------------------------------------------------------------|
 | **Java**   | **21 LTS**            | Required. Tested with Eclipse Temurin / OpenJDK 21.          |
-| **Gradle** | **8.7** (via wrapper) | Do **not** install Gradle manually — always use `./gradlew`. |
-| **Git**    | Any recent            | —                                                            |
+| **Gradle** | **8.7** (via wrapper) | Do **not** install Gradle manually - always use `./gradlew`. |
+| **Git**    | Any recent            | -                                                            |
 
 > The build will fail on Java versions other than 21. Make sure `JAVA_HOME` points to a JDK 21 installation.
 
@@ -106,7 +106,8 @@ If you want to implement a new command or query follow the established patterns.
 - **Event Types**:
     - `UserInputEvent`: Triggered by STT (`elite.intel.ai.ears`) for user voice input.
     - `SensorDataEvent`: Sent directly to AI for cadence or analysis, used in query/command handlers.
-    - `VoiceProcessEvent`: Initiates TTS processing (`elite.intel.ai.mouth`).
+  - `AiVoxResponseEvent`: Initiates TTS processing (`elite.intel.ai.mouth`).
+  - `AudioMonitorEvent`: Use this event to send the data to UI for visualization only. (`elite.intel.ai.erars`).
     - `YourJournalEvent extends BaseEvent`: Journal file events, wrappers. Registered in `elite.intel.gameapi.journal.EventRegistry`.
 - **Event Bus**:
     - Use `elite.intel.gameapi.EventBusManager` to publish events.
@@ -130,7 +131,7 @@ If you want to implement a new command or query follow the established patterns.
   - Run in a separate thread, stream mic input to STT, and publish `UserInputEvent` when a transcription is ready.
   - Use `AudioCalibrator` to automatically set RMS thresholds based on real-time audio analysis.
     - Use `AudioFormatDetector` to automatically detect the audio device, bitrate, and sample rate.
-- **Current backend**: `elite.intel.ai.ears.whisper.WhisperSTTImpl` — offline, runs locally via
+- **Current backend**: `elite.intel.ai.ears.whisper.WhisperSTTImpl` - offline, runs locally via
   `whisper-jni` (JNI bindings to whisper.cpp). Requires a 16 kHz mono audio stream; resampling is handled internally by
   `Resampler`.
 - **Native dependency**: Whisper native libraries are loaded at runtime from the path specified by
@@ -143,11 +144,11 @@ If you want to implement a new command or query follow the established patterns.
   - Run in a separate thread, manage an internal queue, and register via `SubscriberRegistration` or
     `EventBusManager.register(this)` for singletons.
 - **Current backends**:
-  - `elite.intel.ai.mouth.kokoro.KokoroTTS` — **primary, offline**. Uses Kokoro via
+  - `elite.intel.ai.mouth.kokoro.KokoroTTS` - **primary, offline**. Uses Kokoro via
     `sherpa-onnx` JNI. Two-queue pipeline: sentence splitting → synthesis queue → playback queue. Native libraries loaded from
     `-Djava.library.path`. No API key required.
   -
-  `elite.intel.ai.mouth.google.GoogleTTSImpl` — cloud-based fallback via Google Cloud Text-to-Speech API. Requires a Google Cloud API key configured in the System settings tab.
+  `elite.intel.ai.mouth.google.GoogleTTSImpl` - cloud-based fallback via Google Cloud Text-to-Speech API. Requires a Google Cloud API key configured in the System settings tab.
 
 ### AI (LLM Integration)
 

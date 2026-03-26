@@ -541,10 +541,10 @@ Temperedalloys
 Pharmaceuticalisolators
 Compactcomposites
 Thermicalloys
-Guardian_techcomponent
-Guardian_powercell
-Guardian_powerconduit
-Guardian_sentinel_wreckagecomponents
-Guardian_sentinel_weaponparts
+Guardian techcomponent
+Guardian powercell
+Guardian powerconduit
+Guardian sentinel wreckagecomponents
+Guardian sentinel weaponparts
 Biotechconductors
 Unknownenergysource

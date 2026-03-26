@@ -57,7 +57,7 @@ public class AiCommandsAndQueries {
 
         /// speed / throttle
         commandMap.put("stop, engine stop, full stop, speed zero", STOP.getAction());
-        commandMap.put("taxi, auto pilot, auto docking, take us in", TAXI.getAction());
+        commandMap.put("taxi, autopilot, auto docking, take us in, taxi in, taxi to landing", TAXI.getAction());
         commandMap.put("quarter throttle, quarter speed, speed 25", SET_SPEED25.getAction());
         commandMap.put("half throttle, half speed, speed 50", SET_SPEED50.getAction());
         commandMap.put("throttle 75, three quarters throttle, speed 75", SET_SPEED75.getAction());

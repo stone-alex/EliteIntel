@@ -160,7 +160,7 @@ If you want to implement a new command or query follow the established patterns.
     - `AiQueryInterface`: `JsonObject sendToAi(JsonArray messages)` for queries.
     - `AiAnalysisInterface`: `JsonObject analyzeData(String userIntent, String dataJson)` for data analysis.
     - `AIChatInterface`: `JsonObject sendToAi(JsonArray messages)` for chats.
-- **Example**: See `elite.intel.ai.brain.xai` for xAI Grok integration.
+- **Example**: See `elite.intel.ai.brain.*` for various implementations.
 
 ## New Journal Events
 

@@ -8,11 +8,9 @@ import elite.intel.ai.mouth.subscribers.events.TTSInterruptEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.UserInputEvent;
 import elite.intel.session.SystemSession;
-import elite.intel.ui.event.AppLogDebugEvent;
 import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.AppPaths;
 import elite.intel.util.AudioPlayer;
-import elite.intel.util.STTSanitizer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -282,14 +280,16 @@ public class ParakeetSTTImpl implements EarsInterface {
 
                 if (transcript.isBlank() || transcript.length() < 3) return;
 
-                EventBusManager.publish(new AppLogDebugEvent("RAW: [" + transcript + "]"));
-                String sanitized = STTSanitizer.getInstance().correctMistakes(transcript);
-                EventBusManager.publish(new AppLogEvent("STT: [" + sanitized + "]"));
+                // EventBusManager.publish(new AppLogDebugEvent("RAW: [" + transcript + "]"));
+                ///String sanitized = STTSanitizer.getInstance().correctMistakes(transcript);
+                //String sanitized = transcript;
+
+                EventBusManager.publish(new AppLogEvent("STT: [" + transcript + "]"));
 
                 if (systemSession.isStreamingModeOn()) {
-                    if (passThrough(sanitized)) sendToAi(sanitized);
+                    if (passThrough(transcript)) sendToAi(transcript);
                 } else {
-                    sendToAi(sanitized);
+                    sendToAi(transcript);
                 }
             } finally {
                 stream.release();

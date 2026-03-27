@@ -311,6 +311,8 @@ public class InputNormalizer {
         SYNONYM_MAP.put("what are we hauling", "cargo hold");
         SYNONYM_MAP.put("what's in the hold", "cargo hold");
         SYNONYM_MAP.put("hold contents", "cargo hold");
+        SYNONYM_MAP.put("deploy cargo scoop", "open cargo scoop");
+        SYNONYM_MAP.put("retract cargo scoop", "close cargo scoop");
 
         // ── Carrier status / fuel / ETA / destination ─────────────────────────
         SYNONYM_MAP.put("when does carrier arrive", "carrier ETA");
@@ -419,6 +421,14 @@ public class InputNormalizer {
         SYNONYM_MAP.put("manax", "max");
         SYNONYM_MAP.put("hard points", "hardpoints");
         SYNONYM_MAP.put("scott", "scan");
+        SYNONYM_MAP.put("mining spots", "mining hot spots");
+        SYNONYM_MAP.put("net vision", "night vision");
+        SYNONYM_MAP.put("her style", "hostile");
+        SYNONYM_MAP.put("hair style", "hostile");
+        SYNONYM_MAP.put("did", "deploy");
+        SYNONYM_MAP.put("did ploy", "deploy");
+
+
 
     }
 

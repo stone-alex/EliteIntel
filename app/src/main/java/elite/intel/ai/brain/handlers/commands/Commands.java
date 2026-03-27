@@ -172,7 +172,7 @@ public enum Commands {
 
     SET_CARRIER_FUEL_RESERVE                            ("set_carrier_fuel_reserve", null,  SetFleetCarrierFuelReserveHandler.class),
 
-    SELECT_HIGHEST_THREAT                               ("target_highest_threat", BINDING_SELECT_HIGHEST_THREAT.getGameBinding(), SimpleCommandActionHandler.class),
+    SELECT_HIGHEST_THREAT                               ("target_hostile_highest_threat", BINDING_SELECT_HIGHEST_THREAT.getGameBinding(), SimpleCommandActionHandler.class),
     TARGET_NEXT_ROUTE_SYSTEM                            ("select_next_system_in_route", BINDING_TARGET_NEXT_ROUTE_SYSTEM.getGameBinding(), SimpleCommandActionHandler.class),
 
     TARGET_WINGMAN0                                     ("target_wingman_1", BINDING_TARGET_WINGMAN0.getGameBinding(), SimpleCommandActionHandler.class),

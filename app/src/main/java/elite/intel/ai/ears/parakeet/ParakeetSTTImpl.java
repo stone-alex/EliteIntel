@@ -13,6 +13,7 @@ import elite.intel.util.AppPaths;
 import elite.intel.util.AudioPlayer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jspecify.annotations.NonNull;
 
 import javax.sound.sampled.*;
 import java.io.ByteArrayOutputStream;
@@ -328,18 +329,16 @@ public class ParakeetSTTImpl implements EarsInterface {
                 log.debug("Parakeet transcription took {} ms", System.currentTimeMillis() - timeStart);
 
                 if (transcript.isBlank() || transcript.length() < 3) return;
-
-                // EventBusManager.publish(new AppLogDebugEvent("RAW: [" + transcript + "]"));
-                ///String sanitized = STTSanitizer.getInstance().correctMistakes(transcript);
-                //String sanitized = transcript;
                 if (blockWord(transcript)) return;
 
-                EventBusManager.publish(new AppLogEvent("STT: [" + transcript + "]"));
+
+                String finalTranscript = sanitizeTranscript(transcript);
+                EventBusManager.publish(new AppLogEvent("STT: [" + finalTranscript + "]"));
 
                 if (systemSession.isStreamingModeOn()) {
-                    if (passThrough(transcript)) sendToAi(transcript);
+                    if (passThrough(finalTranscript)) sendToAi(finalTranscript);
                 } else {
-                    sendToAi(transcript);
+                    sendToAi(finalTranscript);
                 }
             } finally {
                 stream.release();
@@ -349,17 +348,30 @@ public class ParakeetSTTImpl implements EarsInterface {
         }
     }
 
+    private @NonNull String sanitizeTranscript(String transcript) {
+        StringBuilder sanitized = new StringBuilder();
+        for (String word : transcript.split("\\s+")) {
+            boolean isBlockWord = false;
+            for (String blockWord : blockWords) {
+                if (word.equalsIgnoreCase(blockWord)) {
+                    isBlockWord = true;
+                    break;
+                }
+            }
+            if (!isBlockWord) {
+                if (sanitized.length() > 0) sanitized.append(" ");
+                sanitized.append(word);
+            }
+        }
+        String finalTranscript = sanitized.toString();
+        return finalTranscript;
+    }
+
 
     private boolean blockWord(String transctipt) {
         for (String word : blockWords) {
             /// if the transcript is block word and nothing else. - ignore
             if (word.equalsIgnoreCase(transctipt)) return true;
-
-            /// if the transcript contains block word. - remove it and continue
-            if (transctipt.startsWith(word)) {
-                transctipt.replace(word, "");
-                return false;
-            }
         }
         return false;
     }

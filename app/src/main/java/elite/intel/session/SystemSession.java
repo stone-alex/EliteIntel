@@ -154,6 +154,7 @@ public class SystemSession {
     }
 
     public void setRmsThresholdHigh(Double rmsThresholdHigh) {
+        this.rms = rmsThresholdHigh;
         Database.withDao(GameSessionDao.class, dao -> {
             GameSessionDao.GameSession session = dao.get();
             session.setRmsThresholdHigh(rmsThresholdHigh == null ? 0.0 : rmsThresholdHigh);
@@ -177,6 +178,7 @@ public class SystemSession {
     }
 
     public void setRmsThresholdLow(Double rmsThresholdLow) {
+        this.floor = rmsThresholdLow;
         Database.withDao(GameSessionDao.class, dao -> {
             GameSessionDao.GameSession session = dao.get();
             session.setRmsThresholdLow(rmsThresholdLow == null ? 0.0 : rmsThresholdLow);

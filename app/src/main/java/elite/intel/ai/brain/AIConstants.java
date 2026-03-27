@@ -5,11 +5,12 @@ import java.util.List;
 public class AIConstants {
     public final static List<String> passThroughWords = List.of("listen", "ignore", "ignoring", "wake", "wake up");
     public final static List<String> blockWords = List.of(
-            "mm-hmm.", "uh-huh.", "eh.", "yeah.",
-            "okay.", "got it.", "did you", "uh.",
+            "mm-hmm.", "uh-huh.", "eh.", "yeah.", "did you",
+            "okay.", "got it.", "uh.", "the", "did", "you", "blow", " a ",
             "hello?", "did you", "it", "she can",
-            "he can", "you can", "my", "i'll", "did you"
+            "he can", "you can", "my", "i'll", "did you", "mm."
     );
+
 
     public final static String TYPE_ACTION = "action";
     public final static String PROPERTY_TEXT_TO_SPEECH_RESPONSE = "text_to_speech_response";

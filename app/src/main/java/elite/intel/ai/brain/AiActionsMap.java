@@ -75,8 +75,8 @@ public class AiActionsMap {
         map.put("deploy landing gear, gear down, lower landing gear, extend landing gear", DEPLOY_LANDING_GEAR.getAction());
         map.put("retract landing gear, gear up, raise landing gear, stow landing gear", RETRACT_LANDING_GEAR.getAction());
         map.put("request docking, dock at station, request landing, docking request, ask for docking, request parking, parking spot, request pad", REQUEST_DOCKING.getAction());
-        map.put("open cargo scoop, deploy cargo scoop, extend scoop {state:true/false}", OPEN_CARGO_SCOOP.getAction());
-        map.put("close cargo scoop, retract cargo scoop, stow scoop {state:true/false}", CLOSE_CARGO_SCOOP.getAction());
+        map.put("open cargo scoop, deploy cargo scoop, open cargo bay, extend scoop {state:true/false}", OPEN_CARGO_SCOOP.getAction());
+        map.put("close cargo scoop, retract cargo scoop, close cargo bay, stow scoop {state:true/false}", CLOSE_CARGO_SCOOP.getAction());
         map.put("night vision {state:true/false}", NIGHT_VISION_ON_OFF.getAction());
         map.put("headlights, lights, ship lights {state:true/false}", LIGHTS_ON_OFF.getAction());
         map.put("drive assist, driving assist, SRV assist {state:true/false}", DRIVE_ASSIST.getAction());
@@ -191,7 +191,7 @@ public class AiActionsMap {
         map.put("target wingman 2, wingman bravo", TARGET_WINGMAN1.getAction());
         map.put("target wingman 3, wingman charlie", TARGET_WINGMAN2.getAction());
         map.put("wing nav lock, lock wingman nav, follow wingman", WING_NAV_LOCK.getAction());
-        map.put("target highest threat, target most dangerous, lock most wanted", SELECT_HIGHEST_THREAT.getAction());
+        map.put("priority target, target highest threat, target most dangerous, select hostile", SELECT_HIGHEST_THREAT.getAction());
 
         // fighter
         if (status.isInMainShip()) {
@@ -210,7 +210,7 @@ public class AiActionsMap {
         map.put("bio scan progress, biology scan progress, organics scanned, how many samples, bio signals in system, biosignals, biological signals, organics in system, which planets have bio signals", BIO_SAMPLE_IN_STAR_SYSTEM.getAction());
         map.put("exobiology samples, biology samples, organics at location, what organisms, what's left to scan, remaining organisms, samples left, organisms remaining, exobiology progress, scan remaining", EXOBIOLOGY_SAMPLES.getAction());
         map.put("stellar objects, planets in system, bodies in system, what planets, how many planets, system bodies, stellar bodies, what's in this system", QUERY_STELLAR_OBJETS.getAction());
-        map.put("signals in system, FSS signals, what signals, unidentified signals, system signals, detected signals, anomalous signals", QUERY_STELLAR_SIGNALS.getAction());
+        map.put("signals in system, FSS signals, mining hot spots, resource extraction sites, what signals, conflict zones, emissions, unidentified signals, system signals, detected signals, anomalous signals", QUERY_STELLAR_SIGNALS.getAction());
         map.put("geo signals, geological signals, volcanic signals, geological activity, volcanic activity, geology in system", QUERY_GEO_SIGNALS.getAction());
         map.put("stations in system, what stations, nearby stations, star ports, space stations, docking available", QUERY_STATIONS.getAction());
         map.put("fleet carriers in system, carriers in system, how many carriers, fleet carriers here, any carriers nearby", QUERY_CARRIERS.getAction());

@@ -97,11 +97,11 @@ public class LMStudioUserInputProcessor extends CommandEndPoint implements AiCom
         JsonArray request = new JsonArray();
         JsonObject system = new JsonObject();
         system.addProperty("role", AIConstants.ROLE_SYSTEM);
-        system.addProperty("content", getContextFactory().generateUserInputSystemPrompt());
+        system.addProperty("content", getContextFactory().generateUserInputSystemPrompt(userInput));
         request.add(system);
         JsonObject userMsg = new JsonObject();
         userMsg.addProperty("role", AIConstants.ROLE_USER);
-        userMsg.addProperty("content", userInput);
+        userMsg.addProperty("content", getContextFactory().normalizeInput(userInput));
         request.add(userMsg);
 
         JsonObject response = LMStudioCommandEndPoint.getInstance().processAiPrompt(request, 0.01f);

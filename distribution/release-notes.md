@@ -1,4 +1,10 @@
-## Elite Intel v-0.0331-beta
+## Elite Intel v-0.033-beta
+
+### bug fixes / features:
+
+- Prompt normalization algorithm and logic.
+
+## Elite Intel v-0.033-beta
 
 ### bug fixes / features:
 

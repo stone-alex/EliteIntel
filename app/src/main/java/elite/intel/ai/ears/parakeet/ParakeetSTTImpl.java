@@ -356,10 +356,12 @@ public class ParakeetSTTImpl implements EarsInterface {
             if (word.equalsIgnoreCase(transctipt)) return true;
 
             /// if the transcript contains block word. - remove it and continue
-            if (transctipt.contains(word)) {
-                transctipt.toLowerCase().replace(word, "");
+            if (transctipt.startsWith(word)) {
+                transctipt.replace(word, "");
                 return false;
             }
+            transctipt.replace("of", "off");
+            transctipt.replace("manax", "max");
         }
         return false;
     }

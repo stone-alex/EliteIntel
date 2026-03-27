@@ -1,9 +1,6 @@
 package elite.intel.ai.brain.commons;
 
-import elite.intel.ai.brain.AiCommandsAndQueries;
-import elite.intel.ai.brain.AiPromptFactory;
-import elite.intel.ai.brain.ShipCadence;
-import elite.intel.ai.brain.ShipPersonality;
+import elite.intel.ai.brain.*;
 import elite.intel.ai.brain.handlers.query.Queries;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
@@ -15,7 +12,13 @@ public class PromptFactory implements AiPromptFactory {
 
     private static final PromptFactory INSTANCE = new PromptFactory();
     private final SystemSession systemSession = SystemSession.getInstance();
-    private final AiCommandsAndQueries commandsAndQueries = AiCommandsAndQueries.getInstance();
+    private final AiActionsMap actionsMap = AiActionsMap.getInstance();
+    private final InputNormalizer normalizer = InputNormalizer.getInstance();
+
+    @Override
+    public String normalizeInput(String rawUserInput) {
+        return normalizer.normalize(rawUserInput);
+    }
 
     private PromptFactory() {
     }
@@ -25,7 +28,8 @@ public class PromptFactory implements AiPromptFactory {
     }
 
     @Override
-    public String generateUserInputSystemPrompt() {
+    public String generateUserInputSystemPrompt(String rawUserInput) {
+        String normalizedInput = normalizer.normalize(rawUserInput);
         StringBuilder sb = new StringBuilder();
         if (!systemSession.useLocalCommandLlm()) {
             youAre(sb);
@@ -38,16 +42,22 @@ public class PromptFactory implements AiPromptFactory {
                 Raw JSON only. No text, no markdown, no explanation before or after.
                 
                 CLASSIFICATION:
-                - Default to COMMAND. Only use a QUERY action when the input is clearly interrogative (starts with: what, where, how, which, why, is, are, does).
-                - If no action matches exactly → {"action": "query_general_conversation", "params": {}}
-                - ANY uncertainty about the action name → use query_general_conversation. Never guess or construct a name.
+                - Default to COMMAND. Only use a QUERY action when the input is clearly interrogative (starts with: what, how, which, why, is, are, does, tell me, how much, how many).
+                - ALWAYS pick the closest matching action. query_general_conversation is ONLY for input that is clearly casual chitchat with zero connection to any action (e.g. "how's your day"). When in doubt, pick the closest action - do NOT fall back to general conversation.
+                - ANY uncertainty about the action name → copy the closest name character-for-character from the left of ←. Never construct or shorten a name.
                 
                 VERB INTENT (apply first, before matching any action):
                 - show / display / open / access / find / search / locate / activate → COMMANDS (open a panel or map, find commodities, missions etc.)
                 - where / tell me / how much / any → lookup QUERY (search data, speak result)
                 
                 DISAMBIGUATION (genuine ambiguities only):
-                - "listen" / "listen up" alone → start_listening_monitor_commands_do_not_ignore_user
+                - "activate" alone (no mode, panel, or subsystem following) → activate
+                - "weapons free" / "weapons hot" / "combat ready" → deploy_hardpoints
+                - "weapons cold" / "weapons away" / "stand down" → retract_hardpoints
+                - "max weapons" / "boost weapons" / "power to weapons" → transfer_power_to_weapons
+                - "max shields" / "boost shields" / "power to shields" → transfer_power_to_shields
+                - "max engines" / "boost engines" / "power to engines" → transfer_power_to_engines
+                - "listen" / "listen up" alone → start_listening
                 - "listen [+ any instruction]" → treat as a normal command/query
                 - "exit" or "close" → exit_close
                 - "drop" alone → drop_from_super_cruise
@@ -79,25 +89,26 @@ public class PromptFactory implements AiPromptFactory {
 
         sb.append("""
                 COMMAND RULES:
-                - Action names appear on the LEFT of ← in the lists below. Copy them character-for-character.
-                - NEVER shorten, guess, or derive an action name. Copy character-for-character from the left of ←.
-                  "show_modules" is WRONG → "show_modules_panel" is correct.
-                  "enter_supercruise" is WRONG → "enter_super_cruise" is correct.
+                - Action names appear on the LEFT of ← in the list below. Copy them character-for-character. No exceptions.
+                - NEVER invent, modify, shorten, extend, or derive an action name. The action value in your JSON MUST be copied verbatim from the LEFT of ←.
+                - Adding suffixes is inventing: "query_ship_loadout_shields" is WRONG - "query_ship_loadout" is correct.
+                - Specialising is inventing: "query_fuel_low" is WRONG - "query_fuel_status" is correct.
+                - If the exact action you want does not exist in the list, use the closest one that does. Do NOT construct a new name.
                 - Use only the param keys shown in the template for that action.
                 """);
 
-        sb.append("\nACTIONS:\n");
-        sb.append(commandsAndQueries.getCommandMap());
-        //sb.append("\nQUERIES:\n");
-        sb.append(commandsAndQueries.getQueries());
+        sb.append(actionsMap.getActions(normalizedInput));
         sb.append("""
                 PARAMS RULES:
                 • Use ONLY the exact key names shown in the action template. No template → empty {}
                 • Use digits not spelled-out numbers: {"key": "123000"} not "one hundred thousand"
+                • {state:true/false} param: on/enable/activate/open/deploy → true, off/disable/deactivate/close/retract → false. ALWAYS include state when the template shows it.
                 • Examples:
                   - "target drive"             → {"action": "target_subsystem", "params": {"key": "drive"}}
                   - "find mining site for LTD" → {"action": "find_mining_site_for_material", "params": {"key": "low temperature diamonds"}}
-                  - "lights on"                → {"action": "headlights_on_off", "params": {"state": true}}
+                  - "night vision on"          → {"action": "toggle_night_vision_on_off", "params": {"state": true}}
+                  - "night vision off"         → {"action": "toggle_night_vision_on_off", "params": {"state": false}}
+                  - "lights on"                → {"action": "toggle_lights_on_off", "params": {"state": true}}
                   - "find gold within 80 ly"   → {"action": "find_commodity", "params": {"key": "gold", "max_distance": "80"}}
                 """);
         return sb.toString();

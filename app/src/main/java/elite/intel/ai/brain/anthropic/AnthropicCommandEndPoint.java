@@ -137,12 +137,12 @@ public class AnthropicCommandEndPoint extends CommandEndPoint implements AiComma
         // out to the top-level "system" field before sending to the API.
         JsonObject system = new JsonObject();
         system.addProperty("role", AIConstants.ROLE_SYSTEM);
-        system.addProperty("content", getContextFactory().generateUserInputSystemPrompt());
+        system.addProperty("content", getContextFactory().generateUserInputSystemPrompt(userInput));
         request.add(system);
 
         JsonObject userMsg = new JsonObject();
         userMsg.addProperty("role", AIConstants.ROLE_USER);
-        userMsg.addProperty("content", userInput);
+        userMsg.addProperty("content", getContextFactory().normalizeInput(userInput));
         request.add(userMsg);
 
         // Low temperature for command classification accuracy

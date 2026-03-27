@@ -1,6 +1,6 @@
 package elite.intel.help;
 
-import elite.intel.ai.brain.AiCommandsAndQueries;
+import elite.intel.ai.brain.AiActionsMap;
 import elite.intel.gameapi.gamestate.dtos.BaseJsonDto;
 import elite.intel.help.dto.AICapabilitiesDto;
 import elite.intel.util.json.GsonFactory;
@@ -9,7 +9,7 @@ import elite.intel.util.json.ToJsonConvertible;
 public class EliteIntelFactory extends BaseJsonDto implements ToJsonConvertible {
 
     private static final EliteIntelFactory instance = new EliteIntelFactory();
-    private final AiCommandsAndQueries commandsAndQueries = AiCommandsAndQueries.getInstance();
+    private final AiActionsMap actionsMap = AiActionsMap.getInstance();
     private EliteIntelFactory() {
         // Prevent instantiation.
     }
@@ -21,12 +21,12 @@ public class EliteIntelFactory extends BaseJsonDto implements ToJsonConvertible 
     public AICapabilitiesDto getCapabilities() {
         String description = "Your capabilities include the following ship controls, and data queries";
         return new AICapabilitiesDto(
-                new DataDto(commandsAndQueries.getCommandMap(), commandsAndQueries.getQueries()),
+                new DataDto(actionsMap.getActions()),
                 description
         );
     }
 
-    public record DataDto(String commands, String queries) implements ToJsonConvertible {
+    public record DataDto(String actions) implements ToJsonConvertible {
         @Override public String toJson() {
             return GsonFactory.getGson().toJson(this);
         }

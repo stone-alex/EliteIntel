@@ -2,14 +2,11 @@ package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
-import elite.intel.session.Status;
 
 
-public class GenericGameControlHandler extends CommandOperator implements CommandHandler {
+public class SimpleCommandActionHandler extends CommandOperator implements CommandHandler {
 
-    private final Status status = Status.getInstance();
-
-    public GenericGameControlHandler(GameController controller) {
+    public SimpleCommandActionHandler(GameController controller) {
         super(controller.getMonitor(), controller.getExecutor());
     }
 

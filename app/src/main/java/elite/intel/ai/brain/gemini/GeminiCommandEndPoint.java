@@ -113,12 +113,12 @@ public class GeminiCommandEndPoint extends CommandEndPoint implements AiCommandI
 
         JsonObject systemMessage = new JsonObject();
         systemMessage.addProperty("role", AIConstants.ROLE_SYSTEM);
-        systemMessage.addProperty("content", getContextFactory().generateUserInputSystemPrompt());
+        systemMessage.addProperty("content", getContextFactory().generateUserInputSystemPrompt(userInput));
         messages.add(systemMessage);
 
         JsonObject userMessage = new JsonObject();
         userMessage.addProperty("role", AIConstants.ROLE_USER);
-        userMessage.addProperty("content", userInput);
+        userMessage.addProperty("content", getContextFactory().normalizeInput(userInput));
         messages.add(userMessage);
 
         JsonObject apiResponse = GeminiChatEndPoint.getInstance().processAiPrompt(messages, 0.01f);

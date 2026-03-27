@@ -35,9 +35,14 @@ If you say "Inventory!" the app does not know what you want to do with it. Do yo
 materials or open a panel?
 Clarity of your commands is the key.
 
+**Input is automatically normalized before it reaches the AI.** Common synonyms, alternate phrasings, and STT
+mishearings are silently remapped to canonical forms — so "punch it", "let's bounce", "get out of here", and
+"jump to hyperspace" all trigger the same action. You do not need to memorize exact phrases; speak naturally and
+the normalizer handles the rest.
+
 ### General rules:
 
-- Rule number 1. You are a commander:  **command, do not mumble**, speak clearly like a drill sargent.
+- Rule number 1. You are a commander:  **command, do not mumble**, speak clearly like a drill sergeant.
 - Rule number 2. **Be clear in your intent**. Single words do not convey meaning, they are too ambiguous.
 
 ---
@@ -150,14 +155,14 @@ Make sure you mention carrier, else it might think you are talking about the shi
 - Navigate to next bio sample / codex entry.
 - Navigate to nearest Fleet Carrier.
 - Navigate to carrier / base / home system.
-- Plot route to next trade stop / station / port.
+- Navigate to / go to / head to / fly to / take me to / set course to / guide me to / plot route to [destination].
 - Calculate Fleet Carrier route. *(Open galaxy map, select star, copy name to clipboard first.)*
 - Enter next Fleet Carrier destination. *(Open Fleet Carrier galaxy map first.)*
 - Calculate trade route / plot profitable trade route.
 - Find nearest Vista Genomics.
 - Find nearest human / guardian tech broker.
 - Find nearest raw / encoded / manufactured material trader.
-- Find brain trees [within X light years].
+- Find / locate / search for brain trees [within X light years].
 - Find mining location for [material] [within X light years].
 - Find where we can mine Tritium [within X light years].
 - Find where we can buy [commodity] [within X light years].
@@ -183,20 +188,21 @@ Make sure you mention carrier, else it might think you are talking about the shi
 - Deploy / recover SRV / car / buggy
 - Open / close cargo scoop, cargo bay, cargo hatch.
 - Request docking. / Contact tower, get a landing pad, parking spot etc.
-- Engage Supercruise / light speed / FSD. (actual supercruise, not jump to next system)
-- Jump to hyperspace / let's go / next waypoint. (actual jump, not supercruise)
-- Drop / disengage FSD / drop from supercruise, dopr here!
+- Engage Supercruise / light speed / lightspeed / super cruise. (actual supercruise, not jump to next system)
+- Jump to hyperspace / engage FSD / let's go / punch it / get out of here / let's bounce / frame shift drive / next waypoint. (actual jump, not supercruise)
+- Drop / drop here / exit supercruise / drop from supercruise.
 - Full stop / engine stop / set speed zero.
 - Set speed to: quarter / half / three-quarter / full throttle.
 - Set speed plus / minus [amount].
 - All power to shields / engines / weapons. Equalize power. / max shields, max engines, max weapons
-- Combat mode / analysis mode. (activate combat mode!)
+- Combat mode / activate combat mode / enter combat mode / combat HUD → switches to combat HUD.
+- Analysis mode / activate analysis mode / explorer mode / analysis HUD → switches to analysis HUD.
 - Night vision on / off.
 - Headlights on / off. / turn on headlights, light off etc.
 - Drive assist on / off.
 - Dismiss ship / go to orbit.
 - Return to surface / pick me up.
-- Open FSS and scan / honk / scan system / full spectrum scan.
+- Open FSS and scan / honk / scan system / run a scan / discovery scan / system scan / full spectrum scan.
 - Show / display - galaxy map / local map / close map.
 - Show comms panel / contacts panel / internal panel / central panel.
 - Show carrier management panel.
@@ -220,11 +226,11 @@ Make sure you mention carrier, else it might think you are talking about the shi
 
 ## ⚙️ App & Session Commands
 
-- Ignore me / stop ignoring me to toggle ignore mode. Say "listen" to temorarelly bypass.
+- Ignore me / stop listening → pause the app. Wake up / listen up / pay attention / start listening → resume. Say "listen" to temporarily bypass.
 - Change voice to [name]
 - List available voices.
-- Change personality to [Professional / Friendly / Unhinged / Rogue]. (could only)
-- Change profile to [Imperial / Federation / Alliance]. (could only)
+- Change personality to [Professional / Friendly / Unhinged / Rogue]. (cloud only)
+- Change profile to [Imperial / Federation / Alliance]. (cloud only)
 - Set reminder [text]. / Remind me [text].
 - Clear reminders.
 - Toggle route announcements on / off.

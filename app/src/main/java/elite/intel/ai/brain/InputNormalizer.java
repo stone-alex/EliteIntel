@@ -261,6 +261,7 @@ public class InputNormalizer {
         SYNONYM_MAP.put("what modules do we have", "ship loadout");
         SYNONYM_MAP.put("module list", "ship loadout");
         SYNONYM_MAP.put("our build", "ship loadout");
+        SYNONYM_MAP.put("ready for a hunt", "ship loadout combat readiness summary");
 
         // ── Current location ───────────────────────────────────────────────────
         SYNONYM_MAP.put("where am i", "current location");
@@ -427,6 +428,7 @@ public class InputNormalizer {
         SYNONYM_MAP.put("hair style", "hostile");
         SYNONYM_MAP.put("did", "deploy");
         SYNONYM_MAP.put("did ploy", "deploy");
+        SYNONYM_MAP.put("do they play", "deploy");
 
 
 

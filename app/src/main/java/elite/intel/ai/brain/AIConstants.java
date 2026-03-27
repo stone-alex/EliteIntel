@@ -7,7 +7,7 @@ public class AIConstants {
     public final static List<String> blockWords = List.of(
             "mm-hmm.", "uh-huh.", "eh.", "yeah.", "did you",
             "okay.", "got it.", "uh.", "the", "did", "you", "blow", " a ",
-            "hello?", "did you", "it", "she can",
+            "hello?", "did you", "it", "she can", "we", "?", "hmm.",
             "he can", "you can", "my", "i'll", "did you", "mm."
     );
 

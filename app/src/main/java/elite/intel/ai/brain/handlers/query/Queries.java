@@ -4,7 +4,7 @@ package elite.intel.ai.brain.handlers.query;
 public enum Queries {
 
     /// ########################################################################################################################################
-    HELP                                ("help",                                         HelpHandler.class),
+    ///HELP                                ("help",                                         HelpHandler.class),
     BIO_SAMPLE_IN_STAR_SYSTEM           ("query_bio_scan_progress",                     AnalyzeBioSignalsStarSystemHandler.class),
     EXOBIOLOGY_SAMPLES                  ("query_exobiology_samples",                    AnalyzeBioSamplesPlanetSurfaceHandler.class),
     QUERY_STELLAR_OBJETS                ("query_stellar_objects",                       AnalyzeStellarObjectsHandler.class),

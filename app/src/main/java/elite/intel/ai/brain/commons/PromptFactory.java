@@ -1,7 +1,6 @@
 package elite.intel.ai.brain.commons;
 
 import elite.intel.ai.brain.*;
-import elite.intel.ai.brain.handlers.query.Queries;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.util.Ranks;
@@ -85,7 +84,7 @@ public class PromptFactory implements AiPromptFactory {
                 
                 """);
         if (!systemSession.useLocalQueryLlm()) {
-            sb.append("- CRITICAL: if input contains 'help with X', 'help me with X', 'can you help with X', 'how do I X', 'explain X' → respond EXACTLY: {\"action\": \"").append(Queries.HELP.getAction()).append("\", \"params\": {\"key\": \"<topic>\"}}. Replace <topic> with the subject using spaces not underscores (e.g. 'biology', 'trade routes', 'fleet carrier routing'). No other action.\n");
+            //sb.append("- CRITICAL: if input contains 'help with X', 'help me with X', 'can you help with X', 'how do I X', 'explain X' → respond EXACTLY: {\"action\": \"").append(Queries.HELP.getAction()).append("\", \"params\": {\"key\": \"<topic>\"}}. Replace <topic> with the subject using spaces not underscores (e.g. 'biology', 'trade routes', 'fleet carrier routing'). No other action.\n");
         }
 
         sb.append("""

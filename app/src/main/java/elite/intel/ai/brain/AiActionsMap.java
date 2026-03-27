@@ -204,7 +204,7 @@ public class AiActionsMap {
 
         // queries
         if (!systemSession.useLocalQueryLlm()) {
-            map.put("help with topic {key:X}", HELP.getAction());
+            //map.put("help with topic {key:X}", HELP.getAction());
         }
         map.put("check key bindings, missing key bindings, unbound keys, keyboard bindings, keybind check, missing bindings", KEY_BINDINGS_ANALYSIS.getAction());
         map.put("bio scan progress, biology scan progress, organics scanned, how many samples, bio signals in system, biosignals, biological signals, organics in system, which planets have bio signals", BIO_SAMPLE_IN_STAR_SYSTEM.getAction());
@@ -218,7 +218,7 @@ public class AiActionsMap {
         map.put("trade profile, trade settings, trading parameters, trade configuration, trading criteria", TRADE_PROFILE_ANALYSIS.getAction());
         map.put("distance to stellar object, how far to body, distance to planet {key:X}, range to planet, how far to moon, how far to station, range to body", DISTANCE_TO_BODY.getAction());
         map.put("last scan, what did we scan, last scanned object, most recent scan, latest scan, recent body scan, what did i last scan", LAST_SCAN_ANALYSIS.getAction());
-        map.put("material inventory {key:X}, how much material {key:X}, do we have material {key:X}, how much {key:X} do we have, do we have any {key:X}, engineering material {key:X}, raw material {key:X}, manufactured material {key:X}, encoded material {key:X}, material stock {key:X}", MATERIALS_INVENTORY.getAction());
+        map.put("material inventory {key:X}, how many items {key:X}, how many guardian item {key:X}, how much material {key:X}, do we have material {key:X}, how much {key:X} do we have, do we have any {key:X}, engineering material {key:X}, raw material {key:X}, manufactured material {key:X}, encoded material {key:X}, material stock {key:X}", MATERIALS_INVENTORY.getAction());
         map.put("planet materials, materials here, what materials on this planet, surface materials, what materials are here, material deposits, minerals on planet", PLANET_MATERIALS.getAction());
         map.put("exploration profits, discovery profits, how much exploration worth, exploration value, scan value, mapping profit, exobiology value, scan earnings, what are scans worth", EXPLORATION_PROFITS.getAction());
         map.put("current location, where are we, our position, what system are we in, where am i, our coordinates, current system, what planet are we at, our current position", CURRENT_LOCATION.getAction());
@@ -237,7 +237,7 @@ public class AiActionsMap {
         map.put("distance to carrier, how far is carrier, where is our carrier, range to carrier, carrier proximity, how far away is carrier", DISTANCE_TO_CARRIER.getAction());
         map.put("pirate mission, kill count, how many kills, massacre mission progress, kills remaining, massacre progress, pirates remaining, pirate kills, bounty hunt progress", PIRATE_MISSION_PROGRESS.getAction());
         map.put("player profile, our ranks, combat rank, trade rank, exploration rank, commander stats, pilot rank, our ranking, commander profile, what rank are we", PLAYER_PROFILE_ANALYSIS.getAction());
-        map.put("ship loadout, ship modules, ship equipment, ship specs, what am I flying, what are we equipped with, do you have, is it equipped, shield generator, hull reinforcement, sensors, thrusters, frameshift, fuel scoop, installed", SHIP_LOADOUT.getAction());
+        map.put("ship loadout, ship modules, combat readiness report, ship equipment, ship specs, what am I flying, what are we equipped with, do you have, is it equipped, shield generator, hull reinforcement, sensors, thrusters, frameshift, fuel scoop, installed", SHIP_LOADOUT.getAction());
         map.put("station details, station services, what services here, what does station offer, station info, station facilities, what's at this station, services available", STATION_DETAILS.getAction());
         map.put("app capabilities, what can you do, your features, list capabilities, what commands do you know, your abilities, what can you help with", APP_CAPABILITIES.getAction());
         map.put("AI designation, what is your name, who are you, what are you called, ai name, system designation", AI_DESIGNATION.getAction());

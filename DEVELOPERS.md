@@ -62,8 +62,7 @@ The fat JAR is written to `distribution/elite_intel.jar`.
 ### Run
 
 ```bash
-java -Djava.library.path=distribution/native/sherpa-onnx \
-     -jar distribution/elite_intel.jar
+java -Djava.library.path=distribution/native/sherpa-onnx -jar distribution/elite_intel.jar
 ```
 
 ### IDE Configuration (IntelliJ IDEA)

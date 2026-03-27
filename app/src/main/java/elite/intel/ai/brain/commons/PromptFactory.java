@@ -43,8 +43,8 @@ public class PromptFactory implements AiPromptFactory {
                 - ANY uncertainty about the action name → use query_general_conversation. Never guess or construct a name.
                 
                 VERB INTENT (apply first, before matching any action):
-                - show / display / open / access / activate → UI navigation COMMAND (open a panel or map)
-                - find / search / locate / tell me / how much / any → lookup QUERY (search data, speak result)
+                - show / display / open / access / find / search / locate / activate → COMMANDS (open a panel or map, find commodities, missions etc.)
+                - where / tell me / how much / any → lookup QUERY (search data, speak result)
                 
                 DISAMBIGUATION (genuine ambiguities only):
                 - "listen" / "listen up" alone → start_listening_monitor_commands_do_not_ignore_user
@@ -65,6 +65,8 @@ public class PromptFactory implements AiPromptFactory {
                 - "inventory" and "storage" are different panels - never substitute one for the other
                 - queries about ship/you → query_ship_loadout*
                 - queries about the carrier → query_carrier*
+                - queries about cargo hold (commodities not materials) → query_cargo_hold_contents*
+                - queries about materials in inventory (not commodities in cargo hold) → query_material_inventory*
                 - NATO alphabet in params: Alpha=A, Bravo=B, Charlie/Charly=C, Delta=D, Echo=E, Foxtrot=F, Golf=G,
                   Hotel=H, India=I, Juliet=J, Kilo=K, Lima=L, Mike=M, November=N, Oscar=O, Papa=P,
                   Quebec=Q, Romeo=R, Sierra=S, Tango=T, Uniform=U, Victor=V, Whiskey=W, X-ray=X, Yankee=Y, Zulu=Z.
@@ -84,9 +86,9 @@ public class PromptFactory implements AiPromptFactory {
                 - Use only the param keys shown in the template for that action.
                 """);
 
-        sb.append("\nCOMMANDS:\n");
+        sb.append("\nACTIONS:\n");
         sb.append(commandsAndQueries.getCommandMap());
-        sb.append("\nQUERIES:\n");
+        //sb.append("\nQUERIES:\n");
         sb.append(commandsAndQueries.getQueries());
         sb.append("""
                 PARAMS RULES:

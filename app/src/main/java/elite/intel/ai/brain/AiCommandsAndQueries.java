@@ -139,7 +139,7 @@ public class AiCommandsAndQueries {
         commandMap.put("show internal panel, show home panel, open home panel", SHOW_INTERNAL_PANEL.getAction());
         commandMap.put("show modules panel, show modules, open modules", SHOW_MODULES_PANEL.getAction());
         commandMap.put("show fire groups, open fire groups", SHOW_FIRE_GROUPS.getAction());
-        commandMap.put("show inventory panel, show inventory, open inventory, display inventory", SHOW_INVENTORY_PANEL.getAction());
+        commandMap.put("show inventory panel, show manifest, open inventory, display inventory", SHOW_INVENTORY_PANEL.getAction());
         commandMap.put("show storage panel, show storage, open storage", SHOW_STORAGE_PANEL.getAction());
         commandMap.put("show status panel, show status, open status", SHOW_STATUS_PANEL.getAction());
         commandMap.put("show carrier management panel, show carrier management, carrier management, open carrier management", DISPLAY_CARRIER_MANAGEMENT.getAction());
@@ -173,7 +173,7 @@ public class AiCommandsAndQueries {
         commandMap.put("clear all mining targets only if word clear is present", CLEAR_MINING_TARGETS.getAction());
 
         commandMap.put("mining and material announcements on/off" + KEY_STATE, MINING_ON_OFF.getAction());
-        commandMap.put("find brain trees, find planet with brain trees that contain requested material" + KEY_X_WITH_DISTANCE, FIND_BRAIN_TREES.getAction());
+        commandMap.put("find brain trees that contain requested material" + KEY_X_WITH_DISTANCE, FIND_BRAIN_TREES.getAction());
         commandMap.put("find mining site for material X" + KEY_X_WITH_DISTANCE, FIND_MINING_SITE.getAction());
         commandMap.put("find where to mine tritium, find tritium mining site" + KEY_X_WITH_DISTANCE, FIND_FLEET_CARRIER_FUEL_MINING_SITE.getAction());
         commandMap.put("navigate to next bio sample, go to next organic, next codex marker", NAVIGATE_TO_NEXT_BIO_SAMPLE.getAction());

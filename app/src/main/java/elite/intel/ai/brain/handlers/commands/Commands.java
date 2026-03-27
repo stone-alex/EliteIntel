@@ -38,7 +38,7 @@ public enum Commands {
     FIND_GUARDIAN_TECHNOLOGY_BROKER                     ("find_guardian_technology_broker", null,  FindGuadrianTechnologyBroker.class),
 
     FIND_VISTA_GENOMICS                                 ("find_vista_genomics", null,  FindVistaGenomicsHandler.class),
-    FIND_BRAIN_TREES                                    ("find_brain_trees", null,  FindBrainTreesHandler.class),
+    FIND_BRAIN_TREES                                    ("find_brain_trees_for_material", null,  FindBrainTreesHandler.class),
     FIND_FLEET_CARRIER_FUEL_MINING_SITE                 ("find_fleet_carrier_fuel_mining_site", null,  FindCarrierFuelMiningSiteHandler.class),
     FIND_MINING_SITE                                    ("find_mining_site_for_material", null, FindMiningSiteHandler.class),
 
@@ -137,7 +137,7 @@ public enum Commands {
     SHOW_INTERNAL_PANEL                                 ("show_internal_panel", null, OpenInternalPanelHandler.class),
     SHOW_MODULES_PANEL                                  ("show_modules_panel", null, OpenModulesPanelHandler.class),
     SHOW_FIRE_GROUPS                                    ("show_fire_groups_panel", null, OpenFireGroupsPanelHandler.class),
-    SHOW_INVENTORY_PANEL                                ("show_inventory_panel", null, OpenInventoryHandler.class),
+    SHOW_INVENTORY_PANEL                                ("show_inventory_manifest_panel", null, OpenInventoryHandler.class),
     SHOW_STORAGE_PANEL                                  ("show_storage_panel", null, OpenStoragePanelHandler.class),
     SHOW_STATUS_PANEL                                   ("show_status_panel", null, OpenStatusPanelHandler.class),
     EXIT_CLOSE                                          ("exit_close", null, ClosePanelHandler.class),

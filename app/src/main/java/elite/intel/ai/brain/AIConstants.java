@@ -8,7 +8,7 @@ public class AIConstants {
             "mm-hmm.", "uh-huh.", "eh.", "yeah.",
             "okay.", "got it.", "did you", "uh.",
             "hello?", "did you", "it", "she can",
-            "he can", "you can", "my", "i'll"
+            "he can", "you can", "my", "i'll", "did you"
     );
 
     public final static String TYPE_ACTION = "action";

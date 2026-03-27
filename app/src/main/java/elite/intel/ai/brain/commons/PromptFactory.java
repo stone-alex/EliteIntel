@@ -73,9 +73,10 @@ public class PromptFactory implements AiPromptFactory {
                 - "geo signals / geological" → query_geo_signals (NOT find_brain_trees)
                 - "find mission providers" / "find pirate mission providers" → find_hunting_grounds (NOT fleet carrier)
                 - "inventory" and "storage" are different panels - never substitute one for the other
-                - queries about ship/you → query_ship_loadout*
+                - queries about ship/you (modules, specs, cargo capacity) → query_ship_loadout*
                 - queries about the carrier → query_carrier*
-                - queries about cargo hold (commodities not materials) → query_cargo_hold_contents*
+                - "how much X do we have" / "do we have any X" (specific item) → query_material_inventory (handles both engineering materials AND cargo commodities)
+                - "what are we carrying" / "list cargo" / "cargo contents" (no specific item) → query_cargo_hold_contents
                 - queries about materials in inventory (not commodities in cargo hold) → query_material_inventory*
                 - NATO alphabet in params: Alpha=A, Bravo=B, Charlie/Charly=C, Delta=D, Echo=E, Foxtrot=F, Golf=G,
                   Hotel=H, India=I, Juliet=J, Kilo=K, Lima=L, Mike=M, November=N, Oscar=O, Papa=P,

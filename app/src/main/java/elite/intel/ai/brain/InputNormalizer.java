@@ -46,6 +46,8 @@ public class InputNormalizer {
         SYNONYM_MAP.put("where can we", "find");
         SYNONYM_MAP.put("find me", "find");
         SYNONYM_MAP.put("location of", "find");
+        SYNONYM_MAP.put("brain tree", "find brain trees");
+        SYNONYM_MAP.put("brain trees", "find brain trees");
 
         // navigate / go / head / travel
         SYNONYM_MAP.put("head over to", "navigate to");
@@ -96,6 +98,12 @@ public class InputNormalizer {
         SYNONYM_MAP.put("drop here", "drop from supercruise");
         SYNONYM_MAP.put("exit supercruise", "drop from supercruise");
 
+
+        //ship queries
+        SYNONYM_MAP.put("check loadout", "ship loadout");
+        SYNONYM_MAP.put("access loadout", "ship loadout");
+        SYNONYM_MAP.put("loadout", "ship loadout");
+
         // retract / store / holster
         SYNONYM_MAP.put("weapons cold", "retract hardpoints");
         SYNONYM_MAP.put("store weapons", "retract hardpoints");
@@ -145,6 +153,10 @@ public class InputNormalizer {
         SYNONYM_MAP.put("exobiology profit", "exploration profits");
         SYNONYM_MAP.put("profit from exobiology", "exploration profits");
         SYNONYM_MAP.put("profits from exobiology", "exploration profits");
+
+        SYNONYM_MAP.put("exit scanner", "exit close panel");
+        SYNONYM_MAP.put("close scanner", "exit close panel");
+        SYNONYM_MAP.put("close the scanner", "exit close panel");
 
 
         // retract / raise
@@ -216,10 +228,198 @@ public class InputNormalizer {
         SYNONYM_MAP.put("start listening", "start listening");
         SYNONYM_MAP.put("wake up", "start listening");
 
+        // ── Route / plotted route queries ─────────────────────────────────────
+        SYNONYM_MAP.put("how many jumps remaining", "plotted route");
+        SYNONYM_MAP.put("how many jumps left", "plotted route");
+        SYNONYM_MAP.put("jumps to destination", "plotted route");
+        SYNONYM_MAP.put("jumps remaining", "plotted route");
+        SYNONYM_MAP.put("jumps left", "plotted route");
+        SYNONYM_MAP.put("route progress", "route analysis");
+        SYNONYM_MAP.put("is next star scoopable", "fuel at next stop");
+        SYNONYM_MAP.put("can we scoop next star", "fuel at next stop");
+        SYNONYM_MAP.put("scoopable at next stop", "fuel at next stop");
+        SYNONYM_MAP.put("fuel at next star", "fuel at next stop");
+        SYNONYM_MAP.put("next jump fuel", "fuel at next stop");
+        SYNONYM_MAP.put("fuel stop on route", "fuel at next stop");
+
+        // ── Ship fuel status ───────────────────────────────────────────────────
+        SYNONYM_MAP.put("do we have enough fuel", "fuel status");
+        SYNONYM_MAP.put("fuel check", "fuel status");
+        SYNONYM_MAP.put("fuel gauge", "fuel status");
+        SYNONYM_MAP.put("running low on fuel", "fuel status");
+        SYNONYM_MAP.put("tank level", "fuel status");
+        SYNONYM_MAP.put("fuel reading", "fuel status");
+
+        // ── FSD jump target ────────────────────────────────────────────────────
+        SYNONYM_MAP.put("next jump destination", "jump destination");
+        SYNONYM_MAP.put("what star are we targeting", "FSD target");
+        SYNONYM_MAP.put("analyze jump target", "analyze destination");
+        SYNONYM_MAP.put("info on next jump", "FSD target");
+
+        // ── Ship loadout ───────────────────────────────────────────────────────
+        SYNONYM_MAP.put("ship configuration", "ship loadout");
+        SYNONYM_MAP.put("what modules do we have", "ship loadout");
+        SYNONYM_MAP.put("module list", "ship loadout");
+        SYNONYM_MAP.put("our build", "ship loadout");
+
+        // ── Current location ───────────────────────────────────────────────────
+        SYNONYM_MAP.put("where am i", "current location");
+        SYNONYM_MAP.put("our coordinates", "current location");
+        SYNONYM_MAP.put("what planet are we at", "current location");
+        SYNONYM_MAP.put("current system", "current location");
+        SYNONYM_MAP.put("our current position", "current location");
+
+        // ── Stellar objects ────────────────────────────────────────────────────
+        SYNONYM_MAP.put("how many planets", "planets in system");
+        SYNONYM_MAP.put("system bodies", "bodies in system");
+        SYNONYM_MAP.put("what bodies are here", "bodies in system");
+
+        // ── Bio signals (system-wide) ──────────────────────────────────────────
+        SYNONYM_MAP.put("bio signals in system", "bio scan progress");
+        SYNONYM_MAP.put("biological signals in system", "bio scan progress");
+        SYNONYM_MAP.put("biosignals in system", "bio scan progress");
+        SYNONYM_MAP.put("organics in system", "bio scan progress");
+        SYNONYM_MAP.put("how many bio signals", "bio scan progress");
+
+        // ── Exobiology samples (planet surface) ───────────────────────────────
+        SYNONYM_MAP.put("what organisms remain", "exobiology samples");
+        SYNONYM_MAP.put("remaining organisms", "exobiology samples");
+        SYNONYM_MAP.put("what's left to scan", "exobiology samples");
+        SYNONYM_MAP.put("samples left", "exobiology samples");
+        SYNONYM_MAP.put("exobiology remaining", "exobiology samples");
+        SYNONYM_MAP.put("how many samples left", "exobiology samples");
+        SYNONYM_MAP.put("scan remaining", "exobiology samples");
+
+        // ── Exploration profits ────────────────────────────────────────────────
+        SYNONYM_MAP.put("mapping profit", "exploration profits");
+        SYNONYM_MAP.put("scan earnings", "exploration profits");
+        SYNONYM_MAP.put("worth scanning", "exploration profits");
+        SYNONYM_MAP.put("exobiology value", "exploration profits");
+        SYNONYM_MAP.put("what are scans worth", "exploration profits");
+
+        // ── Engineering materials (not cargo commodities) ─────────────────────
+        SYNONYM_MAP.put("engineering materials", "material inventory");
+        SYNONYM_MAP.put("raw materials inventory", "material inventory");
+        SYNONYM_MAP.put("manufactured materials", "material inventory");
+        SYNONYM_MAP.put("encoded materials", "material inventory");
+        SYNONYM_MAP.put("crafting materials", "material inventory");
+
+        // ── Cargo / commodities (not engineering materials) ───────────────────
+        SYNONYM_MAP.put("commodity inventory", "cargo contents");
+        SYNONYM_MAP.put("what commodities do we have", "cargo contents");
+        SYNONYM_MAP.put("cargo manifest", "cargo hold");
+        SYNONYM_MAP.put("what are we hauling", "cargo hold");
+        SYNONYM_MAP.put("what's in the hold", "cargo hold");
+        SYNONYM_MAP.put("hold contents", "cargo hold");
+
+        // ── Carrier status / fuel / ETA / destination ─────────────────────────
+        SYNONYM_MAP.put("when does carrier arrive", "carrier ETA");
+        SYNONYM_MAP.put("carrier arrival time", "carrier ETA");
+        SYNONYM_MAP.put("carrier arrival", "carrier ETA");
+        SYNONYM_MAP.put("when does carrier jump", "carrier ETA");
+        SYNONYM_MAP.put("carrier jump time", "carrier ETA");
+        SYNONYM_MAP.put("carrier fuel level", "carrier tritium");
+        SYNONYM_MAP.put("tritium level", "carrier tritium");
+        SYNONYM_MAP.put("tritium reserve", "carrier tritium");
+        SYNONYM_MAP.put("where is carrier headed", "carrier destination");
+        SYNONYM_MAP.put("carrier final destination", "carrier destination");
+        SYNONYM_MAP.put("carrier heading", "carrier destination");
+
+        // ── Station / outfitting / shipyard ───────────────────────────────────
+        SYNONYM_MAP.put("station info", "station details");
+        SYNONYM_MAP.put("station facilities", "station details");
+        SYNONYM_MAP.put("available modules", "modules available");
+        SYNONYM_MAP.put("buy modules", "outfitting");
+        SYNONYM_MAP.put("ship parts", "outfitting");
+        SYNONYM_MAP.put("station equipment", "outfitting");
+        SYNONYM_MAP.put("available ships", "ships for sale");
+        SYNONYM_MAP.put("buy a ship", "shipyard");
+        SYNONYM_MAP.put("new ship options", "shipyard");
+
+        // ── Trade ──────────────────────────────────────────────────────────────
+        SYNONYM_MAP.put("what are we trading", "trade route");
+        SYNONYM_MAP.put("trading schedule", "trade route");
+        SYNONYM_MAP.put("our trading plan", "trade route");
+        SYNONYM_MAP.put("trade configuration", "trade profile");
+        SYNONYM_MAP.put("trading criteria", "trade profile");
+        SYNONYM_MAP.put("our trade settings", "trade profile");
+
+        // ── System security / politics ─────────────────────────────────────────
+        SYNONYM_MAP.put("who owns this system", "faction control");
+        SYNONYM_MAP.put("who controls this system", "faction control");
+        SYNONYM_MAP.put("controlling power", "faction control");
+        SYNONYM_MAP.put("dominant faction", "faction control");
+        SYNONYM_MAP.put("security level", "system security");
+
+        // ── Player profile / ranks ─────────────────────────────────────────────
+        SYNONYM_MAP.put("commander stats", "player profile");
+        SYNONYM_MAP.put("pilot rank", "player profile");
+        SYNONYM_MAP.put("what rank are we", "player profile");
+        SYNONYM_MAP.put("our ranking", "player profile");
+        SYNONYM_MAP.put("commander profile", "player profile");
+
+        // ── Pirate / massacre missions ─────────────────────────────────────────
+        SYNONYM_MAP.put("kills remaining", "kill count");
+        SYNONYM_MAP.put("how many pirates left", "kill count");
+        SYNONYM_MAP.put("massacre progress", "massacre mission progress");
+        SYNONYM_MAP.put("pirates remaining", "massacre mission progress");
+        SYNONYM_MAP.put("pirate kills remaining", "massacre mission progress");
+
+        // ── Distance queries ───────────────────────────────────────────────────
+        SYNONYM_MAP.put("range to carrier", "distance to carrier");
+        SYNONYM_MAP.put("how far is the carrier", "distance to carrier");
+        SYNONYM_MAP.put("range to bio sample", "distance to last bio sample");
+        SYNONYM_MAP.put("how far to previous organism", "distance to last bio sample");
+        SYNONYM_MAP.put("distance from inhabited space", "distance to bubble");
+        SYNONYM_MAP.put("how far from civilization", "distance to bubble");
+        SYNONYM_MAP.put("range from human space", "distance to bubble");
+        SYNONYM_MAP.put("range to planet", "distance to stellar object");
+        SYNONYM_MAP.put("how far to moon", "distance to stellar object");
+        SYNONYM_MAP.put("how far to station", "distance to stellar object");
+
+        // ── Missions ───────────────────────────────────────────────────────────
+        SYNONYM_MAP.put("mission status", "active missions");
+        SYNONYM_MAP.put("what are our missions", "current missions");
+        SYNONYM_MAP.put("ongoing missions", "active missions");
+
+        // ── Bounties ───────────────────────────────────────────────────────────
+        SYNONYM_MAP.put("bounty earnings", "total bounties");
+        SYNONYM_MAP.put("credits from bounties", "total bounties");
+
+        // ── Geological signals ─────────────────────────────────────────────────
+        SYNONYM_MAP.put("geological activity", "geological signals");
+        SYNONYM_MAP.put("volcanic activity", "volcanic signals");
+        SYNONYM_MAP.put("geology in system", "geo signals");
+
+        // ── Planet surface queries ─────────────────────────────────────────────
+        SYNONYM_MAP.put("surface materials", "planet materials");
+        SYNONYM_MAP.put("materials on the surface", "planet materials");
+        SYNONYM_MAP.put("what materials are here", "planet materials");
+        SYNONYM_MAP.put("planetary biome", "planet biome");
+        SYNONYM_MAP.put("atmosphere analysis", "biome analysis");
+        SYNONYM_MAP.put("what life is here", "planet biome");
+
+        // ── Last scan ──────────────────────────────────────────────────────────
+        SYNONYM_MAP.put("most recent scan", "last scan");
+        SYNONYM_MAP.put("latest scan", "last scan");
+        SYNONYM_MAP.put("what did i last scan", "last scanned object");
+
+        // ── Time ───────────────────────────────────────────────────────────────
+        SYNONYM_MAP.put("galactic time", "current time");
+        SYNONYM_MAP.put("utc time", "current time");
+        SYNONYM_MAP.put("earth time", "time on earth");
+
+        // ── App capabilities ───────────────────────────────────────────────────
+        SYNONYM_MAP.put("what commands do you know", "app capabilities");
+        SYNONYM_MAP.put("what can you help with", "app capabilities");
+        SYNONYM_MAP.put("your abilities", "app capabilities");
+
         // phonetics
         SYNONYM_MAP.put("of", "off");
         SYNONYM_MAP.put("manax", "max");
         SYNONYM_MAP.put("hard points", "hardpoints");
+        SYNONYM_MAP.put("scott", "scan");
+
     }
 
     private InputNormalizer() {

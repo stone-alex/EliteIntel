@@ -2,7 +2,6 @@ package elite.intel.ai.brain.handlers.query;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
-import elite.intel.gameapi.gamestate.dtos.GameEvents;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.yaml.ToYamlConvertable;
 import elite.intel.util.yaml.YamlFactory;
@@ -29,7 +28,7 @@ public class AnalyzeCargoHoldHandler extends BaseQueryAnalyzer implements QueryH
         return process(new AiDataStruct(instructions, new DataDto(playerSession.getShipLoadout().getCargoCapacity(), playerSession.getShipCargo())), originalUserInput);
     }
 
-    record DataDto(int cargoCapacity, GameEvents.CargoEvent cargo) implements ToYamlConvertable {
+    record DataDto(int cargoCapacity, ToYamlConvertable cargo) implements ToYamlConvertable {
         @Override public String toYaml() {
             return YamlFactory.toYaml(this);
         }

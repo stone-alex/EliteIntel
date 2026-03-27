@@ -1,7 +1,5 @@
 package elite.intel.ai.brain.handlers.query;
 
-import elite.intel.ai.brain.handlers.query.struct.AnalyseMaterialsHandler;
-
 // @formatter:off
 public enum Queries {
 
@@ -28,7 +26,7 @@ public enum Queries {
     TRADE_ROUTE_ANALYSIS                ("query_trade_route",                           AnalyzeTradeScheduleHandler.class),
     LOCAL_OUTFITTING                    ("query_local_outfitting",                      AnalyzeLocalOutfittingHandler.class),
     LOCAL_SHIPYARD                      ("query_local_shipyard",                        AnalyzeShipyardHandler.class),
-    CARGO_HOLD_CONTENTS                 ("query_cargo_hold",                            AnalyzeCargoHoldHandler.class),
+    CARGO_HOLD_CONTENTS                 ("query_cargo_hold_contents",                            AnalyzeCargoHoldHandler.class),
     PLOTTED_ROUTE_ANALYSIS              ("query_plotted_route",                         AnalyzeRouterHandler.class),
     CARRIER_ROUTE_ANALYSIS              ("query_carrier_route",                         AnalyzeCarrierRouteHandler.class),
     CARRIER_TRITIUM_SUPPLY              ("query_carrier_fuel",                          AnalyzeFleetCarrierFuelSupplyHandler.class),

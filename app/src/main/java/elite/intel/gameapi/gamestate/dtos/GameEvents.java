@@ -4,12 +4,14 @@ import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
+import elite.intel.util.yaml.ToYamlConvertable;
+import elite.intel.util.yaml.YamlFactory;
 
 import java.util.List;
 
 public class GameEvents {
 
-    public static class CargoEvent implements ToJsonConvertible {
+    public static class CargoEvent implements ToJsonConvertible, ToYamlConvertable {
         @SerializedName("timestamp")
         private String timestamp;
         @SerializedName("event")
@@ -65,6 +67,11 @@ public class GameEvents {
 
         public void setInventory(List<Inventory> inventory) {
             this.inventory = inventory;
+        }
+
+        @Override
+        public String toYaml() {
+            return YamlFactory.toYaml(this);
         }
     }
 

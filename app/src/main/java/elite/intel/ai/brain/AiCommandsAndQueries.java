@@ -4,9 +4,7 @@ import elite.intel.session.Status;
 import elite.intel.session.SystemSession;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import static elite.intel.ai.brain.commons.AiEndPoint.CONNECTION_CHECK_COMMAND;
 import static elite.intel.ai.brain.handlers.commands.Commands.*;
@@ -256,30 +254,6 @@ public class AiCommandsAndQueries {
         queryMap.put("(fallback) general conversation, chitchat, anything not matched above", GENERAL_CONVERSATION.getAction());
 
         return queryMap;
-    }
-
-    /**
-     * Returns all unique words extracted from every command and query hint phrase.
-     * Used by {@link elite.intel.util.SttTermCorrector} to fuzzy-correct STT output
-     * against known colloquial terms. New entries added here are automatically included.
-     */
-    public Set<String> getVocabulary() {
-        Set<String> words = new HashSet<>();
-        collectWords(words, buildCommandMap().keySet());
-        collectWords(words, buildQueryMap().keySet());
-        return words;
-    }
-
-    private static void collectWords(Set<String> target, Set<String> phrases) {
-        for (String phrase : phrases) {
-            // Strip template markers {key:X}, {state:true/false}, <material>, etc.
-            String cleaned = phrase.replaceAll("\\{[^}]*\\}", " ").replaceAll("<[^>]*>", " ").toLowerCase();
-            for (String word : cleaned.toLowerCase().split("[^a-z']+")) {
-                if (word.length() >= 3) {
-                    target.add(word);
-                }
-            }
-        }
     }
 
     public String getCommandMap() {

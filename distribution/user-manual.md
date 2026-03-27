@@ -36,7 +36,7 @@ materials or open a panel?
 Clarity of your commands is the key.
 
 **Input is automatically normalized before it reaches the AI.** Common synonyms, alternate phrasings, and STT
-mishearings are silently remapped to canonical forms — so "punch it", "let's bounce", "get out of here", and
+mishearings are silently remapped to canonical forms - so "punch it", "let's bounce", "get out of here", and
 "jump to hyperspace" all trigger the same action. You do not need to memorize exact phrases; speak naturally and
 the normalizer handles the rest.
 

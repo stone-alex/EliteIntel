@@ -20,6 +20,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 public class SystemSession {
+
+    private Double rms = 0.0;
+    private Double floor = 0.0;
     private static volatile SystemSession instance;
     private final ShipManager shipManager = ShipManager.getInstance();
 
@@ -138,10 +141,16 @@ public class SystemSession {
 
 
     public Double getRmsThresholdHigh() {
-        return Database.withDao(GameSessionDao.class, dao -> {
-            GameSessionDao.GameSession session = dao.get();
-            return session.getRmsThresholdHigh();
-        });
+        if (rms == null || rms == 0.0) {
+            return Database.withDao(GameSessionDao.class, dao -> {
+                GameSessionDao.GameSession session = dao.get();
+                Double rmsThresholdHigh = session.getRmsThresholdHigh();
+                this.rms = rmsThresholdHigh;
+                return rmsThresholdHigh;
+            });
+        } else {
+            return rms;
+        }
     }
 
     public void setRmsThresholdHigh(Double rmsThresholdHigh) {
@@ -153,11 +162,18 @@ public class SystemSession {
         });
     }
 
+
     public Double getRmsThresholdLow() {
-        return Database.withDao(GameSessionDao.class, dao -> {
-            GameSessionDao.GameSession session = dao.get();
-            return session.getRmsThresholdLow();
-        });
+        if (floor == null || floor == 0.0) {
+            return Database.withDao(GameSessionDao.class, dao -> {
+                GameSessionDao.GameSession session = dao.get();
+                Double rmsThresholdLow = session.getRmsThresholdLow();
+                this.floor = rmsThresholdLow;
+                return rmsThresholdLow;
+            });
+        } else {
+            return floor;
+        }
     }
 
     public void setRmsThresholdLow(Double rmsThresholdLow) {

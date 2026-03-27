@@ -16,10 +16,10 @@ import org.apache.logging.log4j.Logger;
 
 import javax.sound.sampled.*;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayDeque;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -60,8 +60,8 @@ public class ParakeetSTTImpl implements EarsInterface {
     private Resampler resampler;
     private int sampleRateHertz;
     private int bufferSize;
-    private double RMS_THRESHOLD_HIGH;
-    private double NOISE_FLOOR;
+    public double RMS_THRESHOLD_HIGH;
+    public double NOISE_FLOOR;
     private final double MINIMUM_NOISE_FLOOR_TO_RMS_RATIO = 300;
     private Thread processingThread;
 
@@ -173,14 +173,19 @@ public class ParakeetSTTImpl implements EarsInterface {
         Path hotwordsFile = modelDir.resolve("hotwords.txt");
         if (Files.exists(hotwordsFile)) {
             try {
-                Path encodedHotwords = new HotwordEncoder(tokensFile).encodeFile(hotwordsFile);
+                log.info("Encoding hotwords from {} using tokens {}", hotwordsFile, tokensFile);
+                HotwordEncoder encoder = new HotwordEncoder(tokensFile);
+                log.info("HotwordEncoder ready - sample: 'transfer' → '{}'", encoder.encode("transfer"));
+                Path encodedHotwords = encoder.encodeFile(hotwordsFile);
+                log.info("Hotwords temp file: {}", encodedHotwords);
+                List<String> sampleLines = Files.readAllLines(encodedHotwords).stream().limit(5).toList();
+                log.info("Encoded hotwords sample (first 5): {}", sampleLines);
                 configBuilder.setHotwordsFile(encodedHotwords.toString());
                 configBuilder.setHotwordsScore(1.0f);
                 configBuilder.setDecodingMethod("modified_beam_search");
                 configBuilder.setBlankPenalty(1.0f);
-                log.info("Parakeet hotwords encoded and loaded from {}", hotwordsFile);
-            } catch (IOException e) {
-                log.warn("Failed to encode hotwords, running without hotword boosting: {}", e.getMessage());
+            } catch (Exception e) {
+                log.warn("Failed to encode hotwords, running without hotword boosting: {} {}", e.getClass().getSimpleName(), e.getMessage());
             }
         }
 

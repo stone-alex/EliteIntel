@@ -140,6 +140,7 @@ public class AudioSettingsPanel extends JPanel {
         helpLabels.add(Box.createVerticalStrut(18));
         JLabel graphLabel = new JLabel("""
                 <html><div style='text-align: left; white-space: pre-wrap;'>
+                <center><h1>When you speak you should see <span style="color:#44CC66FF;">green</span>, else <span style="color:#FF4444FF;">red</span></h1></center>
                 <ul>
                 <li> <b><span style="color:#FF4444FF;">RED</b></span> mic gate is closed - we are not sending audio<br>
                 <li> <b><span style="color:#FF8C00FF;">AMBER</b></span> gate opens sometimes, but cuts off your words - expect incorrect transcriptions<br>

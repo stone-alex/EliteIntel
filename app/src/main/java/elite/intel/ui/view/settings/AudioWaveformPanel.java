@@ -308,7 +308,7 @@ public class AudioWaveformPanel extends JPanel {
         g2.drawString("MIC", 6, 11);
     }
 
-    private void drawLegend(Graphics2D g2, @SuppressWarnings("unused") int w, int h) {
+    private void drawLegend(Graphics2D g2, int w, int h) {
         Font font = new Font(Font.MONOSPACED, Font.PLAIN, 12);
         g2.setFont(font);
         FontMetrics fm = g2.getFontMetrics();
@@ -349,6 +349,26 @@ public class AudioWaveformPanel extends JPanel {
 
             x += swatchSize + swatchGap + fm.stringWidth(labels[i]) + entryGap;
         }
+
+        // Calibrated threshold readout - bottom-right (static values from last calibration)
+        double calFloor = elite.intel.session.SystemSession.getInstance().getRmsThresholdLow();
+        double calGate = elite.intel.session.SystemSession.getInstance().getRmsThresholdHigh();
+        String floorStr = String.format("CAL FLOOR: %.0f", calFloor);
+        String gateStr = String.format("CAL GATE: %.0f", calGate);
+        int gap = 10;
+        int gateW = fm.stringWidth(gateStr);
+        int floorW = fm.stringWidth(floorStr);
+        int blockW = floorW + gap + gateW;
+        int rx = w - blockW - 6;
+
+        g2.setColor(new Color(0x0D, 0x0E, 0x17, 0xCC));
+        g2.fillRoundRect(rx - 3, ly - fm.getAscent() - 1, blockW + 6, rowH + 2, 4, 4);
+
+        g2.setColor(COLOR_FLOOR);
+        g2.drawString(floorStr, rx, ly);
+
+        g2.setColor(COLOR_GATE);
+        g2.drawString(gateStr, rx + floorW + gap, ly);
     }
 
     private void drawClipBadge(Graphics2D g2) {

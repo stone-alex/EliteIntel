@@ -16,7 +16,7 @@ Latest [release notes](https://github.com/stone-alex/EliteIntel/blob/master/dist
 Powered by Kokoro. built-in / included.
 
 **✅ The off-line STT. (Linux and Windows)**
-Powered by Whisper. built-in / included.
+Powered by NVIDIA Parakeet. built-in / included.
 
 **✅ Local off-line private LLMs are now supported**
 [Installing local LLM](https://github.com/stone-alex/EliteIntel/wiki/Install-Local-LLM)
@@ -38,7 +38,7 @@ Powered by Whisper. built-in / included.
 
 ### 🎤 STT (Speech To Text)
 
-- **Whisper (Local - off-line)**
+- **NVIDIA Parakeet (Local - off-line)**
 
 ### 🔊 TTS (Text To Speech)
 

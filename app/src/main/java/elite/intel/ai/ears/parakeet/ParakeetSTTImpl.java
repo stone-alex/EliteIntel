@@ -360,8 +360,6 @@ public class ParakeetSTTImpl implements EarsInterface {
                 transctipt.replace(word, "");
                 return false;
             }
-            transctipt.replace("of", "off");
-            transctipt.replace("manax", "max");
         }
         return false;
     }

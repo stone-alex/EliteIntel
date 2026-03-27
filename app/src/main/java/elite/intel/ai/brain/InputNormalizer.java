@@ -127,6 +127,10 @@ public class InputNormalizer {
         SYNONYM_MAP.put("listen up", "start listening");
         SYNONYM_MAP.put("listen to me", "start listening");
         SYNONYM_MAP.put("pay attention", "start listening");
+
+        // phonetics
+        SYNONYM_MAP.put("of", "off");
+        SYNONYM_MAP.put("manax", "max");
     }
 
     private InputNormalizer() {

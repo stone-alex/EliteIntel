@@ -48,7 +48,6 @@ public class AnalyseMaterialsHandler extends BaseQueryAnalyzer implements QueryH
         JsonElement key = params.get("key");
         String query = (key != null) ? key.getAsString() : null;
 
-        // LLM sometimes routes correctly but omits the key — fall back to scanning the raw input
         if (query == null || query.isBlank()) {
             query = extractQueryFromInput(originalUserInput);
         }

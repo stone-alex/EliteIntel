@@ -1,10 +1,11 @@
-## Elite Intel v-0.033-beta
+## Elite Intel v-0.0332-beta
 
 ### bug fixes / features:
-
 - Prompt normalization algorithm and logic.
+- Adjusted missing material caps
+- Combined query for commodity and materials. Now you can ask: "Do we have <blah>" and it will query both cargo and inventory
 
-## Elite Intel v-0.033-beta
+## Elite Intel v-0.0331-beta
 
 ### bug fixes / features:
 

@@ -45,7 +45,7 @@ cd EliteIntel
 Or clone the upstream repo directly:
 
 ```bash
-git clone https://github.com/djlondon/EliteIntel.git
+git clone https://github.com/stone-alex/EliteIntel.git
 cd EliteIntel
 ```
 

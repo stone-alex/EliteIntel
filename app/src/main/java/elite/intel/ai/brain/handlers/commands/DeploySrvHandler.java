@@ -19,7 +19,6 @@ public class DeploySrvHandler extends CommandOperator implements CommandHandler 
     @Override public void handle(String action, JsonObject params, String responseText) {
 
         if (status.isInMainShip()) {
-            navigator.closeOpenPanel();
             navigator.openAndNavigate(StatusFlags.GuiFocus.ROLE_PANEL, CenterPanel.COMMANDER);
 
             /// ensure the cursor is at the top

@@ -54,8 +54,8 @@ public class AiActionsMap {
         map.put("navigate to next trade stop, go to next trade stop", NAVIGATE_TO_NEXT_TRADE_STOP.getAction());
         map.put("navigate from memory, paste from memory", NAVIGATE_TO_ADDRESS_FROM_MEMORY.getAction());
         map.put("cancel navigation, abort navigation, clear route, stop navigation", NAVIGATION_ON_OFF.getAction());
-        map.put("select next system in route, next waypoint, next stop", TARGET_NEXT_ROUTE_SYSTEM.getAction());
-        map.put("jump to hyperspace, engage jump, engage FSD, engage drive, hyperspace jump, enter hyperspace, lets go", JUMP_TO_HYPERSPACE.getAction());
+        map.put("select next system in route", TARGET_NEXT_ROUTE_SYSTEM.getAction());
+        map.put("jump to hyperspace, engage jump, engage FSD, engage drive, hyperspace jump, enter hyperspace, lets go, next way point", JUMP_TO_HYPERSPACE.getAction());
         map.put("drop from supercruise, exit supercruise, disengage supercruise, drop out, leave supercruise, drop in", DROP_FROM_SUPER_CRUISE.getAction());
         map.put("enter supercruise, engage supercruise, go supercruise, supercruise", ENTER_SUPER_CRUISE.getAction());
         map.put("set home system", SET_HOME_SYSTEM.getAction());
@@ -220,7 +220,7 @@ public class AiActionsMap {
         map.put("last scan, what did we scan, last scanned object", LAST_SCAN_ANALYSIS.getAction());
         map.put("material inventory, how much material, do we have material {key:X}", MATERIALS_INVENTORY.getAction());
         map.put("planet materials, materials here, what materials on this planet", PLANET_MATERIALS.getAction());
-        map.put("exploration profits, how much exploration worth, exploration value, scan value", EXPLORATION_PROFITS.getAction());
+        map.put("exploration profits, discovery profits, how much exploration worth, exploration value, scan value", EXPLORATION_PROFITS.getAction());
         map.put("current location, where are we, our position, what system are we in", CURRENT_LOCATION.getAction());
         map.put("fuel status, fuel level, how much fuel, fuel remaining, are we low on fuel", SHIP_FUEL_STATUS.getAction());
         map.put("jump destination, FSD target, where are we jumping, analyze destination", FSD_TARGET_ANALYSIS.getAction());

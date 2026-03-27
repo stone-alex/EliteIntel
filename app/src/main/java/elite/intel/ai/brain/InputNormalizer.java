@@ -21,12 +21,20 @@ public class InputNormalizer {
 
     static {
         // HUD mode switches - must appear before single-word "activate" rules
+
+        // HUD mode switches - must appear before single-word "activate" rules
         SYNONYM_MAP.put("activate combat mode", "switch to combat mode");
         SYNONYM_MAP.put("activate analysis mode", "switch to analysis mode");
         SYNONYM_MAP.put("hud combat mode", "switch to combat mode");
         SYNONYM_MAP.put("hud analysis mode", "switch to analysis mode");
         SYNONYM_MAP.put("combat mode", "switch to combat mode");
         SYNONYM_MAP.put("analysis mode", "switch to analysis mode");
+        SYNONYM_MAP.put("switch to combat", "switch to combat mode");
+        SYNONYM_MAP.put("enter combat mode", "switch to combat mode");
+        SYNONYM_MAP.put("combat hud", "switch to combat mode");
+        SYNONYM_MAP.put("switch to analysis", "switch to analysis mode");
+        SYNONYM_MAP.put("analysis hud", "switch to analysis mode");
+        SYNONYM_MAP.put("explorer mode", "switch to analysis mode");
 
         // find / locate / search
         SYNONYM_MAP.put("search for", "find");
@@ -36,6 +44,8 @@ public class InputNormalizer {
         SYNONYM_MAP.put("where is", "find");
         SYNONYM_MAP.put("where can i", "find");
         SYNONYM_MAP.put("where can we", "find");
+        SYNONYM_MAP.put("find me", "find");
+        SYNONYM_MAP.put("location of", "find");
 
         // navigate / go / head / travel
         SYNONYM_MAP.put("head over to", "navigate to");
@@ -53,16 +63,41 @@ public class InputNormalizer {
         SYNONYM_MAP.put("guide us to", "navigate to");
         SYNONYM_MAP.put("plot course to", "navigate to");
         SYNONYM_MAP.put("plot a course", "navigate");
+        SYNONYM_MAP.put("fly to", "navigate to");
+        SYNONYM_MAP.put("set destination", "navigate to");
+        SYNONYM_MAP.put("take us to", "navigate to");
+        SYNONYM_MAP.put("get me to", "navigate to");
+        SYNONYM_MAP.put("plot route to", "navigate to");
 
         // jump / hyperspace
         SYNONYM_MAP.put("get out of here", "jump to hyperspace");
         SYNONYM_MAP.put("let's get moving", "jump to hyperspace");
+        SYNONYM_MAP.put("proceed to", "jump to hyperspace");
+        SYNONYM_MAP.put("next way point", "jump to hyperspace");
+        SYNONYM_MAP.put("punch it", "jump to hyperspace");
+        // new additions
+        SYNONYM_MAP.put("engage fsd", "jump to hyperspace");
+        SYNONYM_MAP.put("engage hyperspace", "jump to hyperspace");
+        SYNONYM_MAP.put("jump", "jump to hyperspace");
+        SYNONYM_MAP.put("hyperspace jump", "jump to hyperspace");
+        SYNONYM_MAP.put("make the jump", "jump to hyperspace");
+        SYNONYM_MAP.put("let's jump", "jump to hyperspace");
+        SYNONYM_MAP.put("frame shift drive", "jump to hyperspace");
+        SYNONYM_MAP.put("engage drive", "jump to hyperspace");
+        SYNONYM_MAP.put("get us out", "jump to hyperspace");
+        SYNONYM_MAP.put("let's bounce", "jump to hyperspace");
 
         // retract / store / holster
         SYNONYM_MAP.put("weapons cold", "retract hardpoints");
         SYNONYM_MAP.put("store weapons", "retract hardpoints");
         SYNONYM_MAP.put("holster weapons", "retract hardpoints");
         SYNONYM_MAP.put("weapons away", "retract hardpoints");
+        // new additions
+        SYNONYM_MAP.put("retract hardpoints", "retract hardpoints");
+        SYNONYM_MAP.put("retract weapons", "retract hardpoints");
+        SYNONYM_MAP.put("stow hardpoints", "retract hardpoints");
+        SYNONYM_MAP.put("put weapons away", "retract hardpoints");
+        SYNONYM_MAP.put("hardpoints in", "retract hardpoints");
 
         // deploy hardpoints
         SYNONYM_MAP.put("weapons hot", "deploy hardpoints");
@@ -70,15 +105,47 @@ public class InputNormalizer {
         SYNONYM_MAP.put("weapons out", "deploy hardpoints");
         SYNONYM_MAP.put("weapons ready", "deploy hardpoints");
         SYNONYM_MAP.put("arm weapons", "deploy hardpoints");
+        SYNONYM_MAP.put("deploy hardpoints", "deploy hardpoints");
+        SYNONYM_MAP.put("deploy weapons", "deploy hardpoints");
+        SYNONYM_MAP.put("hardpoints out", "deploy hardpoints");
+        SYNONYM_MAP.put("arm up", "deploy hardpoints");
+        SYNONYM_MAP.put("ready weapons", "deploy hardpoints");
 
         // deploy / extend / release
         SYNONYM_MAP.put("extend", "deploy");
         SYNONYM_MAP.put("release", "deploy");
         SYNONYM_MAP.put("lower", "deploy");
+        SYNONYM_MAP.put("put out", "deploy");
+        SYNONYM_MAP.put("launch", "deploy");
+
+
+        // Exploration
+        SYNONYM_MAP.put("launch srv", "deploy srv");
+        SYNONYM_MAP.put("deploy car", "deploy srv");
+        SYNONYM_MAP.put("deploy vehicle", "deploy srv");
+
+        SYNONYM_MAP.put("board ship", "recover SRV");
+        SYNONYM_MAP.put("extract car", "recover SRV");
+        SYNONYM_MAP.put("extract vehicle", "recover SRV");
+        SYNONYM_MAP.put("recover car", "recover SRV");
+        SYNONYM_MAP.put("recover vehicle", "recover SRV");
+        SYNONYM_MAP.put("recover srv", "recover SRV");
+        SYNONYM_MAP.put("extract srv", "recover SRV");
+
+        SYNONYM_MAP.put("discovery profit", "exploration profits");
+        SYNONYM_MAP.put("profits from discovery", "exploration profits");
+        SYNONYM_MAP.put("profit from discovery", "exploration profits");
+        SYNONYM_MAP.put("exobiology profit", "exploration profits");
+        SYNONYM_MAP.put("profit from exobiology", "exploration profits");
+        SYNONYM_MAP.put("profits from exobiology", "exploration profits");
+
 
         // retract / raise
         SYNONYM_MAP.put("raise", "retract");
         SYNONYM_MAP.put("stow", "retract");
+        SYNONYM_MAP.put("retract", "retract");
+        SYNONYM_MAP.put("pull in", "retract");
+        SYNONYM_MAP.put("hide", "retract");
 
         // calculate / compute / plot
         SYNONYM_MAP.put("compute", "calculate");
@@ -94,43 +161,58 @@ public class InputNormalizer {
         SYNONYM_MAP.put("aim at", "target");
         SYNONYM_MAP.put("focus on", "target");
         SYNONYM_MAP.put("lock on", "target");
-        SYNONYM_MAP.put("select", "target");
-
-        // select next
-        SYNONYM_MAP.put("next target", "select next system in route");
+        SYNONYM_MAP.put("lock onto", "target");
+        SYNONYM_MAP.put("acquire target", "target");
+        SYNONYM_MAP.put("select target", "target");
 
         // scan
         SYNONYM_MAP.put("honk", "scan the system");
         SYNONYM_MAP.put("full scan", "scan the system");
+        SYNONYM_MAP.put("fss scan", "scan the system");
+        SYNONYM_MAP.put("open fss and scan", "scan the system");
         SYNONYM_MAP.put("system scan", "scan the system");
+        // new additions
+        SYNONYM_MAP.put("scan system", "scan the system");
+        SYNONYM_MAP.put("run a scan", "scan the system");
+        SYNONYM_MAP.put("perform system scan", "scan the system");
+        SYNONYM_MAP.put("discovery scan", "scan the system");
 
         // dismiss / send away
-        SYNONYM_MAP.put("send ship away", "dismiss ship");
-        SYNONYM_MAP.put("park ship", "dismiss ship");
+        SYNONYM_MAP.put("go play", "dismiss ship");
+        SYNONYM_MAP.put("dismiss ship", "dismiss ship");
 
         // equalize / balance / reset
         SYNONYM_MAP.put("balance power", "equalize power");
         SYNONYM_MAP.put("reset power", "equalize power");
         SYNONYM_MAP.put("equalize", "equalize power");
+        SYNONYM_MAP.put("equalize power", "equalize power");
+        SYNONYM_MAP.put("balance", "equalize power");
+        SYNONYM_MAP.put("reset systems", "equalize power");
+        SYNONYM_MAP.put("even out power", "equalize power");
 
         // activate
         SYNONYM_MAP.put("engage", "activate");
-        SYNONYM_MAP.put("punch it", "activate");
+        SYNONYM_MAP.put("select", "activate");
+        SYNONYM_MAP.put("activate", "activate");
+        SYNONYM_MAP.put("turn on", "activate");
+        SYNONYM_MAP.put("enable", "activate");
 
         // stop listening / ignore user
         SYNONYM_MAP.put("ignore me", "stop listening");
-        SYNONYM_MAP.put("ignore us", "stop listening");
-        SYNONYM_MAP.put("go quiet", "stop listening");
-        SYNONYM_MAP.put("be quiet", "stop listening");
+        SYNONYM_MAP.put("sleep", "stop listening");
+        SYNONYM_MAP.put("stop listening", "stop listening");
 
         // start listening
         SYNONYM_MAP.put("listen up", "start listening");
         SYNONYM_MAP.put("listen to me", "start listening");
         SYNONYM_MAP.put("pay attention", "start listening");
+        SYNONYM_MAP.put("start listening", "start listening");
+        SYNONYM_MAP.put("wake up", "start listening");
 
         // phonetics
         SYNONYM_MAP.put("of", "off");
         SYNONYM_MAP.put("manax", "max");
+        SYNONYM_MAP.put("hard points", "hardpoints");
     }
 
     private InputNormalizer() {

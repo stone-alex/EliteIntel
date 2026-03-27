@@ -127,10 +127,6 @@ public class AppController implements Runnable {
                     SwingUtilities.invokeLater(() -> {
                         ears.start();
                         EventBusManager.publish(new MissionCriticalAnnouncementEvent("Audio calibration complete"));
-                        appendToLog("Calibration complete: RMS=" +
-                                SystemSession.getInstance().getRmsThresholdHigh() +
-                                " NOISE FLOOR=" + SystemSession.getInstance().getRmsThresholdLow()
-                        );
                     });
                 } catch (Exception ex) {
                     SwingUtilities.invokeLater(() -> {

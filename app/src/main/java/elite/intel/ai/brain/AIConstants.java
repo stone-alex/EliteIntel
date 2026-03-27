@@ -3,7 +3,7 @@ package elite.intel.ai.brain;
 import java.util.List;
 
 public class AIConstants {
-    public final static List<String> passThroughWords = List.of("listen", "ignore", "ignoring");
+    public final static List<String> passThroughWords = List.of("listen", "ignore", "ignoring", "wake", "wake up");
     public final static List<String> blockWords = List.of(
             "mm-hmm.", "uh-huh.", "eh.", "yeah.",
             "okay.", "got it.", "did you", "uh.",

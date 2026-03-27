@@ -75,7 +75,6 @@ public class InputNormalizer {
         SYNONYM_MAP.put("proceed to", "jump to hyperspace");
         SYNONYM_MAP.put("next way point", "jump to hyperspace");
         SYNONYM_MAP.put("punch it", "jump to hyperspace");
-        // new additions
         SYNONYM_MAP.put("engage fsd", "jump to hyperspace");
         SYNONYM_MAP.put("engage hyperspace", "jump to hyperspace");
         SYNONYM_MAP.put("jump", "jump to hyperspace");
@@ -87,13 +86,21 @@ public class InputNormalizer {
         SYNONYM_MAP.put("get us out", "jump to hyperspace");
         SYNONYM_MAP.put("let's bounce", "jump to hyperspace");
 
+        // FTL
+        SYNONYM_MAP.put("light speed", "enter supercruise");
+        SYNONYM_MAP.put("lightspeed", "enter supercruise");
+        SYNONYM_MAP.put("supercruise", "enter supercruise");
+        SYNONYM_MAP.put("super cruise", "enter supercruise");
+
+        SYNONYM_MAP.put("drop", "drop from supercruise");
+        SYNONYM_MAP.put("drop here", "drop from supercruise");
+        SYNONYM_MAP.put("exit supercruise", "drop from supercruise");
+
         // retract / store / holster
         SYNONYM_MAP.put("weapons cold", "retract hardpoints");
         SYNONYM_MAP.put("store weapons", "retract hardpoints");
         SYNONYM_MAP.put("holster weapons", "retract hardpoints");
         SYNONYM_MAP.put("weapons away", "retract hardpoints");
-        // new additions
-        SYNONYM_MAP.put("retract hardpoints", "retract hardpoints");
         SYNONYM_MAP.put("retract weapons", "retract hardpoints");
         SYNONYM_MAP.put("stow hardpoints", "retract hardpoints");
         SYNONYM_MAP.put("put weapons away", "retract hardpoints");

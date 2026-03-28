@@ -359,12 +359,11 @@ public class ParakeetSTTImpl implements EarsInterface {
                 }
             }
             if (!isBlockWord) {
-                if (sanitized.length() > 0) sanitized.append(" ");
+                if (!sanitized.isEmpty()) sanitized.append(" ");
                 sanitized.append(word);
             }
         }
-        String finalTranscript = sanitized.toString();
-        return finalTranscript;
+        return sanitized.toString();
     }
 
 

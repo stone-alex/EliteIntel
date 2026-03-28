@@ -305,6 +305,15 @@ public class InputNormalizer {
         SYNONYM_MAP.put("encoded materials", "material inventory");
         SYNONYM_MAP.put("crafting materials", "material inventory");
 
+        // ── Ship Controls  ─────────────────────
+        SYNONYM_MAP.put("radio traffic", "toggle radio");
+        SYNONYM_MAP.put("radio traffic on", "toggle radio on");
+        SYNONYM_MAP.put("radio traffic off", "toggle radio off");
+        SYNONYM_MAP.put("radio transmission", "toggle radio");
+        SYNONYM_MAP.put("radio transmission on", "toggle radio on");
+        SYNONYM_MAP.put("radio transmission off", "toggle radio off");
+        SYNONYM_MAP.put("shut up", "interrupt");
+
         // ── Cargo / commodities (not engineering materials) ───────────────────
         SYNONYM_MAP.put("commodity inventory", "cargo contents");
         SYNONYM_MAP.put("what commodities do we have", "cargo contents");
@@ -313,7 +322,11 @@ public class InputNormalizer {
         SYNONYM_MAP.put("what's in the hold", "cargo hold");
         SYNONYM_MAP.put("hold contents", "cargo hold");
         SYNONYM_MAP.put("deploy cargo scoop", "open cargo scoop");
+        SYNONYM_MAP.put("open cargo bay", "open cargo scoop");
         SYNONYM_MAP.put("retract cargo scoop", "close cargo scoop");
+        SYNONYM_MAP.put("close cargo bay", "close cargo scoop");
+        SYNONYM_MAP.put("display", "open");
+
 
         // ── Carrier status / fuel / ETA / destination ─────────────────────────
         SYNONYM_MAP.put("when does carrier arrive", "carrier ETA");
@@ -422,6 +435,7 @@ public class InputNormalizer {
         SYNONYM_MAP.put("manax", "max");
         SYNONYM_MAP.put("hard points", "hardpoints");
         SYNONYM_MAP.put("scott", "scan");
+        SYNONYM_MAP.put("scale", "scan");
         SYNONYM_MAP.put("mining spots", "mining hot spots");
         SYNONYM_MAP.put("net vision", "night vision");
         SYNONYM_MAP.put("her style", "hostile");
@@ -429,6 +443,12 @@ public class InputNormalizer {
         SYNONYM_MAP.put("did", "deploy");
         SYNONYM_MAP.put("did ploy", "deploy");
         SYNONYM_MAP.put("do they play", "deploy");
+        SYNONYM_MAP.put("perimeter", "enter");
+        SYNONYM_MAP.put("exit this window", "exit");
+        SYNONYM_MAP.put("spectrum scan", "scan system");
+        SYNONYM_MAP.put("full spectrum scan", "FSS");
+        SYNONYM_MAP.put("full-spectrum scan", "FSS");
+        SYNONYM_MAP.put("when wake up", "wake up");
 
 
 

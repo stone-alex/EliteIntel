@@ -75,8 +75,8 @@ public class AiActionsMap {
         map.put("deploy landing gear, gear down, lower landing gear, extend landing gear", DEPLOY_LANDING_GEAR.getAction());
         map.put("retract landing gear, gear up, raise landing gear, stow landing gear", RETRACT_LANDING_GEAR.getAction());
         map.put("request docking, dock at station, request landing, docking request, ask for docking, request parking, parking spot, request pad", REQUEST_DOCKING.getAction());
-        map.put("open cargo scoop, deploy cargo scoop, open cargo bay, extend scoop {state:true/false}", OPEN_CARGO_SCOOP.getAction());
-        map.put("close cargo scoop, retract cargo scoop, close cargo bay, stow scoop {state:true/false}", CLOSE_CARGO_SCOOP.getAction());
+        map.put("open cargo scoop, deploy cargo scoop, open cargo bay, extend scoop", OPEN_CARGO_SCOOP.getAction());
+        map.put("close cargo scoop, retract cargo scoop, close cargo bay, stow scoop", CLOSE_CARGO_SCOOP.getAction());
         map.put("night vision {state:true/false}", NIGHT_VISION_ON_OFF.getAction());
         map.put("headlights, lights, ship lights {state:true/false}", LIGHTS_ON_OFF.getAction());
         map.put("drive assist, driving assist, SRV assist {state:true/false}", DRIVE_ASSIST.getAction());
@@ -112,7 +112,7 @@ public class AiActionsMap {
         map.put("change trade profile allow strongholds {state:true/false}", CHANGE_TRADE_PROFILE_SET_ALLOW_STRONGHOLDS.getAction());
 
         // announcements / app settings
-        map.put("toggle radio {state:true/false}", SET_RADIO_TRANSMISSION_MODE.getAction());
+        map.put("toggle radio, radio traffic, radio transmissions {state:true/false}", SET_RADIO_TRANSMISSION_MODE.getAction());
         map.put("radar contact announcement {state:true/false}", SET_RADAR_CONTACT_ANNOUNCEMENT.getAction());
         map.put("discovery announcements {state:true/false}", DISCOVERY_ON_OFF.getAction());
         map.put("route announcements {state:true/false}", ROUTE_ON_OFF.getAction());
@@ -130,27 +130,27 @@ public class AiActionsMap {
 
         // UI panels
         map.put("activate", ACTIVATE.getAction());
-        map.put("show transactions panel", SHOW_TRANSACTIONS.getAction());
-        map.put("show contacts panel", SHOW_CONTACTS.getAction());
-        map.put("show navigation panel", SHOW_NAVIGATION.getAction());
-        map.put("show chat panel", SHOW_CHAT_PANEL.getAction());
-        map.put("show inbox panel", SHOW_INBOX_PANEL.getAction());
-        map.put("show social panel", SHOW_SOCIAL_PANEL.getAction());
-        map.put("show history panel", SHOW_HISTORY_PANEL.getAction());
-        map.put("show squadron panel", SHOW_SQUADRON.getAction());
-        map.put("show commander panel", SHOW_COMMANDER_PANEL.getAction());
-        map.put("show fighter panel", SHOW_FIGHTER_PANEL.getAction());
-        map.put("show crew panel", SHOW_CREW.getAction());
-        map.put("show home panel", SHOW_INTERNAL_PANEL.getAction());
-        map.put("show modules panel", SHOW_MODULES_PANEL.getAction());
-        map.put("show fire groups", SHOW_FIRE_GROUPS.getAction());
-        map.put("show inventory panel", SHOW_INVENTORY_PANEL.getAction());
-        map.put("show storage panel", SHOW_STORAGE_PANEL.getAction());
-        map.put("show status panel", SHOW_STATUS_PANEL.getAction());
-        map.put("show carrier management panel", DISPLAY_CARRIER_MANAGEMENT.getAction());
+        map.put("show, open or display transactions panel", SHOW_TRANSACTIONS.getAction());
+        map.put("show, open or display contacts panel", SHOW_CONTACTS.getAction());
+        map.put("show, open or display navigation panel", SHOW_NAVIGATION.getAction());
+        map.put("show, open or display chat panel", SHOW_CHAT_PANEL.getAction());
+        map.put("show, open or display inbox panel", SHOW_INBOX_PANEL.getAction());
+        map.put("show, open or display social panel", SHOW_SOCIAL_PANEL.getAction());
+        map.put("show, open or display history panel", SHOW_HISTORY_PANEL.getAction());
+        map.put("show, open or display squadron panel", SHOW_SQUADRON.getAction());
+        map.put("show, open or display commander panel", SHOW_COMMANDER_PANEL.getAction());
+        map.put("show, open or display fighter panel", SHOW_FIGHTER_PANEL.getAction());
+        map.put("show, open or display crew panel", SHOW_CREW.getAction());
+        map.put("show, open or display home panel", SHOW_INTERNAL_PANEL.getAction());
+        map.put("show, open or display modules panel", SHOW_MODULES_PANEL.getAction());
+        map.put("show, open or display fire groups", SHOW_FIRE_GROUPS.getAction());
+        map.put("show, open or display inventory panel", SHOW_INVENTORY_PANEL.getAction());
+        map.put("show, open or display storage panel", SHOW_STORAGE_PANEL.getAction());
+        map.put("show, open or display status panel", SHOW_STATUS_PANEL.getAction());
+        map.put("show, open or display carrier management panel", DISPLAY_CARRIER_MANAGEMENT.getAction());
+        map.put("show, open or display galaxy map", OPEN_GALAXY_MAP.getAction());
+        map.put("show, open or display system map", OPEN_SYSTEM_MAP.getAction());
         map.put("exit close panel", EXIT_CLOSE.getAction());
-        map.put("open galaxy map", OPEN_GALAXY_MAP.getAction());
-        map.put("open system map", OPEN_SYSTEM_MAP.getAction());
         map.put("power to shields, max shields, boost shields", INCREASE_SHIELDS_POWER.getAction());
         map.put("power to engines, max engines, boost engines", INCREASE_ENGINES_POWER.getAction());
         map.put("power to weapons, max weapons, boost weapons", INCREASE_WEAPONS_POWER.getAction());
@@ -177,10 +177,10 @@ public class AiActionsMap {
         map.put("clear mining targets", CLEAR_MINING_TARGETS.getAction());
         map.put("mining announcements {state:true/false}", MINING_ON_OFF.getAction());
         map.put("find brain trees {key:X, max_distance:Y}", FIND_BRAIN_TREES.getAction());
-        map.put("find mining site, find asteroid field {key:X, max_distance:Y}", FIND_MINING_SITE.getAction());
+        map.put("find mining site, find mining location, find mining hotspot, find where to mine, find asteroid field {key:X, max_distance:Y}", FIND_MINING_SITE.getAction());
         map.put("find tritium mining site, find tritium field {key:X, max_distance:Y}", FIND_FLEET_CARRIER_FUEL_MINING_SITE.getAction());
         map.put("navigate to next bio sample, go to next sample, next organism", NAVIGATE_TO_NEXT_BIO_SAMPLE.getAction());
-        map.put("scan the system, full scan, honk, system scan, discovery scan, FSS", OPEN_FSS_AND_SCAN.getAction());
+        map.put("scan the system, full scan, honk, system scan, discovery scan, FSS, full spectrum scan, scan system", OPEN_FSS_AND_SCAN.getAction());
         map.put("find nearest vista genomics, find genomics, vista genomics", FIND_VISTA_GENOMICS.getAction());
         map.put("delete codex entry", DELETE_CODEX_ENTRY.getAction());
         map.put("clear codex entries", CLEAR_CODEX_ENTRIES.getAction());
@@ -209,7 +209,7 @@ public class AiActionsMap {
         map.put("check key bindings, missing key bindings, unbound keys, keyboard bindings, keybind check, missing bindings", KEY_BINDINGS_ANALYSIS.getAction());
         map.put("bio scan progress, biology scan progress, organics scanned, how many samples, bio signals in system, biosignals, biological signals, organics in system, which planets have bio signals", BIO_SAMPLE_IN_STAR_SYSTEM.getAction());
         map.put("exobiology samples, biology samples, organics at location, what organisms, what's left to scan, remaining organisms, samples left, organisms remaining, exobiology progress, scan remaining", EXOBIOLOGY_SAMPLES.getAction());
-        map.put("stellar objects, planets in system, bodies in system, what planets, how many planets, system bodies, stellar bodies, what's in this system", QUERY_STELLAR_OBJETS.getAction());
+        map.put("stellar objects, planets in system, is planet or moon landable, bodies in system, what planets, how many planets, system bodies, stellar bodies, what's in this system", QUERY_STELLAR_OBJETS.getAction());
         map.put("signals in system, FSS signals, mining hot spots, resource extraction sites, what signals, conflict zones, emissions, unidentified signals, system signals, detected signals, anomalous signals", QUERY_STELLAR_SIGNALS.getAction());
         map.put("geo signals, geological signals, volcanic signals, geological activity, volcanic activity, geology in system", QUERY_GEO_SIGNALS.getAction());
         map.put("stations in system, what stations, nearby stations, star ports, space stations, docking available", QUERY_STATIONS.getAction());
@@ -223,7 +223,7 @@ public class AiActionsMap {
         map.put("exploration profits, discovery profits, how much exploration worth, exploration value, scan value, mapping profit, exobiology value, scan earnings, what are scans worth", EXPLORATION_PROFITS.getAction());
         map.put("current location, where are we, our position, what system are we in, where am i, our coordinates, current system, what planet are we at, our current position", CURRENT_LOCATION.getAction());
         map.put("fuel status, fuel level, how much fuel, fuel remaining, are we low on fuel, fuel check, do we have enough fuel, tank level, fuel gauge", SHIP_FUEL_STATUS.getAction());
-        map.put("jump destination, FSD target, where are we jumping, analyze destination, next jump destination, what star are we targeting, analyze jump target, info on next jump", FSD_TARGET_ANALYSIS.getAction());
+        map.put("FSD target, analyze destination, what star are we targeting, analyze jump target, info on next jump", FSD_TARGET_ANALYSIS.getAction());
         map.put("plotted route, fuel at next stop, is fuel available at next way point, route analysis, current route, navigation route, jumps remaining, jumps left, how many jumps, route progress, next star scoopable, fuel stop", PLOTTED_ROUTE_ANALYSIS.getAction());
         map.put("carrier route, carrier navigation, carrier jump route, carrier trip, carrier journey, carrier travel plan", CARRIER_ROUTE_ANALYSIS.getAction());
         map.put("trade route, trading route, current trade plan, what are we trading, our trading plan, trading schedule, trade legs", TRADE_ROUTE_ANALYSIS.getAction());

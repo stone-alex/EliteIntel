@@ -4,11 +4,17 @@ import java.util.List;
 
 public class AIConstants {
     public final static List<String> passThroughWords = List.of("listen", "ignore", "ignoring", "wake", "wake up");
+
+    /**
+     * List of trash NVIDIA Parakeet likes to pre-pend and pollute the STT with.
+     *
+     */
     public final static List<String> blockWords = List.of(
-            "mm-hmm.", "uh-huh.", "eh.", "yeah.", "did you",
+            "mm-hmm.", "uh-huh.", "eh.", "yeah.", "did you", "wh", "now",
             "okay.", "got it.", "uh.", "the", "did", "you", "blow", " a ",
-            "hello?", "did you", "it", "she can", "we", "?", "hmm.",
-            "he can", "you can", "my", "i'll", "did you", "mm."
+            "hello?", "did you", "it", "she can", "we", "?", "hmm.", "for",
+            "he can", "you can", "my", "i'll", "did you", "mm.", "don't i",
+            "fuck", "shit", "keep", "can", "click", "if"
     );
 
 

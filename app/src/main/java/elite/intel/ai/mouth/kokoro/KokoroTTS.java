@@ -387,8 +387,9 @@ public class KokoroTTS implements MouthInterface {
         try {
             // LC_NUMERIC: Linux=1, macOS=4, Windows=2
             int LC_NUMERIC = Platform.isLinux() ? 1 : Platform.isMac() ? 4 : 2;
-            Native.load("c", CLib.class).setlocale(LC_NUMERIC, "C");
-        } catch (Exception e) {
+            String libName = Platform.isWindows() ? "msvcrt" : "c";
+            Native.load(libName, CLib.class).setlocale(LC_NUMERIC, "C");
+        } catch (Throwable e) {
             log.warn("KokoroTTS: could not reset LC_NUMERIC locale: {}", e.getMessage());
         }
     }

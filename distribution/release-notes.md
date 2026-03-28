@@ -1,3 +1,9 @@
+## Elite Intel v-0.0333-beta
+
+### bug fixes / features:
+
+- Attempt to fix no TTS Issue on Windows. (App was looking to load a non-existent C++ library)
+
 ## Elite Intel v-0.0332-beta
 
 ### bug fixes / features:

@@ -13,6 +13,7 @@ import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -39,6 +40,7 @@ import java.util.zip.ZipInputStream;
  */
 public class UpdaterApp {
 
+    private static final String ICON_AI = "/images/update.png";
     // -- Palette (mirrors AppView exactly) ------------------------------------
     private static final Color BG = new Color(0x141622);
     private static final Color BG_PANEL = new Color(0x1F2032);
@@ -95,9 +97,18 @@ public class UpdaterApp {
     }
 
     // -- UI construction (no MVC, just like the main app) ----------------------
+    private ImageIcon scaledIcon(String resource) {
+        return new ImageIcon(
+                new ImageIcon(
+                        Objects.requireNonNull(getClass().getResource(resource))
+                ).getImage().getScaledInstance(48, 48, Image.SCALE_SMOOTH)
+        );
+    }
 
     private void buildUi() {
         frame = new JFrame("Elite Intel – Updater");
+        ImageIcon aiIcon = scaledIcon(ICON_AI);
+        frame.setIconImage(aiIcon.getImage());
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setSize(620, 380);
         frame.setMinimumSize(new Dimension(480, 300));

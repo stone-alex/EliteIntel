@@ -19,6 +19,14 @@ dependencies {
     // Do NOT add :app here; that would drag in all native STT/TTS/LLM deps.
 }
 
+sourceSets {
+    main {
+        resources {
+            srcDirs = ['src/main/resources']
+            include '**/*.png'
+        }
+    }
+}
 shadowJar {
     archiveBaseName = 'elite_intel_updater'
     archiveClassifier = ''   // no '-all' suffix

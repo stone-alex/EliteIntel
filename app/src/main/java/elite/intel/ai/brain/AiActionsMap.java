@@ -179,7 +179,7 @@ public class AiActionsMap {
         map.put("find mining site, find mining location, find mining hotspot, find where to mine, find asteroid field {key:X, max_distance:Y}", FIND_MINING_SITE.getAction());
         map.put("find tritium mining site, find tritium field {key:X, max_distance:Y}", FIND_FLEET_CARRIER_FUEL_MINING_SITE.getAction());
         map.put("navigate to next bio sample, go to next sample, navigate to next organic, codex entry", NAVIGATE_TO_NEXT_BIO_SAMPLE.getAction());
-        map.put("scan the system, full scan, honk, system scan, discovery scan, FSS, full spectrum scan, scan system", OPEN_FSS_AND_SCAN.getAction());
+        map.put("scan the system, open fss, full scan, honk, system scan, discovery scan, FSS, full spectrum scan, scan system", OPEN_FSS_AND_SCAN.getAction());
         map.put("find nearest vista genomics, find genomics, vista genomics", FIND_VISTA_GENOMICS.getAction());
         map.put("delete codex entry", DELETE_CODEX_ENTRY.getAction());
         map.put("clear codex entries", CLEAR_CODEX_ENTRIES.getAction());

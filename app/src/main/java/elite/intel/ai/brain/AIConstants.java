@@ -16,6 +16,7 @@ public class AIConstants {
             "mm-hmm", "uh-huh", "hmm", "mm", "uh", "um", "ah", "oh", "huh", "eh",
             // Acknowledgements
             "yeah", "yep", "yup", "nope",
+            "it",
             "okay", "ok", "got it", "alright", "alrighty",
             "sure", "right",
             // Greetings / closings Parakeet hallucinates
@@ -31,7 +32,7 @@ public class AIConstants {
             "she can", "he can", "you can", "like they", "did you",
             "wh", "i'll", "like",
             // Pure garbage tokens
-            "blow", "fuck", "shit"
+            "blow", "fuck", "shit", "just"
     );
 
 

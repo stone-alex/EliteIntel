@@ -221,9 +221,8 @@ public class InputNormalizer {
         SYNONYM_MAP.put("enable", "activate");
 
         // stop listening / ignore user
-        SYNONYM_MAP.put("ignore me", "stop listening");
-        SYNONYM_MAP.put("sleep", "stop listening");
-        SYNONYM_MAP.put("stop listening", "stop listening");
+        SYNONYM_MAP.put("sleep", "ignore me");
+        SYNONYM_MAP.put("stop listening", "ignore me");
 
         // start listening
         SYNONYM_MAP.put("listen up", "start listening");
@@ -460,6 +459,8 @@ public class InputNormalizer {
         SYNONYM_MAP.put("kodak", "codex");
         SYNONYM_MAP.put("they make me", "take me");
         SYNONYM_MAP.put("products", "codex");
+        SYNONYM_MAP.put("sleep carrier", "fleet carrier");
+        SYNONYM_MAP.put("navigate zip", "exit");
 
 
 

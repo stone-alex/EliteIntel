@@ -54,7 +54,7 @@ public enum Commands {
     SET_RADAR_CONTACT_ANNOUNCEMENT                      ("toggle_radar_announcements", null, RadarAnnouncementOnOffHandler.class),
 
     START_LISTENING                                     ("start_listening", null, StartListeningHandler.class),
-    IGNORE_ME                                      ("ignore_me", null, IgnoreMeHandler.class),
+    IGNORE_ME                                           ("ignore_me", null, IgnoreMeHandler.class),
 
     NAVIGATE_TO_TARGET                                  ("navigate_to_coordinates", null,  NavigateToCoordinatesHandler.class),
     NAVIGATION_OFF                                      ("cancel_navigation", null,  NavigationOnOffHandler.class),
@@ -97,7 +97,7 @@ public enum Commands {
     NAVIGATE_TO_CARRIER                                 ("navigate_to_fleet_carrier", null,  NavigateToMyFleetCarrier.class),
     SET_OPTIMAL_SPEED                                   ("set_optimal_speed", null,  SetOptimalSpeedHandler.class),
     TAKE_ME_HOME                                        ("navigate_to_home_system", null,  NavigateRouteToHomeHandler.class),
-    OPEN_FSS_AND_SCAN                                   ("scan_system", null,  DisplayFssAndScanHandler.class),
+    OPEN_FSS_AND_SCAN                                   ("open_fss_scan_system", null,  DisplayFssAndScanHandler.class),
 
     GET_HEADING_TO_LZ                                   ("navigate_to_landing_zone", null,  NavigateToLandingZone.class),
     DEPLOY_SRV                                          ("deploy_srv", null,  DeploySrvHandler.class),

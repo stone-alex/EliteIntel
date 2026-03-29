@@ -6,7 +6,6 @@ import elite.intel.ai.mouth.subscribers.events.RadioTransmissionEvent;
 import elite.intel.db.managers.CargoHoldManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
-import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
 import elite.intel.gameapi.journal.events.ReceiveTextEvent;
 import elite.intel.session.PlayerSession;
 
@@ -23,7 +22,7 @@ public class TransmissionReceivedSubscriber {
         CargoHoldManager cargoHoldManager = CargoHoldManager.getInstance();
         boolean haveCargo = cargoHoldManager.get() == null?  false : cargoHoldManager.get().getCount() > 0;
 
-        if (isPirateMessage(event.getMessageLocalised()) && haveCargo) {
+        if (isPirateMessage(event.getMessageLocalised()) && haveCargo && !isRadioOn) {
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("Pirate Alert!!!"));
             return;
         }

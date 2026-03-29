@@ -10,11 +10,17 @@ public class LightsOnOffHandler extends CommandOperator implements CommandHandle
         super(controller.getMonitor(), controller.getExecutor());
     }
 
-    @Override public void handle(String action, JsonObject params, String responseText) {
+    @Override
+    public void handle(String action, JsonObject params, String responseText) {
         Status status = Status.getInstance();
 
         if (status.isInSrv()) {
-            toggleLights(Bindings.GameCommand.BINDING_BUGGY_LIGHTS_TOGGLE.getGameBinding());
+            if (status.isSrvHighBeam()) {
+                toggleLights(Bindings.GameCommand.BINDING_BUGGY_LIGHTS_TOGGLE.getGameBinding());
+            } else {
+                toggleLights(Bindings.GameCommand.BINDING_BUGGY_LIGHTS_TOGGLE.getGameBinding());
+                toggleLights(Bindings.GameCommand.BINDING_BUGGY_LIGHTS_TOGGLE.getGameBinding());
+            }
         }
 
         if (status.isInMainShip()) {

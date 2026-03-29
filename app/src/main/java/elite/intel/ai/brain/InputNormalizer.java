@@ -35,6 +35,11 @@ public class InputNormalizer {
         SYNONYM_MAP.put("switch to analysis", "switch to analysis mode");
         SYNONYM_MAP.put("analysis hud", "switch to analysis mode");
         SYNONYM_MAP.put("explorer mode", "switch to analysis mode");
+        SYNONYM_MAP.put("next enemy", "priority target");
+        SYNONYM_MAP.put("select enemy", "priority target");
+        SYNONYM_MAP.put("high threat", "priority target");
+        SYNONYM_MAP.put("highest threat", "priority target");
+        SYNONYM_MAP.put("priority target", "priority target");
 
         // find / locate / search
         SYNONYM_MAP.put("search for", "find");
@@ -438,6 +443,7 @@ public class InputNormalizer {
         SYNONYM_MAP.put("scale", "scan");
         SYNONYM_MAP.put("mining spots", "mining hot spots");
         SYNONYM_MAP.put("net vision", "night vision");
+        SYNONYM_MAP.put("division", "night vision");
         SYNONYM_MAP.put("her style", "hostile");
         SYNONYM_MAP.put("hair style", "hostile");
         SYNONYM_MAP.put("did", "deploy");

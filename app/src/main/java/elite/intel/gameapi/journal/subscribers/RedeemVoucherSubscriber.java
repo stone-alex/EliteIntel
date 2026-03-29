@@ -1,6 +1,7 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.intel.db.managers.BountyManager;
 import elite.intel.db.managers.MissionManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
@@ -15,6 +16,7 @@ import java.util.Map;
 public class RedeemVoucherSubscriber {
 
     private final MissionManager missionManager = MissionManager.getInstance();
+    private final BountyManager bountyManager = BountyManager.getInstance();
 
     @Subscribe
     public void onRedeemVoucherEvent(RedeemVoucherEvent event) {
@@ -33,6 +35,10 @@ public class RedeemVoucherSubscriber {
         );
         if (missions == null || missions.isEmpty()) {
             PlayerSession.getInstance().clearBounties();
+        } else {
+            // Missions still active: preserve bounty records for kill counting but
+            // flag them as cashed-in so they are excluded from pending bounty totals.
+            bountyManager.markAllCashedIn();
         }
     }
 

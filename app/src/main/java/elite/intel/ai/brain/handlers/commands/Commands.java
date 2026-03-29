@@ -9,7 +9,7 @@ public enum Commands {
 
     CONNECTION_CHECK                                    (CONNECTION_CHECK_COMMAND, null, ConnectionCheck.class),
     DISABLE_ALL_ANNOUNCEMENTS                           ("disable_all_announcements", null, DisableAllAnnouncementHandler.class),
-    LIGHTS_ON_OFF                                       ("toggle_lights_on_off", null, LightsOnOffHandler.class),
+    LIGHTS_ON_OFF                                       ("toggle_lights", null, LightsOnOffHandler.class),
     ADD_MINING_TARGET                                   ("add_mining_target", null, AddMiningTargetHandler.class),
     REMOVE_MINING_TARGET                                ("remove_mining_target", null, RemoveMiningTargetHandler.class),
     CLEAR_MINING_TARGETS                                ("clear_mining_targets", null, ClearMiningTargetsHandler.class),
@@ -144,7 +144,7 @@ public enum Commands {
 
 
     REQUEST_DOCKING                                     ("request_docking", null,  RequestDockingHandler.class),
-    NIGHT_VISION_ON_OFF                                 ("toggle_night_vision_on_off", BINDING_NIGHT_VISION_TOGGLE.getGameBinding(), ToggleNightVision.class),
+    NIGHT_VISION_ON_OFF                                 ("toggle_nightvision", BINDING_NIGHT_VISION_TOGGLE.getGameBinding(), ToggleNightVision.class),
 
     CYCLE_NEXT_PAGE                                     ("cycle_next_page", BINDING_CYCLE_NEXT_PAGE.getGameBinding(), SimpleCommandActionHandler.class),
     CYCLE_NEXT_PANEL                                    ("cycle_next_panel", BINDING_CYCLE_NEXT_PANEL.getGameBinding(), SimpleCommandActionHandler.class),

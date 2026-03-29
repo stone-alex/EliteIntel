@@ -1,6 +1,7 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.ai.mouth.subscribers.events.RouteAnnouncementEvent;
 import elite.intel.db.dao.RouteMonetisationDao.MonetisationTransaction;
@@ -83,7 +84,7 @@ public class JumpCompletedSubscriber {
         if (finalDestination != null && finalDestination.equalsIgnoreCase(event.getStarSystem())) {
             shipRoute.clearRoute();
             if (!reminderText.isBlank()) {
-                EventBusManager.publish(new MissionCriticalAnnouncementEvent("Reminder " + reminderText));
+                EventBusManager.publish(new AiVoxResponseEvent("Reminder " + reminderText));
             } else {
                 sb.append(" Arrived at final destination: ").append(finalDestination);
             }

@@ -47,6 +47,19 @@ public class BountyManager {
         });
     }
 
+    public void markAllCashedIn() {
+        Database.withDao(BountyDao.class, dao -> {
+            BountyDao.Bounty[] data = dao.listAll();
+            for (BountyDao.Bounty row : data) {
+                BountyDto bounty = GsonFactory.getGson().fromJson(row.getBounty(), BountyDto.class);
+                bounty.setCashedIn(true);
+                row.setBounty(bounty.toJson());
+                dao.upsert(row);
+            }
+            return null;
+        });
+    }
+
     public void clear() {
         Database.withDao(BountyDao.class, dao -> {dao.clear(); return null;});
     }

@@ -363,7 +363,8 @@ public class ParakeetSTTImpl implements EarsInterface {
                 sanitized.append(word);
             }
         }
-        return sanitized.toString();
+        String string = sanitized.toString();
+        return string.replace("?", "").replace("!", "").replace(";", "").replace(":", "").replace(",", "").replace(".", "");
     }
 
 

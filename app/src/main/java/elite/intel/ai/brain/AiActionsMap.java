@@ -77,8 +77,8 @@ public class AiActionsMap {
         map.put("request docking, dock at station, request landing, docking request, ask for docking, request parking, parking spot, request pad", REQUEST_DOCKING.getAction());
         map.put("open cargo scoop, deploy cargo scoop, open cargo bay, extend scoop", OPEN_CARGO_SCOOP.getAction());
         map.put("close cargo scoop, retract cargo scoop, close cargo bay, stow scoop", CLOSE_CARGO_SCOOP.getAction());
-        map.put("night vision {state:true/false}", NIGHT_VISION_ON_OFF.getAction());
-        map.put("headlights, lights, ship lights {state:true/false}", LIGHTS_ON_OFF.getAction());
+        map.put("night vision, nightvision, turn on night vision, turn off night vision ", NIGHT_VISION_ON_OFF.getAction());
+        map.put("headlights, lights, ship lights, lights on, lights off ", LIGHTS_ON_OFF.getAction());
         map.put("drive assist, driving assist, SRV assist {state:true/false}", DRIVE_ASSIST.getAction());
         map.put("dismiss ship, send ship away, park ship, ship to orbit", DISMISS_SHIP.getAction());
         map.put("return to surface, recall ship, pick me up", RETURN_TO_SURFACE.getAction());
@@ -186,12 +186,12 @@ public class AiActionsMap {
         map.put("clear codex entries", CLEAR_CODEX_ENTRIES.getAction());
 
         // combat
-        map.put("target subsystem, aim at subsystem, lock onto subsystem {key:X}", TARGET_SUB_SYSTEM.getAction());
+        map.put("target fsd {key:fsd}, target engines {key:drive}, target Power Distributor {key:power distributor} target power plant {key:powerplant}, target powerplant {key:powerplant}, target life support {key:life support}, ", TARGET_SUB_SYSTEM.getAction());
         map.put("target wingman 1, wingman alpha", TARGET_WINGMAN0.getAction());
         map.put("target wingman 2, wingman bravo", TARGET_WINGMAN1.getAction());
         map.put("target wingman 3, wingman charlie", TARGET_WINGMAN2.getAction());
         map.put("wing nav lock, lock wingman nav, follow wingman", WING_NAV_LOCK.getAction());
-        map.put("priority target, target highest threat, target most dangerous, select hostile", SELECT_HIGHEST_THREAT.getAction());
+        map.put("priority target, target highest threat, target most dangerous, select hostile, next enemy, select enemy", SELECT_HIGHEST_THREAT.getAction());
 
         // fighter
         if (status.isInMainShip()) {

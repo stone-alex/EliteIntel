@@ -15,6 +15,7 @@ public class BountyDto extends BaseJsonDto implements ToJsonConvertible {
     private long totalReward;
     private String victimFaction;
     private String earnedAt;
+    private boolean cashedIn = false;
 
     public List<Reward> getRewards() {
         return rewards;
@@ -70,6 +71,14 @@ public class BountyDto extends BaseJsonDto implements ToJsonConvertible {
 
     public void setEarnedAt(String earnedAt) {
         this.earnedAt = earnedAt;
+    }
+
+    public boolean isCashedIn() {
+        return cashedIn;
+    }
+
+    public void setCashedIn(boolean cashedIn) {
+        this.cashedIn = cashedIn;
     }
 
     public String getKey() {

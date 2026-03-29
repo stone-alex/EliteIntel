@@ -1,9 +1,13 @@
 # Elite Intel Developer Guidelines
 
-## Overview (video is dated, but still relevant)
+## Packages
 
-[![Architecture Overview](https://img.youtube.com/vi/tpqcodcuIig/0.jpg)](https://youtu.be/tpqcodcuIig)
-
+- [elite.intel.gameapi](app/src/main/java/elite/intel/gameapi/DEVELOPER.md)
+- [elite.intel.db](app/src/main/java/elite/intel/db/DEVELOPER.md)
+- [elite.intel.ai.mouth](app/src/main/java/elite/intel/ai/mouth/DEVELOPER.md)
+- [elite.intel.ai.hands](app/src/main/java/elite/intel/ai/hands/DEVELOPER.md)
+- [elite.intel.ai.ears](app/src/main/java/elite/intel/ai/ears/DEVELOPER.md)
+- [elite.intel.ai.brain](app/src/main/java/elite/intel/ai/brain/DEVELOPER.md)
 
 Welcome to developing for Elite Intel, a Java-based QoL app for *Elite Dangerous*. This guide ensures contributions align with the app’s architecture and Frontier’s TOS. The app uses an event-driven design (`elite.intel.gameapi`), Swing UI (`elite.intel.ui`), and integrates STT/TTS (via
 `elite.intel.ai.ears` and `elite.intel.ai.mouth`) and AI (via `elite.intel.ai.brain`).

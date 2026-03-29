@@ -28,6 +28,7 @@ public class BountyEventSubscriber {
         sessionData.setVictimFaction(event.getVictimFaction());
         sessionData.setTarget(event.getTarget());
         sessionData.setTotalReward(event.getTotalReward());
+        sessionData.setEarnedAt(event.getTimestamp());
         List<BountyDto.Reward> rewards = new ArrayList<>();
         for (BountyEvent.Reward reward : event.getRewards()) {
             BountyDto.Reward r = new BountyDto.Reward();

@@ -40,16 +40,13 @@ public class StatusEventSubscriber {
         if (legalStatusBeforeChange != null) {
             String legalState = event.getLegalState();
             if (legalState != null && !legalStatusBeforeChange.equalsIgnoreCase(legalState)) {
-                if ("Speeding".equalsIgnoreCase(legalState)) {
-                    EventBusManager.publish(new MissionCriticalAnnouncementEvent("Speeding."));
-                } else {
+                if (!"Speeding".equalsIgnoreCase(legalState)) {
                     EventBusManager.publish(new MissionCriticalAnnouncementEvent("Legal status changed to: " + legalState + ". "));
                 }
             }
         }
 
         status.setStatus(event);
-
         EventBusManager.publish(new PlayerMovedEvent(event.getLatitude(), event.getLongitude(), event.getPlanetRadius(), event.getAltitude()));
 
         // --------------------------------------------------------------------------------------

@@ -49,7 +49,7 @@
 
 
         <!-- Specific logger levels -->
-        <Logger name="elite.intel" level="debug"/>
+        <Logger name="elite.intel" level="error"/>
         <Logger name="elite.intel.gameapi.JournalParser" level="error"/>
         <Logger name="elite.intel.gameapi.AuxiliaryFilesMonitor" level="error"/>
         <Logger name="elite.intel.gameapi.journal.subscribers" level="error"/>
@@ -60,9 +60,9 @@
         <Logger name="elite.intel.util.NavigationUtils" level="error"/>
         <Logger name="elite.intel.ai.hands.KeyBindingsParser" level="error"/>
         <Logger name="elite.intel.ai.brain.xai.GrokCommandEndPoint" level="error"/>
-        <Logger name="elite.intel.ai.ears" level="debug"/>
+        <Logger name="elite.intel.ai.ears" level="error"/>
         <Logger name="elite.intel.ai.mouth" level="error"/>
-        <Logger name="elite.intel.ai.brain" level="debug"/>
+        <Logger name="elite.intel.ai.brain" level="error"/>
         <Logger name="elite.intel.search.spansh" level="error"/>
         <Logger name="elite.intel.db" level="error"/>
         <Logger name="elite.intel.search.spansh.market" level="error"/>

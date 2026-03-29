@@ -1,3 +1,17 @@
+## Elite Intel v-0.0334-beta
+
+### bug fixes / features:
+
+- Pirate missions will now calculate correctly based on bounty collected against a target faction. Old bounties no longer count towards the mission. (bug fix)
+- Pirate mission accept would fail if no hunting were available. fixed.
+- NOTE: If you cash all your bounties before completing the missions, the counter will reset. (known issue)
+- Added Windows key support for bindings.
+- Added application menu support for key bindings.
+- Found and removed long and unnecessary reminder in pirate missions.
+- Say "Exit" or "Close" to exit any window or tab.
+- Nightvision toggle no longer requires on/off clarification.
+- Lights toggle no longer requires on/off clarification.
+
 ## Elite Intel v-0.0333-beta
 
 ### bug fixes / features:

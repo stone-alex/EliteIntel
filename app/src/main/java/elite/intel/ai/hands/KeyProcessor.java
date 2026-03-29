@@ -76,7 +76,7 @@ public class KeyProcessor {
     public static final int KEY_RIGHTALT = NATIVE_BASE + 6;
     public static final int KEY_LEFTSUPER = NATIVE_BASE + 7;
     public static final int KEY_RIGHTSUPER = NATIVE_BASE + 8;
-    public static final int KEY_MENU = KeyEvent.VK_CONTEXT_MENU;
+    public static final int KEY_MENU = NATIVE_BASE + 9;
     public static final int KEY_LEFTBRACKET = KeyEvent.VK_OPEN_BRACKET;
     public static final int KEY_BACKSLASH = KeyEvent.VK_BACK_SLASH;
     public static final int KEY_RIGHTBRACKET = KeyEvent.VK_CLOSE_BRACKET;

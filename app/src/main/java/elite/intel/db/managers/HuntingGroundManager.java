@@ -139,7 +139,10 @@ public class HuntingGroundManager {
             return Void.class;
         });
 
-        return Database.withDao(PirateHuntingGroundsDao.class, dao -> dao.findByFactionName(targetFaction, destinationSystem).getId());
+        return Database.withDao(PirateHuntingGroundsDao.class, dao -> {
+            HuntingGround byFactionName = dao.findByFactionName(targetFaction, destinationSystem);
+            return byFactionName == null ? -1 : byFactionName.getId();
+        });
     }
 
     public void updateProviderFaction(String providerStarSystem, int targetFactionId, String providerFaction, String targetSystem) {

@@ -52,6 +52,7 @@ class LinuxX11NativeKeyInput implements NativeKeyInput {
         KEYSYM_MAP.put(NATIVE_BASE + 6, 0xFFEAL);  // KEY_RIGHTALT     → XK_Alt_R
         KEYSYM_MAP.put(NATIVE_BASE + 7, 0xFFEBL);  // KEY_LEFTSUPER    → XK_Super_L
         KEYSYM_MAP.put(NATIVE_BASE + 8, 0xFFECL);  // KEY_RIGHTSUPER   → XK_Super_R
+        KEYSYM_MAP.put(NATIVE_BASE + 9, 0xFF67L);  // KEY_MENU         → XK_Menu
     }
 
     private final X11 x11;

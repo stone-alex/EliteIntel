@@ -15,6 +15,7 @@ public class MissionDto extends BaseJsonDto {
     private long missionId;
     private String faction;
     private String missionDescription;
+    private String acceptedAt;
     private MissionType missionType;
     private long reward;
     private boolean influenceIncrease;
@@ -40,6 +41,7 @@ public class MissionDto extends BaseJsonDto {
 
     public MissionDto(MissionAcceptedEvent event) {
         if (event != null) {
+            setAcceptedAt(event.getTimestamp());
             setMissionId(event.getMissionID());
             setMissionProvider(event.getFaction());
             setMissionType(toMissionType(event.getName()));
@@ -92,6 +94,14 @@ public class MissionDto extends BaseJsonDto {
 
     public void setCommodityName(String commodityName) {
         this.commodityName = commodityName;
+    }
+
+    public String getAcceptedAt() {
+        return acceptedAt;
+    }
+
+    public void setAcceptedAt(String acceptedAt) {
+        this.acceptedAt = acceptedAt;
     }
 
     public void setMissionId(long missionID) {

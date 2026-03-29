@@ -66,8 +66,9 @@ class NativeKeyInputFactory {
             FALLBACK_VK.put(NATIVE_BASE + 4, KeyEvent.VK_SHIFT);    // RIGHTSHIFT
             FALLBACK_VK.put(NATIVE_BASE + 5, KeyEvent.VK_ALT);      // LEFTALT
             FALLBACK_VK.put(NATIVE_BASE + 6, KeyEvent.VK_ALT);      // RIGHTALT
-            FALLBACK_VK.put(NATIVE_BASE + 7, KeyEvent.VK_WINDOWS);  // LEFTSUPER
-            FALLBACK_VK.put(NATIVE_BASE + 8, KeyEvent.VK_WINDOWS);  // RIGHTSUPER
+            FALLBACK_VK.put(NATIVE_BASE + 7, KeyEvent.VK_WINDOWS);        // LEFTSUPER
+            FALLBACK_VK.put(NATIVE_BASE + 8, KeyEvent.VK_WINDOWS);        // RIGHTSUPER
+            FALLBACK_VK.put(NATIVE_BASE + 9, KeyEvent.VK_CONTEXT_MENU);   // MENU
         }
 
         private final Robot robot;

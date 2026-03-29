@@ -9,8 +9,8 @@ import elite.intel.session.PlayerSession;
 import elite.intel.util.yaml.ToYamlConvertable;
 import elite.intel.util.yaml.YamlFactory;
 
+import java.time.Instant;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class AnalyzePirateMissionHandler extends BaseQueryAnalyzer implements QueryHandler {
 
@@ -42,106 +42,108 @@ public class AnalyzePirateMissionHandler extends BaseQueryAnalyzer implements Qu
     }
 
     private String computeKillsRemaining(Map<Long, MissionDto> missions, Set<BountyDto> bounties) {
-        // Count unique kills by victimFaction
-        Map<String, Long> uniqueKillsByTarget = bounties.stream()
-                .filter(bounty -> bounty.getVictimFaction() != null && bounty.getPilotName() != null)
-                .collect(Collectors.groupingBy(
-                        bounty -> bounty.getVictimFaction() + "|" + bounty.getPilotName(),
-                        Collectors.counting()
-                ))
-                .entrySet().stream()
-                .collect(Collectors.groupingBy(
-                        entry -> entry.getKey().split("\\|")[0],
-                        Collectors.summingLong(Map.Entry::getValue)
-                ));
-
-        // Sort all missions by missionId
+        // Sort all missions by acceptedAt then missionId (oldest first)
         List<MissionDto> sortedMissions = missions.values().stream()
-                .filter(mission -> mission.getMissionTargetFaction() != null)
-                .sorted(Comparator.comparingLong(MissionDto::getMissionId))
+                .filter(m -> m.getMissionTargetFaction() != null)
+                .sorted(Comparator.comparing(this::missionAcceptedAt)
+                        .thenComparingLong(MissionDto::getMissionId))
                 .toList();
 
         if (sortedMissions.isEmpty()) {
             return "no missions available";
         }
 
-        // Group missions by faction
-        Map<String, List<MissionDto>> missionsByFaction = sortedMissions.stream()
-                .collect(Collectors.groupingBy(MissionDto::getFaction));
+        String targetFaction = sortedMissions.getFirst().getMissionTargetFaction();
 
-        String targetFaction = sortedMissions.get(0).getMissionTargetFaction();
-        long totalKills = uniqueKillsByTarget.getOrDefault(targetFaction, 0L);
-
-        // Prepare pending missions per faction (Deque of required kill counts)
-        Map<String, Deque<Integer>> pendingMissionsByFaction = new HashMap<>();
-        for (String faction : missionsByFaction.keySet()) {
-            List<Integer> killCounts = missionsByFaction.get(faction).stream()
-                    .sorted(Comparator.comparingLong(MissionDto::getMissionId))
-                    .mapToInt(MissionDto::getKillCount)
-                    .boxed()
-                    .collect(Collectors.toList());
-            pendingMissionsByFaction.put(faction, new LinkedList<>(killCounts));
+        // Group missions by provider faction, preserving chronological order within each faction
+        Map<String, List<MissionDto>> missionsByFaction = new LinkedHashMap<>();
+        for (MissionDto m : sortedMissions) {
+            missionsByFaction.computeIfAbsent(m.getFaction(), k -> new ArrayList<>()).add(m);
         }
 
-        // Simulate kill allocation to find current state
-        Map<String, Integer> activeMissions = new HashMap<>();
-        Map<String, Integer> completedMissionsByFaction = new HashMap<>();
-        for (String faction : pendingMissionsByFaction.keySet()) {
-            Deque<Integer> pending = pendingMissionsByFaction.get(faction);
-            if (!pending.isEmpty()) {
-                activeMissions.put(faction, pending.pollFirst());
-            }
-            completedMissionsByFaction.put(faction, 0);
+        // Per-faction deques of pending missions (already chronologically ordered)
+        Map<String, Deque<MissionDto>> pendingByFaction = new LinkedHashMap<>();
+        for (Map.Entry<String, List<MissionDto>> e : missionsByFaction.entrySet()) {
+            pendingByFaction.put(e.getKey(), new LinkedList<>(e.getValue()));
         }
 
-        long remainingKillsToApply = totalKills;
-        while (remainingKillsToApply > 0 && !activeMissions.isEmpty()) {
-            long minRemaining = activeMissions.values().stream().min(Integer::compareTo).orElse(Integer.MAX_VALUE);
-            minRemaining = Math.min(minRemaining, remainingKillsToApply);
-            List<String> factionsToProcess = new ArrayList<>(activeMissions.keySet());
-            for (String faction : factionsToProcess) {
-                int newRemaining = activeMissions.get(faction) - (int) minRemaining;
-                activeMissions.put(faction, newRemaining);
-                if (newRemaining <= 0) {
-                    completedMissionsByFaction.merge(faction, 1, Integer::sum);
-                    activeMissions.remove(faction);
-                    Deque<Integer> pending = pendingMissionsByFaction.get(faction);
-                    if (!pending.isEmpty()) {
-                        activeMissions.put(faction, pending.pollFirst());
+        // Initialize: first mission per faction becomes active
+        Map<String, MissionDto> activeMission = new LinkedHashMap<>();
+        Map<String, Integer> activeRemaining = new LinkedHashMap<>();
+        Map<String, Integer> completedByFaction = new LinkedHashMap<>();
+        for (String faction : pendingByFaction.keySet()) {
+            MissionDto first = Objects.requireNonNull(pendingByFaction.get(faction).pollFirst());
+            activeMission.put(faction, first);
+            activeRemaining.put(faction, first.getKillCount());
+            completedByFaction.put(faction, 0);
+        }
+
+        // Sort bounties for target faction by earnedAt (oldest first)
+        // null earnedAt → Instant.MAX so old records always count toward any mission
+        List<BountyDto> targetBounties = bounties.stream()
+                .filter(b -> targetFaction.equals(b.getVictimFaction()) && b.getPilotName() != null)
+                .sorted(Comparator.comparing(this::bountyEarnedAt))
+                .toList();
+
+        // Phase 1: Apply historical kills in chronological order.
+        // Each kill applies only to missions whose acceptedAt <= kill's earnedAt.
+        // This correctly handles pre-mission bounties and mixed-age stacks.
+        for (BountyDto bounty : targetBounties) {
+            Instant killTime = bountyEarnedAt(bounty);
+            List<String> eligible = activeMission.entrySet().stream()
+                    .filter(e -> e.getValue() != null && missionAcceptedAt(e.getValue()).compareTo(killTime) <= 0)
+                    .map(Map.Entry::getKey)
+                    .toList();
+            for (String faction : eligible) {
+                int remaining = activeRemaining.get(faction) - 1;
+                if (remaining <= 0) {
+                    completedByFaction.merge(faction, 1, Integer::sum);
+                    Deque<MissionDto> pending = pendingByFaction.get(faction);
+                    if (pending != null && !pending.isEmpty()) {
+                        MissionDto next = pending.pollFirst();
+                        activeMission.put(faction, next);
+                        activeRemaining.put(faction, next.getKillCount());
+                    } else {
+                        activeMission.remove(faction);
+                        activeRemaining.remove(faction);
                     }
+                } else {
+                    activeRemaining.put(faction, remaining);
                 }
             }
-            remainingKillsToApply -= minRemaining;
         }
 
-        // Kills remaining per faction (current active or 0)
+        // Current kills-remaining per faction for display
         Map<String, Integer> killsRemainingByFaction = new HashMap<>();
         for (String faction : missionsByFaction.keySet()) {
-            killsRemainingByFaction.put(faction, activeMissions.getOrDefault(faction, 0));
+            killsRemainingByFaction.put(faction, activeRemaining.getOrDefault(faction, 0));
         }
 
-        // Compute total kills remaining to complete all missions
-        // Make copies for simulation
-        Map<String, Integer> simActive = new HashMap<>(activeMissions);
-        Map<String, Deque<Integer>> simPending = new HashMap<>();
-        for (String faction : pendingMissionsByFaction.keySet()) {
-            simPending.put(faction, new LinkedList<>(pendingMissionsByFaction.get(faction)));
+        // Phase 2: Simulate future kills needed to finish all remaining missions.
+        // All active missions at this point are already accepted, so no timestamp filtering needed.
+        Map<String, Integer> simActive = new LinkedHashMap<>(activeRemaining);
+        Map<String, Deque<Integer>> simPending = new LinkedHashMap<>();
+        for (Map.Entry<String, Deque<MissionDto>> e : pendingByFaction.entrySet()) {
+            Deque<Integer> counts = new LinkedList<>();
+            for (MissionDto m : e.getValue()) counts.add(m.getKillCount());
+            simPending.put(e.getKey(), counts);
         }
 
         long totalKillsRemaining = 0;
         while (!simActive.isEmpty()) {
-            long minRemaining = simActive.values().stream().min(Integer::compareTo).orElse(Integer.MAX_VALUE);
+            int minRemaining = simActive.values().stream().min(Integer::compareTo).orElse(Integer.MAX_VALUE);
             totalKillsRemaining += minRemaining;
             List<String> factionsToProcess = new ArrayList<>(simActive.keySet());
             for (String faction : factionsToProcess) {
-                int newRemaining = simActive.get(faction) - (int) minRemaining;
-                simActive.put(faction, newRemaining);
+                int newRemaining = simActive.get(faction) - minRemaining;
                 if (newRemaining <= 0) {
                     simActive.remove(faction);
                     Deque<Integer> pending = simPending.get(faction);
-                    if (!pending.isEmpty()) {
+                    if (pending != null && !pending.isEmpty()) {
                         simActive.put(faction, pending.pollFirst());
                     }
+                } else {
+                    simActive.put(faction, newRemaining);
                 }
             }
         }
@@ -151,15 +153,13 @@ public class AnalyzePirateMissionHandler extends BaseQueryAnalyzer implements Qu
         List<String> sortedFactions = new ArrayList<>(missionsByFaction.keySet());
         sortedFactions.sort(String::compareTo);
         for (String faction : sortedFactions) {
-            int completed = completedMissionsByFaction.getOrDefault(faction, 0);
+            int completed = completedByFaction.getOrDefault(faction, 0);
             int killsRemaining = killsRemainingByFaction.getOrDefault(faction, 0);
             StringBuilder summary = new StringBuilder();
             summary.append(faction).append(" ").append(killsRemaining).append(" Kills remaining");
             if (completed > 0) {
                 summary.append(", ").append(completed == 1 ? "one" : completed).append(" mission");
-                if (completed > 1) {
-                    summary.append("s");
-                }
+                if (completed > 1) summary.append("s");
                 summary.append(" completed");
             }
             factionSummaries.add(summary.toString());
@@ -171,8 +171,19 @@ public class AnalyzePirateMissionHandler extends BaseQueryAnalyzer implements Qu
             sb.append(totalKillsRemaining).append(" kills remain to complete the assignment. Summary: ");
         }
         sb.append(summary);
-
         return sb.toString();
+    }
+
+    private Instant missionAcceptedAt(MissionDto m) {
+        String ts = m.getAcceptedAt();
+        // null = old record with no timestamp; treat as epoch so all bounties count (backward compat)
+        return ts != null ? Instant.parse(ts) : Instant.EPOCH;
+    }
+
+    private Instant bountyEarnedAt(BountyDto b) {
+        String ts = b.getEarnedAt();
+        // null = old record with no timestamp; treat as MAX so it counts toward any mission (backward compat)
+        return ts != null ? Instant.parse(ts) : Instant.MAX;
     }
 
     private String computeMissionProfit(Map<Long, MissionDto> missionsMap, Set<BountyDto> bounties) {

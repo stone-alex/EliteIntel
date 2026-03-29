@@ -16,7 +16,8 @@ import static elite.intel.ai.hands.KeyProcessor.NATIVE_BASE;
  * Windows implementation of NativeKeyInput using user32.dll SendInput.
  * Sends hardware-level virtual key codes that distinguish left/right modifiers:
  * VK_LCONTROL (0xA2), VK_RCONTROL (0xA3), VK_LSHIFT (0xA0), VK_RSHIFT (0xA1),
- * VK_LMENU (0xA4), VK_RMENU (0xA5), VK_LWIN (0x5B), VK_RWIN (0x5C).
+ * VK_LMENU (0xA4), VK_RMENU (0xA5), VK_LWIN (0x5B), VK_RWIN (0x5C),
+ * VK_APPS (0x5D - Menu/Application key).
  */
 class WindowsNativeKeyInput implements NativeKeyInput {
     private static final Logger log = LogManager.getLogger(WindowsNativeKeyInput.class);
@@ -39,10 +40,12 @@ class WindowsNativeKeyInput implements NativeKeyInput {
         VK_MAP.put(NATIVE_BASE + 6, (short) 0xA5);  // KEY_RIGHTALT     → VK_RMENU
         VK_MAP.put(NATIVE_BASE + 7, (short) 0x5B);  // KEY_LEFTSUPER    → VK_LWIN
         VK_MAP.put(NATIVE_BASE + 8, (short) 0x5C);  // KEY_RIGHTSUPER   → VK_RWIN
+        VK_MAP.put(NATIVE_BASE + 9, (short) 0x5D);  // KEY_MENU         → VK_APPS
 
         EXTENDED_VKS = Set.of(
                 (short) 0xA3,  // VK_RCONTROL
-                (short) 0xA5   // VK_RMENU (right alt)
+                (short) 0xA5,  // VK_RMENU (right alt)
+                (short) 0x5D   // VK_APPS (menu key)
         );
     }
 

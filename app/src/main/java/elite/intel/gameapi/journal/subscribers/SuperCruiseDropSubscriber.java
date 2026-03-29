@@ -3,6 +3,7 @@ package elite.intel.gameapi.journal.subscribers;
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.brain.handlers.CommandHandlerFactory;
 import elite.intel.ai.brain.handlers.commands.CommandHandler;
+import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SensorDataEvent;
@@ -51,7 +52,7 @@ public class SuperCruiseDropSubscriber {
 
         String carrierName = playerSession.getCarrierData().getCarrierName();
         if (event.getType().toUpperCase().startsWith(carrierName.toUpperCase())) {
-            EventBusManager.publish(new SensorDataEvent("Welcome Home to " + StringUtls.capitalizeWords(carrierName) + "! ", "We are back at base"));
+            EventBusManager.publish(new AiVoxResponseEvent("Welcome Home to " + StringUtls.capitalizeWords(carrierName) + "! "));
         }
     }
 }

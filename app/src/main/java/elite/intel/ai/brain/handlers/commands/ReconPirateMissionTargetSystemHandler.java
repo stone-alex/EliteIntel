@@ -8,7 +8,6 @@ import elite.intel.db.dao.PirateMissionProviderDao.MissionProvider;
 import elite.intel.db.managers.HuntingGroundManager;
 import elite.intel.db.managers.HuntingGroundManager.PirateMissionTuple;
 import elite.intel.db.managers.LocationManager;
-import elite.intel.db.managers.ReminderManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.util.json.GsonFactory;
 import elite.intel.util.json.ToJsonConvertible;
@@ -56,9 +55,6 @@ public class ReconPirateMissionTargetSystemHandler extends CommandOperator imple
                                         If scans do not trigger confirmation, you may need to manually confirm the presence of resource sites.
                                 """.formatted(starSystem)
                 )
-        );
-        ReminderManager.getInstance().setReminder(
-                new DataDto(starSystem, target.getTargetFaction()).toJson()
         );
 
         RoutePlotter plotter = new RoutePlotter(this.controller);

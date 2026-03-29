@@ -14,6 +14,7 @@ public class BountyDto extends BaseJsonDto implements ToJsonConvertible {
     private String target;
     private long totalReward;
     private String victimFaction;
+    private String earnedAt;
 
     public List<Reward> getRewards() {
         return rewards;
@@ -63,6 +64,13 @@ public class BountyDto extends BaseJsonDto implements ToJsonConvertible {
         this.victimFaction = victimFaction;
     }
 
+    public String getEarnedAt() {
+        return earnedAt;
+    }
+
+    public void setEarnedAt(String earnedAt) {
+        this.earnedAt = earnedAt;
+    }
 
     public String getKey() {
         return Md5Utils.generateMd5(pilotName + target + victimFaction + totalReward);

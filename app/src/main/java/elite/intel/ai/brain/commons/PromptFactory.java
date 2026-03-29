@@ -70,6 +70,9 @@ public class PromptFactory implements AiPromptFactory {
                 - "target most dangerous / highest threat" → target_highest_threat
                 - "target [anything else]" → target_subsystem, key = the words after "target"
                 - organics / biology / exobiology → exobiology actions, NOT geo/materials
+                - profit from bounties is not profit from missions for bounties → 'query_total_bounties'
+                - profit from missions is not profit from bounties for missions → 'query_missions_and_rewards'
+                - profit from discovery is not profit from bounties or missions → 'query_exploration_profits'
                 - material trader (raw/encoded/manufactured) → find_raw/encoded/manufactured_material_trader
                 - "geo signals / geological" → query_geo_signals (NOT find_brain_trees)
                 - "find mission providers" / "find pirate mission providers" → find_hunting_grounds (NOT fleet carrier)

@@ -99,7 +99,7 @@ Make sure you mention carrier, else it might think you are talking about the shi
 - Is the next star scoopable?
 - Analyze FSD target (allegiance, traffic, security, geo/bio data, etc.).
 - What's in my cargo hold?
-- What's my ship loadout?
+- What's your loadout?
 - Analyze our route. (summary of the route, fuel availability
 - What's my fuel level?
 
@@ -144,8 +144,7 @@ Make sure you mention carrier, else it might think you are talking about the shi
 - Mission progress summary.
 - Total bounties collected this session.
 - What active missions do I have? (any missions, not just pirate)
-- Target power plant (works now)
-- Target Subsystem [fsd / power plant / thrusters / etc.] (broken now)
+- Target Subsystems commands: 'target drive', 'target fsd', 'target shield generator', 'target powerplant', 'target engine,' 'target life support', 'target power distributor'. NOTE: optional subsystems are not included in the list.
 - Note: "Light Speed!" or "Supercruise!" will retract hardpoints / gear if needed and bail you out of there, but only if you are not mass-locked.
 
 ## 🧭 Navigation Commands
@@ -172,16 +171,16 @@ Make sure you mention carrier, else it might think you are talking about the shi
 - Take me home / navigate to home system.
 - Set as home system.
 - Set optimal speed. *(Sets throttle to 75% for supercruise approach.)*
-- Set fuel reserve to [amount].
-- Target next system in route.
+- Increase / Decrease speed by [amount]. 1-10
+- Set fuel level to [amount]. / Set fuel reserve to [amount]. (sets the fleet carrier fuel reserves)
+- Target the next system in route. (selects whatever system is next in the plotted route)
 - Wing nav lock / lock on wing.
-- Select / target highest threat.
-- Target power plant / subsystem.
+- Select / target highest threat / next hostile / target enemy
 - Navigate from memory. (This will open the galaxy map and navigate to the location you have copied from somewhere via Ctrl+C.)
 
 ## 🎮 Ship Controls
 
-- gear up / down.
+- gear up / down | deploy / retract landing gear.
 - Deploy / retract hardpoints / weapons.
 - Weapons Hot! (same as deploy hardpoints)
 - Deploy heat sink.
@@ -197,25 +196,19 @@ Make sure you mention carrier, else it might think you are talking about the shi
 - All power to shields / engines / weapons. Equalize power. / max shields, max engines, max weapons
 - Combat mode / activate combat mode / enter combat mode / combat HUD → switches to combat HUD.
 - Analysis mode / activate analysis mode / explorer mode / analysis HUD → switches to analysis HUD.
-- Night vision on / off.
-- Headlights on / off. / turn on headlights, light off etc.
+- Night vision (on / off).
+- Headlights (on / off).
 - Drive assist on / off.
-- Dismiss ship / go to orbit.
-- Return to surface / pick me up.
-- Open FSS and scan / honk / scan system / run a scan / discovery scan / system scan / full spectrum scan.
+- Dismiss ship / go to orbit / go play.
+- Return to the surface / pick me up.
+- Open FSS and scan / honk / scan system / run a scan / discovery scan / system scan / full spectrum scan. (Will open the full FSS UI and hunk)
 - Show / display - galaxy map / local map / close map.
 - Show comms panel / contacts panel / internal panel / central panel.
 - Show carrier management panel.
-- Exit to HUD.
-- Interrupt / silence / cancel [stops TTS mid-sentence].
-- Activate / punch it / engage.
-- Show Navigation panel.
-- Show Transaction panel.
-- Show Home Panel.
-- Show Modules panel.
-- Show Fire groups
-- Show ship panel
-- Show manifest / inventory panel / cargo hold panel. (note - show manifast works without word panel, the other variants need word panel, else it can be confused with query cargo etc)
+- Exit / close (Exits menus / tabs / sub-menus and drops you to HUD).
+- Interrupt / shut up / silence / cancel [stops TTS mid-sentence].
+- Activate Controlls / Activate (activates whatever is selected in the UI)
+- Show <tab name> (Show Navigation, Display Transaction Open Home Panel, Show Modules, etc)
 
 ## 🎙️ Fighter Commands
 

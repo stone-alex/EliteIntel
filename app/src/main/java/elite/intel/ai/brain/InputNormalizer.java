@@ -331,7 +331,7 @@ public class InputNormalizer {
         SYNONYM_MAP.put("display", "open");
 
 
-        // ── Carrier status / fuel / ETA / destination ─────────────────────────
+        // ── 1 status / fuel / ETA / destination ─────────────────────────
         SYNONYM_MAP.put("when does carrier arrive", "carrier ETA");
         SYNONYM_MAP.put("carrier arrival time", "carrier ETA");
         SYNONYM_MAP.put("carrier arrival", "carrier ETA");
@@ -461,6 +461,8 @@ public class InputNormalizer {
         SYNONYM_MAP.put("products", "codex");
         SYNONYM_MAP.put("sleep carrier", "fleet carrier");
         SYNONYM_MAP.put("navigate zip", "exit");
+        SYNONYM_MAP.put("first to", "what is");
+        SYNONYM_MAP.put("repair", "radar");
 
 
 

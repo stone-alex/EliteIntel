@@ -42,13 +42,17 @@ public class PromptFactory implements AiPromptFactory {
                 
                 CLASSIFICATION:
                 - Default to COMMAND. Only use a QUERY action when the input is clearly interrogative (starts with: what, how, which, why, is, are, does, tell me, how much, how many).
-                - ALWAYS pick the closest matching action. query_general_conversation is ONLY for input that is clearly casual chitchat with zero connection to any action (e.g. "how's your day"). When in doubt, pick the closest action - do NOT fall back to general conversation.
+                - ALWAYS pick the closest matching action. query_general_conversation is ONLY a last resort. When input is non sensical. (See HANDLE NONSENSICAL INPUT)
                 - ANY uncertainty about the action name → copy the closest name character-for-character from the left of ←. Never construct or shorten a name.
+                
+                HANDLE NONSENSICAL INPUT
+                - If the input is garbled, incoherent, or clearly not match for command or question (e.g. "setup spin refind grouping", "let's banding find do they play"), do NOT guess. Respond EXACTLY: {"action": "query_general_conversation", "params": {"key": "input unclear"}}
+                - Do NOT attempt to match nonsense to the nearest action.
                 
                 VERB INTENT (apply first, before matching any action):
                 - show / display / open / access / find / search / locate / activate → COMMANDS (open a panel or map, find commodities, missions etc.)
                 - where / tell me / how much / any → lookup QUERY (search data, speak result)
-                
+
                 DISAMBIGUATION (genuine ambiguities only):
                 - "activate" alone (no mode, panel, or subsystem following) → activate
                 - "weapons free" / "weapons hot" / "combat ready" → deploy_hardpoints
@@ -57,6 +61,7 @@ public class PromptFactory implements AiPromptFactory {
                 - "max shields" / "boost shields" / "power to shields" → transfer_power_to_shields
                 - "max engines" / "boost engines" / "power to engines" → transfer_power_to_engines
                 - Never confuse "max engines" with "target engines"
+                - Never confuse "deploy vehicle" with "deploy landing gear"
                 
                 - "listen" / "listen up" alone → start_listening
                 - "listen [+ any instruction]" → treat as a normal command/query

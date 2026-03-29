@@ -22,8 +22,7 @@ public class OpenInboxPenalHandler extends CommandOperator implements CommandHan
 
     @Override
     public void handle(String action, JsonObject params, String responseText) {
-        if (status.isInMainShip() || status.isInFighter()) {
-            operateKeyboard(Bindings.GameCommand.BINDING_TARGET_NEXT_ROUTE_SYSTEM.getGameBinding(), 0);
+        if (status.isInMainShip() || status.isInFighter() || status.isInSrv()) {
             navigator.openAndNavigate(StatusFlags.GuiFocus.COMMS_PANEL, CommsPanel.INBOX);
         } else {
             EventBusManager.publish(new AiVoxResponseEvent("Sorry, I can't do that right now."));

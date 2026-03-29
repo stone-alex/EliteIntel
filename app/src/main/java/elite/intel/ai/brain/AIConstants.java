@@ -30,7 +30,7 @@ public class AIConstants {
             "i got it", "don't i",
             // Hallucinated subject fragments
             "she can", "he can", "you can", "like they", "did you",
-            "wh", "i'll", "like",
+            "wh", "i'll", "like", "got a",
             // Pure garbage tokens
             "blow", "fuck", "shit", "just"
     );

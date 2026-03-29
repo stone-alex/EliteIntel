@@ -54,7 +54,7 @@ public class AiActionsMap {
         map.put("navigate to next trade stop, go to next trade stop", NAVIGATE_TO_NEXT_TRADE_STOP.getAction());
         map.put("navigate from memory, paste from memory", NAVIGATE_TO_ADDRESS_FROM_MEMORY.getAction());
         map.put("cancel navigation, abort navigation, clear route, stop navigation", NAVIGATION_OFF.getAction());
-        map.put("select next system in route", TARGET_NEXT_ROUTE_SYSTEM.getAction());
+        map.put("target destination", TARGET_DESTINATION.getAction());
         map.put("jump to hyperspace, engage jump, engage FSD, engage drive, hyperspace jump, enter hyperspace, lets go, next way point", JUMP_TO_HYPERSPACE.getAction());
         map.put("drop from supercruise, exit supercruise, disengage supercruise, drop out, leave supercruise, drop in", DROP_FROM_SUPER_CRUISE.getAction());
         map.put("enter supercruise, engage supercruise, go supercruise, supercruise", ENTER_SUPER_CRUISE.getAction());
@@ -72,7 +72,7 @@ public class AiActionsMap {
         map.put("set optimal speed, optimal approach speed, approach speed", SET_OPTIMAL_SPEED.getAction());
 
         // flight / ship systems
-        map.put("deploy landing gear, gear down, lower landing gear, extend landing gear", DEPLOY_LANDING_GEAR.getAction());
+        map.put("landing gear, gear down, lower landing gear, extend landing gear", DEPLOY_LANDING_GEAR.getAction());
         map.put("retract landing gear, gear up, raise landing gear, stow landing gear", RETRACT_LANDING_GEAR.getAction());
         map.put("request docking, dock at station, request landing, docking request, ask for docking, request parking, parking spot, request pad", REQUEST_DOCKING.getAction());
         map.put("open / close cargo scoop, deploy / retract cargo scoop, open / close cargo bay", TOGGLE_CARGO_SCOOP.getAction());
@@ -133,7 +133,7 @@ public class AiActionsMap {
         map.put("show, open or display contacts panel", SHOW_CONTACTS.getAction());
         map.put("show, open or display navigation panel", SHOW_NAVIGATION.getAction());
         map.put("show, open or display chat panel", SHOW_CHAT_PANEL.getAction());
-        map.put("show, open or display inbox panel", SHOW_INBOX_PANEL.getAction());
+        map.put("show, open or display email inbox panel", SHOW_INBOX_PANEL.getAction());
         map.put("show, open or display social panel", SHOW_SOCIAL_PANEL.getAction());
         map.put("show, open or display history panel", SHOW_HISTORY_PANEL.getAction());
         map.put("show, open or display squadron panel", SHOW_SQUADRON.getAction());
@@ -166,7 +166,7 @@ public class AiActionsMap {
         map.put("deploy hardpoints, weapons hot, combat ready, weapons free, weapons out, arm weapons, weapons ready", DEPLOY_HARDPOINTS.getAction());
 
         // vehicle deployment
-        map.put("deploy SRV, launch SRV, send out SRV, drop SRV", DEPLOY_SRV.getAction());
+        map.put("deploy SRV, deploy vehicle, launch SRV, send out SRV, drop SRV", DEPLOY_SRV.getAction());
         map.put("recover SRV, board ship, return SRV, retrieve SRV, SRV dock", RECOVER_SRV.getAction());
         map.put("deploy heat sink, launch heat sink, dump heat", DEPLOY_HEAT_SINK.getAction());
         map.put("equalize power, balance power, reset power, distribute power equally", RESET_POWER.getAction());
@@ -245,7 +245,7 @@ public class AiActionsMap {
         map.put("distance to bubble, how far from bubble, how far from inhabited space, distance from inhabited space, how far from civilization, range from human space", DISTANCE_TO_BUBBLE.getAction());
         map.put("distance to last bio sample, how far to sample, how far to last organism, range to bio sample, how far to previous organism, navigate to bio sample", DISTANCE_TO_LAST_BIO_SAMPLE.getAction());
         map.put("current time, what time is it, time on earth, galactic time, utc time, what's the time, real time", TIME_IN_ZONE.getAction());
-        map.put("planet biome, biome analysis, what biome {key:X}, planetary biome, atmosphere analysis, what life is here, biome type", PLANET_BIOME_ANALYSIS.getAction());
+        map.put("analyze biome, biome analysis, what biome {key:X}, planetary biome, atmosphere analysis, what life is here, biome type", PLANET_BIOME_ANALYSIS.getAction());
         map.put("reminder, what was the reminder, destination reminder, any reminders, recall reminder, what did we set as reminder", REMINDER.getAction());
         map.put("local stations, stations and settlements, outposts in system, space stations here, star ports, all stations in system, settlements in system", ANALYZE_LOCAL_STATIONS.getAction());
         map.put("general conversation", GENERAL_CONVERSATION.getAction());

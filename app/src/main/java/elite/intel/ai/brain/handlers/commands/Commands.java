@@ -126,7 +126,7 @@ public enum Commands {
     SHOW_CONTACTS                                       ("show_contacts_panel", null, OpenContactsHandler.class),
     SHOW_NAVIGATION                                     ("show_navigation_panel", null, OpenNavigationHandler.class),
     SHOW_CHAT_PANEL                                     ("show_chat_panel", null, OpenCommsPanelHandler.class   ),
-    SHOW_INBOX_PANEL                                    ("show_inbox_panel", null, OpenInboxPenalHandler.class),
+    SHOW_INBOX_PANEL                                    ("show_email_inbox_panel", null, OpenInboxPenalHandler.class),
     SHOW_SOCIAL_PANEL                                   ("show_social_panel", null, OpenSocialPanelHandler.class),
     SHOW_HISTORY_PANEL                                  ("show_history_panel", null, OpenHistoryPanelHandler.class),
     SHOW_SQUADRON                                       ("show_squadron_panel", null, OpenSquadronHandler.class),
@@ -171,7 +171,7 @@ public enum Commands {
     SET_CARRIER_FUEL_RESERVE                            ("set_carrier_fuel_reserve", null,  SetFleetCarrierFuelReserveHandler.class),
 
     SELECT_HIGHEST_THREAT                               ("target_hostile_highest_threat", BINDING_SELECT_HIGHEST_THREAT.getGameBinding(), SimpleCommandActionHandler.class),
-    TARGET_NEXT_ROUTE_SYSTEM                            ("select_next_system_in_route", BINDING_TARGET_NEXT_ROUTE_SYSTEM.getGameBinding(), SimpleCommandActionHandler.class),
+    TARGET_DESTINATION                                  ("target_destination", BINDING_TARGET_NEXT_ROUTE_SYSTEM.getGameBinding(), SimpleCommandActionHandler.class),
 
     TARGET_WINGMAN0                                     ("target_wingman_1", BINDING_TARGET_WINGMAN0.getGameBinding(), SimpleCommandActionHandler.class),
     TARGET_WINGMAN1                                     ("target_wingman_2", BINDING_TARGET_WINGMAN1.getGameBinding(), SimpleCommandActionHandler.class),

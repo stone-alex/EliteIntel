@@ -158,6 +158,7 @@ public class InputNormalizer {
         SYNONYM_MAP.put("profit from exobiology", "exploration profits");
         SYNONYM_MAP.put("profits from exobiology", "exploration profits");
 
+
         SYNONYM_MAP.put("exit scanner", "exit close panel");
         SYNONYM_MAP.put("close scanner", "exit close panel");
         SYNONYM_MAP.put("close the scanner", "exit close panel");
@@ -316,6 +317,8 @@ public class InputNormalizer {
         SYNONYM_MAP.put("radio transmission on", "toggle radio on");
         SYNONYM_MAP.put("radio transmission off", "toggle radio off");
         SYNONYM_MAP.put("shut up", "interrupt");
+        SYNONYM_MAP.put("display email", "show inbox");
+        SYNONYM_MAP.put("email", "show inbox");
 
         // ── Cargo / commodities (not engineering materials) ───────────────────
         SYNONYM_MAP.put("commodity inventory", "cargo contents");
@@ -463,6 +466,13 @@ public class InputNormalizer {
         SYNONYM_MAP.put("navigate zip", "exit");
         SYNONYM_MAP.put("first to", "what is");
         SYNONYM_MAP.put("repair", "radar");
+        SYNONYM_MAP.put("scam", "scan");
+        SYNONYM_MAP.put("rfss", "fss");
+        SYNONYM_MAP.put("displayed", "display");
+        SYNONYM_MAP.put("i think it's it", "exit");
+
+
+
 
 
 

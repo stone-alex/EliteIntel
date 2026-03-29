@@ -1,4 +1,4 @@
-## Elite Intel v-0.0334-beta
+## Elite Intel v-0.0335-beta
 
 ### bug fixes / features:
 
@@ -8,6 +8,7 @@
 - Improved community and mining hotspot search.
 - Simplified toggle commands to one word (no longer require qualifier on/off)
 - Added exit Detailed Surface Scan mode to "exit" command.
+- Updated user manual.
 
 ## Elite Intel v-0.0334-beta
 

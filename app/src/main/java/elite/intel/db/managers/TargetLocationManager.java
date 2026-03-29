@@ -29,7 +29,7 @@ public class TargetLocationManager {
     public void save(TargetLocation tracking) {
         Database.withDao(TargetLocationDao.class, dao ->{
             TargetLocationDao.TargetLocation data = new TargetLocationDao.TargetLocation();
-            data.setJson(tracking.toJson());
+            data.setJson(tracking == null ? null : tracking.toJson());
             dao.save(data);
             return null;
         });

@@ -11,7 +11,7 @@ public class AnalyzeBountiesCollectedHandler extends BaseQueryAnalyzer implement
     private final BountyManager bountyManager = BountyManager.getInstance();
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        // Sum only bounties not yet cashed in — answers "how much uncollected bounty do I have?"
+        // Sum only bounties not yet cashed in - answers "how much uncollected bounty do I have?"
         long totalBounties = bountyManager.getAll().stream()
                 .filter(b -> !b.isCashedIn())
                 .mapToLong(b -> b.getTotalReward())

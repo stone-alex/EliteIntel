@@ -90,14 +90,7 @@ public class Bindings {
         BINDING_DRIVE_ASSIST("ToggleDriveAssist"),
         BINDING_EXPLORATION_FSSQUIT("ExplorationFSSQuit"),
 
-        //EXIT_SETTLEMENT_PLACEMENT_CAMERA("exit_settlement_placement_camera", "ExitSettlementPlacementCamera"),
-
-        //GALNET_AUDIO_CLEAR_QUEUE("galnet_audio_clear_queue", "GalnetAudio_ClearQueue"),
-        //GALNET_AUDIO_PLAY_PAUSE("galnet_audio_play_pause", "GalnetAudio_Play_Pause"),
-        //GALNET_AUDIO_SKIP_BACKWARD("galnet_audio_skip_backward", "GalnetAudio_SkipBackward"),
-        //GALNET_AUDIO_SKIP_FORWARD("galnet_audio_skip_forward", "GalnetAudio_SkipForward"),
-
-        //BINDING_HEAD_LOOK_RESET("HeadLookReset"),
+        EXPLORATION_SAAEXIT_THIRD_PERSON("ExplorationSAAExitThirdPerson"),
 
         BINDING_RADAR_DECREASE_RANGE("RadarDecreaseRange"),
         BINDING_RADAR_INCREASE_RANGE("RadarIncreaseRange"),

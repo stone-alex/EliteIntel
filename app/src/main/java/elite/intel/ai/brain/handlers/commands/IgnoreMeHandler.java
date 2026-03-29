@@ -5,7 +5,7 @@ import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.VoiceInputModeToggleEvent;
 
-public class StopListeningHandler implements CommandHandler {
+public class IgnoreMeHandler implements CommandHandler {
 
     @Override
     public void handle(String action, JsonObject params, String responseText) {

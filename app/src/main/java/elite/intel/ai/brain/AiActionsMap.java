@@ -41,7 +41,7 @@ public class AiActionsMap {
 
         // always available
         map.put("start listening, listen, listen up, pay attention, I'm talking to you", START_LISTENING.getAction());
-        map.put("stop listening, ignore me, ignore us, go quiet, be quiet, stop monitoring", STOP_LISTENING.getAction());
+        map.put("ignore me, do not monitor", IGNORE_ME.getAction());
         map.put("interrupt", INTERRUPT_TTS.getAction());
         map.put("switch to combat mode", ACTIVATE_COMBAT_MODE.getAction());
         map.put("switch to analysis mode", ACTIVATE_ANALYSIS_MODE.getAction());
@@ -53,7 +53,7 @@ public class AiActionsMap {
         map.put("navigate to landing zone, bearing to landing zone, heading to landing zone, find landing zone", GET_HEADING_TO_LZ.getAction());
         map.put("navigate to next trade stop, go to next trade stop", NAVIGATE_TO_NEXT_TRADE_STOP.getAction());
         map.put("navigate from memory, paste from memory", NAVIGATE_TO_ADDRESS_FROM_MEMORY.getAction());
-        map.put("cancel navigation, abort navigation, clear route, stop navigation", NAVIGATION_ON_OFF.getAction());
+        map.put("cancel navigation, abort navigation, clear route, stop navigation", NAVIGATION_OFF.getAction());
         map.put("select next system in route", TARGET_NEXT_ROUTE_SYSTEM.getAction());
         map.put("jump to hyperspace, engage jump, engage FSD, engage drive, hyperspace jump, enter hyperspace, lets go, next way point", JUMP_TO_HYPERSPACE.getAction());
         map.put("drop from supercruise, exit supercruise, disengage supercruise, drop out, leave supercruise, drop in", DROP_FROM_SUPER_CRUISE.getAction());
@@ -61,7 +61,7 @@ public class AiActionsMap {
         map.put("set home system", SET_HOME_SYSTEM.getAction());
 
         // speed / throttle
-        map.put("stop engines, full stop, all stop, halt, kill engines, cut throttle, zero throttle, stop ship", STOP.getAction());
+        map.put("stop engines, stop here, full stop, all stop, halt, kill engines, cut throttle, zero throttle, stop ship", SET_SPEED_ZERO.getAction());
         map.put("taxi to landing, taxi, auto land, autopilot landing", TAXI.getAction());
         map.put("quarter throttle, 25 percent, slow speed, one quarter", SET_SPEED25.getAction());
         map.put("half throttle, 50 percent, half speed", SET_SPEED50.getAction());
@@ -75,10 +75,9 @@ public class AiActionsMap {
         map.put("deploy landing gear, gear down, lower landing gear, extend landing gear", DEPLOY_LANDING_GEAR.getAction());
         map.put("retract landing gear, gear up, raise landing gear, stow landing gear", RETRACT_LANDING_GEAR.getAction());
         map.put("request docking, dock at station, request landing, docking request, ask for docking, request parking, parking spot, request pad", REQUEST_DOCKING.getAction());
-        map.put("open cargo scoop, deploy cargo scoop, open cargo bay, extend scoop", OPEN_CARGO_SCOOP.getAction());
-        map.put("close cargo scoop, retract cargo scoop, close cargo bay, stow scoop", CLOSE_CARGO_SCOOP.getAction());
+        map.put("open / close cargo scoop, deploy / retract cargo scoop, open / close cargo bay", TOGGLE_CARGO_SCOOP.getAction());
         map.put("night vision, nightvision, turn on night vision, turn off night vision ", NIGHT_VISION_ON_OFF.getAction());
-        map.put("headlights, lights, ship lights, lights on, lights off ", LIGHTS_ON_OFF.getAction());
+        map.put("headlights, lights, turn off lights, turn on lights, ship lights, lights on, lights off ", LIGHTS_ON_OFF.getAction());
         map.put("drive assist, driving assist, SRV assist {state:true/false}", DRIVE_ASSIST.getAction());
         map.put("dismiss ship, send ship away, park ship, ship to orbit", DISMISS_SHIP.getAction());
         map.put("return to surface, recall ship, pick me up", RETURN_TO_SURFACE.getAction());
@@ -179,7 +178,7 @@ public class AiActionsMap {
         map.put("find brain trees {key:X, max_distance:Y}", FIND_BRAIN_TREES.getAction());
         map.put("find mining site, find mining location, find mining hotspot, find where to mine, find asteroid field {key:X, max_distance:Y}", FIND_MINING_SITE.getAction());
         map.put("find tritium mining site, find tritium field {key:X, max_distance:Y}", FIND_FLEET_CARRIER_FUEL_MINING_SITE.getAction());
-        map.put("navigate to next bio sample, go to next sample, next organism", NAVIGATE_TO_NEXT_BIO_SAMPLE.getAction());
+        map.put("navigate to next bio sample, go to next sample, navigate to next organic, codex entry", NAVIGATE_TO_NEXT_BIO_SAMPLE.getAction());
         map.put("scan the system, full scan, honk, system scan, discovery scan, FSS, full spectrum scan, scan system", OPEN_FSS_AND_SCAN.getAction());
         map.put("find nearest vista genomics, find genomics, vista genomics", FIND_VISTA_GENOMICS.getAction());
         map.put("delete codex entry", DELETE_CODEX_ENTRY.getAction());

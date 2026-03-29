@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
 
 import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_SET_SPEED75;
+import static elite.intel.ai.brain.handlers.commands.Commands.DECREASE_SPEED_BY;
 
 /**
  * The SetOptimalSpeedHandler class is responsible for handling the command
@@ -22,7 +23,7 @@ public class SetOptimalSpeedHandler extends CommandOperator implements CommandHa
     }
 
     @Override public void handle(String action, JsonObject params, String responseText) {
-        String setOptimalSpeed = BINDING_SET_SPEED75.getGameBinding();
-        operateKeyboard(setOptimalSpeed, 0);
+        operateKeyboard(BINDING_SET_SPEED75.getGameBinding(), 0); /// Sets to 75%
+        operateKeyboard(DECREASE_SPEED_BY.getBinding(), 0); /// Decrease by 1 notch
     }
 }

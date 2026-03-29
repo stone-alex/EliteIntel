@@ -27,8 +27,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static elite.intel.ai.brain.AIConstants.blockWords;
 import static elite.intel.ai.brain.AIConstants.passThroughWords;
+import static elite.intel.ai.brain.AIConstants.trashSttWords;
 import static elite.intel.gameapi.AudioMonitorBus.publish;
 import static java.util.Arrays.copyOf;
 
@@ -329,10 +329,12 @@ public class ParakeetSTTImpl implements EarsInterface {
                 log.debug("Parakeet transcription took {} ms", System.currentTimeMillis() - timeStart);
 
                 if (transcript.isBlank() || transcript.length() < 3) return;
-                if (blockWord(transcript)) return;
 
+                // Case 1: pure trash → nothing left after stripping → block
+                // Case 2: trash prefix + real content → strip prefix, pass remainder
+                String finalTranscript = stripTrashPrefix(transcript);
+                if (finalTranscript.isBlank()) return;
 
-                String finalTranscript = sanitizeTranscript(transcript);
                 EventBusManager.publish(new AppLogEvent("STT: [" + finalTranscript + "]"));
 
                 if (systemSession.isStreamingModeOn()) {
@@ -348,32 +350,43 @@ public class ParakeetSTTImpl implements EarsInterface {
         }
     }
 
-    private @NonNull String sanitizeTranscript(String transcript) {
-        StringBuilder sanitized = new StringBuilder();
-        for (String word : transcript.split("\\s+")) {
-            boolean isBlockWord = false;
-            for (String blockWord : blockWords) {
-                if (word.equalsIgnoreCase(blockWord)) {
-                    isBlockWord = true;
-                    break;
+    /**
+     * Strips leading trash tokens Parakeet prepends to real utterances, e.g.
+     * "mm-hmm. fire lasers" → "fire lasers".
+     * Returns empty string if the entire transcript is trash (Case 1 block).
+     * Matching is punctuation-tolerant: "okay," and "okay." both match "okay".
+     */
+    private @NonNull String stripTrashPrefix(String transcript) {
+        String[] tokens = transcript.split("\\s+");
+        int start = 0;
+        outer:
+        while (start < tokens.length) {
+            for (String trash : trashSttWords) {
+                String[] trashTokens = trash.split("\\s+");
+                if (start + trashTokens.length > tokens.length) continue;
+                boolean matches = true;
+                for (int i = 0; i < trashTokens.length; i++) {
+                    String tok = tokens[start + i].replaceAll("[?.!;:,]+$", "");
+                    String tr = trashTokens[i].replaceAll("[?.!;:,]+$", "");
+                    if (!tok.equalsIgnoreCase(tr)) {
+                        matches = false;
+                        break;
+                    }
+                }
+                if (matches) {
+                    start += trashTokens.length;
+                    continue outer;
                 }
             }
-            if (!isBlockWord) {
-                if (!sanitized.isEmpty()) sanitized.append(" ");
-                sanitized.append(word);
-            }
+            break;
         }
-        String string = sanitized.toString();
-        return string.replace("?", "").replace("!", "").replace(";", "").replace(":", "").replace(",", "").replace(".", "");
-    }
-
-
-    private boolean blockWord(String transctipt) {
-        for (String word : blockWords) {
-            /// if the transcript is block word and nothing else. - ignore
-            if (word.equalsIgnoreCase(transctipt)) return true;
+        if (start >= tokens.length) return "";
+        StringBuilder sb = new StringBuilder();
+        for (int i = start; i < tokens.length; i++) {
+            if (!sb.isEmpty()) sb.append(" ");
+            sb.append(tokens[i]);
         }
-        return false;
+        return sb.toString().replace("?", "").replace("!", "").replace(";", "").replace(":", "").replace(",", "").replace(".", "");
     }
 
     private boolean passThrough(String transcript) {

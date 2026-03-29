@@ -59,6 +59,7 @@ public class InputNormalizer {
         SYNONYM_MAP.put("head to", "navigate to");
         SYNONYM_MAP.put("go to", "navigate to");
         SYNONYM_MAP.put("take us to", "navigate to");
+        ;
         SYNONYM_MAP.put("take me to", "navigate to");
         SYNONYM_MAP.put("get me to", "navigate to");
         SYNONYM_MAP.put("get us to", "navigate to");
@@ -72,8 +73,6 @@ public class InputNormalizer {
         SYNONYM_MAP.put("plot a course", "navigate");
         SYNONYM_MAP.put("fly to", "navigate to");
         SYNONYM_MAP.put("set destination", "navigate to");
-        SYNONYM_MAP.put("take us to", "navigate to");
-        SYNONYM_MAP.put("get me to", "navigate to");
         SYNONYM_MAP.put("plot route to", "navigate to");
 
         // jump / hyperspace
@@ -456,6 +455,11 @@ public class InputNormalizer {
         SYNONYM_MAP.put("full-spectrum scan", "FSS");
         SYNONYM_MAP.put("when wake up", "wake up");
         SYNONYM_MAP.put("nicolai has", "equalize");
+        SYNONYM_MAP.put("mitigation", "navigation");
+        SYNONYM_MAP.put("codec", "codex");
+        SYNONYM_MAP.put("kodak", "codex");
+        SYNONYM_MAP.put("they make me", "take me");
+        SYNONYM_MAP.put("products", "codex");
 
 
 

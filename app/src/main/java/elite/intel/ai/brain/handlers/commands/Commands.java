@@ -9,7 +9,7 @@ public enum Commands {
 
     CONNECTION_CHECK                                    (CONNECTION_CHECK_COMMAND, null, ConnectionCheck.class),
     DISABLE_ALL_ANNOUNCEMENTS                           ("disable_all_announcements", null, DisableAllAnnouncementHandler.class),
-    LIGHTS_ON_OFF                                       ("toggle_lights", null, LightsOnOffHandler.class),
+    LIGHTS_ON_OFF                                       ("toggle_lights_on_off", null, LightsOnOffHandler.class),
     ADD_MINING_TARGET                                   ("add_mining_target", null, AddMiningTargetHandler.class),
     REMOVE_MINING_TARGET                                ("remove_mining_target", null, RemoveMiningTargetHandler.class),
     CLEAR_MINING_TARGETS                                ("clear_mining_targets", null, ClearMiningTargetsHandler.class),
@@ -54,10 +54,10 @@ public enum Commands {
     SET_RADAR_CONTACT_ANNOUNCEMENT                      ("toggle_radar_announcements", null, RadarAnnouncementOnOffHandler.class),
 
     START_LISTENING                                     ("start_listening", null, StartListeningHandler.class),
-    STOP_LISTENING                                      ("stop_listening", null, StopListeningHandler.class),
+    IGNORE_ME                                      ("ignore_me", null, IgnoreMeHandler.class),
 
     NAVIGATE_TO_TARGET                                  ("navigate_to_coordinates", null,  NavigateToCoordinatesHandler.class),
-    NAVIGATION_ON_OFF                                   ("cancel_navigation", null,  NavigationOnOffHandler.class),
+    NAVIGATION_OFF                                      ("cancel_navigation", null,  NavigationOnOffHandler.class),
     DISCOVERY_ON_OFF                                    ("toggle_discovery_announcements", null, DiscoveryOnOffHandler.class),
     MINING_ON_OFF                                       ("toggle_mining_announcements", null, MiningOnOffHandler.class),
     ROUTE_ON_OFF                                        ("toggle_route_announcements", null, RouteAnnouncementsOnOffHandler.class),
@@ -67,7 +67,7 @@ public enum Commands {
 
     /// Commands that have a specific handler impl (which uses N bindings inside)
     INCREASE_ENGINES_POWER                              ("transfer_power_to_engines", null,  SetPowerToEnginesHandler.class),
-    NAVIGATE_TO_NEXT_BIO_SAMPLE                         ("navigate_to_bio_sample", null,  NavigateToNextCodexEntry.class),
+    NAVIGATE_TO_NEXT_BIO_SAMPLE                         ("navigate_to_bio_sample_codex_entry", null,  NavigateToNextCodexEntry.class),
     INCREASE_SHIELDS_POWER                              ("transfer_power_to_shields", null,  SetPowerToSystemsHandler.class),
     INCREASE_SYSTEMS_POWER                              ("transfer_power_to_ship_systems", null,  SetPowerToSystemsHandler.class),
     INCREASE_WEAPONS_POWER                              ("transfer_power_to_weapons", null,  SetPowerToWeaponsHandler.class),
@@ -82,8 +82,7 @@ public enum Commands {
     DISPLAY_RADAR_PANEL                                 ("display_radar_panel", null,  DisplayRadarPanelHandler.class),
     ///
     DISPLAY_CARRIER_MANAGEMENT                          ("display_carrier_management", null,  OpenFleetCarrierManagementHandler.class    ),
-    OPEN_CARGO_SCOOP                                    ("open_cargo_scoop", null,  OpenCargoScoopHandler.class),
-    CLOSE_CARGO_SCOOP                                   ("close_cargo_scoop", null,  CloseCargoScoopHandler.class),
+    TOGGLE_CARGO_SCOOP                                    ("toggle_cargo_scoop", null,  CargoScoopHandler.class),
     RETRACT_HARDPOINTS                                  ("retract_hardpoints", null,  RetractHardpointsHandler.class),
     DEPLOY_HARDPOINTS                                   ("deploy_hardpoints", null,  DeployHardpointsHandler.class),
     DEPLOY_LANDING_GEAR                                 ("deploy_landing_gear", null,  DeployLandingGearHandler.class),
@@ -158,13 +157,12 @@ public enum Commands {
     DISMISS_SHIP                                        ("dismiss_ship", BINDING_RECALL_DISMISS_SHIP.getGameBinding(), DismissRecallShip.class),
     RETURN_TO_SURFACE                                   ("return_to_surface", BINDING_RECALL_DISMISS_SHIP.getGameBinding(), DismissRecallShip.class),
 
-    FIGHTER_REQUEST_DEFENSIVE_BEHAVIOUR                         ("fighter_defend", BINDING_REQUEST_DEFENSIVE_BEHAVIOUR.getGameBinding(), SimpleCommandActionHandler.class),
-    FIGHTER_REQUEST_FOCUS_TARGET                                ("fighter_attack_target", BINDING_REQUEST_DEFENSIVE_BEHAVIOUR.getGameBinding(), SimpleCommandActionHandler.class),
-    FIGHTER_REQUEST_HOLD_FIRE                                   ("fighter_hold_fire", BINDING_REQUEST_HOLD_FIRE.getGameBinding(), SimpleCommandActionHandler.class),
-    FIGHTER_REQUEST_REQUEST_DOCK                                ("fighter_return_to_ship", BINDING_REQUEST_REQUEST_DOCK.getGameBinding(), SimpleCommandActionHandler.class),
-    STOP                                                ("stop", BINDING_SET_SPEED_ZERO.getGameBinding(), SimpleCommandActionHandler.class),
-    TAXI                                                ("taxi_to_landing", BINDING_SET_SPEED_ZERO.getGameBinding(), SimpleCommandActionHandler.class),
+    FIGHTER_REQUEST_DEFENSIVE_BEHAVIOUR                 ("fighter_defend", BINDING_REQUEST_DEFENSIVE_BEHAVIOUR.getGameBinding(), SimpleCommandActionHandler.class),
+    FIGHTER_REQUEST_FOCUS_TARGET                        ("fighter_attack_target", BINDING_REQUEST_DEFENSIVE_BEHAVIOUR.getGameBinding(), SimpleCommandActionHandler.class),
+    FIGHTER_REQUEST_HOLD_FIRE                           ("fighter_hold_fire", BINDING_REQUEST_HOLD_FIRE.getGameBinding(), SimpleCommandActionHandler.class),
+    FIGHTER_REQUEST_REQUEST_DOCK                        ("fighter_return_to_ship", BINDING_REQUEST_REQUEST_DOCK.getGameBinding(), SimpleCommandActionHandler.class),
     SET_SPEED_ZERO                                      ("set_speed_to_zero_0", BINDING_SET_SPEED_ZERO.getGameBinding(), SimpleCommandActionHandler.class),
+    TAXI                                                ("taxi_to_landing", BINDING_SET_SPEED_ZERO.getGameBinding(), SimpleCommandActionHandler.class),
     SET_SPEED25                                         ("set_speed_25", BINDING_SET_SPEED25.getGameBinding(), SimpleCommandActionHandler.class),
     SET_SPEED50                                         ("set_speed_50", BINDING_SET_SPEED50.getGameBinding(), SimpleCommandActionHandler.class),
     SET_SPEED75                                         ("set_speed_75", BINDING_SET_SPEED75.getGameBinding(), SimpleCommandActionHandler.class),

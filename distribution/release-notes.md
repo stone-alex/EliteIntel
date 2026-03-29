@@ -2,6 +2,17 @@
 
 ### bug fixes / features:
 
+- Cleaned up Parakeet input, filtering random STT junk.
+- Expended hotwords boost file
+- Adjusted discovery commands / queries
+- Improved community and mining hotspot search.
+- Simplified toggle commands to one word (no longer require qualifier on/off)
+- Added exit Detailed Surface Scan mode to "exit" command.
+
+## Elite Intel v-0.0334-beta
+
+### bug fixes / features:
+
 - Pirate missions will now calculate correctly based on bounty collected against a target faction. Old bounties no longer count towards the mission. (bug fix)
 - Pirate mission accept would fail if no hunting were available. fixed.
 - Added Windows key support for bindings.

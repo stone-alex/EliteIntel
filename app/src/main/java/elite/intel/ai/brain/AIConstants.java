@@ -6,16 +6,32 @@ public class AIConstants {
     public final static List<String> passThroughWords = List.of("listen", "ignore", "ignoring", "wake", "wake up");
 
     /**
-     * List of trash NVIDIA Parakeet likes to pre-pend and pollute the STT with.
-     *
+     * Trash tokens NVIDIA Parakeet prepends to real utterances, or emits alone on noise.
+     * Used by stripTrashPrefix(): tokens are stripped only from the START of the transcript.
+     * Multi-word entries are matched as a unit (e.g. "got it" strips both tokens together).
+     * Matching is punctuation-tolerant - trailing .,!?;: are ignored on both sides.
      */
-    public final static List<String> blockWords = List.of(
-            "mm-hmm.", "uh-huh.", "eh.", "yeah.", "did you", "wh", "now",
-            "okay.", "got it.", "uh.", "the", "did", "you", "blow", " a ",
-            "hello?", "did you", "it", "she can", "we", "?", "hmm.", "for",
-            "he can", "you can", "my", "i'll", "did you", "mm.", "don't i",
-            "fuck", "shit", "keep", "can", "click", "if", "do", "?", "didn't",
-            "like they", "like"
+    public final static List<String> trashSttWords = List.of(
+            // Filler sounds
+            "mm-hmm", "uh-huh", "hmm", "mm", "uh", "um", "ah", "oh", "huh", "eh",
+            // Acknowledgements
+            "yeah", "yep", "yup", "nope",
+            "okay", "ok", "got it", "alright", "alrighty",
+            "sure", "right",
+            // Greetings / closings Parakeet hallucinates
+            "hello", "hi", "hey", "bye", "goodbye",
+            // Discourse filler
+            "so", "well", "now", "anyway", "actually", "basically", "literally",
+            // Social phrases
+            "thanks", "thank you",
+            "i'm sorry", "sorry", "excuse me", "pardon",
+            "you know", "i see", "i mean", "of course", "no problem",
+            "i got it", "don't i",
+            // Hallucinated subject fragments
+            "she can", "he can", "you can", "like they", "did you",
+            "wh", "i'll", "like",
+            // Pure garbage tokens
+            "blow", "fuck", "shit"
     );
 
 

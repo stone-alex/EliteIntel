@@ -99,6 +99,10 @@ public class UINavigator {
             operator.operateKeyboard(Bindings.GameCommand.BINDING_EXPLORATION_FSSQUIT.getGameBinding(), 0);
         }
 
+        if (status.isSaaModeActive()) {
+            operator.operateKeyboard(Bindings.GameCommand.EXPLORATION_SAAEXIT_THIRD_PERSON.getGameBinding(), 0);
+        }
+
         /// traverse out of all nested windows - has no negative effect if we are out of the nested menus / views
         if (status.isGalaxyMapOpen() || status.isSystemMapOpen() || status.isSaaModeActive()) {
             for (int i = 0; i < 5; i++) {

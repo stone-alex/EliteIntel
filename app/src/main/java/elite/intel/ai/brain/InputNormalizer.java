@@ -455,6 +455,7 @@ public class InputNormalizer {
         SYNONYM_MAP.put("full spectrum scan", "FSS");
         SYNONYM_MAP.put("full-spectrum scan", "FSS");
         SYNONYM_MAP.put("when wake up", "wake up");
+        SYNONYM_MAP.put("nicolai has", "equalize");
 
 
 

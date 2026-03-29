@@ -14,7 +14,8 @@ public class AIConstants {
             "okay.", "got it.", "uh.", "the", "did", "you", "blow", " a ",
             "hello?", "did you", "it", "she can", "we", "?", "hmm.", "for",
             "he can", "you can", "my", "i'll", "did you", "mm.", "don't i",
-            "fuck", "shit", "keep", "can", "click", "if", "do", "?", "didn't"
+            "fuck", "shit", "keep", "can", "click", "if", "do", "?", "didn't",
+            "like they", "like"
     );
 
 

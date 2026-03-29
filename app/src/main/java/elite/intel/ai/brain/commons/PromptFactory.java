@@ -56,6 +56,8 @@ public class PromptFactory implements AiPromptFactory {
                 - "max weapons" / "boost weapons" / "power to weapons" → transfer_power_to_weapons
                 - "max shields" / "boost shields" / "power to shields" → transfer_power_to_shields
                 - "max engines" / "boost engines" / "power to engines" → transfer_power_to_engines
+                - Never confuse "max engines" with "target engines"
+                
                 - "listen" / "listen up" alone → start_listening
                 - "listen [+ any instruction]" → treat as a normal command/query
                 - "exit" or "close" → exit_close

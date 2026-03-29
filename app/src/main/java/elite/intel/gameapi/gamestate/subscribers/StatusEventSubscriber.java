@@ -41,7 +41,7 @@ public class StatusEventSubscriber {
             String legalState = event.getLegalState();
             if (legalState != null && !legalStatusBeforeChange.equalsIgnoreCase(legalState)) {
                 if (!"Speeding".equalsIgnoreCase(legalState)) {
-                    EventBusManager.publish(new MissionCriticalAnnouncementEvent("Legal status changed to: " + legalState + ". "));
+                    EventBusManager.publish(new MissionCriticalAnnouncementEvent("Legal status: " + legalState + ". "));
                 }
             }
         }

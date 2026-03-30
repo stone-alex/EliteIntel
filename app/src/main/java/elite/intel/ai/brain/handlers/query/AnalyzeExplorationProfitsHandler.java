@@ -31,7 +31,7 @@ public class AnalyzeExplorationProfitsHandler extends BaseQueryAnalyzer implemen
                 - potentialProfit: total credits available if all known genus in the current system are fully scanned
                 - acquiredProfit: total credits already earned from completed bio samples and codex entries this session
                 
-                State both values in credits. Answer only what the user asked.
+                State both values in credits. Combine both values into a single response.
                 """;
         return process(
                 new AiDataStruct(

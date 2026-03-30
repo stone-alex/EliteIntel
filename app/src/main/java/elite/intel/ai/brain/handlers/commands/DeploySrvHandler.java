@@ -4,7 +4,6 @@ import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
 import elite.intel.session.Status;
 import elite.intel.session.StatusFlags;
-import elite.intel.session.ui.CenterPanel;
 import elite.intel.session.ui.UINavigator;
 
 public class DeploySrvHandler extends CommandOperator implements CommandHandler {
@@ -19,7 +18,7 @@ public class DeploySrvHandler extends CommandOperator implements CommandHandler 
     @Override public void handle(String action, JsonObject params, String responseText) {
 
         if (status.isInMainShip()) {
-            navigator.openAndNavigate(StatusFlags.GuiFocus.ROLE_PANEL, CenterPanel.COMMANDER);
+            operateKeyboard(Bindings.GameCommand.BINDING_FOCUS_ROLE_PANEL.getGameBinding(), 0);
 
             /// ensure the cursor is at the top
             operateKeyboard(Bindings.GameCommand.BINDING_UI_LEFT.getGameBinding(), 0);

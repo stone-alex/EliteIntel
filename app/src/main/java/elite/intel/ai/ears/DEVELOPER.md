@@ -85,8 +85,20 @@ When the gate opens, `IsSpeakingEvent(true)` is published so the TTS (
 2. Use `AudioFormatDetector` to get the audio format - do not hard-code sample rates.
 3. Use `AudioCalibrator` to obtain `RmsTupple` thresholds for the VAD gate.
 4. Use `StreamNormalizer` for per-frame gain before feeding the model.
-5. Publish `UserInputEvent(sanitisedTranscript, confidence)` when a phrase is complete.
-6. Publish `IsSpeakingEvent(true/false)` to gate TTS.
+5. Implement VAD gate logic.
+6. Normalize audio frames before sending to STT.
+7. Publish `UserInputEvent(sanitisedTranscript, confidence)` when a phrase is complete.
+8. Wire in to ApiFactory for instantiation based on key pattern (if cloud service)
+9. Provide a consistent user interface option to switch to the STT service following the established pattern.
+
+**NOTE** You can use distribution/parakeet/hotwords.txt to boost the common game related words,
+but DO NOT change that file. Parakeet impl will not work if there are blank lines, more than
+one word per line, or any hidden characters. If you choose to use that or a different file for
+boosting, place it in to ROOT/distribution/ directory and implement a method in AppPaths to load it both in IDE
+and while running from the fat jar.
+
+All contents of the distribution directory are packaged in to installation / update.
+
 
 ---
 

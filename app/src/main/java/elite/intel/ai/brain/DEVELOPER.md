@@ -137,8 +137,10 @@ UserInputEvent (from ears)
 
 ## Key Design Rules
 
-- **Never modify trigger phrases** in handler action name enums (`Commands`,
+- **Never modify existing trigger phrases** in handler action name enums (`Commands`,
   `Queries`). They are matched against LLM output and were tuned over months; any change causes routing failures across all providers.
 - **No Java pre-filtering
-  ** of user input before it reaches the LLM. The LLM handles noisy STT output far better than regex.
+  ** of user input before it reaches the LLM other than prompt reducer logic. The LLM handles noisy STT output far better than regex.
+- If you are adding a new query/command handler, your entry in the AiActionsMap must not clash / conflict with the existing entries.
 - The LLM receives only the session state relevant to the current query - not the full conversation history - to minimise token usage and latency.
+- To run successfully on small local LLMs we have to pre-digest the data. Do not rely on LLM to do complex calculations or reasoning. It will fail too often.

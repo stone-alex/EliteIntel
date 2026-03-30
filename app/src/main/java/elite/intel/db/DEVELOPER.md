@@ -62,8 +62,11 @@ SQLite pragmas (applied at connection open):
 app/src/main/resources/db-migration/V{n}__description.sql
 ```
 
-Migrations are numbered sequentially (currently 36 files). They run automatically at startup before any DAO is used. *
-*Never modify an existing migration file** - add a new numbered file instead.
+Migrations are numbered sequentially (currently 36 files). They run automatically at startup before any DAO is used.
+
+**⚠ Never modify an existing migration file!** - add a new numbered file instead following the pattern.
+
+SQL statements are executed separated by `;` and must be valid SQLite statements.
 
 ---
 
@@ -95,6 +98,11 @@ Managers are singletons that add business logic on top of a DAO:
 - Coordinate multi-table operations transactionally
 - Publish EventBus events when state changes (e.g. cargo updated)
 - Expose a clean API to the rest of the application
+- DB Entities generally only live in Managers and DAOs. (with few exceptions)
+- Game-related data persisted in the database as JSON object to save us from schema changes when a new JSON format is presented by FDev.
+- Data objects that live outside the database layer implement ToJsonConvertable and ToYamlConvertable, usually by extending BaseDto object.
+- JSON data is used for communication between the game and the app.
+- YAML data is used for communication between the app and the AI to save on tokens.
 
 ```java
 public class CargoHoldManager {
@@ -143,34 +151,12 @@ brain/ QueryHandler.handle()
 
 ---
 
-## Manager Inventory
-
-| Manager                    | Domain                                         |
-|----------------------------|------------------------------------------------|
-| `PlayerManager`            | CMDR profile, ranks, credits                   |
-| `ShipManager`              | Active ship loadout, stored ships              |
-| `CargoHoldManager`         | Cargo hold contents                            |
-| `TradeRouteManager`        | Cached Spansh trade routes + filter logic      |
-| `LocationManager`          | Notable/bookmarked locations                   |
-| `MissionManager`           | Active and completed missions                  |
-| `FleetCarrierManager`      | Fleet carrier status and inventory             |
-| `FleetCarrierRouteManager` | Carrier jump schedule history                  |
-| `BrainTreeManager`         | Guardian site locations                        |
-| `BioSamplesManager`        | Alien biology sample collection                |
-| `CodexEntryManager`        | Codex exploration log                          |
-| `MaterialManager`          | Engineering raw/encoded/manufactured materials |
-| `BountyManager`            | Active bounties and vouchers                   |
-| `ReminderManager`          | In-game reminders and notifications            |
-| `KeyBindingManager`        | Persisted key binding overrides                |
-| `MonetizeRouteManager`     | Route profitability calculations               |
-
----
-
 ## API Key Storage
 
-API keys (Google TTS, OpenAI, etc.) are stored encrypted in SQLite via `Cypher`. Accessed through
-`ConfigManager.getInstance().getSystemKey(KeyName.*)`. **Never log or transmit API keys.
-** Never query the key columns in plain-text SQL outside of `ConfigManager`.
+API keys (Google TTS, Claude, OpenAI, etc.) are stored encrypted in SQLite via `Cypher`. Accessed through
+`ConfigManager.getInstance().getSystemKey(KeyName.*)`. **Never log API keys.
+** Transmit only in HTTP headers as required by the service provider.
+
 
 ---
 
@@ -179,9 +165,4 @@ API keys (Google TTS, OpenAI, etc.) are stored encrypted in SQLite via `Cypher`.
 Managers publish domain change events; they do not consume events directly. Event consumption happens in
 `gameapi/` subscribers which then call manager update methods.
 
-| Published by       | Event                 | Consumers                 |
-|--------------------|-----------------------|---------------------------|
-| `CargoHoldManager` | `CargoChangedEvent`   | UI, brain context builder |
-| `FuelStateManager` | `FuelLowEvent`        | mouth (TTS warning)       |
-| `MissionManager`   | `MissionExpiredEvent` | mouth, UI                 |
-| Various managers   | `SensorDataEvent`     | brain (LLM context)       |
+Event bus is synchronous.

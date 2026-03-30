@@ -13,7 +13,8 @@ Welcome to developing for Elite Intel, a Java-based QoL app for *Elite Dangerous
 `elite.intel.ai.ears` and `elite.intel.ai.mouth`) and AI (via `elite.intel.ai.brain`).
 
 ### How does the app work?
-The app monitors journal and auxiliary files and builds local cache of relevant data stored in json format.
+
+The app monitors journal and auxiliary files and builds local cache of relevant data stored in SQLite database format.
 In addition Elite Intel uses custom API to access EDSM and Spansh data sources for specific features.
 The user speaks in to a microphone, this audio is sent to STT for processing, and the resulting text is sent to AI for 
 analysis and response. The AI figures out intent from the input. The input can be a command, a query or chat. 
@@ -37,7 +38,7 @@ AI for analysis in a different prompt along with the original user input. AI wil
 | **Gradle** | **8.7** (via wrapper) | Do **not** install Gradle manually - always use `./gradlew`. |
 | **Git**    | Any recent            | -                                                            |
 
-> The build will fail on Java versions other than 21. Make sure `JAVA_HOME` points to a JDK 21 installation.
+> The build will fail on Java versions lower than 21. Make sure `JAVA_HOME` points to a JDK 21 installation or newer.
 
 ### Checkout
 
@@ -91,6 +92,16 @@ java -Djava.library.path=distribution/native/sherpa-onnx -jar distribution/elite
 - **Modularity**: New features should subscribe to journal events (`elite.intel.gameapi.journal.events`) or custom events via `@Subscribe`.
 - **TOS Compliance**: No AFK automation or game file modifications. All actions require user input.
 
+⚠ **Any pull requests that require users setting up external dependencies such as Python environments etc. will be
+rejected.**
+
+⚠ **Any pull requests that contain JNI to an unsigned library that is not avaiable both on Linux and Windows will be
+rejected.**
+
+⚠ **Any pull requests that contain JNI to a library that reads / modifies in-game memory will be rejected.**
+
+NO EXCEPTIONS
+
 The app's architecture is decoupled and modular. This means modules do not have a direct dependency or
 knowledge of each other. If you want to add a new API integration to an alternative LLM, STT or TTS, all you
 have to do is implement the contract in the interfaces and place your code in correct packages following the convention.
@@ -101,7 +112,8 @@ If you want to implement a new command or query follow the established patterns.
 1. **Fork**: Create a personal fork of the repo.
 2. **Branch**: Use descriptive names (e.g., `feature/new-voice`).
 3. **Code**: Implement in relevant packages (e.g., `elite.intel.ai.brain` for AI, `elite.intel.ui.controller` for UI).
-4. **PR**: Submit a pull request to `master`. Include tests and documentation.
+4. **PR**: Submit a pull request to
+   `master`. Include documentation. If you are implementing a cloud service - provide a temporary key for testing. (one week duration)
 5. **Review**: Await maintainer approval (required due to branch protection).
 
 ## Event System
@@ -134,10 +146,10 @@ If you want to implement a new command or query follow the established patterns.
   - Run in a separate thread, stream mic input to STT, and publish `UserInputEvent` when a transcription is ready.
   - Use `AudioCalibrator` to automatically set RMS thresholds based on real-time audio analysis.
     - Use `AudioFormatDetector` to automatically detect the audio device, bitrate, and sample rate.
-- **Current backend**: `elite.intel.ai.ears.whisper.WhisperSTTImpl` - offline, runs locally via
-  `whisper-jni` (JNI bindings to whisper.cpp). Requires a 16 kHz mono audio stream; resampling is handled internally by
+- **Current backend**: `elite.intel.ai.ears.parakeet.ParakeetSTTImpl` - offline, runs locally via
+  `whisper-jni` (JNI bindings). Requires a 16 kHz mono audio stream; resampling is handled internally by
   `Resampler`.
-- **Native dependency**: Whisper native libraries are loaded at runtime from the path specified by
+- **Native dependency**: Parakeet native libraries are loaded at runtime from the path specified by
   `-Djava.library.path` (see IDE Configuration above).
 
 ### TTS (Text-to-Speech)
@@ -165,6 +177,10 @@ If you want to implement a new command or query follow the established patterns.
     - `AIChatInterface`: `JsonObject sendToAi(JsonArray messages)` for chats.
 - **Example**: See `elite.intel.ai.brain.*` for various implementations.
 
+The UserPrompt is routed through a reducer which attempts to reduce the number of possible actions based text found in user input.
+If not enough information is found to reduce the prompt, the prompt is not reduced and LLM will have to infer the action from a larger prompt.
+The prompt size is capped at 8K tokens. Caching mechanisms are used where supported.
+
 ## New Journal Events
 
 - **Registration**: Use `elite.intel.gameapi.journal.EventRegistry` to register new events.
@@ -173,9 +189,9 @@ If you want to implement a new command or query follow the established patterns.
 
 ## Security
 
-- Sanitize voice inputs to prevent injection.
-- Store API keys securely (UI "System" tab, locked fields).
-- No internet-required features beyond APIs.
+- Sanitize voice inputs to prevent unintentional prompts.
+- Store API keys using the existing mechanism.
+- No internet-required features beyond Data and TTS and LLM APIs.
 
 ## Licensing
 

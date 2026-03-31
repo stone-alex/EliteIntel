@@ -169,7 +169,10 @@ public class ParakeetSTTImpl implements EarsInterface {
 
         OfflineRecognizerConfig.Builder configBuilder = OfflineRecognizerConfig.builder()
                 .setFeatureConfig(featureConfig)
-                .setOfflineModelConfig(modelConfig);
+                .setOfflineModelConfig(modelConfig)
+                .setDecodingMethod("modified_beam_search")
+                .setMaxActivePaths(8)
+                .setHotwordsScore(2.0f);
 
         Path hotwordsFile = modelDir.resolve("hotwords.txt");
         if (Files.exists(hotwordsFile)) {

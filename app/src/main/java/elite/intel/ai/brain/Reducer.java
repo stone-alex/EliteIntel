@@ -31,7 +31,7 @@ public class Reducer {
             "thanks", "thank you",
             "i'm sorry", "sorry", "excuse me", "pardon",
             "you know", "i see", "i mean", "of course", "no problem",
-            "i got it", "don't i",
+            "i got it", "don't i", "a ", "or ",
             // Hallucinated subject fragments
             "she can", "he can", "you can", "like they", "did you",
             "wh", "i'll", "like", "got a",

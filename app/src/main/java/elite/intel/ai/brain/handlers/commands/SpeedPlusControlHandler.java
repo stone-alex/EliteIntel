@@ -2,6 +2,7 @@ package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
+import elite.intel.util.AudioPlayer;
 
 import static elite.intel.ai.brain.handlers.commands.Commands.INCREASE_SPEED_BY;
 
@@ -17,6 +18,7 @@ public class SpeedPlusControlHandler extends CommandOperator implements CommandH
         String increase = INCREASE_SPEED_BY.getBinding();
         for (int i = 0; i < num; i++) {
             operateKeyboard(increase, 0);
+            AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_2);
         }
 
 

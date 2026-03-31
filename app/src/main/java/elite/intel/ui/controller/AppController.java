@@ -106,11 +106,11 @@ public class AppController implements Runnable {
     }*/
 
     private String ignoreModeOffMessage() {
-        return "I am listening";
+        return "I am listening.";
     }
 
     private String ignoreModeOnMessage() {
-        return "I am ignoring you";
+        return "I am sleeping.";
     }
 
     @Subscribe

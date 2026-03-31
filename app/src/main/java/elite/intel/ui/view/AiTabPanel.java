@@ -55,7 +55,7 @@ public class AiTabPanel extends JPanel {
                 e -> EventBusManager.publish(new ToggleDetailedLogEvent(showDetailedLog.isSelected())));
         showDetailedLog.setForeground(ACCENT);
 
-        toggleWakeWordOnOff = new JCheckBox("Ignore Me! / Listen Up!", false);
+        toggleWakeWordOnOff = new JCheckBox("Sleep / Ignore | Listen / Wake Up", false);
         toggleWakeWordOnOff.addActionListener(
                 e -> EventBusManager.publish(new ToggleWakeWordEvent(toggleWakeWordOnOff.isSelected())));
         toggleWakeWordOnOff.setEnabled(false);
@@ -87,7 +87,7 @@ public class AiTabPanel extends JPanel {
         buttons.add(Box.createRigidArea(new Dimension(8, 0)));
         buttons.add(toggleObsOverlay);
         buttons.add(Box.createRigidArea(new Dimension(8, 0)));
-        buttons.add(showDetailedLog);
+        //buttons.add(showDetailedLog);
 
         add(new JLabel(" "));
         add(buttons, gbc);

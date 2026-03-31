@@ -3,12 +3,12 @@ package elite.intel.ai.mouth;
 import java.util.Random;
 
 /**
- * Simulates a 2-way radio transmission effect on PCM-16 LE audio at 24000 Hz.
+ * Simulates a shortwave radio transmission effect on PCM-16 LE audio at 24000 Hz.
  * <p>
  * Processing chain:
  * <ol>
  *   <li>Butterworth highpass at 300 Hz - cuts bass rumble and voice fundamental</li>
- *   <li>Butterworth lowpass at 3000 Hz - cuts highs, leaving the narrow telephone band</li>
+ *   <li>Butterworth lowpass at 5500 Hz - passes sibilance and upper harmonics for shortwave character</li>
  *   <li>Light static noise - ~1% random amplitude</li>
  *   <li>Gain compensation - recovers level lost to the bandpass attenuation</li>
  * </ol>
@@ -32,13 +32,13 @@ public class RadioFilter {
     private static final double HP_A1 = -1.88909;
     private static final double HP_A2 = 0.89489;
 
-    // --- Butterworth lowpass biquad, fc=3000 Hz, fs=24000 Hz, Q=0.707 --------
-    // ω0 = 2π·3000/24000 = 0.7854  sin=0.7071  cos=0.7071  α=0.50004
-    private static final double LP_B0 = 0.09763;
-    private static final double LP_B1 = 0.19526;
-    private static final double LP_B2 = 0.09763;
-    private static final double LP_A1 = -0.94278;
-    private static final double LP_A2 = 0.33330;
+    // --- Butterworth lowpass biquad, fc=5500 Hz, fs=24000 Hz, Q=0.707 --------
+    // ω0 = 2π·5500/24000 = 1.4400  sin=0.99146  cos=0.13042  α=0.70117
+    private static final double LP_B0 = 0.25558;
+    private static final double LP_B1 = 0.51117;
+    private static final double LP_B2 = 0.25558;
+    private static final double LP_A1 = -0.15333;
+    private static final double LP_A2 = 0.17566;
 
     private static final Random RNG = new Random();
 

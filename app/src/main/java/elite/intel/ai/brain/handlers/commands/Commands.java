@@ -100,7 +100,7 @@ public enum Commands {
     OPEN_FSS_AND_SCAN                                   ("open_fss_scan_system", null,  DisplayFssAndScanHandler.class),
 
     GET_HEADING_TO_LZ                                   ("navigate_to_landing_zone", null,  NavigateToLandingZone.class),
-    DEPLOY_SRV                                          ("deploy_srv_vehicle", null,  DeploySrvHandler.class),
+    DEPLOY_SRV                                          ("deploy_vehicle_srv", null,  DeploySrvHandler.class),
     DEPLOY_FIGHTER                                      ("deploy_fighter", null,  DeployFighterHandler.class),
     RECOVER_SRV                                         ("recover_srv_vehicle_get_on_board_ship", null,  RecoverSrvHandler.class),
     CLEAR_CODEX_ENTRIES                                 ("clear_codex_entries", null,  ClearCodexEntriesHandler.class),

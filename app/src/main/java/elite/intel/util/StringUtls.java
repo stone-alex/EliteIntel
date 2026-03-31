@@ -138,7 +138,7 @@ public class StringUtls {
                 .replace(":", " - ")
                 .replaceAll("\\.{2,}", " ")                     // "..." → space (espeak-ng stof crash on multi-dot sequences)
                 .replaceAll("\\s{2,}", " ")                     // collapse repeated spaces
-                .replace(", pilot", ".")
+                .replace(", pilot", StringUtls.player(PlayerSession.getInstance()))
                 .trim();
     }
 

@@ -29,7 +29,7 @@ public class AiActionsMap {
         Map<String, String> map = new LinkedHashMap<>();
 
         // always available
-        map.put("start listening, listen, listen up, pay attention, I'm talking to you", START_LISTENING.getAction());
+        map.put("start listening, listen, wake up, listen up, pay attention, I'm talking to you", START_LISTENING.getAction());
         map.put("ignore me, do not monitor", IGNORE_ME.getAction());
         map.put("interrupt", INTERRUPT_TTS.getAction());
         map.put("switch to combat mode", ACTIVATE_COMBAT_MODE.getAction());
@@ -69,7 +69,7 @@ public class AiActionsMap {
         map.put("headlights, lights, turn off lights, turn on lights, ship lights, lights on, lights off ", LIGHTS_ON_OFF.getAction());
         map.put("drive assist, driving assist, SRV assist {state:true/false}", DRIVE_ASSIST.getAction());
         map.put("dismiss ship, send ship away, park ship, ship to orbit", DISMISS_SHIP.getAction());
-        map.put("return to surface, recall ship, pick me up", RETURN_TO_SURFACE.getAction());
+        map.put("return to surface, pick me up", RETURN_TO_SURFACE.getAction());
 
         // market / traders / brokers
         map.put("find raw material trader, raw trader, where to trade raw materials {key:X}", FIND_RAW_MATERIAL_TRADER.getAction());
@@ -155,8 +155,13 @@ public class AiActionsMap {
         map.put("deploy hardpoints, weapons hot, combat ready, weapons free, weapons out, arm weapons, weapons ready", DEPLOY_HARDPOINTS.getAction());
 
         // vehicle deployment
-        map.put("deploy SRV, deploy vehicle, launch SRV, send out SRV, drop SRV", DEPLOY_SRV.getAction());
-        map.put("recover SRV, board ship, return SRV, retrieve SRV, SRV dock", RECOVER_SRV.getAction());
+        if (status.isInMainShip()) {
+            map.put("deploy SRV, deploy vehicle, launch SRV, send out SRV, drop SRV", DEPLOY_SRV.getAction());
+        }
+        if (status.isInSrv()) {
+            map.put("recover SRV, board ship, return SRV, retrieve SRV, SRV dock", RECOVER_SRV.getAction());
+        }
+
         map.put("deploy heat sink, launch heat sink, dump heat", DEPLOY_HEAT_SINK.getAction());
         map.put("equalize power, balance power, reset power, distribute power equally", RESET_POWER.getAction());
         map.put("retract hardpoints, weapons cold, weapons away, stand down, holster weapons, weapons down, safe weapons", RETRACT_HARDPOINTS.getAction());
@@ -225,8 +230,8 @@ public class AiActionsMap {
         map.put("outfitting, ship upgrades, modules available, what modules at station, available modules, available equipment, buy modules, ship parts, station equipment", LOCAL_OUTFITTING.getAction());
         map.put("shipyard, ships for sale, what ships at station, buy a ship, available ships, ships to buy, new ship", LOCAL_SHIPYARD.getAction());
         map.put("cargo hold, what are we carrying, cargo contents, commodities on board, cargo manifest, what are we hauling, hold contents, commodity inventory, trading commodities", CARGO_HOLD_CONTENTS.getAction());
-        map.put("player profile, our ranks, combat rank, trade rank, exploration rank, commander stats, pilot rank, our ranking, commander profile, what rank are we", PLAYER_PROFILE_ANALYSIS.getAction());
-        map.put("ship loadout, ship modules, combat readiness report, ship equipment, ship specs, what am I flying, what are we equipped with, do you have, is it equipped, shield generator, hull reinforcement, sensors, thrusters, frameshift, fuel scoop, installed", SHIP_LOADOUT.getAction());
+        map.put("player profile, my ranks, progress, combat rank, trade rank, exploration rank, commander stats, pilot rank, our ranking, commander profile, what rank are we", PLAYER_PROFILE_ANALYSIS.getAction());
+        map.put("ship loadout, damage report, ship modules, combat readiness report, ship equipment, ship specs, what am I flying, what are we equipped with, do you have, is it equipped, shield generator, hull reinforcement, sensors, thrusters, frameshift, fuel scoop, installed", SHIP_LOADOUT.getAction());
         map.put("station details, station services, what services here, what does station offer, station info, station facilities, what's at this station, services available", STATION_DETAILS.getAction());
         map.put("app capabilities, what can you do, your features, list capabilities, what commands do you know, your abilities, what can you help with", APP_CAPABILITIES.getAction());
         map.put("AI designation, what is your name, who are you, what are you called, ai name, system designation", AI_DESIGNATION.getAction());

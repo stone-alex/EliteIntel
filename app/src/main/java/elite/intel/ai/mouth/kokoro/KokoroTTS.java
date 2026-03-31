@@ -13,6 +13,7 @@ import elite.intel.ai.mouth.subscribers.events.TTSInterruptEvent;
 import elite.intel.ai.mouth.subscribers.events.VocalisationRequestEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.PlayerSession;
+import elite.intel.session.Status;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AiResponseLogEvent;
 import elite.intel.ui.event.AppLogEvent;
@@ -204,7 +205,9 @@ public class KokoroTTS implements MouthInterface {
         String[] sentences = sanitizedText.split("(?<=[.,!?])\\s+(?=\\S)");
         for (String sentence : sentences) {
             if (!sentence.isBlank()) {
-                synthesisQueue.offer(new SynthesisTask(sentence, event.getVoiceName(), event.isRadio()));
+                boolean isRadio = event.isRadio();
+                if (!Status.getInstance().isInMainShip()) isRadio = true;
+                synthesisQueue.offer(new SynthesisTask(sentence, event.getVoiceName(), isRadio));
             }
         }
     }
@@ -239,7 +242,6 @@ public class KokoroTTS implements MouthInterface {
                 AudioDeClicker.sanitize(pcm, 5);
                 AudioDeClicker.applyVolume(pcm, systemSession.getVoiceVolume() / 100f);
                 if (task.isRadio()) {
-                    AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_2);
                     RadioFilter.apply(pcm);
                 }
                 playbackQueue.put(pcm);

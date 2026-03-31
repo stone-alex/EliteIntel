@@ -2,6 +2,7 @@ package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.hands.GameController;
+import elite.intel.util.AudioPlayer;
 
 public class SpeedMinusControlHandler extends CommandOperator implements CommandHandler {
 
@@ -15,6 +16,7 @@ public class SpeedMinusControlHandler extends CommandOperator implements Command
         String decrease = Commands.DECREASE_SPEED_BY.getBinding();
         for (int i = 0; i < num; i++) {
             operateKeyboard(decrease, 0);
+            AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_2);
         }
     }
 }

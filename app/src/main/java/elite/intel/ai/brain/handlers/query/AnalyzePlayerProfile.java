@@ -55,6 +55,8 @@ public class AnalyzePlayerProfile extends BaseQueryAnalyzer implements QueryHand
                 - Answer only what the user asked. If no specific question, provide a brief progression summary.
                 - Convert timePledged from seconds to hours and minutes.
                 - Distances are in light years.
+                - these stats are not about you, they are about player. Start you reply with "Your progress..."
+                Example: Your progress in X rank is Y percent etc.
                 """;
         return process(
                 new AiDataStruct(

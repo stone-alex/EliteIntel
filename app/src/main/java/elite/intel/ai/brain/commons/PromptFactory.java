@@ -62,6 +62,7 @@ public class PromptFactory implements AiPromptFactory {
                 - "max engines" / "boost engines" / "power to engines" → transfer_power_to_engines
                 - Never confuse "max engines" with "target engines"
                 - Never confuse "deploy vehicle" with "deploy landing gear"
+                - For "progress, rank, player stats" → 'query_player_profile_rank_progress' do not confuse with "profits for exploration, missions or bounties"
                 
                 - "listen" / "listen up" alone → start_listening
                 - "listen [+ any instruction]" → treat as a normal command/query

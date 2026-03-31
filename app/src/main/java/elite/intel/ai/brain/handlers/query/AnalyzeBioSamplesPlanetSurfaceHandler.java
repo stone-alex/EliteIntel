@@ -43,7 +43,7 @@ public class AnalyzeBioSamplesPlanetSurfaceHandler extends BaseQueryAnalyzer imp
                 - completedCount: number of genus fully completed (all 3 samples taken)
                 
                 Rules:
-                - If asked what is left to scan: list names from remainingGenus. If empty, say all known organics are completed.
+                - If asked what is left to scan: list names from all remainingGenus. If empty, say all known organics are completed.
                 - If asked what we are currently scanning: list names from currentlyScanning.
                 - Always return genus names, not just how many
                 """;

@@ -166,6 +166,7 @@ public class InputNormalizer {
         SYNONYM_MAP.put("retract", "retract");
         SYNONYM_MAP.put("pull in", "retract");
         SYNONYM_MAP.put("hide", "retract");
+        SYNONYM_MAP.put("recall ship", "return to surface");
 
         // calculate / compute / plot
         SYNONYM_MAP.put("compute", "calculate");
@@ -234,7 +235,7 @@ public class InputNormalizer {
         SYNONYM_MAP.put("jumps to destination", "plotted route");
         SYNONYM_MAP.put("jumps remaining", "plotted route");
         SYNONYM_MAP.put("jumps left", "plotted route");
-        SYNONYM_MAP.put("route progress", "route analysis");
+        SYNONYM_MAP.put("progress", "player profile, my ranks, progress");
         SYNONYM_MAP.put("is next star scoopable", "fuel at next stop");
         SYNONYM_MAP.put("can we scoop next star", "fuel at next stop");
         SYNONYM_MAP.put("scoopable at next stop", "fuel at next stop");
@@ -473,6 +474,19 @@ public class InputNormalizer {
         SYNONYM_MAP.put("i think it's it", "exit");
         SYNONYM_MAP.put("are two", "power to");
         SYNONYM_MAP.put("motor car of", "recover");
+        SYNONYM_MAP.put("allocation", "location");
+        SYNONYM_MAP.put("distance", "distance");
+        SYNONYM_MAP.put("fields", "shields");
+        SYNONYM_MAP.put("power two", "power to");
+        SYNONYM_MAP.put("what are the systems", "power to systems");
+        SYNONYM_MAP.put("continuation", "connection");
+        SYNONYM_MAP.put("and is it", "exit");
+        SYNONYM_MAP.put("think that it", "exit");
+        SYNONYM_MAP.put("I am going to cover", "recover");
+        SYNONYM_MAP.put("we recall the", "recover");
+        SYNONYM_MAP.put("carcass too", "cargo scoop");
+        SYNONYM_MAP.put("pergascope", "cargo scoop");
+
     }
 
     private InputNormalizer() {

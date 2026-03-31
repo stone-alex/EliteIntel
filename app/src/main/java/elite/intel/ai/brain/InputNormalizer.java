@@ -82,8 +82,31 @@ public class InputNormalizer {
         SYNONYM_MAP.put("punch it", "jump to hyperspace");
         SYNONYM_MAP.put("engage fsd", "jump to hyperspace");
         SYNONYM_MAP.put("engage hyperspace", "jump to hyperspace");
-        // FSD query phrases must come BEFORE single-word "jump" rule or they get swallowed
+
+        // ── All multi-word "jump/jumps" phrases MUST appear before single-word "jump" ──
+        // Single-word "jump" matches any substring, so longer phrases must fire first.
+
+        // FSD query
         SYNONYM_MAP.put("info on next jump", "FSD target");
+
+        // Carrier route jump counts
+        SYNONYM_MAP.put("how many jumps on the carrier route", "carrier route");
+        SYNONYM_MAP.put("how many jump on the carrier route", "carrier route");
+        SYNONYM_MAP.put("how many jumps on carrier", "carrier route");
+        SYNONYM_MAP.put("how many jump on carrier", "carrier route");
+        SYNONYM_MAP.put("jumps left on carrier", "carrier route");
+        SYNONYM_MAP.put("jumps remaining on carrier", "carrier route");
+
+        // Ship route / plotted route jump counts
+        SYNONYM_MAP.put("how many jumps to destination", "plotted route");
+        SYNONYM_MAP.put("how many jump to destination", "plotted route");
+        SYNONYM_MAP.put("how many jumps remaining", "plotted route");
+        SYNONYM_MAP.put("how many jumps left", "plotted route");
+        SYNONYM_MAP.put("how many jumps", "plotted route");
+        SYNONYM_MAP.put("jumps to destination", "plotted route");
+        SYNONYM_MAP.put("jumps remaining", "plotted route");
+        SYNONYM_MAP.put("jumps left", "plotted route");
+
         SYNONYM_MAP.put("jump", "jump to hyperspace");
         SYNONYM_MAP.put("hyperspace jump", "jump to hyperspace");
         SYNONYM_MAP.put("make the jump", "jump to hyperspace");
@@ -104,14 +127,6 @@ public class InputNormalizer {
         SYNONYM_MAP.put("drop here", "drop from supercruise");
         SYNONYM_MAP.put("disengage", "drop");
         SYNONYM_MAP.put("disengage supercruise", "drop from supercruise");
-        // carrier route and specific plotted route phrases must come BEFORE the generic "how many jumps" rule
-        SYNONYM_MAP.put("how many jumps on the carrier route", "carrier route");
-        SYNONYM_MAP.put("how many jump on the carrier route", "carrier route");
-        SYNONYM_MAP.put("how many jumps on carrier", "carrier route");
-        SYNONYM_MAP.put("how many jump on carrier", "carrier route");
-        SYNONYM_MAP.put("how many jumps to destination", "plotted route");
-        SYNONYM_MAP.put("how many jump to destination", "plotted route");
-        SYNONYM_MAP.put("how many jumps", "plotted route");
         SYNONYM_MAP.put("carrier balance", "carrier stats");
         SYNONYM_MAP.put("lower landing gear", "gear down");
         SYNONYM_MAP.put("how far from civilization", "distance to bubble");
@@ -306,12 +321,14 @@ public class InputNormalizer {
         SYNONYM_MAP.put("what bodies are here", "bodies in system");
 
         // ── Bio signals (system-wide) ──────────────────────────────────────────
-        // "which planets" phrases must be here so they normalise before single-word rules fire
-        SYNONYM_MAP.put("which planets still need bio", "bio signals in system");
-        SYNONYM_MAP.put("which planets still need organic", "bio signals in system");
-        SYNONYM_MAP.put("which planets need bio scans", "bio signals in system");
-        SYNONYM_MAP.put("which planets need organic scans", "bio signals in system");
-        SYNONYM_MAP.put("which planets have unscanned bio", "bio signals in system");
+        // Map directly to "which planets have bio signals" (in AiActionsMap) to avoid
+        // cascading through the bio-signals-in-system → bio-scan-progress chain.
+        SYNONYM_MAP.put("which planets still need bio or organic scans", "which planets have bio signals");
+        SYNONYM_MAP.put("which planets still need bio", "which planets have bio signals");
+        SYNONYM_MAP.put("which planets still need organic", "which planets have bio signals");
+        SYNONYM_MAP.put("which planets need bio scans", "which planets have bio signals");
+        SYNONYM_MAP.put("which planets need organic scans", "which planets have bio signals");
+        SYNONYM_MAP.put("which planets have unscanned bio", "which planets have bio signals");
         SYNONYM_MAP.put("bio signals in system", "bio scan progress");
         SYNONYM_MAP.put("biological signals in system", "bio scan progress");
         SYNONYM_MAP.put("biosignals in system", "bio scan progress");
@@ -319,6 +336,8 @@ public class InputNormalizer {
         SYNONYM_MAP.put("how many bio signals", "bio scan progress");
 
         // ── Exobiology samples (planet surface) ───────────────────────────────
+        SYNONYM_MAP.put("bio scans have we completed", "exobiology samples");
+        SYNONYM_MAP.put("bio scans completed", "exobiology samples");
         SYNONYM_MAP.put("what organisms remain", "exobiology samples");
         SYNONYM_MAP.put("remaining organisms", "exobiology samples");
         SYNONYM_MAP.put("what's left to scan", "exobiology samples");

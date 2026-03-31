@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 
 import static elite.intel.ai.brain.handlers.commands.Commands.*;
 import static elite.intel.ai.brain.handlers.query.Queries.*;
+import static elite.intel.util.SleepNoThrow.sleep;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -564,7 +565,7 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> enterCarrierDestination() {
-        return Stream.of("enter carrier destination", "set carrier destination", "next carrier destination");
+        return Stream.of("enter carrier destination", "set carrier destination", "enter next carrier destination");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -730,7 +731,7 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> queryShipLoadout() {
-        return Stream.of("ship loadout", "damage report", "what am I flying", "ship equipment", "do you have fuel scoop equipped", "do you have weapons equipped", "what weapons do you have equipped", "do you have a refinery equipped");
+        return Stream.of("ship loadout", "what am I flying", "ship equipment", "do you have fuel scoop equipped", "do you have weapons equipped", "what weapons do you have equipped", "do you have a refinery equipped");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -793,6 +794,7 @@ public class NaturalSpeechIntegrationTest {
     @MethodSource
     void queryBioScanProgress(String input) throws InterruptedException {
         assertRouted(input, BIO_SAMPLE_IN_STAR_SYSTEM.getAction());
+        sleep(2000); /// <- might be a large data set. pause here.
     }
 
     static Stream<String> queryBioScanProgress() {

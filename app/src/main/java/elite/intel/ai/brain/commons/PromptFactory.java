@@ -62,6 +62,11 @@ public class PromptFactory implements AiPromptFactory {
                 - "max engines" / "boost engines" / "power to engines" → transfer_power_to_engines
                 - Never confuse "max engines" with "target engines"
                 - Never confuse "deploy vehicle" with "deploy landing gear"
+                - Never confuse "organics in system" with "organics at this location/planet/moon"
+                - Never confuse "carrier balance" (finances) with "balance power" (power distribution)
+                - Never confuse "bio signals" (potential organic colonies) with "bio scans" (scanned and verified genus)
+                - Never confuse "in system" (within star system) with "this location" (current planet / moon)
+                - distance to bubble is distance from our stellar coordinates to the center of the coordinate system (0,0,0)
                 - For "progress, rank, player stats" → 'query_player_profile_rank_progress' do not confuse with "profits for exploration, missions or bounties"
                 
                 - "listen" / "listen up" alone → start_listening
@@ -115,7 +120,7 @@ public class PromptFactory implements AiPromptFactory {
                 • {state:true/false} param: on/enable/activate/open/deploy → true, off/disable/deactivate/close/retract → false. ALWAYS include state when the template shows it.
                 • Examples:
                   - "target drive"             → {"action": "target_subsystem", "params": {"key": "drive"}}
-                  - "find mining site for LTD" → {"action": "find_mining_site_for_material", "params": {"key": "low temperature diamonds"}}
+                  - "find mining location for low temperature diamonds" → {"action": "find_mining_site", "params": {"key": "low temperature diamonds"}}
                   - "night vision on"          → {"action": "toggle_night_vision_on_off", "params": {"state": true}}
                   - "night vision off"         → {"action": "toggle_night_vision_on_off", "params": {"state": false}}
                   - "lights on"                → {"action": "toggle_lights_on_off", "params": {"state": true}}

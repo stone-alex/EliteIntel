@@ -5,12 +5,13 @@ public enum Queries {
 
     /// ########################################################################################################################################
     ///HELP                                ("help",                                         HelpHandler.class),
-    BIO_SAMPLE_IN_STAR_SYSTEM           ("query_bio_scan_progress",                     AnalyzeBioSignalsStarSystemHandler.class),
+    BIO_SAMPLE_IN_STAR_SYSTEM           ("query_bio_signals_in_star_system",            AnalyzeBioSignalsStarSystemHandler.class),
     EXOBIOLOGY_SAMPLES                  ("query_exobiology_samples",                    AnalyzeBioSamplesPlanetSurfaceHandler.class),
     QUERY_STELLAR_OBJETS                ("query_stellar_objects",                       AnalyzeStellarObjectsHandler.class),
     QUERY_STELLAR_SIGNALS               ("query_signals",                               AnalyzeStellarSignalsHandler.class),
     QUERY_GEO_SIGNALS                   ("query_geo_signals",                           AnalyzeGeologyInStarSystemHandler.class),
     QUERY_STATIONS                      ("query_stations",                              AnalyzeStationsHandler.class),
+    ANALYZE_MARKETS                     ("query_markets",                               AnalyzeMarkets.class),
     QUERY_CARRIERS                      ("query_carriers",                              AnalyzeCarriersHandler.class),
     KEY_BINDINGS_ANALYSIS               ("query_key_bindings",                          AnalyzeMisingKeyBindingHandler.class),
     SYSTEM_SECURITY_ANALYSIS            ("query_system_security",                       AnalyzeSystemSecurityHandler.class),
@@ -26,12 +27,12 @@ public enum Queries {
     TRADE_ROUTE_ANALYSIS                ("query_trade_route",                           AnalyzeTradeScheduleHandler.class),
     LOCAL_OUTFITTING                    ("query_local_outfitting",                      AnalyzeLocalOutfittingHandler.class),
     LOCAL_SHIPYARD                      ("query_local_shipyard",                        AnalyzeShipyardHandler.class),
-    CARGO_HOLD_CONTENTS                 ("query_cargo_hold_contents",                            AnalyzeCargoHoldHandler.class),
-    PLOTTED_ROUTE_ANALYSIS              ("query_plotted_route",                         AnalyzeRouterHandler.class),
+    CARGO_HOLD_CONTENTS                 ("query_cargo_hold_contents",                   AnalyzeCargoHoldHandler.class),
+    PLOTTED_ROUTE_ANALYSIS              ("query_ship_route_remaining_jumps",            AnalyzeRouterHandler.class),
     CARRIER_ROUTE_ANALYSIS              ("query_carrier_route",                         AnalyzeCarrierRouteHandler.class),
     CARRIER_TRITIUM_SUPPLY              ("query_carrier_fuel",                          AnalyzeFleetCarrierFuelSupplyHandler.class),
-    CARRIER_DESTINATION                 ("query_carrier_destination",                   AnalyzeFleetCarrierFinalDestinationHandler.class),
-    CARRIER_STATUS                      ("query_carrier_status",                        AnalyzeCarrierDataHandler.class),
+    CARRIER_ROUTE                       ("query_carrier_route",                         AnalyzeFleetCarrierFinalDestinationHandler.class),
+    CARRIER_STATUS                      ("query_carrier_status_fuel_credit_balance",    AnalyzeCarrierDataHandler.class),
     CARRIER_ETA                         ("query_carrier_eta",                           CarrierETAHandler.class),
     DISTANCE_TO_CARRIER                 ("query_distance_to_carrier",                   AnalyzeDistanceFromFleetCarrierHandler.class),
     PIRATE_MISSION_PROGRESS             ("query_pirate_mission",                        AnalyzePirateMissionHandler.class),
@@ -47,7 +48,6 @@ public enum Queries {
     PLANET_BIOME_ANALYSIS               ("query_biome_analysis",                        BiomeAnalyzerHandler.class),
     REMINDER                            ("query_reminder",                              RemindTargetDestinationHandler.class),
     ANALYZE_MISSIONS                    ("query_missions_and_rewards",                              AnalyzeMissionHandler.class),
-    ANALYZE_LOCAL_STATIONS              ("query_local_stations",                        AnalyzeLocalStations.class),
     GENERAL_CONVERSATION                ("query_general_conversation",                  GeneralConversationHandler.class)
     ;
     /// ########################################################################################################################################

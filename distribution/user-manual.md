@@ -71,7 +71,7 @@ the normalizer handles the rest.
 
 ## Exobiology
 
-- Bio-sample progress on current planet / current star system (completed, partial, remaining).
+- What bio scans have we completed? / current star system (completed, partial, remaining).
 - Exploration profit potential in this system.
 - Last bio-sample location and distance. (requires codex entry scan with composition analyzer)
 - Navigate to next bio-sample / organic / codex entry. (requires codex entry scan with composition analyzer)

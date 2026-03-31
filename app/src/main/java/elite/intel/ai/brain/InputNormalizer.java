@@ -98,7 +98,18 @@ public class InputNormalizer {
         SYNONYM_MAP.put("supercruise", "enter supercruise");
         SYNONYM_MAP.put("super cruise", "enter supercruise");
         SYNONYM_MAP.put("drop", "drop from supercruise");
+        SYNONYM_MAP.put("leave supercruise", "drop from supercruise");
         SYNONYM_MAP.put("drop here", "drop from supercruise");
+        SYNONYM_MAP.put("disengage", "drop");
+        SYNONYM_MAP.put("disengage supercruise", "drop from supercruise");
+        SYNONYM_MAP.put("how many jumps", "plotted route");
+        SYNONYM_MAP.put("carrier balance", "carrier stats");
+        SYNONYM_MAP.put("lower landing gear", "gear down");
+        SYNONYM_MAP.put("how far from civilization", "distance to bubble");
+        SYNONYM_MAP.put("distance to earth", "distance to bubble");
+        SYNONYM_MAP.put("markets at outposts in system", "query markets");
+        SYNONYM_MAP.put("where is our carrier", "distance to fleet carrier");
+        SYNONYM_MAP.put("bodies in system", "stellar objects");
 
         //ship queries
         SYNONYM_MAP.put("check loadout", "ship loadout");
@@ -392,7 +403,6 @@ public class InputNormalizer {
         SYNONYM_MAP.put("range to bio sample", "distance to last bio sample");
         SYNONYM_MAP.put("how far to previous organism", "distance to last bio sample");
         SYNONYM_MAP.put("distance from inhabited space", "distance to bubble");
-        SYNONYM_MAP.put("how far from civilization", "distance to bubble");
         SYNONYM_MAP.put("range from human space", "distance to bubble");
         SYNONYM_MAP.put("range to planet", "distance to stellar object");
         SYNONYM_MAP.put("how far to moon", "distance to stellar object");
@@ -446,8 +456,8 @@ public class InputNormalizer {
         SYNONYM_MAP.put("scott", "scan");
         SYNONYM_MAP.put("scale", "scan");
         SYNONYM_MAP.put("mining spots", "mining hot spots");
-        SYNONYM_MAP.put("net vision", "night vision");
-        SYNONYM_MAP.put("division", "night vision");
+        SYNONYM_MAP.put("net vision", "toggle night vision");
+        SYNONYM_MAP.put("division", "toggle night vision");
         SYNONYM_MAP.put("her style", "hostile");
         SYNONYM_MAP.put("hair style", "hostile");
         SYNONYM_MAP.put("did", "deploy");

@@ -14,30 +14,16 @@ import static elite.intel.ai.brain.handlers.query.Queries.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-/**
- * Routing sanity check — verifies that natural-language input phrases are
- * routed to the correct handler by the live LLM.
- * <p>
- * Run with:  ./gradlew localIntegrationTest
- * <p>
- * Prerequisites:
- * - Ollama (or configured LLM backend) must be running locally
- * - App SQLite DB must exist (populated by at least one normal run)
- * <p>
- * This is NOT a CI test. It is a local smoke-check to catch routing regressions
- * after changes to AiActionsMap or LLM prompt. Tests run sequentially with a
- * pause between each phrase to give the LLM time to process.
- */
 @Tag("local-integration")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class RoutingIntegrationTest {
+public class NaturalSpeechIntegrationTest {
 
 
     /**
      * Pause between each test phrase. Increase if your LLM is slow.
      */
-    private static final int LLM_WAIT_MS = 2000;
+    private static final int LLM_WAIT_MS = 3000;
 
     private HandlerCapture capture;
 
@@ -48,7 +34,6 @@ public class RoutingIntegrationTest {
         // Let any startup noise (connection check etc.) settle
         Thread.sleep(2000);
         EventBusManager.publish(new UserInputEvent("command_verify_connection", 100f));
-        Thread.sleep(4000);
     }
 
     @AfterAll
@@ -85,7 +70,7 @@ public class RoutingIntegrationTest {
     }
 
     static Stream<String> startListening() {
-        return Stream.of("wake", "wake up", "pay attention", "listen up");
+        return Stream.of("listen", "wake up", "pay attention", "listen up");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -118,7 +103,7 @@ public class RoutingIntegrationTest {
     }
 
     static Stream<String> combatMode() {
-        return Stream.of("switch to combat mode");
+        return Stream.of("combat mode", "combat HUD", "combat HUD", "combat HUD");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -129,7 +114,7 @@ public class RoutingIntegrationTest {
     }
 
     static Stream<String> analysisMode() {
-        return Stream.of("switch to analysis mode");
+        return Stream.of("Analysis mode", "activate analysis mode", "explorer mode", "analysis HUD");
     }
 
     // =========================================================================
@@ -236,7 +221,7 @@ public class RoutingIntegrationTest {
     }
 
     static Stream<String> jumpToHyperspace() {
-        return Stream.of("jump to hyperspace", "jump", "engage FSD", "lets go", "next way point");
+        return Stream.of("jump to hyperspace", "engage jump", "engage FSD", "lets go", "next way point");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -259,7 +244,7 @@ public class RoutingIntegrationTest {
     }
 
     static Stream<String> dropFromSupercruise() {
-        return Stream.of("drop", "drop in", "drop out");
+        return Stream.of("drop from supercruise", "drop in", "drop out", "disengage supercruise");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -270,7 +255,7 @@ public class RoutingIntegrationTest {
     }
 
     static Stream<String> navigateToMission() {
-        return Stream.of("navigate to active mission", "go to mission");
+        return Stream.of("navigate to active mission target", "go to mission target");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -316,17 +301,17 @@ public class RoutingIntegrationTest {
     static Stream<String> targetDestination() {
         return Stream.of("target destination");
     }
-//
-//    @ParameterizedTest(name = "[{index}] \"{0}\"")
-//    @Order(38)
-//    @MethodSource
-//    void navigateFromMemory(String input) throws InterruptedException {
-//        assertRouted(input, NAVIGATE_TO_ADDRESS_FROM_MEMORY.getAction());
-//    }
-//
-//    static Stream<String> navigateFromMemory() {
-//        return Stream.of("navigate from memory", "paste from memory");
-//    }
+
+    @ParameterizedTest(name = "[{index}] \"{0}\"")
+    @Order(38)
+    @MethodSource
+    void navigateFromMemory(String input) throws InterruptedException {
+        assertRouted(input, NAVIGATE_TO_ADDRESS_FROM_MEMORY.getAction());
+    }
+
+    static Stream<String> navigateFromMemory() {
+        return Stream.of("navigate from memory", "paste from memory");
+    }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
     @Order(39)
@@ -539,7 +524,7 @@ public class RoutingIntegrationTest {
     }
 
     static Stream<String> openFss() {
-        return Stream.of("scan the system", "open fss", "full spectrum scan", "honk", "discovery scan");
+        return Stream.of("Open FSS and scan.", "Perform filtered spectrum scan", "full spectrum scan", "honk", "discovery scan");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -550,7 +535,7 @@ public class RoutingIntegrationTest {
     }
 
     static Stream<String> navigateToNextBioSample() {
-        return Stream.of("navigate to next bio sample", "go to next sample", "codex entry");
+        return Stream.of("Navigate to next bio-sample", "Navigate to next organic", "navigate to codex entry");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -561,7 +546,7 @@ public class RoutingIntegrationTest {
     }
 
     static Stream<String> findMiningSite() {
-        return Stream.of("find mining site for alexandrite within 1000 light years", "find mining location for low temperature diamonds  within 1000 light years", "find asteroid field with gold  within 1000 light years");
+        return Stream.of("find mining site", "find mining location", "find asteroid field gold");
     }
 
     // =========================================================================
@@ -731,7 +716,7 @@ public class RoutingIntegrationTest {
     }
 
     static Stream<String> queryCurrentLocation() {
-        return Stream.of("current location", "where are we", "what system are we in", "our position");
+        return Stream.of("Where are we right now?");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -775,7 +760,7 @@ public class RoutingIntegrationTest {
     }
 
     static Stream<String> queryPlottedRoute() {
-        return Stream.of("plotted route", "jumps remaining", "how many jumps", "next star scoopable?", "is fuel available on the route?");
+        return Stream.of("plotted route", "jumps remaining", "how many jumps");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -797,7 +782,7 @@ public class RoutingIntegrationTest {
     }
 
     static Stream<String> queryStellarObjects() {
-        return Stream.of("stellar objects", "planets in system", "bodies in system", "what planets");
+        return Stream.of("What landable planets or moons are in this system?");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -808,7 +793,7 @@ public class RoutingIntegrationTest {
     }
 
     static Stream<String> queryStellarSignals() {
-        return Stream.of("signals in system", "FSS signals", "what signals", "system signals");
+        return Stream.of("What signals are in this system?", "What signals do you see?", "Any interesting signals?", "System signals?", "What's in this system?");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -819,8 +804,9 @@ public class RoutingIntegrationTest {
     }
 
     static Stream<String> queryBioScanProgress() {
-        return Stream.of("bio scans in star system", "biosignals", "bio signals in system", "organics in system");
+        return Stream.of("Which planets still need bio or organic scans?");
     }
+
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
     @Order(209)
@@ -830,7 +816,7 @@ public class RoutingIntegrationTest {
     }
 
     static Stream<String> queryExobiologySamples() {
-        return Stream.of("exobiology samples", "what organisms", "organisms remaining", "samples left");
+        return Stream.of("What bio scans have we completed?", "What organics do we still have to scan?", "What organics or biology is on this planet");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -852,7 +838,7 @@ public class RoutingIntegrationTest {
     }
 
     static Stream<String> queryCarrierStatus() {
-        return Stream.of("carrier status", "carrier finances", "carrier balance", "carrier overview");
+        return Stream.of("What is our carrier range?", "What's my fleet carrier fuel status", "How long can we operate on current funds?", "How far can carrier we jump with current tritium?");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -874,7 +860,7 @@ public class RoutingIntegrationTest {
     }
 
     static Stream<String> queryDistanceToCarrier() {
-        return Stream.of("distance to carrier", "how far is carrier", "where is our carrier");
+        return Stream.of("How far are we from the carrier?", "Distance from the fleet carrier?", "How far is the fleet carrier?");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -885,7 +871,7 @@ public class RoutingIntegrationTest {
     }
 
     static Stream<String> queryFsdTarget() {
-        return Stream.of("FSD target", "what star are we targeting", "info on fsd target");
+        return Stream.of("FSD target", "what star are we targeting", "info on next jump");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -896,7 +882,7 @@ public class RoutingIntegrationTest {
     }
 
     static Stream<String> queryExplorationProfits() {
-        return Stream.of("exploration profits", "how much exploration worth", "scan value");
+        return Stream.of("Exploration profit potential in this system.", "What is the exploration profit potential in this system?");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -951,7 +937,7 @@ public class RoutingIntegrationTest {
     }
 
     static Stream<String> queryPlanetMaterials() {
-        return Stream.of("planet materials", "what materials on this planet", "surface materials");
+        return Stream.of("What materials are available on this planet?");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -962,7 +948,7 @@ public class RoutingIntegrationTest {
     }
 
     static Stream<String> queryDistanceToBubble() {
-        return Stream.of("distance to bubble", "how far from bubble", "how far from civilization", "distance to earth");
+        return Stream.of("How far are we from the Bubble?");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -975,17 +961,17 @@ public class RoutingIntegrationTest {
     static Stream<String> queryAiDesignation() {
         return Stream.of("what is your name", "who are you", "AI designation");
     }
-//
-//    @ParameterizedTest(name = "[{index}] \"{0}\"")
-//    @Order(223)
-//    @MethodSource
-//    void queryCapabilities(String input) throws InterruptedException {
-//        assertRouted(input, APP_CAPABILITIES.getAction());
-//    }
-//
-//    static Stream<String> queryCapabilities() {
-//        return Stream.of("what can you do", "list capabilities", "what commands do you know");
-//    }
+
+    @ParameterizedTest(name = "[{index}] \"{0}\"")
+    @Order(223)
+    @MethodSource
+    void queryCapabilities(String input) throws InterruptedException {
+        assertRouted(input, APP_CAPABILITIES.getAction());
+    }
+
+    static Stream<String> queryCapabilities() {
+        return Stream.of("what can you do", "list capabilities", "what commands do you know");
+    }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
     @Order(224)
@@ -995,7 +981,7 @@ public class RoutingIntegrationTest {
     }
 
     static Stream<String> queryLastScan() {
-        return Stream.of("last scan", "what did we scan", "most recent scan");
+        return Stream.of("Analyze the most recent scan?");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -1017,7 +1003,7 @@ public class RoutingIntegrationTest {
     }
 
     static Stream<String> queryCarrierEta() {
-        return Stream.of("carrier ETA", "when does carrier arrive", "carrier arrival time");
+        return Stream.of("What's the ETA for our fleet carrier jump?");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -1062,5 +1048,50 @@ public class RoutingIntegrationTest {
 
     static Stream<String> queryKeyBindings() {
         return Stream.of("check key bindings", "missing key bindings", "unbound keys");
+    }
+
+    @ParameterizedTest(name = "[{index}] \"{0}\"")
+    @Order(231)
+    @MethodSource
+    void queryBiomeAnalysis(String input) throws InterruptedException {
+        assertRouted(input, PLANET_BIOME_ANALYSIS.getAction());
+    }
+
+    static Stream<String> queryBiomeAnalysis() {
+        return Stream.of("Analyze the biome for this star system", "Biome analysis for planet a 1");
+    }
+
+    @ParameterizedTest(name = "[{index}] \"{0}\"")
+    @Order(232)
+    @MethodSource
+    void queryLastBioSample(String input) throws InterruptedException {
+        assertRouted(input, DISTANCE_TO_LAST_BIO_SAMPLE.getAction());
+    }
+
+    static Stream<String> queryLastBioSample() {
+        return Stream.of("Last bio-sample location and distance.", "How far are we from the last bio-sample?");
+    }
+
+    @ParameterizedTest(name = "[{index}] \"{0}\"")
+    @Order(233)
+    @MethodSource
+    void queryCarrierRoute(String input) throws InterruptedException {
+        assertRouted(input, CARRIER_ROUTE_ANALYSIS.getAction());
+    }
+
+    static Stream<String> queryCarrierRoute() {
+        return Stream.of("What's on the carrier route?", "What's the route for our fleet carrier?", "How many jump on the carrier route?");
+    }
+
+
+    @ParameterizedTest(name = "[{index}] \"{0}\"")
+    @Order(233)
+    @MethodSource
+    void querySetCarrierFuelReserve(String input) throws InterruptedException {
+        assertRouted(input, SET_CARRIER_FUEL_RESERVE.getAction());
+    }
+
+    static Stream<String> querySetCarrierFuelReserve() {
+        return Stream.of("Set fuel level to 5000", "Set fuel reserve to 10000", "Fuel reserve 15000", "Set fuel reserve to fifteen thousand");
     }
 }

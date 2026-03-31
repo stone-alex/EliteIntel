@@ -2,6 +2,8 @@ package elite.intel.session.ui;
 
 import elite.intel.ai.brain.handlers.commands.Bindings;
 import elite.intel.ai.brain.handlers.commands.CommandOperator;
+import elite.intel.ai.hands.events.GameInputEvent;
+import elite.intel.gameapi.GameControllerBus;
 import elite.intel.session.Status;
 import elite.intel.session.StatusFlags;
 import elite.intel.session.StatusFlags.GuiFocus;
@@ -96,17 +98,18 @@ public class UINavigator {
         }
 
         if (status.isFssModeActive()) {
-            operator.operateKeyboard(Bindings.GameCommand.BINDING_EXPLORATION_FSSQUIT.getGameBinding(), 0);
+
+            GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_EXPLORATION_FSSQUIT.getGameBinding(), 0));
         }
 
         if (status.isSaaModeActive()) {
-            operator.operateKeyboard(Bindings.GameCommand.EXPLORATION_SAAEXIT_THIRD_PERSON.getGameBinding(), 0);
+            GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.EXPLORATION_SAAEXIT_THIRD_PERSON.getGameBinding(), 0));
         }
 
         /// traverse out of all nested windows - has no negative effect if we are out of the nested menus / views
         if (status.isGalaxyMapOpen() || status.isSystemMapOpen() || status.isSaaModeActive()) {
             for (int i = 0; i < 5; i++) {
-                operator.operateKeyboard(Bindings.GameCommand.BINDING_EXIT_KEY.getGameBinding(), 0);
+                GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_EXIT_KEY.getGameBinding(), 0));
             }
         }
     }
@@ -151,7 +154,7 @@ public class UINavigator {
         }
 
         for (int i = 0; i < steps; i++) {
-            operator.operateKeyboardTap(key); // always tap - binding.hold flag must be ignored for tab cycling
+            GameControllerBus.publish(new GameInputEvent(key, 0)); // always tap - binding.hold flag must be ignored for tab cycling
         }
         state.recordTab((Enum & PanelTab) target);
     }
@@ -168,7 +171,7 @@ public class UINavigator {
         if (steps == 0) return;
         String key = Bindings.GameCommand.BINDING_CYCLE_PREVIOUS_PANEL.getGameBinding();
         for (int i = 0; i < steps; i++) {
-            operator.operateKeyboardTap(key); // always tap - binding.hold flag must be ignored for tab cycling
+            GameControllerBus.publish(new GameInputEvent(key, 0)); // always tap - binding.hold flag must be ignored for tab cycling
         }
         state.recordTab((Enum & PanelTab) defaultTarget);
     }
@@ -186,7 +189,7 @@ public class UINavigator {
         }
         String nextTab = Bindings.GameCommand.BINDING_CYCLE_NEXT_PANEL.getGameBinding();
         for (int i = 0; i < getTabCount(panel); i++) {
-            operator.operateKeyboardTap(nextTab); // always tap
+            GameControllerBus.publish(new GameInputEvent(nextTab, 0)); // always tap
         }
         state.resetToDefault();
     }
@@ -211,7 +214,9 @@ public class UINavigator {
                 default -> throw new IllegalArgumentException("No panel binding for GuiFocus: " + panel);
             };
         }
-        if (binding != null) operator.operateKeyboardTap(binding); // panel focus keys must be tapped, not held
+        if (binding != null) {
+            GameControllerBus.publish(new GameInputEvent(binding, 0)); // panel focus keys must be tapped, not held
+        }
         sleep(RANDOM_MAX);
     }
 

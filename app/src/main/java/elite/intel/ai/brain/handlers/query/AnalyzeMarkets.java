@@ -12,7 +12,7 @@ import elite.intel.util.yaml.YamlFactory;
 import java.util.LinkedList;
 import java.util.List;
 
-public class AnalyzeLocalStations extends BaseQueryAnalyzer implements QueryHandler {
+public class AnalyzeMarkets extends BaseQueryAnalyzer implements QueryHandler {
 
     private final PlayerSession playerSession = PlayerSession.getInstance();
 

@@ -141,7 +141,7 @@ public enum Commands {
 
 
     REQUEST_DOCKING                                     ("request_docking", null,  RequestDockingHandler.class),
-    NIGHT_VISION_ON_OFF                                 ("toggle_nightvision", BINDING_NIGHT_VISION_TOGGLE.getGameBinding(), ToggleNightVision.class),
+    NIGHT_VISION_ON_OFF                                 ("toggle_night_vision_on_off", BINDING_NIGHT_VISION_TOGGLE.getGameBinding(), ToggleNightVision.class),
 
     CYCLE_NEXT_PAGE                                     ("cycle_next_page", BINDING_CYCLE_NEXT_PAGE.getGameBinding(), SimpleCommandActionHandler.class),
     CYCLE_NEXT_PANEL                                    ("cycle_next_panel", BINDING_CYCLE_NEXT_PANEL.getGameBinding(), SimpleCommandActionHandler.class),

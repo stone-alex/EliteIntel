@@ -62,11 +62,15 @@ public class PromptFactory implements AiPromptFactory {
                 - "max engines" / "boost engines" / "power to engines" → transfer_power_to_engines
                 - Never confuse "max engines" with "target engines"
                 - Never confuse "deploy vehicle" with "deploy landing gear"
+                - CARRIER vs SHIP: if the word "carrier" does not appear in the input, all route/jump/navigation queries refer to the SHIP, not the fleet carrier. Use query_ship_route_remaining_jumps, not query_carrier_route.
                 - Never confuse "organics in system" with "organics at this location/planet/moon"
                 - Never confuse "carrier balance" (finances) with "balance power" (power distribution)
-                - Never confuse "bio signals" (potential organic colonies) with "bio scans" (scanned and verified genus)
-                - Never confuse "in system" (within star system) with "this location" (current planet / moon)
+                - bio signals context (system-wide): "which planets have bio signals / which planets need scanning / bio signals in system / organics in system / biological signals / how many planets have bio" → query_bio_scans_and_samples_in_star_system. KEY: "which planets" always = system-wide.
+                - bio scans context (current planet surface): "what organisms are here / what's been scanned here / exobiology samples / organics on this planet / biology on this planet / bio scans completed / what organics do we still have to scan / what organics remain / organics still to scan / organics left to scan" → query_exobiology_samples. KEY: "here / on this planet / on this moon / at this location / still have to scan / left to scan" = planet surface.
+                - Never confuse "in system" or "which planets" (system-wide) with "here / on this planet / at this location / still have to scan" (planet surface)
                 - Never confuse "signals" with "stellar objects"
+                - carrier full status (fuel + credits + operations): "carrier status / carrier fuel status / how far can carrier jump / fleet carrier fuel status" → query_carrier_status_fuel_credit_balance
+                - carrier tritium level only: "how much tritium / tritium supply / tritium level / tritium reserve" → query_carrier_fuel
                 - distance to bubble is distance from our stellar coordinates to the center of the coordinate system (0,0,0)
                 - For "progress, rank, player stats" → 'query_player_profile_rank_progress' do not confuse with "profits for exploration, missions or bounties"
                 
@@ -81,7 +85,8 @@ public class PromptFactory implements AiPromptFactory {
                 - "target next route system" → select_next_system_in_route
                 - "target most dangerous / highest threat" → target_highest_threat
                 - "target [anything else]" → target_subsystem, key = the words after "target"
-                - organics / biology / exobiology → exobiology actions, NOT geo/materials
+                - organics / biology / exobiology on a planet or here → query_exobiology_samples, NOT geo/materials
+                - organics / bio signals in a system or which planets → query_bio_scans_and_samples_in_star_system
                 - profit from bounties is not profit from missions for bounties → 'query_total_bounties'
                 - profit from missions is not profit from bounties for missions → 'query_missions_and_rewards'
                 - profit from discovery is not profit from bounties or missions → 'query_exploration_profits'

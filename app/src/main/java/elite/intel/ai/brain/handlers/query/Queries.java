@@ -38,7 +38,7 @@ public enum Queries {
     PLAYER_PROFILE_ANALYSIS             ("query_player_profile_rank_progress",                        AnalyzePlayerProfile.class),
     SHIP_LOADOUT                        ("query_ship_loadout",                          AnalyzeShipLoadoutHandler.class),
     STATION_DETAILS                     ("query_station_details",                       StationDataHandler.class),
-    APP_CAPABILITIES                    ("query_app_capabilities",                      WhatAreYourCapabilitiesHandler.class),
+    //APP_CAPABILITIES                    ("query_app_capabilities",                      WhatAreYourCapabilitiesHandler.class),
     AI_DESIGNATION                      ("query_ai_designation",                        WhatIsYourNameHandler.class),
     TOTAL_BOUNTIES                      ("query_total_bounties",                        AnalyzeBountiesCollectedHandler.class),
     DISTANCE_TO_BUBBLE                  ("query_distance_to_bubble",                    AnalyzeDistanceFromTheBubble.class),

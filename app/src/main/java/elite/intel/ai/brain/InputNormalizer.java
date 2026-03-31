@@ -82,6 +82,8 @@ public class InputNormalizer {
         SYNONYM_MAP.put("punch it", "jump to hyperspace");
         SYNONYM_MAP.put("engage fsd", "jump to hyperspace");
         SYNONYM_MAP.put("engage hyperspace", "jump to hyperspace");
+        // FSD query phrases must come BEFORE single-word "jump" rule or they get swallowed
+        SYNONYM_MAP.put("info on next jump", "FSD target");
         SYNONYM_MAP.put("jump", "jump to hyperspace");
         SYNONYM_MAP.put("hyperspace jump", "jump to hyperspace");
         SYNONYM_MAP.put("make the jump", "jump to hyperspace");
@@ -102,6 +104,13 @@ public class InputNormalizer {
         SYNONYM_MAP.put("drop here", "drop from supercruise");
         SYNONYM_MAP.put("disengage", "drop");
         SYNONYM_MAP.put("disengage supercruise", "drop from supercruise");
+        // carrier route and specific plotted route phrases must come BEFORE the generic "how many jumps" rule
+        SYNONYM_MAP.put("how many jumps on the carrier route", "carrier route");
+        SYNONYM_MAP.put("how many jump on the carrier route", "carrier route");
+        SYNONYM_MAP.put("how many jumps on carrier", "carrier route");
+        SYNONYM_MAP.put("how many jump on carrier", "carrier route");
+        SYNONYM_MAP.put("how many jumps to destination", "plotted route");
+        SYNONYM_MAP.put("how many jump to destination", "plotted route");
         SYNONYM_MAP.put("how many jumps", "plotted route");
         SYNONYM_MAP.put("carrier balance", "carrier stats");
         SYNONYM_MAP.put("lower landing gear", "gear down");
@@ -110,6 +119,7 @@ public class InputNormalizer {
         SYNONYM_MAP.put("markets at outposts in system", "query markets");
         SYNONYM_MAP.put("where is our carrier", "distance to fleet carrier");
         SYNONYM_MAP.put("bodies in system", "stellar objects");
+        SYNONYM_MAP.put("select destination", "target destination");
 
         //ship queries
         SYNONYM_MAP.put("check loadout", "ship loadout");
@@ -166,6 +176,12 @@ public class InputNormalizer {
         SYNONYM_MAP.put("profits from exobiology", "exploration profits");
 
 
+        // docking / landing clearance - normalise before LLM sees "landing" (avoids landing-gear confusion)
+        SYNONYM_MAP.put("request landing clearance", "request docking");
+        SYNONYM_MAP.put("landing clearance", "request docking");
+        SYNONYM_MAP.put("clear me to land", "request docking");
+        SYNONYM_MAP.put("permission to land", "request docking");
+
         SYNONYM_MAP.put("exit scanner", "exit close panel");
         SYNONYM_MAP.put("close scanner", "exit close panel");
         SYNONYM_MAP.put("close the scanner", "exit close panel");
@@ -212,6 +228,7 @@ public class InputNormalizer {
         // dismiss / send away
         SYNONYM_MAP.put("go play", "dismiss ship");
         SYNONYM_MAP.put("dismiss ship", "dismiss ship");
+        SYNONYM_MAP.put("dismissed", "dismiss ship");
 
         // equalize / balance / reset
         SYNONYM_MAP.put("balance power", "equalize power");
@@ -267,7 +284,7 @@ public class InputNormalizer {
         SYNONYM_MAP.put("next jump destination", "jump destination");
         SYNONYM_MAP.put("what star are we targeting", "FSD target");
         SYNONYM_MAP.put("analyze jump target", "analyze destination");
-        SYNONYM_MAP.put("info on next jump", "FSD target");
+        // "info on next jump" moved earlier (before single-word "jump" rule)
 
         // ── Ship loadout ───────────────────────────────────────────────────────
         SYNONYM_MAP.put("ship configuration", "ship loadout");
@@ -289,6 +306,12 @@ public class InputNormalizer {
         SYNONYM_MAP.put("what bodies are here", "bodies in system");
 
         // ── Bio signals (system-wide) ──────────────────────────────────────────
+        // "which planets" phrases must be here so they normalise before single-word rules fire
+        SYNONYM_MAP.put("which planets still need bio", "bio signals in system");
+        SYNONYM_MAP.put("which planets still need organic", "bio signals in system");
+        SYNONYM_MAP.put("which planets need bio scans", "bio signals in system");
+        SYNONYM_MAP.put("which planets need organic scans", "bio signals in system");
+        SYNONYM_MAP.put("which planets have unscanned bio", "bio signals in system");
         SYNONYM_MAP.put("bio signals in system", "bio scan progress");
         SYNONYM_MAP.put("biological signals in system", "bio scan progress");
         SYNONYM_MAP.put("biosignals in system", "bio scan progress");

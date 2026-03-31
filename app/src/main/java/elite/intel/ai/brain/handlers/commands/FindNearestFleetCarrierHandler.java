@@ -1,7 +1,6 @@
 package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
@@ -14,14 +13,9 @@ import elite.intel.session.Status;
 import elite.intel.util.TimeUtils;
 import elite.intel.util.json.GetNumberFromParam;
 
-public class FindNearestFleetCarrierHandler extends CommandOperator implements CommandHandler {
+public class FindNearestFleetCarrierHandler implements CommandHandler {
 
-    private final GameController gameController;
 
-    public FindNearestFleetCarrierHandler(GameController gameController) {
-        super(gameController.getMonitor(), gameController.getExecutor());
-        this.gameController = gameController;
-    }
 
     @Override public void handle(String action, JsonObject params, String responseText) {
 
@@ -52,7 +46,7 @@ public class FindNearestFleetCarrierHandler extends CommandOperator implements C
                     .findFirst()
                     .ifPresentOrElse(
                             result -> {
-                                RoutePlotter routePlotter = new RoutePlotter(this.gameController);
+                                RoutePlotter routePlotter = new RoutePlotter();
                                 String dateAsString = result.getUpdatedAt();
                                 String timeAgo = TimeUtils.transformToYMDHtimeAgo(dateAsString, TimeUtils.LOCAL_DATE_TIME);
                                 EventBusManager.publish(new MissionCriticalAnnouncementEvent("Found fleet carrier " + result.getCallSign() + " at " + result.getSystemName() + ". Data last updated " + timeAgo));

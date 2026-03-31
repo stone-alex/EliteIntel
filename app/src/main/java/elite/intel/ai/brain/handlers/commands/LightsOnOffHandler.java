@@ -1,14 +1,12 @@
 package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.hands.GameController;
+import elite.intel.ai.hands.events.GameInputEvent;
+import elite.intel.gameapi.GameControllerBus;
 import elite.intel.session.Status;
 
-public class LightsOnOffHandler extends CommandOperator implements CommandHandler {
+public class LightsOnOffHandler implements CommandHandler {
 
-    public LightsOnOffHandler(GameController controller) {
-        super(controller.getMonitor(), controller.getExecutor());
-    }
 
     @Override
     public void handle(String action, JsonObject params, String responseText) {
@@ -29,6 +27,6 @@ public class LightsOnOffHandler extends CommandOperator implements CommandHandle
     }
 
     private void toggleLights(String binding) {
-        operateKeyboard(binding, 0);
+        GameControllerBus.publish(new GameInputEvent(binding, 0));
     }
 }

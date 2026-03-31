@@ -1,17 +1,17 @@
 package elite.intel.db.managers;
 
 import com.google.common.eventbus.Subscribe;
-import elite.intel.ai.brain.handlers.commands.CommandOperator;
-import elite.intel.ai.hands.GameController;
+import elite.intel.ai.hands.events.GameInputEvent;
 import elite.intel.db.FuzzySearch;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.gameapi.GameControllerBus;
 import elite.intel.gameapi.journal.events.ShipTargetedEvent;
 import elite.intel.util.AudioPlayer;
 import elite.intel.util.SleepNoThrow;
 
 import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_CYCLE_NEXT_SUBSYSTEM;
 
-public class SubSystemsManager extends CommandOperator {
+public class SubSystemsManager {
 
     private static volatile SubSystemsManager instance;
 
@@ -19,16 +19,15 @@ public class SubSystemsManager extends CommandOperator {
     private volatile boolean continueTargeting = true;
     private volatile boolean pause = false;
 
-    private SubSystemsManager(GameController cameController) {
-        super(cameController.getMonitor(), cameController.getExecutor());
+    private SubSystemsManager() {
         EventBusManager.register(this);
     }
 
-    public static SubSystemsManager getInstance(GameController cameController) {
+    public static SubSystemsManager getInstance() {
         if (instance == null) {
             synchronized (SubSystemsManager.class) {
                 if (instance == null) {
-                    instance = new SubSystemsManager(cameController);
+                    instance = new SubSystemsManager();
                 }
             }
         }
@@ -62,7 +61,7 @@ public class SubSystemsManager extends CommandOperator {
                         usingFallback = true;
                         cycleCount = 0;
                     }
-                    operateKeyboard(BINDING_CYCLE_NEXT_SUBSYSTEM.getGameBinding(), 50);
+                    GameControllerBus.publish(new GameInputEvent(BINDING_CYCLE_NEXT_SUBSYSTEM.getGameBinding(), 50));
                     pause = true;
                     cycleCount++;
                     SleepNoThrow.sleep(250);

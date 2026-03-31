@@ -2,13 +2,12 @@ package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.FuzzySearch;
 import elite.intel.db.dao.LocationDao;
 import elite.intel.db.managers.BrainTreeManager;
-import elite.intel.db.managers.ReminderManager;
 import elite.intel.db.managers.LocationManager;
+import elite.intel.db.managers.ReminderManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.search.spansh.stellarobjects.StellarObjectSearchResultDto;
 import elite.intel.util.json.GsonFactory;
@@ -16,16 +15,11 @@ import elite.intel.util.json.ToJsonConvertible;
 
 import static elite.intel.util.StringUtls.capitalizeWords;
 
-public class FindBrainTreesHandler extends CommandOperator implements CommandHandler {
+public class FindBrainTreesHandler implements CommandHandler {
 
-    private final GameController controller;
     private final BrainTreeManager brainTreeManager = BrainTreeManager.getInstance();
     private final LocationManager locationManager = LocationManager.getInstance();
 
-    public FindBrainTreesHandler(GameController controller) {
-        super(controller.getMonitor(), controller.getExecutor());
-        this.controller = controller;
-    }
 
     @Override public void handle(String action, JsonObject params, String responseText) {
         if (brainTreeManager.getCount() == 0) {
@@ -60,7 +54,7 @@ public class FindBrainTreesHandler extends CommandOperator implements CommandHan
                                     + " Head to planet " + result.getBodyName()
                     )
             );
-            RoutePlotter plotter = new RoutePlotter(this.controller);
+            RoutePlotter plotter = new RoutePlotter();
             plotter.plotRoute(result.getSystemName());
             ReminderManager.getInstance()
                     .setReminder(

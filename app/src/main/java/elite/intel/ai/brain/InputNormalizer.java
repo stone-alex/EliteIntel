@@ -83,7 +83,7 @@ public class InputNormalizer {
         SYNONYM_MAP.put("engage fsd", "jump to hyperspace");
         SYNONYM_MAP.put("engage hyperspace", "jump to hyperspace");
 
-        // ── All multi-word "jump/jumps" phrases MUST appear before single-word "jump" ──
+        // -- All multi-word "jump/jumps" phrases MUST appear before single-word "jump" --
         // Single-word "jump" matches any substring, so longer phrases must fire first.
 
         // FSD query
@@ -273,7 +273,7 @@ public class InputNormalizer {
         SYNONYM_MAP.put("start listening", "start listening");
         SYNONYM_MAP.put("wake up", "start listening");
 
-        // ── Route / plotted route queries ─────────────────────────────────────
+        // -─ Route / plotted route queries ─────────────────────────────────────
         SYNONYM_MAP.put("how many jumps remaining", "plotted route");
         SYNONYM_MAP.put("how many jumps left", "plotted route");
         SYNONYM_MAP.put("jumps to destination", "plotted route");

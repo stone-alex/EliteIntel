@@ -1,7 +1,6 @@
 package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.Status;
@@ -9,14 +8,10 @@ import elite.intel.session.StatusFlags;
 import elite.intel.session.ui.CommsPanel;
 import elite.intel.session.ui.UINavigator;
 
-public class OpenInboxPenalHandler extends CommandOperator implements CommandHandler {
-
-    public OpenInboxPenalHandler(GameController controller) {
-        super(controller.getMonitor(), controller.getExecutor());
-    }
+public class OpenInboxPenalHandler implements CommandHandler {
 
 
-    private final UINavigator navigator = new UINavigator(this);
+    private final UINavigator navigator = new UINavigator();
     private final Status status = Status.getInstance();
 
 

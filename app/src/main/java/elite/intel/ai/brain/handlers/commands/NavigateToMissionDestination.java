@@ -1,22 +1,16 @@
 package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.managers.MissionManager;
 import elite.intel.db.managers.ReminderManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.dto.MissionDto;
 
-public class NavigateToMissionDestination extends CommandOperator implements CommandHandler {
+public class NavigateToMissionDestination implements CommandHandler {
 
-    private final GameController controller;
     private final MissionManager missionManager = MissionManager.getInstance();
 
-    public NavigateToMissionDestination(GameController controller) {
-        super(controller.getMonitor(), controller.getExecutor());
-        this.controller = controller;
-    }
 
     @Override
     public void handle(String action, JsonObject params, String responseText) {
@@ -45,7 +39,7 @@ public class NavigateToMissionDestination extends CommandOperator implements Com
         );
 
         EventBusManager.publish(new MissionCriticalAnnouncementEvent("Head to " + mission.getDestinationSystem() + " system."));
-        RoutePlotter plotter = new RoutePlotter(this.controller);
+        RoutePlotter plotter = new RoutePlotter();
         plotter.plotRoute(mission.getDestinationSystem());
     }
 }

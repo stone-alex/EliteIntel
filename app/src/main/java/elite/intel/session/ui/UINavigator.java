@@ -1,7 +1,6 @@
 package elite.intel.session.ui;
 
 import elite.intel.ai.brain.handlers.commands.Bindings;
-import elite.intel.ai.brain.handlers.commands.CommandOperator;
 import elite.intel.ai.hands.events.GameInputEvent;
 import elite.intel.gameapi.GameControllerBus;
 import elite.intel.session.Status;
@@ -31,11 +30,9 @@ public class UINavigator {
     private static final int RANDOM_MIN = 125;
     private static final int RANDOM_MAX = 250;
 
-    private final CommandOperator operator;
     private final PanelStateTracker tracker = PanelStateTracker.getInstance();
 
-    public UINavigator(CommandOperator operator) {
-        this.operator = operator;
+    public UINavigator() {
     }
 
     // -------------------------------------------------------------------------

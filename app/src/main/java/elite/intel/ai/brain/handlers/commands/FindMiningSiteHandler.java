@@ -2,12 +2,11 @@ package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.FuzzySearch;
-import elite.intel.db.managers.ReminderManager;
 import elite.intel.db.managers.LocationManager;
+import elite.intel.db.managers.ReminderManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.search.spansh.stellarobjects.ReserveLevel;
 import elite.intel.search.spansh.stellarobjects.StellarObjectSearch;
@@ -18,15 +17,10 @@ import java.util.Optional;
 
 import static elite.intel.util.StringUtls.capitalizeWords;
 
-public class FindMiningSiteHandler extends CommandOperator implements CommandHandler {
+public class FindMiningSiteHandler implements CommandHandler {
 
     public static final int MAX_DEFAULT_RANGE = 1000;
-    private final GameController controller;
 
-    public FindMiningSiteHandler(GameController controller) {
-        super(controller.getMonitor(), controller.getExecutor());
-        this.controller = controller;
-    }
 
     @Override public void handle(String action, JsonObject params, String responseText) {
         Status status = Status.getInstance();
@@ -64,7 +58,7 @@ public class FindMiningSiteHandler extends CommandOperator implements CommandHan
 
         Optional<StellarObjectSearchResultDto.Result> result = miningLocations.getResults().stream().findFirst();
         if (result.isPresent()) {
-            RoutePlotter routePlotter = new RoutePlotter(this.controller);
+            RoutePlotter routePlotter = new RoutePlotter();
             routePlotter.plotRoute(result.get().getSystemName());
             String reminder = "Found nearest mining location in " + result.get().getSystemName() + " system head to planet " + result.get().getBodyName();
             ReminderManager.getInstance().setReminder(reminder);

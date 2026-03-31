@@ -1,20 +1,17 @@
 package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.hands.GameController;
+import elite.intel.ai.hands.events.GameInputEvent;
+import elite.intel.gameapi.GameControllerBus;
 import elite.intel.session.Status;
 import elite.intel.session.StatusFlags;
 import elite.intel.session.ui.LeftPanel;
 import elite.intel.session.ui.UINavigator;
 
-public class RequestDockingHandler extends CommandOperator implements CommandHandler {
+public class RequestDockingHandler implements CommandHandler {
 
 
-    public RequestDockingHandler(GameController controller) {
-        super(controller.getMonitor(), controller.getExecutor());
-    }
-
-    private final UINavigator navigator = new UINavigator(this);
+    private final UINavigator navigator = new UINavigator();
     private final Status status = Status.getInstance();
 
     @Override public void handle(String action, JsonObject params, String responseText) {
@@ -23,23 +20,23 @@ public class RequestDockingHandler extends CommandOperator implements CommandHan
         if(status.isInMainShip()){
             navigator.assumeDefaultState(StatusFlags.GuiFocus.EXTERNAL_PANEL);
             // un-target ships
-            operateKeyboard(Bindings.GameCommand.BINDING_TARGET_NEXT_ROUTE_SYSTEM.getGameBinding(), 0);
+            GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_TARGET_NEXT_ROUTE_SYSTEM.getGameBinding(), 0));
             navigator.openAndNavigate(StatusFlags.GuiFocus.EXTERNAL_PANEL, LeftPanel.CONTACTS);
             //navigate to panel
-            operateKeyboard(Bindings.GameCommand.BINDING_UI_DOWN.getGameBinding(), 0);
-            operateKeyboard(Bindings.GameCommand.BINDING_UI_UP.getGameBinding(), 1500); // scroll up to the top (and hope our station is there)
-            operateKeyboard(Bindings.GameCommand.BINDING_UI_RIGHT.getGameBinding(), 0);
+            GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_UI_DOWN.getGameBinding(), 0));
+            GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_UI_UP.getGameBinding(), 1500)); // scroll up to the top (and hope our station is there)
+            GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_UI_RIGHT.getGameBinding(), 0));
 
             //request docking
-            operateKeyboard(Bindings.GameCommand.BINDING_UI_SELECT.getGameBinding(), 120);
+            GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_UI_SELECT.getGameBinding(), 120));
             /// Exit
             navigator.closeAndRestore(StatusFlags.GuiFocus.EXTERNAL_PANEL);
         }
         if (status.isInFighter()) {
-            operateKeyboard(Bindings.GameCommand.BINDING_FOCUS_ROLE_PANEL.getGameBinding(), 0);
-            operateKeyboard(Bindings.GameCommand.BINDING_UI_RIGHT.getGameBinding(), 0);
-            operateKeyboard(Bindings.GameCommand.BINDING_UI_SELECT.getGameBinding(), 120);
-            operateKeyboard(Bindings.GameCommand.BINDING_FOCUS_ROLE_PANEL.getGameBinding(), 0);
+            GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_FOCUS_ROLE_PANEL.getGameBinding(), 0));
+            GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_UI_RIGHT.getGameBinding(), 0));
+            GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_UI_SELECT.getGameBinding(), 120));
+            GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_FOCUS_ROLE_PANEL.getGameBinding(), 0));
         }
     }
 }

@@ -1,7 +1,6 @@
 package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.dao.PirateHuntingGroundsDao.HuntingGround;
 import elite.intel.db.dao.PirateMissionProviderDao.MissionProvider;
@@ -14,14 +13,9 @@ import elite.intel.util.json.ToJsonConvertible;
 
 import java.util.List;
 
-public class ReconPirateMissionTargetSystemHandler extends CommandOperator implements CommandHandler {
+public class ReconPirateMissionTargetSystemHandler implements CommandHandler {
 
-    private final GameController controller;
 
-    public ReconPirateMissionTargetSystemHandler(GameController controller) {
-        super(controller.getMonitor(), controller.getExecutor());
-        this.controller = controller;
-    }
 
     @Override public void handle(String action, JsonObject params, String responseText) {
         HuntingGroundManager manager = HuntingGroundManager.getInstance();
@@ -57,7 +51,7 @@ public class ReconPirateMissionTargetSystemHandler extends CommandOperator imple
                 )
         );
 
-        RoutePlotter plotter = new RoutePlotter(this.controller);
+        RoutePlotter plotter = new RoutePlotter();
         plotter.plotRoute(starSystem);
     }
 

@@ -24,7 +24,7 @@ public class NaturalSpeechIntegrationTest {
     /**
      * Pause between each test phrase. Increase if your LLM is slow.
      */
-    private static final int LLM_WAIT_MS = 2000;
+    private static final int LLM_WAIT_MS = 3000;
 
     private HandlerCapture capture;
 
@@ -783,6 +783,7 @@ public class NaturalSpeechIntegrationTest {
     @MethodSource
     void queryStellarSignals(String input) throws InterruptedException {
         assertRouted(input, QUERY_STELLAR_SIGNALS.getAction());
+        sleep(2000);
     }
 
     static Stream<String> queryStellarSignals() {

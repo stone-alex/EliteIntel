@@ -1,7 +1,6 @@
 package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.dao.PirateHuntingGroundsDao.HuntingGround;
 import elite.intel.db.dao.PirateMissionProviderDao.MissionProvider;
@@ -21,17 +20,12 @@ import elite.intel.util.yaml.YamlFactory;
 import java.util.List;
 import java.util.Map;
 
-public class ReconMissionProviderSystemHandler extends CommandOperator implements CommandHandler {
+public class ReconMissionProviderSystemHandler implements CommandHandler {
 
-    private final GameController controller;
     private final HuntingGroundManager huntingGroundManager = HuntingGroundManager.getInstance();
     private final LocationManager locationManager = LocationManager.getInstance();
     private final PlayerSession playerSession = PlayerSession.getInstance();
 
-    public ReconMissionProviderSystemHandler(GameController controller) {
-        super(controller.getMonitor(), controller.getExecutor());
-        this.controller = controller;
-    }
 
     @Override public void handle(String action, JsonObject params, String responseText) {
 
@@ -92,7 +86,7 @@ public class ReconMissionProviderSystemHandler extends CommandOperator implement
                 )
         );
 
-        RoutePlotter plotter = new RoutePlotter(controller);
+        RoutePlotter plotter = new RoutePlotter();
         plotter.plotRoute(starSystem);
         ReminderManager.getInstance().setReminder(
                 new DataDto(
@@ -126,7 +120,7 @@ public class ReconMissionProviderSystemHandler extends CommandOperator implement
             EventBusManager.publish(new UserInputEvent(" find hunting grounds", 100f));
             return false;
         } else {
-            RoutePlotter plotter = new RoutePlotter(this.controller);
+            RoutePlotter plotter = new RoutePlotter();
             plotter.plotRoute(destination);
             return true;
         }

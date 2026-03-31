@@ -1,7 +1,8 @@
 package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.hands.GameController;
+import elite.intel.ai.hands.events.GameInputEvent;
+import elite.intel.gameapi.GameControllerBus;
 import elite.intel.session.Status;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -39,13 +40,10 @@ import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.*;
  * - handle: Executes the power redistribution operation triggered by the command, using
  * provided parameters and response text.
  */
-public class SetPowerToEnginesHandler extends CommandOperator implements CommandHandler {
+public class SetPowerToEnginesHandler implements CommandHandler {
 
     private static final Logger log = LogManager.getLogger(SetPowerToEnginesHandler.class);
 
-    public SetPowerToEnginesHandler(GameController commandHandler) {
-        super(commandHandler.getMonitor(), commandHandler.getExecutor());
-    }
 
     @Override public void handle(String action, JsonObject params, String responseText) {
         Status status = Status.getInstance();
@@ -77,9 +75,9 @@ public class SetPowerToEnginesHandler extends CommandOperator implements Command
     }
 
     private void performAction(String resetPowerDistribution, String increaseEnginePower, String increaseSystemPower) {
-        operateKeyboard(resetPowerDistribution, 0);
-        operateKeyboard(increaseEnginePower, 0);
-        operateKeyboard(increaseEnginePower, 0);
+        GameControllerBus.publish(new GameInputEvent(resetPowerDistribution, 0));
+        GameControllerBus.publish(new GameInputEvent(increaseEnginePower, 0));
+        GameControllerBus.publish(new GameInputEvent(increaseEnginePower, 0));
         log.info("Diverting power to engines");
     }
 }

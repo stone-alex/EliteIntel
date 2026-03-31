@@ -1,22 +1,16 @@
 package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.Status;
 
-public class NavigateRouteToHomeHandler extends CommandOperator implements CommandHandler {
+public class NavigateRouteToHomeHandler implements CommandHandler {
 
-    private final GameController commandHandler;
     private final PlayerSession playerSession = PlayerSession.getInstance();
 
-    public NavigateRouteToHomeHandler(GameController commandHandler) {
-        super(commandHandler.getMonitor(), commandHandler.getExecutor());
-        this.commandHandler = commandHandler;
-    }
 
     @Override public void handle(String action, JsonObject params, String responseText) {
 
@@ -28,7 +22,7 @@ public class NavigateRouteToHomeHandler extends CommandOperator implements Comma
                 EventBusManager.publish(new MissionCriticalAnnouncementEvent("Home system is not set. We are homeless!"));
                 return;
             }
-            RoutePlotter plotter = new RoutePlotter(commandHandler);
+            RoutePlotter plotter = new RoutePlotter();
             plotter.plotRoute(location.getStarName());
         } else {
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("Route can only be plotted in SRV or Main Ship."));

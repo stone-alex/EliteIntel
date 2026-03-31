@@ -1,7 +1,6 @@
 package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.db.managers.MissionManager;
 import elite.intel.gameapi.EventBusManager;
@@ -10,13 +9,8 @@ import elite.intel.gameapi.journal.events.dto.MissionDto;
 
 import java.util.Set;
 
-public class NavigateToPirateMassacreMissionTargetHandler extends CommandOperator implements CommandHandler {
+public class NavigateToPirateMassacreMissionTargetHandler implements CommandHandler {
 
-    private final GameController controller;
-    public NavigateToPirateMassacreMissionTargetHandler(GameController controller) {
-        super(controller.getMonitor(), controller.getExecutor());
-        this.controller = controller;
-    }
 
     @Override public void handle(String action, JsonObject params, String responseText) {
         MissionManager missionManager = MissionManager.getInstance();
@@ -36,7 +30,7 @@ public class NavigateToPirateMassacreMissionTargetHandler extends CommandOperato
 
         if(mission == null) return;
 
-        RoutePlotter plotter = new RoutePlotter(this.controller);
+        RoutePlotter plotter = new RoutePlotter();
         plotter.plotRoute(mission.getDestinationSystem());
     }
 }

@@ -1,7 +1,8 @@
 package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.hands.GameController;
+import elite.intel.ai.hands.events.GameInputEvent;
+import elite.intel.gameapi.GameControllerBus;
 import elite.intel.session.Status;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,14 +18,11 @@ import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.*;
  * for systems and engines by invoking key bindings stored within the game's configuration.
  * The operations are performed with a fixed delay between each action.
  */
-public class SetPowerToSystemsHandler extends CommandOperator implements CommandHandler {
+public class SetPowerToSystemsHandler implements CommandHandler {
 
     private static final Logger log = LogManager.getLogger(SetPowerToSystemsHandler.class);
 
 
-    public SetPowerToSystemsHandler(GameController commandHandler) throws Exception {
-        super(commandHandler.getMonitor(), commandHandler.getExecutor());
-    }
 
     @Override public void handle(String action, JsonObject params, String responseText) {
         Status status = Status.getInstance();
@@ -56,9 +54,9 @@ public class SetPowerToSystemsHandler extends CommandOperator implements Command
     }
 
     private void performOperation(String resetPowerDistribution, String increaseSystemsPower, String increaseEnginesPower) {
-        operateKeyboard(resetPowerDistribution, 0);
-        operateKeyboard(increaseSystemsPower, 0);
-        operateKeyboard(increaseSystemsPower, 0);
+        GameControllerBus.publish(new GameInputEvent(resetPowerDistribution, 0));
+        GameControllerBus.publish(new GameInputEvent(increaseSystemsPower, 0));
+        GameControllerBus.publish(new GameInputEvent(increaseSystemsPower, 0));
 
         log.info("Power distribution complete");
     }

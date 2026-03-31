@@ -1,7 +1,6 @@
 package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.dao.PirateMissionProviderDao.MissionProvider;
 import elite.intel.db.managers.HuntingGroundManager;
@@ -13,17 +12,12 @@ import elite.intel.session.PlayerSession;
 
 import java.util.List;
 
-public class NavigateToToKnownPirateMassacreMissionProvider extends CommandOperator implements CommandHandler {
+public class NavigateToToKnownPirateMassacreMissionProvider implements CommandHandler {
 
-    private final GameController controller;
     private final HuntingGroundManager huntingGroundManager = HuntingGroundManager.getInstance();
     private final LocationManager locationManager = LocationManager.getInstance();
     private final PlayerSession playerSession = PlayerSession.getInstance();
 
-    public NavigateToToKnownPirateMassacreMissionProvider(GameController controller) {
-        super(controller.getMonitor(), controller.getExecutor());
-        this.controller = controller;
-    }
 
     @Override public void handle(String action, JsonObject params, String responseText) {
         LocationDto location = locationManager.findByLocationData(playerSession.getLocationData());
@@ -48,7 +42,7 @@ public class NavigateToToKnownPirateMassacreMissionProvider extends CommandOpera
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("No Knowing mission providers. Searching..."));
             EventBusManager.publish(new UserInputEvent(" find hunting grounds", 100f));
         } else {
-            RoutePlotter plotter = new RoutePlotter(this.controller);
+            RoutePlotter plotter = new RoutePlotter();
             plotter.plotRoute(destination);
         }
     }

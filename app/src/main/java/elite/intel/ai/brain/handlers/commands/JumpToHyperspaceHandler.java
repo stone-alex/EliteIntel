@@ -1,9 +1,10 @@
 package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.hands.GameController;
+import elite.intel.ai.hands.events.GameInputEvent;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.gameapi.GameControllerBus;
 import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.data.FsdTarget;
 import elite.intel.session.PlayerSession;
@@ -13,18 +14,15 @@ import elite.intel.util.SleepNoThrow;
 
 import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.*;
 
-public class JumpToHyperspaceHandler extends CommandOperator implements CommandHandler {
+public class JumpToHyperspaceHandler implements CommandHandler {
 
     private final PlayerSession playerSession = PlayerSession.getInstance();
-    private final UINavigator navigator = new UINavigator(this);
+    private final UINavigator navigator = new UINavigator();
     private final Status status = Status.getInstance();
 
-    public JumpToHyperspaceHandler(GameController controller) {
-        super(controller.getMonitor(), controller.getExecutor());
-    }
 
     @Override public void handle(String action, JsonObject params, String responseText) {
-        operateKeyboard(BINDING_TARGET_NEXT_ROUTE_SYSTEM.getGameBinding(), 0);
+        GameControllerBus.publish(new GameInputEvent(BINDING_TARGET_NEXT_ROUTE_SYSTEM.getGameBinding(), 0));
         SleepNoThrow.sleep(800);
         FsdTarget fsdTarget = playerSession.getFsdTarget();
         if (fsdTarget != null) {
@@ -52,12 +50,12 @@ public class JumpToHyperspaceHandler extends CommandOperator implements CommandH
         } else if (status.isFsdCooldown()) {
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("FSD is on cooldown."));
         } else if (status.isFighterOut()) {
-            operateKeyboard(BINDING_REQUEST_REQUEST_DOCK.getGameBinding(), 0);
+            GameControllerBus.publish(new GameInputEvent(BINDING_REQUEST_REQUEST_DOCK.getGameBinding(), 0));
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("Fighter is still out. Can not comply."));
         } else if (status.isInMainShip()) {
-            PreFtlChecks.preJumpCheck(status, this, "Preparing for FTL.");
-            operateKeyboard(BINDING_SET_SPEED100.getGameBinding(), 0);
-            operateKeyboard(BINDING_JUMP_TO_HYPERSPACE.getGameBinding(), 0);
+            PreFtlChecks.preJumpCheck(status, "Preparing for FTL.");
+            GameControllerBus.publish(new GameInputEvent(BINDING_SET_SPEED100.getGameBinding(), 0));
+            GameControllerBus.publish(new GameInputEvent(BINDING_JUMP_TO_HYPERSPACE.getGameBinding(), 0));
         } else {
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("Get in to your ship, so we can blast out of here."));
         }

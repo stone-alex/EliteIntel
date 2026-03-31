@@ -2,7 +2,6 @@ package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.FuzzySearch;
 import elite.intel.db.managers.ReminderManager;
@@ -16,15 +15,10 @@ import java.util.List;
 import static elite.intel.util.StringUtls.capitalizeWords;
 import static elite.intel.util.StringUtls.getIntSafely;
 
-public class FindCommodityHandler extends CommandOperator implements CommandHandler {
+public class FindCommodityHandler implements CommandHandler {
 
-    private final GameController controller;
     private final PlayerSession playerSession = PlayerSession.getInstance();
 
-    public FindCommodityHandler(GameController commandHandler) {
-        super(commandHandler.getMonitor(), commandHandler.getExecutor());
-        this.controller = commandHandler;
-    }
 
     @Override public void handle(String action, JsonObject params, String responseText) {
 
@@ -64,7 +58,7 @@ public class FindCommodityHandler extends CommandOperator implements CommandHand
         EventBusManager.publish(new MissionCriticalAnnouncementEvent(reminder));
         reminderManager.setReminder(reminder);
 
-        RoutePlotter plotter = new RoutePlotter(this.controller);
+        RoutePlotter plotter = new RoutePlotter();
         plotter.plotRoute(result.getStarSystem());
     }
 }

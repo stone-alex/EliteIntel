@@ -1,20 +1,14 @@
 package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.Status;
 
-public class NavigateToMyFleetCarrier extends CommandOperator implements CommandHandler {
+public class NavigateToMyFleetCarrier implements CommandHandler {
 
-    private final GameController controller;
 
-    public NavigateToMyFleetCarrier(GameController commandHandler) {
-        super(commandHandler.getMonitor(), commandHandler.getExecutor());
-        this.controller = commandHandler;
-    }
 
     @Override public void handle(String action, JsonObject params, String responseText) {
 
@@ -35,7 +29,7 @@ public class NavigateToMyFleetCarrier extends CommandOperator implements Command
             }
 
             if (destination != null && !destination.isEmpty()) {
-                RoutePlotter plotter = new RoutePlotter(this.controller);
+                RoutePlotter plotter = new RoutePlotter();
                 plotter.plotRoute(destination);
             } else {
                 EventBusManager.publish(new MissionCriticalAnnouncementEvent("Carrier location not available."));

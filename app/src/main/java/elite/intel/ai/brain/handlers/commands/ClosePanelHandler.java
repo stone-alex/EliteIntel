@@ -1,19 +1,17 @@
 package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.hands.GameController;
+import elite.intel.ai.hands.events.GameInputEvent;
+import elite.intel.gameapi.GameControllerBus;
 import elite.intel.session.Status;
 import elite.intel.session.ui.UINavigator;
 
 import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_EXIT_KEY;
 
-public class ClosePanelHandler extends CommandOperator implements CommandHandler {
+public class ClosePanelHandler implements CommandHandler {
 
-    public ClosePanelHandler(GameController controller) {
-        super(controller.getMonitor(), controller.getExecutor());
-    }
 
-    private final UINavigator navigator = new UINavigator(this);
+    private final UINavigator navigator = new UINavigator();
     private final Status status = Status.getInstance();
 
     @Override
@@ -21,12 +19,12 @@ public class ClosePanelHandler extends CommandOperator implements CommandHandler
         navigator.closeOpenPanel();
 
         if (status.isSystemMapOpen() || status.isGalaxyMapOpen()) {
-            operateKeyboard(Bindings.GameCommand.BINDING_UI_LEFT.getGameBinding(), 0);
-            operateKeyboard(Bindings.GameCommand.BINDING_UI_RIGHT.getGameBinding(), 0);
+            GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_UI_LEFT.getGameBinding(), 0));
+            GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_UI_RIGHT.getGameBinding(), 0));
         }
         if (status.isGalaxyMapOpen() || status.isSystemMapOpen() || status.isStationServicesOpen() || status.isOrreryOpen()) {
             for (int i = 0; i < 10; i++) { ///  back out of all menus etc
-                operateKeyboard(BINDING_EXIT_KEY.getGameBinding(), 0);
+                GameControllerBus.publish(new GameInputEvent(BINDING_EXIT_KEY.getGameBinding(), 0));
             }
         }
     }

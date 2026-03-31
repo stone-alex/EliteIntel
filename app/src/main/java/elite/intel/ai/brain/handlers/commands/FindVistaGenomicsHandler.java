@@ -1,7 +1,6 @@
 package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.dao.LocationDao;
 import elite.intel.db.managers.LocationManager;
@@ -15,14 +14,9 @@ import elite.intel.util.json.GetNumberFromParam;
 import java.util.List;
 import java.util.Optional;
 
-public class FindVistaGenomicsHandler extends CommandOperator implements CommandHandler {
+public class FindVistaGenomicsHandler implements CommandHandler {
 
-    private final GameController controller;
 
-    public FindVistaGenomicsHandler(GameController controller) {
-        super(controller.getMonitor(), controller.getExecutor());
-        this.controller = controller;
-    }
 
     @Override public void handle(String action, JsonObject params, String responseText) {
         Number range = GetNumberFromParam.extractRangeParameter(params, 250);
@@ -56,7 +50,7 @@ public class FindVistaGenomicsHandler extends CommandOperator implements Command
         }
 
         Optional<VistaGenomicsLocationDto.Result> first = results.stream().findFirst();
-        RoutePlotter routePlotter = new RoutePlotter(this.controller);
+        RoutePlotter routePlotter = new RoutePlotter();
         VistaGenomicsLocationDto.Result result = first.get();
 
         String reminder = "Head to " + result.getSystemName() + " star system. When you get there looks for" + result.getStationName();

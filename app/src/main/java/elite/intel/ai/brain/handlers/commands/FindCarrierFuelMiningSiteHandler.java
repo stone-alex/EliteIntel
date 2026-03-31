@@ -1,7 +1,6 @@
 package elite.intel.ai.brain.handlers.commands;
 
 import com.google.gson.JsonObject;
-import elite.intel.ai.hands.GameController;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.db.dao.LocationDao;
 import elite.intel.db.managers.LocationManager;
@@ -18,14 +17,9 @@ import elite.intel.util.json.GetNumberFromParam;
 import java.util.Optional;
 
 
-public class FindCarrierFuelMiningSiteHandler extends CommandOperator implements CommandHandler {
+public class FindCarrierFuelMiningSiteHandler implements CommandHandler {
 
-    final private GameController gameController;
 
-    public FindCarrierFuelMiningSiteHandler(GameController gameController) {
-        super(gameController.getMonitor(), gameController.getExecutor());
-        this.gameController = gameController;
-    }
 
     @Override public void handle(String action, JsonObject params, String responseText) {
         Status status = Status.getInstance();
@@ -61,7 +55,7 @@ public class FindCarrierFuelMiningSiteHandler extends CommandOperator implements
             EventBusManager.publish(new MissionCriticalAnnouncementEvent(reminder));
             ReminderManager reminderManager = ReminderManager.getInstance();
             reminderManager.setReminder(reminder);
-            RoutePlotter routePlotter = new RoutePlotter(this.gameController);
+            RoutePlotter routePlotter = new RoutePlotter();
             routePlotter.plotRoute(result.get().getSystemName());
 
         } else {

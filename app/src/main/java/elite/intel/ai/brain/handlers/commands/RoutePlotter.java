@@ -1,6 +1,5 @@
 package elite.intel.ai.brain.handlers.commands;
 
-import elite.intel.ai.hands.GameController;
 import elite.intel.ai.hands.KeyProcessor;
 import elite.intel.ai.hands.events.EnterTextEvent;
 import elite.intel.ai.hands.events.GameInputEvent;
@@ -14,12 +13,12 @@ import elite.intel.util.AudioPlayer;
 
 import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.*;
 
-public class RoutePlotter extends CommandOperator {
+public class RoutePlotter {
 
 
-    private final UINavigator navigator = new UINavigator(this);
-    public RoutePlotter(GameController cameController) {
-        super(cameController.getMonitor(), cameController.getExecutor());
+    private final UINavigator navigator = new UINavigator();
+
+    public RoutePlotter() {
     }
 
     public void plotRoute(String destination) {

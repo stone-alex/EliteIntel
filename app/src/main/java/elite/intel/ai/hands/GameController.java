@@ -2,8 +2,10 @@ package elite.intel.ai.hands;
 
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.commands.Commands;
+import elite.intel.ai.hands.events.GameInputEvent;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.gameapi.GameControllerBus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -35,6 +37,7 @@ public class GameController {
     public GameController() throws Exception {
         this.executor = KeyBindingExecutor.getInstance();
         this.monitor = BindingsMonitor.getInstance();
+        new HandsSubscriber();
         log.info("GameCommandHandler initialized");
     }
 
@@ -122,19 +125,11 @@ public class GameController {
             return;
         }
 
-        log.debug("Updated SessionTracker with action: {}, params: {}", action, params);
-        KeyBindingsParser.KeyBinding binding = monitor.getBindings().get(action);
-        if (binding == null) {
-            binding = monitor.getBindings().get(Commands.getGameBinding(action));
-        }
-
-        if (binding != null) {
-            executor.executeBinding(binding);
-            log.info("Executed action: {} with key: {}", action, binding.key);
-        } else {
-            log.warn("No binding found for action: {}", action);
-            handleChat("No key binding found for that action.");
-        }
+        log.debug("Dispatching action: {}, params: {}", action, params);
+        String resolvedId = monitor.getBindings().containsKey(action)
+                ? action
+                : Commands.getGameBinding(action);
+        GameControllerBus.publish(new GameInputEvent(resolvedId, 0));
     }
 
     private void handleChat(String responseText) {

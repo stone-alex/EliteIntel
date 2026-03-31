@@ -2,14 +2,11 @@ package elite.intel.ai.brain.handlers.commands;
 
 import elite.intel.ai.hands.BindingsMonitor;
 import elite.intel.ai.hands.KeyBindingExecutor;
-import elite.intel.ai.hands.KeyBindingsParser;
-import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
-import elite.intel.gameapi.EventBusManager;
-import elite.intel.session.ui.UINavigator;
+import elite.intel.ai.hands.events.GameInputEvent;
+import elite.intel.ai.hands.events.GameTapEvent;
+import elite.intel.gameapi.GameControllerBus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import static elite.intel.util.SleepNoThrow.sleep;
 
 /**
  * CustomCommandOperator serves as a base class for handling custom keyboard operations
@@ -40,15 +37,7 @@ public class CommandOperator {
      *                          executing the binding.
      */
     public void operateKeyboard(String bindingIdentifier, int holdTime) {
-        KeyBindingsParser.KeyBinding binding = monitor.getBindings().get(bindingIdentifier);
-
-        if (binding != null) {
-            executor.executeBindingWithHold(binding, holdTime);
-        } else {
-            log.warn("No binding found for action: {}", bindingIdentifier);
-            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Custom command operator. No key binding found for " + bindingIdentifier));
-        }
-        sleep(UINavigator.randomDelay());
+        GameControllerBus.publish(new GameInputEvent(bindingIdentifier, holdTime));
     }
 
     /**
@@ -59,15 +48,6 @@ public class CommandOperator {
      * Applies a random delay after tap.
      */
     public void operateKeyboardTap(String bindingIdentifier) {
-        KeyBindingsParser.KeyBinding binding = monitor.getBindings().get(bindingIdentifier);
-
-        if (binding != null) {
-            log.debug("Tap binding: key={}, ignoring hold flag={}", binding.key, binding.hold);
-            executor.executeTap(binding);
-        } else {
-            log.warn("No binding found for action: {}", bindingIdentifier);
-            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Custom command operator. No key binding found for " + bindingIdentifier));
-        }
-        sleep(UINavigator.randomDelay());
+        GameControllerBus.publish(new GameTapEvent(bindingIdentifier));
     }
 }

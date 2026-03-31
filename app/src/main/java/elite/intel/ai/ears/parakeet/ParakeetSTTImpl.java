@@ -303,7 +303,7 @@ public class ParakeetSTTImpl implements EarsInterface {
             } catch (java.util.concurrent.TimeoutException e) {
                 future.cancel(true);
                 log.error("Speech To Text hung after {}s - replacing executor", INFERENCE_TIMEOUT_SEC);
-                EventBusManager.publish(new AiVoxResponseEvent("STT inference hung after " + INFERENCE_TIMEOUT_SEC + "s - replacing executor"));
+                EventBusManager.publish(new AiVoxResponseEvent("STT hung. Restarting process."));
                 transcriptionExecutor.shutdownNow();
                 transcriptionExecutor = Executors.newSingleThreadExecutor(r -> {
                     Thread t = new Thread(r, "Parakeet-Transcription");

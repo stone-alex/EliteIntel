@@ -2,9 +2,12 @@ package elite.intel.ai.brain.handlers.commands;
 
 import elite.intel.ai.hands.GameController;
 import elite.intel.ai.hands.KeyProcessor;
+import elite.intel.ai.hands.events.EnterTextEvent;
+import elite.intel.ai.hands.events.RawKeyEvent;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.db.managers.ShipRouteManager;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.gameapi.GameControllerBus;
 import elite.intel.session.ui.UINavigator;
 import elite.intel.util.AudioPlayer;
 
@@ -45,13 +48,12 @@ public class RoutePlotter extends CommandOperator {
             String activate = BINDING_ACTIVATE.getGameBinding();
             operateKeyboard(activate, 0);
             Thread.sleep(200);
-            KeyProcessor keyProcessor = KeyProcessor.getInstance();
-            keyProcessor.enterText(destination);
+            GameControllerBus.publish(new EnterTextEvent(destination));
             Thread.sleep(250);
-            keyProcessor.pressKey(KeyProcessor.KEY_DOWNARROW);
-            keyProcessor.pressKey(KeyProcessor.KEY_ENTER);
+            GameControllerBus.publish(new RawKeyEvent(KeyProcessor.KEY_DOWNARROW));
+            GameControllerBus.publish(new RawKeyEvent(KeyProcessor.KEY_ENTER));
             Thread.sleep(1000);
-            keyProcessor.pressKey(KeyProcessor.KEY_ENTER);
+            GameControllerBus.publish(new RawKeyEvent(KeyProcessor.KEY_ENTER));
 
 //            //glide time
 //            operateKeyboard(BINDING_CAM_ZOOM_OUT.getGameBinding(), 60);

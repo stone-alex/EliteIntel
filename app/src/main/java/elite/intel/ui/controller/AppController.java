@@ -93,18 +93,6 @@ public class AppController implements Runnable {
         EventBusManager.publish(new AiVoxResponseEvent(event.isOn() ? ignoreModeOnMessage() : ignoreModeOffMessage()));
     }
 
-/*    @Subscribe
-    public void togglePrivacyMode(TogglePrivacyModeEvent event) {
-        EarsInterface ears = services.get(ServiceType.EARS).get();
-        if (ears != null) {
-            if (event.isEnabled()) {
-                ears.stop();
-            } else {
-                ears.start();
-            }
-        }
-    }*/
-
     private String ignoreModeOffMessage() {
         return "I am listening.";
     }

@@ -105,6 +105,7 @@ public class ResponseRouter implements AIRouterInterface {
         }
 
         try {
+            EventBusManager.publish(new HandlerDispatchedEvent(action, handler.getClass().getSimpleName(), false));
             JsonObject dataJson = handler.handle(action, params, userInput);
             if (dataJson == null) return;
             String responseTextToUse = dataJson.has(AIConstants.PROPERTY_TEXT_TO_SPEECH_RESPONSE) ? dataJson.get(AIConstants.PROPERTY_TEXT_TO_SPEECH_RESPONSE).getAsString() : "";
@@ -152,6 +153,7 @@ public class ResponseRouter implements AIRouterInterface {
         EventBusManager.publish(new AppLogEvent("Command handler: " + handler.getClass().getSimpleName()));
         new Thread(() -> {
             try {
+                EventBusManager.publish(new HandlerDispatchedEvent(action, handler.getClass().getSimpleName(), true));
                 handler.handle(action, params, responseText);
             } catch (Exception e) {
                 EventBusManager.publish(new AiVoxResponseEvent("Error processing command for action " + action + " see logs."));

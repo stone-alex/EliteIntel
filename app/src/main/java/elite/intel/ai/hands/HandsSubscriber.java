@@ -35,6 +35,7 @@ public class HandsSubscriber {
 
     @Subscribe
     public void onGameInput(GameInputEvent event) {
+        if (monitor.getBindings() == null) return;
         KeyBindingsParser.KeyBinding binding = monitor.getBindings().get(event.getBindingId());
         if (binding != null) {
             executor.executeBindingWithHold(binding, event.getHoldTime());
@@ -48,6 +49,7 @@ public class HandsSubscriber {
 
     @Subscribe
     public void onGameTap(GameTapEvent event) {
+        if (monitor.getBindings() == null) return;
         KeyBindingsParser.KeyBinding binding = monitor.getBindings().get(event.getBindingId());
         if (binding != null) {
             log.debug("Tap binding: key={}, ignoring hold flag={}", binding.key, binding.hold);

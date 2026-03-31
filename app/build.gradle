@@ -13,6 +13,9 @@ repositories {
 }
 
 dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.11.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.11.0'
+
     // Text to Speech
     implementation 'com.google.cloud:google-cloud-texttospeech:2.73.0'
 
@@ -117,6 +120,28 @@ shadowJar {
     }
     mergeServiceFiles()
     destinationDirectory = file("${rootProject.projectDir}/distribution")
+}
+
+// Default test task — exclude local-integration tests so CI never tries to call Ollama
+test {
+    useJUnitPlatform {
+        excludeTags 'local-integration'
+    }
+}
+
+// Run with: ./gradlew localIntegrationTest
+// Requires: Ollama (or configured LLM) running, app DB populated from at least one normal run
+tasks.register('localIntegrationTest', Test) {
+    description = 'Routing sanity check against live LLM. Not for CI.'
+    group = 'verification'
+    useJUnitPlatform {
+        includeTags 'local-integration'
+    }
+    maxParallelForks = 1
+    testLogging {
+        events 'passed', 'failed', 'skipped'
+        exceptionFormat 'full'
+    }
 }
 
 // Ensure only the fat JAR is produced and used by assemble/build

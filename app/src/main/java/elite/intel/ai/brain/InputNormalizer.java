@@ -192,11 +192,11 @@ public class InputNormalizer {
         SYNONYM_MAP.put("fss scan", "scan the system");
         SYNONYM_MAP.put("open fss and scan", "scan the system");
         SYNONYM_MAP.put("system scan", "scan the system");
-        // new additions
         SYNONYM_MAP.put("scan system", "scan the system");
         SYNONYM_MAP.put("run a scan", "scan the system");
         SYNONYM_MAP.put("perform system scan", "scan the system");
         SYNONYM_MAP.put("discovery scan", "scan the system");
+        SYNONYM_MAP.put("where are we", "current location");
 
         // dismiss / send away
         SYNONYM_MAP.put("go play", "dismiss ship");
@@ -221,6 +221,7 @@ public class InputNormalizer {
         // stop listening / ignore user
         SYNONYM_MAP.put("sleep", "ignore me");
         SYNONYM_MAP.put("stop listening", "ignore me");
+        SYNONYM_MAP.put("do not monitor", "ignore me");
 
         // start listening
         SYNONYM_MAP.put("listen up", "start listening");

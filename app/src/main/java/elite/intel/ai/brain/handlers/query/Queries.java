@@ -5,10 +5,10 @@ public enum Queries {
 
     /// ########################################################################################################################################
     ///HELP                                ("help",                                         HelpHandler.class),
-    BIO_SAMPLE_IN_STAR_SYSTEM           ("query_bio_signals_in_star_system",            AnalyzeBioSignalsStarSystemHandler.class),
+    BIO_SAMPLE_IN_STAR_SYSTEM           ("query_bio_scans_and_samples_in_star_system",            AnalyzeBioScansStarSystemHandler.class),
     EXOBIOLOGY_SAMPLES                  ("query_exobiology_samples",                    AnalyzeBioSamplesPlanetSurfaceHandler.class),
     QUERY_STELLAR_OBJETS                ("query_stellar_objects",                       AnalyzeStellarObjectsHandler.class),
-    QUERY_STELLAR_SIGNALS               ("query_signals",                               AnalyzeStellarSignalsHandler.class),
+    QUERY_STELLAR_SIGNALS               ("query_signals_in_star_system",                               AnalyzeStellarSignalsHandler.class),
     QUERY_GEO_SIGNALS                   ("query_geo_signals",                           AnalyzeGeologyInStarSystemHandler.class),
     QUERY_STATIONS                      ("query_stations",                              AnalyzeStationsHandler.class),
     ANALYZE_MARKETS                     ("query_markets",                               AnalyzeMarkets.class),
@@ -22,7 +22,6 @@ public enum Queries {
     PLANET_MATERIALS                    ("query_planet_materials",                      AnalyzeMaterialsOnPlanetHandler.class),
     EXPLORATION_PROFITS                 ("query_exploration_profits",                   AnalyzeExplorationProfitsHandler.class),
     CURRENT_LOCATION                    ("query_current_location",                      AnalyzeCurrentLocationHandler.class),
-    SHIP_FUEL_STATUS                    ("query_fuel_status",                           AnalyzeFuelStatusHandler.class),
     FSD_TARGET_ANALYSIS                 ("query_fsd_target",                            AnalyzeFsdTargetHandler.class),
     TRADE_ROUTE_ANALYSIS                ("query_trade_route",                           AnalyzeTradeScheduleHandler.class),
     LOCAL_OUTFITTING                    ("query_local_outfitting",                      AnalyzeLocalOutfittingHandler.class),

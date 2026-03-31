@@ -735,17 +735,6 @@ public class RoutingIntegrationTest {
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
-    @Order(201)
-    @MethodSource
-    void queryFuelStatus(String input) throws InterruptedException {
-        assertRouted(input, SHIP_FUEL_STATUS.getAction());
-    }
-
-    static Stream<String> queryFuelStatus() {
-        return Stream.of("fuel status", "how much fuel", "fuel level", "are we low on fuel");
-    }
-
-    @ParameterizedTest(name = "[{index}] \"{0}\"")
     @Order(202)
     @MethodSource
     void queryShipLoadout(String input) throws InterruptedException {
@@ -775,7 +764,7 @@ public class RoutingIntegrationTest {
     }
 
     static Stream<String> queryPlottedRoute() {
-        return Stream.of("plotted route", "jumps remaining", "how many jumps", "next star scoopable?", "is fuel available on the route?");
+        return Stream.of("plotted route", "jumps remaining", "how many jumps remain", "is next star scoopable?", "is fuel available on the route?");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -797,7 +786,7 @@ public class RoutingIntegrationTest {
     }
 
     static Stream<String> queryStellarObjects() {
-        return Stream.of("stellar objects", "planets in system", "bodies in system", "what planets");
+        return Stream.of("stellar objects", "planets in system", "how many landable planets", "what planets are landable");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -819,7 +808,7 @@ public class RoutingIntegrationTest {
     }
 
     static Stream<String> queryBioScanProgress() {
-        return Stream.of("bio scans in star system", "biosignals", "bio signals in system", "organics in system");
+        return Stream.of("are there bio signal in star system", "bio scan remaining in the star system", "organics in system");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")

@@ -39,10 +39,10 @@ public class AiActionsMap {
         map.put("navigate to coordinates {lat:X, lon:Y}", NAVIGATE_TO_TARGET.getAction());
         map.put("navigate to active mission, plot route to mission, take me to mission, go to mission {key:X}", NAVIGATE_TO_NEXT_MISSION.getAction());
         map.put("navigate to fleet carrier, go to carrier, head to carrier, return to carrier, take us to carrier", NAVIGATE_TO_CARRIER.getAction());
-        map.put("navigate to landing zone, bearing to landing zone, heading to landing zone, find landing zone", GET_HEADING_TO_LZ.getAction());
+        map.put("navigate to landing zone, bearing to landing zone, heading to landing zone, back to LZ", GET_HEADING_TO_LZ.getAction());
         map.put("navigate to next trade stop, go to next trade stop", NAVIGATE_TO_NEXT_TRADE_STOP.getAction());
         map.put("navigate from memory, paste from memory", NAVIGATE_TO_ADDRESS_FROM_MEMORY.getAction());
-        map.put("cancel navigation, abort navigation, clear route, stop navigation", NAVIGATION_OFF.getAction());
+        map.put("cancel navigation, abort navigation, stop navigation", NAVIGATION_OFF.getAction());
         map.put("target destination", TARGET_DESTINATION.getAction());
         map.put("jump to hyperspace,  jump, hyperspace jump, enter hyperspace, lets go, next way point", JUMP_TO_HYPERSPACE.getAction());
         map.put("drop from supercruise, ftl, drop out, leave supercruise, drop in", DROP_FROM_SUPER_CRUISE.getAction());
@@ -84,7 +84,7 @@ public class AiActionsMap {
         map.put("set carrier fuel reserve, carrier tritium reserve {key:X}", SET_CARRIER_FUEL_RESERVE.getAction());
         map.put("calculate fleet carrier route, plan carrier route, carrier jump route", CALCULATE_FLEET_CARRIER_ROUTE.getAction());
         map.put("enter carrier destination, set carrier destination, carrier destination", ENTER_FLEET_CARRIER_DESTINATION.getAction());
-        map.put("clear fleet carrier route, cancel carrier route, abort carrier jump", CLEAR_FLEET_CARRIER_ROUTE.getAction());
+        map.put("clear fleet carrier route, cancel carrier route", CLEAR_FLEET_CARRIER_ROUTE.getAction());
 
         // trade
         map.put("calculate trade route", CALCULATE_TRADE_ROUTE.getAction());
@@ -202,11 +202,11 @@ public class AiActionsMap {
             //map.put("help with topic {key:X}", HELP.getAction());
         }
         map.put("check key bindings, missing key bindings, unbound keys, keyboard bindings, keybind check, missing bindings", KEY_BINDINGS_ANALYSIS.getAction());
-        map.put("bio signals done within the star system, organics scanned in star system, how many bio samples in star system, bio signals in system, biosignals, biological signals in star system, organics in system, which planets have bio signals", BIO_SAMPLE_IN_STAR_SYSTEM.getAction());
+        map.put("bio signals done within the star system, organics scanned in star system, how many bio samples in star system, bio signals in system, bio samples in star system, biological signals in star system, organics in system, which planets have bio signals", BIO_SAMPLE_IN_STAR_SYSTEM.getAction());
         map.put("exobiology samples, biology samples, organics at location, what organisms, what's left to scan, remaining organisms, samples left, organisms remaining, exobiology progress, scan remaining", EXOBIOLOGY_SAMPLES.getAction());
         map.put("distance to last bio sample, how far to sample, how far to last organism, range to bio sample, how far to previous organism, navigate to bio sample", DISTANCE_TO_LAST_BIO_SAMPLE.getAction());
         map.put("analyze biome, biome analysis, what biome {key:X}, planetary biome, atmosphere analysis, what life is here, biome type", PLANET_BIOME_ANALYSIS.getAction());
-        map.put("stellar objects, planets in system, is planet or moon landable, bodies in system, what planets, how many planets, system bodies, stellar bodies, what's in this system", QUERY_STELLAR_OBJETS.getAction());
+        map.put("stellar objects, planets in system, landable planets, is planet or moon landable, bodies in system, what planets, how many planets, system bodies, stellar bodies, what's in this system", QUERY_STELLAR_OBJETS.getAction());
         map.put("signals in system, FSS signals, mining hot spots, resource extraction sites, what signals, conflict zones, emissions, unidentified signals, system signals, detected signals, anomalous signals", QUERY_STELLAR_SIGNALS.getAction());
         map.put("geo signals, geological signals, volcanic signals, geological activity, volcanic activity, geology in system", QUERY_GEO_SIGNALS.getAction());
         map.put("stations in system, what stations, nearby stations, star ports, space stations, docking available", QUERY_STATIONS.getAction());
@@ -225,13 +225,12 @@ public class AiActionsMap {
         map.put("planet materials, materials here, what materials on this planet, surface materials, what materials are here, material deposits, minerals on planet", PLANET_MATERIALS.getAction());
         map.put("exploration profits, discovery profits, how much exploration worth, exploration value, scan value, mapping profit, exobiology value, scan earnings, what are scans worth", EXPLORATION_PROFITS.getAction());
         map.put("current location, where are we, our position, what system are we in, where am i, our coordinates, current system, what planet are we at, our current position", CURRENT_LOCATION.getAction());
-        map.put("fuel status, fuel level, how much fuel, fuel remaining, are we low on fuel, fuel check, do we have enough fuel, tank level, fuel gauge", SHIP_FUEL_STATUS.getAction());
         map.put("FSD target info, analyze destination, what star are we targeting, analyze fsd target, information on fsd target", FSD_TARGET_ANALYSIS.getAction());
         map.put("plotted route, fuel at next stop, fuel availability on route, route analysis, current route, navigation route, jumps remaining, jumps left, how many jumps, next star scoopable, fuel stop", PLOTTED_ROUTE_ANALYSIS.getAction());
         map.put("trade route, trading route, current trade plan, what are we trading, our trading plan, trading schedule, trade legs", TRADE_ROUTE_ANALYSIS.getAction());
         map.put("outfitting, ship upgrades, modules available, what modules at station, available modules, available equipment, buy modules, ship parts, station equipment", LOCAL_OUTFITTING.getAction());
         map.put("shipyard, ships for sale, what ships at station, buy a ship, available ships, ships to buy, new ship", LOCAL_SHIPYARD.getAction());
-        map.put("cargo hold, what are we carrying, cargo contents, commodities on board, cargo manifest, what are we hauling, hold contents, commodity inventory, trading commodities", CARGO_HOLD_CONTENTS.getAction());
+        map.put("what is in our cargo hold, what are we carrying, cargo contents, commodities on board, what are we hauling, hold contents", CARGO_HOLD_CONTENTS.getAction());
         map.put("player profile, my ranks, progress, combat rank, trade rank, exploration rank, commander stats, pilot rank, our ranking, commander profile, what rank are we", PLAYER_PROFILE_ANALYSIS.getAction());
         map.put("ship loadout, damage report, ship modules, combat readiness report, ship equipment, ship specs, what am I flying, what are we equipped with, do you have, is it equipped, shield generator, hull reinforcement, sensors, thrusters, frameshift, fuel scoop, installed", SHIP_LOADOUT.getAction());
         map.put("station details, station services, what services here, what does station offer, station info, station facilities, what's at this station, services available", STATION_DETAILS.getAction());

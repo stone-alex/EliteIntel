@@ -15,7 +15,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-public class AnalyzeBioSignalsStarSystemHandler extends BaseQueryAnalyzer implements QueryHandler {
+public class AnalyzeBioScansStarSystemHandler extends BaseQueryAnalyzer implements QueryHandler {
 
     private final PlayerSession playerSession = PlayerSession.getInstance();
     private final LocationManager locationManager = LocationManager.getInstance();
@@ -33,7 +33,7 @@ public class AnalyzeBioSignalsStarSystemHandler extends BaseQueryAnalyzer implem
                 - partialSamples: individual genus samples that are in progress (1 or 2 of 3 taken) with how many scans still needed
                 
                 Rules:
-                - If asked which planets have bio signals remaining: use planetsRequireBioScans.
+                - If asked which planets have bio scans remaining: use planetsRequireBioScans.
                 - If asked about partial or in-progress scans: use partialSamples.
                 - Be concise. List names and counts only.
                 """;

@@ -66,6 +66,7 @@ public class PromptFactory implements AiPromptFactory {
                 - Never confuse "carrier balance" (finances) with "balance power" (power distribution)
                 - Never confuse "bio signals" (potential organic colonies) with "bio scans" (scanned and verified genus)
                 - Never confuse "in system" (within star system) with "this location" (current planet / moon)
+                - Never confuse "signals" with "stellar objects"
                 - distance to bubble is distance from our stellar coordinates to the center of the coordinate system (0,0,0)
                 - For "progress, rank, player stats" → 'query_player_profile_rank_progress' do not confuse with "profits for exploration, missions or bounties"
                 

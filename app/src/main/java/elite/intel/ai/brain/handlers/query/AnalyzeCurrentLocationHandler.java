@@ -80,11 +80,26 @@ public class AnalyzeCurrentLocationHandler extends BaseQueryAnalyzer implements 
                                 trafficDto.getData() == null ? null : trafficDto.getData().getTraffic(),
                                 (int) location.getRadius(),
                                 (surfaceTemperatureInKelvin - 273),
-                                getFormattedSolarDayLength(location.getRotationPeriod(), location.getOrbitalPeriod(), location.isTidalLocked())
+                                computeSolarDayLength(location)
                         )
                 ),
                 originalUserInput
         );
+    }
+
+    private String computeSolarDayLength(LocationDto location) {
+        // Moons tidally locked to a planet: their solar day equals the parent planet's orbital period around the star,
+        // not the moon's own rotation/orbital period around the planet.
+        if (location.isTidalLocked()
+                && LocationDto.LocationType.MOON.equals(location.getLocationType())
+                && location.getParentBodyId() > 0) {
+            LocationDto parentPlanet = locationManager.getLocation(location.getStarName(), location.getParentBodyId());
+            double parentOrbitalPeriod = parentPlanet.getOrbitalPeriod();
+            if (parentOrbitalPeriod > 0) {
+                return formatSecondsToHoursMinutes(parentOrbitalPeriod);
+            }
+        }
+        return getFormattedSolarDayLength(location.getRotationPeriod(), location.getOrbitalPeriod(), location.isTidalLocked());
     }
 
     private String getFormattedSolarDayLength(double rotationPeriodSeconds, double orbitalPeriodSeconds, boolean isTidallyLocked) {

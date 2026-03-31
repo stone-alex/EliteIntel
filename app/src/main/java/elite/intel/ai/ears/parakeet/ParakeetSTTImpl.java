@@ -27,8 +27,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static elite.intel.ai.brain.AIConstants.passThroughWords;
-import static elite.intel.ai.brain.AIConstants.trashSttWords;
+import static elite.intel.ai.brain.Reducer.passThroughWords;
+import static elite.intel.ai.brain.Reducer.trashSttWords;
 import static elite.intel.gameapi.AudioMonitorBus.publish;
 import static java.util.Arrays.copyOf;
 
@@ -299,7 +299,8 @@ public class ParakeetSTTImpl implements EarsInterface {
                 future.get(INFERENCE_TIMEOUT_SEC, TimeUnit.SECONDS);
             } catch (java.util.concurrent.TimeoutException e) {
                 future.cancel(true);
-                log.error("Parakeet inference hung after {}s - replacing executor", INFERENCE_TIMEOUT_SEC);
+                log.error("Speech To Text hung after {}s - replacing executor", INFERENCE_TIMEOUT_SEC);
+                EventBusManager.publish(new AiVoxResponseEvent("STT inference hung after " + INFERENCE_TIMEOUT_SEC + "s - replacing executor"));
                 transcriptionExecutor.shutdownNow();
                 transcriptionExecutor = Executors.newSingleThreadExecutor(r -> {
                     Thread t = new Thread(r, "Parakeet-Transcription");

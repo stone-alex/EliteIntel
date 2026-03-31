@@ -3,12 +3,10 @@ package elite.intel.ai.brain;
 import elite.intel.session.Status;
 import elite.intel.session.SystemSession;
 
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
+import static elite.intel.ai.brain.Reducer.formatActions;
 import static elite.intel.ai.brain.commons.AiEndPoint.CONNECTION_CHECK_COMMAND;
 import static elite.intel.ai.brain.handlers.commands.Commands.*;
 import static elite.intel.ai.brain.handlers.query.Queries.*;
@@ -19,24 +17,15 @@ public class AiActionsMap {
     private final SystemSession systemSession = SystemSession.getInstance();
     private final Status status = Status.getInstance();
 
-    // Words too common to be useful for filtering
-    private static final Set<String> STOP_WORDS = Set.of(
-            "a", "an", "the", "to", "of", "in", "on", "at", "by", "for",
-            "with", "and", "or", "is", "are", "am", "be", "do", "does",
-            "what", "where", "how", "which", "any", "our", "my", "me",
-            "we", "us", "i", "you", "it", "this", "that", "get", "have",
-            "has", "can", "could", "would", "should", "not", "no", "up",
-            "here", "there", "some", "much", "many"
-    );
-
     private AiActionsMap() {
+        // ensure singleton pattern
     }
 
     public static AiActionsMap getInstance() {
         return INSTANCE;
     }
 
-    private Map<String, String> buildActionsMap() {
+    public Map<String, String> actionMap() {
         Map<String, String> map = new LinkedHashMap<>();
 
         // always available
@@ -69,7 +58,7 @@ public class AiActionsMap {
         map.put("full throttle, 100 percent, full speed, maximum speed, max throttle", SET_SPEED100.getAction());
         map.put("increase speed by {key:X}", INCREASE_SPEED_BY.getAction());
         map.put("decrease speed by {key:X}", DECREASE_SPEED_BY.getAction());
-        map.put("set optimal speed, optimal approach speed, approach speed", SET_OPTIMAL_SPEED.getAction());
+        map.put("set optimal speed, optimal approach speed, optimize approach speed", SET_OPTIMAL_SPEED.getAction());
 
         // flight / ship systems
         map.put("landing gear, gear down, lower landing gear, extend landing gear", DEPLOY_LANDING_GEAR.getAction());
@@ -148,7 +137,7 @@ public class AiActionsMap {
         map.put("show, open or display status panel", SHOW_STATUS_PANEL.getAction());
         map.put("show, open or display carrier management panel", DISPLAY_CARRIER_MANAGEMENT.getAction());
         map.put("show, open or display galaxy map", OPEN_GALAXY_MAP.getAction());
-        map.put("show, open or display system map", OPEN_SYSTEM_MAP.getAction());
+        map.put("show, open or display local / stat system map", OPEN_SYSTEM_MAP.getAction());
         map.put("exit close panel", EXIT_CLOSE.getAction());
         map.put("power to shields, max shields, boost shields", INCREASE_SHIELDS_POWER.getAction());
         map.put("power to engines, max engines, boost engines", INCREASE_ENGINES_POWER.getAction());
@@ -257,55 +246,9 @@ public class AiActionsMap {
     }
 
     /**
-     * Returns the full action list formatted for the LLM prompt, optionally
-     * filtered to only those actions whose key contains a word from the
-     * normalized user input.
-     * <p>
-     * Falls back to the full map if fewer than MIN_MATCH_THRESHOLD actions match,
-     * to avoid over-filtering on ambiguous or low-signal input.
-     */
-    public String getActions(String normalizedInput) {
-        Map<String, String> full = buildActionsMap();
-        Map<String, String> filtered = filterByInput(normalizedInput, full);
-        Map<String, String> source = !filtered.isEmpty() ? filtered : full;
-        return formatActions(source);
-    }
-
-    /**
      * Returns the full unfiltered action list (used by capability queries).
      */
     public String getActions() {
-        return formatActions(buildActionsMap());
-    }
-
-    private Map<String, String> filterByInput(String normalizedInput, Map<String, String> full) {
-        if (normalizedInput == null || normalizedInput.isBlank()) return full;
-
-        Set<String> inputWords = Arrays.stream(normalizedInput.toLowerCase().split("\\W+"))
-                .filter(w -> w.length() > 2)
-                .filter(w -> !STOP_WORDS.contains(w))
-                .collect(Collectors.toSet());
-
-        if (inputWords.isEmpty()) return full;
-
-        Map<String, String> result = new LinkedHashMap<>();
-        for (Map.Entry<String, String> entry : full.entrySet()) {
-            String keyLower = entry.getKey().toLowerCase();
-            for (String word : inputWords) {
-                if (keyLower.contains(word)) {
-                    result.put(entry.getKey(), entry.getValue());
-                    break;
-                }
-            }
-        }
-        return result;
-    }
-
-    private String formatActions(Map<String, String> map) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("ACTIONS (use ONLY these exact action names):\n\n");
-        map.forEach((key, action) ->
-                sb.append("  ").append(action).append(" ← ").append(key).append("\n"));
-        return sb.toString();
+        return formatActions(actionMap());
     }
 }

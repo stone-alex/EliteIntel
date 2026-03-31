@@ -11,7 +11,6 @@ import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.mouth.subscribers.events.MissionCriticalAnnouncementEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.ChatHistory;
-import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.StringUtls;
@@ -32,14 +31,12 @@ public class ResponseRouter implements AIRouterInterface {
     private final Map<String, CommandHandler> commandHandlers;
     private final Map<String, QueryHandler> queryHandlers;
     private final SystemSession systemSession;
-    private final PlayerSession playerSession;
 
     private ResponseRouter() {
         try {
             commandHandlers = CommandHandlerFactory.getInstance().registerCommandHandlers();
             queryHandlers = QueryHandlerFactory.getInstance().registerQueryHandlers();
             this.systemSession = SystemSession.getInstance();
-            this.playerSession = PlayerSession.getInstance();
         } catch (Exception e) {
             log.error("Failed to initialize ResponseRouter", e);
             throw new RuntimeException("ResponseRouter initialization failed", e);

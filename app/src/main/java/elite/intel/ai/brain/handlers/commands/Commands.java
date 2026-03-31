@@ -73,8 +73,8 @@ public enum Commands {
     INCREASE_WEAPONS_POWER                              ("transfer_power_to_weapons", null,  SetPowerToWeaponsHandler.class),
     RESET_POWER                                         ("equalize_power", null,  ResetPowerSettings.class),
 
-    OPEN_GALAXY_MAP                                     ("open_galaxy_map", null,  OpenGalaxyMapHandler.class),
-    OPEN_SYSTEM_MAP                                     ("open_system_map", null,  OpenLocalMapHandler.class),
+    OPEN_GALAXY_MAP                                     ("display_open_galaxy_map", null,  OpenGalaxyMapHandler.class),
+    OPEN_SYSTEM_MAP                                     ("display_open_system_map", null,  OpenLocalMapHandler.class),
 
 
     ///DISPLAY_INTERNAL_PANEL                              ("display_internal_panel", null,  DisplayInternalPanelHandler.class),
@@ -100,14 +100,12 @@ public enum Commands {
     OPEN_FSS_AND_SCAN                                   ("open_fss_scan_system", null,  DisplayFssAndScanHandler.class),
 
     GET_HEADING_TO_LZ                                   ("navigate_to_landing_zone", null,  NavigateToLandingZone.class),
-    DEPLOY_SRV                                          ("deploy_srv", null,  DeploySrvHandler.class),
+    DEPLOY_SRV                                          ("deploy_srv_vehicle", null,  DeploySrvHandler.class),
     DEPLOY_FIGHTER                                      ("deploy_fighter", null,  DeployFighterHandler.class),
-    RECOVER_SRV                                         ("recover_srv", null,  RecoverSrvHandler.class),
+    RECOVER_SRV                                         ("recover_srv_vehicle_get_on_board_ship", null,  RecoverSrvHandler.class),
     CLEAR_CODEX_ENTRIES                                 ("clear_codex_entries", null,  ClearCodexEntriesHandler.class),
     CALCULATE_FLEET_CARRIER_ROUTE                       ("calculate_fleet_carrier_route", null,  CalculateFleetCarrierRouteHandler.class),
     ENTER_FLEET_CARRIER_DESTINATION                     ("enter_fleet_carrier_destination", null,  EnterNextCarrierDestinationHandler.class),
-    //SHUT_DOWN                                           ("system_shut_down", null,  SystemShutDownRequestHandler.class),
-
 
     CALCULATE_TRADE_ROUTE                               ("calculate_trade_route", null,  CalculateTradeRouteHandler.class),
     CHANGE_TRADE_PROFILE_SET_STARTING_BUDGET            ("trade_profile_set_budget", null,  ChangeTradeProfileSetStartingBudgetHander.class),

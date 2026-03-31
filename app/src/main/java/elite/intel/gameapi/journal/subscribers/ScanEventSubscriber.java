@@ -86,6 +86,14 @@ public class ScanEventSubscriber {
         }
 
         location.setLocationType(locationType);
+
+        // For moons, record the parent planet's bodyID so day-length can use the planet's orbital period
+        if (MOON.equals(locationType) && event.getParents() != null && !event.getParents().isEmpty()) {
+            ScanEvent.Parent firstParent = event.getParents().get(0);
+            if (firstParent.getPlanet() != null) {
+                location.setParentBodyId(firstParent.getPlanet());
+            }
+        }
         location.setSystemAddress(event.getSystemAddress());
         location.setStarClass(event.getStarType());
         location.setPlanetName(event.getBodyName());

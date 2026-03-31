@@ -52,7 +52,7 @@ public class PromptFactory implements AiPromptFactory {
                 VERB INTENT (apply first, before matching any action):
                 - show / display / open / access / find / search / locate / activate → COMMANDS (open a panel or map, find commodities, missions etc.)
                 - where / tell me / how much / any → lookup QUERY (search data, speak result)
-
+                
                 DISAMBIGUATION (genuine ambiguities only):
                 - "activate" alone (no mode, panel, or subsystem following) → activate
                 - "weapons free" / "weapons hot" / "combat ready" → deploy_hardpoints
@@ -107,7 +107,6 @@ public class PromptFactory implements AiPromptFactory {
                 - Use only the param keys shown in the template for that action.
                 """);
 
-        sb.append(actionsMap.getActions(normalizedInput));
         sb.append("""
                 PARAMS RULES:
                 • Use ONLY the exact key names shown in the action template. No template → empty {}
@@ -121,6 +120,10 @@ public class PromptFactory implements AiPromptFactory {
                   - "lights on"                → {"action": "toggle_lights_on_off", "params": {"state": true}}
                   - "find gold within 80 ly"   → {"action": "find_commodity", "params": {"key": "gold", "max_distance": "80"}}
                 """);
+        /// NOTE the number of actions is reduced based on the user input. If reduction is not possible, the full map is returned.
+        sb.append(Reducer.formatActions(Reducer.reduce(normalizedInput, actionsMap.actionMap())));
+
+
         return sb.toString();
     }
 
@@ -189,11 +192,11 @@ public class PromptFactory implements AiPromptFactory {
         sb.append("""
                 Instructions:
                 Data provided is in YAML format as 'sensorData'.
-
+                
                 Summarise ONLY the important concrete readings and events that are ACTUALLY present in the provided sensorData.
                 Use ONLY the data inside sensorData and the event-specific instructions below (if any).
                 Ignore everything else: timestamps, eventName, endOfLife, metadata, status flags, non-essential fields, etc.
-
+                
                 STRICT RULES - MUST FOLLOW EVERY ONE:
                 - Output EXACTLY this JSON structure and NOTHING else - no extra text, no explanations, no markdown:
                   {"text_to_speech_response": "summary here"}

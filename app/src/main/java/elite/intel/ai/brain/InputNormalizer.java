@@ -59,7 +59,6 @@ public class InputNormalizer {
         SYNONYM_MAP.put("head to", "navigate to");
         SYNONYM_MAP.put("go to", "navigate to");
         SYNONYM_MAP.put("take us to", "navigate to");
-        ;
         SYNONYM_MAP.put("take me to", "navigate to");
         SYNONYM_MAP.put("get me to", "navigate to");
         SYNONYM_MAP.put("get us to", "navigate to");
@@ -95,13 +94,11 @@ public class InputNormalizer {
         // FTL
         SYNONYM_MAP.put("light speed", "enter supercruise");
         SYNONYM_MAP.put("lightspeed", "enter supercruise");
+        SYNONYM_MAP.put("ftl", "enter supercruise");
         SYNONYM_MAP.put("supercruise", "enter supercruise");
         SYNONYM_MAP.put("super cruise", "enter supercruise");
-
         SYNONYM_MAP.put("drop", "drop from supercruise");
         SYNONYM_MAP.put("drop here", "drop from supercruise");
-        SYNONYM_MAP.put("exit supercruise", "drop from supercruise");
-
 
         //ship queries
         SYNONYM_MAP.put("check loadout", "ship loadout");
@@ -136,7 +133,6 @@ public class InputNormalizer {
         SYNONYM_MAP.put("lower", "deploy");
         SYNONYM_MAP.put("put out", "deploy");
         SYNONYM_MAP.put("launch", "deploy");
-
 
         // Exploration
         SYNONYM_MAP.put("launch srv", "deploy srv");
@@ -319,6 +315,7 @@ public class InputNormalizer {
         SYNONYM_MAP.put("shut up", "interrupt");
         SYNONYM_MAP.put("display email", "show inbox");
         SYNONYM_MAP.put("email", "show inbox");
+        SYNONYM_MAP.put("optimize", "set optimal speed");
 
         // ── Cargo / commodities (not engineering materials) ───────────────────
         SYNONYM_MAP.put("commodity inventory", "cargo contents");
@@ -436,7 +433,11 @@ public class InputNormalizer {
         SYNONYM_MAP.put("what can you help with", "app capabilities");
         SYNONYM_MAP.put("your abilities", "app capabilities");
 
-        // phonetics
+        addPhonetics();
+    }
+
+    private static void addPhonetics() {
+        // ── Phonetic corrections ───────────────────────────────────────────────────
         SYNONYM_MAP.put("of", "off");
         SYNONYM_MAP.put("manax", "max");
         SYNONYM_MAP.put("hard points", "hardpoints");
@@ -470,12 +471,8 @@ public class InputNormalizer {
         SYNONYM_MAP.put("rfss", "fss");
         SYNONYM_MAP.put("displayed", "display");
         SYNONYM_MAP.put("i think it's it", "exit");
-
-
-
-
-
-
+        SYNONYM_MAP.put("are two", "power to");
+        SYNONYM_MAP.put("motor car of", "recover");
     }
 
     private InputNormalizer() {

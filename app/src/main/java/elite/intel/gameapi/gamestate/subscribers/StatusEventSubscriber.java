@@ -16,6 +16,7 @@ public class StatusEventSubscriber {
     private boolean lowFuelAnnounced = false;
     private boolean lowOxygenAnnounced = false;
     private boolean lowHealthAnnounced = false;
+    private boolean glideAnnounced = false;
 
     // Track previous GuiFocus to detect transitions, not just current state
     private GuiFocus previousGuiFocus = GuiFocus.NO_FOCUS;
@@ -73,6 +74,13 @@ public class StatusEventSubscriber {
         if (status.isLowHealth() && !lowHealthAnnounced) {
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("Low health warning!"));
             lowHealthAnnounced = true;
+        }
+
+        if (status.isGlideMode() && !glideAnnounced) {
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Atmospheric descend!"));
+            glideAnnounced = true;
+        } else if (!status.isGlideMode() && glideAnnounced) {
+            glideAnnounced = false;
         }
     }
 }

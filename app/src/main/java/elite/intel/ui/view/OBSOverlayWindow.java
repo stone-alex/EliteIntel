@@ -51,7 +51,7 @@ public class OBSOverlayWindow extends JFrame {
         setUndecorated(true);
         setAlwaysOnTop(false);
         setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-        setSize(900, 220);
+        setSize(900, 124);
         setLocationRelativeTo(null);
         setLocation(0, 0);
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/images/ai.png")));

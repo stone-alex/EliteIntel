@@ -29,8 +29,8 @@ public class AiActionsMap {
         Map<String, String> map = new LinkedHashMap<>();
 
         // always available
-        map.put("start listening, listen, wake up, listen up, pay attention, I'm talking to you", START_LISTENING.getAction());
-        map.put("ignore me, do not monitor", IGNORE_ME.getAction());
+        map.put("wake up", WAKEUP.getAction());
+        map.put("sleep, go to sleep, ignore me, do not monitor", SLEEP.getAction());
         map.put("interrupt", INTERRUPT_TTS.getAction());
         map.put("switch to combat mode", ACTIVATE_COMBAT_MODE.getAction());
         map.put("switch to analysis mode", ACTIVATE_ANALYSIS_MODE.getAction());
@@ -68,7 +68,7 @@ public class AiActionsMap {
         map.put("night vision, nightvision, turn on night vision, turn off night vision ", NIGHT_VISION_ON_OFF.getAction());
         map.put("headlights, lights, turn off lights, turn on lights, ship lights, lights on, lights off ", LIGHTS_ON_OFF.getAction());
         map.put("drive assist, driving assist, SRV assist {state:true/false}", DRIVE_ASSIST.getAction());
-        map.put("dismiss ship, send ship away, park ship, ship to orbit", DISMISS_SHIP.getAction());
+        map.put("dismiss ship, send ship away, ship to orbit", DISMISS_SHIP.getAction());
         map.put("return to surface, pick me up", RETURN_TO_SURFACE.getAction());
 
         // market / traders / brokers

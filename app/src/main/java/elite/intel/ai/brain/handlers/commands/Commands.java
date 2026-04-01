@@ -53,8 +53,8 @@ public enum Commands {
     SET_RADIO_TRANSMISSION_MODE                         ("toggle_radio", null,  SetRadioTransmissionOnOff.class),
     SET_RADAR_CONTACT_ANNOUNCEMENT                      ("toggle_radar_announcements", null, RadarAnnouncementOnOffHandler.class),
 
-    START_LISTENING                                     ("start_listening", null, StartListeningHandler.class),
-    IGNORE_ME                                           ("ignore_me", null, IgnoreMeHandler.class),
+    WAKEUP                                              ("wakeup", null, StartListeningHandler.class),
+    SLEEP                                               ("sleep", null, IgnoreMeHandler.class),
 
     NAVIGATE_TO_TARGET                                  ("navigate_to_coordinates", null,  NavigateToCoordinatesHandler.class),
     NAVIGATION_OFF                                      ("cancel_navigation", null,  NavigationOnOffHandler.class),

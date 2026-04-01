@@ -76,6 +76,8 @@ public class InputNormalizer {
 
         // jump / hyperspace
         SYNONYM_MAP.put("get out of here", "jump to hyperspace");
+        SYNONYM_MAP.put("next star system", "jump to hyperspace");
+        SYNONYM_MAP.put("let us go", "jump to hyperspace");
         SYNONYM_MAP.put("let's get moving", "jump to hyperspace");
         SYNONYM_MAP.put("proceed to", "jump to hyperspace");
         SYNONYM_MAP.put("next way point", "jump to hyperspace");
@@ -177,6 +179,7 @@ public class InputNormalizer {
         SYNONYM_MAP.put("deploy vehicle", "deploy srv");
 
         SYNONYM_MAP.put("board ship", "recover SRV");
+        SYNONYM_MAP.put("back a board this ship", "recover SRV");
         SYNONYM_MAP.put("requesting extraction", "recover SRV");
         SYNONYM_MAP.put("extract car", "recover SRV");
         SYNONYM_MAP.put("extract vehicle", "recover SRV");
@@ -265,16 +268,16 @@ public class InputNormalizer {
         SYNONYM_MAP.put("activate controls", "activate");
 
         // stop listening / ignore user
-        SYNONYM_MAP.put("sleep", "ignore me");
+        SYNONYM_MAP.put("slip", "slip");
         SYNONYM_MAP.put("stop listening", "ignore me");
         SYNONYM_MAP.put("do not monitor", "ignore me");
 
         // start listening
-        SYNONYM_MAP.put("listen up", "start listening");
-        SYNONYM_MAP.put("listen to me", "start listening");
-        SYNONYM_MAP.put("pay attention", "start listening");
-        SYNONYM_MAP.put("start listening", "start listening");
-        SYNONYM_MAP.put("wake up", "start listening");
+//        SYNONYM_MAP.put("listen up", "start listening");
+//        SYNONYM_MAP.put("listen to me", "start listening");
+//        SYNONYM_MAP.put("pay attention", "start listening");
+//        SYNONYM_MAP.put("start listening", "start listening");
+//        SYNONYM_MAP.put("wake up", "start listening");
 
         // -─ Route / plotted route queries ─────────────────────────────────────
         SYNONYM_MAP.put("how many jumps remaining", "plotted route");

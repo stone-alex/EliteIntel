@@ -70,7 +70,7 @@ public class NaturalSpeechIntegrationTest {
     @Order(10)
     @MethodSource
     void startListening(String input) throws InterruptedException {
-        assertRouted(input, START_LISTENING.getAction());
+        assertRouted(input, WAKEUP.getAction());
     }
 
     static Stream<String> startListening() {
@@ -81,7 +81,7 @@ public class NaturalSpeechIntegrationTest {
     @Order(11)
     @MethodSource
     void ignoreMe(String input) throws InterruptedException {
-        assertRouted(input, IGNORE_ME.getAction());
+        assertRouted(input, SLEEP.getAction());
     }
 
     static Stream<String> ignoreMe() {

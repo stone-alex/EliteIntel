@@ -27,7 +27,7 @@ public class LoadoutSubscriber {
     public void onLoadoutEvent(LoadoutEvent event) {
         ShipDao.Ship currentShip = shipManager.getShip();
         Status.getInstance().setOkToAnnounceLoadout(
-                !Objects.equals(currentShip.getShipId(), event.getShipId())
+                currentShip != null && !Objects.equals(currentShip.getShipId(), event.getShipId())
         );
 
 

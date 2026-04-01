@@ -269,8 +269,6 @@ public class PlayerSession {
         bounties.clear();
         bioSamples.clear();
         markets.clear();
-        shipLoadouts.clear();
-        this.setShipLoadout(null);
     }
 
     public void setShipCargo(GameEvents.CargoEvent event) {

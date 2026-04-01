@@ -1,3 +1,11 @@
+## Elite Intel v-0.0337-beta
+
+### bug fixes / features:
+
+- Wrote a test harness for LLM commands
+- Improved app accuracy (part 1 LLM)
+- Decoupled handlers from game controller.
+
 ## Elite Intel v-0.0335-beta
 
 ### bug fixes / features:

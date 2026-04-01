@@ -42,7 +42,8 @@ public class HandsSubscriber {
         } else {
             log.warn("No binding found for action: {}", event.getBindingId());
             EventBusManager.publish(new MissionCriticalAnnouncementEvent(
-                    "No key binding found for " + event.getBindingId()));
+                    "No key binding found for " + event.getBindingId())
+            );
         }
         sleep(UINavigator.randomDelay());
     }

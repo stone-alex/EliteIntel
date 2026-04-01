@@ -129,6 +129,7 @@ public class InputNormalizer {
         SYNONYM_MAP.put("disengage supercruise", "drop from supercruise");
         SYNONYM_MAP.put("carrier balance", "carrier stats");
         SYNONYM_MAP.put("lower landing gear", "gear down");
+        SYNONYM_MAP.put("extend landing gear", "gear down");
         SYNONYM_MAP.put("how far from civilization", "distance to bubble");
         SYNONYM_MAP.put("distance to earth", "distance to bubble");
         SYNONYM_MAP.put("markets at outposts in system", "query markets");

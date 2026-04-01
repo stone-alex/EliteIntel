@@ -16,27 +16,12 @@ public class Reducer {
      * Matching is punctuation-tolerant - trailing .,!?;: are ignored on both sides.
      */
     public final static List<String> trashSttWords = List.of(
-            // Filler sounds
-            "mm-hmm", "uh-huh", "hmm", "mm", "uh", "um", "ah", "oh", "huh", "eh",
-            // Acknowledgements
-            "yeah", "yep", "yup", "nope",
-            "it", "an", "cool", "the",
-            "okay", "ok", "got it", "alright", "alrighty",
-            "sure", "right",
-            // Greetings / closings Parakeet hallucinates
-            "hello", "hi", "hey", "bye", "goodbye",
-            // Discourse filler
+            "--", "mm-hmm", "uh-huh", "hmm", "mm", "uh", "um", "ah", "oh", "huh", "eh",
+            "yeah", "yep", "yup", "nope", "hello", "hi", "hey", "bye", "goodbye",
             "so", "well", "now", "anyway", "actually", "basically", "literally",
-            // Social phrases
-            "thanks", "thank you",
-            "i'm sorry", "sorry", "excuse me", "pardon",
-            "you know", "i see", "i mean", "of course", "no problem",
-            "i got it", "don't i", "a ", "or ",
-            // Hallucinated subject fragments
+            "thanks", "thank you", "i got it", "don't i", "a ", "or ",
             "she can", "he can", "you can", "like they", "did you",
-            "wh", "i'll", "like", "got a",
-            // Pure garbage tokens
-            "blow", "fuck", "shit", "just", "i "
+            "wh", "i'll", "like", "got a", "blow", "fuck", "shit", "just", "i ", "to "
     );
 
 

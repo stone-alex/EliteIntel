@@ -177,6 +177,7 @@ public class InputNormalizer {
         SYNONYM_MAP.put("deploy vehicle", "deploy srv");
 
         SYNONYM_MAP.put("board ship", "recover SRV");
+        SYNONYM_MAP.put("requesting extraction", "recover SRV");
         SYNONYM_MAP.put("extract car", "recover SRV");
         SYNONYM_MAP.put("extract vehicle", "recover SRV");
         SYNONYM_MAP.put("recover car", "recover SRV");
@@ -261,6 +262,7 @@ public class InputNormalizer {
         SYNONYM_MAP.put("activate", "activate");
         SYNONYM_MAP.put("turn on", "activate");
         SYNONYM_MAP.put("enable", "activate");
+        SYNONYM_MAP.put("activate controls", "activate");
 
         // stop listening / ignore user
         SYNONYM_MAP.put("sleep", "ignore me");

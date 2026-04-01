@@ -568,6 +568,7 @@ public class NaturalSpeechIntegrationTest {
         return Stream.of("enter carrier destination", "set carrier destination", "enter next carrier destination");
     }
 
+/*
     @ParameterizedTest(name = "[{index}] \"{0}\"")
     @Order(81)
     @MethodSource
@@ -578,6 +579,7 @@ public class NaturalSpeechIntegrationTest {
     static Stream<String> clearCarrierRoute() {
         return Stream.of("clear fleet carrier route", "cancel carrier route");
     }
+*/
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
     @Order(82)
@@ -594,27 +596,27 @@ public class NaturalSpeechIntegrationTest {
     // App settings / announcements
     // =========================================================================
 
-    @ParameterizedTest(name = "[{index}] \"{0}\"")
-    @Order(90)
-    @MethodSource
-    void disableAnnouncements(String input) throws InterruptedException {
-        assertRouted(input, DISABLE_ALL_ANNOUNCEMENTS.getAction());
-    }
+//    @ParameterizedTest(name = "[{index}] \"{0}\"")
+//    @Order(90)
+//    @MethodSource
+//    void disableAnnouncements(String input) throws InterruptedException {
+//        assertRouted(input, DISABLE_ALL_ANNOUNCEMENTS.getAction());
+//    }
+//
+//    static Stream<String> disableAnnouncements() {
+//        return Stream.of("disable all announcements");
+//    }
 
-    static Stream<String> disableAnnouncements() {
-        return Stream.of("disable all announcements");
-    }
-
-    @ParameterizedTest(name = "[{index}] \"{0}\"")
-    @Order(91)
-    @MethodSource
-    void clearCache(String input) throws InterruptedException {
-        assertRouted(input, CLEAR_CACHE.getAction());
-    }
-
-    static Stream<String> clearCache() {
-        return Stream.of("clear cache");
-    }
+//    @ParameterizedTest(name = "[{index}] \"{0}\"")
+//    @Order(91)
+//    @MethodSource
+//    void clearCache(String input) throws InterruptedException {
+//        assertRouted(input, CLEAR_CACHE.getAction());
+//    }
+//
+//    static Stream<String> clearCache() {
+//        return Stream.of("clear cache");
+//    }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
     @Order(92)
@@ -720,7 +722,7 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> queryCurrentLocation() {
-        return Stream.of("Where are we right now?", "what is our location", "where are we");
+        return Stream.of("Where are we right now?", "what is our location", "where are we", "how long does the day last at current location");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")

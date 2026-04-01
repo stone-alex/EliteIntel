@@ -20,7 +20,6 @@ import java.io.ByteArrayOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayDeque;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -38,11 +37,11 @@ public class ParakeetSTTImpl implements EarsInterface {
     private static final int SAMPLE_RATE = 16000;
     private static final int CHANNELS = 1;
     private static final int ENTER_VOICE_FRAMES = 1;
-    private static final int EXIT_SILENCE_FRAMES = 8;
-    private static final int PRE_ROLL_FRAMES = 4;
+    private static final int EXIT_SILENCE_FRAMES = 6;
+    private static final int PRE_ROLL_FRAMES = 6;
     private static final long BASE_BACKOFF_MS = 2000;
     private static final long MAX_BACKOFF_MS = 60000;
-    private static final long INFERENCE_TIMEOUT_SEC = 5;
+    private static final long INFERENCE_TIMEOUT_SEC = 4;
     private static final int MIN_AUDIO_MS = 1500;
     private static final int MIN_AUDIO_BYTES = SAMPLE_RATE * 2 * MIN_AUDIO_MS / 1000;
     private static final int MAX_UTTERANCE_MS = 8000;
@@ -167,31 +166,28 @@ public class ParakeetSTTImpl implements EarsInterface {
                 .setFeatureDim(128)
                 .build();
 
+
         OfflineRecognizerConfig.Builder configBuilder = OfflineRecognizerConfig.builder()
                 .setFeatureConfig(featureConfig)
                 .setOfflineModelConfig(modelConfig)
-                .setDecodingMethod("modified_beam_search")
-                .setMaxActivePaths(8)
-                .setHotwordsScore(2.0f);
+                .setDecodingMethod("greedy_search") /// does not support hotwords
+                .setMaxActivePaths(50)  /// slightly slower, but more accurate
+                .setBlankPenalty(0.0f); /// low value prevents trash in trascriptions for short utterences
 
-        Path hotwordsFile = modelDir.resolve("hotwords.txt");
-        if (Files.exists(hotwordsFile)) {
-            try {
-                log.info("Encoding hotwords from {} using tokens {}", hotwordsFile, tokensFile);
-                HotwordEncoder encoder = new HotwordEncoder(tokensFile);
-                log.info("HotwordEncoder ready - sample: 'transfer' → '{}'", encoder.encode("transfer"));
-                Path encodedHotwords = encoder.encodeFile(hotwordsFile);
-                log.info("Hotwords temp file: {}", encodedHotwords);
-                List<String> sampleLines = Files.readAllLines(encodedHotwords).stream().limit(5).toList();
-                log.info("Encoded hotwords sample (first 5): {}", sampleLines);
-                configBuilder.setHotwordsFile(encodedHotwords.toString());
-                configBuilder.setHotwordsScore(1.0f);
-                configBuilder.setDecodingMethod("modified_beam_search");
-                configBuilder.setBlankPenalty(1.0f);
-            } catch (Exception e) {
-                log.warn("Failed to encode hotwords, running without hotword boosting: {} {}", e.getClass().getSimpleName(), e.getMessage());
-            }
-        }
+        /// Experimental support. Causes hangs and occasional crashes
+//        Path hotwordsFile = modelDir.resolve("hotwords.txt");
+//        if (Files.exists(hotwordsFile)) {
+//            try {
+//                HotwordEncoder encoder = new HotwordEncoder(tokensFile);
+//                Path encodedHotwords = encoder.encodeFile(hotwordsFile);
+//                configBuilder.setHotwordsFile(encodedHotwords.toString());
+//                configBuilder.setDecodingMethod("modified_beam_search");
+//                configBuilder.setBlankPenalty(0.00f);
+//                configBuilder.setHotwordsScore(1.0f);
+//            } catch (Exception e) {
+//                log.warn("Failed to encode hotwords, running without hotword boosting: {} {}", e.getClass().getSimpleName(), e.getMessage());
+//            }
+//        }
 
         return new OfflineRecognizer(configBuilder.build());
     }

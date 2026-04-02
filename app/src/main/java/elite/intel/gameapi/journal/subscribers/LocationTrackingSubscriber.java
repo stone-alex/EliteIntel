@@ -175,7 +175,7 @@ public class LocationTrackingSubscriber {
             hasAnnouncedOrbital = true;
         }
 
-        String glideAngleText = glideAngleOk ? "Glide Angle minus " + glideAngle + " degrees. " : "Steep descent. Glide Angle minus " + glideAngle + " degrees. ";
+        String glideAngleText = glideAngleOk ? "Glide Angle " + glideAngle + " degrees. " : "Steep descent. Glide Angle " + glideAngle + " degrees. ";
 
         if (trajectoryDeviation) {
             log.info("Off course, we are moving away from the target.");
@@ -246,13 +246,13 @@ public class LocationTrackingSubscriber {
         if (isOnSurface(event)) {
             //CRAWLING on the surface (SRV or on foot)
             if (navigator.distanceToTarget() <= ARRIVAL_RADIUS && navigator.altitude() == 0) {
-                vocalize("Arrived!", 0, navigator.bearingToTarget(), true);
+                vocalize(" Arrived! ", 0, navigator.bearingToTarget(), true);
                 TargetLocation t = playerSession.getTracking();
                 t.setEnabled(false);
                 playerSession.setTracking(t);
                 resetTrackingState();
             } else if (headingDeviation) {
-                vocalize(movingAway ? "Diverging. " : "Converging. ", navigator.distanceToTarget(), navigator.bearingToTarget(), false);
+                vocalize(movingAway ? " Diverging. " : " Converging. ", navigator.distanceToTarget(), navigator.bearingToTarget(), false);
             } else {
                 announceBearingAndDistances(navigator, movingAway ? " Diverging. " : " Converging. ");
             }
@@ -270,11 +270,11 @@ public class LocationTrackingSubscriber {
                 }
 
                 if (headingDeviation) {
-                    vocalize(movingAway ? "Diverging. " : "Converging. ", navigator.distanceToTarget(), navigator.bearingToTarget(), movingAway);
+                    vocalize(movingAway ? " Diverging. " : " Converging. ", navigator.distanceToTarget(), navigator.bearingToTarget(), movingAway);
                 } else if (event.getAltitude() > 3_000 && glideAngleOk) {
-                    announceBearingAndDistances(navigator, movingAway ? "Diverging." : "Converging. Glide Angle minus " + glideAngle + " degrees.");
+                    announceBearingAndDistances(navigator, movingAway ? " Diverging." : " Converging. Glide Angle " + glideAngle + " degrees.");
                 } else {
-                    announceBearingAndDistances(navigator, movingAway ? "Diverging." : "Converging. ");
+                    announceBearingAndDistances(navigator, movingAway ? " Diverging." : " Converging. ");
                 }
             }
         }

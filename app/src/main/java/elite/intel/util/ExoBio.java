@@ -1,6 +1,7 @@
 package elite.intel.util;
 
 import elite.intel.gameapi.journal.events.dto.BioSampleDto;
+import elite.intel.gameapi.journal.events.dto.GenusDto;
 import elite.intel.util.yaml.ToYamlConvertable;
 import elite.intel.util.yaml.YamlFactory;
 
@@ -19,6 +20,24 @@ public class ExoBio {
 
         return result;
     }
+
+    public static List<GenusDto> calculateGenusNotYetScanned(List<ExoBio.DataDto> completedSamples, List<GenusDto> genusListForCurrentLocation) {
+        ArrayList<GenusDto> result = new ArrayList<>();
+        for (GenusDto genus : genusListForCurrentLocation) {
+            boolean found = false;
+            for (ExoBio.DataDto sample : completedSamples) {
+                if (sample.genus().equals(genus.getSpecies())) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                result.add(genus);
+            }
+        }
+        return result;
+    }
+
 
     public record DataDto(String planetName, String genus, String species, Integer scanXof3, boolean completed) implements ToYamlConvertable {
 

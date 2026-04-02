@@ -11,9 +11,9 @@ import elite.intel.util.ExoBio;
 import elite.intel.util.yaml.ToYamlConvertable;
 import elite.intel.util.yaml.YamlFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import static elite.intel.util.ExoBio.calculateGenusNotYetScanned;
 import static elite.intel.util.ExoBio.completedScansForPlanet;
 
 public class AnalyzeBioSamplesPlanetSurfaceHandler extends BaseQueryAnalyzer implements QueryHandler {
@@ -57,22 +57,6 @@ public class AnalyzeBioSamplesPlanetSurfaceHandler extends BaseQueryAnalyzer imp
         return process(struct, originalUserInput);
     }
 
-    private List<GenusDto> calculateGenusNotYetScanned(List<ExoBio.DataDto> completedSamples, List<GenusDto> genusListForCurrentLocation) {
-        ArrayList<GenusDto> result = new ArrayList<>();
-        for (GenusDto genus : genusListForCurrentLocation) {
-            boolean found = false;
-            for (ExoBio.DataDto sample : completedSamples) {
-                if (sample.genus().equals(genus.getSpecies())) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                result.add(genus);
-            }
-        }
-        return result;
-    }
 
     record DataDto(
             List<GenusDto> remainingGenus,

@@ -8,12 +8,18 @@ import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.data.BioForms;
 import elite.intel.gameapi.journal.events.ScanOrganicEvent;
 import elite.intel.gameapi.journal.events.dto.BioSampleDto;
+import elite.intel.gameapi.journal.events.dto.GenusDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
 import elite.intel.gameapi.journal.events.dto.TargetLocation;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.Status;
 import elite.intel.util.BioScanDistances;
+import elite.intel.util.ExoBio;
 
+import java.util.List;
+
+import static elite.intel.util.ExoBio.calculateGenusNotYetScanned;
+import static elite.intel.util.ExoBio.completedScansForPlanet;
 import static elite.intel.util.StringUtls.subtractString;
 
 public class ScanOrganicSubscriber {
@@ -97,7 +103,6 @@ public class ScanOrganicSubscriber {
             sb.append("\"").append(genus).append("\" logged. ");
             sb.append("collection complete. ");
 
-            announce(sb.toString());
             BioSampleDto bioSampleDto = createBioSampleDto(genus, species, isOurDiscovery);
 
             bioSampleDto.setPayout(payment);
@@ -114,14 +119,22 @@ public class ScanOrganicSubscriber {
                     currentLocation.getBodyId()
             );
             playerSession.clearGenusPaymentAnnounced();
+            locationManager.save(currentLocation);
+
+            List<GenusDto> allSpecies = currentLocation.getGenus();
+            List<ExoBio.DataDto> completedSpecies = completedScansForPlanet(playerSession.getBioCompletedSamples(), currentLocation.getPlanetName());
+            List<GenusDto> remainingSpecies = calculateGenusNotYetScanned(completedSpecies, allSpecies);
+            if (remainingSpecies.isEmpty()) {
+                sb.append(" All genus scanned. ");
+            } else {
+                sb.append(" Remaining genus: ");
+                for (GenusDto entry : remainingSpecies) {
+                    sb.append(entry.getSpecies()).append(", ");
+                }
+            }
+
+            announce(sb.toString());
         }
-
-        locationManager.save(currentLocation);
-    }
-
-    private void removeCodexEntry(String variantLocalised, Long systemAddress, Long bodyId) {
-        LocationDto address = locationManager.findBySystemAddress(systemAddress, bodyId);
-        codexEntryManager.clearCompleted(address.getStarName(), address.getBodyId(), variantLocalised);
     }
 
     private BioSampleDto createBioSampleDto(String genus, String species, boolean isOurDiscovery) {

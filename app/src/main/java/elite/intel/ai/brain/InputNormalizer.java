@@ -492,6 +492,9 @@ public class InputNormalizer {
         SYNONYM_MAP.put("what commands do you know", "app capabilities");
         SYNONYM_MAP.put("what can you help with", "app capabilities");
         SYNONYM_MAP.put("your abilities", "app capabilities");
+        SYNONYM_MAP.put("survey", "SRV");
+        SYNONYM_MAP.put("product center", "codex entry");
+        SYNONYM_MAP.put("council", "cancel");
 
         addPhonetics();
     }

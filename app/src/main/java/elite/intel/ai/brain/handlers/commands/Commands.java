@@ -103,7 +103,6 @@ public enum Commands {
     DEPLOY_SRV                                          ("deploy_vehicle_srv", null,  DeploySrvHandler.class),
     DEPLOY_FIGHTER                                      ("deploy_fighter", null,  DeployFighterHandler.class),
     RECOVER_SRV                                         ("recover_srv_vehicle_get_on_board_ship", null,  RecoverSrvHandler.class),
-    CLEAR_CODEX_ENTRIES                                 ("clear_codex_entries", null,  ClearCodexEntriesHandler.class),
     CALCULATE_FLEET_CARRIER_ROUTE                       ("calculate_fleet_carrier_route", null,  CalculateFleetCarrierRouteHandler.class),
     ENTER_FLEET_CARRIER_DESTINATION                     ("enter_fleet_carrier_destination", null,  EnterNextCarrierDestinationHandler.class),
 

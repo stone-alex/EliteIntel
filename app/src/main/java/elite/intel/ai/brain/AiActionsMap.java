@@ -177,8 +177,7 @@ public class AiActionsMap {
         map.put("navigate to next bio sample, go to next sample, navigate to next organic, codex entry", NAVIGATE_TO_NEXT_BIO_SAMPLE.getAction());
         map.put("scan the system, open fss, full scan, honk, system scan, discovery scan, FSS, full spectrum scan, scan system", OPEN_FSS_AND_SCAN.getAction());
         map.put("find nearest vista genomics, find genomics, vista genomics", FIND_VISTA_GENOMICS.getAction());
-        map.put("delete codex entry", DELETE_CODEX_ENTRY.getAction());
-        map.put("clear codex entries", CLEAR_CODEX_ENTRIES.getAction());
+        map.put("delete codex entry, delete this codex, delete this entry, delete this organic", DELETE_CODEX_ENTRY.getAction());
 
         // combat
         map.put("target fsd {key:fsd}, target engines {key:drive}, target Power Distributor {key:power distributor} target power plant {key:powerplant}, target powerplant {key:powerplant}, target life support {key:life support}, ", TARGET_SUB_SYSTEM.getAction());

@@ -84,12 +84,10 @@ public class AiActionsMap {
         map.put("set carrier fuel reserve, carrier tritium reserve {key:X}", SET_CARRIER_FUEL_RESERVE.getAction());
         map.put("calculate fleet carrier route, plan carrier route, carrier jump route", CALCULATE_FLEET_CARRIER_ROUTE.getAction());
         map.put("enter carrier destination, set carrier destination, carrier destination", ENTER_FLEET_CARRIER_DESTINATION.getAction());
-        map.put("clear fleet carrier route, cancel carrier route", CLEAR_FLEET_CARRIER_ROUTE.getAction());
 
         // trade
         map.put("calculate trade route", CALCULATE_TRADE_ROUTE.getAction());
         map.put("list trade route parameters", LIST_TRADE_ROUTE_PARAMETERS.getAction());
-        map.put("cancel trade route", CLEAR_TRADE_ROUTE.getAction());
         map.put("monetize route", MONETIZE_ROUTE.getAction());
         map.put("change trade profile starting budget {key:X}", CHANGE_TRADE_PROFILE_SET_STARTING_BUDGET.getAction());
         map.put("change trade profile max stops {key:X}", CHANGE_TRADE_PROFILE_SET_MAX_NUMBER_OF_STOPS.getAction());
@@ -107,7 +105,6 @@ public class AiActionsMap {
         map.put("disable all announcements", DISABLE_ALL_ANNOUNCEMENTS.getAction());
         map.put("set voice {key:X}", SET_AI_VOICE.getAction());
         map.put("list available voices", LIST_AVAILABLE_VOICES.getAction());
-        map.put("clear cache", CLEAR_CACHE.getAction());
         map.put("clear reminders", CLEAR_REMINDERS.getAction());
         map.put("set reminder {key:X}", SET_REMINDER.getAction());
 

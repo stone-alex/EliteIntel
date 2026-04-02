@@ -5,7 +5,8 @@
 - Adding missing material capacity updates, fixed incorrect material capacity entries.
 - Changed Parakeet to work with greedy algo instead of hotwords.
 - Minor adjustments to organic scan announcements.
-- Change to exo-bio announcement, let user know what genus remain to scan. Fixed sell organic data sensor event.
+- Change to an exo-bio announcement, let the user know what genus remains to scan. Fixed sell organic data sensor event.
+- Removing handlers that remove data. too dangerous to have them around. Can falsely remove user data.
 
 ## Elite Intel v-0.0338-beta
 

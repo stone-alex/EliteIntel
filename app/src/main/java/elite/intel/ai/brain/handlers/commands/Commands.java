@@ -13,7 +13,6 @@ public enum Commands {
     ADD_MINING_TARGET                                   ("add_mining_target", null, AddMiningTargetHandler.class),
     REMOVE_MINING_TARGET                                ("remove_mining_target", null, RemoveMiningTargetHandler.class),
     CLEAR_MINING_TARGETS                                ("clear_mining_targets", null, ClearMiningTargetsHandler.class),
-    CLEAR_CACHE                                         ("clear_cache", null, ClearCacheHandler.class),
     INTERRUPT_TTS                                       ("interrupt", null, ShutUpHandler.class),
 
     FIND_RAW_MATERIAL_TRADER                            ("find_raw_material_trader", null, FindRawMaterialTraderHandler.class),
@@ -43,7 +42,6 @@ public enum Commands {
     FIND_MINING_SITE                                    ("find_mining_site", null, FindMiningSiteHandler.class),
 
     FIND_NEAREST_FLEET_CARRIER                          ("find_nearest_fleet_carrier", null,  FindNearestFleetCarrierHandler.class),
-    CLEAR_FLEET_CARRIER_ROUTE                           ("clear_fleet_carrier_route", null,  ClearFleetCarrierRouteHandler.class),
 
     FIND_COMMODITY                                      ("find_commodity", null, FindCommodityHandler.class),
     SET_AI_VOICE                                        ("set_voice", null,  ChangeShipVoiceHandler.class),
@@ -115,7 +113,6 @@ public enum Commands {
     CHANGE_TRADE_PROFILE_SET_ALLOW_PERMIT_SYSTEMS       ("trade_profile_toggle_permit_systems", null, ChangeTradeProfileAllowPermitSystemsHandler.class),
     CHANGE_TRADE_PROFILE_SET_ALLOW_STRONGHOLDS          ("trade_profile_toggle_strongholds", null, ChangeTradeProfileSetAllowEnemyStrongHoldsHandler.class),
     LIST_TRADE_ROUTE_PARAMETERS                         ("list_trade_parameters", null,  ListAvailableTradeRouteProfilesHandler.class),
-    CLEAR_TRADE_ROUTE                                   ("clear_trade_route", null,  ClearTradeRouteHandler.class),
 
     /// Generic simple commands. no parameters, but require binding
     ACTIVATE                                            ("activate", BINDING_ACTIVATE.getGameBinding(), SimpleCommandActionHandler.class),

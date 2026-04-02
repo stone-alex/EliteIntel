@@ -579,16 +579,6 @@ public class RoutingIntegrationTest {
         return Stream.of("enter carrier destination", "set carrier destination", "carrier destination");
     }
 
-    @ParameterizedTest(name = "[{index}] \"{0}\"")
-    @Order(81)
-    @MethodSource
-    void clearCarrierRoute(String input) throws InterruptedException {
-        assertRouted(input, CLEAR_FLEET_CARRIER_ROUTE.getAction());
-    }
-
-    static Stream<String> clearCarrierRoute() {
-        return Stream.of("clear fleet carrier route", "cancel carrier route", "abort carrier jump");
-    }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
     @Order(82)
@@ -614,17 +604,6 @@ public class RoutingIntegrationTest {
 
     static Stream<String> disableAnnouncements() {
         return Stream.of("disable all announcements");
-    }
-
-    @ParameterizedTest(name = "[{index}] \"{0}\"")
-    @Order(91)
-    @MethodSource
-    void clearCache(String input) throws InterruptedException {
-        assertRouted(input, CLEAR_CACHE.getAction());
-    }
-
-    static Stream<String> clearCache() {
-        return Stream.of("clear cache");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")

@@ -1,6 +1,7 @@
 package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
+import elite.intel.db.dao.CodexEntryDao.CodexEntry;
 import elite.intel.db.managers.CodexEntryManager;
 import elite.intel.db.managers.LocationManager;
 import elite.intel.gameapi.EventBusManager;
@@ -17,9 +18,11 @@ import elite.intel.util.BioScanDistances;
 import elite.intel.util.ExoBio;
 
 import java.util.List;
+import java.util.Locale;
 
 import static elite.intel.util.ExoBio.calculateGenusNotYetScanned;
 import static elite.intel.util.ExoBio.completedScansForPlanet;
+import static elite.intel.util.NavigationUtils.calculateSurfaceDistance;
 import static elite.intel.util.StringUtls.subtractString;
 
 public class ScanOrganicSubscriber {
@@ -90,12 +93,16 @@ public class ScanOrganicSubscriber {
             BioSampleDto bioSampleDto = createBioSampleDto(genus, species, isOurDiscovery);
             bioSampleDto.setScanXof3(1);
             currentLocation.addBioScan(bioSampleDto);
+            deleteScannedCodexEntry(genus, currentLocation);
+            locationManager.save(currentLocation);
             announce(sb.toString());
 
         } else if (scan2.equalsIgnoreCase(scanType)) {
             BioSampleDto bioSampleDto = createBioSampleDto(genus, species, isOurDiscovery);
-            currentLocation.addBioScan(bioSampleDto);
             bioSampleDto.setScanXof3(2);
+            currentLocation.addBioScan(bioSampleDto);
+            deleteScannedCodexEntry(genus, currentLocation);
+            locationManager.save(currentLocation);
             announce("Sample for genus \"" + genus + "\" logged. ");
         } else if (scan3.equalsIgnoreCase(scanType)) {
             sb = new StringBuilder();
@@ -110,14 +117,10 @@ public class ScanOrganicSubscriber {
             bioSampleDto.setScanXof3(3);
             bioSampleDto.setBioSampleCompleted(true);
             bioSampleDto.setOurDiscovery(currentLocation.isOurDiscovery());
+            deleteScannedCodexEntry(genus, currentLocation);
             playerSession.addBioSample(bioSampleDto);
             playerSession.setCurrentPartial(null);
             currentLocation.deletePartialBioSamples();
-            codexEntryManager.clearEntriesForCurrentLocation(
-                    event.getSpeciesLocalised(),
-                    currentLocation.getStarName(),
-                    currentLocation.getBodyId()
-            );
             playerSession.clearGenusPaymentAnnounced();
             locationManager.save(currentLocation);
 
@@ -152,6 +155,40 @@ public class ScanOrganicSubscriber {
         bioSampleDto.setBodyId(currentLocation.getBodyId());
         bioSampleDto.setDistanceToNextSample(distanceToNextSample(genus, species));
         return bioSampleDto;
+    }
+
+    /**
+     * Deletes the codex entry nearest to the current scan position whose genus matches.
+     * The scanned colony will be within minimum colony range of the matching codex entry.
+     */
+    private void deleteScannedCodexEntry(String genus, LocationDto currentLocation) {
+        double lat = status.getStatus().getLatitude();
+        double lon = status.getStatus().getLongitude();
+        double planetRadius = status.getStatus().getPlanetRadius();
+        double minRange = BioForms.getDistance(genus);
+        if (minRange <= 0) return;
+
+        List<CodexEntry> entries =
+                codexEntryManager.getForPlanet(currentLocation.getStarName(), currentLocation.getBodyId());
+        if (entries == null || entries.isEmpty()) return;
+
+        CodexEntry nearest = null;
+        double nearestDist = Double.MAX_VALUE;
+        for (CodexEntry entry : entries) {
+            if (!entry.getEntryName().toLowerCase(Locale.ROOT).contains(genus.toLowerCase(Locale.ROOT))) continue;
+            double dist = calculateSurfaceDistance(lat, lon, entry.getLatitude(), entry.getLongitude(), planetRadius, 0);
+            if (dist < minRange && dist < nearestDist) {
+                nearest = entry;
+                nearestDist = dist;
+            }
+        }
+
+        if (nearest != null) {
+            TargetLocation tl = new TargetLocation();
+            tl.setLatitude(nearest.getLatitude());
+            tl.setLongitude(nearest.getLongitude());
+            codexEntryManager.deleteTrackedEntry(tl);
+        }
     }
 
     private double distanceToNextSample(String genus, String species) {

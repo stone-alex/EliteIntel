@@ -115,12 +115,12 @@ public class ScanEvent extends BaseEvent {
     // Nested class for Parents
     public static class Parent {
         @SerializedName("Planet")
-        private Integer planet;
+        private Long planet;
 
         @SerializedName("Star")
         private Integer star;
 
-        public Integer getPlanet() {
+        public Long getPlanet() {
             return planet;
         }
 

@@ -11,13 +11,32 @@ public class Reducer {
 
     /// trash
     public final static List<String> trashSttWords = List.of(
-            "--", "mm-hmm", "uh-huh", "hmm", "mm", "uh", "um", "ah", "oh", "huh", "eh"
+            "--", "mm-hmm", "uh-huh", "hmm", "mm", "uh", "um", "ah", "oh", "huh", "eh",
+
+            "yeah", "yep", "yup", "nope", "it", "an", "cool", "the",
+            "okay", "ok", "got it", "alright", "alrighty", "sure", "right",
+            "hello", "hi", "hey", "bye", "goodbye",
+            "so", "well", "now", "anyway", "actually", "basically", "literally",
+            "thanks", "thank you", "i'm sorry", "sorry", "excuse me", "pardon",
+            "you know", "i see", "i mean", "of course", "no problem",
+            "i got it", "don't i", "a ", "or ", "she can", "he can", "you can",
+            "like they", "did you", "wh", "i'll", "like", "got a",
+            "blow", "fuck", "shit", "just", "i "
     );
 
 
     /// George Carlin list
     private static final Set<String> STOP_WORDS = Set.of(
-            "blow", "fuck", "shit", "piss", "cunt", "cock", "cocksucker", "motherfucker"
+            /// George Carlin list
+            "blow", "fuck", "shit", "piss", "cunt", "cock", "cocksucker", "motherfucker",
+
+            /// Stop words
+            "a", "an", "the", "to", "of", "in", "on", "at", "by", "for",
+            "with", "and", "or", "is", "are", "am", "be", "do", "does",
+            "what", "where", "how", "which", "any", "our", "my", "me",
+            "we", "us", "i", "you", "it", "this", "that", "get", "have",
+            "has", "can", "could", "would", "should", "not", "no", "up",
+            "here", "there", "some", "much", "many"
     );
 
 

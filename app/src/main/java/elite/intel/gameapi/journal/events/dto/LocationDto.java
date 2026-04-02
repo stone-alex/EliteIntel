@@ -86,7 +86,7 @@ public class LocationDto implements ToJsonConvertible {
     private int geoSignals;
     private boolean hasRings;
     private String parentBodyName;
-    private long parentBodyId; // in-game bodyID of parent body (set for moons: the parent planet's bodyID)
+    private Long parentBodyId; // in-game bodyID of parent body (set for moons: the parent planet's bodyID)
 
     public LocationDto(long bodiId) {
         setBodyId(bodiId);
@@ -879,11 +879,11 @@ public class LocationDto implements ToJsonConvertible {
         return parentBodyName;
     }
 
-    public long getParentBodyId() {
+    public Long getParentBodyId() {
         return parentBodyId;
     }
 
-    public void setParentBodyId(long parentBodyId) {
+    public void setParentBodyId(Long parentBodyId) {
         if (this.parentBodyId > 0) return;
         this.parentBodyId = parentBodyId;
     }

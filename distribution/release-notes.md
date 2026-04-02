@@ -8,9 +8,10 @@
 - Minor adjustments to organic scan announcements.
 - Change to an exo-bio announcement, let the user know what genus remains to scan. Fixed sell organic data sensor event.
 - Removing handlers that remove data. too dangerous to have them around. Can falsely remove user data.
-- The sibilance is aliasing from the resampler. When downsampling 48kHz → 16kHz, any energy above 8kHz (the new Nyquist) folds back into the 4–8kHz range — right where natural sibilants live. The sherpa-onnx resampler's anti-aliasing filter isn't aggressive enough to prevent this.
+- The sibilance is aliasing from the resampler. When downsampling 48kHz 🡢 16kHz, any energy above 8kHz (the new Nyquist) folds back into the 4-8kHz range - right where natural sibilants live. The sherpa-onnx resampler's anti-aliasing filter isn't aggressive enough to prevent this.
 - Fix: apply a biquad lowpass filter at ~7.2kHz before the resampler on each frame. Need a stateful filter so the delay registers persist across frames (otherwise you get a transient click at every buffer boundary).
-- The chain is now: capture → anti-alias LPF (7.2kHz cutoff) → linear-interp resample → VAD/collect → whole-utterance normalize → Parakeet. The filter state is held in the AntiAliasingFilter instance and carries across frames, so no clicks at buffer boundaries.
+- The chain is now: capture 🡢 anti-alias LPF (7.2kHz cutoff) 🡢 linear-interp resample 🡢 VAD/collect 🡢 whole-utterance normalize 🡢 Parakeet. The filter state is held in the AntiAliasingFilter instance and carries across frames, so no clicks at buffer boundaries.
+- Bio samples collection improvements.
 
 ## Elite Intel v-0.0338-beta
 
@@ -58,7 +59,7 @@
 ### bug fixes / features:
 - Prompt normalization algorithm and logic.
 - Adjusted missing material caps
-- Combined query for commodity and materials. Now you can ask: "Do we have <blah>" and it will query both cargo and inventory
+- Combined query for commodity and materials. Now you can ask: "Do we have <blah🡢" and it will query both cargo and inventory
 
 ## Elite Intel v-0.0331-beta
 
@@ -168,5 +169,5 @@
   the prompts are now queued and are processed sequentially in the order they arrive.
 - Removed chat history from chit-chat. LLM would just echo that back at the user. That was annoying.
 - Default to all announcements OFF.
-- Short acknowledgement call-outs. The app will no longer post-fix with "Commander" or "<your name>"
+- Short acknowledgement call-outs. The app will no longer post-fix with "Commander" or "<your name🡢"
 - Checking "Use" box on the Local LLM settings panel will not automatically re-start the app's LLM service.

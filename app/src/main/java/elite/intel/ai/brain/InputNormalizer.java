@@ -180,6 +180,7 @@ public class InputNormalizer {
         SYNONYM_MAP.put("extract vehicle", "recover SRV");
         SYNONYM_MAP.put("recover car", "recover SRV");
         SYNONYM_MAP.put("recover vehicle", "recover SRV");
+        SYNONYM_MAP.put("recover buggy", "recover SRV");
         SYNONYM_MAP.put("recover srv", "recover SRV");
         SYNONYM_MAP.put("extract srv", "recover SRV");
 
@@ -542,6 +543,12 @@ public class InputNormalizer {
         SYNONYM_MAP.put("product center", "codex entry");
         SYNONYM_MAP.put("council", "cancel");
         SYNONYM_MAP.put("scalar", "scanner");
+        SYNONYM_MAP.put("lensing", "landing");
+        SYNONYM_MAP.put("team", "tin");
+        SYNONYM_MAP.put("karga", "cargo");
+        SYNONYM_MAP.put("skoop", "scoop");
+        SYNONYM_MAP.put("alex sounds right", "alexandrite");
+        SYNONYM_MAP.put("center", "entry");
     }
 
     private InputNormalizer() {

@@ -178,10 +178,10 @@ public class LocationTrackingSubscriber {
 
         if (trajectoryDeviation) {
             log.info("Off course, we are moving away from the target.");
-            vocalize("Moving Away", navigator.distanceToTarget(), navigator.bearingToTarget(), false);
+            vocalize(" Diverging ", navigator.distanceToTarget(), navigator.bearingToTarget(), false);
 
         } else if (distanceToTarget > TOO_FAR_FOR_GLIDE) {
-            vocalize("On course.", navigator.distanceToTarget(), navigator.bearingToTarget(), false);
+            vocalize(" Diverging ", navigator.distanceToTarget(), navigator.bearingToTarget(), false);
             log.info("On course, but too far to announce glide angles.");
             hasAnnouncedGlideAngleOnApproach = false;
 
@@ -259,9 +259,9 @@ public class LocationTrackingSubscriber {
             //FLYING in normal space above surface
             if (navigator.distanceToTarget() < 1_000 && !lookForLandingSpotAnnounced && event.getAltitude() > 10) {
                 lookForLandingSpotAnnounced = true;
-                vocalize("Within 1000 meters from target. Look for landing spot", 0, 0, true);
+                vocalize(" Within 1000 meters from target. Look for landing spot ", 0, 0, true);
                 if (movingAway) {
-                    vocalize("Diverging.", 0, 0, false);
+                    vocalize(" Diverging. ", 0, 0, false);
                 }
             } else {
                 if (navigator.distanceToTarget() > 1500) {
@@ -271,9 +271,9 @@ public class LocationTrackingSubscriber {
                 if (headingDeviation) {
                     vocalize(movingAway ? " Diverging. " : " Converging. ", navigator.distanceToTarget(), navigator.bearingToTarget(), movingAway);
                 } else if (event.getAltitude() > 3_000 && glideAngleOk) {
-                    announceBearingAndDistances(navigator, movingAway ? " Diverging." : " Converging. Glide Angle " + glideAngle + " degrees.");
+                    announceBearingAndDistances(navigator, movingAway ? " Diverging. " : " Converging. Glide Angle " + glideAngle + " degrees.");
                 } else {
-                    announceBearingAndDistances(navigator, movingAway ? " Diverging." : " Converging. ");
+                    announceBearingAndDistances(navigator, movingAway ? " Diverging. " : " Converging. ");
                 }
             }
         }

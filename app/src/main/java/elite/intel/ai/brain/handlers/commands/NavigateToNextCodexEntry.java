@@ -14,9 +14,7 @@ import elite.intel.gameapi.journal.events.dto.TargetLocation;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.Status;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 import static elite.intel.util.NavigationUtils.calculateSurfaceDistance;
 
@@ -36,7 +34,6 @@ public class NavigateToNextCodexEntry implements CommandHandler {
             EventBusManager.publish(new AiVoxResponseEvent("I don't know where you are yet."));
             return;
         }
-
 
         List<CodexEntryDao.CodexEntry> codexEntries = getCodexEntries(currentLocation);
         if (codexEntries.isEmpty()) {
@@ -96,99 +93,111 @@ public class NavigateToNextCodexEntry implements CommandHandler {
 
         List<CodexEntryDao.CodexEntry> filteredResult = new ArrayList<>();
         for (CodexEntryDao.CodexEntry entry : codexEntries) {
-            for (BioSampleDto completed : completedBioSamples) {
-                if (completedBioSamples.stream().anyMatch(
-                        c -> entry.getEntryName()
-                                .toLowerCase()
-                                .contains(c.getGenus().toLowerCase(Locale.ROOT))
-                )) {
-                    continue;
-                }
-                if (!entry.getEntryName().contains(completed.getGenus())) {
-                    filteredResult.add(entry);
-                }
-            }
+            boolean isCompleted = completedBioSamples.stream().anyMatch(
+                    c -> entry.getEntryName().toLowerCase(Locale.ROOT)
+                            .contains(c.getGenus().toLowerCase(Locale.ROOT)));
+            if (!isCompleted) filteredResult.add(entry);
         }
-
         return filteredResult;
     }
-
 
     private Tuple<CodexEntryDao.CodexEntry, String> findBestBioTarget(List<CodexEntryDao.CodexEntry> codexEntries, List<BioSampleDto> partials, double playerLat, double playerLon, double planetRadius) {
         String partialGenus = playerSession.getCurrentPartial();
         boolean hasPartials = partialGenus != null && !partials.isEmpty();
-        String message = "";
-        CodexEntryDao.CodexEntry bestPartialMatch = null;
-        CodexEntryDao.CodexEntry bestAny = null;
-        double bestPartialDist = Double.MAX_VALUE;
-        double bestAnyDist = Double.MAX_VALUE;
-        boolean isTooClose = false;
+        if (hasPartials) {
+            return findPartialTarget(codexEntries, partials, partialGenus, playerLat, playerLon, planetRadius);
+        } else {
+            return findFreshTarget(codexEntries, playerLat, playerLon, planetRadius);
+        }
+    }
+
+    /**
+     * Has a partial scan in progress: find the nearest codex entry for the tracked genus
+     * that is far enough from all existing partial scan locations.
+     */
+    private Tuple<CodexEntryDao.CodexEntry, String> findPartialTarget(List<CodexEntryDao.CodexEntry> codexEntries, List<BioSampleDto> partials, String partialGenus, double playerLat, double playerLon, double planetRadius) {
+        CodexEntryDao.CodexEntry best = null;
+        double bestDist = Double.MAX_VALUE;
+
         for (CodexEntryDao.CodexEntry entry : codexEntries) {
             if (entry.getLatitude() == 0 && entry.getLongitude() == 0) continue;
-
             String genus = entry.getEntryName().split(" ")[0];
-            double distToPlayer = calculateSurfaceDistance(playerLat, playerLon, entry.getLatitude(), entry.getLongitude(), planetRadius, 0);
+            if (!genus.equalsIgnoreCase(partialGenus)) continue;
+            if (isTooCloseToAnyPartialOfSameGenus(entry, genus, partials, planetRadius)) continue;
 
-            // Check distance (no partials or not too close to any partial of the same genus)
-            isTooClose = isTooCloseToAnyPartialOfSameGenus(entry, genus, partials, planetRadius);
-            boolean valid = !hasPartials || !isTooClose;
-            if (!valid) continue;
-
-            BioSampleDto partialMatch = findForGenus(genus, partials);
-            if (hasPartials && partialMatch == null) continue;
-
-            Integer scanXof3 = partialMatch == null ? null : partialMatch.getScanXof3();
-
-            if (hasPartials && scanXof3 != null && scanXof3 > 2) {
-                // scans completed, skip
-                continue;
-            }
-
-            if (partialMatch != null && !partialMatch.getGenus().equalsIgnoreCase(partialGenus)) {
-                continue;
-            }
-
-            // If we have partials and this matches one of their genera → priority track
-            if (hasPartials && partials.stream().anyMatch(p -> genus.equalsIgnoreCase(p.getGenus()))) {
-                if (distToPlayer < bestPartialDist) {
-                    bestPartialDist = distToPlayer;
-                    bestPartialMatch = entry;
-                }
-            }
-
-            // Always track best valid of any genus (fallback)
-            if (distToPlayer < bestAnyDist) {
-                bestAnyDist = distToPlayer;
-                bestAny = entry;
+            double dist = calculateSurfaceDistance(playerLat, playerLon, entry.getLatitude(), entry.getLongitude(), planetRadius, 0);
+            if (dist < bestDist) {
+                bestDist = dist;
+                best = entry;
             }
         }
 
-        CodexEntryDao.CodexEntry entry = bestPartialMatch != null ? bestPartialMatch : bestAny;
-        if (entry == null && isTooClose) message = "No matches found for partial sample within range.";
-        return new Tuple<>(entry, message);
+        if (best == null) return new Tuple<>(null, "No codex entry found for the tracked genus.");
+        return new Tuple<>(best, "");
     }
 
-    private BioSampleDto findForGenus(String genus, List<BioSampleDto> partials) {
-        if (partials.isEmpty()) return null;
-        return partials.stream()
-                .filter(p -> genus.equalsIgnoreCase(p.getGenus()))
-                .findFirst()
-                .orElse(null);
+    /**
+     * No partial scan: find the genus with the most codex entries that are all at least
+     * minRange apart from each other (greedy). Prefers genera with 3 viable entries,
+     * then 2, then 1. Ties broken by distance to the nearest entry.
+     */
+    private Tuple<CodexEntryDao.CodexEntry, String> findFreshTarget(List<CodexEntryDao.CodexEntry> codexEntries, double playerLat, double playerLon, double planetRadius) {
+        Map<String, List<CodexEntryDao.CodexEntry>> byGenus = new LinkedHashMap<>();
+        for (CodexEntryDao.CodexEntry entry : codexEntries) {
+            if (entry.getLatitude() == 0 && entry.getLongitude() == 0) continue;
+            String genus = entry.getEntryName().split(" ")[0];
+            byGenus.computeIfAbsent(genus, k -> new ArrayList<>()).add(entry);
+        }
+
+        int bestCount = 0;
+        CodexEntryDao.CodexEntry bestEntry = null;
+        double bestDist = Double.MAX_VALUE;
+
+        for (Map.Entry<String, List<CodexEntryDao.CodexEntry>> genusGroup : byGenus.entrySet()) {
+            String genus = genusGroup.getKey();
+            List<CodexEntryDao.CodexEntry> entries = genusGroup.getValue();
+            double minRange = BioForms.getDistance(genus);
+
+            // Sort nearest-first so the greedy pick yields the most player-convenient set
+            entries.sort((a, b) -> Double.compare(
+                    calculateSurfaceDistance(playerLat, playerLon, a.getLatitude(), a.getLongitude(), planetRadius, 0),
+                    calculateSurfaceDistance(playerLat, playerLon, b.getLatitude(), b.getLongitude(), planetRadius, 0)));
+
+            // Greedy independent set: pick entries >= minRange from all already-picked
+            List<CodexEntryDao.CodexEntry> feasible = new ArrayList<>();
+            for (CodexEntryDao.CodexEntry candidate : entries) {
+                boolean tooClose = minRange > 0 && feasible.stream().anyMatch(picked ->
+                        calculateSurfaceDistance(
+                                candidate.getLatitude(), candidate.getLongitude(),
+                                picked.getLatitude(), picked.getLongitude(), planetRadius, 0) < minRange);
+                if (!tooClose) feasible.add(candidate);
+            }
+
+            if (feasible.isEmpty()) continue;
+            double nearestDist = calculateSurfaceDistance(playerLat, playerLon,
+                    feasible.get(0).getLatitude(), feasible.get(0).getLongitude(), planetRadius, 0);
+
+            if (feasible.size() > bestCount || (feasible.size() == bestCount && nearestDist < bestDist)) {
+                bestCount = feasible.size();
+                bestEntry = feasible.get(0);
+                bestDist = nearestDist;
+            }
+        }
+
+        if (bestEntry == null) return new Tuple<>(null, "No codex entries found.");
+        return new Tuple<>(bestEntry, "");
     }
 
     private boolean isTooCloseToAnyPartialOfSameGenus(CodexEntryDao.CodexEntry entry, String genus, List<BioSampleDto> partials, double planetRadius) {
-        double minAllowed = BioForms.getDistance(genus); // genus-specific min distance
+        double minAllowed = BioForms.getDistance(genus);
+        if (minAllowed <= 0) return false;
 
         for (BioSampleDto partial : partials) {
             if (!genus.equalsIgnoreCase(partial.getGenus())) continue;
-
             double dist = calculateSurfaceDistance(
                     partial.getScanLatitude(), partial.getScanLongitude(),
                     entry.getLatitude(), entry.getLongitude(), planetRadius, 0);
-
-            if (dist <= minAllowed) {
-                return true; // violates rule → discard this codex entry
-            }
+            if (dist <= minAllowed) return true;
         }
         return false;
     }

@@ -4,7 +4,7 @@ package elite.intel.ai.brain.commons;
  * Published on {@link elite.intel.gameapi.EventBusManager} immediately before a command or query
  * handler's {@code handle()} method is invoked.
  * <p>
- * In production no subscriber listens to this event — zero overhead.
+ * In production no subscriber listens to this event - zero overhead.
  * A test harness subscribes to it to assert that the correct handler was routed to
  * without letting the handler's side-effects (keystrokes, TTS) actually execute.
  */

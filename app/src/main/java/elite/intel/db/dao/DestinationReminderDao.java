@@ -14,37 +14,48 @@ import java.sql.SQLException;
 public interface DestinationReminderDao {
 
 
-    @SqlUpdate("INSERT OR REPLACE INTO destination_reminder (id, json) VALUES (1, :json)")
-    void save(@BindBean DestinationReminderDao.Destination data);
+    @SqlUpdate("INSERT OR REPLACE INTO destination_reminder (id, starSystem, reminder) VALUES (1, :starSystem, :reminder)")
+    void save(@BindBean Reminder data);
 
-    @SqlQuery("SELECT json FROM destination_reminder WHERE id = 1")
-    DestinationReminderDao.Destination get();
+    @SqlQuery("SELECT * FROM destination_reminder WHERE id = 1")
+    Reminder get();
 
     @SqlUpdate("DELETE FROM destination_reminder")
     void clear();
 
-    class DestinationMapper implements RowMapper<DestinationReminderDao.Destination> {
+    class DestinationMapper implements RowMapper<Reminder> {
 
-        @Override public DestinationReminderDao.Destination map(ResultSet rs, StatementContext ctx) throws SQLException {
-            Destination destination = new Destination();
-            destination.setJson(rs.getString("json"));
+        @Override
+        public Reminder map(ResultSet rs, StatementContext ctx) throws SQLException {
+            Reminder destination = new Reminder();
+            destination.setReminder(rs.getString("reminder"));
+            destination.setStarSystem(rs.getString("starSystem"));
             return destination;
         }
     }
 
 
-    class Destination {
-        public Destination() {
+    class Reminder {
+        public Reminder() {
         }
 
-        private String json;
+        private String starSystem;
+        private String reminder;
 
-        public String getJson() {
-            return json;
+        public String getReminder() {
+            return reminder;
         }
 
-        public void setJson(String json) {
-            this.json = json;
+        public void setReminder(String reminder) {
+            this.reminder = reminder;
+        }
+
+        public String getStarSystem() {
+            return starSystem;
+        }
+
+        public void setStarSystem(String starSystem) {
+            this.starSystem = starSystem;
         }
     }
 }

@@ -53,8 +53,11 @@ public class FindVistaGenomicsHandler implements CommandHandler {
         RoutePlotter routePlotter = new RoutePlotter();
         VistaGenomicsLocationDto.Result result = first.get();
 
-        String reminder = "Head to " + result.getSystemName() + " star system. When you get there looks for" + result.getStationName();
-        ReminderManager.getInstance().setReminder(reminder);
+        String reminder = "Head to " + result.getSystemName() + " star system. When you get there looks for " + result.getStationName();
+        ReminderManager.getInstance().setReminder(
+                result.getSystemName(),
+                reminder
+        );
         EventBusManager.publish(new MissionCriticalAnnouncementEvent(reminder));
         routePlotter.plotRoute(result.getSystemName());
     }

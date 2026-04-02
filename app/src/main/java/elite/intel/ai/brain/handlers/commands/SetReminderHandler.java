@@ -13,7 +13,10 @@ public class SetReminderHandler implements CommandHandler {
         ReminderManager reminderManager = ReminderManager.getInstance();
         JsonElement key = params.get("key");
         if (key != null) {
-            reminderManager.setReminder(key.getAsString());
+            reminderManager.setReminder(
+                    key.getAsString(),
+                    null
+            );
         } else {
             EventBusManager.publish(new AiVoxResponseEvent("no reminder key parameter provided"));
         }

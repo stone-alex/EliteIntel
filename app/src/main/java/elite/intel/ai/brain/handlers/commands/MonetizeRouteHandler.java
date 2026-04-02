@@ -32,7 +32,10 @@ public class MonetizeRouteHandler implements CommandHandler {
                     + " star system, "
                     + tradeTuple.getDestination().getStationName() + " port. ";
 
-            reminderManager.setReminder(reminder);
+            reminderManager.setReminder(
+                    reminder,
+                    tradeTuple.getSource().getStarSystem()
+            );
 
             EventBusManager.publish(
                     new MissionCriticalAnnouncementEvent(

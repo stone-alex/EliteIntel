@@ -61,7 +61,10 @@ public class FindMiningSiteHandler implements CommandHandler {
             RoutePlotter routePlotter = new RoutePlotter();
             routePlotter.plotRoute(result.get().getSystemName());
             String reminder = "Found nearest mining location in " + result.get().getSystemName() + " system head to planet " + result.get().getBodyName();
-            ReminderManager.getInstance().setReminder(reminder);
+            ReminderManager.getInstance().setReminder(
+                    reminder,
+                    result.get().getSystemName()
+            );
             EventBusManager.publish(new AiVoxResponseEvent(reminder));
         } else {
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("No mining sites found within range."));

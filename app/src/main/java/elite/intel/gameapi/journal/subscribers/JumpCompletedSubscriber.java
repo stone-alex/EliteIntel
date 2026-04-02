@@ -3,6 +3,7 @@ package elite.intel.gameapi.journal.subscribers;
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.ai.mouth.subscribers.events.RouteAnnouncementEvent;
+import elite.intel.db.dao.DestinationReminderDao;
 import elite.intel.db.dao.RouteMonetisationDao.MonetisationTransaction;
 import elite.intel.db.managers.LocationManager;
 import elite.intel.db.managers.MonetizeRouteManager;
@@ -45,96 +46,100 @@ public class JumpCompletedSubscriber {
     @Subscribe
     public void onFSDJumpEvent(FSDJumpEvent event) {
         Thread.ofVirtual().start(() -> {
-        SystemBodiesDto systemBodiesDto = EdsmApiClient.searchSystemBodies(event.getStarSystem());
-        processEdsmData(systemBodiesDto, event.getSystemAddress(), event.getStarPos());
+            SystemBodiesDto systemBodiesDto = EdsmApiClient.searchSystemBodies(event.getStarSystem());
+            processEdsmData(systemBodiesDto, event.getSystemAddress(), event.getStarPos());
 
-        boolean isSellerSystem = monetizeRouteManager.isSeller(event.getStarSystem());
-        boolean isBuyerSystem = monetizeRouteManager.isBuyer(event.getStarSystem());
-        MonetisationTransaction station = monetizeRouteManager.getTransaction();
+            boolean isSellerSystem = monetizeRouteManager.isSeller(event.getStarSystem());
+            boolean isBuyerSystem = monetizeRouteManager.isBuyer(event.getStarSystem());
+            MonetisationTransaction station = monetizeRouteManager.getTransaction();
 
-        LocationDto primaryStar = locationManager.findBySystemAddress(event.getSystemAddress(), event.getBodyId());
-        primaryStar.setBodyId(event.getBodyId());
-        primaryStar.setSystemAddress(event.getSystemAddress());
-        primaryStar.setStationGovernment(event.getSystemGovernmentLocalised());
-        primaryStar.setAllegiance(event.getSystemAllegiance());
-        primaryStar.setSecurity(event.getSystemSecurityLocalised());
-        primaryStar.setStarName(event.getStarSystem());
-        primaryStar.setPlanetName(event.getBody());
-        primaryStar.setLocationType(LocationDto.LocationType.PRIMARY_STAR);
-        primaryStar.setX(event.getStarPos()[0]);
-        primaryStar.setY(event.getStarPos()[1]);
-        primaryStar.setZ(event.getStarPos()[2]);
-        primaryStar.setPopulation(event.getPopulation());
-        primaryStar.setPowerplayState(event.getPowerplayState());
-        primaryStar.setPowerplayStateControlProgress(event.getPowerplayStateControlProgress());
-        primaryStar.setPowerplayStateReinforcement(event.getPowerplayStateReinforcement());
-        primaryStar.setPowerplayStateUndermining(event.getPowerplayStateUndermining());
-        playerSession.setCurrentLocationId(primaryStar.getBodyId(), event.getSystemAddress());
-        playerSession.setCurrentPrimaryStarName(primaryStar.getStarName());
+            LocationDto primaryStar = locationManager.findBySystemAddress(event.getSystemAddress(), event.getBodyId());
+            primaryStar.setBodyId(event.getBodyId());
+            primaryStar.setSystemAddress(event.getSystemAddress());
+            primaryStar.setStationGovernment(event.getSystemGovernmentLocalised());
+            primaryStar.setAllegiance(event.getSystemAllegiance());
+            primaryStar.setSecurity(event.getSystemSecurityLocalised());
+            primaryStar.setStarName(event.getStarSystem());
+            primaryStar.setPlanetName(event.getBody());
+            primaryStar.setLocationType(LocationDto.LocationType.PRIMARY_STAR);
+            primaryStar.setX(event.getStarPos()[0]);
+            primaryStar.setY(event.getStarPos()[1]);
+            primaryStar.setZ(event.getStarPos()[2]);
+            primaryStar.setPopulation(event.getPopulation());
+            primaryStar.setPowerplayState(event.getPowerplayState());
+            primaryStar.setPowerplayStateControlProgress(event.getPowerplayStateControlProgress());
+            primaryStar.setPowerplayStateReinforcement(event.getPowerplayStateReinforcement());
+            primaryStar.setPowerplayStateUndermining(event.getPowerplayStateUndermining());
+            playerSession.setCurrentLocationId(primaryStar.getBodyId(), event.getSystemAddress());
+            playerSession.setCurrentPrimaryStarName(primaryStar.getStarName());
 
 
-        String finalDestination = playerSession.getFinalDestination();
+            String finalDestination = playerSession.getFinalDestination();
 
-        StringBuilder sb = new StringBuilder();
-        List<NavRouteDto> orderedRoute = shipRoute.getOrderedRoute();
-        boolean roueSet = !orderedRoute.isEmpty();
-        String reminderText = destinationReminderManager.getReminderText();
-
-        if (finalDestination != null && finalDestination.equalsIgnoreCase(event.getStarSystem())) {
-            shipRoute.clearRoute();
-            if (!reminderText.isBlank()) {
-                EventBusManager.publish(new AiVoxResponseEvent("Reminder " + reminderText));
-            } else {
-                sb.append(" Arrived at final destination: ").append(finalDestination);
-            }
-            TrafficDto trafficDto = EdsmApiClient.searchTraffic(finalDestination);
-            if (trafficDto.getData() != null && trafficDto.getData().getTraffic() != null) {
-                TrafficStats trafficStats = trafficDto.getData().getTraffic();
-            }
-            DeathsDto deathsDto = EdsmApiClient.searchDeaths(finalDestination);
-            if (deathsDto.getData() != null && deathsDto.getData().getDeaths() != null) {
-                DeathsStats deathsStats = deathsDto.getData().getDeaths();
-            }
-            primaryStar.setTrafficDto(trafficDto);
-            primaryStar.setDeathsDto(deathsDto);
-
-        } else if (roueSet) {
-            if (!reminderText.isBlank() && reminderText.toLowerCase().contains(event.getStarSystem().toLowerCase(Locale.ROOT))) {
-                EventBusManager.publish(new AiVoxResponseEvent("Reminder " + reminderText));
+            StringBuilder sb = new StringBuilder();
+            List<NavRouteDto> orderedRoute = shipRoute.getOrderedRoute();
+            boolean roueSet = !orderedRoute.isEmpty();
+            DestinationReminderDao.Reminder reminder = destinationReminderManager.getReminder();
+            String reminderText = null;
+            if (reminder != null && reminder.getStarSystem().equals(event.getStarSystem())) {
+                reminderText = reminder.getReminder();
             }
 
-            sb.append("Arrived at ").append(event.getStarSystem()).append(".");
-            List<NavRouteDto> route = shipRoute.getOrderedRoute();
-            int remainingJump = route.size();
-            if (remainingJump > 0) {
-                route.stream().findFirst().ifPresent(
-                        nextStop -> sb
-                                .append(" Next Waypoint: ")
-                                .append(nextStop.getName())
-                                .append(", ")
-                                .append(" Star Class: ")
-                                .append(nextStop.getStarClass())
-                                .append(". ")
-                                .append(isFuelStarClause(nextStop.getStarClass()))
-                );
-                sb.append(" We have ").append(remainingJump).append(" jump");
-                if (remainingJump > 1) sb.append("s");
-                sb.append(" left to destination. ");
+            if (finalDestination != null && finalDestination.equalsIgnoreCase(event.getStarSystem())) {
+                shipRoute.clearRoute();
+                if (reminderText != null && !reminderText.isBlank()) {
+                    EventBusManager.publish(new AiVoxResponseEvent("Reminder " + reminderText));
+                } else {
+                    sb.append(" Arrived at final destination: ").append(finalDestination);
+                }
+                TrafficDto trafficDto = EdsmApiClient.searchTraffic(finalDestination);
+                if (trafficDto.getData() != null && trafficDto.getData().getTraffic() != null) {
+                    TrafficStats trafficStats = trafficDto.getData().getTraffic();
+                }
+                DeathsDto deathsDto = EdsmApiClient.searchDeaths(finalDestination);
+                if (deathsDto.getData() != null && deathsDto.getData().getDeaths() != null) {
+                    DeathsStats deathsStats = deathsDto.getData().getDeaths();
+                }
+                primaryStar.setTrafficDto(trafficDto);
+                primaryStar.setDeathsDto(deathsDto);
+
+            } else if (roueSet) {
+                if (reminderText != null && !reminderText.isBlank() && reminderText.toLowerCase().contains(event.getStarSystem().toLowerCase(Locale.ROOT))) {
+                    EventBusManager.publish(new AiVoxResponseEvent("Reminder " + reminderText));
+                }
+
+                sb.append("Arrived at ").append(event.getStarSystem()).append(".");
+                List<NavRouteDto> route = shipRoute.getOrderedRoute();
+                int remainingJump = route.size();
+                if (remainingJump > 0) {
+                    route.stream().findFirst().ifPresent(
+                            nextStop -> sb
+                                    .append(" Next Waypoint: ")
+                                    .append(nextStop.getName())
+                                    .append(", ")
+                                    .append(" Star Class: ")
+                                    .append(nextStop.getStarClass())
+                                    .append(". ")
+                                    .append(isFuelStarClause(nextStop.getStarClass()))
+                    );
+                    sb.append(" We have ").append(remainingJump).append(" jump");
+                    if (remainingJump > 1) sb.append("s");
+                    sb.append(" left to destination. ");
+                }
             }
-        }
 
-        locationManager.save(primaryStar);
+            locationManager.save(primaryStar);
 
-        if (playerSession.isRouteAnnouncementOn()) {
-            EventBusManager.publish(new RouteAnnouncementEvent(sb.toString()));
-        }
-        if (isSellerSystem && station != null) {
-            EventBusManager.publish(new SensorDataEvent("Head to " + station.getSourceStationName() + " buy " + station.getSourceCommodity(), "Remind User"));
-        }
+            if (playerSession.isRouteAnnouncementOn()) {
+                EventBusManager.publish(new RouteAnnouncementEvent(sb.toString()));
+            }
+            if (isSellerSystem && station != null) {
+                EventBusManager.publish(new SensorDataEvent("Head to " + station.getSourceStationName() + " buy " + station.getSourceCommodity(), "Remind User"));
+            }
 
-        if (isBuyerSystem && station != null) {
-            EventBusManager.publish(new SensorDataEvent("Head to " + station.getDestinationStationName() + " sell " + station.getDestinationCommodity(), "Remind User"));
-        }
+            if (isBuyerSystem && station != null) {
+                EventBusManager.publish(new SensorDataEvent("Head to " + station.getDestinationStationName() + " sell " + station.getDestinationCommodity(), "Remind User"));
+            }
         }); // end virtual thread
     }
 

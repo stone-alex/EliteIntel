@@ -82,6 +82,9 @@ public class NavigateToNextTradeStopHandler implements CommandHandler {
             EventBusManager.publish(new MissionCriticalAnnouncementEvent(sb.toString()));
         }
 
-        reminderManager.setReminder(sb.toString());
+        reminderManager.setReminder(
+                sb.toString(),
+                destinationSystem
+        );
     }
 }

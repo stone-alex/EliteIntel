@@ -362,3 +362,10 @@ where materialName = 'Proto Heat Radiators';
 update materials
 set maxCapacity = 200
 where materialName = 'Boron';
+
+alter table destination_reminder
+    add column starSystem text default null;
+alter table destination_reminder
+    add column reminder text default null;
+alter table destination_reminder
+    drop column json;

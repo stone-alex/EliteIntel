@@ -56,7 +56,10 @@ public class FindCommodityHandler implements CommandHandler {
         CommoditySearchResult result = results.getFirst();
         String reminder = "Head to " + result.getStarSystem() + " star system, " + result.getStationName() + " " + result.getStationType() + ". Price per unit is " + result.getPrice() + " credits.";
         EventBusManager.publish(new MissionCriticalAnnouncementEvent(reminder));
-        reminderManager.setReminder(reminder);
+        reminderManager.setReminder(
+                reminder,
+                result.getStarSystem()
+        );
 
         RoutePlotter plotter = new RoutePlotter();
         plotter.plotRoute(result.getStarSystem());

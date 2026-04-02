@@ -23,18 +23,15 @@ public final class ReminderManager {
     }
 
 
-    public String getReminderText() {
-        return Database.withDao(DestinationReminderDao.class, dao -> {
-            DestinationReminderDao.Destination destination = dao.get();
-            if (destination == null) return "";
-            return destination.getJson();
-        });
+    public DestinationReminderDao.Reminder getReminder() {
+        return Database.withDao(DestinationReminderDao.class, DestinationReminderDao::get);
     }
 
-    public void setReminder(String text) {
+    public void setReminder(String text, String starSystem) {
         Database.withDao(DestinationReminderDao.class, dao -> {
-            DestinationReminderDao.Destination data = new DestinationReminderDao.Destination();
-            data.setJson(text);
+            DestinationReminderDao.Reminder data = new DestinationReminderDao.Reminder();
+            data.setStarSystem(starSystem);
+            data.setReminder(text);
             dao.save(data);
             return null;
         });

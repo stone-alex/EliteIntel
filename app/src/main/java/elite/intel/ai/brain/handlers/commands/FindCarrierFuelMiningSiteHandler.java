@@ -54,7 +54,10 @@ public class FindCarrierFuelMiningSiteHandler implements CommandHandler {
             String reminder = "Head to " + result.get().getSystemName() + " star system.";
             EventBusManager.publish(new MissionCriticalAnnouncementEvent(reminder));
             ReminderManager reminderManager = ReminderManager.getInstance();
-            reminderManager.setReminder(reminder);
+            reminderManager.setReminder(
+                    reminder,
+                    result.get().getSystemName()
+            );
             RoutePlotter routePlotter = new RoutePlotter();
             routePlotter.plotRoute(result.get().getSystemName());
 

@@ -2,6 +2,7 @@
 
 ### bug fixes / features:
 
+- Reminder will only trigger in the destination system
 - Adding missing material capacity updates, fixed incorrect material capacity entries.
 - Changed Parakeet to work with greedy algo instead of hotwords.
 - Minor adjustments to organic scan announcements.

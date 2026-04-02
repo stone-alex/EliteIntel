@@ -58,7 +58,8 @@ public class FindBrainTreesHandler implements CommandHandler {
             plotter.plotRoute(result.getSystemName());
             ReminderManager.getInstance()
                     .setReminder(
-                            "Head to " + result.getSystemName() + " planet " + result.getBodyName()
+                            "Head to " + result.getSystemName() + " planet " + result.getBodyName(),
+                            result.getSystemName()
                     );
         }
     }

@@ -77,13 +77,15 @@ public class TradersAndBrokersSearch {
             return null;
         }
 
-        TraderAndBrokerSearchDto.Result result = results.get(0);
+        TraderAndBrokerSearchDto.Result result = results.getFirst();
         EventBusManager.publish(
                 new AiVoxResponseEvent("Head to " + result.getSystemName() + " star system. When you get there looks for" + result.getStationName()
                         +". Data was last updated: "+ TimeUtils.transformToYMDHtimeAgo(result.getUpdatedAt(), TimeUtils.LOCAL_DATE_TIME)
                 )
         );
-        ReminderManager.getInstance().setReminder(result.toJson());
+        ReminderManager.getInstance().setReminder(
+                "Head to " + result.getStationName(), result.getSystemName()
+        );
         return result.getSystemName();
     }
 }

@@ -35,7 +35,8 @@ public class NavigateToMissionDestination implements CommandHandler {
         }
 
         ReminderManager.getInstance().setReminder(
-                sb.toString()
+                sb.toString(),
+                mission.getDestinationSystem()
         );
 
         EventBusManager.publish(new MissionCriticalAnnouncementEvent("Head to " + mission.getDestinationSystem() + " system."));

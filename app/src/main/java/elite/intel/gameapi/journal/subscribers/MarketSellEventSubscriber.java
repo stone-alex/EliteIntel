@@ -2,8 +2,8 @@ package elite.intel.gameapi.journal.subscribers;
 
 import com.google.common.eventbus.Subscribe;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
-import elite.intel.db.managers.ReminderManager;
 import elite.intel.db.managers.MonetizeRouteManager;
+import elite.intel.db.managers.ReminderManager;
 import elite.intel.db.managers.TradeRouteManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.MarketSellEvent;
@@ -48,7 +48,8 @@ public class MarketSellEventSubscriber {
 
             EventBusManager.publish(new AiVoxResponseEvent(sb.toString()));
             reminderManager.setReminder(
-                    sb.toString()
+                    sb.toString(),
+                    destinationSystem
             );
         } else {
             reminderManager.clear();

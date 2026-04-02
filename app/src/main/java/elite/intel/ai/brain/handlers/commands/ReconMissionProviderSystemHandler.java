@@ -89,10 +89,8 @@ public class ReconMissionProviderSystemHandler implements CommandHandler {
         RoutePlotter plotter = new RoutePlotter();
         plotter.plotRoute(starSystem);
         ReminderManager.getInstance().setReminder(
-                new DataDto(
-                        starSystem,
-                        " Seek mission providers in local ports with pirate massacre missions against " + targetStarSystemName + " system."
-                ).toYaml()
+                " Seek mission providers in local ports with pirate massacre missions against " + targetStarSystemName + " system.",
+                targetStarSystemName
         );
     }
 

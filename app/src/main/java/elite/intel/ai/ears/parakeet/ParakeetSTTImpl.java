@@ -59,6 +59,7 @@ public class ParakeetSTTImpl implements EarsInterface {
     private ExecutorService transcriptionExecutor;
     private OfflineRecognizer recognizer;
     private Resampler resampler;
+    private AntiAliasingFilter antiAliasingFilter;
     private int sampleRateHertz;
     private int bufferSize;
     public double RMS_THRESHOLD_HIGH;
@@ -195,8 +196,9 @@ public class ParakeetSTTImpl implements EarsInterface {
 
     private void captureLoop() {
         if (sampleRateHertz != SAMPLE_RATE) {
+            antiAliasingFilter = new AntiAliasingFilter(sampleRateHertz, SAMPLE_RATE);
             resampler = new Resampler(sampleRateHertz, SAMPLE_RATE, CHANNELS);
-            log.info("Resampling {} → {} Hz", sampleRateHertz, SAMPLE_RATE);
+            log.info("Resampling {} → {} Hz with anti-aliasing filter", sampleRateHertz, SAMPLE_RATE);
         }
 
         int retryCount = 0;
@@ -236,10 +238,14 @@ public class ParakeetSTTImpl implements EarsInterface {
                 int bytesRead = line.read(buffer, 0, buffer.length);
                 if (bytesRead <= 0) continue;
 
-                byte[] audio = (resampler != null)
-                        ? resampler.resample(buffer, bytesRead)
+                byte[] preResample = (antiAliasingFilter != null)
+                        ? antiAliasingFilter.filter(buffer, bytesRead)
                         : buffer;
-                int audioLen = (resampler != null) ? audio.length : bytesRead;
+                int preResampleLen = (antiAliasingFilter != null) ? preResample.length : bytesRead;
+                byte[] audio = (resampler != null)
+                        ? resampler.resample(preResample, preResampleLen)
+                        : preResample;
+                int audioLen = (resampler != null) ? audio.length : preResampleLen;
 
                 double rms = calculateRMS(audio, audioLen);
 
@@ -252,14 +258,15 @@ public class ParakeetSTTImpl implements EarsInterface {
                 if (rms > RMS_THRESHOLD_HIGH) {
                     consecutiveVoice++;
                     consecutiveSilence = 0;
-                    audio = Amplifier.amplify(audio);
                 } else {
                     consecutiveVoice = 0;
                     consecutiveSilence++;
                 }
 
+                boolean justActivated = false;
                 if (!isActive && consecutiveVoice >= ENTER_VOICE_FRAMES && !isSpeaking.get()) {
                     isActive = true;
+                    justActivated = true;
                     audioCollector.reset();
                     for (byte[] frame : preRoll) audioCollector.write(frame, 0, frame.length);
                     preRoll.clear();
@@ -271,7 +278,7 @@ public class ParakeetSTTImpl implements EarsInterface {
                     isActive = false;
                     log.debug("VAD: speech ended");
                 }
-                if (isActive) {
+                if (isActive && !justActivated) {
                     audioCollector.write(audio, 0, audioLen);
                     if (audioCollector.size() >= MAX_UTTERANCE_BYTES) {
                         isActive = false;
@@ -318,7 +325,7 @@ public class ParakeetSTTImpl implements EarsInterface {
     private void transcribeAndDispatch(byte[] pcmBytes) {
         pendingTranscriptions.decrementAndGet();
         try {
-            float[] samples = pcm16ToFloat(padAudio(trimLeadingLowEnergy(pcmBytes)));
+            float[] samples = pcm16ToFloat(Amplifier.amplify(padAudio(trimLeadingLowEnergy(pcmBytes))));
 
             long timeStart = System.currentTimeMillis();
             OfflineStream stream = recognizer.createStream();

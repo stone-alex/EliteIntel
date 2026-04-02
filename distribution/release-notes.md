@@ -8,6 +8,9 @@
 - Minor adjustments to organic scan announcements.
 - Change to an exo-bio announcement, let the user know what genus remains to scan. Fixed sell organic data sensor event.
 - Removing handlers that remove data. too dangerous to have them around. Can falsely remove user data.
+- The sibilance is aliasing from the resampler. When downsampling 48kHz → 16kHz, any energy above 8kHz (the new Nyquist) folds back into the 4–8kHz range — right where natural sibilants live. The sherpa-onnx resampler's anti-aliasing filter isn't aggressive enough to prevent this.
+- Fix: apply a biquad lowpass filter at ~7.2kHz before the resampler on each frame. Need a stateful filter so the delay registers persist across frames (otherwise you get a transient click at every buffer boundary).
+- The chain is now: capture → anti-alias LPF (7.2kHz cutoff) → linear-interp resample → VAD/collect → whole-utterance normalize → Parakeet. The filter state is held in the AntiAliasingFilter instance and carries across frames, so no clicks at buffer boundaries.
 
 ## Elite Intel v-0.0338-beta
 

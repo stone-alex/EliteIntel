@@ -36,7 +36,6 @@ public class LocationTrackingSubscriber {
     public static final int MAX_NORAMAL_SAPCE_SPEED = 700;
     public static final int APPROXIMATE_DRP_ALTITUDE = 30_000;
     private static final Logger log = LogManager.getLogger(LocationTrackingSubscriber.class);
-    private static final long MIN_INTERVAL_MS = 15_000;
     private static final double HYSTERESIS = 7;
     private static final double ARRIVAL_RADIUS = 50;
     private static final double GLIDE_ENTRY_RADIUS = 2_500_000;

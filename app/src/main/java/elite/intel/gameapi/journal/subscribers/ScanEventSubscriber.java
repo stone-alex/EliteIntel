@@ -166,12 +166,7 @@ public class ScanEventSubscriber {
             location.setMaterials(materials);
         }
 
-        if (location.getBioSignals() > 0 && playerSession.isDiscoveryAnnouncementOn()) {
-            EventBusManager.publish(new DiscoveryAnnouncementEvent("Life Found in " + location.getPlanetShortName()));
-        } else {
-            announceIfNewDiscovery(event, location);
-        }
-
+        announceIfNewDiscovery(event, location);
         locationManager.save(location);
         playerSession.setLastScan(location);
 

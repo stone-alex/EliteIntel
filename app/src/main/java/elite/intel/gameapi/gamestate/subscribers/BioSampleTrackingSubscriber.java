@@ -60,12 +60,10 @@ public class BioSampleTrackingSubscriber {
 
         // Announce only on state transition
         if (!status.isInSupercruise()) {
-            boolean inMainShip = status.isInMainShip();
             boolean onFoot = status.isOnFoot();
             boolean inSrv = status.isInSrv();
-            String shipname  = playerSession.getShipLoadout().getShipName();
-            String vehicle = inSrv ? "Surface Recon Vehicle" : (onFoot ? "You Are" : shipname);
-
+            String shipName = playerSession.getShipLoadout().getShipName();
+            String vehicle = inSrv ? "Surface Recon Vehicle" : (onFoot ? "You Are" : shipName);
 
             if (wasFarEnough != isFarEnough) {
                 if (isFarEnough) {

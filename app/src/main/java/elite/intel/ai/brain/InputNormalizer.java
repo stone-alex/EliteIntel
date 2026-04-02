@@ -9,7 +9,7 @@ import java.util.Map;
  * <p>
  * Phrases are matched before single words (order matters).
  * Context-sensitive verbs (show, open, set, check) are intentionally excluded -
- * the LLM handles those correctly and normalization would cause false substitutions.
+ * the LLM handles those correctly, and normalization would cause false substitutions.
  */
 public class InputNormalizer {
 
@@ -541,6 +541,7 @@ public class InputNormalizer {
         SYNONYM_MAP.put("survey", "SRV");
         SYNONYM_MAP.put("product center", "codex entry");
         SYNONYM_MAP.put("council", "cancel");
+        SYNONYM_MAP.put("scalar", "scanner");
     }
 
     private InputNormalizer() {

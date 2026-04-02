@@ -105,9 +105,6 @@ public class PromptFactory implements AiPromptFactory {
                   Zero=0…Nine/Niner=9. Example: "moon two Charlie" → "2C"
                 
                 """);
-        if (!systemSession.useLocalQueryLlm()) {
-            //sb.append("- CRITICAL: if input contains 'help with X', 'help me with X', 'can you help with X', 'how do I X', 'explain X' → respond EXACTLY: {\"action\": \"").append(Queries.HELP.getAction()).append("\", \"params\": {\"key\": \"<topic>\"}}. Replace <topic> with the subject using spaces not underscores (e.g. 'biology', 'trade routes', 'fleet carrier routing'). No other action.\n");
-        }
 
         sb.append("""
                 COMMAND RULES:

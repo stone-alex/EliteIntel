@@ -5,34 +5,19 @@ import java.util.stream.Collectors;
 
 public class Reducer {
 
-    /// these words will bass through in "ignore" mode.
+    /// these words will pass through in "ignore" mode.
     public final static List<String> passThroughWords = List.of("listen", "wake", "wake up");
 
 
-    /**
-     * Trash tokens NVIDIA Parakeet prepends to real utterances, or emits alone on noise.
-     * Used by stripTrashPrefix(): tokens are stripped only from the START of the transcript.
-     * Multi-word entries are matched as a unit (e.g. "got it" strips both tokens together).
-     * Matching is punctuation-tolerant - trailing .,!?;: are ignored on both sides.
-     */
+    /// trash
     public final static List<String> trashSttWords = List.of(
-            "--", "mm-hmm", "uh-huh", "hmm", "mm", "uh", "um", "ah", "oh", "huh", "eh",
-            "yeah", "yep", "yup", "nope", "hello", "hi", "hey", "bye", "goodbye",
-            "so", "well", "now", "anyway", "actually", "basically", "literally",
-            "thanks", "thank you", "i got it", "don't i", "a ", "or ",
-            "she can", "he can", "you can", "like they", "did you", "may",
-            "wh", "i'll", "like", "got a", "blow", "fuck", "shit", "just", "i ", "to "
+            "--", "mm-hmm", "uh-huh", "hmm", "mm", "uh", "um", "ah", "oh", "huh", "eh"
     );
 
 
-    // Words too common to be useful for filtering
+    /// George Carlin list
     private static final Set<String> STOP_WORDS = Set.of(
-            "a", "an", "the", "to", "of", "in", "on", "at", "by", "for",
-            "with", "and", "or", "is", "are", "am", "be", "do", "does",
-            "what", "where", "how", "which", "any", "our", "my", "me",
-            "we", "us", "i", "you", "it", "this", "that", "get", "have",
-            "has", "can", "could", "would", "should", "not", "no", "up",
-            "here", "there", "some", "much", "many"
+            "blow", "fuck", "shit", "piss", "cunt", "cock", "cocksucker", "motherfucker"
     );
 
 

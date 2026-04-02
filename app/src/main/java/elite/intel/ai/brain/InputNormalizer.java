@@ -102,12 +102,7 @@ public class InputNormalizer {
         // Ship route / plotted route jump counts
         SYNONYM_MAP.put("how many jumps to destination", "plotted route");
         SYNONYM_MAP.put("how many jump to destination", "plotted route");
-        SYNONYM_MAP.put("how many jumps remaining", "plotted route");
-        SYNONYM_MAP.put("how many jumps left", "plotted route");
         SYNONYM_MAP.put("how many jumps", "plotted route");
-        SYNONYM_MAP.put("jumps to destination", "plotted route");
-        SYNONYM_MAP.put("jumps remaining", "plotted route");
-        SYNONYM_MAP.put("jumps left", "plotted route");
 
         SYNONYM_MAP.put("jump", "jump to hyperspace");
         SYNONYM_MAP.put("hyperspace jump", "jump to hyperspace");
@@ -305,7 +300,6 @@ public class InputNormalizer {
         SYNONYM_MAP.put("next jump destination", "jump destination");
         SYNONYM_MAP.put("what star are we targeting", "FSD target");
         SYNONYM_MAP.put("analyze jump target", "analyze destination");
-        // "info on next jump" moved earlier (before single-word "jump" rule)
 
         // ── Ship loadout ───────────────────────────────────────────────────────
         SYNONYM_MAP.put("ship configuration", "ship loadout");
@@ -488,13 +482,6 @@ public class InputNormalizer {
         SYNONYM_MAP.put("utc time", "current time");
         SYNONYM_MAP.put("earth time", "time on earth");
 
-        // ── App capabilities ───────────────────────────────────────────────────
-        SYNONYM_MAP.put("what commands do you know", "app capabilities");
-        SYNONYM_MAP.put("what can you help with", "app capabilities");
-        SYNONYM_MAP.put("your abilities", "app capabilities");
-        SYNONYM_MAP.put("survey", "SRV");
-        SYNONYM_MAP.put("product center", "codex entry");
-        SYNONYM_MAP.put("council", "cancel");
 
         addPhonetics();
     }
@@ -551,7 +538,9 @@ public class InputNormalizer {
         SYNONYM_MAP.put("flint", "fleet");
         SYNONYM_MAP.put("fleet crater", "fleet carrier");
         SYNONYM_MAP.put("litigation", "navigation");
-
+        SYNONYM_MAP.put("survey", "SRV");
+        SYNONYM_MAP.put("product center", "codex entry");
+        SYNONYM_MAP.put("council", "cancel");
     }
 
     private InputNormalizer() {

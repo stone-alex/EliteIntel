@@ -20,7 +20,7 @@ public class Reducer {
             "yeah", "yep", "yup", "nope", "hello", "hi", "hey", "bye", "goodbye",
             "so", "well", "now", "anyway", "actually", "basically", "literally",
             "thanks", "thank you", "i got it", "don't i", "a ", "or ",
-            "she can", "he can", "you can", "like they", "did you",
+            "she can", "he can", "you can", "like they", "did you", "may",
             "wh", "i'll", "like", "got a", "blow", "fuck", "shit", "just", "i ", "to "
     );
 

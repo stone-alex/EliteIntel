@@ -38,12 +38,13 @@ public class ParakeetSTTImpl implements EarsInterface {
     private static final int CHANNELS = 1;
     private static final int ENTER_VOICE_FRAMES = 1;
     private static final int EXIT_SILENCE_FRAMES = 6;
-    private static final int PRE_ROLL_FRAMES = 6;
+    private static final int PRE_ROLL_FRAMES = 2;
     private static final long BASE_BACKOFF_MS = 2000;
     private static final long MAX_BACKOFF_MS = 60000;
     private static final long INFERENCE_TIMEOUT_SEC = 4;
     private static final int MIN_AUDIO_MS = 1500;
     private static final int MIN_AUDIO_BYTES = SAMPLE_RATE * 2 * MIN_AUDIO_MS / 1000;
+    private static final double LEADING_TRIM_THRESHOLD_FACTOR = 3.0; // trim leading frames below NOISE_FLOOR * this
     private static final int MAX_UTTERANCE_MS = 8000;
     private static final int MAX_UTTERANCE_BYTES = SAMPLE_RATE * 2 * MAX_UTTERANCE_MS / 1000;
 
@@ -172,7 +173,7 @@ public class ParakeetSTTImpl implements EarsInterface {
                 .setOfflineModelConfig(modelConfig)
                 .setDecodingMethod("greedy_search") /// does not support hotwords
                 .setMaxActivePaths(50)  /// slightly slower, but more accurate
-                .setBlankPenalty(0.0f); /// low value prevents trash in trascriptions for short utterences
+                .setBlankPenalty(-2.0f); /// low value prevents trash in transcriptions for short utterances
 
         /// Experimental support. Causes hangs and occasional crashes
 //        Path hotwordsFile = modelDir.resolve("hotwords.txt");
@@ -317,7 +318,7 @@ public class ParakeetSTTImpl implements EarsInterface {
     private void transcribeAndDispatch(byte[] pcmBytes) {
         pendingTranscriptions.decrementAndGet();
         try {
-            float[] samples = pcm16ToFloat(padAudio(pcmBytes));
+            float[] samples = pcm16ToFloat(padAudio(trimLeadingLowEnergy(pcmBytes)));
 
             long timeStart = System.currentTimeMillis();
             OfflineStream stream = recognizer.createStream();
@@ -424,11 +425,34 @@ public class ParakeetSTTImpl implements EarsInterface {
         return samples;
     }
 
+    /**
+     * Strips leading 10ms frames whose RMS is below NOISE_FLOOR * LEADING_TRIM_THRESHOLD_FACTOR.
+     * Stops at the first frame that crosses the threshold, so speech onsets are preserved.
+     */
+    private byte[] trimLeadingLowEnergy(byte[] pcm) {
+        final int FRAME_BYTES = 320; // 160 samples = 10ms at 16kHz, 16-bit mono
+        final double threshold = NOISE_FLOOR * LEADING_TRIM_THRESHOLD_FACTOR;
+        int offset = 0;
+        while (offset + FRAME_BYTES <= pcm.length) {
+            if (calculateRMS(pcm, offset, FRAME_BYTES) >= threshold) break;
+            offset += FRAME_BYTES;
+        }
+        if (offset == 0) return pcm;
+        byte[] trimmed = new byte[pcm.length - offset];
+        System.arraycopy(pcm, offset, trimmed, 0, trimmed.length);
+        log.debug("Leading trim: removed {}ms of low-energy audio", offset * 1000 / (SAMPLE_RATE * 2));
+        return trimmed;
+    }
+
     private double calculateRMS(byte[] buffer, int length) {
+        return calculateRMS(buffer, 0, length);
+    }
+
+    private double calculateRMS(byte[] buffer, int offset, int length) {
         if (length < 2) return 0.0;
         double sum = 0.0;
         int samples = length / 2;
-        for (int i = 0; i < length; i += 2) {
+        for (int i = offset; i < offset + length; i += 2) {
             int val = (buffer[i + 1] << 8) | (buffer[i] & 0xFF);
             if (val > 32767) val -= 65536;
             sum += (double) val * val;

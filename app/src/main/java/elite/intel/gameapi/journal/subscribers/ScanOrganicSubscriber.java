@@ -33,10 +33,6 @@ public class ScanOrganicSubscriber {
                         Rephrase to natural, immersive speech:
                             - Key elements ONLY: genus/species logged, distance/completion if stated.
                             - Use "we", "You" - NEVER "ship", "SRV", or "vehicle".
-                            Examples of style (DO NOT copy-base on data):
-                                - Data mentions genus logged → "<genus> sample logged."
-                                - Data has distance → "First <genus> logged. Maintain 500 meters between colonies."
-                                - Data signals complete → "<genus> scans complete."
                     
                             Output EXACTLY:
                                 {"text_to_speech_response": "your natural rephrase"}
@@ -94,12 +90,12 @@ public class ScanOrganicSubscriber {
             BioSampleDto bioSampleDto = createBioSampleDto(genus, species, isOurDiscovery);
             currentLocation.addBioScan(bioSampleDto);
             bioSampleDto.setScanXof3(2);
-            announce("Scan for genus \"" + genus + "\" logged. ");
+            announce("Sample for genus \"" + genus + "\" logged. ");
         } else if (scan3.equalsIgnoreCase(scanType)) {
             sb = new StringBuilder();
-            sb.append("NOTE: Organic scans for genus: ");
-            sb.append("\"").append(genus).append("\"");
-            sb.append(" are complete. ");
+            sb.append("Final sample for genus: ");
+            sb.append("\"").append(genus).append("\" logged. ");
+            sb.append("collection complete. ");
 
             announce(sb.toString());
             BioSampleDto bioSampleDto = createBioSampleDto(genus, species, isOurDiscovery);

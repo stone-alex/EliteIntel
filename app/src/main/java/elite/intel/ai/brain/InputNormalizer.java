@@ -545,6 +545,9 @@ public class InputNormalizer {
         SYNONYM_MAP.put("we recall the", "recover");
         SYNONYM_MAP.put("carcass too", "cargo scoop");
         SYNONYM_MAP.put("pergascope", "cargo scoop");
+        SYNONYM_MAP.put("flint", "fleet");
+        SYNONYM_MAP.put("fleet crater", "fleet carrier");
+        SYNONYM_MAP.put("litigation", "navigation");
 
     }
 

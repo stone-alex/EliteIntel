@@ -1,3 +1,11 @@
+## Elite Intel v-0.0340-beta
+
+### bug fixes / features:
+
+- Adding missing material capacity updates, fixed incorrect material capacity entries.
+- Changed Parakeet to work with greedy algo instead of hotwords.
+- Minor adjustments to organic scan announcements.
+
 ## Elite Intel v-0.0338-beta
 
 ### bug fixes / features:

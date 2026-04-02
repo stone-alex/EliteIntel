@@ -1,8 +1,10 @@
 package elite.intel.ui.view;
 
 import com.google.common.eventbus.Subscribe;
+import elite.intel.db.managers.ShipManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.UserInputEvent;
+import elite.intel.session.PlayerSession;
 import elite.intel.ui.event.AiResponseLogEvent;
 
 import javax.swing.*;
@@ -17,7 +19,8 @@ public class OBSOverlayWindow extends JFrame {
 
     private static final Color BG = new Color(0, 0, 0);
     private static final Color FG = new Color(0xFF8C00);
-
+    private final PlayerSession playerSession = PlayerSession.getInstance();
+    private final ShipManager shipManager = ShipManager.getInstance();
     private static final int TYPEWRITER_DELAY_MS = 50;
     private static final int MAX_MESSAGES = 7;
 
@@ -77,13 +80,14 @@ public class OBSOverlayWindow extends JFrame {
     @Subscribe
     public void onUserInputEvent(UserInputEvent event) {
         if (event.getUserInput() == null || event.getUserInput().isBlank()) return;
-        SwingUtilities.invokeLater(() -> addMessage("User: ", event.getUserInput()));
+        SwingUtilities.invokeLater(() -> addMessage(playerSession.getPlayerName() + ": ", event.getUserInput()));
     }
 
     @Subscribe
     public void onAiResponseLogEvent(AiResponseLogEvent event) {
         if (event.getData() == null || event.getData().isBlank()) return;
-        SwingUtilities.invokeLater(() -> addMessage("AI: ", event.getData()));
+        String shipName = shipManager.getShip() == null ? "AI" : shipManager.getShip().getShipName();
+        SwingUtilities.invokeLater(() -> addMessage(shipName + ": ", event.getData()));
     }
 
     // -- Message lifecycle -----------------------------------------------------

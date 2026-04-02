@@ -11,7 +11,6 @@ public class RemindTargetDestinationHandler extends BaseQueryAnalyzer implements
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
         DestinationReminderDao.Reminder reminder = destinationReminder.getReminder();
-        String reminderText = reminder.getReminder();
-        return process(reminderText != null && reminderText.isBlank() ? "No reminder set" : reminderText);
+        return process(reminder == null ? "no reminders set" : reminder.getReminder());
     }
 }

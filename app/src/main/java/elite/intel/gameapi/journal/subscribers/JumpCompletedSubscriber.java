@@ -82,7 +82,7 @@ public class JumpCompletedSubscriber {
             DestinationReminderDao.Reminder reminder = destinationReminderManager.getReminder();
             String reminderText = null;
             if (reminder != null && reminder.getStarSystem().equals(event.getStarSystem())) {
-                reminderText = reminder.getReminder();
+                reminderText = reminder.getReminder() == null ? "" : reminder.getReminder();
             }
 
             if (finalDestination != null && finalDestination.equalsIgnoreCase(event.getStarSystem())) {

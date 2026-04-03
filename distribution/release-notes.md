@@ -1,3 +1,5 @@
+- Fixed projected payment on organic scan. It was sending wrong and average value, now sends corect value for Genus / Variant
+
 ## Elite Intel v-0.0342-beta
 
 ### bug fixes / features:

@@ -34,9 +34,13 @@ public class CodexEntryEventSubscriber {
         if (nameLocalised == null) nameLocalised = event.getName();
         if (nameLocalised == null) nameLocalised = "Unknown";
 
-        String firstWordOfEntryName = nameLocalised.split(" ")[0];
+        String[] nameParts = nameLocalised.split(" ");
+        String firstWordOfEntryName = nameParts[0];
+        String secondWordOfEntryName = nameParts.length > 1 ? nameParts[1] : null;
         int bioSampleDistance = BioForms.getDistance(firstWordOfEntryName);
-        BioForms.ProjectedPayment projectedPayment = BioForms.getAverageProjectedPayment(capitalizeWords(firstWordOfEntryName));
+        BioForms.ProjectedPayment projectedPayment = (secondWordOfEntryName != null)
+                ? BioForms.getProjectedPayment(capitalizeWords(firstWordOfEntryName), capitalizeWords(secondWordOfEntryName))
+                : BioForms.getAverageProjectedPayment(capitalizeWords(firstWordOfEntryName));
         String genus = bioSampleDistance > 0 ? capitalizeWords(firstWordOfEntryName) : null;
 
         boolean alreadyHaveThisEntry = codexEntryManager.checkIfExist(currentLocation.getStarName(), currentLocation.getBodyId(), nameLocalised);
@@ -72,7 +76,7 @@ public class CodexEntryEventSubscriber {
             Boolean isAnnounced = playerSession.paymentHasBeenAnnounced(genus);
 
             if (projectedPayment != null && projectedPayment.payment() != null && !isAnnounced) {
-                sb.append("Vista Genomics Payment: ").append(projectedPayment).append(" credits. For a complete set of three samples. ");
+                sb.append("Vista Genomics Payment: ").append(projectedPayment.payment()).append(" credits. For a complete set of three samples. ");
                 if (projectedPayment.firstDiscoveryBonus() != null && currentLocation.isOurDiscovery()) {
                     sb.append(projectedPayment.firstDiscoveryBonus());
                     sb.append(" credits bonus for first discovery.");

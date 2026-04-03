@@ -8,13 +8,11 @@ import elite.intel.gameapi.gamestate.status_events.PlayerMovedEvent;
 import elite.intel.gameapi.journal.events.DisembarkEvent;
 import elite.intel.gameapi.journal.events.dto.TargetLocation;
 import elite.intel.session.PlayerSession;
+import elite.intel.session.Status;
 import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.NavigationUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static elite.intel.util.NavigationUtils.calculateGlideAngle;
 import static elite.intel.util.NavigationUtils.formatDistance;
@@ -38,56 +36,26 @@ public class LocationTrackingSubscriber {
     private static final Logger log = LogManager.getLogger(LocationTrackingSubscriber.class);
     private static final double HYSTERESIS = 7;
     private static final double ARRIVAL_RADIUS = 50;
-    private static final double GLIDE_ENTRY_RADIUS = 2_500_000;
-    private static final double TOO_FAR_FOR_GLIDE = 3_500_000;
+    // 100 km is the atmospheric commit altitude - do not descend below this until ready to burn in.
+    // We target being ~600 km (surface distance) from the destination when we hit that altitude.
+    // Ideal descent initiation: 1000–2000 km from target at 200–300 km altitude.
+    private static final double GLIDE_ENTRY_ALTITUDE_M = 50_000;
+    private static final double GLIDE_ENTRY_TARGET_DISTANCE_M = 600_000;
     private final PlayerSession playerSession = PlayerSession.getInstance();
     private boolean hasAnnouncedOrbital = false;
     private boolean hasAnnouncedSurface = false;
-    private boolean hasAnnouncedGlideAngleOnApproach = false;
+    // TTS latency + journal tick delay: project forward to compensate for speech synthesis delay.
+    // Cap the lookahead distance so high-speed supercruise entry doesn't exaggerate angles.
+    private static final double LOOKAHEAD_SECONDS = 5.0;
+    private static final double MAX_LOOKAHEAD_DISTANCE_M = 50_000; // 50 km cap regardless of speed
     private TargetLocation lastTracking = null;
     private double lastDistance = -1;
+    private double lastAltitude = -1;
     private long lastAnnounceTime = -1;
-    private double lastDistanceThreshold = 0;
     private boolean lookForLandingSpotAnnounced = false;
     private boolean isGliding = false;
-
-    public static double[] generateDescendingSequence(double n) {
-        List<Double> sequence = new ArrayList<>();
-        double current = n;
-        // Add initial value
-        sequence.add(current);
-        while (current > 0) {
-            // Determine the current magnitude and corresponding step
-            if (current >= 10_000_000) {
-                current -= 500_000; // Half of 1,000,000
-            } else if (current >= 1_000_000) {
-                current -= 250_000; // Quarter of 100,000
-            } else if (current >= 100_000) {
-                current -= 25_000; // Quarter of 100,000
-            } else if (current >= 10_000) {
-                current -= 2_500; // Quarter of 10,000
-            } else if (current >= 1_000) {
-                current -= 250; // Quarter of 1,000
-            } else if (current >= 100) {
-                current -= 25; // Quarter of 100
-            } else {
-                current -= 25; // Continue with 25 until 0
-            }
-            // Ensure we don't go negative
-            if (current < 0) {
-                current = 0;
-            }
-            sequence.add(current);
-        }
-
-        // Convert List<Double> to double[]
-        double[] result = new double[sequence.size()];
-        for (int i = 0; i < sequence.size(); i++) {
-            result[i] = sequence.get(i);
-        }
-
-        return result;
-    }
+    private boolean beginDescentCued = false; // true once "begin descent" has been announced at low priority
+    private boolean levelOffCued = false;     // true once "level off" has been announced - stays silent until pilot actually levels off
 
     /**
      * Handles the event triggered when a player moves within the game environment.
@@ -128,13 +96,16 @@ public class LocationTrackingSubscriber {
             log.info(navigator.toString());
         }
 
-        if (isAboveSurface(event) || isOnSurface(event)) {
-            surfaceNavigation(navigator, event);
+        if (Status.getInstance().isGlideMode()) {
+            glideNavigation(navigator, event);
         } else if (isInOrbit(event)) {
             orbitalNavigation(navigator, event);
+        } else {
+            surfaceNavigation(navigator, event);
         }
 
         lastDistance = navigator.distanceToTarget();
+        lastAltitude = event.getAltitude();
     }
 
     private boolean isOnSurface(PlayerMovedEvent event) {
@@ -143,10 +114,6 @@ public class LocationTrackingSubscriber {
 
     private boolean isInOrbit(PlayerMovedEvent event) {
         return event.getAltitude() > APPROXIMATE_DRP_ALTITUDE;
-    }
-
-    private boolean isAboveSurface(PlayerMovedEvent event) {
-        return event.getAltitude() < APPROXIMATE_DRP_ALTITUDE;
     }
 
     /**
@@ -161,45 +128,194 @@ public class LocationTrackingSubscriber {
      *                  current position data including altitude and coordinates.
      */
     private void orbitalNavigation(NavigationUtils.Direction navigator, PlayerMovedEvent event) {
-
-        boolean glideAngleOk = isGlideAngleOk(event, navigator);
-        boolean trajectoryDeviation = isHeadingDeviation(navigator);
-
-        int glideAngle = calculateGlideAngle(event.getAltitude(), navigator.distanceToTarget());
-        double distanceToEdgeOfRadius = navigator.distanceToTarget() + GLIDE_ENTRY_RADIUS;
         double distanceToTarget = navigator.distanceToTarget();
+        double altitude = event.getAltitude();
+        double planetRadius = event.getPlanetRadius();
+        double speed = navigator.getSpeed();
 
         if (!hasAnnouncedOrbital) {
-            vocalize(null, navigator.distanceToTarget(), navigator.bearingToTarget(), true);
+            vocalize("Orbital. " + formatDistance(distanceToTarget) + bearingLabel(navigator.bearingToTarget()), 0, 0, true);
             hasAnnouncedOrbital = true;
         }
 
-        String glideAngleText = glideAngleOk ? "Glide Angle " + glideAngle + " degrees. " : "Steep descent. Glide Angle " + glideAngle + " degrees. ";
+        double commitDist = commitDistance(planetRadius);
 
-        if (trajectoryDeviation) {
-            log.info("Off course, we are moving away from the target.");
-            vocalize(" Diverging ", navigator.distanceToTarget(), navigator.bearingToTarget(), false);
-
-        } else if (distanceToTarget > TOO_FAR_FOR_GLIDE) {
-            vocalize(" Diverging ", navigator.distanceToTarget(), navigator.bearingToTarget(), false);
-            log.info("On course, but too far to announce glide angles.");
-            hasAnnouncedGlideAngleOnApproach = false;
-
-        } else if (distanceToTarget > distanceToEdgeOfRadius && distanceToTarget < TOO_FAR_FOR_GLIDE) {
-            vocalize(glideAngleText, navigator.distanceToTarget(), navigator.bearingToTarget(), !hasAnnouncedGlideAngleOnApproach);
-            log.info("On course. close to the glide zone, announce glide angle.");
-            hasAnnouncedGlideAngleOnApproach = hasEnteredGlide(navigator, event);
-
-        } else if (distanceToTarget <= GLIDE_ENTRY_RADIUS) {
-            vocalize(glideAngleText, navigator.distanceToTarget(), navigator.bearingToTarget(), false);
-            log.info("Destination to target is less than " + GLIDE_ENTRY_RADIUS + " meters. Distance to target: " + distanceToTarget + ".");
+        // Project position forward to compensate for TTS latency (~5 s at orbital speed).
+        // Cap lookahead distance at 50 km so supercruise/fast-descent speeds don't exaggerate angles.
+        // Never project below commit distance.
+        double projectedDistance = distanceToTarget;
+        if (speed > MAX_NORAMAL_SAPCE_SPEED) {
+            double lookaheadDist = Math.min(speed * LOOKAHEAD_SECONDS, MAX_LOOKAHEAD_DISTANCE_M);
+            double candidate = distanceToTarget - lookaheadDist;
+            if (candidate > commitDist) {
+                projectedDistance = candidate;
+            }
         }
 
+        // Actual descent angle: computed from consecutive journal ticks.
+        // Raw atan(Δalt/Δarc) overstates the angle at high altitude because surface arc grows
+        // slower than 3D horizontal distance. Multiply by R/(R+h) to recover true nose pitch.
+        double actualDescentAngle = 0;
+        boolean hasActualAngle = false;
+        if (lastAltitude > 0 && lastDistance > 0 && altitude < lastAltitude && distanceToTarget < lastDistance) {
+            double deltaAlt = lastAltitude - altitude;           // m descended (positive)
+            double deltaDist = lastDistance - distanceToTarget;   // m approached (positive)
+            if (deltaDist > 0) {
+                double scaleFactor = planetRadius / (planetRadius + altitude); // R/(R+h)
+                actualDescentAngle = Math.toDegrees(Math.atan((deltaAlt / deltaDist) * scaleFactor));
+                hasActualAngle = true;
+            }
+        }
+
+        // Keep commit-point angle in log for reference
+        double commitAngle = computeRequiredDescentAngle(altitude, distanceToTarget, planetRadius);
+
+        // Left/right correction: meaningful only within ±30° (wider deviations require an orbital pass).
+        // Near poles, great-circle bearing spins fast as meridians converge (cos(lat) → 0).
+        // Widen the dead-band inversely with cos(lat) so corrections suppress before they become chattery.
+        // cos(0°)=1 → threshold=5°, cos(60°)=0.5 → threshold=10°, cos(80°)=0.17 → threshold=29° (suppressed).
+        int bearingToTarget = navigator.bearingToTarget();
+        int userHeading = navigator.userHeading();
+        String headingCorrection = "";
+        if (userHeading > 0) {
+            int offset = bearingToTarget - userHeading;
+            if (offset > 180) offset -= 360;
+            if (offset < -180) offset += 360;
+            double cosLat = Math.max(Math.cos(Math.toRadians(Math.abs(event.getLatitude()))), 0.1);
+            int correctionThreshold = (int) Math.ceil(5.0 / cosLat);
+            if (Math.abs(offset) > correctionThreshold && Math.abs(offset) <= 30) {
+                headingCorrection = "Adjust " + (offset > 0 ? "right" : "left") + " " + Math.abs(offset) + " degrees. ";
+            }
+        }
+
+        String orbLog = String.format(
+                "[ORB] alt=%.0fkm | dist=%.0fkm | proj=%.0fkm | commit=%.0fkm | speed=%.0fm/s | " +
+                        "descent=%s | commit_angle=%.1f° | bearing=%d° | heading=%d°",
+                altitude / 1000, distanceToTarget / 1000, projectedDistance / 1000,
+                commitDist / 1000, speed,
+                hasActualAngle ? String.format("%.1f°", actualDescentAngle) : "n/a",
+                commitAngle, bearingToTarget, userHeading);
+        log.info(orbLog);
+        EventBusManager.publish(new AppLogEvent(orbLog));
+
+        // Suppress descent guidance at supercruise speeds - still decelerating into orbit.
+        if (speed > 50_000) {
+            vocalize(formatDistance(projectedDistance) + bearingLabel(bearingToTarget), 0, 0, false);
+            return;
+        }
+
+        // Inside commit distance: on final approach.
+        if (projectedDistance <= commitDist) {
+            vocalize("Final. " + formatDistance(distanceToTarget) + bearingLabel(bearingToTarget), 0, 0, false);
+            return;
+        }
+
+        // Level flight: -5 to +5° inclusive (|descent| < 6°) - orbital mechanics zone.
+        boolean levelFlight = !hasActualAngle || actualDescentAngle < 6.0;
+
+        // Altitude floor: pilot is below 100 km but still far from target.
+        // Only fire "Level off" when truly descending, and only once - stay silent after.
+        if (altitude < 100_000 && distanceToTarget > commitDist * 3) {
+            if (levelFlight) {
+                levelOffCued = false; // pilot levelled off - reset so we can warn again if they descend
+                vocalize(headingCorrection + formatDistance(projectedDistance) + bearingLabel(bearingToTarget), 0, 0, false);
+            } else if (!levelOffCued) {
+                vocalize("Level off. " + formatDistance(distanceToTarget) + bearingLabel(bearingToTarget), 0, 0, true);
+                levelOffCued = true;
+            }
+            // If levelOffCued && !levelFlight: already told them once - stay silent
+            return;
+        } else {
+            levelOffCued = false;
+        }
+
+        if (levelFlight) {
+            if (distanceToTarget < 1_000_000) {
+                // Within 1000 km: give the geometric angle aimed directly at the target.
+                double scaleFactor = planetRadius / (planetRadius + altitude);
+                int geoAngle = (int) Math.round(Math.toDegrees(Math.atan((altitude / distanceToTarget) * scaleFactor)));
+                boolean urgent = commitAngle > 20.0 || speed > 15_000;
+                vocalize("Minus " + geoAngle + " degrees to target. " + headingCorrection + formatDistance(projectedDistance) + bearingLabel(bearingToTarget), 0, 0, urgent);
+            } else if (commitAngle >= 5.0 && commitAngle <= 45.0) {
+                // Comfortable descent window - cue the pilot with the required angle.
+                boolean urgent = commitAngle > 20.0 || speed > 15_000;
+                vocalize("Begin descent minus " + (int) Math.round(commitAngle) + " degrees. " + headingCorrection + formatDistance(projectedDistance) + bearingLabel(bearingToTarget), 0, 0, !beginDescentCued || urgent);
+                beginDescentCued = true;
+            } else if (commitAngle > 45.0 && altitude < 400_000) {
+                // Too steep from here - orbit for a better pass.
+                vocalize("Circle for approach. " + headingCorrection + formatDistance(projectedDistance) + bearingLabel(bearingToTarget), 0, 0, false);
+                beginDescentCued = false;
+            } else {
+                // Too far or still entering orbit - distance + any heading nudge.
+                beginDescentCued = false;
+                vocalize(headingCorrection + formatDistance(projectedDistance) + bearingLabel(bearingToTarget), 0, 0, false);
+            }
+        } else {
+            // Actively descending - confirm actual angle so pilot can compare with HUD.
+            beginDescentCued = false;
+            vocalize("Minus " + (int) Math.round(actualDescentAngle) + " degrees. " + headingCorrection + formatDistance(projectedDistance) + bearingLabel(bearingToTarget), 0, 0, false);
+        }
+    }
+
+    /**
+     * Monitors the atmospheric burn glide phase.
+     * Glide state is managed by the game engine; pilot manages their own pitch.
+     * Callouts: distance + bearing, plus a "maintain descent" warning if climbing
+     * (pitching above ~-5° cancels glide mode).
+     */
+    private void glideNavigation(NavigationUtils.Direction navigator, PlayerMovedEvent event) {
+        double distanceToTarget = navigator.distanceToTarget();
+        double altitude = event.getAltitude();
+        int slopeAngle = calculateGlideAngle(altitude, distanceToTarget);
+        boolean climbing = lastAltitude > 0 && altitude > lastAltitude;
+
+        String glideLog = String.format(
+                "[GLIDE] alt=%.0fkm | dist=%.0fkm | slope=%.1f° | bearing=%d° | %s",
+                altitude / 1000, distanceToTarget / 1000, (double) slopeAngle, navigator.bearingToTarget(),
+                climbing ? "CLIMBING" : "ok");
+        log.info(glideLog);
+        EventBusManager.publish(new AppLogEvent(glideLog));
+
+        if (climbing) {
+            // Pitching up risks cancelling glide - warn immediately.
+            vocalize("Maintain descent. " + formatDistance(distanceToTarget) + bearingLabel(navigator.bearingToTarget()), 0, 0, true);
+        } else {
+            vocalize(formatDistance(distanceToTarget) + bearingLabel(navigator.bearingToTarget()), 0, 0, false);
+        }
         lastDistance = distanceToTarget;
     }
 
-    private boolean isGlideAngleOk(PlayerMovedEvent event, NavigationUtils.Direction navigator) {
+    /**
+     * Bearing label for TTS: "bearing 270 degrees."
+     */
+    private String bearingLabel(double bearing) {
+        if (bearing <= 0) return "";
+        return "bearing " + (int) bearing + " degrees.";
+    }
 
+    /**
+     * Commit distance scales with planet radius so small moons don't hit TOGA immediately.
+     * Factor 0.08 → 1500 km body ≈ 120 km commit → ~39 km exit at −25° burn.
+     * Capped at GLIDE_ENTRY_TARGET_DISTANCE_M for very large planets.
+     */
+    private double commitDistance(double planetRadius) {
+        return Math.min(planetRadius * 0.08, GLIDE_ENTRY_TARGET_DISTANCE_M);
+    }
+
+    /**
+     * Normal approach: angle needed to reach the atmospheric commit point (100 km altitude)
+     * at commitDistance(planetRadius) from the target.
+     * Returns 90 if already inside commit distance, 0 if already below commit altitude.
+     */
+    private double computeRequiredDescentAngle(double altitude, double distanceToTarget, double planetRadius) {
+        double availableHorizontal = distanceToTarget - commitDistance(planetRadius);
+        if (availableHorizontal <= 0) return 90.0;
+        double verticalDrop = altitude - GLIDE_ENTRY_ALTITUDE_M;
+        if (verticalDrop <= 0) return 0.0;
+        return Math.toDegrees(Math.atan(verticalDrop / availableHorizontal));
+    }
+
+    private boolean isGlideAngleOk(PlayerMovedEvent event, NavigationUtils.Direction navigator) {
         if (event.getAltitude() > 100_000) {
             return calculateGlideAngle(event.getAltitude(), navigator.distanceToTarget()) < 60;
         } else if (event.getAltitude() < 50_000) {
@@ -207,12 +323,6 @@ public class LocationTrackingSubscriber {
         } else {
             return calculateGlideAngle(event.getAltitude(), navigator.distanceToTarget()) < 36;
         }
-    }
-
-    private boolean hasEnteredGlide(NavigationUtils.Direction navigator, PlayerMovedEvent event) {
-        return navigator.distanceToTarget() < GLIDE_ENTRY_RADIUS // in glide zone
-                && navigator.getSpeed() > MAX_NORAMAL_SAPCE_SPEED // in supercruise
-                && event.getAltitude() < 33_000; // in drop range
     }
 
     /**
@@ -271,7 +381,7 @@ public class LocationTrackingSubscriber {
                 if (headingDeviation) {
                     vocalize(movingAway ? " Diverging. " : " Converging. ", navigator.distanceToTarget(), navigator.bearingToTarget(), movingAway);
                 } else if (event.getAltitude() > 3_000 && glideAngleOk) {
-                    announceBearingAndDistances(navigator, movingAway ? " Diverging. " : " Converging. Glide Angle " + glideAngle + " degrees.");
+                    announceBearingAndDistances(navigator, movingAway ? " Diverging. " : " Converging. Glide Angle " + glideAngle + " degrees. ");
                 } else {
                     announceBearingAndDistances(navigator, movingAway ? " Diverging. " : " Converging. ");
                 }
@@ -307,11 +417,13 @@ public class LocationTrackingSubscriber {
         hasAnnouncedOrbital = false;
         hasAnnouncedSurface = false;
         lookForLandingSpotAnnounced = false;
+        beginDescentCued = false;
+        levelOffCued = false;
         playerSession.setTracking(new TargetLocation());
         lastTracking = null;
         lastDistance = -1;
+        lastAltitude = -1;
         lastAnnounceTime = -1;
-        lastDistanceThreshold = -1;
         isGliding = false;
     }
 

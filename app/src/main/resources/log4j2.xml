@@ -46,6 +46,7 @@
         <Logger name="org.sqlite.jdbc" level="off"/>
         <Logger name="org.jdbi.v3.core" level="off"/>
         <Logger name="org.jdbi.v3" level="off"/>
+        <Logger name="com.zaxxer" level="off"/>
 
 
         <!-- Specific logger levels -->

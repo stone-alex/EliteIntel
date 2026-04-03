@@ -173,7 +173,9 @@ public class NavigationUtils {
         double bearingDegrees = Math.toDegrees(bearing);
         bearingDegrees = (bearingDegrees + 360) % 360;
         int roundedBearing = (int) Math.round(bearingDegrees);
-        return new Result(roundedBearing, calculateSurfaceDistance(targetLatitude, targetLongitude, userLatitude, userLongitude, planetRadius, altitude));
+        // Distance to a surface target is always the arc on the surface (radius only).
+        // Using (radius + altitude) would inflate distances at orbital height and break all angle math.
+        return new Result(roundedBearing, calculateSurfaceDistance(targetLatitude, targetLongitude, userLatitude, userLongitude, planetRadius, 0));
     }
 
     /**

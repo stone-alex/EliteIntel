@@ -12,6 +12,7 @@
 - Fix: apply a biquad lowpass filter at ~7.2kHz before the resampler on each frame. Need a stateful filter so the delay registers persist across frames (otherwise you get a transient click at every buffer boundary).
 - The chain is now: capture 🡢 anti-alias LPF (7.2kHz cutoff) 🡢 linear-interp resample 🡢 VAD/collect 🡢 whole-utterance normalize 🡢 Parakeet. The filter state is held in the AntiAliasingFilter instance and carries across frames, so no clicks at buffer boundaries.
 - Bio samples collection improvements.
+- Orbital navigation fixes. Account for radius, polar correction. Adjusted glide angle calculation, illuminated sharp turns while in orbit, added pull up / level off prompts.
 
 ## Elite Intel v-0.0338-beta
 

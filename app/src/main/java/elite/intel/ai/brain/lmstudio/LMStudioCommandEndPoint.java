@@ -66,7 +66,6 @@ public class LMStudioCommandEndPoint extends AiEndPoint implements AIChatInterfa
 
             StructuredResponse sr = checkResponse(root);
             if (!sr.isSuccessful()) {
-                EventBusManager.publish(new AiVoxResponseEvent("LLM error: no response from LM Studio"));
                 return null;
             }
 

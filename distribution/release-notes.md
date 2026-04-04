@@ -1,3 +1,11 @@
+## Elite Intel v-0.0348-beta
+
+### bug fixes / features:
+- reduce the chatter for the error messaging.
+- distance to X / distance to Earth prompt adjustments.
+- Prohibition to use player stats command unless explicitly asked (used to fall back on that for some reason)
+
+
 ## Elite Intel v-0.0347-beta
 
 ### bug fixes / features:

@@ -8,8 +8,6 @@ import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.journal.events.DockedEvent;
 import elite.intel.gameapi.journal.events.dto.CarrierDataDto;
 import elite.intel.gameapi.journal.events.dto.LocationDto;
-import elite.intel.search.edsm.EdsmApiClient;
-import elite.intel.search.edsm.dto.MarketDto;
 import elite.intel.session.PlayerSession;
 
 import java.util.List;
@@ -46,9 +44,6 @@ public class DockedSubscriber {
 
 
         Thread.ofVirtual().start(() -> {
-        MarketDto edsmMarketDto = EdsmApiClient.searchMarket(event.getMarketID(), null, null, 0);
-        location.setMarket(edsmMarketDto);
-        location.setStationName(edsmMarketDto.getData().getStationName());
         LocationDto.LocationType locationType = LocationDto.determineType(event.getStationType().toLowerCase(Locale.ROOT), false);
         if (FLEET_CARRIER == locationType) {
             location.setLocationType(FLEET_CARRIER);

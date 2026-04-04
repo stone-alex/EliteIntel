@@ -81,7 +81,7 @@ public class ResponseRouter implements AIRouterInterface {
             } else if (!action.isEmpty()) {
                 log.warn("Unknown action '{}' - LLM invented an action name not in registry", action);
                 EventBusManager.publish(new AppLogEvent("Unknown action: " + action));
-                EventBusManager.publish(new AiVoxResponseEvent("LLM Hallucinated action that does not exist."));
+                log.warn("LLM Hallucinated action that does not exist." + action);
             } else {
                 handleChat(responseText);
             }
@@ -96,10 +96,11 @@ public class ResponseRouter implements AIRouterInterface {
     private void handleQuery(String action, JsonObject params, String userInput) {
         QueryHandler handler = getQueryHandlers().get(action);
         if (handler == null) {
-            EventBusManager.publish(new MissionCriticalAnnouncementEvent("StFailed to infer action"));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("infer query action"));
             return;
         }
 
+        //AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_1);
         EventBusManager.publish(new AppLogEvent("Query handler: " + handler.getClass().getSimpleName()));
         if (action == null || action.isEmpty()) {
             EventBusManager.publish(new AiVoxResponseEvent("No query action found"));
@@ -145,7 +146,7 @@ public class ResponseRouter implements AIRouterInterface {
             /// do nothing and return.
             return;
         }
-
+        //AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_1);
         if (!CONNECTION_CHECK_COMMAND.equalsIgnoreCase(action)) {
             EventBusManager.publish(new AiVoxResponseEvent("%s".formatted(StringUtls.affirmative())));
         }

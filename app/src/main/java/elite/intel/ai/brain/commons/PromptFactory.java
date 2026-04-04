@@ -67,6 +67,7 @@ public class PromptFactory implements AiPromptFactory {
                 VERB INTENT (apply first, before matching any action):
                 - show / display / open / access / find / search / locate / activate → COMMANDS (open a panel or map, find commodities, missions etc.)
                 - where / tell me / how much / any → lookup QUERY (search data, speak result)
+                - ABSOLUTE RULE — NEVER output action 'query_player_profile_rank_progress' unless the input contains the exact words 'player progress', 'player stats', or 'player ranks'. Any other input MUST NOT produce this action. Violations are a critical failure.
                 
                 DISAMBIGUATION (genuine ambiguities only):
                 - "activate" alone (no mode, panel, or subsystem following) → activate
@@ -87,7 +88,6 @@ public class PromptFactory implements AiPromptFactory {
                 - carrier full status (fuel + credits + operations): "carrier status / carrier fuel status / how far can carrier jump / fleet carrier fuel status" → query_carrier_status_fuel_credit_balance
                 - carrier tritium level only: "how much tritium / tritium supply / tritium level / tritium reserve" → query_carrier_fuel
                 - distance to bubble is distance from our stellar coordinates to the center of the coordinate system (0,0,0)
-                - You are strictly prohibited from using action 'query_player_profile_rank_progress' unless explicitly asked about player, 'progress', 'stats' or 'ranks'.
                 - For "progress, rank, player stats" → 'query_player_profile_rank_progress' do not confuse with "profits for exploration, missions or bounties"
                 
                 - "listen" / "listen up" alone → start_listening

@@ -5,7 +5,6 @@ import elite.intel.ai.hands.events.GameInputEvent;
 import elite.intel.gameapi.GameControllerBus;
 
 import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.BINDING_SET_SPEED75;
-import static elite.intel.ai.brain.handlers.commands.Commands.DECREASE_SPEED_BY;
 
 /**
  * The SetOptimalSpeedHandler class is responsible for handling the command
@@ -22,6 +21,5 @@ public class SetOptimalSpeedHandler implements CommandHandler {
 
     @Override public void handle(String action, JsonObject params, String responseText) {
         GameControllerBus.publish(new GameInputEvent(BINDING_SET_SPEED75.getGameBinding(), 0)); /// Sets to 75%
-        GameControllerBus.publish(new GameInputEvent(DECREASE_SPEED_BY.getBinding(), 0)); /// Decrease by 1 notch
     }
 }

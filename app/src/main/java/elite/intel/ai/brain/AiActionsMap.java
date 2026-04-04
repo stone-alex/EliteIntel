@@ -215,7 +215,7 @@ public class AiActionsMap {
         map.put("distance to carrier, where is our carrier, how far is carrier, where is our carrier, range to carrier, carrier proximity, how far away is carrier", DISTANCE_TO_CARRIER.getAction());
         map.put("system security, faction control, who controls, power struggle, security level, who owns this system, dominant faction, controlling power", SYSTEM_SECURITY_ANALYSIS.getAction());
         map.put("trade profile, trade settings, trading parameters, trade configuration, trading criteria", TRADE_PROFILE_ANALYSIS.getAction());
-        map.put("distance to stellar object, how far to body, distance to planet {key:X}, range to planet, how far to moon, how far to station, range to body", DISTANCE_TO_BODY.getAction());
+        map.put("distance to stellar object, how far to body, distance to planet {key:X}, range to planet, how far to moon, how far to station, range to body. NOTE: Sol and Earth always mean the bubble/civilization — never use this action for Sol or Earth", DISTANCE_TO_BODY.getAction());
         map.put("last scan, what did we scan, last scanned object, most recent scan, latest scan, recent body scan, what did i last scan", LAST_SCAN_ANALYSIS.getAction());
         map.put("material inventory {key:X}, how many items {key:X}, how many guardian item {key:X}, how much material {key:X}, do we have material {key:X}, how much {key:X} do we have, do we have any {key:X}, engineering material {key:X}, raw material {key:X}, manufactured material {key:X}, encoded material {key:X}, material stock {key:X}", MATERIALS_INVENTORY.getAction());
         map.put("planet materials, materials here, what materials on this planet, surface materials, what materials are here, material deposits, minerals on planet", PLANET_MATERIALS.getAction());
@@ -232,7 +232,7 @@ public class AiActionsMap {
         map.put("station details, station services, what services here, what services are here, services here, what services does this station have, services at this station, what does station offer, station info, station facilities, what's at this station, services available", STATION_DETAILS.getAction());
         map.put("AI designation, what is your name, who are you, what are you called, ai name, system designation", AI_DESIGNATION.getAction());
         map.put("bounties, total bounties, bounty collected, how much in bounties, bounty earnings, credits from bounties, bounty credits", TOTAL_BOUNTIES.getAction());
-        map.put("distance to bubble, how far from bubble, how far from inhabited space, distance from inhabited space, how far from civilization, range from human space", DISTANCE_TO_BUBBLE.getAction());
+        map.put("distance to bubble, distance to sol, distance from sol, distance to Earth, distance from Earth, how far from sol, how far from bubble, how far from inhabited space, distance from inhabited space, how far from civilization, range from human space", DISTANCE_TO_BUBBLE.getAction());
         map.put("current time, what time is it, time on earth, galactic time, utc time, what's the time, real time", TIME_IN_ZONE.getAction());
         map.put("reminder, what was the reminder, destination reminder, any reminders, recall reminder, what did we set as reminder", REMINDER.getAction());
         map.put("local markets, markets at stations and settlements, markets at outposts in system", ANALYZE_MARKETS.getAction());

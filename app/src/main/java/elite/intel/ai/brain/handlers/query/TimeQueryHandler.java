@@ -18,9 +18,9 @@ public class TimeQueryHandler extends BaseQueryAnalyzer implements QueryHandler 
 
         if (SystemSession.getInstance().useLocalQueryLlm()) {
             ZonedDateTime localNow = ZonedDateTime.now(ZoneId.systemDefault());
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm dd-MM-yyyy");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
             String formattedTime = localNow.format(formatter);
-            return process("Only local time available: " + formattedTime+" time in other timezone is not available");
+            return process("Time is: " + formattedTime);
         } else {
             ////EventBusManager.publish(new AiVoxResponseEvent("Analyzing temporal data. Stand by."));
 

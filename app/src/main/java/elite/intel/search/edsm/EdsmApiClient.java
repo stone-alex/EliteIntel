@@ -14,10 +14,13 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class EdsmApiClient {
     private static final Logger log = LogManager.getLogger(EdsmApiClient.class);
     private static final String BASE_URL = "https://www.edsm.net";
+    private static final long MIN_INTERVAL_MS = 1_000L;
+    private static final AtomicLong lastRequestTime = new AtomicLong(0L);
 
     private static StringBuilder publicUrl(String endpoint) {
         return new StringBuilder(BASE_URL + endpoint + "?");
@@ -344,7 +347,17 @@ public class EdsmApiClient {
         return callEdsm(query);
     }
 
+    private static synchronized void throttle() {
+        long now = System.currentTimeMillis();
+        long elapsed = now - lastRequestTime.get();
+        if (elapsed < MIN_INTERVAL_MS) {
+            SleepNoThrow.sleep(MIN_INTERVAL_MS - elapsed);
+        }
+        lastRequestTime.set(System.currentTimeMillis());
+    }
+
     private static String callEdsm(StringBuilder query) {
+        throttle();
         try {
             URI uri = URI.create(query.toString());
             URL url = uri.toURL();
@@ -361,7 +374,7 @@ public class EdsmApiClient {
                 return "";
             }
             if (responseCode != 200) {
-                log.error("EDSM API error: {} - {}", responseCode, conn.getResponseMessage());
+                log.warn("EDSM API failed");
                 return "";
             }
 

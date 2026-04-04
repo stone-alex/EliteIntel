@@ -128,7 +128,16 @@ public class InputNormalizer {
         SYNONYM_MAP.put("lower landing gear", "gear down");
         SYNONYM_MAP.put("extend landing gear", "gear down");
         SYNONYM_MAP.put("how far from civilization", "distance to bubble");
+        SYNONYM_MAP.put("how far from the bubble", "distance to bubble");
+        SYNONYM_MAP.put("how far from the earth", "distance to bubble");
+        SYNONYM_MAP.put("how far from earth", "distance to bubble");
         SYNONYM_MAP.put("distance to earth", "distance to bubble");
+        SYNONYM_MAP.put("distance from earth", "distance to bubble");
+        SYNONYM_MAP.put("distance to sol", "distance to bubble");
+        SYNONYM_MAP.put("distance from sol", "distance to bubble");
+        SYNONYM_MAP.put("how far from sol", "distance to bubble");
+        SYNONYM_MAP.put("how far to sol", "distance to bubble");
+        SYNONYM_MAP.put("how far to earth", "distance to bubble");
         SYNONYM_MAP.put("markets at outposts in system", "query markets");
         SYNONYM_MAP.put("where is our carrier", "distance to fleet carrier");
         SYNONYM_MAP.put("bodies in system", "stellar objects");
@@ -554,6 +563,8 @@ public class InputNormalizer {
         SYNONYM_MAP.put("next zip", "exit");
         SYNONYM_MAP.put("recovered", "recover");
         SYNONYM_MAP.put("break over", "recover");
+        SYNONYM_MAP.put("from seoul", "from sol");
+        SYNONYM_MAP.put("seoul", "sol");
     }
 
     private InputNormalizer() {

@@ -10,7 +10,6 @@ import elite.intel.gameapi.UserInputEvent;
 import elite.intel.session.SystemSession;
 import elite.intel.ui.event.AppLogEvent;
 import elite.intel.util.AppPaths;
-import elite.intel.util.AudioPlayer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.NonNull;
@@ -406,7 +405,7 @@ public class ParakeetSTTImpl implements EarsInterface {
 
     private void sendToAi(String transcript) {
         EventBusManager.publish(new TTSInterruptEvent());
-        AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_1);
+        //AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_1);
         log.info("Dispatching transcript: {}", transcript.replace("computer", ""));
         EventBusManager.publish(new UserInputEvent(transcript.replace("computer", ""), 1.0f));
     }

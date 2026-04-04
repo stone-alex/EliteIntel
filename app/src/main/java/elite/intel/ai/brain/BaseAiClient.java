@@ -4,6 +4,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.gameapi.EventBusManager;
+import elite.intel.session.SystemSession;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,10 +15,10 @@ import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 
 public class BaseAiClient {
-
+    private static final Logger log = LogManager.getLogger(BaseAiClient.class);
     private volatile HttpURLConnection currentConnection = null;
     private volatile Thread currentRequestThread = null;  // optional, for interrupt()
-
+    private final SystemSession systemSession = SystemSession.getInstance();
 
     public BaseAiClient() {
     }
@@ -60,16 +63,20 @@ public class BaseAiClient {
 
             int code = conn.getResponseCode();
             if (code != 200) {
-                if (code == 400) {
+                if (code == 400 && !systemSession.useLocalCommandLlm()) {
+                    log.error("Bad Request. Unsupported request format or invalid API key: " + code);
                     EventBusManager.publish(new AiVoxResponseEvent("Bad Request. Unsupported request format or invalid API key"));
                 }
                 if (code == 429) {
+                    log.error("Too Many Requests. Please try again later." + code);
                     EventBusManager.publish(new AiVoxResponseEvent("Too Many Requests. Please try again later."));
                 }
                 if (code == 401) {
+                    log.error("Invalid API Key. Please check your API Key and try again." + code);
                     EventBusManager.publish(new AiVoxResponseEvent("Invalid API Key. Please check your API Key and try again."));
                 }
                 if (code == 500) {
+                    log.error("Internal Server Error. Please try again later." + code);
                     EventBusManager.publish(new AiVoxResponseEvent("Internal Server Error. Please try again later."));
                 }
 

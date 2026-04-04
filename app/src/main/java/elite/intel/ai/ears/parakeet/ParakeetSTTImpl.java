@@ -407,7 +407,7 @@ public class ParakeetSTTImpl implements EarsInterface {
         EventBusManager.publish(new TTSInterruptEvent());
         //AudioPlayer.getInstance().playBeep(AudioPlayer.BEEP_1);
         log.info("Dispatching transcript: {}", transcript.replace("computer", ""));
-        EventBusManager.publish(new UserInputEvent(transcript.replace("computer", ""), 1.0f));
+        EventBusManager.publish(new UserInputEvent(transcript.replace("computer", "")));
     }
 
     @Subscribe

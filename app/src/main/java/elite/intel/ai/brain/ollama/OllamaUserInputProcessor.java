@@ -51,19 +51,19 @@ public class OllamaUserInputProcessor extends CommandEndPoint implements AiComma
     @Subscribe @Override public void onUserInput(UserInputEvent event) {
         if (!running.get()) return;
         if (executor == null) {
-            processVoiceCommand(event.getUserInput(), event.getConfidence());
+            processVoiceCommand(event.getUserInput());
             return;
         }
-        executor.submit(() -> processVoiceCommand(event.getUserInput(), event.getConfidence()));
+        executor.submit(() -> processVoiceCommand(event.getUserInput()));
     }
 
-    private void processVoiceCommand(String userInput, float confidence) {
+    private void processVoiceCommand(String userInput) {
         if (userInput == null || userInput.isEmpty()) {
             getRouter().processAiResponse(createError("Sorry, I couldn't process that."), userInput);
             return;
         }
 
-        log.info("Ollama voice input: {} (conf: {})", userInput, confidence);
+        log.info("Ollama voice input: {}", userInput);
 
         if (CONNECTION_CHECK_COMMAND.equalsIgnoreCase(userInput)) {
             JsonObject direct = new JsonObject();

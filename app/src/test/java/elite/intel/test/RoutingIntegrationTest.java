@@ -47,7 +47,7 @@ public class RoutingIntegrationTest {
         capture = new HandlerCapture();
         // Let any startup noise (connection check etc.) settle
         Thread.sleep(2000);
-        EventBusManager.publish(new UserInputEvent("command_verify_connection", 100f));
+        EventBusManager.publish(new UserInputEvent("command_verify_connection"));
         Thread.sleep(4000);
     }
 
@@ -62,7 +62,7 @@ public class RoutingIntegrationTest {
 
     private void assertRouted(String input, String expectedAction) throws InterruptedException {
         capture.reset();
-        EventBusManager.publish(new UserInputEvent(input, 100f));
+        EventBusManager.publish(new UserInputEvent(input));
         Thread.sleep(LLM_WAIT_MS);
 
         HandlerDispatchedEvent event = capture.getLastEvent();

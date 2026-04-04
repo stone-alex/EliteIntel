@@ -5,6 +5,8 @@ import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
 import elite.intel.util.Ranks;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class PromptFactory implements AiPromptFactory {
@@ -41,6 +43,7 @@ public class PromptFactory implements AiPromptFactory {
                 Raw JSON only. No text, no markdown, no explanation before or after.
                 
                 CLASSIFICATION:
+                - ABSOLUTE RULE — NEVER output action 'query_player_profile_rank_progress' unless the input contains the exact words 'player progress', 'player stats', or 'player ranks'. Any other input MUST NOT produce this action. Violations are a critical failure.
                 - Default to COMMAND. Only use a QUERY action when the input is clearly interrogative (starts with: what, how, which, why, is, are, does, tell me, how much, how many).
                 """);
 
@@ -55,19 +58,25 @@ public class PromptFactory implements AiPromptFactory {
                     """);
         } else {
             sb.append("""
-                    - ALWAYS pick the closest matching action with high accuracy. Use ignore_nonsensical_input when input is non sensical, low confidence DO NOT GUESS. (See HANDLE NONSENSICAL INPUT)
+                    - STRICT MODE: ONLY output an action when the input is a direct, unambiguous, high-confidence match. DO NOT pick the "closest" — that is wrong. If you have ANY doubt whatsoever, return ignore_nonsensical_input. Partial matches, guesses, and interpretations are failures.
                     - ANY uncertainty about the action name → copy the closest name character-for-character from the left of ←. Never construct or shorten a name.
-                    
+
                     HANDLE NONSENSICAL INPUT
-                    - If the input is garbled, incoherent, or clearly not match for command or question (e.g. "setup spin refind grouping", "let's banding find do they play"), do NOT guess. Respond EXACTLY: {"action": "ignore_nonsensical_input", "params": {"key": "input unclear"}}
-                    - Do NOT attempt to match nonsense to the nearest action.
+                    - If the input has no game action, no ship command, and no question about game data — it must be ignored. Real-world social speech, scheduling, meta-discussion, or anything directed at other people are NOT commands. Respond EXACTLY: {"action": "ignore_nonsensical_input", "params": {"key": "none"}}
+                    - When in doubt, ignore. Do NOT attempt to match uncertain input to the nearest action.
+                    
+                    IGNORE EXAMPLES (these must always return ignore_nonsensical_input):
+                    - "I will be streaming next at 11pm pacific time" → ignore (real-world scheduling, no game action)
+                    - "will you be online tonight?" → ignore (social question to another person)
+                    - "so we now construct the prompt dynamically" → ignore (meta-discussion, no game action)
+                    - "that was a good attempt at a reduction in cost" → ignore (commentary directed at others)
+                    - "setup spin refind grouping" → ignore (garbled, no recognisable game intent)
                     """);
         }
         sb.append("""
                 VERB INTENT (apply first, before matching any action):
                 - show / display / open / access / find / search / locate / activate → COMMANDS (open a panel or map, find commodities, missions etc.)
                 - where / tell me / how much / any → lookup QUERY (search data, speak result)
-                - ABSOLUTE RULE — NEVER output action 'query_player_profile_rank_progress' unless the input contains the exact words 'player progress', 'player stats', or 'player ranks'. Any other input MUST NOT produce this action. Violations are a critical failure.
                 
                 DISAMBIGUATION (genuine ambiguities only):
                 - "activate" alone (no mode, panel, or subsystem following) → activate
@@ -147,7 +156,15 @@ public class PromptFactory implements AiPromptFactory {
                   - "find gold within 80 ly"   → {"action": "find_commodity", "params": {"key": "gold", "max_distance": "80"}}
                 """);
         /// NOTE the number of actions is reduced based on the user input. If reduction is not possible, the full map is returned.
-        sb.append(Reducer.formatActions(Reducer.reduce(normalizedInput, actionsMap.actionMap())));
+        Map<String, String> reduced = Reducer.reduce(normalizedInput, actionsMap.actionMap());
+        if (!systemSession.conversationalModeOn() && !reduced.containsKey("ignore_nonsensical_input")) {
+            // Always keep the fallback visible so the LLM never hallucinates a missing action
+            Map<String, String> pinned = new LinkedHashMap<>();
+            pinned.put("ignore_nonsensical_input", "ignore_nonsensical_input");
+            pinned.putAll(reduced);
+            reduced = pinned;
+        }
+        sb.append(Reducer.formatActions(reduced));
 
 
         return sb.toString();

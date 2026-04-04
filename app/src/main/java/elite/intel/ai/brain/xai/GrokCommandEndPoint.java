@@ -83,19 +83,19 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
         }
         if (executor == null) {
             log.warn("Executor is null; running onUserInput on caller thread");
-            processVoiceCommand(event.getUserInput(), event.getConfidence());
+            processVoiceCommand(event.getUserInput());
             return;
         }
         executor.submit(() -> {
             try {
-                processVoiceCommand(event.getUserInput(), event.getConfidence());
+                processVoiceCommand(event.getUserInput());
             } catch (Exception e) {
                 log.error("Error processing user input", e);
             }
         });
     }
 
-    private void processVoiceCommand(String userInput, float confidence) {
+    private void processVoiceCommand(String userInput) {
 
         if (userInput == null || userInput.isEmpty()) {
             JsonObject errorResponse = new JsonObject();
@@ -104,7 +104,7 @@ public class GrokCommandEndPoint extends CommandEndPoint implements AiCommandInt
             return;
         }
 
-        log.info("Sanitized voice userInput:\n{} (confidence: {})", userInput, confidence);
+        log.info("Sanitized voice userInput:\n{}", userInput);
 
         JsonArray messages = new JsonArray();
         JsonObject systemMessage = new JsonObject();

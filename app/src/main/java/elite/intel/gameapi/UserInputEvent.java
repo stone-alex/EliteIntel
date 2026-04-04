@@ -9,22 +9,15 @@ import java.time.Instant;
 
 public class UserInputEvent extends BaseEvent {
 
-    public UserInputEvent(String sanitizedTranscript, float confidence) {
+    public UserInputEvent(String sanitizedTranscript) {
         super(Instant.now().toString(), Duration.ofSeconds(10), "UserInput");
         this.userInput = sanitizedTranscript;
-        this.confidence = confidence;
     }
 
     private String userInput;
-    private float confidence;
-
 
     public String getUserInput() {
         return userInput;
-    }
-
-    public float getConfidence() {
-        return confidence;
     }
 
     @Override public String getEventType() {

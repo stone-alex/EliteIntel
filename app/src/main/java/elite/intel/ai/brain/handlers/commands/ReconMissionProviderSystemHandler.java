@@ -115,7 +115,7 @@ public class ReconMissionProviderSystemHandler implements CommandHandler {
 
         if (destination == null) {
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("No Knowing mission providers. Searching..."));
-            EventBusManager.publish(new UserInputEvent(" find hunting grounds", 100f));
+            EventBusManager.publish(new UserInputEvent(" find hunting grounds"));
             return false;
         } else {
             RoutePlotter plotter = new RoutePlotter();

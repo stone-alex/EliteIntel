@@ -36,7 +36,7 @@ public class NaturalSpeechIntegrationTest {
         Thread.sleep(2000);
         /// this allows LLM to cache the entire prompt without filtering.
         /// without this call at the start of the session, the failure rate will be higher.
-        EventBusManager.publish(new UserInputEvent("command_verify_connection", 100f));
+        EventBusManager.publish(new UserInputEvent("command_verify_connection"));
         Thread.sleep(4000);
     }
 
@@ -51,7 +51,7 @@ public class NaturalSpeechIntegrationTest {
 
     private void assertRouted(String input, String expectedAction) throws InterruptedException {
         capture.reset();
-        EventBusManager.publish(new UserInputEvent(input, 100f));
+        EventBusManager.publish(new UserInputEvent(input));
         Thread.sleep(LLM_WAIT_MS);
 
         HandlerDispatchedEvent event = capture.getLastEvent();

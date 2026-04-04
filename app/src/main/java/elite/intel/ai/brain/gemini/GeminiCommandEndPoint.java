@@ -87,19 +87,19 @@ public class GeminiCommandEndPoint extends CommandEndPoint implements AiCommandI
         }
         if (executor == null) {
             log.warn("Executor is null; running onUserInput on caller thread");
-            processVoiceCommand(event.getUserInput(), event.getConfidence());
+            processVoiceCommand(event.getUserInput());
             return;
         }
         executor.submit(() -> {
             try {
-                processVoiceCommand(event.getUserInput(), event.getConfidence());
+                processVoiceCommand(event.getUserInput());
             } catch (Exception e) {
                 log.error("Error processing user input", e);
             }
         });
     }
 
-    private void processVoiceCommand(String userInput, float confidence) {
+    private void processVoiceCommand(String userInput) {
         if (userInput == null || userInput.isEmpty()) {
             JsonObject errorResponse = new JsonObject();
             errorResponse.addProperty(AIConstants.PROPERTY_TEXT_TO_SPEECH_RESPONSE, "Sorry, I couldn't process that.");
@@ -107,7 +107,7 @@ public class GeminiCommandEndPoint extends CommandEndPoint implements AiCommandI
             return;
         }
 
-        log.info("Sanitized voice userInput:\n{} (confidence: {})", userInput, confidence);
+        log.info("Sanitized voice userInput:\n{}", userInput);
 
         JsonArray messages = new JsonArray();
 

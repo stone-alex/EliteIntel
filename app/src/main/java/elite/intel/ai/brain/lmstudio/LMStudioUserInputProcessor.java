@@ -63,13 +63,13 @@ public class LMStudioUserInputProcessor extends CommandEndPoint implements AiCom
     public void onUserInput(UserInputEvent event) {
         if (!running.get()) return;
         if (executor == null) {
-            processVoiceCommand(event.getUserInput(), event.getConfidence());
+            processVoiceCommand(event.getUserInput());
             return;
         }
         executor.submit(() -> {
             {
                 try {
-                    processVoiceCommand(event.getUserInput(), event.getConfidence());
+                    processVoiceCommand(event.getUserInput());
                 } catch (Exception e) {
                     EventBusManager.publish(new AppLogEvent("Error processing user input. See logs."));
                     log.error("Error processing user input", e);
@@ -78,13 +78,13 @@ public class LMStudioUserInputProcessor extends CommandEndPoint implements AiCom
         });
     }
 
-    private void processVoiceCommand(String userInput, float confidence) {
+    private void processVoiceCommand(String userInput) {
         if (userInput == null || userInput.isEmpty()) {
             getRouter().processAiResponse(createError("Sorry, I couldn't process that."), userInput);
             return;
         }
 
-        log.info("LM Studio voice input: {} (conf: {})", userInput, confidence);
+        log.info("LM Studio voice input: {}", userInput);
 
         if (CONNECTION_CHECK_COMMAND.equalsIgnoreCase(userInput)) {
             JsonObject direct = new JsonObject();

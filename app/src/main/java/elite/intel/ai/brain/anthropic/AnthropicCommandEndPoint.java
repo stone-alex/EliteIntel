@@ -81,10 +81,10 @@ public class AnthropicCommandEndPoint extends CommandEndPoint implements AiComma
     public void onUserInput(UserInputEvent event) {
         if (!running.get()) return;
         if (executor == null) {
-            processVoiceCommand(event.getUserInput(), event.getConfidence());
+            processVoiceCommand(event.getUserInput());
             return;
         }
-        executor.submit(() -> processVoiceCommand(event.getUserInput(), event.getConfidence()));
+        executor.submit(() -> processVoiceCommand(event.getUserInput()));
     }
 
     @Subscribe
@@ -123,13 +123,13 @@ public class AnthropicCommandEndPoint extends CommandEndPoint implements AiComma
     // Core processing
     // -----------------------------------------------------------------------
 
-    private void processVoiceCommand(String userInput, float confidence) {
+    private void processVoiceCommand(String userInput) {
         if (userInput == null || userInput.isEmpty()) {
             getRouter().processAiResponse(createError("Sorry, I couldn't process that."), userInput);
             return;
         }
 
-        log.info("Anthropic voice input: {} (conf: {})", userInput, confidence);
+        log.info("Anthropic voice input: {}", userInput);
 
         JsonArray request = new JsonArray();
 

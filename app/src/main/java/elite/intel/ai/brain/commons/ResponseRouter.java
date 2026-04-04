@@ -21,6 +21,7 @@ import javax.annotation.Nullable;
 import java.util.Map;
 
 import static elite.intel.ai.brain.commons.AiEndPoint.CONNECTION_CHECK_COMMAND;
+import static elite.intel.ai.brain.handlers.commands.Commands.IGNORE_NONSENSE;
 import static elite.intel.util.json.JsonUtils.nullSaveJsonObject;
 
 
@@ -80,7 +81,7 @@ public class ResponseRouter implements AIRouterInterface {
             } else if (!action.isEmpty()) {
                 log.warn("Unknown action '{}' - LLM invented an action name not in registry", action);
                 EventBusManager.publish(new AppLogEvent("Unknown action: " + action));
-                EventBusManager.publish(new AiVoxResponseEvent("Action not recognized."));
+                EventBusManager.publish(new AiVoxResponseEvent("LLM Hallucinated action that does not exist."));
             } else {
                 handleChat(responseText);
             }
@@ -140,6 +141,11 @@ public class ResponseRouter implements AIRouterInterface {
 
     protected void handleCommand(String action, JsonObject params, String responseText) {
         EventBusManager.publish(new AppLogEvent("Processing action: " + action + " with params: " + params.toString()));
+        if (IGNORE_NONSENSE.getAction().equalsIgnoreCase(action)) {
+            /// do nothing and return.
+            return;
+        }
+
         if (!CONNECTION_CHECK_COMMAND.equalsIgnoreCase(action)) {
             EventBusManager.publish(new AiVoxResponseEvent("%s".formatted(StringUtls.affirmative())));
         }

@@ -42,7 +42,7 @@ public class ScanOrganicSubscriber {
                         Rephrase to natural, immersive speech:
                             - Key elements ONLY: genus/species logged, distance/completion if stated.
                             - Use "we", "You" - NEVER "ship", "SRV", or "vehicle".
-                    
+                            - If 'Remaining genus' listed, provide the exact and detailed list of genus, do not provide a vague reference. 
                             Output EXACTLY:
                                 {"text_to_speech_response": "your natural rephrase"}
                     """));

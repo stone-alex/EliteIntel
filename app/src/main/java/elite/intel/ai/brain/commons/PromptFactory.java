@@ -42,13 +42,28 @@ public class PromptFactory implements AiPromptFactory {
                 
                 CLASSIFICATION:
                 - Default to COMMAND. Only use a QUERY action when the input is clearly interrogative (starts with: what, how, which, why, is, are, does, tell me, how much, how many).
-                - ALWAYS pick the closest matching action. query_general_conversation is ONLY a last resort. When input is non sensical. (See HANDLE NONSENSICAL INPUT)
-                - ANY uncertainty about the action name → copy the closest name character-for-character from the left of ←. Never construct or shorten a name.
-                
-                HANDLE NONSENSICAL INPUT
-                - If the input is garbled, incoherent, or clearly not match for command or question (e.g. "setup spin refind grouping", "let's banding find do they play"), do NOT guess. Respond EXACTLY: {"action": "query_general_conversation", "params": {"key": "input unclear"}}
-                - Do NOT attempt to match nonsense to the nearest action.
-                
+                """);
+
+        if (systemSession.conversationalModeOn()) {
+            sb.append("""
+                    - ALWAYS pick the closest matching action. query_general_conversation is ONLY a last resort. When input is non sensical. (See HANDLE NONSENSICAL INPUT)
+                    - ANY uncertainty about the action name → copy the closest name character-for-character from the left of ←. Never construct or shorten a name.
+                    
+                    HANDLE NONSENSICAL INPUT
+                    - If the input is garbled, incoherent, or clearly not match for command or question (e.g. "setup spin refind grouping", "let's banding find do they play"), do NOT guess. Respond EXACTLY: {"action": "query_general_conversation", "params": {"key": "input unclear"}}
+                    - Do NOT attempt to match nonsense to the nearest action.
+                    """);
+        } else {
+            sb.append("""
+                    - ALWAYS pick the closest matching action with high accuracy. Use ignore_nonsensical_input when input is non sensical, low confidence DO NOT GUESS. (See HANDLE NONSENSICAL INPUT)
+                    - ANY uncertainty about the action name → copy the closest name character-for-character from the left of ←. Never construct or shorten a name.
+                    
+                    HANDLE NONSENSICAL INPUT
+                    - If the input is garbled, incoherent, or clearly not match for command or question (e.g. "setup spin refind grouping", "let's banding find do they play"), do NOT guess. Respond EXACTLY: {"action": "ignore_nonsensical_input", "params": {"key": "input unclear"}}
+                    - Do NOT attempt to match nonsense to the nearest action.
+                    """);
+        }
+        sb.append("""
                 VERB INTENT (apply first, before matching any action):
                 - show / display / open / access / find / search / locate / activate → COMMANDS (open a panel or map, find commodities, missions etc.)
                 - where / tell me / how much / any → lookup QUERY (search data, speak result)
@@ -72,6 +87,7 @@ public class PromptFactory implements AiPromptFactory {
                 - carrier full status (fuel + credits + operations): "carrier status / carrier fuel status / how far can carrier jump / fleet carrier fuel status" → query_carrier_status_fuel_credit_balance
                 - carrier tritium level only: "how much tritium / tritium supply / tritium level / tritium reserve" → query_carrier_fuel
                 - distance to bubble is distance from our stellar coordinates to the center of the coordinate system (0,0,0)
+                - You are strictly prohibited from using action 'query_player_profile_rank_progress' unless explicitly asked about player, 'progress', 'stats' or 'ranks'.
                 - For "progress, rank, player stats" → 'query_player_profile_rank_progress' do not confuse with "profits for exploration, missions or bounties"
                 
                 - "listen" / "listen up" alone → start_listening
@@ -90,6 +106,7 @@ public class PromptFactory implements AiPromptFactory {
                 - profit from bounties is not profit from missions for bounties → 'query_total_bounties'
                 - profit from missions is not profit from bounties for missions → 'query_missions_and_rewards'
                 - profit from discovery is not profit from bounties or missions → 'query_exploration_profits'
+                
                 - material trader (raw/encoded/manufactured) → find_raw/encoded/manufactured_material_trader
                 - "geo signals / geological" → query_geo_signals (NOT find_brain_trees)
                 - "find mission providers" / "find pirate mission providers" → find_hunting_grounds (NOT fleet carrier)

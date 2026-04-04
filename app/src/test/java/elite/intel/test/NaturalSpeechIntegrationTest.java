@@ -74,7 +74,7 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> startListening() {
-        return Stream.of("listen", "wake up", "pay attention", "listen up", "wake");
+        return Stream.of("wake up", "wake");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")

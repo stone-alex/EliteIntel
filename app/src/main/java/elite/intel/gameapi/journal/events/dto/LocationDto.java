@@ -884,7 +884,7 @@ public class LocationDto implements ToJsonConvertible {
     }
 
     public void setParentBodyId(Long parentBodyId) {
-        if (this.parentBodyId > 0) return;
+        if (this.parentBodyId != null && this.parentBodyId > 0) return;
         this.parentBodyId = parentBodyId;
     }
 

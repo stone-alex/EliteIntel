@@ -549,6 +549,9 @@ public class InputNormalizer {
         SYNONYM_MAP.put("skoop", "scoop");
         SYNONYM_MAP.put("alex sounds right", "alexandrite");
         SYNONYM_MAP.put("center", "entry");
+        SYNONYM_MAP.put("next zip", "exit");
+        SYNONYM_MAP.put("recovered", "recover");
+        SYNONYM_MAP.put("break over", "recover");
     }
 
     private InputNormalizer() {

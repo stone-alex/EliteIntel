@@ -25,11 +25,13 @@ import static elite.intel.ui.view.AppTheme.*;
 public class PlayerTabPanel extends JPanel {
 
     private final PlayerSession playerSession = PlayerSession.getInstance();
+    private final SystemSession systemSession = SystemSession.getInstance();
 
     private JTextField playerAltNameField;
     private JTextField journalDirField;
     private JTextField bindingsDirField;
     private JScrollPane fleetScrollPane;
+    private JCheckBox conversationModeCheckBox;
 
     public PlayerTabPanel() {
         buildUi();
@@ -108,6 +110,11 @@ public class PlayerTabPanel extends JPanel {
         JButton saveButton = makeButton("Save");
         saveButton.addActionListener(e -> savePlayerConfig());
         btns.add(saveButton);
+
+        conversationModeCheckBox = new JCheckBox("Conversation Mode");
+        conversationModeCheckBox.addActionListener(e -> systemSession.setConversationalMode(conversationModeCheckBox.isSelected()));
+        btns.add(conversationModeCheckBox);
+
         add(btns, gbc);
 
         // Row 4: Fleet Management header

@@ -176,6 +176,7 @@ public enum Commands {
     SET_REMINDER                                        ("set_reminder", null, SetReminderHandler.class),
     DELETE_CODEX_ENTRY                                  ("delete_codex_entry", null, DeleteCodexEntryHandler.class),
 
+    IGNORE_NONSENSE                                     ("ignore_nonsensical_input", null, IgnoreNonSensicalInputHandler.class),
     ;
 
     ///

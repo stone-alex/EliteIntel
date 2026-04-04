@@ -420,4 +420,17 @@ public class SystemSession {
             return Void.class;
         });
     }
+
+    public void setConversationalMode(boolean b) {
+        Database.withDao(GameSessionDao.class, dao -> {
+            GameSessionDao.GameSession session = dao.get();
+            session.setConversationModeOn(b);
+            dao.save(session);
+            return Void.TYPE;
+        });
+    }
+
+    public boolean conversationalModeOn() {
+        return Database.withDao(GameSessionDao.class, dao -> dao.get().isConversationModeOn());
+    }
 }

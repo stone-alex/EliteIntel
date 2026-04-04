@@ -236,7 +236,12 @@ public class AiActionsMap {
         map.put("current time, what time is it, time on earth, galactic time, utc time, what's the time, real time", TIME_IN_ZONE.getAction());
         map.put("reminder, what was the reminder, destination reminder, any reminders, recall reminder, what did we set as reminder", REMINDER.getAction());
         map.put("local markets, markets at stations and settlements, markets at outposts in system", ANALYZE_MARKETS.getAction());
-        map.put("general conversation", GENERAL_CONVERSATION.getAction());
+
+        if (systemSession.conversationalModeOn()) {
+            map.put("general conversation", GENERAL_CONVERSATION.getAction());
+        } else {
+            map.put("ignore_nonsensical_input", IGNORE_NONSENSE.getAction());
+        }
 
         // machine-only
         map.put(CONNECTION_CHECK_COMMAND, CONNECTION_CHECK.getAction());

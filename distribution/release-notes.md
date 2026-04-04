@@ -1,4 +1,6 @@
-- Fixed projected payment on organic scan. It was sending wrong and average value, now sends corect value for Genus / Variant
+- Fixed projected payment on organic scan. It was sending the wrong, and the average value now sends the correct value for Genus / Variant
+- Added Conversation mode on/off toggle. **(UI ONLY!)
+  ** When on, the app will act as usual, when off it will ignore all input that does not match an existing command or query. This is a strict parser mode.
 
 ## Elite Intel v-0.0342-beta
 

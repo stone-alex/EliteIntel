@@ -51,7 +51,7 @@ public class LoadoutSubscriber {
         }
 
         if (Status.getInstance().isOkToAnnounceLoadout()) {
-            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Hello " + playerSession.getPlayerName() + ", I am " + ship.getShipName() + ", at your service " + Ranks.getPlayerHonorific()));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Hello " + playerSession.getPlayerName() + ", I am " + event.getShipName() + ", at your service " + Ranks.getPlayerHonorific()));
         }
     }
 }

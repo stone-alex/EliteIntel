@@ -15,6 +15,7 @@ public class LoadoutConverter {
         FuelCapacityDto fuelCapacity = new FuelCapacityDto();
         fuelCapacity.setMainTank(event.getFuelCapacity().getMain());
         fuelCapacity.setReserveTank(event.getFuelCapacity().getReserve());
+        dto.setShipId(event.getShipId());
         dto.setFuelCapacity(fuelCapacity);
         dto.setHullHealth(event.getHullHealth() * 100f);
         dto.setMaxJumpRange(Math.round(event.getMaxJumpRange() * 100.0) / 100.0);

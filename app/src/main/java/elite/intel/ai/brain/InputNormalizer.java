@@ -234,6 +234,8 @@ public class InputNormalizer {
         SYNONYM_MAP.put("full scan", "scan the system");
         SYNONYM_MAP.put("fss scan", "scan the system");
         SYNONYM_MAP.put("open fss and scan", "scan the system");
+        SYNONYM_MAP.put("open central panel", "open or display commander panel");
+        SYNONYM_MAP.put("open role panel", "open or display commander panel");
         SYNONYM_MAP.put("system scan", "scan the system");
         SYNONYM_MAP.put("scan system", "scan the system");
         SYNONYM_MAP.put("run a scan", "scan the system");
@@ -549,6 +551,9 @@ public class InputNormalizer {
         SYNONYM_MAP.put("skoop", "scoop");
         SYNONYM_MAP.put("alex sounds right", "alexandrite");
         SYNONYM_MAP.put("center", "entry");
+        SYNONYM_MAP.put("next zip", "exit");
+        SYNONYM_MAP.put("recovered", "recover");
+        SYNONYM_MAP.put("break over", "recover");
     }
 
     private InputNormalizer() {

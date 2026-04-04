@@ -1091,4 +1091,17 @@ public class NaturalSpeechIntegrationTest {
     static Stream<String> querySetCarrierFuelReserve() {
         return Stream.of("Set fuel level to 5000", "Set fuel reserve to 10000", "Fuel reserve 15000", "Set fuel reserve to fifteen thousand");
     }
+
+
+    @ParameterizedTest(name = "[{index}] \"{0}\"")
+    @Order(234)
+    @MethodSource
+    void disembark(String input) throws InterruptedException {
+        assertRouted(input, DISEMBARK.getAction());
+    }
+
+    static Stream<String> disembark() {
+        return Stream.of("disembark");
+    }
+
 }

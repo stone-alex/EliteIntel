@@ -55,7 +55,7 @@ public class AiTabPanel extends JPanel {
                 e -> EventBusManager.publish(new ToggleDetailedLogEvent(showDetailedLog.isSelected())));
         showDetailedLog.setForeground(ACCENT);
 
-        toggleWakeWordOnOff = new JCheckBox("Sleep / Ignore | Listen / Wake Up", false);
+        toggleWakeWordOnOff = new JCheckBox("Sleep / Wake Up", false);
         toggleWakeWordOnOff.addActionListener(
                 e -> EventBusManager.publish(new ToggleWakeWordEvent(toggleWakeWordOnOff.isSelected())));
         toggleWakeWordOnOff.setEnabled(false);

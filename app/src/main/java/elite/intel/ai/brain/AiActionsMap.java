@@ -158,7 +158,7 @@ public class AiActionsMap {
         if (status.isInSrv()) {
             map.put("recover SRV, board ship, return SRV, retrieve SRV, SRV dock", RECOVER_SRV.getAction());
         }
-
+        map.put("disembark", DISEMBARK.getAction());
         map.put("deploy heat sink, launch heat sink, dump heat", DEPLOY_HEAT_SINK.getAction());
         map.put("equalize power, balance power, reset power, distribute power equally", RESET_POWER.getAction());
         map.put("retract hardpoints, weapons cold, weapons away, stand down, holster weapons, weapons down, safe weapons", RETRACT_HARDPOINTS.getAction());

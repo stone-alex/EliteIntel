@@ -1,4 +1,12 @@
-- Fixed projected payment on organic scan. It was sending wrong and average value, now sends corect value for Genus / Variant
+## Elite Intel v-0.0344-beta
+
+### bug fixes / features:
+
+- Fixed projected payment on organic scan. It was sending the wrong, and the average value now sends the correct value for Genus / Variant
+- Added Conversation mode on/off toggle. **(UI ONLY!)
+  ** When on, the app will act as usual, when off it will ignore all input that does not match an existing command or query. This is a strict parser mode.
+- Added "disembark" command. Not to be confused with "exit" which will exit Game UI panes / maps etc.
+- Fixed an incorrect bio sample projected payment announcement.
 
 ## Elite Intel v-0.0342-beta
 

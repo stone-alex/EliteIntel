@@ -99,6 +99,8 @@ public enum Commands {
 
     GET_HEADING_TO_LZ                                   ("navigate_to_landing_zone", null,  NavigateToLandingZone.class),
     DEPLOY_SRV                                          ("deploy_vehicle_srv", null,  DeploySrvHandler.class),
+    DISEMBARK                                           ("disembark", null,  DisembarkHandler.class),
+
     DEPLOY_FIGHTER                                      ("deploy_fighter", null,  DeployFighterHandler.class),
     RECOVER_SRV                                         ("recover_srv_vehicle_get_on_board_ship", null,  RecoverSrvHandler.class),
     CALCULATE_FLEET_CARRIER_ROUTE                       ("calculate_fleet_carrier_route", null,  CalculateFleetCarrierRouteHandler.class),

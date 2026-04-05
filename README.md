@@ -19,7 +19,7 @@ Powered by Kokoro. built-in / included.
 Powered by NVIDIA Parakeet. built-in / included.
 
 **✅ Local off-line private LLMs are now supported**
-[Installing local LLM](https://github.com/stone-alex/EliteIntel/wiki/Install-Local-LLM)
+[Installing local LLM](https://github.com/stone-alex/EliteIntel/wiki/installing-local-llms)
 
 - If you do not have the hardware to run your local LLM you can use cloud LLM from Claude, xAI, Google, or Open AI but
   that comes with a small fee. (about $6 a month)

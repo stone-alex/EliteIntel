@@ -116,14 +116,14 @@ public class InputNormalizer {
         // FTL
         SYNONYM_MAP.put("light speed", "enter supercruise");
         SYNONYM_MAP.put("lightspeed", "enter supercruise");
+        SYNONYM_MAP.put("drop ftl", "drop from supercruise");  // must be before "ftl" → enter supercruise
         SYNONYM_MAP.put("ftl", "enter supercruise");
         SYNONYM_MAP.put("supercruise", "enter supercruise");
         SYNONYM_MAP.put("super cruise", "enter supercruise");
-        SYNONYM_MAP.put("drop", "drop from supercruise");
-        SYNONYM_MAP.put("leave supercruise", "drop from supercruise");
-        SYNONYM_MAP.put("drop here", "drop from supercruise");
-        SYNONYM_MAP.put("disengage", "drop");
-        SYNONYM_MAP.put("disengage supercruise", "drop from supercruise");
+        SYNONYM_MAP.put("leave supercruise", "drop out");
+        SYNONYM_MAP.put("drop here", "drop out");
+        SYNONYM_MAP.put("disengage", "drop out");
+        SYNONYM_MAP.put("disengage supercruise", "drop out");
         SYNONYM_MAP.put("carrier balance", "carrier stats");
         SYNONYM_MAP.put("lower landing gear", "gear down");
         SYNONYM_MAP.put("extend landing gear", "gear down");
@@ -151,6 +151,8 @@ public class InputNormalizer {
         SYNONYM_MAP.put("how far am i from earth", "distance to bubble");
         SYNONYM_MAP.put("how far are we from earth", "distance to bubble");
         SYNONYM_MAP.put("how far from earth", "distance to bubble");
+        SYNONYM_MAP.put("how far is earth", "distance to bubble");
+        SYNONYM_MAP.put("how far is sol", "distance to bubble");
         SYNONYM_MAP.put("distance to earth", "distance to bubble");
         SYNONYM_MAP.put("distance from earth", "distance to bubble");
         SYNONYM_MAP.put("how far am i from sol", "distance to bubble");
@@ -228,6 +230,7 @@ public class InputNormalizer {
         SYNONYM_MAP.put("landing clearance", "request docking");
         SYNONYM_MAP.put("clear me to land", "request docking");
         SYNONYM_MAP.put("permission to land", "request docking");
+        SYNONYM_MAP.put("request landing", "request docking");
 
         SYNONYM_MAP.put("exit scanner", "exit close panel");
         SYNONYM_MAP.put("close scanner", "exit close panel");
@@ -251,6 +254,7 @@ public class InputNormalizer {
         SYNONYM_MAP.put("abort", "cancel");
         SYNONYM_MAP.put("clear route", "cancel navigation");
         SYNONYM_MAP.put("stop navigation", "cancel navigation");
+        SYNONYM_MAP.put("plot route", "navigate to");
 
         // target
         SYNONYM_MAP.put("aim at", "target");

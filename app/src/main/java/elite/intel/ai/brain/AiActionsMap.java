@@ -37,7 +37,7 @@ public class AiActionsMap {
 
         // navigation
         map.put("navigate to coordinates {lat:X, lon:Y}", NAVIGATE_TO_TARGET.getAction());
-        map.put("navigate to active mission, plot route to mission, take me to mission, go to mission {key:X}", NAVIGATE_TO_NEXT_MISSION.getAction());
+        map.put("navigate to active mission, plot route to active mission, plot route to mission, take me to mission, go to mission {key:X}", NAVIGATE_TO_NEXT_MISSION.getAction());
         map.put("navigate to fleet carrier, go to carrier, head to carrier, return to carrier, take us to carrier", NAVIGATE_TO_CARRIER.getAction());
         map.put("navigate to landing zone, bearing to landing zone, heading to landing zone, back to LZ", GET_HEADING_TO_LZ.getAction());
         map.put("navigate to next trade stop, go to next trade stop", NAVIGATE_TO_NEXT_TRADE_STOP.getAction());
@@ -45,7 +45,7 @@ public class AiActionsMap {
         map.put("cancel navigation, abort navigation, stop navigation", NAVIGATION_OFF.getAction());
         map.put("target destination", TARGET_DESTINATION.getAction());
         map.put("jump to hyperspace,  jump, hyperspace jump, enter hyperspace, lets go, next way point", JUMP_TO_HYPERSPACE.getAction());
-        map.put("drop from supercruise, ftl, drop out, leave supercruise, drop in", DROP_FROM_SUPER_CRUISE.getAction());
+        map.put("drop out, drop here, drop ftl, drop from supercruise, leave supercruise, drop in", DROP_FROM_SUPER_CRUISE.getAction());
         map.put("enter supercruise,  supercruise, go supercruise, supercruise", ENTER_SUPER_CRUISE.getAction());
         map.put("set home system", SET_HOME_SYSTEM.getAction());
 
@@ -230,7 +230,6 @@ public class AiActionsMap {
         map.put("player profile, my ranks, progress, combat rank, trade rank, exploration rank, commander stats, pilot rank, our ranking, commander profile, what rank are we", PLAYER_PROFILE_ANALYSIS.getAction());
         map.put("ship loadout, damage report, ship modules, combat readiness report, ship equipment, ship specs, what am I flying, what are we equipped with, do you have, is it equipped, shield generator, hull reinforcement, sensors, thrusters, frameshift, fuel scoop, installed", SHIP_LOADOUT.getAction());
         map.put("station details, station services, what services here, what services are here, services here, what services does this station have, services at this station, what does station offer, station info, station facilities, what's at this station, services available", STATION_DETAILS.getAction());
-        map.put("AI designation, what is your name, who are you, what are you called, ai name, system designation", AI_DESIGNATION.getAction());
         map.put("bounties, total bounties, bounty collected, how much in bounties, bounty earnings, credits from bounties, bounty credits", TOTAL_BOUNTIES.getAction());
         map.put("distance to bubble, distance to sol, distance from sol, distance to Earth, distance from Earth, how far from sol, how far from bubble, how far from inhabited space, distance from inhabited space, how far from civilization, range from human space", DISTANCE_TO_BUBBLE.getAction());
         map.put("current time, what time is it, time on earth, galactic time, utc time, what's the time, real time", TIME_IN_ZONE.getAction());

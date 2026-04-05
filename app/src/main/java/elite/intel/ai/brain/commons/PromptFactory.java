@@ -102,7 +102,8 @@ public class PromptFactory implements AiPromptFactory {
                 - "listen" / "listen up" alone → start_listening
                 - "listen [+ any instruction]" → treat as a normal command/query
                 - "exit" or "close" → exit_close
-                - "drop" alone → drop_from_super_cruise
+                - "drop" alone / "drop in" / "drop out" → drop_from_super_cruise
+                - "halt" alone → set_speed_zero
                 - "lets go" / "jump to ..." / "enter hyperspace" → jump_to_hyperspace
                 - "confirm ..." → only match confirm-requiring actions when "confirm" is literally in the input
                 - "clear ..." → only match clear-requiring actions when "clear" is literally in the input

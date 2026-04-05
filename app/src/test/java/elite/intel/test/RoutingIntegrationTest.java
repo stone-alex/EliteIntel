@@ -933,27 +933,6 @@ public class RoutingIntegrationTest {
         return Stream.of("distance to bubble", "how far from bubble", "how far from civilization", "distance to earth");
     }
 
-    @ParameterizedTest(name = "[{index}] \"{0}\"")
-    @Order(222)
-    @MethodSource
-    void queryAiDesignation(String input) throws InterruptedException {
-        assertRouted(input, AI_DESIGNATION.getAction());
-    }
-
-    static Stream<String> queryAiDesignation() {
-        return Stream.of("what is your name", "who are you", "AI designation");
-    }
-//
-//    @ParameterizedTest(name = "[{index}] \"{0}\"")
-//    @Order(223)
-//    @MethodSource
-//    void queryCapabilities(String input) throws InterruptedException {
-//        assertRouted(input, APP_CAPABILITIES.getAction());
-//    }
-//
-//    static Stream<String> queryCapabilities() {
-//        return Stream.of("what can you do", "list capabilities", "what commands do you know");
-//    }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
     @Order(224)

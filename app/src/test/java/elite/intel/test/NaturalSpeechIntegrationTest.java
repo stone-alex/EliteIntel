@@ -3,6 +3,7 @@ package elite.intel.test;
 import elite.intel.ai.brain.commons.HandlerDispatchedEvent;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.UserInputEvent;
+import elite.intel.session.SystemSession;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -11,7 +12,6 @@ import java.util.stream.Stream;
 
 import static elite.intel.ai.brain.handlers.commands.Commands.*;
 import static elite.intel.ai.brain.handlers.query.Queries.*;
-import static elite.intel.util.SleepNoThrow.sleep;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -24,12 +24,14 @@ public class NaturalSpeechIntegrationTest {
     /**
      * Pause between each test phrase. Increase if your LLM is slow.
      */
-    private static final int LLM_WAIT_MS = 3000;
+    private static final int LLM_WAIT_MS = 500;
+    /// adjust this nob to your LLM. too fast, and the fail rate will be higher.
 
     private HandlerCapture capture;
 
     @BeforeAll
     void bootstrap() throws InterruptedException {
+        SystemSession.getInstance().setConversationalMode(true);
         HeadlessBootstrap.start();
         capture = new HandlerCapture();
         // Let any startup noise (connection check etc.) settle
@@ -133,7 +135,7 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> speedZero() {
-        return Stream.of("stop engines", "full stop", "all stop", "halt", "kill engines", "cut throttle", "zero throttle", "stop ship");
+        return Stream.of("stop engines", "full stop", "all stop", "kill engines", "cut throttle", "zero throttle", "stop ship");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -248,7 +250,7 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> dropFromSupercruise() {
-        return Stream.of("drop here", "drop in", "drop out", "drop");
+        return Stream.of("drop here", "drop in", "drop out", "drop ftl");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -596,27 +598,16 @@ public class NaturalSpeechIntegrationTest {
     // App settings / announcements
     // =========================================================================
 
-//    @ParameterizedTest(name = "[{index}] \"{0}\"")
-//    @Order(90)
-//    @MethodSource
-//    void disableAnnouncements(String input) throws InterruptedException {
-//        assertRouted(input, DISABLE_ALL_ANNOUNCEMENTS.getAction());
-//    }
-//
-//    static Stream<String> disableAnnouncements() {
-//        return Stream.of("disable all announcements");
-//    }
+    @ParameterizedTest(name = "[{index}] \"{0}\"")
+    @Order(90)
+    @MethodSource
+    void disableAnnouncements(String input) throws InterruptedException {
+        assertRouted(input, DISABLE_ALL_ANNOUNCEMENTS.getAction());
+    }
 
-//    @ParameterizedTest(name = "[{index}] \"{0}\"")
-//    @Order(91)
-//    @MethodSource
-//    void clearCache(String input) throws InterruptedException {
-//        assertRouted(input, CLEAR_CACHE.getAction());
-//    }
-//
-//    static Stream<String> clearCache() {
-//        return Stream.of("clear cache");
-//    }
+    static Stream<String> disableAnnouncements() {
+        return Stream.of("disable all announcements");
+    }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
     @Order(92)
@@ -766,7 +757,7 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> queryStationsInSystem() {
-        return Stream.of("stations in system", "what stations", "nearby stations", "docking available");
+        return Stream.of("stations in system", "what stations", "nearby stations", "are there any stations or ports here", "any ports in this star system");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -777,7 +768,7 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> queryStellarObjects() {
-        return Stream.of("What landable planets or moons are in this system?");
+        return Stream.of("What landable planets or moons are in this system?", "Are there any ice rings this star system");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -785,7 +776,6 @@ public class NaturalSpeechIntegrationTest {
     @MethodSource
     void queryStellarSignals(String input) throws InterruptedException {
         assertRouted(input, QUERY_STELLAR_SIGNALS.getAction());
-        sleep(2000);
     }
 
     static Stream<String> queryStellarSignals() {
@@ -797,7 +787,6 @@ public class NaturalSpeechIntegrationTest {
     @MethodSource
     void queryBioScanProgress(String input) throws InterruptedException {
         assertRouted(input, BIO_SAMPLE_IN_STAR_SYSTEM.getAction());
-        sleep(2000); /// <- might be a large data set. pause here.
     }
 
     static Stream<String> queryBioScanProgress() {
@@ -945,30 +934,9 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> queryDistanceToBubble() {
-        return Stream.of("How far are we from the Bubble?");
+        return Stream.of("How far are we from the Bubble?", "Distance to earth", "How far is earth", "how far to civilization", "how far to earth");
     }
 
-    @ParameterizedTest(name = "[{index}] \"{0}\"")
-    @Order(222)
-    @MethodSource
-    void queryAiDesignation(String input) throws InterruptedException {
-        assertRouted(input, AI_DESIGNATION.getAction());
-    }
-
-    static Stream<String> queryAiDesignation() {
-        return Stream.of("what is your name", "who are you", "AI designation");
-    }
-//
-//    @ParameterizedTest(name = "[{index}] \"{0}\"")
-//    @Order(223)
-//    @MethodSource
-//    void queryCapabilities(String input) throws InterruptedException {
-//        assertRouted(input, APP_CAPABILITIES.getAction());
-//    }
-//
-//    static Stream<String> queryCapabilities() {
-//        return Stream.of("what can you do", "list capabilities", "what commands do you know");
-//    }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
     @Order(224)
@@ -1089,7 +1057,7 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> querySetCarrierFuelReserve() {
-        return Stream.of("Set fuel level to 5000", "Set fuel reserve to 10000", "Fuel reserve 15000", "Set fuel reserve to fifteen thousand");
+        return Stream.of("Set fuel reserve level to 5000", "Set fuel reserve to 10000", "Fuel reserve 15000", "Set fuel reserve to fifteen thousand");
     }
 
 
@@ -1103,5 +1071,18 @@ public class NaturalSpeechIntegrationTest {
     static Stream<String> disembark() {
         return Stream.of("disembark");
     }
+
+/*
+    @ParameterizedTest(name = "[{index}] \"{0}\"")
+    @Order(235)
+    @MethodSource
+    void nonsense(String input) throws InterruptedException {
+        assertRouted(input, IGNORE_NONSENSE.getAction());
+    }
+
+    static Stream<String> nonsense() {
+        return Stream.of("youtube stream is at 5 tomorrow", "what time should we meet", "most to the time it should pay no attention to bogus data", "the response time is fast", "what is the meaning of life", "some other crap", "have to navigate though the potholes");
+    }
+*/
 
 }

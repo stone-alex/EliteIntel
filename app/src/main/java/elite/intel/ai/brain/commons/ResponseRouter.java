@@ -33,6 +33,16 @@ public class ResponseRouter implements AIRouterInterface {
     private final Map<String, QueryHandler> queryHandlers;
     private final SystemSession systemSession;
 
+    private boolean dryRun = false;
+
+    /**
+     * When true the router publishes {@link HandlerDispatchedEvent} but skips handler execution.
+     * Use from test harnesses only — default is false.
+     */
+    public void setDryRun(boolean dryRun) {
+        this.dryRun = dryRun;
+    }
+
     private ResponseRouter() {
         try {
             commandHandlers = CommandHandlerFactory.getInstance().registerCommandHandlers();
@@ -108,6 +118,7 @@ public class ResponseRouter implements AIRouterInterface {
 
         try {
             EventBusManager.publish(new HandlerDispatchedEvent(action, handler.getClass().getSimpleName(), false));
+            if (dryRun) return;
             JsonObject dataJson = handler.handle(action, params, userInput);
             if (dataJson == null) return;
             String responseTextToUse = dataJson.has(AIConstants.PROPERTY_TEXT_TO_SPEECH_RESPONSE) ? dataJson.get(AIConstants.PROPERTY_TEXT_TO_SPEECH_RESPONSE).getAsString() : "";
@@ -161,6 +172,7 @@ public class ResponseRouter implements AIRouterInterface {
         new Thread(() -> {
             try {
                 EventBusManager.publish(new HandlerDispatchedEvent(action, handler.getClass().getSimpleName(), true));
+                if (dryRun) return;
                 handler.handle(action, params, responseText);
             } catch (Exception e) {
                 EventBusManager.publish(new AiVoxResponseEvent("Error processing command for action " + action + " see logs."));

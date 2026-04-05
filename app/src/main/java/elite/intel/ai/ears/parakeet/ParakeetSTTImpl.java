@@ -345,7 +345,10 @@ public class ParakeetSTTImpl implements EarsInterface {
                 EventBusManager.publish(new AppLogEvent("STT: [" + finalTranscript + "]"));
 
                 if (systemSession.isStreamingModeOn()) {
-                    if (passThrough(finalTranscript)) sendToAi(finalTranscript);
+                    if (passThrough(finalTranscript)) {
+                        String stripped = stripListenBypassPrefix(finalTranscript);
+                        sendToAi(stripped != null ? stripped : finalTranscript);
+                    }
                 } else {
                     sendToAi(finalTranscript);
                 }
@@ -401,6 +404,24 @@ public class ParakeetSTTImpl implements EarsInterface {
             if (transcript.toLowerCase().contains(word)) return true;
         }
         return false;
+    }
+
+    /**
+     * If the transcript contains a "listen up" / "listen" bypass prefix followed by
+     * meaningful content, returns the content with the prefix stripped.
+     * Returns null if the transcript is just the keyword alone (e.g. pure "wake up")
+     * or no listen prefix is present — caller should send the original in that case.
+     */
+    private String stripListenBypassPrefix(String transcript) {
+        String lower = transcript.toLowerCase();
+        for (String prefix : new String[]{"listen up ", "listen "}) {
+            int idx = lower.indexOf(prefix);
+            if (idx >= 0) {
+                String remainder = transcript.substring(idx + prefix.length()).trim();
+                if (!remainder.isBlank()) return remainder;
+            }
+        }
+        return null;
     }
 
     private void sendToAi(String transcript) {

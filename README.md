@@ -21,6 +21,9 @@ Powered by NVIDIA Parakeet. built-in / included.
 **✅ Local off-line private LLMs are now supported**
 [Installing local LLM](https://github.com/stone-alex/EliteIntel/wiki/installing-local-llms)
 
+### Minimum requirements for **running the game and the LLM on same GPU**
+- NVIDIA RTX 3090 **24GB VRAM** or equivalent. NOTE: RTX 5090 with only **12GB VRAM will not do**. Not enough VRAM.
+
 - If you do not have the hardware to run your local LLM you can use cloud LLM from Claude, xAI, Google, or Open AI but
   that comes with a small fee. (about $6 a month)
   [**Real life Cloud LLM cost breakdown**](https://github.com/stone-alex/EliteIntel/wiki/LLM-Real-Live-Cost)

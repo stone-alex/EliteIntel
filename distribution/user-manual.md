@@ -24,8 +24,7 @@ Headphones and mic are recommended.
 **Play around with STT Threads**. Under the Settings / Audio. What do they do? They tell speech recognition how many
 threads to ask from the processor.
 It is a min/max. You can ask for 10 threads, but if your processor can only give you 5 - 5 is all you get. If your
-processor can only
-give it 1 thread, one thread is all you get even if you ask for 11 threads. The more threads you get
+processor can only give it 1 thread, one thread is all you get even if you ask for 11 threads. The more threads you get
 the faster the STT will process your speech. Faster, but not better. This does not have effect on quality.
 
 ## How to Speak Commands (successfully)
@@ -39,6 +38,11 @@ Clarity of your commands is the key.
 mishearings are silently remapped to canonical forms - so "punch it", "let's bounce", "get out of here", and
 "jump to hyperspace" all trigger the same action. You do not need to memorize exact phrases; speak naturally and
 the normalizer handles the rest.
+
+### There is a Sleep and Wake modes.
+- Wake mode - the app will listen to your every word and try to interpret it as a command. However, there is a check box on the Player tab. When UNCHECKED it makes the app ignore anything that it can't map to an action. So you can say things during game play and **for the most part** the app will only respond to a clear command or a query that is implemented.
+- Sleep mode - the app will ignore you completely except when you say "Wake Up" to return it to wake mode, or "Listen Up" followed by your request. "Listen Up" is a one-time by-pass of the sleep mode.
+
 
 ### General rules:
 
@@ -189,7 +193,7 @@ Make sure you mention carrier, else it might think you are talking about the shi
 - Request docking. / Contact tower, get a landing pad, parking spot etc.
 - Engage Supercruise / light speed / lightspeed / super cruise. (actual supercruise, not jump to next system)
 - Jump to hyperspace / engage FSD / let's go / punch it / get out of here / let's bounce / frame shift drive / next waypoint. (actual jump, not supercruise)
-- Drop / drop here / exit supercruise / drop from supercruise.
+- Drop / drop here / drop in / drop ftl / exit supercruise / drop from supercruise.
 - Full stop / engine stop / set speed zero.
 - Set speed to: quarter / half / three-quarter / full throttle.
 - Set speed plus / minus [amount].
@@ -204,6 +208,7 @@ Make sure you mention carrier, else it might think you are talking about the shi
 - Open FSS and scan / honk / scan system / run a scan / discovery scan / system scan / full spectrum scan. (Will open the full FSS UI and hunk)
 - Show / display - galaxy map / local map / close map.
 - Show comms panel / contacts panel / internal panel / central panel.
+- Show or display commander panel / role panel / central panel
 - Show carrier management panel.
 - Exit / close (Exits menus / tabs / sub-menus and drops you to HUD).
 - Interrupt / shut up / silence / cancel [stops TTS mid-sentence].
@@ -219,7 +224,9 @@ Make sure you mention carrier, else it might think you are talking about the shi
 
 ## ⚙️ App & Session Commands
 
-- Ignore me / stop listening → pause the app. Wake up / listen up / pay attention / start listening → resume. Say "listen" to temporarily bypass.
+- **"Ignore me" / "do not monitor" / "sleep"** → puts the app to sleep (ignores all input).
+- **"Wake up"** → resumes normal listening.
+- **"Listen up \<command\>"** → bypass: passes a single command or query through while the app stays asleep. The "listen up" prefix is stripped before the command reaches the AI. Example: *"Listen up, jump to hyperspace"* executes the jump without waking the app.
 - Change voice to [name]
 - List available voices.
 - Change personality to [Professional / Friendly / Unhinged / Rogue]. (cloud only)
@@ -240,11 +247,16 @@ Make sure you mention carrier, else it might think you are talking about the shi
 
 - Help with <topic> (e.g. Help with pirate missions <- will explain how pirate missions features work)
 
-## 💬 General Chat (Cloud LLMs only - local LLM will be stiff)
+## 💬 General Chat (Cloud LLMs only · Conversation Mode must be ON)
 
-Anything else! When no specific command or query matches, Elite Intel falls back to general conversation. Ask about game
-lore, real-world topics, your ship build, what to watch on Netflix - whatever. The AI's not just a command parser; it's
-a Sidekick.
+By default the app runs in **Strict Mode**: if input doesn't match a known command or query it is silently ignored.
+This is intentional — it prevents STT noise and background chatter from triggering random actions mid-flight.
+
+Enable **Conversation Mode** in the Settings tab to turn on free-form chat. When on, anything that doesn't match a
+command falls back to general conversation — game lore, real-world topics, ship builds, whatever. The AI is not just
+a command parser when you want it to be more.
+
+Local LLMs will respond but will be stiff. Cloud LLMs (Claude, OpenAI, xAI) are recommended for conversation.
 
 ---
 

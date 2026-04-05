@@ -1072,9 +1072,33 @@ public class NaturalSpeechIntegrationTest {
         return Stream.of("disembark");
     }
 
-/*
+
     @ParameterizedTest(name = "[{index}] \"{0}\"")
     @Order(235)
+    @MethodSource
+    void openCentralPanel(String input) throws InterruptedException {
+        assertRouted(input, SHOW_COMMANDER_PANEL.getAction());
+    }
+
+    static Stream<String> openCentralPanel() {
+        return Stream.of("Open commander panel", "open central panel", "open role panel");
+    }
+
+
+    @ParameterizedTest(name = "[{index}] \"{0}\"")
+    @Order(235)
+    @MethodSource
+    void openFighterPanel(String input) throws InterruptedException {
+        assertRouted(input, SHOW_FIGHTER_PANEL.getAction());
+    }
+
+    static Stream<String> openFighterPanel() {
+        return Stream.of("Open fighter panel", "show fighter", "display fighter panel", "fighter bay");
+    }
+
+/*
+    @ParameterizedTest(name = "[{index}] \"{0}\"")
+    @Order(236)
     @MethodSource
     void nonsense(String input) throws InterruptedException {
         assertRouted(input, IGNORE_NONSENSE.getAction());

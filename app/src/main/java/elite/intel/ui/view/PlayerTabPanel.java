@@ -147,6 +147,7 @@ public class PlayerTabPanel extends JPanel {
         playerAltNameField.setText(playerSession.getAlternativeName() != null ? playerSession.getAlternativeName() : "");
         journalDirField.setText(playerSession.getJournalPath().toString());
         bindingsDirField.setText(playerSession.getBindingsDir().toString());
+        conversationModeCheckBox.setSelected(systemSession.conversationalModeOn());
 
         List<ShipDao.Ship> ships = ShipManager.getInstance().getAllShips();
         ships.sort((a, b) -> {

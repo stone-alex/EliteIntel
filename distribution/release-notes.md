@@ -1,6 +1,12 @@
- - distance to bubble/earth adjustments
- - Stricter "Ignore non-sensical input" rule when NOT in conversation mode
+## Elite Intel v-0.0348-beta
 
+### bug fixes / features:
+
+- removed confidence param (no longer use, not provided by STT anymore).
+- distance to bubble/earth adjustments
+- Stricter "Ignore nonsensical input" rule when NOT in conversation mode
+- Updated tests.
+- Fixed ignore / and pass through keywords
 
 ## Elite Intel v-0.0348-beta
 

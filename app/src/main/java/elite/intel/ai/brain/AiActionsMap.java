@@ -123,7 +123,7 @@ public class AiActionsMap {
         map.put("show, open or display social panel", SHOW_SOCIAL_PANEL.getAction());
         map.put("show, open or display history panel", SHOW_HISTORY_PANEL.getAction());
         map.put("show, open or display squadron panel", SHOW_SQUADRON.getAction());
-        map.put("show, open or display commander panel", SHOW_COMMANDER_PANEL.getAction());
+        map.put("show, open or display commander, central, role panel,", SHOW_COMMANDER_PANEL.getAction());
         map.put("show, open or display fighter panel", SHOW_FIGHTER_PANEL.getAction());
         map.put("show, open or display crew panel", SHOW_CREW.getAction());
         map.put("show, open or display home panel", SHOW_INTERNAL_PANEL.getAction());

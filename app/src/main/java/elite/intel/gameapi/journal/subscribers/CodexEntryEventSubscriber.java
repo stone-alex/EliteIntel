@@ -104,12 +104,12 @@ public class CodexEntryEventSubscriber {
 
         if(playerSession.isDiscoveryAnnouncementOn()) {
             String instructions = """
-            Codex entry added. Provide essential summary.
+                    Database updated. 
+                    Provide essential summary.
             - Only facts, no speculation.
+                    - List Genus, payment and distance if provided.
             - If there is a warning announce it, else do not mention that there are no warnings.
             - Do not append any extra data.
-            - Be brief.
-            - Spell out numerals.
             - Round rewards in credits to nearest million.
             """;
             EventBusManager.publish(new SensorDataEvent(sb.toString(), instructions));

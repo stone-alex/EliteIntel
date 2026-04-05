@@ -591,6 +591,8 @@ public class InputNormalizer {
         SYNONYM_MAP.put("break over", "recover");
         SYNONYM_MAP.put("from seoul", "from sol");
         SYNONYM_MAP.put("seoul", "sol");
+        SYNONYM_MAP.put("roll", "role");
+
     }
 
     private InputNormalizer() {

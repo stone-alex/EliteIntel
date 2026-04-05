@@ -24,6 +24,11 @@ public class DisplayFssAndScanHandler implements CommandHandler {
             return;
         }
 
+        if (!status.isInSupercruise()) {
+            EventBusManager.publish(new AiVoxResponseEvent("We must be in supercruise to do that."));
+            return;
+        }
+
         String stop = BINDING_SET_SPEED_ZERO.getGameBinding();
         String fssControl = BINDING_EXPLORATION_FSSDISCOVERY_SCAN.getGameBinding();
 

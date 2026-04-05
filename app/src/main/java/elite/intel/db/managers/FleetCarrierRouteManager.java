@@ -1,9 +1,8 @@
 package elite.intel.db.managers;
 
-import elite.intel.db.dao.FleetCarrierDao;
-import elite.intel.search.spansh.carrierroute.CarrierJump;
 import elite.intel.db.dao.FleetCarrierRouteDao;
 import elite.intel.db.util.Database;
+import elite.intel.search.spansh.carrierroute.CarrierJump;
 
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +30,7 @@ public class FleetCarrierRouteManager {
 
 
     public void setFleetCarrierRoute(Map<Integer, CarrierJump> fleetCarrierRoute) {
+        if (fleetCarrierRoute == null || fleetCarrierRoute.isEmpty()) return;
         clear();
         Database.withDao(FleetCarrierRouteDao.class, dao -> {
 

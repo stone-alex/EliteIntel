@@ -7,9 +7,10 @@ import elite.intel.util.NavigationUtils;
 
 public class AnalyzeDistanceFromTheBubble extends BaseQueryAnalyzer implements QueryHandler {
 
+    private final LocationManager locationManager = LocationManager.getInstance();
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        //EventBusManager.publish(new AiVoxResponseEvent("Analyzing galactic coordinates. Stand by."));
-        LocationDao.Coordinates galacticCoordinates = LocationManager.getInstance().getGalacticCoordinates();
+
+        LocationDao.Coordinates galacticCoordinates = locationManager.getGalacticCoordinates();
 
         if (galacticCoordinates.x() == 0 && galacticCoordinates.y() == 0 && galacticCoordinates.z() == 0) {
             return process("Local Coordinates are not available.");

@@ -126,6 +126,7 @@ public class UINavigator {
         closePanel(panel);
         sleep(RANDOM_MAX);
         tracker.notifyEliteIntelClosedPanel();
+        state.resetToDefault();
     }
 
     // -------------------------------------------------------------------------

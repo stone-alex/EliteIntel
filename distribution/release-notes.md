@@ -1,3 +1,7 @@
+ - distance to bubble/earth adjustments
+ - Stricter "Ignore non-sensical input" rule when NOT in conversation mode
+
+
 ## Elite Intel v-0.0348-beta
 
 ### bug fixes / features:

@@ -52,28 +52,24 @@ Supported providers:
 
 | Provider         | Type            | Notes                                |
 |------------------|-----------------|--------------------------------------|
-| Ollama           | Local / offline | Runs on user hardware, zero API cost |
+| LMStudio         | Local / offline | Fast. Best choice                    |
+| Ollama           | Local / offline | Slow, unless you have the extra hardware |
 | Anthropic Claude | Cloud           | Sonnet / Haiku                       |
 | xAI Grok         | Cloud           | Fast non-reasoning model             |
 | OpenAI ChatGPT   | Cloud           | GPT-4 class                          |
+| Gemeni           | Cloud           | gemini-3.1-flash-lite-preview        |
 
 ### Dual-Model Local Inference
 
 When running against Ollama, the application uses **two separate models** for different
 cognitive loads:
 
-- **Command model** (e.g. `tulu3:8b`) - intent classification and ship control dispatch.
-  Smaller, faster, lower temperature. Optimised for latency on simple commands.
-- **Query model** (e.g. `qwen2.5:14b`) - data analysis, exploration summaries, multi-step
-  reasoning. Larger model tolerates higher latency in exchange for reasoning quality.
-
-This split avoids over-provisioning the command path with an expensive model while ensuring
-the analysis path has sufficient capacity.
+- **Action model** (e.g. `Tulu-3.1-8B-SuperNova-Q4_K_M`) - intent classification ship control, data analysis and queries.
 
 ### Temperature as a Design Parameter
 
-LLM temperature is a first-class configuration value tied to the user-selectable personality
-mode, not a hidden constant:
+(Cloud LLMs only)
+LLM temperature is a first-class configuration value tied to the user-selectable personality mode, not a hidden constant:
 
 | Personality  | Temperature | Behaviour                                   |
 |--------------|-------------|---------------------------------------------|
@@ -90,18 +86,13 @@ mode, not a hidden constant:
 
 Two STT backends are supported behind a common interface:
 
-- **Whisper** (local, offline) - bundled with the installer, no API key required
-- **Google Cloud STT** (cloud) - higher accuracy, especially on domain-specific vocabulary
+- **Parakeet** (local, offline) - bundled with the installer, no API key required
 
-A **STT correction dictionary** handles domain-specific vocabulary that general-purpose
-STT models misrecognise. *Elite Dangerous* has hundreds of commodity and system names that
-are phonetically ambiguous. The dictionary supports user-extensible entries in the form
-`"misrecognised_word"="intended_term"`, allowing the community to contribute corrections.
 
 ### TTS (Text-to-Speech)
 
-- **Piper TTS** (local, offline) - runs as a local HTTP server on port 5000, integrated via
-  REST. No API key, no cloud dependency, sub-100ms synthesis latency on modern hardware.
+- **Kokoro** (local, offline) - JNI Invocation 0 network traffic - bundled with the installer, no API key required
+
 - **Google Cloud TTS** (cloud) - 14 voices across British, American, and Australian accents,
   selected at runtime via voice command.
 
@@ -149,14 +140,11 @@ API keys for cloud providers are stored **encrypted in a local SQLite database**
 never logged, never transmitted except in request headers to the configured provider
 endpoint, and never leave the user's machine in any other form.
 
-### Streaming Mode / Privacy Mode
+### Sleep / Wake Mode
 
-- **Streaming mode** - the application ignores all audio input unless prefixed with a
-  configurable wake word (default: "Computer"). STT still transcribes continuously in this
-  mode, which has token cost implications the user is informed of.
-- **Privacy mode** - STT is disabled completely. No audio is captured or transmitted.
-  Cannot be toggled by voice command; requires manual UI interaction to prevent accidental
-  re-activation.
+- Wake mode - the app will listen to your every word and try to interpret it as a command. However, there is a check box on the Player tab. When UNCHECKED it makes the app ignore anything that it can't map to an action. So you can say things during game play and **for the most part** the app will only respond to a clear command or a query that is implemented.
+- Sleep mode - the app will ignore you completely except when you say "Wake Up" to return it to wake mode, or "Listen Up" followed by your request. "Listen Up" is a one-time by-pass of the sleep mode.
+
 
 ### No Game Memory Access
 

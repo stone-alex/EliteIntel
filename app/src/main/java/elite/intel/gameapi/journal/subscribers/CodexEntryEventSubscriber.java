@@ -107,8 +107,8 @@ public class CodexEntryEventSubscriber {
                     Database updated. 
                     Provide essential summary.
             - Only facts, no speculation.
-                    - List Genus, payment and distance if provided.
-            - If there is a warning announce it, else do not mention that there are no warnings.
+                    - IF entry is about organics: List Genus, payment and distance if provided.
+                    - IF there is a warning announce it, else do not mention that there are no warnings.
             - Do not append any extra data.
             - Round rewards in credits to nearest million.
             """;

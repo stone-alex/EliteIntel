@@ -128,7 +128,7 @@ public class ScanOrganicSubscriber {
             List<ExoBio.DataDto> completedSpecies = completedScansForPlanet(playerSession.getBioCompletedSamples(), currentLocation.getPlanetName());
             List<GenusDto> remainingSpecies = calculateGenusNotYetScanned(completedSpecies, allSpecies);
             if (remainingSpecies.isEmpty()) {
-                sb.append(" All genus scanned. ");
+                sb.append(" Organic survey complete for this planet.");
             } else {
                 sb.append(" Remaining genus: ");
                 for (GenusDto entry : remainingSpecies) {

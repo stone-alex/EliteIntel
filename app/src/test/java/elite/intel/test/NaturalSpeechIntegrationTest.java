@@ -1096,6 +1096,18 @@ public class NaturalSpeechIntegrationTest {
         return Stream.of("Open fighter panel", "show fighter", "display fighter panel", "fighter bay");
     }
 
+
+    @ParameterizedTest(name = "[{index}] \"{0}\"")
+    @Order(236)
+    @MethodSource
+    void fighterOpenOrders(String input) throws InterruptedException {
+        assertRouted(input, FIGHTER_OPEN_ORDERS.getAction());
+    }
+
+    static Stream<String> fighterOpenOrders() {
+        return Stream.of("fighter open orders", "fire at will", "attack");
+    }
+
 /*
     @ParameterizedTest(name = "[{index}] \"{0}\"")
     @Order(236)

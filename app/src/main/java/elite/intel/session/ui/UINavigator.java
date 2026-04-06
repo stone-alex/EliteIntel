@@ -89,6 +89,7 @@ public class UINavigator {
 
     public void closeOpenPanel() {
 
+
         StatusFlags.GuiFocus lastOpened = tracker.getLastOpenedPanel();
         if (lastOpened != null) {
             closeAndRestore(lastOpened);
@@ -103,11 +104,8 @@ public class UINavigator {
             GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.EXPLORATION_SAAEXIT_THIRD_PERSON.getGameBinding(), 0));
         }
 
-        /// traverse out of all nested windows - has no negative effect if we are out of the nested menus / views
-        if (status.isGalaxyMapOpen() || status.isSystemMapOpen() || status.isSaaModeActive()) {
-            for (int i = 0; i < 5; i++) {
-                GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_EXIT_KEY.getGameBinding(), 0));
-            }
+        for (int i = 0; i < 10; i++) {
+            GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_EXIT_KEY.getGameBinding(), 0));
         }
     }
 

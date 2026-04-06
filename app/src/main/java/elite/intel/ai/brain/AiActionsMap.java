@@ -6,7 +6,6 @@ import elite.intel.session.SystemSession;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static elite.intel.ai.brain.Reducer.formatActions;
 import static elite.intel.ai.brain.commons.AiEndPoint.CONNECTION_CHECK_COMMAND;
 import static elite.intel.ai.brain.handlers.commands.Commands.*;
 import static elite.intel.ai.brain.handlers.query.Queries.*;
@@ -25,6 +24,20 @@ public class AiActionsMap {
         return INSTANCE;
     }
 
+    /**
+     * Creates and returns a mapping of user actions to their associated commands.
+     * The method initializes a map configured with numerous commands for controlling
+     * navigation, speed, flight systems, market functions, fleet carrier operations,
+     * trade profile configurations, announcements, app settings, and UI panel controls.
+     * Each key in the map contains a string that represents various user inputs,
+     * while the value is the associated command string to perform the expected action.
+     * <p>
+     * This map supports multiple aliases for actions, allowing flexible voice command
+     * recognition and user interaction.
+     *
+     * @return A map of user input strings to corresponding command strings, represented
+     * as a mapping between keys (user input phrases) and values (command actions).
+     */
     public Map<String, String> actionMap() {
         Map<String, String> map = new LinkedHashMap<>();
 
@@ -191,12 +204,9 @@ public class AiActionsMap {
             map.put("order fighter attack my target, fighter attack, sic fighter on target", FIGHTER_REQUEST_FOCUS_TARGET.getAction());
             map.put("order fighter hold fire, fighter cease fire, fighter stand down", FIGHTER_REQUEST_HOLD_FIRE.getAction());
             map.put("order fighter return to ship, fighter dock, recall fighter", FIGHTER_REQUEST_REQUEST_DOCK.getAction());
+            map.put("fighter open orders, fire at will, attack", FIGHTER_OPEN_ORDERS.getAction());
         }
 
-        // queries
-        if (!systemSession.useLocalQueryLlm()) {
-            //map.put("help with topic {key:X}", HELP.getAction());
-        }
         map.put("check key bindings, missing key bindings, unbound keys, keyboard bindings, keybind check, missing bindings", KEY_BINDINGS_ANALYSIS.getAction());
         map.put("bio signals done within the star system, organics scanned in star system, how many bio samples in star system, bio signals in system, bio samples in star system, biological signals in star system, organics in system, which planets have bio signals, which planets still need bio scans, which planets need organic scans, which planets still need scanning, bio scan needed on which planets, planets with unscanned bio signals, bio scan progress", BIO_SAMPLE_IN_STAR_SYSTEM.getAction());
         map.put("exobiology samples, biology samples, organics at location, what organisms, what's left to scan, remaining organisms, samples left, organisms remaining, exobiology progress, scan remaining, what bio scans completed, what bio scans have we completed, bio scans done, bio scans completed, organics on this planet, biology on this planet, what organisms are here, what organisms are on this planet, bio sample progress on planet, what's been scanned here, what organics do we still have to scan, what organics still to scan, organics still to scan, organics remaining to scan, organics left to scan, what organics remain, biology still to scan, what biology remains, what do we still need to scan here", EXOBIOLOGY_SAMPLES.getAction());
@@ -246,12 +256,5 @@ public class AiActionsMap {
         map.put(CONNECTION_CHECK_COMMAND, CONNECTION_CHECK.getAction());
 
         return map;
-    }
-
-    /**
-     * Returns the full unfiltered action list (used by capability queries).
-     */
-    public String getActions() {
-        return formatActions(actionMap());
     }
 }

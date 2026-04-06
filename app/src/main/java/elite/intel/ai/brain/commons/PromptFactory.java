@@ -28,6 +28,16 @@ public class PromptFactory implements AiPromptFactory {
         return INSTANCE;
     }
 
+    /**
+     * Generates a system prompt based on the given raw user input and the current session configuration.
+     * The generated prompt provides a strict command parsing guideline to ensure correct action classification
+     * and JSON formatting based on specific contextual rules.
+     *
+     * @param rawUserInput The raw input string provided by the user, which will be normalized
+     *                     and used to generate the system prompt.
+     * @return A formatted string containing the system prompt with detailed classification and
+     * handling rules for parsing user inputs into structured JSON actions.
+     */
     @Override
     public String generateUserInputSystemPrompt(String rawUserInput) {
         String normalizedInput = normalizer.normalize(rawUserInput);
@@ -156,6 +166,7 @@ public class PromptFactory implements AiPromptFactory {
                   - "lights on"                → {"action": "toggle_lights_on_off", "params": {"state": true}}
                   - "find gold within 80 ly"   → {"action": "find_commodity", "params": {"key": "gold", "max_distance": "80"}}
                 """);
+
         /// NOTE the number of actions is reduced based on the user input. If reduction is not possible, the full map is returned.
         Map<String, String> reduced = Reducer.reduce(normalizedInput, actionsMap.actionMap());
         if (!systemSession.conversationalModeOn() && !reduced.containsKey("ignore_nonsensical_input")) {

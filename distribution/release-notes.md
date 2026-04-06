@@ -1,3 +1,19 @@
+## Elite Intel v-0.0350-beta
+
+### bug fixes / features:
+- basic on-foot commands (wheel)
+- Show/Open: Commander/Role/Central panel should open the central panel on the top tab.
+- Deploy SRV / Deploy vehicle / deploy buggy should launch vehicle
+- Disembark (and only disembar) will put you on foot.
+- deploy fighter, launch fighter, send out fighter
+
+- order fighter defend ship, fighter defend, fighter defensive
+- order fighter attack my target, fighter attack, fighter on target
+- order fighter hold fire, fighter cease fire, fighter stand down",
+- order fighter return to ship, fighter dock, recall fighter
+- Fire at Will!, Attack! (that's open orders, but can't use word "open", or it will think it needs to open something on UI)
+
+
 ## Elite Intel v-0.0348-beta
 
 ### bug fixes / features:

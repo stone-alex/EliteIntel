@@ -101,6 +101,7 @@ public class Bindings {
         BINDING_REQUEST_FOCUS_TARGET("OrderFocusTarget"),
         BINDING_REQUEST_HOLD_FIRE("OrderHoldFire"),
         BINDING_REQUEST_REQUEST_DOCK("OrderRequestDock"),
+        OPEN_ORDERS("OpenOrders"),
 
         BINDING_SELECT_TARGETS_TARGET("SelectTargetsTarget"),
 

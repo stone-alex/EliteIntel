@@ -121,7 +121,7 @@ public enum Commands {
     SHOW_TRANSACTIONS                                   ("show_transactions_panel", null, OpenTransactionHandler.class),
     SHOW_CONTACTS                                       ("show_contacts_panel", null, OpenContactsHandler.class),
     SHOW_NAVIGATION                                     ("show_navigation_panel", null, OpenNavigationHandler.class),
-    SHOW_CHAT_PANEL                                     ("show_chat_panel", null, OpenCommsPanelHandler.class   ),
+    SHOW_CHAT_PANEL                                     ("show_chat_comms_panel", null, OpenCommsPanelHandler.class   ),
     SHOW_INBOX_PANEL                                    ("show_email_inbox_panel", null, OpenInboxPenalHandler.class),
     SHOW_SOCIAL_PANEL                                   ("show_social_panel", null, OpenSocialPanelHandler.class),
     SHOW_HISTORY_PANEL                                  ("show_history_panel", null, OpenHistoryPanelHandler.class),

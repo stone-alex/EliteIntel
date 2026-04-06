@@ -9,6 +9,9 @@ import elite.intel.session.Status;
 import elite.intel.session.StatusFlags;
 import elite.intel.session.ui.CommsPanel;
 import elite.intel.session.ui.UINavigator;
+import elite.intel.util.SleepNoThrow;
+
+import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.*;
 
 public class OpenHistoryPanelHandler implements CommandHandler {
 
@@ -22,6 +25,14 @@ public class OpenHistoryPanelHandler implements CommandHandler {
         if (status.isInMainShip() || status.isInFighter()) {
             GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_TARGET_NEXT_ROUTE_SYSTEM.getGameBinding(), 0));
             navigator.openAndNavigate(StatusFlags.GuiFocus.COMMS_PANEL, CommsPanel.HISTORY);
+        } else if (status.isOnFoot()) {
+            GameControllerBus.publish(new GameInputEvent(BINDING_ON_FOOT_WHEEL.getGameBinding(), 500));
+            SleepNoThrow.sleep(500);
+            GameControllerBus.publish(new GameInputEvent(BINDING_UI_UP.getGameBinding(), 0));
+            GameControllerBus.publish(new GameInputEvent(BINDING_ACTIVATE.getGameBinding(), 0));
+            GameControllerBus.publish(new GameInputEvent(BINDING_CYCLE_NEXT_PANEL.getGameBinding(), 0));
+            GameControllerBus.publish(new GameInputEvent(BINDING_CYCLE_NEXT_PANEL.getGameBinding(), 0));
+            GameControllerBus.publish(new GameInputEvent(BINDING_CYCLE_NEXT_PANEL.getGameBinding(), 0));
         } else {
             EventBusManager.publish(new AiVoxResponseEvent("Sorry, I can't do that right now."));
         }

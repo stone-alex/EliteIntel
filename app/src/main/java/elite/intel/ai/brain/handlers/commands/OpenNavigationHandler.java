@@ -7,6 +7,9 @@ import elite.intel.session.Status;
 import elite.intel.session.StatusFlags;
 import elite.intel.session.ui.LeftPanel;
 import elite.intel.session.ui.UINavigator;
+import elite.intel.util.SleepNoThrow;
+
+import static elite.intel.ai.brain.handlers.commands.Bindings.GameCommand.*;
 
 public class OpenNavigationHandler implements CommandHandler {
 
@@ -17,8 +20,16 @@ public class OpenNavigationHandler implements CommandHandler {
     @Override
     public void handle(String action, JsonObject params, String responseText) {
         if (status.isInMainShip() || status.isInSrv() || status.isInFighter()) {
-            GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_TARGET_NEXT_ROUTE_SYSTEM.getGameBinding(), 0));
             navigator.openAndNavigate(StatusFlags.GuiFocus.EXTERNAL_PANEL, LeftPanel.NAVIGATION);
+        } else if (status.isOnFoot()) {
+            GameControllerBus.publish(new GameInputEvent(BINDING_ON_FOOT_WHEEL.getGameBinding(), 500));
+            SleepNoThrow.sleep(500);
+            GameControllerBus.publish(new GameInputEvent(BINDING_UI_LEFT.getGameBinding(), 0));
+            GameControllerBus.publish(new GameInputEvent(BINDING_UI_UP.getGameBinding(), 0));
+            GameControllerBus.publish(new GameInputEvent(BINDING_UI_UP.getGameBinding(), 0));
+            GameControllerBus.publish(new GameInputEvent(BINDING_UI_UP.getGameBinding(), 0));
+            GameControllerBus.publish(new GameInputEvent(BINDING_UI_UP.getGameBinding(), 0));
+            GameControllerBus.publish(new GameInputEvent(BINDING_ACTIVATE.getGameBinding(), 0));
         }
     }
 }

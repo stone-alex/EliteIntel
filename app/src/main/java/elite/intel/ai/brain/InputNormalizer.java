@@ -118,6 +118,7 @@ public class InputNormalizer {
         SYNONYM_MAP.put("lightspeed", "enter supercruise");
         SYNONYM_MAP.put("drop ftl", "drop from supercruise");  // must be before "ftl" → enter supercruise
         SYNONYM_MAP.put("ftl", "enter supercruise");
+        SYNONYM_MAP.put("f t l", "enter supercruise");
         SYNONYM_MAP.put("supercruise", "enter supercruise");
         SYNONYM_MAP.put("super cruise", "enter supercruise");
         SYNONYM_MAP.put("leave supercruise", "drop out");
@@ -592,6 +593,7 @@ public class InputNormalizer {
         SYNONYM_MAP.put("from seoul", "from sol");
         SYNONYM_MAP.put("seoul", "sol");
         SYNONYM_MAP.put("roll", "role");
+        SYNONYM_MAP.put("career", "carrier");
 
     }
 

@@ -141,26 +141,34 @@ public class AiActionsMap {
         map.put("show, open or display social panel", SHOW_SOCIAL_PANEL.getAction());
         map.put("show, open or display history panel", SHOW_HISTORY_PANEL.getAction());
         map.put("show, open or display squadron panel", SHOW_SQUADRON.getAction());
-        map.put("show, open or display commander, central, role panel,", SHOW_COMMANDER_PANEL.getAction());
-        map.put("show, open or display fighter panel", SHOW_FIGHTER_PANEL.getAction());
-        map.put("show, open or display crew panel", SHOW_CREW.getAction());
-        map.put("show, open or display home panel", SHOW_INTERNAL_PANEL.getAction());
-        map.put("show, open or display modules panel", SHOW_MODULES_PANEL.getAction());
-        map.put("show, open or display fire groups", SHOW_FIRE_GROUPS.getAction());
-        map.put("show, open or display inventory panel", SHOW_INVENTORY_PANEL.getAction());
-        map.put("show, open or display storage panel", SHOW_STORAGE_PANEL.getAction());
+        if (status.isInMainShip()) {
+            map.put("show, open or display fighter panel", SHOW_FIGHTER_PANEL.getAction());
+        }
+        if (status.isInSrv() || status.isInMainShip()) {
+            map.put("show, open or display commander, central, role panel,", SHOW_COMMANDER_PANEL.getAction());
+            map.put("show, open or display crew panel", SHOW_CREW.getAction());
+            map.put("show, open or display home panel", SHOW_INTERNAL_PANEL.getAction());
+            map.put("show, open or display modules panel", SHOW_MODULES_PANEL.getAction());
+            map.put("show, open or display fire groups", SHOW_FIRE_GROUPS.getAction());
+            map.put("show, open or display inventory panel", SHOW_INVENTORY_PANEL.getAction());
+            map.put("show, open or display storage panel", SHOW_STORAGE_PANEL.getAction());
+        }
+
         map.put("show, open or display status panel", SHOW_STATUS_PANEL.getAction());
         map.put("show, open or display carrier management panel", DISPLAY_CARRIER_MANAGEMENT.getAction());
         map.put("show, open or display galaxy map", OPEN_GALAXY_MAP.getAction());
         map.put("show, open or display local / stat system map", OPEN_SYSTEM_MAP.getAction());
+
         if (status.isInMainShip()) {
             map.put("show, open or display station services panel", SHOW_STATION_SERVICES.getAction());
         }
         map.put("exit close panel", EXIT_CLOSE.getAction());
-        map.put("power to shields, max shields, boost shields", INCREASE_SHIELDS_POWER.getAction());
-        map.put("power to engines, max engines, boost engines", INCREASE_ENGINES_POWER.getAction());
-        map.put("power to weapons, max weapons, boost weapons", INCREASE_WEAPONS_POWER.getAction());
 
+        if (status.isInMainShip() || status.isInSrv()) {
+            map.put("power to shields, max shields, boost shields", INCREASE_SHIELDS_POWER.getAction());
+            map.put("power to engines, max engines, boost engines", INCREASE_ENGINES_POWER.getAction());
+            map.put("power to weapons, max weapons, boost weapons", INCREASE_WEAPONS_POWER.getAction());
+        }
         // pirate massacre missions
         map.put("navigate to mission provider system", RECON_PROVIDER_SYSTEM.getAction());
         map.put("navigate to pirate mission provider", NAVIGATE_TO_PIRATE_MISSION_PROVIDER.getAction());
@@ -170,19 +178,22 @@ public class AiActionsMap {
         map.put("recon hunting ground", RECON_TARGET_SYSTEM.getAction());
         map.put("ignore hunting ground", IGNORE_HUNTING_GROUND.getAction());
         map.put("confirm hunting ground", CONFIRM_HUNTING_GROUND.getAction());
-        map.put("deploy hardpoints, weapons hot, combat ready, weapons free, weapons out, arm weapons, weapons ready", DEPLOY_HARDPOINTS.getAction());
-
+        if (status.isInMainShip()) {
+            map.put("deploy hardpoints, weapons hot, combat ready, weapons free, weapons out, arm weapons, weapons ready", DEPLOY_HARDPOINTS.getAction());
+        }
         // vehicle deployment
         if (status.isInMainShip()) {
             map.put("deploy SRV, deploy vehicle, launch SRV, send out SRV, drop SRV", DEPLOY_SRV.getAction());
+            map.put("retract hardpoints, weapons cold, weapons away, stand down, holster weapons, weapons down, safe weapons", RETRACT_HARDPOINTS.getAction());
+            map.put("deploy heat sink, launch heat sink, dump heat", DEPLOY_HEAT_SINK.getAction());
         }
         if (status.isInSrv()) {
             map.put("recover SRV, board ship, return SRV, retrieve SRV, SRV dock", RECOVER_SRV.getAction());
         }
-        map.put("disembark", DISEMBARK.getAction());
-        map.put("deploy heat sink, launch heat sink, dump heat", DEPLOY_HEAT_SINK.getAction());
-        map.put("equalize power, balance power, reset power, distribute power equally", RESET_POWER.getAction());
-        map.put("retract hardpoints, weapons cold, weapons away, stand down, holster weapons, weapons down, safe weapons", RETRACT_HARDPOINTS.getAction());
+        if (status.isInSrv() || status.isInMainShip()) {
+            map.put("disembark", DISEMBARK.getAction());
+            map.put("equalize power, balance power, reset power, distribute power equally", RESET_POWER.getAction());
+        }
 
         // science / mining / biology
         map.put("add mining target {key:X}", ADD_MINING_TARGET.getAction());
@@ -198,14 +209,15 @@ public class AiActionsMap {
         map.put("delete codex entry, delete this codex, delete this entry, delete this organic", DELETE_CODEX_ENTRY.getAction());
 
         // combat
-        map.put("target fsd {key:fsd}, target engines {key:drive}, target Power Distributor {key:power distributor} target power plant {key:powerplant}, target powerplant {key:powerplant}, target life support {key:life support}, ", TARGET_SUB_SYSTEM.getAction());
-        map.put("target wingman 1, wingman alpha", TARGET_WINGMAN0.getAction());
-        map.put("target wingman 2, wingman bravo", TARGET_WINGMAN1.getAction());
-        map.put("target wingman 3, wingman charlie", TARGET_WINGMAN2.getAction());
-        map.put("wing nav lock, lock wingman nav, follow wingman", WING_NAV_LOCK.getAction());
-        map.put("priority target, target highest threat, target most dangerous, select hostile, next enemy, select enemy", SELECT_HIGHEST_THREAT.getAction());
-
-        // fighter
+        if (status.isInMainShip()) {
+            map.put("target fsd {key:fsd}, target engines {key:drive}, target Power Distributor {key:power distributor} target power plant {key:powerplant}, target powerplant {key:powerplant}, target life support {key:life support}, ", TARGET_SUB_SYSTEM.getAction());
+            map.put("target wingman 1, wingman alpha", TARGET_WINGMAN0.getAction());
+            map.put("target wingman 2, wingman bravo", TARGET_WINGMAN1.getAction());
+            map.put("target wingman 3, wingman charlie", TARGET_WINGMAN2.getAction());
+            map.put("wing nav lock, lock wingman nav, follow wingman", WING_NAV_LOCK.getAction());
+            map.put("priority target, target highest threat, target most dangerous, select hostile, next enemy, select enemy", SELECT_HIGHEST_THREAT.getAction());
+        }
+        // fighter orders
         if (status.isInMainShip()) {
             map.put("deploy fighter, launch fighter, send out fighter", DEPLOY_FIGHTER.getAction());
             map.put("order fighter defend ship, fighter defend, fighter defensive", FIGHTER_REQUEST_DEFENSIVE_BEHAVIOUR.getAction());

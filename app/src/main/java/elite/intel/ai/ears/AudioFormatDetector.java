@@ -22,7 +22,7 @@ public class AudioFormatDetector {
 
     private static final Logger log = LogManager.getLogger(AudioFormatDetector.class);
     private static final int CHANNELS = 1; // Mono
-    private static final int[] POSSIBLE_RATES = {48000, 44100, 16000}; // Preferred rates in order
+    private static final int[] POSSIBLE_RATES = {192000, 96000, 48000, 44100, 16000}; // Preferred rates in order
     private static final double BUFFER_DURATION_SECONDS = 0.1; // 100ms buffer
     private static final int BYTES_PER_SAMPLE = 2; // 16-bit = 2 bytes
 

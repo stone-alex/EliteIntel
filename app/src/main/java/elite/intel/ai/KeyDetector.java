@@ -41,7 +41,7 @@ public class KeyDetector {
             Map.entry(ProviderEnum.OPENAI, Pattern.compile("^sk-[a-zA-Z0-9_-]{161}$")),
             Map.entry(ProviderEnum.GOOGLE_STT, Pattern.compile("^AIzaSy[a-zA-Z0-9_-]{33}$")),
             Map.entry(ProviderEnum.GOOGLE_TTS, Pattern.compile("^AIzaSy[a-zA-Z0-9_-]{33}$")),
-            Map.entry(ProviderEnum.GOOGLE_LLM, Pattern.compile("^AIzaSy[a-zA-Z0-9_-]{33}$")),
+            Map.entry(ProviderEnum.GEMENI, Pattern.compile("^AIzaSy[a-zA-Z0-9_-]{33}$")),
             Map.entry(ProviderEnum.ANTHROPIC, Pattern.compile("^sk-ant-api\\d{2}-[a-zA-Z0-9_-]{93,97}$")),
             Map.entry(ProviderEnum.AWS_LLM, Pattern.compile("^(AKIA|ASIA)[A-Z0-9]{16}$")),
             Map.entry(ProviderEnum.AWS_STT, Pattern.compile("^(AKIA|ASIA)[A-Z0-9]{16}$")),

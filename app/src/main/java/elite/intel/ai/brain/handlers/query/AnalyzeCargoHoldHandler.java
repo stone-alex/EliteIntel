@@ -25,7 +25,11 @@ public class AnalyzeCargoHoldHandler extends BaseQueryAnalyzer implements QueryH
                 - If asked about cargo capacity: state the cargoCapacity value in tons.
                 - No follow-up questions.
                 """;
-        return process(new AiDataStruct(instructions, new DataDto(playerSession.getShipLoadout().getCargoCapacity(), playerSession.getShipCargo())), originalUserInput);
+        return process(new AiDataStruct(
+                        instructions,
+                        new DataDto(playerSession.getShipLoadout().getCargoCapacity(), playerSession.getShipCargo())),
+                originalUserInput
+        );
     }
 
     record DataDto(int cargoCapacity, ToYamlConvertable cargo) implements ToYamlConvertable {

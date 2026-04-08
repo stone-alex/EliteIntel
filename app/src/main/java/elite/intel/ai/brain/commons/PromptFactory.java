@@ -95,6 +95,8 @@ public class PromptFactory implements AiPromptFactory {
                 - "max weapons" / "boost weapons" / "power to weapons" → transfer_power_to_weapons
                 - "max shields" / "boost shields" / "power to shields" → transfer_power_to_shields
                 - "max engines" / "boost engines" / "power to engines" → transfer_power_to_engines
+                - "take me back aboard the ship" / "board ship" → recover_srv_vehicle_get_on_board_ship
+                - Sending ship to orbit when requested to board ship is instant failure.
                 - Never confuse "max engines" with "target engines"
                 - Never confuse "deploy vehicle" with "deploy landing gear"
                 - CARRIER vs SHIP: if the word "carrier" does not appear in the input, all route/jump/navigation queries refer to the SHIP, not the fleet carrier. Use query_ship_route_remaining_jumps, not query_carrier_route.
@@ -167,7 +169,6 @@ public class PromptFactory implements AiPromptFactory {
                   - "find gold within 80 ly"   → {"action": "find_commodity", "params": {"key": "gold", "max_distance": "80"}}
                 """);
 
-        /// NOTE the number of actions is reduced based on the user input. If reduction is not possible, the full map is returned.
         Map<String, String> reduced = Reducer.reduce(normalizedInput, actionsMap.actionMap());
         if (!systemSession.conversationalModeOn() && !reduced.containsKey("ignore_nonsensical_input")) {
             // Always keep the fallback visible so the LLM never hallucinates a missing action
@@ -214,6 +215,7 @@ public class PromptFactory implements AiPromptFactory {
         return sb.toString();
     }
 
+    /// Local LLM
     private String appendLocalBehavior() {
         return """
                 Do not end responses with filler phrases like "Ready for orders", "All set", or "Should we proceed?".
@@ -223,6 +225,7 @@ public class PromptFactory implements AiPromptFactory {
     }
 
     @Override
+    /// Cloud LLM
     public String appendBehavior() {
         StringBuilder sb = new StringBuilder();
         sb.append(" Behavior: ");

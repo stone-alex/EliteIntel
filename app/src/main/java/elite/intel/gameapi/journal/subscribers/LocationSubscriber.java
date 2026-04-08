@@ -39,7 +39,7 @@ public class LocationSubscriber {
         dto.setSecondEconomy(event.getSystemSecondEconomyLocalised());
         dto.setLocationType(LocationDto.determineType(event.getBodyType().toLowerCase(Locale.ROOT), event.getDistFromStarLS() > 0));
 
-        //TODO: Need a util to figure what type of location this is.
+
         dto.setStationType(event.getStationType());
         if ("FleetCarrier".equalsIgnoreCase(event.getStationType())) {
             dto.setLocationType(LocationDto.LocationType.FLEET_CARRIER);

@@ -62,7 +62,7 @@ public class ApiFactory {
             case GROK -> GrokAnalysisEndpoint.getInstance();
             case OPENAI -> OpenAiAnalysisEndPoint.getInstance();
             case ANTHROPIC -> AnthropicAnalysisEndpoint.getInstance();
-            case GOOGLE_LLM -> GeminiAnalysisEndpoint.getInstance();
+            case GEMENI -> GeminiAnalysisEndpoint.getInstance();
             default -> OllamaAnalysisEndpoint.getInstance();
         };
 
@@ -83,7 +83,7 @@ public class ApiFactory {
             case GROK -> GrokChatEndPoint.getInstance();
             case OPENAI -> OpenAiChatEndPoint.getInstance();
             case ANTHROPIC -> AnthropicUserEndPoint.getInstance();
-            case GOOGLE_LLM -> GeminiChatEndPoint.getInstance();
+            case GEMENI -> GeminiChatEndPoint.getInstance();
             default -> OllamaCommandEndPoint.getInstance();
         };
     }
@@ -118,7 +118,7 @@ public class ApiFactory {
             case GROK -> GrokCommandEndPoint.getInstance();
             case OPENAI -> OpenAiCommandEndPoint.getInstance();
             case ANTHROPIC -> AnthropicCommandEndPoint.getInstance();
-            case GOOGLE_LLM -> GeminiCommandEndPoint.getInstance();
+            case GEMENI -> GeminiCommandEndPoint.getInstance();
             default -> OllamaUserInputProcessor.getInstance();
         };
     }

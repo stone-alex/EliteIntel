@@ -11,7 +11,7 @@ public enum ProviderEnum {
     GROK("LLM"),
     GOOGLE_STT("STT"),
     GOOGLE_TTS("TTS"),
-    GOOGLE_LLM("LLM"),
+    GEMENI("LLM"),
     OPENAI("LLM"),
     ANTHROPIC("LLM"),
     AWS_LLM("LLM"),

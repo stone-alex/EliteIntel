@@ -171,25 +171,9 @@ public class ParakeetSTTImpl implements EarsInterface {
         OfflineRecognizerConfig.Builder configBuilder = OfflineRecognizerConfig.builder()
                 .setFeatureConfig(featureConfig)
                 .setOfflineModelConfig(modelConfig)
-                .setDecodingMethod("greedy_search") /// does not support hotwords
+                .setDecodingMethod("greedy_search")
                 .setMaxActivePaths(50)  /// slightly slower, but more accurate
                 .setBlankPenalty(-2.0f); /// low value prevents trash in transcriptions for short utterances
-
-        /// Experimental support. Causes hangs and occasional crashes
-//        Path hotwordsFile = modelDir.resolve("hotwords.txt");
-//        if (Files.exists(hotwordsFile)) {
-//            try {
-//                HotwordEncoder encoder = new HotwordEncoder(tokensFile);
-//                Path encodedHotwords = encoder.encodeFile(hotwordsFile);
-//                configBuilder.setHotwordsFile(encodedHotwords.toString());
-//                configBuilder.setDecodingMethod("modified_beam_search");
-//                configBuilder.setBlankPenalty(0.00f);
-//                configBuilder.setHotwordsScore(1.0f);
-//            } catch (Exception e) {
-//                log.warn("Failed to encode hotwords, running without hotword boosting: {} {}", e.getClass().getSimpleName(), e.getMessage());
-//            }
-//        }
-
         return new OfflineRecognizer(configBuilder.build());
     }
 
@@ -249,7 +233,8 @@ public class ParakeetSTTImpl implements EarsInterface {
                 double rms = calculateRMS(audio, audioLen);
 
                 publish(new AudioMonitorEvent(
-                        copyOf(audio, audioLen), audioLen, rms, NOISE_FLOOR, RMS_THRESHOLD_HIGH));
+                        copyOf(audio, audioLen), audioLen, rms, NOISE_FLOOR, RMS_THRESHOLD_HIGH)
+                );
 
                 preRoll.addLast(copyOf(audio, audioLen));
                 if (preRoll.size() > PRE_ROLL_FRAMES) preRoll.removeFirst();

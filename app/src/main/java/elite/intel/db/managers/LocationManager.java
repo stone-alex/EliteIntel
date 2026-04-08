@@ -109,7 +109,7 @@ public class LocationManager {
 
     public LocationDto findByStatus(GameEvents.StatusEvent.Destination destination) {
         return Database.withDao(LocationDao.class, dao -> {
-            LocationDao.Location location = dao.findBySystemAddresAndInGameId(destination.getSystem(), destination.getBody());
+            LocationDao.Location location = dao.findBySystemAddressAndInGameId(destination.getSystem(), destination.getBody());
             return location == null ? new LocationDto(-1L) : GsonFactory.getGson().fromJson(location.getJson(), LocationDto.class);
         });
     }

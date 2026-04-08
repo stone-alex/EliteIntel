@@ -33,7 +33,7 @@ public interface LocationDao {
 
 
     @SqlQuery("select * from location where inGameId = 1 and json like '%\":systemId\"%'")
-    LocationDao.Location findBySystemAddresAndInGameId(@Bind("systemId") Long systemId, @Bind("inGameId") Long inGameId);
+    LocationDao.Location findBySystemAddressAndInGameId(@Bind("systemId") Long systemId, @Bind("inGameId") Long inGameId);
 
     @SqlQuery("SELECT * FROM location WHERE inGameId = :inGameId AND :primaryStar = primaryStar")
     LocationDao.Location findByInGameIdAndPrimaryStar(Long inGameId, String primaryStar);

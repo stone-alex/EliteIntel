@@ -9,7 +9,7 @@ import com.google.common.eventbus.EventBus;
  * blocks or is blocked by STT/TTS/LLM/journal traffic.
  * <p>
  * Synchronous (not async) by design: keystroke sequences rely on the caller
- * blocking between publishes while sleeping, so fire-and-forget would break timing.
+ * blocking between publishing while sleeping, so fire-and-forget would break timing.
  */
 public class GameControllerBus {
     private static final EventBus bus = new EventBus("game-controller");

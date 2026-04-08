@@ -59,10 +59,7 @@ public class LMStudioAnalysisEndpoint extends AiEndPoint implements AiAnalysisIn
 
             JsonObject systemMsg = new JsonObject();
             systemMsg.addProperty("role", AIConstants.ROLE_SYSTEM);
-            systemMsg.addProperty("content",
-                    apiFactory.getAiPromptFactory().generateAnalysisPrompt()
-                            + "\n "
-                            + struct.getInstructions());
+            systemMsg.addProperty("content", apiFactory.getAiPromptFactory().generateAnalysisPrompt() + "\n " + struct.getInstructions());
 
             JsonObject userMsg = new JsonObject();
             userMsg.addProperty("role", AIConstants.ROLE_USER);

@@ -8,7 +8,7 @@ import java.util.concurrent.Executors;
  * Separate async event bus for real-time audio monitoring.
  * <p>
  * Uses Guava AsyncEventBus backed by a single daemon thread so that publishing
- * from WhisperSTT's hot capture loop never blocks the main EventBusManager
+ * from Parakeet's hot capture loop never blocks the main EventBusManager
  * (which is synchronous on the caller's thread).
  */
 public class AudioMonitorBus {

@@ -14,6 +14,7 @@ public class OpenFleetCarrierManagementHandler implements CommandHandler {
 
     /// not a sure fire. assumes default UI selection. will fail often.
     @Override public void handle(String action, JsonObject params, String responseText) {
+        UiNavCommon.close();
         if(status.isOnFoot()){
             GameControllerBus.publish(new GameInputEvent(BINDING_ON_FOOT_WHEEL.getGameBinding(), 500));
             GameControllerBus.publish(new GameInputEvent(BINDING_UI_RIGHT.getGameBinding(), 0));

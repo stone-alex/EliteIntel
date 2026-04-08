@@ -5,7 +5,7 @@ import elite.intel.gameapi.GameControllerBus;
 import elite.intel.session.Status;
 import elite.intel.session.ui.UINavigator;
 
-public class UiExit {
+public class UiNavCommon {
 
     public static void close() {
         Status status = Status.getInstance();
@@ -14,5 +14,12 @@ public class UiExit {
             GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_UI_RIGHT.getGameBinding(), 0));
         }
         new UINavigator().closeOpenPanel();
+    }
+
+
+    public static void prepToKnownUiPositionWhileInTheShipAtStation() {
+        GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_UI_DOWN.getGameBinding(), 0));
+        GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_UI_DOWN.getGameBinding(), 0));
+        GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_UI_DOWN.getGameBinding(), 0));
     }
 }

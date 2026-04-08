@@ -6,6 +6,6 @@ public class ClosePanelHandler implements CommandHandler {
 
     @Override
     public void handle(String action, JsonObject params, String responseText) {
-        UiExit.close();
+        UiNavCommon.close();
     }
 }

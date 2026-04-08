@@ -6,6 +6,9 @@
 - Added "disembark" command to when you are in the ship.
 - Added "show/open/display station services" when you are in your ship at the station/port/carrier.
 - Wrapped the subscribers that do IO in to virtual threads. (slight performance improvement).
+- Fixed carrier scheduled to depart message. Now it will say carrier will depart in H hours M minutes.
+- Consolidated action map, to reduce the options even farther based on isOnFoot, isInMainShip, and isInSRV.
+
 
 
 ## Elite Intel v-0.0350-beta

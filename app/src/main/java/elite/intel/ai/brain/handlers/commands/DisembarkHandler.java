@@ -15,7 +15,7 @@ public class DisembarkHandler implements CommandHandler {
 
     @Override
     public void handle(String action, JsonObject params, String responseText) {
-        UiExit.close();
+        UiNavCommon.close();
         if (status.isInSrv()) {
             GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_FOCUS_ROLE_PANEL.getGameBinding(), 0));
 

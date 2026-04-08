@@ -133,6 +133,7 @@ public enum Commands {
     SHOW_STORAGE_PANEL                                  ("show_storage_panel", null, OpenStoragePanelHandler.class),
     SHOW_STATUS_PANEL                                   ("show_status_panel", null, OpenStatusPanelHandler.class),
     SHOW_STATION_SERVICES                               ("show_station_services_panel", null, OpenStationServicesHandler.class),
+    LAUNCH_SHIP                                         ("launch_ship", null, LaunchShipHandler.class),
     EXIT_CLOSE                                          ("exit_close", null, ClosePanelHandler.class),
 
 

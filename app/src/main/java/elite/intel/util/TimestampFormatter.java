@@ -23,7 +23,7 @@ public class TimestampFormatter {
         try {
             ZonedDateTime zdt = ZonedDateTime.parse(isoTimestamp, DateTimeFormatter.ISO_DATE_TIME);
             if (useLocalTime) {
-                zdt = zdt.withZoneSameInstant(ZoneId.of("America/Los_Angeles")); // PDT
+                zdt = zdt.withZoneSameInstant(ZoneId.systemDefault());
             }
             return zdt.format(HUMAN_READABLE_FORMATTER);
         } catch (Exception e) {

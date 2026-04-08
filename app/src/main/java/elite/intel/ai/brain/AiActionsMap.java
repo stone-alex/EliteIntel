@@ -45,10 +45,7 @@ public class AiActionsMap {
         map.put("wake up", WAKEUP.getAction());
         map.put("sleep, go to sleep, ignore me, do not monitor", SLEEP.getAction());
         map.put("interrupt", INTERRUPT_TTS.getAction());
-        if (status.isInMainShip() || status.isInSrv()) {
-            map.put("switch to combat mode", ACTIVATE_COMBAT_MODE.getAction());
-            map.put("switch to analysis mode", ACTIVATE_ANALYSIS_MODE.getAction());
-        }
+
         // navigation
         map.put("navigate to coordinates {lat:X, lon:Y}", NAVIGATE_TO_TARGET.getAction());
         map.put("navigate to active mission, plot route to active mission, plot route to mission, take me to mission, go to mission {key:X}", NAVIGATE_TO_NEXT_MISSION.getAction());
@@ -57,17 +54,16 @@ public class AiActionsMap {
         map.put("navigate to next trade stop, go to next trade stop", NAVIGATE_TO_NEXT_TRADE_STOP.getAction());
         map.put("navigate from memory, paste from memory", NAVIGATE_TO_ADDRESS_FROM_MEMORY.getAction());
         map.put("cancel navigation, abort navigation, stop navigation", NAVIGATION_OFF.getAction());
+        map.put("set home system", SET_HOME_SYSTEM.getAction());
 
         if (status.isInMainShip()) {
+            // navigation
             map.put("target destination", TARGET_DESTINATION.getAction());
             map.put("jump to hyperspace,  jump, hyperspace jump, enter hyperspace, lets go, next way point", JUMP_TO_HYPERSPACE.getAction());
             map.put("drop out, drop here, drop ftl, drop from supercruise, leave supercruise, drop in", DROP_FROM_SUPER_CRUISE.getAction());
             map.put("enter supercruise,  supercruise, go supercruise, supercruise", ENTER_SUPER_CRUISE.getAction());
-        }
-        map.put("set home system", SET_HOME_SYSTEM.getAction());
-
-        // speed / throttle
-        if (status.isInMainShip()) {
+            map.put("launch ship, launch", LAUNCH_SHIP.getAction());
+            // speed / throttle
             map.put("stop engines, stop here, full stop, all stop, halt, kill engines, cut throttle, zero throttle, stop ship", SET_SPEED_ZERO.getAction());
             map.put("taxi to landing, taxi, auto land, autopilot landing", TAXI.getAction());
             map.put("quarter throttle, 25 percent, slow speed, one quarter", SET_SPEED25.getAction());
@@ -80,21 +76,72 @@ public class AiActionsMap {
             map.put("landing gear, gear down, lower landing gear, extend landing gear", DEPLOY_LANDING_GEAR.getAction());
             map.put("retract landing gear, gear up, raise landing gear, stow landing gear", RETRACT_LANDING_GEAR.getAction());
             map.put("request docking, dock at station, request landing, docking request, ask for docking, request parking, parking spot, request pad", REQUEST_DOCKING.getAction());
+            // UI panels
+            map.put("show, open or display fighter panel", SHOW_FIGHTER_PANEL.getAction());
+
+            // combat
+            map.put("deploy hardpoints, weapons hot, combat ready, weapons free, weapons out, arm weapons, weapons ready", DEPLOY_HARDPOINTS.getAction());
+            map.put("retract hardpoints, weapons cold, weapons away, stand down, holster weapons, weapons down, safe weapons", RETRACT_HARDPOINTS.getAction());
+            map.put("target fsd {key:fsd}, target engines {key:drive}, target Power Distributor {key:power distributor} target power plant {key:powerplant}, target powerplant {key:powerplant}, target life support {key:life support}, ", TARGET_SUB_SYSTEM.getAction());
+            map.put("target wingman 1, wingman alpha", TARGET_WINGMAN0.getAction());
+            map.put("target wingman 2, wingman bravo", TARGET_WINGMAN1.getAction());
+            map.put("target wingman 3, wingman charlie", TARGET_WINGMAN2.getAction());
+            map.put("wing nav lock, lock wingman nav, follow wingman", WING_NAV_LOCK.getAction());
+            map.put("priority target, target highest threat, target most dangerous, select hostile, next enemy, select enemy", SELECT_HIGHEST_THREAT.getAction());
+            // vehicle deployment
+            map.put("deploy SRV, deploy vehicle, launch SRV, send out SRV, drop SRV", DEPLOY_SRV.getAction());
+            map.put("deploy heat sink, launch heat sink, dump heat", DEPLOY_HEAT_SINK.getAction());
+            // fighter orders
+            map.put("deploy fighter, launch fighter, send out fighter", DEPLOY_FIGHTER.getAction());
+            map.put("order fighter defend ship, fighter defend, fighter defensive", FIGHTER_REQUEST_DEFENSIVE_BEHAVIOUR.getAction());
+            map.put("order fighter attack my target, fighter attack, sic fighter on target", FIGHTER_REQUEST_FOCUS_TARGET.getAction());
+            map.put("order fighter hold fire, fighter cease fire, fighter stand down", FIGHTER_REQUEST_HOLD_FIRE.getAction());
+            map.put("order fighter return to ship, fighter dock, recall fighter", FIGHTER_REQUEST_REQUEST_DOCK.getAction());
+            map.put("fighter open orders, fire at will, attack", FIGHTER_OPEN_ORDERS.getAction());
         }
 
-        // flight / ship systems
+        if (status.isInMainShip() && !status.isDocked()) {
+            map.put("stations in system, what stations, nearby stations, star ports, space stations, docking available", QUERY_STATIONS.getAction());
+        }
+
+        if (status.isInSrv() && status.isDocked()) {
+            map.put("show, open or display station services panel", SHOW_STATION_SERVICES.getAction());
+        }
+
         if (status.isInMainShip() || status.isInSrv()) {
+            // flight / ship systems
+            map.put("switch to combat mode", ACTIVATE_COMBAT_MODE.getAction());
+            map.put("switch to analysis mode", ACTIVATE_ANALYSIS_MODE.getAction());
             map.put("open / close cargo scoop, deploy / retract cargo scoop, open / close cargo bay", TOGGLE_CARGO_SCOOP.getAction());
             map.put("night vision, nightvision, turn on night vision, turn off night vision ", NIGHT_VISION_ON_OFF.getAction());
             map.put("headlights, lights, turn off lights, turn on lights, ship lights, lights on, lights off ", LIGHTS_ON_OFF.getAction());
+            // UI panels
+            map.put("show, open or display commander, central, role panel,", SHOW_COMMANDER_PANEL.getAction());
+            map.put("show, open or display crew panel", SHOW_CREW.getAction());
+            map.put("show, open or display home panel", SHOW_INTERNAL_PANEL.getAction());
+            map.put("show, open or display modules panel", SHOW_MODULES_PANEL.getAction());
+            map.put("show, open or display fire groups", SHOW_FIRE_GROUPS.getAction());
+            map.put("show, open or display inventory panel", SHOW_INVENTORY_PANEL.getAction());
+            map.put("show, open or display storage panel", SHOW_STORAGE_PANEL.getAction());
+            // power
+            map.put("power to shields, max shields, boost shields", INCREASE_SHIELDS_POWER.getAction());
+            map.put("power to engines, max engines, boost engines", INCREASE_ENGINES_POWER.getAction());
+            map.put("power to weapons, max weapons, boost weapons", INCREASE_WEAPONS_POWER.getAction());
+            // vehicle deployment
+            map.put("disembark", DISEMBARK.getAction());
+            map.put("equalize power, balance power, reset power, distribute power equally", RESET_POWER.getAction());
         }
+
         if (status.isInSrv()) {
             map.put("drive assist, driving assist, SRV assist {state:true/false}", DRIVE_ASSIST.getAction());
+            map.put("recover SRV, board ship, return SRV, retrieve SRV, SRV dock", RECOVER_SRV.getAction());
         }
+
         if (status.isInMainShip() || status.isOnFoot()) {
             map.put("dismiss ship, send ship away, ship to orbit", DISMISS_SHIP.getAction());
             map.put("return to surface, pick me up", RETURN_TO_SURFACE.getAction());
         }
+
         // market / traders / brokers
         map.put("find raw material trader, raw trader, where to trade raw materials {key:X}", FIND_RAW_MATERIAL_TRADER.getAction());
         map.put("find encoded material trader, encoded trader, data trader {key:X}", FIND_ENCODED_MATERIAL_TRADER.getAction());
@@ -141,34 +188,12 @@ public class AiActionsMap {
         map.put("show, open or display social panel", SHOW_SOCIAL_PANEL.getAction());
         map.put("show, open or display history panel", SHOW_HISTORY_PANEL.getAction());
         map.put("show, open or display squadron panel", SHOW_SQUADRON.getAction());
-        if (status.isInMainShip()) {
-            map.put("show, open or display fighter panel", SHOW_FIGHTER_PANEL.getAction());
-        }
-        if (status.isInSrv() || status.isInMainShip()) {
-            map.put("show, open or display commander, central, role panel,", SHOW_COMMANDER_PANEL.getAction());
-            map.put("show, open or display crew panel", SHOW_CREW.getAction());
-            map.put("show, open or display home panel", SHOW_INTERNAL_PANEL.getAction());
-            map.put("show, open or display modules panel", SHOW_MODULES_PANEL.getAction());
-            map.put("show, open or display fire groups", SHOW_FIRE_GROUPS.getAction());
-            map.put("show, open or display inventory panel", SHOW_INVENTORY_PANEL.getAction());
-            map.put("show, open or display storage panel", SHOW_STORAGE_PANEL.getAction());
-        }
-
         map.put("show, open or display status panel", SHOW_STATUS_PANEL.getAction());
         map.put("show, open or display carrier management panel", DISPLAY_CARRIER_MANAGEMENT.getAction());
         map.put("show, open or display galaxy map", OPEN_GALAXY_MAP.getAction());
         map.put("show, open or display local / stat system map", OPEN_SYSTEM_MAP.getAction());
-
-        if (status.isInMainShip()) {
-            map.put("show, open or display station services panel", SHOW_STATION_SERVICES.getAction());
-        }
         map.put("exit close panel", EXIT_CLOSE.getAction());
 
-        if (status.isInMainShip() || status.isInSrv()) {
-            map.put("power to shields, max shields, boost shields", INCREASE_SHIELDS_POWER.getAction());
-            map.put("power to engines, max engines, boost engines", INCREASE_ENGINES_POWER.getAction());
-            map.put("power to weapons, max weapons, boost weapons", INCREASE_WEAPONS_POWER.getAction());
-        }
         // pirate massacre missions
         map.put("navigate to mission provider system", RECON_PROVIDER_SYSTEM.getAction());
         map.put("navigate to pirate mission provider", NAVIGATE_TO_PIRATE_MISSION_PROVIDER.getAction());
@@ -178,22 +203,6 @@ public class AiActionsMap {
         map.put("recon hunting ground", RECON_TARGET_SYSTEM.getAction());
         map.put("ignore hunting ground", IGNORE_HUNTING_GROUND.getAction());
         map.put("confirm hunting ground", CONFIRM_HUNTING_GROUND.getAction());
-        if (status.isInMainShip()) {
-            map.put("deploy hardpoints, weapons hot, combat ready, weapons free, weapons out, arm weapons, weapons ready", DEPLOY_HARDPOINTS.getAction());
-        }
-        // vehicle deployment
-        if (status.isInMainShip()) {
-            map.put("deploy SRV, deploy vehicle, launch SRV, send out SRV, drop SRV", DEPLOY_SRV.getAction());
-            map.put("retract hardpoints, weapons cold, weapons away, stand down, holster weapons, weapons down, safe weapons", RETRACT_HARDPOINTS.getAction());
-            map.put("deploy heat sink, launch heat sink, dump heat", DEPLOY_HEAT_SINK.getAction());
-        }
-        if (status.isInSrv()) {
-            map.put("recover SRV, board ship, return SRV, retrieve SRV, SRV dock", RECOVER_SRV.getAction());
-        }
-        if (status.isInSrv() || status.isInMainShip()) {
-            map.put("disembark", DISEMBARK.getAction());
-            map.put("equalize power, balance power, reset power, distribute power equally", RESET_POWER.getAction());
-        }
 
         // science / mining / biology
         map.put("add mining target {key:X}", ADD_MINING_TARGET.getAction());
@@ -208,25 +217,6 @@ public class AiActionsMap {
         map.put("find nearest vista genomics, find genomics, vista genomics", FIND_VISTA_GENOMICS.getAction());
         map.put("delete codex entry, delete this codex, delete this entry, delete this organic", DELETE_CODEX_ENTRY.getAction());
 
-        // combat
-        if (status.isInMainShip()) {
-            map.put("target fsd {key:fsd}, target engines {key:drive}, target Power Distributor {key:power distributor} target power plant {key:powerplant}, target powerplant {key:powerplant}, target life support {key:life support}, ", TARGET_SUB_SYSTEM.getAction());
-            map.put("target wingman 1, wingman alpha", TARGET_WINGMAN0.getAction());
-            map.put("target wingman 2, wingman bravo", TARGET_WINGMAN1.getAction());
-            map.put("target wingman 3, wingman charlie", TARGET_WINGMAN2.getAction());
-            map.put("wing nav lock, lock wingman nav, follow wingman", WING_NAV_LOCK.getAction());
-            map.put("priority target, target highest threat, target most dangerous, select hostile, next enemy, select enemy", SELECT_HIGHEST_THREAT.getAction());
-        }
-        // fighter orders
-        if (status.isInMainShip()) {
-            map.put("deploy fighter, launch fighter, send out fighter", DEPLOY_FIGHTER.getAction());
-            map.put("order fighter defend ship, fighter defend, fighter defensive", FIGHTER_REQUEST_DEFENSIVE_BEHAVIOUR.getAction());
-            map.put("order fighter attack my target, fighter attack, sic fighter on target", FIGHTER_REQUEST_FOCUS_TARGET.getAction());
-            map.put("order fighter hold fire, fighter cease fire, fighter stand down", FIGHTER_REQUEST_HOLD_FIRE.getAction());
-            map.put("order fighter return to ship, fighter dock, recall fighter", FIGHTER_REQUEST_REQUEST_DOCK.getAction());
-            map.put("fighter open orders, fire at will, attack", FIGHTER_OPEN_ORDERS.getAction());
-        }
-
         map.put("check key bindings, missing key bindings, unbound keys, keyboard bindings, keybind check, missing bindings", KEY_BINDINGS_ANALYSIS.getAction());
         map.put("bio signals done within the star system, organics scanned in star system, how many bio samples in star system, bio signals in system, bio samples in star system, biological signals in star system, organics in system, which planets have bio signals, which planets still need bio scans, which planets need organic scans, which planets still need scanning, bio scan needed on which planets, planets with unscanned bio signals, bio scan progress", BIO_SAMPLE_IN_STAR_SYSTEM.getAction());
         map.put("exobiology samples, biology samples, organics at location, what organisms, what's left to scan, remaining organisms, samples left, organisms remaining, exobiology progress, scan remaining, what bio scans completed, what bio scans have we completed, bio scans done, bio scans completed, organics on this planet, biology on this planet, what organisms are here, what organisms are on this planet, bio sample progress on planet, what's been scanned here, what organics do we still have to scan, what organics still to scan, organics still to scan, organics remaining to scan, organics left to scan, what organics remain, biology still to scan, what biology remains, what do we still need to scan here", EXOBIOLOGY_SAMPLES.getAction());
@@ -235,7 +225,7 @@ public class AiActionsMap {
         map.put("stellar objects, planets in system, landable planets, is planet or moon landable, bodies in system, what planets, how many planets, system bodies, stellar bodies", QUERY_STELLAR_OBJETS.getAction());
         map.put("signals in system, what signals are in this system, what's in this system, what's detected in system, what signals here, what signals do you see, what signals do you detect, what signals can you see, FSS signals, mining hot spots, resource extraction sites, what signals, conflict zones, emissions, unidentified signals, system signals, detected signals, anomalous signals", QUERY_STELLAR_SIGNALS.getAction());
         map.put("geo signals, geological signals, volcanic signals, geological activity, volcanic activity, geology in system", QUERY_GEO_SIGNALS.getAction());
-        map.put("stations in system, what stations, nearby stations, star ports, space stations, docking available", QUERY_STATIONS.getAction());
+
         map.put("fleet carriers in system, carriers in system, how many carriers, fleet carriers here, any carriers nearby", QUERY_CARRIERS.getAction());
         map.put("carrier route, carrier navigation, carrier jump route, carrier trip, carrier journey, carrier travel plan, how many jumps on carrier route, jumps remaining on carrier, carrier route jump count, jumps left on carrier", CARRIER_ROUTE_ANALYSIS.getAction());
         map.put("carrier route, where is carrier going, carrier next jump, where is carrier headed, carrier heading, carrier endpoint, carrier final destination", CARRIER_ROUTE.getAction());
@@ -259,7 +249,7 @@ public class AiActionsMap {
         map.put("what is in our cargo hold, what are we carrying, cargo contents, commodities on board, what are we hauling, hold contents", CARGO_HOLD_CONTENTS.getAction());
         map.put("player profile, my ranks, progress, combat rank, trade rank, exploration rank, commander stats, pilot rank, our ranking, commander profile, what rank are we", PLAYER_PROFILE_ANALYSIS.getAction());
         map.put("ship loadout, damage report, ship modules, combat readiness report, ship equipment, ship specs, what am I flying, what are we equipped with, do you have, is it equipped, shield generator, hull reinforcement, sensors, thrusters, frameshift, fuel scoop, installed", SHIP_LOADOUT.getAction());
-        map.put("station details, station services, what services here, what services are here, services here, what services does this station have, services at this station, what does station offer, station info, station facilities, what's at this station, services available", STATION_DETAILS.getAction());
+        map.put("station details, what services here, what services are here, services here, what services does this station have, services at this station, what does station offer, station info, station facilities, what's at this station, services available", STATION_DETAILS.getAction());
         map.put("bounties, total bounties, bounty collected, how much in bounties, bounty earnings, credits from bounties, bounty credits", TOTAL_BOUNTIES.getAction());
         map.put("distance to bubble, distance to sol, distance from sol, distance to Earth, distance from Earth, how far from sol, how far from bubble, how far from inhabited space, distance from inhabited space, how far from civilization, range from human space", DISTANCE_TO_BUBBLE.getAction());
         map.put("current time, what time is it, time on earth, galactic time, utc time, what's the time, real time", TIME_IN_ZONE.getAction());

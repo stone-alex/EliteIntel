@@ -18,15 +18,16 @@ public class LoadGameEventSubscriber {
 
     @Subscribe
     public void onEvent(LoadGameEvent event) {
-
-        playerSession.setPlayerName(playerSession.getAlternativeName() == null ? event.getCommander() : playerSession.getAlternativeName());
-        playerSession.setInGameName(event.getCommander());
-        playerSession.setCurrentShip(event.getShip());
-        playerSession.setCurrentShipName(event.getShipName());
-        playerSession.setPersonalCreditsAvailable(event.getCredits());
-        playerSession.setGameVersion(event.getGameversion());
-        playerSession.setGameBuild(event.getBuild());
-        cleanUpRoute(playerSession);
+        Thread.ofVirtual().start(() -> {
+            playerSession.setPlayerName(playerSession.getAlternativeName() == null ? event.getCommander() : playerSession.getAlternativeName());
+            playerSession.setInGameName(event.getCommander());
+            playerSession.setCurrentShip(event.getShip());
+            playerSession.setCurrentShipName(event.getShipName());
+            playerSession.setPersonalCreditsAvailable(event.getCredits());
+            playerSession.setGameVersion(event.getGameversion());
+            playerSession.setGameBuild(event.getBuild());
+            cleanUpRoute(playerSession);
+        });
     }
 
     private void cleanUpRoute(PlayerSession playerSession) {

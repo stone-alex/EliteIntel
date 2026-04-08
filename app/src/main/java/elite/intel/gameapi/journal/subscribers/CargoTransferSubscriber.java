@@ -13,22 +13,23 @@ public class CargoTransferSubscriber {
 
     @Subscribe
     public void onCargoTransfer(CargoTransferEvent event) {
+        Thread.ofVirtual().start(() -> {
+            List<CargoTransferEvent.Transfer> transfers = event.getTransfers();
+            CarrierDataDto carrierData = playerSession.getCarrierData();
 
-        List<CargoTransferEvent.Transfer> transfers = event.getTransfers();
-        CarrierDataDto carrierData = playerSession.getCarrierData();
+            for (CargoTransferEvent.Transfer transfer : transfers) {
+                String commodity = transfer.getType();
+                int amount = transfer.getCount();
 
-        for(CargoTransferEvent.Transfer transfer : transfers) {
-            String commodity = transfer.getType();
-            int amount = transfer.getCount();
+                if ("tocarrier".equalsIgnoreCase(transfer.getDirection())) {
+                    carrierData.addCommodity(commodity, amount);
+                }
 
-            if("tocarrier".equalsIgnoreCase(transfer.getDirection())) {
-                carrierData.addCommodity(commodity, amount);
+                if ("toship".equalsIgnoreCase(transfer.getDirection())) {
+                    carrierData.removeCommodity(commodity, amount);
+                }
             }
-
-            if("toship".equalsIgnoreCase(transfer.getDirection())) {
-                carrierData.removeCommodity(commodity, amount);
-            }
-        }
-        playerSession.setCarrierData(carrierData);
+            playerSession.setCarrierData(carrierData);
+        });
     }
 }

@@ -23,36 +23,37 @@ public class SuperCruiseDropSubscriber {
 
     @Subscribe
     public void onSuperCruiseDrop(SupercruiseDestinationDropEvent event) {
-
-        if (event.getThreat() > 0) {
-            String instructions = """
-                        Notify user about supercruise exit and threat level
-                        - level 0 threat level is none
-                        - level 1 - 2 threat level low
-                        - level 3 - 5 threat level medium
-                        - level 6 - 8 threat level high
-                    """;
-            EventBusManager.publish(new SensorDataEvent(" Dropped from supercruise. Threat level: " + event.getThreat() + ". ", instructions));
-            if (event.getThreat() > 2) {
-                CommandHandler activateCombatMode = commandHandlerFactory.getCommandHandlers().get(ACTIVATE_COMBAT_MODE.getAction());
-                new Thread(() -> activateCombatMode.handle(ACTIVATE_COMBAT_MODE.getAction(), null, "")).start();
+        Thread.ofVirtual().start(() -> {
+            if (event.getThreat() > 0) {
+                String instructions = """
+                            Notify user about supercruise exit and threat level
+                            - level 0 threat level is none
+                            - level 1 - 2 threat level low
+                            - level 3 - 5 threat level medium
+                            - level 6 - 8 threat level high
+                        """;
+                EventBusManager.publish(new SensorDataEvent(" Dropped from supercruise. Threat level: " + event.getThreat() + ". ", instructions));
+                if (event.getThreat() > 2) {
+                    CommandHandler activateCombatMode = commandHandlerFactory.getCommandHandlers().get(ACTIVATE_COMBAT_MODE.getAction());
+                    new Thread(() -> activateCombatMode.handle(ACTIVATE_COMBAT_MODE.getAction(), null, "")).start();
+                }
+            } else if (event.getThreat() < 3) {
+                CommandHandler activateCombatMode = commandHandlerFactory.getCommandHandlers().get(ACTIVATE_ANALYSIS_MODE.getAction());
+                new Thread(() -> activateCombatMode.handle(ACTIVATE_ANALYSIS_MODE.getAction(), null, "")).start();
             }
-        } else if (event.getThreat() < 3) {
-            CommandHandler activateCombatMode = commandHandlerFactory.getCommandHandlers().get(ACTIVATE_ANALYSIS_MODE.getAction());
-            new Thread(() -> activateCombatMode.handle(ACTIVATE_ANALYSIS_MODE.getAction(), null, "")).start();
-        }
 
 
-        LocationDto location = locationManager.findByMarketId(event.getMarketID());
-        if (location.getBodyId() < 1 && location.getSystemAddress() < 1) {
-            location.setLocationType(LocationDto.LocationType.STATION);
-            location.setSystemAddress(playerSession.getLocationData().getSystemAddress());
-            locationManager.save(location);
-        }
+            LocationDto location = locationManager.findByMarketId(event.getMarketID());
+            if (location.getBodyId() < 1 && location.getSystemAddress() < 1) {
+                location.setLocationType(LocationDto.LocationType.STATION);
+                location.setSystemAddress(playerSession.getLocationData().getSystemAddress());
+                locationManager.save(location);
+            }
 
-        String carrierName = playerSession.getCarrierData().getCarrierName();
-        if (event.getType().toUpperCase().startsWith(carrierName.toUpperCase())) {
-            EventBusManager.publish(new AiVoxResponseEvent("Welcome Home to " + StringUtls.capitalizeWords(carrierName) + "! "));
-        }
+            String carrierName = playerSession.getCarrierData().getCarrierName();
+            if (event.getType().toUpperCase().startsWith(carrierName.toUpperCase())) {
+                EventBusManager.publish(new AiVoxResponseEvent("Welcome Home to " + StringUtls.capitalizeWords(carrierName) + "! "));
+            }
+        });
     }
 }

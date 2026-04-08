@@ -8,9 +8,11 @@ import elite.intel.gameapi.journal.events.dto.CarrierDataDto;
 public class DepositCarrierFuelSubscriber {
 
     @Subscribe public void onCarrierDepositFuelEvent(CarrierDepositFuelEvent event) {
-        FleetCarrierManager manager = FleetCarrierManager.getInstance();
-        CarrierDataDto carrierDataDto = manager.get();
-        carrierDataDto.setFuelLevel(event.getTotal());
-        manager.save(carrierDataDto);
+        Thread.ofVirtual().start(() -> {
+            FleetCarrierManager manager = FleetCarrierManager.getInstance();
+            CarrierDataDto carrierDataDto = manager.get();
+            carrierDataDto.setFuelLevel(event.getTotal());
+            manager.save(carrierDataDto);
+        });
     }
 }

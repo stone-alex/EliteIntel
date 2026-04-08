@@ -23,100 +23,101 @@ public class CodexEntryEventSubscriber {
 
     @Subscribe
     public void onCodexEntryEvent(CodexEntryEvent event) {
+        Thread.ofVirtual().start(() -> {
+            final Status status = Status.getInstance();
 
-        final Status status = Status.getInstance();
+            LocationDto currentLocation = locationManager.findBySystemAddress(event.getSystemAddress(), event.getBodyID());
+            playerSession.setCurrentLocationId(event.getBodyID(), event.getSystemAddress());
+            StringBuilder sb = new StringBuilder();
 
-        LocationDto currentLocation = locationManager.findBySystemAddress(event.getSystemAddress(), event.getBodyID());
-        playerSession.setCurrentLocationId(event.getBodyID(), event.getSystemAddress());
-        StringBuilder sb = new StringBuilder();
+            String nameLocalised = event.getNameLocalised();
+            if (nameLocalised == null) nameLocalised = event.getName();
+            if (nameLocalised == null) nameLocalised = "Unknown";
 
-        String nameLocalised = event.getNameLocalised();
-        if (nameLocalised == null) nameLocalised = event.getName();
-        if (nameLocalised == null) nameLocalised = "Unknown";
+            String[] nameParts = nameLocalised.split(" ");
+            String firstWordOfEntryName = nameParts[0];
+            String secondWordOfEntryName = nameParts.length > 1 ? nameParts[1] : null;
+            int bioSampleDistance = BioForms.getDistance(firstWordOfEntryName);
+            BioForms.ProjectedPayment projectedPayment = (secondWordOfEntryName != null)
+                    ? BioForms.getProjectedPayment(capitalizeWords(firstWordOfEntryName), capitalizeWords(secondWordOfEntryName))
+                    : BioForms.getAverageProjectedPayment(capitalizeWords(firstWordOfEntryName));
+            String genus = bioSampleDistance > 0 ? capitalizeWords(firstWordOfEntryName) : null;
 
-        String[] nameParts = nameLocalised.split(" ");
-        String firstWordOfEntryName = nameParts[0];
-        String secondWordOfEntryName = nameParts.length > 1 ? nameParts[1] : null;
-        int bioSampleDistance = BioForms.getDistance(firstWordOfEntryName);
-        BioForms.ProjectedPayment projectedPayment = (secondWordOfEntryName != null)
-                ? BioForms.getProjectedPayment(capitalizeWords(firstWordOfEntryName), capitalizeWords(secondWordOfEntryName))
-                : BioForms.getAverageProjectedPayment(capitalizeWords(firstWordOfEntryName));
-        String genus = bioSampleDistance > 0 ? capitalizeWords(firstWordOfEntryName) : null;
-
-        boolean alreadyHaveThisEntry = codexEntryManager.checkIfExist(currentLocation.getStarName(), currentLocation.getBodyId(), nameLocalised);
-
-
-        if (!alreadyHaveThisEntry && event.isNewEntry()) {
-            sb.append(" New Codex Entry: ");
-        } else {
-            sb.append(" Codex Entry: ");
-        }
-        sb.append(" Name: ");
-        String[] split = nameLocalised.split(" - ", 2);
-        if (split.length == 2) {
-            sb.append(split[0]).append(", variant ").append(split[1]).append(", ");
-        } else {
-            sb.append(nameLocalised).append(", ");
-        }
-        sb.append(" Category: ");
-        sb.append(event.getSubCategoryLocalised()).append(". ");
-
-        if (bioSampleDistance > 0 && !alreadyHaveThisEntry) {
-            sb.append(" Minimum distance between samples for collection: ").append(bioSampleDistance).append(" meters. ");
-        }
+            boolean alreadyHaveThisEntry = codexEntryManager.checkIfExist(currentLocation.getStarName(), currentLocation.getBodyId(), nameLocalised);
 
 
-        if (!alreadyHaveThisEntry) {
-            sb.append(", ");
-            if (event.getVoucherAmount() > 0) {
-                sb.append("Voucher Amount: ");
-                sb.append(event.getVoucherAmount());
-                sb.append(" credits. ");
+            if (!alreadyHaveThisEntry && event.isNewEntry()) {
+                sb.append(" New Codex Entry: ");
+            } else {
+                sb.append(" Codex Entry: ");
             }
-            Boolean isAnnounced = playerSession.paymentHasBeenAnnounced(genus);
+            sb.append(" Name: ");
+            String[] split = nameLocalised.split(" - ", 2);
+            if (split.length == 2) {
+                sb.append(split[0]).append(", variant ").append(split[1]).append(", ");
+            } else {
+                sb.append(nameLocalised).append(", ");
+            }
+            sb.append(" Category: ");
+            sb.append(event.getSubCategoryLocalised()).append(". ");
 
-            if (projectedPayment != null && projectedPayment.payment() != null && !isAnnounced) {
-                sb.append("Vista Genomics Payment: ").append(projectedPayment.payment()).append(" credits. For a complete set of three samples. ");
-                if (projectedPayment.firstDiscoveryBonus() != null && currentLocation.isOurDiscovery()) {
-                    sb.append(projectedPayment.firstDiscoveryBonus());
-                    sb.append(" credits bonus for first discovery.");
+            if (bioSampleDistance > 0 && !alreadyHaveThisEntry) {
+                sb.append(" Minimum distance between samples for collection: ").append(bioSampleDistance).append(" meters. ");
+            }
+
+
+            if (!alreadyHaveThisEntry) {
+                sb.append(", ");
+                if (event.getVoucherAmount() > 0) {
+                    sb.append("Voucher Amount: ");
+                    sb.append(event.getVoucherAmount());
+                    sb.append(" credits. ");
                 }
-                sb.append(".");
-                playerSession.setGenusPaymentAnnounced(genus);
-            }
-        } else {
-            for (CodexEntryDao.CodexEntry entry : codexEntryManager.getForPlanet(currentLocation.getStarName(), currentLocation.getBodyId())) {
-                boolean isNameMatched = entry.getEntryName().equals(nameLocalised);
-                double distanceFromPreviousSample = NavigationUtils.calculateSurfaceDistance(
-                        status.getStatus().getLatitude(),
-                        status.getStatus().getLongitude(),
-                        entry.getLatitude(),
-                        entry.getLongitude(),
-                        status.getStatus().getPlanetRadius(),
-                        0
-                );
-                if (genus != null && isNameMatched && distanceFromPreviousSample < bioSampleDistance) {
-                    sb.append(" WARNING: Codex entry too proximate to previous sample of same genus- insufficient separation for sample diversity!");
-                    break;
+                Boolean isAnnounced = playerSession.paymentHasBeenAnnounced(genus);
+
+                if (projectedPayment != null && projectedPayment.payment() != null && !isAnnounced) {
+                    sb.append("Vista Genomics Payment: ").append(projectedPayment.payment()).append(" credits. For a complete set of three samples. ");
+                    if (projectedPayment.firstDiscoveryBonus() != null && currentLocation.isOurDiscovery()) {
+                        sb.append(projectedPayment.firstDiscoveryBonus());
+                        sb.append(" credits bonus for first discovery.");
+                    }
+                    sb.append(".");
+                    playerSession.setGenusPaymentAnnounced(genus);
+                }
+            } else {
+                for (CodexEntryDao.CodexEntry entry : codexEntryManager.getForPlanet(currentLocation.getStarName(), currentLocation.getBodyId())) {
+                    boolean isNameMatched = entry.getEntryName().equals(nameLocalised);
+                    double distanceFromPreviousSample = NavigationUtils.calculateSurfaceDistance(
+                            status.getStatus().getLatitude(),
+                            status.getStatus().getLongitude(),
+                            entry.getLatitude(),
+                            entry.getLongitude(),
+                            status.getStatus().getPlanetRadius(),
+                            0
+                    );
+                    if (genus != null && isNameMatched && distanceFromPreviousSample < bioSampleDistance) {
+                        sb.append(" WARNING: Codex entry too proximate to previous sample of same genus- insufficient separation for sample diversity!");
+                        break;
+                    }
                 }
             }
-        }
 
-        if(playerSession.isDiscoveryAnnouncementOn()) {
-            String instructions = """
-                    Database updated. 
-                    Provide essential summary.
-            - Only facts, no speculation.
-                    - IF entry is about organics: List Genus, payment and distance if provided.
-                    - IF there is a warning announce it, else do not mention that there are no warnings.
-            - Do not append any extra data.
-            - Round rewards in credits to nearest million.
-            """;
-            EventBusManager.publish(new SensorDataEvent(sb.toString(), instructions));
-        }
-        if("$Codex_SubCategory_Organic_Structures;".equalsIgnoreCase(event.getSubCategory())) {
-            codexEntryManager.save(event);
-        }
-        locationManager.save(currentLocation);
+            if (playerSession.isDiscoveryAnnouncementOn()) {
+                String instructions = """
+                                Database updated. 
+                                Provide essential summary.
+                        - Only facts, no speculation.
+                                - IF entry is about organics: List Genus, payment and distance if provided.
+                                - IF there is a warning announce it, else do not mention that there are no warnings.
+                        - Do not append any extra data.
+                        - Round rewards in credits to nearest million.
+                        """;
+                EventBusManager.publish(new SensorDataEvent(sb.toString(), instructions));
+            }
+            if ("$Codex_SubCategory_Organic_Structures;".equalsIgnoreCase(event.getSubCategory())) {
+                codexEntryManager.save(event);
+            }
+            locationManager.save(currentLocation);
+        });
     }
 }

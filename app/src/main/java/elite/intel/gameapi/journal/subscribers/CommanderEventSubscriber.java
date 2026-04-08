@@ -9,7 +9,6 @@ public class CommanderEventSubscriber {
 
     @Subscribe
     public void onEvent(CommanderEvent event) {
-        PlayerSession session = PlayerSession.getInstance();
-        session.setInGameName(event.getName());
+        PlayerSession.getInstance().setInGameName(event.getName());
     }
 }

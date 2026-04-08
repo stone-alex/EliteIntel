@@ -11,17 +11,3 @@ public class NpcCrewPaidWageSubscriber {
 
     }
 }
-
-/**
- *
- * Example event
- * <p>
- * {
- * "timestamp": "2025-08-28T05:54:07Z",
- * "event": "NpcCrewPaidWage",
- * "NpcCrewName": "Isidro Pennington",
- * "NpcCrewId": 235144001,
- * "Amount": 1450127
- * }
- *
- */

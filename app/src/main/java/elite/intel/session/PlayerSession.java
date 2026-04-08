@@ -13,11 +13,11 @@ import elite.intel.gameapi.journal.events.ReputationEvent;
 import elite.intel.gameapi.journal.events.dto.*;
 import elite.intel.gameapi.journal.events.dto.shiploadout.ShipLoadOutDto;
 import elite.intel.util.OsDetector;
+import elite.intel.util.Ranks;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.apache.commons.lang3.StringUtils.trimToNull;
 
@@ -849,6 +849,22 @@ public class PlayerSession {
             dao.save(player);
             return Void.class;
         });
+    }
+
+    public String randomPlayerName() {
+        String alternativeName = getAlternativeName();
+        String playerName = trimToNull(alternativeName) != null ? alternativeName : getPlayerName();
+        String playerMilitaryRank = getPlayerHighestMilitaryRank();
+        String playerHonorific = Ranks.getPlayerHonorific();
+
+        List<String> result = Arrays.stream(
+                new String[]{alternativeName, playerHonorific, playerName, playerMilitaryRank}
+        ).filter(Objects::nonNull).toList();
+        if (result.isEmpty()) {
+            return "Commander";
+        }
+
+        return result.get(new Random().nextInt(result.size()));
     }
 }
 

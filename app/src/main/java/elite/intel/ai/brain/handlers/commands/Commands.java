@@ -44,10 +44,7 @@ public enum Commands {
     FIND_NEAREST_FLEET_CARRIER                          ("find_nearest_fleet_carrier", null,  FindNearestFleetCarrierHandler.class),
 
     FIND_COMMODITY                                      ("find_commodity", null, FindCommodityHandler.class),
-    SET_AI_VOICE                                        ("set_voice", null,  ChangeShipVoiceHandler.class),
     SET_HOME_SYSTEM                                     ("set_home_system", null,  SetCurrentStarAsHomeSystem.class),
-    SET_PERSONALITY                                     ("set_personality", null, SetPersonalityHandler.class),
-    SET_CADENCE                                         ("set_cadence", null, SetCadenceHandler.class),
     SET_RADIO_TRANSMISSION_MODE                         ("toggle_radio", null,  SetRadioTransmissionOnOff.class),
     SET_RADAR_CONTACT_ANNOUNCEMENT                      ("toggle_radar_announcements", null, RadarAnnouncementOnOffHandler.class),
 
@@ -135,6 +132,7 @@ public enum Commands {
     SHOW_INVENTORY_PANEL                                ("show_inventory_panel", null, OpenInventoryHandler.class),
     SHOW_STORAGE_PANEL                                  ("show_storage_panel", null, OpenStoragePanelHandler.class),
     SHOW_STATUS_PANEL                                   ("show_status_panel", null, OpenStatusPanelHandler.class),
+    SHOW_STATION_SERVICES                               ("show_station_services_panel", null, OpenStationServicesHandler.class),
     EXIT_CLOSE                                          ("exit_close", null, ClosePanelHandler.class),
 
 
@@ -174,7 +172,6 @@ public enum Commands {
     TARGET_WINGMAN1                                     ("target_wingman_2", BINDING_TARGET_WINGMAN1.getGameBinding(), SimpleCommandActionHandler.class),
     TARGET_WINGMAN2                                     ("target_wingman_3", BINDING_TARGET_WINGMAN2.getGameBinding(), SimpleCommandActionHandler.class),
     WING_NAV_LOCK                                       ("wing_nav_lock", BINDING_WING_NAV_LOCK.getGameBinding(), SimpleCommandActionHandler.class),
-    LIST_AVAILABLE_VOICES                               ("list_available_voices", null,  ListAvailableVoicesHandler.class),
     CLEAR_REMINDERS                                     ("clear_reminders", null, CleareReminderHandler.class),
     SET_REMINDER                                        ("set_reminder", null, SetReminderHandler.class),
     DELETE_CODEX_ENTRY                                  ("delete_codex_entry", null, DeleteCodexEntryHandler.class),

@@ -33,101 +33,104 @@ public class SAASignalsFoundSubscriber {
 
     @Subscribe
     public void onSAASignalsFound(SAASignalsFoundEvent event) {
-        StringBuilder sb = new StringBuilder();
-        LocationDto location = LocationManager.getInstance().findBySystemAddress(event.getSystemAddress(), event.getBodyID());
-        LocationDto primaryStarLocation = locationManager.findPrimaryStar(playerSession.getPrimaryStarName());
-        location.setPlanetName(event.getBodyName());
-        location.setBodyId(event.getBodyID());
-        location.setStarName(primaryStarLocation.getStarName());
-        location.setX(primaryStarLocation.getX());
-        location.setY(primaryStarLocation.getY());
-        location.setZ(primaryStarLocation.getZ());
+        Thread.ofVirtual().start(() -> {
+            StringBuilder sb = new StringBuilder();
+            LocationDto location = LocationManager.getInstance().findBySystemAddress(event.getSystemAddress(), event.getBodyID());
+            LocationDto primaryStarLocation = locationManager.findPrimaryStar(playerSession.getPrimaryStarName());
+            location.setPlanetName(event.getBodyName());
+            location.setBodyId(event.getBodyID());
+            location.setStarName(primaryStarLocation.getStarName());
+            location.setX(primaryStarLocation.getX());
+            location.setY(primaryStarLocation.getY());
+            location.setZ(primaryStarLocation.getZ());
 
-        location.addSaaSignals(event.getSignals());
-        locationManager.save(location);
+            location.addSaaSignals(event.getSignals());
+            locationManager.save(location);
 
-        List<SAASignalsFoundEvent.Signal> signals = event.getSignals();
-        int signalsFound = signals != null ? signals.size() : 0;
+            List<SAASignalsFoundEvent.Signal> signals = event.getSignals();
+            int signalsFound = signals != null ? signals.size() : 0;
 
-        if (signalsFound > 0) {
-            int liveSignals = event.getGenuses() != null ? event.getGenuses().size() : 0;
-            sb.append(" Signal(s) found: ");
-            for (SAASignalsFoundEvent.Signal signal : signals) {
-                sb.append(" Type: ").append(signal.getType()).append(". ");
-                if ("Tritium".equals(signal.getType())) {
-                    sb.append(" Carrier fuel source is detected. ");
-                }
-            }
-
-            if (liveSignals > 0) {
-                location.setBioSignals(liveSignals);
-                location.setGenus(toGenusDto(event.getGenuses(), location.isOurDiscovery(), location.getPlanetName()));
-                boolean hasBeenScanned = scanBioCompleted(event, playerSession);
-
-                if (!hasBeenScanned) sb.append(" Exobiology signal(s) found ").append(liveSignals).append(": ");
-
-                long averageProjectedPayment = 0;
-                long averageFirstDiscoveryBonus = 0;
-                for (SAASignalsFoundEvent.Genus genus : event.getGenuses()) {
-                    BioForms.ProjectedPayment averagePayment = BioForms.getAverageProjectedPayment(genus.getGenusLocalised());
-                    if (averagePayment != null) {
-                        averageProjectedPayment = averageProjectedPayment + averagePayment.payment();
-                        averageFirstDiscoveryBonus = averageFirstDiscoveryBonus + averagePayment.firstDiscoveryBonus();
+            if (signalsFound > 0) {
+                int liveSignals = event.getGenuses() != null ? event.getGenuses().size() : 0;
+                sb.append(" Signal(s) found: ");
+                for (SAASignalsFoundEvent.Signal signal : signals) {
+                    sb.append(" Type: ").append(signal.getType()).append(". ");
+                    if ("Tritium".equals(signal.getType())) {
+                        sb.append(" Carrier fuel source is detected. ");
                     }
+                }
 
+                if (liveSignals > 0) {
+                    location.setBioSignals(liveSignals);
+                    location.setGenus(toGenusDto(event.getGenuses(), location.isOurDiscovery(), location.getPlanetName()));
+                    boolean hasBeenScanned = scanBioCompleted(event, playerSession);
+
+                    if (!hasBeenScanned) sb.append(" Exobiology signal(s) found ").append(liveSignals).append(": ");
+
+                    long averageProjectedPayment = 0;
+                    long averageFirstDiscoveryBonus = 0;
+                    for (SAASignalsFoundEvent.Genus genus : event.getGenuses()) {
+                        BioForms.ProjectedPayment averagePayment = BioForms.getAverageProjectedPayment(genus.getGenusLocalised());
+                        if (averagePayment != null) {
+                            averageProjectedPayment = averageProjectedPayment + averagePayment.payment();
+                            averageFirstDiscoveryBonus = averageFirstDiscoveryBonus + averagePayment.firstDiscoveryBonus();
+                        }
+
+                        if (!hasBeenScanned) {
+                            sb.append(" ");
+                            sb.append(genus.getGenusLocalised());
+                            sb.append(", ");
+                        }
+                    }
                     if (!hasBeenScanned) {
-                        sb.append(" ");
-                        sb.append(genus.getGenusLocalised());
-                        sb.append(", ");
+                        sb.append("Average projected payment of: ").append(averageProjectedPayment).append(" credits.");
+                        if (location.isOurDiscovery()) {
+                            sb.append(" Plus average bonus of: ").append(averageFirstDiscoveryBonus).append(" credits for first discovery.");
+                        }
                     }
-                }
-                if (!hasBeenScanned) {
-                    sb.append("Average projected payment of: ").append(averageProjectedPayment).append(" credits.");
-                    if (location.isOurDiscovery()) {
-                        sb.append(" Plus average bonus of: ").append(averageFirstDiscoveryBonus).append(" credits for first discovery.");
+
+                } else if (event.getBodyName().contains("Ring")) {
+                    //Rings are bodies
+                    LocationDto ring = new LocationDto(event.getBodyID());
+                    ring.setSystemAddress(event.getSystemAddress());
+                    ring.setBodyId(event.getBodyID());
+                    ring.setPlanetName(event.getBodyName());
+                    ring.setMaterials(toMaterials(event.getSignals()));
+                    ring.setLocationType(PLANETARY_RING);
+
+                    String parentBodyName = event.getBodyName().substring(0, event.getBodyName().length() - " X Ring".length());
+                    ring.setParentBodyName(parentBodyName);
+                    LocationDto parent = locationManager.getLocation(
+                            playerSession.getPrimaryStarName(),
+                            findParentId(
+                                    parentBodyName,
+                                    locationManager.findAllBySystemAddress(event.getSystemAddress()
+                                    )
+                            )
+                    );
+                    if (parent != null) parent.setHasRings(true);
+                    if (event.getSignals() != null) {
+                        ring.setSaaSignals(event.getSignals());
+                        ring.setGeoSignals(event.getSignals().size());
+                        if (parent != null) parent.setSaaSignals(event.getSignals());
                     }
+                    locationManager.save(ring);
+                    if (parent != null) locationManager.save(parent);
                 }
 
-            } else if (event.getBodyName().contains("Ring")) {
-                //Rings are bodies
-                LocationDto ring = new LocationDto(event.getBodyID());
-                ring.setSystemAddress(event.getSystemAddress());
-                ring.setBodyId(event.getBodyID());
-                ring.setPlanetName(event.getBodyName());
-                ring.setMaterials(toMaterials(event.getSignals()));
-                ring.setLocationType(PLANETARY_RING);
-
-                String parentBodyName = event.getBodyName().substring(0, event.getBodyName().length() - " X Ring".length());
-                ring.setParentBodyName(parentBodyName);
-                LocationDto parent = locationManager.getLocation(
-                        playerSession.getPrimaryStarName(),
-                        findParentId(
-                                parentBodyName,
-                                locationManager.findAllBySystemAddress(event.getSystemAddress()
-                                )
-                        )
-                );
-                if (parent != null) parent.setHasRings(true);
-                if (event.getSignals() != null) {
-                    ring.setSaaSignals(event.getSignals());
-                    ring.setGeoSignals(event.getSignals().size());
-                    if (parent != null) parent.setSaaSignals(event.getSignals());
+                if (playerSession.isDiscoveryAnnouncementOn()) {
+                    announce(sb.toString());
                 }
-                locationManager.save(ring);
-                if (parent != null) locationManager.save(parent);
+            } else {
+                if (playerSession.isDiscoveryAnnouncementOn()) {
+                    announce("No Signal(s) detected.");
+                }
             }
 
-            if (playerSession.isDiscoveryAnnouncementOn()) {
-                announce(sb.toString());
-            }
-        } else {
-            if (playerSession.isDiscoveryAnnouncementOn()) {
-                announce("No Signal(s) detected.");
-            }
-        }
-
-        locationManager.save(location);
+            locationManager.save(location);
+        });
     }
+
 
     private long findParentId(String parentBodyName, Collection<LocationDto> allLocationsInStarSystem) {
         for (LocationDto dto : allLocationsInStarSystem) {

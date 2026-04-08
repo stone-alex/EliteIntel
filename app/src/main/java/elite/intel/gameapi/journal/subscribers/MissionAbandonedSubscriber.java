@@ -14,12 +14,13 @@ public class MissionAbandonedSubscriber {
 
     @Subscribe
     public void onMissionAbandonedEvent(MissionAbandonedEvent event) {
-        MissionDto mission = missionManager.getMission(event.getMissionID());
-
-        if (mission != null) {
-            missionManager.remove(event.getMissionID());
-            String missionDetails = mission.getMissionDescription();
-            EventBusManager.publish(new SensorDataEvent("Notify: Mission \"" + missionDetails + "\" Abandoned: " + mission, "Notify user of mission abandonment, provide short summary from the data received."));
-        }
+        Thread.ofVirtual().start(() -> {
+            MissionDto mission = missionManager.getMission(event.getMissionID());
+            if (mission != null) {
+                missionManager.remove(event.getMissionID());
+                String missionDetails = mission.getMissionDescription();
+                EventBusManager.publish(new SensorDataEvent("Notify: Mission \"" + missionDetails + "\" Abandoned: " + mission, "Notify user of mission abandonment, provide short summary from the data received."));
+            }
+        });
     }
 }

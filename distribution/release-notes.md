@@ -1,10 +1,20 @@
+## Elite Intel v-0.0352-beta
+
+### bug fixes / features:
+
+- setting ship voice, personality and cadence now only available via UI.  No longer available via a voice command.
+- Added "disembark" command to when you are in the ship.
+- Added "show/open/display station services" when you are in your ship at the station/port/carrier.
+- Wrapped the subscribers that do IO in to virtual threads. (slight performance improvement).
+
+
 ## Elite Intel v-0.0350-beta
 
 ### bug fixes / features:
 - basic on-foot commands (wheel)
 - Show/Open: Commander/Role/Central panel should open the central panel on the top tab.
 - Deploy SRV / Deploy vehicle / deploy buggy should launch vehicle
-- Disembark (and only disembar) will put you on foot.
+- Disembark (and only disembark) will put you on foot.
 - deploy fighter, launch fighter, send out fighter
 
 - order fighter defend ship, fighter defend, fighter defensive

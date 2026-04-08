@@ -16,30 +16,32 @@ public class MissionRedirectedSubscriber {
 
     @Subscribe
     public void onMissionRedirectedSubscriber(MissionRedirectedEvent event) {
-        MissionDto mission = missionManager.getMission(event.getMissionID());
-        String newDestinationStation = event.getNewDestinationStation();
-        String newDestinationSystem = event.getNewDestinationSystem();
+        Thread.ofVirtual().start(() -> {
+            MissionDto mission = missionManager.getMission(event.getMissionID());
+            String newDestinationStation = event.getNewDestinationStation();
+            String newDestinationSystem = event.getNewDestinationSystem();
 
-        if (!newDestinationStation.isEmpty()) {
-            mission.setDestinationStation(newDestinationStation);
-        }
-        if (!newDestinationSystem.isEmpty()) {
-            mission.setDestinationSystem(newDestinationSystem);
-        }
-        missionManager.save(mission);
+            if (!newDestinationStation.isEmpty()) {
+                mission.setDestinationStation(newDestinationStation);
+            }
+            if (!newDestinationSystem.isEmpty()) {
+                mission.setDestinationSystem(newDestinationSystem);
+            }
+            missionManager.save(mission);
 
-        String instructions = """
-                    Notify user of mission update.
-                     - IF new destination system present, announce new destination star system.
-                     - IF new station is present announce new destination station.
-                     Example: Mission for <faction> is redirected to <New System> - <New Station>
-                """;
-        EventBusManager.publish(
-                new SensorDataEvent(
-                        new MissionRedirectData(mission.getFaction(), newDestinationSystem, newDestinationStation).toYaml(),
-                        instructions
-                )
-        );
+            String instructions = """
+                        Notify user of mission update.
+                         - IF new destination system present, announce new destination star system.
+                         - IF new station is present announce new destination station.
+                         Example: Mission for <faction> is redirected to <New System> - <New Station>
+                    """;
+            EventBusManager.publish(
+                    new SensorDataEvent(
+                            new MissionRedirectData(mission.getFaction(), newDestinationSystem, newDestinationStation).toYaml(),
+                            instructions
+                    )
+            );
+        });
     }
 
     record MissionRedirectData(String faction, String newDestination, String newStation) implements ToYamlConvertable {

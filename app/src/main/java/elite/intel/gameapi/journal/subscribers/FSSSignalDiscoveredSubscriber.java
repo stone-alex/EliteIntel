@@ -26,25 +26,26 @@ public class FSSSignalDiscoveredSubscriber {
 
     @Subscribe
     public void onFSSSignalDiscovered(FSSSignalDiscoveredEvent event) {
+        Thread.ofVirtual().start(() -> {
+            locationManager.save(updateLocation(event));
 
-        locationManager.save(updateLocation(event));
+            if ("ResourceExtraction".equals(event.getSignalType())) {
+                pirateMissionDataManager.confirmTargetReconResourceSite(playerSession.getPrimaryStarName());
+            }
 
-        if ("ResourceExtraction".equals(event.getSignalType())) {
-            pirateMissionDataManager.confirmTargetReconResourceSite(playerSession.getPrimaryStarName());
-        }
-
-        if (event.getUssTypeLocalised() != null && event.getUssTypeLocalised().equals("Nonhuman signal source")) {
-            publishVoice("Nonhuman signal source detected! Threat level " + event.getThreatLevel() + "!");
-        }
-        if (event.getUssType() != null && event.getUssType().contains(USS_TYPE_SALVAGE)) {
-            announceSalvage("Low quality salvage", event);
-        }
-        if (event.getUssType() != null && event.getUssType().contains(USS_TYPE_VALUABLE_SALVAGE)) {
-            announceSalvage("Valuable salvage", event);
-        }
-        if (event.getUssType() != null && event.getUssType().contains(USS_TYPE_VERY_VALUABLE_SALVAGE)) {
-            announceSalvage("Very Valuable salvage", event);
-        }
+            if (event.getUssTypeLocalised() != null && event.getUssTypeLocalised().equals("Nonhuman signal source")) {
+                publishVoice("Nonhuman signal source detected! Threat level " + event.getThreatLevel() + "!");
+            }
+            if (event.getUssType() != null && event.getUssType().contains(USS_TYPE_SALVAGE)) {
+                announceSalvage("Low quality salvage", event);
+            }
+            if (event.getUssType() != null && event.getUssType().contains(USS_TYPE_VALUABLE_SALVAGE)) {
+                announceSalvage("Valuable salvage", event);
+            }
+            if (event.getUssType() != null && event.getUssType().contains(USS_TYPE_VERY_VALUABLE_SALVAGE)) {
+                announceSalvage("Very Valuable salvage", event);
+            }
+        });
     }
 
     private LocationDto updateLocation(FSSSignalDiscoveredEvent event) {

@@ -9,15 +9,17 @@ public class CommitCrimeEventSubscriber {
 
     @Subscribe
     public void onCommitCrimeEvent(CommitCrimeEvent event) {
-        StringBuilder sb = new StringBuilder();
+        Thread.ofVirtual().start(() -> {
+            StringBuilder sb = new StringBuilder();
 
-        sb.append(" WARNING: Faction ");
-        sb.append(event.getFaction());
-        sb.append(" issued bounty of ").append(event.getBounty()).append(" credits ");
-        sb.append(" for ").append(event.getCrimeType());
-        sb.append(" against ");
-        sb.append(event.getVictimLocalised());
+            sb.append(" WARNING: Faction ");
+            sb.append(event.getFaction());
+            sb.append(" issued bounty of ").append(event.getBounty()).append(" credits ");
+            sb.append(" for ").append(event.getCrimeType());
+            sb.append(" against ");
+            sb.append(event.getVictimLocalised());
 
-        EventBusManager.publish(new MissionCriticalAnnouncementEvent(sb.toString()));
+            EventBusManager.publish(new MissionCriticalAnnouncementEvent(sb.toString()));
+        });
     }
 }

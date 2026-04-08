@@ -18,46 +18,50 @@ public class TouchdownEventSubscriber {
 
     @Subscribe
     public void onTouchdownEvent(TouchdownEvent event) {
-        String body = event.getBody();
-        Double latitude = event.getLatitude();
-        Double longitude = event.getLongitude();
-        String pointOfInterest = event.getNearestDestinationLocalised();
-        String starSystem = event.getStarSystem();
-        boolean isStation = event.isOnStation();
-        boolean isOnPlanet = event.isOnPlanet();
-        String locationType = isStation ? "Station" : isOnPlanet ? "Planet" : null;
+        Thread.ofVirtual().start(() -> {
+            String body = event.getBody();
+            Double latitude = event.getLatitude();
+            Double longitude = event.getLongitude();
+            String pointOfInterest = event.getNearestDestinationLocalised();
+            String starSystem = event.getStarSystem();
+            boolean isStation = event.isOnStation();
+            boolean isOnPlanet = event.isOnPlanet();
+            String locationType = isStation ? "Station" : isOnPlanet ? "Planet" : null;
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("Touchdown: ");
-        sb.append(" ");
-        sb.append(event.isPlayerControlled() ? "Manual" : "Unmanned");
-        sb.append(" ");
-        if (isStation) sb.append(" On Station ");
-        if (isStation) sb.append(" On ").append(event.getBody()).append(". ").append("Nearest Destination: ").append(pointOfInterest).append(".");
+            StringBuilder sb = new StringBuilder();
+            sb.append("Touchdown: ");
+            sb.append(" ");
+            sb.append(event.isPlayerControlled() ? "Manual" : "Unmanned");
+            sb.append(" ");
+            if (isStation) sb.append(" On Station ");
+            if (isStation)
+                sb.append(" On ").append(event.getBody()).append(". ").append("Nearest Destination: ").append(pointOfInterest).append(".");
 
-        sb.append(" ");
-        sb.append(locationType == null ? "Unknown" : locationType);
-        sb.append(" ");
-        sb.append(body);
-        sb.append(" ");
-        sb.append("Latitude: ");
-        sb.append(latitude);
-        sb.append(" ");
-        sb.append("Longitude: ");
-        sb.append(longitude);
-        sb.append(" ");
-        sb.append("Point of Interest: ");
-        sb.append(pointOfInterest);
+            sb.append(" ");
+            sb.append(locationType == null ? "Unknown" : locationType);
+            sb.append(" ");
+            sb.append(body);
+            sb.append(" ");
+            sb.append("Latitude: ");
+            sb.append(latitude);
+            sb.append(" ");
+            sb.append("Longitude: ");
+            sb.append(longitude);
+            sb.append(" ");
+            sb.append("Point of Interest: ");
+            sb.append(pointOfInterest);
 
 
-        LocationDto currentLocation = locationManager.findByLocationData(playerSession.getLocationData());
-        currentLocation.setLandingCoordinates(new double[]{event.getLatitude(), event.getLongitude()});
-        locationManager.save(currentLocation);
+            LocationDto currentLocation = locationManager.findByLocationData(playerSession.getLocationData());
+            currentLocation.setLandingCoordinates(new double[]{event.getLatitude(), event.getLongitude()});
+            locationManager.save(currentLocation);
 
-        if (pointOfInterest != null && !pointOfInterest.isEmpty()) {
-            EventBusManager.publish(new SensorDataEvent(sb.toString(), "We have landed successfully. Notify user"));
-        } else {
-            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Touchdown!"));
-        }
+            if (pointOfInterest != null && !pointOfInterest.isEmpty()) {
+                EventBusManager.publish(new SensorDataEvent(sb.toString(), "We have landed successfully. Notify user"));
+            } else {
+                EventBusManager.publish(new MissionCriticalAnnouncementEvent("Touchdown!"));
+            }
+
+        });
     }
 }

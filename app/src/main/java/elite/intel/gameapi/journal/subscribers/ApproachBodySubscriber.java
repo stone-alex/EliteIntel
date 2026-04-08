@@ -29,60 +29,62 @@ public class ApproachBodySubscriber {
     @Subscribe
     public void onApproachBodyEvent(ApproachBodyEvent event) {
         Thread.ofVirtual().start(() -> {
-        Status status = Status.getInstance();
-        double orbitalCruiseEntryAltitude = status.getStatus().getAltitude();
-        StringBuilder sb = new StringBuilder();
-        LocationDto location = locationManager.findBySystemAddress(event.getSystemAddress(), event.getBodyID());
+            Status status = Status.getInstance();
+            double orbitalCruiseEntryAltitude = status.getStatus().getAltitude();
+            StringBuilder sb = new StringBuilder();
+            LocationDto location = locationManager.findBySystemAddress(event.getSystemAddress(), event.getBodyID());
 
-        if (location.getPlanetName() == null || location.getPlanetName().isEmpty()) {
-            location.setPlanetName(event.getBody());
-            location.setPlanetShortName(event.getBody());
-        }
-
-        String locationType = location.getLocationType() == null ? "" : location.getLocationType().name();
-        sb.append("Entering orbit for ").append(locationType).append(" ").append(location.getPlanetName()).append(". ");
-
-        String currentSystem = event.getStarSystem();
-
-        location.setOrbitalCruiseEntryAltitude(orbitalCruiseEntryAltitude);
-
-        playerSession.setCurrentLocationId(event.getBodyID(), event.getSystemAddress());
-        playerSession.setCurrentPrimaryStarName(event.getStarSystem());
-
-        if (playerSession.getTracking().isEnabled()) return;
-
-        SystemBodiesDto systemBodiesDto = EdsmApiClient.searchSystemBodies(currentSystem);
-
-        boolean weHaveOurOwnData = location.getGravity() > 0;
-
-        if (weHaveOurOwnData) {
-            useOurData(location, sb);
-        } else {
-            //try EDSM data
-            boolean edsmHasData = systemBodiesDto.getData() != null
-                    && systemBodiesDto.getData().getBodies() != null
-                    && !systemBodiesDto.getData().getBodies().isEmpty();
-
-            if (edsmHasData) {
-                List<BodyData> edsmData = systemBodiesDto.getData().getBodies();
-                //we found the planet in EDSM
-                edsmData.stream().filter(edsmDataItem ->
-                        location.getPlanetName().equalsIgnoreCase(edsmDataItem.getName())).findFirst().ifPresent(bodyData ->
-                        extractDataFromEdsm(bodyData, location, sb)
-                );
-            } else { // no data available
-                sb.append(" No data available for ").append(event.getBody()).append(".");
-                sb.append(" Check gravity and temperature data before landing");
+            if (location.getPlanetName() == null || location.getPlanetName().isEmpty()) {
+                location.setPlanetName(event.getBody());
+                location.setPlanetShortName(event.getBody());
             }
-        }
 
-        locationManager.save(location);
-        String instructions = """
-                    We are approaching planet/moon. Warn/Notify user with this data.
-                    Temperature data is provided in C (Celsius)
-                    Gravity around equal to or less than 1G is safe. Issue a gravity warning if gravity is higher than 1G.
-                """;
-        EventBusManager.publish(new SensorDataEvent(sb.toString(), instructions));
+            String locationType = location.getLocationType() == null ? "" : location.getLocationType().name();
+            sb.append("Entering orbit for ").append(locationType).append(" ").append(location.getPlanetName()).append(". ");
+
+            String currentSystem = event.getStarSystem();
+
+            location.setOrbitalCruiseEntryAltitude(orbitalCruiseEntryAltitude);
+
+            playerSession.setCurrentLocationId(event.getBodyID(), event.getSystemAddress());
+            playerSession.setCurrentPrimaryStarName(event.getStarSystem());
+
+            if (playerSession.getTracking().isEnabled()) return;
+
+            SystemBodiesDto systemBodiesDto = EdsmApiClient.searchSystemBodies(currentSystem);
+
+            boolean weHaveOurOwnData = location.getGravity() > 0;
+
+            if (weHaveOurOwnData) {
+                useOurData(location, sb);
+            } else {
+                //try EDSM data
+                boolean edsmHasData = systemBodiesDto.getData() != null
+                        && systemBodiesDto.getData().getBodies() != null
+                        && !systemBodiesDto.getData().getBodies().isEmpty();
+
+                if (edsmHasData) {
+                    List<BodyData> edsmData = systemBodiesDto.getData().getBodies();
+                    //we found the planet in EDSM
+                    edsmData.stream().filter(edsmDataItem ->
+                            location.getPlanetName().equalsIgnoreCase(edsmDataItem.getName())).findFirst().ifPresent(bodyData ->
+                            extractDataFromEdsm(bodyData, location, sb)
+                    );
+                } else { // no data available
+                    sb.append(" No data available for ").append(event.getBody()).append(".");
+                    sb.append(" Check gravity and temperature data before landing");
+                }
+            }
+
+            locationManager.save(location);
+            if (playerSession.isRouteAnnouncementOn()) {
+                String instructions = """
+                            We are approaching planet/moon. Warn/Notify user with this data.
+                            Temperature data is provided in C (Celsius)
+                            Gravity around equal to or less than 1G is safe. Issue a gravity warning if gravity is higher than 1G.
+                        """;
+                EventBusManager.publish(new SensorDataEvent(sb.toString(), instructions));
+            }
         }); // end virtual thread
     }
 

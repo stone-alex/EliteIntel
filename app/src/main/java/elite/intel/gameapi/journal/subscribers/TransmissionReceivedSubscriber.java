@@ -15,34 +15,37 @@ import java.util.Set;
 @SuppressWarnings("unused")
 public class TransmissionReceivedSubscriber {
 
+    private final PlayerSession playerSession = PlayerSession.getInstance();
+
     @Subscribe
     public void onReceiveTextEvent(ReceiveTextEvent event) {
-        PlayerSession playerSession = PlayerSession.getInstance();
-        Boolean isRadioOn = playerSession.isRadioTransmissionOn();
-        CargoHoldManager cargoHoldManager = CargoHoldManager.getInstance();
-        boolean haveCargo = cargoHoldManager.get() == null?  false : cargoHoldManager.get().getCount() > 0;
+        Thread.ofVirtual().start(() -> {
+            Boolean isRadioOn = playerSession.isRadioTransmissionOn();
+            CargoHoldManager cargoHoldManager = CargoHoldManager.getInstance();
+            boolean haveCargo = cargoHoldManager.get() == null ? false : cargoHoldManager.get().getCount() > 0;
 
-        if (isPirateMessage(event.getMessageLocalised()) && haveCargo && !isRadioOn) {
-            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Pirate Alert!!!"));
-            return;
-        }
-
-        if (isRadioOn == null || !isRadioOn) return;
-
-        if (!event.getMessageLocalised().toLowerCase().contains("entered channel")) {
-            boolean isStation = event.getMessage().toLowerCase().contains("station");
-
-            if (event.getFrom().toLowerCase().contains("cruise")) return;
-            if (event.getFrom().toLowerCase().contains("military")) return;
-
-            if (isStation) {
-                if (!event.getMessageLocalised().toLowerCase().contains("fire zone")) {
-                    EventBusManager.publish(new SensorDataEvent("radio_transmission from:" + event.getFrom() + ", message:" + event.getMessageLocalised() + ".", "Notify User"));
-                }
-            } else {
-                EventBusManager.publish(new RadioTransmissionEvent(event.getMessageLocalised()));
+            if (isPirateMessage(event.getMessageLocalised()) && haveCargo && !isRadioOn) {
+                EventBusManager.publish(new MissionCriticalAnnouncementEvent("Pirate Alert!!!"));
+                return;
             }
-        }
+
+            if (isRadioOn == null || !isRadioOn) return;
+
+            if (!event.getMessageLocalised().toLowerCase().contains("entered channel")) {
+                boolean isStation = event.getMessage().toLowerCase().contains("station");
+
+                if (event.getFrom().toLowerCase().contains("cruise")) return;
+                if (event.getFrom().toLowerCase().contains("military")) return;
+
+                if (isStation) {
+                    if (!event.getMessageLocalised().toLowerCase().contains("fire zone")) {
+                        EventBusManager.publish(new SensorDataEvent("radio_transmission from:" + event.getFrom() + ", message:" + event.getMessageLocalised() + ".", "Notify User"));
+                    }
+                } else {
+                    EventBusManager.publish(new RadioTransmissionEvent(event.getMessageLocalised()));
+                }
+            }
+        });
     }
 
     private boolean isPirateMessage(String message) {

@@ -28,7 +28,6 @@ public class MaterialCollectedSubscriber {
 
     @Subscribe
     public void onMaterialCollected(MaterialCollectedEvent event) {
-        // Always record immediately
         materialManager.save(event.getName(), determineType(event.getCategory()), event.getCount());
 
         MaterialsDao.Material material = Database.withDao(MaterialsDao.class, dao -> dao.findByExactName(StringUtls.capitalizeWords(event.getName())));

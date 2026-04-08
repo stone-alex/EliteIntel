@@ -25,33 +25,36 @@ public class LoadoutSubscriber {
 
     @Subscribe
     public void onLoadoutEvent(LoadoutEvent event) {
-        ShipDao.Ship currentShip = shipManager.getShip();
-        Status.getInstance().setOkToAnnounceLoadout(
-                currentShip != null && !Objects.equals(currentShip.getShipId(), event.getShipId())
-        );
+        Thread.ofVirtual().start(() -> {
+
+            ShipDao.Ship currentShip = shipManager.getShip();
+            Status.getInstance().setOkToAnnounceLoadout(
+                    currentShip != null && !Objects.equals(currentShip.getShipId(), event.getShipId())
+            );
 
 
-        playerSession.setCurrentShipName(event.getShipName());
-        playerSession.setCurrentShip(event.getShip());
-        playerSession.setShipLoadout(LoadoutConverter.toShipLoadOutDto(event));
+            playerSession.setCurrentShipName(event.getShipName());
+            playerSession.setCurrentShip(event.getShip());
+            playerSession.setShipLoadout(LoadoutConverter.toShipLoadOutDto(event));
 
 
-        ShipDao.Ship ship = shipManager.getShipById(event.getShipId());
-        if (ship == null) {
-            String shipDefaultVoice = KokoroVoices.EMMA.name();
-            if (!systemSession.useLocalTTS()) {
-                shipDefaultVoice = GoogleVoices.EMMA.name();
+            ShipDao.Ship ship = shipManager.getShipById(event.getShipId());
+            if (ship == null) {
+                String shipDefaultVoice = KokoroVoices.EMMA.name();
+                if (!systemSession.useLocalTTS()) {
+                    shipDefaultVoice = GoogleVoices.EMMA.name();
+                }
+                shipManager.save(event.getShipId(), event.getShipName(), event.getCargoCapacity(), event.getShip(), shipDefaultVoice);
+            } else {
+                ship.setCargoCapacity(event.getCargoCapacity());
+                ship.setShipIdentifier(event.getShip());
+                ship.setShipName(event.getShipName());
+                shipManager.saveShip(ship);
             }
-            shipManager.save(event.getShipId(), event.getShipName(), event.getCargoCapacity(), event.getShip(), shipDefaultVoice);
-        } else {
-            ship.setCargoCapacity(event.getCargoCapacity());
-            ship.setShipIdentifier(event.getShip());
-            ship.setShipName(event.getShipName());
-            shipManager.saveShip(ship);
-        }
 
-        if (Status.getInstance().isOkToAnnounceLoadout()) {
-            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Hello " + playerSession.getPlayerName() + ", I am " + event.getShipName() + ", at your service " + Ranks.getPlayerHonorific()));
-        }
+            if (Status.getInstance().isOkToAnnounceLoadout()) {
+                EventBusManager.publish(new MissionCriticalAnnouncementEvent("Hello " + playerSession.getPlayerName() + ", I am " + event.getShipName() + ", at your service " + Ranks.getPlayerHonorific()));
+            }
+        });
     }
 }

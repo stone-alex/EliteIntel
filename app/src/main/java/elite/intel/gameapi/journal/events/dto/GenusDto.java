@@ -1,6 +1,8 @@
 package elite.intel.gameapi.journal.events.dto;
 
-public class GenusDto {
+import elite.intel.gameapi.gamestate.dtos.BaseJsonDto;
+
+public class GenusDto extends BaseJsonDto {
 
     private String planetName;
     private String species;

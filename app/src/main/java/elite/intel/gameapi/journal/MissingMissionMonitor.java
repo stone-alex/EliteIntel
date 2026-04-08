@@ -10,7 +10,6 @@ import elite.intel.gameapi.journal.events.MissionsEvent;
 import elite.intel.gameapi.journal.events.dto.MissionDto;
 import elite.intel.session.PlayerSession;
 import elite.intel.ui.controller.ManagedService;
-import elite.intel.util.StringUtls;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -111,7 +110,7 @@ public class MissingMissionMonitor implements Runnable, ManagedService {
             for (MissionAcceptedEvent mission : missingMissions) {
                 EventBusManager.publish(new AiVoxResponseEvent(
                         "%s! i detected a %s mission that i haven't catalogued.".formatted(
-                                StringUtls.player(PlayerSession.getInstance()),
+                                PlayerSession.getInstance().randomPlayerName(),
                                 mission.getName()
                         )
                 ));

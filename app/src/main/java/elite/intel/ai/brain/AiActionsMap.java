@@ -45,9 +45,10 @@ public class AiActionsMap {
         map.put("wake up", WAKEUP.getAction());
         map.put("sleep, go to sleep, ignore me, do not monitor", SLEEP.getAction());
         map.put("interrupt", INTERRUPT_TTS.getAction());
-        map.put("switch to combat mode", ACTIVATE_COMBAT_MODE.getAction());
-        map.put("switch to analysis mode", ACTIVATE_ANALYSIS_MODE.getAction());
-
+        if (status.isInMainShip() || status.isInSrv()) {
+            map.put("switch to combat mode", ACTIVATE_COMBAT_MODE.getAction());
+            map.put("switch to analysis mode", ACTIVATE_ANALYSIS_MODE.getAction());
+        }
         // navigation
         map.put("navigate to coordinates {lat:X, lon:Y}", NAVIGATE_TO_TARGET.getAction());
         map.put("navigate to active mission, plot route to active mission, plot route to mission, take me to mission, go to mission {key:X}", NAVIGATE_TO_NEXT_MISSION.getAction());
@@ -56,34 +57,44 @@ public class AiActionsMap {
         map.put("navigate to next trade stop, go to next trade stop", NAVIGATE_TO_NEXT_TRADE_STOP.getAction());
         map.put("navigate from memory, paste from memory", NAVIGATE_TO_ADDRESS_FROM_MEMORY.getAction());
         map.put("cancel navigation, abort navigation, stop navigation", NAVIGATION_OFF.getAction());
-        map.put("target destination", TARGET_DESTINATION.getAction());
-        map.put("jump to hyperspace,  jump, hyperspace jump, enter hyperspace, lets go, next way point", JUMP_TO_HYPERSPACE.getAction());
-        map.put("drop out, drop here, drop ftl, drop from supercruise, leave supercruise, drop in", DROP_FROM_SUPER_CRUISE.getAction());
-        map.put("enter supercruise,  supercruise, go supercruise, supercruise", ENTER_SUPER_CRUISE.getAction());
+
+        if (status.isInMainShip()) {
+            map.put("target destination", TARGET_DESTINATION.getAction());
+            map.put("jump to hyperspace,  jump, hyperspace jump, enter hyperspace, lets go, next way point", JUMP_TO_HYPERSPACE.getAction());
+            map.put("drop out, drop here, drop ftl, drop from supercruise, leave supercruise, drop in", DROP_FROM_SUPER_CRUISE.getAction());
+            map.put("enter supercruise,  supercruise, go supercruise, supercruise", ENTER_SUPER_CRUISE.getAction());
+        }
         map.put("set home system", SET_HOME_SYSTEM.getAction());
 
         // speed / throttle
-        map.put("stop engines, stop here, full stop, all stop, halt, kill engines, cut throttle, zero throttle, stop ship", SET_SPEED_ZERO.getAction());
-        map.put("taxi to landing, taxi, auto land, autopilot landing", TAXI.getAction());
-        map.put("quarter throttle, 25 percent, slow speed, one quarter", SET_SPEED25.getAction());
-        map.put("half throttle, 50 percent, half speed", SET_SPEED50.getAction());
-        map.put("three quarters throttle, 75 percent, three quarter speed", SET_SPEED75.getAction());
-        map.put("full throttle, 100 percent, full speed, maximum speed, max throttle", SET_SPEED100.getAction());
-        map.put("increase speed by {key:X}", INCREASE_SPEED_BY.getAction());
-        map.put("decrease speed by {key:X}", DECREASE_SPEED_BY.getAction());
-        map.put("set optimal speed, optimal approach speed, optimize approach speed", SET_OPTIMAL_SPEED.getAction());
+        if (status.isInMainShip()) {
+            map.put("stop engines, stop here, full stop, all stop, halt, kill engines, cut throttle, zero throttle, stop ship", SET_SPEED_ZERO.getAction());
+            map.put("taxi to landing, taxi, auto land, autopilot landing", TAXI.getAction());
+            map.put("quarter throttle, 25 percent, slow speed, one quarter", SET_SPEED25.getAction());
+            map.put("half throttle, 50 percent, half speed", SET_SPEED50.getAction());
+            map.put("three quarters throttle, 75 percent, three quarter speed", SET_SPEED75.getAction());
+            map.put("full throttle, 100 percent, full speed, maximum speed, max throttle", SET_SPEED100.getAction());
+            map.put("increase speed by {key:X}", INCREASE_SPEED_BY.getAction());
+            map.put("decrease speed by {key:X}", DECREASE_SPEED_BY.getAction());
+            map.put("set optimal speed, optimal approach speed, optimize approach speed", SET_OPTIMAL_SPEED.getAction());
+            map.put("landing gear, gear down, lower landing gear, extend landing gear", DEPLOY_LANDING_GEAR.getAction());
+            map.put("retract landing gear, gear up, raise landing gear, stow landing gear", RETRACT_LANDING_GEAR.getAction());
+            map.put("request docking, dock at station, request landing, docking request, ask for docking, request parking, parking spot, request pad", REQUEST_DOCKING.getAction());
+        }
 
         // flight / ship systems
-        map.put("landing gear, gear down, lower landing gear, extend landing gear", DEPLOY_LANDING_GEAR.getAction());
-        map.put("retract landing gear, gear up, raise landing gear, stow landing gear", RETRACT_LANDING_GEAR.getAction());
-        map.put("request docking, dock at station, request landing, docking request, ask for docking, request parking, parking spot, request pad", REQUEST_DOCKING.getAction());
-        map.put("open / close cargo scoop, deploy / retract cargo scoop, open / close cargo bay", TOGGLE_CARGO_SCOOP.getAction());
-        map.put("night vision, nightvision, turn on night vision, turn off night vision ", NIGHT_VISION_ON_OFF.getAction());
-        map.put("headlights, lights, turn off lights, turn on lights, ship lights, lights on, lights off ", LIGHTS_ON_OFF.getAction());
-        map.put("drive assist, driving assist, SRV assist {state:true/false}", DRIVE_ASSIST.getAction());
-        map.put("dismiss ship, send ship away, ship to orbit", DISMISS_SHIP.getAction());
-        map.put("return to surface, pick me up", RETURN_TO_SURFACE.getAction());
-
+        if (status.isInMainShip() || status.isInSrv()) {
+            map.put("open / close cargo scoop, deploy / retract cargo scoop, open / close cargo bay", TOGGLE_CARGO_SCOOP.getAction());
+            map.put("night vision, nightvision, turn on night vision, turn off night vision ", NIGHT_VISION_ON_OFF.getAction());
+            map.put("headlights, lights, turn off lights, turn on lights, ship lights, lights on, lights off ", LIGHTS_ON_OFF.getAction());
+        }
+        if (status.isInSrv()) {
+            map.put("drive assist, driving assist, SRV assist {state:true/false}", DRIVE_ASSIST.getAction());
+        }
+        if (status.isInMainShip() || status.isOnFoot()) {
+            map.put("dismiss ship, send ship away, ship to orbit", DISMISS_SHIP.getAction());
+            map.put("return to surface, pick me up", RETURN_TO_SURFACE.getAction());
+        }
         // market / traders / brokers
         map.put("find raw material trader, raw trader, where to trade raw materials {key:X}", FIND_RAW_MATERIAL_TRADER.getAction());
         map.put("find encoded material trader, encoded trader, data trader {key:X}", FIND_ENCODED_MATERIAL_TRADER.getAction());
@@ -102,6 +113,7 @@ public class AiActionsMap {
         map.put("calculate trade route", CALCULATE_TRADE_ROUTE.getAction());
         map.put("list trade route parameters", LIST_TRADE_ROUTE_PARAMETERS.getAction());
         map.put("monetize route", MONETIZE_ROUTE.getAction());
+
         map.put("change trade profile starting budget {key:X}", CHANGE_TRADE_PROFILE_SET_STARTING_BUDGET.getAction());
         map.put("change trade profile max stops {key:X}", CHANGE_TRADE_PROFILE_SET_MAX_NUMBER_OF_STOPS.getAction());
         map.put("change trade profile max distance {key:X}", CHANGE_TRADE_PROFILE_SET_MAX_DISTANCE_FROM_ENTRY.getAction());
@@ -116,15 +128,8 @@ public class AiActionsMap {
         map.put("discovery announcements {state:true/false}", DISCOVERY_ON_OFF.getAction());
         map.put("route announcements {state:true/false}", ROUTE_ON_OFF.getAction());
         map.put("disable all announcements", DISABLE_ALL_ANNOUNCEMENTS.getAction());
-        map.put("set voice {key:X}", SET_AI_VOICE.getAction());
-        map.put("list available voices", LIST_AVAILABLE_VOICES.getAction());
         map.put("clear reminders", CLEAR_REMINDERS.getAction());
         map.put("set reminder {key:X}", SET_REMINDER.getAction());
-
-        if (!systemSession.useLocalQueryLlm()) {
-            map.put("set personality {key:X}", SET_PERSONALITY.getAction());
-            map.put("set cadence {key:X}", SET_CADENCE.getAction());
-        }
 
         // UI panels
         map.put("activate", ACTIVATE.getAction());
@@ -148,6 +153,9 @@ public class AiActionsMap {
         map.put("show, open or display carrier management panel", DISPLAY_CARRIER_MANAGEMENT.getAction());
         map.put("show, open or display galaxy map", OPEN_GALAXY_MAP.getAction());
         map.put("show, open or display local / stat system map", OPEN_SYSTEM_MAP.getAction());
+        if (status.isInMainShip()) {
+            map.put("show, open or display station services panel", SHOW_STATION_SERVICES.getAction());
+        }
         map.put("exit close panel", EXIT_CLOSE.getAction());
         map.put("power to shields, max shields, boost shields", INCREASE_SHIELDS_POWER.getAction());
         map.put("power to engines, max engines, boost engines", INCREASE_ENGINES_POWER.getAction());

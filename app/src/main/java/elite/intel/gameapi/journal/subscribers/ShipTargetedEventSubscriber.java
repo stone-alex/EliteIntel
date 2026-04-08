@@ -45,12 +45,6 @@ public class ShipTargetedEventSubscriber {
             info.append("Contact: ");
             info.append(missionTargetOrNull);
 
-//            info.append(ship == null ? " Unknown Ship " : ship);
-//            info.append(", ");
-//
-//            info.append(pilotName == null ? " Pilot Unknown " : pilotName.replace("_", " "));
-//            info.append(", ");
-
             info.append(pilotRank == null ? " Rank Unknown " : pilotRank.replace("_", " "));
             info.append(", ");
 

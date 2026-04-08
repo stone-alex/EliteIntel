@@ -15,17 +15,19 @@ public class SupercruiseEntryEventSubscriber {
     private final Logger log = LoggerFactory.getLogger(SupercruiseEntryEventSubscriber.class);
     private final PlayerSession playerSession = PlayerSession.getInstance();
     private final LocationManager locationManager = LocationManager.getInstance();
+
     @Subscribe
     public void onSuperCruiseEntryEvent(SupercruiseEntryEvent event) {
-
-        LocationDto currentLocation = locationManager.findByLocationData(playerSession.getLocationData());
-        currentLocation.setStationFaction(null);
-        currentLocation.setStationName(null);
-        currentLocation.setStationServices(new ArrayList<>());
-        currentLocation.setStationAllegiance(null);
-        currentLocation.setStationEconomy(null);
-        currentLocation.setStationGovernment(null);
-        currentLocation.setStationType(null);
-        locationManager.save(currentLocation);
+        Thread.ofVirtual().start(() -> {
+            LocationDto currentLocation = locationManager.findByLocationData(playerSession.getLocationData());
+            currentLocation.setStationFaction(null);
+            currentLocation.setStationName(null);
+            currentLocation.setStationServices(new ArrayList<>());
+            currentLocation.setStationAllegiance(null);
+            currentLocation.setStationEconomy(null);
+            currentLocation.setStationGovernment(null);
+            currentLocation.setStationType(null);
+            locationManager.save(currentLocation);
+        });
     }
 }

@@ -12,14 +12,16 @@ import org.apache.logging.log4j.Logger;
 public class MiningEventSubscriber {
 
     private static final Logger log = LogManager.getLogger(MiningEventSubscriber.class);
+    private final PlayerSession playerSession = PlayerSession.getInstance();
 
     @Subscribe
     public void onMiningRefined(MiningRefinedEvent dto) {
-        PlayerSession playerSession = PlayerSession.getInstance();
-        String material = dto.getTypeLocalised().replace("\"", "").toLowerCase();
-        if(!playerSession.getMiningTargets().contains(material)) {
-            playerSession.addMiningTarget(material);
-            EventBusManager.publish(new MiningAnnouncementEvent(material + " is added to mining targets"));
-        }
+        Thread.ofVirtual().start(() -> {
+            String material = dto.getTypeLocalised().replace("\"", "").toLowerCase();
+            if (!playerSession.getMiningTargets().contains(material)) {
+                playerSession.addMiningTarget(material);
+                EventBusManager.publish(new MiningAnnouncementEvent(material + " is added to mining targets"));
+            }
+        });
     }
 }

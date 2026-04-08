@@ -69,43 +69,44 @@ public class LocationTrackingSubscriber {
      */
     @Subscribe
     public void onPlayerMoved(PlayerMovedEvent event) {
+        Thread.ofVirtual().start(() -> {
+            TargetLocation targetLocation = playerSession.getTracking();
+            if (targetLocation == null || !targetLocation.isEnabled()) {
+                resetTrackingState();
+                return;
+            }
 
-        TargetLocation targetLocation = playerSession.getTracking();
-        if (targetLocation == null || !targetLocation.isEnabled()) {
-            resetTrackingState();
-            return;
-        }
+            if (!targetLocation.equals(lastTracking) && lastTracking != null) {
+                resetTrackingState();
+                lastTracking = targetLocation;
+            }
 
-        if (!targetLocation.equals(lastTracking) && lastTracking != null) {
-            resetTrackingState();
-            lastTracking = targetLocation;
-        }
+            NavigationUtils.Direction navigator = NavigationUtils.getDirections(
+                    targetLocation.getLatitude(),
+                    targetLocation.getLongitude(),
+                    event
+            );
 
-        NavigationUtils.Direction navigator = NavigationUtils.getDirections(
-                targetLocation.getLatitude(),
-                targetLocation.getLongitude(),
-                event
-        );
+            if (navigator.distanceToTarget() == 0 && navigator.altitude() == 0) {
+                // we are not on the planet and not in orbit
+                log.info("Navigation ON, but not on planet and not in orbit. Skipping navigation.");
+                return;
+            } else {
+                EventBusManager.publish(new AppLogEvent(navigator.toString()));
+                log.info(navigator.toString());
+            }
 
-        if (navigator.distanceToTarget() == 0 && navigator.altitude() == 0) {
-            // we are not on the planet and not in orbit
-            log.info("Navigation ON, but not on planet and not in orbit. Skipping navigation.");
-            return;
-        } else {
-            EventBusManager.publish(new AppLogEvent(navigator.toString()));
-            log.info(navigator.toString());
-        }
+            if (Status.getInstance().isGlideMode()) {
+                glideNavigation(navigator, event);
+            } else if (isInOrbit(event)) {
+                orbitalNavigation(navigator, event);
+            } else {
+                surfaceNavigation(navigator, event);
+            }
 
-        if (Status.getInstance().isGlideMode()) {
-            glideNavigation(navigator, event);
-        } else if (isInOrbit(event)) {
-            orbitalNavigation(navigator, event);
-        } else {
-            surfaceNavigation(navigator, event);
-        }
-
-        lastDistance = navigator.distanceToTarget();
-        lastAltitude = event.getAltitude();
+            lastDistance = navigator.distanceToTarget();
+            lastAltitude = event.getAltitude();
+        });
     }
 
     private boolean isOnSurface(PlayerMovedEvent event) {

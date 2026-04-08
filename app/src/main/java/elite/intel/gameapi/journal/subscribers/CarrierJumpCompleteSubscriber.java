@@ -27,85 +27,87 @@ public class CarrierJumpCompleteSubscriber {
 
     @Subscribe
     public void onCarrierJumpCompleteEvent(CarrierJumpEvent event) {
-        String starSystem = event.getStarSystem();
-        double[] starPos = event.getStarPos();
-        playerSession.setLastKnownCarrierLocation(starSystem);
+        Thread.ofVirtual().start(() -> {
+            String starSystem = event.getStarSystem();
+            double[] starPos = event.getStarPos();
+            playerSession.setLastKnownCarrierLocation(starSystem);
 
-        if (starPos.length == 3 && starPos[0] == 0.0 && starPos[1] == 0.0 && starPos[2] == 0 && !"sol".equalsIgnoreCase(starSystem)) {
-            EventBusManager.publish(new AppLogEvent("WARNING: Carrier Jump complete, but star position is reported 0.0.0"));
-            EventBusManager.publish(new MissionCriticalAnnouncementEvent("Carrier jump is complete, but star position was not reported."));
-        }
+            if (starPos.length == 3 && starPos[0] == 0.0 && starPos[1] == 0.0 && starPos[2] == 0 && !"sol".equalsIgnoreCase(starSystem)) {
+                EventBusManager.publish(new AppLogEvent("WARNING: Carrier Jump complete, but star position is reported 0.0.0"));
+                EventBusManager.publish(new MissionCriticalAnnouncementEvent("Carrier jump is complete, but star position was not reported."));
+            }
 
 
-        FleetCarrierRouteManager fleetCarrierRouteManager = FleetCarrierRouteManager.getInstance();
-        CarrierDataDto carrierData = playerSession.getCarrierData();
-        carrierData.setSystemAddress(event.getSystemAddress());
-        carrierData.setStarName(event.getStarSystem());
-        CarrierJump currentLocationLeg = fleetCarrierRouteManager.findByPrimaryStar(event.getStarSystem());
-        boolean currentLegIsNotPresent = currentLocationLeg == null;
-        boolean routePlotted = !fleetCarrierRouteManager.getFleetCarrierRoute().isEmpty();
+            FleetCarrierRouteManager fleetCarrierRouteManager = FleetCarrierRouteManager.getInstance();
+            CarrierDataDto carrierData = playerSession.getCarrierData();
+            carrierData.setSystemAddress(event.getSystemAddress());
+            carrierData.setStarName(event.getStarSystem());
+            CarrierJump currentLocationLeg = fleetCarrierRouteManager.findByPrimaryStar(event.getStarSystem());
+            boolean currentLegIsNotPresent = currentLocationLeg == null;
+            boolean routePlotted = !fleetCarrierRouteManager.getFleetCarrierRoute().isEmpty();
 
-        if (currentLegIsNotPresent && routePlotted) {
-            String systemName = fleetCarrierRouteManager
-                    .getFleetCarrierRoute()
-                    .get(fleetCarrierRouteManager.getFleetCarrierRoute().size() - 1)
-                    .getSystemName();
-            ClipboardUtils.setClipboardText(systemName);
-            FleetCarrierRouteCalculator.calculate();
-        }
+            if (currentLegIsNotPresent && routePlotted) {
+                String systemName = fleetCarrierRouteManager
+                        .getFleetCarrierRoute()
+                        .get(fleetCarrierRouteManager.getFleetCarrierRoute().size() - 1)
+                        .getSystemName();
+                ClipboardUtils.setClipboardText(systemName);
+                FleetCarrierRouteCalculator.calculate();
+            }
 
-        int fuelUsed = currentLocationLeg == null ? 0 : currentLocationLeg.getFuelUsed();
-        carrierData.setFuelLevel(carrierData.getFuelLevel() - fuelUsed);
-        playerSession.setCarrierData(carrierData);
-
-        fleetCarrierRouteManager.removeLeg(event.getStarSystem());
-
-        playerSession.setCarrierDepartureTime(null);
-
-        Status status = Status.getInstance();
-        CarrierDataDto carrierInfo = playerSession.getCarrierData();
-
-        LocationDto location = toLocationDto(event);
-        if (status.isDocked()) {
-            location.setX(starPos[0]);
-            location.setY(starPos[1]);
-            location.setZ(starPos[2]);
-            playerSession.setCurrentLocationId(event.getBodyId(), event.getSystemAddress());
-            playerSession.setCurrentPrimaryStarName(event.getStarSystem());
-            locationManager.save(location);
-        }
-
-        if (starPos[0] > 0) {
-            carrierData.setX(starPos[0]);
-            carrierData.setY(starPos[1]);
-            carrierData.setZ(starPos[2]);
+            int fuelUsed = currentLocationLeg == null ? 0 : currentLocationLeg.getFuelUsed();
+            carrierData.setFuelLevel(carrierData.getFuelLevel() - fuelUsed);
             playerSession.setCarrierData(carrierData);
-        }
 
-        CarrierDataDto postJumpCarrierData = playerSession.getCarrierData();
-        int numJumpsRemaining = fleetCarrierRouteManager.getFleetCarrierRoute().size();
-        int estimatedTimeToFinal = numJumpsRemaining * 20;
-        String timeString;
-        if (estimatedTimeToFinal > 59) {
-            int hours = estimatedTimeToFinal / 60;
-            int minutes = estimatedTimeToFinal % 60;
-            timeString = hours + " hours and " + minutes + " minutes";
-        } else {
-            timeString = estimatedTimeToFinal + " minutes";
-        }
-        String remainingRoute = numJumpsRemaining == 0 ? ". Final destination reached!" : ". Remaining " + numJumpsRemaining + " jumps. Estimated time to final " + timeString + " ";
+            fleetCarrierRouteManager.removeLeg(event.getStarSystem());
 
-        String instructions = """
-                    Notify user about new carrier location.
-                    Example: Carrier jump complete!. New location <starSystem>, remaining fuel supply <fuelSupply> tons. Fuel in reserve <fuelReserve> tons.
-                """;
-        EventBusManager.publish(
-                new SensorDataEvent(
-                        "Carrier Location: " + event.getStarSystem() + " fuelSupply " + postJumpCarrierData.getFuelLevel() + " fuelReserve:" + postJumpCarrierData.getFuelReserve() + remainingRoute,
-                        instructions
-                )
-        );
-        DeferredNotificationManager.getInstance().scheduleNotification("Carrier jump cooldown is complete", FOUR_MINUTES);
+            playerSession.setCarrierDepartureTime(null);
+
+            Status status = Status.getInstance();
+            CarrierDataDto carrierInfo = playerSession.getCarrierData();
+
+            LocationDto location = toLocationDto(event);
+            if (status.isDocked()) {
+                location.setX(starPos[0]);
+                location.setY(starPos[1]);
+                location.setZ(starPos[2]);
+                playerSession.setCurrentLocationId(event.getBodyId(), event.getSystemAddress());
+                playerSession.setCurrentPrimaryStarName(event.getStarSystem());
+                locationManager.save(location);
+            }
+
+            if (starPos[0] > 0) {
+                carrierData.setX(starPos[0]);
+                carrierData.setY(starPos[1]);
+                carrierData.setZ(starPos[2]);
+                playerSession.setCarrierData(carrierData);
+            }
+
+            CarrierDataDto postJumpCarrierData = playerSession.getCarrierData();
+            int numJumpsRemaining = fleetCarrierRouteManager.getFleetCarrierRoute().size();
+            int estimatedTimeToFinal = numJumpsRemaining * 20;
+            String timeString;
+            if (estimatedTimeToFinal > 59) {
+                int hours = estimatedTimeToFinal / 60;
+                int minutes = estimatedTimeToFinal % 60;
+                timeString = hours + " hours and " + minutes + " minutes";
+            } else {
+                timeString = estimatedTimeToFinal + " minutes";
+            }
+            String remainingRoute = numJumpsRemaining == 0 ? ". Final destination reached!" : ". Remaining " + numJumpsRemaining + " jumps. Estimated time to final " + timeString + " ";
+
+            String instructions = """
+                        Notify user about new carrier location.
+                        Example: Carrier jump complete!. New location <starSystem>, remaining fuel supply <fuelSupply> tons. Fuel in reserve <fuelReserve> tons.
+                    """;
+            EventBusManager.publish(
+                    new SensorDataEvent(
+                            "Carrier Location: " + event.getStarSystem() + " fuelSupply " + postJumpCarrierData.getFuelLevel() + " fuelReserve:" + postJumpCarrierData.getFuelReserve() + remainingRoute,
+                            instructions
+                    )
+            );
+            DeferredNotificationManager.getInstance().scheduleNotification("Carrier jump cooldown is complete", FOUR_MINUTES);
+        });
     }
 
     private LocationDto toLocationDto(CarrierJumpEvent event) {

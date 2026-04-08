@@ -14,28 +14,31 @@ public class SupercruiseExitedSubscriber {
 
     @Subscribe
     public void onSupercruiseExited(SupercruiseExitEvent event) {
-        LocationDto starSystem = locationManager.findPrimaryStar(playerSession.getPrimaryStarName());
-        LocationDto here = locationManager.findBySystemAddress(event.getSystemAddress(), event.getBodyId());
-        playerSession.setCurrentLocationId(event.getBodyId(), event.getSystemAddress());
+        Thread.ofVirtual().start(() -> {
+                    LocationDto starSystem = locationManager.findPrimaryStar(playerSession.getPrimaryStarName());
+                    LocationDto here = locationManager.findBySystemAddress(event.getSystemAddress(), event.getBodyId());
+                    playerSession.setCurrentLocationId(event.getBodyId(), event.getSystemAddress());
 
-        here.setBodyType(event.getBodyType());
-        here.setBodyId(event.getBodyId());
-        here.setSystemAddress(event.getSystemAddress());
-        here.setStarName(playerSession.getPrimaryStarName());
+                    here.setBodyType(event.getBodyType());
+                    here.setBodyId(event.getBodyId());
+                    here.setSystemAddress(event.getSystemAddress());
+                    here.setStarName(playerSession.getPrimaryStarName());
 
-        LocationDto.LocationType locationType = LocationDto.determineType(event.getBodyType(), false);
-        if (LocationDto.LocationType.STATION == locationType) {
-            here.setStationName(event.getBody());
-        } else if (LocationDto.LocationType.PLANET == locationType || LocationDto.LocationType.MOON == locationType) {
-            here.setPlanetName(event.getBody());
-        } else if (LocationDto.LocationType.PLANETARY_RING == locationType) {
-            here.setStationName("Planetary Ring of " + here.getPlanetShortName());
-        }
+                    LocationDto.LocationType locationType = LocationDto.determineType(event.getBodyType(), false);
+                    if (LocationDto.LocationType.STATION == locationType) {
+                        here.setStationName(event.getBody());
+                    } else if (LocationDto.LocationType.PLANET == locationType || LocationDto.LocationType.MOON == locationType) {
+                        here.setPlanetName(event.getBody());
+                    } else if (LocationDto.LocationType.PLANETARY_RING == locationType) {
+                        here.setStationName("Planetary Ring of " + here.getPlanetShortName());
+                    }
 
-        if (here.getLocationType() == null || LocationDto.LocationType.UNCLASSIFIED == here.getLocationType()) {
-            here.setLocationType(locationType);
-        }
+                    if (here.getLocationType() == null || LocationDto.LocationType.UNCLASSIFIED == here.getLocationType()) {
+                        here.setLocationType(locationType);
+                    }
 
-        playerSession.setCurrentLocationId(event.getBodyId(), event.getSystemAddress());
+                    playerSession.setCurrentLocationId(event.getBodyId(), event.getSystemAddress());
+                }
+        );
     }
 }

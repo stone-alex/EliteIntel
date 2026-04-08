@@ -15,26 +15,27 @@ public class CarrierJumpRequestSubscriber {
 
     @Subscribe
     public void onCarrierJumpRequestEvent(CarrierJumpRequestEvent event) {
+        Thread.ofVirtual().start(() -> {
+            String fleetCarrierType = event.getCarrierType(); //nulls
+            String destinationSystemName = event.getSystemName(); //nulls
+            String destinationStellarBody = event.getBody();
+            String rawDepartureTime = event.getDepartureTime();
+            String formattedDepartureTime = TimestampFormatter.formatTimestamp(rawDepartureTime, true);
 
-        String fleetCarrierType = event.getCarrierType(); //nulls
-        String destinationSystemName = event.getSystemName(); //nulls
-        String destinationStellarBody = event.getBody();
-        String rawDepartureTime = event.getDepartureTime();
-        String formattedDepartureTime = TimestampFormatter.formatTimestamp(rawDepartureTime, true);
+            StringBuilder sb = new StringBuilder();
+            sb.append("Carrier Jump Scheduled: ");
+            sb.append(" to ");
+            sb.append(destinationStellarBody);
+            sb.append(" departure time: ");
+            sb.append(formattedDepartureTime);
+            sb.append(".");
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("Carrier Jump Scheduled: ");
-        sb.append(" to ");
-        sb.append(destinationStellarBody);
-        sb.append(" departure time: ");
-        sb.append(formattedDepartureTime);
-        sb.append(".");
+            PlayerSession playerSession = PlayerSession.getInstance();
+            playerSession.setCarrierDepartureTime(rawDepartureTime);
 
-        PlayerSession playerSession = PlayerSession.getInstance();
-        playerSession.setCarrierDepartureTime(rawDepartureTime);
-
-        long millis = Instant.parse(event.getDepartureTime()).toEpochMilli() - (1000 * 60 * 3);
-        DeferredNotificationManager.getInstance().scheduleNotification("Carrier is departing in three minutes.", millis);
-        EventBusManager.publish(new SensorDataEvent(sb.toString(), "Notify User"));
+            long millis = Instant.parse(event.getDepartureTime()).toEpochMilli() - (1000 * 60 * 3);
+            DeferredNotificationManager.getInstance().scheduleNotification("Carrier is departing in three minutes.", millis);
+            EventBusManager.publish(new SensorDataEvent(sb.toString(), "Notify User"));
+        });
     }
 }

@@ -17,55 +17,56 @@ public class CarrierLocationSubscriber {
 
     @Subscribe
     public void onCarrierLocationEvent(CarrierLocationEvent event) {
+        Thread.ofVirtual().start(() -> {
+                    if ("FleetCarrier".equalsIgnoreCase(event.getCarrierType()) || "SquadronCarrier".equalsIgnoreCase(event.getCarrierType())) {
 
-        if ("FleetCarrier".equalsIgnoreCase(event.getCarrierType()) || "SquadronCarrier".equalsIgnoreCase(event.getCarrierType())) {
+                        boolean isSquadron = "SquadronCarrier".equalsIgnoreCase(event.getCarrierType());
 
-            boolean isSquadron = "SquadronCarrier".equalsIgnoreCase(event.getCarrierType());
+                        playerSession.setLastKnownCarrierLocation(event.getStarSystem());
+                        FleetCarrierRouteManager route = FleetCarrierRouteManager.getInstance();
+                        CarrierDataDto carrierData = playerSession.getCarrierData();
+                        carrierData.setStarName(event.getStarSystem());
 
-            playerSession.setLastKnownCarrierLocation(event.getStarSystem());
-            FleetCarrierRouteManager route = FleetCarrierRouteManager.getInstance();
-            CarrierDataDto carrierData = playerSession.getCarrierData();
-            carrierData.setStarName(event.getStarSystem());
+                        CarrierJump currentCompletedJump = route.findByPrimaryStar(event.getStarSystem());
+                        boolean routeEntryFound = false;
+                        if (currentCompletedJump != null) {
+                            carrierData.setX(currentCompletedJump.getX());
+                            carrierData.setY(currentCompletedJump.getY());
+                            carrierData.setZ(currentCompletedJump.getZ());
+                            if (isSquadron) {
+                                playerSession.setSquadronCarrierData(carrierData);
+                            } else {
+                                playerSession.setCarrierData(carrierData);
+                            }
 
-            CarrierJump currentCompletedJump = route.findByPrimaryStar(event.getStarSystem());
-            boolean routeEntryFound = false;
-            if (currentCompletedJump != null) {
-                carrierData.setX(currentCompletedJump.getX());
-                carrierData.setY(currentCompletedJump.getY());
-                carrierData.setZ(currentCompletedJump.getZ());
-                if (isSquadron) {
-                    playerSession.setSquadronCarrierData(carrierData);
-                } else {
-                    playerSession.setCarrierData(carrierData);
-                }
+                            routeEntryFound = true;
+                        }
 
-                routeEntryFound = true;
-            }
+                        route.removeLeg(event.getStarSystem());
 
-            route.removeLeg(event.getStarSystem());
-
-            if (!routeEntryFound) {
-                Thread.ofVirtual().start(() -> {
-                    // try via EDSM
-                    StarSystemDto starSystemDto = EdsmApiClient.searchStarSystem(event.getStarSystem(), 1);
-                    StarSystemDto.Coords coords = starSystemDto.getCoords();
-                    if (coords != null && coords.getX() > 0 && coords.getY() > 0 && coords.getZ() > 0) {
-                        carrierData.setX(coords.getX());
-                        carrierData.setY(coords.getY());
-                        carrierData.setZ(coords.getZ());
-                        playerSession.setCarrierData(carrierData);
-                    } else {
-                        // try via saved locations
-                        LocationManager locationData = LocationManager.getInstance();
-                        LocationDto location = locationData.findPrimaryStar(event.getStarSystem());
-                        carrierData.setX(location.getX());
-                        carrierData.setY(location.getY());
-                        carrierData.setZ(location.getZ());
-                        playerSession.setCarrierData(carrierData);
+                        if (!routeEntryFound) {
+                            Thread.ofVirtual().start(() -> {
+                                // try via EDSM
+                                StarSystemDto starSystemDto = EdsmApiClient.searchStarSystem(event.getStarSystem(), 1);
+                                StarSystemDto.Coords coords = starSystemDto.getCoords();
+                                if (coords != null && coords.getX() > 0 && coords.getY() > 0 && coords.getZ() > 0) {
+                                    carrierData.setX(coords.getX());
+                                    carrierData.setY(coords.getY());
+                                    carrierData.setZ(coords.getZ());
+                                    playerSession.setCarrierData(carrierData);
+                                } else {
+                                    // try via saved locations
+                                    LocationManager locationData = LocationManager.getInstance();
+                                    LocationDto location = locationData.findPrimaryStar(event.getStarSystem());
+                                    carrierData.setX(location.getX());
+                                    carrierData.setY(location.getY());
+                                    carrierData.setZ(location.getZ());
+                                    playerSession.setCarrierData(carrierData);
+                                }
+                            });
+                        }
                     }
-                });
-            }
-        }
+                }
+        );
     }
-
 }

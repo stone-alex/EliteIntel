@@ -6,8 +6,6 @@ import javax.annotation.Nullable;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import static org.apache.commons.lang3.StringUtils.trimToNull;
-
 public class StringUtls {
 
 
@@ -138,7 +136,7 @@ public class StringUtls {
                 .replace(":", " - ")
                 .replaceAll("\\.{2,}", " ")                     // "..." → space (espeak-ng stof crash on multi-dot sequences)
                 .replaceAll("\\s{2,}", " ")                     // collapse repeated spaces
-                .replace(", pilot", StringUtls.player(PlayerSession.getInstance()))
+                .replace(", pilot", PlayerSession.getInstance().randomPlayerName())
                 .trim();
     }
 
@@ -195,22 +193,6 @@ public class StringUtls {
     public static String affirmative() {
         List<String> result = Arrays.stream(
                 new String[]{"On it!", "affirmative!", "aye-aye!", "certainly!", "of course!", "rightaway!"}
-        ).filter(Objects::nonNull).toList();
-        if (result.isEmpty()) {
-            return "Commander";
-        }
-
-        return result.get(new Random().nextInt(result.size()));
-    }
-
-    public static String player(PlayerSession playerSession) {
-        String alternativeName = playerSession.getAlternativeName();
-        String playerName = trimToNull(alternativeName) != null ? alternativeName : playerSession.getPlayerName();
-        String playerMilitaryRank = playerSession.getPlayerHighestMilitaryRank();
-        String playerHonorific = Ranks.getPlayerHonorific();
-
-        List<String> result = Arrays.stream(
-                new String[]{alternativeName, playerHonorific, playerName, playerMilitaryRank}
         ).filter(Objects::nonNull).toList();
         if (result.isEmpty()) {
             return "Commander";

@@ -51,93 +51,95 @@ public class ScanOrganicSubscriber {
 
     @Subscribe
     public void onScanOrganicEvent(ScanOrganicEvent event) {
-        playerSession.setTracking(new TargetLocation()); // turn off tracking
-        StringBuilder sb = new StringBuilder();
-        String scanType = event.getScanType();
-        String genus = event.getGenusLocalised();
-        playerSession.setCurrentPartial(genus);
-        String species = subtractString(event.getSpeciesLocalised(), genus);
-        LocationDto currentLocation = locationManager.findBySystemAddress(event.getSystemAddress(), event.getBody());
-        playerSession.setCurrentLocationId(event.getBody(), event.getSystemAddress());
+        Thread.ofVirtual().start(() -> {
+            playerSession.setTracking(new TargetLocation()); // turn off tracking
+            StringBuilder sb = new StringBuilder();
+            String scanType = event.getScanType();
+            String genus = event.getGenusLocalised();
+            playerSession.setCurrentPartial(genus);
+            String species = subtractString(event.getSpeciesLocalised(), genus);
+            LocationDto currentLocation = locationManager.findBySystemAddress(event.getSystemAddress(), event.getBody());
+            playerSession.setCurrentLocationId(event.getBody(), event.getSystemAddress());
 
-        boolean isOurDiscovery = currentLocation.isOurDiscovery();
-        BioForms.ProjectedPayment paymentData = BioForms.getProjectedPayment(genus, species);
+            boolean isOurDiscovery = currentLocation.isOurDiscovery();
+            BioForms.ProjectedPayment paymentData = BioForms.getProjectedPayment(genus, species);
 
-        long payment = paymentData == null ? 0 : paymentData.payment();
-        long firstDiscoveryBonus = paymentData == null || !isOurDiscovery ? 0 : paymentData.firstDiscoveryBonus();
+            long payment = paymentData == null ? 0 : paymentData.payment();
+            long firstDiscoveryBonus = paymentData == null || !isOurDiscovery ? 0 : paymentData.firstDiscoveryBonus();
 
-        BioForms.BioDetails bioDetails = BioForms.getDetails(genus, species);
-        Integer distance = BioScanDistances.GENUS_TO_CCR.get(genus);
+            BioForms.BioDetails bioDetails = BioForms.getDetails(genus, species);
+            Integer distance = BioScanDistances.GENUS_TO_CCR.get(genus);
 
-        Integer range = null;
-        if (bioDetails == null) {
-            range = distance;
-        }
-        if (distance != null) {
-            range = distance;
-        }
-
-        if (scan1.equals(scanType)) {
-            sb.append(" Organic sample detected. Genus: ");
-            sb.append(" ");
-            sb.append("\"").append(genus).append("\"");
-            sb.append(" Species:");
-            sb.append(species);
-            sb.append(" First sample out of three required. ");
-            if (range != null) {
-                sb.append(" Required Distance between samples: ");
-                sb.append(range);
-                sb.append(" meters. ");
+            Integer range = null;
+            if (bioDetails == null) {
+                range = distance;
+            }
+            if (distance != null) {
+                range = distance;
             }
 
-            BioSampleDto bioSampleDto = createBioSampleDto(genus, species, isOurDiscovery);
-            bioSampleDto.setScanXof3(1);
-            currentLocation.addBioScan(bioSampleDto);
-            deleteScannedCodexEntry(genus, currentLocation);
-            locationManager.save(currentLocation);
-            announce(sb.toString());
-
-        } else if (scan2.equalsIgnoreCase(scanType)) {
-            BioSampleDto bioSampleDto = createBioSampleDto(genus, species, isOurDiscovery);
-            bioSampleDto.setScanXof3(2);
-            currentLocation.addBioScan(bioSampleDto);
-            deleteScannedCodexEntry(genus, currentLocation);
-            locationManager.save(currentLocation);
-            announce("Sample for genus \"" + genus + "\" logged. ");
-        } else if (scan3.equalsIgnoreCase(scanType)) {
-            sb = new StringBuilder();
-            sb.append("Final sample for genus: ");
-            sb.append("\"").append(genus).append("\" logged. ");
-            sb.append("collection complete. ");
-
-            BioSampleDto bioSampleDto = createBioSampleDto(genus, species, isOurDiscovery);
-
-            bioSampleDto.setPayout(payment);
-            bioSampleDto.setFistDiscoveryBonus(firstDiscoveryBonus);
-            bioSampleDto.setScanXof3(3);
-            bioSampleDto.setBioSampleCompleted(true);
-            bioSampleDto.setOurDiscovery(currentLocation.isOurDiscovery());
-            deleteScannedCodexEntry(genus, currentLocation);
-            playerSession.addBioSample(bioSampleDto);
-            playerSession.setCurrentPartial(null);
-            currentLocation.deletePartialBioSamples();
-            playerSession.clearGenusPaymentAnnounced();
-            locationManager.save(currentLocation);
-
-            List<GenusDto> allSpecies = currentLocation.getGenus();
-            List<ExoBio.DataDto> completedSpecies = completedScansForPlanet(playerSession.getBioCompletedSamples(), currentLocation.getPlanetName());
-            List<GenusDto> remainingSpecies = calculateGenusNotYetScanned(completedSpecies, allSpecies);
-            if (remainingSpecies.isEmpty()) {
-                sb.append(" Organic survey complete for this planet.");
-            } else {
-                sb.append(" Remaining genus: ");
-                for (GenusDto entry : remainingSpecies) {
-                    sb.append(entry.getSpecies()).append(", ");
+            if (scan1.equals(scanType)) {
+                sb.append(" Organic sample detected. Genus: ");
+                sb.append(" ");
+                sb.append("\"").append(genus).append("\"");
+                sb.append(" Species:");
+                sb.append(species);
+                sb.append(" First sample out of three required. ");
+                if (range != null) {
+                    sb.append(" Required Distance between samples: ");
+                    sb.append(range);
+                    sb.append(" meters. ");
                 }
-            }
 
-            announce(sb.toString());
-        }
+                BioSampleDto bioSampleDto = createBioSampleDto(genus, species, isOurDiscovery);
+                bioSampleDto.setScanXof3(1);
+                currentLocation.addBioScan(bioSampleDto);
+                deleteScannedCodexEntry(genus, currentLocation);
+                locationManager.save(currentLocation);
+                announce(sb.toString());
+
+            } else if (scan2.equalsIgnoreCase(scanType)) {
+                BioSampleDto bioSampleDto = createBioSampleDto(genus, species, isOurDiscovery);
+                bioSampleDto.setScanXof3(2);
+                currentLocation.addBioScan(bioSampleDto);
+                deleteScannedCodexEntry(genus, currentLocation);
+                locationManager.save(currentLocation);
+                announce("Sample for genus \"" + genus + "\" logged. ");
+            } else if (scan3.equalsIgnoreCase(scanType)) {
+                sb = new StringBuilder();
+                sb.append("Final sample for genus: ");
+                sb.append("\"").append(genus).append("\" logged. ");
+                sb.append("collection complete. ");
+
+                BioSampleDto bioSampleDto = createBioSampleDto(genus, species, isOurDiscovery);
+
+                bioSampleDto.setPayout(payment);
+                bioSampleDto.setFistDiscoveryBonus(firstDiscoveryBonus);
+                bioSampleDto.setScanXof3(3);
+                bioSampleDto.setBioSampleCompleted(true);
+                bioSampleDto.setOurDiscovery(currentLocation.isOurDiscovery());
+                deleteScannedCodexEntry(genus, currentLocation);
+                playerSession.addBioSample(bioSampleDto);
+                playerSession.setCurrentPartial(null);
+                currentLocation.deletePartialBioSamples();
+                playerSession.clearGenusPaymentAnnounced();
+                locationManager.save(currentLocation);
+
+                List<GenusDto> allSpecies = currentLocation.getGenus();
+                List<ExoBio.DataDto> completedSpecies = completedScansForPlanet(playerSession.getBioCompletedSamples(), currentLocation.getPlanetName());
+                List<GenusDto> remainingSpecies = calculateGenusNotYetScanned(completedSpecies, allSpecies);
+                if (remainingSpecies.isEmpty()) {
+                    sb.append(" Organic survey complete for this planet.");
+                } else {
+                    sb.append(" Remaining genus: ");
+                    for (GenusDto entry : remainingSpecies) {
+                        sb.append(entry.getSpecies()).append(", ");
+                    }
+                }
+
+                announce(sb.toString());
+            }
+        });
     }
 
     private BioSampleDto createBioSampleDto(String genus, String species, boolean isOurDiscovery) {

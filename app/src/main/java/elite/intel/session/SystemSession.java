@@ -123,7 +123,7 @@ public class SystemSession {
     }
 
 
-    public boolean isStreamingModeOn() {
+    public boolean isSleepingModeOn() {
         return Database.withDao(GameSessionDao.class, dao -> {
             GameSessionDao.GameSession session = dao.get();
             return session.getPrivacyModeOn();

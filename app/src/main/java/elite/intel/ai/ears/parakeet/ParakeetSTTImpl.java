@@ -329,7 +329,7 @@ public class ParakeetSTTImpl implements EarsInterface {
 
                 EventBusManager.publish(new AppLogEvent("STT: [" + finalTranscript + "]"));
 
-                if (systemSession.isStreamingModeOn()) {
+                if (systemSession.isSleepingModeOn()) {
                     if (passThrough(finalTranscript)) {
                         String stripped = stripListenBypassPrefix(finalTranscript);
                         sendToAi(stripped != null ? stripped : finalTranscript);

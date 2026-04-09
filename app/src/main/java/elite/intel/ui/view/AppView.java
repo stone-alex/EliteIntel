@@ -94,7 +94,7 @@ public class AppView extends JFrame implements AppViewInterface {
     public void initData() {
         settingsTabPanel.initData();
         playerTabPanel.initData();
-        aiTabPanel.initData(systemSession.isStreamingModeOn());
+        aiTabPanel.initData(systemSession.isSleepingModeOn());
     }
 
     @Subscribe

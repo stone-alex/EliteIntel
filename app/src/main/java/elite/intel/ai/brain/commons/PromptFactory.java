@@ -169,7 +169,7 @@ public class PromptFactory implements AiPromptFactory {
                   - "find gold within 80 ly"   → {"action": "find_commodity", "params": {"key": "gold", "max_distance": "80"}}
                 """);
 
-        Map<String, String> reduced = Reducer.reduce(normalizedInput, actionsMap.actionMap());
+        Map<String, String> reduced = Reducer.reduce(normalizedInput, actionsMap.actionMap(), !systemSession.conversationalModeOn());
         if (!systemSession.conversationalModeOn() && !reduced.containsKey("ignore_nonsensical_input")) {
             // Always keep the fallback visible so the LLM never hallucinates a missing action
             Map<String, String> pinned = new LinkedHashMap<>();

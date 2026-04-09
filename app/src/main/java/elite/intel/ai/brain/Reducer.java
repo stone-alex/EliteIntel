@@ -52,7 +52,7 @@ public class Reducer {
      * @param full            the complete map of key-value pairs to be filtered.
      * @return a filtered map containing entries from the input map whose keys match the filtering criteria.
      */
-    public static Map<String, String> reduce(String normalizedInput, Map<String, String> full) {
+    public static Map<String, String> reduce(String normalizedInput, Map<String, String> full, boolean isStrictMode) {
         if (normalizedInput == null || normalizedInput.isBlank()) return full;
 
         Set<String> inputWords = Arrays.stream(normalizedInput.toLowerCase().split("\\W+"))
@@ -60,7 +60,18 @@ public class Reducer {
                 .filter(w -> !STOP_WORDS.contains(w))
                 .collect(Collectors.toSet());
 
-        if (inputWords.isEmpty()) return full;
+        //if (inputWords.isEmpty()) return full;
+        if (inputWords.isEmpty()) {
+            if (isStrictMode) {
+                Map<String, String> pinned = new LinkedHashMap<>();
+                pinned.put("ignore_nonsensical_input", "ignore_nonsensical_input");
+                return pinned;
+            } else {
+                Map<String, String> pinned = new LinkedHashMap<>();
+                pinned.put("query_general_conversation", "query_general_conversation");
+                return pinned;
+            }
+        }
 
         Map<String, String> result = new LinkedHashMap<>();
         for (Map.Entry<String, String> entry : full.entrySet()) {

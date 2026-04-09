@@ -2,6 +2,14 @@
 
 ### bug fixes / features:
 
+- strict reducer setting. If conversation mode is off, (default) the app should have less changes to perform action on radom chatter
+
+
+
+## Elite Intel v-0.0352-beta
+
+### bug fixes / features:
+
 - setting ship voice, personality and cadence now only available via UI.  No longer available via a voice command.
 - Added "disembark" command to when you are in the ship.
 - Added "show/open/display station services" when you are in your ship at the station/port/carrier.

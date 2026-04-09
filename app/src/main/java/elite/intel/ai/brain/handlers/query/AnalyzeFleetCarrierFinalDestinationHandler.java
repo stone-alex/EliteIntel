@@ -32,19 +32,24 @@ public class AnalyzeFleetCarrierFinalDestinationHandler extends BaseQueryAnalyze
         String iceRingStops = calculateIceRingStops(carrierRoute);
 
         String instructions = """
-                    Provide route summary.
-                    DATA:
-                    - finalDestination is destination
-                    - timeInMinutes announce as hours and minutes
-                    - totalFuelRequired is total fuel required
-                    - numJumps is number of legs/stops/jumps
-                    - refuelLocations are star systems with ice rings containing fuel
-                    RULE:
-                    Begin with: "The fleet carrier will arrive at [finalDestination] in HH hours and MM minutes. [totalFuelRequired] tons of fuel required to complete the journey."
-                    Then evaluate fuelBalance from the data:
-                    - If fuelBalance < 0 (negative): append "The carrier will need to refuel before reaching [finalDestination]."
-                    - If fuelBalance >= 0 (zero or positive): append "The carrier will have sufficient fuel to reach [finalDestination]."
-                    Do not add anything else.
+                Answer the user's question about the fleet carrier's planned route.
+                
+                Data fields:
+                - finalDestination: the destination system
+                - timeInMinutes: total travel time — announce as hours and minutes
+                - totalFuelRequired: tritium needed for the full journey in tons
+                - numJumps: number of legs/stops/jumps to destination
+                - refuelLocations: star systems with ice rings where the carrier can refuel
+                - fuelBalance: positive = tritium surplus in tons, negative = shortfall in tons
+                
+                Rules:
+                - Answer only what was asked. Do not volunteer unrequested data.
+                - For destination questions: use finalDestination.
+                - For ETA or travel time questions: use timeInMinutes.
+                - For jump count questions: use numJumps.
+                - For fuel questions: use totalFuelRequired and fuelBalance.
+                - For refuel stop questions: use refuelLocations.
+                - Only mention fuelBalance if the user asked about fuel or range.
                 """;
 
         return process(new AiDataStruct(instructions, new DataDto(finalDestination, totalFuelRequired, fuelBalance, timeInMinutes, numJumps, iceRingStops)), originalUserInput);

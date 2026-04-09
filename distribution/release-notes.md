@@ -180,7 +180,6 @@
 
 - Changed Gemini model to "gemini-3.1-flash-lite-preview" per request.
 
----
 
 ## Elite Intel v-0.0314
 
@@ -189,7 +188,6 @@
 - Added LM Studio support.
 - Fixing orbital navigation.
 
----
 
 ## Elite Intel v-0.0313 (hot fix)
 
@@ -199,7 +197,6 @@
 - Gemeni response format tuning.
 - Added a Fleet management panel under the Player tab. You can now customize the personality, cadence and voice of your ships. NOTE: The voice names will be reset to default if you switch from Local to Cloud voices and back.
 
----
 
 ## Elite Intel v-0.0311-beta
 

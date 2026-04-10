@@ -319,7 +319,7 @@ public class InputNormalizer {
         SYNONYM_MAP.put("jumps to destination", "plotted route");
         SYNONYM_MAP.put("jumps remaining", "plotted route");
         SYNONYM_MAP.put("jumps left", "plotted route");
-        SYNONYM_MAP.put("progress", "player profile, my ranks, progress");
+        SYNONYM_MAP.put("player progress", "player profile");
         SYNONYM_MAP.put("is next star scoopable", "fuel at next stop");
         SYNONYM_MAP.put("can we scoop next star", "fuel at next stop");
         SYNONYM_MAP.put("scoopable at next stop", "fuel at next stop");
@@ -481,9 +481,9 @@ public class InputNormalizer {
         // ── Distance queries ───────────────────────────────────────────────────
         SYNONYM_MAP.put("range to carrier", "distance to carrier");
         SYNONYM_MAP.put("how far is the carrier", "distance to carrier");
+        SYNONYM_MAP.put("where is our carrier", "distance to carrier");
         SYNONYM_MAP.put("range to bio sample", "distance to last bio sample");
         SYNONYM_MAP.put("how far to previous organism", "distance to last bio sample");
-        SYNONYM_MAP.put("distance from inhabited space", "distance to bubble");
         SYNONYM_MAP.put("range from human space", "distance to bubble");
         SYNONYM_MAP.put("range to planet", "distance to stellar object");
         SYNONYM_MAP.put("how far to moon", "distance to stellar object");

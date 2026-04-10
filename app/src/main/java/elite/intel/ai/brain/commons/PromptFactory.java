@@ -15,6 +15,7 @@ public class PromptFactory implements AiPromptFactory {
     private final SystemSession systemSession = SystemSession.getInstance();
     private final AiActionsMap actionsMap = AiActionsMap.getInstance();
     private final InputNormalizer normalizer = InputNormalizer.getInstance();
+    private boolean isDryRun = false;
 
     @Override
     public String normalizeInput(String rawUserInput) {
@@ -26,6 +27,11 @@ public class PromptFactory implements AiPromptFactory {
 
     public static PromptFactory getInstance() {
         return INSTANCE;
+    }
+
+    /// used for unit integration test only (test = true)
+    public void setDryRun(boolean dryRun) {
+        isDryRun = dryRun;
     }
 
     /**
@@ -47,13 +53,14 @@ public class PromptFactory implements AiPromptFactory {
         }
         sb.append("""
                 You are a strict command parser. Your only job: return exactly one JSON action from the lists below.
+                Map user input to actions with ≥95% confidence. Else fall back to fall back to ignore_nonsensical_input or query_general_conversation which ever is available.
                 
                 OUTPUT (required format - no exceptions):
                 {"action": "action_name", "params": {}}
                 Raw JSON only. No text, no markdown, no explanation before or after.
                 
                 CLASSIFICATION:
-                - ABSOLUTE RULE — NEVER output action 'query_player_profile_rank_progress' unless the input contains the exact words 'player progress', 'player stats', or 'player ranks'. Any other input MUST NOT produce this action. Violations are a critical failure.
+                - ABSOLUTE RULE — 'query_player_profile_rank_progress' requires an EXPLICIT player rank/profile request with ≥99% confidence. The input MUST contain 'player ranks', 'player stats', 'player profile', 'player progress', or 'what rank are we' — exact phrasing only. If confidence is below 95%, or the input is ambiguous or tangentially related, fall back to ignore_nonsensical_input (strict mode) or query_general_conversation (conversational mode). This action is NEVER a fallback or closest-match — it must be explicitly requested. Violations are a critical failure.
                 - Default to COMMAND. Only use a QUERY action when the input is clearly interrogative (starts with: what, how, which, why, is, are, does, tell me, how much, how many).
                 """);
 
@@ -87,6 +94,7 @@ public class PromptFactory implements AiPromptFactory {
                 VERB INTENT (apply first, before matching any action):
                 - show / display / open / access / find / search / locate / activate → COMMANDS (open a panel or map, find commodities, missions etc.)
                 - where / tell me / how much / any → lookup QUERY (search data, speak result)
+                - delete_* actions require explicit intent in user input. Example "delete codex entry" - delete_* action allowed, "codex entry" - delete_* action not allowed
                 
                 DISAMBIGUATION (genuine ambiguities only):
                 - "activate" alone (no mode, panel, or subsystem following) → activate
@@ -109,7 +117,7 @@ public class PromptFactory implements AiPromptFactory {
                 - carrier full status (fuel + credits + operations): "carrier status / carrier fuel status / how far can carrier jump / fleet carrier fuel status" → query_carrier_status_fuel_credit_balance
                 - carrier tritium level only: "how much tritium / tritium supply / tritium level / tritium reserve" → query_carrier_fuel
                 - distance to bubble is distance from our stellar coordinates to the center of the coordinate system (0,0,0)
-                - For "progress, rank, player stats" → 'query_player_profile_rank_progress' do not confuse with "profits for exploration, missions or bounties"
+                - For EXPLICIT "player ranks / player stats / player profile / player progress / what rank are we" → 'query_player_profile_rank_progress'. Do NOT confuse with profits, exploration earnings, missions, bounties, or any other use of the word "rank" or "progress".
                 
                 - "listen" / "listen up" alone → start_listening
                 - "listen [+ any instruction]" → treat as a normal command/query
@@ -169,7 +177,7 @@ public class PromptFactory implements AiPromptFactory {
                   - "find gold within 80 ly"   → {"action": "find_commodity", "params": {"key": "gold", "max_distance": "80"}}
                 """);
 
-        Map<String, String> reduced = Reducer.reduce(normalizedInput, actionsMap.actionMap(), !systemSession.conversationalModeOn());
+        Map<String, String> reduced = Reducer.reduce(normalizedInput, actionsMap.actionMap(isDryRun), !systemSession.conversationalModeOn());
         if (!systemSession.conversationalModeOn() && !reduced.containsKey("ignore_nonsensical_input")) {
             // Always keep the fallback visible so the LLM never hallucinates a missing action
             Map<String, String> pinned = new LinkedHashMap<>();

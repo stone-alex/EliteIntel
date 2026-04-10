@@ -1,3 +1,13 @@
+## Elite Intel v-0.0354-beta
+
+### bug fixes / features:
+
+- Fix for the biome (Bacteria is the most likely candidate)
+- Fix for the Carrier arrival times
+- Unit test support for conditional action map assembly
+- Added station services (open). This only fires when you are in your ship at the station, port or fleet carrier.
+
+
 ## Elite Intel v-0.0352-beta
 
 ### bug fixes / features:

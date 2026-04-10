@@ -38,7 +38,7 @@ public class AiActionsMap {
      * @return A map of user input strings to corresponding command strings, represented
      * as a mapping between keys (user input phrases) and values (command actions).
      */
-    public Map<String, String> actionMap() {
+    public Map<String, String> actionMap(boolean isDryRun) {
         Map<String, String> map = new LinkedHashMap<>();
 
         // always available
@@ -56,10 +56,10 @@ public class AiActionsMap {
         map.put("cancel navigation, abort navigation, stop navigation", NAVIGATION_OFF.getAction());
         map.put("set home system", SET_HOME_SYSTEM.getAction());
 
-        if (status.isInMainShip()) {
+        if (status.isInMainShip() || isDryRun) {
             // navigation
             map.put("target destination", TARGET_DESTINATION.getAction());
-            map.put("jump to hyperspace,  jump, hyperspace jump, enter hyperspace, lets go, next way point", JUMP_TO_HYPERSPACE.getAction());
+            map.put("jump to hyperspace,  jump, hyperspace jump, enter hyperspace, lets go, next way point, let's go", JUMP_TO_HYPERSPACE.getAction());
             map.put("drop out, drop here, drop ftl, drop from supercruise, leave supercruise, drop in", DROP_FROM_SUPER_CRUISE.getAction());
             map.put("enter supercruise,  supercruise, go supercruise, supercruise", ENTER_SUPER_CRUISE.getAction());
             map.put("launch ship, launch", LAUNCH_SHIP.getAction());
@@ -97,18 +97,18 @@ public class AiActionsMap {
             map.put("order fighter attack my target, fighter attack, sic fighter on target", FIGHTER_REQUEST_FOCUS_TARGET.getAction());
             map.put("order fighter hold fire, fighter cease fire, fighter stand down", FIGHTER_REQUEST_HOLD_FIRE.getAction());
             map.put("order fighter return to ship, fighter dock, recall fighter", FIGHTER_REQUEST_REQUEST_DOCK.getAction());
-            map.put("fighter open orders, fire at will, attack", FIGHTER_OPEN_ORDERS.getAction());
+            map.put("fighter open orders, fire at will, attack at will", FIGHTER_OPEN_ORDERS.getAction());
         }
 
-        if (status.isInMainShip() && !status.isDocked()) {
+        if (status.isInMainShip() && !status.isDocked() || isDryRun) {
             map.put("stations in system, what stations, nearby stations, star ports, space stations, docking available", QUERY_STATIONS.getAction());
         }
 
-        if (status.isInSrv() && status.isDocked()) {
+        if (status.isInSrv() && status.isDocked() || isDryRun) {
             map.put("show, open or display station services panel", SHOW_STATION_SERVICES.getAction());
         }
 
-        if (status.isInMainShip() || status.isInSrv()) {
+        if (status.isInMainShip() || status.isInSrv() || isDryRun) {
             // flight / ship systems
             map.put("switch to combat mode", ACTIVATE_COMBAT_MODE.getAction());
             map.put("switch to analysis mode", ACTIVATE_ANALYSIS_MODE.getAction());
@@ -132,12 +132,12 @@ public class AiActionsMap {
             map.put("equalize power, balance power, reset power, distribute power equally", RESET_POWER.getAction());
         }
 
-        if (status.isInSrv()) {
+        if (status.isInSrv() || isDryRun) {
             map.put("drive assist, driving assist, SRV assist {state:true/false}", DRIVE_ASSIST.getAction());
             map.put("recover SRV, board ship, return SRV, retrieve SRV, SRV dock", RECOVER_SRV.getAction());
         }
 
-        if (status.isInMainShip() || status.isOnFoot()) {
+        if (status.isInMainShip() || status.isOnFoot() || isDryRun) {
             map.put("dismiss ship, send ship away, ship to orbit", DISMISS_SHIP.getAction());
             map.put("return to surface, pick me up", RETURN_TO_SURFACE.getAction());
         }
@@ -247,7 +247,7 @@ public class AiActionsMap {
         map.put("outfitting, ship upgrades, modules available, what modules at station, available modules, available equipment, buy modules, ship parts, station equipment", LOCAL_OUTFITTING.getAction());
         map.put("shipyard, ships for sale, what ships at station, buy a ship, available ships, ships to buy, new ship", LOCAL_SHIPYARD.getAction());
         map.put("what is in our cargo hold, what are we carrying, cargo contents, commodities on board, what are we hauling, hold contents", CARGO_HOLD_CONTENTS.getAction());
-        map.put("player profile, my ranks, progress, combat rank, trade rank, exploration rank, commander stats, pilot rank, our ranking, commander profile, what rank are we", PLAYER_PROFILE_ANALYSIS.getAction());
+        map.put("player profile, player ranks, player stats, player progress, what rank are we", PLAYER_PROFILE_ANALYSIS.getAction());
         map.put("ship loadout, damage report, ship modules, combat readiness report, ship equipment, ship specs, what am I flying, what are we equipped with, do you have, is it equipped, shield generator, hull reinforcement, sensors, thrusters, frameshift, fuel scoop, installed", SHIP_LOADOUT.getAction());
         map.put("station details, what services here, what services are here, services here, what services does this station have, services at this station, what does station offer, station info, station facilities, what's at this station, services available", STATION_DETAILS.getAction());
         map.put("bounties, total bounties, bounty collected, how much in bounties, bounty earnings, credits from bounties, bounty credits", TOTAL_BOUNTIES.getAction());

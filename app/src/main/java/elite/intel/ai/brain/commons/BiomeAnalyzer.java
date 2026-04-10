@@ -40,21 +40,24 @@ public class BiomeAnalyzer extends BaseQueryAnalyzer {
 
 
         String instructions = """
-                Predict probable genus for each planet using the genusToBiome map.
+                Classify likely biology for each planet using the genusToBiome map.
                 
                 Data fields:
                 - locations: list of planets to classify (planetName, planetClass, atmosphere, temperature in Kelvin, vulcanism, numBioSignals)
                 - genusToBiome: map of genus name to the biome conditions it requires
                 - starSystemCharacteristics: star types and planet types present in this system
-                
+
                 Rules:
-                - For each planet: match its planetClass, atmosphere, temperature, and vulcanism against genusToBiome conditions. Allow partial and lenient matches.
-                - The number of genus listed per planet must be equal to or greater than numBioSignals.
-                - If no plausible matches exist but numBioSignals is greater than zero: list Bacterium as a fallback.
-                - If no matches and numBioSignals is zero: output "Planet <planetName>: no matching genus found".
-                - Output only planet names and genus lists. No explanations.
+                - If numBioSignals is zero: skip the planet entirely.
+                - If numBioSignals is greater than zero: Bacterium is near-certain — always include it as confirmed.
+                - For additional genus beyond Bacterium: strictly match planetClass, atmosphere, temperature, and vulcanism against genusToBiome. Only include a genus if conditions are a strong match. Do NOT use lenient or partial matching.
+                - Additional genus are crowd-sourced statistical candidates only — they may or may not be present. Do not pad the list to reach numBioSignals; list only what genuinely fits the conditions.
+                - Distinguish clearly between what is near-certain and what is speculative.
+                - Output only planet names and genus. No explanations.
                 
-                Output format: Planet X: Possible genus are Genus1, Genus2, Genus3. Planet Y: Possible genus are Genus1, Genus2.
+                Output format:
+                Planet X: Confirmed: Bacterium. Possibly also: Genus2, Genus3.
+                Planet Y: Confirmed: Bacterium. No other strong candidates.
                 """;
 
         List<LocationData> list = List.of(locations);

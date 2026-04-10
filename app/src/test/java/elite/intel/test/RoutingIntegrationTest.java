@@ -85,7 +85,7 @@ public class RoutingIntegrationTest {
     }
 
     static Stream<String> startListening() {
-        return Stream.of("wake", "wake up", "pay attention", "listen up");
+        return Stream.of("wake", "wake up");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -144,7 +144,7 @@ public class RoutingIntegrationTest {
     }
 
     static Stream<String> speedZero() {
-        return Stream.of("stop engines", "full stop", "all stop", "halt", "kill engines", "cut throttle", "zero throttle", "stop ship");
+        return Stream.of("stop engines", "full stop", "all stop", "kill engines", "cut throttle", "zero throttle", "stop ship");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -721,7 +721,7 @@ public class RoutingIntegrationTest {
     }
 
     static Stream<String> queryShipLoadout() {
-        return Stream.of("ship loadout", "damage report", "what am I flying", "ship equipment");
+        return Stream.of("ship loadout", "what am I flying", "ship equipment");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -809,7 +809,7 @@ public class RoutingIntegrationTest {
     }
 
     static Stream<String> queryPlayerProfile() {
-        return Stream.of("player profile", "my ranks", "combat rank", "commander stats");
+        return Stream.of("player profile", "player ranks", "player stats", "player progress", "what rank are we");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")

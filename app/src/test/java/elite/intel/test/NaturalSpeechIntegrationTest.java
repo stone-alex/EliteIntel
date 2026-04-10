@@ -24,7 +24,7 @@ public class NaturalSpeechIntegrationTest {
     /**
      * Pause between each test phrase. Increase if your LLM is slow.
      */
-    private static final int LLM_WAIT_MS = 500;
+    private static final int LLM_WAIT_MS = 1000;
     /// adjust this nob to your LLM. too fast, and the fail rate will be higher.
 
     private HandlerCapture capture;
@@ -813,7 +813,7 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> queryPlayerProfile() {
-        return Stream.of("player profile", "my ranks", "combat rank", "commander stats");
+        return Stream.of("player profile", "player ranks", "player stats", "player progress", "summarize player profile");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -901,7 +901,7 @@ public class NaturalSpeechIntegrationTest {
     }
 
     static Stream<String> queryStationDetails() {
-        return Stream.of("station details", "station services", "what services here", "station info");
+        return Stream.of("station details", "show station services", "what services here", "station info");
     }
 
     @ParameterizedTest(name = "[{index}] \"{0}\"")

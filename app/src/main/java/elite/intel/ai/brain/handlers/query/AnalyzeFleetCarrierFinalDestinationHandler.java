@@ -22,7 +22,12 @@ public class AnalyzeFleetCarrierFinalDestinationHandler extends BaseQueryAnalyze
 
         Map<Integer, CarrierJump> carrierRoute = manager.getFleetCarrierRoute();
         Integer totalFuelRequired = manager.getTotalFuelRequired();
-        Integer timeInMinutes = carrierRoute.size() * 20;
+        int totalMinutes = carrierRoute.size() * 20;
+        int travelHours = totalMinutes / 60;
+        int travelMins = totalMinutes % 60;
+        String travelTime = travelHours > 0
+                ? travelHours + " hours " + travelMins + " minutes"
+                : travelMins + " minutes";
         Integer numJumps = carrierRoute.size();
         String finalDestination = manager.getFinalDestination();
 
@@ -36,7 +41,7 @@ public class AnalyzeFleetCarrierFinalDestinationHandler extends BaseQueryAnalyze
                 
                 Data fields:
                 - finalDestination: the destination system
-                - timeInMinutes: total travel time — announce as hours and minutes
+                - travelTime: total travel time, pre-formatted as "X hours Y minutes" — speak it as-is
                 - totalFuelRequired: tritium needed for the full journey in tons
                 - numJumps: number of legs/stops/jumps to destination
                 - refuelLocations: star systems with ice rings where the carrier can refuel
@@ -45,14 +50,14 @@ public class AnalyzeFleetCarrierFinalDestinationHandler extends BaseQueryAnalyze
                 Rules:
                 - Answer only what was asked. Do not volunteer unrequested data.
                 - For destination questions: use finalDestination.
-                - For ETA or travel time questions: use timeInMinutes.
+                - For ETA or travel time questions: use travelTime.
                 - For jump count questions: use numJumps.
                 - For fuel questions: use totalFuelRequired and fuelBalance.
                 - For refuel stop questions: use refuelLocations.
                 - Only mention fuelBalance if the user asked about fuel or range.
                 """;
 
-        return process(new AiDataStruct(instructions, new DataDto(finalDestination, totalFuelRequired, fuelBalance, timeInMinutes, numJumps, iceRingStops)), originalUserInput);
+        return process(new AiDataStruct(instructions, new DataDto(finalDestination, totalFuelRequired, fuelBalance, travelTime, numJumps, iceRingStops)), originalUserInput);
     }
 
     private String calculateIceRingStops(Map<Integer, CarrierJump> carrierRoute) {
@@ -66,7 +71,7 @@ public class AnalyzeFleetCarrierFinalDestinationHandler extends BaseQueryAnalyze
         return sb.toString().substring(0, sb.length() - 1);
     }
 
-    record DataDto(String finalDestination, int fuelRequired, int fuelBalance, int timeInMinutes, int numJumps,
+    record DataDto(String finalDestination, int fuelRequired, int fuelBalance, String travelTime, int numJumps,
                    String refuelLocations) implements ToYamlConvertable {
 
         @Override

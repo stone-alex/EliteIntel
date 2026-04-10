@@ -3,6 +3,9 @@ package elite.intel.ai.brain;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static elite.intel.ai.brain.handlers.commands.Commands.IGNORE_NONSENSE;
+import static elite.intel.ai.brain.handlers.query.Queries.GENERAL_CONVERSATION;
+
 public class Reducer {
 
     /// these words will pass through in "ignore" mode.
@@ -64,11 +67,11 @@ public class Reducer {
         if (inputWords.isEmpty()) {
             if (isStrictMode) {
                 Map<String, String> pinned = new LinkedHashMap<>();
-                pinned.put("ignore_nonsensical_input", "ignore_nonsensical_input");
+                pinned.put(IGNORE_NONSENSE.getAction(), IGNORE_NONSENSE.getAction());
                 return pinned;
             } else {
                 Map<String, String> pinned = new LinkedHashMap<>();
-                pinned.put("query_general_conversation", "query_general_conversation");
+                pinned.put(GENERAL_CONVERSATION.getAction(), GENERAL_CONVERSATION.getAction());
                 return pinned;
             }
         }

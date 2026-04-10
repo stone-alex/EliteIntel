@@ -157,7 +157,7 @@ public enum Commands {
     FIGHTER_REQUEST_HOLD_FIRE                           ("fighter_hold_fire", BINDING_REQUEST_HOLD_FIRE.getGameBinding(), SimpleCommandActionHandler.class),
     FIGHTER_REQUEST_REQUEST_DOCK                        ("fighter_return_to_ship", BINDING_REQUEST_REQUEST_DOCK.getGameBinding(), SimpleCommandActionHandler.class),
     FIGHTER_OPEN_ORDERS                                 ("fighter_fire_at_will", OPEN_ORDERS.getGameBinding(), SimpleCommandActionHandler.class),
-    SET_SPEED_ZERO                                      ("set_speed_to_zero_0", BINDING_SET_SPEED_ZERO.getGameBinding(), SimpleCommandActionHandler.class),
+    SET_SPEED_ZERO                                      ("set_speed_to_zero_0_stop_ship", BINDING_SET_SPEED_ZERO.getGameBinding(), SimpleCommandActionHandler.class),
     TAXI                                                ("taxi_to_landing", BINDING_SET_SPEED_ZERO.getGameBinding(), SimpleCommandActionHandler.class),
     SET_SPEED25                                         ("set_speed_25", BINDING_SET_SPEED25.getGameBinding(), SimpleCommandActionHandler.class),
     SET_SPEED50                                         ("set_speed_50", BINDING_SET_SPEED50.getGameBinding(), SimpleCommandActionHandler.class),

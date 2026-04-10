@@ -2,6 +2,7 @@ package elite.intel.test;
 
 import elite.intel.ai.ApiFactory;
 import elite.intel.ai.brain.AiCommandInterface;
+import elite.intel.ai.brain.commons.PromptFactory;
 import elite.intel.ai.brain.commons.ResponseRouter;
 import elite.intel.db.util.Database;
 import elite.intel.session.SystemSession;
@@ -32,6 +33,7 @@ public class HeadlessBootstrap {
         // Routing-only mode: LLM dispatch is asserted but handlers do not execute
         // (no keystrokes, no DB writes, no Spansh/EDSM calls)
         ResponseRouter.getInstance().setDryRun(true);
+        PromptFactory.getInstance().setDryRun(true);
 
         brain = ApiFactory.getInstance().getCommandEndpoint();
         brain.start();

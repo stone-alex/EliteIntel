@@ -3,9 +3,9 @@ package elite.intel.ui.view;
 import com.google.common.eventbus.Subscribe;
 import elite.intel.db.managers.ShipManager;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.UserInputEvent;
 import elite.intel.session.PlayerSession;
 import elite.intel.ui.event.AiResponseLogEvent;
+import elite.intel.ui.event.NormalizedUserInputEvent;
 
 import javax.swing.*;
 import java.awt.*;
@@ -78,9 +78,9 @@ public class OBSOverlayWindow extends JFrame {
     // -- Event bus -------------------------------------------------------------
 
     @Subscribe
-    public void onUserInputEvent(UserInputEvent event) {
-        if (event.getUserInput() == null || event.getUserInput().isBlank()) return;
-        SwingUtilities.invokeLater(() -> addMessage(playerSession.getPlayerName() + ": ", event.getUserInput()));
+    public void onUserInputEvent(NormalizedUserInputEvent event) {
+        if (event.getText() == null || event.getText().isBlank()) return;
+        SwingUtilities.invokeLater(() -> addMessage(playerSession.getPlayerName() + ": ", event.getText()));
     }
 
     @Subscribe

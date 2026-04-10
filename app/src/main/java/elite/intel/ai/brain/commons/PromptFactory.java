@@ -1,8 +1,10 @@
 package elite.intel.ai.brain.commons;
 
 import elite.intel.ai.brain.*;
+import elite.intel.gameapi.EventBusManager;
 import elite.intel.session.PlayerSession;
 import elite.intel.session.SystemSession;
+import elite.intel.ui.event.NormalizedUserInputEvent;
 import elite.intel.util.Ranks;
 
 import java.util.LinkedHashMap;
@@ -25,6 +27,7 @@ public class PromptFactory implements AiPromptFactory {
     @Override
     public String normalizeInput(String rawUserInput) {
         String corrected = SttCorrector.correct(rawUserInput, sttVocabulary);
+        EventBusManager.publish(new NormalizedUserInputEvent(corrected));
         return normalizer.normalize(corrected);
     }
 

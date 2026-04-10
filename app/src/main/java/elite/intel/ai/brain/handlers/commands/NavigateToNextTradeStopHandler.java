@@ -48,7 +48,7 @@ public class NavigateToNextTradeStopHandler implements CommandHandler {
         List<TradeCommodity> commodities = nextStop.getTradeStopDto().getCommodities();
         if (!cargoLoaded) {
             boolean notInSourceSystem = !location.getStarName().equalsIgnoreCase(sourceSystem);
-            boolean notAtTheSourceStation = !location.getStationName().equalsIgnoreCase(sourceStation);
+            boolean notAtTheSourceStation = location.getStationName() != null && !location.getStationName().equalsIgnoreCase(sourceStation);
 
             if (notInSourceSystem) {
                 sb.append(" Travel to ").append(sourceSystem).append(", ");

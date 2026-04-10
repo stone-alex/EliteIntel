@@ -2,11 +2,7 @@ package elite.intel.ui.controller;
 
 import com.google.common.eventbus.Subscribe;
 import elite.intel.gameapi.EventBusManager;
-import elite.intel.gameapi.UserInputEvent;
-import elite.intel.ui.event.AiResponseLogEvent;
-import elite.intel.ui.event.AppLogDebugEvent;
-import elite.intel.ui.event.AppLogEvent;
-import elite.intel.ui.event.ToggleDetailedLogEvent;
+import elite.intel.ui.event.*;
 import elite.intel.ui.view.AiTabPanel;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -39,8 +35,8 @@ public class AiTabController {
     }
 
     @Subscribe
-    public void onUserInputEvent(UserInputEvent event) {
-        view.addUserMessage(event.getUserInput());
+    public void onUserInputEvent(NormalizedUserInputEvent event) {
+        view.addUserMessage(event.getText());
     }
 
     @Subscribe

@@ -84,12 +84,15 @@ public class TradeProfileManager {
         TradeStationSearchCriteria.ReferenceCoords coords = new TradeStationSearchCriteria.ReferenceCoords();
         LocationManager locationManager = LocationManager.getInstance();
         LocationDao.Coordinates galacticCoordinates = locationManager.getGalacticCoordinates();
+        String primaryStarName = playerSession.getPrimaryStarName();
 
         if (galacticCoordinates == null) {
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("Galactic coordinates are not available."));
             return true;
         }
-        if (galacticCoordinates.x() == 0 && galacticCoordinates.y() == 0 && galacticCoordinates.z() == 0) {
+
+        /// Sol is 0,0,0 but also if we do not have coordinates, our location will be 0,0,0.
+        if (galacticCoordinates.x() == 0 && galacticCoordinates.y() == 0 && galacticCoordinates.z() == 0 && !"Sol".equalsIgnoreCase(primaryStarName)) {
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("Galactic coordinates are not available."));
             return true;
         }

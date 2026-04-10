@@ -37,7 +37,7 @@ public class ResponseRouter implements AIRouterInterface {
 
     /**
      * When true the router publishes {@link HandlerDispatchedEvent} but skips handler execution.
-     * Use from test harnesses only — default is false.
+     * Use from test harnesses only - default is false.
      */
     public void setDryRun(boolean dryRun) {
         this.dryRun = dryRun;

@@ -48,7 +48,7 @@ public class AnalyzeShipLoadoutHandler extends BaseQueryAnalyzer implements Quer
         String instructions = """
                 Answer the user's question about ship loadout, health, or capabilities.
 
-                modulePresence contains pre-computed Java search results — these are facts, not suggestions.
+                modulePresence contains pre-computed Java search results - these are facts, not suggestions.
                 For any yes/no module question, read modulePresence and report it exactly. Do not reason further.
                 
                 Data fields:

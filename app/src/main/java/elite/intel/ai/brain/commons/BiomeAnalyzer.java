@@ -49,9 +49,9 @@ public class BiomeAnalyzer extends BaseQueryAnalyzer {
 
                 Rules:
                 - If numBioSignals is zero: skip the planet entirely.
-                - If numBioSignals is greater than zero: Bacterium is near-certain — always include it as confirmed.
+                - If numBioSignals is greater than zero: Bacterium is near-certain - always include it as confirmed.
                 - For additional genus beyond Bacterium: strictly match planetClass, atmosphere, temperature, and vulcanism against genusToBiome. Only include a genus if conditions are a strong match. Do NOT use lenient or partial matching.
-                - Additional genus are crowd-sourced statistical candidates only — they may or may not be present. Do not pad the list to reach numBioSignals; list only what genuinely fits the conditions.
+                - Additional genus are crowd-sourced statistical candidates only - they may or may not be present. Do not pad the list to reach numBioSignals; list only what genuinely fits the conditions.
                 - Distinguish clearly between what is near-certain and what is speculative.
                 - Output only planet names and genus. No explanations.
                 

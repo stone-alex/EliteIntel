@@ -60,7 +60,7 @@ public class PromptFactory implements AiPromptFactory {
                 Raw JSON only. No text, no markdown, no explanation before or after.
                 
                 CLASSIFICATION:
-                - ABSOLUTE RULE — 'query_player_profile_rank_progress' requires an EXPLICIT player rank/profile request with ≥99% confidence. The input MUST contain 'player ranks', 'player stats', 'player profile', 'player progress', or 'what rank are we' — exact phrasing only. If confidence is below 95%, or the input is ambiguous or tangentially related, fall back to ignore_nonsensical_input (strict mode) or query_general_conversation (conversational mode). This action is NEVER a fallback or closest-match — it must be explicitly requested. Violations are a critical failure.
+                - ABSOLUTE RULE - 'query_player_profile_rank_progress' requires an EXPLICIT player rank/profile request with ≥99% confidence. The input MUST contain 'player ranks', 'player stats', 'player profile', 'player progress', or 'what rank are we' - exact phrasing only. If confidence is below 95%, or the input is ambiguous or tangentially related, fall back to ignore_nonsensical_input (strict mode) or query_general_conversation (conversational mode). This action is NEVER a fallback or closest-match - it must be explicitly requested. Violations are a critical failure.
                 - Default to COMMAND. Only use a QUERY action when the input is clearly interrogative (starts with: what, how, which, why, is, are, does, tell me, how much, how many).
                 """);
 
@@ -75,11 +75,11 @@ public class PromptFactory implements AiPromptFactory {
                     """);
         } else {
             sb.append("""
-                    - STRICT MODE: ONLY output an action when the input is a direct, unambiguous, high-confidence match. DO NOT pick the "closest" — that is wrong. If you have ANY doubt whatsoever, return ignore_nonsensical_input. Partial matches, guesses, and interpretations are failures.
+                    - STRICT MODE: ONLY output an action when the input is a direct, unambiguous, high-confidence match. DO NOT pick the "closest" - that is wrong. If you have ANY doubt whatsoever, return ignore_nonsensical_input. Partial matches, guesses, and interpretations are failures.
                     - ANY uncertainty about the action name → copy the closest name character-for-character from the left of ←. Never construct or shorten a name.
 
                     HANDLE NONSENSICAL INPUT
-                    - If the input has no game action, no ship command, and no question about game data — it must be ignored. Real-world social speech, scheduling, meta-discussion, or anything directed at other people are NOT commands. Respond EXACTLY: {"action": "ignore_nonsensical_input", "params": {"key": "none"}}
+                    - If the input has no game action, no ship command, and no question about game data - it must be ignored. Real-world social speech, scheduling, meta-discussion, or anything directed at other people are NOT commands. Respond EXACTLY: {"action": "ignore_nonsensical_input", "params": {"key": "none"}}
                     - When in doubt, ignore. Do NOT attempt to match uncertain input to the nearest action.
                     
                     IGNORE EXAMPLES (these must always return ignore_nonsensical_input):

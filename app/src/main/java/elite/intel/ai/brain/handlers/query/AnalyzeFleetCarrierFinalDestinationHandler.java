@@ -41,7 +41,7 @@ public class AnalyzeFleetCarrierFinalDestinationHandler extends BaseQueryAnalyze
                 
                 Data fields:
                 - finalDestination: the destination system
-                - travelTime: total travel time, pre-formatted as "X hours Y minutes" — speak it as-is
+                - travelTime: total travel time, pre-formatted as "X hours Y minutes" - speak it as-is
                 - totalFuelRequired: tritium needed for the full journey in tons
                 - numJumps: number of legs/stops/jumps to destination
                 - refuelLocations: star systems with ice rings where the carrier can refuel

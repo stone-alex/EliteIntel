@@ -395,7 +395,7 @@ public class ParakeetSTTImpl implements EarsInterface {
      * If the transcript contains a "listen up" / "listen" bypass prefix followed by
      * meaningful content, returns the content with the prefix stripped.
      * Returns null if the transcript is just the keyword alone (e.g. pure "wake up")
-     * or no listen prefix is present — caller should send the original in that case.
+     * or no listen prefix is present - caller should send the original in that case.
      */
     private String stripListenBypassPrefix(String transcript) {
         String lower = transcript.toLowerCase();

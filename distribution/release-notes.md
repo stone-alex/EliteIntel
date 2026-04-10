@@ -1,3 +1,10 @@
+## Elite Intel v-0.0355-beta
+
+### bug fixes / features:
+- Added SttCorrector. It automatically corrects input adjusting it against the curated domain list of tokens "blending" to "landing", "sip" to "ship".
+
+
+
 ## Elite Intel v-0.0354-beta
 
 ### bug fixes / features:

@@ -8,6 +8,7 @@ import elite.intel.util.Ranks;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 public class PromptFactory implements AiPromptFactory {
 
@@ -17,9 +18,14 @@ public class PromptFactory implements AiPromptFactory {
     private final InputNormalizer normalizer = InputNormalizer.getInstance();
     private boolean isDryRun = false;
 
+    // Rebuilt each time generateUserInputSystemPrompt() is called (which always
+    // precedes normalizeInput() in every backend), then reused by normalizeInput().
+    private volatile Set<String> sttVocabulary = Set.of();
+
     @Override
     public String normalizeInput(String rawUserInput) {
-        return normalizer.normalize(rawUserInput);
+        String corrected = SttCorrector.correct(rawUserInput, sttVocabulary);
+        return normalizer.normalize(corrected);
     }
 
     private PromptFactory() {
@@ -46,7 +52,9 @@ public class PromptFactory implements AiPromptFactory {
      */
     @Override
     public String generateUserInputSystemPrompt(String rawUserInput) {
-        String normalizedInput = normalizer.normalize(rawUserInput);
+        Map<String, String> fullMap = actionsMap.actionMap(isDryRun);
+        sttVocabulary = SttCorrector.extractVocabulary(fullMap);
+        String normalizedInput = normalizer.normalize(SttCorrector.correct(rawUserInput, sttVocabulary));
         StringBuilder sb = new StringBuilder();
         if (!systemSession.useLocalCommandLlm()) {
             youAre(sb);
@@ -177,7 +185,7 @@ public class PromptFactory implements AiPromptFactory {
                   - "find gold within 80 ly"   → {"action": "find_commodity", "params": {"key": "gold", "max_distance": "80"}}
                 """);
 
-        Map<String, String> reduced = Reducer.reduce(normalizedInput, actionsMap.actionMap(isDryRun), !systemSession.conversationalModeOn());
+        Map<String, String> reduced = Reducer.reduce(normalizedInput, fullMap, !systemSession.conversationalModeOn());
         if (!systemSession.conversationalModeOn() && !reduced.containsKey("ignore_nonsensical_input")) {
             // Always keep the fallback visible so the LLM never hallucinates a missing action
             Map<String, String> pinned = new LinkedHashMap<>();

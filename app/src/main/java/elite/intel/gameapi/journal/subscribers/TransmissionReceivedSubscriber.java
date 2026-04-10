@@ -9,20 +9,34 @@ import elite.intel.gameapi.SensorDataEvent;
 import elite.intel.gameapi.journal.events.ReceiveTextEvent;
 import elite.intel.session.PlayerSession;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @SuppressWarnings("unused")
 public class TransmissionReceivedSubscriber {
+
+    private static final int DEDUP_CACHE_SIZE = 50;
+    private final Set<String> recentTransmissions = Collections.newSetFromMap(
+            new LinkedHashMap<>(DEDUP_CACHE_SIZE + 1, 0.75f, true) {
+                @Override
+                protected boolean removeEldestEntry(Map.Entry<String, Boolean> e) {
+                    return size() > DEDUP_CACHE_SIZE;
+                }
+            }
+    );
 
     private final PlayerSession playerSession = PlayerSession.getInstance();
 
     @Subscribe
     public void onReceiveTextEvent(ReceiveTextEvent event) {
         Thread.ofVirtual().start(() -> {
+            String key = event.getFrom() + "|" + event.getMessageLocalised();
+            synchronized (recentTransmissions) {
+                if (!recentTransmissions.add(key)) return;
+            }
+
             Boolean isRadioOn = playerSession.isRadioTransmissionOn();
             CargoHoldManager cargoHoldManager = CargoHoldManager.getInstance();
-            boolean haveCargo = cargoHoldManager.get() == null ? false : cargoHoldManager.get().getCount() > 0;
+            boolean haveCargo = cargoHoldManager.get() != null && cargoHoldManager.get().getCount() > 0;
 
             if (isPirateMessage(event.getMessageLocalised()) && haveCargo && !isRadioOn) {
                 EventBusManager.publish(new MissionCriticalAnnouncementEvent("Pirate Alert!!!"));

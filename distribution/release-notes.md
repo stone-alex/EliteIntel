@@ -6,6 +6,9 @@
 - Fix for the Carrier arrival times
 - Unit test support for conditional action map assembly
 - Added station services (open). This only fires when you are in your ship at the station, port or fleet carrier.
+- Fixed find broker / trader.
+- Fixed "welcome back aboard" when pulling in the SRV
+- Fixed loadout query. "Do we have a fuel scoop" will not invent actions anymore
 
 
 ## Elite Intel v-0.0352-beta

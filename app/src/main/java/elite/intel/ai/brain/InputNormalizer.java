@@ -594,6 +594,8 @@ public class InputNormalizer {
         SYNONYM_MAP.put("seoul", "sol");
         SYNONYM_MAP.put("roll", "role");
         SYNONYM_MAP.put("career", "carrier");
+        SYNONYM_MAP.put("sip", "ship");
+        SYNONYM_MAP.put("aligns", "launch");
 
     }
 

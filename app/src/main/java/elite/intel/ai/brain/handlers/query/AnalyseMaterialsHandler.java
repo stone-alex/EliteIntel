@@ -3,11 +3,9 @@ package elite.intel.ai.brain.handlers.query;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import elite.intel.ai.brain.handlers.query.struct.AiDataStruct;
-import elite.intel.ai.mouth.subscribers.events.AiVoxResponseEvent;
 import elite.intel.db.FuzzySearch;
 import elite.intel.db.dao.MaterialsDao;
 import elite.intel.db.util.Database;
-import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.gamestate.dtos.GameEvents;
 import elite.intel.session.PlayerSession;
 import elite.intel.util.yaml.ToYamlConvertable;
@@ -44,7 +42,6 @@ public class AnalyseMaterialsHandler extends BaseQueryAnalyzer implements QueryH
     }
 
     @Override public JsonObject handle(String action, JsonObject params, String originalUserInput) throws Exception {
-        EventBusManager.publish(new AiVoxResponseEvent("Checking mats inventory and cargo. Stand by."));
         JsonElement key = params.get("key");
         String query = (key != null) ? key.getAsString() : null;
 
@@ -75,7 +72,7 @@ public class AnalyseMaterialsHandler extends BaseQueryAnalyzer implements QueryH
             }
         }
 
-        // 2. Try commodity in cargo hold
+        // 2. Try commodity in the cargo hold
         String commodityName = capitalizeWords(FuzzySearch.fuzzyCommodityMatch(query, 3));
         if (commodityName != null) {
             GameEvents.CargoEvent cargo = PlayerSession.getInstance().getShipCargo();

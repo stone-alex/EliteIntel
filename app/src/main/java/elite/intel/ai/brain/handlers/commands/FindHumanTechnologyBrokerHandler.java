@@ -18,7 +18,7 @@ public class FindHumanTechnologyBrokerHandler implements CommandHandler {
         TradersAndBrokersSearch search = TradersAndBrokersSearch.getInstance();
         RoutePlotter routePlotter = new RoutePlotter();
         String location = search.location(null, BrokerType.HUMAN, range);
-        if (location != null) {
+        if (location == null) {
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("No Human tech broker available"));
         } else {
             routePlotter.plotRoute(location);

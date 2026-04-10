@@ -6,15 +6,18 @@ import elite.intel.db.managers.LocationManager;
 import elite.intel.db.managers.ReminderManager;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.search.spansh.station.traderandbroker.*;
+import elite.intel.session.PlayerSession;
 import elite.intel.util.TimeUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class TradersAndBrokersSearch {
 
     private static TradersAndBrokersSearch instance;
+    private static PlayerSession playerSession;
 
     private TradersAndBrokersSearch() {
     }
@@ -22,6 +25,7 @@ public class TradersAndBrokersSearch {
     public static synchronized TradersAndBrokersSearch getInstance() {
         if (instance == null) {
             instance = new TradersAndBrokersSearch();
+            playerSession = PlayerSession.getInstance();
         }
         return instance;
     }
@@ -77,15 +81,36 @@ public class TradersAndBrokersSearch {
             return null;
         }
 
-        TraderAndBrokerSearchDto.Result result = results.getFirst();
-        EventBusManager.publish(
-                new AiVoxResponseEvent("Head to " + result.getSystemName() + " star system. When you get there looks for" + result.getStationName()
-                        +". Data was last updated: "+ TimeUtils.transformToYMDHtimeAgo(result.getUpdatedAt(), TimeUtils.LOCAL_DATE_TIME)
-                )
-        );
-        ReminderManager.getInstance().setReminder(
-                "Head to " + result.getStationName(), result.getSystemName()
-        );
-        return result.getSystemName();
+        results = results.stream().sorted(Comparator.comparingDouble(TraderAndBrokerSearchDto.Result::getDistance)).toList();
+
+        TraderAndBrokerSearchDto.Result result = null;
+        String pledgedPower = playerSession.getRankAndProgressDto().getPledgedToPower();
+        if (pledgedPower == null || pledgedPower.isEmpty()) {
+            result = results.getFirst();
+        } else {
+            for (TraderAndBrokerSearchDto.Result r : results) {
+                if (r.getSystemControllingPower() == null) {
+                    result = r;
+                    break;
+                }
+                if (r.getSystemControllingPower() != null && r.getSystemControllingPower().equals(pledgedPower)) {
+                    result = r;
+                    break;
+                }
+            }
+        }
+
+        if (result != null) {
+            EventBusManager.publish(
+                    new AiVoxResponseEvent("Head to " + result.getSystemName() + " star system. When you get there looks for" + result.getStationName()
+                            + ". Data was last updated: " + TimeUtils.transformToYMDHtimeAgo(result.getUpdatedAt(), TimeUtils.LOCAL_DATE_TIME)
+                    )
+            );
+            ReminderManager.getInstance().setReminder(
+                    "Head to " + result.getStationName(), result.getSystemName()
+            );
+            return result.getSystemName();
+        }
+        return null;
     }
 }

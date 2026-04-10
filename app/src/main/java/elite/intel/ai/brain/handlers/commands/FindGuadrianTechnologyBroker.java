@@ -18,12 +18,11 @@ public class FindGuadrianTechnologyBroker implements CommandHandler {
         TradersAndBrokersSearch search = TradersAndBrokersSearch.getInstance();
         RoutePlotter routePlotter = new RoutePlotter();
 
-        String location = search.location(null, BrokerType.HUMAN, range);
-        if (location != null) {
+        String location = search.location(null, BrokerType.GUARDIAN, range);
+        if (location == null) {
             EventBusManager.publish(new MissionCriticalAnnouncementEvent("No Guardian tech broker available"));
         } else {
             routePlotter.plotRoute(location);
         }
-        routePlotter.plotRoute(location);
     }
 }

@@ -60,7 +60,10 @@ public class FuzzySearch {
 
 
     /// re-use for other fuzzy search
-    private static <T> String fuzzyMatch(String input, int similarity, Class<T> daoClass, Function<T, List<String>> candidatesProvider, BiFunction<T, String, String> originalCaseProvider) {
+    private static <T> String fuzzyMatch(String input, int similarity,
+                                         Class<T> daoClass,
+                                         Function<T, List<String>> candidatesProvider,
+                                         BiFunction<T, String, String> originalCaseProvider) {
         if (input == null || input.isBlank()) return null;
 
         final String lowerInput = input.trim().toLowerCase();

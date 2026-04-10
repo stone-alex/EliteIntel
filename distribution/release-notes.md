@@ -2,8 +2,8 @@
 
 ### bug fixes / features:
 - Added SttCorrector. It automatically corrects input adjusting it against the curated domain list of tokens "blending" to "landing", "sip" to "ship".
-
-
+- trade route fix
+- use corrected STT in display
 
 ## Elite Intel v-0.0354-beta
 

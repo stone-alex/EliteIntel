@@ -20,7 +20,7 @@ public class RequestDockingHandler implements CommandHandler {
         if(status.isInMainShip()){
             navigator.assumeDefaultState(StatusFlags.GuiFocus.EXTERNAL_PANEL);
             // un-target ships
-            GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_TARGET_NEXT_ROUTE_SYSTEM.getGameBinding(), 0));
+
             navigator.openAndNavigate(StatusFlags.GuiFocus.EXTERNAL_PANEL, LeftPanel.CONTACTS);
             //navigate to panel
             GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_UI_DOWN.getGameBinding(), 0));

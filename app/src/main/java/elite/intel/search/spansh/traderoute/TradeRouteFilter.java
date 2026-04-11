@@ -1,8 +1,5 @@
 package elite.intel.search.spansh.traderoute;
 
-import elite.intel.gameapi.data.PowerPlayData;
-import elite.intel.search.edsm.utils.StrongHoldFilter;
-import elite.intel.search.spansh.starsystems.StarSystemClient;
 import elite.intel.search.spansh.starsystems.StarSystemResult;
 import elite.intel.search.spansh.starsystems.StationClient;
 import elite.intel.search.spansh.starsystems.SystemSearchCriteria;
@@ -11,7 +8,7 @@ import elite.intel.session.PlayerSession;
 import java.util.ArrayList;
 import java.util.List;
 
-import static elite.intel.search.edsm.utils.StrongHoldFilter.skipEnemyStrongHold;
+import static elite.intel.search.edsm.utils.StrongHoldFilter.skipEnemyStarSystemHold;
 
 public class TradeRouteFilter {
 
@@ -46,7 +43,7 @@ public class TradeRouteFilter {
             StarSystemResult ogSourceSystem = searchSystem(ogSource);
             StarSystemResult ogDestinationSystem = searchSystem(ogDestination);
 
-            if(skipEnemyStrongHold(ogSourceSystem, ogDestinationSystem, pledgedPower)) continue;
+            if (skipEnemyStarSystemHold(ogSourceSystem, ogDestinationSystem, pledgedPower)) continue;
 
             filteredResults.add(transaction);
             route.setResult(filteredResults);

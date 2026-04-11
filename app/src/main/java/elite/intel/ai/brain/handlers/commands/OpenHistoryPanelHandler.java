@@ -23,7 +23,6 @@ public class OpenHistoryPanelHandler implements CommandHandler {
     @Override
     public void handle(String action, JsonObject params, String responseText) {
         if (status.isInMainShip() || status.isInFighter()) {
-            GameControllerBus.publish(new GameInputEvent(Bindings.GameCommand.BINDING_TARGET_NEXT_ROUTE_SYSTEM.getGameBinding(), 0));
             navigator.openAndNavigate(StatusFlags.GuiFocus.COMMS_PANEL, CommsPanel.HISTORY);
         } else if (status.isOnFoot()) {
             GameControllerBus.publish(new GameInputEvent(BINDING_ON_FOOT_WHEEL.getGameBinding(), 500));

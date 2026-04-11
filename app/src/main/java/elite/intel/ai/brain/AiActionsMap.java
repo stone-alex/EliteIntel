@@ -59,11 +59,11 @@ public class AiActionsMap {
 
         if (status.isInMainShip() || isDryRun) {
             // navigation
-            map.put("target destination", TARGET_DESTINATION.getAction());
+            map.put("select fds destination", TARGET_DESTINATION.getAction());
             map.put("jump to hyperspace,  jump, hyperspace jump, enter hyperspace, lets go, next way point, let's go", JUMP_TO_HYPERSPACE.getAction());
             map.put("drop out, drop here, drop ftl, drop from supercruise, leave supercruise, drop in", DROP_FROM_SUPER_CRUISE.getAction());
             map.put("enter supercruise,  supercruise, go supercruise, supercruise", ENTER_SUPER_CRUISE.getAction());
-            map.put("launch ship, launch", LAUNCH_SHIP.getAction());
+            map.put("launch ship, launch, detach from station, leave port, leave station", LAUNCH_SHIP.getAction());
             // speed / throttle
             map.put("stop engines, stop here, full stop, all stop, halt, kill engines, cut throttle, zero throttle, stop ship", SET_SPEED_ZERO.getAction());
             map.put("taxi to landing, taxi, auto land, autopilot landing", TAXI.getAction());
@@ -201,9 +201,9 @@ public class AiActionsMap {
         map.put("active missions, current missions, mission log, what missions, mission status, what are our missions, ongoing missions, mission board", ANALYZE_MISSIONS.getAction());
         map.put("pirate mission, kill count, how many kills, massacre mission progress, kills remaining, massacre progress, pirates remaining, pirate kills, bounty hunt progress", PIRATE_MISSION_PROGRESS.getAction());
         map.put("find hunting grounds {key:X}", FIND_HUNTING_GROUNDS.getAction());
-        map.put("recon hunting ground", RECON_TARGET_SYSTEM.getAction());
+        map.put("recon hunting ground, navigate to target system, navigate to hunting ground", RECON_TARGET_SYSTEM.getAction());
         map.put("ignore hunting ground", IGNORE_HUNTING_GROUND.getAction());
-        map.put("confirm hunting ground", CONFIRM_HUNTING_GROUND.getAction());
+        map.put("confirm hunting ground, confirm target star system", CONFIRM_HUNTING_GROUND.getAction());
 
         // science / mining / biology
         map.put("add mining target {key:X}", ADD_MINING_TARGET.getAction());

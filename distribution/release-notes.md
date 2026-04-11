@@ -1,3 +1,10 @@
+## Elite Intel v-0.0356-beta
+
+### bug fixes / features:
+- Pirate Massacre mission finder fix
+
+
+
 ## Elite Intel v-0.0355-beta
 
 ### bug fixes / features:

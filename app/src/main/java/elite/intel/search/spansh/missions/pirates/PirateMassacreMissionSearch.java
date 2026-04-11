@@ -3,9 +3,9 @@ package elite.intel.search.spansh.missions.pirates;
 import elite.intel.db.dao.LocationDao;
 import elite.intel.db.dao.PirateHuntingGroundsDao.HuntingGround;
 import elite.intel.db.dao.PirateMissionProviderDao.MissionProvider;
-import elite.intel.db.managers.LocationManager;
 import elite.intel.db.managers.HuntingGroundManager;
 import elite.intel.db.managers.HuntingGroundManager.PirateMissionTuple;
+import elite.intel.db.managers.LocationManager;
 import elite.intel.search.intra.IntraClient;
 import elite.intel.search.intra.IntraRequest;
 import elite.intel.search.intra.IntraResponse;
@@ -17,7 +17,7 @@ import elite.intel.session.PlayerSession;
 import java.util.ArrayList;
 import java.util.List;
 
-import static elite.intel.search.edsm.utils.StrongHoldFilter.skipEnemyStrongHold;
+import static elite.intel.search.edsm.utils.StrongHoldFilter.skipEnemyStarSystemHold;
 
 public class PirateMassacreMissionSearch {
 
@@ -95,7 +95,8 @@ public class PirateMassacreMissionSearch {
 
             if (missionProviderSystem == null || battleGroundSystem == null) continue;
 
-            if (pledgedToPower && skipEnemyStrongHold(missionProviderSystem, battleGroundSystem, pledgedPower)) continue;
+            if (pledgedToPower && skipEnemyStarSystemHold(missionProviderSystem, battleGroundSystem, pledgedPower))
+                continue;
 
             result.add(
                     missionDataManager.savePartialPair(

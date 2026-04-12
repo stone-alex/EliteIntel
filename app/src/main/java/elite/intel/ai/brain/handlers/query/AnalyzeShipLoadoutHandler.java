@@ -6,13 +6,11 @@ import elite.intel.gameapi.journal.events.dto.shiploadout.EngineeringDto;
 import elite.intel.gameapi.journal.events.dto.shiploadout.ModuleDto;
 import elite.intel.gameapi.journal.events.dto.shiploadout.ShipLoadOutDto;
 import elite.intel.session.PlayerSession;
+import elite.intel.util.StringUtls;
 import elite.intel.util.yaml.ToYamlConvertable;
 import elite.intel.util.yaml.YamlFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static java.util.Map.entry;
 import static java.util.Map.ofEntries;
@@ -129,12 +127,13 @@ public class AnalyzeShipLoadoutHandler extends BaseQueryAnalyzer implements Quer
         for (java.util.Map.Entry<String, String> entry : MODULE_KEYWORDS.entrySet()) {
             if (inputLower.contains(entry.getKey())) {
                 String keyword = entry.getValue();
-                java.util.Optional<String> match = installedModules.stream()
+                Optional<String> match = installedModules.stream()
                         .filter(m -> m.toLowerCase().contains(keyword))
                         .findFirst();
-                return match.isPresent()
-                        ? entry.getKey() + ": INSTALLED (" + elite.intel.util.StringUtls.toReadableModuleName(match.get()) + ")"
-                        : entry.getKey() + ": NOT INSTALLED";
+                return match.map(s -> entry.getKey() +
+                        ": INSTALLED (" + StringUtls.toReadableModuleName(s) + ")").orElseGet(
+                        () -> entry.getKey() + ": NOT INSTALLED"
+                );
             }
         }
         return "no specific module detected in query";

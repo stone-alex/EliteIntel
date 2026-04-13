@@ -8,7 +8,7 @@ import elite.intel.session.PlayerSession;
 import java.util.ArrayList;
 import java.util.List;
 
-import static elite.intel.search.edsm.utils.StrongHoldFilter.skipEnemyStarSystemHold;
+import static elite.intel.search.edsm.utils.StrongHoldFilter.skipEnemyStarSystem;
 
 public class TradeRouteFilter {
 
@@ -43,11 +43,11 @@ public class TradeRouteFilter {
             StarSystemResult ogSourceSystem = searchSystem(ogSource);
             StarSystemResult ogDestinationSystem = searchSystem(ogDestination);
 
-            if (skipEnemyStarSystemHold(ogSourceSystem, ogDestinationSystem, pledgedPower)) continue;
+            if (skipEnemyStarSystem(ogSourceSystem, ogDestinationSystem, pledgedPower)) continue;
 
             filteredResults.add(transaction);
-            route.setResult(filteredResults);
         }
+        route.setResult(filteredResults);
         return route;
     }
 

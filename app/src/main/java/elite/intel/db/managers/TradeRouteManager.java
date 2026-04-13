@@ -70,6 +70,8 @@ public class TradeRouteManager {
             return null;
         }
 
+        /// Spansh does not have a filter for enemy territory. We have to do that manually.
+        /// This means we will have a gap in the route. This is temporary, until we have our own trade route calculation.
         if(criteria.isAllowStrongHold()) {
             save(tradeRoute);
             return tradeRoute;
@@ -87,6 +89,9 @@ public class TradeRouteManager {
 
 
     private void save(TradeRouteResponse tradeRoute) {
+        /// clear old route
+        clear();
+
         if (tradeRoute.getResult() == null) return;
         Database.withDao(TradeRouteDao.class, dao -> {
             dao.clear(); //clear previous route

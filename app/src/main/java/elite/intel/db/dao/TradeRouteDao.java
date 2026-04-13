@@ -30,7 +30,7 @@ public interface TradeRouteDao {
     void clear();
 
     @SqlUpdate("""
-        DELETE FROM trade_route 
+                DELETE FROM trade_route
         WHERE CAST(json_extract(json, '$.destinationMarketId') AS INTEGER) = :marketId
     """)
     void deleteForMarketId(@Bind("marketId") long marketId);

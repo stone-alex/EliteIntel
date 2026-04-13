@@ -53,7 +53,7 @@ public class StationSearchResult extends BaseJsonDto implements ToJsonConvertibl
         @SerializedName("id")
         private String id;
 
-        @SerializedName("system_id64")
+        @SerializedName("id64")
         private long id64;
 
         @SerializedName("is_being_colonised")

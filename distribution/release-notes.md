@@ -1,3 +1,9 @@
+## Elite Intel v-0.0357-beta
+
+### bug fixes / features:
+- Trade route fix. Allow to **optionally** filter out enemy Stronghold. NOTE this may introduce a gap in the route.
+
+
 ## Elite Intel v-0.0356-beta
 
 ### bug fixes / features:

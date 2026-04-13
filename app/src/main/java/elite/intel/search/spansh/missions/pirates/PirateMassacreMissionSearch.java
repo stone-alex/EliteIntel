@@ -17,7 +17,7 @@ import elite.intel.session.PlayerSession;
 import java.util.ArrayList;
 import java.util.List;
 
-import static elite.intel.search.edsm.utils.StrongHoldFilter.skipEnemyStarSystem;
+import static elite.intel.search.edsm.utils.EnemyStarSystemFilter.isEnemyStrongholdPair;
 
 public class PirateMassacreMissionSearch {
 
@@ -95,7 +95,7 @@ public class PirateMassacreMissionSearch {
 
             if (missionProviderSystem == null || battleGroundSystem == null) continue;
 
-            if (pledgedToPower && skipEnemyStarSystem(missionProviderSystem, battleGroundSystem, pledgedPower))
+            if (pledgedToPower && isEnemyStrongholdPair(missionProviderSystem, battleGroundSystem, pledgedPower))
                 continue;
 
             result.add(

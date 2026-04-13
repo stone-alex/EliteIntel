@@ -97,7 +97,7 @@ public class SystemSearchCriteria extends BaseJsonDto implements ToJsonConvertib
     }
     public static class Filters {
 
-        @SerializedName("system_name")
+        @SerializedName("name")
         private SystemNameFilter systemName;
 
         public SystemNameFilter getSystemName() {

@@ -5,7 +5,6 @@ import elite.intel.db.util.Database;
 import elite.intel.gameapi.EventBusManager;
 import elite.intel.gameapi.SubscriberRegistration;
 import elite.intel.session.LoadSessionEvent;
-import elite.intel.session.SystemSession;
 import elite.intel.ui.controller.AppController;
 import elite.intel.ui.view.AppView;
 import elite.intel.util.Cypher;
@@ -19,18 +18,15 @@ public class App {
 
     public static void main(String[] args) {
 
-        //init kry and db first!
+        // init kry and db first!
         Cypher.initializeKey();
         Database.init();
 
-        // change to when we have version 1.0
+        // change the debug log level when we have version 1.0
         Configurator.setRootLevel(Level.ALL);
 
-        //Event subscribers
+        // Event subscribers
         SubscriberRegistration.registerSubscribers();
-
-        // Turn off streaming mode
-        SystemSession.getInstance().stopStartListening(false);
 
         // spin up the session
         EventBusManager.publish(new LoadSessionEvent());

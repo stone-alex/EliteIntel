@@ -32,7 +32,7 @@ public class Database {
     }
 
     public static <T, R> R withDao(Class<T> daoClass, java.util.function.Function<T, R> block) {
-        // Use withExtension to obtain a thread-safe handle for this specific operation
+        // Use withExtension to get a thread-safe handle for this specific operation
         try {
             return JDBI.withExtension(daoClass, block::apply);
         } catch (Exception e) {

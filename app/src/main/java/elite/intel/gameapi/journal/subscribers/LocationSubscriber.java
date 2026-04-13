@@ -68,7 +68,6 @@ public class LocationSubscriber {
     }
 
     private LocationDto findLocation(LocationEvent event) {
-        LocationManager locationData = LocationManager.getInstance();
-        return locationData.findBySystemAddress(event.getSystemAddress(), event.getBody());
+        return locationManager.findBySystemAddress(event.getSystemAddress(), event.getBody());
     }
 }

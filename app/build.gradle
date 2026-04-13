@@ -56,9 +56,6 @@ dependencies {
     // Connection pool
     implementation 'com.zaxxer:HikariCP:5.1.0'
 
-    ///whisper
-    implementation 'io.github.givimad:whisper-jni:1.7.1'
-
     //sherpa
     implementation files('libs/sherpa-onnx-v1.12.33.jar')
 

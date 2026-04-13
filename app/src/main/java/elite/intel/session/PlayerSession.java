@@ -134,20 +134,6 @@ public class PlayerSession {
         return bounties.getAll();
     }
 
-
-/*
-    public void saveLocation(LocationDto location) {
-        if (location.getBodyId() == -1) {
-            return;
-        }
-        locationManager.save(location);
-    }
-*/
-
-/*    public Map<Long, LocationDto> getLocations() {
-        return locationManager.findByPrimaryStar(getPrimaryStarName());
-    }*/
-
     public String getPrimaryStarName() {
         return Database.withDao(PlayerDao.class, dao -> dao.get().getCurrentPrimaryStar());
     }

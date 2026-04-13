@@ -159,7 +159,7 @@ public class SystemSession {
             GameSessionDao.GameSession session = dao.get();
             session.setRmsThresholdHigh(rmsThresholdHigh == null ? 0.0 : rmsThresholdHigh);
             dao.save(session);
-            return null;
+            return Void.TYPE;
         });
     }
 
@@ -183,7 +183,7 @@ public class SystemSession {
             GameSessionDao.GameSession session = dao.get();
             session.setRmsThresholdLow(rmsThresholdLow == null ? 0.0 : rmsThresholdLow);
             dao.save(session);
-            return null;
+            return Void.TYPE;
         });
     }
 

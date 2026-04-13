@@ -17,7 +17,7 @@ public final class AppPaths {
     }
 
 
-    /// --- APP USER DATA STUFF
+    /// --- APP USER DATA LOCATION
     public static Path getDatabasePath() throws IOException {
         Path base;
         if (OsDetector.getOs() == OsDetector.OS.LINUX || OsDetector.getOs() == OsDetector.OS.MAC) {

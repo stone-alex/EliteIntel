@@ -363,6 +363,10 @@ public class EdsmApiClient {
 
     private static String callEdsm(StringBuilder query) {
         throttle();
+        return doCallEdsm(query, 1);
+    }
+
+    private static String doCallEdsm(StringBuilder query, int retriesLeft) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(query.toString()))
@@ -377,7 +381,22 @@ public class EdsmApiClient {
             int status = response.statusCode();
 
             if (status == 429) {
-                log.warn("EDSM API rate limit exceeded");
+                if (retriesLeft > 0) {
+                    int resetSecs = response.headers().firstValue("x-rate-limit-reset")
+                            .map(v -> {
+                                try {
+                                    return Integer.parseInt(v);
+                                } catch (NumberFormatException e) {
+                                    return 10;
+                                }
+                            })
+                            .orElse(10);
+                    log.warn("EDSM rate limit hit; waiting {}s before retry", resetSecs + 1);
+                    SleepNoThrow.sleep((resetSecs + 1) * 1_000L);
+                    throttle();
+                    return doCallEdsm(query, retriesLeft - 1);
+                }
+                log.warn("EDSM API rate limit exceeded after retry");
                 return "";
             }
             if (status != 200) {

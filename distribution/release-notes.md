@@ -1,4 +1,9 @@
-## Elite Intel v-0.0358-beta
+## Elite Intel v-0.0359-beta
+
+### bug fixes / features:
+- Fix for EDSM client. headers and API call limit/timeout
+- Increased wait time for galaxy map to open before we attempt to enter the route.
+
 
 ### bug fixes / features:
 - changes to normalizer for "email" commands

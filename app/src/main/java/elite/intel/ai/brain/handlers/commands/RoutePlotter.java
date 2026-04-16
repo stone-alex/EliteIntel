@@ -35,7 +35,7 @@ public class RoutePlotter {
 
         try {
             GameControllerBus.publish(new GameInputEvent(BINDING_GALAXY_MAP.getGameBinding(), 0));
-            Thread.sleep(1700);
+            Thread.sleep(3000);
             GameControllerBus.publish(new GameInputEvent(BINDING_CAM_ZOOM_IN.getGameBinding(), 500));
             GameControllerBus.publish(new GameInputEvent(BINDING_UI_LEFT.getGameBinding(), 0));
             Thread.sleep(200);
